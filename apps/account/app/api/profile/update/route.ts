@@ -24,16 +24,20 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { full_name, phone } = await request.json();
+    const { full_name, phone, country, contact_preference } = await request.json();
 
     const admin = createAdminSupabase();
+    const updates: Record<string, unknown> = {
+      full_name: full_name || null,
+      phone: phone || null,
+      updated_at: new Date().toISOString(),
+    };
+    if (country) updates.country = country;
+    if (contact_preference) updates.contact_preference = contact_preference;
+
     const { error } = await admin
       .from("customer_profiles")
-      .update({
-        full_name: full_name || null,
-        phone: phone || null,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updates)
       .eq("id", user.id);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });

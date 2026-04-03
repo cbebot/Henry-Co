@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, ChevronRight } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { getNavSections, type NavItem } from "@/lib/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
+import Logo from "@/components/brand/Logo";
 
 type SidebarProps = {
   user: { fullName: string | null; email: string | null; avatarUrl: string | null };
@@ -53,9 +54,7 @@ export default function Sidebar({ user, unreadCount }: SidebarProps) {
     <aside className="hidden lg:flex lg:flex-col lg:w-[var(--acct-sidebar-width)] lg:fixed lg:inset-y-0 lg:left-0 lg:border-r lg:border-[var(--acct-line)] lg:bg-[var(--acct-bg-soft)]">
       {/* Brand header */}
       <div className="flex h-16 items-center gap-3 border-b border-[var(--acct-line)] px-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--acct-gold)] text-xs font-bold text-white">
-          H
-        </div>
+        <Logo size={32} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">Henry & Co.</p>
           <p className="text-[0.65rem] text-[var(--acct-muted)]">My Account</p>

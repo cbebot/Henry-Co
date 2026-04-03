@@ -1,8 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Camera, User } from "lucide-react";
+
+const COUNTRIES = [
+  { code: "NG", name: "Nigeria" },
+  { code: "GH", name: "Ghana" },
+  { code: "KE", name: "Kenya" },
+  { code: "ZA", name: "South Africa" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "US", name: "United States" },
+  { code: "CA", name: "Canada" },
+  { code: "AE", name: "United Arab Emirates" },
+  { code: "DE", name: "Germany" },
+  { code: "FR", name: "France" },
+];
+
+const CONTACT_PREFS = [
+  { value: "email", label: "Email" },
+  { value: "whatsapp", label: "WhatsApp" },
+  { value: "phone", label: "Phone" },
+  { value: "in_app", label: "In-app" },
+];
 
 type Props = {
   profile: Record<string, string | null> | null;
@@ -12,9 +32,37 @@ type Props = {
 export default function ProfileForm({ profile, email }: Props) {
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [phone, setPhone] = useState(profile?.phone || "");
+  const [country, setCountry] = useState(profile?.country || "NG");
+  const [contactPref, setContactPref] = useState(profile?.contact_preference || "email");
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setMessage(null);
+
+    try {
+      const form = new FormData();
+      form.append("avatar", file);
+      const res = await fetch("/api/profile/avatar", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setAvatarUrl(data.avatar_url);
+      setMessage({ type: "success", text: "Photo updated" });
+      router.refresh();
+    } catch (err: unknown) {
+      setMessage({ type: "error", text: err instanceof Error ? err.message : "Upload failed" });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +73,12 @@ export default function ProfileForm({ profile, email }: Props) {
       const res = await fetch("/api/profile/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ full_name: fullName.trim(), phone: phone.trim() }),
+        body: JSON.stringify({
+          full_name: fullName.trim(),
+          phone: phone.trim(),
+          country,
+          contact_preference: contactPref,
+        }),
       });
 
       const data = await res.json();
@@ -41,7 +94,7 @@ export default function ProfileForm({ profile, email }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-lg space-y-4">
+    <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
       {message && (
         <div
           className={`rounded-xl px-4 py-3 text-sm ${
@@ -53,6 +106,38 @@ export default function ProfileForm({ profile, email }: Props) {
           {message.text}
         </div>
       )}
+
+      {/* Avatar */}
+      <div className="flex items-center gap-5">
+        <div className="relative">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" className="h-20 w-20 rounded-2xl object-cover border border-[var(--acct-line)]" />
+          ) : (
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[var(--acct-surface)] border border-[var(--acct-line)]">
+              <User size={28} className="text-[var(--acct-muted)]" />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="absolute -bottom-1.5 -right-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--acct-gold)] text-white shadow-lg transition-transform hover:scale-110"
+          >
+            {uploading ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleAvatarChange}
+            className="hidden"
+          />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-[var(--acct-ink)]">Profile photo</p>
+          <p className="text-xs text-[var(--acct-muted)]">JPG, PNG or WebP. Max 5 MB.</p>
+        </div>
+      </div>
 
       <div>
         <label className="mb-1.5 block text-sm font-medium">Email</label>
@@ -71,15 +156,45 @@ export default function ProfileForm({ profile, email }: Props) {
         />
       </div>
 
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-1.5 block text-sm font-medium">Country</label>
+          <select value={country} onChange={(e) => setCountry(e.target.value)} className="acct-select">
+            {COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-medium">Phone</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="acct-input"
+            placeholder="+234..."
+          />
+        </div>
+      </div>
+
       <div>
-        <label className="mb-1.5 block text-sm font-medium">Phone</label>
-        <input
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="acct-input"
-          placeholder="+234..."
-        />
+        <label className="mb-2 block text-sm font-medium">Preferred contact method</label>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {CONTACT_PREFS.map((pref) => (
+            <button
+              key={pref.value}
+              type="button"
+              onClick={() => setContactPref(pref.value)}
+              className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all ${
+                contactPref === pref.value
+                  ? "border-[var(--acct-gold)] bg-[var(--acct-gold-soft)] text-[var(--acct-gold)]"
+                  : "border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)] hover:border-[var(--acct-gold)]/40"
+              }`}
+            >
+              {pref.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">

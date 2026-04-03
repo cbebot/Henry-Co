@@ -7,6 +7,7 @@ import { Menu, X, LogOut, Bell } from "lucide-react";
 import { getNavSections } from "@/lib/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
+import Logo from "@/components/brand/Logo";
 
 type MobileNavProps = {
   user: { fullName: string | null; email: string | null; avatarUrl: string | null };
@@ -34,9 +35,7 @@ export default function MobileNav({ user, unreadCount }: MobileNavProps) {
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-[var(--acct-line)] bg-[var(--acct-bg-soft)]/95 px-4 backdrop-blur-md">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--acct-gold)] text-[0.65rem] font-bold text-white">
-            H
-          </div>
+          <Logo size={28} />
           <span className="text-sm font-semibold">My Account</span>
         </div>
         <div className="flex items-center gap-1">
