@@ -11,14 +11,14 @@ export default async function OwnerOverviewPage() {
     <LearnWorkspaceShell
       kicker="Academy Ops"
       title="Run the academy with real visibility across learning, payments, assignments, and certificates."
-      description="HenryCo Learn splits operations into focused views so content, learners, assignments, analytics, and announcements do not collapse into one weak admin page."
+      description="HenryCo Learn keeps operations in focused views so content, learners, assignments, analytics, and announcements stay easy to manage at scale."
       nav={ownerNav("/owner")}
     >
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <LearnMetricCard label="Total courses" value={String(analytics.metrics.totalCourses)} hint="Published plus internal programs in the live academy store." />
         <LearnMetricCard label="Active learners" value={String(analytics.metrics.activeLearners)} hint="Unique academy identities with active or completed enrollments." />
         <LearnMetricCard label="Certificates issued" value={String(analytics.metrics.certificatesIssued)} hint="Live academy certificates with verification records." />
-        <LearnMetricCard label="Completion rate" value={`${analytics.metrics.completionRate}%`} hint="Completion based on real enrollment status, not dead dashboard counters." />
+        <LearnMetricCard label="Completion rate" value={`${analytics.metrics.completionRate}%`} hint="Completion based on real enrollment status and verified academy progress." />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">

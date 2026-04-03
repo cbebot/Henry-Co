@@ -8,6 +8,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../../..");
 const runtimeBucket = "property-runtime";
 const ownerEmail = "introvert7519@gmail.com";
+const ownerUserId = "f43081fe-7543-4b02-85d8-9cbfd8048b92";
 const ownerPhone = "+2349133957084";
 
 function parseEnvFile(filepath) {
@@ -116,6 +117,15 @@ async function findListingByTitle(title) {
 async function findNotifications(entityId) {
   const notifications = await listJsonCollection("notifications");
   return notifications.filter((record) => record.entityId === entityId);
+}
+
+async function findSavedListing(userId, listingId) {
+  const savedListings = await listJsonCollection("saved-listings");
+  return (
+    savedListings.find(
+      (record) => record.userId === userId && record.listingId === listingId
+    ) ?? null
+  );
 }
 
 async function findCustomerActivities(referenceId) {
@@ -357,15 +367,15 @@ test("listing submission, owner update, and moderation approval stay connected",
   );
   expect(listingThreads.some((record) => record.category === "listing_submission")).toBeTruthy();
 
-  await signInAsOwner(page, "/account/listings");
+  await signInAsOwner(page, "/owner");
   await expect(
-    page.getByRole("heading", { name: /Owner and agent listing workspace/i }).first()
+    page.getByRole("heading", { name: /Owner submission and listing visibility/i }).first()
   ).toBeVisible();
-  await expect(page.getByText(listingTitle)).toBeVisible();
+  await expect(page.getByText(listingTitle).first()).toBeVisible();
 
-  const listingSection = page.locator("section").filter({ hasText: listingTitle }).first();
+  const listingSection = page.getByTestId(`owner-listing-workspace-${listing.id}`);
   await listingSection
-    .getByLabel("Summary")
+    .locator('textarea[name="summary"]')
     .fill("Updated by the verification owner workspace to confirm the resubmission path.");
   await listingSection.getByRole("button", { name: /Save and resubmit/i }).click();
 
@@ -385,7 +395,7 @@ test("listing submission, owner update, and moderation approval stay connected",
     page.getByRole("heading", { name: /Listing moderation and featuring/i }).first()
   ).toBeVisible();
 
-  const moderationSection = page.locator("form").filter({ hasText: listingTitle }).first();
+  const moderationSection = page.getByTestId(`moderation-listing-${listing.id}`);
   await moderationSection.getByRole("combobox").first().selectOption("approved");
   await moderationSection
     .getByLabel("Review note for owner or agent")
@@ -401,6 +411,7 @@ test("listing submission, owner update, and moderation approval stay connected",
     () => findListingByTitle(listingTitle),
     (value) => Boolean(value) && value.status === "approved"
   );
+  sharedState.approvedListingSlug = approvedListing.slug;
   expect(approvedListing.visibility).toBe("public");
 
   const approvalNotifications = await waitForValue(
@@ -422,7 +433,10 @@ test("owner save flow, ops updates, and privileged workspaces render for the map
       !sharedState.submittedListingSlug
   );
 
-  await signInAsOwner(page, `/property/${sharedState.submittedListingSlug}`);
+  await signInAsOwner(
+    page,
+    `/property/${sharedState.approvedListingSlug || sharedState.submittedListingSlug}`
+  );
   await expect(
     page.getByRole("heading", { name: new RegExp(sharedState.listingTitle, "i") })
   ).toBeVisible();
@@ -430,8 +444,19 @@ test("owner save flow, ops updates, and privileged workspaces render for the map
   await page.getByRole("button", { name: /Save property/i }).click();
   await expect(page.getByText(/Property saved to your HenryCo account history/i)).toBeVisible();
 
-  await page.goto("/account/saved");
-  await expect(page.getByText(sharedState.listingTitle)).toBeVisible();
+  const savedRecord = await waitForValue(
+    "saved property record",
+    () => findSavedListing(ownerUserId, sharedState.listingId),
+    Boolean
+  );
+  expect(savedRecord.listingId).toBe(sharedState.listingId);
+
+  const savedActivities = await waitForValue(
+    "saved property activity",
+    () => findCustomerActivities(sharedState.listingId),
+    (records) => records.some((record) => record.activity_type === "property_saved")
+  );
+  expect(savedActivities.some((record) => record.activity_type === "property_saved")).toBeTruthy();
 
   await page.goto("/operations");
   await expect(

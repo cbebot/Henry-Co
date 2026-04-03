@@ -12,6 +12,7 @@ import {
   createSupportThread,
   ensureCustomerProfile,
 } from "@/lib/property/shared-account";
+import { getSharedAccountPropertyPath } from "@/lib/property/links";
 import {
   createListingFromSubmission,
   removeSavedPropertyForUser,
@@ -76,18 +77,14 @@ function revalidatePropertyRoutes(slug?: string | null) {
   const paths = [
     "/",
     "/search",
-    "/managed",
-    "/trust",
-    "/faq",
-    "/submit",
-    "/account",
-    "/account/saved",
-    "/account/inquiries",
-    "/account/viewings",
-    "/account/listings",
-    "/owner",
-    "/agent",
-    "/operations",
+      "/managed",
+      "/trust",
+      "/faq",
+      "/submit",
+      "/account",
+      "/owner",
+      "/agent",
+      "/operations",
     "/moderation",
     "/support",
     "/admin",
@@ -233,7 +230,7 @@ export async function POST(request: Request) {
           description: listing.title,
           referenceType: "property_listing",
           referenceId: listing.id,
-          actionUrl: `/property/${listing.slug}`,
+          actionUrl: getSharedAccountPropertyPath("saved"),
         });
 
         revalidatePropertyRoutes(listing.slug);
@@ -286,7 +283,7 @@ export async function POST(request: Request) {
           status: "new",
           referenceType: "property_inquiry",
           referenceId: inquiryId,
-          actionUrl: `/property/${listing.slug}`,
+          actionUrl: getSharedAccountPropertyPath("inquiries"),
           metadata: { listingId },
         });
 
@@ -402,7 +399,7 @@ export async function POST(request: Request) {
           status: "requested",
           referenceType: "property_viewing_request",
           referenceId: viewingId,
-          actionUrl: "/account/viewings",
+          actionUrl: getSharedAccountPropertyPath("viewings"),
           metadata: { listingId, preferredDate, backupDate },
         });
 
@@ -533,7 +530,7 @@ export async function POST(request: Request) {
           status: "submitted",
           referenceType: "property_listing",
           referenceId: listing.id,
-          actionUrl: "/account/listings",
+          actionUrl: getSharedAccountPropertyPath("listings"),
           metadata: { listingId: listing.id },
         });
 
@@ -577,7 +574,7 @@ export async function POST(request: Request) {
 
       case "listing_update": {
         if (!viewer.user) {
-          return redirectTo(request, `/login?next=${encodeURIComponent("/account/listings")}`);
+          return redirectTo(request, `/login?next=${encodeURIComponent("/owner")}`);
         }
 
         const listingId = text(formData, "listing_id");
@@ -589,7 +586,7 @@ export async function POST(request: Request) {
           "moderation",
           "property_admin",
         ]);
-        if (!canEdit) return redirectTo(request, "/account");
+        if (!canEdit) return redirectTo(request, "/owner");
 
         const extraGallery = listValue(formData, "gallery_urls");
         const mediaFiles = formData
@@ -666,7 +663,7 @@ export async function POST(request: Request) {
           status: nextStatus,
           referenceType: "property_listing",
           referenceId: listing.id,
-          actionUrl: "/account/listings",
+          actionUrl: getSharedAccountPropertyPath("listings"),
         });
 
         if (nextStatus === "submitted") {
@@ -748,7 +745,10 @@ export async function POST(request: Request) {
           status,
           referenceType: "property_listing",
           referenceId: listing.id,
-          actionUrl: status === "approved" ? `/property/${listing.slug}` : "/account/listings",
+          actionUrl:
+            status === "approved"
+              ? `/property/${listing.slug}`
+              : getSharedAccountPropertyPath("listings"),
         });
 
         await sendPropertyEvent({
@@ -779,11 +779,17 @@ export async function POST(request: Request) {
         const inquiryId = text(formData, "inquiry_id");
         const inquiry = snapshot.inquiries.find((item) => item.id === inquiryId);
         if (!inquiry) return redirectTo(request, withQuery(returnTo, "error", "missing-inquiry"));
+        const assignedAgentId = text(formData, "assigned_agent_id") || inquiry.assignedAgentId;
+        const selectedStatus = text(formData, "status");
+        const nextStatus =
+          assignedAgentId && (!selectedStatus || selectedStatus === "new")
+            ? "assigned"
+            : selectedStatus || inquiry.status;
 
         await upsertPropertyInquiry({
           ...inquiry,
-          status: (text(formData, "status") || inquiry.status) as typeof inquiry.status,
-          assignedAgentId: text(formData, "assigned_agent_id") || inquiry.assignedAgentId,
+          status: nextStatus as typeof inquiry.status,
+          assignedAgentId,
           updatedAt: new Date().toISOString(),
         });
 

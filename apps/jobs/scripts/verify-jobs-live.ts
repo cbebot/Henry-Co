@@ -682,7 +682,7 @@ async function main() {
       cookieHeader: candidateSession.cookieHeader,
     });
 
-    assert(candidateHub.status === 200 && candidateHub.text.includes("Candidate Hub"), "Candidate dashboard should render for the signed-in candidate.");
+    assert(candidateHub.status === 200 && candidateHub.text.includes("Jobs Module"), "Candidate module should render for the signed-in candidate.");
     assert(
       candidateApplicationsPage.status === 200 &&
         candidateApplicationsPage.text.includes("Applications") &&
@@ -707,8 +707,8 @@ async function main() {
     });
 
     assert(
-      employerWorkspace.status === 200 && employerWorkspace.text.includes("Employer Workspace"),
-      "Employer workspace should render for the employer owner."
+      employerWorkspace.status === 200 && employerWorkspace.text.includes("Employer Console"),
+      "Employer console should render for the employer owner."
     );
     assert(
       employerJobsPage.status === 200 && employerJobsPage.text.includes("Operations Systems Lead"),
@@ -736,8 +736,8 @@ async function main() {
     });
 
     assert(
-      recruiterPage.status === 200 && recruiterPage.text.includes("Recruiter Overview"),
-      "Recruiter overview should render for the manager account."
+      recruiterPage.status === 200 && recruiterPage.text.includes("Recruiter Console"),
+      "Recruiter console should render for the manager account."
     );
     assert(
       pipelinePage.status === 200 && pipelinePage.text.includes("Operations Systems Lead"),

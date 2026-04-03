@@ -8,6 +8,7 @@ import {
   sendFinalDeliveryNotifications,
   sendInquiryNotifications,
   sendMilestoneReadyNotifications,
+  sendPaymentInstructionsNotifications,
   sendProjectUpdateNotifications,
   sendProjectStartedNotifications,
   sendProposalDecisionNotifications,
@@ -15,6 +16,10 @@ import {
   sendRevisionCompletedNotifications,
   sendRevisionRequestedNotifications,
 } from "@/lib/studio/email/send";
+import {
+  buildMilestoneAmounts,
+  estimateStudioPricing,
+} from "@/lib/studio/pricing";
 import {
   asNumber,
   cleanText,
@@ -83,18 +88,6 @@ function packageById(packageId: string | null | undefined, packages: StudioPacka
   return packages.find((item) => item.id === packageId) ?? null;
 }
 
-function averageDepositRate(pkg: StudioPackage | null) {
-  return pkg?.depositRate ?? 0.4;
-}
-
-function budgetMultiplier(budgetBand: string) {
-  const key = cleanText(budgetBand).toLowerCase();
-  if (key.includes("under")) return 0.9;
-  if (key.includes("2m") || key.includes("5m")) return 1.15;
-  if (key.includes("10m") || key.includes("plus")) return 1.35;
-  return 1;
-}
-
 function scoreReadiness(input: SubmitStudioBriefInput) {
   let score = 48;
   if (cleanText(input.goals).length > 80) score += 12;
@@ -136,11 +129,11 @@ function pickTeam(input: SubmitStudioBriefInput, teams: StudioTeamProfile[]) {
   return ranked[0]?.team ?? teams[0];
 }
 
-function buildMilestonePlan(proposalId: string, projectId: string, investment: number) {
-  const deposit = Math.round(investment * 0.4);
-  const foundation = Math.round(investment * 0.25);
-  const production = Math.round(investment * 0.2);
-  const delivery = Math.max(investment - deposit - foundation - production, 0);
+function buildMilestonePlan(projectId: string, investment: number, depositRate: number) {
+  const { deposit, foundation, production, delivery } = buildMilestoneAmounts(
+    investment,
+    depositRate
+  );
 
   const milestones: StudioProjectMilestone[] = [
     {
@@ -267,9 +260,34 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
   const customRequestId = createId();
   const proposalId = createId();
   const projectId = createId();
+  const draftCustomRequest =
+    input.packageIntent === "custom"
+      ? {
+          projectType: cleanText(input.projectType) || service.name,
+          platformPreference:
+            cleanText(input.platformPreference) || "Best-fit recommendation",
+          designDirection: cleanText(input.designDirection) || "Premium modern",
+          pageRequirements: input.pageRequirements ?? [],
+          addonServices: input.addonServices ?? [],
+          inspirationSummary: cleanText(input.inspirationSummary),
+        }
+      : null;
   const readinessScore = scoreReadiness(input);
-  const investment = Math.round((pkg?.price ?? service.startingPrice) * budgetMultiplier(input.budgetBand));
-  const { proposalMilestones, projectMilestones } = buildMilestonePlan(proposalId, projectId, investment);
+  const pricing = estimateStudioPricing({
+    service,
+    package: input.packageIntent === "package" ? pkg : null,
+    brief: {
+      requiredFeatures: input.requiredFeatures ?? [],
+      urgency: input.urgency,
+    },
+    customRequest: draftCustomRequest,
+  });
+  const investment = pricing.total;
+  const { proposalMilestones, projectMilestones } = buildMilestonePlan(
+    projectId,
+    investment,
+    pricing.depositRate
+  );
   const meta: UpsertMeta = {
     userId: input.userId,
     email: input.email,
@@ -321,12 +339,13 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
           id: customRequestId,
           leadId,
           createdAt: now.toISOString(),
-          projectType: cleanText(input.projectType) || service.name,
-          platformPreference: cleanText(input.platformPreference) || "Best-fit recommendation",
-          designDirection: cleanText(input.designDirection) || "Premium modern",
-          pageRequirements: input.pageRequirements ?? [],
-          addonServices: input.addonServices ?? [],
-          inspirationSummary: cleanText(input.inspirationSummary),
+          projectType: draftCustomRequest?.projectType || service.name,
+          platformPreference:
+            draftCustomRequest?.platformPreference || "Best-fit recommendation",
+          designDirection: draftCustomRequest?.designDirection || "Premium modern",
+          pageRequirements: draftCustomRequest?.pageRequirements ?? [],
+          addonServices: draftCustomRequest?.addonServices ?? [],
+          inspirationSummary: draftCustomRequest?.inspirationSummary || "",
         }
       : null;
 
@@ -342,7 +361,7 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
       pkg?.summary ||
       `${service.name} scoped around ${lead.businessType.toLowerCase()}, ${lead.urgency.toLowerCase()} urgency, and a ${lead.budgetBand.toLowerCase()} budget lane.`,
     investment,
-    depositAmount: Math.round(investment * averageDepositRate(pkg)),
+    depositAmount: pricing.depositAmount,
     currency: "NGN",
     validUntil: plusDays(now, 7),
     teamId: team.id,
@@ -363,9 +382,9 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     ],
     milestones: proposalMilestones,
     comparisonNotes: [
-      "Starts with a deposit-backed execution slot, not a shallow estimate.",
-      "Milestones are tied to visible delivery checkpoints and approval moments.",
-      "This proposal can be refined by sales without losing the original scope trail.",
+      "The price is built from scope, platform complexity, and timing instead of a vague lump sum.",
+      "The first payment matches the deposit checkpoint shown in the milestone rail.",
+      "The same commercial record continues into finance, delivery, files, revisions, and support.",
     ],
   };
 
@@ -436,12 +455,15 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
       project.id,
       "project_created",
       "Project workspace opened",
-      "Studio activated a deposit-aware project workspace from the accepted brief."
+      "Studio opened the project workspace and requested the deposit needed to begin onboarding."
     );
   }
 
   await sendInquiryNotifications({ lead, proposal, project });
   await sendProposalNotifications({ lead, proposal, project, teamName: team.name });
+  if (project && payment) {
+    await sendPaymentInstructionsNotifications({ lead, proposal, project, payment });
+  }
 
   return { lead, brief, proposal, project, payment };
 }
@@ -578,12 +600,17 @@ export async function createProjectFromProposal(proposalId: string) {
     role: "sales_consultation",
   });
 
-  await sendProjectStartedNotifications({ lead, proposal: acceptedProposal, project, payment });
+  await sendPaymentInstructionsNotifications({
+    lead,
+    proposal: acceptedProposal,
+    project,
+    payment,
+  });
   await appendProjectUpdate(
     project.id,
     "project_created",
     "Project created from proposal",
-    "Sales converted the accepted proposal into a funded Studio workspace."
+    "Sales converted the accepted proposal into a pending-deposit Studio workspace."
   );
   return project;
 }
@@ -1044,6 +1071,16 @@ export async function saveStudioPlatformSettings(input: {
   supportEmail: string;
   supportPhone: string;
   primaryCta: string;
+  paymentBankName: string;
+  paymentAccountName: string;
+  paymentAccountNumber: string;
+  paymentCurrency: string;
+  paymentInstructions: string;
+  paymentSupportEmail: string;
+  paymentSupportWhatsApp: string;
+  companyAccountName: string;
+  companyAccountNumber: string;
+  companyBankName: string;
   trustSignals: string[];
   process: string[];
 }) {
@@ -1055,11 +1092,20 @@ export async function saveStudioPlatformSettings(input: {
     {
       key: "platform",
       value: {
-        ...(catalog.platform ?? {}),
-        currency: "NGN",
+        currency: cleanText(input.paymentCurrency) || catalog.platform.currency || "NGN",
         support_email: cleanText(input.supportEmail),
         support_phone: cleanText(input.supportPhone),
         primary_cta: cleanText(input.primaryCta),
+        payment_bank_name: cleanText(input.paymentBankName) || null,
+        payment_account_name: cleanText(input.paymentAccountName) || null,
+        payment_account_number: cleanText(input.paymentAccountNumber) || null,
+        payment_currency: cleanText(input.paymentCurrency) || "NGN",
+        payment_instructions: cleanText(input.paymentInstructions) || null,
+        payment_support_email: cleanText(input.paymentSupportEmail) || null,
+        payment_support_whatsapp: cleanText(input.paymentSupportWhatsApp) || null,
+        company_account_name: cleanText(input.companyAccountName) || null,
+        company_account_number: cleanText(input.companyAccountNumber) || null,
+        company_bank_name: cleanText(input.companyBankName) || null,
       },
       created_at: now,
       updated_at: now,

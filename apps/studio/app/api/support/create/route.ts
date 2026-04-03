@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { getStudioAccountUrl } from "@/lib/studio/links";
 import { createSupportThread } from "@/lib/studio/shared-account";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
-  const redirectTo = String(formData.get("redirectTo") || "/client");
+  const redirectTo = String(formData.get("redirectTo") || getStudioAccountUrl());
   const subject = String(formData.get("subject") || "").trim();
   const body = String(formData.get("body") || "").trim();
   const category = String(formData.get("category") || "general").trim();

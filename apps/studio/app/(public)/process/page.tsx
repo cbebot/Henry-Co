@@ -3,8 +3,7 @@ import { getStudioCatalog } from "@/lib/studio/catalog";
 
 export default async function ProcessPage() {
   const catalog = await getStudioCatalog();
-  const primaryCta =
-    typeof catalog.platform.primary_cta === "string" ? catalog.platform.primary_cta : "Start a Studio project";
+  const primaryCta = catalog.platform.primaryCta || "Start a Studio project";
 
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-10 sm:px-8 lg:px-10">

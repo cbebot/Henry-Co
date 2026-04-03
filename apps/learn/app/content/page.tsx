@@ -2,6 +2,7 @@ import { addModuleLessonDefinitionAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { contentNav } from "@/lib/learn/navigation";
+import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnPanel, LearnWorkspaceShell } from "@/components/learn/ui";
 
 export default async function ContentPage() {
@@ -10,9 +11,9 @@ export default async function ContentPage() {
 
   return (
     <LearnWorkspaceShell
-      kicker="Content Builder"
-      title="Add modules and lessons without breaking the academy structure."
-      description="This builder keeps lesson logic attached to real courses and modules so progress, certificates, and learner dashboards continue to work."
+      kicker="Content Studio"
+      title="Add modules and lessons with the full academy structure intact."
+      description="Every lesson stays attached to its real course and module so progress, certificates, learner dashboards, and public pages remain in sync."
       nav={contentNav("/content")}
     >
       <LearnPanel className="rounded-[2rem]">
@@ -40,7 +41,7 @@ export default async function ContentPage() {
           </label>
           <textarea name="lessonBody" placeholder="Lesson body markdown" className="learn-textarea rounded-2xl px-4 py-3 md:col-span-2" rows={8} required />
           <div className="md:col-span-2">
-            <button type="submit" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">Add module + lesson</button>
+            <PendingSubmitButton pendingLabel="Publishing lesson structure...">Add module and lesson</PendingSubmitButton>
           </div>
         </form>
       </LearnPanel>

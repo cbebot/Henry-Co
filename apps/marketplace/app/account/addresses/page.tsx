@@ -1,6 +1,7 @@
 import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
+import type { MarketplaceAddress } from "@/lib/marketplace/types";
 import { accountNav } from "@/lib/marketplace/navigation";
 
 export const dynamic = "force-dynamic";
@@ -37,7 +38,7 @@ export default async function AccountAddressesPage() {
 
       {data.addresses.length ? (
         <div className="grid gap-4 md:grid-cols-2">
-          {data.addresses.map((address) => (
+          {data.addresses.map((address: MarketplaceAddress) => (
             <article key={address.id} className="market-paper rounded-[1.75rem] p-5">
               <p className="market-kicker">{address.label}</p>
               <h2 className="mt-3 text-xl font-semibold text-[var(--market-ink)]">{address.recipient}</h2>

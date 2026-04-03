@@ -8,6 +8,7 @@ import {
   sanitizeHeaderValue,
 } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
+import { getStudioCatalog } from "@/lib/studio/catalog";
 import { upsertStudioRecord } from "@/lib/studio/store";
 import { sendStudioWhatsAppText } from "@/lib/studio/whatsapp";
 import type {
@@ -44,6 +45,11 @@ type EmailLayout = {
 function baseUrl() {
   const domain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
   return process.env.NODE_ENV === "production" ? `https://studio.${domain}` : "http://localhost:3000";
+}
+
+async function getPaymentSettings() {
+  const catalog = await getStudioCatalog({ includeUnpublished: true });
+  return catalog.platform;
 }
 
 function escapeHtml(value: string) {
@@ -414,6 +420,81 @@ export async function sendProjectStartedNotifications(input: {
   });
 }
 
+export async function sendPaymentInstructionsNotifications(input: {
+  lead: StudioLead;
+  proposal: StudioProposal;
+  project: StudioProject;
+  payment: StudioPayment;
+}) {
+  const projectUrl = `${baseUrl()}/project/${input.project.id}?access=${input.project.accessKey}`;
+  const platform = await getPaymentSettings();
+  const sections: EmailSection[] = [
+    { label: "Transfer amount", value: formatCurrency(input.payment.amount, input.payment.currency) },
+    {
+      label: "Bank",
+      value: platform.paymentBankName || "Finance configuration pending",
+    },
+    {
+      label: "Account name",
+      value: platform.paymentAccountName || "Finance configuration pending",
+    },
+    {
+      label: "Account number",
+      value: platform.paymentAccountNumber || "Finance configuration pending",
+    },
+    {
+      label: "Due date",
+      value: input.payment.dueDate ? new Date(input.payment.dueDate).toLocaleDateString("en-NG") : "Immediately",
+    },
+  ];
+
+  if (platform.paymentSupportEmail) {
+    sections.push({ label: "Finance support", value: platform.paymentSupportEmail });
+  }
+  if (platform.paymentSupportWhatsApp) {
+    sections.push({ label: "WhatsApp support", value: platform.paymentSupportWhatsApp });
+  }
+
+  await renderAndSendEmail({
+    to: input.lead.normalizedEmail,
+    entityId: input.payment.id,
+    templateKey: "payment_instructions",
+    layout: {
+      subject: `Payment instructions • ${input.project.title}`,
+      eyebrow: "Payment instructions",
+      title: "Your deposit rail is ready for transfer.",
+      intro:
+        "Use the exact account details below, then upload proof inside the Studio workspace so finance can confirm the transfer and move the project into onboarding.",
+      highlightLabel: "Amount due",
+      highlightValue: formatCurrency(input.payment.amount, input.payment.currency),
+      sections,
+      bullets: [
+        platform.paymentInstructions,
+        "Copy the account number and amount exactly as shown.",
+        "Upload proof in the payment section immediately after transfer.",
+        "HenryCo finance confirms the payment before delivery moves into the next milestone.",
+      ],
+      actionLabel: "Open payment workspace",
+      actionHref: projectUrl,
+    },
+  });
+
+  await sendWhatsApp({
+    phone: input.lead.phone,
+    entityId: input.payment.id,
+    templateKey: "payment_instructions",
+    subject: "Payment instructions",
+    body: [
+      `HenryCo Studio • ${input.project.title}`,
+      `Amount: ${formatCurrency(input.payment.amount, input.payment.currency)}`,
+      `Bank: ${platform.paymentBankName || "Pending"}`,
+      `Account: ${platform.paymentAccountName || "Pending"}`,
+      `Number: ${platform.paymentAccountNumber || "Pending"}`,
+      `Workspace: ${projectUrl}`,
+    ].join("\n"),
+  });
+}
+
 export async function sendProposalDecisionNotifications(input: {
   lead: StudioLead;
   proposal: StudioProposal;
@@ -654,6 +735,7 @@ export async function sendPaymentReminderNotification(input: {
   payment: StudioPayment;
 }) {
   const projectUrl = `${baseUrl()}/project/${input.project.id}?access=${input.project.accessKey}`;
+  const platform = await getPaymentSettings();
   await renderAndSendEmail({
     to: input.lead.normalizedEmail,
     entityId: input.payment.id,
@@ -669,6 +751,14 @@ export async function sendPaymentReminderNotification(input: {
       sections: [
         { label: "Payment label", value: input.payment.label },
         { label: "Due date", value: input.payment.dueDate ? new Date(input.payment.dueDate).toLocaleDateString("en-NG") : "Pending" },
+        { label: "Bank", value: platform.paymentBankName || "Finance configuration pending" },
+        { label: "Account name", value: platform.paymentAccountName || "Finance configuration pending" },
+        { label: "Account number", value: platform.paymentAccountNumber || "Finance configuration pending" },
+      ],
+      bullets: [
+        platform.paymentInstructions,
+        "Copy the amount and account details directly from the payment lane.",
+        "Upload proof in the Studio workspace once the transfer lands.",
       ],
       actionLabel: "Open payment workspace",
       actionHref: projectUrl,
@@ -683,6 +773,8 @@ export async function sendPaymentReminderNotification(input: {
     body: [
       `HenryCo Studio • ${input.payment.label}`,
       `Amount due: ${formatCurrency(input.payment.amount, input.payment.currency)}`,
+      `Bank: ${platform.paymentBankName || "Pending"}`,
+      `Account number: ${platform.paymentAccountNumber || "Pending"}`,
       `Project workspace: ${projectUrl}`,
     ].join("\n"),
   });

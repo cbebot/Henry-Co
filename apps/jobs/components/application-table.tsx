@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { JobApplication } from "@/lib/jobs/types";
+import { EmptyState } from "@/components/feedback";
 import { StatusPill } from "@/components/workspace-shell";
 
 function toneForStage(stage: string) {
@@ -17,7 +18,13 @@ export function ApplicationTable({
   detailBase: string;
 }) {
   if (applications.length === 0) {
-    return <p className="text-sm text-[var(--jobs-muted)]">No applications yet.</p>;
+    return (
+      <EmptyState
+        kicker="Pipeline is clear"
+        title="No applications are in this queue yet."
+        body="New candidates will appear here as soon as roles start receiving live applications."
+      />
+    );
   }
 
   return (

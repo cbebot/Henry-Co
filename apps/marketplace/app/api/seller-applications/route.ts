@@ -61,7 +61,7 @@ export async function POST(request: Request) {
   const payload = (await request.json().catch(() => ({}))) as SellerApplicationPayload;
   const mode = payload.mode === "submit" ? "submit" : "draft";
   const storeName = String(payload.storeName || "").trim();
-  const storeSlug = String(payload.storeSlug || storeName ? slugify(String(payload.storeSlug || storeName)) : "").trim();
+  const storeSlug = String(payload.storeSlug || (storeName ? slugify(storeName) : "")).trim();
   const legalName = String(payload.legalName || "").trim();
   const phone = String(payload.phone || "").trim();
   const categoryFocus = String(payload.categoryFocus || "").trim();
@@ -74,14 +74,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Store identity is incomplete." }, { status: 400 });
   }
 
+  if (mode === "submit" && !agreementAccepted) {
+    return NextResponse.json({ error: "Agreement acceptance is required before submission." }, { status: 400 });
+  }
+
   const admin = createAdminSupabase();
   const { data: existing } = await admin
     .from("marketplace_vendor_applications")
-    .select("id, status")
+    .select("id, status, submitted_at, agreement_accepted_at")
     .eq("user_id", viewer.user.id)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  const existingStatus = String(existing?.status || "");
+  const preservedStatus =
+    mode === "submit"
+      ? "submitted"
+      : ["submitted", "under_review", "approved", "changes_requested", "rejected"].includes(existingStatus)
+      ? existingStatus
+      : "draft";
 
   const applicationPayload = {
     user_id: viewer.user.id,
@@ -92,8 +104,11 @@ export async function POST(request: Request) {
     contact_phone: phone || null,
     category_focus: categoryFocus || null,
     story: story || null,
-    status: mode === "submit" ? "submitted" : "draft",
-    submitted_at: mode === "submit" ? new Date().toISOString() : null,
+    status: preservedStatus,
+    submitted_at:
+      mode === "submit"
+        ? existing?.submitted_at || new Date().toISOString()
+        : existing?.submitted_at || null,
     progress_step: progressStep,
     documents_json: documents,
     draft_payload: {
@@ -103,8 +118,10 @@ export async function POST(request: Request) {
       phone,
       categoryFocus,
       story,
+      documents,
     },
-    agreement_accepted_at: agreementAccepted ? new Date().toISOString() : null,
+    agreement_accepted_at:
+      agreementAccepted ? existing?.agreement_accepted_at || new Date().toISOString() : existing?.agreement_accepted_at || null,
   };
 
   const mutation = existing?.id

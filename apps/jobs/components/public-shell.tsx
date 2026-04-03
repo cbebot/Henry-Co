@@ -2,8 +2,10 @@ import Link from "next/link";
 import { getDivisionConfig } from "@henryco/config";
 import { PublicFooter } from "@henryco/ui";
 import { PublicNavbar } from "@henryco/ui";
+import { getSharedAccountJobsUrl } from "@/lib/account";
 
 const jobs = getDivisionConfig("jobs");
+const accountJobsUrl = getSharedAccountJobsUrl();
 
 export function PublicShell({
   children,
@@ -21,7 +23,7 @@ export function PublicShell({
         items={[...jobs.publicNav]}
         primaryCta={primaryCta}
         secondaryCta={secondaryCta}
-        auxLink={{ label: "Candidate Hub", href: "/candidate" }}
+        auxLink={{ label: "HenryCo Account", href: accountJobsUrl, external: true }}
       />
       <main>{children}</main>
       <PublicFooter
@@ -39,17 +41,18 @@ export function PublicShell({
             ],
           },
           {
-            title: "Workspaces",
+            title: "Jobs Surfaces",
             links: [
-              { label: "Candidate", href: "/candidate" },
-              { label: "Employer", href: "/employer" },
-              { label: "Recruiter", href: "/recruiter" },
-              { label: "Owner", href: "/owner" },
+              { label: "Candidate Module", href: "/candidate" },
+              { label: "Employer Console", href: "/employer" },
+              { label: "Recruiter Console", href: "/recruiter" },
+              { label: "Owner Operations", href: "/owner" },
             ],
           },
           {
             title: "HenryCo",
             links: [
+              { label: "Account Dashboard", href: accountJobsUrl, external: true },
               { label: "Internal Careers", href: "/careers" },
               { label: "Group Hub", href: "https://henrycogroup.com", external: true },
             ],

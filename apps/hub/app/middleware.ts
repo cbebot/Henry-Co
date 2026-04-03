@@ -15,8 +15,33 @@ const csp = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+function normalizeHost(value?: string | null) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/.*$/, "")
+    .replace(/:\d+$/, "");
+}
+
 export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+  const requestHeaders = new Headers(request.headers);
+  const host = normalizeHost(request.headers.get("x-forwarded-host") || request.headers.get("host"));
+  requestHeaders.set("x-henry-host", host);
+  requestHeaders.set("x-henry-pathname", request.nextUrl.pathname);
+
+  const isWorkspaceHost = host.startsWith("workspace.");
+  const rewriteUrl = request.nextUrl.clone();
+
+  if (isWorkspaceHost && !rewriteUrl.pathname.startsWith("/workspace")) {
+    rewriteUrl.pathname =
+      rewriteUrl.pathname === "/" ? "/workspace" : `/workspace${rewriteUrl.pathname}`;
+  }
+
+  const response =
+    isWorkspaceHost && rewriteUrl.pathname !== request.nextUrl.pathname
+      ? NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } })
+      : NextResponse.next({ request: { headers: requestHeaders } });
 
   response.headers.set("Content-Security-Policy", csp);
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");

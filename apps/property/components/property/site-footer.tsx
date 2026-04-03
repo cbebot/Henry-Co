@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
+import { getSharedAccountPropertyUrl } from "@/lib/property/links";
 
 const property = getDivisionConfig("property");
 
@@ -26,9 +27,9 @@ const footerColumns = [
   {
     title: "Account",
     links: [
-      { href: "/account", label: "Saved and viewings" },
-      { href: "/account/listings", label: "My listings" },
-      { href: "/login", label: "Property login" },
+      { href: getSharedAccountPropertyUrl(), label: "Property activity" },
+      { href: getSharedAccountPropertyUrl("viewings"), label: "Viewings and inquiries" },
+      { href: "/login", label: "HenryCo account sign-in" },
     ],
   },
 ];
@@ -89,7 +90,7 @@ export function PropertySiteFooter() {
               {property.supportEmail} · {property.supportPhone} · property.henrycogroup.com
             </div>
             <Link
-              href="/account"
+              href={getSharedAccountPropertyUrl()}
               className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--property-ink)]"
             >
               Open property account

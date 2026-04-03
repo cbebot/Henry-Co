@@ -12,9 +12,12 @@ export function ProductDetailActions({
   product: MarketplaceProduct;
   vendor: MarketplaceVendor | null;
 }) {
-  const { addToCart } = useMarketplaceCart();
-  const { isWishlisted, toggleWishlist } = useMarketplaceWishlist();
-  const { isFollowing, toggleFollow } = useMarketplaceFollows();
+  const { addToCart, pendingCartSlugs } = useMarketplaceCart();
+  const { isWishlisted, pendingWishlistSlugs, toggleWishlist } = useMarketplaceWishlist();
+  const { isFollowing, pendingFollowSlugs, toggleFollow } = useMarketplaceFollows();
+  const adding = pendingCartSlugs.includes(product.slug);
+  const saving = pendingWishlistSlugs.includes(product.slug);
+  const followingBusy = vendor ? pendingFollowSlugs.includes(vendor.slug) : false;
 
   const payload = {
     productSlug: product.slug,
@@ -36,24 +39,27 @@ export function ProductDetailActions({
         <button
           type="button"
           onClick={() => void addToCart(payload, 1)}
+          disabled={adding}
           className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold"
         >
-          Add to cart
+          {adding ? "Adding..." : "Add to cart"}
         </button>
         <button
           type="button"
           onClick={() => void toggleWishlist(product.slug)}
+          disabled={saving}
           className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
         >
-          {isWishlisted(product.slug) ? "Saved" : "Save"}
+          {saving ? "Saving..." : isWishlisted(product.slug) ? "Saved" : "Save"}
         </button>
         {vendor ? (
           <button
             type="button"
             onClick={() => void toggleFollow(vendor.slug)}
+            disabled={followingBusy}
             className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
           >
-            {isFollowing(vendor.slug) ? "Following store" : "Follow store"}
+            {followingBusy ? "Updating..." : isFollowing(vendor.slug) ? "Following store" : "Follow store"}
           </button>
         ) : null}
         <Link href="/search" className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
@@ -66,6 +72,7 @@ export function ProductDetailActions({
           <button
             type="button"
             onClick={() => void toggleWishlist(product.slug)}
+            disabled={saving}
             className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--market-line)] bg-[var(--market-paper-white)] text-[var(--market-ink)]"
           >
             <Heart className={`h-4 w-4 ${isWishlisted(product.slug) ? "fill-current" : ""}`} />
@@ -74,6 +81,7 @@ export function ProductDetailActions({
             <button
               type="button"
               onClick={() => void toggleFollow(vendor.slug)}
+              disabled={followingBusy}
               className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--market-line)] bg-[var(--market-paper-white)] text-[var(--market-ink)]"
             >
               <Store className="h-4 w-4" />
@@ -82,10 +90,11 @@ export function ProductDetailActions({
           <button
             type="button"
             onClick={() => void addToCart(payload, 1)}
+            disabled={adding}
             className="market-button-primary inline-flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
           >
             <ShoppingBag className="h-4 w-4" />
-            Add to cart
+            {adding ? "Adding..." : "Add to cart"}
           </button>
         </div>
       </div>

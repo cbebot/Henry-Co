@@ -32,10 +32,10 @@ export function LearnSignupForm({ nextPath = "/learner" }: { nextPath?: string }
       });
 
       if (error) throw error;
-      setMessage("Account created. Check your inbox to verify the academy account.");
+      setMessage("Your academy account is ready. Check your inbox to confirm your email and continue.");
       router.push("/login");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Sign up failed.");
+      setMessage(error instanceof Error ? error.message : "We couldn't create your account just now.");
     } finally {
       setLoading(false);
     }
@@ -81,14 +81,14 @@ export function LearnSignupForm({ nextPath = "/learner" }: { nextPath?: string }
           />
         </div>
 
-        {message ? <div className="rounded-2xl border border-[var(--learn-line)] px-4 py-3 text-sm text-[var(--learn-ink-soft)]">{message}</div> : null}
+        {message ? <div className="rounded-2xl border border-[var(--learn-line)] bg-white/5 px-4 py-3 text-sm text-[var(--learn-ink-soft)]">{message}</div> : null}
 
         <button
           type="submit"
           disabled={loading}
           className="learn-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold disabled:opacity-70"
         >
-          {loading ? "Creating..." : "Create academy account"}
+          {loading ? "Creating your academy..." : "Create academy account"}
         </button>
       </form>
     </div>

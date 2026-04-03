@@ -6,6 +6,7 @@ import { Menu, Moon, SunMedium, X } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "next-themes";
 import { getDivisionConfig } from "@henryco/config";
+import { getSharedAccountPropertyUrl } from "@/lib/property/links";
 
 const property = getDivisionConfig("property");
 
@@ -38,6 +39,7 @@ export function PropertySiteHeader({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const accountHref = signedIn ? getSharedAccountPropertyUrl() : "/login";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--property-line)] bg-[color:color-mix(in_srgb,var(--property-bg)_80%,transparent)]/90 backdrop-blur-2xl">
@@ -94,7 +96,7 @@ export function PropertySiteHeader({
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Link
-            href={signedIn ? "/account" : "/login"}
+            href={accountHref}
             className="property-button-primary hidden rounded-full px-5 py-3 text-sm font-semibold sm:inline-flex"
           >
             {signedIn ? signedInLabel || "Account" : "Sign in"}
@@ -124,7 +126,7 @@ export function PropertySiteHeader({
               </Link>
             ))}
             <Link
-              href={signedIn ? "/account" : "/login"}
+              href={accountHref}
               onClick={() => setOpen(false)}
               className="rounded-[1.2rem] bg-[linear-gradient(135deg,#fde8da_0%,#e9bb95_42%,#bb7542_100%)] px-4 py-3 text-sm font-semibold text-[#1c120d]"
             >

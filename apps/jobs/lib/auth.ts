@@ -2,6 +2,7 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
+import { getSharedAccountLoginUrl, normalizeJobsPath } from "@/lib/account";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getCandidateProfileByUserId, getEmployerMembershipsByUser, getInternalProfile } from "@/lib/jobs/data";
 import type { JobsRole, JobsViewer } from "@/lib/jobs/types";
@@ -85,8 +86,7 @@ export async function requireJobsUser(next?: string) {
   const viewer = await getJobsViewer();
 
   if (!viewer.user) {
-    const suffix = next ? `?next=${encodeURIComponent(next)}` : "";
-    redirect(`/login${suffix}`);
+    redirect(getSharedAccountLoginUrl(normalizeJobsPath(next)));
   }
 
   return viewer;

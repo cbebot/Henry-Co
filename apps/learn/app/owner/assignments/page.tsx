@@ -2,6 +2,7 @@ import { assignTrainingAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { ownerNav } from "@/lib/learn/navigation";
+import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnPanel, LearnWorkspaceShell } from "@/components/learn/ui";
 
 export default async function OwnerAssignmentsPage() {
@@ -12,7 +13,7 @@ export default async function OwnerAssignmentsPage() {
     <LearnWorkspaceShell
       kicker="Assignments"
       title="Assign internal training and monitor completion windows."
-      description="Assignments can target a course or a full path, preserve sponsor context, and trigger academy notifications automatically."
+      description="Assignments can target a course or full path, preserve sponsor context, and trigger academy reminders automatically."
       nav={ownerNav("/owner/assignments")}
     >
       <LearnPanel className="rounded-[2rem]">
@@ -35,7 +36,7 @@ export default async function OwnerAssignmentsPage() {
           <input name="dueAt" type="datetime-local" className="learn-input rounded-2xl px-4 py-3" />
           <textarea name="note" placeholder="Required before dispatch coverage begins..." className="learn-textarea rounded-2xl px-4 py-3 md:col-span-2" rows={4} />
           <div className="md:col-span-2">
-            <button type="submit" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">Assign training</button>
+            <PendingSubmitButton pendingLabel="Sending assignment...">Assign training</PendingSubmitButton>
           </div>
         </form>
       </LearnPanel>

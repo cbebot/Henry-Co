@@ -1,0 +1,46 @@
+import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
+
+export type StudioRequestPathway = "package" | "custom";
+
+export type RequestBuilderSelectionProps = {
+  services: StudioService[];
+  packages: StudioPackage[];
+  teams: StudioTeamProfile[];
+  serviceKind: StudioService["kind"];
+  setServiceKind: (value: StudioService["kind"]) => void;
+  pathway: StudioRequestPathway;
+  setPathway: (value: StudioRequestPathway) => void;
+  filteredPackages: StudioPackage[];
+  selectedPackage: StudioPackage | null;
+  setSelectedPackageId: (value: string) => void;
+  selectedProjectType: string;
+  setSelectedProjectType: (value: string) => void;
+  selectedPlatform: string;
+  setSelectedPlatform: (value: string) => void;
+  selectedDesign: string;
+  setSelectedDesign: (value: string) => void;
+  selectedPages: string[];
+  setSelectedPages: (value: string[]) => void;
+  selectedModules: string[];
+  setSelectedModules: (value: string[]) => void;
+  selectedAddOns: string[];
+  setSelectedAddOns: (value: string[]) => void;
+  selectedTech: string[];
+  setSelectedTech: (value: string[]) => void;
+  businessType: string;
+  setBusinessType: (value: string) => void;
+  budgetBand: string;
+  setBudgetBand: (value: string) => void;
+  urgency: string;
+  setUrgency: (value: string) => void;
+  timeline: string;
+  setTimeline: (value: string) => void;
+  goals: string;
+  setGoals: (value: string) => void;
+  scopeNotes: string;
+  setScopeNotes: (value: string) => void;
+  inspirationSummary: string;
+  setInspirationSummary: (value: string) => void;
+  selectedTeamId: string;
+  setSelectedTeamId: (value: string) => void;
+};

@@ -10,6 +10,12 @@ type NavItem = {
   active?: boolean;
 };
 
+export function humanizeLabel(value: string) {
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 export function LearnPanel({
   className,
   children,
@@ -99,7 +105,7 @@ export function LearnStatusBadge({
           ? "border-[var(--learn-line-strong)] bg-[var(--learn-mint-soft)]/10 text-[var(--learn-mint-soft)]"
           : "border-[var(--learn-line)] bg-white/5 text-[var(--learn-ink-soft)]";
 
-  return <span className={cn("inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold", toneClass)}>{label}</span>;
+  return <span className={cn("inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold shadow-[0_12px_30px_rgba(0,0,0,0.14)]", toneClass)}>{label}</span>;
 }
 
 export function CourseCard({
@@ -111,11 +117,18 @@ export function CourseCard({
   href: string;
   saved?: boolean;
 }) {
+  const visibilityLabel =
+    course.visibility === "public"
+      ? "Public access"
+      : course.visibility === "internal"
+        ? "Assigned access"
+        : "Private access";
+
   return (
     <Link href={href} className="group block">
-      <article className="learn-panel learn-mesh flex h-full flex-col rounded-[2rem] p-6 transition duration-200 group-hover:-translate-y-1">
+      <article className="learn-panel learn-mesh flex h-full flex-col rounded-[2rem] p-6 transition duration-300 group-hover:-translate-y-1.5 group-hover:border-[var(--learn-line-strong)]">
         <div className="flex flex-wrap items-center gap-2">
-          <LearnStatusBadge label={course.visibility} tone={course.visibility === "public" ? "signal" : "warning"} />
+          <LearnStatusBadge label={visibilityLabel} tone={course.visibility === "public" ? "signal" : "warning"} />
           <LearnStatusBadge label={course.accessModel === "free" ? "Free" : course.accessModel === "paid" ? "Paid" : "Sponsored"} tone={course.accessModel === "free" ? "success" : "neutral"} />
           {course.certification ? <LearnStatusBadge label="Certificate" tone="signal" /> : null}
         </div>
@@ -132,9 +145,9 @@ export function CourseCard({
 
         <div className="mt-6 grid gap-3 text-sm text-[var(--learn-ink-soft)] sm:grid-cols-2">
           <div className="flex items-center gap-2"><Clock3 className="h-4 w-4" /> {course.durationText}</div>
-          <div className="flex items-center gap-2"><Layers3 className="h-4 w-4" /> {course.difficulty}</div>
+          <div className="flex items-center gap-2"><Layers3 className="h-4 w-4" /> {humanizeLabel(course.difficulty)}</div>
           <div className="flex items-center gap-2"><GraduationCap className="h-4 w-4" /> Pass {course.passingScore}%</div>
-          <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> {course.visibility === "public" ? "Open track" : "Role-restricted"}</div>
+          <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> {course.visibility === "public" ? "Open to learners" : "Limited by role or assignment"}</div>
         </div>
 
         <div className="mt-6 flex items-center justify-between border-t border-[var(--learn-line)] pt-5">
@@ -159,17 +172,19 @@ export function PathCard({
   courseCount: number;
   href: string;
 }) {
+  const visibilityLabel = path.visibility === "public" ? "Public path" : "Assigned path";
+
   return (
     <Link href={href} className="group block">
-      <article className="learn-panel rounded-[2rem] p-6 transition duration-200 group-hover:-translate-y-1">
+      <article className="learn-panel rounded-[2rem] p-6 transition duration-300 group-hover:-translate-y-1.5 group-hover:border-[var(--learn-line-strong)]">
         <div className="flex items-center justify-between gap-4">
-          <LearnStatusBadge label={path.visibility} tone={path.visibility === "public" ? "signal" : "warning"} />
+          <LearnStatusBadge label={visibilityLabel} tone={path.visibility === "public" ? "signal" : "warning"} />
           <Sparkles className="h-5 w-5 text-[var(--learn-copper)]" />
         </div>
         <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{path.title}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">{path.summary}</p>
         <div className="mt-5 flex items-center justify-between text-sm text-[var(--learn-ink-soft)]">
-          <span>{courseCount} structured modules</span>
+          <span>{courseCount} curated course stops</span>
           <span className="inline-flex items-center gap-1 font-semibold text-[var(--learn-mint-soft)]">Open path <ChevronRight className="h-4 w-4" /></span>
         </div>
       </article>
@@ -194,7 +209,7 @@ export function LearnWorkspaceShell({
 }) {
   return (
     <div className="mx-auto grid max-w-[92rem] gap-6 px-5 py-8 sm:px-8 xl:grid-cols-[280px,1fr] xl:px-10">
-      <aside className="learn-panel rounded-[2rem] p-4">
+      <aside className="learn-panel rounded-[2rem] p-4 xl:sticky xl:top-24 xl:self-start">
         <div className="learn-kicker">{kicker}</div>
         <h1 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--learn-ink)]">{title}</h1>
         <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">{description}</p>
@@ -204,10 +219,10 @@ export function LearnWorkspaceShell({
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center justify-between rounded-[1.35rem] px-4 py-3 text-sm font-semibold transition",
+                "flex items-center justify-between rounded-[1.35rem] px-4 py-3 text-sm font-semibold transition duration-200",
                 item.active
                   ? "bg-[linear-gradient(135deg,#0f3730,#2e7c6d)] text-white"
-                  : "border border-[var(--learn-line)] bg-black/10 text-[var(--learn-ink)]"
+                  : "border border-[var(--learn-line)] bg-black/10 text-[var(--learn-ink)] hover:-translate-y-0.5 hover:border-[var(--learn-line-strong)] hover:bg-white/5"
               )}
             >
               <span>{item.label}</span>

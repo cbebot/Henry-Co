@@ -1,4 +1,5 @@
 import type { LearnRole } from "@/lib/learn/types";
+import { getAccountLearnUrl } from "@/lib/learn/links";
 
 export type LearnNavItem = {
   href: string;
@@ -19,11 +20,22 @@ export function learnerNav(active: string): LearnNavItem[] {
   ];
 }
 
+export function courseRoomNav(courseHref: string): LearnNavItem[] {
+  return [
+    { href: getAccountLearnUrl(), label: "Account overview" },
+    { href: getAccountLearnUrl("active"), label: "Active learning" },
+    { href: courseHref, label: "Course room", active: true },
+    { href: getAccountLearnUrl("certificates"), label: "Certificates" },
+    { href: "/teach", label: "Teach with HenryCo" },
+  ];
+}
+
 export function ownerNav(active: string): LearnNavItem[] {
   return [
     { href: "/owner", label: "Overview", active: active === "/owner" },
     { href: "/owner/courses", label: "Courses", active: active === "/owner/courses" },
     { href: "/owner/paths", label: "Paths", active: active === "/owner/paths" },
+    { href: "/owner/instructors", label: "Instructors", active: active === "/owner/instructors" },
     { href: "/owner/learners", label: "Learners", active: active === "/owner/learners" },
     { href: "/owner/certificates", label: "Certificates", active: active === "/owner/certificates" },
     { href: "/owner/assignments", label: "Assignments", active: active === "/owner/assignments" },
@@ -37,6 +49,7 @@ export function adminNav(active: string): LearnNavItem[] {
     { href: "/admin", label: "Overview", active: active === "/admin" },
     { href: "/owner/courses", label: "Courses", active: active === "/owner/courses" },
     { href: "/owner/paths", label: "Paths", active: active === "/owner/paths" },
+    { href: "/owner/instructors", label: "Instructors", active: active === "/owner/instructors" },
     { href: "/owner/learners", label: "Learners", active: active === "/owner/learners" },
     { href: "/owner/assignments", label: "Assignments", active: active === "/owner/assignments" },
   ];

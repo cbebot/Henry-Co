@@ -46,7 +46,7 @@ export default async function StudioHomePage() {
               {[
                 ["Package-led buying", "For repeatable premium delivery with clearer investment logic."],
                 ["First-class custom work", "For bespoke websites, apps, portals, and workflow-heavy software."],
-                ["Client workspace", "For milestones, files, revisions, updates, and payment checkpoints."],
+                ["Shared account visibility", "For Studio history, invoices, support, and delivery records inside HenryCo account."],
               ].map(([title, body]) => (
                 <div key={title} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
                   <div className="text-base font-semibold text-[var(--studio-ink)]">{title}</div>

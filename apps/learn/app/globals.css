@@ -54,6 +54,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   color: var(--learn-ink);
   font-family: var(--font-learn-sans);
   background:
@@ -183,6 +184,12 @@ textarea {
   box-shadow: 0 28px 70px rgba(95, 197, 171, 0.3);
 }
 
+.learn-button-primary:disabled,
+.learn-button-secondary:disabled {
+  transform: none;
+  box-shadow: none;
+}
+
 .learn-button-secondary {
   display: inline-flex;
   align-items: center;
@@ -244,6 +251,35 @@ textarea {
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
   color: var(--learn-ink);
   box-shadow: var(--learn-shadow-soft);
+}
+
+.learn-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.learn-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  animation: learn-shimmer 1.4s ease-in-out infinite;
+}
+
+summary {
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+@keyframes learn-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @media (max-width: 767px) {

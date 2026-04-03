@@ -266,7 +266,7 @@ export default async function SubmitListingPage({
                 Submit listing
               </button>
               <Link
-                href="/account/listings"
+                href="/owner"
                 className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
               >
                 Open listing workspace

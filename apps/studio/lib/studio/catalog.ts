@@ -22,6 +22,11 @@ import {
 } from "@/lib/studio/content";
 import { cleanText } from "@/lib/studio/store";
 import { readStudioCollection, upsertStudioCollectionRecord } from "@/lib/studio/store";
+import {
+  getSharedCompanySettings,
+  normalizeStudioPlatformSettings,
+  type StudioPlatformSettings,
+} from "@/lib/studio/settings-shared";
 import type {
   StudioCaseStudy,
   StudioDifferentiator,
@@ -44,7 +49,7 @@ type StudioCatalog = {
   process: string[];
   trustSignals: string[];
   valueComparisons: StudioValueComparison[];
-  platform: Record<string, unknown>;
+  platform: StudioPlatformSettings;
 };
 
 type GetStudioCatalogOptions = {
@@ -253,12 +258,7 @@ async function ensureCatalogSeeded() {
     { key: COMPARISON_KEY, value: studioValueComparisons },
     {
       key: "platform",
-      value: {
-        currency: "NGN",
-        support_email: "studio@henrycogroup.com",
-        support_phone: "+2349133957084",
-        primary_cta: "Start a Studio project",
-      },
+      value: normalizeStudioPlatformSettings(),
     },
   ];
 
@@ -299,12 +299,7 @@ export async function getStudioCatalog(
       process: studioProcess,
       trustSignals: studioTrustSignals,
       valueComparisons: studioValueComparisons,
-      platform: {
-        currency: "NGN",
-        support_email: "studio@henrycogroup.com",
-        support_phone: "+2349133957084",
-        primary_cta: "Start a Studio project",
-      },
+      platform: normalizeStudioPlatformSettings(),
     };
   }
 
@@ -318,6 +313,7 @@ export async function getStudioCatalog(
   ]);
 
   const settingMap = new Map(settingRows.map((item) => [cleanText(item.key), item.value]));
+  const sharedCompanySettings = await getSharedCompanySettings();
   const services = serviceRows.length > 0 ? serviceRows.map(mapServiceRow).filter((item) => item.id) : defaults.services;
   const packages = packageRows.length > 0 ? packageRows.map(mapPackageRow).filter((item) => item.id) : defaults.packages;
   const teams = teamRows.length > 0 ? teamRows.map(mapTeamRow).filter((item) => item.id) : defaults.teams;
@@ -339,10 +335,10 @@ export async function getStudioCatalog(
     valueComparisons: asRecordArray<StudioValueComparison>(
       settingMap.get(COMPARISON_KEY) ?? studioValueComparisons
     ),
-    platform:
-      (settingMap.get("platform") as Record<string, unknown> | undefined) ?? {
-        currency: "NGN",
-      },
+    platform: normalizeStudioPlatformSettings(
+      settingMap.get("platform") as Record<string, unknown> | undefined,
+      sharedCompanySettings
+    ),
   };
 }
 

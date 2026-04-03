@@ -24,6 +24,13 @@ export type LearnAssignmentStatus = "assigned" | "in_progress" | "completed" | "
 export type LearnQuestionType = "single_choice" | "multiple_choice" | "short_text";
 export type LearnNotificationChannel = "in_app" | "email" | "whatsapp" | "system";
 export type LearnNotificationStatus = "queued" | "sent" | "failed" | "skipped";
+export type LearnTeacherApplicationStatus =
+  | "submitted"
+  | "under_review"
+  | "changes_requested"
+  | "approved"
+  | "rejected";
+export type LearnTeacherPayoutModel = "pending" | "revenue_share" | "fixed_fee" | "stipend";
 export type LearnEventKey =
   | "academy_welcome"
   | "enrollment_confirmed"
@@ -33,6 +40,10 @@ export type LearnEventKey =
   | "certificate_earned"
   | "internal_assignment"
   | "academy_announcement"
+  | "teacher_application_submitted"
+  | "teacher_application_changes_requested"
+  | "teacher_application_approved"
+  | "teacher_application_rejected"
   | "owner_alert";
 
 export type LearnViewer = {
@@ -323,6 +334,40 @@ export type LearnSavedCourse = {
   createdAt: string;
 };
 
+export type LearnTeacherApplicationFile = {
+  name: string;
+  url: string;
+  publicId: string;
+  mimeType: string | null;
+  size: number | null;
+};
+
+export type LearnTeacherApplication = {
+  id: string;
+  userId: string | null;
+  normalizedEmail: string | null;
+  fullName: string;
+  phone: string | null;
+  country: string | null;
+  expertiseArea: string;
+  teachingTopics: string[];
+  credentials: string;
+  portfolioLinks: string[];
+  courseProposal: string;
+  supportingFiles: LearnTeacherApplicationFile[];
+  termsAcceptedAt: string;
+  status: LearnTeacherApplicationStatus;
+  reviewNotes: string | null;
+  adminNotes: string | null;
+  payoutModel: LearnTeacherPayoutModel;
+  revenueSharePercent: number | null;
+  reviewedAt: string | null;
+  reviewedByUserId: string | null;
+  instructorMembershipId: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type LearnSnapshot = {
   categories: LearnCategory[];
   instructors: LearnInstructor[];
@@ -344,4 +389,5 @@ export type LearnSnapshot = {
   assignments: LearnAssignment[];
   payments: LearnPaymentRecord[];
   savedCourses: LearnSavedCourse[];
+  teacherApplications: LearnTeacherApplication[];
 };

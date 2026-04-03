@@ -23,7 +23,13 @@ function joinClassNames(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
 }
 
-export function StudioSiteHeader() {
+export function StudioSiteHeader({
+  supportEmail,
+  accountHref,
+}: {
+  supportEmail: string | null;
+  accountHref: string;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -33,12 +39,12 @@ export function StudioSiteHeader() {
         <div className="mx-auto flex max-w-[92rem] flex-wrap items-center justify-between gap-4 px-5 py-2 text-xs text-[var(--studio-ink-soft)] sm:px-8 lg:px-10">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-[var(--studio-signal)]" />
-            Premium briefs, proposal-ready scopes, and milestone-backed delivery visibility
+            Premium briefs, verified payment guidance, and project history aligned with HenryCo account
           </div>
           <div className="hidden items-center gap-5 lg:flex">
-            <div>studio@henrycogroup.com</div>
-            <Link href="/client" className="font-semibold text-[var(--studio-ink)]">
-              Client workspace
+            <div>{supportEmail || studio.supportEmail}</div>
+            <Link href={accountHref} className="font-semibold text-[var(--studio-ink)]">
+              HenryCo account
             </Link>
           </div>
         </div>
@@ -120,11 +126,11 @@ export function StudioSiteHeader() {
               </Link>
             ))}
             <Link
-              href="/client"
+              href={accountHref}
               onClick={() => setOpen(false)}
               className="rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm font-medium text-[var(--studio-ink)]"
             >
-              Client workspace
+              HenryCo account
             </Link>
             <Link
               href="/contact"

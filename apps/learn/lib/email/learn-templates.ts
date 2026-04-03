@@ -5,6 +5,7 @@ import {
   getOptionalEnv,
   sanitizeHeaderValue,
 } from "@/lib/env";
+import { getAccountLearnUrl, getLearnUrl } from "@/lib/learn/links";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createId, nowIso, upsertLearnRecord } from "@/lib/learn/store";
 import { sendLearnWhatsAppText } from "@/lib/learn/whatsapp";
@@ -384,8 +385,8 @@ export async function sendAcademyWelcomeNotification(input: {
         "Keep certificates and training assignments tied to one identity.",
         "Pick up where you stopped without losing progress.",
       ],
-      actionLabel: "Open learner dashboard",
-      actionHref: `${baseUrl()}/learner`,
+      actionLabel: "Open HenryCo account",
+      actionHref: getAccountLearnUrl(),
     },
   });
 }
@@ -464,8 +465,8 @@ export async function sendPaymentConfirmedNotification(input: {
         { label: "Course", value: input.courseTitle },
         { label: "Reference", value: input.reference },
       ],
-      actionLabel: "Open learner dashboard",
-      actionHref: `${baseUrl()}/learner/payments`,
+      actionLabel: "Open HenryCo account",
+      actionHref: getAccountLearnUrl("payments"),
     },
   });
 }
@@ -607,8 +608,8 @@ export async function sendInternalAssignmentNotification(input: {
         ...(input.dueAt ? [{ label: "Due", value: new Date(input.dueAt).toLocaleDateString("en-NG") }] : []),
       ],
       bullets: input.note ? [input.note] : [],
-      actionLabel: "Open learner dashboard",
-      actionHref: `${baseUrl()}/learner`,
+      actionLabel: "Open HenryCo account",
+      actionHref: getAccountLearnUrl("assignments"),
     },
   });
 
@@ -622,7 +623,7 @@ export async function sendInternalAssignmentNotification(input: {
       `HenryCo Learn • ${input.title}`,
       input.sponsorName ? `Sponsor: ${input.sponsorName}` : null,
       input.dueAt ? `Due: ${new Date(input.dueAt).toLocaleDateString("en-NG")}` : null,
-      `Dashboard: ${baseUrl()}/learner`,
+      `Dashboard: ${getAccountLearnUrl("assignments")}`,
     ]
       .filter(Boolean)
       .join("\n"),
@@ -646,9 +647,132 @@ export async function sendAcademyAnnouncementNotification(input: {
       eyebrow: "Academy announcement",
       title: input.title,
       intro: input.body,
-      actionLabel: "Open HenryCo Learn",
-      actionHref: `${baseUrl()}/learner/notifications`,
+      actionLabel: "Open HenryCo account",
+      actionHref: getAccountLearnUrl("notifications"),
     },
+  });
+}
+
+export async function sendTeacherApplicationSubmittedNotification(input: {
+  audience: Audience;
+  fullName: string;
+  expertiseArea: string;
+  teachingTopics: string[];
+  applicationId: string;
+  manageUrl: string;
+}) {
+  await sendEmail({
+    audience: input.audience,
+    templateKey: "teacher_application_submitted",
+    title: "Teaching application submitted",
+    entityType: "teacher_application",
+    entityId: input.applicationId,
+    layout: {
+      subject: "Teaching application received • HenryCo Learn",
+      eyebrow: "Teach with HenryCo",
+      title: "Your teaching application is with the academy team.",
+      intro:
+        "HenryCo Learn has recorded your application and attached it to your HenryCo identity so review, onboarding, and future instructor operations stay connected.",
+      sections: [
+        { label: "Applicant", value: input.fullName },
+        { label: "Expertise", value: input.expertiseArea },
+        ...(input.teachingTopics.length
+          ? [{ label: "Proposed topics", value: input.teachingTopics.join(", ") }]
+          : []),
+      ],
+      actionLabel: "Review application",
+      actionHref: input.manageUrl,
+    },
+  });
+
+  await sendWhatsApp({
+    audience: input.audience,
+    templateKey: "teacher_application_submitted",
+    title: "Teaching application submitted",
+    entityType: "teacher_application",
+    entityId: input.applicationId,
+    body: [
+      "HenryCo Learn • Teach with HenryCo",
+      "Your teaching application has been received.",
+      `Review it here: ${input.manageUrl}`,
+    ].join("\n"),
+  });
+}
+
+export async function sendTeacherApplicationStatusNotification(input: {
+  audience: Audience;
+  fullName: string;
+  applicationId: string;
+  status: "submitted" | "under_review" | "changes_requested" | "approved" | "rejected";
+  reviewNotes?: string | null;
+  manageUrl: string;
+}) {
+  const statusLabel =
+    input.status === "changes_requested"
+      ? "Changes requested"
+      : input.status === "approved"
+        ? "Approved"
+        : input.status === "rejected"
+          ? "Not approved"
+          : input.status === "under_review"
+            ? "Under review"
+            : "Submitted";
+
+  const templateKey =
+    input.status === "changes_requested"
+      ? "teacher_application_changes_requested"
+      : input.status === "approved"
+        ? "teacher_application_approved"
+        : input.status === "rejected"
+          ? "teacher_application_rejected"
+          : "teacher_application_submitted";
+
+  const intro =
+    input.status === "approved"
+      ? "Your application is approved and ready to move into instructor onboarding."
+      : input.status === "changes_requested"
+        ? "HenryCo Learn needs a few updates before the application can move forward."
+        : input.status === "rejected"
+          ? "The academy team has reviewed the application and it is not moving forward in its current form."
+          : "Your application is currently being reviewed by the academy team.";
+
+  await sendEmail({
+    audience: input.audience,
+    templateKey,
+    title: `Teaching application ${statusLabel.toLowerCase()}`,
+    entityType: "teacher_application",
+    entityId: input.applicationId,
+    layout: {
+      subject: `Teaching application ${statusLabel} • HenryCo Learn`,
+      eyebrow: "Teach with HenryCo",
+      title: `Application ${statusLabel.toLowerCase()}.`,
+      intro,
+      sections: [{ label: "Applicant", value: input.fullName }],
+      bullets: input.reviewNotes ? [input.reviewNotes] : [],
+      actionLabel:
+        input.status === "approved"
+          ? "Open instructor application"
+          : input.status === "changes_requested"
+            ? "Update application"
+            : "Open application",
+      actionHref: input.manageUrl,
+    },
+  });
+
+  await sendWhatsApp({
+    audience: input.audience,
+    templateKey,
+    title: `Teaching application ${statusLabel.toLowerCase()}`,
+    entityType: "teacher_application",
+    entityId: input.applicationId,
+    body: [
+      "HenryCo Learn • Teach with HenryCo",
+      `Application status: ${statusLabel}.`,
+      input.reviewNotes ? `Notes: ${input.reviewNotes}` : null,
+      `Open application: ${input.manageUrl}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
   });
 }
 

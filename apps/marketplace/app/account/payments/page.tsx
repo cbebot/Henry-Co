@@ -1,6 +1,7 @@
 import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
+import type { MarketplacePaymentRecord } from "@/lib/marketplace/types";
 import { accountNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -18,7 +19,7 @@ export default async function AccountPaymentsPage() {
     >
       {data.payments.length ? (
         <div className="space-y-4">
-          {data.payments.map((payment) => (
+          {data.payments.map((payment: MarketplacePaymentRecord) => (
             <article key={payment.id} className="market-paper rounded-[1.75rem] p-5">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                 <div>

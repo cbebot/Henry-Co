@@ -19,6 +19,7 @@ import type {
   LearnReview,
   LearnSavedCourse,
   LearnSnapshot,
+  LearnTeacherApplication,
   LearnViewer,
 } from "@/lib/learn/types";
 import { getLearnSetting, readLearnCollection } from "@/lib/learn/store";
@@ -359,6 +360,47 @@ function mapSavedCourse(row: Record<string, unknown>): LearnSavedCourse {
   };
 }
 
+function mapTeacherApplication(row: Record<string, unknown>): LearnTeacherApplication {
+  const files = Array.isArray(row.supporting_files)
+    ? (row.supporting_files as Array<Record<string, unknown>>)
+        .map((file) => ({
+          name: cleanText(file.name),
+          url: cleanText(file.url),
+          publicId: cleanText(file.publicId || file.public_id),
+          mimeType: cleanText(file.mimeType || file.mime_type) || null,
+          size: file.size == null ? null : asNumber(file.size),
+        }))
+        .filter((file) => file.name && file.url)
+    : [];
+
+  return {
+    id: cleanText(row.id),
+    userId: cleanText(row.user_id) || null,
+    normalizedEmail: cleanText(row.normalized_email) || null,
+    fullName: cleanText(row.full_name),
+    phone: cleanText(row.phone) || null,
+    country: cleanText(row.country) || null,
+    expertiseArea: cleanText(row.expertise_area),
+    teachingTopics: arrayOfText(row.teaching_topics),
+    credentials: cleanText(row.credentials),
+    portfolioLinks: arrayOfText(row.portfolio_links),
+    courseProposal: cleanText(row.course_proposal),
+    supportingFiles: files,
+    termsAcceptedAt: cleanText(row.terms_accepted_at),
+    status: cleanText(row.status) as LearnTeacherApplication["status"],
+    reviewNotes: cleanText(row.review_notes) || null,
+    adminNotes: cleanText(row.admin_notes) || null,
+    payoutModel: cleanText(row.payout_model) as LearnTeacherApplication["payoutModel"],
+    revenueSharePercent:
+      row.revenue_share_percent == null ? null : asNumber(row.revenue_share_percent),
+    reviewedAt: cleanText(row.reviewed_at) || null,
+    reviewedByUserId: cleanText(row.reviewed_by_user_id) || null,
+    instructorMembershipId: cleanText(row.instructor_membership_id) || null,
+    createdAt: cleanText(row.created_at),
+    updatedAt: cleanText(row.updated_at),
+  };
+}
+
 async function ensureLearnBootstrap() {
   const current = await getLearnSetting<{ version?: string }>("bootstrap_version");
   if (current?.version === LEARN_BOOTSTRAP_VERSION) {
@@ -375,7 +417,7 @@ async function ensureLearnBootstrap() {
 export async function getLearnSnapshot(): Promise<LearnSnapshot> {
   await ensureLearnBootstrap();
 
-  const [categoryRows, instructorRows, planRows, courseRows, pathRows, pathItemRows, moduleRows, lessonRows, resourceRows, quizRows, questionRows, enrollmentRows, progressRows, attemptRows, certificateRows, reviewRows, notificationRows, assignmentRows, paymentRows, savedRows] =
+  const [categoryRows, instructorRows, planRows, courseRows, pathRows, pathItemRows, moduleRows, lessonRows, resourceRows, quizRows, questionRows, enrollmentRows, progressRows, attemptRows, certificateRows, reviewRows, notificationRows, assignmentRows, paymentRows, savedRows, teacherApplicationRows] =
     await Promise.all([
       readLearnCollection<Record<string, unknown>>("learn_course_categories", "sort_order"),
       readLearnCollection<Record<string, unknown>>("learn_instructors", "full_name"),
@@ -397,6 +439,7 @@ export async function getLearnSnapshot(): Promise<LearnSnapshot> {
       readLearnCollection<Record<string, unknown>>("learn_assignments", "assigned_at", false),
       readLearnCollection<Record<string, unknown>>("learn_payments", "created_at", false),
       readLearnCollection<Record<string, unknown>>("learn_saved_courses", "created_at", false),
+      readLearnCollection<Record<string, unknown>>("learn_teacher_applications", "updated_at", false),
     ]);
 
   const courses = courseRows.map(mapCourse);
@@ -429,6 +472,7 @@ export async function getLearnSnapshot(): Promise<LearnSnapshot> {
     assignments: assignmentRows.map(mapAssignment),
     payments: paymentRows.map(mapPayment),
     savedCourses: savedRows.map(mapSavedCourse),
+    teacherApplications: teacherApplicationRows.map(mapTeacherApplication),
   };
 }
 
@@ -699,6 +743,13 @@ export async function getLearnerWorkspace(viewer: LearnViewer) {
   };
 }
 
+export async function getTeacherApplicationForViewer(viewer: LearnViewer) {
+  const snapshot = await getLearnSnapshot();
+  return (
+    snapshot.teacherApplications.find((application) => matchesViewer(application, viewer)) || null
+  );
+}
+
 export async function getOwnerAnalytics() {
   const snapshot = await getLearnSnapshot();
   const totalRevenue = snapshot.payments
@@ -727,6 +778,8 @@ export async function getOwnerAnalytics() {
       ).size,
       completionRate,
       certificatesIssued: snapshot.certificates.length,
+      teacherApplications: snapshot.teacherApplications.length,
+      approvedInstructors: snapshot.teacherApplications.filter((item) => item.status === "approved").length,
       overdueAssignments: snapshot.assignments.filter(
         (item) => item.status !== "completed" && item.dueAt && new Date(item.dueAt) < new Date()
       ).length,

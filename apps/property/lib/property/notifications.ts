@@ -3,6 +3,12 @@ import "server-only";
 import { getDivisionConfig } from "@henryco/config";
 import "@/lib/server-env";
 import { normalizeEmail, normalizePhone } from "@/lib/env";
+import {
+  getPropertyUrl,
+  getPropertyWorkspaceUrl,
+  getSharedAccountPropertyPath,
+  getSharedAccountPropertyUrl,
+} from "@/lib/property/links";
 import { appendPropertyNotification } from "@/lib/property/store";
 import { appendCustomerNotification } from "@/lib/property/shared-account";
 import {
@@ -40,6 +46,14 @@ function cleanText(value?: string | null) {
   return String(value || "").trim();
 }
 
+function resolvePropertyHref(value: unknown, fallback: string) {
+  const href = cleanText(typeof value === "string" ? value : "");
+  if (!href) return fallback;
+  if (/^https?:\/\//i.test(href)) return href;
+  if (href.startsWith("/")) return getPropertyUrl(href);
+  return fallback;
+}
+
 function hasTwilioConfig() {
   return Boolean(
     cleanText(process.env.TWILIO_ACCOUNT_SID) &&
@@ -74,7 +88,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: "HenryCo Property has logged the inquiry and routed it into the appropriate response queue.",
           bullets: [listingTitle, locationLabel || null, "A relationship manager will follow up next."].filter(Boolean) as string[],
           ctaLabel: "Review the listing",
-          ctaHref: String(payload.ctaHref || "/search"),
+          ctaHref: resolvePropertyHref(payload.ctaHref, getPropertyUrl("/search")),
         },
         whatsapp: `HenryCo Property: your inquiry for ${listingTitle} has been received.`,
       };
@@ -88,8 +102,8 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           headline: "Your viewing request is logged.",
           summary: "HenryCo Property captured the request and placed it in the scheduling queue.",
           bullets: [listingTitle, viewingTime || "Timing will be confirmed shortly"].filter(Boolean) as string[],
-          ctaLabel: "Open your dashboard",
-          ctaHref: "/account/viewings",
+          ctaLabel: "Open your HenryCo account",
+          ctaHref: getSharedAccountPropertyUrl("viewings"),
         },
         whatsapp: `HenryCo Property: your viewing request for ${listingTitle} is logged.`,
       };
@@ -104,7 +118,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: "The appointment is scheduled and HenryCo Property will continue follow-up before the meeting.",
           bullets: [listingTitle, viewingTime].filter(Boolean) as string[],
           ctaLabel: "See viewing details",
-          ctaHref: "/account/viewings",
+          ctaHref: getSharedAccountPropertyUrl("viewings"),
         },
         whatsapp: `HenryCo Property: your viewing for ${listingTitle} is confirmed${viewingTime ? ` on ${viewingTime}` : ""}.`,
       };
@@ -119,7 +133,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: "This is a reminder from HenryCo Property to reduce missed appointments and keep coordination clear.",
           bullets: [listingTitle, viewingTime].filter(Boolean) as string[],
           ctaLabel: "Review appointment",
-          ctaHref: "/account/viewings",
+          ctaHref: getSharedAccountPropertyUrl("viewings"),
         },
         whatsapp: `HenryCo Property reminder: ${listingTitle}${viewingTime ? ` at ${viewingTime}` : ""}.`,
       };
@@ -134,7 +148,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: "HenryCo Property received the listing and queued it for editorial, trust, and operations review.",
           bullets: [listingTitle, "You will be notified after review or if changes are requested."],
           ctaLabel: "Open listing workspace",
-          ctaHref: "/account/listings",
+          ctaHref: getPropertyWorkspaceUrl("/owner"),
         },
         whatsapp: `HenryCo Property: ${listingTitle} has been submitted for review.`,
       };
@@ -149,7 +163,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: "The listing passed moderation and is now available for discovery, inquiry, and viewing requests.",
           bullets: [listingTitle, locationLabel || null].filter(Boolean) as string[],
           ctaLabel: "View live listing",
-          ctaHref: String(payload.ctaHref || "/search"),
+          ctaHref: resolvePropertyHref(payload.ctaHref, getPropertyUrl("/search")),
         },
         whatsapp: `HenryCo Property: ${listingTitle} is now live.`,
       };
@@ -164,7 +178,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: note || "The property could not be approved in its current state.",
           bullets: [listingTitle],
           ctaLabel: "Review listing notes",
-          ctaHref: "/account/listings",
+          ctaHref: getPropertyWorkspaceUrl("/owner"),
         },
         whatsapp: `HenryCo Property updated ${listingTitle}. ${note || "Please review the moderation notes."}`,
       };
@@ -179,7 +193,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: note || "HenryCo Property recorded an important managed-property note.",
           bullets: [listingTitle || "Managed portfolio update"].filter(Boolean) as string[],
           ctaLabel: "Open managed-property workspace",
-          ctaHref: "/managed",
+          ctaHref: getPropertyUrl("/managed"),
         },
         whatsapp: `HenryCo Property managed update: ${note || listingTitle}.`,
       };
@@ -197,7 +211,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: note || "A tracked property workflow now needs an operator response.",
           bullets: [listingTitle || "Property workflow alert"].filter(Boolean) as string[],
           ctaLabel: "Open operations workspace",
-          ctaHref: "/operations",
+          ctaHref: getPropertyWorkspaceUrl("/operations"),
         },
         whatsapp: `HenryCo Property alert: ${note || listingTitle || "Operator attention required."}`,
       };
@@ -369,11 +383,13 @@ export async function sendPropertyEvent(input: PropertyEventInput) {
       referenceType: input.entityType,
       referenceId: input.entityId,
       actionUrl:
-        input.event === "viewing_requested" || input.event === "viewing_scheduled"
-          ? "/account/viewings"
+        input.event === "viewing_requested" ||
+        input.event === "viewing_scheduled" ||
+        input.event === "viewing_reminder"
+          ? getSharedAccountPropertyPath("viewings")
           : input.event.startsWith("listing")
-            ? "/account/listings"
-            : "/account/inquiries",
+            ? getSharedAccountPropertyPath("listings")
+            : getSharedAccountPropertyPath("inquiries"),
     });
   }
 

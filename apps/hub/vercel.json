@@ -3,5 +3,5 @@
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @henryco/hub build",
-  "outputDirectory": ".next"
+  "outputDirectory": "apps/hub/.next"
 }

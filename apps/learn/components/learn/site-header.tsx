@@ -1,13 +1,16 @@
 import Link from "next/link";
+import { Menu } from "lucide-react";
 import { ThemeToggle } from "@henryco/ui";
 import { getDivisionConfig } from "@henryco/config";
 import { getLearnViewer } from "@/lib/learn/auth";
+import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { BrandMark } from "@/components/learn/ui";
 
 const learn = getDivisionConfig("learn");
 
 export async function LearnSiteHeader() {
   const viewer = await getLearnViewer();
+  const accountHref = viewer.user ? getAccountLearnUrl() : getSharedAuthUrl("login");
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--learn-line)] bg-[color-mix(in_srgb,var(--learn-bg)_84%,transparent)] backdrop-blur-2xl">
@@ -28,10 +31,36 @@ export async function LearnSiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle className="hidden sm:inline-flex" />
-          <Link href={viewer.user ? "/learner" : "/login"} className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold">
-            {viewer.user ? "My Academy" : "Sign in"}
+          <details className="relative lg:hidden">
+            <summary className="learn-button-secondary flex h-11 w-11 cursor-pointer items-center justify-center rounded-full p-0 list-none">
+              <Menu className="h-4 w-4" />
+            </summary>
+            <div className="learn-panel absolute right-0 mt-3 w-[min(21rem,calc(100vw-2.5rem))] rounded-[1.8rem] p-4">
+              <div className="space-y-2">
+                {learn.publicNav.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex rounded-[1.2rem] border border-[var(--learn-line)] bg-white/5 px-4 py-3 text-sm font-semibold text-[var(--learn-ink)] transition hover:border-[var(--learn-line-strong)]"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="mt-4 flex flex-col gap-2">
+                <Link href={accountHref} className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold">
+                  {viewer.user ? "Open account" : "Sign in"}
+                </Link>
+                <Link href="/courses" className="learn-button-primary rounded-full px-4 py-2.5 text-sm font-semibold">
+                  Explore courses
+                </Link>
+              </div>
+            </div>
+          </details>
+          <Link href={accountHref} className="hidden sm:inline-flex learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold">
+            {viewer.user ? "Open account" : "Sign in"}
           </Link>
           <Link href="/courses" className="learn-button-primary rounded-full px-4 py-2.5 text-sm font-semibold">
             Explore courses

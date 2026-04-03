@@ -24,10 +24,10 @@ export default async function HomePage() {
           <div className="learn-panel learn-mesh rounded-[2.8rem] p-8 sm:p-12 xl:p-14">
             <p className="learn-kicker">Premium Academy Platform</p>
             <h1 className="learn-display mt-6 max-w-5xl text-[var(--learn-ink)]">
-              Learning that feels calmer, sharper, and more operationally serious than the average LMS.
+              One calm academy for learning, onboarding, certification, and capability growth.
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--learn-ink-soft)]">
-              {learn.description} Built for public learners, internal staff training, onboarding, vendor enablement, certifications, and future HenryCo knowledge products.
+              {learn.description} Designed for public learners, teams, partners, and premium HenryCo programs that need elegant progress tracking from first lesson to verified completion.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/courses" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">
@@ -64,7 +64,7 @@ export default async function HomePage() {
         <LearnSectionIntro
           kicker="Featured Courses"
           title="Launch stronger, certify faster, and train teams with less clutter."
-          body="The HenryCo Learn catalog is seeded from live academy records, not a dead demo page. Each program is designed as part of a bigger academy system, not an isolated course card."
+          body="Every featured program is backed by live academy records, enrollment logic, and completion flows so the learning journey stays real from discovery through certificate issue."
         />
         <div className="mt-8 grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
           {featuredCourses.map((course) => (
@@ -77,7 +77,7 @@ export default async function HomePage() {
         <LearnSectionIntro
           kicker="Academy Paths"
           title="Tracks that sequence confidence, not just content."
-          body="HenryCo Learn treats academy tracks as first-class learning experiences for sellers, internal operations, managers, logistics teams, and growth operators."
+          body="HenryCo Learn turns related programs into guided paths for vendors, staff teams, managers, logistics leaders, and growth-minded operators."
         />
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           {featuredPaths.map((path) => (
@@ -92,8 +92,8 @@ export default async function HomePage() {
             <div className="rounded-2xl border border-[var(--learn-line)] bg-white/5 p-4">
               <BriefcaseBusiness className="h-5 w-5 text-[var(--learn-copper)]" />
             </div>
-            <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">Internal assignment monitoring</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">Managers can assign role-restricted training, monitor completion, and keep proof of readiness attached to one learner identity.</p>
+            <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">Assigned learning journeys</h3>
+            <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">Managers can assign role-based learning, follow completion, and keep proof of readiness connected to each learner identity.</p>
           </LearnPanel>
           <LearnPanel className="rounded-[2rem]">
             <div className="rounded-2xl border border-[var(--learn-line)] bg-white/5 p-4">
@@ -106,8 +106,8 @@ export default async function HomePage() {
             <div className="rounded-2xl border border-[var(--learn-line)] bg-white/5 p-4">
               <ShieldCheck className="h-5 w-5 text-[var(--learn-copper)]" />
             </div>
-            <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">Unified account readiness</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">Enrollments, progress, certificates, payments, notifications, and assignments persist cleanly for future account.henrycogroup.com integration.</p>
+            <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">Connected account history</h3>
+            <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">Enrollments, progress, certificates, payments, notifications, and assignments persist cleanly for future unified HenryCo account experiences.</p>
           </LearnPanel>
         </div>
       </section>

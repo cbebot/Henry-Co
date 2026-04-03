@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireLearnRoles, requireLearnUser } from "@/lib/learn/auth";
+import { getAccountLearnUrl } from "@/lib/learn/links";
 import {
   addModuleLessonDefinition,
   assignTraining,
@@ -12,8 +13,10 @@ import {
   enrollInCourse,
   markNotificationRead,
   publishAcademyAnnouncement,
+  reviewTeacherApplication,
   saveCourseDefinition,
   savePathDefinition,
+  submitTeacherApplication,
   submitQuizAttempt,
   syncViewerIdentity,
   toggleSavedCourse,
@@ -39,6 +42,12 @@ function asBoolean(formData: FormData, key: string) {
   return value === "on" || value === "true";
 }
 
+function asFiles(formData: FormData, key: string) {
+  return formData
+    .getAll(key)
+    .filter((value): value is File => value instanceof File && value.size > 0);
+}
+
 export async function enrollInCourseAction(formData: FormData) {
   const courseId = String(formData.get("courseId") || "");
   if (!courseId) redirect("/courses");
@@ -50,7 +59,7 @@ export async function enrollInCourseAction(formData: FormData) {
   revalidatePath("/learner");
   redirect(
     result.enrollment.status === "awaiting_payment"
-      ? "/learner/payments"
+      ? getAccountLearnUrl("payments")
       : `/learner/courses/${result.course.id}`
   );
 }
@@ -130,6 +139,49 @@ export async function createSupportRequestAction(formData: FormData) {
   });
   revalidatePath("/support");
   redirect("/help?sent=1");
+}
+
+export async function submitTeacherApplicationAction(formData: FormData) {
+  const viewer = await requireLearnUser("/teach");
+  await submitTeacherApplication({
+    viewer,
+    fullName: String(formData.get("fullName") || ""),
+    phone: String(formData.get("phone") || ""),
+    country: String(formData.get("country") || ""),
+    expertiseArea: String(formData.get("expertiseArea") || ""),
+    teachingTopics: asCsvList(formData, "teachingTopics"),
+    credentials: String(formData.get("credentials") || ""),
+    portfolioLinks: asCsvList(formData, "portfolioLinks"),
+    courseProposal: String(formData.get("courseProposal") || ""),
+    supportingFiles: asFiles(formData, "supportingFiles"),
+    agreementAccepted: asBoolean(formData, "agreementAccepted"),
+  });
+  revalidatePath("/teach");
+  revalidatePath("/owner/instructors");
+  redirect("/teach?submitted=1");
+}
+
+export async function reviewTeacherApplicationAction(formData: FormData) {
+  const actor = await requireLearnRoles(
+    ["academy_owner", "academy_admin"],
+    "/owner/instructors"
+  );
+  await reviewTeacherApplication({
+    actor,
+    applicationId: String(formData.get("applicationId") || ""),
+    status: String(formData.get("decision") || "under_review") as never,
+    reviewNotes: String(formData.get("reviewNotes") || ""),
+    adminNotes: String(formData.get("adminNotes") || ""),
+    payoutModel: String(formData.get("payoutModel") || "pending") as never,
+    revenueSharePercent:
+      formData.get("revenueSharePercent") == null || String(formData.get("revenueSharePercent")).trim() === ""
+        ? null
+        : Number(formData.get("revenueSharePercent")),
+  });
+  revalidatePath("/teach");
+  revalidatePath("/owner");
+  revalidatePath("/owner/instructors");
+  redirect(`/owner/instructors?updated=${encodeURIComponent(String(formData.get("decision") || ""))}`);
 }
 
 export async function confirmEnrollmentPaymentAction(formData: FormData) {

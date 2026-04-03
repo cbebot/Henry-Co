@@ -76,10 +76,28 @@ export async function getDivisionNotifications(userId: string, division: string)
     .from("customer_notifications")
     .select("*")
     .eq("user_id", userId)
-    .eq("category", division)
     .order("created_at", { ascending: false })
-    .limit(20);
-  return data || [];
+    .limit(50);
+
+  const records = data || [];
+  if (division !== "property") {
+    return records.filter((record) => record.category === division).slice(0, 20);
+  }
+
+  return records
+    .filter((record) => {
+      const referenceType = String(record.reference_type || "");
+      const actionUrl = String(record.action_url || "");
+      const title = String(record.title || "").toLowerCase();
+      return (
+        referenceType.startsWith("property_") ||
+        actionUrl.includes("/property") ||
+        actionUrl.includes("/owner") ||
+        actionUrl.includes("property.henrycogroup.com") ||
+        title.includes("property")
+      );
+    })
+    .slice(0, 20);
 }
 
 // ─── Division support threads ───

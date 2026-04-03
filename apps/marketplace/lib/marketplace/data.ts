@@ -18,6 +18,7 @@ import type {
   MarketplaceHomeData,
   MarketplaceNotification,
   MarketplaceOrder,
+  MarketplaceOrderFeedItem,
   MarketplacePaymentRecord,
   MarketplacePayoutRequest,
   MarketplaceProduct,
@@ -27,9 +28,14 @@ import type {
   MarketplaceSupportThread,
   MarketplaceVendor,
   MarketplaceVendorApplication,
+  MarketplaceViewerContext,
 } from "@/lib/marketplace/types";
 
 type Snapshot = MarketplaceHomeData;
+type IdentityScopeOps<T> = T & {
+  or: (filter: string) => T;
+  eq: (column: string, value: string | null) => T;
+};
 
 const emptyHomeData: Snapshot = {
   kpis: [
@@ -88,6 +94,29 @@ function buildKpis(input: Pick<MarketplaceHomeData, "vendors" | "products" | "re
 
 function getFallbackSnapshot() {
   return localDemoFallbackEnabled() ? demoHomeData : emptyHomeData;
+}
+
+function filterValue(value: string) {
+  return `"${value.replace(/"/g, '\\"')}"`;
+}
+
+function applyIdentityScope<T>(
+  query: T,
+  viewer: MarketplaceViewerContext,
+  userColumn: string,
+  emailColumn = "normalized_email"
+) : T {
+  const scopedQuery = query as IdentityScopeOps<T>;
+  if (!viewer.user && !viewer.normalizedEmail) return query;
+  if (viewer.user?.id && viewer.normalizedEmail) {
+    return scopedQuery.or(
+      `${userColumn}.eq.${filterValue(viewer.user.id)},${emailColumn}.eq.${filterValue(viewer.normalizedEmail)}`
+    );
+  }
+  if (viewer.user?.id) {
+    return scopedQuery.eq(userColumn, viewer.user.id);
+  }
+  return scopedQuery.eq(emailColumn, viewer.normalizedEmail);
 }
 
 function buildPlaceholderVendor(scopeId?: string | null): MarketplaceVendor {
@@ -552,21 +581,25 @@ export async function getMarketplaceShellState(): Promise<MarketplaceShellState>
 
   try {
     const admin = createAdminSupabase();
-    const [wishlistRes, followsRes, notificationsRes, applicationRes] = await Promise.all([
-      admin.from("marketplace_wishlists").select("product_id").eq("user_id", viewer.user.id),
-      admin.from("marketplace_vendor_follows").select("vendor_id").eq("user_id", viewer.user.id),
-      admin
-        .from("marketplace_user_notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", viewer.user.id)
-        .is("read_at", null),
+    const latestApplicationQuery = applyIdentityScope(
       admin
         .from("marketplace_vendor_applications")
         .select("status")
-        .eq("user_id", viewer.user.id)
         .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
+        .limit(1),
+      viewer,
+      "user_id"
+    ).maybeSingle();
+
+    const [wishlistRes, followsRes, notificationsRes, applicationRes] = await Promise.all([
+      applyIdentityScope(admin.from("marketplace_wishlists").select("product_id"), viewer, "user_id"),
+      applyIdentityScope(admin.from("marketplace_vendor_follows").select("vendor_id"), viewer, "user_id"),
+      applyIdentityScope(
+        admin.from("marketplace_user_notifications").select("id", { count: "exact", head: true }).is("read_at", null),
+        viewer,
+        "user_id"
+      ),
+      latestApplicationQuery,
     ]);
 
     if (wishlistRes.error || followsRes.error || notificationsRes.error) {
@@ -616,34 +649,54 @@ export async function getBuyerDashboardData() {
 
   try {
     const admin = createAdminSupabase();
+    const latestApplicationQuery = applyIdentityScope(
+      admin
+        .from("marketplace_vendor_applications")
+        .select("*")
+        .order("submitted_at", { ascending: false })
+        .limit(1),
+      viewer,
+      "user_id"
+    ).maybeSingle();
+
     const [addressesRes, ordersRes, orderGroupsRes, orderItemsRes, paymentsRes, disputesRes, notificationsRes, applicationRes, wishlistRes, followsRes, reviewsRes, supportThreadsRes] =
       await Promise.all([
-        admin.from("marketplace_addresses").select("*").eq("user_id", viewer.user.id).order("is_default", { ascending: false }),
-        admin
-          .from("marketplace_orders")
-          .select("*")
-          .eq("user_id", viewer.user.id)
-          .order("placed_at", { ascending: false }),
+        applyIdentityScope(
+          admin.from("marketplace_addresses").select("*").order("is_default", { ascending: false }),
+          viewer,
+          "user_id"
+        ),
+        applyIdentityScope(
+          admin.from("marketplace_orders").select("*").order("placed_at", { ascending: false }),
+          viewer,
+          "user_id"
+        ),
         admin.from("marketplace_order_groups").select("*").order("created_at", { ascending: false }),
         admin.from("marketplace_order_items").select("*").order("created_at", { ascending: false }),
         admin.from("marketplace_payment_records").select("*").order("created_at", { ascending: false }),
-        admin.from("marketplace_disputes").select("*").eq("opened_by_user_id", viewer.user.id).order("updated_at", { ascending: false }),
-        admin
-          .from("marketplace_user_notifications")
-          .select("*")
-          .eq("user_id", viewer.user.id)
-          .order("created_at", { ascending: false }),
-        admin
-          .from("marketplace_vendor_applications")
-          .select("*")
-          .eq("user_id", viewer.user.id)
-          .order("submitted_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        admin.from("marketplace_wishlists").select("product_id").eq("user_id", viewer.user.id),
-        admin.from("marketplace_vendor_follows").select("vendor_id").eq("user_id", viewer.user.id),
-        admin.from("marketplace_reviews").select("*").eq("user_id", viewer.user.id).order("created_at", { ascending: false }),
-        admin.from("marketplace_support_threads").select("*").eq("user_id", viewer.user.id).order("updated_at", { ascending: false }),
+        applyIdentityScope(
+          admin.from("marketplace_disputes").select("*").order("updated_at", { ascending: false }),
+          viewer,
+          "opened_by_user_id"
+        ),
+        applyIdentityScope(
+          admin.from("marketplace_user_notifications").select("*").order("created_at", { ascending: false }),
+          viewer,
+          "user_id"
+        ),
+        latestApplicationQuery,
+        applyIdentityScope(admin.from("marketplace_wishlists").select("product_id"), viewer, "user_id"),
+        applyIdentityScope(admin.from("marketplace_vendor_follows").select("vendor_id"), viewer, "user_id"),
+        applyIdentityScope(
+          admin.from("marketplace_reviews").select("*").order("created_at", { ascending: false }),
+          viewer,
+          "user_id"
+        ),
+        applyIdentityScope(
+          admin.from("marketplace_support_threads").select("*").order("updated_at", { ascending: false }),
+          viewer,
+          "user_id"
+        ),
       ]);
 
     if (
@@ -687,7 +740,7 @@ export async function getBuyerDashboardData() {
 
       const items = (orderItemsRes.data ?? [])
         .filter((item: Record<string, unknown>) =>
-          groups.some((group) => group.id === String(item.order_group_id))
+          groups.some((group: MarketplaceOrder["groups"][number]) => group.id === String(item.order_group_id))
         )
         .map((item: Record<string, unknown>) => ({
           id: String(item.id),
@@ -807,10 +860,24 @@ export async function getBuyerDashboardData() {
             storeName: String(applicationRes.data.store_name || ""),
             slug: String(applicationRes.data.proposed_store_slug || ""),
             legalName: String(applicationRes.data.legal_name || ""),
+            phone: applicationRes.data.contact_phone ? String(applicationRes.data.contact_phone) : null,
             categoryFocus: String(applicationRes.data.category_focus || ""),
+            story: String(applicationRes.data.story || ""),
             status: String(applicationRes.data.status || "submitted") as MarketplaceVendorApplication["status"],
+            progressStep: String(applicationRes.data.progress_step || "start"),
             submittedAt: String(applicationRes.data.submitted_at || new Date().toISOString()),
             reviewNote: applicationRes.data.review_note ? String(applicationRes.data.review_note) : null,
+            documents:
+              applicationRes.data.documents_json && typeof applicationRes.data.documents_json === "object"
+                ? (applicationRes.data.documents_json as Record<string, string>)
+                : {},
+            draftPayload:
+              applicationRes.data.draft_payload && typeof applicationRes.data.draft_payload === "object"
+                ? (applicationRes.data.draft_payload as Record<string, unknown>)
+                : {},
+            agreementAcceptedAt: applicationRes.data.agreement_accepted_at
+              ? String(applicationRes.data.agreement_accepted_at)
+              : null,
           } satisfies MarketplaceVendorApplication)
         : null,
     };
@@ -830,6 +897,34 @@ export async function getBuyerDashboardData() {
       issue: "Buyer account data is unavailable right now.",
     };
   }
+}
+
+export function toMarketplaceOrderFeed(orders: MarketplaceOrder[]): MarketplaceOrderFeedItem[] {
+  return orders.map((order) => {
+    const stalled = ["placed", "awaiting_payment", "processing"].includes(order.status);
+    const headline =
+      order.paymentStatus === "verified"
+        ? `${order.orderNo} is moving through fulfillment`
+        : stalled
+          ? `${order.orderNo} needs the next buyer action`
+          : `${order.orderNo} is live in the order timeline`;
+
+    const detailParts = [
+      `Payment ${order.paymentStatus.replace(/_/g, " ")}`,
+      `${order.groups.length} delivery segment${order.groups.length === 1 ? "" : "s"}`,
+      order.timeline[order.timeline.length - 1] || `Status ${order.status.replace(/_/g, " ")}`,
+    ];
+
+    return {
+      id: order.id,
+      orderNo: order.orderNo,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      headline,
+      detail: detailParts.join(" · "),
+      createdAt: order.placedAt,
+    } satisfies MarketplaceOrderFeedItem;
+  });
 }
 
 export async function getVendorWorkspaceData() {

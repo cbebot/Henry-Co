@@ -20,18 +20,7 @@ export default async function OwnerDashboardPage() {
     getStudioSnapshot(),
     getStudioCatalog({ includeUnpublished: true }),
   ]);
-  const supportEmail =
-    typeof catalog.platform.support_email === "string"
-      ? catalog.platform.support_email
-      : "studio@henrycogroup.com";
-  const supportPhone =
-    typeof catalog.platform.support_phone === "string"
-      ? catalog.platform.support_phone
-      : "+2349133957084";
-  const primaryCta =
-    typeof catalog.platform.primary_cta === "string"
-      ? catalog.platform.primary_cta
-      : "Start a Studio project";
+  const platform = catalog.platform;
 
   return (
     <StudioWorkspaceShell
@@ -89,21 +78,92 @@ export default async function OwnerDashboardPage() {
           <input type="hidden" name="redirectPath" value="/owner" />
           <input
             name="supportEmail"
-            defaultValue={supportEmail}
+            defaultValue={platform.supportEmail || ""}
             placeholder="Support email"
             className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
           />
           <input
             name="supportPhone"
-            defaultValue={supportPhone}
+            defaultValue={platform.supportPhone || ""}
             placeholder="Support phone"
             className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
           />
           <input
             name="primaryCta"
-            defaultValue={primaryCta}
+            defaultValue={platform.primaryCta}
             placeholder="Primary CTA"
             className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none lg:col-span-2"
+          />
+          <div className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5 lg:col-span-2">
+            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+              Shared company payment profile
+            </div>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
+              Studio now uses the live HenryCo company account record from the shared database as the
+              default payment source. These values let Studio override copy, routing, or account data
+              only when the public experience needs a Studio-specific payment posture.
+            </p>
+          </div>
+          <input
+            name="paymentBankName"
+            defaultValue={platform.paymentBankName || ""}
+            placeholder="Payment bank name"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
+          />
+          <input
+            name="paymentAccountName"
+            defaultValue={platform.paymentAccountName || ""}
+            placeholder="Payment account name"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
+          />
+          <input
+            name="paymentAccountNumber"
+            defaultValue={platform.paymentAccountNumber || ""}
+            placeholder="Payment account number"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
+          />
+          <input
+            name="paymentCurrency"
+            defaultValue={platform.paymentCurrency}
+            placeholder="Currency"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
+          />
+          <input
+            name="paymentSupportEmail"
+            defaultValue={platform.paymentSupportEmail || ""}
+            placeholder="Payment support email"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
+          />
+          <input
+            name="paymentSupportWhatsApp"
+            defaultValue={platform.paymentSupportWhatsApp || ""}
+            placeholder="Payment support WhatsApp"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
+          />
+          <input
+            name="companyBankName"
+            defaultValue={platform.companyBankName || ""}
+            placeholder="Company bank name"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
+          />
+          <input
+            name="companyAccountName"
+            defaultValue={platform.companyAccountName || ""}
+            placeholder="Company account name"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none"
+          />
+          <input
+            name="companyAccountNumber"
+            defaultValue={platform.companyAccountNumber || ""}
+            placeholder="Company account number"
+            className="w-full rounded-full border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink)] outline-none lg:col-span-2"
+          />
+          <textarea
+            name="paymentInstructions"
+            defaultValue={platform.paymentInstructions}
+            rows={4}
+            className="min-h-28 w-full rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 text-sm text-[var(--studio-ink)] outline-none lg:col-span-2"
+            placeholder="Explain exactly how payment should be made and how proof should be submitted."
           />
           <textarea
             name="trustSignals"

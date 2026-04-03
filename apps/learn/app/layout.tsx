@@ -1,18 +1,7 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
 import ThemeProvider from "@/components/providers/theme-provider";
 import "./globals.css";
 import { getDivisionConfig } from "@henryco/config";
-
-const sans = Manrope({
-  subsets: ["latin"],
-  variable: "--font-learn-sans",
-});
-
-const display = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-learn-display",
-});
 
 const learn = getDivisionConfig("learn");
 
@@ -34,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-[var(--learn-bg)] text-[var(--learn-ink)] antialiased">
         <ThemeProvider>{children}</ThemeProvider>
       </body>

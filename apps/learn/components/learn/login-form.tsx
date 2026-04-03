@@ -29,7 +29,7 @@ export function LearnLoginForm({ nextPath = "/learner" }: { nextPath?: string })
         });
 
         if (error) throw error;
-        setMessage("Magic link sent. Check your inbox and continue into HenryCo Learn.");
+        setMessage("Check your inbox for your sign-in link. Your academy session will open as soon as you confirm.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -37,7 +37,7 @@ export function LearnLoginForm({ nextPath = "/learner" }: { nextPath?: string })
         router.refresh();
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Sign in failed.");
+      setMessage(error instanceof Error ? error.message : "We couldn't sign you in just now.");
     } finally {
       setLoading(false);
     }
@@ -92,14 +92,14 @@ export function LearnLoginForm({ nextPath = "/learner" }: { nextPath?: string })
           </div>
         ) : null}
 
-        {message ? <div className="rounded-2xl border border-[var(--learn-line)] px-4 py-3 text-sm text-[var(--learn-ink-soft)]">{message}</div> : null}
+        {message ? <div className="rounded-2xl border border-[var(--learn-line)] bg-white/5 px-4 py-3 text-sm text-[var(--learn-ink-soft)]">{message}</div> : null}
 
         <button
           type="submit"
           disabled={loading}
           className="learn-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold disabled:opacity-70"
         >
-          {loading ? "Continuing..." : mode === "magic" ? "Send magic link" : "Sign in"}
+          {loading ? "Opening your academy..." : mode === "magic" ? "Email my sign-in link" : "Sign in"}
         </button>
       </form>
     </div>

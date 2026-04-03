@@ -1,0 +1,348 @@
+import { CheckCircle2, FileStack, GraduationCap, Sparkles, UsersRound } from "lucide-react";
+import { submitTeacherApplicationAction } from "@/lib/learn/actions";
+import { getLearnViewer } from "@/lib/learn/auth";
+import { getTeacherApplicationForViewer } from "@/lib/learn/data";
+import { getSharedAuthUrl } from "@/lib/learn/links";
+import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
+import { LearnPanel, LearnSectionIntro, LearnStatusBadge } from "@/components/learn/ui";
+
+export const metadata = { title: "Teach with HenryCo - HenryCo Learn" };
+
+const COUNTRY_OPTIONS = [
+  "Nigeria",
+  "Ghana",
+  "Kenya",
+  "South Africa",
+  "United Kingdom",
+  "United States",
+  "Canada",
+  "United Arab Emirates",
+];
+
+export default async function TeachPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ submitted?: string }>;
+}) {
+  const params = await searchParams;
+  const viewer = await getLearnViewer();
+  const application = viewer.user ? await getTeacherApplicationForViewer(viewer) : null;
+  const canEdit =
+    !application ||
+    application.status === "changes_requested" ||
+    application.status === "rejected";
+
+  return (
+    <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
+      <section className="learn-panel learn-hero learn-mesh rounded-[2.8rem] p-8 sm:p-10 xl:p-12">
+        <div className="flex flex-wrap gap-2">
+          <LearnStatusBadge label="Teach with HenryCo" tone="signal" />
+          <LearnStatusBadge label="Instructor pipeline" />
+          <LearnStatusBadge label="Revenue-share ready" tone="success" />
+        </div>
+        <h1 className="learn-heading mt-6 text-[3rem] text-[var(--learn-ink)] sm:text-[4.4rem]">
+          Teach serious skills through a calmer, premium academy.
+        </h1>
+        <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--learn-ink-soft)]">
+          HenryCo Learn is built for instructors who can teach with clarity, professional judgment,
+          and a real point of view. We review every application carefully, connect it to one
+          HenryCo identity, and prepare approved instructors for structured onboarding instead of a
+          rough creator free-for-all.
+        </p>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <LearnPanel className="rounded-[1.8rem] p-5">
+            <Sparkles className="h-5 w-5 text-[var(--learn-copper)]" />
+            <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
+              Premium learning standards
+            </h2>
+            <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
+              We prefer instructors who can sequence ideas, reduce noise, and create course
+              experiences learners finish with pride.
+            </p>
+          </LearnPanel>
+          <LearnPanel className="rounded-[1.8rem] p-5">
+            <UsersRound className="h-5 w-5 text-[var(--learn-copper)]" />
+            <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
+              Public and internal reach
+            </h2>
+            <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
+              HenryCo Learn supports public learners, internal readiness, partner enablement, and
+              future academy launches from one connected platform.
+            </p>
+          </LearnPanel>
+          <LearnPanel className="rounded-[1.8rem] p-5">
+            <FileStack className="h-5 w-5 text-[var(--learn-copper)]" />
+            <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
+              Structured review and onboarding
+            </h2>
+            <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
+              Applications move through review, changes, approval, and onboarding readiness without
+              losing context, supporting material, or payout planning.
+            </p>
+          </LearnPanel>
+        </div>
+      </section>
+
+      <section className="mt-10 grid gap-6 xl:grid-cols-[0.88fr,1.12fr]">
+        <LearnPanel className="rounded-[2rem]">
+          <LearnSectionIntro
+            kicker="What We Look For"
+            title="Strong operators, credible specialists, and teachers with taste."
+            body="The best HenryCo instructors combine subject expertise with calm delivery, practical structure, and a point of view that can hold up in premium learning products."
+          />
+          <div className="mt-6 space-y-4 text-sm leading-7 text-[var(--learn-ink-soft)]">
+            <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <p className="font-semibold text-[var(--learn-ink)]">Great fit</p>
+              <p className="mt-2">
+                Marketplace operators, internal training leads, care/logistics specialists,
+                customer-experience experts, business operators, and practical digital-skills
+                teachers.
+              </p>
+            </div>
+            <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <p className="font-semibold text-[var(--learn-ink)]">Review flow</p>
+              <p className="mt-2">
+                Submit your background, links, and course proposal. The academy team reviews it,
+                requests changes where needed, and moves strong applications into approval and
+                onboarding.
+              </p>
+            </div>
+            <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <p className="font-semibold text-[var(--learn-ink)]">Commercial readiness</p>
+              <p className="mt-2">
+                Revenue-share and payout setup are handled privately through academy operations after
+                approval. Public applicants see clean opportunity language, not messy finance
+                internals.
+              </p>
+            </div>
+          </div>
+        </LearnPanel>
+
+        <div className="space-y-6">
+          {params.submitted ? (
+            <LearnPanel className="rounded-[2rem]">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-5 w-5 text-[var(--learn-mint)]" />
+                <p className="text-sm font-semibold text-[var(--learn-mint-soft)]">
+                  Your teaching application is now in review.
+                </p>
+              </div>
+            </LearnPanel>
+          ) : null}
+
+          {application ? (
+            <LearnPanel className="rounded-[2rem]">
+              <div className="flex flex-wrap items-center gap-2">
+                <LearnStatusBadge label={`Status: ${application.status.replace(/_/g, " ")}`} tone={application.status === "approved" ? "success" : application.status === "changes_requested" ? "warning" : "signal"} />
+                <LearnStatusBadge label={application.expertiseArea} />
+              </div>
+              <h2 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
+                Existing application
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
+                We keep your teaching application attached to the same HenryCo identity used across
+                courses, certificates, and future academy operations.
+              </p>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
+                    Topics
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--learn-ink)]">
+                    {application.teachingTopics.join(", ") || "No topics supplied yet"}
+                  </p>
+                </div>
+                <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
+                    Updated
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--learn-ink)]">
+                    {new Date(application.updatedAt).toLocaleDateString("en-NG", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+              </div>
+              {application.reviewNotes ? (
+                <div className="mt-5 rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
+                    Academy notes
+                  </p>
+                  <p className="mt-2 text-sm leading-7 text-[var(--learn-ink)]">{application.reviewNotes}</p>
+                </div>
+              ) : null}
+              {application.supportingFiles.length > 0 ? (
+                <div className="mt-5 space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
+                    Supporting files
+                  </p>
+                  {application.supportingFiles.map((file) => (
+                    <a
+                      key={file.publicId}
+                      href={file.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between rounded-[1.35rem] border border-[var(--learn-line)] bg-white/5 px-4 py-3 text-sm text-[var(--learn-ink)] transition hover:border-[var(--learn-line-strong)]"
+                    >
+                      <span>{file.name}</span>
+                      <span className="text-[var(--learn-ink-soft)]">Open</span>
+                    </a>
+                  ))}
+                </div>
+              ) : null}
+            </LearnPanel>
+          ) : null}
+
+          {!viewer.user ? (
+            <LearnPanel className="rounded-[2rem]">
+              <LearnSectionIntro
+                kicker="Apply"
+                title="Sign in through HenryCo Account to apply."
+                body="Teaching applications are tied to the shared HenryCo identity model so review, onboarding, and future instructor payouts stay connected to one account."
+              />
+              <a
+                href={getSharedAuthUrl("login", "/teach")}
+                className="learn-button-primary mt-6 rounded-full px-5 py-3 text-sm font-semibold"
+              >
+                Sign in and apply
+              </a>
+            </LearnPanel>
+          ) : canEdit ? (
+            <LearnPanel className="rounded-[2rem]">
+              <LearnSectionIntro
+                kicker="Application Form"
+                title={application ? "Update your teaching application." : "Apply to teach with HenryCo."}
+                body="This application is reviewed by academy operations. Keep it specific, credible, and practical."
+              />
+              <form action={submitTeacherApplicationAction} className="mt-6 grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Full name</label>
+                  <input
+                    name="fullName"
+                    required
+                    defaultValue={application?.fullName || viewer.user?.fullName || ""}
+                    className="learn-input mt-2 rounded-2xl px-4 py-3"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Email</label>
+                  <input
+                    value={viewer.user?.email || ""}
+                    readOnly
+                    className="learn-input mt-2 rounded-2xl px-4 py-3 opacity-80"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Phone</label>
+                  <input
+                    name="phone"
+                    defaultValue={application?.phone || ""}
+                    className="learn-input mt-2 rounded-2xl px-4 py-3"
+                    placeholder="+234..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Country</label>
+                  <select
+                    name="country"
+                    defaultValue={application?.country || "Nigeria"}
+                    className="learn-select mt-2 rounded-2xl px-4 py-3"
+                  >
+                    {COUNTRY_OPTIONS.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Expertise area</label>
+                  <input
+                    name="expertiseArea"
+                    required
+                    defaultValue={application?.expertiseArea || ""}
+                    className="learn-input mt-2 rounded-2xl px-4 py-3"
+                    placeholder="Marketplace operations, internal training, customer experience..."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Teaching topics</label>
+                  <textarea
+                    name="teachingTopics"
+                    required
+                    defaultValue={application?.teachingTopics.join(", ") || ""}
+                    rows={3}
+                    className="learn-textarea mt-2 rounded-2xl px-4 py-3"
+                    placeholder="Add the topics you can teach well, separated by commas or new lines."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Credentials and experience</label>
+                  <textarea
+                    name="credentials"
+                    required
+                    defaultValue={application?.credentials || ""}
+                    rows={5}
+                    className="learn-textarea mt-2 rounded-2xl px-4 py-3"
+                    placeholder="Summarize your track record, experience, training history, certifications, and delivery credibility."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Portfolio or profile links</label>
+                  <textarea
+                    name="portfolioLinks"
+                    defaultValue={application?.portfolioLinks.join("\n") || ""}
+                    rows={3}
+                    className="learn-textarea mt-2 rounded-2xl px-4 py-3"
+                    placeholder="Add website, LinkedIn, sample classes, profile links, or hosted supporting material."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Sample course or topic proposal</label>
+                  <textarea
+                    name="courseProposal"
+                    required
+                    defaultValue={application?.courseProposal || ""}
+                    rows={6}
+                    className="learn-textarea mt-2 rounded-2xl px-4 py-3"
+                    placeholder="Describe the course or topic you would teach, who it is for, what transformation it creates, and why HenryCo should trust you to lead it."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Supporting files</label>
+                  <input
+                    type="file"
+                    name="supportingFiles"
+                    multiple
+                    accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
+                    className="learn-input mt-2 rounded-2xl px-4 py-3 file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--learn-ink)]"
+                  />
+                  <p className="mt-2 text-xs leading-6 text-[var(--learn-ink-soft)]">
+                    Upload up to four files. Hosted links can still be added in the portfolio field.
+                  </p>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="flex items-start gap-3 rounded-[1.4rem] border border-[var(--learn-line)] px-4 py-4 text-sm text-[var(--learn-ink)]">
+                    <input type="checkbox" name="agreementAccepted" required className="mt-1 h-4 w-4" />
+                    <span className="leading-7 text-[var(--learn-ink-soft)]">
+                      I confirm that the information is accurate, that I can deliver the subject
+                      matter professionally, and that HenryCo may review the application for
+                      instructor onboarding, internal enablement, or future academy partnerships.
+                    </span>
+                  </label>
+                </div>
+                <div className="md:col-span-2">
+                  <PendingSubmitButton pendingLabel="Submitting your teaching application...">
+                    {application ? "Update application" : "Submit application"}
+                  </PendingSubmitButton>
+                </div>
+              </form>
+            </LearnPanel>
+          ) : null}
+        </div>
+      </section>
+    </main>
+  );
+}

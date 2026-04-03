@@ -1,6 +1,7 @@
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
+import { getSharedCookieDomain } from "@henryco/config";
 
 let browserClient: ReturnType<typeof createBrowserClient> | null = null;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -12,7 +13,21 @@ export function getBrowserSupabase() {
   }
 
   if (!browserClient) {
-    browserClient = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const cookieDomain = getSharedCookieDomain(window.location.hostname);
+    browserClient = createBrowserClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY,
+      cookieDomain
+        ? {
+            cookieOptions: {
+              domain: cookieDomain,
+              path: "/",
+              sameSite: "lax",
+              secure: true,
+            },
+          }
+        : undefined
+    );
   }
 
   return browserClient;

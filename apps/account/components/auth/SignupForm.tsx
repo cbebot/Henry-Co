@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
 
@@ -25,6 +25,20 @@ const CONTACT_PREFS = [
   { value: "in_app", label: "In-app only" },
 ];
 
+function mapSignupError(message?: string | null) {
+  const clean = String(message || "").trim();
+  if (/database error|saving new user|creating new user/i.test(clean)) {
+    return "Account creation is temporarily routed through HenryCo support while shared auth provisioning is repaired. Use an existing HenryCo account to sign in, or email hello@henrycogroup.com for manual activation.";
+  }
+
+  return clean || "Something went wrong. Please try again.";
+}
+
+function buildLoginHref(next: string | null) {
+  if (!next) return "/login";
+  return `/login?next=${encodeURIComponent(next)}`;
+}
+
 export default function SignupForm() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -38,6 +52,8 @@ export default function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
 
   const selectedCountry = COUNTRIES.find((c) => c.code === country);
 
@@ -68,7 +84,7 @@ export default function SignupForm() {
         },
       });
 
-      if (authError) { setError(authError.message); return; }
+      if (authError) { setError(mapSignupError(authError.message)); return; }
       setSuccess(true);
     } catch {
       setError("Something went wrong. Please try again.");
@@ -87,7 +103,7 @@ export default function SignupForm() {
         <p className="mt-2 text-sm text-[var(--acct-muted)]">
           We&apos;ve sent a verification link to <strong>{email}</strong>. Click it to activate your account.
         </p>
-        <button onClick={() => router.push("/login")} className="acct-button-secondary mt-4">
+        <button onClick={() => router.push(buildLoginHref(next))} className="acct-button-secondary mt-4">
           Back to sign in
         </button>
       </div>

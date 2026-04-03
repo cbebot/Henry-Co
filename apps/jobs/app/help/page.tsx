@@ -1,8 +1,11 @@
 import { PublicShell } from "@/components/public-shell";
+import { getSharedAccountJobsUrl } from "@/lib/account";
+
+const accountJobsUrl = getSharedAccountJobsUrl();
 
 export default function HelpPage() {
   return (
-    <PublicShell primaryCta={{ label: "Open candidate hub", href: "/candidate" }}>
+    <PublicShell primaryCta={{ label: "Open account summary", href: accountJobsUrl }} secondaryCta={{ label: "Open candidate module", href: "/candidate" }}>
       <div className="mx-auto max-w-5xl space-y-4 px-4 py-10 sm:px-6 lg:px-8">
         <div className="jobs-panel rounded-[2.2rem] p-8">
           <p className="jobs-kicker">Help</p>
@@ -12,7 +15,7 @@ export default function HelpPage() {
           {
             question: "How do saved jobs and applications sync into the HenryCo account?",
             answer:
-              "Jobs activity is written into the shared customer activity, notifications, support, and document spine so the future unified account can render your hiring history without backfill work.",
+              "Jobs activity is written into the shared customer activity, notifications, support, and document spine so the unified HenryCo account can render your hiring history without backfill work.",
           },
           {
             question: "What makes an employer verified?",

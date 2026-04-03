@@ -1,8 +1,15 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { requireStudioRoles } from "@/lib/studio/auth";
+import {
+  getStudioViewer,
+  requireStudioRoles,
+  viewerHasRole,
+} from "@/lib/studio/auth";
+import { getProjectWorkspace } from "@/lib/studio/data";
+import { getStudioSnapshot } from "@/lib/studio/store";
 import {
   addDeliverable,
   appendProjectMessage,
@@ -40,6 +47,53 @@ function asCsvList(formData: FormData, key: string) {
 function asBoolean(formData: FormData, key: string) {
   const value = String(formData.get(key) || "");
   return value === "on" || value === "true";
+}
+
+const studioStaffRoles = [
+  "studio_owner",
+  "sales_consultation",
+  "project_manager",
+  "developer_designer",
+  "client_success",
+  "finance",
+] as const;
+
+async function requireProjectWorkspaceAccess(
+  projectId: string,
+  accessKey: string | null,
+  nextPath: string
+) {
+  const viewer = await getStudioViewer();
+  const workspace = await getProjectWorkspace({
+    projectId,
+    accessKey,
+    viewer,
+  });
+
+  if (workspace) {
+    return { viewer, workspace };
+  }
+
+  if (!viewer.user) {
+    redirect(getStudioLoginUrl(nextPath));
+  }
+
+  redirect(getStudioAccountUrl());
+}
+
+async function requirePaymentWorkspaceAccess(
+  paymentId: string,
+  accessKey: string | null,
+  nextPath: string
+) {
+  const snapshot = await getStudioSnapshot();
+  const payment = snapshot.payments.find((item) => item.id === paymentId);
+  if (!payment) {
+    throw new Error("Payment record not found.");
+  }
+
+  const access = await requireProjectWorkspaceAccess(payment.projectId, accessKey, nextPath);
+  return { payment, ...access };
 }
 
 export async function submitStudioBriefAction(formData: FormData) {
@@ -90,18 +144,21 @@ export async function submitStudioBriefAction(formData: FormData) {
 
 export async function uploadPaymentProofAction(formData: FormData) {
   const paymentId = String(formData.get("paymentId") || "");
-  const redirectPath = String(formData.get("redirectPath") || "/client");
+  const redirectPath = String(formData.get("redirectPath") || getStudioAccountUrl());
+  const accessKey = String(formData.get("accessKey") || "") || null;
   const proof = formData.get("proof");
 
   if (!paymentId || !(proof instanceof File) || proof.size === 0) {
     redirect(redirectPath);
   }
 
+  await requirePaymentWorkspaceAccess(paymentId, accessKey, redirectPath);
   await attachPaymentProof(paymentId, proof);
   redirect(redirectPath);
 }
 
 export async function createProjectFromProposalAction(formData: FormData) {
+  await requireStudioRoles(["studio_owner", "sales_consultation"], "/sales/proposals");
   const proposalId = String(formData.get("proposalId") || "");
   if (!proposalId) redirect("/sales");
 
@@ -111,13 +168,16 @@ export async function createProjectFromProposalAction(formData: FormData) {
 
 export async function appendProjectMessageAction(formData: FormData) {
   const projectId = String(formData.get("projectId") || "");
-  const redirectPath = String(formData.get("redirectPath") || "/client");
+  const redirectPath = String(formData.get("redirectPath") || getStudioAccountUrl());
+  const accessKey = String(formData.get("accessKey") || "") || null;
   if (!projectId) redirect(redirectPath);
 
   const supabase = await createSupabaseServer();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const { viewer } = await requireProjectWorkspaceAccess(projectId, accessKey, redirectPath);
+  const isStaffSender = viewerHasRole(viewer, [...studioStaffRoles]);
 
   await appendProjectMessage({
     projectId,
@@ -125,9 +185,9 @@ export async function appendProjectMessageAction(formData: FormData) {
       (typeof user?.user_metadata?.full_name === "string" && user.user_metadata.full_name) ||
       user?.email ||
       String(formData.get("sender") || "Studio client"),
-    senderRole: String(formData.get("senderRole") || "client"),
+    senderRole: isStaffSender ? "team" : "client",
     body: String(formData.get("body") || ""),
-    isInternal: String(formData.get("isInternal") || "") === "on",
+    isInternal: isStaffSender && String(formData.get("isInternal") || "") === "on",
   });
 
   redirect(redirectPath);
@@ -135,19 +195,22 @@ export async function appendProjectMessageAction(formData: FormData) {
 
 export async function createRevisionAction(formData: FormData) {
   const projectId = String(formData.get("projectId") || "");
-  const redirectPath = String(formData.get("redirectPath") || "/client");
+  const redirectPath = String(formData.get("redirectPath") || getStudioAccountUrl());
+  const accessKey = String(formData.get("accessKey") || "") || null;
   if (!projectId) redirect(redirectPath);
 
+  const { viewer } = await requireProjectWorkspaceAccess(projectId, accessKey, redirectPath);
   await createRevision({
     projectId,
     summary: String(formData.get("summary") || ""),
-    requestedBy: String(formData.get("requestedBy") || "client") as "client" | "team",
+    requestedBy: viewerHasRole(viewer, [...studioStaffRoles]) ? "team" : "client",
   });
 
   redirect(redirectPath);
 }
 
 export async function completeRevisionAction(formData: FormData) {
+  await requireStudioRoles(["studio_owner", "project_manager", "developer_designer"], "/pm");
   const revisionId = String(formData.get("revisionId") || "");
   const redirectPath = String(formData.get("redirectPath") || "/pm");
   if (!revisionId) redirect(redirectPath);
@@ -156,6 +219,7 @@ export async function completeRevisionAction(formData: FormData) {
 }
 
 export async function setMilestoneStatusAction(formData: FormData) {
+  await requireStudioRoles(["studio_owner", "project_manager"], "/pm");
   const projectId = String(formData.get("projectId") || "");
   const milestoneId = String(formData.get("milestoneId") || "");
   const status = String(formData.get("status") || "planned") as
@@ -171,6 +235,7 @@ export async function setMilestoneStatusAction(formData: FormData) {
 }
 
 export async function setPaymentStatusAction(formData: FormData) {
+  await requireStudioRoles(["studio_owner", "finance"], "/finance");
   const paymentId = String(formData.get("paymentId") || "");
   const status = String(formData.get("status") || "requested") as
     | "requested"
@@ -186,6 +251,7 @@ export async function setPaymentStatusAction(formData: FormData) {
 }
 
 export async function addDeliverableAction(formData: FormData) {
+  await requireStudioRoles(["studio_owner", "developer_designer"], "/delivery");
   const projectId = String(formData.get("projectId") || "");
   const redirectPath = String(formData.get("redirectPath") || "/delivery");
   if (!projectId) redirect(redirectPath);
@@ -206,9 +272,11 @@ export async function addDeliverableAction(formData: FormData) {
 
 export async function publishReviewAction(formData: FormData) {
   const projectId = String(formData.get("projectId") || "");
-  const redirectPath = String(formData.get("redirectPath") || "/client");
+  const redirectPath = String(formData.get("redirectPath") || getStudioAccountUrl());
+  const accessKey = String(formData.get("accessKey") || "") || null;
   if (!projectId) redirect(redirectPath);
 
+  await requireProjectWorkspaceAccess(projectId, accessKey, redirectPath);
   await publishReview({
     projectId,
     customerName: String(formData.get("customerName") || ""),
@@ -335,6 +403,16 @@ export async function saveStudioPlatformSettingsAction(formData: FormData) {
     supportEmail: String(formData.get("supportEmail") || ""),
     supportPhone: String(formData.get("supportPhone") || ""),
     primaryCta: String(formData.get("primaryCta") || ""),
+    paymentBankName: String(formData.get("paymentBankName") || ""),
+    paymentAccountName: String(formData.get("paymentAccountName") || ""),
+    paymentAccountNumber: String(formData.get("paymentAccountNumber") || ""),
+    paymentCurrency: String(formData.get("paymentCurrency") || "NGN"),
+    paymentInstructions: String(formData.get("paymentInstructions") || ""),
+    paymentSupportEmail: String(formData.get("paymentSupportEmail") || ""),
+    paymentSupportWhatsApp: String(formData.get("paymentSupportWhatsApp") || ""),
+    companyAccountName: String(formData.get("companyAccountName") || ""),
+    companyAccountNumber: String(formData.get("companyAccountNumber") || ""),
+    companyBankName: String(formData.get("companyBankName") || ""),
     trustSignals: asCsvList(formData, "trustSignals"),
     process: asCsvList(formData, "process"),
   });

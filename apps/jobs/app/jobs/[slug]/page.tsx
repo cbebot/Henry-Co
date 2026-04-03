@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JobCard } from "@/components/job-card";
 import { PublicShell } from "@/components/public-shell";
+import { getSharedAccountLoginUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
 import { getJobPostBySlug, getJobPosts } from "@/lib/jobs/data";
 import { submitApplicationAction, toggleSavedJobAction } from "@/app/actions";
@@ -25,9 +26,10 @@ export default async function JobDetailPage({
   }
 
   const related = jobs.filter((item) => item.categorySlug === job.categorySlug && item.slug !== job.slug).slice(0, 3);
+  const loginUrl = getSharedAccountLoginUrl(`/jobs/${job.slug}`);
 
   return (
-    <PublicShell primaryCta={{ label: "Open Candidate Dashboard", href: "/candidate" }}>
+    <PublicShell primaryCta={{ label: "Open Candidate Module", href: "/candidate" }}>
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <div className="jobs-panel rounded-[2.4rem] p-7 sm:p-9">
           <div className="flex flex-wrap gap-2">
@@ -104,9 +106,9 @@ export default async function JobDetailPage({
                 </form>
               ) : (
                 <div className="mt-4 rounded-2xl bg-[var(--jobs-accent-soft)] p-4 text-sm text-[var(--jobs-ink)]">
-                  <Link href={`/login?next=${encodeURIComponent(`/jobs/${job.slug}`)}`} className="font-semibold underline">
-                    Sign in
-                  </Link>{" "}
+                  <a href={loginUrl} className="font-semibold underline">
+                    Sign in with your HenryCo account
+                  </a>{" "}
                   to save or apply.
                 </div>
               )}

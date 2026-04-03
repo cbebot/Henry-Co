@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { getSharedCookieDomain } from "@henryco/config";
 
 const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password", "/reset-password", "/auth/callback"];
 
@@ -22,6 +23,17 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: (() => {
+        const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
+        return cookieDomain
+          ? {
+              domain: cookieDomain,
+              path: "/",
+              sameSite: "lax",
+              secure: true,
+            }
+          : undefined;
+      })(),
       cookies: {
         getAll() {
           return request.cookies.getAll();

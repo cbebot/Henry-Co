@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { getDivisionUrl } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getLearnSnapshot } from "@/lib/learn/data";
+import { getAccountLearnUrl, getLearnCourseRoomUrl, getLearnUrl } from "@/lib/learn/links";
 import {
   appendCustomerActivity,
   appendCustomerDocument,
@@ -11,6 +12,7 @@ import {
   upsertCustomerInvoice,
 } from "@/lib/learn/shared-account";
 import { createId, deleteLearnRecord, nowIso, upsertLearnRecord } from "@/lib/learn/store";
+import { uploadTeacherApplicationFile } from "@/lib/learn/uploads";
 import { createAdminSupabase } from "@/lib/supabase";
 import type {
   LearnCourse,
@@ -19,6 +21,9 @@ import type {
   LearnProgressRecord,
   LearnQuiz,
   LearnQuizAttempt,
+  LearnTeacherApplication,
+  LearnTeacherApplicationFile,
+  LearnTeacherPayoutModel,
   LearnViewer,
 } from "@/lib/learn/types";
 import {
@@ -29,6 +34,8 @@ import {
   sendInternalAssignmentNotification,
   sendOwnerAlert,
   sendPaymentConfirmedNotification,
+  sendTeacherApplicationStatusNotification,
+  sendTeacherApplicationSubmittedNotification,
 } from "@/lib/email/learn-templates";
 
 type Identity = {
@@ -82,6 +89,50 @@ function audienceFromIdentity(identity: Identity) {
     normalizedEmail: identity.normalizedEmail,
     fullName: identity.fullName,
   };
+}
+
+function teacherApplicationStatusLabel(status: LearnTeacherApplication["status"]) {
+  switch (status) {
+    case "submitted":
+      return "Submitted";
+    case "under_review":
+      return "Under review";
+    case "changes_requested":
+      return "Changes requested";
+    case "approved":
+      return "Approved";
+    case "rejected":
+      return "Not approved";
+    default:
+      return "Submitted";
+  }
+}
+
+function teacherApplicationStatusDescription(status: LearnTeacherApplication["status"]) {
+  switch (status) {
+    case "submitted":
+      return "Your teaching application is now with the HenryCo academy team.";
+    case "under_review":
+      return "Your teaching application is now being reviewed by the academy team.";
+    case "changes_requested":
+      return "HenryCo Learn needs a few updates before the application can move forward.";
+    case "approved":
+      return "You are approved to move into instructor onboarding with HenryCo Learn.";
+    case "rejected":
+      return "The current teaching application was not approved for onboarding.";
+    default:
+      return "Your teaching application was updated.";
+  }
+}
+
+function mapTeacherApplicationFiles(value: LearnTeacherApplicationFile[]) {
+  return value.map((file) => ({
+    name: file.name,
+    url: file.url,
+    public_id: file.publicId,
+    mime_type: file.mimeType,
+    size: file.size,
+  }));
 }
 
 function canSelfEnroll(course: LearnCourse, viewer: LearnViewer) {
@@ -365,8 +416,11 @@ export async function enrollInCourse(input: {
         ? "Your seat is reserved. Payment confirmation will unlock the learning workspace."
         : "Your enrollment is active and the course is ready.",
     category: "learn",
-    actionUrl: `${getDivisionUrl("learn")}/learner/courses`,
-    actionLabel: "Open Learn",
+    actionUrl:
+      enrollment.status === "awaiting_payment"
+        ? getAccountLearnUrl("payments")
+        : getLearnCourseRoomUrl(course.id),
+    actionLabel: enrollment.status === "awaiting_payment" ? "Open account" : "Open course",
     referenceType: "learn_enrollment",
     referenceId: enrollment.id,
   });
@@ -947,6 +1001,346 @@ export async function updateLearnerPreferences(input: {
   );
 }
 
+export async function submitTeacherApplication(input: {
+  viewer: LearnViewer;
+  fullName: string;
+  phone?: string | null;
+  country?: string | null;
+  expertiseArea: string;
+  teachingTopics: string[];
+  credentials: string;
+  portfolioLinks: string[];
+  courseProposal: string;
+  supportingFiles: File[];
+  agreementAccepted: boolean;
+}) {
+  if (!input.agreementAccepted) {
+    throw new Error("Please accept the teaching standards and terms before applying.");
+  }
+
+  const identity = assertViewerIdentity(input.viewer);
+  const snapshot = await getLearnSnapshot();
+  const existing =
+    snapshot.teacherApplications.find(
+      (item) =>
+        (identity.userId && item.userId === identity.userId) ||
+        (identity.normalizedEmail && item.normalizedEmail === identity.normalizedEmail)
+    ) || null;
+
+  if (existing?.status === "approved") {
+    throw new Error("This HenryCo account already has an approved teaching application.");
+  }
+
+  const uploadedFiles = [...(existing?.supportingFiles || [])];
+  for (const [index, file] of input.supportingFiles.slice(0, 4).entries()) {
+    if (!(file instanceof File) || file.size <= 0) continue;
+    const uploaded = await uploadTeacherApplicationFile(file, {
+      folderSuffix: identity.userId || identity.normalizedEmail || "teacher",
+      publicIdPrefix: `teach-${index + 1}`,
+    });
+    uploadedFiles.push({
+      name: uploaded.name,
+      url: uploaded.secureUrl,
+      publicId: uploaded.publicId,
+      mimeType: uploaded.mimeType,
+      size: uploaded.size,
+    });
+  }
+
+  const applicationId =
+    existing?.id ||
+    stableId("teacher-application", identity.userId || identity.normalizedEmail || createId());
+  const createdAt = existing?.createdAt || nowIso();
+  const updatedAt = nowIso();
+  const nextStatus: LearnTeacherApplication["status"] =
+    existing?.status === "under_review" ? "under_review" : "submitted";
+  const application: LearnTeacherApplication = {
+    id: applicationId,
+    userId: identity.userId,
+    normalizedEmail: identity.normalizedEmail,
+    fullName: cleanText(input.fullName) || identity.fullName || "HenryCo instructor applicant",
+    phone: cleanText(input.phone) || null,
+    country: cleanText(input.country) || null,
+    expertiseArea: cleanText(input.expertiseArea),
+    teachingTopics: input.teachingTopics.map((item) => cleanText(item)).filter(Boolean),
+    credentials: cleanText(input.credentials),
+    portfolioLinks: input.portfolioLinks.map((item) => cleanText(item)).filter(Boolean),
+    courseProposal: cleanText(input.courseProposal),
+    supportingFiles: uploadedFiles,
+    termsAcceptedAt: existing?.termsAcceptedAt || updatedAt,
+    status: nextStatus,
+    reviewNotes:
+      existing?.status === "changes_requested" ? existing.reviewNotes : existing?.reviewNotes || null,
+    adminNotes: existing?.adminNotes || null,
+    payoutModel: existing?.payoutModel || "pending",
+    revenueSharePercent: existing?.revenueSharePercent ?? null,
+    reviewedAt: existing?.status === "changes_requested" ? null : existing?.reviewedAt || null,
+    reviewedByUserId:
+      existing?.status === "changes_requested" ? null : existing?.reviewedByUserId || null,
+    instructorMembershipId: existing?.instructorMembershipId || null,
+    createdAt,
+    updatedAt,
+  };
+
+  await upsertLearnRecord(
+    "learn_teacher_applications",
+    {
+      id: application.id,
+      user_id: application.userId,
+      normalized_email: application.normalizedEmail,
+      full_name: application.fullName,
+      phone: application.phone,
+      country: application.country,
+      expertise_area: application.expertiseArea,
+      teaching_topics: application.teachingTopics,
+      credentials: application.credentials,
+      portfolio_links: application.portfolioLinks,
+      course_proposal: application.courseProposal,
+      supporting_files: mapTeacherApplicationFiles(application.supportingFiles),
+      terms_accepted_at: application.termsAcceptedAt,
+      status: application.status,
+      review_notes: application.reviewNotes,
+      admin_notes: application.adminNotes,
+      payout_model: application.payoutModel,
+      revenue_share_percent: application.revenueSharePercent,
+      reviewed_at: application.reviewedAt,
+      reviewed_by_user_id: application.reviewedByUserId,
+      instructor_membership_id: application.instructorMembershipId,
+      created_at: application.createdAt,
+      updated_at: application.updatedAt,
+    },
+    {
+      userId: identity.userId,
+      email: identity.normalizedEmail,
+      role: "learner",
+    }
+  );
+
+  await ensureCustomerProfile({
+    userId: identity.userId,
+    email: identity.normalizedEmail,
+    fullName: application.fullName,
+    phone: application.phone,
+  });
+
+  await appendCustomerActivity({
+    userId: identity.userId,
+    email: identity.normalizedEmail,
+    activityType: "learn_teacher_application_submitted",
+    title: "Teaching application received",
+    description: `Applied to teach ${application.teachingTopics.join(", ") || application.expertiseArea} through HenryCo Learn.`,
+    status: application.status,
+    referenceType: "learn_teacher_application",
+    referenceId: application.id,
+    actionUrl: getLearnUrl("/teach"),
+    metadata: {
+      expertise_area: application.expertiseArea,
+      teaching_topics: application.teachingTopics,
+      file_count: application.supportingFiles.length,
+    },
+  });
+
+  await appendCustomerNotification({
+    userId: identity.userId,
+    email: identity.normalizedEmail,
+    title: "Teaching application submitted",
+    body: "HenryCo Learn has recorded your teaching application and the academy team will review it shortly.",
+    category: "learn",
+    actionUrl: getLearnUrl("/teach"),
+    actionLabel: "Review application",
+    referenceType: "learn_teacher_application",
+    referenceId: application.id,
+  });
+
+  await sendTeacherApplicationSubmittedNotification({
+    audience: audienceFromIdentity(identity),
+    fullName: application.fullName,
+    expertiseArea: application.expertiseArea,
+    teachingTopics: application.teachingTopics,
+    applicationId: application.id,
+    manageUrl: getLearnUrl("/teach"),
+  });
+
+  await sendOwnerAlert({
+    title: `Teaching application: ${application.fullName}`,
+    body: `${application.fullName} submitted a HenryCo Learn teaching application in ${application.expertiseArea}.`,
+    entityType: "learn_teacher_application",
+    entityId: application.id,
+    actionUrl: `${getDivisionUrl("learn")}/owner/instructors`,
+  });
+
+  return application;
+}
+
+export async function reviewTeacherApplication(input: {
+  actor: LearnViewer;
+  applicationId: string;
+  status: LearnTeacherApplication["status"];
+  reviewNotes?: string | null;
+  adminNotes?: string | null;
+  payoutModel?: LearnTeacherPayoutModel | null;
+  revenueSharePercent?: number | null;
+}) {
+  const snapshot = await getLearnSnapshot();
+  const existing = snapshot.teacherApplications.find((item) => item.id === input.applicationId);
+  if (!existing) {
+    throw new Error("Teaching application not found.");
+  }
+
+  const reviewedAt = nowIso();
+  let instructorMembershipId = existing.instructorMembershipId;
+  if (input.status === "approved") {
+    instructorMembershipId =
+      existing.instructorMembershipId || stableId("learn-instructor-membership", existing.id);
+
+    await upsertLearnRecord(
+      "learn_role_memberships",
+      {
+        id: instructorMembershipId,
+        user_id: existing.userId,
+        normalized_email: existing.normalizedEmail,
+        scope_type: "platform",
+        scope_id: null,
+        role: "instructor",
+        is_active: true,
+        created_at: existing.createdAt,
+        updated_at: reviewedAt,
+      },
+      {
+        userId: input.actor.user?.id,
+        email: input.actor.normalizedEmail,
+        role: input.actor.roles[0] || "academy_admin",
+      }
+    );
+  } else if (existing.instructorMembershipId) {
+    await upsertLearnRecord(
+      "learn_role_memberships",
+      {
+        id: existing.instructorMembershipId,
+        user_id: existing.userId,
+        normalized_email: existing.normalizedEmail,
+        scope_type: "platform",
+        scope_id: null,
+        role: "instructor",
+        is_active: false,
+        created_at: existing.createdAt,
+        updated_at: reviewedAt,
+      },
+      {
+        userId: input.actor.user?.id,
+        email: input.actor.normalizedEmail,
+        role: input.actor.roles[0] || "academy_admin",
+      }
+    );
+  }
+
+  const updated: LearnTeacherApplication = {
+    ...existing,
+    status: input.status,
+    reviewNotes: cleanText(input.reviewNotes) || null,
+    adminNotes: cleanText(input.adminNotes) || null,
+    payoutModel: input.payoutModel || existing.payoutModel || "pending",
+    revenueSharePercent:
+      input.revenueSharePercent == null
+        ? existing.revenueSharePercent
+        : Math.max(0, Number(input.revenueSharePercent || 0)),
+    reviewedAt,
+    reviewedByUserId: input.actor.user?.id || null,
+    instructorMembershipId: instructorMembershipId || null,
+    updatedAt: reviewedAt,
+  };
+
+  await upsertLearnRecord(
+    "learn_teacher_applications",
+    {
+      id: updated.id,
+      user_id: updated.userId,
+      normalized_email: updated.normalizedEmail,
+      full_name: updated.fullName,
+      phone: updated.phone,
+      country: updated.country,
+      expertise_area: updated.expertiseArea,
+      teaching_topics: updated.teachingTopics,
+      credentials: updated.credentials,
+      portfolio_links: updated.portfolioLinks,
+      course_proposal: updated.courseProposal,
+      supporting_files: mapTeacherApplicationFiles(updated.supportingFiles),
+      terms_accepted_at: updated.termsAcceptedAt,
+      status: updated.status,
+      review_notes: updated.reviewNotes,
+      admin_notes: updated.adminNotes,
+      payout_model: updated.payoutModel,
+      revenue_share_percent: updated.revenueSharePercent,
+      reviewed_at: updated.reviewedAt,
+      reviewed_by_user_id: updated.reviewedByUserId,
+      instructor_membership_id: updated.instructorMembershipId,
+      created_at: updated.createdAt,
+      updated_at: updated.updatedAt,
+    },
+    {
+      userId: input.actor.user?.id,
+      email: input.actor.normalizedEmail,
+      role: input.actor.roles[0] || "academy_admin",
+    }
+  );
+
+  const applicantMessage = cleanText(input.reviewNotes) || teacherApplicationStatusDescription(updated.status);
+
+  await appendCustomerActivity({
+    userId: updated.userId,
+    email: updated.normalizedEmail,
+    activityType: "learn_teacher_application_reviewed",
+    title: `Teaching application ${teacherApplicationStatusLabel(updated.status).toLowerCase()}`,
+    description: applicantMessage,
+    status: updated.status,
+    referenceType: "learn_teacher_application",
+    referenceId: updated.id,
+    actionUrl: getLearnUrl("/teach"),
+    metadata: {
+      payout_model: updated.payoutModel,
+      revenue_share_percent: updated.revenueSharePercent,
+      reviewed_by_user_id: updated.reviewedByUserId,
+    },
+  });
+
+  await appendCustomerNotification({
+    userId: updated.userId,
+    email: updated.normalizedEmail,
+    title: `Teaching application ${teacherApplicationStatusLabel(updated.status).toLowerCase()}`,
+    body: applicantMessage,
+    category: "learn",
+    actionUrl: getLearnUrl("/teach"),
+    actionLabel: "Open teaching application",
+    referenceType: "learn_teacher_application",
+    referenceId: updated.id,
+  });
+
+  await sendTeacherApplicationStatusNotification({
+    audience: {
+      userId: updated.userId,
+      email: updated.normalizedEmail,
+      normalizedEmail: updated.normalizedEmail,
+      fullName: updated.fullName,
+      phone: updated.phone,
+    },
+    fullName: updated.fullName,
+    applicationId: updated.id,
+    status: updated.status,
+    reviewNotes: updated.reviewNotes,
+    manageUrl: getLearnUrl("/teach"),
+  });
+
+  await sendOwnerAlert({
+    title: `Teaching application ${teacherApplicationStatusLabel(updated.status).toLowerCase()}: ${updated.fullName}`,
+    body: `${updated.fullName}'s HenryCo Learn teaching application is now ${teacherApplicationStatusLabel(updated.status).toLowerCase()}.`,
+    entityType: "learn_teacher_application",
+    entityId: updated.id,
+    actionUrl: `${getDivisionUrl("learn")}/owner/instructors`,
+  });
+
+  return updated;
+}
+
 export async function confirmEnrollmentPayment(input: {
   paymentId: string;
   actor: LearnViewer;
@@ -1387,7 +1781,7 @@ export async function assignTraining(input: {
     status: "assigned",
     referenceType: "learn_assignment",
     referenceId: assignmentId,
-    actionUrl: `${getDivisionUrl("learn")}/learner`,
+    actionUrl: getAccountLearnUrl("assignments"),
     metadata: {
       course_id: course?.id || null,
       path_id: path?.id || null,
@@ -1400,8 +1794,8 @@ export async function assignTraining(input: {
     title: `${course?.title || path?.title || "Training"} assigned`,
     body: cleanText(input.note) || "A HenryCo training assignment is waiting in your academy queue.",
     category: "learn",
-    actionUrl: `${getDivisionUrl("learn")}/learner`,
-    actionLabel: "Open Learn",
+    actionUrl: getAccountLearnUrl("assignments"),
+    actionLabel: "Open account",
     referenceType: "learn_assignment",
     referenceId: assignmentId,
   });
@@ -1473,8 +1867,8 @@ export async function publishAcademyAnnouncement(input: {
       title: cleanText(input.title),
       body: cleanText(input.body),
       category: "learn",
-      actionUrl: `${getDivisionUrl("learn")}/learner/notifications`,
-      actionLabel: "Open notifications",
+      actionUrl: getAccountLearnUrl("notifications"),
+      actionLabel: "Open account",
       referenceType: "learn_announcement",
       referenceId: announcementId,
     });

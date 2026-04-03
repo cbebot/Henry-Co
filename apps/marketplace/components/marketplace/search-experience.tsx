@@ -128,10 +128,10 @@ export function SearchExperience({
 
   return (
     <>
-      <section className="grid gap-6 xl:grid-cols-[320px,1fr]">
-        <aside className="sticky top-28 hidden self-start xl:block">{filters}</aside>
+      <section className="relative grid gap-6 xl:grid-cols-[320px,1fr]">
+        <aside className="sticky top-28 z-10 hidden self-start xl:block">{filters}</aside>
 
-        <div className="space-y-5">
+        <div className="relative z-20 space-y-5">
           <div className="flex flex-col gap-4 rounded-[1.7rem] border border-[var(--market-line-strong)] bg-[var(--market-paper-white)] p-5 shadow-[0_20px_52px_rgba(28,24,18,0.06)] sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">

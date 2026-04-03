@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { EmailOtpType } from "@supabase/supabase-js";
+import { getSharedCookieDomain } from "@henryco/config";
 import "@/lib/server-env";
 import { getRequiredEnv } from "@/lib/env";
 
 function cleanNext(value: string | null) {
-  if (!value || !value.startsWith("/")) return "/account";
+  if (!value || !value.startsWith("/")) return "/owner";
   return value;
 }
 
@@ -56,12 +57,15 @@ export async function GET(request: Request) {
   }
 
   const redirect = NextResponse.redirect(new URL(nextPath, request.url), { status: 303 });
+  const cookieDomain = getSharedCookieDomain(url.hostname);
   redirect.cookies.set({
     name: getAuthCookieName(supabaseUrl),
     value: `base64-${Buffer.from(JSON.stringify(data.session)).toString("base64url")}`,
+    domain: cookieDomain,
     path: "/",
     sameSite: "lax",
     httpOnly: false,
+    secure: Boolean(cookieDomain),
     maxAge: 60 * 60 * 24 * 400,
   });
 

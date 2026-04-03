@@ -11,7 +11,7 @@ export default async function InstructorPage() {
     <LearnWorkspaceShell
       kicker="Instructor"
       title="Monitor course quality, completions, and learner outcomes."
-      description="Instructor views focus on teaching signals and learner outcomes rather than forcing teaching into a generic admin dashboard."
+      description="Instructor views stay focused on teaching signals and learner outcomes so course quality remains easy to review."
       nav={instructorNav("/instructor")}
     >
       <div className="space-y-5">

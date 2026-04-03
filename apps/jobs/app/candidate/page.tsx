@@ -13,8 +13,8 @@ export default async function CandidateOverviewPage() {
   return (
     <WorkspaceShell
       area="candidate"
-      title="Candidate Hub"
-      subtitle="Track profile strength, applications, saved roles, files, and recruiter movement without noise."
+      title="Jobs Module"
+      subtitle="Track profile strength, applications, saved roles, files, and recruiter movement as part of your HenryCo account activity."
       nav={candidateNav}
       activeHref="/candidate"
       accent="linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%)"

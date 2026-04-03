@@ -17,6 +17,14 @@ import {
   upsertJobAlert,
 } from "@/lib/jobs/write";
 
+function getSafeReturnTo(formData: FormData) {
+  const value = formData.get("returnTo");
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("/") || trimmed.startsWith("//")) return null;
+  return trimmed;
+}
+
 export async function saveCandidateProfileAction(formData: FormData) {
   const viewer = await requireJobsUser("/candidate/profile");
   await saveCandidateProfile({
@@ -64,7 +72,7 @@ export async function uploadCandidateDocumentAction(formData: FormData) {
 export async function toggleSavedJobAction(formData: FormData) {
   const viewer = await requireJobsUser("/candidate/saved-jobs");
   const jobSlug = String(formData.get("jobSlug") || "");
-  await toggleSavedJob({
+  const result = await toggleSavedJob({
     actor: {
       userId: viewer.user!.id,
       email: viewer.user!.email,
@@ -77,6 +85,11 @@ export async function toggleSavedJobAction(formData: FormData) {
   revalidatePath(`/jobs/${jobSlug}`);
   revalidatePath("/candidate");
   revalidatePath("/candidate/saved-jobs");
+
+  const returnTo = getSafeReturnTo(formData);
+  if (returnTo) {
+    redirect(`${returnTo}?saved=${result.saved ? "1" : "0"}`);
+  }
 }
 
 export async function createJobAlertAction(formData: FormData) {
@@ -169,6 +182,11 @@ export async function advanceApplicationStageAction(formData: FormData) {
   revalidatePath("/employer");
   revalidatePath("/employer/applicants");
   revalidatePath("/recruiter");
+
+  const returnTo = getSafeReturnTo(formData);
+  if (returnTo) {
+    redirect(`${returnTo}?stageUpdated=1`);
+  }
 }
 
 export async function addApplicationNoteAction(formData: FormData) {
@@ -185,6 +203,11 @@ export async function addApplicationNoteAction(formData: FormData) {
   });
   revalidatePath("/employer");
   revalidatePath("/recruiter");
+
+  const returnTo = getSafeReturnTo(formData);
+  if (returnTo) {
+    redirect(`${returnTo}?noteAdded=1`);
+  }
 }
 
 export async function updateEmployerVerificationAction(formData: FormData) {
@@ -202,6 +225,12 @@ export async function updateEmployerVerificationAction(formData: FormData) {
   });
   revalidatePath("/moderation");
   revalidatePath("/recruiter");
+
+  const returnTo = getSafeReturnTo(formData);
+  const employerSlug = String(formData.get("employerSlug") || "");
+  if (returnTo) {
+    redirect(`${returnTo}?updated=${encodeURIComponent(employerSlug)}`);
+  }
 }
 
 export async function markNotificationReadAction(formData: FormData) {

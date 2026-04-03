@@ -1,6 +1,7 @@
 import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData, getMarketplaceHomeData } from "@/lib/marketplace/data";
+import type { MarketplaceReview } from "@/lib/marketplace/types";
 import { accountNav } from "@/lib/marketplace/navigation";
 
 export const dynamic = "force-dynamic";
@@ -42,7 +43,7 @@ export default async function AccountReviewsPage() {
 
       {buyer.reviews.length ? (
         <div className="space-y-4">
-          {buyer.reviews.map((review) => (
+          {buyer.reviews.map((review: MarketplaceReview) => (
             <article key={review.id} className="market-paper rounded-[1.75rem] p-5">
               <p className="market-kicker">{review.productSlug} · {review.status}</p>
               <h2 className="mt-3 text-xl font-semibold text-[var(--market-ink)]">{review.title}</h2>

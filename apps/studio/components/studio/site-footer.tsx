@@ -26,14 +26,33 @@ const footerColumns = [
   {
     title: "Workspace",
     links: [
-      { href: "/client", label: "Client workspace" },
-      { href: "/login", label: "Studio login" },
+      { href: "__ACCOUNT__", label: "HenryCo account" },
+      { href: "__LOGIN__", label: "Shared sign in" },
       { href: "/contact", label: "Contact" },
     ],
   },
 ];
 
-export function StudioSiteFooter() {
+export function StudioSiteFooter({
+  supportEmail,
+  supportPhone,
+  accountHref,
+  loginHref,
+}: {
+  supportEmail: string | null;
+  supportPhone: string | null;
+  accountHref: string;
+  loginHref: string;
+}) {
+  const columns = footerColumns.map((column) => ({
+    ...column,
+    links: column.links.map((link) => ({
+      ...link,
+      href:
+        link.href === "__ACCOUNT__" ? accountHref : link.href === "__LOGIN__" ? loginHref : link.href,
+    })),
+  }));
+
   return (
     <footer className="border-t border-[var(--studio-line)] bg-[linear-gradient(180deg,rgba(5,12,17,0.2),rgba(5,12,17,0.6))]">
       <div className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 lg:px-10">
@@ -78,7 +97,7 @@ export function StudioSiteFooter() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
-              {footerColumns.map((column) => (
+              {columns.map((column) => (
                 <div key={column.title}>
                   <div className="studio-kicker">{column.title}</div>
                   <div className="mt-4 flex flex-col gap-3">
@@ -99,13 +118,13 @@ export function StudioSiteFooter() {
 
           <div className="mt-10 grid gap-4 border-t border-[var(--studio-line)] pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <div className="text-sm leading-7 text-[var(--studio-ink-soft)]">
-              {studio.supportEmail} · {studio.supportPhone} · studio.henrycogroup.com
+              {supportEmail || studio.supportEmail} · {supportPhone || studio.supportPhone} · studio.henrycogroup.com
             </div>
             <Link
-              href="/client"
+              href={accountHref}
               className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--studio-ink)]"
             >
-              Open client workspace
+              Open HenryCo account
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

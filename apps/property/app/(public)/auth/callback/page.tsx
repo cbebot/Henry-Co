@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 function cleanNext(value: string | null) {
-  if (!value || !value.startsWith("/")) return "/account";
+  if (!value || !value.startsWith("/")) return "/owner";
   return value;
 }
 

@@ -3,6 +3,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
+import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import type { StudioRole, StudioViewer } from "@/lib/studio/types";
@@ -132,8 +133,7 @@ export async function requireStudioUser(next?: string) {
   const viewer = await getStudioViewer();
 
   if (!viewer.user) {
-    const suffix = next ? `?next=${encodeURIComponent(next)}` : "";
-    redirect(`/login${suffix}`);
+    redirect(getStudioLoginUrl(next));
   }
 
   return viewer;
@@ -143,7 +143,7 @@ export async function requireStudioRoles(allowed: StudioRole[], next?: string) {
   const viewer = await requireStudioUser(next);
 
   if (!viewerHasRole(viewer, allowed)) {
-    redirect("/client");
+    redirect(getStudioAccountUrl());
   }
 
   return viewer;

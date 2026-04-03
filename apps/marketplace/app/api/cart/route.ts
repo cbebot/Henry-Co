@@ -14,6 +14,7 @@ type CartPayload = {
   productSlug?: string;
   quantity?: number;
   itemId?: string;
+  sessionToken?: string;
 };
 
 function asQuantity(value: unknown, fallback = 1) {
@@ -22,11 +23,11 @@ function asQuantity(value: unknown, fallback = 1) {
   return Math.max(0, Math.floor(parsed));
 }
 
-async function resolveCartId() {
+async function resolveCartId(preferredSessionToken?: string | null) {
   const viewer = await getMarketplaceViewer();
   const cookieStore = await cookies();
   const admin = createAdminSupabase();
-  const sessionToken = cookieStore.get("marketplace_cart_token")?.value || null;
+  const sessionToken = preferredSessionToken || cookieStore.get("marketplace_cart_token")?.value || null;
 
   const { data: byUser } = viewer.user
     ? await admin
@@ -101,7 +102,7 @@ export async function POST(request: Request) {
   }
 
   const admin = createAdminSupabase();
-  const { viewer, cartId, sessionToken } = await resolveCartId();
+  const { viewer, cartId, sessionToken } = await resolveCartId(payload.sessionToken || null);
   const vendor = snapshot.vendors.find((item) => item.slug === product.vendorSlug) ?? null;
 
   const { data: existingItem } = await admin

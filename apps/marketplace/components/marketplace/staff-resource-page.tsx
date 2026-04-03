@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { EmptyState, MetricCard, WorkspaceShell } from "@/components/marketplace/shell";
 import {
   getMarketplaceHomeData,
@@ -147,6 +146,62 @@ export async function StaffResourcePage({
     );
   }
 
+  if (root === "/admin" && resource === "brands") {
+    return (
+      <WorkspaceShell title="Brands" description="Brand records and presentation accents stay organized here." nav={nav}>
+        <div className="grid gap-5 md:grid-cols-2">
+          {snapshot.brands.map((brand) => (
+            <article key={brand.id} className="market-paper rounded-[1.75rem] p-5">
+              <p className="market-kicker">{brand.slug}</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{brand.name}</h2>
+              <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{brand.description}</p>
+            </article>
+          ))}
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
+  if (root === "/admin" && resource === "collections") {
+    return (
+      <WorkspaceShell title="Collections" description="Editorial collection rails, curation, and product grouping." nav={nav}>
+        <div className="grid gap-5 md:grid-cols-2">
+          {snapshot.collections.map((collection) => (
+            <article key={collection.id} className="market-paper rounded-[1.75rem] p-5">
+              <p className="market-kicker">{collection.kicker}</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{collection.title}</h2>
+              <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{collection.description}</p>
+              <p className="mt-4 text-sm font-semibold text-[var(--market-ink)]">
+                {collection.productSlugs.length} linked product{collection.productSlugs.length === 1 ? "" : "s"}
+              </p>
+            </article>
+          ))}
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
+  if (root === "/admin" && resource === "sellers") {
+    return (
+      <WorkspaceShell title="Sellers" description="Approved vendor passports and storefront accountability." nav={nav}>
+        <div className="grid gap-5 md:grid-cols-2">
+          {snapshot.vendors.map((vendor) => (
+            <article key={vendor.id} className="market-paper rounded-[1.75rem] p-5">
+              <p className="market-kicker">{vendor.verificationLevel}</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{vendor.name}</h2>
+              <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{vendor.description}</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <MetricCard label="Trust" value={`${vendor.trustScore}%`} hint="Public trust passport score." />
+                <MetricCard label="SLA" value={`${vendor.responseSlaHours}h`} hint="Average response expectation." />
+                <MetricCard label="Followers" value={String(vendor.followersCount)} hint="Saved buyers and followers." />
+              </div>
+            </article>
+          ))}
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
   if ((root === "/admin" && resource === "campaigns") || (root === "/owner" && resource === "digest")) {
     return (
       <WorkspaceShell title={title} description="Campaign and executive summary visibility." nav={nav}>
@@ -182,6 +237,74 @@ export async function StaffResourcePage({
             ))
           ) : (
             <EmptyState title="No notification records yet." body="Delivery logs and queue backlog will appear here." />
+          )}
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
+  if (
+    (root === "/admin" && resource === "email-logs") ||
+    (root === "/support" && resource === "email-logs")
+  ) {
+    const items = queue.notifications.filter((item: Record<string, unknown>) => String(item.channel || "") === "email");
+
+    return (
+      <WorkspaceShell title="Email logs" description="Email delivery attempts and failure visibility." nav={nav}>
+        <div className="space-y-4">
+          {items.length ? (
+            items.map((item: Record<string, unknown>) => (
+              <article key={String(item.id)} className="market-paper rounded-[1.75rem] p-5">
+                <p className="market-kicker">{String(item.status || "queued")} · {String(item.provider || "email")}</p>
+                <h2 className="mt-3 text-xl font-semibold tracking-tight text-[var(--market-ink)]">
+                  {String(item.template_key || "Email notification")}
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
+                  {String(item.recipient || "unknown recipient")} · {formatDate(String(item.created_at || new Date().toISOString()))}
+                </p>
+                {item.last_error ? (
+                  <p className="mt-3 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-3 text-sm text-[var(--market-alert)]">
+                    {String(item.last_error)}
+                  </p>
+                ) : null}
+              </article>
+            ))
+          ) : (
+            <EmptyState title="No email records yet." body="Email delivery logs will appear here with status and retry context." />
+          )}
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
+  if (
+    (root === "/admin" && resource === "whatsapp-logs") ||
+    (root === "/support" && resource === "whatsapp-logs")
+  ) {
+    const items = queue.notifications.filter((item: Record<string, unknown>) => String(item.channel || "") === "whatsapp");
+
+    return (
+      <WorkspaceShell title="WhatsApp logs" description="WhatsApp delivery attempts, skips, and provider visibility." nav={nav}>
+        <div className="space-y-4">
+          {items.length ? (
+            items.map((item: Record<string, unknown>) => (
+              <article key={String(item.id)} className="market-paper rounded-[1.75rem] p-5">
+                <p className="market-kicker">{String(item.status || "queued")} · {String(item.provider || "whatsapp")}</p>
+                <h2 className="mt-3 text-xl font-semibold tracking-tight text-[var(--market-ink)]">
+                  {String(item.template_key || "WhatsApp notification")}
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
+                  {String(item.recipient || "unknown recipient")} · {formatDate(String(item.created_at || new Date().toISOString()))}
+                </p>
+                {item.skipped_reason || item.last_error ? (
+                  <p className="mt-3 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-3 text-sm text-[var(--market-alert)]">
+                    {String(item.skipped_reason || item.last_error)}
+                  </p>
+                ) : null}
+              </article>
+            ))
+          ) : (
+            <EmptyState title="No WhatsApp records yet." body="WhatsApp delivery diagnostics will appear here when provider-backed sends run." />
           )}
         </div>
       </WorkspaceShell>
@@ -267,6 +390,73 @@ export async function StaffResourcePage({
               </form>
             </article>
           ))}
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
+  if (root === "/moderation" && resource === "risk") {
+    const items = queue.products
+      .filter((product: Record<string, unknown>) => {
+        const stock = Number(product.total_stock || 0);
+        const summary = String(product.summary || "");
+        const price = Number(product.base_price || 0);
+        return stock <= 2 || summary.length < 36 || price <= 0;
+      })
+      .slice(0, 20);
+
+    return (
+      <WorkspaceShell title="Risk signals" description="Thin metadata, stock stress, and approval pressure grouped into one moderation queue." nav={nav}>
+        <div className="space-y-4">
+          {items.length ? (
+            items.map((product: Record<string, unknown>) => (
+              <article key={String(product.id)} className="market-paper rounded-[1.75rem] p-5">
+                <p className="market-kicker">{String(product.approval_status || "draft")}</p>
+                <h2 className="mt-3 text-xl font-semibold tracking-tight text-[var(--market-ink)]">
+                  {String(product.title || "Product")}
+                </h2>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  <MetricCard
+                    label="Stock"
+                    value={String(product.total_stock || 0)}
+                    hint="Low stock and availability pressure."
+                  />
+                  <MetricCard
+                    label="Summary"
+                    value={`${String(product.summary || "").length} ch`}
+                    hint="Thin copy can delay approvals and conversion."
+                  />
+                  <MetricCard
+                    label="Price"
+                    value={formatCurrency(Number(product.base_price || 0))}
+                    hint="Price anomalies or unset pricing are flagged."
+                  />
+                </div>
+              </article>
+            ))
+          ) : (
+            <EmptyState title="No immediate moderation risks." body="Metadata weakness, stock pressure, and pricing anomalies will surface here." />
+          )}
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
+  if (root === "/moderation" && resource === "reviews") {
+    return (
+      <WorkspaceShell title="Reviews" description="Published review quality and verification outcomes." nav={nav}>
+        <div className="grid gap-5 md:grid-cols-2">
+          {snapshot.reviews.length ? (
+            snapshot.reviews.map((review) => (
+              <article key={review.id} className="market-paper rounded-[1.75rem] p-5">
+                <p className="market-kicker">{review.verifiedPurchase ? "verified purchase" : "manual review"}</p>
+                <h2 className="mt-3 text-xl font-semibold tracking-tight text-[var(--market-ink)]">{review.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{review.body}</p>
+              </article>
+            ))
+          ) : (
+            <EmptyState title="No review records yet." body="Review quality and moderation outcomes will appear here." />
+          )}
         </div>
       </WorkspaceShell>
     );
@@ -375,6 +565,34 @@ export async function StaffResourcePage({
     );
   }
 
+  if ((root === "/operations" && resource === "notifications") || (root === "/owner" && resource === "automation-health")) {
+    const failedNotifications = queue.notifications.filter((item: Record<string, unknown>) => String(item.status || "") === "failed");
+    const queuedNotifications = queue.notifications.filter((item: Record<string, unknown>) => String(item.status || "") === "queued");
+
+    return (
+      <WorkspaceShell title={title} description="Notification backlog, retries, and automation diagnostics." nav={nav}>
+        <div className="grid gap-5 md:grid-cols-3">
+          <MetricCard label="Queued" value={String(queuedNotifications.length)} hint="Pending sends waiting for provider delivery." />
+          <MetricCard label="Failed" value={String(failedNotifications.length)} hint="Messages requiring retries or operator review." />
+          <MetricCard label="Audit entries" value={String(queue.auditLogs.length)} hint="Most recent logged operator and automation actions." />
+        </div>
+        <div className="mt-6 space-y-4">
+          {queue.notifications.slice(0, 12).map((item: Record<string, unknown>) => (
+            <article key={String(item.id)} className="market-paper rounded-[1.75rem] p-5">
+              <p className="market-kicker">{String(item.channel || "notification")} · {String(item.status || "queued")}</p>
+              <h2 className="mt-3 text-xl font-semibold tracking-tight text-[var(--market-ink)]">
+                {String(item.template_key || "Notification")}
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
+                {String(item.recipient || "unknown recipient")}
+              </p>
+            </article>
+          ))}
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
   if ((root === "/owner" && resource === "audit") || (root === "/finance" && resource === "audit") || (root === "/moderation" && resource === "audit")) {
     return (
       <WorkspaceShell title="Audit" description="Latest operator and automation audit trail." nav={nav}>
@@ -403,6 +621,26 @@ export async function StaffResourcePage({
           <MetricCard label="Pending applications" value={String(overview.pendingApplications)} hint="Seller approval backlog." />
           <MetricCard label="Open disputes" value={String(overview.openDisputes)} hint="Support and moderation pressure." />
           <MetricCard label="Pending payouts" value={String(overview.pendingPayouts)} hint="Finance review backlog." />
+        </div>
+      </WorkspaceShell>
+    );
+  }
+
+  if ((root === "/finance" && resource === "refunds") || (root === "/admin" && resource === "settings")) {
+    return (
+      <WorkspaceShell
+        title={title}
+        description={
+          root === "/finance"
+            ? "Refund posture and reversal visibility."
+            : "Marketplace configuration guardrails and operational defaults."
+        }
+        nav={nav}
+      >
+        <div className="grid gap-5 md:grid-cols-3">
+          <MetricCard label="Open disputes" value={String(overview.openDisputes)} hint="Disputes drive most refund pressure." />
+          <MetricCard label="Pending payouts" value={String(overview.pendingPayouts)} hint="Finance backlog tied to payout and refund timing." />
+          <MetricCard label="Stalled orders" value={String(overview.stalledOrders)} hint="Orders needing operational or payment intervention." />
         </div>
       </WorkspaceShell>
     );

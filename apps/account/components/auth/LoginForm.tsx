@@ -5,6 +5,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
+function normalizeNext(next: string | null) {
+  if (!next) return "/";
+  if (/^https?:\/\//i.test(next)) return next;
+  return next.startsWith("/") ? next : "/";
+}
+
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +37,12 @@ export default function LoginForm() {
         return;
       }
 
-      const next = searchParams.get("next") || "/";
+      const next = normalizeNext(searchParams.get("next"));
+      if (/^https?:\/\//i.test(next)) {
+        window.location.assign(next);
+        return;
+      }
+
       router.push(next);
       router.refresh();
     } catch {

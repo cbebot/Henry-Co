@@ -2,6 +2,7 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
+import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { readLearnCollection } from "@/lib/learn/store";
@@ -131,8 +132,7 @@ export async function requireLearnUser(next?: string) {
   const viewer = await getLearnViewer();
 
   if (!viewer.user) {
-    const suffix = next ? `?next=${encodeURIComponent(next)}` : "";
-    redirect(`/login${suffix}`);
+    redirect(getSharedAuthUrl("login", next));
   }
 
   return viewer;
@@ -141,7 +141,7 @@ export async function requireLearnUser(next?: string) {
 export async function requireLearnRoles(allowed: LearnRole[], next?: string) {
   const viewer = await requireLearnUser(next);
   if (!viewerHasRole(viewer, allowed)) {
-    redirect("/learner");
+    redirect(getAccountLearnUrl());
   }
   return viewer;
 }

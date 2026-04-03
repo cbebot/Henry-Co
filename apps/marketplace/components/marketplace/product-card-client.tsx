@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
 import type { MarketplaceProduct } from "@/lib/marketplace/types";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -12,16 +13,56 @@ const fallbackImage =
   "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80";
 
 export function ProductCardClient({ product }: { product: MarketplaceProduct }) {
-  const { addToCart } = useMarketplaceCart();
+  const { addToCart, pendingCartSlugs } = useMarketplaceCart();
   const { isWishlisted, pendingWishlistSlugs, toggleWishlist } = useMarketplaceWishlist();
   const saving = pendingWishlistSlugs.includes(product.slug);
+  const adding = pendingCartSlugs.includes(product.slug);
   const wishlisted = isWishlisted(product.slug);
+  const [justAdded, setJustAdded] = useState(false);
+  const flashTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (flashTimeoutRef.current) {
+        window.clearTimeout(flashTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  async function handleAddToCart() {
+    const added = await addToCart(
+      {
+        productSlug: product.slug,
+        title: product.title,
+        price: product.basePrice,
+        compareAtPrice: product.compareAtPrice,
+        currency: product.currency,
+        image: product.gallery[0] || null,
+        vendorSlug: product.vendorSlug,
+        vendorName: null,
+        trustBadges: product.trustBadges,
+        inventoryOwnerType: product.inventoryOwnerType,
+        deliveryNote: product.deliveryNote,
+      },
+      1
+    );
+
+    if (!added) return;
+    setJustAdded(true);
+    if (flashTimeoutRef.current) {
+      window.clearTimeout(flashTimeoutRef.current);
+    }
+    flashTimeoutRef.current = window.setTimeout(() => setJustAdded(false), 1800);
+  }
 
   return (
     <motion.article
       layout
       whileHover={{ y: -4 }}
-      className="group flex h-full flex-col overflow-hidden rounded-[1.9rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] shadow-[0_24px_70px_rgba(28,24,18,0.08)]"
+      className={cn(
+        "group relative z-10 flex h-full scroll-mt-40 flex-col overflow-hidden rounded-[1.9rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] shadow-[0_24px_70px_rgba(28,24,18,0.08)] transition duration-300",
+        justAdded && "border-[color:rgba(92,124,78,0.38)] shadow-[0_28px_84px_rgba(72,95,60,0.14)]"
+      )}
     >
       <div className="relative aspect-[4/4.5] overflow-hidden bg-[var(--market-soft-wash)]">
         <Image
@@ -98,25 +139,16 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() =>
-                void addToCart(
-                  {
-                    productSlug: product.slug,
-                    title: product.title,
-                    price: product.basePrice,
-                    compareAtPrice: product.compareAtPrice,
-                    currency: product.currency,
-                    image: product.gallery[0] || null,
-                    vendorSlug: product.vendorSlug,
-                    vendorName: null,
-                    trustBadges: product.trustBadges,
-                    inventoryOwnerType: product.inventoryOwnerType,
-                    deliveryNote: product.deliveryNote,
-                  },
-                  1
-                )
-              }
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--market-noir)] text-[var(--market-paper-white)] shadow-[0_16px_34px_rgba(18,14,10,0.18)] transition hover:scale-[1.02]"
+              disabled={adding}
+              onClick={() => void handleAddToCart()}
+              className={cn(
+                "inline-flex h-11 w-11 items-center justify-center rounded-full text-[var(--market-paper-white)] shadow-[0_16px_34px_rgba(18,14,10,0.18)] transition",
+                adding
+                  ? "bg-[var(--market-brass)]"
+                  : justAdded
+                    ? "bg-[var(--market-success)]"
+                    : "bg-[var(--market-noir)] hover:scale-[1.02]"
+              )}
               aria-label={`Add ${product.title} to cart`}
             >
               <ShoppingBag className="h-4 w-4" />

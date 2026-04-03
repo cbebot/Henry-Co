@@ -37,6 +37,7 @@ const requiredFiles = [
   "lib/marketplace/automation.ts",
   "supabase/migrations/20260402180000_marketplace_init.sql",
   "supabase/migrations/20260402180500_marketplace_policies.sql",
+  "supabase/migrations/20260402223000_marketplace_events_and_application_state.sql",
   "scripts/seed-marketplace.mjs",
   "scripts/sync-marketplace-division.mjs",
 ];
@@ -86,6 +87,10 @@ const tableChecks = [
   "marketplace_disputes",
   "marketplace_payout_requests",
   "marketplace_notification_queue",
+  "marketplace_events",
+  "marketplace_notification_attempts",
+  "marketplace_automation_runs",
+  "marketplace_user_comm_preferences",
   "marketplace_support_threads",
   "marketplace_support_messages",
 ];

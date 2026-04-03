@@ -892,7 +892,7 @@ export async function createEmployerProfile(input: {
     activityType: JOBS_ACTIVITY_EMPLOYER_MEMBERSHIP,
     status: "active",
     title: `${name} employer access`,
-    description: "Employer workspace access is active.",
+    description: "Employer console access is active.",
     metadata: {
       employerSlug: slug,
       employerName: name,
@@ -928,7 +928,7 @@ export async function createEmployerProfile(input: {
     title: "Employer onboarding submitted",
     body: `${name} is now inside HenryCo Jobs and awaiting verification review.`,
     actionUrl: "/employer/company",
-    actionLabel: "Open employer workspace",
+    actionLabel: "Open employer console",
     referenceType: "jobs_employer",
     referenceId: slug,
   });
@@ -943,7 +943,7 @@ export async function createEmployerProfile(input: {
         `Employer: ${name}`,
         `Website: ${website || companyPayload.href}`,
       ],
-      ctaLabel: "Open employer workspace",
+      ctaLabel: "Open employer console",
       ctaHref: toJobsUrl("/employer/company"),
     },
     {
@@ -993,7 +993,7 @@ export async function createJobPost(input: {
     memberships.find((membership) => membership.employerSlug === requestedEmployerSlug) ?? memberships[0];
 
   if (!employer && input.actor.role !== "owner" && input.actor.role !== "manager") {
-    throw new Error("Employer workspace access is required to publish a role.");
+    throw new Error("Employer console access is required to publish a role.");
   }
 
   const title = asText(input.formData.get("title"));
@@ -1400,8 +1400,8 @@ export async function updateEmployerVerification(input: {
           key: "employer_verification",
           heading: "Employer verification updated",
           summary: `${employerName} is now marked ${input.status} inside HenryCo Jobs.`,
-          detailLines: [input.reason || "Open your employer workspace for the latest verification context."],
-          ctaLabel: "Open employer workspace",
+          detailLines: [input.reason || "Open your employer console for the latest verification context."],
+          ctaLabel: "Open employer console",
           ctaHref: toJobsUrl("/employer/company"),
         },
         {

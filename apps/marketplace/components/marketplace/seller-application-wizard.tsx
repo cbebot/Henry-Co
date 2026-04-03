@@ -18,6 +18,7 @@ type FormState = {
   phone: string;
   categoryFocus: string;
   story: string;
+  documents: Record<string, string>;
   agreementAccepted: boolean;
 };
 
@@ -35,18 +36,24 @@ export function SellerApplicationWizard({
   step,
   initialApplication,
 }: SellerApplicationWizardProps) {
+  const initialDraft = initialApplication?.draftPayload ?? {};
   const [form, setForm] = useState<FormState>({
-    storeName: initialApplication?.storeName || "",
-    storeSlug: initialApplication?.slug || "",
-    legalName: initialApplication?.legalName || "",
-    phone: "",
-    categoryFocus: initialApplication?.categoryFocus || "",
-    story: "",
-    agreementAccepted: false,
+    storeName: String(initialDraft.storeName || initialApplication?.storeName || ""),
+    storeSlug: String(initialDraft.storeSlug || initialApplication?.slug || ""),
+    legalName: String(initialDraft.legalName || initialApplication?.legalName || ""),
+    phone: String(initialDraft.phone || initialApplication?.phone || ""),
+    categoryFocus: String(initialDraft.categoryFocus || initialApplication?.categoryFocus || ""),
+    story: String(initialDraft.story || initialApplication?.story || ""),
+    documents:
+      initialDraft.documents && typeof initialDraft.documents === "object"
+        ? (initialDraft.documents as Record<string, string>)
+        : initialApplication?.documents || {},
+    agreementAccepted: Boolean(initialApplication?.agreementAcceptedAt),
   });
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "submitted">("idle");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (
@@ -56,6 +63,7 @@ export function SellerApplicationWizard({
       !form.phone &&
       !form.categoryFocus &&
       !form.story &&
+      Object.keys(form.documents).length === 0 &&
       !form.agreementAccepted &&
       !initialApplication
     ) {
@@ -67,7 +75,7 @@ export function SellerApplicationWizard({
         void (async () => {
           setSaving(true);
           try {
-            await fetch("/api/seller-applications", {
+            const response = await fetch("/api/seller-applications", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -78,7 +86,14 @@ export function SellerApplicationWizard({
                 ...form,
               }),
             });
+            if (!response.ok) {
+              const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+              throw new Error(payload?.error || "Draft save failed.");
+            }
+            setError(null);
             setSavedAt(new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
+          } catch (reason) {
+            setError(reason instanceof Error ? reason.message : "Draft save failed.");
           } finally {
             setSaving(false);
           }
@@ -93,6 +108,7 @@ export function SellerApplicationWizard({
 
   async function submitApplication() {
     setSubmitState("submitting");
+    setError(null);
     const response = await fetch("/api/seller-applications", {
       method: "POST",
       headers: {
@@ -111,7 +127,19 @@ export function SellerApplicationWizard({
       return;
     }
 
+    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+    setError(payload?.error || "Application submission failed.");
     setSubmitState("idle");
+  }
+
+  function updateDocument(key: string, value: string) {
+    setForm((current) => ({
+      ...current,
+      documents: {
+        ...current.documents,
+        [key]: value,
+      },
+    }));
   }
 
   return (
@@ -137,6 +165,11 @@ export function SellerApplicationWizard({
         <p className="mt-4 text-sm leading-7 text-[var(--market-muted)]">
           {saving ? "Saving draft..." : savedAt ? `Draft saved at ${savedAt}.` : "Drafts autosave while you work."}
         </p>
+        {error ? (
+          <p className="mt-2 rounded-full bg-[rgba(126,33,18,0.08)] px-4 py-2 text-sm font-medium text-[var(--market-alert)]">
+            {error}
+          </p>
+        ) : null}
       </div>
 
       <div className="rounded-[2rem] border border-[var(--market-line-strong)] bg-[var(--market-paper-white)] p-6 shadow-[0_20px_52px_rgba(28,24,18,0.06)] sm:p-8">
@@ -198,8 +231,34 @@ export function SellerApplicationWizard({
                 placeholder="Explain what you sell, why buyers should trust the store, and the service standard you can maintain."
               />
             </label>
-            <div className="rounded-[1.5rem] border border-dashed border-[var(--market-line-strong)] bg-[var(--market-bg-elevated)] p-5 text-sm leading-7 text-[var(--market-muted)]">
-              Document handling is wired into the real application record. This phase is where KYC files, fulfillment proof, and category-quality evidence attach to the seller profile.
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="space-y-2">
+                <span className="text-sm font-semibold text-[var(--market-ink)]">Business registration document URL</span>
+                <input
+                  value={form.documents.businessRegistration || ""}
+                  onChange={(event) => updateDocument("businessRegistration", event.target.value)}
+                  className="market-input rounded-[1.2rem] px-4 py-3"
+                  placeholder="https://..."
+                />
+              </label>
+              <label className="space-y-2">
+                <span className="text-sm font-semibold text-[var(--market-ink)]">Founder ID / KYC document URL</span>
+                <input
+                  value={form.documents.founderIdentity || ""}
+                  onChange={(event) => updateDocument("founderIdentity", event.target.value)}
+                  className="market-input rounded-[1.2rem] px-4 py-3"
+                  placeholder="https://..."
+                />
+              </label>
+              <label className="space-y-2 sm:col-span-2">
+                <span className="text-sm font-semibold text-[var(--market-ink)]">Payout account proof URL</span>
+                <input
+                  value={form.documents.payoutProof || ""}
+                  onChange={(event) => updateDocument("payoutProof", event.target.value)}
+                  className="market-input rounded-[1.2rem] px-4 py-3"
+                  placeholder="https://..."
+                />
+              </label>
             </div>
             <label className="flex items-start gap-3 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-4 py-4">
               <input
@@ -226,6 +285,23 @@ export function SellerApplicationWizard({
               <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
                 {form.story || "Store story still needs to be completed before submission."}
               </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {[
+                  ["Business registration", form.documents.businessRegistration || "Pending"],
+                  ["Founder ID", form.documents.founderIdentity || "Pending"],
+                  ["Payout proof", form.documents.payoutProof || "Pending"],
+                ].map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="rounded-[1.3rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 py-4"
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
+                      {label}
+                    </p>
+                    <p className="mt-2 text-sm font-medium text-[var(--market-ink)] break-all">{value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-soft-olive)] p-5 text-sm leading-7 text-[var(--market-ink)]">
               Submission routes the application into the live moderation queue and triggers owner/admin alerts. Publishing access remains locked until approval is complete.

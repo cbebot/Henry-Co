@@ -20,13 +20,19 @@ export default async function SellerApplicationPage() {
       actions={
         <Link
           href={
-            application?.status === "submitted" || application?.status === "under_review"
+            application?.status === "approved"
+              ? "/vendor/onboarding"
+              : application?.status === "submitted" || application?.status === "under_review"
               ? "/account/seller-application/review"
               : "/account/seller-application/start"
           }
           className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold"
         >
-          {application ? "Continue application" : "Start application"}
+          {application?.status === "approved"
+            ? "Continue vendor onboarding"
+            : application
+              ? "Continue application"
+              : "Start application"}
         </Link>
       }
     >

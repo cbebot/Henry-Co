@@ -52,7 +52,7 @@ type MarketplaceRuntimeContextValue = {
   closeCart: () => void;
   dismissToast: (id: string) => void;
   refreshShell: (silent?: boolean) => Promise<void>;
-  addToCart: (input: AddToCartInput, quantity?: number) => Promise<void>;
+  addToCart: (input: AddToCartInput, quantity?: number) => Promise<boolean>;
   updateCartQuantity: (itemId: string, quantity: number) => Promise<void>;
   removeCartItem: (itemId: string) => Promise<void>;
   toggleWishlist: (productSlug: string) => Promise<void>;
@@ -111,6 +111,22 @@ function mergeOptimisticCartItem(
 
 function redirectToLogin(nextPath: string) {
   window.location.href = `/login?next=${encodeURIComponent(nextPath)}`;
+}
+
+function readCookie(name: string) {
+  const match = document.cookie
+    .split("; ")
+    .find((entry) => entry.startsWith(`${name}=`));
+  return match ? decodeURIComponent(match.split("=").slice(1).join("=")) : null;
+}
+
+function ensureGuestCartToken() {
+  const existing = readCookie("marketplace_cart_token");
+  if (existing) return existing;
+
+  const token = crypto.randomUUID();
+  document.cookie = `marketplace_cart_token=${encodeURIComponent(token)}; Path=/; SameSite=Lax; Max-Age=2592000`;
+  return token;
 }
 
 export function MarketplaceRuntimeProvider({
@@ -266,6 +282,7 @@ export function MarketplaceRuntimeProvider({
 
   async function addToCart(input: AddToCartInput, quantity = 1) {
     const previous = shell;
+    const sessionToken = !shell.viewer.signedIn ? ensureGuestCartToken() : null;
     setPendingCartSlugs((current) => [...current, input.productSlug]);
     setCartOpen(true);
     setShell((current) => {
@@ -289,6 +306,7 @@ export function MarketplaceRuntimeProvider({
         body: JSON.stringify({
           productSlug: input.productSlug,
           quantity,
+          sessionToken,
         }),
       });
 
@@ -300,9 +318,11 @@ export function MarketplaceRuntimeProvider({
       setShell(payload.shell);
       pushToast("Added to cart", "success", input.title);
       emitCrossTabRefresh("cart", input.productSlug);
+      return true;
     } catch {
       setShell(previous);
       pushToast("Could not add that item.", "error");
+      return false;
     } finally {
       setPendingCartSlugs((current) => current.filter((slug) => slug !== input.productSlug));
     }
@@ -485,6 +505,7 @@ export function useMarketplaceCart() {
     cart: runtime.shell.cart,
     cartOpen: runtime.cartOpen,
     cartBusy: runtime.cartBusy,
+    pendingCartSlugs: runtime.pendingCartSlugs,
     openCart: runtime.openCart,
     closeCart: runtime.closeCart,
     addToCart: runtime.addToCart,

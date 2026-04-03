@@ -1,6 +1,7 @@
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
+import type { MarketplaceDispute } from "@/lib/marketplace/types";
 import { accountNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 
@@ -29,7 +30,7 @@ export default async function AccountDisputesPage() {
       </form>
 
       <div className="space-y-4">
-        {data.disputes.map((dispute) => (
+        {data.disputes.map((dispute: MarketplaceDispute) => (
           <article key={dispute.id} className="market-paper rounded-[1.75rem] p-5">
             <p className="market-kicker">{dispute.disputeNo}</p>
             <h2 className="mt-3 text-xl font-semibold capitalize text-[var(--market-ink)]">{dispute.status}</h2>

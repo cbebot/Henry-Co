@@ -454,10 +454,27 @@ export const demoVendorApplication: MarketplaceVendorApplication = {
   storeName: "Luminous Atelier",
   slug: "luminous-atelier",
   legalName: "Luminous Atelier Limited",
+  phone: "+2349133000000",
   categoryFocus: "Premium workspace and home pieces",
+  story:
+    "We source quieter workspace and home products with cleaner photography, calmer materials, and dependable delivery handling.",
   status: "approved",
+  progressStep: "review",
   submittedAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 9).toISOString(),
   reviewNote: "Approved after KYC verification and response-SLA confirmation.",
+  documents: {
+    businessRegistration: "https://files.henrycogroup.com/marketplace/demo/business-registration.pdf",
+    founderIdentity: "https://files.henrycogroup.com/marketplace/demo/founder-id.pdf",
+    payoutProof: "https://files.henrycogroup.com/marketplace/demo/payout-proof.pdf",
+  },
+  draftPayload: {
+    storeName: "Luminous Atelier",
+    legalName: "Luminous Atelier Limited",
+    categoryFocus: "Premium workspace and home pieces",
+    story:
+      "We source quieter workspace and home products with cleaner photography, calmer materials, and dependable delivery handling.",
+  },
+  agreementAcceptedAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 9).toISOString(),
 };
 
 export const demoPayoutRequests: MarketplacePayoutRequest[] = [

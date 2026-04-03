@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MetricCard, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
+import type { MarketplaceNotification } from "@/lib/marketplace/types";
 import { accountNav } from "@/lib/marketplace/navigation";
 
 export const dynamic = "force-dynamic";
@@ -29,7 +30,7 @@ export default async function AccountOverviewPage() {
       <section className="market-paper rounded-[1.75rem] p-6">
         <p className="market-kicker">Recent activity</p>
         <div className="mt-5 space-y-3">
-          {data.notifications.slice(0, 4).map((item) => (
+          {data.notifications.slice(0, 4).map((item: MarketplaceNotification) => (
             <div key={item.id} className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4">
               <p className="text-sm font-semibold text-[var(--market-ink)]">{item.title}</p>
               <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{item.body}</p>

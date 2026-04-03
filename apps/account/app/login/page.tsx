@@ -4,7 +4,14 @@ import Logo from "@/components/brand/Logo";
 
 export const metadata = { title: "Sign In — Henry & Co." };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const params = await searchParams;
+  const signupHref = params.next ? `/signup?next=${encodeURIComponent(params.next)}` : "/signup";
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4">
       <div className="w-full max-w-md acct-fade-in">
@@ -24,7 +31,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-xs text-[var(--acct-muted)]">
           Don&apos;t have an account?{" "}
-          <a href="/signup" className="font-medium text-[var(--acct-gold)] hover:underline">
+          <a href={signupHref} className="font-medium text-[var(--acct-gold)] hover:underline">
             Create one
           </a>
         </p>

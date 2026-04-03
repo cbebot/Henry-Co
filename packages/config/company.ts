@@ -35,6 +35,15 @@ export type DivisionConfig = {
 
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
 
+function normalizeHostname(value?: string | null) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/.*$/, "")
+    .replace(/:\d+$/, "");
+}
+
 export const COMPANY = {
   group: {
     name: "Henry & Co.",
@@ -316,4 +325,31 @@ export function getDivisionUrl(key: DivisionKey) {
     return `https://${COMPANY.group.baseDomain}`;
   }
   return `https://${division.subdomain}.${COMPANY.group.baseDomain}`;
+}
+
+export function getAccountUrl(path = "/") {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `https://account.${COMPANY.group.baseDomain}${normalizedPath}`;
+}
+
+export function getSharedCookieDomain(hostname?: string | null) {
+  const normalizedHost = normalizeHostname(hostname);
+  const baseDomain = normalizeHostname(COMPANY.group.baseDomain);
+
+  if (!normalizedHost || !baseDomain) return undefined;
+  if (
+    normalizedHost === "localhost" ||
+    normalizedHost.endsWith(".localhost") ||
+    normalizedHost === "127.0.0.1" ||
+    normalizedHost === "::1" ||
+    /^\d+\.\d+\.\d+\.\d+$/.test(normalizedHost)
+  ) {
+    return undefined;
+  }
+
+  if (normalizedHost === baseDomain || normalizedHost.endsWith(`.${baseDomain}`)) {
+    return `.${baseDomain}`;
+  }
+
+  return undefined;
 }

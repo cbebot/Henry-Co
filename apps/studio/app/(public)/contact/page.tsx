@@ -3,14 +3,8 @@ import { getStudioCatalog } from "@/lib/studio/catalog";
 
 export default async function ContactPage() {
   const catalog = await getStudioCatalog();
-  const supportEmail =
-    typeof catalog.platform.support_email === "string"
-      ? catalog.platform.support_email
-      : "studio@henrycogroup.com";
-  const supportPhone =
-    typeof catalog.platform.support_phone === "string"
-      ? catalog.platform.support_phone
-      : "+2349133957084";
+  const supportEmail = catalog.platform.supportEmail || "studio@henrycogroup.com";
+  const supportPhone = catalog.platform.supportPhone || "+2349133957084";
 
   return (
     <main className="mx-auto max-w-[64rem] px-5 py-10 sm:px-8">

@@ -283,10 +283,16 @@ export type MarketplaceVendorApplication = {
   storeName: string;
   slug: string;
   legalName: string;
+  phone: string | null;
   categoryFocus: string;
+  story: string;
   status: VendorApplicationStatus;
+  progressStep: string;
   submittedAt: string;
   reviewNote: string | null;
+  documents: Record<string, string>;
+  draftPayload: Record<string, unknown>;
+  agreementAcceptedAt: string | null;
 };
 
 export type MarketplaceHomeData = {

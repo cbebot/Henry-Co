@@ -9,7 +9,8 @@ import { formatCurrency } from "@/lib/utils";
 
 export function MarketplaceCartDrawer() {
   const runtime = useMarketplaceRuntime();
-  const { cart, cartBusy, cartOpen, closeCart, updateCartQuantity, removeCartItem } = useMarketplaceCart();
+  const { cart, cartBusy, cartOpen, closeCart, pendingCartSlugs, updateCartQuantity, removeCartItem } = useMarketplaceCart();
+  const cartSyncing = cartBusy || pendingCartSlugs.length > 0;
 
   return (
     <AnimatePresence>
@@ -21,7 +22,7 @@ export function MarketplaceCartDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeCart}
-            className="fixed inset-0 z-50 bg-[rgba(10,8,6,0.42)] backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-[rgba(10,8,6,0.42)] backdrop-blur-sm md:pointer-events-none md:bg-transparent md:backdrop-blur-0"
           />
           <motion.aside
             initial={{ opacity: 0, x: 48 }}
@@ -155,20 +156,28 @@ export function MarketplaceCartDrawer() {
                 Split-order clarity, delivery windows, and payment states stay visible again at checkout.
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <Link
-                  href="/cart"
-                  onClick={closeCart}
-                  className="inline-flex items-center justify-center rounded-full border border-[color:rgba(255,255,255,0.16)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-                >
-                  View cart
-                </Link>
-                <Link
-                  href="/checkout"
-                  onClick={closeCart}
-                  className="inline-flex items-center justify-center rounded-full bg-[var(--market-brass)] px-5 py-3 text-sm font-semibold text-[var(--market-noir)]"
-                >
-                  Checkout
-                </Link>
+                {cartSyncing ? (
+                  <div className="sm:col-span-2 rounded-[1.35rem] border border-[color:rgba(255,255,255,0.14)] bg-[color:rgba(255,255,255,0.06)] px-4 py-4 text-center text-sm font-semibold text-[color:rgba(255,255,255,0.72)]">
+                    Finalizing basket before navigation...
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      href="/cart"
+                      onClick={closeCart}
+                      className="inline-flex items-center justify-center rounded-full border border-[color:rgba(255,255,255,0.16)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                    >
+                      View cart
+                    </Link>
+                    <Link
+                      href="/checkout"
+                      onClick={closeCart}
+                      className="inline-flex items-center justify-center rounded-full bg-[var(--market-brass)] px-5 py-3 text-sm font-semibold text-[var(--market-noir)]"
+                    >
+                      Checkout
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.aside>

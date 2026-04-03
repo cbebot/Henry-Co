@@ -11,7 +11,7 @@ export default async function AnalyticsPage() {
     <LearnWorkspaceShell
       kicker="Analytics View"
       title="Read the academy through outcome signals, not vanity metrics."
-      description="This reporting surface stays separate so finance, internal managers, and academy leaders can focus on completion, revenue, assignments, and trust signals."
+      description="This reporting surface stays focused on completion, revenue, assignments, and trust signals for finance, internal managers, and academy leaders."
       nav={analyticsNav("/analytics")}
     >
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
+import { MarketplaceRuntimeProvider } from "@/components/marketplace/runtime-provider";
 import ThemeProvider from "@/components/providers/theme-provider";
+import { getMarketplaceShellState } from "@/lib/marketplace/data";
 import { getDivisionConfig } from "@henryco/config";
 
 const fraunces = Fraunces({
@@ -37,13 +39,17 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const shell = await getMarketplaceShellState();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${fraunces.variable} ${manrope.variable} min-h-screen bg-[var(--market-bg)] text-[var(--market-ink)] antialiased`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <MarketplaceRuntimeProvider initialShell={shell}>{children}</MarketplaceRuntimeProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

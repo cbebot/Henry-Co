@@ -263,7 +263,8 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
 
     propertySnapshotCache = {
       value,
-      expiresAt: Date.now() + 15_000,
+      // Avoid serving stale listing state across worker processes after mutations.
+      expiresAt: Date.now(),
     };
 
     return value;

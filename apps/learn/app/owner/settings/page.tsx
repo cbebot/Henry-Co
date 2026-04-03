@@ -1,6 +1,7 @@
 import { publishAcademyAnnouncementAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { ownerNav } from "@/lib/learn/navigation";
+import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnPanel, LearnWorkspaceShell } from "@/components/learn/ui";
 
 export default async function OwnerSettingsPage() {
@@ -10,7 +11,7 @@ export default async function OwnerSettingsPage() {
     <LearnWorkspaceShell
       kicker="Settings"
       title="Announcements, academy support posture, and publishing controls."
-      description="The academy settings area is where broadcast communication and publishing-side adjustments live, rather than being buried inside a generic dashboard."
+      description="This is where academy-wide announcements and publishing controls stay visible instead of getting buried inside a broad operations view."
       nav={ownerNav("/owner/settings")}
     >
       <LearnPanel className="rounded-[2rem]">
@@ -23,7 +24,7 @@ export default async function OwnerSettingsPage() {
             <option value="internal_learners">Internal learners only</option>
           </select>
           <div>
-            <button type="submit" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">Send announcement</button>
+            <PendingSubmitButton pendingLabel="Sending announcement...">Send announcement</PendingSubmitButton>
           </div>
         </form>
       </LearnPanel>

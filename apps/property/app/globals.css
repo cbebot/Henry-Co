@@ -181,6 +181,12 @@ textarea {
   box-shadow: 0 28px 76px rgba(191, 122, 71, 0.28);
 }
 
+.property-button-primary:disabled,
+.property-button-secondary:disabled {
+  transform: none;
+  box-shadow: none;
+}
+
 .property-button-secondary {
   border: 1px solid var(--property-line-strong);
   background: rgba(255, 255, 255, 0.03);
@@ -224,6 +230,20 @@ textarea {
   color: color-mix(in srgb, var(--property-ink) 34%, transparent);
 }
 
+.property-loading-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.property-loading-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  animation: property-loading-sheen 1.4s ease-in-out infinite;
+}
+
 .property-brand-mark {
   position: relative;
   display: inline-flex;
@@ -253,6 +273,12 @@ textarea {
 }
 
 @keyframes property-brand-sheen {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes property-loading-sheen {
   to {
     transform: translateX(100%);
   }

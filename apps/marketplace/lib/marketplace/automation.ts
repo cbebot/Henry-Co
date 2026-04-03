@@ -1,7 +1,11 @@
 import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
-import { logMarketplaceAction, sendMarketplaceEvent } from "@/lib/marketplace/notifications";
+import {
+  logMarketplaceAction,
+  retryMarketplaceQueuedNotifications,
+  sendMarketplaceEvent,
+} from "@/lib/marketplace/notifications";
 
 type AutomationSummary = {
   lowStockAlerts: number;
@@ -10,6 +14,9 @@ type AutomationSummary = {
   abandonedCarts: number;
   pendingApplications: number;
   pendingPayouts: number;
+  notificationRetries: number;
+  notificationRetryFailures: number;
+  notificationRetrySkips: number;
   blocked: boolean;
   errors: string[];
 };
@@ -28,12 +35,39 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
     abandonedCarts: 0,
     pendingApplications: 0,
     pendingPayouts: 0,
+    notificationRetries: 0,
+    notificationRetryFailures: 0,
+    notificationRetrySkips: 0,
     blocked: false,
     errors: [],
   };
 
+  let automationRunId: string | null = null;
+
   try {
     const admin = createAdminSupabase();
+    const { data: automationRun } = await admin
+      .from("marketplace_automation_runs")
+      .insert({
+        automation_key: "marketplace-automation-sweep",
+        status: "started",
+        summary: {
+          startedAt: now.toISOString(),
+        },
+      } as never)
+      .select("id")
+      .maybeSingle();
+
+    automationRunId = automationRun?.id ? String(automationRun.id) : null;
+
+    const retrySummary = await retryMarketplaceQueuedNotifications(25);
+    summary.notificationRetries = retrySummary.recovered;
+    summary.notificationRetryFailures = retrySummary.failed;
+    summary.notificationRetrySkips = retrySummary.skipped;
+    if (retrySummary.issue) {
+      summary.errors.push(retrySummary.issue);
+    }
+
     const [productsRes, ordersRes, cartsRes, applicationsRes, payoutsRes, cartItemsRes] =
       await Promise.all([
         admin
@@ -206,9 +240,36 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
       actorEmail: "automation@henrycogroup.com",
       details: summary,
     });
+
+    if (automationRunId) {
+      await admin
+        .from("marketplace_automation_runs")
+        .update({
+          status: "completed",
+          summary,
+          completed_at: new Date().toISOString(),
+        } as never)
+        .eq("id", automationRunId);
+    }
   } catch (error) {
     summary.blocked = true;
     summary.errors.push(error instanceof Error ? error.message : "Marketplace automation sweep failed.");
+
+    if (automationRunId) {
+      try {
+        const admin = createAdminSupabase();
+        await admin
+          .from("marketplace_automation_runs")
+          .update({
+            status: "failed",
+            summary,
+            completed_at: new Date().toISOString(),
+          } as never)
+          .eq("id", automationRunId);
+      } catch {
+        // ignore automation run update failure
+      }
+    }
   }
 
   return summary;

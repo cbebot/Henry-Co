@@ -2,9 +2,11 @@ import { notFound } from "next/navigation";
 import { completeLessonAction, submitQuizAttemptAction } from "@/lib/learn/actions";
 import { requireLearnUser } from "@/lib/learn/auth";
 import { getLearnerWorkspace } from "@/lib/learn/data";
-import { learnerNav } from "@/lib/learn/navigation";
+import { getAccountLearnUrl } from "@/lib/learn/links";
+import { courseRoomNav } from "@/lib/learn/navigation";
 import { syncViewerIdentity } from "@/lib/learn/workflows";
-import { LearnMarkdown, LearnPanel, LearnStatusBadge, LearnWorkspaceShell } from "@/components/learn/ui";
+import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
+import { humanizeLabel, LearnMarkdown, LearnPanel, LearnStatusBadge, LearnWorkspaceShell } from "@/components/learn/ui";
 
 export default async function LearnerCoursePage({
   params,
@@ -39,22 +41,33 @@ export default async function LearnerCoursePage({
 
   return (
     <LearnWorkspaceShell
-      kicker="Course Player"
+      kicker="Course Room"
       title={course.title}
-      description={course.subtitle}
-      nav={learnerNav("/learner/courses")}
+      description="Keep learning inside the focused course room, while HenryCo Account keeps your wider learning history, certificates, saved courses, and notifications together."
+      nav={courseRoomNav(`/learner/courses/${course.id}`)}
+      actions={
+        <a
+          href={getAccountLearnUrl()}
+          className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold"
+        >
+          Open account
+        </a>
+      }
     >
       {enrollment.status === "awaiting_payment" ? (
         <LearnPanel className="rounded-[2rem]">
-          <p className="text-sm text-amber-200">Payment confirmation is still pending for this course. The enrollment is reserved but the learning workspace will fully unlock after academy finance confirms the payment.</p>
+          <p className="text-sm text-amber-200">Payment confirmation is still in progress for this course. Your seat is reserved and your lessons will unlock as soon as confirmation is complete.</p>
         </LearnPanel>
       ) : null}
 
       <LearnPanel className="rounded-[2rem]">
         <div className="flex flex-wrap items-center gap-2">
           <LearnStatusBadge label={`${enrollment.percentComplete}% complete`} tone="signal" />
-          <LearnStatusBadge label={enrollment.status} tone={enrollment.status === "completed" ? "success" : "neutral"} />
+          <LearnStatusBadge label={humanizeLabel(enrollment.status)} tone={enrollment.status === "completed" ? "success" : "neutral"} />
           {certificate ? <LearnStatusBadge label="Certificate issued" tone="success" /> : null}
+        </div>
+        <div className="mt-5 rounded-full bg-white/10 p-1">
+          <div className="h-3 rounded-full bg-[linear-gradient(135deg,#d8f4eb,#5fc5ab)] transition-[width] duration-500" style={{ width: `${Math.max(8, enrollment.percentComplete)}%` }} />
         </div>
       </LearnPanel>
 
@@ -87,7 +100,7 @@ export default async function LearnerCoursePage({
                       <form action={completeLessonAction} className="mt-5">
                         <input type="hidden" name="courseId" value={course.id} />
                         <input type="hidden" name="lessonId" value={lesson.id} />
-                        <button type="submit" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">Mark lesson complete</button>
+                        <PendingSubmitButton pendingLabel="Saving your progress...">Mark lesson complete</PendingSubmitButton>
                       </form>
                     ) : null}
                   </div>
@@ -119,7 +132,7 @@ export default async function LearnerCoursePage({
                 </div>
               </div>
             ))}
-            <button type="submit" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">Submit assessment</button>
+            <PendingSubmitButton pendingLabel="Submitting your assessment...">Submit assessment</PendingSubmitButton>
           </form>
         </LearnPanel>
       ) : null}

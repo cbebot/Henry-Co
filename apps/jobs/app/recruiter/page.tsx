@@ -13,8 +13,8 @@ export default async function RecruiterOverviewPage() {
   return (
     <WorkspaceShell
       area="recruiter"
-      title="Recruiter Overview"
-      subtitle="Pipeline triage, employers, moderation, and internal hiring queues in one operator-grade surface."
+      title="Recruiter Console"
+      subtitle="Pipeline triage, employers, moderation, and internal hiring queues in one operator-grade Jobs surface linked to HenryCo identity."
       nav={recruiterNav}
       activeHref="/recruiter"
       accent="linear-gradient(135deg,#1d3f6f 0%,#3266b4 55%,#6db7ff 100%)"

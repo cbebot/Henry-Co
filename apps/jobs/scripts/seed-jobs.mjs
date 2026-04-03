@@ -84,7 +84,7 @@ async function upsertMembership(supabase, input) {
     division: "jobs",
     activity_type: "jobs_employer_membership",
     title: `${input.employerName} employer access`,
-    description: "Seeded employer workspace membership.",
+    description: "Seeded employer console membership.",
     status: "active",
     reference_type: "jobs_employer",
     reference_id: input.employerSlug,

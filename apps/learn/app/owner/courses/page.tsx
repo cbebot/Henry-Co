@@ -2,6 +2,7 @@ import { saveCourseDefinitionAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { ownerNav } from "@/lib/learn/navigation";
+import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnPanel, LearnWorkspaceShell } from "@/components/learn/ui";
 
 export default async function OwnerCoursesPage() {
@@ -70,7 +71,7 @@ export default async function OwnerCoursesPage() {
             Certification course
           </label>
           <div className="md:col-span-2 xl:col-span-3">
-            <button type="submit" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">Save course</button>
+            <PendingSubmitButton pendingLabel="Saving course details...">Save course</PendingSubmitButton>
           </div>
         </form>
       </LearnPanel>

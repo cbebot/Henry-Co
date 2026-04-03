@@ -2,6 +2,7 @@
 
 import { useEffect, useEffectEvent, useState, startTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getSharedAccountLoginUrl } from "@/lib/account";
 
 type CallbackState = {
   title: string;
@@ -11,7 +12,7 @@ type CallbackState = {
 
 const initialState: CallbackState = {
   title: "Securing your HenryCo Jobs session",
-  body: "We are validating your sign-in and restoring your workspace.",
+  body: "We are validating your sign-in and restoring the Jobs module.",
   error: false,
 };
 
@@ -80,9 +81,8 @@ export default function AuthCallbackClient() {
 
       const next = normalizeNext(searchParams.get("next"));
       window.setTimeout(() => {
-        const loginUrl = new URL("/login", window.location.origin);
+        const loginUrl = new URL(getSharedAccountLoginUrl(next));
         loginUrl.searchParams.set("error", "auth");
-        loginUrl.searchParams.set("next", next);
         window.location.replace(loginUrl.toString());
       }, 1800);
     });

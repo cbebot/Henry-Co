@@ -79,6 +79,11 @@ export function PublicHeaderClient() {
           <button
             type="button"
             onClick={runtime.openCart}
+            aria-label={
+              runtime.shell.cart.count
+                ? `Open cart with ${runtime.shell.cart.count} item${runtime.shell.cart.count === 1 ? "" : "s"}`
+                : "Open cart"
+            }
             className="relative inline-flex h-11 items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 text-sm font-semibold text-[var(--market-ink)]"
           >
             <ShoppingBag className="h-4 w-4" />

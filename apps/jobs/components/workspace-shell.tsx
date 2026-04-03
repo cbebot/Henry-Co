@@ -8,18 +8,29 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
+import { getSharedAccountJobsUrl, getSharedAccountOrigin } from "@/lib/account";
 
 type NavItem = {
   href: string;
   label: string;
 };
 
-const AREA_ICONS: Record<string, LucideIcon> = {
-  candidate: UserRound,
-  employer: Building2,
-  recruiter: BriefcaseBusiness,
-  moderation: ShieldCheck,
+const AREA_META: Record<
+  string,
+  {
+    icon: LucideIcon;
+    label: string;
+  }
+> = {
+  candidate: { icon: UserRound, label: "Candidate module" },
+  employer: { icon: Building2, label: "Employer console" },
+  recruiter: { icon: BriefcaseBusiness, label: "Recruiter console" },
+  moderation: { icon: ShieldCheck, label: "Moderation" },
+  analytics: { icon: ChartColumnBig, label: "Analytics" },
 };
+
+const accountJobsUrl = getSharedAccountJobsUrl();
+const accountHomeUrl = getSharedAccountOrigin();
 
 export function WorkspaceShell({
   area,
@@ -40,7 +51,8 @@ export function WorkspaceShell({
   children: React.ReactNode;
   rightRail?: React.ReactNode;
 }) {
-  const Icon = AREA_ICONS[area] ?? ChartColumnBig;
+  const areaMeta = AREA_META[area] ?? { icon: ChartColumnBig, label: "Jobs surface" };
+  const Icon = areaMeta.icon;
 
   return (
     <div className="jobs-page px-4 py-4 sm:px-6 lg:px-8">
@@ -52,7 +64,7 @@ export function WorkspaceShell({
                 <Icon className="h-5 w-5" />
               </div>
               <div>
-                <div className="jobs-kicker !text-white/70">{area}</div>
+                <div className="jobs-kicker !text-white/70">{areaMeta.label}</div>
                 <div className="text-lg font-semibold">{title}</div>
               </div>
             </div>
@@ -67,6 +79,21 @@ export function WorkspaceShell({
               </Link>
             ))}
           </nav>
+
+          <div className="mt-5 rounded-[1.7rem] bg-[var(--jobs-paper-soft)] p-4">
+            <div className="text-sm font-semibold">Shared HenryCo account</div>
+            <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
+              Identity, notifications, files, and activity history are linked back into your central HenryCo account.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <a href={accountJobsUrl} className="jobs-button-secondary rounded-full px-4 py-2 text-xs font-semibold">
+                Account summary
+              </a>
+              <a href={accountHomeUrl} className="jobs-button-secondary rounded-full px-4 py-2 text-xs font-semibold">
+                Account home
+              </a>
+            </div>
+          </div>
         </aside>
 
         <section className="min-w-0">{children}</section>

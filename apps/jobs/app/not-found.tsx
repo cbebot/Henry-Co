@@ -7,7 +7,7 @@ export default function NotFound() {
         <p className="jobs-kicker">Not Found</p>
         <h1 className="mt-3 jobs-heading">That page is no longer on the hiring map.</h1>
         <p className="mt-4 text-sm leading-7 text-[var(--jobs-muted)]">
-          The role, employer page, or workspace surface you requested could not be found.
+          The role, employer page, or Jobs module surface you requested could not be found.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Link href="/" className="jobs-button-primary rounded-full px-5 py-3 text-sm font-semibold">

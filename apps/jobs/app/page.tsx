@@ -2,9 +2,11 @@ import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, Building2, ShieldCheck, Sparkles } from "lucide-react";
 import { JobCard } from "@/components/job-card";
 import { HeroLink, PublicShell } from "@/components/public-shell";
+import { getSharedAccountJobsUrl } from "@/lib/account";
 import { getJobsHomeData } from "@/lib/jobs/data";
 
 export const dynamic = "force-dynamic";
+const accountJobsUrl = getSharedAccountJobsUrl();
 
 export default async function HomePage() {
   const home = await getJobsHomeData();
@@ -118,11 +120,15 @@ export default async function HomePage() {
             <Sparkles className="h-5 w-5" />
             <span className="jobs-kicker">Next Steps</span>
           </div>
-          <h2 className="mt-3 jobs-heading">Enter the workspace that fits your side of the market.</h2>
+          <h2 className="mt-3 jobs-heading">Continue through the HenryCo account-linked Jobs module.</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--jobs-muted)]">
+            Public discovery stays here. Protected hiring activity remains attached to your shared HenryCo account and then opens the exact Jobs surface you need.
+          </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <HeroLink href="/candidate" label="Candidate workspace" />
-            <HeroLink href="/employer" label="Employer workspace" subtle />
-            <HeroLink href="/recruiter" label="Recruiter workspace" subtle />
+            <HeroLink href={accountJobsUrl} label="Account summary" subtle />
+            <HeroLink href="/candidate" label="Candidate module" />
+            <HeroLink href="/employer" label="Employer console" subtle />
+            <HeroLink href="/recruiter" label="Recruiter console" subtle />
           </div>
         </div>
       </section>

@@ -10,8 +10,8 @@ export default async function AdminPage() {
   return (
     <LearnWorkspaceShell
       kicker="Admin"
-      title="Cross-functional academy administration."
-      description="Admin operators can move between courses, paths, learners, assignments, and reporting without inheriting the full owner surface."
+      title="Support the academy across courses, learners, assignments, and reporting."
+      description="Admin operators can move between the core academy surfaces without needing the full owner view."
       nav={adminNav("/admin")}
     >
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">

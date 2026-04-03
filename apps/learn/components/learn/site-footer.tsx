@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getDivisionConfig } from "@henryco/config";
+import { getAccountLearnUrl } from "@/lib/learn/links";
 
 const learn = getDivisionConfig("learn");
 
@@ -13,7 +14,7 @@ export function LearnSiteFooter() {
             Premium learning for public growth, internal readiness, and verified capability.
           </h3>
           <p className="mt-4 max-w-xl text-sm leading-8 text-[var(--learn-ink-soft)]">
-            HenryCo Learn connects courses, internal training, notifications, certificates, and future unified-account history through one calm academy operating surface.
+            HenryCo Learn connects courses, team learning, notifications, certificates, and future unified-account history through one calm academy experience.
           </p>
         </div>
 
@@ -42,8 +43,8 @@ export function LearnSiteFooter() {
             <p>{learn.supportEmail}</p>
             <p>{learn.supportPhone}</p>
             <p>Mon-Fri 9:00-18:00 WAT</p>
-            <Link href="/learner" className="inline-flex text-[var(--learn-mint-soft)] transition hover:text-white">
-              Learner dashboard
+            <Link href={getAccountLearnUrl()} className="inline-flex text-[var(--learn-mint-soft)] transition hover:text-white">
+              Open HenryCo account
             </Link>
           </div>
         </div>
