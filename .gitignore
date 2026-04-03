@@ -1,0 +1,18 @@
+node_modules
+.vercel
+.env*.local
+.env.production.vercel
+.tmp-*
+.tmp-edge-supabase-profile/
+.claude/
+*.err
+*.out
+.next
+.turbo
+dist
+.tmp-vercel-env
+.tmp-studio-start.ps1
+
+# Nested repos / legacy directories
+/HenryCo/
+/care/

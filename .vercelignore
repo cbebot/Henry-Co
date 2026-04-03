@@ -1,0 +1,9 @@
+apps/care/.tmp-chrome-profile
+node_modules
+.next
+.claude
+.tmp-*
+*.log
+apps/*/.next
+.vercel/output
+apps/*/.vercel/output

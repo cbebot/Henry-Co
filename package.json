@@ -1,0 +1,20 @@
+{
+  "name": "henryco-workspace",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@9.15.5",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "build:logistics": "pnpm --filter @henryco/logistics build",
+    "lint:logistics": "pnpm --filter @henryco/logistics lint",
+    "typecheck:logistics": "pnpm --filter @henryco/logistics typecheck",
+    "build:studio": "pnpm --filter @henryco/studio build",
+    "lint:studio": "pnpm --filter @henryco/studio lint",
+    "typecheck:studio": "pnpm --filter @henryco/studio typecheck"
+  },
+  "devDependencies": {
+    "next": "16.1.6"
+  }
+}

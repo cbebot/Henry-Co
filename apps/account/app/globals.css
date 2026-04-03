@@ -1,0 +1,271 @@
+@import "tailwindcss";
+
+/* ─── HenryCo Account Platform Tokens ─── */
+:root {
+  --acct-bg: #FAFAF8;
+  --acct-bg-soft: #FFFFFF;
+  --acct-bg-elevated: #FFFFFF;
+  --acct-surface: #F5F3EF;
+  --acct-line: #E8E4DD;
+  --acct-ink: #1A1814;
+  --acct-muted: #6B6560;
+  --acct-gold: #C9A227;
+  --acct-gold-soft: #F7F0D8;
+  --acct-green: #10B981;
+  --acct-green-soft: #D1FAE5;
+  --acct-red: #EF4444;
+  --acct-red-soft: #FEE2E2;
+  --acct-blue: #3B82F6;
+  --acct-blue-soft: #DBEAFE;
+  --acct-purple: #8B5CF6;
+  --acct-purple-soft: #EDE9FE;
+  --acct-orange: #F59E0B;
+  --acct-orange-soft: #FEF3C7;
+  --acct-radius: 1.25rem;
+  --acct-radius-lg: 1.75rem;
+  --acct-radius-sm: 0.75rem;
+  --acct-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+  --acct-shadow-lg: 0 4px 12px rgba(0,0,0,0.06);
+  --acct-font-display: "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif;
+  --acct-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --acct-sidebar-width: 260px;
+}
+
+.dark {
+  --acct-bg: #0B0F14;
+  --acct-bg-soft: #141920;
+  --acct-bg-elevated: #1A2028;
+  --acct-surface: #1E252E;
+  --acct-line: #2A3140;
+  --acct-ink: #F0EDE8;
+  --acct-muted: #8E8A84;
+  --acct-gold: #D4AF37;
+  --acct-gold-soft: rgba(212,175,55,0.12);
+  --acct-green: #34D399;
+  --acct-green-soft: rgba(52,211,153,0.12);
+  --acct-red: #F87171;
+  --acct-red-soft: rgba(248,113,113,0.12);
+  --acct-blue: #60A5FA;
+  --acct-blue-soft: rgba(96,165,250,0.12);
+  --acct-purple: #A78BFA;
+  --acct-purple-soft: rgba(167,139,250,0.12);
+  --acct-orange: #FBBF24;
+  --acct-orange-soft: rgba(251,191,36,0.12);
+  --acct-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  --acct-shadow-lg: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* ─── Base ─── */
+body {
+  font-family: var(--acct-font-sans);
+  background: var(--acct-bg);
+  color: var(--acct-ink);
+}
+
+/* ─── Typography ─── */
+.acct-display {
+  font-family: var(--acct-font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.acct-kicker {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--acct-muted);
+}
+
+/* ─── Surfaces ─── */
+.acct-card {
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius-lg);
+  box-shadow: var(--acct-shadow);
+}
+
+.acct-panel {
+  background: var(--acct-bg-soft);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius-lg);
+}
+
+.acct-surface {
+  background: var(--acct-surface);
+  border-radius: var(--acct-radius);
+}
+
+/* ─── Buttons ─── */
+.acct-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  background: var(--acct-gold);
+  border-radius: var(--acct-radius);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+}
+.acct-button-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 2px 8px rgba(201,162,39,0.3);
+}
+
+.acct-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--acct-ink);
+  background: var(--acct-surface);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.acct-button-secondary:hover {
+  background: var(--acct-line);
+}
+
+.acct-button-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--acct-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--acct-radius-sm);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.acct-button-ghost:hover {
+  background: var(--acct-surface);
+  color: var(--acct-ink);
+}
+
+/* ─── Inputs ─── */
+.acct-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--acct-ink);
+  background: var(--acct-bg);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius);
+  transition: border-color 0.15s ease;
+  outline: none;
+}
+.acct-input:focus {
+  border-color: var(--acct-gold);
+  box-shadow: 0 0 0 3px var(--acct-gold-soft);
+}
+
+.acct-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--acct-ink);
+  background: var(--acct-bg);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius);
+  transition: border-color 0.15s ease;
+  outline: none;
+  resize: vertical;
+}
+.acct-textarea:focus {
+  border-color: var(--acct-gold);
+  box-shadow: 0 0 0 3px var(--acct-gold-soft);
+}
+
+.acct-select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--acct-ink);
+  background: var(--acct-bg);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius);
+  outline: none;
+  cursor: pointer;
+}
+.acct-select:focus {
+  border-color: var(--acct-gold);
+}
+
+/* ─── Chips / Badges ─── */
+.acct-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+.acct-chip-gold { background: var(--acct-gold-soft); color: var(--acct-gold); }
+.acct-chip-green { background: var(--acct-green-soft); color: var(--acct-green); }
+.acct-chip-red { background: var(--acct-red-soft); color: var(--acct-red); }
+.acct-chip-blue { background: var(--acct-blue-soft); color: var(--acct-blue); }
+.acct-chip-purple { background: var(--acct-purple-soft); color: var(--acct-purple); }
+.acct-chip-orange { background: var(--acct-orange-soft); color: var(--acct-orange); }
+
+/* ─── Metric Card ─── */
+.acct-metric {
+  padding: 1.25rem 1.5rem;
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius-lg);
+  box-shadow: var(--acct-shadow);
+}
+
+/* ─── Nav active state ─── */
+.acct-nav-active {
+  background: var(--acct-gold-soft);
+  color: var(--acct-gold);
+  font-weight: 600;
+}
+
+/* ─── Scrollbar ─── */
+.acct-scrollbar::-webkit-scrollbar { width: 4px; }
+.acct-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.acct-scrollbar::-webkit-scrollbar-thumb { background: var(--acct-line); border-radius: 2px; }
+
+/* ─── Empty state ─── */
+.acct-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--acct-muted);
+}
+
+/* ─── Divider ─── */
+.acct-divider {
+  border: none;
+  border-top: 1px solid var(--acct-line);
+  margin: 1rem 0;
+}
+
+/* ─── Transition helpers ─── */
+.acct-fade-in {
+  animation: acctFadeIn 0.3s ease;
+}
+@keyframes acctFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

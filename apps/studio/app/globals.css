@@ -1,0 +1,308 @@
+@import "tailwindcss";
+
+:root {
+  --font-studio-sans:
+    "Plus Jakarta Sans",
+    "Aptos",
+    "Segoe UI Variable",
+    "Segoe UI",
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+  --font-studio-display:
+    "Space Grotesk",
+    "Aptos Display",
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+  --studio-ink: #edf6fa;
+  --studio-ink-soft: rgba(237, 246, 250, 0.72);
+  --studio-bg: #061017;
+  --studio-bg-soft: #091923;
+  --studio-surface: rgba(8, 19, 28, 0.84);
+  --studio-surface-strong: rgba(8, 16, 22, 0.96);
+  --studio-line: rgba(170, 233, 240, 0.12);
+  --studio-line-strong: rgba(170, 233, 240, 0.24);
+  --studio-mint: #58d4d2;
+  --studio-mint-soft: #d5fdfd;
+  --studio-copper: #d9a86d;
+  --studio-signal: #97f4f3;
+  --studio-shadow: 0 42px 120px rgba(0, 0, 0, 0.36);
+  --studio-shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.22);
+}
+
+.light {
+  --studio-ink: #0a1a21;
+  --studio-ink-soft: rgba(10, 26, 33, 0.68);
+  --studio-bg: #eef5f7;
+  --studio-bg-soft: #e2ecef;
+  --studio-surface: rgba(255, 255, 255, 0.88);
+  --studio-surface-strong: rgba(255, 255, 255, 0.96);
+  --studio-line: rgba(10, 26, 33, 0.1);
+  --studio-line-strong: rgba(10, 26, 33, 0.18);
+  --studio-shadow: 0 30px 100px rgba(13, 34, 42, 0.12);
+  --studio-shadow-soft: 0 16px 42px rgba(13, 34, 42, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--studio-ink);
+  font-family: var(--font-studio-sans);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(88, 212, 210, 0.16), transparent 24%),
+    radial-gradient(circle at 88% 0%, rgba(217, 168, 109, 0.14), transparent 22%),
+    radial-gradient(circle at 60% 88%, rgba(88, 212, 210, 0.08), transparent 24%),
+    linear-gradient(180deg, color-mix(in srgb, var(--studio-bg) 86%, black) 0%, var(--studio-bg) 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(88, 212, 210, 0.22);
+}
+
+.studio-page {
+  min-height: 100vh;
+}
+
+.studio-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.studio-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(213, 253, 253, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(213, 253, 253, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: -2;
+}
+
+.studio-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(88, 212, 210, 0.08), transparent 28%),
+    radial-gradient(circle at 90% 18%, rgba(217, 168, 109, 0.08), transparent 24%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.studio-panel {
+  border: 1px solid var(--studio-line);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--studio-surface) 94%, transparent), var(--studio-surface-strong));
+  box-shadow: var(--studio-shadow);
+  backdrop-filter: blur(22px);
+}
+
+.studio-muted-panel {
+  border: 1px solid var(--studio-line);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.studio-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.studio-mesh {
+  position: relative;
+  overflow: hidden;
+}
+
+.studio-mesh::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(151, 244, 243, 0.08) 22%, transparent 46%),
+    linear-gradient(300deg, transparent 0%, rgba(217, 168, 109, 0.08) 18%, transparent 40%);
+  mask-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.9) 0, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0, rgba(255, 255, 255, 0.35) 1px, transparent 1px);
+  mask-size: 120px 120px;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.studio-mesh::after {
+  content: "";
+  position: absolute;
+  inset: auto -12% -32% auto;
+  width: 28rem;
+  height: 28rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(88, 212, 210, 0.18) 0%, transparent 68%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.studio-hero::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% auto auto;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(88, 212, 210, 0.18) 0%, transparent 72%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.studio-display {
+  font-family: var(--font-studio-display);
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+  font-weight: 700;
+}
+
+.studio-heading {
+  font-family: var(--font-studio-display);
+  font-size: clamp(2.1rem, 4vw, 3.8rem);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  font-weight: 700;
+}
+
+.studio-kicker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--studio-signal);
+}
+
+.studio-button-primary {
+  background: linear-gradient(135deg, #dff8fb 0%, #8df4f2 42%, #4eb8c2 100%);
+  color: #031117;
+  box-shadow: 0 24px 60px rgba(88, 212, 210, 0.24);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+.studio-button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 28px 70px rgba(88, 212, 210, 0.28);
+}
+
+.studio-button-secondary {
+  border: 1px solid var(--studio-line-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--studio-ink);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.studio-button-secondary:hover {
+  transform: translateY(-1px);
+  border-color: rgba(151, 244, 243, 0.34);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.studio-input,
+.studio-select,
+.studio-textarea {
+  width: 100%;
+  border: 1px solid var(--studio-line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--studio-ink);
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
+}
+
+.studio-input:focus,
+.studio-select:focus,
+.studio-textarea:focus {
+  border-color: rgba(151, 244, 243, 0.4);
+  box-shadow: 0 0 0 3px rgba(88, 212, 210, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.studio-input::placeholder,
+.studio-textarea::placeholder {
+  color: color-mix(in srgb, var(--studio-ink) 34%, transparent);
+}
+
+.studio-brand-mark {
+  position: relative;
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--studio-line-strong);
+  background:
+    linear-gradient(145deg, rgba(217, 168, 109, 0.18), rgba(88, 212, 210, 0.22)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+  color: var(--studio-ink);
+  box-shadow: var(--studio-shadow-soft);
+  font-weight: 800;
+  letter-spacing: -0.08em;
+}
+
+.studio-brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 10%, rgba(255, 255, 255, 0.1) 50%, transparent 90%);
+  transform: translateX(-100%);
+  animation: studio-brand-sheen 8s linear infinite;
+}
+
+@keyframes studio-brand-sheen {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

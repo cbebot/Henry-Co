@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm --filter @henryco/marketplace build",
+  "crons": [
+    {
+      "path": "/api/cron/marketplace-automation",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+:root {
+  --font-learn-sans:
+    "Manrope",
+    "Aptos",
+    "Segoe UI Variable",
+    "Segoe UI",
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+  --font-learn-display:
+    "Fraunces",
+    "Iowan Old Style",
+    Georgia,
+    serif;
+  --learn-ink: #eef7f4;
+  --learn-ink-soft: rgba(238, 247, 244, 0.72);
+  --learn-bg: #061311;
+  --learn-bg-soft: #0a1b18;
+  --learn-surface: rgba(8, 22, 18, 0.86);
+  --learn-surface-strong: rgba(6, 17, 14, 0.96);
+  --learn-line: rgba(216, 244, 235, 0.11);
+  --learn-line-strong: rgba(216, 244, 235, 0.22);
+  --learn-mint: #5fc5ab;
+  --learn-mint-soft: #d8f4eb;
+  --learn-copper: #e3bc7e;
+  --learn-shadow: 0 42px 120px rgba(0, 0, 0, 0.36);
+  --learn-shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.22);
+}
+
+.light {
+  --learn-ink: #0d231d;
+  --learn-ink-soft: rgba(13, 35, 29, 0.72);
+  --learn-bg: #eef7f3;
+  --learn-bg-soft: #dfece7;
+  --learn-surface: rgba(255, 255, 255, 0.88);
+  --learn-surface-strong: rgba(255, 255, 255, 0.96);
+  --learn-line: rgba(13, 35, 29, 0.09);
+  --learn-line-strong: rgba(13, 35, 29, 0.16);
+  --learn-shadow: 0 30px 100px rgba(13, 35, 29, 0.12);
+  --learn-shadow-soft: 0 16px 42px rgba(13, 35, 29, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--learn-ink);
+  font-family: var(--font-learn-sans);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(95, 197, 171, 0.16), transparent 24%),
+    radial-gradient(circle at 100% 10%, rgba(227, 188, 126, 0.12), transparent 20%),
+    radial-gradient(circle at 70% 100%, rgba(95, 197, 171, 0.08), transparent 28%),
+    linear-gradient(180deg, color-mix(in srgb, var(--learn-bg) 88%, black) 0%, var(--learn-bg) 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(95, 197, 171, 0.25);
+}
+
+.learn-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.learn-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(216, 244, 235, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(216, 244, 235, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: -2;
+}
+
+.learn-panel {
+  border: 1px solid var(--learn-line);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--learn-surface) 94%, transparent), var(--learn-surface-strong));
+  box-shadow: var(--learn-shadow);
+  backdrop-filter: blur(20px);
+}
+
+.learn-mesh {
+  position: relative;
+  overflow: hidden;
+}
+
+.learn-mesh::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(95, 197, 171, 0.08) 24%, transparent 48%),
+    linear-gradient(300deg, transparent 0%, rgba(227, 188, 126, 0.08) 18%, transparent 44%);
+  mask-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.9) 0, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0, rgba(255, 255, 255, 0.35) 1px, transparent 1px);
+  mask-size: 120px 120px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.learn-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.learn-hero::before {
+  content: "";
+  position: absolute;
+  inset: -18% auto auto -8%;
+  width: 25rem;
+  height: 25rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(95, 197, 171, 0.18) 0%, transparent 72%);
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+.learn-display {
+  font-family: var(--font-learn-display);
+  font-size: clamp(3.4rem, 8vw, 7rem);
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+  font-weight: 600;
+}
+
+.learn-heading {
+  font-family: var(--font-learn-display);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  font-weight: 600;
+}
+
+.learn-kicker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--learn-mint-soft);
+}
+
+.learn-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e7fff7 0%, #b3f6e2 42%, #6fd0b6 100%);
+  color: #041915;
+  box-shadow: 0 24px 60px rgba(95, 197, 171, 0.24);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+.learn-button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 28px 70px rgba(95, 197, 171, 0.3);
+}
+
+.learn-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--learn-line-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--learn-ink);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.learn-button-secondary:hover {
+  transform: translateY(-1px);
+  border-color: rgba(216, 244, 235, 0.36);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.learn-input,
+.learn-select,
+.learn-textarea {
+  width: 100%;
+  border: 1px solid var(--learn-line);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--learn-ink);
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
+}
+
+.learn-input:focus,
+.learn-select:focus,
+.learn-textarea:focus {
+  border-color: rgba(216, 244, 235, 0.42);
+  box-shadow: 0 0 0 3px rgba(95, 197, 171, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.learn-input::placeholder,
+.learn-textarea::placeholder {
+  color: color-mix(in srgb, var(--learn-ink) 40%, transparent);
+}
+
+.learn-brand-mark {
+  position: relative;
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--learn-line-strong);
+  background:
+    linear-gradient(145deg, rgba(227, 188, 126, 0.18), rgba(95, 197, 171, 0.22)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+  color: var(--learn-ink);
+  box-shadow: var(--learn-shadow-soft);
+}
+
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

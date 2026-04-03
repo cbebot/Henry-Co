@@ -1,0 +1,177 @@
+import { revalidatePath } from "next/cache";
+import { NextResponse } from "next/server";
+import { normalizeEmail } from "@/lib/env";
+import { getMarketplaceViewer } from "@/lib/marketplace/auth";
+import { sendMarketplaceEvent } from "@/lib/marketplace/notifications";
+import { createAdminSupabase } from "@/lib/supabase";
+
+export const runtime = "nodejs";
+
+type SellerApplicationPayload = {
+  mode?: "draft" | "submit";
+  progressStep?: string;
+  storeName?: string;
+  storeSlug?: string;
+  legalName?: string;
+  phone?: string;
+  categoryFocus?: string;
+  story?: string;
+  documents?: Record<string, string>;
+  agreementAccepted?: boolean;
+};
+
+function slugify(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+export async function GET() {
+  const viewer = await getMarketplaceViewer();
+  if (!viewer.user) {
+    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+  }
+
+  const admin = createAdminSupabase();
+  const { data, error } = await admin
+    .from("marketplace_vendor_applications")
+    .select("*")
+    .eq("user_id", viewer.user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({
+    application: data,
+  });
+}
+
+export async function POST(request: Request) {
+  const viewer = await getMarketplaceViewer();
+  if (!viewer.user) {
+    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+  }
+
+  const payload = (await request.json().catch(() => ({}))) as SellerApplicationPayload;
+  const mode = payload.mode === "submit" ? "submit" : "draft";
+  const storeName = String(payload.storeName || "").trim();
+  const storeSlug = String(payload.storeSlug || storeName ? slugify(String(payload.storeSlug || storeName)) : "").trim();
+  const legalName = String(payload.legalName || "").trim();
+  const phone = String(payload.phone || "").trim();
+  const categoryFocus = String(payload.categoryFocus || "").trim();
+  const story = String(payload.story || "").trim();
+  const progressStep = String(payload.progressStep || "start").trim();
+  const documents = payload.documents && typeof payload.documents === "object" ? payload.documents : {};
+  const agreementAccepted = Boolean(payload.agreementAccepted);
+
+  if (mode === "submit" && (!storeName || !storeSlug || !legalName)) {
+    return NextResponse.json({ error: "Store identity is incomplete." }, { status: 400 });
+  }
+
+  const admin = createAdminSupabase();
+  const { data: existing } = await admin
+    .from("marketplace_vendor_applications")
+    .select("id, status")
+    .eq("user_id", viewer.user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const applicationPayload = {
+    user_id: viewer.user.id,
+    normalized_email: normalizeEmail(viewer.user.email),
+    store_name: storeName || "Untitled store",
+    proposed_store_slug: storeSlug || slugify(storeName || "untitled-store"),
+    legal_name: legalName || "Pending legal entity",
+    contact_phone: phone || null,
+    category_focus: categoryFocus || null,
+    story: story || null,
+    status: mode === "submit" ? "submitted" : "draft",
+    submitted_at: mode === "submit" ? new Date().toISOString() : null,
+    progress_step: progressStep,
+    documents_json: documents,
+    draft_payload: {
+      storeName,
+      storeSlug,
+      legalName,
+      phone,
+      categoryFocus,
+      story,
+    },
+    agreement_accepted_at: agreementAccepted ? new Date().toISOString() : null,
+  };
+
+  const mutation = existing?.id
+    ? admin
+        .from("marketplace_vendor_applications")
+        .update(applicationPayload as never)
+        .eq("id", existing.id)
+        .select("*")
+        .maybeSingle()
+    : admin
+        .from("marketplace_vendor_applications")
+        .insert(applicationPayload as never)
+        .select("*")
+        .maybeSingle();
+
+  const { data: application, error } = await mutation;
+  if (error || !application) {
+    return NextResponse.json({ error: error?.message || "Application save failed." }, { status: 500 });
+  }
+
+  if (mode === "submit") {
+    await admin.from("marketplace_role_memberships").upsert({
+      user_id: viewer.user.id,
+      normalized_email: normalizeEmail(viewer.user.email),
+      scope_type: "platform",
+      scope_id: null,
+      role: "vendor_applicant",
+      is_active: true,
+    } as never);
+
+    await sendMarketplaceEvent({
+      event: "vendor_application_submitted",
+      userId: viewer.user.id,
+      normalizedEmail: normalizeEmail(viewer.user.email),
+      recipientEmail: viewer.user.email,
+      recipientPhone: phone || null,
+      actorUserId: viewer.user.id,
+      actorEmail: viewer.user.email,
+      entityType: "vendor_application",
+      entityId: String(application.id),
+      payload: {
+        storeName: String(application.store_name || storeName),
+      },
+    });
+
+    await sendMarketplaceEvent({
+      event: "owner_alert",
+      recipientEmail:
+        process.env.MARKETPLACE_OWNER_ALERT_EMAIL ||
+        process.env.RESEND_SUPPORT_INBOX ||
+        "marketplace@henrycogroup.com",
+      actorUserId: viewer.user.id,
+      actorEmail: viewer.user.email,
+      entityType: "vendor_application",
+      entityId: String(application.id),
+      payload: {
+        note: `New seller application submitted for ${String(application.store_name || storeName)}.`,
+      },
+    });
+  }
+
+  revalidatePath("/account/seller-application");
+  revalidatePath("/vendor");
+
+  return NextResponse.json({
+    ok: true,
+    mode,
+    application,
+  });
+}

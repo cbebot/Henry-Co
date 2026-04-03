@@ -1,0 +1,220 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { requireJobsRoles, requireJobsUser } from "@/lib/auth";
+import {
+  addApplicationNote,
+  advanceApplicationStage,
+  createEmployerProfile,
+  createJobPost,
+  markJobsNotificationRead,
+  saveCandidateProfile,
+  submitApplication,
+  toggleSavedJob,
+  updateEmployerVerification,
+  uploadCandidateAsset,
+  upsertJobAlert,
+} from "@/lib/jobs/write";
+
+export async function saveCandidateProfileAction(formData: FormData) {
+  const viewer = await requireJobsUser("/candidate/profile");
+  await saveCandidateProfile({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    email: viewer.user!.email,
+    fullName: viewer.user!.fullName,
+    phone: viewer.user!.phone,
+    avatarUrl: viewer.user!.avatarUrl,
+    formData,
+  });
+  revalidatePath("/candidate");
+  revalidatePath("/candidate/profile");
+  redirect("/candidate/profile?saved=1");
+}
+
+export async function uploadCandidateDocumentAction(formData: FormData) {
+  const viewer = await requireJobsUser("/candidate/files");
+  const file = formData.get("file");
+  const kind = typeof formData.get("kind") === "string" ? String(formData.get("kind")) : "resume";
+  if (!(file instanceof File)) {
+    throw new Error("A file is required.");
+  }
+
+  await uploadCandidateAsset({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    kind,
+    file,
+  });
+  revalidatePath("/candidate");
+  revalidatePath("/candidate/files");
+  revalidatePath("/candidate/profile");
+  redirect("/candidate/files?uploaded=1");
+}
+
+export async function toggleSavedJobAction(formData: FormData) {
+  const viewer = await requireJobsUser("/candidate/saved-jobs");
+  const jobSlug = String(formData.get("jobSlug") || "");
+  await toggleSavedJob({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    jobSlug,
+  });
+  revalidatePath("/jobs");
+  revalidatePath(`/jobs/${jobSlug}`);
+  revalidatePath("/candidate");
+  revalidatePath("/candidate/saved-jobs");
+}
+
+export async function createJobAlertAction(formData: FormData) {
+  const viewer = await requireJobsUser("/candidate/alerts");
+  await upsertJobAlert({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    label: String(formData.get("label") || "Jobs alert"),
+    criteria: {
+      q: String(formData.get("q") || ""),
+      category: String(formData.get("category") || ""),
+      mode: String(formData.get("mode") || ""),
+      internal: String(formData.get("internal") || "0"),
+    },
+  });
+  revalidatePath("/candidate/alerts");
+  redirect("/candidate/alerts?saved=1");
+}
+
+export async function submitApplicationAction(formData: FormData) {
+  const viewer = await requireJobsUser("/candidate/applications");
+  const result = await submitApplication({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    formData,
+  });
+  revalidatePath("/jobs");
+  revalidatePath(`/jobs/${String(formData.get("jobSlug") || "")}`);
+  revalidatePath("/candidate");
+  revalidatePath("/candidate/applications");
+  redirect(`/candidate/applications?submitted=${encodeURIComponent(result.applicationId)}`);
+}
+
+export async function createEmployerProfileAction(formData: FormData) {
+  const viewer = await requireJobsUser("/employer/company");
+  const result = await createEmployerProfile({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    formData,
+  });
+  revalidatePath("/employer");
+  revalidatePath("/employer/company");
+  revalidatePath(`/employers/${result.employerSlug}`);
+  redirect(`/employer/company?created=${result.employerSlug}`);
+}
+
+export async function createJobPostAction(formData: FormData) {
+  const viewer = await requireJobsUser("/employer/jobs/new");
+  const result = await createJobPost({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+    },
+    formData,
+  });
+  revalidatePath("/employer");
+  revalidatePath("/employer/jobs");
+  revalidatePath(`/employer/jobs/${result.slug}`);
+  revalidatePath("/jobs");
+  redirect(`/employer/jobs/${result.slug}?created=1`);
+}
+
+export async function advanceApplicationStageAction(formData: FormData) {
+  const viewer = await requireJobsRoles(["recruiter", "admin", "owner", "moderator", "employer"]);
+  await advanceApplicationStage({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+    },
+    applicationId: String(formData.get("applicationId") || ""),
+    stage: String(formData.get("stage") || "reviewing"),
+    note: String(formData.get("note") || ""),
+  });
+  revalidatePath("/employer");
+  revalidatePath("/employer/applicants");
+  revalidatePath("/recruiter");
+}
+
+export async function addApplicationNoteAction(formData: FormData) {
+  const viewer = await requireJobsRoles(["recruiter", "admin", "owner", "moderator", "employer"]);
+  await addApplicationNote({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+    },
+    applicationId: String(formData.get("applicationId") || ""),
+    note: String(formData.get("note") || ""),
+  });
+  revalidatePath("/employer");
+  revalidatePath("/recruiter");
+}
+
+export async function updateEmployerVerificationAction(formData: FormData) {
+  const viewer = await requireJobsRoles(["recruiter", "admin", "owner", "moderator"]);
+  await updateEmployerVerification({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    employerSlug: String(formData.get("employerSlug") || ""),
+    status: String(formData.get("status") || "pending") as "pending" | "verified" | "watch" | "rejected",
+    reason: String(formData.get("reason") || ""),
+  });
+  revalidatePath("/moderation");
+  revalidatePath("/recruiter");
+}
+
+export async function markNotificationReadAction(formData: FormData) {
+  const viewer = await requireJobsUser();
+  await markJobsNotificationRead({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    notificationId: String(formData.get("notificationId") || ""),
+  });
+  revalidatePath("/candidate");
+  revalidatePath("/employer");
+}

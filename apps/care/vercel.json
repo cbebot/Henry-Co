@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "crons": [
+    {
+      "path": "/api/cron/care-automation",
+      "schedule": "15 8 * * *"
+    }
+  ]
+}

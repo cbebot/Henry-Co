@@ -1,0 +1,274 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: property.e2e.spec.mjs >> public discovery, inquiry, and viewing requests persist to live storage
+- Location: tests\property.e2e.spec.mjs:205:1
+
+# Error details
+
+```
+StorageUnknownError: fetch failed
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]: Curated listings, guided viewings, and managed-property trust rails
+        - link "Managed property" [ref=e8] [cursor=pointer]:
+          - /url: /managed
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - link "HC Property HenryCo Property" [ref=e11] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e13]: HC
+            - generic [ref=e14]:
+              - generic [ref=e15]: Property
+              - generic [ref=e16]: HenryCo Property
+          - generic [ref=e17]: Editorial listings for calmer decisions
+        - navigation [ref=e18]:
+          - link "Home" [ref=e19] [cursor=pointer]:
+            - /url: /
+          - link "Search" [ref=e20] [cursor=pointer]:
+            - /url: /search
+          - link "Managed" [ref=e21] [cursor=pointer]:
+            - /url: /managed
+          - link "Trust" [ref=e22] [cursor=pointer]:
+            - /url: /trust
+          - link "Submit" [ref=e23] [cursor=pointer]:
+            - /url: /submit
+        - generic [ref=e24]:
+          - button "Toggle theme" [ref=e25]:
+            - img [ref=e26]
+          - link "Sign in" [ref=e28] [cursor=pointer]:
+            - /url: /login
+    - main [ref=e29]:
+      - generic [ref=e32]:
+        - paragraph [ref=e33]: Ikoyi, Lagos
+        - heading "Harbour Crest Penthouse" [level=1] [ref=e34]
+        - paragraph [ref=e35]: Designed for executives who want space, privacy, and cleaner operations. HenryCo Property manages the viewing rail, owner communication, and final handover support for this listing.
+      - generic [ref=e37]: Viewing request submitted. Scheduling and reminder follow-up are now active.
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - img "Harbour Crest Penthouse" [ref=e42]
+            - generic [ref=e43]:
+              - img "Harbour Crest Penthouse" [ref=e45]
+              - img "Harbour Crest Penthouse" [ref=e47]
+          - generic [ref=e48]:
+            - generic [ref=e49]:
+              - img [ref=e51]
+              - generic [ref=e54]: Area
+              - generic [ref=e55]: Ikoyi, Lagos
+            - generic [ref=e56]:
+              - img [ref=e58]
+              - generic [ref=e60]: Availability
+              - generic [ref=e61]: Future availability
+            - generic [ref=e62]:
+              - img [ref=e64]
+              - generic [ref=e67]: Trust
+              - generic [ref=e68]: 3 trust signals
+            - generic [ref=e69]:
+              - img [ref=e71]
+              - generic [ref=e73]: Signals
+              - generic [ref=e74]: 5 beds · 540 sqm · Concierge arrival
+          - generic [ref=e75]:
+            - generic [ref=e76]:
+              - generic [ref=e77]: approved
+              - generic [ref=e78]: Managed by HenryCo
+              - generic [ref=e79]: Owner verified
+              - generic [ref=e80]: Premium viewing protocol
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e83]: Highlights
+                - generic [ref=e84]:
+                  - generic [ref=e85]: • 5 beds
+                  - generic [ref=e86]: • 540 sqm
+                  - generic [ref=e87]: • Concierge arrival
+              - generic [ref=e88]:
+                - generic [ref=e89]: Verification notes
+                - generic [ref=e90]:
+                  - generic [ref=e91]: • Title documents reviewed
+                  - generic [ref=e92]: • Service-charge clarity provided
+            - generic [ref=e93]:
+              - generic [ref=e94]: Amenities
+              - generic [ref=e95]:
+                - generic [ref=e96]: Private terrace
+                - generic [ref=e97]: Lift access
+                - generic [ref=e98]: Staff quarters
+                - generic [ref=e99]: Smart security
+                - generic [ref=e100]: Generator
+          - article [ref=e101]:
+            - img "Adaeze Okonkwo" [ref=e103]
+            - generic [ref=e104]:
+              - generic [ref=e105]:
+                - generic [ref=e106]: Relationship Manager, Prime Homes
+                - heading "Adaeze Okonkwo" [level=3] [ref=e107]
+                - paragraph [ref=e108]: Pairs premium listings with disciplined follow-up, cleaner owner comms, and higher-conviction viewing preparation.
+              - generic [ref=e109]:
+                - generic [ref=e110]: Trust escort
+                - generic [ref=e111]: Executive rentals
+              - generic [ref=e112]:
+                - generic [ref=e113]: property@henrycogroup.com
+                - generic [ref=e114]: "+2349133957084"
+        - generic [ref=e115]:
+          - complementary [ref=e116]:
+            - generic [ref=e117]: Summary
+            - generic [ref=e118]: ₦32,000,000
+            - generic [ref=e119]: per year
+            - generic [ref=e120]:
+              - generic [ref=e121]:
+                - img [ref=e122]
+                - text: Ikoyi, Lagos
+              - generic [ref=e125]:
+                - img [ref=e126]
+                - text: Available from 19 Apr 2026, 17:00
+            - link "Sign in to save" [ref=e129] [cursor=pointer]:
+              - /url: /login?next=%2Fproperty%2Fharbour-crest-penthouse-ikoyi
+              - img [ref=e130]
+              - text: Sign in to save
+          - generic [ref=e132]:
+            - generic [ref=e133]: Inquiry
+            - heading "Ask about this property" [level=2] [ref=e134]
+            - generic [ref=e135]:
+              - generic [ref=e136]:
+                - text: Name
+                - textbox "Name" [ref=e137]
+              - generic [ref=e138]:
+                - text: Email
+                - textbox "Email" [ref=e139]
+              - generic [ref=e140]:
+                - text: Phone
+                - textbox "Phone" [ref=e141]:
+                  - /placeholder: +234...
+              - generic [ref=e142]:
+                - text: Message
+                - textbox "Message" [ref=e143]:
+                  - /placeholder: What would you like HenryCo Property to clarify for you?
+              - button "Submit inquiry" [ref=e144]
+          - generic [ref=e145]:
+            - generic [ref=e146]: Viewing request
+            - heading "Request a viewing" [level=2] [ref=e147]
+            - generic [ref=e148]:
+              - generic [ref=e149]:
+                - text: Attendee name
+                - textbox "Attendee name" [ref=e150]
+              - generic [ref=e151]:
+                - generic [ref=e152]:
+                  - text: Email
+                  - textbox "Email" [ref=e153]
+                - generic [ref=e154]:
+                  - text: Phone
+                  - textbox "Phone" [ref=e155]
+              - generic [ref=e156]:
+                - generic [ref=e157]:
+                  - text: Preferred time
+                  - textbox "Preferred time" [ref=e158]
+                - generic [ref=e159]:
+                  - text: Backup time
+                  - textbox "Backup time" [ref=e160]
+              - generic [ref=e161]:
+                - text: Notes
+                - textbox "Notes" [ref=e162]:
+                  - /placeholder: Access, household schedule, or questions for the viewing team.
+              - button "Request viewing" [ref=e163]
+      - generic [ref=e164]:
+        - generic [ref=e167]:
+          - paragraph [ref=e168]: Related listings
+          - heading "Other homes and spaces worth shortlisting." [level=1] [ref=e169]
+          - paragraph [ref=e170]: Similar inventory in the same area or category, surfaced with the same editorial standard.
+        - article [ref=e172]:
+          - generic [ref=e173]:
+            - img "Cove Garden Townhouse" [ref=e174]
+            - generic [ref=e175]:
+              - generic [ref=e176]: Owner verified
+              - generic [ref=e177]: Move-in prep available
+          - generic [ref=e178]:
+            - generic [ref=e179]:
+              - generic [ref=e180]:
+                - generic [ref=e181]: rent
+                - generic [ref=e182]: •
+                - generic [ref=e183]: Lekki Phase 1, Lagos
+              - heading "Cove Garden Townhouse" [level=3] [ref=e184]
+              - paragraph [ref=e185]: A four-bed family townhouse with rooftop lounge, quiet street access, and strong move-in readiness.
+            - generic [ref=e186]:
+              - generic [ref=e187]:
+                - img [ref=e189]
+                - generic [ref=e192]: 4 beds
+              - generic [ref=e193]:
+                - img [ref=e195]
+                - generic [ref=e199]: 5 baths
+              - generic [ref=e200]:
+                - img [ref=e202]
+                - generic [ref=e206]: 390 sqm
+              - generic [ref=e207]:
+                - img [ref=e209]
+                - generic [ref=e212]: 3 parking
+            - generic [ref=e213]:
+              - generic [ref=e214]:
+                - generic [ref=e215]: ₦14,500,000
+                - generic [ref=e216]: per year
+              - link "View" [ref=e217] [cursor=pointer]:
+                - /url: /property/cove-garden-townhouse-lekki
+                - text: View
+                - img [ref=e218]
+    - contentinfo [ref=e220]:
+      - generic [ref=e222]:
+        - generic [ref=e223]:
+          - generic [ref=e224]:
+            - generic [ref=e225]: HenryCo Property
+            - heading "Premium property discovery with tighter moderation, calmer inquiry handling, and managed operations that continue after the listing goes live." [level=2] [ref=e226]
+            - paragraph [ref=e227]: HenryCo Property is built for serious renters, buyers, owners, and operators who want trust signals, clearer communication, and fewer low-information decisions.
+            - generic [ref=e228]:
+              - link "Browse listings" [ref=e229] [cursor=pointer]:
+                - /url: /search
+              - link "Submit a property" [ref=e230] [cursor=pointer]:
+                - /url: /submit
+          - generic [ref=e231]:
+            - generic [ref=e232]:
+              - generic [ref=e233]: Discover
+              - generic [ref=e234]:
+                - link "Search listings" [ref=e235] [cursor=pointer]:
+                  - /url: /search
+                - link "Managed properties" [ref=e236] [cursor=pointer]:
+                  - /url: /managed
+                - link "Trust standards" [ref=e237] [cursor=pointer]:
+                  - /url: /trust
+                - link "FAQ" [ref=e238] [cursor=pointer]:
+                  - /url: /faq
+            - generic [ref=e239]:
+              - generic [ref=e240]: Owners and agents
+              - generic [ref=e241]:
+                - link "Submit a listing" [ref=e242] [cursor=pointer]:
+                  - /url: /submit
+                - link "Owner workspace" [ref=e243] [cursor=pointer]:
+                  - /url: /owner
+                - link "Agent surface" [ref=e244] [cursor=pointer]:
+                  - /url: /agent
+                - link "Operations" [ref=e245] [cursor=pointer]:
+                  - /url: /operations
+            - generic [ref=e246]:
+              - generic [ref=e247]: Account
+              - generic [ref=e248]:
+                - link "Saved and viewings" [ref=e249] [cursor=pointer]:
+                  - /url: /account
+                - link "My listings" [ref=e250] [cursor=pointer]:
+                  - /url: /account/listings
+                - link "Property login" [ref=e251] [cursor=pointer]:
+                  - /url: /login
+        - generic [ref=e252]:
+          - generic [ref=e253]: property@henrycogroup.com · +2349133957084 · property.henrycogroup.com
+          - link "Open property account" [ref=e254] [cursor=pointer]:
+            - /url: /account
+            - text: Open property account
+            - img [ref=e255]
+  - alert [ref=e257]
+```
