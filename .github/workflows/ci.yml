@@ -1,0 +1,55 @@
+# Canonical CI for HenryCo — GitHub is the single source of truth.
+# Do not duplicate this pipeline on GitLab or other hosts.
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  # Placeholders so Next.js apps can compile in CI without real secrets.
+  # Vercel preview/production still inject real values at deploy time.
+  NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ci-placeholder-signature
+  SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.ci-placeholder-signature
+  NEXT_PUBLIC_BASE_DOMAIN: henrycogroup.com
+
+jobs:
+  lint-typecheck-test-build:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (all apps)
+        run: pnpm run lint:all
+
+      - name: Typecheck (all apps)
+        run: pnpm run typecheck:all
+
+      - name: Test (super-app)
+        run: pnpm run test:workspace
+
+      - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
+        run: pnpm run build:all

@@ -1,0 +1,61 @@
+# Expo EAS builds — triggered manually. Production uses the GitHub Environment
+# "production" so you can require reviewers before the job runs (no deploy without approval).
+
+name: EAS Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: EAS build profile (see apps/super-app/eas.json)
+        type: choice
+        required: true
+        default: preview
+        options:
+          - preview
+          - staging
+          - production
+      platform:
+        description: Target platform
+        type: choice
+        required: true
+        default: all
+        options:
+          - all
+          - ios
+          - android
+
+jobs:
+  eas:
+    if: ${{ secrets.EXPO_TOKEN != '' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.profile == 'production' && 'production' || 'eas-nonprod' }}
+    defaults:
+      run:
+        working-directory: apps/super-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install workspace dependencies
+        working-directory: ${{ github.workspace }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Expo / EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: EAS build
+        run: eas build --platform ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --non-interactive --no-wait

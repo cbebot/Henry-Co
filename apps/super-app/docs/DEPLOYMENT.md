@@ -1,5 +1,7 @@
 # Deployment (Staging-first)
 
+See also the monorepo guide: `docs/GITHUB_SOURCE_OF_TRUTH.md` (GitHub Actions, Vercel, EAS, approvals).
+
 ## Prerequisites
 
 1. **Expo account** with a dedicated **staging** EAS project.

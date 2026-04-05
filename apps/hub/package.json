@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "db:apply": "node ./scripts/apply-hub-migrations.mjs",
     "db:probe": "node ./scripts/probe-supabase-tables.mjs"
   },

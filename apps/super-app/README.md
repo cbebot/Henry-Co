@@ -27,6 +27,7 @@ Copy `.env.staging.example` to `.env.staging.local` and provide **staging** Supa
 
 ## Docs
 
+- `../../docs/GITHUB_SOURCE_OF_TRUTH.md` — GitHub-only CI, Vercel, EAS, branch protection
 - `docs/ARCHITECTURE.md` — layering, navigation, backend boundaries
 - `docs/COMPONENT_INVENTORY.md` — UI primitives and feature entry points
 - `docs/DEPLOYMENT.md` — staging deployment notes (no production automation)
