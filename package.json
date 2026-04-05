@@ -14,7 +14,11 @@
     "typecheck:logistics": "pnpm --filter @henryco/logistics typecheck",
     "build:studio": "pnpm --filter @henryco/studio build",
     "lint:studio": "pnpm --filter @henryco/studio lint",
-    "typecheck:studio": "pnpm --filter @henryco/studio typecheck"
+    "typecheck:studio": "pnpm --filter @henryco/studio typecheck",
+    "super-app:start": "pnpm --filter @henryco/super-app start",
+    "super-app:lint": "pnpm --filter @henryco/super-app lint",
+    "super-app:typecheck": "pnpm --filter @henryco/super-app typecheck",
+    "super-app:test": "pnpm --filter @henryco/super-app test:ci"
   },
   "dependencies": {
     "@henryco/config": "workspace:^"
