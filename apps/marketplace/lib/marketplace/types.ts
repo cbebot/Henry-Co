@@ -27,23 +27,48 @@ export type OrderStatus =
   | "cart"
   | "placed"
   | "awaiting_payment"
+  | "paid_held"
   | "payment_verified"
+  | "fulfillment_in_progress"
   | "processing"
   | "partially_shipped"
   | "shipped"
   | "delivered"
+  | "delivered_pending_confirmation"
+  | "awaiting_auto_release"
+  | "payout_releasable"
+  | "payout_released"
+  | "payout_frozen"
   | "disputed"
+  | "refunded"
+  | "partially_refunded"
   | "cancelled";
 export type PaymentStatus = "pending" | "receipt_submitted" | "verified" | "failed" | "refunded";
 export type FulfillmentStatus =
   | "awaiting_acceptance"
   | "confirmed"
+  | "fulfillment_in_progress"
   | "packed"
   | "shipped"
   | "delivered"
+  | "delivered_pending_confirmation"
   | "delayed"
   | "returned";
-export type PayoutStatus = "eligible" | "requested" | "approved" | "rejected" | "paid";
+export type PayoutStatus =
+  | "eligible"
+  | "awaiting_payment"
+  | "paid_held"
+  | "awaiting_auto_release"
+  | "payout_releasable"
+  | "requested"
+  | "approved"
+  | "payout_released"
+  | "payout_frozen"
+  | "disputed"
+  | "refunded"
+  | "partially_refunded"
+  | "rejected"
+  | "paid";
 export type ReviewStatus = "pending" | "published" | "hidden";
 export type DisputeStatus = "open" | "investigating" | "resolved" | "rejected";
 export type CampaignSurface = "hero" | "editorial" | "deals" | "category" | "checkout";
@@ -329,7 +354,9 @@ export type MarketplaceShellState = {
     signedIn: boolean;
     userId: string | null;
     firstName: string | null;
+    fullName: string | null;
     email: string | null;
+    avatarUrl: string | null;
     roles: MarketplaceRole[];
     canApplyToSell: boolean;
     canOpenVendorWorkspace: boolean;
@@ -417,6 +444,7 @@ export type MarketplaceViewerContext = {
         id: string;
         email: string | null;
         fullName: string | null;
+        avatarUrl: string | null;
       };
   normalizedEmail: string | null;
   roles: MarketplaceRole[];

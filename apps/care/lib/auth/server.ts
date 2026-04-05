@@ -1,8 +1,9 @@
 import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getSharedCookieDomain } from "@henryco/config";
 import { buildStaffLoginUrl } from "@/lib/auth/routes";
 import { homeForRole, normalizeRole, type AppRole } from "@/lib/auth/roles";
 import { getOptionalEnv } from "@/lib/env";
@@ -42,8 +43,20 @@ export async function getServerSupabase() {
   }
 
   const cookieStore = await cookies();
+  const headerStore = await headers();
+  const cookieDomain = getSharedCookieDomain(
+    headerStore.get("x-forwarded-host") || headerStore.get("host")
+  );
 
   return createServerClient(url, anon, {
+    cookieOptions: cookieDomain
+      ? {
+          domain: cookieDomain,
+          path: "/",
+          sameSite: "lax",
+          secure: true,
+        }
+      : undefined,
     cookies: {
       getAll() {
         return cookieStore.getAll();

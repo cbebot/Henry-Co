@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 const appDir = process.cwd();
@@ -22,6 +23,16 @@ function loadEnvFile(filepath) {
 loadEnvFile(path.join(rootDir, ".env.local"));
 loadEnvFile(path.join(rootDir, ".env.production.vercel"));
 
+const port = Number(process.env.MARKETPLACE_E2E_PORT || 3016);
+const defaultBaseUrl =
+  process.env.VERCEL_ENV === "production"
+    ? "https://marketplace.henrycogroup.com"
+    : `http://127.0.0.1:${port}`;
+const baseURL =
+  process.env.MARKETPLACE_SMOKE_BASE_URL ||
+  process.env.MARKETPLACE_E2E_BASE_URL ||
+  defaultBaseUrl;
+
 const requiredFiles = [
   "app/(public)/page.tsx",
   "app/(public)/checkout/page.tsx",
@@ -33,6 +44,9 @@ const requiredFiles = [
   "app/admin/page.tsx",
   "app/support/page.tsx",
   "app/api/marketplace/route.ts",
+  "app/api/health/route.ts",
+  "app/api/readiness/route.ts",
+  "app/api/version/route.ts",
   "app/api/cron/marketplace-automation/route.ts",
   "lib/marketplace/automation.ts",
   "supabase/migrations/20260402180000_marketplace_init.sql",
@@ -96,6 +110,7 @@ const tableChecks = [
 ];
 
 let hasFailure = missingFiles.length > 0;
+const warnings = [];
 
 for (const table of tableChecks) {
   const { error } = await supabase.from(table).select("id").limit(1);
@@ -122,6 +137,230 @@ if (divisionError || !division) {
 
 if (!hasFailure) {
   console.log("[marketplace:smoke] File and database checks passed.");
+}
+
+function assert(condition, message) {
+  if (!condition) {
+    console.error(`[marketplace:smoke] ${message}`);
+    hasFailure = true;
+  }
+}
+
+function toUrl(pathname) {
+  return new URL(pathname, baseURL).toString();
+}
+
+async function fetchText(pathname, options = {}) {
+  const response = await fetch(toUrl(pathname), {
+    redirect: "manual",
+    ...options,
+  });
+  const body = await response.text();
+  return { response, body };
+}
+
+function extractCookie(response) {
+  const raw = response.headers.get("set-cookie");
+  if (!raw) return null;
+  return raw.split(";")[0];
+}
+
+async function checkRoute(pathname, needle, label = pathname, options = {}) {
+  const { response, body } = await fetchText(pathname, options);
+  assert(response.ok, `${label} returned ${response.status}`);
+  if (needle) {
+    assert(body.includes(needle), `${label} did not include expected content: ${needle}`);
+  }
+}
+
+const [{ data: category }, { data: product }, { data: vendor }, { data: order }] = await Promise.all([
+  supabase
+    .from("marketplace_categories")
+    .select("slug, name")
+    .order("sort_order", { ascending: true })
+    .limit(1)
+    .maybeSingle(),
+  supabase
+    .from("marketplace_products")
+    .select("slug, title")
+    .eq("approval_status", "approved")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle(),
+  supabase
+    .from("marketplace_vendors")
+    .select("slug, name")
+    .eq("status", "approved")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle(),
+  supabase
+    .from("marketplace_orders")
+    .select("order_no")
+    .order("placed_at", { ascending: false })
+    .limit(1)
+    .maybeSingle(),
+]);
+
+await checkRoute("/", "HenryCo Marketplace", "homepage");
+await checkRoute("/search", "Reactive discovery", "search");
+await checkRoute("/sell", "A selective marketplace for sellers", "sell page");
+await checkRoute("/help", "Support flows designed to resolve edge cases", "help page");
+
+if (category?.slug && category?.name) {
+  await checkRoute(`/category/${category.slug}`, category.name, "category page");
+} else {
+  warnings.push("Skipped category route verification because no category row was available.");
+}
+
+if (product?.slug && product?.title) {
+  await checkRoute(`/product/${product.slug}`, product.title, "product page");
+} else {
+  warnings.push("Skipped product route verification because no approved product row was available.");
+}
+
+if (vendor?.slug && vendor?.name) {
+  await checkRoute(`/store/${vendor.slug}`, vendor.name, "store page");
+} else {
+  warnings.push("Skipped store route verification because no approved vendor row was available.");
+}
+
+if (order?.order_no) {
+  await checkRoute(`/track/${order.order_no}`, order.order_no, "track page");
+} else {
+  warnings.push("Skipped track route verification because no live marketplace order was available.");
+}
+
+{
+  const { response } = await fetchText("/login?next=%2Faccount");
+  const location = response.headers.get("location") || "";
+  assert(response.status === 307, `/login redirect returned ${response.status}`);
+  assert(
+    location.startsWith("https://account.henrycogroup.com/login?next="),
+    `/login redirect target was not shared account: ${location || "missing location"}`
+  );
+}
+
+{
+  const { response } = await fetchText("/signup?next=%2Faccount");
+  const location = response.headers.get("location") || "";
+  assert(response.status === 307, `/signup redirect returned ${response.status}`);
+  assert(
+    location.startsWith("https://account.henrycogroup.com/signup?next="),
+    `/signup redirect target was not shared account: ${location || "missing location"}`
+  );
+}
+
+{
+  const { response } = await fetchText("/admin");
+  const location = response.headers.get("location") || "";
+  assert(response.status === 307, `/admin redirect returned ${response.status}`);
+  assert(
+    location.startsWith("https://account.henrycogroup.com/login?next="),
+    `/admin redirect target was not shared account login: ${location || "missing location"}`
+  );
+}
+
+{
+  const shellResponse = await fetch(toUrl("/api/shell"), { redirect: "manual" });
+  const shellPayload = await shellResponse.json();
+  assert(shellResponse.ok, `/api/shell returned ${shellResponse.status}`);
+  assert(Boolean(shellPayload?.schemaReady), "/api/shell did not report schemaReady=true");
+}
+
+{
+  const healthResponse = await fetch(toUrl("/api/health"), { redirect: "manual" });
+  const healthPayload = await healthResponse.json();
+  assert(healthResponse.ok, `/api/health returned ${healthResponse.status}`);
+  assert(Boolean(healthPayload?.ok), "/api/health did not report ok=true");
+}
+
+{
+  const readinessResponse = await fetch(toUrl("/api/readiness"), { redirect: "manual" });
+  const readinessPayload = await readinessResponse.json();
+  assert(readinessResponse.ok, `/api/readiness returned ${readinessResponse.status}`);
+  assert(Boolean(readinessPayload?.ready), "/api/readiness did not report ready=true");
+}
+
+{
+  const versionResponse = await fetch(toUrl("/api/version"), { redirect: "manual" });
+  const versionPayload = await versionResponse.json();
+  assert(versionResponse.ok, `/api/version returned ${versionResponse.status}`);
+  assert(Boolean(versionPayload?.app), "/api/version did not report app metadata");
+}
+
+{
+  const productsResponse = await fetch(toUrl("/api/products"), { redirect: "manual" });
+  const productsPayload = await productsResponse.json();
+  assert(productsResponse.ok, `/api/products returned ${productsResponse.status}`);
+  assert(Number(productsPayload?.total || 0) > 0, "/api/products returned no approved products");
+}
+
+if (product?.slug) {
+  const sessionToken = randomUUID();
+  const cookieHeader = `marketplace_cart_token=${sessionToken}`;
+  const addResponse = await fetch(toUrl("/api/cart"), {
+    method: "POST",
+    redirect: "manual",
+    headers: {
+      "content-type": "application/json",
+      cookie: cookieHeader,
+    },
+    body: JSON.stringify({
+      productSlug: product.slug,
+      quantity: 1,
+      sessionToken,
+    }),
+  });
+  const addPayload = await addResponse.json();
+  const persistedCookie = extractCookie(addResponse) || cookieHeader;
+  assert(addResponse.ok, `/api/cart POST returned ${addResponse.status}`);
+  assert(
+    Number(addPayload?.shell?.cart?.count || 0) > 0,
+    "/api/cart POST did not return a non-empty cart shell"
+  );
+
+  const cartResponse = await fetch(toUrl("/api/cart"), {
+    headers: {
+      cookie: persistedCookie,
+    },
+    redirect: "manual",
+  });
+  const cartPayload = await cartResponse.json();
+  assert(cartResponse.ok, `/api/cart GET returned ${cartResponse.status}`);
+  assert(Number(cartPayload?.count || 0) > 0, "/api/cart GET did not persist the guest cart");
+
+  const { response: checkoutResponse, body: checkoutBody } = await fetchText("/checkout", {
+    headers: {
+      cookie: persistedCookie,
+    },
+  });
+  assert(checkoutResponse.ok, `/checkout returned ${checkoutResponse.status}`);
+  assert(
+    checkoutBody.includes("Sign in required") &&
+      checkoutBody.includes("Sign in to continue"),
+    "/checkout did not render the shared-account gate for a guest cart"
+  );
+
+  const addedItem = addPayload?.shell?.cart?.items?.find((item) => item.productSlug === product.slug);
+  if (addedItem?.id) {
+    const deleteResponse = await fetch(toUrl("/api/cart"), {
+      method: "DELETE",
+      redirect: "manual",
+      headers: {
+        "content-type": "application/json",
+        cookie: persistedCookie,
+      },
+      body: JSON.stringify({ itemId: addedItem.id }),
+    });
+    assert(deleteResponse.ok, `/api/cart DELETE cleanup returned ${deleteResponse.status}`);
+  } else {
+    warnings.push("Guest cart cleanup skipped because the added cart item id was not returned.");
+  }
+}
+
+for (const warning of warnings) {
+  console.warn(`[marketplace:smoke] ${warning}`);
 }
 
 process.exit(hasFailure ? 1 : 0);

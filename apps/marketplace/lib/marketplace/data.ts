@@ -2,6 +2,11 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { getOptionalEnv } from "@/lib/env";
+import {
+  computePayoutBalance,
+  deriveSellerTrustProfile,
+  titleCaseMarketplaceValue,
+} from "@/lib/marketplace/governance";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   demoHomeData,
@@ -42,17 +47,17 @@ const emptyHomeData: Snapshot = {
     {
       label: "Verified stores",
       value: "0",
-      hint: "The premium seller base will appear here once the catalog is seeded.",
+      hint: "The seller base will appear here once approved stores go live.",
     },
     {
       label: "Active listings",
       value: "0",
-      hint: "Products will appear here as soon as approvals are published.",
+      hint: "Products will appear here as soon as approved listings are published.",
     },
     {
       label: "Trust rating",
       value: "0.0",
-      hint: "Trust passport scoring will surface once the first reviews land.",
+      hint: "Trust signals will appear here once the first reviews land.",
     },
   ],
   categories: [],
@@ -354,7 +359,7 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
       snapshot,
       issue:
         snapshot.categories.length === 0 && snapshot.products.length === 0 && snapshot.vendors.length === 0
-          ? "Marketplace schema is live, but the catalog has not been seeded yet."
+          ? "Marketplace is connected, but no approved catalog is live yet."
           : null,
     };
   } catch (error) {
@@ -559,7 +564,9 @@ export async function getMarketplaceShellState(): Promise<MarketplaceShellState>
       signedIn: Boolean(viewer.user),
       userId: viewer.user?.id ?? null,
       firstName: viewer.user?.fullName ? viewer.user.fullName.split(" ")[0] : null,
+      fullName: viewer.user?.fullName ?? null,
       email: viewer.user?.email ?? null,
+      avatarUrl: viewer.user?.avatarUrl ?? null,
       roles: viewer.roles,
       canApplyToSell: Boolean(viewer.user),
       canOpenVendorWorkspace: viewer.roles.includes("vendor"),
@@ -901,19 +908,27 @@ export async function getBuyerDashboardData() {
 
 export function toMarketplaceOrderFeed(orders: MarketplaceOrder[]): MarketplaceOrderFeedItem[] {
   return orders.map((order) => {
-    const stalled = ["placed", "awaiting_payment", "processing"].includes(order.status);
+    const stalled = ["placed", "awaiting_payment", "paid_held", "processing", "awaiting_auto_release"].includes(order.status);
     const headline =
-      order.paymentStatus === "verified"
-        ? `${order.orderNo} is moving through fulfillment`
-        : stalled
-          ? `${order.orderNo} needs the next buyer action`
-          : `${order.orderNo} is live in the order timeline`;
+      order.status === "payout_released"
+        ? `${order.orderNo} has completed HenryCo payout settlement`
+        : order.status === "payout_frozen"
+          ? `${order.orderNo} is under trust and payout review`
+          : order.paymentStatus === "verified"
+            ? `${order.orderNo} is moving through fulfillment and escrow`
+            : stalled
+              ? `${order.orderNo} needs the next protected action`
+              : `${order.orderNo} is live in the order timeline`;
+
+    const latestGroupPayoutState =
+      order.groups.find((group) => group.payoutStatus && group.payoutStatus !== "paid")?.payoutStatus || null;
 
     const detailParts = [
-      `Payment ${order.paymentStatus.replace(/_/g, " ")}`,
+      `Payment ${titleCaseMarketplaceValue(order.paymentStatus.replace(/_/g, " "))}`,
+      latestGroupPayoutState ? `Payout ${titleCaseMarketplaceValue(latestGroupPayoutState.replace(/_/g, " "))}` : null,
       `${order.groups.length} delivery segment${order.groups.length === 1 ? "" : "s"}`,
-      order.timeline[order.timeline.length - 1] || `Status ${order.status.replace(/_/g, " ")}`,
-    ];
+      order.timeline[order.timeline.length - 1] || `Status ${titleCaseMarketplaceValue(order.status.replace(/_/g, " "))}`,
+    ].filter(Boolean) as string[];
 
     return {
       id: order.id,
@@ -937,23 +952,56 @@ export async function getVendorWorkspaceData() {
 
   try {
     const admin = createAdminSupabase();
-    const [productsRes, payoutsRes, disputesRes, groupsRes, ordersRes] = await Promise.all([
+    const [productsRes, payoutsRes, disputesRes, groupsRes, ordersRes, moderationRes] = await Promise.all([
       admin.from("marketplace_products").select("*").eq("vendor_id", vendor.id).order("updated_at", { ascending: false }),
       admin.from("marketplace_payout_requests").select("*").eq("vendor_id", vendor.id).order("created_at", { ascending: false }),
       admin.from("marketplace_disputes").select("*").eq("vendor_id", vendor.id).order("updated_at", { ascending: false }),
       admin.from("marketplace_order_groups").select("*").eq("vendor_id", vendor.id).order("created_at", { ascending: false }),
       admin.from("marketplace_orders").select("*").order("placed_at", { ascending: false }),
+      admin.from("marketplace_moderation_cases").select("id", { count: "exact", head: true }).eq("subject_type", "product"),
     ]);
 
-    if (productsRes.error || payoutsRes.error || disputesRes.error || groupsRes.error || ordersRes.error) {
+    if (productsRes.error || payoutsRes.error || disputesRes.error || groupsRes.error || ordersRes.error || moderationRes.error) {
       throw new Error("Vendor tables unavailable");
     }
 
     const ordersById = new Map((ordersRes.data ?? []).map((item: Record<string, unknown>) => [String(item.id), item]));
+    const groupRows = (groupsRes.data ?? []) as Array<Record<string, unknown>>;
+    const deliveredOrderCount = groupRows.filter((row) => String(row.fulfillment_status || "") === "delivered").length;
+    const openDisputeCount = (disputesRes.data ?? []).filter(
+      (row: Record<string, unknown>) => String(row.status || "") !== "resolved"
+    ).length;
+    const trustProfile = deriveSellerTrustProfile({
+      vendor,
+      deliveredOrderCount,
+      openDisputeCount,
+      productCount: (productsRes.data ?? []).length,
+      moderationIncidents: moderationRes.count ?? 0,
+    });
+    const balanceSummary = computePayoutBalance({
+      groups: groupRows.map((row) => ({
+        id: String(row.id),
+        payoutStatus: String(row.payout_status || ""),
+        netVendorAmount: Number(row.net_vendor_amount || 0),
+      })),
+    });
+    const payoutChecklist = [
+      vendor.supportEmail ? "Support email configured." : "Add a support email before the next payout review.",
+      vendor.supportPhone ? "Support phone configured." : "Add a support phone for faster dispute handling.",
+      trustProfile.tier === "unverified"
+        ? "Complete seller verification to reduce reserve windows."
+        : `${trustProfile.label} sellers currently auto-release after ${trustProfile.autoReleaseDays} day(s).`,
+      openDisputeCount > 0
+        ? "Resolve open disputes before requesting more payout volume."
+        : "No open disputes are blocking payout readiness.",
+    ];
 
     return {
       viewer,
       vendor,
+      trustProfile,
+      balanceSummary,
+      payoutChecklist,
       products:
         productsRes.data?.map((row: Record<string, unknown>) => ({
           id: String(row.id),
@@ -1021,7 +1069,9 @@ export async function getVendorWorkspaceData() {
             status: String(order?.status || "placed"),
             fulfillmentStatus: String(row.fulfillment_status || "awaiting_acceptance"),
             paymentStatus: String(row.payment_status || "pending"),
+            payoutStatus: String(row.payout_status || "awaiting_payment"),
             subtotal: Number(row.subtotal || 0),
+            netVendorAmount: Number(row.net_vendor_amount || 0),
             placedAt: String(order?.placed_at || order?.created_at || new Date().toISOString()),
           };
         }) ?? [],
@@ -1030,6 +1080,9 @@ export async function getVendorWorkspaceData() {
     return {
       viewer,
       vendor,
+      trustProfile: deriveSellerTrustProfile({ vendor }),
+      balanceSummary: computePayoutBalance({ groups: [] }),
+      payoutChecklist: [] as string[],
       products: [] as MarketplaceProduct[],
       payouts: [] as MarketplacePayoutRequest[],
       disputes: [] as MarketplaceDispute[],
@@ -1039,7 +1092,9 @@ export async function getVendorWorkspaceData() {
         status: string;
         fulfillmentStatus: string;
         paymentStatus: string;
+        payoutStatus: string;
         subtotal: number;
+        netVendorAmount: number;
         placedAt: string;
       }>,
       issue: "Vendor workspace data is unavailable right now.",
@@ -1197,14 +1252,16 @@ export async function getOrderByNumber(orderNo: string) {
       buyerEmail: String(orderRes.data.buyer_email || ""),
       shippingCity: String(orderRes.data.shipping_city || ""),
       shippingRegion: String(orderRes.data.shipping_region || ""),
-      timeline: Array.isArray(orderRes.data.timeline) ? orderRes.data.timeline.map(String) : [],
+      timeline: Array.isArray(orderRes.data.timeline)
+        ? orderRes.data.timeline.map(String)
+        : [`Order status: ${titleCaseMarketplaceValue(String(orderRes.data.status || "placed").replace(/_/g, " "))}`],
       groups: (groupsRes.data ?? []).map((group: Record<string, unknown>) => ({
         id: String(group.id),
         vendorSlug: vendorById.get(String(group.vendor_id))?.slug || null,
         ownerType: String(group.owner_type || "vendor") as MarketplaceOrder["groups"][number]["ownerType"],
         fulfillmentStatus: String(group.fulfillment_status || "awaiting_acceptance") as MarketplaceOrder["groups"][number]["fulfillmentStatus"],
         paymentStatus: String(group.payment_status || "pending") as MarketplaceOrder["groups"][number]["paymentStatus"],
-        payoutStatus: String(group.payout_status || "eligible") as MarketplaceOrder["groups"][number]["payoutStatus"],
+        payoutStatus: String(group.payout_status || "awaiting_payment") as MarketplaceOrder["groups"][number]["payoutStatus"],
         subtotal: Number(group.subtotal || 0),
         commissionAmount: Number(group.commission_amount || 0),
         netVendorAmount: Number(group.net_vendor_amount || 0),

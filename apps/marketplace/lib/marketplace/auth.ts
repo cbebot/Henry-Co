@@ -1,14 +1,19 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { normalizeEmail } from "@/lib/env";
+import { isRecoverableSupabaseAuthError, normalizeEmail } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
+import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { MarketplaceRole, MarketplaceViewerContext } from "@/lib/marketplace/types";
 
 type SharedProfile = {
   full_name: string | null;
   role?: string | null;
+};
+
+type CustomerProfile = {
+  avatar_url: string | null;
 };
 
 type MarketplaceRoleMembershipRow = {
@@ -32,9 +37,16 @@ export function viewerHasRole(
 
 export async function getMarketplaceViewer(): Promise<MarketplaceViewerContext> {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
+
+  try {
+    const auth = await supabase.auth.getUser();
+    user = auth.data.user;
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+  }
 
   if (!user) {
     return {
@@ -48,11 +60,14 @@ export async function getMarketplaceViewer(): Promise<MarketplaceViewerContext> 
   const admin = createAdminSupabase();
   const email = normalizeEmail(user.email);
 
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("full_name, role")
-    .eq("id", user.id)
-    .maybeSingle<SharedProfile>();
+  const [{ data: profile }, { data: customerProfile }] = await Promise.all([
+    admin.from("profiles").select("full_name, role").eq("id", user.id).maybeSingle<SharedProfile>(),
+    admin
+      .from("customer_profiles")
+      .select("avatar_url")
+      .eq("id", user.id)
+      .maybeSingle<CustomerProfile>(),
+  ]);
 
   let memberships:
     | MarketplaceRoleMembershipRow[]
@@ -118,6 +133,7 @@ export async function getMarketplaceViewer(): Promise<MarketplaceViewerContext> 
         (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
         (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
         null,
+      avatarUrl: customerProfile?.avatar_url || null,
     },
     normalizedEmail: email,
     roles,
@@ -134,8 +150,7 @@ export async function requireMarketplaceUser(next?: string) {
   const viewer = await getMarketplaceViewer();
 
   if (!viewer.user) {
-    const suffix = next ? `?next=${encodeURIComponent(next)}` : "";
-    redirect(`/login${suffix}`);
+    redirect(buildSharedAccountLoginUrl(next || "/account"));
   }
 
   return viewer;
