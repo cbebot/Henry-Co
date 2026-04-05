@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -10,6 +11,7 @@ import { StudioThemeToggle } from "@/components/studio/theme-toggle";
 const studio = getDivisionConfig("studio");
 
 const nav = [
+  { href: "/pick", label: "Project types" },
   { href: "/services", label: "Services" },
   { href: "/pricing", label: "Packages" },
   { href: "/work", label: "Case Studies" },
@@ -26,9 +28,11 @@ function joinClassNames(...values: Array<string | false | null | undefined>) {
 export function StudioSiteHeader({
   supportEmail,
   accountHref,
+  accountMenu,
 }: {
   supportEmail: string | null;
   accountHref: string;
+  accountMenu?: ReactNode;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -88,6 +92,7 @@ export function StudioSiteHeader({
         </nav>
 
         <div className="flex items-center gap-2">
+          {accountMenu}
           <StudioThemeToggle />
           <Link
             href="/contact"

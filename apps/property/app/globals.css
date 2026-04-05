@@ -203,6 +203,37 @@ textarea {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.property-nav-link-active {
+  background: rgba(232, 184, 148, 0.14);
+  color: var(--property-ink);
+}
+
+.property-nav-link-idle {
+  color: var(--property-ink-soft);
+}
+
+.property-nav-link-idle:hover {
+  color: var(--property-ink);
+}
+
+.property-status-badge-positive {
+  border-color: rgba(152, 179, 154, 0.36);
+  background: rgba(152, 179, 154, 0.14);
+  color: var(--property-sage-soft);
+}
+
+.property-status-badge-negative {
+  border-color: rgba(191, 122, 71, 0.36);
+  background: rgba(191, 122, 71, 0.16);
+  color: var(--property-accent-soft);
+}
+
+.property-status-badge-neutral {
+  border-color: var(--property-line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--property-ink-soft);
+}
+
 .property-input,
 .property-select,
 .property-textarea {

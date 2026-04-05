@@ -330,7 +330,7 @@ export default function CompanyPageClient({
               />
               <InfoPill
                 icon={<ShieldCheck className="h-4 w-4" />}
-                label="Trust posture"
+                label="Trust & quality"
                 value="Structured, professional, and clear"
               />
               <InfoPill

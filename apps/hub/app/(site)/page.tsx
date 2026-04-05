@@ -1,5 +1,11 @@
+import { headers } from "next/headers";
 import HubHomeClient from "./HubHomeClient";
+import { getHubHomeCopy } from "@henryco/i18n/server";
+import { getAccountUrl } from "@henryco/config";
+import { getHubPublicLocale } from "../../lib/locale-server";
 import { getCompanySettings } from "../lib/company-settings";
+import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
+import { getHubPublicChipUser } from "@/lib/hub-public-viewer";
 import {
   normalizeCompanySettings,
   type CompanySettingsRecord,
@@ -73,6 +79,20 @@ export default async function HomePage() {
     hasServerError = true;
   }
 
+  const locale = await getHubPublicLocale();
+  const copy = getHubHomeCopy(locale);
+
+  const [chipUser, h] = await Promise.all([getHubPublicChipUser(), headers()]);
+  const returnPath = h.get("x-hub-return-path") || "/";
+  const accountChip = {
+    user: chipUser,
+    loginHref: getHubSharedLoginUrl(returnPath),
+    signupHref: getHubSharedSignupUrl(returnPath),
+    accountHref: getAccountUrl("/"),
+  };
+  const firstName = chipUser?.displayName?.trim().split(/\s+/).filter(Boolean)[0];
+  const heroWelcome = firstName ? `Welcome back, ${firstName}` : null;
+
   return (
     <HubHomeClient
       brandTitle={settings.brand_title ?? "Henry & Co."}
@@ -84,6 +104,10 @@ export default async function HomePage() {
       initialDivisions={divisions}
       initialFaqs={faqs}
       hasServerError={hasServerError}
+      copy={copy}
+      locale={locale}
+      accountChip={accountChip}
+      heroWelcome={heroWelcome}
     />
   );
 }

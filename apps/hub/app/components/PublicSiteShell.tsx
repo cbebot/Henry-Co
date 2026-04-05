@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Layers3, Mail, Phone } from "lucide-react";
+import type { PublicAccountUser } from "@henryco/ui";
+import { PublicAccountChip } from "@henryco/ui";
 import {
   normalizeCompanySettings,
   type CompanySettingsRecord,
@@ -64,6 +66,7 @@ function BrandLogo({
 
 export default function PublicSiteShell({
   initialSettings,
+  accountChip,
   children,
 }: {
   initialSettings:
@@ -71,6 +74,13 @@ export default function PublicSiteShell({
     | Record<string, unknown>
     | { settings?: Partial<CompanySettingsRecord> | null; hasServerError?: boolean }
     | null;
+  /** Shared HenryCo identity in the header (session-aware). */
+  accountChip?: {
+    user: PublicAccountUser | null;
+    loginHref: string;
+    signupHref: string;
+    accountHref: string;
+  };
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -128,20 +138,39 @@ export default function PublicSiteShell({
             </Link>
           </nav>
 
-          <div className="hidden items-center gap-3 sm:flex">
-            <Link
-              href="/contact"
-              className="rounded-xl border border-white/12 bg-white/5 px-3.5 py-2 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.92))] transition hover:bg-white/10"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/#divisions"
-              className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
-            >
-              Explore
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {accountChip ? (
+              <PublicAccountChip
+                user={accountChip.user}
+                loginHref={accountChip.loginHref}
+                signupHref={accountChip.signupHref}
+                accountHref={accountChip.accountHref}
+                preferencesHref="/preferences"
+                showSignOut
+                buttonClassName="border-white/14 bg-white/[0.08] text-white hover:border-white/22 hover:bg-white/[0.12]"
+                dropdownClassName="border-zinc-700/80 bg-[#0a0f1f]"
+                menuItems={[
+                  { label: "Divisions directory", href: "/#divisions" },
+                  { label: "About", href: "/about" },
+                  { label: "Contact", href: "/contact" },
+                ]}
+              />
+            ) : null}
+            <div className="hidden items-center gap-3 sm:flex">
+              <Link
+                href="/contact"
+                className="rounded-xl border border-white/12 bg-white/5 px-3.5 py-2 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.92))] transition hover:bg-white/10"
+              >
+                Contact
+              </Link>
+              <Link
+                href="/#divisions"
+                className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+              >
+                Explore
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -255,6 +284,12 @@ export default function PublicSiteShell({
                   className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
                 >
                   Contact
+                </Link>
+                <Link
+                  href="/preferences"
+                  className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+                >
+                  Language & preferences
                 </Link>
               </div>
             </div>

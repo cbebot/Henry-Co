@@ -19,13 +19,13 @@ export function MarketplaceToastStack() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 18 }}
               className={cn(
-                "pointer-events-auto overflow-hidden rounded-[1.45rem] border px-4 py-4 shadow-[0_24px_60px_rgba(17,13,9,0.18)] backdrop-blur-xl",
+                "pointer-events-auto overflow-hidden rounded-[1.45rem] border px-4 py-4 shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl",
                 toast.tone === "success" &&
-                  "border-[rgba(67,103,72,0.26)] bg-[rgba(242,247,241,0.95)] text-[var(--market-success)]",
+                  "border-[rgba(144,215,186,0.26)] bg-[rgba(11,21,20,0.9)] text-[var(--market-success)]",
                 toast.tone === "error" &&
-                  "border-[rgba(124,36,25,0.28)] bg-[rgba(252,243,240,0.97)] text-[var(--market-alert)]",
+                  "border-[rgba(255,171,151,0.28)] bg-[rgba(27,14,16,0.92)] text-[var(--market-alert)]",
                 toast.tone === "info" &&
-                  "border-[rgba(184,150,86,0.28)] bg-[rgba(255,250,241,0.97)] text-[var(--market-ink)]"
+                  "border-[rgba(117,209,255,0.26)] bg-[rgba(10,16,28,0.92)] text-[var(--market-paper-white)]"
               )}
             >
               <div className="flex items-start gap-3">

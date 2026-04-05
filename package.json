@@ -7,12 +7,17 @@
     "node": "24.x"
   },
   "scripts": {
+    "build:all": "pnpm -r --filter \"./apps/*\" run build",
+    "lint:all": "pnpm -r --filter \"./apps/*\" run lint",
     "build:logistics": "pnpm --filter @henryco/logistics build",
     "lint:logistics": "pnpm --filter @henryco/logistics lint",
     "typecheck:logistics": "pnpm --filter @henryco/logistics typecheck",
     "build:studio": "pnpm --filter @henryco/studio build",
     "lint:studio": "pnpm --filter @henryco/studio lint",
     "typecheck:studio": "pnpm --filter @henryco/studio typecheck"
+  },
+  "dependencies": {
+    "@henryco/config": "workspace:^"
   },
   "devDependencies": {
     "next": "16.1.6"

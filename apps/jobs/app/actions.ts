@@ -70,8 +70,10 @@ export async function uploadCandidateDocumentAction(formData: FormData) {
 }
 
 export async function toggleSavedJobAction(formData: FormData) {
-  const viewer = await requireJobsUser("/candidate/saved-jobs");
   const jobSlug = String(formData.get("jobSlug") || "");
+  const explicitReturn = getSafeReturnTo(formData);
+  const landing = explicitReturn || (jobSlug ? `/jobs/${jobSlug}` : "/jobs");
+  const viewer = await requireJobsUser(landing);
   const result = await toggleSavedJob({
     actor: {
       userId: viewer.user!.id,
@@ -86,10 +88,7 @@ export async function toggleSavedJobAction(formData: FormData) {
   revalidatePath("/candidate");
   revalidatePath("/candidate/saved-jobs");
 
-  const returnTo = getSafeReturnTo(formData);
-  if (returnTo) {
-    redirect(`${returnTo}?saved=${result.saved ? "1" : "0"}`);
-  }
+  redirect(`${landing}?saved=${result.saved ? "1" : "0"}`);
 }
 
 export async function createJobAlertAction(formData: FormData) {
@@ -114,7 +113,9 @@ export async function createJobAlertAction(formData: FormData) {
 }
 
 export async function submitApplicationAction(formData: FormData) {
-  const viewer = await requireJobsUser("/candidate/applications");
+  const jobSlug = String(formData.get("jobSlug") || "");
+  const returnTo = getSafeReturnTo(formData) || (jobSlug ? `/jobs/${jobSlug}` : "/candidate/applications");
+  const viewer = await requireJobsUser(returnTo);
   const result = await submitApplication({
     actor: {
       userId: viewer.user!.id,
@@ -125,7 +126,7 @@ export async function submitApplicationAction(formData: FormData) {
     formData,
   });
   revalidatePath("/jobs");
-  revalidatePath(`/jobs/${String(formData.get("jobSlug") || "")}`);
+  revalidatePath(`/jobs/${jobSlug}`);
   revalidatePath("/candidate");
   revalidatePath("/candidate/applications");
   redirect(`/candidate/applications?submitted=${encodeURIComponent(result.applicationId)}`);
@@ -163,7 +164,7 @@ export async function createJobPostAction(formData: FormData) {
   revalidatePath("/employer/jobs");
   revalidatePath(`/employer/jobs/${result.slug}`);
   revalidatePath("/jobs");
-  redirect(`/employer/jobs/${result.slug}?created=1`);
+  redirect(`/employer/jobs/${result.slug}?created=1&mode=${encodeURIComponent(result.moderationStatus)}`);
 }
 
 export async function advanceApplicationStageAction(formData: FormData) {

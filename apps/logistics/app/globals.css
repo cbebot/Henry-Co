@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+:root {
+  --logistics-bg: #09060a;
+  --logistics-ink: #f8efe8;
+  --logistics-muted: rgba(241, 224, 213, 0.72);
+  --logistics-line: rgba(222, 148, 95, 0.14);
+  --logistics-line-strong: rgba(222, 148, 95, 0.24);
+  --logistics-accent: #d77539;
+  --logistics-accent-soft: #f3d4be;
+  --logistics-mist: #a49486;
+  --logistics-panel: linear-gradient(180deg, rgba(28, 16, 15, 0.88) 0%, rgba(16, 11, 13, 0.82) 100%);
+  --logistics-shadow: 0 30px 110px rgba(0, 0, 0, 0.38);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(215, 117, 57, 0.16), transparent 24%),
+    radial-gradient(circle at 82% 12%, rgba(164, 148, 134, 0.14), transparent 24%),
+    radial-gradient(circle at 12% 84%, rgba(111, 78, 68, 0.16), transparent 28%),
+    linear-gradient(180deg, #08050a 0%, #09070c 42%, #120d12 100%);
+  color: var(--logistics-ink);
+  font-family:
+    var(--font-manrope),
+    "Manrope",
+    "Aptos",
+    "Segoe UI Variable",
+    "Segoe UI",
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, rgba(255, 245, 238, 0.018) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 245, 238, 0.018) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at center, black 24%, transparent 86%);
+  opacity: 0.2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(215, 117, 57, 0.24);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

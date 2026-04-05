@@ -29,7 +29,7 @@ export function MarketplaceCartDrawer() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 48 }}
             transition={{ type: "spring", stiffness: 220, damping: 24 }}
-            className="fixed inset-y-0 right-0 z-[60] flex w-full max-w-[440px] flex-col border-l border-[var(--market-line-strong)] bg-[var(--market-noir)] text-[var(--market-paper-white)] shadow-[0_40px_140px_rgba(0,0,0,0.45)]"
+            className="fixed inset-y-0 right-0 z-[60] flex w-full max-w-[440px] flex-col border-l border-[var(--market-line-strong)] bg-[rgba(5,7,13,0.94)] text-[var(--market-paper-white)] shadow-[0_40px_140px_rgba(0,0,0,0.45)] backdrop-blur-3xl"
           >
             <div className="flex items-center justify-between border-b border-[color:rgba(255,255,255,0.12)] px-6 py-5">
               <div>
@@ -54,10 +54,10 @@ export function MarketplaceCartDrawer() {
                 cart.items.map((item) => (
                   <article
                     key={item.id}
-                    className="rounded-[1.6rem] border border-[color:rgba(255,255,255,0.12)] bg-[color:rgba(255,255,255,0.06)] p-4"
+                    className="rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4"
                   >
                     <div className="grid grid-cols-[84px,1fr] gap-4">
-                      <div className="relative aspect-square overflow-hidden rounded-[1.15rem] bg-[color:rgba(255,255,255,0.08)]">
+                      <div className="relative aspect-square overflow-hidden rounded-[1.15rem] bg-[rgba(255,255,255,0.06)]">
                         {item.image ? (
                           <Image
                             src={item.image}
@@ -71,20 +71,20 @@ export function MarketplaceCartDrawer() {
 
                       <div className="space-y-3">
                         <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[color:rgba(255,255,255,0.6)]">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
                             {item.inventoryOwnerType === "company" ? "HenryCo stocked" : item.vendorName || "Verified store"}
                           </p>
                           <p className="mt-1 text-base font-semibold leading-6">{item.title}</p>
-                          <p className="mt-1 text-sm text-[color:rgba(255,255,255,0.64)]">{item.deliveryNote}</p>
+                          <p className="mt-1 text-sm text-[var(--market-muted)]">{item.deliveryNote}</p>
                         </div>
 
                         <div className="flex items-center justify-between gap-3">
-                          <div className="inline-flex items-center gap-2 rounded-full border border-[color:rgba(255,255,255,0.14)] px-2 py-1">
+                          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-2 py-1">
                             <button
                               type="button"
                               disabled={cartBusy}
                               onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:rgba(255,255,255,0.08)]"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.08)]"
                             >
                               <Minus className="h-3.5 w-3.5" />
                             </button>
@@ -93,7 +93,7 @@ export function MarketplaceCartDrawer() {
                               type="button"
                               disabled={cartBusy}
                               onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:rgba(255,255,255,0.08)]"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.08)]"
                             >
                               <Plus className="h-3.5 w-3.5" />
                             </button>
@@ -103,7 +103,7 @@ export function MarketplaceCartDrawer() {
                               {formatCurrency(item.price * item.quantity, item.currency)}
                             </p>
                             {item.compareAtPrice ? (
-                              <p className="text-xs text-[color:rgba(255,255,255,0.46)] line-through">
+                              <p className="text-xs text-[var(--market-muted)] line-through">
                                 {formatCurrency(item.compareAtPrice, item.currency)}
                               </p>
                             ) : null}
@@ -116,17 +116,17 @@ export function MarketplaceCartDrawer() {
                       type="button"
                       disabled={cartBusy}
                       onClick={() => removeCartItem(item.id)}
-                      className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:rgba(255,255,255,0.58)]"
+                      className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]"
                     >
                       Remove
                     </button>
                   </article>
                 ))
               ) : (
-                <div className="rounded-[1.8rem] border border-dashed border-[color:rgba(255,255,255,0.16)] bg-[color:rgba(255,255,255,0.04)] p-8 text-center">
+                <div className="rounded-[1.8rem] border border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-8 text-center">
                   <ShoppingBag className="mx-auto h-8 w-8 text-[var(--market-brass)]" />
                   <p className="mt-4 text-xl font-semibold tracking-tight">Start building the basket.</p>
-                  <p className="mt-3 text-sm leading-7 text-[color:rgba(255,255,255,0.66)]">
+                  <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
                     Quick-add from any card and the basket will stay updated here without a hard refresh.
                   </p>
                   <Link
@@ -142,22 +142,22 @@ export function MarketplaceCartDrawer() {
 
             <div className="border-t border-[color:rgba(255,255,255,0.12)] px-6 py-5">
               {runtime.shell.issue ? (
-                <div className="mb-4 rounded-[1.3rem] border border-[color:rgba(210,128,103,0.35)] bg-[color:rgba(124,36,25,0.26)] px-4 py-3 text-sm text-[color:rgba(255,255,255,0.82)]">
+                <div className="mb-4 rounded-[1.3rem] border border-[rgba(255,171,151,0.26)] bg-[rgba(27,14,16,0.9)] px-4 py-3 text-sm text-[var(--market-paper-white)]">
                   {runtime.shell.issue}
                 </div>
               ) : null}
-              <div className="flex items-center justify-between text-sm text-[color:rgba(255,255,255,0.68)]">
+              <div className="flex items-center justify-between text-sm text-[var(--market-muted)]">
                 <span>Subtotal</span>
                 <span className="text-base font-semibold text-[var(--market-paper-white)]">
                   {formatCurrency(cart.subtotal, cart.items[0]?.currency || "NGN")}
                 </span>
               </div>
-              <p className="mt-3 text-sm leading-7 text-[color:rgba(255,255,255,0.6)]">
+              <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
                 Split-order clarity, delivery windows, and payment states stay visible again at checkout.
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {cartSyncing ? (
-                  <div className="sm:col-span-2 rounded-[1.35rem] border border-[color:rgba(255,255,255,0.14)] bg-[color:rgba(255,255,255,0.06)] px-4 py-4 text-center text-sm font-semibold text-[color:rgba(255,255,255,0.72)]">
+                  <div className="sm:col-span-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-center text-sm font-semibold text-[var(--market-muted)]">
                     Finalizing basket before navigation...
                   </div>
                 ) : (
@@ -165,14 +165,14 @@ export function MarketplaceCartDrawer() {
                     <Link
                       href="/cart"
                       onClick={closeCart}
-                      className="inline-flex items-center justify-center rounded-full border border-[color:rgba(255,255,255,0.16)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                      className="market-button-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
                     >
                       View cart
                     </Link>
                     <Link
                       href="/checkout"
                       onClick={closeCart}
-                      className="inline-flex items-center justify-center rounded-full bg-[var(--market-brass)] px-5 py-3 text-sm font-semibold text-[var(--market-noir)]"
+                      className="market-button-primary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
                     >
                       Checkout
                     </Link>

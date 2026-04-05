@@ -22,7 +22,10 @@ export default async function VendorOrdersPage() {
             <p className="market-kicker">{order.orderNo}</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{formatCurrency(order.subtotal)}</h2>
             <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
-              {formatDate(order.placedAt)} · {order.fulfillmentStatus} · {order.paymentStatus}
+              {formatDate(order.placedAt)} · {order.fulfillmentStatus} · {order.paymentStatus} · payout {order.payoutStatus.replace(/_/g, " ")}
+            </p>
+            <p className="mt-2 text-sm font-medium text-[var(--market-brass)]">
+              Net vendor settlement: {formatCurrency(order.netVendorAmount)}
             </p>
             <form action="/api/marketplace" method="POST" className="mt-4 grid gap-3 md:grid-cols-[1fr,1fr,1fr,auto]">
               <input type="hidden" name="intent" value="vendor_order_update" />

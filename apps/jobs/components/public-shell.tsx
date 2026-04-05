@@ -1,13 +1,19 @@
 import Link from "next/link";
-import { getDivisionConfig } from "@henryco/config";
-import { PublicFooter } from "@henryco/ui";
-import { PublicNavbar } from "@henryco/ui";
-import { getSharedAccountJobsUrl } from "@/lib/account";
+import { headers } from "next/headers";
+import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import { PublicAccountChip, PublicFooter, PublicNavbar } from "@henryco/ui";
+import {
+  getSharedAccountJobsUrl,
+  getSharedAccountLoginUrl,
+  getSharedAccountSignupUrl,
+  normalizeJobsPath,
+} from "@/lib/account";
+import { getJobsViewer } from "@/lib/auth";
 
 const jobs = getDivisionConfig("jobs");
 const accountJobsUrl = getSharedAccountJobsUrl();
 
-export function PublicShell({
+export async function PublicShell({
   children,
   primaryCta,
   secondaryCta,
@@ -16,16 +22,57 @@ export function PublicShell({
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
 }) {
+  const viewer = await getJobsViewer();
+  const resolvedPrimary =
+    primaryCta ??
+    (viewer.user
+      ? { label: "My hiring hub", href: "/candidate" }
+      : { label: "Browse open jobs", href: "/jobs" });
+  const resolvedSecondary =
+    secondaryCta ??
+    (viewer.user
+      ? { label: "Saved jobs", href: "/candidate/saved-jobs" }
+      : { label: "Hire with HenryCo", href: "/hire" });
+  const h = await headers();
+  const returnPath = h.get("x-jobs-return-path") || "/";
+  const loginHref = getSharedAccountLoginUrl(normalizeJobsPath(returnPath));
+  const signupHref = getSharedAccountSignupUrl(normalizeJobsPath(returnPath));
+  const chipUser = viewer.user
+    ? {
+        displayName: viewer.user.fullName || viewer.user.email || "Your account",
+        email: viewer.user.email,
+        avatarUrl: viewer.user.avatarUrl,
+      }
+    : null;
+
   return (
-    <div className="jobs-page">
+    <div className="jobs-page jobs-shell">
       <PublicNavbar
         brand={{ name: jobs.name, sub: jobs.sub }}
         items={[...jobs.publicNav]}
-        primaryCta={primaryCta}
-        secondaryCta={secondaryCta}
-        auxLink={{ label: "HenryCo Account", href: accountJobsUrl, external: true }}
+        primaryCta={resolvedPrimary}
+        secondaryCta={resolvedSecondary}
+        headerClassName="jobs-public-header"
+        auxLink={{ label: "HenryCo account", href: accountJobsUrl, external: true }}
+        accountMenu={
+          <PublicAccountChip
+            user={chipUser}
+            loginHref={loginHref}
+            accountHref={accountJobsUrl}
+            preferencesHref={getHubUrl("/preferences")}
+            signupHref={signupHref}
+            showSignOut
+            menuItems={[
+              { label: "Candidate home", href: "/candidate" },
+              { label: "Applications", href: "/candidate/applications" },
+              { label: "Saved jobs", href: "/candidate/saved-jobs" },
+              { label: "Browse jobs", href: "/jobs" },
+              { label: "Hire with HenryCo", href: "/hire" },
+            ]}
+          />
+        }
       />
-      <main>{children}</main>
+      <main className="jobs-main">{children}</main>
       <PublicFooter
         brand={jobs.name}
         description={jobs.description}
@@ -41,18 +88,19 @@ export function PublicShell({
             ],
           },
           {
-            title: "Jobs Surfaces",
+            title: "For teams",
             links: [
-              { label: "Candidate Module", href: "/candidate" },
-              { label: "Employer Console", href: "/employer" },
-              { label: "Recruiter Console", href: "/recruiter" },
-              { label: "Owner Operations", href: "/owner" },
+              { label: "Candidates", href: "/candidate" },
+              { label: "Hire with HenryCo", href: "/hire" },
+              { label: "Employer workspace", href: "/employer" },
+              { label: "Recruiters", href: "/recruiter" },
+              { label: "Careers", href: "/careers" },
             ],
           },
           {
             title: "HenryCo",
             links: [
-              { label: "Account Dashboard", href: accountJobsUrl, external: true },
+              { label: "My HenryCo account", href: accountJobsUrl, external: true },
               { label: "Internal Careers", href: "/careers" },
               { label: "Group Hub", href: "https://henrycogroup.com", external: true },
             ],

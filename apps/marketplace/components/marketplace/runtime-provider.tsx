@@ -16,6 +16,10 @@ import type {
   MarketplaceShellState,
 } from "@/lib/marketplace/types";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
+import {
+  stashMarketplacePostAuthIntent,
+  takeMarketplacePostAuthIntent,
+} from "@/lib/marketplace/post-auth-intent";
 import { getBrowserSupabaseOptional } from "@/lib/supabase/browser";
 
 type ToastTone = "success" | "error" | "info";
@@ -110,7 +114,7 @@ function mergeOptimisticCartItem(
   ];
 }
 
-function redirectToLogin(nextPath: string) {
+function goToSharedAccountLogin(nextPath: string) {
   window.location.href = buildSharedAccountLoginUrl(nextPath, window.location.origin);
 }
 
@@ -125,9 +129,7 @@ function ensureGuestCartToken() {
   const existing = readCookie("marketplace_cart_token");
   if (existing) return existing;
 
-  const token = crypto.randomUUID();
-  document.cookie = `marketplace_cart_token=${encodeURIComponent(token)}; Path=/; SameSite=Lax; Max-Age=2592000`;
-  return token;
+  return crypto.randomUUID();
 }
 
 export function MarketplaceRuntimeProvider({
@@ -146,6 +148,9 @@ export function MarketplaceRuntimeProvider({
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const broadcastRef = useRef<BroadcastChannel | null>(null);
   const refreshShellRef = useRef<(silent?: boolean) => Promise<void>>(async () => undefined);
+  const postAuthResumeRef = useRef(false);
+  /** Synchronous guard so double-clicks cannot enqueue overlapping POST /api/cart calls. */
+  const cartRequestSlugsRef = useRef<Set<string>>(new Set());
 
   function pushToast(title: string, tone: ToastTone, body?: string) {
     const toast = makeToast(title, tone, body);
@@ -181,6 +186,12 @@ export function MarketplaceRuntimeProvider({
   }
 
   refreshShellRef.current = refreshShell;
+
+  useEffect(() => {
+    startTransition(() => {
+      void refreshShellRef.current(true);
+    });
+  }, []);
 
   useEffect(() => {
     if (typeof BroadcastChannel === "undefined") {
@@ -282,19 +293,84 @@ export function MarketplaceRuntimeProvider({
     } satisfies MarketplaceRealtimePayload);
   }
 
+  useEffect(() => {
+    if (!shell.viewer.signedIn || !shell.viewer.userId) {
+      postAuthResumeRef.current = false;
+      return;
+    }
+    if (postAuthResumeRef.current) return;
+    const intent = takeMarketplacePostAuthIntent();
+    if (!intent) return;
+    postAuthResumeRef.current = true;
+
+    const resume = async () => {
+      if (intent.action === "wishlist") {
+        setPendingWishlistSlugs((current) => [...current, intent.productSlug]);
+        try {
+          const response = await fetch("/api/wishlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productSlug: intent.productSlug }),
+          });
+          if (response.ok) {
+            const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
+            startTransition(() => setShell(payload.shell));
+            pushToast(payload.active ? "Saved to wishlist" : "Removed from wishlist", "success");
+            emitCrossTabRefresh("wishlist", intent.productSlug);
+          } else if (response.status === 401) {
+            stashMarketplacePostAuthIntent({ action: "wishlist", productSlug: intent.productSlug });
+            goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
+          }
+        } finally {
+          setPendingWishlistSlugs((current) => current.filter((slug) => slug !== intent.productSlug));
+        }
+        return;
+      }
+
+      setPendingFollowSlugs((current) => [...current, intent.vendorSlug]);
+      try {
+        const response = await fetch("/api/follows", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ vendorSlug: intent.vendorSlug }),
+        });
+        if (response.ok) {
+          const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
+          startTransition(() => setShell(payload.shell));
+          pushToast(payload.active ? "Store followed" : "Store unfollowed", "success");
+          emitCrossTabRefresh("follow", intent.vendorSlug);
+        } else if (response.status === 401) {
+          stashMarketplacePostAuthIntent({ action: "follow", vendorSlug: intent.vendorSlug });
+          goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
+        }
+      } finally {
+        setPendingFollowSlugs((current) => current.filter((slug) => slug !== intent.vendorSlug));
+      }
+    };
+
+    void resume();
+  }, [shell.viewer.signedIn, shell.viewer.userId]);
+
   async function addToCart(input: AddToCartInput, quantity = 1) {
+    if (cartRequestSlugsRef.current.has(input.productSlug)) {
+      return false;
+    }
+    cartRequestSlugsRef.current.add(input.productSlug);
+
     const previous = shell;
     const sessionToken = !shell.viewer.signedIn ? ensureGuestCartToken() : null;
     setPendingCartSlugs((current) => [...current, input.productSlug]);
     setCartOpen(true);
     setShell((current) => {
       const items = mergeOptimisticCartItem(current.cart.items, input, quantity);
+      const count = items.reduce((sum, item) => sum + item.quantity, 0);
+      const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
       return {
         ...current,
         cart: {
           items,
-          count: items.reduce((sum, item) => sum + item.quantity, 0),
-          subtotal: current.cart.subtotal + input.price * quantity,
+          count,
+          subtotal,
         },
       };
     });
@@ -326,6 +402,7 @@ export function MarketplaceRuntimeProvider({
       pushToast("Could not add that item.", "error");
       return false;
     } finally {
+      cartRequestSlugsRef.current.delete(input.productSlug);
       setPendingCartSlugs((current) => current.filter((slug) => slug !== input.productSlug));
     }
   }
@@ -386,7 +463,8 @@ export function MarketplaceRuntimeProvider({
 
   async function toggleWishlist(productSlug: string) {
     if (!shell.viewer.signedIn) {
-      redirectToLogin(window.location.pathname);
+      stashMarketplacePostAuthIntent({ action: "wishlist", productSlug });
+      goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
       return;
     }
 
@@ -410,7 +488,8 @@ export function MarketplaceRuntimeProvider({
       });
 
       if (response.status === 401) {
-        redirectToLogin(window.location.pathname + window.location.search);
+        stashMarketplacePostAuthIntent({ action: "wishlist", productSlug });
+        goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
         return;
       }
 
@@ -429,7 +508,8 @@ export function MarketplaceRuntimeProvider({
 
   async function toggleFollow(vendorSlug: string) {
     if (!shell.viewer.signedIn) {
-      redirectToLogin(window.location.pathname);
+      stashMarketplacePostAuthIntent({ action: "follow", vendorSlug });
+      goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
       return;
     }
 
@@ -453,7 +533,8 @@ export function MarketplaceRuntimeProvider({
       });
 
       if (response.status === 401) {
-        redirectToLogin(window.location.pathname + window.location.search);
+        stashMarketplacePostAuthIntent({ action: "follow", vendorSlug });
+        goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
         return;
       }
 

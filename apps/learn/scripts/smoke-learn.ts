@@ -27,8 +27,10 @@ const requiredFiles = [
   "app/(public)/page.tsx",
   "app/(public)/courses/page.tsx",
   "app/(public)/courses/[slug]/page.tsx",
+  "app/(public)/teach/page.tsx",
   "app/learner/page.tsx",
   "app/owner/page.tsx",
+  "app/owner/instructors/page.tsx",
   "app/content/page.tsx",
   "app/support/page.tsx",
   "app/api/cron/learn-automation/route.ts",
@@ -36,6 +38,7 @@ const requiredFiles = [
   "app/api/learn/announcement/route.ts",
   "supabase/migrations/20260402233000_learn_init.sql",
   "supabase/migrations/20260402233500_learn_policies.sql",
+  "supabase/migrations/20260403120000_learn_teacher_applications.sql",
 ];
 
 const missing = requiredFiles.filter((file) => !fs.existsSync(path.join(appDir, file)));
@@ -68,6 +71,7 @@ const learnTables = [
   ["learn_progress", "id"],
   ["learn_quiz_attempts", "id"],
   ["learn_certificates", "id"],
+  ["learn_teacher_applications", "id"],
 ];
 
 async function tableExists(table: string, column: string) {

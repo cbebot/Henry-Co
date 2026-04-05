@@ -312,3 +312,14 @@ export type LogisticsDashboardQueue = {
   tone: "critical" | "warning" | "info" | "success";
   shipments: LogisticsShipment[];
 };
+
+/** Real rider/dispatch GPS breadcrumbs only — empty until the rider app posts coordinates. */
+export type LogisticsTrackingPoint = {
+  id: string;
+  shipmentId: string;
+  latitude: number;
+  longitude: number;
+  accuracyMeters: number | null;
+  source: string;
+  recordedAt: string;
+};

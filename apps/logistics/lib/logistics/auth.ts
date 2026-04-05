@@ -1,6 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
+import { isRecoverableSupabaseAuthError } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -55,9 +56,16 @@ export function viewerHasRole(viewer: LogisticsViewer | null | undefined, allowe
 
 export async function getLogisticsViewer(): Promise<LogisticsViewer> {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
+
+  try {
+    const auth = await supabase.auth.getUser();
+    user = auth.data.user;
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+  }
 
   if (!user) {
     return { user: null, normalizedEmail: null, roles: [], memberships: [] };

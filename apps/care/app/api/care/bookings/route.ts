@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminSupabase } from "../../../../lib/supabase";
-
-function normalizePhone(phone: string) {
-  return String(phone || "").replace(/\D/g, "");
-}
+import { normalizeEmail, normalizePhone } from "@henryco/config";
 
 function makeTrackingCode() {
   const date = new Date();
@@ -20,7 +17,7 @@ export async function POST(req: Request) {
 
     const customer_name = String(body?.customer_name || "").trim();
     const phone = String(body?.phone || "").trim();
-    const email = String(body?.email || "").trim() || null;
+    const email = normalizeEmail(String(body?.email || "").trim());
     const service_type = String(body?.service_type || "").trim();
     const items_count = Number(body?.items_count || 0);
     const pickup_address = String(body?.pickup_address || "").trim();

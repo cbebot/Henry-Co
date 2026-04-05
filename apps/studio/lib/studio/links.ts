@@ -16,3 +16,11 @@ export function getStudioLoginUrl(nextPath?: string | null) {
       : getStudioAbsoluteUrl(nextPath || "/");
   return getAccountUrl(`/login?next=${encodeURIComponent(next)}`);
 }
+
+export function getStudioSignupUrl(nextPath?: string | null) {
+  const next =
+    nextPath && /^https?:\/\//i.test(nextPath)
+      ? nextPath
+      : getStudioAbsoluteUrl(nextPath || "/");
+  return getAccountUrl(`/signup?next=${encodeURIComponent(next)}`);
+}

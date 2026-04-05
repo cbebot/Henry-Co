@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { MetricCard, PageIntro } from "@/components/marketplace/shell";
 import { getOrderByNumber } from "@/lib/marketplace/data";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -19,13 +19,17 @@ export default async function TrackOrderPage({
       <PageIntro
         kicker="Order tracking"
         title={`Tracking ${order.orderNo}`}
-        description="Split-order clarity stays visible here: every vendor segment, payment state, and fulfillment milestone gets its own card so support and buyer expectations stay aligned."
+        description="Split-order clarity stays visible here: every vendor segment, payment update, and fulfillment milestone gets its own card so support and buyer expectations stay aligned."
       />
 
       <div className="grid gap-5 md:grid-cols-3">
         <MetricCard label="Order value" value={formatCurrency(order.grandTotal)} hint="Grand total including shipping." />
-        <MetricCard label="Payment state" value={order.paymentStatus} hint="Updated by finance or COD workflow." />
-        <MetricCard label="Placed at" value={formatDate(order.placedAt)} hint="Time stamped into the audit trail." />
+        <MetricCard label="Payment state" value={order.paymentStatus} hint="Updated after payment review or cash-on-delivery confirmation." />
+        <MetricCard
+          label="Payout control"
+          value={order.groups.some((group) => group.payoutStatus === "payout_frozen") ? "Frozen" : "Escrow active"}
+          hint="Seller payout is released only after the order is properly completed."
+        />
       </div>
 
       <section className="market-panel rounded-[2rem] p-6">
@@ -53,12 +57,31 @@ export default async function TrackOrderPage({
                     <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Tracking</p>
                     <p className="mt-1 text-lg font-semibold text-[var(--market-ink)]">{group.shipmentTrackingCode || "Pending"}</p>
                   </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Payout</p>
+                    <p className="mt-1 text-lg font-semibold capitalize text-[var(--market-ink)]">{group.payoutStatus.replace(/_/g, " ")}</p>
+                  </div>
                 </div>
               </article>
             ))}
           </div>
         </div>
       </section>
+
+      {order.groups.some((group) => group.fulfillmentStatus === "delivered" && group.payoutStatus !== "payout_released") ? (
+        <section className="market-paper rounded-[2rem] p-6">
+          <p className="market-kicker">Completion confirmation</p>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
+            Confirm completion once the order is satisfactory. HenryCo only releases seller payout after delivery is confirmed or the order qualifies for auto-release.
+          </p>
+          <form action="/api/marketplace" method="POST" className="mt-5 flex flex-wrap gap-3">
+            <input type="hidden" name="intent" value="order_confirm_completion" />
+            <input type="hidden" name="order_no" value={order.orderNo} />
+            <input type="hidden" name="return_to" value={`/track/${order.orderNo}`} />
+            <button className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">Confirm completion</button>
+          </form>
+        </section>
+      ) : null}
     </div>
   );
 }

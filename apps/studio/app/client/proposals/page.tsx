@@ -4,6 +4,7 @@ import { requireStudioUser } from "@/lib/studio/auth";
 import { studioClientSnapshot } from "@/lib/studio/data";
 import { clientNav } from "@/lib/studio/navigation";
 import { getStudioSnapshot } from "@/lib/studio/store";
+import { friendlyProposalStatus } from "@/lib/studio/project-workspace-copy";
 import { StudioWorkspaceShell } from "@/components/studio/workspace/shell";
 
 export default async function ClientProposalsPage() {
@@ -26,7 +27,7 @@ export default async function ClientProposalsPage() {
             <div className="mt-4 text-2xl font-semibold text-[var(--studio-ink)]">
               {formatCurrency(proposal.investment, proposal.currency)}
             </div>
-            <div className="mt-2 text-sm text-[var(--studio-ink-soft)]">{proposal.status.replaceAll("_", " ")}</div>
+            <div className="mt-2 text-sm text-[var(--studio-ink-soft)]">{friendlyProposalStatus(proposal.status)}</div>
             <div className="mt-5">
               <Link href={`/proposals/${proposal.id}?access=${proposal.accessKey}`} className="studio-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
                 Open proposal

@@ -4,17 +4,17 @@ import { getStudioCatalog } from "@/lib/studio/catalog";
 export default async function TrustPage() {
   const catalog = await getStudioCatalog();
   const highlights = [
-    { title: "Server-side controls", body: "Privileged operations remain on the server side.", icon: ShieldCheck },
+    { title: "Protected controls", body: "Sensitive actions stay behind secure access controls.", icon: ShieldCheck },
     { title: "Milestone visibility", body: "Payments and delivery checkpoints stay visible to the client.", icon: Waypoints },
-    { title: "Proposal-first process", body: "Leads become real proposal objects, not dead-end forms.", icon: Sparkles },
-    { title: "Premium finish", body: "The product surface feels considered, modern, and high-trust.", icon: Star },
+    { title: "Structured proposals", body: "Every enquiry becomes a formal proposal with clear scope, pricing, and timelines.", icon: Sparkles },
+    { title: "Premium quality", body: "Every surface is designed to feel considered, modern, and worthy of your investment.", icon: Star },
   ];
 
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-10 sm:px-8 lg:px-10">
       <section className="studio-panel studio-mesh rounded-[2.4rem] px-7 py-10 sm:px-10 lg:px-14">
-        <div className="studio-kicker">Trust layer</div>
-        <h1 className="studio-heading mt-4">Designed to remove uncertainty from premium digital delivery.</h1>
+        <div className="studio-kicker">Trust & transparency</div>
+        <h1 className="studio-heading mt-4">Built to give you confidence at every stage of delivery.</h1>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--studio-ink-soft)]">
           HenryCo Studio is structured around scope clarity, milestone visibility, secure file handling,
           payment checkpoints, and accountable communication so clients always know what is happening.
@@ -57,7 +57,7 @@ export default async function TrustPage() {
       </section>
 
       <section className="mt-10 studio-panel rounded-[1.75rem] p-6">
-        <div className="studio-kicker">Why buyers switch</div>
+        <div className="studio-kicker">Why clients choose HenryCo</div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {catalog.valueComparisons.map((comparison) => (
             <article key={comparison.title} className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">

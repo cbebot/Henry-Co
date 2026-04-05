@@ -514,9 +514,10 @@ async function loadLatestPaymentRequests(bookingIds: string[]) {
   return latestByBooking;
 }
 
-async function resolveLinkedCareBookings(identity: CareAccountIdentity) {
-  await upsertCustomerProfileProjection(identity);
-
+/**
+ * Read-only match for dashboard views — no per-booking writes (those blocked Care page TTFB).
+ */
+async function findMatchedCareBookings(identity: CareAccountIdentity): Promise<CareBookingRow[]> {
   const normalizedEmail = normalizeEmail(identity.email);
   const normalizedPhone = normalizePhone(identity.phone);
   const [mappedIds, bookingsByEmail, bookingsByPhone] = await Promise.all([
@@ -531,7 +532,7 @@ async function resolveLinkedCareBookings(identity: CareAccountIdentity) {
     bookingsById.set(booking.id, booking);
   }
 
-  const matchedBookings = [...bookingsById.values()]
+  return [...bookingsById.values()]
     .filter((booking) => {
       if (mappedIds.includes(booking.id)) {
         return true;
@@ -547,13 +548,22 @@ async function resolveLinkedCareBookings(identity: CareAccountIdentity) {
         new Date(right.updated_at || right.created_at || 0).getTime() -
         new Date(left.updated_at || left.created_at || 0).getTime()
     );
+}
 
+async function applyCareBookingLinkSideEffects(
+  identity: CareAccountIdentity,
+  matchedBookings: CareBookingRow[]
+) {
+  await upsertCustomerProfileProjection(identity);
   for (const booking of matchedBookings) {
     await updateBookingContactProjection(booking, identity);
   }
-
   await syncCareArtifacts(identity, matchedBookings);
+}
 
+async function resolveLinkedCareBookings(identity: CareAccountIdentity) {
+  const matchedBookings = await findMatchedCareBookings(identity);
+  await applyCareBookingLinkSideEffects(identity, matchedBookings);
   return matchedBookings;
 }
 
@@ -570,11 +580,10 @@ export function scheduleLinkedCareBookingsSync(identity: CareAccountIdentity) {
   });
 }
 
-export async function listLinkedCareBookingsForUser(identity: CareAccountIdentity) {
-  const matchedBookings = await resolveLinkedCareBookings(identity);
-
-  const paymentRequests = await loadLatestPaymentRequests(matchedBookings.map((booking) => booking.id));
-
+function buildLinkedCareBookings(
+  matchedBookings: CareBookingRow[],
+  paymentRequests: Map<string, CarePaymentRequestRow>
+): LinkedCareBooking[] {
   return matchedBookings.map((booking) => {
     const paymentRequest = paymentRequests.get(booking.id) ?? null;
     return {
@@ -587,11 +596,33 @@ export async function listLinkedCareBookingsForUser(identity: CareAccountIdentit
   });
 }
 
+function scheduleCareLinkageWrites(identity: CareAccountIdentity, matchedBookings: CareBookingRow[]) {
+  after(() => {
+    void applyCareBookingLinkSideEffects(identity, matchedBookings).catch((error) => {
+      console.error("[henryco/account] Deferred care linkage writes failed:", error);
+    });
+  });
+}
+
+export async function listLinkedCareBookingsForUser(identity: CareAccountIdentity) {
+  const matchedBookings = await findMatchedCareBookings(identity);
+  scheduleCareLinkageWrites(identity, matchedBookings);
+
+  const paymentRequests = await loadLatestPaymentRequests(matchedBookings.map((booking) => booking.id));
+
+  return buildLinkedCareBookings(matchedBookings, paymentRequests);
+}
+
 export async function listLinkedCarePaymentsForUser(identity: CareAccountIdentity) {
-  const bookings = await listLinkedCareBookingsForUser(identity);
-  if (bookings.length === 0) {
+  const matchedBookings = await findMatchedCareBookings(identity);
+  scheduleCareLinkageWrites(identity, matchedBookings);
+
+  if (matchedBookings.length === 0) {
     return [] as Array<Record<string, unknown>>;
   }
+
+  const paymentRequests = await loadLatestPaymentRequests(matchedBookings.map((booking) => booking.id));
+  const bookings = buildLinkedCareBookings(matchedBookings, paymentRequests);
 
   const admin = createAdminSupabase();
   const bookingIds = bookings.map((booking) => booking.id);

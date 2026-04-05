@@ -18,35 +18,47 @@ export default async function StudioHomePage() {
           <div className="studio-panel studio-hero studio-mesh rounded-[3rem] px-7 py-8 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
             <div className="studio-kicker">HenryCo Studio</div>
             <h1 className="studio-display mt-6 max-w-5xl text-[var(--studio-ink)]">
-              Premium digital systems for companies that need to sell better and operate cleaner.
+              Websites, web apps, and real software—guided from raw idea to polished launch.
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-              Websites, commerce platforms, admin systems, client portals, mobile products, and custom
-              software structured through a real proposal, milestone, and delivery platform instead of a
-              shallow agency handoff.
+              We design and build for schools, churches, founders, logistics teams, marketplaces, creators, and established
+              businesses. You choose a ready-made project path when it fits, or describe something fully custom when it
+              does not. Either way you get plain-English scope, honest milestones, and one premium workspace tied to your
+              HenryCo account.
+            </p>
+            <p className="mt-4 max-w-3xl rounded-2xl border border-[var(--studio-line)] bg-black/15 px-4 py-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+              <span className="font-semibold text-[var(--studio-ink)]">Your next step is always obvious:</span>{" "}
+              browse curated project types, open a structured brief, or talk to Studio on the contact page. Deposits and
+              proof are explained before you pay—never hidden behind jargon.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href="/request"
+                href="/pick"
                 className="studio-button-primary inline-flex items-center gap-3 rounded-full px-6 py-4 text-sm font-semibold"
               >
-                Start a project
+                Help me pick a project type
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/pricing"
+                href="/request"
                 className="studio-button-secondary inline-flex rounded-full px-6 py-4 text-sm font-semibold"
               >
-                Review package lanes
+                I already know what I need
+              </Link>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center rounded-full border border-[var(--studio-line)] px-6 py-4 text-sm font-semibold text-[var(--studio-ink-soft)] transition hover:border-[rgba(151,244,243,0.28)] hover:text-[var(--studio-ink)]"
+              >
+                View packages
               </Link>
             </div>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
               {[
-                ["Package-led buying", "For repeatable premium delivery with clearer investment logic."],
-                ["First-class custom work", "For bespoke websites, apps, portals, and workflow-heavy software."],
-                ["Shared account visibility", "For Studio history, invoices, support, and delivery records inside HenryCo account."],
+                ["Fixed packages", "When the scope is similar each time—clear price bands and what is included."],
+                ["Fully custom build", "When you need something unique: software, portals, or a product only you have."],
+                ["Same account, full history", "Proposals, payments, messages, and delivery notes stay in your HenryCo account."],
               ].map(([title, body]) => (
                 <div key={title} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
                   <div className="text-base font-semibold text-[var(--studio-ink)]">{title}</div>
@@ -58,28 +70,28 @@ export default async function StudioHomePage() {
 
           <div className="grid gap-6">
             <div className="studio-panel rounded-[2.5rem] p-6 sm:p-8">
-              <div className="studio-kicker">Operating posture</div>
+              <div className="studio-kicker">Studio snapshot</div>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 {[
                   {
-                    label: "Service lanes",
+                    label: "Services",
                     value: String(catalog.services.length),
-                    body: "Publicly positioned delivery lanes with clearer commercial framing.",
+                    body: "Specialised areas of expertise — from web development to product design.",
                   },
                   {
-                    label: "Package paths",
+                    label: "Packages",
                     value: String(catalog.packages.length),
-                    body: "Predefined premium buying lanes for faster-fit work.",
+                    body: "Ready-to-start project types with clear scope and pricing.",
                   },
                   {
-                    label: "Specialist teams",
+                    label: "Teams",
                     value: String(catalog.teams.length),
-                    body: "Clients can choose a team or let HenryCo recommend the best fit.",
+                    body: "Choose a team directly or let us recommend the best fit for your project.",
                   },
                   {
                     label: "Case studies",
                     value: String(catalog.caseStudies.length),
-                    body: "Proof surfaces designed to sell credibility before the first call.",
+                    body: "Real projects we've delivered — see the work before you commit.",
                   },
                 ].map((item) => (
                   <div key={item.label} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
@@ -134,21 +146,21 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
           <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Buying architecture</div>
-            <h2 className="studio-heading mt-4">This platform is designed to help serious buyers decide faster.</h2>
+            <div className="studio-kicker">How it works</div>
+            <h2 className="studio-heading mt-4">A clear path from idea to delivery — no guesswork required.</h2>
             <div className="mt-6 space-y-4">
               {[
                 {
-                  title: "Package-led premium work",
-                  body: "Use packages when the delivery lane is already clear and the business wants faster investment clarity.",
+                  title: "Packages for common projects",
+                  body: "When you need a website, commerce store, or dashboard with a clear scope — pick a package and start.",
                 },
                 {
-                  title: "Custom product or software scope",
-                  body: "Use the custom brief when the workflow, user roles, or operating logic is too specific for a package.",
+                  title: "Custom builds for unique needs",
+                  body: "When your project needs specific features, user roles, or integrations that don't fit a standard package.",
                 },
                 {
-                  title: "Project workspace continuity",
-                  body: "After the brief, the same record can carry proposals, payments, milestones, updates, files, and revisions.",
+                  title: "Everything in one workspace",
+                  body: "Your proposal, payments, milestones, updates, and deliverables live in one organised project workspace.",
                 },
               ].map((item) => (
                 <div key={item.title} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
@@ -160,7 +172,7 @@ export default async function StudioHomePage() {
           </div>
 
           <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Value contrast</div>
+            <div className="studio-kicker">Why HenryCo Studio</div>
             <div className="mt-6 space-y-4">
               {catalog.valueComparisons.map((item) => (
                 <div key={item.title} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
@@ -183,8 +195,8 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-3xl">
-            <div className="studio-kicker">Packages and investments</div>
-            <h2 className="studio-heading mt-4">Fast-fit premium lanes for buyers who want clarity before the first meeting.</h2>
+            <div className="studio-kicker">Packages</div>
+            <h2 className="studio-heading mt-4">Transparent pricing so you know what to expect before the first conversation.</h2>
           </div>
           <Link href="/pricing" className="text-sm font-semibold text-[var(--studio-ink)]">
             Explore all packages
@@ -220,8 +232,8 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
           <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Service architecture</div>
-            <h2 className="studio-heading mt-4">A studio framed around operational outcomes, not generic deliverables.</h2>
+            <div className="studio-kicker">Services</div>
+            <h2 className="studio-heading mt-4">Specialised services built around real business outcomes.</h2>
             <div className="mt-6 space-y-4">
               {featuredServices.map((service) => (
                 <div key={service.id} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
@@ -256,8 +268,8 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[0.97fr_1.03fr]">
           <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Team fit</div>
-            <h2 className="studio-heading mt-4">Choose a team directly or let HenryCo recommend the best delivery fit.</h2>
+            <div className="studio-kicker">Our teams</div>
+            <h2 className="studio-heading mt-4">Work with a specialist team matched to your project.</h2>
             <div className="mt-6 space-y-4">
               {featuredTeams.map((team) => (
                 <div key={team.id} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
@@ -277,7 +289,7 @@ export default async function StudioHomePage() {
           </div>
 
           <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Operating system</div>
+            <div className="studio-kicker">Our process</div>
             <div className="mt-6 space-y-4">
               {catalog.process.map((step, index) => (
                 <div key={step} className="flex gap-4 rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
@@ -296,8 +308,8 @@ export default async function StudioHomePage() {
         <div className="studio-panel rounded-[2.8rem] px-7 py-8 sm:px-10 lg:px-14 lg:py-12">
           <div className="grid gap-8 xl:grid-cols-[0.94fr_1.06fr] xl:items-end">
             <div>
-              <div className="studio-kicker">Trust and next move</div>
-              <h2 className="studio-heading mt-4">Premium delivery only works when the buyer can see the system behind it.</h2>
+              <div className="studio-kicker">Trust & credibility</div>
+              <h2 className="studio-heading mt-4">Quality you can verify before you invest.</h2>
               <div className="mt-6 space-y-4">
                 {featuredTestimonials.map((item) => (
                   <div key={item.id} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
@@ -312,23 +324,23 @@ export default async function StudioHomePage() {
               {[
                 {
                   icon: Waypoints,
-                  title: "Milestone-backed visibility",
-                  body: "The operating model keeps scope, payments, reviews, and delivery checkpoints visible.",
+                  title: "Full project visibility",
+                  body: "Scope, payments, reviews, and delivery milestones — visible to you at every stage.",
                 },
                 {
                   icon: Layers3,
-                  title: "Cross-functional alignment",
-                  body: "Sales, PM, finance, delivery, and support are designed around one shared record.",
+                  title: "One team, one workspace",
+                  body: "Design, development, finance, and support all work from the same project record.",
                 },
                 {
                   icon: Sparkles,
-                  title: "Custom work stays premium",
-                  body: "Bespoke websites and software are treated as a first-class buying path, not a vague fallback.",
+                  title: "Custom work, premium standard",
+                  body: "Bespoke projects receive the same structured process, clear milestones, and polish as any package.",
                 },
                 {
                   icon: Target,
-                  title: "Future dashboard ready",
-                  body: "Studio activity is being persisted so it can later feed the unified HenryCo account history.",
+                  title: "Everything in your account",
+                  body: "Project history, invoices, and updates are always accessible from your HenryCo account.",
                 },
               ].map((item) => (
                 <div key={item.title} className="rounded-[1.8rem] border border-[var(--studio-line)] bg-black/10 p-5">

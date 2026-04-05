@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ThemeProvider from "@/components/providers/theme-provider";
+import { LocaleProvider } from "@henryco/i18n/react";
+import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 export const metadata: Metadata = {
   title: "My Account — Henry & Co.",
@@ -13,11 +16,17 @@ export const metadata: Metadata = {
   ),
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getAccountAppLocale();
+  const dir = isRtlLocale(locale) ? "rtl" : "ltr";
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <HenryCoThemeBlocking />
+        <ThemeProvider>
+          <LocaleProvider locale={locale}>{children}</LocaleProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

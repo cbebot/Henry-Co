@@ -35,6 +35,8 @@ export default async function VendorProductsPage() {
                     <span>{formatCurrency(product.basePrice)} base</span>
                     <span>{product.stock} in stock</span>
                     <span>{product.leadTime || "Lead time pending"}</span>
+                    <span>Quality {String((product.filterData as Record<string, unknown>).qualityScore || "n/a")}</span>
+                    <span>Risk {String((product.filterData as Record<string, unknown>).riskScore || "n/a")}</span>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3">

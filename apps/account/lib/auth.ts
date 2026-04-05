@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
+import { after } from "next/server";
 import { redirect } from "next/navigation";
 import {
   isRecoverableSupabaseAuthError,
@@ -38,7 +39,11 @@ export const getAccountUser = cache(async (): Promise<AccountUser | null> => {
 
   if (!user) return null;
 
-  await ensureAccountProfileRecords(user);
+  after(() => {
+    void ensureAccountProfileRecords(user).catch((error) => {
+      console.error("[henryco/account] Deferred profile seed failed:", error);
+    });
+  });
 
   const admin = createAdminSupabase();
   const [{ data: profile }, { data: ownerProfile }] = await Promise.all([

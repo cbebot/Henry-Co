@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
-import { requireRoles } from "@/lib/auth/server";
+import { redirect } from "next/navigation";
+import { getHqUrl } from "@henryco/config";
 
 export default async function OwnerOnlyLayout({
-  children,
 }: {
   children: ReactNode;
 }) {
-  await requireRoles(["owner"]);
-  return children;
+  redirect(getHqUrl("/owner/divisions/care"));
 }

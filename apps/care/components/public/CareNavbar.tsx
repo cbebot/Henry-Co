@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, PhoneCall, Sparkles, X } from "lucide-react";
+import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 
 export type PublicNavItem = { href: string; label: string };
@@ -63,7 +64,13 @@ function BrandMark({
   );
 }
 
-export default function CareNavbar({ division }: { division: DivisionPublicConfig }) {
+export default function CareNavbar({
+  division,
+  accountSlot,
+}: {
+  division: DivisionPublicConfig;
+  accountSlot?: ReactNode;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -124,6 +131,7 @@ export default function CareNavbar({ division }: { division: DivisionPublicConfi
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
+          {accountSlot ? <div className="flex shrink-0 items-center">{accountSlot}</div> : null}
           <div className="hidden items-center gap-2 rounded-full border border-black/8 bg-white/68 px-4 py-2 text-xs font-medium text-zinc-600 shadow-[0_12px_32px_rgba(12,17,45,0.06)] xl:flex dark:border-white/10 dark:bg-white/[0.04] dark:text-white/68">
             <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
             Pickup delivery, home cleaning, office cleaning, and recurring care
@@ -181,6 +189,12 @@ export default function CareNavbar({ division }: { division: DivisionPublicConfi
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
+
+            {accountSlot ? (
+              <div className="flex justify-end border-b border-black/8 pb-3 dark:border-white/10">
+                {accountSlot}
+              </div>
+            ) : null}
 
             <div className="grid gap-2 sm:grid-cols-2">
               {nav.map((item) => (

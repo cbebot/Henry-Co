@@ -45,6 +45,7 @@ async function main() {
     getCertificateByCode,
     getLearnerWorkspace,
     getOwnerAnalytics,
+    getTeacherApplicationForViewer,
   } = await import("../lib/learn/data");
   const {
     syncViewerIdentity,
@@ -59,6 +60,8 @@ async function main() {
     assignTraining,
     publishAcademyAnnouncement,
     createLearnerSupportRequest,
+    reviewTeacherApplication,
+    submitTeacherApplication,
   } = await import("../lib/learn/workflows");
   const { runLearnAutomationSweep } = await import("../lib/learn/automation");
   const { upsertLearnRecord } = await import("../lib/learn/store");
@@ -307,6 +310,64 @@ async function main() {
   const internalCourseView = await getCourseBySlug("care-service-excellence", internalViewer);
   assert(internalCourseView, "Assigned internal learner could not access restricted course.");
 
+  const existingTeacherApplication = await getTeacherApplicationForViewer(internalViewer);
+  if (existingTeacherApplication?.status === "approved") {
+    await reviewTeacherApplication({
+      actor: ownerViewer,
+      applicationId: existingTeacherApplication.id,
+      status: "changes_requested",
+      reviewNotes: "Automation is reopening this application to verify the full review cycle.",
+      adminNotes: `QA reset ${runId}`,
+      payoutModel: "revenue_share",
+      revenueSharePercent: 30,
+    });
+  }
+
+  const teacherApplication = await submitTeacherApplication({
+    viewer: internalViewer,
+    fullName: internalViewer.user?.fullName || "HenryCo Academy QA Internal",
+    phone: "+2349133957084",
+    country: "Nigeria",
+    expertiseArea: "Academy QA and operational training systems",
+    teachingTopics: [`Academy QA ${runId}`, "Operations readiness", "Internal enablement"],
+    credentials:
+      "Operational QA lead for HenryCo academy verification with practical experience in structured learning flows, publishing checks, and readiness reviews.",
+    portfolioLinks: ["https://learn.henrycogroup.com/academy", "https://henrycogroup.com"],
+    courseProposal:
+      "A practical academy operations course that teaches staff and partners how to structure learning experiences, validate readiness, and deliver premium instructional quality inside HenryCo Learn.",
+    supportingFiles: [],
+    agreementAccepted: true,
+  });
+
+  const teacherChangesRequested = await reviewTeacherApplication({
+    actor: ownerViewer,
+    applicationId: teacherApplication.id,
+    status: "changes_requested",
+    reviewNotes: "Please sharpen the audience framing and sequence the learning outcomes more clearly.",
+    adminNotes: `QA change request ${runId}`,
+    payoutModel: "revenue_share",
+    revenueSharePercent: 30,
+  });
+  assert(
+    teacherChangesRequested.status === "changes_requested",
+    "Teaching application could not move into changes requested state."
+  );
+
+  const teacherApproved = await reviewTeacherApplication({
+    actor: ownerViewer,
+    applicationId: teacherApplication.id,
+    status: "approved",
+    reviewNotes: "Application approved for instructor onboarding readiness.",
+    adminNotes: `QA approval ${runId}`,
+    payoutModel: "revenue_share",
+    revenueSharePercent: 30,
+  });
+  assert(teacherApproved.status === "approved", "Teaching application approval failed.");
+  assert(
+    cleanText(teacherApproved.instructorMembershipId),
+    "Approved teaching application did not create an instructor membership reference."
+  );
+
   const supportRequest = await createLearnerSupportRequest({
     viewer: learnerViewer,
     subject: `Academy QA support ${runId}`,
@@ -438,6 +499,12 @@ async function main() {
     internalWorkspace.assignments.some((item) => item.id === assignmentResult.assignmentId),
     "Assigned learner workspace is missing the internal assignment."
   );
+  assert(
+    snapshot.teacherApplications.some(
+      (item) => item.id === teacherApproved.id && item.status === "approved"
+    ),
+    "Approved teacher application did not persist in the academy snapshot."
+  );
 
   const analytics = await getOwnerAnalytics();
   assert(analytics.metrics.totalCourses >= 8, "Owner analytics did not reflect academy course inventory.");
@@ -485,6 +552,13 @@ async function main() {
   const courseNudges = snapshot.notifications.filter((item) => item.templateKey === "course_nudge");
   const progressReminders = snapshot.notifications.filter((item) => item.templateKey === "progress_reminder");
   const assignmentReminders = snapshot.notifications.filter((item) => item.templateKey === "internal_assignment");
+  const teacherApplicationNotifications = snapshot.notifications.filter((item) =>
+    [
+      "teacher_application_submitted",
+      "teacher_application_changes_requested",
+      "teacher_application_approved",
+    ].includes(item.templateKey)
+  );
 
   assert((activityCount || 0) >= 3, "Shared account activity did not persist.");
   assert((invoiceCount || 0) >= 1, "Shared account invoice did not persist.");
@@ -495,6 +569,10 @@ async function main() {
   assert(courseNudges.length >= 1, "Course nudge notifications were not stored.");
   assert(progressReminders.length >= 1, "Progress reminder notifications were not stored.");
   assert(assignmentReminders.length >= 2, "Assignment notifications/reminders were not stored.");
+  assert(
+    teacherApplicationNotifications.length >= 3,
+    "Teacher application notifications were not stored."
+  );
 
   const resendConfigured = Boolean(cleanText(process.env.RESEND_API_KEY));
   const whatsappConfigured = Boolean(
@@ -514,6 +592,11 @@ async function main() {
         createdPath,
         certificate: quizResult.certificate,
         assignmentId: assignmentResult.assignmentId,
+        teacherApplication: {
+          id: teacherApproved.id,
+          status: teacherApproved.status,
+          instructorMembershipId: teacherApproved.instructorMembershipId,
+        },
         announcementCount: announcement.count,
         automation,
         learnerWorkspace: {

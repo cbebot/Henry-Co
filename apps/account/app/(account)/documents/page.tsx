@@ -1,4 +1,4 @@
-import { FileText, Upload, Download } from "lucide-react";
+import { FileText, Download } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import { getDocuments } from "@/lib/account-data";
 import { formatDate } from "@/lib/format";

@@ -662,6 +662,28 @@ export async function completeLesson(input: {
   const lesson = snapshot.lessons.find((item) => item.id === input.lessonId && item.courseId === course.id);
   if (!lesson) throw new Error("Lesson not found.");
 
+  const orderedLessons = snapshot.modules
+    .filter((item) => item.courseId === course.id)
+    .sort((left, right) => left.sortOrder - right.sortOrder)
+    .flatMap((module) =>
+      snapshot.lessons
+        .filter((item) => item.moduleId === module.id)
+        .sort((left, right) => left.sortOrder - right.sortOrder)
+    );
+  const targetLessonIndex = orderedLessons.findIndex((item) => item.id === lesson.id);
+  const completedLessonIds = new Set(
+    snapshot.progress
+      .filter((item) => item.enrollmentId === enrollment.id && item.status === "completed")
+      .map((item) => item.lessonId)
+  );
+  const firstIncompleteRequiredLesson = orderedLessons
+    .slice(0, targetLessonIndex)
+    .find((item) => !completedLessonIds.has(item.id));
+
+  if (firstIncompleteRequiredLesson) {
+    throw new Error(`Complete "${firstIncompleteRequiredLesson.title}" before this lesson.`);
+  }
+
   const progressId = stableId("progress", `${enrollment.id}:${lesson.id}`);
   const completedAt = nowIso();
   await upsertLearnRecord(
@@ -749,7 +771,7 @@ export async function completeLesson(input: {
     status: updatedEnrollment.status,
     referenceType: "learn_lesson",
     referenceId: lesson.id,
-    actionUrl: `${getDivisionUrl("learn")}/learner/courses/${course.id}`,
+    actionUrl: getLearnCourseRoomUrl(course.id),
     metadata: {
       percent_complete: updatedEnrollment.percentComplete,
     },
@@ -788,6 +810,27 @@ export async function submitQuizAttempt(input: {
   );
   if (!enrollment || !["active", "completed"].includes(enrollment.status)) {
     throw new Error("You need an active enrollment before taking this assessment.");
+  }
+
+  const courseLessons = snapshot.lessons.filter((item) => item.courseId === course.id);
+  const completedLessonIds = new Set(
+    snapshot.progress
+      .filter((item) => item.enrollmentId === enrollment.id && item.status === "completed")
+      .map((item) => item.lessonId)
+  );
+  const incompleteLesson = courseLessons.find((item) => !completedLessonIds.has(item.id));
+  if (incompleteLesson) {
+    throw new Error(`Finish "${incompleteLesson.title}" before taking the assessment.`);
+  }
+
+  const existingAttempts = snapshot.attempts.filter(
+    (item) => item.enrollmentId === enrollment.id && item.quizId === quiz.id
+  );
+  if (existingAttempts.some((item) => item.passed)) {
+    throw new Error("This assessment has already been passed.");
+  }
+  if (existingAttempts.length >= quiz.maxAttempts) {
+    throw new Error("This assessment has reached its maximum number of attempts.");
   }
 
   const questions = snapshot.questions.filter((item) => item.quizId === quiz.id);
@@ -884,7 +927,7 @@ export async function submitQuizAttempt(input: {
     status: passed ? "passed" : "retry_required",
     referenceType: "learn_quiz",
     referenceId: quiz.id,
-    actionUrl: `${getDivisionUrl("learn")}/learner/courses/${course.id}`,
+    actionUrl: getLearnCourseRoomUrl(course.id),
     metadata: {
       score,
       passed,
@@ -1442,7 +1485,7 @@ export async function confirmEnrollmentPayment(input: {
     referenceType: "learn_payment",
     referenceId: updatedPayment.id,
     amount: updatedPayment.amount,
-    actionUrl: `${getDivisionUrl("learn")}/learner/courses/${course.id}`,
+    actionUrl: getLearnCourseRoomUrl(course.id),
   });
 
   await appendCustomerNotification({
@@ -1451,7 +1494,7 @@ export async function confirmEnrollmentPayment(input: {
     title: `${course.title} payment confirmed`,
     body: "The enrollment is now active in HenryCo Learn.",
     category: "learn",
-    actionUrl: `${getDivisionUrl("learn")}/learner/courses/${course.id}`,
+    actionUrl: getLearnCourseRoomUrl(course.id),
     actionLabel: "Open course",
     referenceType: "learn_payment",
     referenceId: updatedPayment.id,

@@ -12,7 +12,7 @@ export default async function OwnerPage() {
   return (
     <WorkspaceShell
       title="Owner"
-      description="Marketplace-wide control surface for trust posture, queue pressure, payout exposure, and stalled order risk."
+      description="Marketplace overview with vendor applications, disputes, payouts, and order health."
       nav={staffNav("/owner", "/owner")}
     >
       <div className="grid gap-5 md:grid-cols-3">

@@ -357,11 +357,19 @@ function ModuleCard({
             <span className="rounded-full bg-white/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-700">
               {module.readiness}
             </span>
+            <span className="rounded-full bg-white/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-700">
+              {module.sourceMode === "structured"
+                ? "Dedicated data"
+                : module.sourceMode === "shared-signals"
+                  ? "Shared signals"
+                  : "Planned"}
+            </span>
           </div>
           <h3 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
             {module.label}
           </h3>
           <p className="mt-2 text-sm leading-6 text-slate-700">{module.tagline}</p>
+          <p className="mt-3 text-sm leading-6 text-slate-600">{module.sourceSummary}</p>
         </div>
         <Building2 className="h-8 w-8 text-slate-500" />
       </div>
@@ -497,6 +505,7 @@ export default function WorkspaceScreen({
   currentHref,
   currentDivision,
   workspaceUrl,
+  preferredWorkspaceUrl,
   divisionHrefs,
 }: {
   viewer: WorkspaceViewer;
@@ -506,6 +515,7 @@ export default function WorkspaceScreen({
   currentHref: string;
   currentDivision?: WorkspaceDivision;
   workspaceUrl: string;
+  preferredWorkspaceUrl: string;
   divisionHrefs: Partial<Record<WorkspaceDivision, string>>;
 }) {
   const selectedModule =
@@ -754,8 +764,13 @@ export default function WorkspaceScreen({
                   {viewer.defaultDivision || "None"}
                 </div>
                 <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
-                  <span className="font-semibold">Workspace target:</span> {workspaceUrl}
+                  <span className="font-semibold">Current access route:</span> {workspaceUrl}
                 </div>
+                {workspaceUrl !== preferredWorkspaceUrl ? (
+                  <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+                    <span className="font-semibold">Preferred workspace host:</span> {preferredWorkspaceUrl}
+                  </div>
+                ) : null}
               </div>
             </div>
 
@@ -829,13 +844,39 @@ export default function WorkspaceScreen({
                     description="No active insight cards are being generated for this module right now."
                   />
                 )}
+                <div className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
+                    <Sparkles className="h-4 w-4" />
+                    Data Mode
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-slate-950 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white">
+                      {selectedModule.readiness}
+                    </span>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-700">
+                      {selectedModule.sourceMode === "structured"
+                        ? "Dedicated data"
+                        : selectedModule.sourceMode === "shared-signals"
+                          ? "Shared signals"
+                          : "Planned"}
+                    </span>
+                  </div>
+                  <p className="mt-4 text-sm leading-6 text-slate-600">{selectedModule.sourceSummary}</p>
+                </div>
               </div>
               <div className="space-y-5">
-                <div className="grid gap-5 xl:grid-cols-2">
-                  {selectedModule.tasks.map((task) => (
-                    <TaskCard key={task.id} task={task} />
-                  ))}
-                </div>
+                {selectedModule.tasks.length > 0 ? (
+                  <div className="grid gap-5 xl:grid-cols-2">
+                    {selectedModule.tasks.map((task) => (
+                      <TaskCard key={task.id} task={task} />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    title="No visible task workload"
+                    description="This division is either calm or the current role scope is intentionally not exposing active task cards here."
+                  />
+                )}
                 {selectedModule.approvals.length > 0 ? (
                   <div className="grid gap-5 xl:grid-cols-2">
                     {selectedModule.approvals.map((task) => (
@@ -845,11 +886,18 @@ export default function WorkspaceScreen({
                 ) : null}
               </div>
             </section>
-            <section className="grid gap-5 xl:grid-cols-3">
-              {selectedModule.queueLanes.map((lane) => (
-                <QueueLaneCard key={lane.id} lane={lane} />
-              ))}
-            </section>
+            {selectedModule.queueLanes.length > 0 ? (
+              <section className="grid gap-5 xl:grid-cols-3">
+                {selectedModule.queueLanes.map((lane) => (
+                  <QueueLaneCard key={lane.id} lane={lane} />
+                ))}
+              </section>
+            ) : (
+              <EmptyState
+                title="No queue lanes in scope"
+                description="Queue boards are hidden when the current role family does not carry queue visibility for this division."
+              />
+            )}
           </div>
         ) : (
           <EmptyState
@@ -927,7 +975,20 @@ export default function WorkspaceScreen({
                   <CircleAlert className="h-3.5 w-3.5" />
                   Role-aware modules
                 </div>
+                {workspaceUrl !== preferredWorkspaceUrl ? (
+                  <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-800">
+                    <CircleAlert className="h-3.5 w-3.5" />
+                    Fallback access route active
+                  </div>
+                ) : null}
               </div>
+
+              {workspaceUrl !== preferredWorkspaceUrl ? (
+                <div className="mb-5 rounded-[24px] border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-900 shadow-[0_18px_45px_rgba(15,23,42,0.04)]">
+                  Shared login now returns to the reachable live deployment at <span className="font-semibold">{workspaceUrl}</span>
+                  {" "}until the preferred workspace host at <span className="font-semibold">{preferredWorkspaceUrl}</span> is attached on Vercel.
+                </div>
+              ) : null}
 
               {renderContent()}
             </main>

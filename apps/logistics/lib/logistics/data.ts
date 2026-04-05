@@ -6,9 +6,10 @@ import {
   LOGISTICS_PUBLIC_METRICS,
   LOGISTICS_SERVICES,
   TIMELINE_DESCRIPTIONS,
+  TIMELINE_LABELS,
 } from "@/lib/logistics/content";
 import { DEFAULT_RATE_CARDS, calculatePromiseConfidence } from "@/lib/logistics/pricing";
-import { normalizeEmail } from "@/lib/env";
+import { normalizeEmail, normalizePhone } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import type {
   LogisticsAddress,
@@ -22,6 +23,7 @@ import type {
   LogisticsRateCard,
   LogisticsSettings,
   LogisticsShipment,
+  LogisticsTrackingPoint,
   LogisticsViewer,
   LogisticsZone,
 } from "@/lib/logistics/types";
@@ -277,6 +279,18 @@ function mapExpense(row: Record<string, unknown>): LogisticsExpense {
   };
 }
 
+function mapTrackingPoint(row: Record<string, unknown>): LogisticsTrackingPoint {
+  return {
+    id: cleanText(row.id),
+    shipmentId: cleanText(row.shipment_id),
+    latitude: asNumber(row.latitude),
+    longitude: asNumber(row.longitude),
+    accuracyMeters: row.accuracy_meters == null ? null : asNumber(row.accuracy_meters),
+    source: cleanText(row.source || "rider_app"),
+    recordedAt: cleanText(row.recorded_at),
+  };
+}
+
 function mapNotification(row: Record<string, unknown>): LogisticsNotification {
   return {
     id: cleanText(row.id),
@@ -435,20 +449,43 @@ export async function getShipmentByTrackingLookup(input: {
   phone?: string | null;
 }) {
   const snapshot = await getLogisticsSnapshot();
-  const trackingCode = cleanText(input.trackingCode).toUpperCase();
-  const phone = cleanText(input.phone);
+  const trackingCode = cleanText(input.trackingCode).toUpperCase().replace(/\s+/g, "");
+  const normalizedPhone = normalizePhone(input.phone);
+  if (!trackingCode || !normalizedPhone) {
+    return null;
+  }
+
+  const phonesMatch = (raw: string | null | undefined) => {
+    const n = normalizePhone(raw);
+    return Boolean(n && n === normalizedPhone);
+  };
 
   return (
     snapshot.shipments.find(
       (shipment) =>
-        shipment.trackingCode.toUpperCase() === trackingCode &&
-        (!phone ||
-          shipment.senderPhone === phone ||
-          shipment.recipientPhone === phone ||
-          shipment.pickupAddress?.phone === phone ||
-          shipment.dropoffAddress?.phone === phone)
+        shipment.trackingCode.toUpperCase().replace(/\s+/g, "") === trackingCode &&
+        (phonesMatch(shipment.senderPhone) ||
+          phonesMatch(shipment.recipientPhone) ||
+          phonesMatch(shipment.pickupAddress?.phone) ||
+          phonesMatch(shipment.dropoffAddress?.phone))
     ) ?? null
   );
+}
+
+export async function getTrackingPointsForShipment(shipmentId: string, limit = 48): Promise<LogisticsTrackingPoint[]> {
+  try {
+    const admin = createAdminSupabase();
+    const { data, error } = await admin
+      .from("logistics_tracking_points")
+      .select("id, shipment_id, latitude, longitude, accuracy_meters, source, recorded_at")
+      .eq("shipment_id", shipmentId)
+      .order("recorded_at", { ascending: true })
+      .limit(limit);
+    if (error) throw error;
+    return (data ?? []).map((row) => mapTrackingPoint(row as Record<string, unknown>));
+  } catch {
+    return [];
+  }
 }
 
 export async function getShipmentDetail(shipmentId: string) {
@@ -456,6 +493,8 @@ export async function getShipmentDetail(shipmentId: string) {
   const shipment = snapshot.shipments.find((item) => item.id === shipmentId) ?? null;
 
   if (!shipment) return null;
+
+  const trackingPoints = await getTrackingPointsForShipment(shipmentId);
 
   return {
     shipment,
@@ -466,6 +505,7 @@ export async function getShipmentDetail(shipmentId: string) {
     proof: snapshot.proofs.find((proof) => proof.shipmentId === shipmentId) ?? null,
     issues: snapshot.issues.filter((issue) => issue.shipmentId === shipmentId),
     expenses: snapshot.expenses.filter((expense) => expense.shipmentId === shipmentId),
+    trackingPoints,
   };
 }
 
@@ -633,7 +673,7 @@ export function buildTrackingTimeline(shipment: LogisticsShipment, events: Logis
           .find((event) => event.lifecycleStatus === status || event.eventType === status) ?? null;
       return {
         key: status,
-        label: status.replaceAll("_", " "),
+        label: TIMELINE_LABELS[status] || status.replaceAll("_", " "),
         description: TIMELINE_DESCRIPTIONS[status] || "Shipment event recorded.",
         when: relatedEvent?.createdAt || null,
         active: shipment.lifecycleStatus === status,

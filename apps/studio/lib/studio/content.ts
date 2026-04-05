@@ -25,12 +25,12 @@ export const studioServices: StudioService[] = [
     id: "service-mobile",
     kind: "mobile_app",
     name: "Mobile Products",
-    headline: "Mobile products for customer experience, operational workflows, and high-frequency business touchpoints.",
+    headline: "Mobile products for customer experience, team operations, and high-frequency business touchpoints.",
     summary:
       "Customer apps, field-team apps, logistics experiences, and mobile-first service products with polished UX and serious delivery structure.",
     startingPrice: 4200000,
     deliveryWindow: "7 to 14 weeks",
-    stack: ["React Native", "Flutter", "Supabase", "Notifications"],
+    stack: ["React Native", "Flutter", "Managed backend", "Notifications"],
     outcomes: ["Faster product launch", "Higher mobile retention", "Operational mobility"],
     scoreBoosts: ["mobile", "app", "consumer", "field"],
   },
@@ -76,13 +76,13 @@ export const studioServices: StudioService[] = [
   {
     id: "service-internal",
     kind: "internal_system",
-    name: "Internal Control Systems",
-    headline: "Dashboards, automations, and operating interfaces that replace spreadsheet chaos.",
+    name: "Internal Operations Platforms",
+    headline: "Dashboards, automations, and team interfaces that replace spreadsheet chaos.",
     summary:
-      "Internal admin systems for sales, support, operations, finance, logistics, and delivery teams that need one command surface instead of scattered tools.",
+      "Internal platforms for sales, support, operations, finance, logistics, and delivery teams that need one clear command surface instead of scattered tools.",
     startingPrice: 3200000,
     deliveryWindow: "5 to 10 weeks",
-    stack: ["Next.js", "Supabase", "Automation", "Reporting"],
+    stack: ["Next.js", "Managed backend", "Automation", "Reporting"],
     outcomes: ["Operational visibility", "Role clarity", "Fewer manual handoffs"],
     scoreBoosts: ["ops", "internal", "dashboard", "admin"],
   },
@@ -90,13 +90,13 @@ export const studioServices: StudioService[] = [
     id: "service-custom",
     kind: "custom_software",
     name: "Custom Software",
-    headline: "Bespoke software systems for companies with unique workflows, business models, or scale goals.",
+    headline: "Bespoke software platforms for companies with unique operations, business models, or scale goals.",
     summary:
-      "Customer portals, internal platforms, revenue systems, multi-role software, and architecture-heavy products designed around commercial leverage, not template constraints.",
+      "Customer portals, internal platforms, revenue platforms, and multi-role software designed around commercial leverage, not template constraints.",
     startingPrice: 5200000,
     deliveryWindow: "8 to 18 weeks",
     stack: ["Architecture", "APIs", "Automation", "Cloud Systems"],
-    outcomes: ["Long-term leverage", "Tailored workflow control", "Serious digital infrastructure"],
+    outcomes: ["Long-term leverage", "Tailored operational control", "Serious digital infrastructure"],
     scoreBoosts: ["custom", "software", "platform", "portal"],
   },
 ];
@@ -139,18 +139,18 @@ export const studioPackages: StudioPackage[] = [
     id: "pkg-control-room",
     serviceId: "service-internal",
     name: "Operations Control Room",
-    summary: "A multi-role internal system for leads, projects, workflow states, approvals, and management reporting.",
+    summary: "A multi-role operations platform for leads, projects, stages, approvals, and management reporting.",
     price: 3900000,
     depositRate: 0.4,
     timelineWeeks: 8,
     bestFor: "Service businesses and operational teams replacing fragmented internal tooling.",
-    includes: ["Role-based dashboards", "Workflow states", "Reporting view", "Automation handoffs"],
+    includes: ["Role-based dashboards", "Project stages", "Reporting view", "Automation handoffs"],
   },
   {
     id: "pkg-client-portal",
     serviceId: "service-custom",
     name: "Client Portal Accelerator",
-    summary: "A secure client-facing portal with onboarding, updates, files, approvals, and payment-aware workflow.",
+    summary: "A secure client-facing portal with onboarding, updates, files, approvals, and payment-aware delivery steps.",
     price: 4650000,
     depositRate: 0.4,
     timelineWeeks: 9,
@@ -187,14 +187,14 @@ export const studioTeams: StudioTeamProfile[] = [
   {
     id: "team-axis",
     name: "Axis Product Systems",
-    label: "Software and Internal Systems Team",
+    label: "Software and Operations Team",
     summary:
-      "Best suited to admin systems, portals, multi-role products, and workflow-heavy software that needs architecture discipline as much as interface quality.",
+      "Best suited to operations platforms, portals, multi-role products, and delivery-heavy software that needs architecture discipline as much as interface quality.",
     availability: "open",
-    focus: ["Internal systems", "Client portals", "Custom software", "Business workflows"],
+    focus: ["Operations platforms", "Client portals", "Custom software", "Business operations"],
     industries: ["Operations", "Services", "Logistics", "B2B software"],
-    stack: ["Next.js", "Supabase", "Node.js", "Automation"],
-    highlights: ["Serious architecture", "Role-aware system design", "Clean operational reporting"],
+    stack: ["Next.js", "Managed backend", "Node.js", "Automation"],
+    highlights: ["Serious architecture", "Role-aware platform design", "Clean operational reporting"],
     scoreBiases: ["dashboard", "custom", "internal", "portal", "software", "ops"],
   },
   {
@@ -215,11 +215,11 @@ export const studioTeams: StudioTeamProfile[] = [
     name: "Vector Mobile",
     label: "Mobile Product Team",
     summary:
-      "Handles customer apps, field workflows, service apps, and cross-platform mobile experiences where polish and clarity matter.",
+      "Handles customer apps, field operations, service apps, and cross-platform mobile experiences where polish and clarity matter.",
     availability: "open",
     focus: ["Mobile apps", "Operational apps", "Customer apps", "Retention flows"],
     industries: ["Logistics", "Consumer services", "Marketplaces", "Field operations"],
-    stack: ["React Native", "Flutter", "Supabase", "Push"],
+    stack: ["React Native", "Flutter", "Managed backend", "Push"],
     highlights: ["Fast mobile delivery", "Role-aware UX", "Reliable cross-platform execution"],
     scoreBiases: ["mobile", "app", "consumer", "field", "retention"],
   },
@@ -229,7 +229,7 @@ export const studioCaseStudies: StudioCaseStudy[] = [
   {
     id: "case-command-center",
     name: "Service Command Center",
-    type: "Internal Control System",
+    type: "Internal Operations Platform",
     challenge:
       "A multi-service operator was running leads, project states, approvals, and finance checkpoints across spreadsheets, chat, and manual reminders.",
     impact:
@@ -262,7 +262,7 @@ export const studioDifferentiators: StudioDifferentiator[] = [
   {
     id: "diff-brief-builder",
     name: "Commercial Brief Builder",
-    description: "The inquiry system collects the actual commercial and delivery detail required to scope serious work correctly.",
+    description: "The inquiry flow collects the commercial and delivery detail needed to scope serious work correctly.",
     pros: ["Higher-quality leads", "Faster proposal drafting", "Less ambiguity"],
     cons: ["Longer than a shallow contact form"],
     difficulty: "medium",
@@ -337,7 +337,7 @@ export const studioFaqs = [
   {
     question: "Do I have to choose one of the listed packages?",
     answer:
-      "No. Packages are there for fast-fit buying paths. If you need something more tailored, the custom project path lets you describe the exact website, app, portal, or software system you want built.",
+      "No. Packages are there for fast-fit buying paths. If you need something more tailored, the custom project path lets you describe the exact website, app, portal, or software product you want built.",
   },
   {
     question: "Can you handle both design and software delivery?",
@@ -357,7 +357,7 @@ export const studioFaqs = [
   {
     question: "Will this later connect to the HenryCo account dashboard?",
     answer:
-      "Yes. Studio activity is being persisted with future account-level history in mind, using authenticated user identity when available and normalized email as the secondary mapping key.",
+      "Yes. Studio projects can connect with your HenryCo account so project history, invoices, files, and support updates stay easy to revisit.",
   },
 ];
 
@@ -370,7 +370,7 @@ export const studioTestimonials = [
   {
     name: "Operations Lead, Multi-Service Business",
     quote:
-      "The internal system work mattered just as much as the front-end polish. We finally had one place to track what was happening across the business.",
+      "The operations platform work mattered just as much as the front-end polish. We finally had one place to track what was happening across the business.",
   },
   {
     name: "Founder, Premium Commerce Brand",
@@ -417,10 +417,10 @@ export function getStudioCaseStudyBySlug(slug: string) {
 
 export const studioTrustSignals = [
   "Real project requests are captured with structured business and scope detail, not a shallow lead form.",
-  "Proposals show investment, milestones, delivery logic, and deposit structure in a visible workflow.",
+  "Proposals show investment, milestones, delivery logic, and deposit structure in one clear view.",
   "Files, revisions, messages, and approvals can live inside the same delivery surface instead of being scattered.",
-  "Privileged workflow actions remain server-side while client-facing access is handled through secure links and account-aware checks.",
-  "The data model is being aligned so future HenryCo account history can show proposals, projects, payments, documents, and support context in one place.",
+  "Access to proposals, files, approvals, and payment steps is protected through secure links and account-aware checks.",
+  "HenryCo account history is designed to keep proposals, projects, payments, documents, and support context in one place.",
 ];
 
 export const studioValueComparisons: StudioValueComparison[] = [
@@ -436,8 +436,8 @@ export const studioValueComparisons: StudioValueComparison[] = [
     title: "HenryCo Studio flow",
     points: [
       "A structured buying path for both packages and serious custom work.",
-      "Proposal, milestones, updates, and payment checkpoints visible in one system.",
-      "A cleaner operating model for client, sales, PM, finance, support, and delivery teams.",
+      "Proposal, milestones, updates, and payment checkpoints visible in one connected workspace.",
+      "A cleaner delivery model for clients, sales, PM, finance, support, and delivery teams.",
     ],
   },
 ];

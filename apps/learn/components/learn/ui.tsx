@@ -184,7 +184,7 @@ export function PathCard({
         <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{path.title}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">{path.summary}</p>
         <div className="mt-5 flex items-center justify-between text-sm text-[var(--learn-ink-soft)]">
-          <span>{courseCount} curated course stops</span>
+          <span>{courseCount} courses in this path</span>
           <span className="inline-flex items-center gap-1 font-semibold text-[var(--learn-mint-soft)]">Open path <ChevronRight className="h-4 w-4" /></span>
         </div>
       </article>

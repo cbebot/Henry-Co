@@ -363,6 +363,8 @@ export async function StaffResourcePage({
                 <input type="hidden" name="return_to" value={`${root}/${resource}`} />
                 <input name="note" className="market-input min-w-[220px] rounded-full px-4 py-2" placeholder="Finance note" />
                 <button name="decision" value="approved" className="market-button-primary rounded-full px-4 py-2 text-sm font-semibold">Approve</button>
+                <button name="decision" value="released" className="market-button-primary rounded-full px-4 py-2 text-sm font-semibold">Release</button>
+                <button name="decision" value="frozen" className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold">Freeze</button>
                 <button name="decision" value="rejected" className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold">Reject</button>
               </form>
             </article>
@@ -385,6 +387,12 @@ export async function StaffResourcePage({
                 <input type="hidden" name="dispute_id" value={String(dispute.id)} />
                 <input type="hidden" name="return_to" value={`${root}/${resource}`} />
                 <input name="note" className="market-input min-w-[220px] rounded-full px-4 py-2" placeholder="Support note" />
+                <select name="resolution_type" className="market-select rounded-full px-4 py-2">
+                  <option value="manual_review">Manual review</option>
+                  <option value="refund_to_buyer">Refund buyer</option>
+                  <option value="release_to_seller">Release seller payout</option>
+                </select>
+                <input name="refund_amount" type="number" className="market-input min-w-[160px] rounded-full px-4 py-2" placeholder="Refund amount" />
                 <button name="status" value="investigating" className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold">Investigating</button>
                 <button name="status" value="resolved" className="market-button-primary rounded-full px-4 py-2 text-sm font-semibold">Resolve</button>
               </form>

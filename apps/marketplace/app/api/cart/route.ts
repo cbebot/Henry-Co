@@ -27,7 +27,7 @@ async function resolveCartId(preferredSessionToken?: string | null) {
   const viewer = await getMarketplaceViewer();
   const cookieStore = await cookies();
   const admin = createAdminSupabase();
-  const sessionToken = preferredSessionToken || cookieStore.get("marketplace_cart_token")?.value || null;
+  const sessionToken = cookieStore.get("marketplace_cart_token")?.value || preferredSessionToken || null;
 
   const { data: byUser } = viewer.user
     ? await admin
@@ -42,11 +42,86 @@ async function resolveCartId(preferredSessionToken?: string | null) {
     !byUser?.id && sessionToken
       ? await admin
           .from("marketplace_carts")
-          .select("id, session_token")
+          .select("id, session_token, user_id")
           .eq("status", "active")
           .eq("session_token", sessionToken)
           .maybeSingle()
       : { data: null };
+
+  if (viewer.user && byUser?.id && byToken?.id && String(byUser.id) !== String(byToken.id) && !byToken.user_id) {
+    const guestCartId = String(byToken.id);
+    const userCartId = String(byUser.id);
+
+    const { data: guestItems } = await admin
+      .from("marketplace_cart_items")
+      .select("product_id, quantity, price, compare_at_price, vendor_id")
+      .eq("cart_id", guestCartId);
+
+    if (guestItems && guestItems.length > 0) {
+      const { data: userItems } = await admin
+        .from("marketplace_cart_items")
+        .select("id, product_id, quantity")
+        .eq("cart_id", userCartId);
+
+      const userItemMap = new Map(
+        (userItems || []).map((item: Record<string, unknown>) => [String(item.product_id), item])
+      );
+
+      for (const guestItem of guestItems) {
+        const existing = userItemMap.get(String(guestItem.product_id));
+        if (existing) {
+          await admin
+            .from("marketplace_cart_items")
+            .update({
+              quantity: Number(existing.quantity || 0) + Number(guestItem.quantity || 1),
+              price: guestItem.price,
+              compare_at_price: guestItem.compare_at_price,
+            } as never)
+            .eq("id", existing.id);
+        } else {
+          await admin.from("marketplace_cart_items").insert({
+            cart_id: userCartId,
+            product_id: guestItem.product_id,
+            vendor_id: guestItem.vendor_id,
+            quantity: guestItem.quantity,
+            price: guestItem.price,
+            compare_at_price: guestItem.compare_at_price,
+          } as never);
+        }
+      }
+    }
+
+    await admin
+      .from("marketplace_cart_items")
+      .delete()
+      .eq("cart_id", guestCartId);
+    await admin
+      .from("marketplace_carts")
+      .update({ status: "merged" } as never)
+      .eq("id", guestCartId);
+
+    return {
+      viewer,
+      cartId: userCartId,
+      sessionToken: byUser.session_token ? String(byUser.session_token) : sessionToken,
+    };
+  }
+
+  if (viewer.user && byToken?.id && !byToken.user_id && !byUser?.id) {
+    await admin
+      .from("marketplace_carts")
+      .update({
+        user_id: viewer.user.id,
+        normalized_email: normalizeEmail(viewer.user.email),
+      } as never)
+      .eq("id", byToken.id);
+
+    return {
+      viewer,
+      cartId: String(byToken.id),
+      sessionToken: byToken.session_token ? String(byToken.session_token) : sessionToken,
+    };
+  }
 
   let id = byUser?.id ? String(byUser.id) : byToken?.id ? String(byToken.id) : null;
   let token = byUser?.session_token
@@ -75,6 +150,48 @@ async function resolveCartId(preferredSessionToken?: string | null) {
   }
 
   return { viewer, cartId: id, sessionToken: token };
+}
+
+async function verifyCartItemOwnership(itemId: string) {
+  const viewer = await getMarketplaceViewer();
+  const cookieStore = await cookies();
+  const admin = createAdminSupabase();
+  const sessionToken = cookieStore.get("marketplace_cart_token")?.value || null;
+
+  const { data: item } = await admin
+    .from("marketplace_cart_items")
+    .select("id, cart_id")
+    .eq("id", itemId)
+    .maybeSingle();
+
+  if (!item) return null;
+
+  const { data: cart } = await admin
+    .from("marketplace_carts")
+    .select("id, user_id, session_token")
+    .eq("id", item.cart_id)
+    .maybeSingle();
+
+  if (!cart) return null;
+
+  const ownerMatch =
+    (viewer.user && cart.user_id && String(cart.user_id) === viewer.user.id) ||
+    (sessionToken && cart.session_token && String(cart.session_token) === sessionToken);
+
+  if (!ownerMatch) return null;
+
+  return item;
+}
+
+function setCartCookie(response: NextResponse, sessionToken: string) {
+  const isProduction = process.env.NODE_ENV === "production";
+  response.cookies.set("marketplace_cart_token", sessionToken, {
+    httpOnly: false,
+    sameSite: "lax",
+    path: "/",
+    secure: isProduction,
+    maxAge: 60 * 60 * 24 * 30,
+  });
 }
 
 export async function GET() {
@@ -153,11 +270,7 @@ export async function POST(request: Request) {
   });
 
   if (sessionToken) {
-    response.cookies.set("marketplace_cart_token", sessionToken, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
+    setCartCookie(response, sessionToken);
   }
 
   return response;
@@ -170,6 +283,11 @@ export async function PATCH(request: Request) {
 
   if (!itemId) {
     return NextResponse.json({ error: "Missing cart item id." }, { status: 400 });
+  }
+
+  const verified = await verifyCartItemOwnership(itemId);
+  if (!verified) {
+    return NextResponse.json({ error: "Cart item not found." }, { status: 404 });
   }
 
   const admin = createAdminSupabase();
@@ -195,6 +313,11 @@ export async function DELETE(request: Request) {
 
   if (!itemId) {
     return NextResponse.json({ error: "Missing cart item id." }, { status: 400 });
+  }
+
+  const verified = await verifyCartItemOwnership(itemId);
+  if (!verified) {
+    return NextResponse.json({ error: "Cart item not found." }, { status: 404 });
   }
 
   const admin = createAdminSupabase();

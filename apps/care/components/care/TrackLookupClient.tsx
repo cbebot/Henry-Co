@@ -354,10 +354,10 @@ export default function TrackLookupClient() {
             variant="panel"
             eyebrow="HenryCo Care tracking"
             title="Looking up your service"
-            description="Checking the latest handling stage, payment context, and the next action that belongs on this booking."
+            description="Checking the latest status, payment details, and what happens next."
             bullets={[
-              "Resolving your live tracking reference",
-              "Pulling the correct service-family timeline",
+              "Looking up your tracking reference",
+              "Loading the service timeline",
               "Preparing the next verified handoff",
             ]}
           />

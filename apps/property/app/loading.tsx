@@ -9,7 +9,12 @@ function PropertyLoadingBar({ widthClass }: { widthClass: string }) {
 export default function Loading() {
   return (
     <div className="property-page property-shell">
-      <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-label="Loading page"
+        className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10"
+      >
         <section className="property-panel rounded-[2rem] p-6 sm:p-8 lg:p-10">
           <div className="space-y-4">
             <div className="property-kicker">Loading</div>
@@ -49,7 +54,7 @@ export default function Loading() {
             ))}
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 }

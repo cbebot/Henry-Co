@@ -1,5 +1,5 @@
-import { getDivisionUrl } from "@henryco/config";
 import { getLearnSnapshot } from "@/lib/learn/data";
+import { getLearnCourseRoomUrl } from "@/lib/learn/links";
 import {
   sendCourseNudgeNotification,
   sendInternalAssignmentNotification,
@@ -53,7 +53,7 @@ export async function runLearnAutomationSweep(now = new Date()) {
       normalizedEmail: enrollment.normalizedEmail,
       email: enrollment.normalizedEmail,
     };
-    const coursePlayerUrl = `${getDivisionUrl("learn")}/learner/courses/${course.id}`;
+    const coursePlayerUrl = getLearnCourseRoomUrl(course.id);
 
     if (
       enrollment.percentComplete === 0 &&

@@ -23,7 +23,10 @@ export async function getWorkspaceRuntime() {
     normalizeHost(headerStore.get("x-henry-host")) ||
     normalizeHost(headerStore.get("x-forwarded-host")) ||
     normalizeHost(headerStore.get("host"));
-  const proto = normalizeProto(headerStore.get("x-forwarded-proto")) || (process.env.VERCEL ? "https" : "http");
+  const proto =
+    normalizeProto(headerStore.get("x-henry-proto")) ||
+    normalizeProto(headerStore.get("x-forwarded-proto")) ||
+    (process.env.VERCEL ? "https" : "http");
   const pathname = headerStore.get("x-henry-pathname") || "/workspace";
   const workspaceHost = host.startsWith("workspace.");
   const basePath = workspaceHost ? "" : "/workspace";

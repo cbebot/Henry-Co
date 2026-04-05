@@ -1,0 +1,25 @@
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.1.159:3001
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 5.5s
+ GET /book 200 in 4.0s (compile: 1221ms, proxy.ts: 533ms, render: 2.2s)
+ GET /book 200 in 2.5s (compile: 130ms, proxy.ts: 868ms, render: 1541ms)
+ GET /track?code=TRK-698QQXQ0&booked=1&phone=0000001234 200 in 3.2s (compile: 1082ms, proxy.ts: 314ms, render: 1845ms)
+ POST /book 303 in 24.9s (compile: 110ms, proxy.ts: 780ms, render: 24.0s)
+ GET /track?code=TRK-698QQXQ0&phone=0000001234 200 in 737ms (compile: 34ms, proxy.ts: 336ms, render: 367ms)
+ GET /api/care/track?code=TRK-698QQXQ0&phone=0000001234 200 in 2.9s (compile: 1016ms, proxy.ts: 437ms, render: 1483ms)
+ GET /track?code=TRK-698QQXQ0&phone=0000001234 200 in 1568ms (compile: 19ms, proxy.ts: 1014ms, render: 535ms)
+ GET /track?code=TRK-698QQXQ0&phone=0000001234 200 in 530ms (compile: 11ms, proxy.ts: 238ms, render: 281ms)
+ GET /api/care/track?code=TRK-698QQXQ0&phone=0000001234 200 in 2.1s (compile: 19ms, proxy.ts: 635ms, render: 1475ms)
+ GET /book 200 in 1308ms (compile: 23ms, proxy.ts: 12ms, render: 1273ms)
+ GET /track?code=TRK-39111EVH&booked=1&phone=0000002234 200 in 501ms (compile: 77ms, proxy.ts: 9ms, render: 415ms)
+ POST /book 303 in 18.3s (compile: 1080ms, proxy.ts: 819ms, render: 16.4s)
+ GET /track?code=TRK-39111EVH&phone=0000002234 200 in 455ms (compile: 52ms, proxy.ts: 12ms, render: 391ms)
+ GET /api/care/track?code=TRK-39111EVH&phone=0000002234 200 in 1689ms (compile: 27ms, proxy.ts: 12ms, render: 1649ms)
+ GET /book 200 in 4.0s (compile: 943ms, proxy.ts: 622ms, render: 2.4s)
+ GET /track?code=TRK-NHF8QTFR&booked=1&phone=0000005554 200 in 797ms (compile: 152ms, proxy.ts: 13ms, render: 632ms)
+ POST /book 303 in 17.1s (compile: 273ms, proxy.ts: 301ms, render: 16.5s)
+ GET /book 200 in 6.8s (compile: 1678ms, proxy.ts: 869ms, render: 4.2s)

@@ -1,10 +1,17 @@
 import type { CSSProperties, ReactNode } from "react";
-import { getDivisionConfig } from "@henryco/config";
+import { headers } from "next/headers";
+import { PublicAccountChip } from "@henryco/ui";
+import { getDivisionConfig, getHubUrl } from "@henryco/config";
 import CareNavbar, { type DivisionPublicConfig } from "@/components/public/CareNavbar";
 import CareFooter from "@/components/public/CareFooter";
-import CookiePreferences from "@/components/public/CookiePreferences";
 import { getCareSettings } from "@/lib/care-data";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
+import {
+  getCareAccountHomeUrl,
+  getCareSharedLoginUrl,
+  getCareSharedSignupUrl,
+} from "@/lib/care-public-links";
+import { getCarePublicChipUser } from "@/lib/care-public-viewer";
 
 export default async function CarePublicShell({ children }: { children: ReactNode }) {
   const care = getDivisionConfig("care") as unknown as DivisionPublicConfig;
@@ -17,6 +24,28 @@ export default async function CarePublicShell({ children }: { children: ReactNod
     supportPhone: settings.support_phone || care.supportPhone,
   };
 
+  const h = await headers();
+  const returnPath = h.get("x-care-return-path") || "/";
+  const chipUser = await getCarePublicChipUser();
+  const loginHref = getCareSharedLoginUrl(returnPath, null);
+  const signupHref = getCareSharedSignupUrl(returnPath, null);
+  const accountHref = getCareAccountHomeUrl();
+
+  const accountSlot = (
+    <PublicAccountChip
+      user={chipUser}
+      loginHref={loginHref}
+      accountHref={accountHref}
+      preferencesHref={getHubUrl("/preferences")}
+      signupHref={signupHref}
+      showSignOut
+      menuItems={[
+        { label: "Track a booking", href: "/track" },
+        { label: "Book care", href: "/book" },
+      ]}
+    />
+  );
+
   return (
     <div
       className="care-page"
@@ -27,14 +56,13 @@ export default async function CarePublicShell({ children }: { children: ReactNod
         } as CSSProperties
       }
     >
-      <CareNavbar division={publicCare} />
+      <CareNavbar division={publicCare} accountSlot={accountSlot} />
 
       <div className="mx-auto w-full max-w-[88rem] px-0">
         {children}
       </div>
 
       <CareFooter division={publicCare} />
-      <CookiePreferences />
     </div>
   );
 }

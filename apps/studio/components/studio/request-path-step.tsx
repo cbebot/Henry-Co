@@ -1,15 +1,18 @@
 import { Layers3, Sparkles } from "lucide-react";
 import {
-  designOptions,
   joinClassNames,
-  platformOptions,
-  projectTypeOptions,
 } from "@/components/studio/request-builder-data";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
+import { filterPricedOptions } from "@/lib/studio/request-config";
+
+function formatAmount(amount: number) {
+  return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : "Included";
+}
 
 export function StudioRequestPathStep({
   services,
   packages,
+  requestConfig,
   serviceKind,
   setServiceKind,
   pathway,
@@ -27,6 +30,7 @@ export function StudioRequestPathStep({
   RequestBuilderSelectionProps,
   | "services"
   | "packages"
+  | "requestConfig"
   | "serviceKind"
   | "setServiceKind"
   | "pathway"
@@ -41,6 +45,9 @@ export function StudioRequestPathStep({
   | "selectedDesign"
   | "setSelectedDesign"
 >) {
+  const projectTypeOptions = filterPricedOptions(requestConfig.projectTypes, serviceKind);
+  const platformOptions = filterPricedOptions(requestConfig.platformOptions, serviceKind);
+
   return (
     <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
       <div className="studio-kicker">Buying lane</div>
@@ -55,7 +62,7 @@ export function StudioRequestPathStep({
           {
             value: "custom" as const,
             title: "Custom project route",
-            body: "Use this when the website, app, portal, or software needs a tailored scope, workflow model, or multi-role architecture.",
+            body: "Use this when the website, app, portal, or software needs a tailored scope, delivery model, or multi-role architecture.",
             icon: Sparkles,
           },
         ].map((item) => (
@@ -109,8 +116,13 @@ export function StudioRequestPathStep({
                 <div className="text-xs uppercase tracking-[0.18em] text-[var(--studio-signal)]">
                   {service.name}
                 </div>
-                <div className="text-xs uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                  {service.deliveryWindow}
+                <div className="text-right">
+                  <div className="text-xs uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+                    {service.deliveryWindow}
+                  </div>
+                  <div className="mt-1 text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                    From ₦{service.startingPrice.toLocaleString("en-NG")}
+                  </div>
                 </div>
               </div>
               <div className="mt-4 text-xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">
@@ -154,25 +166,73 @@ export function StudioRequestPathStep({
           ))}
         </div>
       ) : (
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <select
-            name="projectType"
-            value={selectedProjectType}
-            onChange={(event) => setSelectedProjectType(event.target.value)}
-            className="studio-select rounded-[1.2rem] px-4 py-3"
-          >
-            {projectTypeOptions.map((item) => <option key={item} value={item}>{item}</option>)}
-          </select>
-          <select
-            name="platformPreference"
-            value={selectedPlatform}
-            onChange={(event) => setSelectedPlatform(event.target.value)}
-            className="studio-select rounded-[1.2rem] px-4 py-3"
-          >
-            {platformOptions.map((item) => <option key={item} value={item}>{item}</option>)}
-          </select>
+        <div className="mt-8 space-y-6">
+          <div>
+            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+              Project type or category
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {projectTypeOptions.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setSelectedProjectType(item.label)}
+                  className={joinClassNames(
+                    "rounded-[1.5rem] border p-4 text-left transition duration-200",
+                    selectedProjectType === item.label
+                      ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
+                      : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.18)]"
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="text-base font-semibold text-[var(--studio-ink)]">{item.label}</div>
+                    <div className="text-xs uppercase tracking-[0.14em] text-[var(--studio-signal)]">
+                      {formatAmount(item.amount)}
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                    {item.description}
+                  </div>
+                </button>
+              ))}
+            </div>
+            <input type="hidden" name="projectType" value={selectedProjectType} />
+          </div>
+
+          <div>
+            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+              Delivery platform
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {platformOptions.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setSelectedPlatform(item.label)}
+                  className={joinClassNames(
+                    "rounded-[1.5rem] border p-4 text-left transition duration-200",
+                    selectedPlatform === item.label
+                      ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
+                      : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.18)]"
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="text-base font-semibold text-[var(--studio-ink)]">{item.label}</div>
+                    <div className="text-xs uppercase tracking-[0.14em] text-[var(--studio-signal)]">
+                      {formatAmount(item.amount)}
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                    {item.description}
+                  </div>
+                </button>
+              ))}
+            </div>
+            <input type="hidden" name="platformPreference" value={selectedPlatform} />
+          </div>
+
           <div className="md:col-span-2 grid gap-3 md:grid-cols-2">
-            {designOptions.map((item) => (
+            {requestConfig.designOptions.map((item) => (
               <button
                 key={item}
                 type="button"

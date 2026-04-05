@@ -1,0 +1,24 @@
+{
+  "name": "@henryco/i18n",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/react.tsx",
+    "./server": "./src/server.ts",
+    "./locale-route": "./src/locale-route.ts"
+  },
+  "peerDependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0"
+  },
+  "dependencies": {
+    "@henryco/config": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.2.14",
+    "typescript": "^5.9.3"
+  }
+}

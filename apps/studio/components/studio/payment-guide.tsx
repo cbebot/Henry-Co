@@ -41,7 +41,7 @@ export function StudioPaymentGuide({
     <section className="studio-panel rounded-[1.9rem] p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-2xl">
-          <div className="studio-kicker">Payment guidance</div>
+          <div className="studio-kicker">How to pay</div>
           <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">
             {title}
           </h2>
@@ -66,6 +66,17 @@ export function StudioPaymentGuide({
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
         <div className="space-y-4">
+          <div className="rounded-[1.5rem] border border-[rgba(151,244,243,0.2)] bg-[linear-gradient(180deg,rgba(8,30,38,0.72),rgba(6,16,23,0.96))] p-5">
+            <div className="flex items-center gap-3 text-[var(--studio-ink)]">
+              <ShieldCheck className="h-4 w-4 text-[var(--studio-signal)]" />
+              <div className="text-sm font-semibold">Verified company payee</div>
+            </div>
+            <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+              Transfer only to the live HenryCo company account shown below. The exact amount, proof
+              path, and support contacts are tied to this payment lane so the team can confirm it quickly.
+            </p>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-3">
             {[
               { label: "Bank", value: bankName, copyLabel: "Copy bank" },
@@ -93,7 +104,7 @@ export function StudioPaymentGuide({
 
           <div className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
             <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Proof and confirmation
+              After you transfer
             </div>
             <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{proofHint}</p>
           </div>
@@ -102,14 +113,14 @@ export function StudioPaymentGuide({
         <div className="space-y-4">
           <div className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
             <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              What happens next
+              Step by step
             </div>
             <div className="mt-4 space-y-4">
               {[
-                "Copy the amount and account details exactly as shown.",
-                "Make the transfer from your bank or company account.",
-                "Upload proof in the payment lane so finance can verify the transfer.",
-                "HenryCo confirms the payment, updates the workspace, and messages you with the next milestone.",
+                "Copy the amount and account details shown on this page.",
+                "Transfer from your bank or company account.",
+                "Upload your receipt or proof below — our team reviews it promptly.",
+                "Once confirmed, your project moves forward and you'll see the update here.",
               ].map((step, index) => (
                 <div key={step} className="flex gap-3">
                   <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] text-xs font-semibold text-[var(--studio-signal)]">

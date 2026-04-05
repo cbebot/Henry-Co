@@ -1,4 +1,5 @@
 import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
+import type { StudioRequestConfig } from "@/lib/studio/request-config";
 
 export type StudioRequestPathway = "package" | "custom";
 
@@ -6,6 +7,7 @@ export type RequestBuilderSelectionProps = {
   services: StudioService[];
   packages: StudioPackage[];
   teams: StudioTeamProfile[];
+  requestConfig: StudioRequestConfig;
   serviceKind: StudioService["kind"];
   setServiceKind: (value: StudioService["kind"]) => void;
   pathway: StudioRequestPathway;

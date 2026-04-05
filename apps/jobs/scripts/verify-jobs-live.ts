@@ -28,6 +28,9 @@ type JobsDataModule = {
     savedJobs: Array<{ job: { slug: string } }>;
     applications: Array<{ applicationId: string; stage: string }>;
     alerts: Array<{ label: string }>;
+    notifications: Array<{ id: string }>;
+    applicationJourneys: Array<{ application: { applicationId: string } }>;
+    recruiterFeed: Array<{ id: string }>;
   }>;
   getEmployerDashboardData: (userId: string, email?: string | null) => Promise<{
     jobs: Array<{ slug: string }>;
@@ -577,6 +580,24 @@ async function main() {
   const moderationAfter = await data.getModerationQueue();
   const analytics = await data.getAnalyticsSnapshot();
   const applicationTimeline = await data.getApplicationTimeline(applicationResult.applicationId);
+  const [applicationActivityRes, candidateNotificationRes] = await Promise.all([
+    supabase
+      .from("customer_activity")
+      .select("action_url")
+      .eq("division", "jobs")
+      .eq("activity_type", "jobs_application")
+      .eq("reference_id", applicationResult.applicationId)
+      .maybeSingle(),
+    supabase
+      .from("customer_notifications")
+      .select("id,action_url,division")
+      .eq("user_id", candidateActor.userId)
+      .eq("division", "jobs")
+      .eq("reference_type", "jobs_application")
+      .eq("reference_id", applicationResult.applicationId)
+      .order("created_at", { ascending: false })
+      .limit(5),
+  ]);
 
   const candidateApplication = candidateDashboard.applications.find(
     (application: { applicationId: string }) => application.applicationId === applicationResult.applicationId
@@ -584,6 +605,12 @@ async function main() {
 
   assert(candidateDashboard.profile?.fullName, "Candidate profile should exist after saving.");
   assert(candidateDashboard.documents.length >= 1, "Candidate documents should include the uploaded resume.");
+  assert(
+    candidateDashboard.applicationJourneys.some(
+      (journey: { application: { applicationId: string } }) => journey.application.applicationId === applicationResult.applicationId
+    ),
+    "Candidate application journeys should include the live application timeline."
+  );
   assert(
     candidateDashboard.savedJobs.some((item: { job: { slug: string } }) => item.job.slug === createdJob.slug),
     "Candidate saved jobs should include the created role."
@@ -619,6 +646,14 @@ async function main() {
   assert(
     applicationTimeline.some((event: { action: string }) => event.action === "jobs_application_stage_changed"),
     "Application timeline should include the shortlist transition."
+  );
+  assert(
+    String(applicationActivityRes.data?.action_url || "").includes("/candidate/applications"),
+    "Application activity should link back to the candidate applications surface."
+  );
+  assert(
+    (candidateNotificationRes.data ?? []).length > 0,
+    "Application stage changes should write jobs notifications into the shared inbox."
   );
   assert(cronPayload.ok === true, "Jobs alert cron should run successfully.");
 
@@ -656,7 +691,7 @@ async function main() {
   const authenticatedRouteChecks = await withServer(port, async () => {
     const publicRoutes = [
       { path: "/", needle: "Hiring, verified talent" },
-      { path: "/jobs", needle: "Search without the clutter tax" },
+      { path: "/jobs", needle: "Find your next role" },
       { path: `/jobs/${createdJob.slug}`, needle: jobTitle },
       { path: `/employers/${employerSlug}`, needle: employerName },
     ];

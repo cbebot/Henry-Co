@@ -1,6 +1,7 @@
 import "server-only";
 
 import { sendPaymentReminderNotification } from "@/lib/studio/email/send";
+import { reconcileStudioSharedPendingSyncs } from "@/lib/studio/shared-account";
 import { getStudioSnapshot } from "@/lib/studio/store";
 
 function cleanText(value?: string | null) {
@@ -30,6 +31,11 @@ function hasReminderRecord(
 }
 
 export async function runStudioAutomationSweep(now = new Date()) {
+  const sharedSync = await reconcileStudioSharedPendingSyncs().catch(() => ({
+    processed: 0,
+    resolved: 0,
+    skipped: 0,
+  }));
   const snapshot = await getStudioSnapshot();
   let paymentRemindersSent = 0;
   let skipped = 0;
@@ -57,6 +63,7 @@ export async function runStudioAutomationSweep(now = new Date()) {
   }
 
   return {
+    sharedSync,
     paymentRemindersSent,
     skipped,
     executedAt: now.toISOString(),

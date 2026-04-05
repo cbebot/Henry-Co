@@ -21,7 +21,7 @@ export default async function RecruiterCandidateDetailPage({
       <SectionCard title={profile.fullName || "Candidate"} body={profile.summary}>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm text-[var(--jobs-muted)]">
-            Readiness {profile.readinessLabel} · Trust {profile.trustScore}
+            {profile.readinessLabel} · Profile strength {profile.trustScore}%
           </div>
           <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm text-[var(--jobs-muted)]">
             Skills: {profile.skills.join(", ")}

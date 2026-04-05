@@ -5,7 +5,17 @@ import { getDivisionConfig } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
+import {
+  buildOrderSettlementSnapshot,
+  computePayoutBalance,
+  deriveBuyerRiskProfile,
+  deriveSellerTrustProfile,
+  evaluateListingSubmission,
+  getAutoReleaseAt,
+  titleCaseMarketplaceValue,
+} from "@/lib/marketplace/governance";
 import { logMarketplaceAction, sendMarketplaceEvent } from "@/lib/marketplace/notifications";
+import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -30,8 +40,155 @@ function makeRef(prefix: string) {
   return `${prefix}-${date}-${nonce}`;
 }
 
+function slugify(value: string) {
+  return textLike(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || randomUUID().slice(0, 8);
+}
+
+function textLike(value?: string | null) {
+  return String(value || "").trim();
+}
+
+function normalizeTimeline(input: unknown) {
+  return Array.isArray(input) ? input.map((item) => textLike(String(item))).filter(Boolean) : [];
+}
+
+async function appendOrderTimeline(
+  admin: ReturnType<typeof createAdminSupabase>,
+  orderNo: string,
+  entries: string[]
+) {
+  if (!orderNo || !entries.length) return;
+
+  const { data: order } = await admin
+    .from("marketplace_orders")
+    .select("timeline")
+    .eq("order_no", orderNo)
+    .maybeSingle();
+
+  const existing = normalizeTimeline(order?.timeline);
+  const nextTimeline = [...existing];
+
+  for (const entry of entries.map((item) => textLike(item)).filter(Boolean)) {
+    if (!nextTimeline.includes(entry)) {
+      nextTimeline.push(entry);
+    }
+  }
+
+  await admin
+    .from("marketplace_orders")
+    .update({ timeline: nextTimeline } as never)
+    .eq("order_no", orderNo);
+}
+
+async function createModerationCase(
+  admin: ReturnType<typeof createAdminSupabase>,
+  input: {
+    subjectType: string;
+    subjectId: string | null | undefined;
+    queue: string;
+    status?: string;
+    decision?: string | null;
+    note?: string | null;
+    assignedTo?: string | null;
+  }
+) {
+  if (!input.subjectId) return;
+
+  try {
+    await admin.from("marketplace_moderation_cases").insert({
+      subject_type: input.subjectType,
+      subject_id: input.subjectId,
+      queue: input.queue,
+      status: input.status || "open",
+      decision: input.decision ?? null,
+      note: input.note ?? null,
+      assigned_to: input.assignedTo ?? null,
+    } as never);
+  } catch {
+    // tolerate moderation schema lag until migrations are fully applied
+  }
+}
+
+async function writeMarketplaceEvent(
+  admin: ReturnType<typeof createAdminSupabase>,
+  input: {
+    eventType: string;
+    userId?: string | null;
+    normalizedEmail?: string | null;
+    actorUserId?: string | null;
+    actorEmail?: string | null;
+    entityType?: string | null;
+    entityId?: string | null;
+    payload?: Record<string, unknown>;
+  }
+) {
+  try {
+    await admin.from("marketplace_events").insert({
+      event_type: input.eventType,
+      user_id: input.userId ?? null,
+      normalized_email: normalizeEmail(input.normalizedEmail) ?? null,
+      actor_user_id: input.actorUserId ?? null,
+      actor_email: normalizeEmail(input.actorEmail) ?? null,
+      entity_type: input.entityType ?? null,
+      entity_id: input.entityId ?? null,
+      payload: input.payload ?? {},
+    } as never);
+  } catch {
+    // ignore until event schema is available everywhere
+  }
+}
+
+async function syncOrderLifecycle(admin: ReturnType<typeof createAdminSupabase>, orderNo: string) {
+  const [{ data: order }, { data: groups }, { data: disputes }] = await Promise.all([
+    admin.from("marketplace_orders").select("id, payment_status").eq("order_no", orderNo).maybeSingle(),
+    admin
+      .from("marketplace_order_groups")
+      .select("fulfillment_status, payout_status, payment_status")
+      .eq("order_no", orderNo),
+    admin
+      .from("marketplace_disputes")
+      .select("status")
+      .eq("order_no", orderNo)
+      .in("status", ["open", "investigating"]),
+  ]);
+
+  if (!order?.id) return;
+
+  const groupRows = (groups ?? []) as Array<Record<string, unknown>>;
+  const openDisputes = (disputes ?? []).length > 0;
+  const allDelivered = groupRows.length > 0 && groupRows.every((group) => String(group.fulfillment_status) === "delivered");
+  const anyShipped = groupRows.some((group) => ["shipped", "delivered"].includes(String(group.fulfillment_status)));
+  const anyConfirmed = groupRows.some((group) =>
+    ["confirmed", "packed", "shipped", "delivered", "fulfillment_in_progress"].includes(String(group.fulfillment_status))
+  );
+  const payoutStatuses = groupRows.map((group) => String(group.payout_status || ""));
+
+  let nextStatus = String(order.payment_status || "") === "verified" ? "paid_held" : "awaiting_payment";
+  if (openDisputes) nextStatus = "disputed";
+  else if (payoutStatuses.some((status) => status === "payout_frozen")) nextStatus = "payout_frozen";
+  else if (payoutStatuses.length > 0 && payoutStatuses.every((status) => status === "payout_released" || status === "paid")) nextStatus = "payout_released";
+  else if (payoutStatuses.some((status) => status === "payout_releasable")) nextStatus = "payout_releasable";
+  else if (payoutStatuses.some((status) => status === "awaiting_auto_release")) nextStatus = "awaiting_auto_release";
+  else if (allDelivered) nextStatus = "delivered_pending_confirmation";
+  else if (anyShipped) nextStatus = "partially_shipped";
+  else if (anyConfirmed) nextStatus = "fulfillment_in_progress";
+  else if (String(order.payment_status || "") === "verified") nextStatus = "paid_held";
+
+  await admin
+    .from("marketplace_orders")
+    .update({ status: nextStatus } as never)
+    .eq("order_no", orderNo);
+}
+
 function redirectTo(request: Request, target: string) {
   return NextResponse.redirect(new URL(target, request.url));
+}
+
+function redirectToSharedAccountLogin(request: Request, nextPath: string) {
+  return redirectTo(request, buildSharedAccountLoginUrl(nextPath, new URL(request.url).origin));
 }
 
 export async function POST(request: Request) {
@@ -127,9 +284,10 @@ export async function POST(request: Request) {
         const response = redirectTo(request, "/cart?added=1");
         if (cartToken) {
           response.cookies.set("marketplace_cart_token", cartToken, {
-            httpOnly: true,
+            httpOnly: false,
             sameSite: "lax",
             path: "/",
+            maxAge: 60 * 60 * 24 * 30,
           });
         }
         revalidatePath("/cart");
@@ -154,7 +312,7 @@ export async function POST(request: Request) {
 
       case "checkout_submit": {
         if (!viewer.user) {
-          return redirectTo(request, "/login?next=/checkout");
+          return redirectToSharedAccountLogin(request, "/checkout");
         }
 
         const cartToken = text(formData, "cart_token") || null;
@@ -202,6 +360,15 @@ export async function POST(request: Request) {
         );
         const shippingTotal = subtotal > 350000 ? 0 : 18000;
         const grandTotal = subtotal + shippingTotal;
+        const { count: priorOrderCount } = await admin
+          .from("marketplace_orders")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", viewer.user.id);
+        const buyerRisk = deriveBuyerRiskProfile({
+          orderCount: priorOrderCount ?? 0,
+          emailVerified: Boolean(viewer.user.email),
+          phoneVerified: Boolean(buyerPhone),
+        });
 
         const { data: createdOrder, error: orderError } = await admin
           .from("marketplace_orders")
@@ -225,6 +392,7 @@ export async function POST(request: Request) {
             timeline: [
               "Order placed",
               paymentMethod === "cod" ? "Awaiting vendor acceptance" : "Awaiting payment verification",
+              "HenryCo will hold seller funds in escrow until fulfillment and trust checks are complete.",
             ],
           } as never)
           .select("id")
@@ -248,7 +416,39 @@ export async function POST(request: Request) {
             (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0),
             0
           );
-          const commissionAmount = vendor?.ownerType === "vendor" ? Math.round(groupSubtotal * 0.15) : 0;
+          const [{ count: productCount }, { count: disputeCount }, { count: deliveredOrderCount }] = await Promise.all([
+            vendor?.id
+              ? admin
+                  .from("marketplace_products")
+                  .select("id", { count: "exact", head: true })
+                  .eq("vendor_id", vendor.id)
+              : Promise.resolve({ count: 0 }),
+            vendor?.id
+              ? admin
+                  .from("marketplace_disputes")
+                  .select("id", { count: "exact", head: true })
+                  .eq("vendor_id", vendor.id)
+                  .in("status", ["open", "investigating"])
+              : Promise.resolve({ count: 0 }),
+            vendor?.id
+              ? admin
+                  .from("marketplace_order_groups")
+                  .select("id", { count: "exact", head: true })
+                  .eq("vendor_id", vendor.id)
+                  .eq("fulfillment_status", "delivered")
+              : Promise.resolve({ count: 0 }),
+          ]);
+          const sellerProfile = deriveSellerTrustProfile({
+            vendor,
+            deliveredOrderCount: deliveredOrderCount ?? 0,
+            openDisputeCount: disputeCount ?? 0,
+            productCount: productCount ?? 0,
+          });
+          const settlement = buildOrderSettlementSnapshot({
+            vendor,
+            subtotal: groupSubtotal,
+            requestFeaturedPlacement: false,
+          });
           const { data: group } = await admin
             .from("marketplace_order_groups")
             .insert({
@@ -258,18 +458,38 @@ export async function POST(request: Request) {
               owner_type: vendor?.ownerType ?? "company",
               fulfillment_status: "awaiting_acceptance",
               payment_status: "pending",
-              payout_status: vendor?.ownerType === "vendor" ? "eligible" : "paid",
+              payout_status: vendor?.ownerType === "vendor" ? "awaiting_payment" : "paid",
               subtotal: groupSubtotal,
-              commission_amount: commissionAmount,
-              net_vendor_amount: groupSubtotal - commissionAmount,
+              commission_amount: settlement.commissionAmount,
+              net_vendor_amount: settlement.netVendorAmount,
             } as never)
             .select("id")
             .maybeSingle();
+
+          await writeMarketplaceEvent(admin, {
+            eventType: "order_group_settlement_snapshot_created",
+            userId: viewer.user.id,
+            normalizedEmail: viewer.user.email,
+            actorUserId: viewer.user.id,
+            actorEmail: viewer.user.email,
+            entityType: "order_group",
+            entityId: group?.id ? String(group.id) : null,
+            payload: {
+              orderNo,
+              vendorSlug,
+              buyerRiskBand: buyerRisk.band,
+              buyerRiskScore: buyerRisk.score,
+              sellerTrustTier: sellerProfile.tier,
+              sellerPlanId: sellerProfile.planId,
+              settlement,
+            },
+          });
 
           for (const item of items) {
             const product = snapshot.products.find((entry) => entry.id === String(item.product_id));
             await admin.from("marketplace_order_items").insert({
               order_id: orderId,
+              order_no: orderNo,
               order_group_id: group?.id ?? null,
               product_id: item.product_id,
               vendor_id: vendor?.id ?? null,
@@ -284,6 +504,15 @@ export async function POST(request: Request) {
           }
         }
 
+        if (buyerRisk.band === "elevated" || buyerRisk.band === "high") {
+          await createModerationCase(admin, {
+            subjectType: "order",
+            subjectId: orderId,
+            queue: "risk_review",
+            note: `Buyer risk ${buyerRisk.band} (${buyerRisk.score}) triggered manual trust review before payout release.`,
+          });
+        }
+
         await admin.from("marketplace_payment_records").insert({
           order_id: orderId,
           order_no: orderNo,
@@ -293,6 +522,25 @@ export async function POST(request: Request) {
           reference: makeRef("MKT-PMT"),
           amount: grandTotal,
         } as never);
+
+        await writeMarketplaceEvent(admin, {
+          eventType: "order_checkout_submitted",
+          userId: viewer.user.id,
+          normalizedEmail: viewer.user.email,
+          actorUserId: viewer.user.id,
+          actorEmail: viewer.user.email,
+          entityType: "order",
+          entityId: orderId,
+          payload: {
+            orderNo,
+            paymentMethod,
+            subtotal,
+            shippingTotal,
+            grandTotal,
+            buyerRiskBand: buyerRisk.band,
+            buyerRiskScore: buyerRisk.score,
+          },
+        });
 
         await admin
           .from("marketplace_carts")
@@ -344,7 +592,7 @@ export async function POST(request: Request) {
       }
 
       case "vendor_apply": {
-        if (!viewer.user) return redirectTo(request, "/login?next=/sell");
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/seller-application");
 
         const storeName = text(formData, "store_name");
         const slug = text(formData, "store_slug") || storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -413,7 +661,7 @@ export async function POST(request: Request) {
       }
 
       case "wishlist_toggle": {
-        if (!viewer.user) return redirectTo(request, "/login?next=/account/wishlist");
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/wishlist");
 
         const productSlug = text(formData, "product_slug");
         const product = snapshot.products.find((item) => item.slug === productSlug);
@@ -456,7 +704,7 @@ export async function POST(request: Request) {
       }
 
       case "vendor_follow_toggle": {
-        if (!viewer.user) return redirectTo(request, "/login?next=/account/following");
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/following");
 
         const vendorSlug = text(formData, "vendor_slug");
         const vendor = snapshot.vendors.find((item) => item.slug === vendorSlug);
@@ -507,7 +755,7 @@ export async function POST(request: Request) {
       }
 
       case "address_upsert": {
-        if (!viewer.user) return redirectTo(request, "/login?next=/account/addresses");
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/addresses");
 
         const isDefault = text(formData, "is_default") === "on";
         if (isDefault) {
@@ -536,7 +784,7 @@ export async function POST(request: Request) {
       }
 
       case "review_submit": {
-        if (!viewer.user) return redirectTo(request, "/login?next=/account/reviews");
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/reviews");
 
         const productSlug = text(formData, "product_slug");
         const product = snapshot.products.find((item) => item.slug === productSlug);
@@ -660,20 +908,67 @@ export async function POST(request: Request) {
 
       case "vendor_product_upsert": {
         if (!viewer.user || !viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
-          return redirectTo(request, "/login?next=/vendor/products/new");
+          return redirectToSharedAccountLogin(request, "/vendor/products/new");
         }
 
         const vendorScopeId =
           viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ??
           snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id ??
           snapshot.vendors[1]?.id;
+        const vendorRecord = snapshot.vendors.find((item) => item.id === vendorScopeId) ?? null;
         const categoryId =
           snapshot.categories.find((item) => item.slug === text(formData, "category_slug"))?.id ??
           snapshot.categories[0].id;
         const brandId =
           snapshot.brands.find((item) => item.slug === text(formData, "brand_slug"))?.id ?? null;
-        const slug = text(formData, "slug") || text(formData, "title").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        const slug = text(formData, "slug") || slugify(text(formData, "title"));
         const decision = text(formData, "submission_mode") || "draft";
+        const imageUrl = text(formData, "image_url");
+        const requestFeaturedPlacement = text(formData, "feature_requested") === "on";
+        const [{ count: productCount }, { count: openDisputeCount }, { data: duplicateMedia }] = await Promise.all([
+          admin.from("marketplace_products").select("id", { count: "exact", head: true }).eq("vendor_id", vendorScopeId),
+          admin
+            .from("marketplace_disputes")
+            .select("id", { count: "exact", head: true })
+            .eq("vendor_id", vendorScopeId)
+            .in("status", ["open", "investigating"]),
+          imageUrl
+            ? admin
+                .from("marketplace_product_media")
+                .select("id, product_id")
+                .eq("url", imageUrl)
+                .limit(3)
+            : Promise.resolve({ data: [] }),
+        ]);
+        const sellerProfile = deriveSellerTrustProfile({
+          vendor: vendorRecord,
+          productCount: productCount ?? 0,
+          openDisputeCount: openDisputeCount ?? 0,
+        });
+        const assessment = evaluateListingSubmission({
+          vendor: vendorRecord,
+          title: text(formData, "title"),
+          summary: text(formData, "summary"),
+          description: text(formData, "description"),
+          categorySlug: text(formData, "category_slug"),
+          imageUrl,
+          sku: text(formData, "sku"),
+          leadTime: text(formData, "lead_time"),
+          deliveryNote: text(formData, "delivery_note"),
+          requestFeaturedPlacement,
+          currentProductCount: productCount ?? 0,
+          duplicateImageDetected: (duplicateMedia?.length ?? 0) > 0,
+        });
+
+        if (assessment.blockSubmission) {
+          await createModerationCase(admin, {
+            subjectType: "product_submission",
+            subjectId: slug,
+            queue: "listing_blocked",
+            note: assessment.moderationReasons.join(" | "),
+          });
+          return redirectTo(request, `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent(assessment.moderationReasons.join(", "))}`);
+        }
 
         const payload = {
           slug,
@@ -688,12 +983,26 @@ export async function POST(request: Request) {
           compare_at_price: numberValue(formData, "compare_at_price", 0) || null,
           total_stock: numberValue(formData, "stock", 0),
           sku: text(formData, "sku"),
-          approval_status: decision === "submit" ? "submitted" : "draft",
+          approval_status:
+            decision === "submit"
+              ? assessment.requiresManualReview
+                ? "under_review"
+                : "submitted"
+              : "draft",
           status: "active",
-          trust_badges: ["Seller submitted"],
+          trust_badges: assessment.trustBadges,
           filter_data: {
-            verifiedSeller: true,
+            verifiedSeller: sellerProfile.tier !== "unverified",
             codEligible: text(formData, "cod_eligible") === "on",
+            qualityScore: assessment.qualityScore,
+            riskScore: assessment.riskScore,
+            postingFee: assessment.postingFee,
+            featuredFee: assessment.featuredFee,
+            reviewReasons: assessment.moderationReasons,
+            requestFeaturedPlacement,
+            duplicateAssetDetected: (duplicateMedia?.length ?? 0) > 0,
+            sellerPlanId: sellerProfile.planId,
+            sellerTrustTier: sellerProfile.tier,
           },
           specifications: {
             Material: text(formData, "material"),
@@ -711,7 +1020,6 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (error) throw error;
 
-        const imageUrl = text(formData, "image_url");
         if (imageUrl && product?.id) {
           await admin.from("marketplace_product_media").upsert({
             product_id: product.id,
@@ -722,7 +1030,30 @@ export async function POST(request: Request) {
           } as never);
         }
 
-        if (decision === "submit") {
+        if (decision === "submit" || assessment.requiresManualReview) {
+          await createModerationCase(admin, {
+            subjectType: "product",
+            subjectId: product?.id ? String(product.id) : slug,
+            queue: assessment.requiresManualReview ? "product_risk_review" : "product_review",
+            note: assessment.moderationReasons.join(" | ") || `Listing submitted with quality ${assessment.qualityScore}.`,
+          });
+
+          await writeMarketplaceEvent(admin, {
+            eventType: "vendor_product_submission_assessed",
+            userId: viewer.user.id,
+            normalizedEmail: viewer.user.email,
+            actorUserId: viewer.user.id,
+            actorEmail: viewer.user.email,
+            entityType: "product",
+            entityId: product?.id ? String(product.id) : null,
+            payload: {
+              slug,
+              assessment,
+              sellerPlanId: sellerProfile.planId,
+              sellerTrustTier: sellerProfile.tier,
+            },
+          });
+
           await sendMarketplaceEvent({
             event: "owner_alert",
             recipientEmail: process.env.RESEND_SUPPORT_INBOX || marketplace.supportEmail,
@@ -731,7 +1062,7 @@ export async function POST(request: Request) {
             entityType: "product",
             entityId: product?.id ? String(product.id) : null,
             payload: {
-              note: `Product ${payload.title} was submitted for moderation.`,
+              note: `Product ${payload.title} was submitted with quality ${assessment.qualityScore} and risk ${assessment.riskScore}.`,
             },
           });
         }
@@ -895,21 +1226,42 @@ export async function POST(request: Request) {
           .from("marketplace_orders")
           .update({
             payment_status: "verified",
-            status: "processing",
+            status: "paid_held",
           } as never)
           .eq("order_no", orderNo);
         await admin
           .from("marketplace_order_groups")
           .update({
             payment_status: "verified",
+            payout_status: "paid_held",
           } as never)
           .eq("order_no", orderNo);
+
+        await appendOrderTimeline(admin, orderNo, [
+          "Payment verified by HenryCo finance.",
+          "Seller funds are now held in escrow pending fulfillment, delivery proof, and trust review.",
+        ]);
 
         const { data: order } = await admin
           .from("marketplace_orders")
           .select("id, user_id, normalized_email, buyer_email, buyer_phone")
           .eq("order_no", orderNo)
           .maybeSingle();
+
+        await writeMarketplaceEvent(admin, {
+          eventType: "payment_verified_and_escrow_activated",
+          userId: order?.user_id ?? null,
+          normalizedEmail: order?.normalized_email ?? null,
+          actorUserId: viewer.user?.id ?? null,
+          actorEmail: viewer.user?.email ?? null,
+          entityType: "order",
+          entityId: order?.id ? String(order.id) : null,
+          payload: {
+            orderNo,
+            reviewNote: note || null,
+            payoutStatus: "paid_held",
+          },
+        });
 
         await sendMarketplaceEvent({
           event: "payment_verified",
@@ -927,13 +1279,77 @@ export async function POST(request: Request) {
           },
         });
 
+        await syncOrderLifecycle(admin, orderNo);
+
         revalidatePath("/finance");
         revalidatePath(`/track/${orderNo}`);
         return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}verified=1`);
       }
 
+      case "order_confirm_completion": {
+        if (!viewer.user) {
+          return redirectToSharedAccountLogin(request, "/account/orders");
+        }
+
+        const orderNo = text(formData, "order_no");
+        const { data: order } = await admin
+          .from("marketplace_orders")
+          .select("id, user_id, normalized_email, buyer_email, buyer_phone")
+          .eq("order_no", orderNo)
+          .maybeSingle();
+
+        const isOwner =
+          order?.user_id === viewer.user.id ||
+          (normalizeEmail(order?.normalized_email) &&
+            normalizeEmail(order?.normalized_email) === normalizeEmail(viewer.user.email));
+        if (!order?.id || !isOwner) {
+          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=forbidden`);
+        }
+
+        const { count: openDisputeCount } = await admin
+          .from("marketplace_disputes")
+          .select("id", { count: "exact", head: true })
+          .eq("order_no", orderNo)
+          .in("status", ["open", "investigating"]);
+
+        if ((openDisputeCount ?? 0) > 0) {
+          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=dispute-open`);
+        }
+
+        await admin
+          .from("marketplace_order_groups")
+          .update({ payout_status: "payout_releasable" } as never)
+          .eq("order_no", orderNo)
+          .eq("fulfillment_status", "delivered")
+          .in("payout_status", ["awaiting_auto_release", "paid_held"]);
+
+        await appendOrderTimeline(admin, orderNo, [
+          "Buyer confirmed completion.",
+          "HenryCo marked eligible seller funds as releasable.",
+        ]);
+
+        await writeMarketplaceEvent(admin, {
+          eventType: "buyer_confirmed_completion",
+          userId: order.user_id ?? null,
+          normalizedEmail: order.normalized_email ?? null,
+          actorUserId: viewer.user.id,
+          actorEmail: viewer.user.email,
+          entityType: "order",
+          entityId: String(order.id),
+          payload: {
+            orderNo,
+          },
+        });
+
+        await syncOrderLifecycle(admin, orderNo);
+        revalidatePath(`/track/${orderNo}`);
+        revalidatePath(`/account/orders/${orderNo}`);
+        revalidatePath("/vendor/payouts");
+        return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}confirmed=1`);
+      }
+
       case "dispute_create": {
-        if (!viewer.user) return redirectTo(request, "/login?next=/account/disputes");
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/disputes");
 
         const orderNo = text(formData, "order_no");
         const reason = text(formData, "reason");
@@ -941,11 +1357,17 @@ export async function POST(request: Request) {
         const vendorSlug = text(formData, "vendor_slug");
         const vendor = snapshot.vendors.find((item) => item.slug === vendorSlug) ?? null;
         const disputeNo = makeRef("MKT-DSP");
+        const { data: order } = await admin
+          .from("marketplace_orders")
+          .select("id, user_id, normalized_email")
+          .eq("order_no", orderNo)
+          .maybeSingle();
 
         const { data: dispute } = await admin
           .from("marketplace_disputes")
           .insert({
             dispute_no: disputeNo,
+            order_id: order?.id ?? null,
             order_no: orderNo,
             opened_by_user_id: viewer.user.id,
             normalized_email: normalizeEmail(viewer.user.email),
@@ -961,6 +1383,42 @@ export async function POST(request: Request) {
           .from("marketplace_orders")
           .update({ status: "disputed" } as never)
           .eq("order_no", orderNo);
+        await admin
+          .from("marketplace_order_groups")
+          .update({
+            payout_status: "payout_frozen",
+          } as never)
+          .eq("order_no", orderNo)
+          .eq(vendor?.id ? "vendor_id" : "order_no", vendor?.id ?? orderNo);
+
+        await appendOrderTimeline(admin, orderNo, [
+          `Dispute opened: ${titleCaseMarketplaceValue(reason || "issue reported")}.`,
+          "HenryCo froze seller payout release while support and moderation review evidence.",
+        ]);
+
+        await createModerationCase(admin, {
+          subjectType: "dispute",
+          subjectId: dispute?.id ? String(dispute.id) : disputeNo,
+          queue: "disputes",
+          note: note || reason,
+        });
+
+        await writeMarketplaceEvent(admin, {
+          eventType: "dispute_created_and_payout_frozen",
+          userId: viewer.user.id,
+          normalizedEmail: viewer.user.email,
+          actorUserId: viewer.user.id,
+          actorEmail: viewer.user.email,
+          entityType: "dispute",
+          entityId: dispute?.id ? String(dispute.id) : null,
+          payload: {
+            orderNo,
+            disputeNo,
+            vendorSlug: vendorSlug || null,
+            reason,
+            note,
+          },
+        });
 
         await sendMarketplaceEvent({
           event: "dispute_opened",
@@ -977,6 +1435,8 @@ export async function POST(request: Request) {
             note,
           },
         });
+
+        await syncOrderLifecycle(admin, orderNo);
 
         return redirectTo(request, "/account/disputes?opened=1");
       }
@@ -1006,6 +1466,58 @@ export async function POST(request: Request) {
           } as never)
           .eq("id", disputeId);
 
+        if (status === "resolved") {
+          const resolutionType = text(formData, "resolution_type") || dispute.resolution_type || "manual_review";
+          const refundAmount = numberValue(formData, "refund_amount", Number(dispute.refund_amount || 0));
+
+          await admin
+            .from("marketplace_disputes")
+            .update({
+              resolution_type: resolutionType,
+              refund_amount: refundAmount || null,
+            } as never)
+            .eq("id", disputeId);
+
+          await admin
+            .from("marketplace_order_groups")
+            .update({
+              payout_status: resolutionType === "refund_to_buyer" ? "refunded" : "awaiting_auto_release",
+            } as never)
+            .eq("order_no", dispute.order_no)
+            .eq(dispute.vendor_id ? "vendor_id" : "order_no", dispute.vendor_id ?? dispute.order_no);
+
+          await appendOrderTimeline(admin, dispute.order_no, [
+            `Dispute ${dispute.dispute_no} resolved.`,
+            resolutionType === "refund_to_buyer"
+              ? "HenryCo marked the affected payout segment as refunded."
+              : "HenryCo returned the payout segment to controlled release monitoring.",
+          ]);
+        } else {
+          await admin
+            .from("marketplace_order_groups")
+            .update({
+              payout_status: "payout_frozen",
+            } as never)
+            .eq("order_no", dispute.order_no)
+            .eq(dispute.vendor_id ? "vendor_id" : "order_no", dispute.vendor_id ?? dispute.order_no);
+        }
+
+        await writeMarketplaceEvent(admin, {
+          eventType: "dispute_status_changed",
+          userId: dispute.opened_by_user_id,
+          normalizedEmail: dispute.normalized_email,
+          actorUserId: viewer.user?.id ?? null,
+          actorEmail: viewer.user?.email ?? null,
+          entityType: "dispute",
+          entityId: disputeId,
+          payload: {
+            disputeNo: dispute.dispute_no,
+            orderNo: dispute.order_no,
+            status,
+            note,
+          },
+        });
+
         await sendMarketplaceEvent({
           event: status === "resolved" ? "dispute_resolved" : "dispute_updated",
           userId: dispute.opened_by_user_id,
@@ -1023,31 +1535,98 @@ export async function POST(request: Request) {
           },
         });
 
+        await syncOrderLifecycle(admin, String(dispute.order_no || ""));
         revalidatePath("/support");
         return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}updated=1`);
       }
 
       case "payout_request": {
         if (!viewer.user || !viewerHasRole(viewer, ["vendor"])) {
-          return redirectTo(request, "/login?next=/vendor/payouts");
+          return redirectToSharedAccountLogin(request, "/vendor/payouts");
         }
 
         const vendorId = viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId;
         if (!vendorId) return redirectTo(request, "/vendor/payouts?error=missing-vendor");
 
+        const { data: openRequest } = await admin
+          .from("marketplace_payout_requests")
+          .select("id, reference, status")
+          .eq("vendor_id", vendorId)
+          .in("status", ["requested", "approved"])
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (openRequest?.id) {
+          return redirectTo(request, "/vendor/payouts?error=open-request-exists");
+        }
+
+        const { data: vendorGroups, error: groupsError } = await admin
+          .from("marketplace_order_groups")
+          .select("id, order_no, payout_status, net_vendor_amount, delivered_at")
+          .eq("vendor_id", vendorId)
+          .order("delivered_at", { ascending: true });
+        if (groupsError) throw groupsError;
+
+        const balance = computePayoutBalance({
+          groups: (vendorGroups ?? []).map((group: Record<string, unknown>) => ({
+            id: String(group.id),
+            payoutStatus: String(group.payout_status || ""),
+            netVendorAmount: Number(group.net_vendor_amount || 0),
+          })),
+        });
+
+        const requestedAmount = Math.round(numberValue(formData, "amount", balance.releasable));
+        if (requestedAmount <= 0 || requestedAmount > balance.releasable) {
+          return redirectTo(request, "/vendor/payouts?error=amount-exceeds-releasable");
+        }
+
+        const selectedGroupIds: string[] = [];
+        let runningAmount = 0;
+        for (const group of (vendorGroups ?? []) as Array<Record<string, unknown>>) {
+          if (String(group.payout_status || "") !== "payout_releasable") continue;
+          selectedGroupIds.push(String(group.id));
+          runningAmount += Number(group.net_vendor_amount || 0);
+          if (runningAmount >= requestedAmount) break;
+        }
+
+        if (!selectedGroupIds.length) {
+          return redirectTo(request, "/vendor/payouts?error=no-releasable-balance");
+        }
+
         const reference = makeRef("MKT-PAY");
-        const amount = numberValue(formData, "amount", 0);
         const { data: payout } = await admin
           .from("marketplace_payout_requests")
           .insert({
             reference,
             vendor_id: vendorId,
-            amount,
+            amount: requestedAmount,
             status: "requested",
             requested_by: viewer.user.id,
           } as never)
           .select("id")
           .maybeSingle();
+
+        await admin
+          .from("marketplace_order_groups")
+          .update({ payout_status: "requested" } as never)
+          .in("id", selectedGroupIds);
+
+        await writeMarketplaceEvent(admin, {
+          eventType: "vendor_payout_requested",
+          userId: viewer.user.id,
+          normalizedEmail: viewer.user.email,
+          actorUserId: viewer.user.id,
+          actorEmail: viewer.user.email,
+          entityType: "payout_request",
+          entityId: payout?.id ? String(payout.id) : null,
+          payload: {
+            reference,
+            vendorId,
+            selectedGroupIds,
+            requestedAmount,
+            balance,
+          },
+        });
 
         const vendor = snapshot.vendors.find((item) => item.id === vendorId);
         await sendMarketplaceEvent({
@@ -1059,11 +1638,13 @@ export async function POST(request: Request) {
           entityId: payout?.id ? String(payout.id) : null,
           payload: {
             payoutReference: reference,
-            note: `${vendor?.name || "Vendor"} requested payout review.`,
+            amount: requestedAmount,
+            note: `${vendor?.name || "Vendor"} requested payout review for ${selectedGroupIds.length} releasable settlement group(s).`,
           },
         });
 
         revalidatePath("/vendor/payouts");
+        revalidatePath("/finance/payouts");
         return redirectTo(request, "/vendor/payouts?requested=1");
       }
 
@@ -1092,13 +1673,33 @@ export async function POST(request: Request) {
           return redirectTo(request, "/vendor/orders?error=forbidden");
         }
 
+        const vendor = snapshot.vendors.find((item) => item.id === String(group.vendor_id || "")) ?? null;
+        const { count: openDisputeCount } = await admin
+          .from("marketplace_disputes")
+          .select("id", { count: "exact", head: true })
+          .eq("order_no", String(group.order_no || ""))
+          .eq(group.vendor_id ? "vendor_id" : "order_no", group.vendor_id ?? group.order_no)
+          .in("status", ["open", "investigating"]);
+        const sellerProfile = deriveSellerTrustProfile({ vendor });
+        const deliveredAt =
+          fulfillmentStatus === "delivered" ? new Date().toISOString() : group.delivered_at ? String(group.delivered_at) : null;
+        const nextPayoutStatus =
+          fulfillmentStatus === "delivered"
+            ? (openDisputeCount ?? 0) > 0
+              ? "payout_frozen"
+              : String(group.payment_status || "") === "verified"
+                ? "awaiting_auto_release"
+                : "awaiting_payment"
+            : String(group.payout_status || "awaiting_payment");
+
         await admin
           .from("marketplace_order_groups")
           .update({
             fulfillment_status: fulfillmentStatus,
             shipment_carrier: shipmentCarrier || null,
             shipment_tracking_code: shipmentTrackingCode || null,
-            delivered_at: fulfillmentStatus === "delivered" ? new Date().toISOString() : null,
+            delivered_at: fulfillmentStatus === "delivered" ? deliveredAt : null,
+            payout_status: nextPayoutStatus,
           } as never)
           .eq("id", orderGroupId);
 
@@ -1143,6 +1744,33 @@ export async function POST(request: Request) {
             : null;
 
         if (event) {
+          await appendOrderTimeline(admin, String(group.order_no || ""), [
+            fulfillmentStatus === "shipped"
+              ? `Shipment dispatched with ${shipmentCarrier || "assigned carrier"}.`
+              : fulfillmentStatus === "delivered"
+                ? `Delivery verified. HenryCo will auto-release seller funds after ${sellerProfile.autoReleaseDays} day(s) unless a dispute or risk hold is triggered.`
+                : `Order updated to ${titleCaseMarketplaceValue(fulfillmentStatus)}.`,
+          ]);
+
+          await writeMarketplaceEvent(admin, {
+            eventType: "vendor_order_group_updated",
+            userId: order?.user_id ?? null,
+            normalizedEmail: order?.normalized_email ?? null,
+            actorUserId: viewer.user?.id ?? null,
+            actorEmail: viewer.user?.email ?? null,
+            entityType: "order_group",
+            entityId: group.id ? String(group.id) : null,
+            payload: {
+              orderNo: group.order_no,
+              fulfillmentStatus,
+              nextPayoutStatus,
+              autoReleaseAt:
+                fulfillmentStatus === "delivered" && deliveredAt
+                  ? getAutoReleaseAt(deliveredAt, sellerProfile)
+                  : null,
+            },
+          });
+
           await sendMarketplaceEvent({
             event,
             userId: order?.user_id ?? null,
@@ -1159,6 +1787,8 @@ export async function POST(request: Request) {
             },
           });
         }
+
+        await syncOrderLifecycle(admin, String(group.order_no || ""));
 
         revalidatePath("/vendor/orders");
         revalidatePath(`/track/${group.order_no}`);
@@ -1212,6 +1842,21 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (!payout) return redirectTo(request, "/finance?error=missing-payout");
 
+        const requestedStatuses = decision === "released" ? ["requested", "approved"] : ["requested"];
+        const groupDecisionStatus =
+          decision === "approved"
+            ? "approved"
+            : decision === "released"
+              ? "payout_released"
+              : decision === "frozen"
+                ? "payout_frozen"
+                : "payout_releasable";
+        const { data: affectedGroups } = await admin
+          .from("marketplace_order_groups")
+          .select("order_no")
+          .eq("vendor_id", payout.vendor_id)
+          .in("payout_status", requestedStatuses);
+
         await admin
           .from("marketplace_payout_requests")
           .update({
@@ -1222,9 +1867,33 @@ export async function POST(request: Request) {
           } as never)
           .eq("id", payoutId);
 
+        await admin
+          .from("marketplace_order_groups")
+          .update({
+            payout_status: groupDecisionStatus,
+          } as never)
+          .eq("vendor_id", payout.vendor_id)
+          .in("payout_status", requestedStatuses);
+
+        await writeMarketplaceEvent(admin, {
+          eventType: "finance_payout_decision_recorded",
+          actorUserId: viewer.user?.id ?? null,
+          actorEmail: viewer.user?.email ?? null,
+          entityType: "payout_request",
+          entityId: payoutId,
+          payload: {
+            reference: payout.reference,
+            decision,
+            amount: payout.amount,
+            note,
+            vendorId: payout.vendor_id,
+            groupDecisionStatus,
+          },
+        });
+
         const vendor = snapshot.vendors.find((item) => item.id === String(payout.vendor_id));
         await sendMarketplaceEvent({
-          event: decision === "approved" ? "payout_approved" : "payout_rejected",
+          event: decision === "approved" || decision === "released" ? "payout_approved" : "payout_rejected",
           recipientEmail: vendor?.supportEmail || null,
           recipientPhone: vendor?.supportPhone || null,
           actorUserId: viewer.user?.id ?? null,
@@ -1233,10 +1902,15 @@ export async function POST(request: Request) {
           entityId: payoutId,
           payload: {
             payoutReference: payout.reference,
+            amount: payout.amount,
             note,
           },
         });
 
+        const affectedOrderNos = Array.from(
+          new Set((affectedGroups ?? []).map((group: Record<string, unknown>) => String(group.order_no || "")).filter(Boolean))
+        );
+        await Promise.all(affectedOrderNos.map((orderNo) => syncOrderLifecycle(admin, orderNo)));
         revalidatePath("/finance");
         revalidatePath("/vendor/payouts");
         return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}decision=${decision}`);

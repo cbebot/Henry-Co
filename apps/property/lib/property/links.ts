@@ -29,6 +29,10 @@ export function getPropertyWorkspaceUrl(path = "/owner") {
 }
 
 export function getSharedAccountPropertyPath(panel: PropertyAccountPanel = "overview") {
+  if (panel === "saved") {
+    return "/property/saved";
+  }
+
   const url = new URL("/property", "https://account.henryco.local");
   if (panel !== "overview") {
     url.searchParams.set("panel", panel);
@@ -45,6 +49,19 @@ export function getSharedAccountLoginUrl(options: {
   propertyOrigin: string;
 }) {
   const url = new URL("/login", getAccountUrl("/"));
+  url.searchParams.set(
+    "next",
+    new URL(sanitizePropertyPath(options.nextPath, "/"), options.propertyOrigin).toString()
+  );
+  url.searchParams.set("division", "property");
+  return url.toString();
+}
+
+export function getSharedAccountSignupUrl(options: {
+  nextPath?: string | null;
+  propertyOrigin: string;
+}) {
+  const url = new URL("/signup", getAccountUrl("/"));
   url.searchParams.set(
     "next",
     new URL(sanitizePropertyPath(options.nextPath, "/"), options.propertyOrigin).toString()

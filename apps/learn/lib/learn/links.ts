@@ -1,4 +1,9 @@
-import { getAccountUrl, getDivisionUrl } from "@henryco/config";
+import {
+  getAccountUrl,
+  getDivisionUrl,
+  isAbsoluteHttpUrl,
+  normalizeTrustedRedirect,
+} from "@henryco/config";
 
 function normalizePath(path = "/") {
   return path.startsWith("/") ? path : `/${path}`;
@@ -22,12 +27,12 @@ export function getAccountLearnUrl(panel?: string | null) {
 
 export function getSharedAuthUrl(mode: "login" | "signup", nextPath?: string | null) {
   const base = getAccountUrl(mode === "login" ? "/login" : "/signup");
-  const next =
-    nextPath && /^https?:\/\//i.test(nextPath)
-      ? nextPath
-      : nextPath
-        ? getLearnUrl(nextPath)
-        : getAccountLearnUrl();
+  const normalizedNext = normalizeTrustedRedirect(nextPath);
+  const next = isAbsoluteHttpUrl(normalizedNext)
+    ? normalizedNext
+    : normalizedNext !== "/"
+      ? getLearnUrl(normalizedNext)
+      : getAccountLearnUrl();
 
   const params = new URLSearchParams();
   if (next) params.set("next", next);

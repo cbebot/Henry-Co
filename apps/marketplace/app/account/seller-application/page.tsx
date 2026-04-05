@@ -38,15 +38,15 @@ export default async function SellerApplicationPage() {
     >
       {application ? (
         <div className="space-y-5">
-          <article className="rounded-[1.8rem] border border-[var(--market-line-strong)] bg-[var(--market-paper-white)] p-6 shadow-[0_20px_52px_rgba(28,24,18,0.06)]">
+          <article className="market-panel rounded-[1.8rem] p-6">
             <p className="market-kicker">{application.status}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-ink)]">
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">
               {application.storeName}
             </h2>
             <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
               Submitted {formatDate(application.submittedAt)} · {application.categoryFocus}
             </p>
-            <p className="mt-4 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-4 py-4 text-sm leading-7 text-[var(--market-ink)]">
+            <p className="market-soft mt-4 rounded-[1.5rem] px-4 py-4 text-sm leading-7 text-[var(--market-ink)]">
               {application.reviewNote ||
                 "Your application is in the workflow. Updates will appear here and in the notifications center."}
             </p>
@@ -69,9 +69,9 @@ export default async function SellerApplicationPage() {
             ].map((item) => (
               <article
                 key={item.title}
-                className="rounded-[1.6rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-5 py-5"
+                className="market-soft rounded-[1.6rem] px-5 py-5"
               >
-                <p className="text-lg font-semibold tracking-tight text-[var(--market-ink)]">{item.title}</p>
+                <p className="text-lg font-semibold tracking-tight text-[var(--market-paper-white)]">{item.title}</p>
                 <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{item.body}</p>
               </article>
             ))}

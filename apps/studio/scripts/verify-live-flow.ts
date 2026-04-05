@@ -101,6 +101,15 @@ async function main() {
     inspirationSummary: summaryLabel,
     depositNow: true,
     files: [],
+    domainIntent: {
+      path: "later",
+      desiredLabel: "",
+      checkedFqdn: null,
+      checkStatus: "decide_later",
+      suggestionsShown: [],
+      lookupMode: "off",
+      lastMessage: null,
+    },
   });
 
   const createdProject = result.project;

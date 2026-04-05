@@ -9,12 +9,12 @@ export function LearnSiteFooter() {
     <footer className="border-t border-[var(--learn-line)] bg-black/10">
       <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[1.4fr,1fr,1fr] xl:px-10">
         <div>
-          <p className="learn-kicker">HenryCo Academy</p>
+          <p className="learn-kicker">{learn.name}</p>
           <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--learn-ink)]">
-            Premium learning for public growth, internal readiness, and verified capability.
+            Practical courses, clear progress, verified certificates.
           </h3>
           <p className="mt-4 max-w-xl text-sm leading-8 text-[var(--learn-ink-soft)]">
-            HenryCo Learn connects courses, team learning, notifications, certificates, and future unified-account history through one calm academy experience.
+            Learn on your schedule, pick up where you left off in your HenryCo account, and share credentials employers can verify online.
           </p>
         </div>
 
@@ -22,9 +22,11 @@ export function LearnSiteFooter() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--learn-ink-soft)]">Explore</p>
           <div className="mt-5 space-y-3">
             {[
-              ["/courses", "Course catalog"],
-              ["/academy", "Academy overview"],
-              ["/certifications", "Certifications"],
+              ["/courses", "Courses"],
+              ["/paths", "Paths"],
+              ["/academy", "How it works"],
+              ["/certifications", "Certificates"],
+              ["/teach", "Teach with HenryCo"],
               ["/trust", "Trust"],
               ["/help", "Help"],
             ].map(([href, label]) => (
@@ -38,14 +40,14 @@ export function LearnSiteFooter() {
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--learn-ink-soft)]">Support</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--learn-ink-soft)]">Account & support</p>
           <div className="mt-5 space-y-3 text-sm text-[var(--learn-ink-soft)]">
             <p>{learn.supportEmail}</p>
             <p>{learn.supportPhone}</p>
-            <p>Mon-Fri 9:00-18:00 WAT</p>
-            <Link href={getAccountLearnUrl()} className="inline-flex text-[var(--learn-mint-soft)] transition hover:text-white">
-              Open HenryCo account
-            </Link>
+            <p>Mon–Fri, 9:00–18:00 WAT</p>
+            <a href={getAccountLearnUrl()} className="inline-flex text-[var(--learn-mint-soft)] transition hover:text-white">
+              Open HenryCo account — Learn
+            </a>
           </div>
         </div>
       </div>

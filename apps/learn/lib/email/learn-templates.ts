@@ -5,7 +5,7 @@ import {
   getOptionalEnv,
   sanitizeHeaderValue,
 } from "@/lib/env";
-import { getAccountLearnUrl, getLearnUrl } from "@/lib/learn/links";
+import { getAccountLearnUrl } from "@/lib/learn/links";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createId, nowIso, upsertLearnRecord } from "@/lib/learn/store";
 import { sendLearnWhatsAppText } from "@/lib/learn/whatsapp";

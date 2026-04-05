@@ -28,7 +28,7 @@ export default function OwnerLoginClient() {
 
     try {
       if (!supabase) {
-        throw new Error("Supabase environment variables are missing.");
+        throw new Error("Sign-in is not configured for this environment.");
       }
 
       const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -59,11 +59,11 @@ export default function OwnerLoginClient() {
         </div>
 
         <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-          Sign in to the Henry &amp; Co. owner dashboard
+          Sign in to HenryCo HQ
         </h1>
 
         <p className="mt-3 text-sm leading-7 text-white/64">
-          This area manages company settings, pages, leadership records, and divisions.
+          This area manages company-wide operations, messaging health, workforce control, brand settings, and division oversight.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">

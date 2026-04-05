@@ -1,16 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { getNavSections, type NavItem } from "@/lib/navigation";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
-import { initials } from "@/lib/format";
 import Logo from "@/components/brand/Logo";
+import NotificationBell from "@/components/notifications/NotificationBell";
+import UserAvatar from "@/components/layout/UserAvatar";
 
 type SidebarProps = {
   user: { fullName: string | null; email: string | null; avatarUrl: string | null };
-  unreadCount: number;
 };
 
 function NavLink({ item, active }: { item: NavItem; active: boolean }) {
@@ -26,17 +25,13 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
     >
       <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
       <span className="flex-1 truncate">{item.label}</span>
-      {item.label === "Notifications" && item.badge ? (
-        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--acct-red)] px-1.5 text-[0.65rem] font-bold text-white">
-          {item.badge > 99 ? "99+" : item.badge}
-        </span>
-      ) : null}
     </Link>
   );
 }
 
-export default function Sidebar({ user, unreadCount }: SidebarProps) {
+export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const sections = getNavSections();
 
   const isActive = (href: string) => {
@@ -45,9 +40,13 @@ export default function Sidebar({ user, unreadCount }: SidebarProps) {
   };
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseBrowser();
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      cache: "no-store",
+    });
+    router.replace("/login");
+    router.refresh();
   };
 
   return (
@@ -59,6 +58,7 @@ export default function Sidebar({ user, unreadCount }: SidebarProps) {
           <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">Henry & Co.</p>
           <p className="text-[0.65rem] text-[var(--acct-muted)]">My Account</p>
         </div>
+        <NotificationBell />
       </div>
 
       {/* Nav */}
@@ -70,10 +70,7 @@ export default function Sidebar({ user, unreadCount }: SidebarProps) {
               {items.map((item) => (
                 <NavLink
                   key={item.href}
-                  item={{
-                    ...item,
-                    badge: item.label === "Notifications" ? unreadCount : undefined,
-                  }}
+                  item={item}
                   active={isActive(item.href)}
                 />
               ))}
@@ -85,17 +82,12 @@ export default function Sidebar({ user, unreadCount }: SidebarProps) {
       {/* User footer */}
       <div className="border-t border-[var(--acct-line)] p-3">
         <div className="flex items-center gap-3 rounded-xl p-2">
-          {user.avatarUrl ? (
-            <img
-              src={user.avatarUrl}
-              alt=""
-              className="h-9 w-9 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-xs font-bold text-[var(--acct-gold)]">
-              {initials(user.fullName)}
-            </div>
-          )}
+          <UserAvatar
+            name={user.fullName}
+            src={user.avatarUrl}
+            size={36}
+            roundedClassName="rounded-full"
+          />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-[var(--acct-ink)]">
               {user.fullName || "Account"}

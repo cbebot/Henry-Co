@@ -50,8 +50,15 @@ export default function PreferencesForm({ preferences }: Props) {
     email_transactional: preferences?.email_transactional ?? true,
     email_digest: preferences?.email_digest ?? false,
     push_enabled: preferences?.push_enabled ?? true,
+    whatsapp_enabled: preferences?.whatsapp_enabled ?? false,
+    sms_enabled: preferences?.sms_enabled ?? false,
     notification_care: preferences?.notification_care ?? true,
     notification_marketplace: preferences?.notification_marketplace ?? true,
+    notification_studio: preferences?.notification_studio ?? true,
+    notification_jobs: preferences?.notification_jobs ?? true,
+    notification_learn: preferences?.notification_learn ?? true,
+    notification_property: preferences?.notification_property ?? true,
+    notification_logistics: preferences?.notification_logistics ?? true,
     notification_wallet: preferences?.notification_wallet ?? true,
     notification_security: preferences?.notification_security ?? true,
   });
@@ -97,54 +104,110 @@ export default function PreferencesForm({ preferences }: Props) {
         </div>
       )}
 
-      <Toggle
-        label="Marketing emails"
-        description="Promotions, new features, and offers"
-        checked={prefs.email_marketing as boolean}
-        onChange={(v) => update("email_marketing", v)}
-      />
-      <Toggle
-        label="Transaction emails"
-        description="Receipts, confirmations, and alerts"
-        checked={prefs.email_transactional as boolean}
-        onChange={(v) => update("email_transactional", v)}
-      />
-      <Toggle
-        label="Weekly digest"
-        description="Weekly summary of your activity"
-        checked={prefs.email_digest as boolean}
-        onChange={(v) => update("email_digest", v)}
-      />
-      <Toggle
-        label="Push notifications"
-        description="In-app and browser notifications"
-        checked={prefs.push_enabled as boolean}
-        onChange={(v) => update("push_enabled", v)}
-      />
-      <Toggle
-        label="Care notifications"
-        description="Updates from Care services"
-        checked={prefs.notification_care as boolean}
-        onChange={(v) => update("notification_care", v)}
-      />
-      <Toggle
-        label="Marketplace notifications"
-        description="Orders, deals, and store updates"
-        checked={prefs.notification_marketplace as boolean}
-        onChange={(v) => update("notification_marketplace", v)}
-      />
-      <Toggle
-        label="Wallet notifications"
-        description="Balance changes and transactions"
-        checked={prefs.notification_wallet as boolean}
-        onChange={(v) => update("notification_wallet", v)}
-      />
-      <Toggle
-        label="Security alerts"
-        description="Login attempts and security changes"
-        checked={prefs.notification_security as boolean}
-        onChange={(v) => update("notification_security", v)}
-      />
+      <div className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
+        <p className="acct-kicker mb-3">Delivery channels</p>
+        <p className="mb-3 text-xs leading-5 text-[var(--acct-muted)]">
+          Turn on every channel you want to use — email, in-app, WhatsApp, and SMS can be active at the same time.
+        </p>
+        <div className="space-y-3">
+          <Toggle
+            label="Marketing emails"
+            description="Promotions, new features, and offers"
+            checked={prefs.email_marketing as boolean}
+            onChange={(v) => update("email_marketing", v)}
+          />
+          <Toggle
+            label="Transaction emails"
+            description="Receipts, confirmations, and alerts"
+            checked={prefs.email_transactional as boolean}
+            onChange={(v) => update("email_transactional", v)}
+          />
+          <Toggle
+            label="Weekly digest"
+            description="A calmer summary instead of separate message noise"
+            checked={prefs.email_digest as boolean}
+            onChange={(v) => update("email_digest", v)}
+          />
+          <Toggle
+            label="In-app notifications"
+            description="Notification center and bell activity inside your dashboard"
+            checked={prefs.push_enabled as boolean}
+            onChange={(v) => update("push_enabled", v)}
+          />
+          <Toggle
+            label="WhatsApp updates"
+            description="Important delivery and project movement through WhatsApp where supported"
+            checked={prefs.whatsapp_enabled as boolean}
+            onChange={(v) => update("whatsapp_enabled", v)}
+          />
+          <Toggle
+            label="SMS updates"
+            description="Short urgent updates through SMS for time-sensitive flows"
+            checked={prefs.sms_enabled as boolean}
+            onChange={(v) => update("sms_enabled", v)}
+          />
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
+        <p className="acct-kicker mb-3">Division sources</p>
+        <div className="space-y-3">
+          <Toggle
+            label="Care notifications"
+            description="Bookings, tracking, and service status"
+            checked={prefs.notification_care as boolean}
+            onChange={(v) => update("notification_care", v)}
+          />
+          <Toggle
+            label="Marketplace notifications"
+            description="Orders, seller updates, and disputes"
+            checked={prefs.notification_marketplace as boolean}
+            onChange={(v) => update("notification_marketplace", v)}
+          />
+          <Toggle
+            label="Studio notifications"
+            description="Proposal movement, project room updates, and payment steps"
+            checked={prefs.notification_studio as boolean}
+            onChange={(v) => update("notification_studio", v)}
+          />
+          <Toggle
+            label="Jobs notifications"
+            description="Application movement, recruiter updates, and alerts"
+            checked={prefs.notification_jobs as boolean}
+            onChange={(v) => update("notification_jobs", v)}
+          />
+          <Toggle
+            label="Learn notifications"
+            description="Course activity, progress, and certification updates"
+            checked={prefs.notification_learn as boolean}
+            onChange={(v) => update("notification_learn", v)}
+          />
+          <Toggle
+            label="Property notifications"
+            description="Inquiries, viewings, and listing progress"
+            checked={prefs.notification_property as boolean}
+            onChange={(v) => update("notification_property", v)}
+          />
+          <Toggle
+            label="Logistics notifications"
+            description="Shipment movement and delivery updates"
+            checked={prefs.notification_logistics as boolean}
+            onChange={(v) => update("notification_logistics", v)}
+          />
+          <Toggle
+            label="Wallet notifications"
+            description="Funding requests, balance changes, and verification alerts"
+            checked={prefs.notification_wallet as boolean}
+            onChange={(v) => update("notification_wallet", v)}
+          />
+          <Toggle
+            label="Security alerts"
+            description="Login attempts and sensitive account changes"
+            checked={prefs.notification_security as boolean}
+            onChange={(v) => update("notification_security", v)}
+          />
+        </div>
+      </div>
 
       <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">
         {loading ? <Loader2 size={16} className="animate-spin" /> : "Save preferences"}

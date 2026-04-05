@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
@@ -22,7 +23,8 @@ import {
   Zap,
 } from "lucide-react";
 import HubParticles from "./HubParticles";
-import { cn } from "@henryco/ui";
+import type { PublicAccountUser } from "@henryco/ui";
+import { cn, PublicAccountChip } from "@henryco/ui";
 import type { DivisionRow } from "../lib/divisions";
 
 type StatusFilter = "all" | "active" | "coming_soon" | "paused";
@@ -53,24 +55,22 @@ type FaqItem = {
   a: string;
 };
 
-const FALLBACK_FAQS: FaqItem[] = [
-  {
-    q: "Can I go directly to a division without starting from this page?",
-    a: "Yes. Each division may still be accessed directly through its own destination. This hub exists to make the wider company easier to understand and to help visitors reach the right business more quickly.",
-  },
-  {
-    q: "Will additional divisions appear here as the company grows?",
-    a: "Yes. As Henry & Co. expands, new divisions can be introduced through the same company framework so the public experience remains clear, consistent, and well organized.",
-  },
-  {
-    q: "Who is this website designed for?",
-    a: "The hub serves customers, partners, suppliers, media, talent, and stakeholders who need a clearer view of the Henry & Co. group and its operating businesses.",
-  },
-  {
-    q: "What company pages should I review first?",
-    a: "The best starting points are the About, Contact, Privacy Notice, and Terms & Conditions pages. Together, they provide a clearer view of the company, its standards, and its public policies.",
-  },
-];
+type HubChrome = {
+  copy: HubHomeCopy;
+  locale: AppLocale;
+  formatShort: Intl.DateTimeFormat;
+  formatLong: Intl.DateTimeFormat;
+};
+
+const HubChromeContext = createContext<HubChrome | null>(null);
+
+function useHubChrome(): HubChrome {
+  const ctx = useContext(HubChromeContext);
+  if (!ctx) {
+    throw new Error("Hub chrome context missing");
+  }
+  return ctx;
+}
 
 function normalizeText(value: unknown, fallback = ""): string {
   const text = typeof value === "string" ? value.trim() : String(value ?? "").trim();
@@ -123,10 +123,10 @@ function safeOpen(url?: string | null) {
   window.open(cleanUrl, "_blank", "noopener,noreferrer");
 }
 
-function getStatusLabel(status: DivisionRow["status"]) {
-  if (status === "coming_soon") return "Coming soon";
-  if (status === "paused") return "Paused";
-  return "Active";
+function getStatusLabel(status: DivisionRow["status"], labels: HubHomeCopy["status"]) {
+  if (status === "coming_soon") return labels.comingSoon;
+  if (status === "paused") return labels.paused;
+  return labels.active;
 }
 
 function getStatusTone(status: DivisionRow["status"]) {
@@ -141,39 +141,30 @@ function getStatusTone(status: DivisionRow["status"]) {
   return "border-emerald-500/25 bg-emerald-500/12 text-emerald-200";
 }
 
-function formatUpdatedAt(value?: string | null) {
+function formatUpdatedAt(value: string | undefined | null, fmt: Intl.DateTimeFormat) {
   if (!value) return "—";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
 
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return fmt.format(date);
 }
 
-function formatUpdatedAtLong(value?: string | null) {
+function formatUpdatedAtLong(value: string | undefined | null, fmt: Intl.DateTimeFormat) {
   if (!value) return "—";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
 
-  return date.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  return fmt.format(date);
 }
 
 function toFaqItems(
-  records?: Array<{ question?: string | null; answer?: string | null } | FaqItem>
+  records: Array<{ question?: string | null; answer?: string | null } | FaqItem> | undefined,
+  fallback: FaqItem[]
 ): FaqItem[] {
   if (!Array.isArray(records) || !records.length) {
-    return FALLBACK_FAQS;
+    return fallback;
   }
 
   const items = records
@@ -192,7 +183,7 @@ function toFaqItems(
     })
     .filter((item) => item.q && item.a);
 
-  return items.length ? items : FALLBACK_FAQS;
+  return items.length ? items : fallback;
 }
 
 function BrandMark({
@@ -302,6 +293,10 @@ export default function HubHomeClient({
   initialDivisions,
   initialFaqs,
   hasServerError,
+  copy,
+  locale,
+  accountChip,
+  heroWelcome,
 }: {
   brandTitle?: string | null;
   brandSub?: string | null;
@@ -312,8 +307,47 @@ export default function HubHomeClient({
   initialDivisions?: DivisionRow[];
   initialFaqs?: Array<{ question?: string | null; answer?: string | null }>;
   hasServerError?: boolean;
+  copy: HubHomeCopy;
+  locale: AppLocale;
+  accountChip?: {
+    user: PublicAccountUser | null;
+    loginHref: string;
+    signupHref: string;
+    accountHref: string;
+  };
+  /** Subtle signed-in hero line (first name). */
+  heroWelcome?: string | null;
 }) {
   const reduceMotion = useReducedMotion();
+
+  const formatShort = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : "en-NG", {
+        timeZone: "UTC",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+    [locale]
+  );
+
+  const formatLong = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : "en-NG", {
+        timeZone: "UTC",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      }),
+    [locale]
+  );
+
+  const chrome = useMemo(
+    () => ({ copy, locale, formatShort, formatLong }),
+    [copy, locale, formatShort, formatLong]
+  );
 
   const brandTitleSafe = normalizeText(brandTitle, "Henry & Co.");
   const brandSubSafe = normalizeText(brandSub, "Corporate Platform");
@@ -326,7 +360,10 @@ export default function HubHomeClient({
     [initialDivisions]
   );
 
-  const initialFaqItems = useMemo(() => toFaqItems(initialFaqs), [initialFaqs]);
+  const initialFaqItems = useMemo(
+    () => toFaqItems(initialFaqs, copy.faqFallback),
+    [initialFaqs, copy.faqFallback]
+  );
 
   const [divisions, setDivisions] = useState<DivisionRow[]>(initialDivisionsSafe);
   const [faqItems, setFaqItems] = useState<FaqItem[]>(initialFaqItems);
@@ -460,8 +497,8 @@ export default function HubHomeClient({
       .filter((value) => !Number.isNaN(value));
 
     if (!values.length) return "—";
-    return formatUpdatedAt(new Date(Math.max(...values)).toISOString());
-  }, [divisions]);
+    return formatUpdatedAt(new Date(Math.max(...values)).toISOString(), formatShort);
+  }, [divisions, formatShort]);
 
   const activeFilterCount = useMemo(() => {
     let total = 0;
@@ -472,21 +509,27 @@ export default function HubHomeClient({
     return total;
   }, [query, category, statusFilter, featuredOnly]);
 
-  const companyLinks = [
-    { label: "Featured", href: "#featured" },
-    { label: "Directory", href: "#divisions" },
-    { label: "Company", href: "#ecosystem" },
-    { label: "FAQ", href: "#faq" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-  ];
+  const companyLinks = useMemo(
+    () => [
+      { label: copy.nav.featured, href: "#featured" },
+      { label: copy.nav.directory, href: "#divisions" },
+      { label: copy.nav.company, href: "#ecosystem" },
+      { label: copy.nav.faq, href: "#faq" },
+      { label: copy.nav.about, href: "/about" },
+      { label: copy.nav.contact, href: "/contact" },
+    ],
+    [copy.nav]
+  );
 
-  const nextPages = [
-    { label: "About Henry & Co.", href: "/about" },
-    { label: "Contact the company", href: "/contact" },
-    { label: "Privacy notice", href: "/privacy" },
-    { label: "Terms & conditions", href: "/terms" },
-  ];
+  const nextPages = useMemo(
+    () => [
+      { label: copy.companyPages.about, href: "/about" },
+      { label: copy.companyPages.contact, href: "/contact" },
+      { label: copy.companyPages.privacy, href: "/privacy" },
+      { label: copy.companyPages.terms, href: "/terms" },
+    ],
+    [copy.companyPages]
+  );
 
   const clearAllFilters = () => {
     setQuery("");
@@ -495,9 +538,7 @@ export default function HubHomeClient({
     setFeaturedOnly(false);
   };
 
-  const introText =
-    normalizeText(intro) ||
-    "Henry & Co. brings together focused businesses under one respected group identity. This hub helps customers, partners, and stakeholders understand the company, locate the right division, and move forward with confidence.";
+  const introText = normalizeText(intro) || copy.introDefault;
 
   const footerText = brandFooterBlurbSafe || introText;
 
@@ -507,6 +548,7 @@ export default function HubHomeClient({
     : null;
 
   return (
+    <HubChromeContext.Provider value={chrome}>
     <div
       className="relative min-h-screen overflow-x-hidden bg-[#050816] text-white"
       style={{ "--accent": brandAccentSafe } as React.CSSProperties}
@@ -527,6 +569,7 @@ export default function HubHomeClient({
         brandLogoUrl={brandLogoUrlSafe}
         searchRef={searchRef}
         links={companyLinks}
+        accountChip={accountChip}
       />
 
       <main>
@@ -551,8 +594,21 @@ export default function HubHomeClient({
                 ) : (
                   <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
                 )}
-                Premium company network • press <b>/</b> to search
+                {copy.hero.badgeBefore}
+                <b>/</b>
+                {copy.hero.badgeAfter}
               </motion.div>
+
+              {heroWelcome ? (
+                <motion.p
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                  animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.42, delay: 0.02 }}
+                  className="mt-4 text-sm font-medium tracking-wide text-white/52"
+                >
+                  {heroWelcome}
+                </motion.p>
+              ) : null}
 
               <motion.h1
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
@@ -560,11 +616,11 @@ export default function HubHomeClient({
                 transition={{ duration: 0.5, delay: 0.04 }}
                 className="mt-6 max-w-5xl text-4xl font-semibold leading-[0.96] tracking-tight text-white sm:text-6xl xl:text-7xl"
               >
-                Explore the businesses, services, and operating divisions of{" "}
+                {copy.hero.titleBefore}
                 <span className="bg-gradient-to-r from-[color:var(--accent)] via-white to-white/70 bg-clip-text text-transparent">
                   {brandTitleSafe}
                 </span>
-                .
+                {copy.hero.titleAfter}
               </motion.h1>
 
               <motion.p
@@ -586,7 +642,7 @@ export default function HubHomeClient({
                   href="#divisions"
                   className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90"
                 >
-                  Explore all divisions
+                  {copy.hero.ctaExplore}
                   <ArrowRight className="h-4 w-4" />
                 </a>
 
@@ -594,7 +650,7 @@ export default function HubHomeClient({
                   href="#featured"
                   className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-5 py-3 text-sm text-white/88 transition hover:bg-white/10"
                 >
-                  View featured divisions
+                  {copy.hero.ctaFeatured}
                   <ChevronRight className="h-4 w-4" />
                 </a>
               </motion.div>
@@ -617,7 +673,7 @@ export default function HubHomeClient({
 
                   <div className="min-w-0">
                     <div className="text-[11px] uppercase tracking-[0.24em] text-white/45">
-                      Company brand system
+                      {copy.brandPanel.eyebrow}
                     </div>
                     <div className="mt-2 text-xl font-semibold tracking-tight text-white">
                       {brandTitleSafe}
@@ -628,15 +684,17 @@ export default function HubHomeClient({
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-3">
                   <DirectoryMiniStat
-                    label="Base domain"
+                    label={copy.brandPanel.baseDomain}
                     value={normalizeText(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com")
                       .replace(/^https?:\/\//i, "")
                       .replace(/\/+$/, "")}
                   />
-                  <DirectoryMiniStat label="Accent" value={brandAccentSafe} />
+                  <DirectoryMiniStat label={copy.brandPanel.accent} value={brandAccentSafe} />
                   <DirectoryMiniStat
-                    label="Logo status"
-                    value={brandLogoUrlSafe ? "Configured" : "Fallback mark"}
+                    label={copy.brandPanel.logoStatus}
+                    value={
+                      brandLogoUrlSafe ? copy.brandPanel.logoConfigured : copy.brandPanel.logoFallback
+                    }
                   />
                 </div>
               </motion.div>
@@ -649,22 +707,22 @@ export default function HubHomeClient({
               >
                 <StatCard
                   icon={<Building2 className="h-5 w-5" />}
-                  label="Divisions"
+                  label={copy.stats.divisions}
                   value={`${stats.total}`}
                 />
                 <StatCard
                   icon={<Zap className="h-5 w-5" />}
-                  label="Active now"
+                  label={copy.stats.activeNow}
                   value={`${stats.active}`}
                 />
                 <StatCard
                   icon={<Star className="h-5 w-5" />}
-                  label="Coming soon"
+                  label={copy.stats.comingSoon}
                   value={`${stats.soon}`}
                 />
                 <StatCard
                   icon={<Globe2 className="h-5 w-5" />}
-                  label="Service sectors"
+                  label={copy.stats.sectors}
                   value={`${stats.sectors}`}
                 />
               </motion.div>
@@ -682,10 +740,10 @@ export default function HubHomeClient({
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
-                      Group standard
+                      {copy.standardCard.eyebrow}
                     </div>
                     <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                      A unified standard across every division.
+                      {copy.standardCard.title}
                     </h2>
                   </div>
 
@@ -700,12 +758,7 @@ export default function HubHomeClient({
                 </div>
 
                 <div className="mt-6 grid gap-3">
-                  {[
-                    "Each division operates with its own market focus while reflecting the standards of the wider Henry & Co. group.",
-                    "The company hub helps visitors understand where to go, who to engage, and how the group is organized.",
-                    "As the company expands, new divisions can be introduced inside one clear and credible structure.",
-                    "The result is a stronger public presence, better navigation, and a more professional experience at every touchpoint.",
-                  ].map((line) => (
+                  {copy.standardCard.bullets.map((line) => (
                     <div
                       key={line}
                       className="flex gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/72"
@@ -719,13 +772,13 @@ export default function HubHomeClient({
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
                   <GlassMiniCard
                     icon={<TrendingUp className="h-4 w-4" />}
-                    label="Latest company update"
+                    label={copy.standardCard.latestUpdate}
                     value={latestUpdate}
                   />
                   <GlassMiniCard
                     icon={<Workflow className="h-4 w-4" />}
-                    label="Operating standard"
-                    value="Consistent and maintained"
+                    label={copy.standardCard.operatingStandard}
+                    value={copy.standardCard.operatingStandardValue}
                   />
                 </div>
 
@@ -734,7 +787,7 @@ export default function HubHomeClient({
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-                          Current spotlight
+                          {copy.standardCard.spotlightEyebrow}
                         </div>
                         <div className="mt-2 text-lg font-semibold text-white">
                           {spotlightDivision.name}
@@ -742,7 +795,7 @@ export default function HubHomeClient({
                         <p className="mt-2 text-sm leading-7 text-white/64">
                           {spotlightDivision.tagline ||
                             spotlightDivision.description ||
-                            "A featured Henry & Co. division representing the group with clarity and focus."}
+                            copy.standardCard.spotlightFallback}
                         </p>
                       </div>
 
@@ -755,7 +808,7 @@ export default function HubHomeClient({
                           ),
                         }}
                       >
-                        Featured
+                        {copy.standardCard.featured}
                       </span>
                     </div>
 
@@ -775,7 +828,7 @@ export default function HubHomeClient({
                         onClick={() => setSelected(spotlightDivision)}
                         className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white/88 transition hover:bg-white/10"
                       >
-                        View details
+                        {copy.standardCard.viewDetails}
                         <ChevronRight className="h-4 w-4" />
                       </button>
 
@@ -790,7 +843,7 @@ export default function HubHomeClient({
                             ),
                           }}
                         >
-                          Visit division
+                          {copy.standardCard.visitDivision}
                           <ExternalLink className="h-4 w-4" />
                         </button>
                       ) : null}
@@ -804,7 +857,7 @@ export default function HubHomeClient({
 
                 {hasServerError ? (
                   <div className="mt-5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-                    Some information is currently being refreshed.
+                    {copy.standardCard.serverError}
                   </div>
                 ) : null}
               </div>
@@ -816,21 +869,21 @@ export default function HubHomeClient({
           <div className="grid gap-4 md:grid-cols-3">
             <PremiumFeature
               icon={<Sparkles className="h-5 w-5" />}
-              eyebrow="Discovery"
-              title="Direct people to the right business"
-              text="The hub removes ambiguity, strengthens confidence, and helps every visitor reach the most relevant Henry & Co. division without confusion."
+              eyebrow={copy.premiumRow.discovery.eyebrow}
+              title={copy.premiumRow.discovery.title}
+              text={copy.premiumRow.discovery.text}
             />
             <PremiumFeature
               icon={<Landmark className="h-5 w-5" />}
-              eyebrow="Corporate presence"
-              title="Present the group with maturity"
-              text="This public layer supports company reputation, clearer communication, and a stronger group-level identity across every market-facing touchpoint."
+              eyebrow={copy.premiumRow.corporate.eyebrow}
+              title={copy.premiumRow.corporate.title}
+              text={copy.premiumRow.corporate.text}
             />
             <PremiumFeature
               icon={<Workflow className="h-5 w-5" />}
-              eyebrow="Scalability"
-              title="Built for growth and continuity"
-              text="As the group grows, new businesses and corporate pages can be introduced inside the same premium framework without weakening consistency."
+              eyebrow={copy.premiumRow.scale.eyebrow}
+              title={copy.premiumRow.scale.title}
+              text={copy.premiumRow.scale.text}
             />
           </div>
         </section>
@@ -842,16 +895,15 @@ export default function HubHomeClient({
                 <div>
                   <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/58">
                     <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                    Featured divisions
+                    {copy.featuredSection.eyebrow}
                   </div>
 
                   <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-                    Selected divisions currently representing the group
+                    {copy.featuredSection.title}
                   </h2>
 
                   <p className="mt-2 max-w-2xl text-sm leading-7 text-white/64">
-                    These businesses currently serve as key public entry points into the
-                    Henry &amp; Co. group.
+                    {copy.featuredSection.body}
                   </p>
                 </div>
 
@@ -859,7 +911,7 @@ export default function HubHomeClient({
                   href="#divisions"
                   className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
                 >
-                  View full directory
+                  {copy.featuredSection.viewDirectory}
                   <ChevronRight className="h-4 w-4" />
                 </a>
               </div>
@@ -878,17 +930,15 @@ export default function HubHomeClient({
             <div className="rounded-[34px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
                 <Search className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                Directory
+                {copy.directory.eyebrow}
               </div>
 
               <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-                Locate the right Henry &amp; Co. business
+                {copy.directory.title}
               </h2>
 
               <p className="mt-3 text-sm leading-7 text-white/64">
-                Search by division name, category, service emphasis, or business focus.
-                This directory exists to help people move quickly and confidently to the
-                right part of the company.
+                {copy.directory.body}
               </p>
 
               <div className="mt-6 space-y-4">
@@ -898,14 +948,14 @@ export default function HubHomeClient({
                     ref={searchRef}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search divisions, services, categories, subdomains…"
+                    placeholder={copy.directory.searchPlaceholder}
                     className="h-14 w-full rounded-2xl border border-white/12 bg-black/30 pl-11 pr-12 text-sm text-white outline-none placeholder:text-white/30 focus:border-[color:var(--accent)]"
                   />
                   {query ? (
                     <button
                       onClick={() => setQuery("")}
                       className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/65 hover:bg-white/10 hover:text-white"
-                      aria-label="Clear search"
+                      aria-label={copy.directory.clearSearchAria}
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -915,7 +965,7 @@ export default function HubHomeClient({
                 {categoryHighlights.length ? (
                   <div>
                     <div className="mb-2 text-[11px] uppercase tracking-[0.16em] text-white/45">
-                      Popular sectors
+                      {copy.directory.popularSectors}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {categoryHighlights.map((item) => (
@@ -947,7 +997,7 @@ export default function HubHomeClient({
                     )}
                   >
                     <BadgeCheck className="h-4 w-4" />
-                    {featuredOnly ? "Showing featured only" : "Limit to featured"}
+                    {featuredOnly ? copy.directory.featuredOn : copy.directory.featuredOff}
                   </button>
 
                   <div className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-3 py-3 text-sm text-white/78">
@@ -963,7 +1013,7 @@ export default function HubHomeClient({
                           value={item}
                           className="bg-[#0B1020] text-white"
                         >
-                          {item === "all" ? "All categories" : item}
+                          {item === "all" ? copy.directory.allCategories : item}
                         </option>
                       ))}
                     </select>
@@ -972,10 +1022,10 @@ export default function HubHomeClient({
 
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { value: "all", label: "All" },
-                    { value: "active", label: "Active" },
-                    { value: "coming_soon", label: "Coming soon" },
-                    { value: "paused", label: "Paused" },
+                    { value: "all", label: copy.directory.filterAll },
+                    { value: "active", label: copy.directory.filterActive },
+                    { value: "coming_soon", label: copy.directory.filterSoon },
+                    { value: "paused", label: copy.directory.filterPaused },
                   ].map((item) => (
                     <button
                       key={item.value}
@@ -994,15 +1044,15 @@ export default function HubHomeClient({
               </div>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                <DirectoryMiniStat label="Showing" value={String(filtered.length)} />
-                <DirectoryMiniStat label="Total" value={String(divisions.length)} />
-                <DirectoryMiniStat label="Featured" value={String(featured.length)} />
+                <DirectoryMiniStat label={copy.directory.showing} value={String(filtered.length)} />
+                <DirectoryMiniStat label={copy.directory.total} value={String(divisions.length)} />
+                <DirectoryMiniStat label={copy.directory.featured} value={String(featured.length)} />
               </div>
 
               <div className="mt-6 rounded-[28px] border border-white/10 bg-black/25 p-5">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-                    Directory overview
+                    {copy.directory.overviewEyebrow}
                   </div>
 
                   {activeFilterCount ? (
@@ -1010,20 +1060,20 @@ export default function HubHomeClient({
                       onClick={clearAllFilters}
                       className="text-xs text-white/70 transition hover:text-white"
                     >
-                      Clear all
+                      {copy.directory.clearAll}
                     </button>
                   ) : (
-                    <span className="text-xs text-emerald-300">Ready</span>
+                    <span className="text-xs text-emerald-300">{copy.directory.ready}</span>
                   )}
                 </div>
 
                 <div className="mt-4 space-y-2 text-sm text-white/72">
                   <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    <span>Active refinements</span>
+                    <span>{copy.directory.activeRefinements}</span>
                     <span className="font-semibold text-white">{activeFilterCount}</span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    <span>Last updated</span>
+                    <span>{copy.directory.lastUpdated}</span>
                     <span className="font-semibold text-white">{latestUpdate}</span>
                   </div>
                 </div>
@@ -1031,7 +1081,7 @@ export default function HubHomeClient({
 
               <div className="mt-6 rounded-[28px] border border-white/10 bg-black/25 p-5">
                 <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-                  Company-level pages
+                  {copy.directory.companyPagesEyebrow}
                 </div>
 
                 <div className="mt-4 grid gap-2">
@@ -1060,8 +1110,7 @@ export default function HubHomeClient({
                 ))
               ) : (
                 <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-10 text-center text-sm text-white/68 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:col-span-2">
-                  No matching divisions were found. Clear your filters or broaden the
-                  search criteria.
+                  {copy.directory.empty}
                 </div>
               )}
             </div>
@@ -1073,26 +1122,19 @@ export default function HubHomeClient({
             <div className="rounded-[34px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
                 <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                Why this matters
+                {copy.ecosystem.eyebrow}
               </div>
 
               <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-                A clearer company presence creates trust before the first conversation
+                {copy.ecosystem.title}
               </h2>
 
               <p className="mt-3 text-sm leading-7 text-white/64">
-                A well-structured corporate hub helps audiences understand the scope of
-                the company, the relationship between its divisions, and the level of
-                professionalism behind every service.
+                {copy.ecosystem.body}
               </p>
 
               <div className="mt-6 grid gap-3">
-                {[
-                  "Stronger brand confidence across all public touchpoints.",
-                  "More efficient routing for customers, partners, and stakeholders.",
-                  "A better foundation for future businesses, campaigns, and announcements.",
-                  "A credible base for company, media, and investor-facing communication.",
-                ].map((item) => (
+                {copy.ecosystem.bullets.map((item) => (
                   <div
                     key={item}
                     className="flex gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/72"
@@ -1107,18 +1149,18 @@ export default function HubHomeClient({
             <div className="grid gap-4">
               <BigFeature
                 icon={<Building2 className="h-6 w-6" />}
-                title="Independent business units"
-                text="Each division can grow through its own workflows, public pages, and commercial direction while remaining aligned with the parent company."
+                title={copy.ecosystem.big[0]}
+                text={copy.ecosystem.bigText[0]}
               />
               <BigFeature
                 icon={<Landmark className="h-6 w-6" />}
-                title="Corporate-grade presentation"
-                text="The group can communicate with greater maturity, stronger trust signals, and clearer positioning across markets and audiences."
+                title={copy.ecosystem.big[1]}
+                text={copy.ecosystem.bigText[1]}
               />
               <BigFeature
                 icon={<Zap className="h-6 w-6" />}
-                title="Prepared for long-term growth"
-                text="As new divisions and public initiatives are introduced, the company can continue expanding without compromising consistency."
+                title={copy.ecosystem.big[2]}
+                text={copy.ecosystem.bigText[2]}
               />
             </div>
           </div>
@@ -1130,17 +1172,15 @@ export default function HubHomeClient({
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
                   <Workflow className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                  Company access
+                  {copy.access.eyebrow}
                 </div>
 
                 <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Everything starts with a clearer first impression
+                  {copy.access.title}
                 </h2>
 
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-white/64">
-                  Whether someone is discovering the company for the first time or
-                  returning to work with a specific division, the hub provides a clear,
-                  polished pathway into the wider Henry &amp; Co. group.
+                  {copy.access.body}
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
@@ -1148,7 +1188,7 @@ export default function HubHomeClient({
                     href="/about"
                     className="inline-flex items-center gap-2 rounded-2xl bg-[color:var(--accent)] px-4 py-3 text-sm font-semibold text-black transition hover:opacity-90"
                   >
-                    Explore company pages
+                    {copy.access.ctaPages}
                     <ArrowRight className="h-4 w-4" />
                   </a>
 
@@ -1156,7 +1196,7 @@ export default function HubHomeClient({
                     href="#divisions"
                     className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
                   >
-                    View the directory
+                    {copy.access.ctaDirectory}
                     <ChevronRight className="h-4 w-4" />
                   </a>
                 </div>
@@ -1165,18 +1205,18 @@ export default function HubHomeClient({
               <div className="grid gap-3">
                 <GlassMiniCard
                   icon={<Layers3 className="h-4 w-4" />}
-                  label="Company standard"
-                  value="Consistent and professional"
+                  label={copy.access.cards[0]}
+                  value={copy.access.cardValues[0]}
                 />
                 <GlassMiniCard
                   icon={<TrendingUp className="h-4 w-4" />}
-                  label="Customer navigation"
-                  value="Clear and guided"
+                  label={copy.access.cards[1]}
+                  value={copy.access.cardValues[1]}
                 />
                 <GlassMiniCard
                   icon={<ShieldCheck className="h-4 w-4" />}
-                  label="Brand confidence"
-                  value="Premium public presence"
+                  label={copy.access.cards[2]}
+                  value={copy.access.cardValues[2]}
                 />
               </div>
             </div>
@@ -1188,16 +1228,15 @@ export default function HubHomeClient({
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
                 <Globe2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                Frequently asked
+                {copy.faq.eyebrow}
               </div>
 
               <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-                Frequently asked questions
+                {copy.faq.title}
               </h2>
 
               <p className="mt-3 text-sm leading-7 text-white/64">
-                These answers help customers, partners, and stakeholders understand
-                how the company works before they need to reach out.
+                {copy.faq.subtitle}
               </p>
             </div>
 
@@ -1230,6 +1269,7 @@ export default function HubHomeClient({
         ) : null}
       </AnimatePresence>
     </div>
+    </HubChromeContext.Provider>
   );
 }
 
@@ -1240,6 +1280,7 @@ function TopBar({
   brandLogoUrl,
   searchRef,
   links,
+  accountChip,
 }: {
   brandTitle: string;
   brandSub: string;
@@ -1247,7 +1288,14 @@ function TopBar({
   brandLogoUrl?: string | null;
   searchRef: React.RefObject<HTMLInputElement | null>;
   links: { label: string; href: string }[];
+  accountChip?: {
+    user: PublicAccountUser | null;
+    loginHref: string;
+    signupHref: string;
+    accountHref: string;
+  };
 }) {
+  const { copy } = useHubChrome();
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#050816]/80 backdrop-blur-2xl">
@@ -1280,20 +1328,40 @@ function TopBar({
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 sm:flex">
-            <button
-              onClick={() => searchRef.current?.focus()}
-              className="rounded-xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/88 transition hover:bg-white/10"
-            >
-              Search hub
-            </button>
-            <a
-              href="#divisions"
-              className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
-            >
-              Explore
-              <ArrowRight className="h-4 w-4" />
-            </a>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {accountChip ? (
+              <PublicAccountChip
+                user={accountChip.user}
+                loginHref={accountChip.loginHref}
+                signupHref={accountChip.signupHref}
+                accountHref={accountChip.accountHref}
+                preferencesHref="/preferences"
+                showSignOut
+                buttonClassName="border-white/14 bg-white/[0.08] text-white hover:border-white/22 hover:bg-white/[0.12]"
+                dropdownClassName="border-zinc-700/80 bg-[#0a0f1f]"
+                menuItems={[
+                  { label: "Divisions directory", href: "/#divisions" },
+                  { label: "About", href: "/about" },
+                  { label: "Contact", href: "/contact" },
+                ]}
+              />
+            ) : null}
+            <div className="hidden items-center gap-3 sm:flex">
+              <button
+                type="button"
+                onClick={() => searchRef.current?.focus()}
+                className="rounded-xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/88 transition hover:bg-white/10"
+              >
+                {copy.topBar.search}
+              </button>
+              <a
+                href="#divisions"
+                className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+              >
+                {copy.topBar.explore}
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </div>
       </header>
@@ -1332,6 +1400,7 @@ function PageFooter({
   companyLinks: { label: string; href: string }[];
   nextPages: { label: string; href: string }[];
 }) {
+  const { copy } = useHubChrome();
   return (
     <footer className="border-t border-white/10 bg-black/20">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
@@ -1363,7 +1432,7 @@ function PageFooter({
               href="#divisions"
               className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/85 transition hover:bg-white/10"
             >
-              Explore divisions
+              {copy.footer.exploreDivisions}
               <ArrowRight className="h-4 w-4" />
             </a>
 
@@ -1371,15 +1440,15 @@ function PageFooter({
               href="/about"
               className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/85 transition hover:bg-white/10"
             >
-              Company pages
+              {copy.footer.companyPages}
               <ChevronRight className="h-4 w-4" />
             </a>
           </div>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          <FooterColumn title="Company hub" links={companyLinks} />
-          <FooterColumn title="Global pages" links={nextPages} />
+          <FooterColumn title={copy.footer.colHub} links={companyLinks} />
+          <FooterColumn title={copy.footer.colGlobal} links={nextPages} />
         </div>
       </div>
     </footer>
@@ -1512,6 +1581,7 @@ function BigFeature({
 }
 
 function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
+  const { copy } = useHubChrome();
   const host = domainFromUrl(division.primary_url, division.subdomain);
   const extra = getExtras(division);
   const accent = getAccent(division.accent);
@@ -1550,7 +1620,7 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
               )}
             >
               <Star className="h-3.5 w-3.5" />
-              {getStatusLabel(division.status)}
+              {getStatusLabel(division.status, copy.status)}
             </span>
 
             <h3 className="mt-3 text-xl font-semibold tracking-tight text-white">
@@ -1560,7 +1630,7 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
             <p className="mt-2 text-sm leading-7 text-white/64">
               {division.description ||
                 division.tagline ||
-                "A public-facing Henry & Co. division built to serve a focused market with clarity and premium presentation."}
+                copy.cards.divisionFallbackLong}
             </p>
           </div>
 
@@ -1587,10 +1657,10 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
         <div className="mt-6 grid gap-4">
           <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
             <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-              Destination
+              {copy.cards.destination}
             </div>
             <div className="mt-1 text-sm font-medium text-white/88">
-              {host ?? "Not configured yet"}
+              {host ?? copy.cards.notConfigured}
             </div>
           </div>
 
@@ -1605,7 +1675,7 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
                   : "cursor-not-allowed border border-white/10 bg-white/[0.06] text-white/40"
               )}
             >
-              Open division
+              {copy.cards.openDivision}
               <ExternalLink className="h-4 w-4" />
             </button>
           </div>
@@ -1622,6 +1692,7 @@ function DivisionCard({
   d: DivisionRow;
   onOpen: () => void;
 }) {
+  const { copy } = useHubChrome();
   const host = domainFromUrl(d.primary_url, d.subdomain);
   const extra = getExtras(d);
   const accent = getAccent(d.accent);
@@ -1677,7 +1748,7 @@ function DivisionCard({
                   )}
                 >
                   <Zap className="h-3.5 w-3.5" />
-                  {getStatusLabel(d.status)}
+                  {getStatusLabel(d.status, copy.status)}
                 </span>
               </div>
 
@@ -1692,7 +1763,7 @@ function DivisionCard({
               className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-black"
               style={{ background: accent }}
             >
-              Featured
+              {copy.cards.featured}
             </span>
           ) : null}
         </div>
@@ -1700,7 +1771,7 @@ function DivisionCard({
         <p className="mt-4 line-clamp-3 text-sm leading-7 text-white/66">
           {d.description ||
             d.tagline ||
-            "A focused Henry & Co. division presented as an independent operating brand inside the wider company ecosystem."}
+            copy.cards.divisionFallbackShort}
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -1716,16 +1787,16 @@ function DivisionCard({
 
         <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
           <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-            Division destination
+            {copy.cards.divisionDestination}
           </div>
 
           <div className="mt-1 text-sm font-medium text-white/88">
-            {host ?? "Not configured yet"}
+            {host ?? copy.cards.notConfigured}
           </div>
 
           {extra.lead?.name ? (
             <div className="mt-3 text-xs text-white/55">
-              Lead: {extra.lead.name}
+              {copy.cards.lead}: {extra.lead.name}
               {extra.lead.title ? ` • ${extra.lead.title}` : ""}
             </div>
           ) : null}
@@ -1736,7 +1807,7 @@ function DivisionCard({
             onClick={onOpen}
             className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white/88 transition hover:bg-white/10"
           >
-            Details
+            {copy.cards.details}
             <ChevronRight className="h-4 w-4" />
           </button>
 
@@ -1751,7 +1822,7 @@ function DivisionCard({
             )}
             style={d.primary_url ? { background: accent } : undefined}
           >
-            Open
+            {copy.cards.open}
             <ExternalLink className="h-4 w-4" />
           </button>
         </div>
@@ -1769,6 +1840,7 @@ function DetailsModal({
   onClose: () => void;
   reduceMotion: boolean;
 }) {
+  const { copy, formatLong } = useHubChrome();
   const host = domainFromUrl(division.primary_url, division.subdomain);
   const extra = getExtras(division);
   const links = Array.isArray(extra.links) ? extra.links : [];
@@ -1814,7 +1886,7 @@ function DetailsModal({
           <button
             onClick={onClose}
             className="absolute right-4 top-4 rounded-full border border-white/10 bg-white/[0.06] p-2 text-white/80 hover:bg-white/10"
-            aria-label="Close"
+            aria-label={copy.modal.closeAria}
           >
             <X className="h-5 w-5" />
           </button>
@@ -1838,7 +1910,7 @@ function DetailsModal({
                   )}
                 >
                   <Zap className="h-3.5 w-3.5" />
-                  {getStatusLabel(division.status)}
+                  {getStatusLabel(division.status, copy.status)}
                 </span>
               </div>
 
@@ -1863,7 +1935,7 @@ function DetailsModal({
                   className="mt-5 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold text-black hover:opacity-90"
                   style={{ background: accent }}
                 >
-                  Enter division
+                  {copy.modal.enterDivision}
                   <ArrowRight className="h-4 w-4" />
                 </button>
               ) : null}
@@ -1877,31 +1949,37 @@ function DetailsModal({
           ) : null}
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <MiniKPI label="Status" value={getStatusLabel(division.status)} />
-            <MiniKPI label="Subdomain" value={host ?? "—"} />
-            <MiniKPI label="Featured" value={division.is_featured ? "Yes" : "No"} />
-            <MiniKPI label="Updated" value={formatUpdatedAtLong(division.updated_at)} />
+            <MiniKPI label={copy.modal.kpiStatus} value={getStatusLabel(division.status, copy.status)} />
+            <MiniKPI label={copy.modal.kpiSubdomain} value={host ?? "—"} />
+            <MiniKPI
+              label={copy.modal.kpiFeatured}
+              value={division.is_featured ? copy.modal.kpiYes : copy.modal.kpiNo}
+            />
+            <MiniKPI
+              label={copy.modal.kpiUpdated}
+              value={formatUpdatedAtLong(division.updated_at, formatLong)}
+            />
           </div>
 
           {(whoItsFor.length || howItWorks.length || trustItems.length) && (
             <div className="grid gap-4 lg:grid-cols-3">
               {whoItsFor.length ? (
-                <InsightList title="Who it serves" items={whoItsFor.slice(0, 6)} />
+                <InsightList title={copy.modal.who} items={whoItsFor.slice(0, 6)} />
               ) : null}
 
               {howItWorks.length ? (
-                <InsightList title="How it works" items={howItWorks.slice(0, 6)} />
+                <InsightList title={copy.modal.how} items={howItWorks.slice(0, 6)} />
               ) : null}
 
               {trustItems.length ? (
-                <InsightList title="Why clients choose it" items={trustItems.slice(0, 6)} />
+                <InsightList title={copy.modal.trust} items={trustItems.slice(0, 6)} />
               ) : null}
             </div>
           )}
 
           {division.highlights?.length ? (
             <div>
-              <div className="text-sm font-semibold">Highlights</div>
+              <div className="text-sm font-semibold">{copy.modal.highlights}</div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {division.highlights.slice(0, 10).map((item) => (
                   <span
@@ -1918,18 +1996,18 @@ function DetailsModal({
           {extra.lead?.name ? (
             <div className="rounded-[28px] border border-white/10 bg-white/[0.06] p-5">
               <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-                Division lead
+                {copy.modal.leadEyebrow}
               </div>
               <div className="mt-2 text-lg font-semibold text-white">{extra.lead.name}</div>
               <div className="mt-1 text-sm text-white/64">
-                {extra.lead.title ?? "Leadership profile"}
+                {extra.lead.title ?? copy.modal.leadFallbackTitle}
               </div>
             </div>
           ) : null}
 
           {links.length ? (
             <div>
-              <div className="text-sm font-semibold">Links</div>
+              <div className="text-sm font-semibold">{copy.modal.links}</div>
               <div className="mt-3 space-y-2">
                 {links.slice(0, 8).map((link, index) => (
                   <button

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { getBrowserSupabase } from "@/lib/supabase/browser";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function LoginForm() {
@@ -20,7 +20,7 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const supabase = createSupabaseBrowser();
+      const supabase = getBrowserSupabase();
       const { error: authError } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
         password,

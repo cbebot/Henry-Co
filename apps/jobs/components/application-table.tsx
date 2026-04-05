@@ -35,8 +35,8 @@ export function ApplicationTable({
             <th>Candidate</th>
             <th>Role</th>
             <th>Stage</th>
-            <th>Readiness</th>
-            <th>Confidence</th>
+            <th>Profile</th>
+            <th>Match</th>
           </tr>
         </thead>
         <tbody>
@@ -53,7 +53,7 @@ export function ApplicationTable({
                 <div className="mt-1 text-sm text-[var(--jobs-muted)]">{application.employerName}</div>
               </td>
               <td>
-                <StatusPill label={application.stage} tone={toneForStage(application.stage)} />
+                <StatusPill label={application.stage.replace(/[_-]+/g, " ")} tone={toneForStage(application.stage)} />
               </td>
               <td>{application.candidateReadiness}</td>
               <td>{application.recruiterConfidence}</td>

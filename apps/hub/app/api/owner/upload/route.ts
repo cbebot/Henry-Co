@@ -1,13 +1,14 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { requireOwner } from "@/app/lib/owner-auth";
+import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const auth = await requireOwner();
   if (!auth.ok) {
-    return NextResponse.json({ error: "Access denied." }, { status: 403 });
+    return ownerAuthDeniedResponse(auth);
   }
 
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;

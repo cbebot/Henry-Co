@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarRange, Heart, ShieldCheck } from "lucide-react";
+import { PropertyPendingButton } from "@/components/property/form-status";
 import {
   PropertyAgentCard,
   PropertyListingCard,
@@ -177,13 +178,13 @@ export default async function PropertyDetailPage({
                   <input type="hidden" name="intent" value="wishlist_toggle" />
                   <input type="hidden" name="listing_id" value={data.listing.id} />
                   <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
-                  <button
-                    type="submit"
-                    className="property-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
-                  >
-                    <Heart className="h-4 w-4" />
-                    {isSaved ? "Remove from saved" : "Save property"}
-                  </button>
+                  <PropertyPendingButton
+                    idleLabel={isSaved ? "Remove from saved" : "Save property"}
+                    pendingLabel={isSaved ? "Updating saved state" : "Saving property"}
+                    variant="secondary"
+                    idleIcon={<Heart className="h-4 w-4" />}
+                    className="px-5"
+                  />
                 </form>
               ) : (
                 <Link
@@ -245,12 +246,10 @@ export default async function PropertyDetailPage({
                 />
               </label>
 
-              <button
-                type="submit"
-                className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
-              >
-                Submit inquiry
-              </button>
+              <PropertyPendingButton
+                idleLabel="Submit inquiry"
+                pendingLabel="Submitting inquiry"
+              />
             </form>
           </section>
 
@@ -317,12 +316,10 @@ export default async function PropertyDetailPage({
                   placeholder="Access, household schedule, or questions for the viewing team."
                 />
               </label>
-              <button
-                type="submit"
-                className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
-              >
-                Request viewing
-              </button>
+              <PropertyPendingButton
+                idleLabel="Request viewing"
+                pendingLabel="Requesting viewing"
+              />
             </form>
           </section>
         </div>

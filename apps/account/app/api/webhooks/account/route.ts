@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendAccountEmail } from "@/lib/email/send";
 import { welcomeEmail, securityAlertEmail, walletFundedEmail } from "@/lib/email/templates";
+import { logSecurityEvent } from "@/lib/security-events";
 
 // Webhook endpoint for cross-division account events
 // Other HenryCo apps can POST here to trigger account-level actions
@@ -40,11 +41,18 @@ export async function POST(request: Request) {
       }
       case "security.alert": {
         if (email) await sendAccountEmail(email, securityAlertEmail(data?.event_name || "Security event", data?.details || ""));
-        await admin.from("customer_security_log").insert({
-          user_id,
-          event_type: data?.event_name || event,
-          ip_address: data?.ip || null,
-          user_agent: data?.user_agent || null,
+        await logSecurityEvent({
+          userId: user_id,
+          eventType: data?.event_name || event,
+          ipAddress: data?.ip || null,
+          userAgent: data?.user_agent || null,
+          locationSummary: data?.location || null,
+          metadata: {
+            source: "account_webhook",
+            details: data?.details || null,
+            rawEvent: event,
+            severity: data?.severity || null,
+          },
         });
         break;
       }

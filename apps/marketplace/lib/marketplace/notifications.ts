@@ -3,6 +3,7 @@ import "server-only";
 import { getDivisionConfig } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { renderMarketplaceEmailTemplate, type MarketplaceTemplateInput, type MarketplaceTemplateKey } from "@/lib/email/marketplace-templates";
+import { syncMarketplaceAccountProjection } from "@/lib/marketplace/projections";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type QueueStatus = "queued" | "sent" | "skipped" | "failed";
@@ -41,6 +42,19 @@ const marketplaceBaseUrl =
   process.env.NODE_ENV === "production"
     ? "https://marketplace.henrycogroup.com"
     : "http://localhost:3000";
+
+function getMarketplaceSenderAddress() {
+  const fallback = "onboarding@resend.dev";
+  const candidate = cleanText(process.env.RESEND_FROM_EMAIL || process.env.RESEND_SUPPORT_INBOX || marketplace.supportEmail)
+    .replace(/[\r\n]+/g, "")
+    .trim();
+
+  if (!candidate || !candidate.includes("@")) {
+    return fallback;
+  }
+
+  return candidate;
+}
 
 const marketingEvents = new Set<MarketplaceTemplateKey>([
   "cart_saved",
@@ -1008,7 +1022,7 @@ async function performEmailDelivery(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${marketplace.name} <${process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev"}>`,
+        from: `${marketplace.name} <${getMarketplaceSenderAddress()}>`,
         to: [email],
         subject: rendered.subject,
         html: rendered.html,
@@ -1309,6 +1323,38 @@ export async function sendMarketplaceEvent(input: MarketplaceEventInput) {
     body: copy.inAppBody,
     payload: input.payload,
   });
+
+  await syncMarketplaceAccountProjection({
+    userId: input.userId,
+    normalizedEmail: input.normalizedEmail,
+    title: copy.inAppTitle,
+    body: copy.inAppBody,
+    category: input.event,
+    priority:
+      input.event === "owner_alert" || input.event === "security_notice" || input.event === "dispute_opened"
+        ? "high"
+        : input.event === "payment_verified" || input.event === "order_delivered"
+          ? "normal"
+          : "low",
+    entityType: input.entityType,
+    entityId: input.entityId,
+    amountKobo:
+      typeof input.payload.amount === "number"
+        ? Math.round(Number(input.payload.amount) * 100)
+        : typeof input.payload.grandTotal === "number"
+          ? Math.round(Number(input.payload.grandTotal) * 100)
+          : null,
+    metadata: input.payload,
+    actionLabel:
+      input.entityType === "order"
+        ? "View order"
+        : input.entityType === "dispute"
+          ? "View dispute"
+          : input.entityType === "payout_request"
+            ? "View payout"
+            : "Open Marketplace",
+    status: operationalEvent ? "active" : "info",
+  }).catch(() => null);
 
   const emailQueueId =
     copy.email && emailAllowed && (operationalEvent || marketingAllowed)

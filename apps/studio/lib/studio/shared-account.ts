@@ -4,7 +4,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 
 type OptionalString = string | null | undefined;
 
-function cleanText(value?: OptionalString) {
+function cleanText(value?: unknown) {
   return String(value || "").trim();
 }
 
@@ -353,6 +353,219 @@ export async function appendCustomerDocument(input: {
 
     if (error) throw error;
   });
+}
+
+type PendingSyncLogRow = {
+  id: string;
+  email: string | null;
+  user_id: string | null;
+  created_at: string;
+  details: Record<string, unknown> | null;
+};
+
+function safeRecord(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+async function resolvedPendingSourceIds() {
+  const admin = createAdminSupabase();
+  const { data } = await admin
+    .from("care_security_logs")
+    .select("details")
+    .eq("event_type", "studio_shared_sync_resolved")
+    .eq("route", "/studio/shared-account")
+    .order("created_at", { ascending: false })
+    .limit(2000);
+
+  return new Set(
+    (data ?? [])
+      .map((row) => cleanText(String(safeRecord(row.details)?.source_log_id ?? "")))
+      .filter(Boolean)
+  );
+}
+
+async function markPendingSyncResolved(input: {
+  sourceLogId: string;
+  kind: string;
+  resolvedUserId: string;
+  email?: string | null;
+}) {
+  const admin = createAdminSupabase();
+  await admin.from("care_security_logs").insert({
+    event_type: "studio_shared_sync_resolved",
+    route: "/studio/shared-account",
+    user_id: cleanText(input.resolvedUserId),
+    email: normalizeEmail(input.email),
+    role: "studio_system",
+    success: true,
+    details: {
+      source_log_id: cleanText(input.sourceLogId),
+      kind: cleanText(input.kind),
+      resolved_user_id: cleanText(input.resolvedUserId),
+    },
+  } as never);
+}
+
+async function replayPendingSharedPayload(input: {
+  kind: string;
+  payload: Record<string, unknown>;
+  resolvedUserId: string;
+  email?: string | null;
+}) {
+  const email = normalizeEmail(input.email);
+
+  switch (cleanText(input.kind)) {
+    case "customer_profile":
+      await ensureCustomerProfile({
+        userId: input.resolvedUserId,
+        email,
+        fullName: cleanText(input.payload.full_name),
+        phone: cleanText(input.payload.phone),
+      });
+      return;
+    case "customer_activity":
+      await appendCustomerActivity({
+        userId: input.resolvedUserId,
+        email,
+        activityType: cleanText(input.payload.activity_type),
+        title: cleanText(input.payload.title),
+        description: cleanText(input.payload.description) || null,
+        status: cleanText(input.payload.status) || null,
+        referenceType: cleanText(input.payload.reference_type) || null,
+        referenceId: cleanText(input.payload.reference_id) || null,
+        amount:
+          input.payload.amount_kobo == null
+            ? null
+            : Number(input.payload.amount_kobo) / 100,
+        actionUrl: cleanText(input.payload.action_url) || null,
+        metadata: safeRecord(input.payload.metadata) ?? {},
+      });
+      return;
+    case "customer_notification":
+      await appendCustomerNotification({
+        userId: input.resolvedUserId,
+        email,
+        title: cleanText(input.payload.title),
+        body: cleanText(input.payload.body),
+        category: cleanText(input.payload.category) || "studio",
+        priority: cleanText(input.payload.priority) || "normal",
+        actionUrl: cleanText(input.payload.action_url) || null,
+        actionLabel: cleanText(input.payload.action_label) || null,
+        referenceType: cleanText(input.payload.reference_type) || null,
+        referenceId: cleanText(input.payload.reference_id) || null,
+      });
+      return;
+    case "customer_invoice":
+      await upsertCustomerInvoice({
+        invoiceNo: cleanText(input.payload.invoice_no),
+        userId: input.resolvedUserId,
+        email,
+        subtotal: Number(input.payload.subtotal_kobo || 0) / 100,
+        total: Number(input.payload.total_kobo || 0) / 100,
+        description: cleanText(input.payload.description),
+        status: cleanText(input.payload.status) || "open",
+        currency: cleanText(input.payload.currency) || "NGN",
+        paymentMethod: cleanText(input.payload.payment_method) || null,
+        paymentReference: cleanText(input.payload.payment_reference) || null,
+        referenceType: cleanText(input.payload.reference_type) || null,
+        referenceId: cleanText(input.payload.reference_id) || null,
+        dueDate: cleanText(input.payload.due_date) || null,
+        paidAt: cleanText(input.payload.paid_at) || null,
+        lineItems: Array.isArray(input.payload.line_items)
+          ? (input.payload.line_items as Array<Record<string, unknown>>)
+          : [],
+      });
+      return;
+    case "customer_document":
+      await appendCustomerDocument({
+        userId: input.resolvedUserId,
+        email,
+        name: cleanText(input.payload.name),
+        type: cleanText(input.payload.type),
+        fileUrl: cleanText(input.payload.file_url),
+        fileSize:
+          input.payload.file_size == null ? null : Number(input.payload.file_size),
+        mimeType: cleanText(input.payload.mime_type) || null,
+        referenceType: cleanText(input.payload.reference_type) || null,
+        referenceId: cleanText(input.payload.reference_id) || null,
+        metadata: safeRecord(input.payload.metadata) ?? {},
+      });
+      return;
+    default:
+      return;
+  }
+}
+
+export async function reconcileStudioSharedPendingSyncs(input?: {
+  email?: string | null;
+  userId?: string | null;
+  limit?: number;
+}) {
+  const admin = createAdminSupabase();
+  const normalizedEmail = normalizeEmail(input?.email);
+  const resolvedIds = await resolvedPendingSourceIds();
+  let query = admin
+    .from("care_security_logs")
+    .select("id,email,user_id,created_at,details")
+    .eq("event_type", "studio_shared_sync_pending")
+    .eq("route", "/studio/shared-account")
+    .order("created_at", { ascending: true })
+    .limit(input?.limit ?? 200);
+
+  if (normalizedEmail) {
+    query = query.eq("email", normalizedEmail);
+  }
+
+  const { data, error } = await query.returns<PendingSyncLogRow[]>();
+  if (error) throw error;
+
+  let processed = 0;
+  let resolved = 0;
+  let skipped = 0;
+
+  for (const row of data ?? []) {
+    processed += 1;
+    if (resolvedIds.has(row.id)) {
+      skipped += 1;
+      continue;
+    }
+
+    const details = safeRecord(row.details);
+    const payload = safeRecord(details?.payload);
+    const kind = cleanText(details?.kind);
+    const resolvedUserId =
+      cleanText(input?.userId) ||
+      (await resolveUserId({
+        userId: cleanText(row.user_id) || null,
+        email: row.email,
+      }));
+
+    if (!payload || !kind || !resolvedUserId) {
+      skipped += 1;
+      continue;
+    }
+
+    await replayPendingSharedPayload({
+      kind,
+      payload,
+      resolvedUserId,
+      email: row.email,
+    });
+    await markPendingSyncResolved({
+      sourceLogId: row.id,
+      kind,
+      resolvedUserId,
+      email: row.email,
+    });
+    resolved += 1;
+  }
+
+  return {
+    processed,
+    resolved,
+    skipped,
+  };
 }
 
 export async function createSupportThread(input: {

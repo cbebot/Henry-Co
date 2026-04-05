@@ -1,5 +1,6 @@
 import "server-only";
 
+import { deriveSellerTrustProfile, shouldAutoReleasePayout } from "@/lib/marketplace/governance";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   logMarketplaceAction,
@@ -14,6 +15,7 @@ type AutomationSummary = {
   abandonedCarts: number;
   pendingApplications: number;
   pendingPayouts: number;
+  autoReleasedPayouts: number;
   notificationRetries: number;
   notificationRetryFailures: number;
   notificationRetrySkips: number;
@@ -35,6 +37,7 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
     abandonedCarts: 0,
     pendingApplications: 0,
     pendingPayouts: 0,
+    autoReleasedPayouts: 0,
     notificationRetries: 0,
     notificationRetryFailures: 0,
     notificationRetrySkips: 0,
@@ -68,7 +71,7 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
       summary.errors.push(retrySummary.issue);
     }
 
-    const [productsRes, ordersRes, cartsRes, applicationsRes, payoutsRes, cartItemsRes] =
+    const [productsRes, ordersRes, cartsRes, applicationsRes, payoutsRes, cartItemsRes, autoReleaseGroupsRes, vendorsRes] =
       await Promise.all([
         admin
           .from("marketplace_products")
@@ -98,6 +101,13 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
           .order("created_at", { ascending: true })
           .limit(30),
         admin.from("marketplace_cart_items").select("cart_id").limit(500),
+        admin
+          .from("marketplace_order_groups")
+          .select("id, order_no, vendor_id, payout_status, delivered_at")
+          .eq("payout_status", "awaiting_auto_release")
+          .not("delivered_at", "is", null)
+          .limit(100),
+        admin.from("marketplace_vendors").select("id, verification_level, trust_score, dispute_rate, fulfillment_rate, owner_type"),
       ]);
 
     if (
@@ -106,7 +116,9 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
       cartsRes.error ||
       applicationsRes.error ||
       payoutsRes.error ||
-      cartItemsRes.error
+      cartItemsRes.error ||
+      autoReleaseGroupsRes.error ||
+      vendorsRes.error
     ) {
       throw new Error(
         [
@@ -116,6 +128,8 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
           applicationsRes.error?.message,
           payoutsRes.error?.message,
           cartItemsRes.error?.message,
+          autoReleaseGroupsRes.error?.message,
+          vendorsRes.error?.message,
         ]
           .filter(Boolean)
           .join(" | ")
@@ -125,6 +139,55 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
     const cartIdsWithItems = new Set(
       (cartItemsRes.data ?? []).map((row: Record<string, unknown>) => String(row.cart_id || ""))
     );
+    const vendorById = new Map(
+      (vendorsRes.data ?? []).map((row: Record<string, unknown>) => [String(row.id), row])
+    );
+
+    for (const row of autoReleaseGroupsRes.data ?? []) {
+      const vendor = vendorById.get(String(row.vendor_id || ""));
+      const sellerProfile = deriveSellerTrustProfile({
+        vendor: vendor
+          ? {
+              verificationLevel: String(vendor.verification_level || "bronze") as "bronze" | "silver" | "gold" | "henryco",
+              trustScore: Number(vendor.trust_score || 0),
+              disputeRate: Number(vendor.dispute_rate || 0),
+              fulfillmentRate: Number(vendor.fulfillment_rate || 0),
+              ownerType: String(vendor.owner_type || "vendor") as "company" | "vendor",
+            }
+          : null,
+      });
+
+      if (
+        !shouldAutoReleasePayout({
+          deliveredAt: String(row.delivered_at || ""),
+          profile: sellerProfile,
+        })
+      ) {
+        continue;
+      }
+
+      await admin
+        .from("marketplace_order_groups")
+        .update({ payout_status: "payout_releasable" } as never)
+        .eq("id", row.id);
+      await admin
+        .from("marketplace_orders")
+        .update({ status: "payout_releasable" } as never)
+        .eq("order_no", row.order_no)
+        .neq("status", "disputed");
+
+      summary.autoReleasedPayouts += 1;
+      await sendMarketplaceEvent({
+        event: "owner_alert",
+        recipientEmail: process.env.RESEND_SUPPORT_INBOX || "marketplace@henrycogroup.com",
+        actorEmail: "automation@henrycogroup.com",
+        entityType: "order_group",
+        entityId: String(row.id),
+        payload: {
+          note: `Order ${String(row.order_no || "")} is now payout-releasable after the seller reserve window elapsed.`,
+        },
+      });
+    }
 
     for (const row of productsRes.data ?? []) {
       await sendMarketplaceEvent({

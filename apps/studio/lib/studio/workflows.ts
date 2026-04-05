@@ -21,6 +21,10 @@ import {
   estimateStudioPricing,
 } from "@/lib/studio/pricing";
 import {
+  normalizeStudioRequestConfig,
+  type StudioRequestConfig,
+} from "@/lib/studio/request-config";
+import {
   asNumber,
   cleanText,
   createAccessKey,
@@ -36,6 +40,7 @@ import type {
   StudioAssignment,
   StudioBrief,
   StudioCustomRequest,
+  StudioDomainIntent,
   StudioLead,
   StudioPackage,
   StudioPayment,
@@ -78,6 +83,7 @@ export type SubmitStudioBriefInput = {
   inspirationSummary?: string | null;
   depositNow?: boolean;
   files?: File[];
+  domainIntent?: StudioDomainIntent | null;
 };
 
 function serviceByKind(kind: StudioServiceKind, services: StudioService[]) {
@@ -86,6 +92,25 @@ function serviceByKind(kind: StudioServiceKind, services: StudioService[]) {
 
 function packageById(packageId: string | null | undefined, packages: StudioPackage[]) {
   return packages.find((item) => item.id === packageId) ?? null;
+}
+
+function domainIntentBullet(intent: StudioDomainIntent | null | undefined): string | null {
+  if (!intent) return null;
+  if (intent.path === "have") {
+    const d = cleanText(intent.desiredLabel);
+    return d
+      ? `Domain: connect existing ${d} at launch`
+      : "Domain: client will connect an existing domain at launch";
+  }
+  if (intent.path === "later") {
+    return "Domain: choose with HenryCo before go-live";
+  }
+  const label = cleanText(intent.desiredLabel) || "preferred name TBD";
+  const backup = cleanText(intent.backupLabel);
+  const fq = intent.checkedFqdn ? ` (${intent.checkedFqdn})` : "";
+  const st = cleanText(intent.checkStatus).replace(/_/g, " ");
+  const backupBit = backup ? `; backup idea: ${backup}` : "";
+  return `Domain intent${fq}: ${label}${backupBit} — ${st || "advisory"}`;
 }
 
 function scoreReadiness(input: SubmitStudioBriefInput) {
@@ -97,6 +122,10 @@ function scoreReadiness(input: SubmitStudioBriefInput) {
   if (cleanText(input.timeline)) score += 4;
   if (cleanText(input.budgetBand)) score += 6;
   if (cleanText(input.companyName)) score += 4;
+  const di = input.domainIntent;
+  if (di?.path === "new" && cleanText(di.desiredLabel).length > 2) score += 4;
+  if (di?.path === "have") score += 3;
+  if (di?.path === "later") score += 2;
   return Math.min(score, 100);
 }
 
@@ -279,9 +308,10 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     brief: {
       requiredFeatures: input.requiredFeatures ?? [],
       urgency: input.urgency,
+      timeline: input.timeline,
     },
     customRequest: draftCustomRequest,
-  });
+  }, catalog.requestConfig);
   const investment = pricing.total;
   const { proposalMilestones, projectMilestones } = buildMilestonePlan(
     projectId,
@@ -331,6 +361,7 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     requiredFeatures: input.requiredFeatures ?? [],
     referenceFiles,
     referenceLinks: input.referenceLinks ?? [],
+    domainIntent: input.domainIntent ?? null,
   };
 
   const customRequest: StudioCustomRequest | null =
@@ -348,6 +379,8 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
           inspirationSummary: draftCustomRequest?.inspirationSummary || "",
         }
       : null;
+
+  const domainLine = domainIntentBullet(input.domainIntent);
 
   const proposal: StudioProposal = {
     id: proposalId,
@@ -372,6 +405,7 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
       `Recommended team: ${team.name}`,
       `Delivery lane: ${service.deliveryWindow}`,
       `Required features: ${(brief.requiredFeatures.length > 0 ? brief.requiredFeatures : ["Tailored scope refinement"]).join(", ")}`,
+      ...(domainLine ? [domainLine] : []),
       ...(customRequest
         ? [
             `Project type: ${customRequest.projectType}`,
@@ -1131,6 +1165,21 @@ export async function saveStudioPlatformSettings(input: {
     {
       key: "public_process",
       value: input.process,
+      created_at: now,
+      updated_at: now,
+    },
+    { role: "studio_owner" },
+    { onConflict: "key", idKey: "key" }
+  );
+}
+
+export async function saveStudioRequestConfig(input: StudioRequestConfig) {
+  const now = new Date().toISOString();
+  await upsertStudioCollectionRecord(
+    "studio_settings",
+    {
+      key: "request_config",
+      value: normalizeStudioRequestConfig(input),
       created_at: now,
       updated_at: now,
     },

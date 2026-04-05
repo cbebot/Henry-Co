@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { IBM_Plex_Mono, Manrope } from "next/font/google";
 
@@ -14,6 +15,10 @@ const plexMono = IBM_Plex_Mono({
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const metadata: Metadata = {
+  title: "Henry & Co. Workspace Retired",
+  description: "The previous HenryCo staff workspace has been retired pending a premium rebuild.",
+};
 
 export default function WorkspaceLayout({
   children,

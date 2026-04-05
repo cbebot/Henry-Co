@@ -2,6 +2,7 @@ import {
   BriefcaseBusiness,
   CircleDollarSign,
   Gauge,
+  Globe,
   ShieldCheck,
   Sparkles,
   Target,
@@ -40,6 +41,11 @@ export function StudioRequestSidePanel({
             { icon: BriefcaseBusiness, label: "Buying route", value: pathway === "package" ? "Package-led engagement" : "Custom proposal path" },
             { icon: CircleDollarSign, label: "Current total", value: formatNaira(pricingPreview.total) },
             { icon: Target, label: "Recommended team", value: recommendedTeamName },
+            {
+              icon: Globe,
+              label: "Launch readiness",
+              value: "Domain, DNS, and go-live are planned with you—not left as a surprise after payment.",
+            },
           ].map((item) => (
             <div key={item.label} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
               <div className="flex items-center gap-3">
@@ -83,17 +89,17 @@ export function StudioRequestSidePanel({
             {
               icon: ShieldCheck,
               title: "Trust-first pricing",
-              body: "The commercial preview reflects scope, platform complexity, and timing instead of a vague estimate.",
+              body: "The preview reflects scope, platform complexity, and timing. Your deposit unlocks a real delivery record—not a black box.",
             },
             {
               icon: Waypoints,
-              title: "Shared account continuity",
-              body: "Top-level account history lives in HenryCo account while direct proposal and project rooms stay inside Studio.",
+              title: "What happens after submit",
+              body: "You receive a proposal link, payment reference, and a clear place to upload proof. Domain and hosting steps are explained before go-live.",
             },
             {
               icon: Sparkles,
-              title: "Custom work stays first-class",
-              body: "Serious custom requests are handled as a premium buying route, not buried behind toy presets.",
+              title: "You can pause",
+              body: "Save your notes, attach files, and come back. Nothing here is meant to rush a cautious buyer.",
             },
           ].map((item) => (
             <div key={item.title} className="rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 p-4">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
 export default function ResetPasswordForm() {
@@ -25,11 +26,11 @@ export default function ResetPasswordForm() {
     try {
       const supabase = createSupabaseBrowser();
       const { error: updateErr } = await supabase.auth.updateUser({ password });
-      if (updateErr) { setError(updateErr.message); return; }
+      if (updateErr) { setError(mapAccountAuthMessage(updateErr.message, "reset_password")); return; }
       setSuccess(true);
       setTimeout(() => router.push("/"), 2000);
     } catch {
-      setError("Something went wrong");
+      setError("We couldn't update your password right now. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -44,7 +45,7 @@ export default function ResetPasswordForm() {
           </svg>
         </div>
         <h2 className="text-lg font-semibold">Password updated</h2>
-        <p className="mt-2 text-sm text-[var(--acct-muted)]">Redirecting to your dashboard...</p>
+        <p className="mt-2 text-sm text-[var(--acct-muted)]">Redirecting to your account...</p>
       </div>
     );
   }

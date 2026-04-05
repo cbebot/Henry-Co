@@ -21,7 +21,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
-import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
+import { buildSharedAccountLoginUrl, buildSharedAccountSignupUrl } from "@/lib/marketplace/shared-account";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -95,11 +95,13 @@ function MenuLink({
   return (
     <Link
       href={href}
+      role="menuitem"
+      tabIndex={0}
       onClick={onNavigate}
-      className="flex items-center justify-between gap-3 rounded-[1.1rem] px-3 py-3 text-sm font-medium text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.06)]"
+      className="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-200 outline-none transition hover:bg-white/8 focus-visible:bg-white/8 focus-visible:ring-2 focus-visible:ring-amber-500/40"
     >
       <span className="flex items-center gap-3">
-        <span className="text-[var(--market-brass)]">{icon}</span>
+        <span className="text-zinc-500">{icon}</span>
         <span>{label}</span>
       </span>
     </Link>
@@ -110,7 +112,6 @@ export function PublicHeaderClient() {
   const runtime = useMarketplaceRuntime();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [interactive, setInteractive] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -121,16 +122,25 @@ export function PublicHeaderClient() {
     return `${pathname}${query ? `?${query}` : ""}`;
   }, [pathname, searchParams]);
 
-  const authHref = useMemo(
+  const loginHref = useMemo(
     () =>
-      runtime.shell.viewer.signedIn
-        ? "/account"
-        : buildSharedAccountLoginUrl(
-            currentPath,
-            typeof window !== "undefined" ? window.location.origin : undefined
-          ),
-    [currentPath, runtime.shell.viewer.signedIn]
+      buildSharedAccountLoginUrl(
+        currentPath,
+        typeof window !== "undefined" ? window.location.origin : undefined
+      ),
+    [currentPath]
   );
+
+  const signupHref = useMemo(
+    () =>
+      buildSharedAccountSignupUrl(
+        currentPath,
+        typeof window !== "undefined" ? window.location.origin : undefined
+      ),
+    [currentPath]
+  );
+
+  const authHref = runtime.shell.viewer.signedIn ? "/account" : loginHref;
 
   const notificationsHref = useMemo(
     () =>
@@ -164,10 +174,6 @@ export function PublicHeaderClient() {
   );
 
   useEffect(() => {
-    setInteractive(true);
-  }, []);
-
-  useEffect(() => {
     setMobileOpen(false);
     setAccountMenuOpen(false);
   }, [currentPath]);
@@ -185,8 +191,41 @@ export function PublicHeaderClient() {
       }
     }
 
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setAccountMenuOpen(false);
+        return;
+      }
+
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const menu = document.getElementById("marketplace-account-menu");
+        if (!menu) return;
+        const focusable = Array.from(
+          menu.querySelectorAll<HTMLElement>('a[href], button:not(:disabled), [tabindex]:not([tabindex="-1"])')
+        );
+        if (focusable.length === 0) return;
+        const idx = focusable.indexOf(document.activeElement as HTMLElement);
+        let next: number;
+        if (event.key === "ArrowDown") {
+          next = idx < focusable.length - 1 ? idx + 1 : 0;
+        } else {
+          next = idx > 0 ? idx - 1 : focusable.length - 1;
+        }
+        focusable[next]?.focus();
+      }
+
+      if (event.key === "Tab") {
+        setAccountMenuOpen(false);
+      }
+    }
+
     document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [accountMenuOpen]);
 
   async function handleSignOut() {
@@ -205,7 +244,7 @@ export function PublicHeaderClient() {
 
   return (
     <header
-      data-marketplace-interactive={interactive ? "true" : "false"}
+      data-marketplace-interactive="true"
       className="sticky top-0 z-40 px-3 pt-3 sm:px-6 xl:px-8"
     >
       <div className="market-panel mx-auto max-w-[1480px] overflow-visible rounded-[2rem]">
@@ -293,9 +332,8 @@ export function PublicHeaderClient() {
                   aria-label={accountMenuOpen ? "Close account menu" : "Open account menu"}
                   aria-expanded={accountMenuOpen}
                   aria-controls="marketplace-account-menu"
-                  disabled={!interactive}
                   onClick={() => setAccountMenuOpen((current) => !current)}
-                  className="inline-flex h-11 min-w-[10.5rem] items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.1)] px-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.14)] disabled:cursor-wait disabled:opacity-70"
+                  className="inline-flex h-11 min-w-[10.5rem] items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.1)] px-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.14)]"
                 >
                   <AccountAvatar
                     avatarUrl={runtime.shell.viewer.avatarUrl}
@@ -312,22 +350,24 @@ export function PublicHeaderClient() {
                 {accountMenuOpen ? (
                   <div
                     id="marketplace-account-menu"
-                    className="absolute right-0 top-full z-50 mt-3 w-[19rem] overflow-hidden rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(4,8,18,0.96)] shadow-[0_28px_70px_rgba(0,0,0,0.36)] backdrop-blur-2xl"
+                    role="menu"
+                    aria-label="Account menu"
+                    className="absolute right-0 top-full z-50 mt-3 w-[19rem] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border border-zinc-700/80 bg-zinc-900 shadow-[0_20px_60px_rgba(0,0,0,0.55),0_4px_14px_rgba(0,0,0,0.3)]"
                   >
-                    <div className="border-b border-[var(--market-line)] px-4 py-4">
+                    <div className="border-b border-zinc-700/60 px-4 py-3.5">
                       <div className="flex items-center gap-3">
                         <AccountAvatar
                           avatarUrl={runtime.shell.viewer.avatarUrl}
                           initials={accountInitials}
                           label={accountIdentity}
-                          className="h-12 w-12 text-sm"
+                          className="h-10 w-10 text-sm"
                         />
                         <div className="min-w-0">
-                          <div className="truncate text-sm font-semibold text-[var(--market-paper-white)]">
+                          <div className="truncate text-sm font-semibold text-white">
                             {accountIdentity}
                           </div>
                           {runtime.shell.viewer.email ? (
-                            <div className="truncate text-xs text-[var(--market-muted)]">
+                            <div className="truncate text-xs text-zinc-400">
                               {runtime.shell.viewer.email}
                             </div>
                           ) : null}
@@ -335,7 +375,7 @@ export function PublicHeaderClient() {
                       </div>
                     </div>
 
-                    <div className="space-y-1 p-2">
+                    <div className="space-y-0.5 px-1.5 py-1.5">
                       <MenuLink
                         href="/account"
                         icon={<UserRound className="h-4 w-4" />}
@@ -350,11 +390,12 @@ export function PublicHeaderClient() {
                       />
                       <button
                         type="button"
+                        role="menuitem"
                         onClick={() => {
                           runtime.openCart();
                           setAccountMenuOpen(false);
                         }}
-                        className="flex w-full items-center justify-between gap-3 rounded-[1.1rem] px-3 py-3 text-left text-sm font-medium text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.06)]"
+                        className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-zinc-200 outline-none transition hover:bg-white/8 focus-visible:bg-white/8 focus-visible:ring-2 focus-visible:ring-amber-500/40"
                       >
                         <span className="flex items-center gap-3">
                           <span className="text-[var(--market-brass)]">
@@ -374,38 +415,63 @@ export function PublicHeaderClient() {
                         label="Orders"
                         onNavigate={() => setAccountMenuOpen(false)}
                       />
+                    </div>
+
+                    <div className="border-t border-zinc-700/60 px-1.5 py-1.5">
                       <MenuLink
                         href={getAccountUrl("/security")}
                         icon={<Settings2 className="h-4 w-4" />}
                         label="Settings"
                         onNavigate={() => setAccountMenuOpen(false)}
                       />
-                    </div>
-
-                    <div className="border-t border-[var(--market-line)] p-2">
                       <button
                         type="button"
+                        role="menuitem"
                         onClick={handleSignOut}
                         disabled={signingOut}
-                        className="flex w-full items-center gap-3 rounded-[1.1rem] px-3 py-3 text-left text-sm font-medium text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.06)] disabled:cursor-wait disabled:opacity-70"
+                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-400 transition outline-none hover:bg-red-500/10 focus-visible:bg-red-500/10 focus-visible:ring-2 focus-visible:ring-red-500/40 disabled:cursor-wait disabled:opacity-50"
                       >
-                        <span className="text-[var(--market-brass)]">
-                          <LogOut className="h-4 w-4" />
-                        </span>
-                        <span>{signingOut ? "Signing out..." : "Sign out"}</span>
+                        <LogOut className="h-4 w-4" />
+                        <span>{signingOut ? "Signing out\u2026" : "Sign out"}</span>
                       </button>
                     </div>
                   </div>
                 ) : null}
               </div>
             ) : (
-              <Link
-                href={authHref}
-                className="inline-flex h-11 min-w-[9.5rem] items-center justify-center gap-2 rounded-full bg-[var(--market-brass)] px-4 text-sm font-bold tracking-tight text-[var(--market-noir)] shadow-[0_10px_36px_rgba(201,162,39,0.42)] ring-2 ring-[rgba(255,255,255,0.22)] transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--market-paper-white)]"
-              >
-                <UserRound className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="truncate">{accountLabel}</span>
-              </Link>
+              <>
+                <div className="hidden items-center gap-2 sm:flex">
+                  <Link
+                    href={loginHref}
+                    className="inline-flex h-11 min-w-[7.5rem] items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-4 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.09)]"
+                    aria-label="Sign in to your HenryCo account"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href={signupHref}
+                    className="inline-flex h-11 min-w-[8.5rem] items-center justify-center gap-2 rounded-full bg-[var(--market-brass)] px-4 text-sm font-bold tracking-tight text-[var(--market-noir)] shadow-[0_10px_36px_rgba(201,162,39,0.42)] ring-2 ring-[rgba(255,255,255,0.22)] transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--market-paper-white)]"
+                    aria-label="Create a HenryCo account"
+                  >
+                    <UserRound className="h-4 w-4 shrink-0 text-[var(--market-noir)]" aria-hidden />
+                    Get started
+                  </Link>
+                </div>
+                <div className="flex items-center gap-1.5 sm:hidden">
+                  <Link
+                    href={loginHref}
+                    className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-3 text-xs font-semibold text-[var(--market-paper-white)]"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href={signupHref}
+                    className="inline-flex h-10 items-center justify-center rounded-full bg-[var(--market-brass)] px-3 text-xs font-bold text-[var(--market-noir)]"
+                  >
+                    Join
+                  </Link>
+                </div>
+              </>
             )}
 
             <button
@@ -440,7 +506,7 @@ export function PublicHeaderClient() {
             })}
           </nav>
           <p className="text-sm text-[var(--market-muted)]">
-            Search-first browsing, verified sellers, split-order clarity, and shared HenryCo account identity.
+            Search-first browsing, verified sellers, clear order tracking, and your HenryCo account.
           </p>
         </div>
 
@@ -475,20 +541,32 @@ export function PublicHeaderClient() {
                   {item.label}
                 </Link>
               ))}
-              <Link
-                href={
-                  runtime.shell.viewer.signedIn
-                    ? "/account"
-                    : buildSharedAccountLoginUrl(
-                        currentPath,
-                        typeof window !== "undefined" ? window.location.origin : undefined
-                      )
-                }
-                onClick={() => setMobileOpen(false)}
-                className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
-              >
-                {runtime.shell.viewer.signedIn ? "Open account" : "Join HenryCo"}
-              </Link>
+              {runtime.shell.viewer.signedIn ? (
+                <Link
+                  href="/account"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                >
+                  Open account
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href={loginHref}
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href={signupHref}
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-[1.35rem] border border-[var(--market-brass)] bg-[var(--market-brass)] px-4 py-3 text-sm font-bold text-[var(--market-noir)]"
+                  >
+                    Get started
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
         </div>

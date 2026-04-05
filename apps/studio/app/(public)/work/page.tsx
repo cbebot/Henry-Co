@@ -11,18 +11,18 @@ export default async function WorkPage() {
         <div className="max-w-4xl">
           <div className="studio-kicker">Selected work</div>
           <h1 className="studio-heading mt-4">
-            Case studies built to prove delivery depth before the first sales call.
+            Real projects, real results — see the work before you commit.
           </h1>
           <p className="mt-5 text-lg leading-8 text-[var(--studio-ink-soft)]">
-            HenryCo Studio does not present weak thumbnails and vague captions. Each story is framed
-            around business pressure, operating clarity, and the level of output premium buyers expect.
+            Each case study covers the business challenge, our approach, and the measurable impact.
+            No vague summaries — just honest proof of what we deliver.
           </p>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[
             ["Case studies", String(catalog.caseStudies.length)],
-            ["Specialist teams", String(catalog.teams.length)],
-            ["Service lanes", String(catalog.services.length)],
+            ["Teams", String(catalog.teams.length)],
+            ["Services", String(catalog.services.length)],
           ].map(([label, value]) => (
             <div key={label} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
               <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{label}</div>

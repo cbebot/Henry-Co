@@ -17,12 +17,15 @@ import {
   sendBookingConfirmationEmail,
   sendPaymentRequestEmail,
 } from "@/lib/email/send";
+import { ensureCareBookingAccountLink } from "@/lib/account-linking";
 import {
   ensureBookingPaymentRequest,
   markPaymentRequestDeliveryState,
 } from "@/lib/payments/verification";
 import { notifyStaffRoles } from "@/lib/staff-alerts";
 import { sendWhatsAppText } from "@/lib/support/whatsapp";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { normalizeEmail, normalizePhone } from "@henryco/config";
 
 type TreatmentType = "standard" | "stain" | "deep_stain" | "delicate";
 type PaymentPlan = "book_first" | "pay_now";
@@ -71,10 +74,6 @@ function asText(formData: FormData, key: string) {
 function asNullableText(formData: FormData, key: string) {
   const value = String(formData.get(key) ?? "").trim();
   return value || null;
-}
-
-function normalizePhone(phone: string) {
-  return String(phone || "").replace(/\D+/g, "");
 }
 
 function redirectToTracking(trackingCode: string, phone?: string | null): never {
@@ -264,6 +263,33 @@ async function generateTrackingCode() {
   return `TRK-${Date.now()}`;
 }
 
+async function getAuthenticatedCustomerProjection(
+  supabase: ReturnType<typeof getAdminSupabase>
+) {
+  const accountSupabase = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await accountSupabase.auth.getUser();
+
+  if (!user?.id) {
+    return {
+      user: null,
+      profile: null,
+    };
+  }
+
+  const { data: profile } = await supabase
+    .from("customer_profiles")
+    .select("full_name, phone")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return {
+    user,
+    profile: profile ?? null,
+  };
+}
+
 async function insertOrderItemWithFallback(
   supabase: ReturnType<typeof getAdminSupabase>,
   payload: OrderItemInsertPayload
@@ -351,11 +377,19 @@ function buildServiceSummary(input: {
 
 export async function createPublicBookingAction(formData: FormData) {
   const supabase = getAdminSupabase();
+  const authenticatedCustomer = await getAuthenticatedCustomerProjection(supabase);
 
   const bookingMode = asText(formData, "booking_mode") === "service" ? "service" : "garment";
-  const customer_name = asText(formData, "customer_name");
-  const email = asNullableText(formData, "email");
-  const phone = asText(formData, "phone");
+  const customer_name =
+    asText(formData, "customer_name") ||
+    String(authenticatedCustomer.profile?.full_name || "").trim() ||
+    String(authenticatedCustomer.user?.user_metadata?.full_name || "").trim() ||
+    String(authenticatedCustomer.user?.user_metadata?.name || "").trim();
+  const email =
+    normalizeEmail(asNullableText(formData, "email")) ||
+    normalizeEmail(authenticatedCustomer.user?.email ?? null);
+  const phone =
+    asText(formData, "phone") || String(authenticatedCustomer.profile?.phone || "").trim();
   const phone_normalized = normalizePhone(phone);
   const pickup_address = asText(formData, "pickup_address");
   const pickup_date = asNullableText(formData, "pickup_date");
@@ -491,6 +525,7 @@ export async function createPublicBookingAction(formData: FormData) {
         details: {
           booking_id: bookingResult.data.id,
           tracking_code: bookingResult.data.tracking_code,
+          account_user_id: authenticatedCustomer.user?.id ?? null,
           category_key: servicePayload.categoryKey,
           service_type_key: servicePayload.serviceTypeKey,
           package_slug: servicePayload.packageSlug ?? null,
@@ -499,6 +534,26 @@ export async function createPublicBookingAction(formData: FormData) {
           payment_plan: paymentPlan,
         },
       } as never);
+
+    if (authenticatedCustomer.user?.id) {
+      await ensureCareBookingAccountLink({
+        userId: authenticatedCustomer.user.id,
+        email,
+        fullName: customer_name,
+        phone,
+        source: "authenticated_booking",
+        booking: {
+          id: bookingResult.data.id,
+          tracking_code: bookingResult.data.tracking_code,
+          customer_name,
+          service_type: `${categoryLabel} • ${serviceLabel}`,
+          pickup_date,
+          pickup_slot: servicePayload.serviceWindow ?? pickup_slot,
+          status: "booked",
+          balance_due: quote.total,
+        },
+      });
+    }
 
     const settings = await getCareSettings();
     const trackUrl = await buildTrackingUrl(bookingResult.data.tracking_code, phone);
@@ -525,14 +580,14 @@ export async function createPublicBookingAction(formData: FormData) {
           paymentPlan === "pay_now"
             ? [
                 "Use the payment email immediately to complete transfer with the tracking code as your reference.",
-                "Reply to that same email with your receipt so support can verify and move the booking forward faster.",
+                "Reply to that same email with your receipt so support can confirm payment and move the booking forward faster.",
                 "Keep the tracking code close for schedule updates, visit progress, and support follow-up.",
                 "Reply if the address, access instructions, or preferred time window needs adjustment.",
               ]
             : [
                 "Keep the tracking code close for schedule updates, visit progress, and support follow-up.",
                 "Check the payment email in this same conversation for the account details and amount due.",
-                "After making payment, reply to that same email with your receipt so the team can verify and continue the booking.",
+                "After making payment, reply to that same email with your receipt so the team can confirm payment and continue the booking.",
                 "Reply if the address, access instructions, or preferred time window needs adjustment.",
               ],
       });
@@ -552,10 +607,10 @@ export async function createPublicBookingAction(formData: FormData) {
         bankName: settings.payment_bank_name || settings.company_bank_name || "Not available",
         instructions: [
           paymentPlan === "pay_now"
-            ? "Customer selected the pay-now path. Make payment with the tracking code as your transfer reference so the team can verify immediately."
+            ? "Customer selected the pay-now path. Make payment with the tracking code as your transfer reference so the team can confirm it immediately."
             : settings.payment_instructions ||
               "Make payment with the tracking code as your transfer reference.",
-          "After making payment, reply to this same email with your receipt so the team can verify and continue your order.",
+          "After making payment, reply to this same email with your receipt so the team can confirm payment and continue your order.",
           paymentSupportLine
             ? `If needed, you may also share the same receipt through ${paymentSupportLine}.`
             : null,
@@ -800,6 +855,7 @@ export async function createPublicBookingAction(formData: FormData) {
     details: {
       booking_id: bookingResult.data.id,
       tracking_code: bookingResult.data.tracking_code,
+      account_user_id: authenticatedCustomer.user?.id ?? null,
       booking_mode: "garment",
       line_count: validItems.length,
       quoted_total,
@@ -807,6 +863,26 @@ export async function createPublicBookingAction(formData: FormData) {
       payment_plan: paymentPlan,
     },
   } as never);
+
+  if (authenticatedCustomer.user?.id) {
+    await ensureCareBookingAccountLink({
+      userId: authenticatedCustomer.user.id,
+      email,
+      fullName: customer_name,
+      phone,
+      source: "authenticated_booking",
+      booking: {
+        id: bookingResult.data.id,
+        tracking_code: bookingResult.data.tracking_code,
+        customer_name,
+        service_type,
+        pickup_date,
+        pickup_slot,
+        status: "booked",
+        balance_due: quoted_total,
+      },
+    });
+  }
 
   const settings = await getCareSettings();
   const trackUrl = await buildTrackingUrl(bookingResult.data.tracking_code, phone);
@@ -833,14 +909,14 @@ export async function createPublicBookingAction(formData: FormData) {
         paymentPlan === "pay_now"
           ? [
               "Use the payment email immediately to pay with the tracking code as your transfer reference.",
-              "Reply to that same email with your receipt so support can verify before pickup progression.",
+              "Reply to that same email with your receipt so support can confirm payment before pickup progression.",
               "Keep the tracking code close for pickup, care progress, and return delivery updates.",
               "Reply if the pickup address or collection window needs adjustment.",
             ]
           : [
               "Keep the tracking code close for pickup, care progress, and return delivery updates.",
               "Check the payment email in this same conversation for the account details and amount due.",
-              "After payment, reply to that same email with your receipt so the team can verify and continue the booking.",
+              "After payment, reply to that same email with your receipt so the team can confirm payment and continue the booking.",
               "Reply if the pickup address or collection window needs adjustment.",
             ],
     });
@@ -863,7 +939,7 @@ export async function createPublicBookingAction(formData: FormData) {
           ? "Customer selected the pay-now path. Make payment with the tracking code as your transfer reference so pickup can move faster after verification."
           : settings.payment_instructions ||
             "Make payment with the tracking code as your transfer reference.",
-        "After making payment, reply to this same email with your receipt so the team can verify and continue your order.",
+        "After making payment, reply to this same email with your receipt so the team can confirm payment and continue your order.",
         paymentSupportLine
           ? `If needed, you may also share the same receipt through ${paymentSupportLine}.`
           : null,

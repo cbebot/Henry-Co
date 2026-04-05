@@ -6,6 +6,7 @@ import { sendAdminNotificationEmail } from "@/lib/email/send";
 import { notifyStaffRoles } from "@/lib/staff-alerts";
 import { inferCareServiceFamily, isReviewEligibleStatus } from "@/lib/care-tracking";
 import { normalizeCareSettings } from "@/lib/care-settings-shared";
+import { normalizePhone } from "@henryco/config";
 
 export const runtime = "nodejs";
 
@@ -20,10 +21,6 @@ function getAdminSupabase() {
   return createClient(url, serviceRole, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-}
-
-function normalizePhone(value: string) {
-  return String(value || "").replace(/\D+/g, "");
 }
 
 function parseAddressCity(value?: string | null) {
@@ -52,7 +49,7 @@ export async function POST(req: Request) {
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
       trackingCode = String(formData.get("tracking_code") || "").trim().toUpperCase();
-      phone = normalizePhone(String(formData.get("phone") || ""));
+      phone = normalizePhone(String(formData.get("phone") || "")) || "";
       rating = Number(formData.get("rating") || 0);
       reviewText = String(formData.get("review_text") || "").trim();
       const candidate = formData.get("photo");
@@ -60,7 +57,7 @@ export async function POST(req: Request) {
     } else {
       const body = await req.json();
       trackingCode = String(body.tracking_code || "").trim().toUpperCase();
-      phone = normalizePhone(String(body.phone || ""));
+      phone = normalizePhone(String(body.phone || "")) || "";
       rating = Number(body.rating || 0);
       reviewText = String(body.review_text || "").trim();
     }

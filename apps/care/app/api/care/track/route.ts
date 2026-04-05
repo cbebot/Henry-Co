@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { applyEffectiveBookingStatus } from "@/lib/care-runtime-overrides";
 import { inferCareServiceFamily, parseServiceBookingSummary } from "@/lib/care-tracking";
 import { getPaymentVerificationSnapshotForBooking } from "@/lib/payments/verification";
+import { normalizePhone } from "@henryco/config";
 
 export const dynamic = "force-dynamic";
 
@@ -71,8 +72,8 @@ export async function GET(req: NextRequest) {
 
     // Optional extra check: if phone is provided, verify loosely
     if (phone) {
-      const normalizedInputPhone = phone.replace(/\D/g, "");
-      const normalizedSavedPhone = String(bookingByCode.phone || "").replace(/\D/g, "");
+      const normalizedInputPhone = normalizePhone(phone);
+      const normalizedSavedPhone = normalizePhone(String(bookingByCode.phone || ""));
 
       if (
         normalizedInputPhone &&

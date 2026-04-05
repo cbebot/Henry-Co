@@ -1,17 +1,36 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { getSharedCookieDomain, isRecoverableSupabaseAuthError } from "@henryco/config";
+import { logOwnerSurfaceError } from "@/lib/owner-diagnostics";
 
 async function getOwnerSupabaseServerClient() {
   const cookieStore = await cookies();
+  const headerStore = await headers();
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anon) {
-    throw new Error("Missing Supabase environment variables.");
+    logOwnerSurfaceError("app/lib/owner-auth.getOwnerSupabaseServerClient", new Error("Missing Supabase URL or anon key"), {
+      hasUrl: Boolean(url),
+      hasAnon: Boolean(anon),
+    });
+    return null;
   }
 
+  const cookieDomain = getSharedCookieDomain(
+    headerStore.get("x-forwarded-host") || headerStore.get("host")
+  );
+
   return createServerClient(url, anon, {
+    cookieOptions: cookieDomain
+      ? {
+          domain: cookieDomain,
+          path: "/",
+          sameSite: "lax",
+          secure: true,
+        }
+      : undefined,
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -29,12 +48,12 @@ async function getOwnerSupabaseServerClient() {
   });
 }
 
-type OwnerSupabaseClient = Awaited<ReturnType<typeof getOwnerSupabaseServerClient>>;
+type OwnerSupabaseClient = NonNullable<Awaited<ReturnType<typeof getOwnerSupabaseServerClient>>>;
 
 type OwnerAuthFailure = {
   ok: false;
-  reason: "unauthorized" | "forbidden";
-  supabase: OwnerSupabaseClient;
+  reason: "unauthorized" | "forbidden" | "misconfigured";
+  supabase: OwnerSupabaseClient | null;
 };
 
 type OwnerAuthSuccess = {
@@ -50,11 +69,23 @@ export type OwnerAuthResult = OwnerAuthFailure | OwnerAuthSuccess;
 
 export async function requireOwner(): Promise<OwnerAuthResult> {
   const supabase = await getOwnerSupabaseServerClient();
+  if (!supabase) {
+    return { ok: false, reason: "misconfigured", supabase: null };
+  }
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
+  let userError: unknown = null;
+
+  try {
+    const auth = await supabase.auth.getUser();
+    user = auth.data.user;
+    userError = auth.error;
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+    userError = error;
+  }
 
   if (userError || !user) {
     return { ok: false, reason: "unauthorized", supabase };

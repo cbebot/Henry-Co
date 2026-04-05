@@ -11,12 +11,11 @@ export default async function TeamsPage() {
         <div className="max-w-4xl">
           <div className="studio-kicker">Teams</div>
           <h1 className="studio-heading mt-4">
-            Choose the HenryCo team that matches the commercial weight of the project.
+            Work with a specialist team matched to your project.
           </h1>
           <p className="mt-5 text-lg leading-8 text-[var(--studio-ink-soft)]">
-            Every team profile is framed around delivery leverage, industry fit, and the kind of
-            work that team closes best. If you prefer not to choose directly, the request flow can
-            recommend the strongest match automatically.
+            Each team brings deep experience in specific industries and project types. Choose the
+            team that fits your needs, or let us recommend the best match based on your brief.
           </p>
         </div>
       </section>

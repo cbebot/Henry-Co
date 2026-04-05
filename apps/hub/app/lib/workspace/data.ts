@@ -600,6 +600,47 @@ function buildCareModule(
     );
   }
 
+  const metrics: WorkspaceMetric[] = [
+    {
+      label: "Active bookings",
+      value: formatCount(bookings.length),
+      hint: "Recent care bookings visible to the workspace.",
+    },
+    ...(canSeeFinance
+      ? [
+          {
+            label: "Unpaid exposure",
+            value: formatMoney(totalUnpaidExposure) || currencyFormatter.format(0),
+            hint: "Open booking balances that still need staff follow-through.",
+            tone:
+              totalUnpaidExposure > 200000
+                ? "critical"
+                : totalUnpaidExposure > 0
+                  ? "warning"
+                  : "success",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+    ...(canSeeSupport
+      ? [
+          {
+            label: "Support queue",
+            value: formatCount(openThreads.length),
+            hint: "Customer threads still waiting for care staff attention.",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+    ...(hasModulePermission(audience, "inbox.view")
+      ? [
+          {
+            label: "Unread alerts",
+            value: formatCount(unreadNotifications.length),
+            hint: "Unread care notifications across the shared notification stream.",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+  ];
+
   return {
     division: "care",
     label: getDivisionConfig("care").shortName,
@@ -610,29 +651,7 @@ function buildCareModule(
     sourceMode: "structured",
     sourceSummary: "This module is operating on dedicated care booking records plus the shared support and notification streams.",
     roles: [],
-    metrics: [
-      {
-        label: "Active bookings",
-        value: formatCount(bookings.length),
-        hint: "Recent care bookings visible to the workspace.",
-      },
-      {
-        label: "Unpaid exposure",
-        value: formatMoney(totalUnpaidExposure) || currencyFormatter.format(0),
-        hint: "Open booking balances that still need staff follow-through.",
-        tone: totalUnpaidExposure > 200000 ? "critical" : totalUnpaidExposure > 0 ? "warning" : "success",
-      },
-      {
-        label: "Support queue",
-        value: formatCount(openThreads.length),
-        hint: "Customer threads still waiting for care staff attention.",
-      },
-      {
-        label: "Unread alerts",
-        value: formatCount(unreadNotifications.length),
-        hint: "Unread care notifications across the shared notification stream.",
-      },
-    ],
+    metrics,
     tasks: visibleTasks,
     approvals: [],
     queueLanes,
@@ -901,6 +920,43 @@ function buildMarketplaceModule(
       ]
     : [];
 
+  const metrics: WorkspaceMetric[] = [
+    ...(hasModulePermission(audience, "approvals.view")
+      ? [
+          {
+            label: "Approvals queued",
+            value: formatCount(approvals.length),
+            hint: "Open seller, catalog, and payout reviews.",
+            tone: approvals.length > 0 ? "warning" : "success",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+    ...(canSeeOperations
+      ? [
+          {
+            label: "Active orders",
+            value: formatCount(orderTasks.length),
+            hint: "Orders still moving through payment or fulfillment.",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+    ...(canSeeSupport
+      ? [
+          {
+            label: "Open disputes",
+            value: formatCount(disputeTasks.length),
+            hint: "Disputes that still need marketplace support or moderation.",
+            tone: disputeTasks.length > 0 ? "warning" : "success",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+    {
+      label: "Catalog records",
+      value: formatCount(products.length),
+      hint: "Marketplace product records visible in the shared schema.",
+    },
+  ];
+
   return {
     division: "marketplace",
     label: getDivisionConfig("marketplace").shortName,
@@ -911,30 +967,7 @@ function buildMarketplaceModule(
     sourceMode: "structured",
     sourceSummary: "Marketplace is operating on dedicated application, catalog, order, dispute, and payout records from the live shared database.",
     roles: [],
-    metrics: [
-      {
-        label: "Approvals queued",
-        value: formatCount(approvals.length),
-        hint: "Open seller, catalog, and payout reviews.",
-        tone: approvals.length > 0 ? "warning" : "success",
-      },
-      {
-        label: "Active orders",
-        value: formatCount(orderTasks.length),
-        hint: "Orders still moving through payment or fulfillment.",
-      },
-      {
-        label: "Open disputes",
-        value: formatCount(disputeTasks.length),
-        hint: "Disputes that still need marketplace support or moderation.",
-        tone: disputeTasks.length > 0 ? "warning" : "success",
-      },
-      {
-        label: "Catalog records",
-        value: formatCount(products.length),
-        hint: "Marketplace product records visible in the shared schema.",
-      },
-    ],
+    metrics,
     tasks: tasks.slice(0, 8),
     approvals: approvals.slice(0, 8),
     queueLanes,
@@ -944,6 +977,7 @@ function buildMarketplaceModule(
 }
 
 function buildActivityModule(input: {
+  membership: WorkspaceDivisionMembership;
   division: Extract<WorkspaceDivision, "studio" | "jobs" | "property" | "learn">;
   activities: ActivityRow[];
   threads: ThreadRow[];
@@ -951,6 +985,7 @@ function buildActivityModule(input: {
   basePath: string;
   structuralCount: number | null;
 }) {
+  const audience = getModuleAudience(input.membership);
   const division = input.division;
   const detailHref = workspaceHref(input.basePath, `/division/${division}`);
   const openThreads = input.threads.filter((thread) => thread.status !== "closed");
@@ -1070,12 +1105,33 @@ function buildActivityModule(input: {
     })
   );
 
-  const approvals = sortTasks(
-    [...threadTasks, ...activityTasks].filter((task) => task.queue === "Approvals")
-  );
-  const tasks = sortTasks(
-    [...threadTasks, ...activityTasks, ...inboxTasks].filter((task) => task.queue !== "Approvals")
-  );
+  const canSeeTasks = hasModulePermission(audience, "tasks.view");
+  const canSeeInbox = hasModulePermission(audience, "inbox.view");
+  const canSeeQueues = hasModulePermission(audience, "queues.view");
+  const approvalRolesByDivision: Record<typeof division, DivisionRole[]> = {
+    studio: ["project_manager", "sales_consultant", "delivery_coordinator", "studio_finance"],
+    jobs: ["recruiter", "internal_recruitment_coordinator", "jobs_moderator", "employer_success"],
+    property: ["listings_manager", "viewing_coordinator", "property_moderator", "managed_property_ops"],
+    learn: ["academy_admin", "content_manager", "certification_manager", "academy_ops", "instructor"],
+  };
+  const canSeeApprovals =
+    hasModulePermission(audience, "division.approve") ||
+    hasModulePermission(audience, "division.moderate") ||
+    hasAnyFamily(audience, ["division_manager", "supervisor", "content_staff", "moderation_staff"]) ||
+    hasAnyRole(audience, approvalRolesByDivision[division]);
+
+  const approvals = canSeeApprovals
+    ? sortTasks([...threadTasks, ...activityTasks].filter((task) => task.queue === "Approvals"))
+    : [];
+  const tasks = canSeeTasks
+    ? sortTasks(
+        [
+          ...threadTasks.filter((task) => task.queue !== "Approvals"),
+          ...activityTasks.filter((task) => task.queue !== "Approvals"),
+          ...(canSeeInbox ? inboxTasks : []),
+        ].filter((task) => task.queue !== "Approvals")
+      )
+    : [];
   const recentSignals = input.activities.filter(
     (activity) => olderThanHours(activity.created_at, 24 * 7) === false
   );
@@ -1122,6 +1178,27 @@ function buildActivityModule(input: {
       })
     );
   }
+  if (canSeeInbox && unreadNotifications.length > 0) {
+    insights.push(
+      buildInsight({
+        id: `${division}-alerts`,
+        title: `${humanize(division)} still has unread alerts`,
+        summary: `${formatCount(unreadNotifications.length)} unread alerts are still open in the shared notification stream.`,
+        tone: unreadNotifications.some(
+          (notification) => cleanText(notification.priority).toLowerCase() === "critical"
+        )
+          ? "warning"
+          : "info",
+        evidence: [
+          `${formatCount(
+            unreadNotifications.filter((notification) => cleanText(notification.priority).toLowerCase() === "critical")
+              .length
+          )} alerts are marked critical.`,
+        ],
+        href: detailHref,
+      })
+    );
+  }
 
   const metrics: WorkspaceMetric[] = [
     {
@@ -1129,17 +1206,25 @@ function buildActivityModule(input: {
       value: formatCount(recentSignals.length),
       hint: "Recent shared activity events for this division.",
     },
-    {
-      label: "Open threads",
-      value: formatCount(openThreads.length),
-      hint: "Support or operational threads still waiting on staff action.",
-      tone: openThreads.length > 0 ? "warning" : "success",
-    },
-    {
-      label: "Unread alerts",
-      value: formatCount(unreadNotifications.length),
-      hint: "Unread notifications assigned to this division stream.",
-    },
+    ...((canSeeTasks || canSeeApprovals)
+      ? [
+          {
+            label: "Open threads",
+            value: formatCount(openThreads.length),
+            hint: "Support or operational threads still waiting on staff action.",
+            tone: openThreads.length > 0 ? "warning" : "success",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+    ...(canSeeInbox
+      ? [
+          {
+            label: "Unread alerts",
+            value: formatCount(unreadNotifications.length),
+            hint: "Unread notifications assigned to this division stream.",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
     {
       label: "Structured records",
       value: input.structuralCount === null ? "Shared feed" : formatCount(input.structuralCount),
@@ -1151,31 +1236,54 @@ function buildActivityModule(input: {
     },
   ];
 
-  const queueLanes: WorkspaceQueueLane[] = [
-    {
-      id: `${division}-follow-up`,
-      title: "Follow-up",
-      description: "Open conversations and operational signals that need a response.",
-      tone: tasks.length > 0 ? "info" : "success",
-      items: tasks
-        .filter((task) => task.queue === "Follow-up" || task.queue === "Workload")
-        .slice(0, 6),
-    },
-    {
-      id: `${division}-approvals-lane`,
-      title: "Approvals",
-      description: "Submissions, applications, or approvals that need staff review.",
-      tone: approvals.length > 0 ? "warning" : "success",
-      items: approvals.slice(0, 6),
-    },
-    {
-      id: `${division}-alerts`,
-      title: "Alerts",
-      description: "Unread division alerts surfaced through the shared notification center.",
-      tone: inboxTasks.length > 0 ? "warning" : "success",
-      items: inboxTasks.slice(0, 6),
-    },
-  ];
+  const queueLanes: WorkspaceQueueLane[] = canSeeQueues
+    ? [
+        ...(canSeeTasks
+          ? [
+              {
+                id: `${division}-follow-up`,
+                title: "Follow-up",
+                description: "Open conversations and operational signals that need a response.",
+                tone: tasks.length > 0 ? "info" : "success",
+                items: tasks
+                  .filter((task) => task.queue === "Follow-up" || task.queue === "Workload")
+                  .slice(0, 6),
+              } satisfies WorkspaceQueueLane,
+            ]
+          : []),
+        ...(canSeeApprovals
+          ? [
+              {
+                id: `${division}-approvals-lane`,
+                title: "Approvals",
+                description: "Submissions, applications, or approvals that need staff review.",
+                tone: approvals.length > 0 ? "warning" : "success",
+                items: approvals.slice(0, 6),
+              } satisfies WorkspaceQueueLane,
+            ]
+          : []),
+        ...(canSeeInbox
+          ? [
+              {
+                id: `${division}-alerts`,
+                title: "Alerts",
+                description: "Unread division alerts surfaced through the shared notification center.",
+                tone: inboxTasks.length > 0 ? "warning" : "success",
+                items: inboxTasks.slice(0, 6),
+              } satisfies WorkspaceQueueLane,
+            ]
+          : []),
+      ]
+    : [];
+
+  const sourceMode: DivisionWorkspaceModule["sourceMode"] =
+    readiness === "live" ? "structured" : readiness === "partial" ? "shared-signals" : "planned";
+  const sourceSummary =
+    sourceMode === "structured"
+      ? "This division is backed by dedicated live records in the shared HenryCo schema."
+      : sourceMode === "shared-signals"
+        ? "This division is currently running from shared activity, support, and notification signals because dedicated operational tables are not fully live yet."
+        : "This division shell is registered, but it still needs live dedicated data structures before it can operate at full depth.";
 
   return {
     division,
@@ -1190,6 +1298,8 @@ function buildActivityModule(input: {
     description:
       "This module combines live shared signals from support, notifications, and activity streams so staff can operate cross-division work from one queue surface.",
     readiness,
+    sourceMode,
+    sourceSummary,
     roles: [],
     metrics,
     tasks: tasks.slice(0, 8),
@@ -1201,12 +1311,14 @@ function buildActivityModule(input: {
 }
 
 function buildLogisticsModule(
+  membership: WorkspaceDivisionMembership,
   audits: AuditRow[],
   basePath: string
 ): DivisionWorkspaceModule {
+  const audience = getModuleAudience(membership);
   const detailHref = workspaceHref(basePath, "/division/logistics");
   const dispatchSignals = audits.filter((audit) => inferDivisionFromAudit(audit) === "logistics");
-  const tasks = dispatchSignals.map((audit) =>
+  const rawTasks = dispatchSignals.map((audit) =>
     buildTask({
       id: `logistics-audit-${audit.id}`,
       division: "logistics",
@@ -1232,15 +1344,22 @@ function buildLogisticsModule(
   );
 
   const readiness: DivisionWorkspaceModule["readiness"] = dispatchSignals.length ? "partial" : "planned";
-  const queueLanes: WorkspaceQueueLane[] = [
-    {
-      id: "logistics-dispatch-events",
-      title: "Dispatch Events",
-      description: "Shared operational events currently standing in for logistics queue data.",
-      tone: tasks.length > 0 ? "info" : "warning",
-      items: sortTasks(tasks).slice(0, 6),
-    },
-  ];
+  const canSeeTasks =
+    hasModulePermission(audience, "tasks.view") ||
+    hasAnyFamily(audience, ["finance_staff", "division_manager", "supervisor"]);
+  const canSeeQueues = hasModulePermission(audience, "queues.view");
+  const tasks = canSeeTasks ? sortTasks(rawTasks).slice(0, 8) : [];
+  const queueLanes: WorkspaceQueueLane[] = canSeeQueues
+    ? [
+        {
+          id: "logistics-dispatch-events",
+          title: "Dispatch Events",
+          description: "Shared operational events currently standing in for logistics queue data.",
+          tone: tasks.length > 0 ? "info" : "warning",
+          items: tasks.slice(0, 6),
+        },
+      ]
+    : [];
 
   return {
     division: "logistics",
@@ -1249,6 +1368,11 @@ function buildLogisticsModule(
     description:
       "Logistics is prepared as a first-class module, but the live workspace is currently reading shared operational events until the dedicated logistics schema is activated.",
     readiness,
+    sourceMode: readiness === "planned" ? "planned" : "shared-signals",
+    sourceSummary:
+      readiness === "planned"
+        ? "The logistics workspace surface is staged, but the live shared database still needs dedicated logistics tables before the module can operate at full depth."
+        : "This module is currently driven by shared audit and operational events until dedicated logistics queue storage goes live.",
     roles: [],
     metrics: [
       {
@@ -1264,7 +1388,7 @@ function buildLogisticsModule(
       },
       {
         label: "Escalations",
-        value: formatCount(tasks.filter((task) => task.status === "stale").length),
+        value: formatCount(rawTasks.filter((task) => task.status === "stale").length),
         hint: "Dispatch events that have aged without a fresh update.",
       },
       {
@@ -1273,7 +1397,7 @@ function buildLogisticsModule(
         hint: "Move logistics from shared event mode to dedicated queue storage.",
       },
     ],
-    tasks: sortTasks(tasks).slice(0, 8),
+    tasks,
     approvals: [],
     queueLanes,
     insights: [
@@ -1556,6 +1680,7 @@ export async function getWorkspaceSnapshot(
     switch (membership.division) {
       case "care":
         workspaceModule = buildCareModule(
+          membership,
           careBookings,
           divisionThreads,
           divisionNotifications,
@@ -1564,6 +1689,7 @@ export async function getWorkspaceSnapshot(
         break;
       case "marketplace":
         workspaceModule = buildMarketplaceModule(
+          membership,
           marketplaceApplications,
           marketplaceProducts,
           marketplaceOrders,
@@ -1574,6 +1700,7 @@ export async function getWorkspaceSnapshot(
         break;
       case "studio":
         workspaceModule = buildActivityModule({
+          membership,
           division: "studio",
           activities: divisionActivities,
           threads: divisionThreads,
@@ -1584,6 +1711,7 @@ export async function getWorkspaceSnapshot(
         break;
       case "jobs":
         workspaceModule = buildActivityModule({
+          membership,
           division: "jobs",
           activities: divisionActivities,
           threads: divisionThreads,
@@ -1594,6 +1722,7 @@ export async function getWorkspaceSnapshot(
         break;
       case "property":
         workspaceModule = buildActivityModule({
+          membership,
           division: "property",
           activities: divisionActivities,
           threads: divisionThreads,
@@ -1604,6 +1733,7 @@ export async function getWorkspaceSnapshot(
         break;
       case "learn":
         workspaceModule = buildActivityModule({
+          membership,
           division: "learn",
           activities: divisionActivities,
           threads: divisionThreads,
@@ -1614,7 +1744,7 @@ export async function getWorkspaceSnapshot(
         break;
       case "logistics":
       default:
-        workspaceModule = buildLogisticsModule(audits, basePath);
+        workspaceModule = buildLogisticsModule(membership, audits, basePath);
         break;
     }
 
@@ -1627,9 +1757,15 @@ export async function getWorkspaceSnapshot(
 
   const tasks = sortTasks(unique(modules.flatMap((module) => module.tasks))).slice(0, 24);
   const approvals = sortTasks(unique(modules.flatMap((module) => module.approvals))).slice(0, 24);
-  const inbox = buildInbox(notifications, threads, visibleDivisions, basePath);
-  const history = buildHistory(audits, visibleDivisions, basePath);
-  const trends = buildTrends(activities, threads, visibleDivisions).slice(0, 6);
+  const inbox = viewer.permissions.includes("inbox.view")
+    ? buildInbox(notifications, threads, visibleDivisions, basePath)
+    : [];
+  const history = viewer.permissions.includes("archive.view")
+    ? buildHistory(audits, visibleDivisions, basePath)
+    : [];
+  const trends = viewer.permissions.includes("reports.view")
+    ? buildTrends(activities, threads, visibleDivisions).slice(0, 6)
+    : [];
 
   const modulesWithRisk = modules.filter((module) =>
     module.tasks.some((task) => ["stale", "at_risk", "blocked"].includes(task.status))
@@ -1644,24 +1780,36 @@ export async function getWorkspaceSnapshot(
       hint: "Division modules available to this staff viewer.",
       tone: "success",
     },
-    {
-      label: "Active workload",
-      value: formatCount(tasks.length),
-      hint: "Prioritized tasks currently visible across all allowed modules.",
-      tone: tasks.length > 12 ? "warning" : "info",
-    },
-    {
-      label: "Approvals",
-      value: formatCount(approvals.length),
-      hint: "Approval items currently waiting in the workspace.",
-      tone: approvals.length > 0 ? "warning" : "success",
-    },
-    {
-      label: "Unread inbox",
-      value: formatCount(unreadInboxCount),
-      hint: "Unread alerts and open conversation threads.",
-      tone: unreadInboxCount > 0 ? "info" : "success",
-    },
+    ...(viewer.permissions.includes("tasks.view")
+      ? [
+          {
+            label: "Active workload",
+            value: formatCount(tasks.length),
+            hint: "Prioritized tasks currently visible across all allowed modules.",
+            tone: tasks.length > 12 ? "warning" : "info",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+    ...(viewer.permissions.includes("approvals.view")
+      ? [
+          {
+            label: "Approvals",
+            value: formatCount(approvals.length),
+            hint: "Approval items currently waiting in the workspace.",
+            tone: approvals.length > 0 ? "warning" : "success",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
+    ...(viewer.permissions.includes("inbox.view")
+      ? [
+          {
+            label: "Unread inbox",
+            value: formatCount(unreadInboxCount),
+            hint: "Unread alerts and open conversation threads.",
+            tone: unreadInboxCount > 0 ? "info" : "success",
+          } satisfies WorkspaceMetric,
+        ]
+      : []),
   ];
 
   const insights = unique([

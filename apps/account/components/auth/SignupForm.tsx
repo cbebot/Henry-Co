@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { normalizeTrustedRedirect } from "@henryco/config";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
 
 const COUNTRIES = [
@@ -25,18 +27,9 @@ const CONTACT_PREFS = [
   { value: "in_app", label: "In-app only" },
 ];
 
-function mapSignupError(message?: string | null) {
-  const clean = String(message || "").trim();
-  if (/database error|saving new user|creating new user/i.test(clean)) {
-    return "Account creation is temporarily routed through HenryCo support while shared auth provisioning is repaired. Use an existing HenryCo account to sign in, or email hello@henrycogroup.com for manual activation.";
-  }
-
-  return clean || "Something went wrong. Please try again.";
-}
-
 function buildLoginHref(next: string | null) {
-  if (!next) return "/login";
-  return `/login?next=${encodeURIComponent(next)}`;
+  const safeNext = normalizeTrustedRedirect(next);
+  return safeNext === "/" ? "/login" : `/login?next=${encodeURIComponent(safeNext)}`;
 }
 
 export default function SignupForm() {
@@ -84,10 +77,10 @@ export default function SignupForm() {
         },
       });
 
-      if (authError) { setError(mapSignupError(authError.message)); return; }
+      if (authError) { setError(mapAccountAuthMessage(authError.message, "sign_up")); return; }
       setSuccess(true);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("We couldn't create your account right now. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
 import { getMarketplaceProductBySlug } from "@/lib/marketplace/data";
@@ -19,10 +20,10 @@ export default async function ProductPage({
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-8 pb-28 sm:px-6 xl:px-8">
-      <section className="grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+      <section className="grid gap-6 xl:grid-cols-[1.06fr,0.94fr]">
         <div className="space-y-4">
-          <article className="overflow-hidden rounded-[2.2rem] border border-[var(--market-line-strong)] bg-[var(--market-paper-white)] shadow-[0_26px_72px_rgba(28,24,18,0.07)]">
-            <div className="relative aspect-[4/4.5]">
+          <article className="market-panel overflow-hidden rounded-[2.3rem]">
+            <div className="relative aspect-[4/4.55]">
               <Image
                 src={
                   data.product.gallery[0] ||
@@ -33,6 +34,7 @@ export default async function ProductPage({
                 sizes="(max-width: 1280px) 100vw, 54vw"
                 className="object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.72)] via-transparent to-transparent" />
             </div>
           </article>
 
@@ -41,9 +43,15 @@ export default async function ProductPage({
               {data.product.gallery.slice(1, 4).map((image, index) => (
                 <div
                   key={`${image}-${index}`}
-                  className="relative aspect-[4/3] overflow-hidden rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-paper-white)]"
+                  className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)]"
                 >
-                  <Image src={image} alt={`${data.product.title} ${index + 2}`} fill sizes="33vw" className="object-cover" />
+                  <Image
+                    src={image}
+                    alt={`${data.product.title} ${index + 2}`}
+                    fill
+                    sizes="33vw"
+                    className="object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -51,26 +59,25 @@ export default async function ProductPage({
         </div>
 
         <div className="space-y-6 xl:sticky xl:top-28 xl:self-start">
-          <article className="rounded-[2.2rem] border border-[var(--market-line-strong)] bg-[var(--market-paper-white)] p-6 shadow-[0_26px_72px_rgba(28,24,18,0.07)] sm:p-8">
-            <p className="market-kicker">Product detail</p>
-            <div className="mt-4 flex flex-wrap gap-2">
+          <article className="market-paper rounded-[2.3rem] p-6 sm:p-8">
+            <div className="flex flex-wrap gap-2">
               {data.product.trustBadges.map((badge) => (
                 <span
                   key={badge}
-                  className="rounded-full bg-[var(--market-bg-elevated)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]"
+                  className="rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]"
                 >
                   {badge}
                 </span>
               ))}
             </div>
-            <h1 className="mt-4 font-[family:var(--font-marketplace-display)] text-[3rem] leading-[0.98] tracking-[-0.04em] text-[var(--market-ink)]">
+            <h1 className="mt-4 font-[family:var(--font-marketplace-display)] text-[3rem] leading-[0.96] tracking-[-0.05em] text-[var(--market-paper-white)]">
               {data.product.title}
             </h1>
             <p className="mt-4 text-base leading-8 text-[var(--market-muted)]">{data.product.description}</p>
 
             <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-y border-[var(--market-line)] py-5">
               <div>
-                <p className="text-3xl font-semibold text-[var(--market-ink)]">
+                <p className="text-3xl font-semibold text-[var(--market-paper-white)]">
                   {formatCurrency(data.product.basePrice, data.product.currency)}
                 </p>
                 {data.product.compareAtPrice ? (
@@ -85,11 +92,54 @@ export default async function ProductPage({
               </div>
             </div>
 
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  icon: BadgeCheck,
+                  label: "Seller trust",
+                  value: data.vendor ? `${data.vendor.name} passport visible` : "Seller passport pending",
+                },
+                {
+                  icon: PackageCheck,
+                  label: "Availability",
+                  value: `${data.product.stock} unit${data.product.stock === 1 ? "" : "s"} in current stock`,
+                },
+                {
+                  icon: Truck,
+                  label: "Fulfillment",
+                  value: data.product.deliveryNote || data.product.leadTime,
+                },
+                {
+                  icon: ShieldCheck,
+                  label: "Payment",
+                  value: data.product.codEligible ? "COD or verified transfer" : "Verified transfer flow",
+                },
+              ].map(({ icon: Icon, label, value }) => (
+                <div
+                  key={label}
+                  className="rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4"
+                >
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-[var(--market-brass)]">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                    {label}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-[var(--market-paper-white)]">{value}</p>
+                </div>
+              ))}
+            </div>
+
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {Object.entries(data.product.specifications).map(([label, value]) => (
-                <div key={label} className="rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-4 py-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">{label}</p>
-                  <p className="mt-2 text-sm font-semibold text-[var(--market-ink)]">{value}</p>
+                <div
+                  key={label}
+                  className="rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4"
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                    {label}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-[var(--market-paper-white)]">{value}</p>
                 </div>
               ))}
             </div>
@@ -99,16 +149,19 @@ export default async function ProductPage({
             </div>
           </article>
 
-          <article className="rounded-[2rem] border border-[var(--market-line-strong)] bg-[var(--market-paper-white)] p-6 shadow-[0_20px_52px_rgba(28,24,18,0.06)]">
-            <p className="market-kicker">Why buyers trust this listing</p>
+          <article className="market-panel rounded-[2rem] p-6">
+            <p className="market-kicker">Why this listing feels safer</p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {[
-                `${data.product.stock} units currently available`,
-                data.product.codEligible ? "COD-eligible with trust policy support" : "Manual verification flow available",
-                data.vendor ? `${data.vendor.name} seller passport visible` : "Seller passport pending",
-                `${data.product.reviewCount} review${data.product.reviewCount === 1 ? "" : "s"} with ${data.product.rating.toFixed(1)} rating`,
+                `${data.product.stock} units currently visible to inventory`,
+                data.product.codEligible ? "Cash on delivery eligible where supported" : "Manual verification flow available",
+                data.vendor ? `${data.vendor.name} seller passport is linked directly from this page` : "Vendor trust surface is still pending linkage",
+                `${data.product.reviewCount} review${data.product.reviewCount === 1 ? "" : "s"} at ${data.product.rating.toFixed(1)} average rating`,
               ].map((item) => (
-                <div key={item} className="rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-4 py-4 text-sm leading-7 text-[var(--market-ink)]">
+                <div
+                  key={item}
+                  className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]"
+                >
                   {item}
                 </div>
               ))}
@@ -119,34 +172,39 @@ export default async function ProductPage({
 
       {data.vendor ? <TrustPassport vendor={data.vendor} /> : null}
 
-      <section className="grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+      <section className="grid gap-6 xl:grid-cols-[1.06fr,0.94fr]">
         <article className="market-paper rounded-[2rem] p-6 sm:p-8">
-          <p className="market-kicker">Product story</p>
+          <p className="market-kicker">Product detail</p>
           <div className="mt-5 space-y-4">
-            <details className="group rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-5 py-4" open>
-              <summary className="cursor-pointer list-none text-lg font-semibold tracking-tight text-[var(--market-ink)]">
+            <details className="group rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-5 py-4" open>
+              <summary className="cursor-pointer list-none text-lg font-semibold tracking-tight text-[var(--market-paper-white)]">
                 Delivery, support, and post-order care
               </summary>
               <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
                 {data.product.deliveryNote || "Delivery windows will be clarified at checkout."} Orders stay traceable from payment to fulfillment, and disputes or support threads stay attached to the same order record.
               </p>
             </details>
-            <details className="group rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-5 py-4">
-              <summary className="cursor-pointer list-none text-lg font-semibold tracking-tight text-[var(--market-ink)]">
+            <details className="group rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-5 py-4">
+              <summary className="cursor-pointer list-none text-lg font-semibold tracking-tight text-[var(--market-paper-white)]">
                 Specifications and material clarity
               </summary>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {Object.entries(data.product.specifications).map(([label, value]) => (
-                  <div key={label} className="rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 py-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">{label}</p>
-                    <p className="mt-2 text-sm font-semibold text-[var(--market-ink)]">{value}</p>
+                  <div
+                    key={label}
+                    className="rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4"
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                      {label}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-[var(--market-paper-white)]">{value}</p>
                   </div>
                 ))}
               </div>
             </details>
-            <details className="group rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-5 py-4">
-              <summary className="cursor-pointer list-none text-lg font-semibold tracking-tight text-[var(--market-ink)]">
-                Store passport and trust context
+            <details className="group rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-5 py-4">
+              <summary className="cursor-pointer list-none text-lg font-semibold tracking-tight text-[var(--market-paper-white)]">
+                Store passport and related discovery
               </summary>
               <div className="mt-3 flex flex-wrap gap-3">
                 {data.vendor ? (
@@ -169,23 +227,33 @@ export default async function ProductPage({
           </div>
         </article>
 
-        <article className="rounded-[2rem] border border-[var(--market-line-strong)] bg-[var(--market-noir)] p-6 text-[var(--market-paper-white)] shadow-[0_30px_80px_rgba(17,13,9,0.28)] sm:p-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-            Buyer confidence
+        <article className="market-panel rounded-[2rem] p-6 sm:p-8">
+          <p className="market-kicker">Complete the set</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">
+            More from this buying context.
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
+            Recommendation rails stay curated and clean instead of becoming noisy upsell clutter.
           </p>
-          <div className="mt-6 space-y-4">
-            {[
-              `${data.product.stock} units currently visible to inventory`,
-              data.product.codEligible ? "Cash on delivery eligible in supported zones" : "Manual verification and cleaner payment traceability enabled",
-              data.vendor ? `${data.vendor.name} storefront and trust passport are linked directly from this page` : "Vendor trust passport will appear once the store is linked",
-              `${data.product.reviewCount} published review${data.product.reviewCount === 1 ? "" : "s"} at ${data.product.rating.toFixed(1)} average rating`,
-            ].map((item) => (
-              <div
-                key={item}
-                className="rounded-[1.35rem] border border-[color:rgba(255,255,255,0.12)] bg-[color:rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[color:rgba(255,255,255,0.72)]"
+          <div className="mt-6 grid gap-4">
+            {data.related.slice(0, 3).map((product) => (
+              <Link
+                key={product.slug}
+                href={`/product/${product.slug}`}
+                className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4"
               >
-                {item}
-              </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                      {product.categorySlug.replace(/-/g, " ")}
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-[var(--market-paper-white)]">{product.title}</p>
+                  </div>
+                  <p className="text-sm font-semibold text-[var(--market-brass)]">
+                    {formatCurrency(product.basePrice, product.currency)}
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         </article>
@@ -195,7 +263,7 @@ export default async function ProductPage({
         <section className="space-y-5">
           <div>
             <p className="market-kicker">Review highlights</p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-ink)]">
+            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
               Verified buying signals, not noisy filler.
             </h2>
           </div>
@@ -203,9 +271,11 @@ export default async function ProductPage({
             {data.reviews.slice(0, 2).map((review) => (
               <article key={review.id} className="market-paper rounded-[1.85rem] p-6">
                 <p className="market-kicker">{review.verifiedPurchase ? "verified purchase" : "review"}</p>
-                <h3 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{review.title}</h3>
+                <h3 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-paper-white)]">
+                  {review.title}
+                </h3>
                 <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{review.body}</p>
-                <p className="mt-4 text-sm font-semibold text-[var(--market-ink)]">{review.buyerName}</p>
+                <p className="mt-4 text-sm font-semibold text-[var(--market-paper-white)]">{review.buyerName}</p>
               </article>
             ))}
           </div>
@@ -214,8 +284,10 @@ export default async function ProductPage({
 
       <section className="space-y-5">
         <div>
-          <p className="market-kicker">Complete the set</p>
-          <h2 className="mt-3 text-4xl font-semibold tracking-tight">More from this shopping context.</h2>
+          <p className="market-kicker">More to discover</p>
+          <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
+            Continue browsing without losing your place.
+          </h2>
         </div>
         <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-4">
           {data.related.map((product) => (

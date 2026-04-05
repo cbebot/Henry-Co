@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/app/lib/owner-auth";
+import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 import {
   normalizeCompanyPerson,
   type CompanyPersonRecord,
@@ -22,7 +23,7 @@ function nullableText(value: unknown) {
 export async function GET() {
   const auth = await requireOwner();
   if (!auth.ok) {
-    return NextResponse.json({ error: "Access denied." }, { status: 403 });
+    return ownerAuthDeniedResponse(auth);
   }
 
   const admin = createAdminSupabase();
@@ -47,7 +48,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const auth = await requireOwner();
   if (!auth.ok) {
-    return NextResponse.json({ error: "Access denied." }, { status: 403 });
+    return ownerAuthDeniedResponse(auth);
   }
 
   const admin = createAdminSupabase();

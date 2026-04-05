@@ -21,7 +21,7 @@ export default async function RecruiterJobsPage() {
                   <div className="font-semibold">{job.title}</div>
                   <div className="mt-1 text-sm text-[var(--jobs-muted)]">{job.employerName} · {job.location}</div>
                 </div>
-                <span className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold">{job.moderationStatus}</span>
+                <span className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold capitalize">{job.moderationStatus.replace(/[_-]+/g, " ")}</span>
               </div>
             </Link>
           ))}

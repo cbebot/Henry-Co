@@ -103,6 +103,7 @@ export async function getProposalWorkspace(input: {
     team: catalog.teams.find((item) => item.id === proposal.teamId) ?? null,
     project: snapshot.projects.find((item) => item.proposalId === proposal.id) ?? null,
     platform: catalog.platform,
+    requestConfig: catalog.requestConfig,
   };
 }
 
@@ -153,6 +154,7 @@ export async function getProjectWorkspace(input: {
     updates: (snapshot.projectUpdates ?? []).filter((item) => item.projectId === project.id),
     reviews: snapshot.reviews.filter((item) => item.projectId === project.id),
     platform: catalog.platform,
+    requestConfig: catalog.requestConfig,
   };
 }
 

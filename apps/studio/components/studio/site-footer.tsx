@@ -61,19 +61,18 @@ export function StudioSiteFooter({
             <div>
               <div className="studio-kicker">HenryCo Studio</div>
               <h2 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
-                Premium websites, software systems, and digital products built with sharper process and stronger delivery confidence.
+                Premium websites, software platforms, and digital products built with sharper process and stronger delivery confidence.
               </h2>
               <p className="mt-5 max-w-2xl text-sm leading-8 text-[var(--studio-ink-soft)]">
-                HenryCo Studio is built for businesses that need more than a pretty homepage. The
-                platform is designed to qualify serious projects, route them to the right team,
-                structure milestone pricing, and keep project visibility clean from first brief to
-                final delivery.
+                HenryCo Studio is built for businesses that need more than a pretty homepage. Studio
+                is designed to qualify serious projects, route them to the right team, structure
+                milestone pricing, and keep project visibility clean from first brief to final delivery.
               </p>
               <div className="mt-7 grid gap-3 sm:grid-cols-3">
                 {[
                   "Package path and custom project path both stay premium.",
                   "Proposals, payments, files, revisions, and updates can stay on one record.",
-                  "The system is designed for future unified HenryCo account history.",
+                  "Project history stays ready inside your HenryCo account.",
                 ].map((item) => (
                   <div key={item} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
                     {item}

@@ -3,7 +3,7 @@ import { Layers3, Quote, Star } from "lucide-react";
 import { getCourseBySlug } from "@/lib/learn/data";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { enrollInCourseAction, toggleSavedCourseAction } from "@/lib/learn/actions";
-import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
+import { getAccountLearnUrl, getLearnCourseRoomUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { ActionLink, CourseCard, LearnMarkdown, LearnPanel, LearnSectionIntro, LearnStatusBadge } from "@/components/learn/ui";
 
@@ -59,8 +59,14 @@ export default async function CourseDetailPage({
               <p>Pass score: {course.passingScore}%</p>
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
-              {canStart ? <ActionLink href={`/learner/courses/${course.id}`} label="Continue learning" /> : null}
-              {viewer.user ? <ActionLink href={getAccountLearnUrl(canStart ? "active" : "overview")} label="Open account" variant="secondary" /> : null}
+              {canStart ? <ActionLink href={getLearnCourseRoomUrl(course.id)} label="Open learning room" /> : null}
+              {viewer.user ? (
+                <ActionLink
+                  href={getAccountLearnUrl(canStart ? "active" : "overview")}
+                  label="View in HenryCo account"
+                  variant="secondary"
+                />
+              ) : null}
               {!canStart && viewer.user ? (
                 <form action={enrollInCourseAction}>
                   <input type="hidden" name="courseId" value={course.id} />
@@ -69,7 +75,7 @@ export default async function CourseDetailPage({
                   </PendingSubmitButton>
                 </form>
               ) : null}
-              {!viewer.user ? <ActionLink href={signInHref} label="Sign in with HenryCo account" variant="secondary" /> : null}
+              {!viewer.user ? <ActionLink href={signInHref} label="Sign in to enroll" variant="secondary" /> : null}
               {viewer.user ? (
                 <form action={toggleSavedCourseAction}>
                   <input type="hidden" name="courseId" value={course.id} />
@@ -79,14 +85,64 @@ export default async function CourseDetailPage({
                 </form>
               ) : null}
             </div>
-            {enrollment?.status === "awaiting_payment" ? <p className="mt-4 text-sm text-amber-200">Payment confirmation is still in progress. Your seat is reserved, and the course will unlock as soon as the shared HenryCo account flow records confirmation.</p> : null}
+            {enrollment?.status === "awaiting_payment" ? (
+              <p className="mt-4 text-sm text-amber-200">
+                We’re confirming your payment. Your seat is held—this page will unlock fully as soon as your HenryCo account shows a completed payment.
+              </p>
+            ) : null}
           </div>
         </div>
       </section>
 
+      <section className="mt-10">
+        <LearnPanel className="rounded-[2rem] p-7">
+          <LearnSectionIntro
+            kicker="What to expect"
+            title="How this course works on HenryCo Learn"
+            body="Lessons are meant to be taken in order. When you’re enrolled, each step unlocks as you finish the one before it. If this program includes a certificate, you’ll see exactly what you must complete—including any final quiz and passing score—inside your learning room and in your HenryCo account."
+          />
+          <ul className="mt-6 grid gap-4 text-sm leading-7 text-[var(--learn-ink-soft)] sm:grid-cols-2">
+            <li className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <span className="font-semibold text-[var(--learn-ink)]">Progress</span>
+              <span className="mt-2 block">Saved automatically. Resume from this course page or from Learn in your HenryCo account.</span>
+            </li>
+            <li className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <span className="font-semibold text-[var(--learn-ink)]">Quiz</span>
+              <span className="mt-2 block">
+                {quiz
+                  ? `Opens after all lessons. Pass at ${quiz.passScore}% (up to ${quiz.maxAttempts} attempts on this program).`
+                  : "This course may be completion-based only—check the learning room for details."}
+              </span>
+            </li>
+            <li className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <span className="font-semibold text-[var(--learn-ink)]">Certificate</span>
+              <span className="mt-2 block">
+                {course.certification
+                  ? "Eligible learners receive a downloadable certificate and a verification code employers or partners can check online."
+                  : "This track may not include a credential; you still get a full record of completion in your account where applicable."}
+              </span>
+            </li>
+            <li className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <span className="font-semibold text-[var(--learn-ink)]">Next step</span>
+              <span className="mt-2 block">
+                {canStart
+                  ? "Open your learning room to continue the next unlocked lesson."
+                  : viewer.user
+                    ? "Enroll to unlock the full sequence."
+                    : "Sign in with your HenryCo account, then enroll to begin."}
+              </span>
+            </li>
+          </ul>
+        </LearnPanel>
+      </section>
+
       <section className="mt-10 grid gap-6 xl:grid-cols-[1.2fr,0.8fr]">
         <LearnPanel className="rounded-[2rem] p-7">
-          <LearnSectionIntro kicker="Course Structure" title="Lessons built for calm progression and real completion." body={course.completionRule} />
+          <LearnSectionIntro
+            kicker="Course structure"
+            title="Lessons in order—so you always know what’s next."
+            body={course.completionRule}
+          />
           <div className="mt-8 space-y-4">
             {modules.map((module, moduleIndex) => (
               <div key={module.id} className="rounded-[1.6rem] border border-[var(--learn-line)] bg-white/5 p-5">
@@ -174,7 +230,11 @@ export default async function CourseDetailPage({
 
       {related.length > 0 ? (
         <section className="mt-10">
-          <LearnSectionIntro kicker="Related Learning" title="Continue building the same capability with confidence." body="These related courses sit in the same academy lane and keep the same calm, progress-first learning experience." />
+          <LearnSectionIntro
+            kicker="Related programs"
+            title="Keep going with courses in the same lane."
+            body="These picks are curated to match the topic you’re viewing—same clear structure, same account-wide progress."
+          />
           <div className="mt-8 grid gap-5 lg:grid-cols-3">
             {related.map((item) => (
               <CourseCard key={item.id} course={item} href={`/courses/${item.slug}`} />

@@ -1528,7 +1528,7 @@ export default function BookPickupForm({
                 <div className="grid gap-2 rounded-[1.2rem] border border-black/10 bg-black/[0.03] px-4 py-4 text-sm leading-7 text-zinc-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/65">
                   <div className="font-semibold text-zinc-950 dark:text-white">
                     {paymentSettings.instructions ||
-                      "Use the tracking code as your transfer reference, then send proof so the Care team can verify and continue the booking."}
+                      "Use the tracking code as your transfer reference, then upload the receipt so the Care team can confirm payment and continue the booking."}
                   </div>
                   {(paymentSettings.supportEmail || paymentSettings.supportWhatsApp) ? (
                     <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">

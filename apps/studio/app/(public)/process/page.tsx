@@ -11,11 +11,11 @@ export default async function ProcessPage() {
         <div className="max-w-4xl">
           <div className="studio-kicker">Process</div>
           <h1 className="studio-heading mt-4">
-            The operating model is built to remove ambiguity at every handoff.
+            A clear process designed to keep you informed at every stage.
           </h1>
           <p className="mt-5 text-lg leading-8 text-[var(--studio-ink-soft)]">
-            Scope, pricing logic, review states, payment checkpoints, and delivery accountability all
-            remain visible from the first brief to final approval.
+            From your first brief to final delivery — scope, pricing, payments, and progress
+            stay visible and structured throughout.
           </p>
         </div>
       </section>

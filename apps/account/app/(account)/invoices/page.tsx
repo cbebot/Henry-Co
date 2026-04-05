@@ -1,4 +1,4 @@
-import { Receipt, Download, ExternalLink } from "lucide-react";
+import { Receipt } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import { getInvoices } from "@/lib/account-data";
 import { formatNaira, formatDate, divisionLabel, divisionColor } from "@/lib/format";

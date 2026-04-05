@@ -47,7 +47,7 @@ export default async function VendorOnboardingPage() {
               <article key={item.title} className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-5 py-5">
                 <div className="flex items-center justify-between gap-4">
                   <h2 className="text-xl font-semibold tracking-tight text-[var(--market-ink)]">{item.title}</h2>
-                  <span className="rounded-full bg-[var(--market-paper-white)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-ink)]">
+                  <span className="rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
                     {item.done ? "Done" : "Next"}
                   </span>
                 </div>

@@ -32,7 +32,7 @@ export default async function ServiceDetailPage({
 
       <section className="mt-10 grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
         <article className="studio-panel rounded-[1.75rem] p-6">
-          <div className="studio-kicker">Delivery outcomes</div>
+          <div className="studio-kicker">What you get</div>
           <div className="mt-5 flex flex-wrap gap-2">
             {service.outcomes.map((outcome) => (
               <span key={outcome} className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs text-[var(--studio-ink-soft)]">
@@ -41,7 +41,7 @@ export default async function ServiceDetailPage({
             ))}
           </div>
           <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
-            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">Starting lane</div>
+            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">Starting from</div>
             <div className="mt-2 text-3xl font-semibold text-[var(--studio-ink)]">
               {formatCurrency(service.startingPrice)}
             </div>
@@ -57,7 +57,7 @@ export default async function ServiceDetailPage({
                 <div className="text-lg font-semibold text-[var(--studio-ink)]">{pkg.name}</div>
                 <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{pkg.summary}</p>
                 <div className="mt-4 text-2xl font-semibold text-[var(--studio-ink)]">{formatCurrency(pkg.price)}</div>
-                <div className="mt-2 text-sm text-[var(--studio-ink-soft)]">{pkg.timelineWeeks} weeks typical lane</div>
+                <div className="mt-2 text-sm text-[var(--studio-ink-soft)]">{pkg.timelineWeeks} weeks typical timeline</div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {pkg.includes.map((item) => (
                     <span key={item} className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs text-[var(--studio-ink-soft)]">
@@ -72,7 +72,7 @@ export default async function ServiceDetailPage({
       </section>
 
       <section className="mt-10 studio-panel rounded-[1.75rem] p-6">
-        <div className="studio-kicker">Commercial advantage</div>
+        <div className="studio-kicker">Why choose HenryCo</div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {catalog.valueComparisons.map((comparison) => (
             <article key={comparison.title} className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">

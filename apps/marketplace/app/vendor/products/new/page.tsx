@@ -1,20 +1,34 @@
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceRoles } from "@/lib/marketplace/auth";
-import { getMarketplaceHomeData } from "@/lib/marketplace/data";
+import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplace/data";
 import { vendorNav } from "@/lib/marketplace/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewVendorProductPage() {
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/products/new");
-  const data = await getMarketplaceHomeData();
+  const [data, vendorData] = await Promise.all([getMarketplaceHomeData(), getVendorWorkspaceData()]);
 
   return (
     <WorkspaceShell
       title="New product"
-      description="Listings are built with moderation in mind: title, story, pricing, stock, trust notes, delivery expectation, and lead visuals are all explicit."
+      description="Listings are built with moderation, pricing governance, and trust scoring in mind: title, story, delivery proof, featured-slot requests, and posting-fee visibility are explicit."
       nav={vendorNav("/vendor/products")}
     >
+      <section className="market-panel rounded-[1.75rem] p-5">
+        <p className="market-kicker">Seller economics in this flow</p>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-sm text-[var(--market-paper-white)]">
+            Plan: {vendorData.trustProfile.plan.name}
+          </div>
+          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-sm text-[var(--market-paper-white)]">
+            Commission: {Math.round(vendorData.trustProfile.plan.commissionRate * 100)}%
+          </div>
+          <div className="rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-sm text-[var(--market-paper-white)]">
+            Featured request fee: NGN {vendorData.trustProfile.plan.featuredSlotFee.toLocaleString()}
+          </div>
+        </div>
+      </section>
       <form action="/api/marketplace" method="POST" className="market-paper space-y-5 rounded-[1.75rem] p-6">
         <input type="hidden" name="intent" value="vendor_product_upsert" />
         <input type="hidden" name="return_to" value="/vendor/products" />
@@ -51,6 +65,10 @@ export default async function NewVendorProductPage() {
         <label className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4">
           <input type="checkbox" name="cod_eligible" />
           <span className="text-sm text-[var(--market-ink)]">Eligible for cash on delivery</span>
+        </label>
+        <label className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4">
+          <input type="checkbox" name="feature_requested" />
+          <span className="text-sm text-[var(--market-ink)]">Request featured placement review (extra fee applies if approved)</span>
         </label>
         <div className="flex flex-wrap gap-3">
           <button name="submission_mode" value="draft" className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold">

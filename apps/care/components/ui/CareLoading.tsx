@@ -117,7 +117,7 @@ export function CareLoadingStage({
         <div className="grid gap-3 sm:grid-cols-3">
           {(bullets && bullets.length > 0
             ? bullets
-            : ["Syncing live workspace state", "Checking delivery and payment context", "Preparing the next clean handoff"]
+            : ["Loading your bookings", "Checking delivery status", "Preparing your dashboard"]
           ).map((item, index) => (
             <div
               key={`${item}-${index}`}

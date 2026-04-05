@@ -37,11 +37,11 @@ export default async function CaseStudyDetailPage({
 
       <section className="mt-10 grid gap-6 md:grid-cols-2">
         <article className="studio-panel rounded-[1.75rem] p-6">
-          <div className="studio-kicker">Challenge framing</div>
+          <div className="studio-kicker">The challenge</div>
           <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">{caseStudy.challenge}</p>
         </article>
         <article className="studio-panel rounded-[1.75rem] p-6">
-          <div className="studio-kicker">Outcome lens</div>
+          <div className="studio-kicker">The result</div>
           <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">{caseStudy.impact}</p>
         </article>
       </section>

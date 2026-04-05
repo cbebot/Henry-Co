@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
+import { LocaleProvider } from "@henryco/i18n/react";
+import { getConsentCopy } from "@henryco/i18n/server";
+import { EcosystemPreferences } from "@henryco/ui/public";
+import { getAccountUrl } from "@henryco/config";
 import PublicSiteShell from "../components/PublicSiteShell";
-import ThemeModeScript from "../components/ThemeModeScript";
+import { HubPublicProviders } from "../components/HubPublicProviders";
 import { getCompanySettings } from "../lib/company-settings";
+import { getHubPublicLocale } from "../../lib/locale-server";
+import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
+import { getHubPublicChipUser } from "@/lib/hub-public-viewer";
 
 function toMetadataUrl(domain?: string | null) {
   const clean = String(domain || "").trim().replace(/^https?:\/\//i, "").replace(/\/+$/, "");
@@ -43,12 +51,30 @@ export default async function SiteLayout({
 }: {
   children: ReactNode;
 }) {
-  const { settings } = await getCompanySettings();
+  const [company, locale, h, chipUser] = await Promise.all([
+    getCompanySettings(),
+    getHubPublicLocale(),
+    headers(),
+    getHubPublicChipUser(),
+  ]);
+  const { settings } = company;
+  const consentCopy = getConsentCopy(locale);
+  const returnPath = h.get("x-hub-return-path") || "/";
+  const accountChip = {
+    user: chipUser,
+    loginHref: getHubSharedLoginUrl(returnPath),
+    signupHref: getHubSharedSignupUrl(returnPath),
+    accountHref: getAccountUrl("/"),
+  };
 
   return (
-    <>
-      <ThemeModeScript />
-      <PublicSiteShell initialSettings={settings}>{children}</PublicSiteShell>
-    </>
+    <HubPublicProviders>
+        <LocaleProvider locale={locale}>
+          <PublicSiteShell initialSettings={settings} accountChip={accountChip}>
+            {children}
+          </PublicSiteShell>
+          <EcosystemPreferences copy={consentCopy} initialLocale={locale} />
+        </LocaleProvider>
+      </HubPublicProviders>
   );
 }

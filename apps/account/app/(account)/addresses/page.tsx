@@ -1,8 +1,7 @@
-import { MapPin, Plus } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import { getAddresses } from "@/lib/account-data";
 import PageHeader from "@/components/layout/PageHeader";
-import EmptyState from "@/components/layout/EmptyState";
 import AddAddressForm from "@/components/addresses/AddAddressForm";
 
 export const dynamic = "force-dynamic";

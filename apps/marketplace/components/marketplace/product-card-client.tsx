@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag, Star } from "lucide-react";
+import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useEffect, useRef, useState } from "react";
 import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
 import type { MarketplaceProduct } from "@/lib/marketplace/types";
@@ -58,28 +59,29 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
   return (
     <motion.article
       layout
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -6 }}
       className={cn(
-        "group relative z-10 flex h-full scroll-mt-40 flex-col overflow-hidden rounded-[1.9rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] shadow-[0_24px_70px_rgba(28,24,18,0.08)] transition duration-300",
-        justAdded && "border-[color:rgba(92,124,78,0.38)] shadow-[0_28px_84px_rgba(72,95,60,0.14)]"
+        "group relative z-10 flex h-full scroll-mt-40 flex-col overflow-hidden rounded-[2rem] border border-[var(--market-line)] bg-[linear-gradient(180deg,rgba(16,21,32,0.96),rgba(10,14,23,0.9))] shadow-[0_26px_90px_rgba(0,0,0,0.24)] transition duration-300",
+        justAdded && "border-[rgba(117,209,255,0.34)] shadow-[0_36px_110px_rgba(117,209,255,0.18)]"
       )}
     >
-      <div className="relative aspect-[4/4.5] overflow-hidden bg-[var(--market-soft-wash)]">
+      <div className="relative aspect-[4/4.6] overflow-hidden bg-[var(--market-soft-wash)]">
         <Image
           src={product.gallery[0] || fallbackImage}
           alt={product.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-          className="object-cover transition duration-500 group-hover:scale-[1.03]"
+          className="object-cover transition duration-500 group-hover:scale-[1.04]"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.9)] via-[rgba(4,7,13,0.12)] to-transparent" />
 
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-[rgba(10,8,6,0.72)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">
+            <span className="rounded-full border border-[rgba(255,255,255,0.14)] bg-[rgba(4,7,13,0.62)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
               {product.inventoryOwnerType === "company" ? "HenryCo stocked" : "Verified seller"}
             </span>
             {product.stock > 0 && product.stock <= 3 ? (
-              <span className="rounded-full bg-[var(--market-alert)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">
+              <span className="rounded-full bg-[rgba(255,171,151,0.92)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-noir)]">
                 Only {product.stock} left
               </span>
             ) : null}
@@ -89,15 +91,23 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
             disabled={saving}
             onClick={() => void toggleWishlist(product.slug)}
             className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-full border transition",
+              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-xl transition",
               wishlisted
-                ? "border-[var(--market-alert)] bg-[rgba(124,36,25,0.14)] text-[var(--market-alert)]"
-                : "border-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.84)] text-[var(--market-ink)]"
+                ? "border-[rgba(255,171,151,0.48)] bg-[rgba(255,171,151,0.16)] text-[var(--market-alert)]"
+                : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.12)] text-[var(--market-paper-white)]"
             )}
             aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
           >
             <Heart className={cn("h-4 w-4", wishlisted ? "fill-current" : "")} />
           </button>
+        </div>
+
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.12)] bg-[rgba(4,7,13,0.58)] px-3 py-1 text-xs text-[var(--market-paper-white)] backdrop-blur-xl">
+            <Star className="h-3.5 w-3.5 fill-[var(--market-brass)] text-[var(--market-brass)]" />
+            <span className="font-semibold">{product.rating.toFixed(1)}</span>
+            <span className="text-[rgba(255,255,255,0.66)]">({product.reviewCount})</span>
+          </div>
         </div>
       </div>
 
@@ -108,25 +118,25 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
               {product.categorySlug.replace(/-/g, " ")}
             </p>
             {product.codEligible ? (
-              <span className="rounded-full bg-[var(--market-soft-olive)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-success)]">
+              <span className="rounded-full border border-[rgba(144,215,186,0.22)] bg-[rgba(144,215,186,0.12)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-success)]">
                 COD ready
               </span>
             ) : null}
           </div>
-          <div>
-            <h3 className="text-[1.25rem] font-semibold tracking-tight text-[var(--market-ink)]">
+          <div className="space-y-2">
+            <h3 className="text-[1.28rem] font-semibold tracking-tight text-[var(--market-paper-white)]">
               {product.title}
             </h3>
-            <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{product.summary}</p>
+            <p className="text-sm leading-7 text-[var(--market-muted)]">{product.summary}</p>
           </div>
-          <p className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--market-muted)]">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--market-muted)]">
             {product.deliveryNote || product.leadTime}
           </p>
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-4">
           <div>
-            <p className="text-2xl font-semibold text-[var(--market-ink)]">
+            <p className="text-2xl font-semibold text-[var(--market-paper-white)]">
               {formatCurrency(product.basePrice, product.currency)}
             </p>
             {product.compareAtPrice ? (
@@ -140,23 +150,28 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
             <button
               type="button"
               disabled={adding}
+              aria-busy={adding}
               onClick={() => void handleAddToCart()}
               className={cn(
-                "inline-flex h-11 w-11 items-center justify-center rounded-full text-[var(--market-paper-white)] shadow-[0_16px_34px_rgba(18,14,10,0.18)] transition",
+                "inline-flex h-11 w-11 items-center justify-center rounded-full transition disabled:cursor-wait",
                 adding
-                  ? "bg-[var(--market-brass)]"
+                  ? "bg-[rgba(221,182,120,0.9)] text-[var(--market-noir)]"
                   : justAdded
-                    ? "bg-[var(--market-success)]"
-                    : "bg-[var(--market-noir)] hover:scale-[1.02]"
+                    ? "bg-[var(--market-success)] text-[var(--market-noir)]"
+                    : "market-button-primary"
               )}
               aria-label={`Add ${product.title} to cart`}
             >
-              <ShoppingBag className="h-4 w-4" />
+              {adding ? (
+                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label="Adding to cart" />
+              ) : (
+                <ShoppingBag className="h-4 w-4" />
+              )}
             </button>
 
             <Link
               href={`/product/${product.slug}`}
-              className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--market-line-strong)] px-4 text-sm font-semibold text-[var(--market-ink)] transition hover:border-[var(--market-brass)] hover:text-[var(--market-brass)]"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--market-line-strong)] bg-[rgba(255,255,255,0.04)] px-4 text-sm font-semibold text-[var(--market-paper-white)] transition hover:border-[rgba(117,209,255,0.42)] hover:text-[var(--market-paper-white)]"
             >
               View
             </Link>

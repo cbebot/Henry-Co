@@ -1,0 +1,34 @@
+{
+  "plugins": {
+    "vercel": {
+      "enabled": true
+    },
+    "supabase": {
+      "enabled": true
+    },
+    "slack": {
+      "enabled": true
+    },
+    "functions": {
+      "enabled": true
+    },
+    "clerk": {
+      "enabled": true
+    },
+    "sentry": {
+      "enabled": true
+    },
+    "cli-for-agent": {
+      "enabled": true
+    },
+    "cloudinary": {
+      "enabled": true
+    },
+    "agent-compatibility": {
+      "enabled": true
+    },
+    "gitlab": {
+      "enabled": true
+    }
+  }
+}

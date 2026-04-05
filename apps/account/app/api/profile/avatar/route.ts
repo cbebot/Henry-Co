@@ -1,27 +1,20 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { uploadProfileAvatar } from "@/lib/cloudinary";
 import { createClient } from "@supabase/supabase-js";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { ensureAccountProfileRecords } from "@/lib/account-profile";
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll(); },
-          setAll(tokens) {
-            try { for (const { name, value, options } of tokens) cookieStore.set(name, value, options); } catch {}
-          },
-        },
-      }
-    );
-
-    const { data: { user } } = await supabase.auth.getUser();
+    await cookies();
+    const supabase = await createSupabaseServer();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    await ensureAccountProfileRecords(user);
 
     const formData = await request.formData();
     const file = formData.get("avatar") as File | null;
@@ -36,8 +29,15 @@ export async function POST(request: Request) {
 
     const { error: updateError } = await admin
       .from("customer_profiles")
-      .update({ avatar_url: secureUrl, updated_at: new Date().toISOString() })
-      .eq("id", user.id);
+      .upsert(
+        {
+          id: user.id,
+          email: user.email || null,
+          avatar_url: secureUrl,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "id" }
+      );
 
     if (updateError) throw updateError;
 

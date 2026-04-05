@@ -1,0 +1,19 @@
+# HenryCo Hub — Supabase CLI config (shared migrations for account + HQ surfaces).
+# Link once: `pnpm exec supabase link --project-ref <YOUR_REF>`
+# Apply:    `pnpm run db:apply` (requires SUPABASE_DB_URL or DATABASE_URL)
+
+[api]
+enabled = true
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+major_version = 15
+
+[db.migrations]
+enabled = true
+schema_paths = []
+
+[db.pooler]
+enabled = false

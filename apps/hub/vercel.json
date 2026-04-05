@@ -1,7 +1,48 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @henryco/hub build",
-  "outputDirectory": "apps/hub/.next"
+  "installCommand": "node ../../scripts/vercel/pnpm.mjs install",
+  "buildCommand": "node ../../scripts/vercel/pnpm.mjs build @henryco/hub",
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "hq.henrycogroup.com"
+        }
+      ],
+      "destination": "/owner"
+    },
+    {
+      "source": "/:path((?!owner(?:/|$)|api/owner(?:/|$)).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "hq.henrycogroup.com"
+        }
+      ],
+      "destination": "/owner/:path*"
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "workspace.henrycogroup.com"
+        }
+      ],
+      "destination": "/workspace"
+    },
+    {
+      "source": "/:path((?!workspace(?:/|$)).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "workspace.henrycogroup.com"
+        }
+      ],
+      "destination": "/workspace/:path*"
+    }
+  ]
 }

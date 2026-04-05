@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
-import ThemeProvider from "@/components/providers/theme-provider";
+import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { getCareSettings } from "@/lib/care-data";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,12 +23,17 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const dir = isRtlLocale(lang) ? "rtl" : "ltr";
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} dir={dir} suppressHydrationWarning>
       <body
         className="min-h-screen bg-white text-zinc-950 antialiased dark:bg-[#08101C] dark:text-white"
       >
+        <HenryCoThemeBlocking />
         <ThemeProvider>
           <Suspense fallback={null}>
             <CareToaster />

@@ -13,19 +13,18 @@ export default async function PricingPage() {
           <div>
             <div className="studio-kicker">Packages and pricing</div>
             <h1 className="studio-heading mt-4 max-w-4xl">
-              Packages create a faster buying path. Bespoke products and custom software still stay first-class.
+              Clear packages for common projects. Custom scoping for everything else.
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-              HenryCo Studio uses packages when a premium delivery lane is already clear. If the work is
-              more complex, more integrated, or more operationally specific, the custom brief path captures
-              the real scope instead of forcing it into the wrong template.
+              Choose a package when the scope is clear, or use the custom brief when your project needs
+              something more specific. Either way, pricing is transparent and you know exactly what you're investing in.
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {[
-              ["Published package lanes", String(catalog.packages.length)],
-              ["Custom-ready service lanes", String(catalog.services.length)],
+              ["Available packages", String(catalog.packages.length)],
+              ["Service areas", String(catalog.services.length)],
             ].map(([label, value]) => (
               <div key={label} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
                 <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{label}</div>
@@ -99,9 +98,9 @@ export default async function PricingPage() {
         </div>
 
         <div className="studio-panel rounded-[2.4rem] p-6 sm:p-8">
-          <div className="studio-kicker">Commercial next move</div>
+          <div className="studio-kicker">Ready to start?</div>
           <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
-            Use a package when it fits. Use the custom brief when the real scope deserves it.
+            Pick a package that fits, or tell us exactly what you need.
           </h2>
           <div className="mt-5 space-y-4">
             {catalog.valueComparisons.slice(0, 2).map((item) => (
@@ -124,7 +123,7 @@ export default async function PricingPage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/services" className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold">
-              Compare service lanes
+              View all services
             </Link>
           </div>
         </div>
@@ -138,7 +137,7 @@ export default async function PricingPage() {
               If the project is larger, more sensitive, or more integrated, Studio will scope it as a custom program.
             </h2>
             <p className="mt-4 text-sm leading-8 text-[var(--studio-ink-soft)]">
-              Enterprise systems, internal transformations, large platform rebuilds, and custom growth stacks should go through the premium brief builder so HenryCo can structure the right delivery model.
+              Enterprise platforms, large-scale rebuilds, and complex integrations benefit from a custom scoping process tailored to your exact requirements.
             </p>
           </div>
           <Link
@@ -146,7 +145,7 @@ export default async function PricingPage() {
             className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-5 py-3 text-sm font-semibold text-[var(--studio-ink)]"
           >
             <Sparkles className="h-4 w-4 text-[var(--studio-signal)]" />
-            Scope an enterprise custom project
+            Start a custom project
           </Link>
         </div>
       </section>

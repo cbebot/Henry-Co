@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireJobsRoles } from "@/lib/auth";
 import { getRecruiterOverviewData } from "@/lib/jobs/data";
 import { recruiterNav } from "@/lib/jobs/navigation";
+import { EmptyState } from "@/components/feedback";
 import { SectionCard, StatTile, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +15,7 @@ export default async function RecruiterOverviewPage() {
     <WorkspaceShell
       area="recruiter"
       title="Recruiter Console"
-      subtitle="Pipeline triage, employers, moderation, and internal hiring queues in one operator-grade Jobs surface linked to HenryCo identity."
+      subtitle="Manage the hiring pipeline, employers, moderation, and candidate queue."
       nav={recruiterNav}
       activeHref="/recruiter"
       accent="linear-gradient(135deg,#1d3f6f 0%,#3266b4 55%,#6db7ff 100%)"
@@ -28,19 +29,27 @@ export default async function RecruiterOverviewPage() {
         </div>
 
         <SectionCard title="Priority queue" actions={<Link href="/recruiter/pipeline" className="text-sm font-semibold text-[var(--jobs-accent)]">Open pipeline</Link>}>
-          <div className="space-y-3">
-            {data.applications.slice(0, 8).map((application) => (
-              <Link key={application.applicationId} href={`/employer/applicants/${application.applicationId}`} className="block rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="font-semibold">{application.candidateName}</div>
-                    <div className="mt-1 text-sm text-[var(--jobs-muted)]">{application.jobTitle} · {application.employerName}</div>
+          {data.applications.length === 0 ? (
+            <EmptyState
+              kicker="No active queue"
+              title="The pipeline is quiet right now."
+              body="New applications, moderation pressure, and hiring movement will appear here as soon as the live system receives them."
+            />
+          ) : (
+            <div className="space-y-3">
+              {data.applications.slice(0, 8).map((application) => (
+                <Link key={application.applicationId} href={`/employer/applicants/${application.applicationId}`} className="block rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-semibold">{application.candidateName}</div>
+                      <div className="mt-1 text-sm text-[var(--jobs-muted)]">{application.jobTitle} · {application.employerName}</div>
+                    </div>
+                    <span className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold capitalize">{application.stage.replace(/[_-]+/g, " ")}</span>
                   </div>
-                  <span className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold">{application.stage}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </SectionCard>
       </div>
     </WorkspaceShell>

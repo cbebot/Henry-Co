@@ -3,9 +3,12 @@ import { createServerClient } from "@supabase/ssr";
 import { getSharedCookieDomain } from "@henryco/config";
 
 export async function proxy(request: NextRequest) {
+  const reqHeaders = new Headers(request.headers);
+  reqHeaders.set("x-learn-return-path", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+
   const response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: reqHeaders,
     },
   });
 

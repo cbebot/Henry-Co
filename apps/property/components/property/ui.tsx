@@ -556,10 +556,10 @@ export function PropertyStatusBadge({ status }: { status: string }) {
   const normalized = status.toLowerCase();
   const tone =
     normalized === "approved" || normalized === "active" || normalized === "completed"
-      ? "border-[rgba(152,179,154,0.36)] bg-[rgba(152,179,154,0.14)] text-[var(--property-sage-soft)]"
+      ? "property-status-badge-positive"
       : normalized === "rejected" || normalized === "cancelled" || normalized === "failed"
-        ? "border-[rgba(191,122,71,0.36)] bg-[rgba(191,122,71,0.16)] text-[var(--property-accent-soft)]"
-        : "border-[var(--property-line)] bg-[rgba(255,255,255,0.04)] text-[var(--property-ink-soft)]";
+        ? "property-status-badge-negative"
+        : "property-status-badge-neutral";
 
   return (
     <span

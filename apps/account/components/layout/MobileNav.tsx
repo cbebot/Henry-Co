@@ -2,21 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X, LogOut, Bell } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, LogOut } from "lucide-react";
 import { getNavSections } from "@/lib/navigation";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
-import { initials } from "@/lib/format";
 import Logo from "@/components/brand/Logo";
+import NotificationBell from "@/components/notifications/NotificationBell";
+import UserAvatar from "@/components/layout/UserAvatar";
 
 type MobileNavProps = {
   user: { fullName: string | null; email: string | null; avatarUrl: string | null };
-  unreadCount: number;
 };
 
-export default function MobileNav({ user, unreadCount }: MobileNavProps) {
+export default function MobileNav({ user }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const sections = getNavSections();
 
   const isActive = (href: string) => {
@@ -25,9 +25,13 @@ export default function MobileNav({ user, unreadCount }: MobileNavProps) {
   };
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseBrowser();
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      cache: "no-store",
+    });
+    router.replace("/login");
+    router.refresh();
   };
 
   return (
@@ -39,17 +43,7 @@ export default function MobileNav({ user, unreadCount }: MobileNavProps) {
           <span className="text-sm font-semibold">My Account</span>
         </div>
         <div className="flex items-center gap-1">
-          <Link
-            href="/notifications"
-            className="relative rounded-lg p-2 text-[var(--acct-muted)] hover:text-[var(--acct-ink)]"
-          >
-            <Bell size={20} />
-            {unreadCount > 0 && (
-              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--acct-red)] px-1 text-[0.55rem] font-bold text-white">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </Link>
+          <NotificationBell buttonClassName="text-[var(--acct-muted)] hover:text-[var(--acct-ink)]" />
           <button
             onClick={() => setOpen(!open)}
             className="rounded-lg p-2 text-[var(--acct-muted)] hover:text-[var(--acct-ink)]"
@@ -69,13 +63,12 @@ export default function MobileNav({ user, unreadCount }: MobileNavProps) {
           <div className="fixed inset-y-0 right-0 z-50 w-[280px] overflow-y-auto bg-[var(--acct-bg-soft)] shadow-2xl acct-scrollbar">
             {/* User header */}
             <div className="flex items-center gap-3 border-b border-[var(--acct-line)] p-4">
-              {user.avatarUrl ? (
-                <img src={user.avatarUrl} alt="" className="h-10 w-10 rounded-full object-cover" />
-              ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-sm font-bold text-[var(--acct-gold)]">
-                  {initials(user.fullName)}
-                </div>
-              )}
+              <UserAvatar
+                name={user.fullName}
+                src={user.avatarUrl}
+                size={40}
+                roundedClassName="rounded-full"
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{user.fullName || "Account"}</p>
                 <p className="truncate text-xs text-[var(--acct-muted)]">{user.email}</p>
@@ -103,11 +96,6 @@ export default function MobileNav({ user, unreadCount }: MobileNavProps) {
                       >
                         <Icon size={18} />
                         <span className="flex-1">{item.label}</span>
-                        {item.label === "Notifications" && unreadCount > 0 && (
-                          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--acct-red)] px-1.5 text-[0.65rem] font-bold text-white">
-                            {unreadCount}
-                          </span>
-                        )}
                       </Link>
                     );
                   })}

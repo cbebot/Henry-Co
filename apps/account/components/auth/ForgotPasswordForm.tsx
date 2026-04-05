@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Loader2 } from "lucide-react";
 
 export default function ForgotPasswordForm() {
@@ -23,12 +24,12 @@ export default function ForgotPasswordForm() {
       );
 
       if (resetError) {
-        setError(resetError.message);
+        setError(mapAccountAuthMessage(resetError.message, "forgot_password"));
         return;
       }
       setSent(true);
     } catch {
-      setError("Something went wrong");
+      setError("We couldn't send the reset link right now. Please try again.");
     } finally {
       setLoading(false);
     }

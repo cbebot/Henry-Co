@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
   --font-jobs-sans:
     "Manrope",
     "Aptos",
@@ -37,6 +38,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --jobs-bg: #081316;
   --jobs-paper: rgba(12, 24, 28, 0.94);
   --jobs-paper-soft: rgba(13, 26, 30, 0.78);
@@ -98,6 +100,32 @@ textarea {
 
 .jobs-page {
   min-height: 100vh;
+}
+
+.jobs-shell .jobs-main {
+  width: 100%;
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2.5rem) clamp(2.5rem, 5vw, 4rem);
+}
+
+.jobs-shell {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(14, 124, 134, 0.14), transparent 42%),
+    radial-gradient(circle at 88% 8%, rgba(184, 138, 71, 0.1), transparent 38%);
+}
+
+.jobs-public-header {
+  border-color: var(--jobs-line) !important;
+  background: color-mix(in srgb, var(--jobs-paper) 85%, transparent) !important;
+}
+
+.dark .jobs-public-header {
+  background: color-mix(in srgb, var(--jobs-paper) 78%, transparent) !important;
+}
+
+.jobs-sticky-subnav {
+  background: color-mix(in srgb, var(--jobs-paper) 88%, transparent);
 }
 
 .jobs-grid {
@@ -219,6 +247,12 @@ textarea {
 .jobs-textarea:focus {
   border-color: color-mix(in srgb, var(--jobs-accent) 60%, white);
   box-shadow: 0 0 0 4px rgba(14, 124, 134, 0.12);
+}
+
+.jobs-select option,
+select.jobs-select option {
+  background-color: var(--jobs-paper);
+  color: var(--jobs-ink);
 }
 
 .jobs-sidebar-link {

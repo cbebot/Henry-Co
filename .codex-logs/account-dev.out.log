@@ -1,0 +1,17 @@
+
+> @henryco/account@0.1.0 dev C:\Users\HP VICTUS\HenryCo\apps\account
+> next dev -p 3003
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3003
+- Network:       http://192.168.1.159:3003
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 5.4s
+ GET /login 200 in 2.7s (compile: 2.2s, proxy.ts: 149ms, render: 288ms)
+○ Compiling /care ...
+ GET /care 200 in 17.6s (compile: 3.4s, proxy.ts: 3.4s, render: 10.8s)
+ GET /care 200 in 8.3s (compile: 132ms, proxy.ts: 1731ms, render: 6.5s)
+✓ Finished writing to filesystem cache in 25.0s
+ GET /care 200 in 7.7s (compile: 309ms, proxy.ts: 2.3s, render: 5.2s)

@@ -6,6 +6,8 @@ export type JobsRole =
   | "owner"
   | "moderator";
 
+export type StageTone = "neutral" | "good" | "warn" | "danger";
+
 export type JobsViewer = {
   user: {
     id: string;
@@ -120,6 +122,8 @@ export type JobPost = {
   isPublished: boolean;
   moderationStatus: "approved" | "pending_review" | "flagged" | "draft";
   employerVerification: string;
+  employerTrustScore: number;
+  employerResponseSlaHours: number | null;
   trustHighlights: string[];
   pipelineStages: string[];
   postedAt: string;
@@ -174,6 +178,62 @@ export type JobsNotification = {
   actionLabel: string | null;
   isRead: boolean;
   createdAt: string;
+};
+
+export type ProfileChecklistItem = {
+  id: string;
+  label: string;
+  detail: string;
+  complete: boolean;
+  href: string;
+};
+
+export type CandidateNextAction = {
+  id: string;
+  label: string;
+  body: string;
+  href: string;
+  tone: StageTone;
+};
+
+export type JobRecommendation = {
+  job: JobPost;
+  score: number;
+  reason: string;
+};
+
+export type RecruiterActivity = {
+  id: string;
+  title: string;
+  body: string;
+  createdAt: string;
+  href: string | null;
+  tone: StageTone;
+  source: "notification" | "timeline" | "thread";
+};
+
+export type ApplicationStageStep = {
+  key: string;
+  label: string;
+  status: "done" | "current" | "upcoming";
+};
+
+export type ApplicationJourney = {
+  application: JobApplication;
+  job: JobPost | null;
+  thread: ConversationThread | null;
+  timeline: TimelineEvent[];
+  sharedMessages: ConversationMessage[];
+  pipeline: ApplicationStageStep[];
+  stageTone: StageTone;
+  stageLabel: string;
+  progressPercent: number;
+  latestSharedUpdate: RecruiterActivity | null;
+  recruiterActionLabel: string;
+  recruiterActionBody: string;
+  recruiterActionAt: string | null;
+  nextStepLabel: string;
+  nextStepBody: string;
 };
 
 export type TimelineEvent = {
@@ -233,4 +293,20 @@ export type JobsHomeData = {
   categories: Array<{ slug: string; name: string; count: number }>;
   differentiators: Differentiator[];
   stats: Array<{ label: string; value: string; detail: string }>;
+};
+
+export type CandidateDashboardData = {
+  profile: CandidateProfile | null;
+  documents: CandidateDocument[];
+  applications: JobApplication[];
+  savedJobs: SavedJob[];
+  alerts: JobAlert[];
+  notifications: JobsNotification[];
+  threads: ConversationThread[];
+  pipelineSummary: Record<string, number>;
+  applicationJourneys: ApplicationJourney[];
+  nextActions: CandidateNextAction[];
+  profileChecklist: ProfileChecklistItem[];
+  recommendedJobs: JobRecommendation[];
+  recruiterFeed: RecruiterActivity[];
 };

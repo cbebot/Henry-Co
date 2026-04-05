@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDivisionConfig } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import {
   extractEmailAddress,
   formatCurrency,
@@ -776,6 +776,48 @@ export async function sendPaymentReminderNotification(input: {
       `Bank: ${platform.paymentBankName || "Pending"}`,
       `Account number: ${platform.paymentAccountNumber || "Pending"}`,
       `Project workspace: ${projectUrl}`,
+    ].join("\n"),
+  });
+}
+
+export async function sendSupportReplyNotification(input: {
+  threadId: string;
+  email?: string | null;
+  phone?: string | null;
+  subject: string;
+  body: string;
+}) {
+  const supportUrl = getAccountUrl(`/support/${input.threadId}`);
+
+  await renderAndSendEmail({
+    to: input.email,
+    entityId: input.threadId,
+    templateKey: "support_reply",
+    layout: {
+      subject: `Support reply • ${input.subject}`,
+      eyebrow: "Support reply",
+      title: "HenryCo Studio replied to your support request.",
+      intro:
+        "Your support conversation has a new reply. The thread remains attached to your HenryCo support history so payment, delivery, and project clarification stay in one place.",
+      sections: [
+        { label: "Subject", value: input.subject },
+        { label: "Reply", value: input.body },
+      ],
+      actionLabel: "Open support thread",
+      actionHref: supportUrl,
+    },
+  });
+
+  await sendWhatsApp({
+    phone: input.phone,
+    entityId: input.threadId,
+    templateKey: "support_reply",
+    subject: "Support reply",
+    body: [
+      "HenryCo Studio support replied to your thread.",
+      input.subject,
+      input.body,
+      `Open thread: ${supportUrl}`,
     ].join("\n"),
   });
 }

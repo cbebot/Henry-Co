@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { requireOwner } from "@/app/lib/owner-auth";
+import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
+import {
+  INTERNAL_COMMS_UNAVAILABLE,
+  isInternalCommsStorageError,
+  logInternalCommsError,
+} from "@/app/lib/internal-comms-errors";
+import {
+  canReadThreadFast,
+  loadThreadAccessContext,
+  type ThreadAccessRow,
+} from "@/app/lib/internal-comms-access";
 
 export const runtime = "nodejs";
 
@@ -24,6 +35,7 @@ const SEED_THREADS: Array<{
   kind: string;
   title: string;
   division: string | null;
+  visibility: "all_owners" | "members_only";
   welcome: string;
 }> = [
   {
@@ -31,6 +43,7 @@ const SEED_THREADS: Array<{
     kind: "broadcast",
     title: "Owner & leadership",
     division: null,
+    visibility: "all_owners",
     welcome:
       "Owner and authorized leadership channel. Customer-facing pages never expose this thread.",
   },
@@ -39,6 +52,7 @@ const SEED_THREADS: Array<{
     kind: "group",
     title: "Division council",
     division: null,
+    visibility: "all_owners",
     welcome: "Cross-division coordination for managers and owners.",
   },
   {
@@ -46,6 +60,7 @@ const SEED_THREADS: Array<{
     kind: "group",
     title: "Marketplace risk & payouts",
     division: "marketplace",
+    visibility: "all_owners",
     welcome: "Escalations for payouts, fraud signals, and seller risk.",
   },
   {
@@ -53,6 +68,7 @@ const SEED_THREADS: Array<{
     kind: "announcement",
     title: "Company announcements",
     division: null,
+    visibility: "all_owners",
     welcome: "Broadcast-style updates. Reply in threads when clarification is needed.",
   },
 ];
@@ -60,21 +76,32 @@ const SEED_THREADS: Array<{
 export async function GET(request: Request) {
   const auth = await requireOwner();
   if (!auth.ok) {
-    return NextResponse.json({ error: "Access denied." }, { status: 403 });
+    return ownerAuthDeniedResponse(auth);
   }
 
   const url = new URL(request.url);
   const q = url.searchParams.get("q")?.trim().toLowerCase() || "";
 
   const admin = createAdminSupabase();
+  const accessCtx = await loadThreadAccessContext(admin, auth.user.id);
 
   const { data: existingRows, error: listError } = await admin
     .from("hq_internal_comm_threads")
-    .select("id, slug, kind, title, division, created_at, updated_at")
+    .select("id, slug, kind, title, division, visibility, created_at, updated_at")
     .order("created_at", { ascending: true });
 
   if (listError) {
-    return NextResponse.json({ error: listError.message, threads: [] }, { status: 200 });
+    logInternalCommsError("threads/list", listError);
+    if (isInternalCommsStorageError(listError)) {
+      return NextResponse.json(
+        { threads: [], degraded: true, message: INTERNAL_COMMS_UNAVAILABLE },
+        { status: 200 }
+      );
+    }
+    return NextResponse.json(
+      { threads: [], degraded: true, message: "Internal channels could not be loaded. Try again shortly." },
+      { status: 200 }
+    );
   }
 
   let threads = Array.isArray(existingRows) ? existingRows : [];
@@ -89,8 +116,9 @@ export async function GET(request: Request) {
         kind: seed.kind,
         title: seed.title,
         division: seed.division,
+        visibility: seed.visibility,
       })
-      .select("id, slug, kind, title, division, created_at, updated_at")
+      .select("id, slug, kind, title, division, visibility, created_at, updated_at")
       .maybeSingle();
 
     if (insertError) {
@@ -107,6 +135,8 @@ export async function GET(request: Request) {
       });
     }
   }
+
+  threads = threads.filter((t) => canReadThreadFast(t as ThreadAccessRow, accessCtx));
 
   if (q) {
     threads = threads.filter(
@@ -142,7 +172,7 @@ export async function GET(request: Request) {
     const lastRead = member?.last_read_at || "1970-01-01T00:00:00.000Z";
 
     let unread = 0;
-    if (membersAvailable) {
+    if (membersAvailable && member) {
       const { count, error: countError } = await admin
         .from("hq_internal_comm_messages")
         .select("id", { count: "exact", head: true })
@@ -170,7 +200,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const auth = await requireOwner();
   if (!auth.ok) {
-    return NextResponse.json({ error: "Access denied." }, { status: 403 });
+    return ownerAuthDeniedResponse(auth);
   }
 
   let body: {
@@ -202,13 +232,16 @@ export async function POST(request: Request) {
   const admin = createAdminSupabase();
   const { data: existing } = await admin
     .from("hq_internal_comm_threads")
-    .select("id, slug, kind, title, division, created_at, updated_at")
+    .select("id, slug, kind, title, division, visibility, created_at, updated_at")
     .eq("slug", slug)
     .maybeSingle();
 
   if (existing) {
     return NextResponse.json({ thread: existing, existing: true });
   }
+
+  const visibility =
+    kind === "broadcast" || kind === "announcement" ? "all_owners" : "members_only";
 
   const { data: inserted, error } = await admin
     .from("hq_internal_comm_threads")
@@ -217,12 +250,17 @@ export async function POST(request: Request) {
       kind,
       title,
       division,
+      visibility,
     })
-    .select("id, slug, kind, title, division, created_at, updated_at")
+    .select("id, slug, kind, title, division, visibility, created_at, updated_at")
     .maybeSingle();
 
   if (error || !inserted) {
-    return NextResponse.json({ error: error?.message || "Could not create thread." }, { status: 400 });
+    logInternalCommsError("threads/create", error);
+    if (error && isInternalCommsStorageError(error)) {
+      return NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 });
+    }
+    return NextResponse.json({ error: "Could not create thread." }, { status: 400 });
   }
 
   await admin.from("hq_internal_comm_thread_members").upsert(

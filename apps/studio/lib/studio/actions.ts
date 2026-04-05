@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
+import { withStudioToast } from "@/lib/studio/redirect-with-toast";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import {
   getStudioViewer,
@@ -10,6 +11,8 @@ import {
 } from "@/lib/studio/auth";
 import { getProjectWorkspace } from "@/lib/studio/data";
 import { getStudioSnapshot } from "@/lib/studio/store";
+import { normalizeStudioRequestConfig } from "@/lib/studio/request-config";
+import type { StudioDomainIntent, StudioRole } from "@/lib/studio/types";
 import {
   addDeliverable,
   appendProjectMessage,
@@ -21,6 +24,7 @@ import {
   publishReview,
   saveStudioPackage,
   saveStudioPlatformSettings,
+  saveStudioRequestConfig,
   saveStudioService,
   saveStudioTeam,
   setLeadStatus,
@@ -49,14 +53,37 @@ function asBoolean(formData: FormData, key: string) {
   return value === "on" || value === "true";
 }
 
-const studioStaffRoles = [
+function parseDomainIntentFromForm(raw: string | null | undefined): StudioDomainIntent | null {
+  if (!raw) return null;
+  try {
+    const o = JSON.parse(raw) as Record<string, unknown>;
+    const path = o.path;
+    if (path !== "new" && path !== "have" && path !== "later") return null;
+    return {
+      path,
+      desiredLabel: String(o.desiredLabel ?? ""),
+      backupLabel: o.backupLabel != null ? String(o.backupLabel) : undefined,
+      checkedFqdn: o.checkedFqdn ? String(o.checkedFqdn) : null,
+      checkStatus: String(o.checkStatus ?? ""),
+      suggestionsShown: Array.isArray(o.suggestionsShown)
+        ? (o.suggestionsShown as unknown[]).map((x) => String(x))
+        : [],
+      lookupMode: String(o.lookupMode ?? "off"),
+      lastMessage: o.lastMessage != null ? String(o.lastMessage) : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+const studioStaffRoles: StudioRole[] = [
   "studio_owner",
   "sales_consultation",
   "project_manager",
   "developer_designer",
   "client_success",
   "finance",
-] as const;
+];
 
 async function requireProjectWorkspaceAccess(
   projectId: string,
@@ -133,13 +160,18 @@ export async function submitStudioBriefAction(formData: FormData) {
     inspirationSummary: String(formData.get("inspirationSummary") || "") || null,
     depositNow: String(formData.get("depositNow") || "") === "on",
     files,
+    domainIntent: parseDomainIntentFromForm(String(formData.get("domainIntentJson") || "")),
   });
 
   if (result.project) {
-    redirect(`/project/${result.project.id}?access=${result.project.accessKey}`);
+    redirect(
+      withStudioToast(`/project/${result.project.id}?access=${result.project.accessKey}`, "brief_submitted")
+    );
   }
 
-  redirect(`/proposals/${result.proposal.id}?access=${result.proposal.accessKey}`);
+  redirect(
+    withStudioToast(`/proposals/${result.proposal.id}?access=${result.proposal.accessKey}`, "brief_submitted")
+  );
 }
 
 export async function uploadPaymentProofAction(formData: FormData) {
@@ -149,12 +181,12 @@ export async function uploadPaymentProofAction(formData: FormData) {
   const proof = formData.get("proof");
 
   if (!paymentId || !(proof instanceof File) || proof.size === 0) {
-    redirect(redirectPath);
+    redirect(withStudioToast(redirectPath, "proof_required"));
   }
 
   await requirePaymentWorkspaceAccess(paymentId, accessKey, redirectPath);
   await attachPaymentProof(paymentId, proof);
-  redirect(redirectPath);
+  redirect(withStudioToast(redirectPath, "proof_uploaded"));
 }
 
 export async function createProjectFromProposalAction(formData: FormData) {
@@ -163,7 +195,7 @@ export async function createProjectFromProposalAction(formData: FormData) {
   if (!proposalId) redirect("/sales");
 
   const project = await createProjectFromProposal(proposalId);
-  redirect(`/project/${project.id}?access=${project.accessKey}`);
+  redirect(withStudioToast(`/project/${project.id}?access=${project.accessKey}`, "brief_submitted"));
 }
 
 export async function appendProjectMessageAction(formData: FormData) {
@@ -177,7 +209,7 @@ export async function appendProjectMessageAction(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   const { viewer } = await requireProjectWorkspaceAccess(projectId, accessKey, redirectPath);
-  const isStaffSender = viewerHasRole(viewer, [...studioStaffRoles]);
+  const isStaffSender = viewerHasRole(viewer, studioStaffRoles);
 
   await appendProjectMessage({
     projectId,
@@ -190,7 +222,7 @@ export async function appendProjectMessageAction(formData: FormData) {
     isInternal: isStaffSender && String(formData.get("isInternal") || "") === "on",
   });
 
-  redirect(redirectPath);
+  redirect(withStudioToast(redirectPath, "message_sent"));
 }
 
 export async function createRevisionAction(formData: FormData) {
@@ -203,10 +235,10 @@ export async function createRevisionAction(formData: FormData) {
   await createRevision({
     projectId,
     summary: String(formData.get("summary") || ""),
-    requestedBy: viewerHasRole(viewer, [...studioStaffRoles]) ? "team" : "client",
+    requestedBy: viewerHasRole(viewer, studioStaffRoles) ? "team" : "client",
   });
 
-  redirect(redirectPath);
+  redirect(withStudioToast(redirectPath, "revision_logged"));
 }
 
 export async function completeRevisionAction(formData: FormData) {
@@ -231,7 +263,7 @@ export async function setMilestoneStatusAction(formData: FormData) {
   if (!projectId || !milestoneId) redirect(redirectPath);
 
   await setMilestoneStatus({ projectId, milestoneId, status });
-  redirect(redirectPath);
+  redirect(withStudioToast(redirectPath, "milestone_advanced"));
 }
 
 export async function setPaymentStatusAction(formData: FormData) {
@@ -247,7 +279,7 @@ export async function setPaymentStatusAction(formData: FormData) {
   if (!paymentId) redirect(redirectPath);
 
   await setPaymentStatus({ paymentId, status });
-  redirect(redirectPath);
+  redirect(withStudioToast(redirectPath, "payment_marked"));
 }
 
 export async function addDeliverableAction(formData: FormData) {
@@ -267,7 +299,7 @@ export async function addDeliverableAction(formData: FormData) {
     files,
   });
 
-  redirect(redirectPath);
+  redirect(withStudioToast(redirectPath, "deliverable_shared"));
 }
 
 export async function publishReviewAction(formData: FormData) {
@@ -285,7 +317,7 @@ export async function publishReviewAction(formData: FormData) {
     company: String(formData.get("company") || ""),
   });
 
-  redirect(redirectPath);
+  redirect(withStudioToast(redirectPath, "review_published"));
 }
 
 export async function setLeadStatusAction(formData: FormData) {
@@ -341,7 +373,7 @@ export async function createProjectUpdateAction(formData: FormData) {
     summary: String(formData.get("summary") || ""),
     notifyClient: asBoolean(formData, "notifyClient"),
   });
-  redirect(redirectPath);
+  redirect(withStudioToast(redirectPath, "update_logged"));
 }
 
 export async function saveStudioServiceAction(formData: FormData) {
@@ -417,4 +449,24 @@ export async function saveStudioPlatformSettingsAction(formData: FormData) {
     process: asCsvList(formData, "process"),
   });
   redirect(String(formData.get("redirectPath") || "/owner"));
+}
+
+export async function saveStudioRequestConfigAction(formData: FormData) {
+  await requireStudioRoles(["studio_owner"], "/owner");
+  const redirectPath = String(formData.get("redirectPath") || "/owner");
+  const payload = String(formData.get("payload") || "").trim();
+
+  if (!payload) {
+    redirect(redirectPath);
+  }
+
+  let parsed: unknown = null;
+  try {
+    parsed = JSON.parse(payload);
+  } catch {
+    redirect(redirectPath);
+  }
+
+  await saveStudioRequestConfig(normalizeStudioRequestConfig(parsed));
+  redirect(redirectPath);
 }

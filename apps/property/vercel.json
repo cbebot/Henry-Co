@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter @henryco/property build",
+  "installCommand": "node ../../scripts/vercel/pnpm.mjs install",
+  "buildCommand": "node ../../scripts/vercel/pnpm.mjs build @henryco/property",
   "crons": [
     {
       "path": "/api/cron/property-automation",

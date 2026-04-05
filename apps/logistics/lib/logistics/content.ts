@@ -251,6 +251,23 @@ export const DEFAULT_LOGISTICS_ZONES: LogisticsZone[] = [
   },
 ];
 
+export const TIMELINE_LABELS: Record<string, string> = {
+  quote_requested: "Quote requested",
+  quoted: "Quoted",
+  awaiting_payment: "Awaiting payment",
+  booked: "Booked",
+  assigned: "Rider assigned",
+  pickup_confirmed: "Picked up",
+  in_transit: "In transit",
+  delayed: "Delayed",
+  attempted_delivery: "Delivery attempted",
+  delivered: "Delivered",
+  failed_delivery: "Delivery failed",
+  return_initiated: "Return started",
+  returned: "Returned",
+  cancelled: "Cancelled",
+};
+
 export const TIMELINE_DESCRIPTIONS: Record<string, string> = {
   quote_requested: "Shipment intent has been captured and is waiting for pricing validation.",
   quoted: "Pricing is ready and the shipment can move into booking when approved.",

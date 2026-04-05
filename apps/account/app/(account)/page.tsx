@@ -1,27 +1,80 @@
 import Link from "next/link";
 import {
   Wallet,
-  Activity,
   Bell,
   ArrowUpRight,
-  CreditCard,
+  BriefcaseBusiness,
   ShoppingBag,
   Sparkles,
   Palette,
   LifeBuoy,
   ChevronRight,
   TrendingUp,
+  ShieldCheck,
 } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
-import { getDashboardSummary } from "@/lib/account-data";
+import { getDashboardSummary, getWalletFundingContext } from "@/lib/account-data";
+import { activityMessageHref } from "@/lib/notification-center";
 import { formatNaira, timeAgo, divisionLabel, divisionColor } from "@/lib/format";
+import { getAccountTrustProfile, getTrustTierLabel } from "@/lib/trust";
 import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 
 export default async function OverviewPage() {
   const user = await requireAccountUser();
-  const data = await getDashboardSummary(user.id);
+  const [data, funding, trust] = await Promise.all([
+    getDashboardSummary(user.id),
+    getWalletFundingContext(user.id),
+    getAccountTrustProfile(user.id),
+  ]);
+
+  const attention = [
+    funding.pending_kobo > 0
+      ? {
+          label: "Pending wallet verification",
+          detail: `${formatNaira(funding.pending_kobo)} is still waiting for finance confirmation.`,
+          href: "/wallet/funding",
+          tone: "var(--acct-blue)",
+          icon: ShieldCheck,
+        }
+      : null,
+    data.unreadNotificationCount > 0
+      ? {
+          label: "Unread notifications",
+          detail: `${data.unreadNotificationCount} update${data.unreadNotificationCount === 1 ? "" : "s"} are still waiting for you.`,
+          href: "/notifications",
+          tone: "var(--acct-gold)",
+          icon: Bell,
+        }
+      : null,
+    data.activeSubscriptions.length > 0
+      ? {
+          label: "Active plans in motion",
+          detail: `${data.activeSubscriptions.length} subscription${data.activeSubscriptions.length === 1 ? "" : "s"} are currently running.`,
+          href: "/subscriptions",
+          tone: "var(--acct-purple)",
+          icon: TrendingUp,
+        }
+      : null,
+    trust.nextTier
+      ? {
+          label: `Unlock ${getTrustTierLabel(trust.nextTier)}`,
+          detail:
+            trust.requirements[0] ||
+            "Your next trust tier needs stronger verification and cleaner account history.",
+          href: "/security",
+          tone: "var(--acct-red)",
+          icon: ShieldCheck,
+        }
+      : null,
+  ].filter(Boolean) as Array<{
+    label: string;
+    detail: string;
+    href: string;
+    tone: string;
+    icon: typeof Bell;
+  }>;
 
   const quickActions = [
     { href: "/wallet", label: "Add money", icon: Wallet, color: "var(--acct-green)" },
@@ -39,7 +92,7 @@ export default async function OverviewPage() {
       />
 
       {/* Metric cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {/* Wallet */}
         <Link href="/wallet" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
@@ -50,7 +103,7 @@ export default async function OverviewPage() {
             {formatNaira(data.wallet.balance_kobo)}
           </p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Ecosystem wallet &middot; Use across all divisions
+            Shared wallet &middot; Use across HenryCo services
           </p>
         </Link>
 
@@ -81,7 +134,55 @@ export default async function OverviewPage() {
             {data.activeSubscriptions.length === 0 ? "No active plans" : "Active plans"}
           </p>
         </Link>
+
+        <Link href="/security" className="acct-metric group transition-shadow hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <p className="acct-kicker">Trust Tier</p>
+            <ShieldCheck size={18} className="text-[var(--acct-blue)]" />
+          </div>
+          <p className="mt-2 text-xl font-bold text-[var(--acct-ink)]">
+            {getTrustTierLabel(trust.tier)}
+          </p>
+          <p className="mt-1 text-xs text-[var(--acct-muted)]">
+            Score {trust.score} · {trust.flags.jobsPostingEligible ? "Business actions unlocked" : "More verification needed"}
+          </p>
+        </Link>
       </div>
+
+      {attention.length > 0 ? (
+        <section className="acct-card p-5">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <p className="acct-kicker">What Needs Your Attention</p>
+              <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
+                In progress, waiting on you, or still unresolved
+              </h2>
+            </div>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {attention.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4 transition hover:border-[var(--acct-gold)]/30 hover:shadow-md"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{item.label}</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{item.detail}</p>
+                  </div>
+                  <div
+                    className="flex h-10 w-10 items-center justify-center rounded-2xl"
+                    style={{ backgroundColor: `${item.tone}18`, color: item.tone }}
+                  >
+                    <item.icon size={18} />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* Quick actions */}
       <section className="acct-card p-5">
@@ -125,9 +226,10 @@ export default async function OverviewPage() {
               </p>
             ) : (
               data.recentActivity.map((item: Record<string, string>) => (
-                <div
+                <Link
                   key={item.id}
-                  className="flex items-start gap-3 rounded-xl bg-[var(--acct-surface)] p-3"
+                  href={activityMessageHref(String(item.id || ""))}
+                  className="flex items-start gap-3 rounded-xl bg-[var(--acct-surface)] p-3 transition hover:bg-[var(--acct-bg-elevated)]"
                 >
                   <div
                     className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
@@ -141,7 +243,7 @@ export default async function OverviewPage() {
                       {divisionLabel(item.division)} &middot; {timeAgo(item.created_at)}
                     </p>
                   </div>
-                </div>
+                </Link>
               ))
             )}
           </div>
@@ -164,21 +266,38 @@ export default async function OverviewPage() {
                 No notifications yet
               </p>
             ) : (
-              data.recentNotifications.map((n: Record<string, string>) => (
-                <div
-                  key={n.id}
-                  className={`rounded-xl p-3 ${
-                    n.is_read === "false" || !n.is_read
+              data.recentNotifications.map((n: Record<string, unknown>) => (
+                <Link
+                  key={String(n.id)}
+                  href={String((n as { message_href?: string }).message_href || "/notifications")}
+                  className={`block rounded-xl p-3 transition hover:bg-[var(--acct-bg-elevated)] ${
+                    !n.is_read
                       ? "border border-[var(--acct-gold)]/20 bg-[var(--acct-gold-soft)]"
                       : "bg-[var(--acct-surface)]"
                   }`}
                 >
-                  <p className="text-sm font-medium text-[var(--acct-ink)]">{n.title}</p>
-                  <p className="mt-0.5 text-xs text-[var(--acct-muted)] line-clamp-2">{n.body}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className="rounded-full px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em]"
+                      style={{
+                        backgroundColor: `${(n.source as { accent?: string })?.accent || "var(--acct-gold)"}18`,
+                        color: (n.source as { accent?: string })?.accent || "var(--acct-gold)",
+                      }}
+                    >
+                      {(n.source as { label?: string })?.label || divisionLabel(String(n.category || "account"))}
+                    </span>
+                    {!n.is_read ? (
+                      <span className="rounded-full bg-[var(--acct-red-soft)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-red)]">
+                        Unread
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-3 text-sm font-medium text-[var(--acct-ink)]">{String(n.title || "")}</p>
+                  <p className="mt-0.5 text-xs text-[var(--acct-muted)] line-clamp-2">{String(n.body || "")}</p>
                   <p className="mt-1 text-[0.65rem] text-[var(--acct-muted)]">
-                    {timeAgo(n.created_at)}
+                    {timeAgo(String(n.created_at || ""))}
                   </p>
-                </div>
+                </Link>
               ))
             )}
           </div>
@@ -192,6 +311,7 @@ export default async function OverviewPage() {
           {[
             { key: "care", label: "Care", desc: "Fabric care, cleaning & upkeep", icon: Sparkles, href: "/care" },
             { key: "marketplace", label: "Marketplace", desc: "Shop products & sell online", icon: ShoppingBag, href: "/marketplace" },
+            { key: "jobs", label: "Jobs", desc: "Applications, saved roles & recruiter updates", icon: BriefcaseBusiness, href: "/jobs" },
             { key: "studio", label: "Studio", desc: "Creative & design services", icon: Palette, href: "/studio" },
           ].map((svc) => (
             <Link

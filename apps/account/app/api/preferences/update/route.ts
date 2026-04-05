@@ -1,34 +1,26 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
-import { cookies } from "next/headers";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { ensureAccountProfileRecords } from "@/lib/account-profile";
+import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
 
 const ALLOWED_FIELDS = [
   "email_marketing", "email_transactional", "email_digest", "push_enabled",
   "sms_enabled", "notification_care", "notification_marketplace",
   "notification_studio", "notification_wallet", "notification_security", "theme",
+  "whatsapp_enabled", "notification_jobs", "notification_learn",
+  "notification_property", "notification_logistics", "default_division",
 ];
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll(); },
-          setAll(tokens) {
-            for (const { name, value, options } of tokens) {
-              try { cookieStore.set(name, value, options); } catch {}
-            }
-          },
-        },
-      }
-    );
-
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabase = await createSupabaseServer();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    await ensureAccountProfileRecords(user);
 
     const body = await request.json();
 
@@ -41,13 +33,16 @@ export async function POST(request: Request) {
     const admin = createAdminSupabase();
     const { error } = await admin
       .from("customer_preferences")
-      .update(updates)
-      .eq("user_id", user.id);
+      .upsert({ user_id: user.id, ...updates }, { onConflict: "user_id" });
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      logApiError("preferences/update", error);
+      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  } catch (error) {
+    logApiError("preferences/update", error);
+    return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
   }
 }

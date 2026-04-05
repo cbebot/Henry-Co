@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
+import { reconcileStudioSharedPendingSyncs } from "@/lib/studio/shared-account";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import type { StudioRole, StudioViewer } from "@/lib/studio/types";
@@ -11,6 +12,7 @@ import type { StudioRole, StudioViewer } from "@/lib/studio/types";
 type SharedProfile = {
   full_name: string | null;
   role?: string | null;
+  avatar_url?: string | null;
 };
 
 type MembershipRow = {
@@ -74,9 +76,17 @@ export async function getStudioViewer(): Promise<StudioViewer> {
   const admin = createAdminSupabase();
   const normalized = normalizeEmail(user.email);
 
+  if (normalized) {
+    await reconcileStudioSharedPendingSyncs({
+      email: normalized,
+      userId: user.id,
+      limit: 100,
+    }).catch(() => null);
+  }
+
   const { data: profile } = await admin
     .from("profiles")
-    .select("full_name, role")
+    .select("full_name, role, avatar_url")
     .eq("id", user.id)
     .maybeSingle<SharedProfile>();
 
@@ -117,6 +127,7 @@ export async function getStudioViewer(): Promise<StudioViewer> {
         (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
         (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
         null,
+      avatarUrl: profile?.avatar_url || null,
     },
     normalizedEmail: normalized,
     roles,

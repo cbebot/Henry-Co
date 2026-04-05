@@ -33,7 +33,7 @@ export default async function TrustPage() {
         <PropertyTrustPill
           icon={<Building2 className="h-5 w-5" />}
           title="Managed-property continuity"
-          body="The operating layer can stay involved after the listing, lease, or occupancy event."
+          body="Our property management team stays involved after the listing, lease, or move-in."
         />
         <PropertyTrustPill
           icon={<Sparkles className="h-5 w-5" />}

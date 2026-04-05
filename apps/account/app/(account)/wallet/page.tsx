@@ -7,9 +7,10 @@ import {
   RefreshCcw,
   Gift,
   Clock,
+  ShieldCheck,
 } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
-import { getWalletSummary, getWalletTransactions } from "@/lib/account-data";
+import { getWalletFundingContext, getWalletTransactions } from "@/lib/account-data";
 import { formatNaira, formatDateTime, divisionLabel } from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
@@ -36,19 +37,29 @@ const typeColors: Record<string, string> = {
 
 export default async function WalletPage() {
   const user = await requireAccountUser();
-  const wallet = await getWalletSummary(user.id);
-  const transactions = await getWalletTransactions(user.id, 50);
+  const { wallet, pending_kobo, requests } = await getWalletFundingContext(user.id);
+  const transactions = (await getWalletTransactions(user.id, 50)).filter(
+    (transaction: Record<string, string | number>) =>
+      transaction.reference_type !== "wallet_funding_request" ||
+      transaction.status === "completed" ||
+      transaction.status === "verified"
+  );
 
   return (
     <div className="space-y-6 acct-fade-in">
       <PageHeader
         title="Wallet"
-        description="Your HenryCo ecosystem wallet — usable across all divisions."
+        description="Your HenryCo wallet for payments across Care, Marketplace, Studio, and more."
         icon={Wallet}
         actions={
-          <Link href="/wallet/add" className="acct-button-primary rounded-xl">
-            <Plus size={16} /> Add money
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/wallet/funding" className="acct-button-primary rounded-xl">
+              <Plus size={16} /> Fund wallet
+            </Link>
+            <Link href="/wallet/withdrawals" className="acct-button-secondary rounded-xl">
+              <ArrowUpRight size={16} /> Withdraw
+            </Link>
+          </div>
         }
       />
 
@@ -58,16 +69,23 @@ export default async function WalletPage() {
           <p className="text-sm font-medium text-white/70">Available balance</p>
           <p className="mt-1 text-4xl font-bold">{formatNaira(wallet.balance_kobo)}</p>
           <p className="mt-2 text-sm text-white/60">
-            HenryCo Wallet &middot; {wallet.currency} &middot; Use anywhere in the ecosystem
+            HenryCo Wallet &middot; {wallet.currency} &middot; Available across HenryCo services
           </p>
         </div>
-        <div className="grid grid-cols-3 divide-x divide-[var(--acct-line)] border-t border-[var(--acct-line)]">
+        <div className="grid grid-cols-2 divide-x divide-[var(--acct-line)] border-t border-[var(--acct-line)] sm:grid-cols-4">
           <Link
-            href="/wallet/add"
+            href="/wallet/funding"
             className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
           >
             <Plus size={18} className="text-[var(--acct-green)]" />
-            <span className="text-xs font-medium">Add money</span>
+            <span className="text-xs font-medium">Fund wallet</span>
+          </Link>
+          <Link
+            href="/wallet/withdrawals"
+            className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
+          >
+            <ArrowDownLeft size={18} className="text-[var(--acct-orange)]" />
+            <span className="text-xs font-medium">Withdraw</span>
           </Link>
           <Link
             href="/payments"
@@ -89,9 +107,9 @@ export default async function WalletPage() {
       {/* Trust cues */}
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          { label: "Instant top-up", desc: "Add money via card, bank transfer or USSD" },
-          { label: "Ecosystem-wide", desc: "Pay for Care, Marketplace, and more" },
-          { label: "Secure & tracked", desc: "Every transaction is logged and verifiable" },
+          { label: "Pending review stays separate", desc: "Funding only moves into available balance after confirmation." },
+          { label: "Works across HenryCo", desc: "Use the same wallet for Care, Marketplace, Studio, and more." },
+          { label: "Secure and traceable", desc: "Every funding request, proof upload, and balance change is recorded." },
         ].map((cue) => (
           <div key={cue.label} className="rounded-xl bg-[var(--acct-surface)] p-4">
             <p className="text-sm font-semibold text-[var(--acct-ink)]">{cue.label}</p>
@@ -99,6 +117,60 @@ export default async function WalletPage() {
           </div>
         ))}
       </div>
+
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="acct-card p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="acct-kicker">Pending funding</p>
+              <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
+                {formatNaira(pending_kobo)}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">
+                Money stays here until transfer proof is uploaded and the HenryCo team confirms the payment.
+              </p>
+            </div>
+            <ShieldCheck className="h-5 w-5 text-[var(--acct-blue)]" />
+          </div>
+          <Link href="/wallet/funding" className="acct-button-secondary mt-5 rounded-xl">
+            Open funding lane
+          </Link>
+        </div>
+
+        <div className="acct-card p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="acct-kicker">Latest funding requests</p>
+              <p className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
+                {requests.length === 0 ? "No funding requests yet" : `${requests.length} request${requests.length === 1 ? "" : "s"} in history`}
+              </p>
+            </div>
+            <Clock className="h-5 w-5 text-[var(--acct-orange)]" />
+          </div>
+          <div className="mt-4 space-y-3">
+            {requests.slice(0, 2).map((request) => (
+              <Link
+                key={request.id}
+                href={`/wallet/funding/${request.id}`}
+                className="block rounded-xl bg-[var(--acct-surface)] px-4 py-3 transition hover:bg-[var(--acct-bg)]"
+              >
+                <p className="text-sm font-semibold text-[var(--acct-ink)]">
+                  {formatNaira(request.amount_kobo)} · {request.reference || request.id}
+                </p>
+                <p className="mt-1 text-xs text-[var(--acct-muted)]">
+                  {request.status.replaceAll("_", " ")}
+                  {request.proof_url ? " · proof uploaded" : " · awaiting proof"}
+                </p>
+              </Link>
+            ))}
+            {requests.length === 0 ? (
+              <p className="text-sm leading-6 text-[var(--acct-muted)]">
+                Create your first funding request to unlock the bank-transfer flow.
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </section>
 
       {/* Transactions */}
       <section className="acct-card p-5">

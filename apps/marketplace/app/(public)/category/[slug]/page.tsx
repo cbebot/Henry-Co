@@ -39,7 +39,7 @@ export default async function CategoryPage({
             {category.filterPresets.map((preset) => (
               <div
                 key={preset}
-                className="rounded-[1.35rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 py-4 text-sm font-medium text-[var(--market-ink)]"
+                className="market-soft rounded-[1.35rem] px-4 py-4 text-sm font-medium text-[var(--market-ink)]"
               >
                 {preset}
               </div>

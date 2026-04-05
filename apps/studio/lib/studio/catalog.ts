@@ -27,6 +27,11 @@ import {
   normalizeStudioPlatformSettings,
   type StudioPlatformSettings,
 } from "@/lib/studio/settings-shared";
+import {
+  defaultStudioRequestConfig,
+  normalizeStudioRequestConfig,
+  type StudioRequestConfig,
+} from "@/lib/studio/request-config";
 import type {
   StudioCaseStudy,
   StudioDifferentiator,
@@ -50,6 +55,7 @@ type StudioCatalog = {
   trustSignals: string[];
   valueComparisons: StudioValueComparison[];
   platform: StudioPlatformSettings;
+  requestConfig: StudioRequestConfig;
 };
 
 type GetStudioCatalogOptions = {
@@ -68,6 +74,7 @@ const TRUST_KEY = "public_trust_signals";
 const COMPARISON_KEY = "public_value_comparisons";
 const DIFFERENTIATOR_KEY = "public_differentiators";
 const CASE_STUDY_KEY = "public_case_studies";
+const REQUEST_CONFIG_KEY = "request_config";
 
 function defaultFaqs(): StudioFaqItem[] {
   return studioFaqs.map((item, index) => ({
@@ -260,6 +267,10 @@ async function ensureCatalogSeeded() {
       key: "platform",
       value: normalizeStudioPlatformSettings(),
     },
+    {
+      key: REQUEST_CONFIG_KEY,
+      value: defaultStudioRequestConfig(),
+    },
   ];
 
   for (const setting of seedSettings) {
@@ -300,6 +311,7 @@ export async function getStudioCatalog(
       trustSignals: studioTrustSignals,
       valueComparisons: studioValueComparisons,
       platform: normalizeStudioPlatformSettings(),
+      requestConfig: defaultStudioRequestConfig(),
     };
   }
 
@@ -339,6 +351,7 @@ export async function getStudioCatalog(
       settingMap.get("platform") as Record<string, unknown> | undefined,
       sharedCompanySettings
     ),
+    requestConfig: normalizeStudioRequestConfig(settingMap.get(REQUEST_CONFIG_KEY)),
   };
 }
 

@@ -9,6 +9,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { timeAgo, formatNaira, divisionLabel, divisionColor } from "@/lib/format";
+import { activityMessageHref, notificationMessageHref } from "@/lib/notification-center";
 import PageHeader from "@/components/layout/PageHeader";
 
 type DivisionModulePageProps = {
@@ -40,10 +41,6 @@ export default function DivisionModulePage({
   const label = divisionLabel(divisionKey);
   const pageTitle = title || label;
 
-  function isExternalHref(value?: string | null) {
-    return Boolean(value && /^https?:\/\//i.test(value));
-  }
-
   return (
     <div className="space-y-6 acct-fade-in">
       <PageHeader
@@ -69,7 +66,7 @@ export default function DivisionModulePage({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((f) => (
           f.href ? (
-            isExternalHref(f.href) ? (
+            /^https?:\/\//i.test(f.href) ? (
               <a
                 key={f.label}
                 href={f.href}
@@ -141,35 +138,18 @@ export default function DivisionModulePage({
           ) : (
             <div className="space-y-2">
               {activity.slice(0, 5).map((item) => (
-                isExternalHref(String(item.action_url || "")) ? (
-                  <a
-                    key={item.id as string}
-                    href={String(item.action_url)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block rounded-xl bg-[var(--acct-surface)] px-3 py-2.5 transition-colors hover:bg-[var(--acct-line)]"
-                  >
-                    <p className="text-sm font-medium text-[var(--acct-ink)]">{item.title}</p>
-                    <p className="mt-0.5 text-xs text-[var(--acct-muted)]">
-                      {item.status ? `${item.status} · ` : ""}
-                      {timeAgo(item.created_at as string)}
-                      {item.amount_kobo ? ` · ${formatNaira(item.amount_kobo as number)}` : ""}
-                    </p>
-                  </a>
-                ) : (
-                  <Link
-                    key={item.id as string}
-                    href={String(item.action_url || "/activity")}
-                    className="block rounded-xl bg-[var(--acct-surface)] px-3 py-2.5 transition-colors hover:bg-[var(--acct-line)]"
-                  >
-                    <p className="text-sm font-medium text-[var(--acct-ink)]">{item.title}</p>
-                    <p className="mt-0.5 text-xs text-[var(--acct-muted)]">
-                      {item.status ? `${item.status} · ` : ""}
-                      {timeAgo(item.created_at as string)}
-                      {item.amount_kobo ? ` · ${formatNaira(item.amount_kobo as number)}` : ""}
-                    </p>
-                  </Link>
-                )
+                <Link
+                  key={item.id as string}
+                  href={activityMessageHref(String(item.id || ""))}
+                  className="block rounded-xl bg-[var(--acct-surface)] px-3 py-2.5 transition-colors hover:bg-[var(--acct-line)]"
+                >
+                  <p className="text-sm font-medium text-[var(--acct-ink)]">{item.title}</p>
+                  <p className="mt-0.5 text-xs text-[var(--acct-muted)]">
+                    {item.status ? `${item.status} · ` : ""}
+                    {timeAgo(item.created_at as string)}
+                    {item.amount_kobo ? ` · ${formatNaira(item.amount_kobo as number)}` : ""}
+                  </p>
+                </Link>
               ))}
             </div>
           )}
@@ -196,35 +176,18 @@ export default function DivisionModulePage({
           ) : (
             <div className="space-y-2">
               {notifications.slice(0, 5).map((n) => (
-                isExternalHref(String(n.action_url || "")) ? (
-                  <a
-                    key={n.id as string}
-                    href={String(n.action_url)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`rounded-xl px-3 py-2.5 ${
-                      !n.is_read ? "bg-[var(--acct-gold-soft)]/50" : "bg-[var(--acct-surface)]"
-                    } block transition-colors hover:bg-[var(--acct-line)]`}
-                  >
-                    <p className="text-sm font-medium text-[var(--acct-ink)]">{n.title}</p>
-                    <p className="mt-0.5 text-xs text-[var(--acct-muted)] line-clamp-1">
-                      {n.body}
-                    </p>
-                  </a>
-                ) : (
-                  <Link
-                    key={n.id as string}
-                    href={String(n.action_url || "/notifications")}
-                    className={`rounded-xl px-3 py-2.5 ${
-                      !n.is_read ? "bg-[var(--acct-gold-soft)]/50" : "bg-[var(--acct-surface)]"
-                    } block transition-colors hover:bg-[var(--acct-line)]`}
-                  >
-                    <p className="text-sm font-medium text-[var(--acct-ink)]">{n.title}</p>
-                    <p className="mt-0.5 text-xs text-[var(--acct-muted)] line-clamp-1">
-                      {n.body}
-                    </p>
-                  </Link>
-                )
+                <Link
+                  key={n.id as string}
+                  href={notificationMessageHref(String(n.id || ""))}
+                  className={`rounded-xl px-3 py-2.5 ${
+                    !n.is_read ? "bg-[var(--acct-gold-soft)]/50" : "bg-[var(--acct-surface)]"
+                  } block transition-colors hover:bg-[var(--acct-line)]`}
+                >
+                  <p className="text-sm font-medium text-[var(--acct-ink)]">{n.title}</p>
+                  <p className="mt-0.5 text-xs text-[var(--acct-muted)] line-clamp-1">
+                    {n.body}
+                  </p>
+                </Link>
               ))}
             </div>
           )}

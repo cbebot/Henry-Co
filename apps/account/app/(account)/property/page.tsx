@@ -1,7 +1,9 @@
+import { redirect } from "next/navigation";
 import { Building2 } from "lucide-react";
 import { getDivisionUrl } from "@henryco/config";
 import { requireAccountUser } from "@/lib/auth";
 import { getDivisionActivity, getDivisionInvoices, getDivisionNotifications, getDivisionSupportThreads } from "@/lib/division-data";
+import { getSavedPropertiesForUser } from "@/lib/property-module";
 import DivisionModulePage from "@/components/divisions/DivisionModulePage";
 
 export const dynamic = "force-dynamic";
@@ -12,15 +14,15 @@ type PropertyPageProps = {
 
 const panelCopy = {
   overview:
-    "Saved properties, inquiries, viewing schedules, and listing submission status all roll into your shared HenryCo account here.",
+    "Saved properties, inquiries, viewing schedules, and listing submissions — all in your account.",
   saved:
-    "Your shortlist history syncs into the shared account layer so property discovery does not disappear when you leave the public listing pages.",
+    "Properties you've saved stay here so you can pick up where you left off.",
   inquiries:
-    "Property inquiries stay visible in the shared account module with the latest support and follow-up context.",
+    "Property inquiries and any follow-up conversations are tracked here.",
   viewings:
-    "Viewing requests and schedules stay attached to your HenryCo account for cleaner coordination across devices and teams.",
+    "Viewing requests and schedules are stored in your account for easy access across devices.",
   listings:
-    "Listing submissions and moderation outcomes stay visible here, while deeper editing continues inside the dedicated Property owner workspace.",
+    "Listing submissions and review outcomes stay visible here, with follow-up coordinated by the HenryCo Property team.",
 } as const;
 
 function countByActivity(
@@ -33,18 +35,22 @@ function countByActivity(
 export default async function PropertyPage({ searchParams }: PropertyPageProps) {
   const user = await requireAccountUser();
   const params = await searchParams;
+  if (params.panel === "saved") {
+    redirect("/property/saved");
+  }
   const activePanel =
     params.panel && params.panel in panelCopy
       ? (params.panel as keyof typeof panelCopy)
       : "overview";
-  const [activity, notifications, supportThreads, invoices] = await Promise.all([
+  const [activity, notifications, supportThreads, invoices, savedProperties] = await Promise.all([
     getDivisionActivity(user.id, "property"),
     getDivisionNotifications(user.id, "property"),
     getDivisionSupportThreads(user.id, "property"),
     getDivisionInvoices(user.id, "property"),
+    getSavedPropertiesForUser(user.id),
   ]);
 
-  const savedCount = countByActivity(activity, ["property_saved"]);
+  const savedCount = savedProperties.length;
   const inquiryCount = countByActivity(activity, ["property_inquiry"]);
   const viewingCount = countByActivity(activity, ["property_viewing_requested"]);
   const listingCount = countByActivity(activity, [
@@ -78,8 +84,8 @@ export default async function PropertyPage({ searchParams }: PropertyPageProps) 
       features={[
         {
           label: `Saved properties · ${savedCount}`,
-          description: "Shortlist activity captured from HenryCo Property discovery.",
-          href: "/property?panel=saved",
+          description: "Real saved listings synced from HenryCo Property, with compare and inquiry actions.",
+          href: "/property/saved",
         },
         {
           label: `Inquiries · ${inquiryCount}`,
@@ -93,7 +99,7 @@ export default async function PropertyPage({ searchParams }: PropertyPageProps) 
         },
         {
           label: `Listing status · ${listingCount}`,
-          description: "Submission and moderation history for owner or agent activity.",
+          description: "Submission and moderation history for your property listing activity.",
           href: "/property?panel=listings",
         },
         {
@@ -102,9 +108,9 @@ export default async function PropertyPage({ searchParams }: PropertyPageProps) 
           href: "/support",
         },
         {
-          label: "Owner workspace",
-          description: "Open the dedicated Property workspace to submit or update listings.",
-          href: `${propertyOrigin}/owner`,
+          label: "Open Property site",
+          description: "Continue discovery, inquiries, and listing activity on the public Property experience.",
+          href: propertyOrigin,
         },
       ]}
     />

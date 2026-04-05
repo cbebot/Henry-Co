@@ -144,7 +144,7 @@ export function SellerApplicationWizard({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[1.9rem] border border-[var(--market-line-strong)] bg-[var(--market-paper-white)] p-5 shadow-[0_20px_52px_rgba(28,24,18,0.06)]">
+      <div className="market-panel rounded-[1.9rem] p-5">
         <div className="flex flex-wrap items-center gap-3">
           {stepOrder.map((item, index) => (
             <div
@@ -172,7 +172,7 @@ export function SellerApplicationWizard({
         ) : null}
       </div>
 
-      <div className="rounded-[2rem] border border-[var(--market-line-strong)] bg-[var(--market-paper-white)] p-6 shadow-[0_20px_52px_rgba(28,24,18,0.06)] sm:p-8">
+      <div className="market-panel rounded-[2rem] p-6 sm:p-8">
         {step === "start" ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
@@ -293,7 +293,7 @@ export function SellerApplicationWizard({
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className="rounded-[1.3rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] px-4 py-4"
+                    className="market-soft rounded-[1.3rem] px-4 py-4"
                   >
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
                       {label}
@@ -303,7 +303,7 @@ export function SellerApplicationWizard({
                 ))}
               </div>
             </div>
-            <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-soft-olive)] p-5 text-sm leading-7 text-[var(--market-ink)]">
+            <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-soft-olive)] p-5 text-sm leading-7 text-[var(--market-paper-white)]">
               Submission routes the application into the live moderation queue and triggers owner/admin alerts. Publishing access remains locked until approval is complete.
             </div>
           </div>

@@ -27,7 +27,7 @@ export default async function CandidateAlertsPage({
   const viewer = await requireJobsUser("/candidate/alerts");
   const [data, params] = await Promise.all([
     getCandidateDashboardData(viewer.user!.id),
-    searchParams ?? Promise.resolve({}),
+    searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
   ]);
   const saved = params.saved === "1";
 
@@ -35,7 +35,7 @@ export default async function CandidateAlertsPage({
     <WorkspaceShell
       area="candidate"
       title="Job Alerts"
-      subtitle="Create live alerts that can feed in-app, email, and scheduler-driven job updates."
+      subtitle="Get notified when new roles match what you're looking for."
       nav={candidateNav}
       activeHref="/candidate/alerts"
       accent="linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%)"
@@ -45,11 +45,11 @@ export default async function CandidateAlertsPage({
           <InlineNotice
             tone="success"
             title="Alert saved"
-            body="This alert is now stored in the live Jobs activity layer and can feed in-app and email job updates."
+            body="Your alert is active. You'll receive notifications when matching roles are posted."
           />
         ) : null}
 
-        <SectionCard title="Create alert" body="Alerts are stored in the real jobs activity layer, not a local browser stub.">
+        <SectionCard title="Create an alert" body="Set up a new alert to watch for roles that match your criteria.">
           <form action={createJobAlertAction} className="grid gap-4 md:grid-cols-2">
             <input name="label" className="jobs-input" placeholder="Remote operations roles" />
             <input name="q" className="jobs-input" placeholder="Keyword" />
@@ -61,7 +61,7 @@ export default async function CandidateAlertsPage({
           </form>
         </SectionCard>
 
-        <SectionCard title="Active alerts" body="Each alert stays attached to your shared HenryCo account graph.">
+        <SectionCard title="Your alerts" body="Alerts you've set up. You'll be notified when new matches are posted.">
           {data.alerts.length === 0 ? (
             <EmptyState
               kicker="No alerts yet"

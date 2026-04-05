@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireLearnRoles, requireLearnUser } from "@/lib/learn/auth";
-import { getAccountLearnUrl } from "@/lib/learn/links";
+import { getAccountLearnUrl, getLearnCourseRoomUrl } from "@/lib/learn/links";
 import {
   addModuleLessonDefinition,
   assignTraining,
@@ -60,7 +60,7 @@ export async function enrollInCourseAction(formData: FormData) {
   redirect(
     result.enrollment.status === "awaiting_payment"
       ? getAccountLearnUrl("payments")
-      : `/learner/courses/${result.course.id}`
+      : getLearnCourseRoomUrl(result.course.id)
   );
 }
 
@@ -84,7 +84,7 @@ export async function completeLessonAction(formData: FormData) {
   if (result.certificate) {
     revalidatePath("/learner/certificates");
   }
-  redirect(`/learner/courses/${courseId}`);
+  redirect(getLearnCourseRoomUrl(courseId));
 }
 
 export async function submitQuizAttemptAction(formData: FormData) {
@@ -106,13 +106,13 @@ export async function submitQuizAttemptAction(formData: FormData) {
   revalidatePath(`/learner/courses/${courseId}`);
   revalidatePath("/learner/certificates");
   revalidatePath("/learner/progress");
-  redirect(`/learner/courses/${courseId}`);
+  redirect(getLearnCourseRoomUrl(courseId));
 }
 
 export async function markNotificationReadAction(formData: FormData) {
   const viewer = await requireLearnUser("/learner/notifications");
   const notificationId = String(formData.get("notificationId") || "");
-  if (!notificationId) redirect("/learner/notifications");
+  if (!notificationId) redirect(getAccountLearnUrl("notifications"));
   await markNotificationRead({ viewer, notificationId });
   revalidatePath("/learner/notifications");
 }
@@ -127,7 +127,7 @@ export async function updateLearnerPreferencesAction(formData: FormData) {
     announcementOptIn: asBoolean(formData, "announcementOptIn"),
   });
   revalidatePath("/learner/settings");
-  redirect("/learner/settings");
+  redirect(getAccountLearnUrl("overview"));
 }
 
 export async function createSupportRequestAction(formData: FormData) {

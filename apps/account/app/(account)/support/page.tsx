@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LifeBuoy, Plus, MessageSquare, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import { getSupportThreads } from "@/lib/account-data";
-import { timeAgo, divisionLabel, divisionColor } from "@/lib/format";
+import { timeAgo, divisionLabel } from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
 

@@ -381,6 +381,37 @@ function mapLead(row: Record<string, unknown>): StudioLead {
   };
 }
 
+function mapDomainIntentFromRow(raw: unknown): StudioBrief["domainIntent"] {
+  if (raw == null) return null;
+  let obj: Record<string, unknown>;
+  if (typeof raw === "string") {
+    try {
+      obj = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  } else if (typeof raw === "object" && !Array.isArray(raw)) {
+    obj = raw as Record<string, unknown>;
+  } else {
+    return null;
+  }
+  const path = obj.path;
+  if (path !== "new" && path !== "have" && path !== "later") return null;
+  const backup = cleanText(obj.backupLabel);
+  return {
+    path,
+    desiredLabel: cleanText(obj.desiredLabel),
+    ...(backup ? { backupLabel: backup } : {}),
+    checkedFqdn: obj.checkedFqdn ? cleanText(obj.checkedFqdn) : null,
+    checkStatus: cleanText(obj.checkStatus) || "not_answered",
+    suggestionsShown: Array.isArray(obj.suggestionsShown)
+      ? (obj.suggestionsShown as unknown[]).map((x) => cleanText(x)).filter(Boolean)
+      : [],
+    lookupMode: cleanText(obj.lookupMode) || "off",
+    lastMessage: obj.lastMessage ? cleanText(obj.lastMessage) : null,
+  };
+}
+
 function mapBrief(row: Record<string, unknown>): StudioBrief {
   return {
     id: cleanText(row.id),
@@ -397,6 +428,7 @@ function mapBrief(row: Record<string, unknown>): StudioBrief {
     requiredFeatures: arrayOfText(row.required_features),
     referenceFiles: [],
     referenceLinks: arrayOfText(row.reference_links),
+    domainIntent: mapDomainIntentFromRow(row.domain_intent),
   };
 }
 
@@ -680,6 +712,7 @@ async function upsertBrief(brief: StudioBrief, meta?: UpsertMeta) {
       required_features: brief.requiredFeatures,
       reference_links: brief.referenceLinks,
       created_at: brief.createdAt,
+      domain_intent: brief.domainIntent ?? {},
     },
     meta
   );

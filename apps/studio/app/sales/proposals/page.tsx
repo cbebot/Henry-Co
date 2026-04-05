@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { formatCurrency } from "@/lib/env";
+import { StudioFormListbox } from "@/components/studio/studio-form-listbox";
 import { setProposalStatusAction } from "@/lib/studio/actions";
+import { STUDIO_PROPOSAL_STATUS_OPTIONS } from "@/lib/studio/form-options";
 import { requireStudioRoles } from "@/lib/studio/auth";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { salesNav } from "@/lib/studio/navigation";
@@ -35,16 +37,17 @@ export default async function SalesProposalsPage() {
                 {proposal.status.replaceAll("_", " ")}
               </div>
             </div>
-            <form action={setProposalStatusAction} className="mt-5 flex flex-wrap items-center gap-2">
+            <form action={setProposalStatusAction} className="mt-5 flex flex-wrap items-end gap-2">
               <input type="hidden" name="proposalId" value={proposal.id} />
               <input type="hidden" name="redirectPath" value="/sales/proposals" />
-              <select name="status" defaultValue={proposal.status} className="studio-select rounded-full px-4 py-2 text-sm">
-                {["draft", "sent", "accepted", "rejected", "expired"].map((status) => (
-                  <option key={status} value={status}>
-                    {status.replaceAll("_", " ")}
-                  </option>
-                ))}
-              </select>
+              <div className="min-w-[11.5rem] max-w-[16rem]">
+                <StudioFormListbox
+                  name="status"
+                  label="Proposal status"
+                  initialValue={proposal.status}
+                  options={STUDIO_PROPOSAL_STATUS_OPTIONS}
+                />
+              </div>
               <button type="submit" className="rounded-full border border-[var(--studio-line)] px-4 py-2 text-xs font-semibold text-[var(--studio-ink)]">
                 Save
               </button>

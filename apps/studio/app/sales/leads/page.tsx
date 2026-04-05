@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { StudioFormListbox } from "@/components/studio/studio-form-listbox";
 import { setLeadStatusAction } from "@/lib/studio/actions";
+import { STUDIO_LEAD_STATUS_OPTIONS } from "@/lib/studio/form-options";
 import { requireStudioRoles } from "@/lib/studio/auth";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { salesNav } from "@/lib/studio/navigation";
@@ -35,16 +37,17 @@ export default async function SalesLeadsPage() {
                     {service?.name || lead.serviceKind.replaceAll("_", " ")} · {lead.businessType} · {lead.budgetBand}
                   </p>
                 </div>
-                <form action={setLeadStatusAction} className="flex flex-wrap items-center gap-2">
+                <form action={setLeadStatusAction} className="flex flex-wrap items-end gap-2">
                   <input type="hidden" name="leadId" value={lead.id} />
                   <input type="hidden" name="redirectPath" value="/sales/leads" />
-                  <select name="status" defaultValue={lead.status} className="studio-select rounded-full px-4 py-2 text-sm">
-                    {["new", "qualified", "proposal_ready", "proposal_sent", "won", "lost"].map((status) => (
-                      <option key={status} value={status}>
-                        {status.replaceAll("_", " ")}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="min-w-[12.5rem] max-w-[17rem]">
+                    <StudioFormListbox
+                      name="status"
+                      label="Lead status"
+                      initialValue={lead.status}
+                      options={STUDIO_LEAD_STATUS_OPTIONS}
+                    />
+                  </div>
                   <button type="submit" className="rounded-full border border-[var(--studio-line)] px-4 py-2 text-xs font-semibold text-[var(--studio-ink)]">
                     Save
                   </button>

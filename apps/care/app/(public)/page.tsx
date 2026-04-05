@@ -23,6 +23,7 @@ import {
   getCarePricing,
   getCareSettings,
 } from "@/lib/care-data";
+import { getCarePublicChipUser } from "@/lib/care-public-viewer";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
 export const revalidate = 60;
@@ -44,12 +45,17 @@ function stars(count: number) {
 }
 
 export default async function CareHomePage() {
-  const [settings, pricing, reviews, catalog] = await Promise.all([
+  const [settings, pricing, reviews, catalog, chipUser] = await Promise.all([
     getCareSettings(),
     getCarePricing(),
     getApprovedReviews(6),
     getCareBookingCatalog(),
+    getCarePublicChipUser(),
   ]);
+
+  const careHeroFirstName = chipUser
+    ? chipUser.displayName.trim().split(/\s+/)[0] || null
+    : null;
 
   const featuredPricing = pricing.filter((item) => item.is_featured).slice(0, 4);
   const garmentPreview = featuredPricing.length > 0 ? featuredPricing : pricing.slice(0, 4);
@@ -142,7 +148,15 @@ export default async function CareHomePage() {
                 {settings.hero_badge || "Garment care, home cleaning, and office cleaning"}
               </div>
 
-              <h1 className="mt-7 max-w-4xl text-balance care-display text-white">
+              {chipUser ? (
+                <p className="mt-6 text-sm font-semibold tracking-tight text-white/72">
+                  Welcome back{careHeroFirstName ? `, ${careHeroFirstName}` : ""}.
+                </p>
+              ) : null}
+
+              <h1
+                className={`max-w-4xl text-balance care-display text-white ${chipUser ? "mt-5" : "mt-7"}`}
+              >
                 {heroTitle}
               </h1>
 

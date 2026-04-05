@@ -1,5 +1,28 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import {
+  getSharedCookieDomain,
+  isRecoverableSupabaseAuthError,
+  isSupabaseAuthTokenCookie,
+} from "@henryco/config";
+
+function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse) {
+  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
+  for (const cookie of request.cookies.getAll()) {
+    if (!isSupabaseAuthTokenCookie(cookie.name)) {
+      continue;
+    }
+
+    request.cookies.set(cookie.name, "");
+    response.cookies.set(cookie.name, "", {
+      domain: cookieDomain,
+      expires: new Date(0),
+      path: "/",
+      sameSite: "lax",
+      secure: true,
+    });
+  }
+}
 
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next({
@@ -15,7 +38,17 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
+  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
+
   const supabase = createServerClient(url, anon, {
+    cookieOptions: cookieDomain
+      ? {
+          domain: cookieDomain,
+          path: "/",
+          sameSite: "lax",
+          secure: true,
+        }
+      : undefined,
     cookies: {
       getAll() {
         return request.cookies.getAll();
@@ -29,7 +62,15 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  try {
+    await supabase.auth.getUser();
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+
+    clearSupabaseAuthCookies(request, response);
+  }
 
   return response;
 }

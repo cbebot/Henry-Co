@@ -10,10 +10,11 @@ export default async function TalentPage() {
     <PublicShell primaryCta={{ label: "Build candidate profile", href: "/candidate/profile" }}>
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-10 sm:px-6 lg:px-8">
         <div className="jobs-panel rounded-[2.2rem] p-8 sm:p-10">
-          <p className="jobs-kicker">Verified Talent</p>
-          <h1 className="mt-3 jobs-heading">Candidate trust is designed, not assumed.</h1>
+          <p className="jobs-kicker">For candidates</p>
+          <h1 className="mt-3 jobs-heading">Build a profile that employers actually trust.</h1>
           <p className="mt-4 max-w-3xl text-sm leading-8 text-[var(--jobs-muted)]">
-            HenryCo Jobs turns profile completion, documents, skills, work proof, and clarity into recruiter-readable trust signals instead of leaving every candidate card equally vague.
+            HenryCo Jobs uses your profile completeness, uploaded documents, verified skills, and work history to help
+            employers see the real you — not just a name and a CV attachment.
           </p>
         </div>
 

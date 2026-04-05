@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { PropertySectionIntro } from "@/components/property/ui";
+import { PropertyPendingButton } from "@/components/property/form-status";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertySnapshot } from "@/lib/property/data";
+import { getSharedAccountPropertyUrl } from "@/lib/property/links";
 
 export const dynamic = "force-dynamic";
 
@@ -50,8 +52,7 @@ export default async function SubmitListingPage({
             <span className="font-semibold text-[var(--property-ink)]">
               {viewer.user?.email || "guest submission"}
             </span>
-            . Submitted activity is mirrored into the shared HenryCo customer history where identity
-            resolution is possible.
+            . Your submission will be linked to your HenryCo account.
           </div>
         </section>
 
@@ -259,17 +260,15 @@ export default async function SubmitListingPage({
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="submit"
-                className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
-              >
-                Submit listing
-              </button>
+              <PropertyPendingButton
+                idleLabel="Submit listing"
+                pendingLabel="Submitting listing"
+              />
               <Link
-                href="/owner"
+                href={getSharedAccountPropertyUrl("listings")}
                 className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Open listing workspace
+                Open property account
               </Link>
             </div>
           </form>

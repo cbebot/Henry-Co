@@ -83,8 +83,8 @@ export default function PaymentProofForm({
         tone: payload.duplicate ? "info" : "success",
         title: payload.duplicate ? "Receipt already captured" : "Receipt submitted",
         description: payload.duplicate
-          ? "The team already has this proof on record."
-          : "The HenryCo Care team will verify the proof and update your booking shortly.",
+          ? "The team already has this receipt on file."
+          : "The HenryCo Care team will review the payment and update your booking shortly.",
       });
 
       await onSubmitted?.();
@@ -107,7 +107,7 @@ export default function PaymentProofForm({
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent)]/18 bg-[color:var(--accent)]/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
             <ShieldCheck className="h-4 w-4" />
-            Payment verification
+            Payment review
           </div>
           <h3 className="mt-4 text-3xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
             {statusLabel}
@@ -197,14 +197,14 @@ export default function PaymentProofForm({
         <textarea
           name="note"
           rows={4}
-          placeholder="Add any note that will help the team verify the transfer quickly."
+          placeholder="Add any note that will help the team confirm your payment quickly."
           className="care-input care-ring min-h-[140px] rounded-2xl px-4 py-3 text-base md:text-sm"
           disabled={!canSubmit || loading}
         />
 
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-[1.8rem] border border-black/10 bg-zinc-50/90 px-5 py-4 text-sm leading-7 text-zinc-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/65">
           <div>
-            Submit the receipt here or reply to the same payment email with the proof attached.
+            Upload the receipt here or reply to the same payment email with it attached.
             {contactFallback ? ` Support fallback: ${contactFallback}.` : ""}
           </div>
 
@@ -218,14 +218,14 @@ export default function PaymentProofForm({
             ) : (
               <ArrowRight className="h-4 w-4" />
             )}
-            {loading ? "Submitting receipt..." : canSubmit ? "Submit receipt proof" : "Payment already verified"}
+            {loading ? "Uploading receipt..." : canSubmit ? "Upload receipt" : "Payment already confirmed"}
           </button>
         </div>
       </form>
 
       {done ? (
         <div className="mt-4 rounded-2xl border border-emerald-300/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-100">
-          Receipt submitted successfully. The support team will verify it and update the booking.
+          Receipt submitted successfully. The support team will review it and update your booking.
         </div>
       ) : null}
 

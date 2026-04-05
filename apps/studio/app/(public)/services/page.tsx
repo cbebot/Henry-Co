@@ -11,12 +11,11 @@ export default async function ServicesPage() {
       <section className="studio-panel rounded-[2.8rem] px-7 py-8 sm:px-10 lg:px-14 lg:py-12">
         <div className="studio-kicker">Services</div>
         <h1 className="studio-heading mt-4 max-w-4xl">
-          Studio services are framed around business outcomes, not generic deliverables.
+          Services built around the outcomes your business actually needs.
         </h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-          From executive websites to internal control systems and custom software, every service lane
-          is designed to turn buyer intent into a real proposal, a clean operating model, and a
-          stronger delivery experience.
+          From executive websites to internal systems and custom software — each service area
+          is structured to deliver a clear result with honest scope and timeline.
         </p>
       </section>
 

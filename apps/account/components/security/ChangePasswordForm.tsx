@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { mapAccountAuthMessage } from "@/lib/auth-copy";
 
 export default function ChangePasswordForm() {
   const [password, setPassword] = useState("");
@@ -30,12 +31,14 @@ export default function ChangePasswordForm() {
       const { error } = await supabase.auth.updateUser({ password });
 
       if (error) {
-        setMessage({ type: "error", text: error.message });
+        setMessage({ type: "error", text: mapAccountAuthMessage(error.message, "change_password") });
       } else {
-        setMessage({ type: "success", text: "Password updated successfully" });
+        setMessage({ type: "success", text: "Your password has been updated." });
         setPassword("");
         setConfirmPassword("");
       }
+    } catch {
+      setMessage({ type: "error", text: "We couldn't update your password right now. Please try again." });
     } finally {
       setLoading(false);
     }

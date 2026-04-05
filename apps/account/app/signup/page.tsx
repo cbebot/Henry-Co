@@ -20,7 +20,7 @@ export default async function SignupPage({
           </div>
           <h1 className="acct-display text-2xl">Create your account</h1>
           <p className="mt-1.5 text-sm text-[var(--acct-muted)]">
-            Join the HenryCo ecosystem
+            Open your HenryCo account
           </p>
         </div>
 

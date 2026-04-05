@@ -10,6 +10,7 @@ import {
 } from "@/lib/email/send";
 import { notifyStaffRoles } from "@/lib/staff-alerts";
 import { createAdminSupabase } from "@/lib/supabase";
+import { normalizePhone } from "@henryco/config";
 
 export type PaymentVerificationStatus =
   | "awaiting_receipt"
@@ -176,10 +177,6 @@ function asNumber(value: unknown) {
 
 function asBoolean(value: unknown) {
   return Boolean(value);
-}
-
-function normalizePhone(value?: string | null) {
-  return String(value || "").replace(/\D+/g, "");
 }
 
 function sanitizeAmount(value?: number | null) {

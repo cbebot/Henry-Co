@@ -2,14 +2,10 @@
 
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { isAbsoluteHttpUrl, normalizeTrustedRedirect } from "@henryco/config";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-
-function normalizeNext(next: string | null) {
-  if (!next) return "/";
-  if (/^https?:\/\//i.test(next)) return next;
-  return next.startsWith("/") ? next : "/";
-}
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -33,12 +29,12 @@ export default function LoginForm() {
       });
 
       if (authError) {
-        setError(authError.message);
+        setError(mapAccountAuthMessage(authError.message, "sign_in"));
         return;
       }
 
-      const next = normalizeNext(searchParams.get("next"));
-      if (/^https?:\/\//i.test(next)) {
+      const next = normalizeTrustedRedirect(searchParams.get("next"));
+      if (isAbsoluteHttpUrl(next)) {
         window.location.assign(next);
         return;
       }
@@ -46,7 +42,7 @@ export default function LoginForm() {
       router.push(next);
       router.refresh();
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("We couldn't sign you in right now. Please try again.");
     } finally {
       setLoading(false);
     }

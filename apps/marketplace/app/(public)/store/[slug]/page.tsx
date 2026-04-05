@@ -26,15 +26,15 @@ export default async function StorePage({
             <StoreActionsClient vendorSlug={data.vendor.slug} />
           </div>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] px-5 py-5">
+            <div className="market-soft rounded-[1.5rem] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--market-muted)]">Trust score</p>
               <p className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-ink)]">{data.vendor.trustScore}%</p>
             </div>
-            <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] px-5 py-5">
+            <div className="market-soft rounded-[1.5rem] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--market-muted)]">Response SLA</p>
               <p className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-ink)]">{data.vendor.responseSlaHours}h</p>
             </div>
-            <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-paper-white)] px-5 py-5">
+            <div className="market-soft rounded-[1.5rem] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--market-muted)]">Followers</p>
               <p className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-ink)]">{data.vendor.followersCount}</p>
             </div>
@@ -70,7 +70,7 @@ export default async function StorePage({
           {data.reviews.slice(0, 2).map((review) => (
             <article key={review.id} className="market-paper rounded-[1.9rem] p-6">
               <p className="market-kicker">{review.verifiedPurchase ? "verified purchase" : "review"}</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{review.title}</h2>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-paper-white)]">{review.title}</h2>
               <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{review.body}</p>
             </article>
           ))}

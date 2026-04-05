@@ -1,8 +1,110 @@
 import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
+import { getDivisionBrand, type DivisionBrand } from "@/lib/branding";
+import {
+  isHiddenNotification,
+  notificationMessageHref,
+  resolveSafeActionUrl,
+} from "@/lib/notification-center";
+import { getSharedPaymentRail } from "@/lib/payment-settings";
 
 const admin = () => createAdminSupabase();
+
+function asText(value: unknown, fallback = "") {
+  return typeof value === "string" ? value : fallback;
+}
+
+function asNullableText(value: unknown) {
+  const text = typeof value === "string" ? value.trim() : "";
+  return text || null;
+}
+
+function asObject(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function resolveNotificationKey(row: Record<string, unknown>) {
+  return (
+    asNullableText(row.division) ||
+    asNullableText(row.category) ||
+    (asText(row.reference_type).startsWith("wallet_") ? "wallet" : null) ||
+    "general"
+  );
+}
+
+export type EnrichedNotification = Record<string, unknown> & {
+  source: DivisionBrand;
+  message_href: string;
+  related_url: string;
+};
+
+export type WalletFundingRequest = {
+  id: string;
+  created_at: string;
+  amount_kobo: number;
+  description: string;
+  status: string;
+  provider: string;
+  reference: string | null;
+  note: string | null;
+  proof_url: string | null;
+  proof_name: string | null;
+  proof_public_id: string | null;
+  proof_uploaded_at: string | null;
+  bank_name: string | null;
+  account_name: string | null;
+  account_number: string | null;
+  instructions: string | null;
+};
+
+function mapFundingRequest(row: Record<string, unknown>): WalletFundingRequest {
+  const metadata = asObject(row.metadata);
+  return {
+    id: asText(row.id),
+    created_at: asText(row.created_at),
+    amount_kobo: Number(row.amount_kobo) || 0,
+    description: asText(row.description),
+    status: asText(row.status, "pending_verification"),
+    provider: asText(metadata.provider, "bank_transfer"),
+    reference: asNullableText(metadata.reference),
+    note: asNullableText(metadata.note),
+    proof_url: asNullableText(metadata.proof_url),
+    proof_name: asNullableText(metadata.proof_name),
+    proof_public_id: asNullableText(metadata.proof_public_id),
+    proof_uploaded_at: asNullableText(metadata.proof_uploaded_at),
+    bank_name: asNullableText(metadata.bank_name),
+    account_name: asNullableText(metadata.account_name),
+    account_number: asNullableText(metadata.account_number),
+    instructions: asNullableText(metadata.instructions),
+  };
+}
+
+/** Newer dedicated funding-request rows */
+function mapDedicatedFundingRequest(row: Record<string, unknown>): WalletFundingRequest {
+  const metadata = asObject(row.metadata);
+  const ref = asNullableText(row.payment_reference) || asNullableText(metadata.reference);
+  return {
+    id: asText(row.id),
+    created_at: asText(row.created_at),
+    amount_kobo: Number(row.amount_kobo) || 0,
+    description: ref ? `Wallet funding — ${ref}` : "Wallet funding request",
+    status: asText(row.status, "pending_verification"),
+    provider: asText(row.provider, "bank_transfer"),
+    reference: ref,
+    note: asNullableText(row.note),
+    proof_url: asNullableText(row.proof_url) || asNullableText(metadata.proof_url),
+    proof_name: asNullableText(row.proof_name) || asNullableText(metadata.proof_name),
+    proof_public_id: asNullableText(row.proof_public_id) || asNullableText(metadata.proof_public_id),
+    proof_uploaded_at: asNullableText(metadata.proof_uploaded_at),
+    bank_name: asNullableText(metadata.bank_name),
+    account_name: asNullableText(metadata.account_name),
+    account_number: asNullableText(metadata.account_number),
+    instructions: asNullableText(metadata.instructions),
+  };
+}
 
 export async function getWalletSummary(userId: string) {
   const { data: wallet } = await admin()
@@ -44,17 +146,45 @@ export async function getNotifications(userId: string, limit = 20) {
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  return data || [];
+  return ((data ?? []) as Array<Record<string, unknown>>).filter(
+    (row) => !isHiddenNotification(row)
+  );
+}
+
+export async function getNotificationFeed(userId: string, limit = 20): Promise<EnrichedNotification[]> {
+  const notifications = (await getNotifications(userId, limit)) as Array<Record<string, unknown>>;
+  return Promise.all(
+    notifications.map(async (notification) => {
+      const source = await getDivisionBrand(resolveNotificationKey(notification));
+      return {
+        ...notification,
+        source,
+        message_href: notificationMessageHref(asText(notification.id)),
+        related_url: await resolveSafeActionUrl(
+          notification.action_url,
+          source.key,
+          source.primaryUrl
+        ),
+      };
+    })
+  );
+}
+
+export async function getNotificationBellFeed(userId: string, limit = 8) {
+  const [items, unreadCount] = await Promise.all([
+    getNotificationFeed(userId, limit),
+    getUnreadNotificationCount(userId),
+  ]);
+
+  return {
+    unreadCount,
+    items,
+  };
 }
 
 export async function getUnreadNotificationCount(userId: string) {
-  const { count } = await admin()
-    .from("customer_notifications")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .eq("is_read", false);
-
-  return count || 0;
+  const notifications = await getNotifications(userId, 200);
+  return notifications.filter((item) => !item.is_read).length;
 }
 
 export async function getAddresses(userId: string) {
@@ -165,7 +295,7 @@ export async function getDashboardSummary(userId: string) {
   const [wallet, activity, notifications, subscriptions, invoices] = await Promise.all([
     getWalletSummary(userId),
     getRecentActivity(userId, 5),
-    getNotifications(userId, 5),
+    getNotificationFeed(userId, 5),
     getSubscriptions(userId),
     getInvoices(userId, 3),
   ]);
@@ -180,4 +310,117 @@ export async function getDashboardSummary(userId: string) {
     activeSubscriptions: subscriptions.filter((s) => s.status === "active"),
     recentInvoices: invoices,
   };
+}
+
+export async function getWalletFundingRequests(userId: string, limit = 12) {
+  const [dedicatedRes, legacyRes] = await Promise.all([
+    admin()
+      .from("customer_wallet_funding_requests")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(limit),
+    admin()
+      .from("customer_wallet_transactions")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("reference_type", "wallet_funding_request")
+      .order("created_at", { ascending: false })
+      .limit(limit),
+  ]);
+
+  const dedicated = dedicatedRes.error
+    ? []
+    : ((dedicatedRes.data ?? []) as Array<Record<string, unknown>>).map(mapDedicatedFundingRequest);
+  const legacyIds = new Set(dedicated.map((r) => r.id));
+  const legacy = ((legacyRes.data ?? []) as Array<Record<string, unknown>>)
+    .filter((row) => !legacyIds.has(asText(row.id)))
+    .map(mapFundingRequest);
+
+  return [...dedicated, ...legacy]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, limit);
+}
+
+export async function getWalletFundingRequestById(userId: string, requestId: string) {
+  const { data: dedicated, error: dedicatedError } = await admin()
+    .from("customer_wallet_funding_requests")
+    .select("*")
+    .eq("id", requestId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (!dedicatedError && dedicated) {
+    return mapDedicatedFundingRequest(dedicated as Record<string, unknown>);
+  }
+
+  const { data: legacy } = await admin()
+    .from("customer_wallet_transactions")
+    .select("*")
+    .eq("id", requestId)
+    .eq("user_id", userId)
+    .eq("reference_type", "wallet_funding_request")
+    .maybeSingle();
+
+  return legacy ? mapFundingRequest(legacy as Record<string, unknown>) : null;
+}
+
+export async function getWalletFundingContext(userId: string) {
+  const [wallet, requests, rail] = await Promise.all([
+    getWalletSummary(userId),
+    getWalletFundingRequests(userId),
+    getSharedPaymentRail(),
+  ]);
+
+  const pending = requests
+    .filter((request) => request.status !== "completed" && request.status !== "verified")
+    .reduce((sum, request) => sum + request.amount_kobo, 0);
+
+  return {
+    wallet,
+    requests,
+    rail,
+    pending_kobo: pending,
+  };
+}
+
+export async function getPayoutMethods(userId: string) {
+  const { data, error } = await admin()
+    .from("customer_payout_methods")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("is_active", true)
+    .order("is_default", { ascending: false });
+
+  if (error) {
+    console.error("[henryco/account] payout methods:", error);
+    return [];
+  }
+  return data ?? [];
+}
+
+export async function getWithdrawalRequests(userId: string, limit = 40) {
+  const { data, error } = await admin()
+    .from("customer_wallet_withdrawal_requests")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[henryco/account] withdrawal requests:", error);
+    return [];
+  }
+  return data ?? [];
+}
+
+export async function getWithdrawalPinConfigured(userId: string): Promise<boolean> {
+  const { data, error } = await admin()
+    .from("customer_preferences")
+    .select("withdrawal_pin_hash")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error || !data) return false;
+  return Boolean(asNullableText((data as { withdrawal_pin_hash?: string }).withdrawal_pin_hash));
 }

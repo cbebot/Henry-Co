@@ -16,7 +16,7 @@ export default async function RecruiterVerificationPage() {
           {queue.pendingEmployers.map((employer) => (
             <div key={employer.slug} className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
               <div className="font-semibold">{employer.name}</div>
-              <div className="mt-1 text-sm text-[var(--jobs-muted)]">{employer.verificationStatus}</div>
+              <div className="mt-1 text-sm capitalize text-[var(--jobs-muted)]">{employer.verificationStatus.replace(/[_-]+/g, " ")}</div>
             </div>
           ))}
         </div>

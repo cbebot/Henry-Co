@@ -1,3 +1,5 @@
+import { HenryCoActivityIndicator } from "@henryco/ui";
+
 function JobsLoadingLine({ className }: { className: string }) {
   return <div className={`animate-pulse rounded-full bg-[var(--jobs-line)]/80 ${className}`} />;
 }
@@ -22,9 +24,9 @@ function JobsLoadingCard() {
 }
 
 export function JobsPageLoading({
-  kicker = "Preparing HenryCo Jobs",
-  title = "Loading a calmer hiring surface.",
-  body = "Pulling live jobs, verified employers, candidate context, and the latest hiring activity into place.",
+  kicker = "HenryCo Jobs",
+  title = "Gathering this page for you",
+  body = "We’re loading the latest jobs and updates. You can keep this tab open—nothing is wrong on your side.",
 }: {
   kicker?: string;
   title?: string;
@@ -33,9 +35,17 @@ export function JobsPageLoading({
   return (
     <div className="mx-auto flex min-h-[72vh] max-w-7xl items-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="jobs-panel w-full rounded-[2.8rem] p-8 sm:p-10">
-        <p className="jobs-kicker">{kicker}</p>
-        <h1 className="mt-4 jobs-heading max-w-3xl">{title}</h1>
-        <p className="mt-4 max-w-3xl text-sm leading-8 text-[var(--jobs-muted)]">{body}</p>
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:gap-6">
+          <HenryCoActivityIndicator
+            className="text-[var(--jobs-accent)] dark:text-[var(--jobs-accent)]"
+            label="Loading"
+          />
+          <div className="min-w-0 flex-1 text-center sm:text-left">
+            <p className="jobs-kicker">{kicker}</p>
+            <h1 className="mt-4 jobs-heading max-w-3xl">{title}</h1>
+            <p className="mt-4 max-w-3xl text-sm leading-8 text-[var(--jobs-muted)]">{body}</p>
+          </div>
+        </div>
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           <JobsLoadingCard />
           <JobsLoadingCard />
@@ -47,9 +57,9 @@ export function JobsPageLoading({
 }
 
 export function JobsWorkspaceLoading({
-  kicker = "Preparing your console",
-  title = "Loading live hiring data.",
-  body = "Bringing the latest applications, trust signals, queues, and account-linked activity into view.",
+  kicker = "Loading",
+  title = "Preparing your workspace.",
+  body = "Loading applications, job postings, and activity.",
 }: {
   kicker?: string;
   title?: string;

@@ -9,24 +9,25 @@ export type LearnNavItem = {
 
 export function learnerNav(active: string): LearnNavItem[] {
   return [
-    { href: "/learner", label: "Overview", active: active === "/learner" },
-    { href: "/learner/courses", label: "My Courses", active: active === "/learner/courses" },
-    { href: "/learner/saved", label: "Saved", active: active === "/learner/saved" },
-    { href: "/learner/certificates", label: "Certificates", active: active === "/learner/certificates" },
-    { href: "/learner/progress", label: "Progress", active: active === "/learner/progress" },
-    { href: "/learner/payments", label: "Payments", active: active === "/learner/payments" },
-    { href: "/learner/notifications", label: "Notifications", active: active === "/learner/notifications" },
-    { href: "/learner/settings", label: "Settings", active: active === "/learner/settings" },
+    { href: getAccountLearnUrl(), label: "Overview", active: active === "overview" || active === "/learner" },
+    { href: getAccountLearnUrl("active"), label: "My courses", active: active === "active" || active === "/learner/courses" },
+    { href: getAccountLearnUrl("progress"), label: "Progress", active: active === "progress" || active === "/learner/progress" },
+    { href: getAccountLearnUrl("saved"), label: "Saved", active: active === "saved" || active === "/learner/saved" },
+    { href: getAccountLearnUrl("certificates"), label: "Certificates", active: active === "certificates" || active === "/learner/certificates" },
+    { href: getAccountLearnUrl("payments"), label: "Payments", active: active === "payments" || active === "/learner/payments" },
+    { href: getAccountLearnUrl("notifications"), label: "Notifications", active: active === "notifications" || active === "/learner/notifications" },
+    { href: getAccountLearnUrl("overview"), label: "Account settings", active: active === "settings" || active === "/learner/settings" },
   ];
 }
 
 export function courseRoomNav(courseHref: string): LearnNavItem[] {
   return [
-    { href: getAccountLearnUrl(), label: "Account overview" },
-    { href: getAccountLearnUrl("active"), label: "Active learning" },
-    { href: courseHref, label: "Course room", active: true },
+    { href: getAccountLearnUrl(), label: "Learn overview" },
+    { href: getAccountLearnUrl("active"), label: "My courses" },
+    { href: getAccountLearnUrl("progress"), label: "Progress" },
+    { href: courseHref, label: "This course", active: true },
     { href: getAccountLearnUrl("certificates"), label: "Certificates" },
-    { href: "/teach", label: "Teach with HenryCo" },
+    { href: "/teach", label: "Apply to teach" },
   ];
 }
 
@@ -85,7 +86,7 @@ export function supportNav(active: string): LearnNavItem[] {
   return [
     { href: "/support", label: "Inbox", active: active === "/support" },
     { href: "/owner/settings", label: "Announcements", active: active === "/owner/settings" },
-    { href: "/learner/notifications", label: "Learner Notifications", active: active === "/learner/notifications" },
+    { href: getAccountLearnUrl("notifications"), label: "Learner Notifications" },
   ];
 }
 

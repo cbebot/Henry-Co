@@ -3,7 +3,7 @@ import "server-only";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
-import { getSharedCookieDomain } from "@henryco/config";
+import { getSharedCookieDomain, isRecoverableSupabaseAuthError } from "@henryco/config";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
 import {
   getDefaultVisibleDivisions,
@@ -139,9 +139,16 @@ async function readActivityDivisions(userId: string) {
 
 export async function getWorkspaceViewer(): Promise<WorkspaceViewer> {
   const supabase = await createWorkspaceSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
+
+  try {
+    const auth = await supabase.auth.getUser();
+    user = auth.data.user;
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+  }
 
   if (!user) {
     return {

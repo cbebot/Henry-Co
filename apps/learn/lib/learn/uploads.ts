@@ -1,5 +1,3 @@
-import "server-only";
-
 import { randomUUID } from "crypto";
 import { createAdminSupabase } from "@/lib/supabase";
 

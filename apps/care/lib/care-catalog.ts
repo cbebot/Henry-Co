@@ -425,7 +425,7 @@ export const DEFAULT_CARE_BOOKING_CATALOG: CareBookingCatalog = {
       key: "bathroom_intensive",
       category_key: "home",
       label: "Bathroom intensive cleaning",
-      description: "Fixture detail, scaling attention, and deeper sanitization.",
+      description: "Fixture detailing, scale removal, and deeper sanitization.",
       amount: 4500,
       sort_order: 2,
       is_active: true,

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { normalizeEmail } from "@/lib/env";
+import { isRecoverableSupabaseAuthError, normalizeEmail } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { PropertyRole, PropertyViewer } from "@/lib/property/types";
@@ -62,9 +62,16 @@ export function viewerHasRole(
 
 export async function getPropertyViewer(): Promise<PropertyViewer> {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
+
+  try {
+    const auth = await supabase.auth.getUser();
+    user = auth.data.user;
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+  }
 
   if (!user) {
     return {

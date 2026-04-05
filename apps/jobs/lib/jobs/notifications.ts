@@ -141,22 +141,40 @@ export async function createJobsInAppNotification(input: {
   referenceType?: string | null;
   referenceId?: string | null;
 }) {
-  const { data } = await createAdminSupabase()
+  const actionUrl = toAbsoluteJobsUrl(input.actionUrl);
+  const { data, error } = await createAdminSupabase()
     .from("customer_notifications")
     .insert({
       user_id: input.userId,
       title: input.title,
       body: input.body,
-      category: "jobs",
+      category: "general",
       priority: input.priority ?? "normal",
-      action_url: input.actionUrl ?? null,
+      action_url: actionUrl,
       action_label: input.actionLabel ?? null,
       division: "jobs",
       reference_type: input.referenceType ?? null,
       reference_id: input.referenceId ?? null,
+      is_read: false,
     } as never)
     .select("id")
     .maybeSingle();
+
+  if (error) {
+    await logNotificationAudit({
+      action: "jobs_in_app_notification_failed",
+      entityType: input.referenceType,
+      entityId: input.referenceId,
+      reason: error.message,
+      payload: {
+        userId: input.userId,
+        title: input.title,
+        body: input.body,
+        actionUrl,
+      },
+    });
+    return null;
+  }
 
   return data?.id ? String(data.id) : null;
 }

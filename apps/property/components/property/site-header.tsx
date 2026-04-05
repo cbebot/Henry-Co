@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Moon, SunMedium, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
-import { useTheme } from "next-themes";
+import { ThemeToggle } from "@henryco/ui";
 import { getDivisionConfig } from "@henryco/config";
-import { getSharedAccountPropertyUrl } from "@/lib/property/links";
 
 const property = getDivisionConfig("property");
 
@@ -14,32 +14,9 @@ function joinClassNames(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
 }
 
-function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme !== "light";
-
-  return (
-    <button
-      type="button"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--property-line)] bg-[rgba(255,255,255,0.03)] text-[var(--property-ink)]"
-      aria-label="Toggle theme"
-    >
-      {isDark ? <SunMedium className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
-  );
-}
-
-export function PropertySiteHeader({
-  signedIn,
-  signedInLabel,
-}: {
-  signedIn: boolean;
-  signedInLabel?: string | null;
-}) {
+export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const accountHref = signedIn ? getSharedAccountPropertyUrl() : "/login";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--property-line)] bg-[color:color-mix(in_srgb,var(--property-bg)_80%,transparent)]/90 backdrop-blur-2xl">
@@ -82,9 +59,7 @@ export function PropertySiteHeader({
                 href={item.href}
                 className={joinClassNames(
                   "rounded-full px-4 py-2 text-sm font-medium transition",
-                  active
-                    ? "bg-[rgba(232,184,148,0.14)] text-[var(--property-ink)]"
-                    : "text-[var(--property-ink-soft)] hover:text-[var(--property-ink)]"
+                  active ? "property-nav-link-active" : "property-nav-link-idle"
                 )}
               >
                 {item.label}
@@ -94,13 +69,8 @@ export function PropertySiteHeader({
         </nav>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <Link
-            href={accountHref}
-            className="property-button-primary hidden rounded-full px-5 py-3 text-sm font-semibold sm:inline-flex"
-          >
-            {signedIn ? signedInLabel || "Account" : "Sign in"}
-          </Link>
+          <ThemeToggle className="hidden h-11 min-w-11 items-center justify-center rounded-full border border-[var(--property-line)] bg-[rgba(255,255,255,0.03)] px-0 py-0 sm:inline-flex" />
+          <div className="hidden sm:block">{accountSlot}</div>
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
@@ -114,6 +84,7 @@ export function PropertySiteHeader({
 
       {open ? (
         <div className="border-t border-[var(--property-line)] px-5 py-4 sm:px-8 lg:hidden">
+          <div className="mb-3 flex flex-col items-stretch gap-2">{accountSlot}</div>
           <nav className="grid gap-2">
             {property.publicNav.map((item) => (
               <Link
@@ -125,13 +96,6 @@ export function PropertySiteHeader({
                 {item.label}
               </Link>
             ))}
-            <Link
-              href={accountHref}
-              onClick={() => setOpen(false)}
-              className="rounded-[1.2rem] bg-[linear-gradient(135deg,#fde8da_0%,#e9bb95_42%,#bb7542_100%)] px-4 py-3 text-sm font-semibold text-[#1c120d]"
-            >
-              {signedIn ? "Open account" : "Sign in"}
-            </Link>
           </nav>
         </div>
       ) : null}

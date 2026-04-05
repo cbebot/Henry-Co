@@ -19,9 +19,9 @@ const footerColumns = [
     title: "Owners and agents",
     links: [
       { href: "/submit", label: "Submit a listing" },
-      { href: "/owner", label: "Owner workspace" },
       { href: "/agent", label: "Agent surface" },
       { href: "/operations", label: "Operations" },
+      { href: getSharedAccountPropertyUrl("listings"), label: "Listing activity" },
     ],
   },
   {

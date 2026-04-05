@@ -2,8 +2,12 @@ import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail } from "@/lib/env";
-import { DEFAULT_PIPELINE, JOBS_DIFFERENTIATORS } from "@/lib/jobs/content";
+import { DEFAULT_PIPELINE, JOBS_DIFFERENTIATORS, JOBS_STAGE_ORDER } from "@/lib/jobs/content";
 import type {
+  ApplicationJourney,
+  ApplicationStageStep,
+  CandidateDashboardData,
+  CandidateNextAction,
   CandidateDocument,
   CandidateProfile,
   ConversationMessage,
@@ -12,11 +16,15 @@ import type {
   EmployerProfile,
   JobAlert,
   JobApplication,
+  JobRecommendation,
   JobPost,
   JobsHomeData,
   JobsNotification,
   ModerationCase,
+  ProfileChecklistItem,
+  RecruiterActivity,
   SavedJob,
+  StageTone,
   TimelineEvent,
 } from "@/lib/jobs/types";
 
@@ -136,9 +144,368 @@ function getReadinessLabel(score: number) {
 }
 
 function stageRank(stage: string) {
-  const order = ["applied", "reviewing", "shortlisted", "interview", "offer", "hired", "rejected"];
-  const idx = order.indexOf(stage);
+  const idx = JOBS_STAGE_ORDER.indexOf(stage as (typeof JOBS_STAGE_ORDER)[number]);
   return idx === -1 ? 999 : idx;
+}
+
+function stageTone(stage: string): StageTone {
+  if (stage === "hired" || stage === "offer") return "good";
+  if (stage === "shortlisted" || stage === "interview") return "warn";
+  if (stage === "rejected") return "danger";
+  return "neutral";
+}
+
+function humanizeStage(stage: string) {
+  if (!stage) return "Applied";
+  return stage
+    .split(/[_\s-]+/)
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(" ");
+}
+
+function buildPipelineState(stages: string[], currentStage: string): ApplicationStageStep[] {
+  const normalized = [...new Set(stages.filter(Boolean))];
+  if (normalized.length === 0) {
+    normalized.push(...DEFAULT_PIPELINE);
+  }
+
+  if (!normalized.includes(currentStage)) {
+    normalized.push(currentStage);
+  }
+
+  const currentIndex = normalized.indexOf(currentStage);
+
+  return normalized.map((stage, index) => ({
+    key: stage,
+    label: humanizeStage(stage),
+    status: index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming",
+  }));
+}
+
+function progressPercent(stage: string, pipeline: string[]) {
+  const normalized = pipeline.length > 0 ? pipeline : [...DEFAULT_PIPELINE];
+  const currentIndex = Math.max(normalized.indexOf(stage), 0);
+  const denominator = Math.max(normalized.length - 1, 1);
+
+  if (stage === "rejected" || stage === "hired") {
+    return 100;
+  }
+
+  return Math.max(12, Math.round(((currentIndex + 1) / (denominator + 1)) * 100));
+}
+
+function toTimestamp(value?: string | null) {
+  if (!value) return 0;
+  const time = new Date(value).getTime();
+  return Number.isFinite(time) ? time : 0;
+}
+
+function relativeStageGuidance(stage: string) {
+  if (stage === "reviewing") {
+    return {
+      label: "Sit tight—someone is reading your application",
+      body: "Your note and profile are with the hiring team. Refresh your resume and availability so you are easy to move forward if they reach out.",
+    };
+  }
+
+  if (stage === "shortlisted") {
+    return {
+      label: "You made the first cut",
+      body: "Shortlist means they liked the match enough to look closer. Have examples ready, know your dates, and watch Applications for the next message.",
+    };
+  }
+
+  if (stage === "interview") {
+    return {
+      label: "Interview season—prep like you mean it",
+      body: "This is the conversation stage. Bring clear stories, proof of impact, and honest answers about how you work.",
+    };
+  }
+
+  if (stage === "offer") {
+    return {
+      label: "Read the offer like a grown-up contract",
+      body: "Check pay, title, start date, and who you report to. It is OK to ask quiet questions before you say yes.",
+    };
+  }
+
+  if (stage === "hired") {
+    return {
+      label: "You closed the loop on this one",
+      body: "Congratulations. Tidy up saved roles and applications so your hub reflects where you are headed next.",
+    };
+  }
+
+  if (stage === "rejected") {
+    return {
+      label: "Not this time—and that is information too",
+      body: "One role saying no does not define you. Tighten your story, then keep going; the board updates often.",
+    };
+  }
+
+  return {
+    label: "Keep your profile honest and complete",
+    body: "Strong basics—resume, skills, availability—make the next step easier whenever a recruiter looks your way.",
+  };
+}
+
+function profileChecklist(profile: CandidateProfile | null, documents: CandidateDocument[]): ProfileChecklistItem[] {
+  const hasResume = documents.some((document) => document.kind === "resume");
+  const hasPortfolio = documents.some((document) => document.kind === "portfolio") || (profile?.portfolioLinks.length ?? 0) > 0;
+
+  return [
+    {
+      id: "identity",
+      label: "Basics and identity",
+      detail: "Full name, phone, and location give recruiters a usable contact layer.",
+      complete: Boolean(profile?.fullName && profile.phone && profile.location),
+      href: "/candidate/profile",
+    },
+    {
+      id: "story",
+      label: "Professional story",
+      detail: "Headline and summary make the profile readable instead of blank metadata.",
+      complete: Boolean(profile?.headline && profile.summary),
+      href: "/candidate/profile",
+    },
+    {
+      id: "skills",
+      label: "Skills and function fit",
+      detail: "At least four clear skills and preferred functions improve role matching.",
+      complete: (profile?.skills.length ?? 0) >= 4 && (profile?.preferredFunctions.length ?? 0) > 0,
+      href: "/candidate/profile",
+    },
+    {
+      id: "history",
+      label: "Work history",
+      detail: "Recruiters need evidence of real operating range, not only a headline.",
+      complete: (profile?.workHistory.length ?? 0) > 0 || (profile?.education.length ?? 0) > 0,
+      href: "/candidate/profile",
+    },
+    {
+      id: "resume",
+      label: "Resume uploaded",
+      detail: "A resume is still the fastest way to raise application readiness.",
+      complete: hasResume,
+      href: "/candidate/files",
+    },
+    {
+      id: "portfolio",
+      label: "Proof and portfolio",
+      detail: "Portfolio links or proof files help shortlisted candidates move faster.",
+      complete: hasPortfolio,
+      href: "/candidate/files",
+    },
+  ];
+}
+
+function buildThreadActivity(
+  application: JobApplication,
+  thread: ConversationThread | null,
+  messages: ConversationMessage[]
+): RecruiterActivity | null {
+  const visibleMessages = messages.filter((message) => {
+    const visibility = asNullableString(message.attachments[0]?.visibility);
+    return message.senderType !== "internal_note" && visibility !== "internal";
+  });
+  const latest = [...visibleMessages].sort((a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt))[0];
+
+  if (!latest) return null;
+
+  const attachment = asObject(latest.attachments[0]);
+  const stage = asNullableString(attachment.stage) || application.stage;
+  const title =
+    asNullableString(attachment.type) === "timeline_event"
+      ? `${humanizeStage(stage || application.stage)} update`
+      : "Recruiter update";
+
+  return {
+    id: `${thread?.id || application.applicationId}-${latest.id}`,
+    title,
+    body: latest.body || `${application.jobTitle} has a new recruiter-side update.`,
+    createdAt: latest.createdAt,
+    href: "/candidate/applications",
+    tone: stageTone(stage || application.stage),
+    source: "thread",
+  };
+}
+
+function buildTimelineActivity(application: JobApplication, timeline: TimelineEvent[]): RecruiterActivity | null {
+  const latest = [...timeline].sort((a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt))[0];
+  if (!latest) return null;
+
+  const nextStage =
+    asNullableString(latest.newValues.nextStage) ||
+    asNullableString(latest.newValues.stage) ||
+    application.stage;
+  const isStageChange = latest.action === "jobs_application_stage_changed";
+
+  return {
+    id: `timeline-${latest.id}`,
+    title: isStageChange ? `${humanizeStage(nextStage)} stage` : humanizeStage(latest.action.replace(/^jobs_/, "")),
+    body:
+      latest.reason ||
+      (isStageChange
+        ? `${application.jobTitle} moved into ${humanizeStage(nextStage).toLowerCase()}.`
+        : `${application.jobTitle} has a new hiring update.`),
+    createdAt: latest.createdAt,
+    href: "/candidate/applications",
+    tone: stageTone(nextStage),
+    source: "timeline",
+  };
+}
+
+function buildRecommendationReason(input: {
+  job: JobPost;
+  profile: CandidateProfile | null;
+  savedJobs: SavedJob[];
+  applications: JobApplication[];
+}) {
+  const profileTerms = new Set(
+    [
+      ...(input.profile?.preferredFunctions ?? []),
+      ...(input.profile?.skills ?? []),
+      ...input.savedJobs.map((saved) => saved.job.categoryName),
+      ...input.applications.map((application) => application.jobTitle),
+    ]
+      .map((value) => value.toLowerCase())
+      .filter(Boolean)
+  );
+
+  const matchedSkill = input.job.skills.find((skill) => profileTerms.has(skill.toLowerCase()));
+  if (matchedSkill) {
+    return `${matchedSkill} already appears in your profile or current search lane.`;
+  }
+
+  if (input.profile?.preferredFunctions.some((item) => input.job.title.toLowerCase().includes(item.toLowerCase()))) {
+    return "The role title lines up with the functions you said you want next.";
+  }
+
+  if (input.job.employerVerification === "verified") {
+    return "This is a verified employer lane with clearer trust and response expectations.";
+  }
+
+  return "This role fits the categories and trust signals you have been interacting with.";
+}
+
+function buildRecommendations(input: {
+  jobs: JobPost[];
+  profile: CandidateProfile | null;
+  savedJobs: SavedJob[];
+  applications: JobApplication[];
+}): JobRecommendation[] {
+  const excluded = new Set([
+    ...input.savedJobs.map((item) => item.job.slug),
+    ...input.applications.map((item) => item.jobSlug),
+  ]);
+  const preferenceTerms = new Set(
+    [
+      ...(input.profile?.preferredFunctions ?? []),
+      ...(input.profile?.skills ?? []),
+      ...input.savedJobs.map((item) => item.job.categoryName),
+      ...input.savedJobs.map((item) => item.job.team),
+      ...input.applications.map((item) => item.jobTitle),
+    ]
+      .map((value) => value.toLowerCase())
+      .filter(Boolean)
+  );
+
+  return input.jobs
+    .filter((job) => !excluded.has(job.slug))
+    .map((job) => {
+      let score = 10;
+      if (job.featured) score += 12;
+      if (job.employerVerification === "verified") score += 16;
+      if (job.internal) score += 6;
+      if (input.profile?.workModes.includes(job.workMode)) score += 10;
+      if (preferenceTerms.has(job.categoryName.toLowerCase())) score += 12;
+      if (preferenceTerms.has(job.team.toLowerCase())) score += 8;
+      if (
+        preferenceTerms.has(job.title.toLowerCase()) ||
+        [...preferenceTerms].some((term) => term && job.title.toLowerCase().includes(term))
+      ) {
+        score += 14;
+      }
+      const skillMatches = job.skills.filter((skill) => preferenceTerms.has(skill.toLowerCase())).length;
+      score += Math.min(skillMatches * 6, 18);
+
+      return {
+        job,
+        score,
+        reason: buildRecommendationReason({
+          job,
+          profile: input.profile,
+          savedJobs: input.savedJobs,
+          applications: input.applications,
+        }),
+      } satisfies JobRecommendation;
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4);
+}
+
+function buildNextActions(input: {
+  checklist: ProfileChecklistItem[];
+  journeys: ApplicationJourney[];
+  savedJobs: SavedJob[];
+}): CandidateNextAction[] {
+  const actions: CandidateNextAction[] = [];
+  const incomplete = input.checklist.filter((item) => !item.complete);
+
+  if (incomplete.length > 0) {
+    actions.push({
+      id: "profile-gap",
+      label: "Finish one profile piece",
+      body: `${incomplete[0].label} still needs love—recruiters notice the gaps first.`,
+      href: incomplete[0].href,
+      tone: "warn",
+    });
+  }
+
+  const interviewJourney = input.journeys.find((journey) => journey.application.stage === "interview");
+  if (interviewJourney) {
+    actions.push({
+      id: `interview-${interviewJourney.application.applicationId}`,
+      label: "Interview prep for this role",
+      body: `${interviewJourney.application.jobTitle} is in interview. Re-read the job, then check Applications for anything new from the team.`,
+      href: "/candidate/applications",
+      tone: "good",
+    });
+  }
+
+  const offerJourney = input.journeys.find((journey) => journey.application.stage === "offer");
+  if (offerJourney) {
+    actions.push({
+      id: `offer-${offerJourney.application.applicationId}`,
+      label: "Offer on the table",
+      body: `${offerJourney.application.jobTitle} reached offer. Read it slowly, then reply with calm questions if you need them.`,
+      href: "/candidate/applications",
+      tone: "good",
+    });
+  }
+
+  if (input.journeys.length === 0 && input.savedJobs.length > 0) {
+    actions.push({
+      id: "saved-first",
+      label: "Turn a saved role into an application",
+      body: `You bookmarked ${input.savedJobs[0].job.title}. If it still feels right, send a short, specific note while it is open.`,
+      href: `/jobs/${input.savedJobs[0].job.slug}`,
+      tone: "neutral",
+    });
+  }
+
+  if (input.journeys.length === 0 && input.savedJobs.length === 0) {
+    actions.push({
+      id: "start-search",
+      label: "Browse open roles",
+      body: "No saves or applications yet—pick a few roles that fit, save them, and apply when you are ready.",
+      href: "/jobs",
+      tone: "neutral",
+    });
+  }
+
+  return actions.slice(0, 4);
 }
 
 function normalizeEmployerVerification(status: string | null | undefined) {
@@ -310,6 +677,10 @@ function buildJobPost(input: {
     isPublished: activityIsJobPublished(row),
     moderationStatus: normalizeJobModerationStatus(asNullableString(row.status), content),
     employerVerification: asString(content.employerVerification || input.employer?.verificationStatus, "pending"),
+    employerTrustScore: asNumber(content.employerTrustScore, input.employer?.trustScore ?? 54),
+    employerResponseSlaHours: asNullableNumber(
+      content.employerResponseSlaHours ?? input.employer?.responseSlaHours ?? null
+    ),
     trustHighlights: asStringArray(content.trustHighlights),
     pipelineStages:
       asStringArray(content.pipelineStages).length > 0 ? asStringArray(content.pipelineStages) : [...DEFAULT_PIPELINE],
@@ -736,6 +1107,7 @@ export async function searchJobs(params: URLSearchParams | Record<string, string
   const employer = asString(getValue("employer")).toLowerCase();
   const workMode = asString(getValue("mode")).toLowerCase();
   const type = asString(getValue("type")).toLowerCase();
+  const loc = asString(getValue("loc")).toLowerCase().trim();
   const internalOnly = asString(getValue("internal")) === "1";
   const verifiedOnly = asString(getValue("verified")) === "1";
 
@@ -744,6 +1116,7 @@ export async function searchJobs(params: URLSearchParams | Record<string, string
     if (employer && job.employerSlug !== employer) return false;
     if (workMode && job.workMode !== workMode) return false;
     if (type && job.employmentType.toLowerCase() !== type) return false;
+    if (loc && !job.location.toLowerCase().includes(loc)) return false;
     if (internalOnly && !job.internal) return false;
     if (verifiedOnly && job.employerVerification !== "verified") return false;
     if (!q) return true;
@@ -932,8 +1305,8 @@ export async function getApplicationById(applicationId: string) {
   return data ? buildApplication(data as Record<string, unknown>) : null;
 }
 
-export async function getCandidateDashboardData(userId: string) {
-  const [profile, documents, applications, savedJobs, alerts, notifications, threads] = await Promise.all([
+export async function getCandidateDashboardData(userId: string): Promise<CandidateDashboardData> {
+  const [profile, documents, applications, savedJobs, alerts, notifications, threads, jobs] = await Promise.all([
     getCandidateProfileByUserId(userId),
     getCandidateDocuments(userId),
     getCandidateApplications(userId),
@@ -941,7 +1314,119 @@ export async function getCandidateDashboardData(userId: string) {
     getJobAlerts(userId),
     getJobsNotifications(userId),
     getJobsThreads(userId),
+    getJobPosts(),
   ]);
+  const applicationIds = applications.map((application) => application.applicationId);
+  const threadIds = threads.map((thread) => thread.id);
+  const admin = createAdminSupabase();
+
+  const [messageRows, timelineRows] = await Promise.all([
+    threadIds.length > 0
+      ? admin.from("support_messages").select("*").in("thread_id", threadIds).order("created_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null }),
+    applicationIds.length > 0
+      ? admin
+          .from("audit_logs")
+          .select("*")
+          .eq("entity_type", "jobs_application")
+          .in("entity_id", applicationIds)
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  const jobMap = new Map(jobs.map((job) => [job.slug, job]));
+  const threadMap = new Map(threads.map((thread) => [thread.referenceId || "", thread]));
+  const messagesByThreadId = new Map<string, ConversationMessage[]>();
+  const timelineByApplicationId = new Map<string, TimelineEvent[]>();
+
+  for (const row of (messageRows.data ?? []) as Array<Record<string, unknown>>) {
+    const message = buildMessage(row);
+    const threadId = asString(row.thread_id);
+    const existing = messagesByThreadId.get(threadId) ?? [];
+    existing.push(message);
+    messagesByThreadId.set(threadId, existing);
+  }
+
+  for (const row of (timelineRows.data ?? []) as Array<Record<string, unknown>>) {
+    const event = buildAudit(row);
+    const applicationId = asString(row.entity_id);
+    const existing = timelineByApplicationId.get(applicationId) ?? [];
+    existing.push(event);
+    timelineByApplicationId.set(applicationId, existing);
+  }
+
+  const applicationJourneys = applications
+    .map((application) => {
+      const job = jobMap.get(application.jobSlug) ?? null;
+      const thread = threadMap.get(application.applicationId) ?? null;
+      const sharedMessages = thread ? messagesByThreadId.get(thread.id) ?? [] : [];
+      const timeline = timelineByApplicationId.get(application.applicationId) ?? [];
+      const pipelineSource = job?.pipelineStages.length ? job.pipelineStages : DEFAULT_PIPELINE;
+      const pipeline = buildPipelineState(pipelineSource, application.stage);
+      const threadActivity = buildThreadActivity(application, thread, sharedMessages);
+      const timelineActivity = buildTimelineActivity(application, timeline);
+      const latestSharedUpdate = [threadActivity, timelineActivity]
+        .filter(Boolean)
+        .sort((a, b) => toTimestamp(b!.createdAt) - toTimestamp(a!.createdAt))[0] ?? null;
+      const nextStep = relativeStageGuidance(application.stage);
+
+      return {
+        application,
+        job,
+        thread,
+        timeline: [...timeline].sort((a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt)),
+        sharedMessages: [...sharedMessages].sort((a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt)),
+        pipeline,
+        stageTone: stageTone(application.stage),
+        stageLabel: humanizeStage(application.stage),
+        progressPercent: progressPercent(application.stage, pipelineSource),
+        latestSharedUpdate,
+        recruiterActionLabel: latestSharedUpdate?.title || nextStep.label,
+        recruiterActionBody: latestSharedUpdate?.body || nextStep.body,
+        recruiterActionAt: latestSharedUpdate?.createdAt || application.updatedAt || application.createdAt,
+        nextStepLabel: nextStep.label,
+        nextStepBody: nextStep.body,
+      } satisfies ApplicationJourney;
+    })
+    .sort((a, b) => toTimestamp(b.recruiterActionAt) - toTimestamp(a.recruiterActionAt));
+
+  const checklist = profileChecklist(profile, documents);
+  const recommendedJobs = buildRecommendations({
+    jobs,
+    profile,
+    savedJobs,
+    applications,
+  });
+  const recruiterFeed = [
+    ...notifications.map(
+      (notification) =>
+        ({
+          id: `notification-${notification.id}`,
+          title: notification.title,
+          body: notification.body,
+          createdAt: notification.createdAt,
+          href: notification.actionUrl,
+          tone:
+            notification.priority === "high"
+              ? "warn"
+              : notification.priority === "urgent"
+                ? "danger"
+                : "neutral",
+          source: "notification",
+        }) satisfies RecruiterActivity
+    ),
+    ...applicationJourneys
+      .map((journey) => journey.latestSharedUpdate)
+      .filter(Boolean)
+      .map((item) => item as RecruiterActivity),
+  ]
+    .sort((a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt))
+    .slice(0, 8);
+  const nextActions = buildNextActions({
+    checklist,
+    journeys: applicationJourneys,
+    savedJobs,
+  });
 
   return {
     profile,
@@ -957,6 +1442,11 @@ export async function getCandidateDashboardData(userId: string) {
         acc[item.stage] = (acc[item.stage] ?? 0) + 1;
         return acc;
       }, {}),
+    applicationJourneys,
+    nextActions,
+    profileChecklist: checklist,
+    recommendedJobs,
+    recruiterFeed,
   };
 }
 

@@ -18,20 +18,46 @@ export async function uploadProfileAvatar(
   file: File,
   userId: string
 ): Promise<{ secureUrl: string; publicId: string }> {
+  return uploadOwnedAsset(file, userId, {
+    folder: "avatars",
+    resourceType: "image",
+    maxBytes: 5 * 1024 * 1024,
+    allowedTypes: new Set(["image/jpeg", "image/jpg", "image/png", "image/webp"]),
+    invalidTypeMessage: "Please upload a JPG, PNG, or WebP image.",
+  });
+}
+
+type UploadOwnedAssetOptions = {
+  folder: string;
+  resourceType?: "image" | "raw" | "auto";
+  maxBytes?: number;
+  allowedTypes?: Set<string>;
+  invalidTypeMessage?: string;
+  publicIdPrefix?: string;
+};
+
+export async function uploadOwnedAsset(
+  file: File,
+  userId: string,
+  options: UploadOwnedAssetOptions
+): Promise<{ secureUrl: string; publicId: string }> {
   if (!(file instanceof File) || file.size <= 0) {
-    throw new Error("No image file provided.");
+    throw new Error("No file provided.");
   }
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error("Please upload an image under 5 MB.");
+
+  if (options.maxBytes && file.size > options.maxBytes) {
+    throw new Error(`Please upload a file under ${Math.round(options.maxBytes / 1024 / 1024)} MB.`);
   }
-  const allowed = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp"]);
-  if (!allowed.has(file.type.toLowerCase())) {
-    throw new Error("Please upload a JPG, PNG, or WebP image.");
+
+  if (options.allowedTypes && !options.allowedTypes.has(file.type.toLowerCase())) {
+    throw new Error(options.invalidTypeMessage || "Unsupported file type.");
   }
 
   const { cloudName, apiKey, apiSecret, baseFolder } = requireCloudinaryEnv();
-  const folder = `${baseFolder}/avatars`;
-  const publicId = `avatar-${userId.slice(0, 8)}-${randomUUID().slice(0, 8)}`;
+  const folder = `${baseFolder}/${options.folder}`;
+  const publicId = `${
+    options.publicIdPrefix || options.folder.replace(/[^a-z0-9]+/gi, "-")
+  }-${userId.slice(0, 8)}-${randomUUID().slice(0, 8)}`;
   const timestamp = Math.floor(Date.now() / 1000);
 
   const payload = `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
@@ -45,8 +71,9 @@ export async function uploadProfileAvatar(
   form.set("folder", folder);
   form.set("public_id", publicId);
 
+  const resourceType = options.resourceType || "auto";
   const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
     { method: "POST", body: form }
   );
 

@@ -3,6 +3,7 @@ import { requireStudioUser } from "@/lib/studio/auth";
 import { studioClientSnapshot } from "@/lib/studio/data";
 import { clientNav } from "@/lib/studio/navigation";
 import { getStudioSnapshot } from "@/lib/studio/store";
+import { clientProjectStatusLabel, friendlyMilestoneStatus } from "@/lib/studio/project-workspace-copy";
 import { StudioWorkspaceShell } from "@/components/studio/workspace/shell";
 
 export default async function ClientProjectsPage() {
@@ -26,13 +27,13 @@ export default async function ClientProjectsPage() {
                 <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{project.summary}</p>
               </div>
               <div className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                {project.status.replaceAll("_", " ")}
+                {clientProjectStatusLabel(project.status)}
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               {project.milestones.map((milestone) => (
                 <span key={milestone.id} className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs text-[var(--studio-ink-soft)]">
-                  {milestone.name} · {milestone.status.replaceAll("_", " ")}
+                  {milestone.name} · {friendlyMilestoneStatus(milestone.status)}
                 </span>
               ))}
             </div>

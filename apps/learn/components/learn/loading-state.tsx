@@ -57,9 +57,9 @@ export function LearnPageLoading({
 }
 
 export function LearnWorkspaceLoading({
-  kicker = "Preparing your academy",
-  title = "Bringing your dashboard into view.",
-  body = "Loading progress, enrollments, reminders, and the next actions that matter most.",
+  kicker = "Your academy",
+  title = "Loading your dashboard.",
+  body = "Preparing your progress, enrollments, and reminders.",
 }: {
   kicker?: string;
   title?: string;

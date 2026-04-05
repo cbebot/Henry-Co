@@ -12,6 +12,7 @@ import {
   getEmployerMembershipsByUser,
   getEmployerProfileBySlug,
   getJobPostBySlug,
+  getJobPosts,
   JOBS_ACTIVITY_ALERT,
   JOBS_ACTIVITY_APPLICATION,
   JOBS_ACTIVITY_EMPLOYER_MEMBERSHIP,
@@ -22,6 +23,7 @@ import {
   JOBS_ACTIVITY_SAVED,
   JOBS_DIVISION,
 } from "@/lib/jobs/data";
+import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
 import {
   createJobsInAppNotification,
   sendJobsEmail,
@@ -108,6 +110,7 @@ async function upsertActivityState(input: {
   metadata: Record<string, unknown>;
   referenceType?: string | null;
   referenceId?: string | null;
+  actionUrl?: string | null;
 }) {
   const admin = createAdminSupabase();
   let query = admin
@@ -122,6 +125,7 @@ async function upsertActivityState(input: {
   }
 
   const { data: existing } = await query.order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const actionUrl = input.actionUrl ? toJobsUrl(input.actionUrl) : asText((existing as Record<string, unknown> | null)?.action_url as string);
 
   if (existing?.id) {
     const { data } = await admin
@@ -133,6 +137,7 @@ async function upsertActivityState(input: {
         metadata: input.metadata,
         reference_type: input.referenceType ?? null,
         reference_id: input.referenceId ?? null,
+        action_url: actionUrl || null,
       } as never)
       .eq("id", existing.id)
       .select("*")
@@ -153,6 +158,7 @@ async function upsertActivityState(input: {
       metadata: input.metadata,
       reference_type: input.referenceType ?? null,
       reference_id: input.referenceId ?? null,
+      action_url: actionUrl || null,
     } as never)
     .select("*")
     .maybeSingle();
@@ -169,6 +175,7 @@ async function upsertReferenceActivityState(input: {
   metadata: Record<string, unknown>;
   referenceType?: string | null;
   referenceId: string;
+  actionUrl?: string | null;
 }) {
   const admin = createAdminSupabase();
   const { data: existing } = await admin
@@ -180,6 +187,7 @@ async function upsertReferenceActivityState(input: {
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+  const actionUrl = input.actionUrl ? toJobsUrl(input.actionUrl) : asText((existing as Record<string, unknown> | null)?.action_url as string);
 
   if (existing?.id) {
     const { data } = await admin
@@ -192,6 +200,7 @@ async function upsertReferenceActivityState(input: {
         metadata: input.metadata,
         reference_type: input.referenceType ?? null,
         reference_id: input.referenceId,
+        action_url: actionUrl || null,
       } as never)
       .eq("id", existing.id)
       .select("*")
@@ -212,6 +221,7 @@ async function upsertReferenceActivityState(input: {
       metadata: input.metadata,
       reference_type: input.referenceType ?? null,
       reference_id: input.referenceId,
+      action_url: actionUrl || null,
     } as never)
     .select("*")
     .maybeSingle();
@@ -442,6 +452,7 @@ export async function saveCandidateProfile(input: {
     metadata,
     referenceType: "jobs_candidate_profile",
     referenceId: input.actor.userId,
+    actionUrl: "/candidate/profile",
   });
 
   await ensurePreferences(input.actor.userId);
@@ -529,7 +540,19 @@ export async function toggleSavedJob(input: {
     .maybeSingle();
 
   if (existing?.id) {
-    await admin.from("customer_activity").delete().eq("id", existing.id);
+    await admin
+      .from("customer_activity")
+      .update({
+        title: `Removed ${job.title} from saved roles`,
+        description: `${job.employerName} · ${job.location}`,
+        status: "removed",
+        action_url: toJobsUrl("/candidate/saved-jobs"),
+        metadata: {
+          ...asObject(existing.metadata),
+          removedAt: new Date().toISOString(),
+        },
+      } as never)
+      .eq("id", existing.id);
     await logAudit({
       actor: input.actor,
       action: "jobs_saved_post_removed",
@@ -548,6 +571,7 @@ export async function toggleSavedJob(input: {
     status: "saved",
     reference_type: "jobs_post",
     reference_id: job.slug,
+    action_url: toJobsUrl(`/jobs/${job.slug}`),
     metadata: {
       jobSlug: job.slug,
       jobTitle: job.title,
@@ -594,6 +618,7 @@ export async function upsertJobAlert(input: {
     },
     referenceType: "jobs_alert",
     referenceId: slugify(input.label),
+    actionUrl: "/candidate/alerts",
   });
 
   await logAudit({
@@ -639,6 +664,7 @@ export async function submitApplication(input: {
   const metadata = {
     applicationId,
     jobSlug: job.slug,
+    jobHref: toJobsUrl(`/jobs/${job.slug}`),
     jobTitle: job.title,
     employerSlug: job.employerSlug,
     employerName: job.employerName,
@@ -666,6 +692,7 @@ export async function submitApplication(input: {
     status: "applied",
     reference_type: "jobs_application",
     reference_id: applicationId,
+    action_url: toJobsUrl("/candidate/applications"),
     metadata,
   } as never);
 
@@ -863,6 +890,7 @@ export async function createEmployerProfile(input: {
     description: description || "Employer profile published into HenryCo Jobs.",
     referenceType: "jobs_employer",
     referenceId: slug,
+    actionUrl: "/employer/company",
     metadata: {
       employerSlug: slug,
       name,
@@ -901,6 +929,7 @@ export async function createEmployerProfile(input: {
     },
     referenceType: "jobs_employer",
     referenceId: slug,
+    actionUrl: "/employer/company",
   });
 
   await upsertReferenceActivityState({
@@ -921,6 +950,7 @@ export async function createEmployerProfile(input: {
     },
     referenceType: "jobs_employer",
     referenceId: slug,
+    actionUrl: "/employer/company",
   });
 
   await createJobsInAppNotification({
@@ -1002,26 +1032,59 @@ export async function createJobPost(input: {
   }
 
   const slug = slugify(asText(input.formData.get("slug")) || `${title}-${employer?.employerSlug || "henryco"}`);
-  const internal = asText(input.formData.get("internal")) === "1";
-  const isPrivileged = input.actor.role === "owner" || input.actor.role === "manager";
-  const moderationStatus = internal || isPrivileged ? "approved" : "pending_review";
-  const isPublished = moderationStatus === "approved";
   const employerSlug = employer?.employerSlug || "henryco-group";
   const employerName = employer?.employerName || "HenryCo Group";
-  const employerProfile = await getEmployerProfileBySlug(employerSlug, { includeUnpublished: true });
+  const isPrivileged = input.actor.role === "owner" || input.actor.role === "manager";
+  const eligibility = await getEmployerPostingEligibility({
+    userId: input.actor.userId,
+    email: input.actor.email,
+    employerSlug,
+    actorRole: input.actor.role,
+  });
+  const internal = asText(input.formData.get("internal")) === "1" && isPrivileged;
+  const employerProfile = eligibility.employer
+    ? { employer: eligibility.employer, jobs: [] }
+    : await getEmployerProfileBySlug(employerSlug, { includeUnpublished: true });
   const pipelineStages = parseList(input.formData.get("pipelineStages"));
   const trustHighlights = parseList(input.formData.get("trustHighlights"));
   const location = asText(input.formData.get("location")) || "Remote";
   const categoryName = asText(input.formData.get("category")) || "Operations";
+  const employerJobs = await getJobPosts({ includeUnpublished: true, employerSlug });
+  const duplicateJob = employerJobs.find((job) => {
+    const sameTitle = job.title.trim().toLowerCase() === title.trim().toLowerCase();
+    const sameLocation = job.location.trim().toLowerCase() === location.trim().toLowerCase();
+    const withinWindow = Date.now() - new Date(job.postedAt).getTime() <= 1000 * 60 * 60 * 24 * 30;
+    return sameTitle && sameLocation && withinWindow;
+  });
+  const recentEmployerJobs = employerJobs.filter((job) => {
+    return Date.now() - new Date(job.postedAt).getTime() <= 1000 * 60 * 60 * 24;
+  });
+  const cooldownTriggered = !isPrivileged && recentEmployerJobs.length >= 3;
+  const moderationStatus =
+    internal || eligibility.autoApprovalAllowed
+      ? "approved"
+      : cooldownTriggered
+        ? "draft"
+        : eligibility.canSubmitForReview
+        ? "pending_review"
+        : "draft";
+  const isPublished = moderationStatus === "approved";
+  const moderationSignals = {
+    duplicateWindowHit: Boolean(duplicateJob),
+    duplicateJobSlug: duplicateJob?.slug || null,
+    cooldownTriggered,
+    postingRequirementsOpen: eligibility.requirements,
+  };
 
   await upsertReferenceActivityState({
     actorUserId: input.actor.userId,
     activityType: JOBS_ACTIVITY_JOB_POST,
-    status: isPublished ? "published" : "pending_review",
+    status: isPublished ? "published" : moderationStatus,
     title,
     description: asText(input.formData.get("summary")) || asText(input.formData.get("description")) || `${employerName} role`,
     referenceType: "jobs_post",
     referenceId: slug,
+    actionUrl: `/employer/jobs/${slug}`,
     metadata: {
       slug,
       title,
@@ -1045,19 +1108,33 @@ export async function createJobPost(input: {
       salaryMax: Number(asText(input.formData.get("salaryMax")) || 0) || null,
       currency: asText(input.formData.get("currency")) || "NGN",
       salaryLabel: asText(input.formData.get("salaryLabel")) || null,
-      featured: asText(input.formData.get("featured")) === "1",
-      internal,
-      isPublished,
-      moderationStatus,
-      employerVerification:
-        internal ? "verified" : employerProfile?.employer.verificationStatus || "pending",
-      trustHighlights:
-        trustHighlights.length > 0
-          ? trustHighlights
-          : asUniqueList([
-              employerProfile?.employer.verificationStatus === "verified" ? "Verified employer" : null,
-              moderationStatus === "approved" ? "Moderated posting" : "Awaiting moderation review",
-              "Structured pipeline",
+        featured: asText(input.formData.get("featured")) === "1",
+        internal,
+        isPublished,
+        moderationStatus,
+        postingEligibility: {
+          trustTier: eligibility.trustTier,
+          trustScore: eligibility.trustScore,
+          verifiedEmail: eligibility.verifiedEmail,
+          membershipActive: eligibility.membershipActive,
+          employerProfileReady: eligibility.employerProfileReady,
+          employerVerificationAllowed: eligibility.employerVerificationAllowed,
+        },
+        moderationSignals,
+        employerVerification:
+          internal ? "verified" : employerProfile?.employer.verificationStatus || "pending",
+        employerTrustScore: employerProfile?.employer.trustScore ?? (internal ? 86 : 54),
+      employerResponseSlaHours: employerProfile?.employer.responseSlaHours ?? 24,
+        trustHighlights:
+          trustHighlights.length > 0
+            ? trustHighlights
+            : asUniqueList([
+                eligibility.trustTier !== "basic"
+                  ? `Shared trust ${eligibility.trustTier.replace(/_/g, " ")}`
+                  : null,
+                employerProfile?.employer.verificationStatus === "verified" ? "Verified employer" : null,
+                moderationStatus === "approved" ? "Moderated posting" : "Awaiting moderation review",
+                "Structured pipeline",
             ]),
       pipelineStages: pipelineStages.length > 0 ? pipelineStages : [...DEFAULT_PIPELINE],
       postedAt: new Date().toISOString(),
@@ -1068,17 +1145,25 @@ export async function createJobPost(input: {
 
   if (!isPublished) {
     await notifyInternalTeam({
-      title: "Job post waiting for review",
-      body: `${title} from ${employerName} is waiting in the moderation queue.`,
+      title: moderationStatus === "draft" ? "Employer role saved as draft" : "Job post waiting for review",
+      body:
+        moderationStatus === "draft"
+          ? `${title} from ${employerName} was forced into draft because posting requirements are still incomplete.`
+          : `${title} from ${employerName} is waiting in the moderation queue.`,
       actionUrl: "/recruiter/jobs",
       actionLabel: "Open jobs queue",
       emailKey: "recruiter_alert",
       emailHeading: "Jobs moderation queue update",
-      emailSummary: `${title} was submitted by ${employerName} and is now waiting for moderation review.`,
+      emailSummary:
+        moderationStatus === "draft"
+          ? `${title} from ${employerName} was saved as draft because the employer still has posting requirements open.`
+          : `${title} was submitted by ${employerName} and is now waiting for moderation review.`,
       emailDetailLines: [
         `Employer: ${employerName}`,
         `Location: ${location}`,
         `Category: ${categoryName}`,
+        ...(duplicateJob ? [`Duplicate signal: matches ${duplicateJob.slug}`] : []),
+        ...(cooldownTriggered ? ["Cooldown signal: employer exceeded the daily posting threshold."] : []),
       ],
       entityType: "jobs_post",
       entityId: slug,
@@ -1104,6 +1189,27 @@ export async function createJobPost(input: {
     });
   }
 
+  await createJobsInAppNotification({
+    userId: input.actor.userId,
+    title:
+      moderationStatus === "approved"
+        ? "Role published"
+        : moderationStatus === "draft"
+          ? "Role saved as draft"
+          : "Role submitted for review",
+    body:
+      moderationStatus === "approved"
+        ? `${title} is now live in HenryCo Jobs.`
+        : moderationStatus === "draft"
+          ? `${title} was saved as draft until trust, company readiness, and moderation requirements are complete.`
+          : `${title} is now waiting in the moderation queue.`,
+    actionUrl: `/employer/jobs/${slug}`,
+    actionLabel: "Open role",
+    priority: moderationStatus === "approved" ? "normal" : "high",
+    referenceType: "jobs_post",
+    referenceId: slug,
+  });
+
   await logAudit({
     actor: input.actor,
     action: "jobs_post_created",
@@ -1114,10 +1220,14 @@ export async function createJobPost(input: {
       moderationStatus,
       isPublished,
       internal,
+      duplicateWindowHit: Boolean(duplicateJob),
+      cooldownTriggered,
+      trustTier: eligibility.trustTier,
+      requirements: eligibility.requirements,
     },
   });
 
-  return { slug };
+  return { slug, moderationStatus };
 }
 
 export async function advanceApplicationStage(input: {
@@ -1144,6 +1254,7 @@ export async function advanceApplicationStage(input: {
     .update({
       status: input.stage,
       metadata: nextMetadata,
+      action_url: toJobsUrl("/candidate/applications"),
     } as never)
     .eq("reference_id", input.applicationId)
     .eq("division", JOBS_DIVISION)
@@ -1314,12 +1425,14 @@ export async function updateEmployerVerification(input: {
       verificationNotes: [input.reason || `Verification changed to ${input.status}`],
       updatedAt: new Date().toISOString(),
     },
+    actionUrl: "/employer/company",
   });
 
   if (profileRow?.id) {
     await admin
       .from("customer_activity")
       .update({
+        action_url: toJobsUrl("/employer/company"),
         metadata: {
           ...profileMetadata,
           verificationStatus: input.status,

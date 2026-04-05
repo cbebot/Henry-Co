@@ -55,6 +55,7 @@ body {
   margin: 0;
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
   color: var(--learn-ink);
   font-family: var(--font-learn-sans);
   background:
@@ -74,6 +75,13 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+button,
+summary,
+a.learn-button-primary,
+a.learn-button-secondary {
+  touch-action: manipulation;
 }
 
 ::selection {
@@ -170,6 +178,7 @@ textarea {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 44px;
   background: linear-gradient(135deg, #e7fff7 0%, #b3f6e2 42%, #6fd0b6 100%);
   color: #041915;
   box-shadow: 0 24px 60px rgba(95, 197, 171, 0.24);
@@ -194,6 +203,7 @@ textarea {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 44px;
   border: 1px solid var(--learn-line-strong);
   background: rgba(255, 255, 255, 0.04);
   color: var(--learn-ink);
@@ -213,9 +223,12 @@ textarea {
 .learn-select,
 .learn-textarea {
   width: 100%;
+  min-height: 52px;
   border: 1px solid var(--learn-line);
   background: rgba(255, 255, 255, 0.05);
   color: var(--learn-ink);
+  font-size: 16px;
+  line-height: 1.5;
   outline: none;
   transition:
     border-color 150ms ease,
@@ -287,6 +300,58 @@ summary::-webkit-details-marker {
   select,
   textarea {
     font-size: 16px;
+  }
+}
+
+@media print {
+  :root,
+  .light {
+    --learn-ink: #0d231d;
+    --learn-ink-soft: rgba(13, 35, 29, 0.72);
+    --learn-bg: #ffffff;
+    --learn-bg-soft: #ffffff;
+    --learn-surface: rgba(255, 255, 255, 1);
+    --learn-surface-strong: rgba(255, 255, 255, 1);
+    --learn-line: rgba(13, 35, 29, 0.12);
+    --learn-line-strong: rgba(13, 35, 29, 0.18);
+    --learn-shadow: none;
+    --learn-shadow-soft: none;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0d231d !important;
+  }
+
+  header,
+  footer,
+  .learn-print-hidden {
+    display: none !important;
+  }
+
+  .learn-shell::before,
+  .learn-mesh::before,
+  .learn-hero::before {
+    display: none !important;
+  }
+
+  .learn-panel {
+    border-color: rgba(13, 35, 29, 0.14) !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .learn-print-sheet {
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
 

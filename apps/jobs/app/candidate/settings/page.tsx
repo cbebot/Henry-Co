@@ -11,14 +11,14 @@ export default async function CandidateSettingsPage() {
     <WorkspaceShell
       area="candidate"
       title="Settings"
-      subtitle="Notification routing and account defaults stay aligned with the future shared HenryCo account."
+      subtitle="Manage your notification preferences and account settings."
       nav={candidateNav}
       activeHref="/candidate/settings"
       accent="linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%)"
     >
-      <SectionCard title="Notification defaults" body="Transactional email is enabled for live application movement. WhatsApp depends on provider eligibility.">
+      <SectionCard title="Notifications" body="Control how you receive updates about your applications and alerts.">
         <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm leading-7 text-[var(--jobs-muted)]">
-          Candidate settings are kept server-side through the shared customer preferences record. Jobs-specific alerts live in the jobs activity layer.
+          Email notifications are enabled by default for application updates. You can manage job alerts from the Alerts page. Additional notification settings will be available here soon.
         </div>
       </SectionCard>
     </WorkspaceShell>

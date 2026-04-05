@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const presetAmounts = [1000, 2000, 5000, 10000, 20000, 50000];
 
 export default function AddMoneyForm() {
+  const router = useRouter();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -14,7 +16,7 @@ export default function AddMoneyForm() {
     e.preventDefault();
     const value = parseInt(amount, 10);
     if (!value || value < 100) {
-      setMessage({ type: "error", text: "Minimum amount is NGN 100" });
+      setMessage({ type: "error", text: "Minimum amount is NGN 100." });
       return;
     }
 
@@ -25,14 +27,19 @@ export default function AddMoneyForm() {
       const res = await fetch("/api/wallet/fund", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount_naira: value }),
+        body: JSON.stringify({
+          provider: "bank_transfer",
+          amountNaira: value,
+        }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to process");
+      const data = (await res.json()) as { error?: string; requestId?: string };
+      if (!res.ok || !data.requestId) {
+        throw new Error(data.error || "Unable to create funding request.");
+      }
 
-      setMessage({ type: "success", text: `NGN ${value.toLocaleString()} added to your wallet successfully.` });
-      setAmount("");
+      router.push(`/wallet/funding/${data.requestId}`);
+      router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
       setMessage({ type: "error", text: msg });
@@ -88,10 +95,14 @@ export default function AddMoneyForm() {
       <button
         type="submit"
         disabled={loading || !amount}
-        className="acct-button-primary mt-4 w-full rounded-xl py-3"
+        className="acct-button-primary mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3"
       >
-        {loading ? <Loader2 size={18} className="animate-spin" /> : "Add to wallet"}
+        {loading ? <Loader2 size={18} className="animate-spin" /> : null}
+        {loading ? "Creating request…" : "Continue to bank transfer"}
       </button>
+      <p className="mt-3 text-center text-xs text-[var(--acct-muted)]">
+        You’ll confirm bank details and upload proof on the next step—balance updates after verification.
+      </p>
     </form>
   );
 }

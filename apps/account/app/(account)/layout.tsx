@@ -1,27 +1,22 @@
-import { requireAccountUser } from "@/lib/auth";
-import { getUnreadNotificationCount } from "@/lib/account-data";
-import Sidebar from "@/components/layout/Sidebar";
-import MobileNav from "@/components/layout/MobileNav";
+import { Suspense, type ReactNode } from "react";
+import AccountLayoutInner from "./AccountLayoutInner";
+import AccountRouteLoading from "@/components/layout/AccountRouteLoading";
 
-export default async function AccountLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAccountUser();
-  const unreadCount = await getUnreadNotificationCount(user.id);
-
-  const userInfo = {
-    fullName: user.fullName,
-    email: user.email,
-    avatarUrl: user.avatarUrl,
-  };
-
+/**
+ * Suspense-wrapped chrome so the first byte can stream while auth + profile resolve.
+ * No artificial delay — fallback only reflects real server work in flight.
+ */
+export default function AccountLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen">
-      <Sidebar user={userInfo} unreadCount={unreadCount} />
-      <MobileNav user={userInfo} unreadCount={unreadCount} />
-      <main className="lg:pl-[var(--acct-sidebar-width)]">
-        <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          {children}
-        </div>
-      </main>
-    </div>
+    <Suspense
+      fallback={
+        <AccountRouteLoading
+          title="Opening your account"
+          description="Confirming your session and loading navigation."
+        />
+      }
+    >
+      <AccountLayoutInner>{children}</AccountLayoutInner>
+    </Suspense>
   );
 }

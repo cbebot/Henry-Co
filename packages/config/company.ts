@@ -33,16 +33,22 @@ export type DivisionConfig = {
   publicNav: NavItem[];
 };
 
-const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
-
 function normalizeHostname(value?: string | null) {
   return String(value || "")
     .trim()
+    .replace(/\\r\\n/gi, "")
+    .replace(/\\n/gi, "")
+    .replace(/\\r/gi, "")
+    .replace(/[\r\n]+/g, "")
     .toLowerCase()
     .replace(/^https?:\/\//, "")
     .replace(/\/.*$/, "")
     .replace(/:\d+$/, "");
 }
+
+const BASE_DOMAIN =
+  normalizeHostname(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com") ||
+  "henrycogroup.com";
 
 export const COMPANY = {
   group: {
@@ -279,9 +285,9 @@ export const COMPANY = {
       supportEmail: "jobs@henrycogroup.com",
       supportPhone: "+2349133957084",
       publicNav: [
-        { label: "Jobs", href: "/jobs" },
+        { label: "Find jobs", href: "/jobs" },
         { label: "Talent", href: "/talent" },
-        { label: "Employers", href: "/employer" },
+        { label: "Hire", href: "/hire" },
         { label: "Careers", href: "/careers" },
         { label: "Trust", href: "/trust" },
         { label: "Help", href: "/help" }
@@ -292,11 +298,11 @@ export const COMPANY = {
       key: "learn",
       name: "HenryCo Learn",
       shortName: "Learn",
-      sub: "Academy, internal training, certification, and enablement",
+      sub: "Courses, paths, quizzes, and verified certificates",
       tagline:
-        "A premium academy for public learning, internal readiness, certification, and business capability building.",
+        "Practical courses you can finish—with clear progress, fair assessments, and credentials employers can check.",
       description:
-        "HenryCo Learn delivers public courses, internal training, certification programs, partner enablement, onboarding tracks, and premium knowledge products through one calm, credible academy experience.",
+        "Browse structured programs, learn at your own pace, pass short assessments where required, and earn HenryCo certificates with a public verification code. Your enrollments and progress also appear in your HenryCo account dashboard.",
       path: "/",
       subdomain: "learn",
       accent: "#3C8C7A",
@@ -306,8 +312,10 @@ export const COMPANY = {
       supportPhone: "+2349133957084",
       publicNav: [
         { label: "Courses", href: "/courses" },
-        { label: "Paths", href: "/paths/marketplace-seller-academy" },
-        { label: "Certifications", href: "/certifications" },
+        { label: "Paths", href: "/paths" },
+        { label: "How it works", href: "/academy" },
+        { label: "Certificates", href: "/certifications" },
+        { label: "Teach", href: "/teach" },
         { label: "Trust", href: "/trust" },
         { label: "Help", href: "/help" }
       ],
@@ -327,9 +335,24 @@ export function getDivisionUrl(key: DivisionKey) {
   return `https://${division.subdomain}.${COMPANY.group.baseDomain}`;
 }
 
+export function getHubUrl(path = "/") {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `https://${COMPANY.group.baseDomain}${normalizedPath}`;
+}
+
 export function getAccountUrl(path = "/") {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   return `https://account.${COMPANY.group.baseDomain}${normalizedPath}`;
+}
+
+export function getHqUrl(path = "/") {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `https://hq.${COMPANY.group.baseDomain}${normalizedPath}`;
+}
+
+export function getWorkspaceUrl(path = "/") {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `https://workspace.${COMPANY.group.baseDomain}${normalizedPath}`;
 }
 
 export function getSharedCookieDomain(hostname?: string | null) {

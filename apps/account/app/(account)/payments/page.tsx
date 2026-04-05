@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CreditCard, Plus, Trash2 } from "lucide-react";
+import { CreditCard, Plus } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import { getPaymentMethods } from "@/lib/account-data";
 import PageHeader from "@/components/layout/PageHeader";

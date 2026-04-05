@@ -1,18 +1,40 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { cookies } from "next/headers";
+import localFont from "next/font/local";
 import { getDivisionConfig } from "@henryco/config";
-import ThemeProvider from "@/components/providers/theme-provider";
+import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
 
-const sans = Manrope({
-  subsets: ["latin"],
+const sans = localFont({
+  src: "./fonts/property-sans-latin.woff2",
   variable: "--font-property-sans",
+  weight: "200 800",
+  display: "swap",
+  fallback: ["Aptos", "Segoe UI Variable", "Segoe UI", "system-ui", "sans-serif"],
 });
 
-const display = Cormorant_Garamond({
-  subsets: ["latin"],
+const display = localFont({
+  src: [
+    {
+      path: "./fonts/property-display-latin.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/property-display-latin.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "./fonts/property-display-latin.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-property-display",
-  weight: ["500", "600", "700"],
+  display: "swap",
+  fallback: ["Times New Roman", "Georgia", "serif"],
 });
 
 const property = getDivisionConfig("property");
@@ -33,10 +55,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const dir = isRtlLocale(lang) ? "rtl" : "ltr";
+
   return (
-    <html lang="en" suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
+    <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
+        <HenryCoThemeBlocking />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

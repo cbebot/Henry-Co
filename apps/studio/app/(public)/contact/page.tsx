@@ -32,7 +32,7 @@ export default async function ContactPage() {
             Start the Studio brief
           </Link>
           <Link href="/pricing" className="studio-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
-            Review package lanes
+            View packages
           </Link>
         </div>
       </div>

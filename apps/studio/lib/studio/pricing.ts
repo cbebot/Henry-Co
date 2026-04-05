@@ -8,6 +8,13 @@ import type {
   StudioProposal,
   StudioService,
 } from "@/lib/studio/types";
+import {
+  defaultStudioRequestConfig,
+  findModifierOptionByLabel,
+  findPricedOptionByLabel,
+  type StudioModifierOption,
+  type StudioRequestConfig,
+} from "@/lib/studio/request-config";
 
 export type StudioPriceLine = {
   label: string;
@@ -25,67 +32,15 @@ export type StudioPricingSummary = {
 type EstimateInput = {
   service: StudioService;
   package?: StudioPackage | null;
-  brief?: Pick<StudioBrief, "requiredFeatures" | "urgency"> | null;
+  brief?: Pick<StudioBrief, "requiredFeatures" | "urgency" | "timeline"> | null;
   customRequest?: Pick<
     StudioCustomRequest,
     "projectType" | "platformPreference" | "pageRequirements" | "addonServices"
   > | null;
 };
 
-const pageRequirementCosts = new Map<string, number>([
-  ["Homepage and offer pages", 240000],
-  ["Services or solution pages", 180000],
-  ["About, team, and trust pages", 160000],
-  ["Case studies or proof pages", 220000],
-  ["Pricing, proposal, or quote surfaces", 180000],
-  ["Client account or portal views", 620000],
-  ["Admin dashboard or internal control room", 780000],
-  ["Checkout, payment, or invoice views", 280000],
-]);
-
-const featureCosts = new Map<string, number>([
-  ["CMS or structured content management", 320000],
-  ["Admin dashboard", 760000],
-  ["Role-based permissions", 280000],
-  ["Payments and invoicing", 460000],
-  ["Bookings, scheduling, or calendar logic", 420000],
-  ["Client account area", 620000],
-  ["Automation and notifications", 540000],
-  ["Analytics and reporting", 380000],
-  ["CRM, ERP, or third-party integrations", 680000],
-  ["File vault or delivery library", 340000],
-]);
-
-const addonCosts = new Map<string, number>([
-  ["Brand identity", 650000],
-  ["Copywriting and messaging", 380000],
-  ["SEO foundation", 320000],
-  ["Launch campaign or sales pages", 540000],
-  ["Email lifecycle automation", 450000],
-  ["WhatsApp customer workflow", 420000],
-  ["Maintenance or retained support", 600000],
-  ["Launch support and training", 300000],
-]);
-
-const platformCosts = new Map<string, number>([
-  ["Website only", 0],
-  ["Web app / SaaS product", 1050000],
-  ["Mobile app", 1450000],
-  ["Website plus admin dashboard", 900000],
-  ["Client portal plus internal operations layer", 1750000],
-  ["Commerce storefront plus backend operations layer", 1550000],
-  ["Best-fit recommendation", 0],
-]);
-
 function roundAmount(value: number) {
   return Math.max(0, Math.round(value));
-}
-
-function urgencyRate(urgency?: string | null) {
-  const normalized = String(urgency || "").trim().toLowerCase();
-  if (normalized.includes("urgent")) return 0.18;
-  if (normalized.includes("priority")) return 0.08;
-  return 0;
 }
 
 export function depositRateForTotal(total: number) {
@@ -94,11 +49,29 @@ export function depositRateForTotal(total: number) {
   return 0.35;
 }
 
-function sumMappedCosts(values: string[] | undefined, costs: Map<string, number>) {
-  return (values ?? []).reduce((sum, value) => sum + (costs.get(value) ?? 0), 0);
+function applyModifier(base: number, option: StudioModifierOption | null) {
+  if (!option || option.value <= 0) return 0;
+  if (option.modifierType === "percent") {
+    return roundAmount(base * option.value);
+  }
+  return roundAmount(option.value);
 }
 
-export function estimateStudioPricing(input: EstimateInput): StudioPricingSummary {
+function sumOptionCosts(
+  values: string[] | undefined,
+  options: StudioRequestConfig["pageOptions"],
+  serviceKind?: StudioService["kind"]
+) {
+  return (values ?? []).reduce((sum, value) => {
+    const option = findPricedOptionByLabel(options, value, serviceKind);
+    return sum + (option?.amount ?? 0);
+  }, 0);
+}
+
+export function estimateStudioPricing(
+  input: EstimateInput,
+  config: StudioRequestConfig = defaultStudioRequestConfig()
+): StudioPricingSummary {
   const service = input.service;
   const pkg = input.package ?? null;
   const brief = input.brief ?? null;
@@ -119,8 +92,25 @@ export function estimateStudioPricing(input: EstimateInput): StudioPricingSummar
       detail: customRequest?.projectType || service.headline,
     });
 
+    const projectTypeOption = findPricedOptionByLabel(
+      config.projectTypes,
+      customRequest?.projectType || null,
+      service.kind
+    );
+    if ((projectTypeOption?.amount ?? 0) > 0) {
+      lines.push({
+        label: "Project category",
+        amount: roundAmount(projectTypeOption?.amount ?? 0),
+        detail: projectTypeOption?.label || null,
+      });
+    }
+
     const platformAmount =
-      platformCosts.get(customRequest?.platformPreference || "") ?? 0;
+      findPricedOptionByLabel(
+        config.platformOptions,
+        customRequest?.platformPreference || null,
+        service.kind
+      )?.amount ?? 0;
     if (platformAmount > 0) {
       lines.push({
         label: "Platform architecture",
@@ -129,7 +119,7 @@ export function estimateStudioPricing(input: EstimateInput): StudioPricingSummar
       });
     }
 
-    const pageAmount = sumMappedCosts(customRequest?.pageRequirements, pageRequirementCosts);
+    const pageAmount = sumOptionCosts(customRequest?.pageRequirements, config.pageOptions, service.kind);
     if (pageAmount > 0) {
       lines.push({
         label: "Interfaces and page systems",
@@ -137,32 +127,47 @@ export function estimateStudioPricing(input: EstimateInput): StudioPricingSummar
         detail: `${customRequest?.pageRequirements?.length || 0} scoped surface(s)`,
       });
     }
+  }
 
-    const featureAmount = sumMappedCosts(brief?.requiredFeatures, featureCosts);
-    if (featureAmount > 0) {
-      lines.push({
-        label: "Functional modules",
-        amount: featureAmount,
-        detail: `${brief?.requiredFeatures?.length || 0} premium module(s)`,
-      });
-    }
+  const featureAmount = sumOptionCosts(brief?.requiredFeatures, config.moduleOptions, service.kind);
+  if (featureAmount > 0) {
+    lines.push({
+      label: "Functional modules",
+      amount: featureAmount,
+      detail: `${brief?.requiredFeatures?.length || 0} premium module(s)`,
+    });
+  }
 
-    const addonAmount = sumMappedCosts(customRequest?.addonServices, addonCosts);
-    if (addonAmount > 0) {
-      lines.push({
-        label: "Growth add-ons",
-        amount: addonAmount,
-        detail: `${customRequest?.addonServices?.length || 0} selected add-on(s)`,
-      });
-    }
+  const addonAmount = sumOptionCosts(customRequest?.addonServices, config.addOnOptions, service.kind);
+  if (addonAmount > 0) {
+    lines.push({
+      label: "Growth add-ons",
+      amount: addonAmount,
+      detail: `${customRequest?.addonServices?.length || 0} selected add-on(s)`,
+    });
   }
 
   const subtotal = lines.reduce((sum, line) => sum + line.amount, 0);
-  const rushRate = urgencyRate(brief?.urgency);
-  if (rushRate > 0) {
+  const timelineModifier = applyModifier(
+    subtotal,
+    findModifierOptionByLabel(config.timelineOptions, brief?.timeline || null, service.kind)
+  );
+  if (timelineModifier > 0) {
+    lines.push({
+      label: "Timeline compression premium",
+      amount: timelineModifier,
+      detail: brief?.timeline || null,
+    });
+  }
+
+  const urgencyModifier = applyModifier(
+    subtotal,
+    findModifierOptionByLabel(config.urgencyOptions, brief?.urgency || null, service.kind)
+  );
+  if (urgencyModifier > 0) {
     lines.push({
       label: "Priority delivery premium",
-      amount: roundAmount(subtotal * rushRate),
+      amount: urgencyModifier,
       detail: brief?.urgency || null,
     });
   }
@@ -202,6 +207,7 @@ export function buildProposalPricingBreakdown(input: {
   package: StudioPackage | null;
   brief: StudioBrief | null;
   customRequest: StudioCustomRequest | null;
+  requestConfig?: StudioRequestConfig | null;
 }) {
   if (!input.service) {
     return [
@@ -218,7 +224,7 @@ export function buildProposalPricingBreakdown(input: {
     package: input.package,
     brief: input.brief,
     customRequest: input.customRequest,
-  });
+  }, input.requestConfig ?? defaultStudioRequestConfig());
 
   const delta = input.proposal.investment - estimated.total;
   const lines = [...estimated.lines];

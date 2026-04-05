@@ -338,7 +338,7 @@ assert(
   failures
 );
 assert(
-  jobsCandidate.status === 200 && jobsCandidate.body.includes("Jobs Module"),
+  jobsCandidate.status === 200 && jobsCandidate.body.includes("Candidate hub"),
   "Jobs candidate workspace did not render from the shared session.",
   failures
 );

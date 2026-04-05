@@ -1,4 +1,4 @@
-import { CheckCircle2, FileStack, GraduationCap, Sparkles, UsersRound } from "lucide-react";
+import { CheckCircle2, FileStack, Sparkles, UsersRound } from "lucide-react";
 import { submitTeacherApplicationAction } from "@/lib/learn/actions";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getTeacherApplicationForViewer } from "@/lib/learn/data";
@@ -36,48 +36,42 @@ export default async function TeachPage({
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <section className="learn-panel learn-hero learn-mesh rounded-[2.8rem] p-8 sm:p-10 xl:p-12">
         <div className="flex flex-wrap gap-2">
-          <LearnStatusBadge label="Teach with HenryCo" tone="signal" />
-          <LearnStatusBadge label="Instructor pipeline" />
-          <LearnStatusBadge label="Revenue-share ready" tone="success" />
+          <LearnStatusBadge label="Instructor applications" tone="signal" />
+          <LearnStatusBadge label="Manual review" />
+          <LearnStatusBadge label="Approval not automatic" tone="warning" />
         </div>
         <h1 className="learn-heading mt-6 text-[3rem] text-[var(--learn-ink)] sm:text-[4.4rem]">
-          Teach serious skills through a calmer, premium academy.
+          Teach on a platform that protects learners—and your reputation.
         </h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--learn-ink-soft)]">
-          HenryCo Learn is built for instructors who can teach with clarity, professional judgment,
-          and a real point of view. We review every application carefully, connect it to one
-          HenryCo identity, and prepare approved instructors for structured onboarding instead of a
-          rough creator free-for-all.
+          HenryCo Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one HenryCo account so review, onboarding, and any future commercial relationship stay coherent.
         </p>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <LearnPanel className="rounded-[1.8rem] p-5">
             <Sparkles className="h-5 w-5 text-[var(--learn-copper)]" />
             <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-              Premium learning standards
+              Quality expectations
             </h2>
             <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              We prefer instructors who can sequence ideas, reduce noise, and create course
-              experiences learners finish with pride.
+              Outlines, outcomes, and respect for learners’ time matter as much as charisma. We decline proposals that look generic, thin, or misaligned with HenryCo audiences.
             </p>
           </LearnPanel>
           <LearnPanel className="rounded-[1.8rem] p-5">
             <UsersRound className="h-5 w-5 text-[var(--learn-copper)]" />
             <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-              Public and internal reach
+              Who sees your work
             </h2>
             <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              HenryCo Learn supports public learners, internal readiness, partner enablement, and
-              future academy launches from one connected platform.
+              Programs may serve the public, internal teams, or partners. We match instructors to the audiences where their expertise is strongest and the business need is clearest.
             </p>
           </LearnPanel>
           <LearnPanel className="rounded-[1.8rem] p-5">
             <FileStack className="h-5 w-5 text-[var(--learn-copper)]" />
             <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-              Structured review and onboarding
+              After you apply
             </h2>
             <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              Applications move through review, changes, approval, and onboarding readiness without
-              losing context, supporting material, or payout planning.
+              Submissions are read by academy operations. We may approve, request specific revisions, or decline. Nothing is published until onboarding and content checks are complete.
             </p>
           </LearnPanel>
         </div>
@@ -86,9 +80,9 @@ export default async function TeachPage({
       <section className="mt-10 grid gap-6 xl:grid-cols-[0.88fr,1.12fr]">
         <LearnPanel className="rounded-[2rem]">
           <LearnSectionIntro
-            kicker="What We Look For"
-            title="Strong operators, credible specialists, and teachers with taste."
-            body="The best HenryCo instructors combine subject expertise with calm delivery, practical structure, and a point of view that can hold up in premium learning products."
+            kicker="Who should apply"
+            title="Experienced people who can teach—not just talk."
+            body="We welcome operators, trainers, and subject-matter experts who already help others succeed: marketplace leads, CX and care specialists, logistics and field managers, digital-skills coaches, and similar roles. You should be comfortable committing to a syllabus, deadlines, and learner support standards."
           />
           <div className="mt-6 space-y-4 text-sm leading-7 text-[var(--learn-ink-soft)]">
             <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
@@ -100,19 +94,15 @@ export default async function TeachPage({
               </p>
             </div>
             <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
-              <p className="font-semibold text-[var(--learn-ink)]">Review flow</p>
+              <p className="font-semibold text-[var(--learn-ink)]">Verification & review</p>
               <p className="mt-2">
-                Submit your background, links, and course proposal. The academy team reviews it,
-                requests changes where needed, and moves strong applications into approval and
-                onboarding.
+                We validate your identity against your HenryCo profile, read your credentials and samples, and assess whether your proposed course fits our learners and quality bar. Most applications receive a decision or a request for more detail—not instant approval.
               </p>
             </div>
             <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
-              <p className="font-semibold text-[var(--learn-ink)]">Commercial readiness</p>
+              <p className="font-semibold text-[var(--learn-ink)]">Revenue & contracts</p>
               <p className="mt-2">
-                Revenue-share and payout setup are handled privately through academy operations after
-                approval. Public applicants see clean opportunity language, not messy finance
-                internals.
+                Where a program is paid, HenryCo may offer revenue share or other instructor compensation. Terms are agreed in writing after approval—they are not promised on this page and vary by program. We never ask for payment to review your application.
               </p>
             </div>
           </div>
@@ -124,7 +114,7 @@ export default async function TeachPage({
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-[var(--learn-mint)]" />
                 <p className="text-sm font-semibold text-[var(--learn-mint-soft)]">
-                  Your teaching application is now in review.
+                  Thank you—your application is in queue for human review. Watch this page and your email for updates.
                 </p>
               </div>
             </LearnPanel>
@@ -135,6 +125,7 @@ export default async function TeachPage({
               <div className="flex flex-wrap items-center gap-2">
                 <LearnStatusBadge label={`Status: ${application.status.replace(/_/g, " ")}`} tone={application.status === "approved" ? "success" : application.status === "changes_requested" ? "warning" : "signal"} />
                 <LearnStatusBadge label={application.expertiseArea} />
+                <LearnStatusBadge label={`Payout: ${application.payoutModel.replace(/_/g, " ")}`} />
               </div>
               <h2 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
                 Existing application
@@ -195,12 +186,48 @@ export default async function TeachPage({
             </LearnPanel>
           ) : null}
 
+          <LearnPanel className="rounded-[2rem]">
+            <LearnSectionIntro
+              kicker="Review stages"
+              title="What happens after you click submit."
+              body="There is no automatic “you’re in.” Each stage exists so learners can trust who teaches them—and so you understand what we expect before you invest more time."
+            />
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  label: "1. Submitted",
+                  body: "We store your answers, files, and proposal against your HenryCo identity so nothing is lost between systems.",
+                },
+                {
+                  label: "2. Under review",
+                  body: "Academy staff assess expertise, topic fit, and whether your outline meets our learner experience standards.",
+                },
+                {
+                  label: "3. Decision",
+                  body: "We approve, ask for targeted changes with written notes, or decline. Silence is not a strategy—we aim to respond clearly.",
+                },
+                {
+                  label: "4. Onboarding",
+                  body: "Approved instructors complete setup steps (access, guidelines, and where relevant commercial paperwork) before teaching publicly.",
+                },
+              ].map((step) => (
+                <div
+                  key={step.label}
+                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4"
+                >
+                  <p className="text-sm font-semibold text-[var(--learn-ink)]">{step.label}</p>
+                  <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">{step.body}</p>
+                </div>
+              ))}
+            </div>
+          </LearnPanel>
+
           {!viewer.user ? (
             <LearnPanel className="rounded-[2rem]">
               <LearnSectionIntro
                 kicker="Apply"
-                title="Sign in through HenryCo Account to apply."
-                body="Teaching applications are tied to the shared HenryCo identity model so review, onboarding, and future instructor payouts stay connected to one account."
+                title="Sign in with your HenryCo account first."
+                body="We only accept teaching applications from verified account holders. That protects applicants, learners, and HenryCo from impersonation—and keeps your status visible in one dashboard."
               />
               <a
                 href={getSharedAuthUrl("login", "/teach")}
@@ -212,11 +239,11 @@ export default async function TeachPage({
           ) : canEdit ? (
             <LearnPanel className="rounded-[2rem]">
               <LearnSectionIntro
-                kicker="Application Form"
-                title={application ? "Update your teaching application." : "Apply to teach with HenryCo."}
-                body="This application is reviewed by academy operations. Keep it specific, credible, and practical."
+                kicker="Application form"
+                title={application ? "Update your teaching application" : "Apply to teach with HenryCo"}
+                body="Be specific. We read every field. Vague pitches or missing proof slow the process down. Honesty about your availability and experience speeds it up."
               />
-              <form action={submitTeacherApplicationAction} className="mt-6 grid gap-4 md:grid-cols-2">
+              <form action={submitTeacherApplicationAction} encType="multipart/form-data" className="mt-6 grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-[var(--learn-ink)]">Full name</label>
                   <input
@@ -340,7 +367,15 @@ export default async function TeachPage({
                 </div>
               </form>
             </LearnPanel>
-          ) : null}
+          ) : (
+            <LearnPanel className="rounded-[2rem]">
+              <LearnSectionIntro
+                kicker="Application in progress"
+                title="We’re already reviewing this submission."
+                body="You’ll hear from us—or see notes on this page—if we need anything else. While a decision is pending, the form stays closed so reviewers always work from one consistent version."
+              />
+            </LearnPanel>
+          )}
         </div>
       </section>
     </main>

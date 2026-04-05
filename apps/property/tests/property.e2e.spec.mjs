@@ -101,12 +101,28 @@ async function waitForValue(label, reader, predicate, timeoutMs = 30_000) {
 
 async function findInquiryByEmail(email) {
   const inquiries = await listJsonCollection("inquiries");
-  return inquiries.find((record) => record.email === email) ?? null;
+  return (
+    inquiries
+      .filter((record) => record.email === email)
+      .sort(
+        (left, right) =>
+          new Date(right.updatedAt || right.createdAt || 0).getTime() -
+          new Date(left.updatedAt || left.createdAt || 0).getTime()
+      )[0] ?? null
+  );
 }
 
 async function findViewingByEmail(email) {
   const viewings = await listJsonCollection("viewings");
-  return viewings.find((record) => record.attendeeEmail === email) ?? null;
+  return (
+    viewings
+      .filter((record) => record.attendeeEmail === email)
+      .sort(
+        (left, right) =>
+          new Date(right.updatedAt || right.createdAt || 0).getTime() -
+          new Date(left.updatedAt || left.createdAt || 0).getTime()
+      )[0] ?? null
+  );
 }
 
 async function findListingByTitle(title) {
@@ -505,8 +521,8 @@ test("owner save flow, ops updates, and privileged workspaces render for the map
   ).toBeTruthy();
 
   for (const route of ["/owner", "/agent", "/support", "/admin", "/moderation"]) {
-    await page.goto(route);
+    await page.goto(route, { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(new RegExp(`${route.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
-    await expect(page.locator("main")).toBeVisible();
+    await expect(page.getByRole("main").first()).toBeVisible();
   }
 });

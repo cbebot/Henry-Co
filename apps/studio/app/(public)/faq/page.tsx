@@ -8,7 +8,7 @@ export default async function FaqPage() {
       <section className="studio-panel studio-mesh rounded-[2.4rem] px-7 py-10 sm:px-10">
         <div className="max-w-3xl">
           <div className="studio-kicker">FAQ</div>
-          <h1 className="studio-heading mt-4">Answers for buyers funding serious digital delivery.</h1>
+          <h1 className="studio-heading mt-4">Common questions about working with HenryCo Studio.</h1>
         </div>
       </section>
 

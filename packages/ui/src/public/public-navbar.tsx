@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -19,6 +20,8 @@ export function PublicNavbar({
   primaryCta,
   secondaryCta,
   auxLink,
+  accountMenu,
+  headerClassName,
 }: {
   brand: {
     name: string;
@@ -29,11 +32,20 @@ export function PublicNavbar({
   primaryCta?: NavItem;
   secondaryCta?: NavItem;
   auxLink?: NavItem;
+  /** Signed-in chip or sign-in control — render from each app’s session */
+  accountMenu?: ReactNode;
+  /** App-specific shell styling (e.g. division theme tokens) */
+  headerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-black/10 bg-white/75 backdrop-blur-2xl dark:border-white/10 dark:bg-[#07111F]/70">
+    <header
+      className={cn(
+        "sticky top-0 z-50 border-b border-black/10 bg-white/75 backdrop-blur-2xl dark:border-white/10 dark:bg-[#07111F]/70",
+        headerClassName
+      )}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 sm:px-8 lg:px-10">
         <Link href={brand.href || "/"} className="min-w-0">
           <div className="text-base font-black tracking-[0.02em] text-zinc-950 dark:text-white">
@@ -86,10 +98,12 @@ export function PublicNavbar({
               {primaryCta.label}
             </PublicButton>
           ) : null}
+          {accountMenu}
           <ThemeToggle />
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
+          {accountMenu}
           <ThemeToggle />
           <button
             type="button"
@@ -133,6 +147,7 @@ export function PublicNavbar({
           )}
 
           <div className="mt-2 flex flex-col gap-3">
+            <div className="flex justify-end px-1">{accountMenu}</div>
             {auxLink ? (
               <PublicButton href={auxLink.href} variant="ghost" size="md">
                 {auxLink.label}

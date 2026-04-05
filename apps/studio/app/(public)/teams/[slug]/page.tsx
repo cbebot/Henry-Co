@@ -55,7 +55,7 @@ export default async function TeamDetailPage({
 
       <section className="mt-10 grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
         <article className="studio-panel rounded-[1.75rem] p-6">
-          <div className="studio-kicker">Operational strengths</div>
+          <div className="studio-kicker">Strengths</div>
           <div className="mt-5 space-y-3">
             {team.highlights.map((item) => (
               <div key={item} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4 text-sm leading-7 text-[var(--studio-ink-soft)]">

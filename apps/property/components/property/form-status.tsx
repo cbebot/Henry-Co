@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { LoaderCircle } from "lucide-react";
-import { useFormStatus } from "react-dom";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type PropertyPendingButtonProps = {
@@ -20,18 +20,39 @@ export function PropertyPendingButton({
   className,
   idleIcon,
 }: PropertyPendingButtonProps) {
-  const { pending } = useFormStatus();
+  const [pending, setPending] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    const button = buttonRef.current;
+    const form = button?.form;
+    if (!button || !form) return;
+
+    const handleSubmit = () => setPending(true);
+    const handleInvalid = () => setPending(false);
+    const handlePageShow = () => setPending(false);
+
+    form.addEventListener("submit", handleSubmit);
+    form.addEventListener("invalid", handleInvalid, true);
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      form.removeEventListener("submit", handleSubmit);
+      form.removeEventListener("invalid", handleInvalid, true);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
 
   return (
     <button
+      ref={buttonRef}
       type="submit"
-      disabled={pending}
       aria-disabled={pending}
       aria-busy={pending}
       className={cn(
         variant === "primary" ? "property-button-primary" : "property-button-secondary",
         "inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold",
-        pending && "cursor-wait opacity-80",
+        pending && "pointer-events-none cursor-wait opacity-80",
         className
       )}
     >

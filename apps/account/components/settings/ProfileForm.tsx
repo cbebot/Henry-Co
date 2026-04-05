@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Camera, User } from "lucide-react";
+import { Loader2, Camera } from "lucide-react";
+import UserAvatar from "@/components/layout/UserAvatar";
 
 const COUNTRIES = [
   { code: "NG", name: "Nigeria" },
@@ -15,6 +16,14 @@ const COUNTRIES = [
   { code: "AE", name: "United Arab Emirates" },
   { code: "DE", name: "Germany" },
   { code: "FR", name: "France" },
+];
+
+const LANGUAGES = [
+  { value: "en", label: "English" },
+  { value: "fr", label: "French" },
+  { value: "ig", label: "Igbo" },
+  { value: "yo", label: "Yoruba" },
+  { value: "ha", label: "Hausa" },
 ];
 
 const CONTACT_PREFS = [
@@ -34,6 +43,7 @@ export default function ProfileForm({ profile, email }: Props) {
   const [phone, setPhone] = useState(profile?.phone || "");
   const [country, setCountry] = useState(profile?.country || "NG");
   const [contactPref, setContactPref] = useState(profile?.contact_preference || "email");
+  const [language, setLanguage] = useState(profile?.language || "en");
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -78,6 +88,7 @@ export default function ProfileForm({ profile, email }: Props) {
           phone: phone.trim(),
           country,
           contact_preference: contactPref,
+          language,
         }),
       });
 
@@ -110,13 +121,12 @@ export default function ProfileForm({ profile, email }: Props) {
       {/* Avatar */}
       <div className="flex items-center gap-5">
         <div className="relative">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="" className="h-20 w-20 rounded-2xl object-cover border border-[var(--acct-line)]" />
-          ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[var(--acct-surface)] border border-[var(--acct-line)]">
-              <User size={28} className="text-[var(--acct-muted)]" />
-            </div>
-          )}
+          <UserAvatar
+            name={fullName || email || "Account"}
+            src={avatarUrl}
+            size={80}
+            roundedClassName="rounded-2xl"
+          />
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
@@ -175,6 +185,17 @@ export default function ProfileForm({ profile, email }: Props) {
             placeholder="+234..."
           />
         </div>
+      </div>
+
+      <div>
+        <label className="mb-1.5 block text-sm font-medium">Language</label>
+        <select value={language} onChange={(e) => setLanguage(e.target.value)} className="acct-select">
+          {LANGUAGES.map((languageOption) => (
+            <option key={languageOption.value} value={languageOption.value}>
+              {languageOption.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

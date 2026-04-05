@@ -1,6 +1,8 @@
-import { Activity, Filter } from "lucide-react";
+import Link from "next/link";
+import { Activity } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import { getRecentActivity } from "@/lib/account-data";
+import { activityMessageHref } from "@/lib/notification-center";
 import { timeAgo, divisionLabel, divisionColor, formatNaira } from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
@@ -28,7 +30,11 @@ export default async function ActivityPage() {
       ) : (
         <div className="acct-card divide-y divide-[var(--acct-line)]">
           {activity.map((item: Record<string, string | number | null>) => (
-            <div key={item.id as string} className="flex items-start gap-4 px-5 py-4">
+            <Link
+              key={item.id as string}
+              href={activityMessageHref(String(item.id || ""))}
+              className="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-[var(--acct-bg-elevated)]"
+            >
               <div
                 className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
                 style={{ backgroundColor: divisionColor(item.division as string) }}
@@ -57,7 +63,7 @@ export default async function ActivityPage() {
                   {formatNaira(item.amount_kobo as number)}
                 </p>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       )}

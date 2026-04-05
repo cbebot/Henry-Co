@@ -91,13 +91,13 @@ export default function CareFlow() {
       <div className="relative">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <div className="care-kicker">Operational showcase</div>
+            <div className="care-kicker">Service overview</div>
             <h2 className="mt-3 care-section-title text-white">
               See how each service lane behaves.
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-white/66">
-              This motion strip is deliberate. It shows that garment logistics, home cleaning,
-              office cleaning, and recurring continuity are no longer being forced into one vague workflow.
+              This motion strip shows how garment care, home cleaning, office cleaning, and recurring
+              service each move through a clear customer journey.
             </p>
           </div>
 
@@ -173,7 +173,7 @@ export default function CareFlow() {
                       <Icon className="h-6 w-6 text-[color:var(--accent)]" />
                     </div>
                     <div className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-white/72">
-                      Service architecture
+                      Service path
                     </div>
                     <div className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white">
                       {current.label}
@@ -232,7 +232,7 @@ export default function CareFlow() {
                   </div>
 
                   <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-[color:var(--accent)]">
-                    Service architecture showcase
+                    Service path overview
                     <ArrowRight className="h-4 w-4" />
                   </div>
                 </div>

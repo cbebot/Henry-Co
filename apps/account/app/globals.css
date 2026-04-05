@@ -206,6 +206,18 @@ body {
   border-color: var(--acct-gold);
 }
 
+.acct-select option,
+.acct-input option {
+  background-color: var(--acct-bg-elevated);
+  color: var(--acct-ink);
+}
+
+select.acct-input {
+  appearance: auto;
+  color: var(--acct-ink);
+  background-color: var(--acct-bg);
+}
+
 /* ─── Chips / Badges ─── */
 .acct-chip {
   display: inline-flex;
@@ -259,6 +271,92 @@ body {
   border: none;
   border-top: 1px solid var(--acct-line);
   margin: 1rem 0;
+}
+
+/* ─── Owner Command Center ─── */
+:root {
+  --owner-sidebar-width: 280px;
+  --owner-accent: #C9A227;
+  --owner-accent-soft: rgba(201,162,39,0.10);
+  --owner-navy: #0F172A;
+  --owner-navy-soft: rgba(15,23,42,0.06);
+}
+.dark {
+  --owner-accent-soft: rgba(212,175,55,0.14);
+  --owner-navy: #1E293B;
+  --owner-navy-soft: rgba(30,41,59,0.3);
+}
+
+.owner-sidebar-bg {
+  background: linear-gradient(180deg, var(--acct-bg-soft) 0%, var(--acct-bg) 100%);
+}
+.dark .owner-sidebar-bg {
+  background: linear-gradient(180deg, #0E1420 0%, #0B0F14 100%);
+}
+
+.owner-nav-active {
+  background: var(--owner-accent-soft);
+  color: var(--owner-accent);
+  font-weight: 600;
+  border-left: 3px solid var(--owner-accent);
+}
+
+.owner-nav-child-active {
+  color: var(--owner-accent);
+  font-weight: 600;
+}
+
+.owner-metric {
+  position: relative;
+  padding: 1.25rem 1.5rem;
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius-lg);
+  box-shadow: var(--acct-shadow);
+  overflow: hidden;
+}
+.owner-metric::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--owner-accent);
+  border-radius: var(--acct-radius-lg) var(--acct-radius-lg) 0 0;
+}
+
+.owner-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--acct-line);
+  margin-bottom: 1.5rem;
+}
+
+.owner-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.owner-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--acct-muted);
+  border-bottom: 1px solid var(--acct-line);
+}
+.owner-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--acct-line);
+  vertical-align: middle;
+}
+.owner-table tr:hover td {
+  background: var(--acct-surface);
 }
 
 /* ─── Transition helpers ─── */

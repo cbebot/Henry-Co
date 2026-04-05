@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
+import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
 import { cookies } from "next/headers";
 
 export async function POST(request: Request) {
@@ -56,10 +57,14 @@ export async function POST(request: Request) {
       is_default: is_default || false,
     });
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      logApiError("addresses/create", error);
+      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  } catch (error) {
+    logApiError("addresses/create", error);
+    return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
   }
 }

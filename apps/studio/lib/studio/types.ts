@@ -146,6 +146,19 @@ export type StudioLead = {
   matchedTeamId: string | null;
 };
 
+/** Captured at brief submit — advisory; final DNS / registrar handled in delivery */
+export type StudioDomainIntent = {
+  path: "new" | "have" | "later";
+  desiredLabel: string;
+  /** Optional second choice if the first choice is taken or uncertain */
+  backupLabel?: string;
+  checkedFqdn: string | null;
+  checkStatus: string;
+  suggestionsShown: string[];
+  lookupMode: string;
+  lastMessage: string | null;
+};
+
 export type StudioBrief = {
   id: string;
   leadId: string;
@@ -161,6 +174,7 @@ export type StudioBrief = {
   requiredFeatures: string[];
   referenceFiles: string[];
   referenceLinks: string[];
+  domainIntent: StudioDomainIntent | null;
 };
 
 export type StudioCustomRequest = {
@@ -354,6 +368,7 @@ export type StudioViewer = {
     id: string;
     email: string | null;
     fullName: string | null;
+    avatarUrl?: string | null;
   } | null;
   normalizedEmail: string | null;
   roles: StudioRole[];
