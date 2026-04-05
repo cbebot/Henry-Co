@@ -9,9 +9,10 @@ import { TextField } from "@/design-system/components/TextField";
 import { spacing } from "@/design-system/theme";
 import type { ContactFormValues } from "@/domain/schemas/contactSchema";
 import { contactSchema } from "@/domain/schemas/contactSchema";
-import { submitContact } from "@/services/contactService";
+import { usePlatform } from "@/providers/PlatformProvider";
 
 export function ContactScreen() {
+  const { database, mode } = usePlatform();
   const {
     control,
     handleSubmit,
@@ -31,7 +32,7 @@ export function ContactScreen() {
 
   const onSubmit = handleSubmit(async (values) => {
     clearErrors("root");
-    const res = await submitContact(values);
+    const res = await database.submitContact(values);
     if (!res.ok) {
       setError("root", { message: res.error });
       return;
@@ -45,6 +46,11 @@ export function ContactScreen() {
         Corporate enquiries, partnerships, and media introductions. For division-specific requests,
         open the relevant module and use its operational channels.
       </Text>
+      {mode === "local" ? (
+        <Text variant="caption" color="textMuted">
+          Local mode: submissions are stored on-device only (mock database).
+        </Text>
+      ) : null}
       {errors.root?.message ? (
         <ErrorState title="Could not send" message={errors.root.message} />
       ) : null}

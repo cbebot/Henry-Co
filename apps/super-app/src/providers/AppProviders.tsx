@@ -1,10 +1,9 @@
 import { ThemeProvider } from "@react-navigation/native";
 import type { Theme } from "@react-navigation/native";
-import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { initSentry } from "@/core/sentry";
 import { palette } from "@/design-system/theme";
+import { PlatformProvider } from "@/providers/PlatformProvider";
 
 const navigationTheme: Theme = {
   dark: true,
@@ -25,13 +24,11 @@ const navigationTheme: Theme = {
 };
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    initSentry();
-  }, []);
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={navigationTheme}>{children}</ThemeProvider>
+      <PlatformProvider>
+        <ThemeProvider value={navigationTheme}>{children}</ThemeProvider>
+      </PlatformProvider>
     </GestureHandlerRootView>
   );
 }

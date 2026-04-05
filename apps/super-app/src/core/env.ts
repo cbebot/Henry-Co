@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+/**
+ * Public env vars only. Runtime mode for adapters is `EXPO_PUBLIC_HENRYCO_ENV`
+ * (`local` | `staging` | `production`) — see `src/platform/runtime.ts`.
+ */
 const envSchema = z.object({
   APP_ENV: z.enum(["development", "staging", "production"]).default("development"),
   SUPABASE_URL: z.string().url().optional().or(z.literal("")),

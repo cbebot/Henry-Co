@@ -2,18 +2,19 @@ import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
-import { buildCloudinaryUrl } from "@/core/cloudinary";
 import { Button } from "@/design-system/components/Button";
 import { Card } from "@/design-system/components/Card";
 import { Text } from "@/design-system/components/Text";
 import { spacing } from "@/design-system/theme";
-import { DIVISION_CATALOG } from "@/domain/divisionCatalog";
-
-const logoUrl = buildCloudinaryUrl("logo/m6mbunrxxa7hmankrk1h", { width: 320, format: "png" });
+import { useDivisions } from "@/hooks/useDivisions";
+import { usePlatform } from "@/providers/PlatformProvider";
 
 export function HubScreen() {
   const router = useRouter();
-  const featured = DIVISION_CATALOG.filter((d) => d.featured).slice(0, 3);
+  const divisions = useDivisions();
+  const { media } = usePlatform();
+  const logoUrl = media.buildPublicUrl("logo/m6mbunrxxa7hmankrk1h", { width: 320, format: "png" });
+  const featured = divisions.filter((d) => d.featured).slice(0, 3);
   return (
     <View style={styles.container} testID="hub-screen">
       <Image

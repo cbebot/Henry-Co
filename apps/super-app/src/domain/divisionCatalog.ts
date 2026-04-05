@@ -129,9 +129,12 @@ export function filterDivisions(params: {
   sectorId: string;
   status: "all" | Division["status"];
   featuredOnly: boolean;
+  /** Defaults to bundled catalog; pass `useDivisions()` output to reflect remote data. */
+  source?: Division[];
 }): Division[] {
   const q = params.query.trim().toLowerCase();
-  return DIVISION_CATALOG.filter((d) => {
+  const list = params.source ?? DIVISION_CATALOG;
+  return list.filter((d) => {
     if (params.featuredOnly && !d.featured) return false;
     if (params.status !== "all" && d.status !== params.status) return false;
     if (params.sectorId !== "all" && !d.sectors.includes(params.sectorId as DivisionSector))

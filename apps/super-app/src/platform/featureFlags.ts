@@ -1,0 +1,71 @@
+import type { RuntimeMode } from "@/platform/runtime";
+import { getRuntimeMode, isLiveServicesApproved, isProductionMode } from "@/platform/runtime";
+
+export type FeatureFlags = {
+  /** Real or sandbox payment flows (Stripe, Paystack, etc.). */
+  payments: boolean;
+  /** Product analytics (Segment, PostHog, etc.). */
+  analytics: boolean;
+  /** Expo push with real provider backend. */
+  livePush: boolean;
+  /** Sentry (or similar) with real DSN. */
+  liveMonitoring: boolean;
+  /** Reads/writes via Supabase (or other DB backend). */
+  remoteDatabase: boolean;
+  /** Upload binary media via signed API (e.g. Cloudinary upload). */
+  mediaUpload: boolean;
+};
+
+function readBool(key: string, defaultValue: boolean): boolean {
+  const v = process.env[key]?.trim().toLowerCase();
+  if (v === "true" || v === "1" || v === "yes") return true;
+  if (v === "false" || v === "0" || v === "no") return false;
+  return defaultValue;
+}
+
+/**
+ * Feature flags per mode. Env vars can override individual flags for staging experiments.
+ * Pattern: EXPO_PUBLIC_FEATURE_<NAME>=true|false
+ */
+export function getFeatureFlags(mode: RuntimeMode = getRuntimeMode()): FeatureFlags {
+  if (mode === "local") {
+    return {
+      payments: readBool("EXPO_PUBLIC_FEATURE_PAYMENTS", false),
+      analytics: readBool("EXPO_PUBLIC_FEATURE_ANALYTICS", false),
+      livePush: readBool("EXPO_PUBLIC_FEATURE_LIVE_PUSH", false),
+      liveMonitoring: readBool("EXPO_PUBLIC_FEATURE_LIVE_MONITORING", false),
+      remoteDatabase: readBool("EXPO_PUBLIC_FEATURE_REMOTE_DATABASE", false),
+      mediaUpload: readBool("EXPO_PUBLIC_FEATURE_MEDIA_UPLOAD", false),
+    };
+  }
+
+  if (mode === "staging") {
+    return {
+      payments: readBool("EXPO_PUBLIC_FEATURE_PAYMENTS", true),
+      analytics: readBool("EXPO_PUBLIC_FEATURE_ANALYTICS", true),
+      livePush: readBool("EXPO_PUBLIC_FEATURE_LIVE_PUSH", true),
+      liveMonitoring: readBool("EXPO_PUBLIC_FEATURE_LIVE_MONITORING", true),
+      remoteDatabase: readBool("EXPO_PUBLIC_FEATURE_REMOTE_DATABASE", true),
+      mediaUpload: readBool("EXPO_PUBLIC_FEATURE_MEDIA_UPLOAD", true),
+    };
+  }
+
+  // production
+  const approved = isLiveServicesApproved();
+  return {
+    payments: approved && readBool("EXPO_PUBLIC_FEATURE_PAYMENTS", true),
+    analytics: approved && readBool("EXPO_PUBLIC_FEATURE_ANALYTICS", true),
+    livePush: approved && readBool("EXPO_PUBLIC_FEATURE_LIVE_PUSH", true),
+    liveMonitoring:
+      approved && readBool("EXPO_PUBLIC_FEATURE_LIVE_MONITORING", Boolean(process.env.EXPO_PUBLIC_SENTRY_DSN)),
+    remoteDatabase: approved && readBool("EXPO_PUBLIC_FEATURE_REMOTE_DATABASE", true),
+    mediaUpload: approved && readBool("EXPO_PUBLIC_FEATURE_MEDIA_UPLOAD", true),
+  };
+}
+
+/** In production, block live adapters unless explicitly approved. */
+export function assertProductionGate(feature: keyof FeatureFlags, flags: FeatureFlags): boolean {
+  if (!isProductionMode()) return true;
+  if (isLiveServicesApproved()) return true;
+  return !flags[feature];
+}

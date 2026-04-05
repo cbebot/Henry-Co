@@ -8,6 +8,7 @@ import { TextField } from "@/design-system/components/TextField";
 import { palette, radii, spacing } from "@/design-system/theme";
 import type { DivisionStatus } from "@/domain/division";
 import { DIRECTORY_SECTOR_FILTERS, filterDivisions } from "@/domain/divisionCatalog";
+import { useDivisions } from "@/hooks/useDivisions";
 import { useRouter } from "expo-router";
 
 const STATUS_OPTIONS: { id: "all" | DivisionStatus; label: string }[] = [
@@ -19,14 +20,15 @@ const STATUS_OPTIONS: { id: "all" | DivisionStatus; label: string }[] = [
 
 export function DirectoryScreen() {
   const router = useRouter();
+  const divisions = useDivisions();
   const [query, setQuery] = useState("");
   const [sectorId, setSectorId] = useState("all");
   const [status, setStatus] = useState<"all" | DivisionStatus>("all");
   const [featuredOnly, setFeaturedOnly] = useState(false);
 
   const results = useMemo(
-    () => filterDivisions({ query, sectorId, status, featuredOnly }),
-    [query, sectorId, status, featuredOnly],
+    () => filterDivisions({ query, sectorId, status, featuredOnly, source: divisions }),
+    [query, sectorId, status, featuredOnly, divisions],
   );
 
   return (

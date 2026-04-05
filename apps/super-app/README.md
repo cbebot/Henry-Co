@@ -2,7 +2,7 @@
 
 Premium cross-platform **Expo + React Native + TypeScript** client for the Henry & Co. ecosystem. This package follows **clean architecture** with feature modules, a shared design system, **Supabase** data access, **Cloudinary** media helpers, **Sentry** monitoring hooks, and **staging-first** configuration.
 
-## Quick start
+## Quick start (local-first)
 
 ```bash
 # from repository root
@@ -11,7 +11,11 @@ cd apps/super-app
 pnpm start
 ```
 
-Copy `.env.staging.example` to `.env.staging.local` and provide **staging** Supabase keys before exercising auth or the contact form.
+**No backend required:** with default `local` runtime (`__DEV__`), the app uses **mock auth**, **mock database** (on-device contact storage), **mock payments**, and **console analytics**. Sign in with any email and password (8+ characters).
+
+Optional: copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_HENRYCO_ENV=staging` plus Supabase keys to exercise real staging services.
+
+Copy `.env.staging.example` to `.env.staging.local` when targeting a named staging file layout.
 
 > Never commit real credentials. Production deploys are out of scope for this branch.
 
@@ -28,6 +32,7 @@ Copy `.env.staging.example` to `.env.staging.local` and provide **staging** Supa
 ## Docs
 
 - `../../docs/GITHUB_SOURCE_OF_TRUTH.md` — GitHub-only CI, Vercel, EAS, branch protection
+- `docs/SERVICE_MIGRATION_CHECKLIST.md` — enabling real providers behind adapters
 - `docs/ARCHITECTURE.md` — layering, navigation, backend boundaries
 - `docs/COMPONENT_INVENTORY.md` — UI primitives and feature entry points
 - `docs/DEPLOYMENT.md` — staging deployment notes (no production automation)

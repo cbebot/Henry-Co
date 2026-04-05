@@ -1,14 +1,22 @@
 import { useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { Text } from "@/design-system/components/Text";
 import { spacing } from "@/design-system/theme";
-import { DIVISION_CATALOG } from "@/domain/divisionCatalog";
+import { useDivisions } from "@/hooks/useDivisions";
 import { ModuleDetail } from "@/features/modules/ModuleDetail";
+import { usePlatform } from "@/providers/PlatformProvider";
 
 export function DivisionModuleScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const division = DIVISION_CATALOG.find((d) => d.slug === slug);
+  const divisions = useDivisions();
+  const { analytics } = usePlatform();
+  const division = divisions.find((d) => d.slug === slug);
+
+  useEffect(() => {
+    if (slug) analytics.screen(`module:${slug}`);
+  }, [slug, analytics]);
 
   if (!division) {
     return (
