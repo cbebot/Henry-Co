@@ -3,6 +3,7 @@ import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 import { MarketplaceRuntimeProvider } from "@/components/marketplace/runtime-provider";
 import ThemeProvider from "@/components/providers/theme-provider";
+import { FloatingSupport } from "@henryco/ui/support";
 import { getMarketplaceShellState } from "@/lib/marketplace/data";
 import { getDivisionConfig } from "@henryco/config";
 
@@ -48,7 +49,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className={`${fraunces.variable} ${manrope.variable} min-h-screen bg-[var(--market-bg)] text-[var(--market-ink)] antialiased`}
       >
         <ThemeProvider>
-          <MarketplaceRuntimeProvider initialShell={shell}>{children}</MarketplaceRuntimeProvider>
+          <MarketplaceRuntimeProvider initialShell={shell}>
+            {children}
+            <FloatingSupport
+              divisionName="HenryCo Marketplace"
+              accent="#B2863B"
+              supportEmail="marketplace@henrycogroup.com"
+              supportUrl="/support"
+            />
+          </MarketplaceRuntimeProvider>
         </ThemeProvider>
       </body>
     </html>

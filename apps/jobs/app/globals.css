@@ -169,12 +169,28 @@ textarea {
   background: linear-gradient(135deg, #0d5e66 0%, var(--jobs-accent) 55%, #7fd0d4 100%);
   color: #f6ffff;
   box-shadow: 0 18px 48px rgba(14, 124, 134, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.jobs-button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 24px 60px rgba(14, 124, 134, 0.32);
+}
+
+.jobs-button-primary:active {
+  transform: translateY(0);
 }
 
 .jobs-button-secondary {
   border: 1px solid var(--jobs-line);
   background: color-mix(in srgb, var(--jobs-paper) 88%, transparent);
   color: var(--jobs-ink);
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.jobs-button-secondary:hover {
+  border-color: color-mix(in srgb, var(--jobs-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--jobs-accent-soft) 40%, transparent);
 }
 
 .jobs-input,
