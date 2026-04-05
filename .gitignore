@@ -13,6 +13,8 @@ node_modules
 dist
 apps/super-app/dist-web-check
 apps/super-app/dist
+apps/company-hub/dist-check
+apps/company-hub/dist
 .tmp-vercel-env
 .tmp-studio-start.ps1
 

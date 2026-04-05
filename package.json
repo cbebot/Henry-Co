@@ -21,7 +21,14 @@
     "super-app:start": "pnpm --filter @henryco/super-app start",
     "super-app:lint": "pnpm --filter @henryco/super-app lint",
     "super-app:typecheck": "pnpm --filter @henryco/super-app typecheck",
-    "super-app:test": "pnpm --filter @henryco/super-app test:ci"
+    "super-app:test": "pnpm --filter @henryco/super-app test:ci",
+    "company-hub:start": "pnpm --filter @henryco/company-hub start",
+    "company-hub:lint": "pnpm --filter @henryco/company-hub lint",
+    "company-hub:typecheck": "pnpm --filter @henryco/company-hub typecheck",
+    "staff:dev": "pnpm --filter @henryco/staff dev",
+    "staff:build": "pnpm --filter @henryco/staff build",
+    "staff:lint": "pnpm --filter @henryco/staff lint",
+    "staff:typecheck": "pnpm --filter @henryco/staff typecheck"
   },
   "dependencies": {
     "@henryco/config": "workspace:^"
