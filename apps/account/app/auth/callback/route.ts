@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { getSharedCookieDomain } from "@henryco/config";
-
-function resolveNext(origin: string, next: string | null) {
-  if (next && /^https?:\/\//i.test(next)) {
-    return next;
-  }
-
-  const safeNext = next && next.startsWith("/") ? next : "/";
-  return `${origin}${safeNext}`;
-}
+import {
+  getSharedCookieDomain,
+  normalizeEmail,
+  normalizePhone,
+  normalizeTrustedRedirect,
+  resolveTrustedRedirect,
+} from "@henryco/config";
+import { ensureAccountProfileRecords } from "@/lib/account-profile";
+import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
+import { detectSecurityRequestContext, logSecurityEvent } from "@/lib/security-events";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -49,14 +49,48 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(resolveNext(origin, next));
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        await ensureAccountProfileRecords(user);
+        const fullName =
+          (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
+          (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
+          null;
+        const phone =
+          normalizePhone(
+            typeof user.user_metadata?.phone === "string" ? user.user_metadata.phone : null
+          ) || null;
+        scheduleLinkedCareBookingsSync({
+          userId: user.id,
+          email: normalizeEmail(user.email),
+          fullName,
+          phone,
+        });
+        const context = await detectSecurityRequestContext();
+        await logSecurityEvent({
+          userId: user.id,
+          eventType: "account_sign_in",
+          ipAddress: context.ipAddress,
+          userAgent: context.userAgent,
+          locationSummary: context.locationSummary,
+          metadata: {
+            source: "auth_callback",
+            email: user.email || null,
+          },
+        });
+      }
+      return NextResponse.redirect(resolveTrustedRedirect(origin, next));
     }
   }
 
   const loginUrl = new URL("/login", origin);
   loginUrl.searchParams.set("error", "auth");
-  if (next) {
-    loginUrl.searchParams.set("next", next);
+  const safeNext = normalizeTrustedRedirect(next);
+  if (safeNext !== "/") {
+    loginUrl.searchParams.set("next", safeNext);
   }
   return NextResponse.redirect(loginUrl);
 }

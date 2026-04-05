@@ -15,7 +15,8 @@ import type {
   MarketplaceShellCartItem,
   MarketplaceShellState,
 } from "@/lib/marketplace/types";
-import { getBrowserSupabase } from "@/lib/supabase/browser";
+import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
+import { getBrowserSupabaseOptional } from "@/lib/supabase/browser";
 
 type ToastTone = "success" | "error" | "info";
 
@@ -110,7 +111,7 @@ function mergeOptimisticCartItem(
 }
 
 function redirectToLogin(nextPath: string) {
-  window.location.href = `/login?next=${encodeURIComponent(nextPath)}`;
+  window.location.href = buildSharedAccountLoginUrl(nextPath, window.location.origin);
 }
 
 function readCookie(name: string) {
@@ -206,7 +207,8 @@ export function MarketplaceRuntimeProvider({
   useEffect(() => {
     if (!shell.viewer.userId) return;
 
-    const supabase = getBrowserSupabase();
+    const supabase = getBrowserSupabaseOptional();
+    if (!supabase) return;
     const refresh = () => {
       startTransition(() => {
         void refreshShellRef.current(true);
@@ -407,6 +409,11 @@ export function MarketplaceRuntimeProvider({
         body: JSON.stringify({ productSlug }),
       });
 
+      if (response.status === 401) {
+        redirectToLogin(window.location.pathname + window.location.search);
+        return;
+      }
+
       if (!response.ok) throw new Error("Wishlist toggle failed.");
       const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
       setShell(payload.shell);
@@ -444,6 +451,11 @@ export function MarketplaceRuntimeProvider({
         },
         body: JSON.stringify({ vendorSlug }),
       });
+
+      if (response.status === 401) {
+        redirectToLogin(window.location.pathname + window.location.search);
+        return;
+      }
 
       if (!response.ok) throw new Error("Follow toggle failed.");
       const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
@@ -597,7 +609,8 @@ export function useMarketplaceOrderFeed(initialItems: MarketplaceOrderFeedItem[]
   useEffect(() => {
     if (!runtime.shell.viewer.userId) return;
 
-    const supabase = getBrowserSupabase();
+    const supabase = getBrowserSupabaseOptional();
+    if (!supabase) return;
     const channel = supabase
       .channel(`marketplace-orders-${runtime.shell.viewer.userId}`)
       .on(
