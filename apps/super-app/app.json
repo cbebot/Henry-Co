@@ -2,7 +2,7 @@
   "expo": {
     "name": "HenryCo",
     "slug": "henryco-super-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "henryco",
@@ -15,10 +15,12 @@
     },
     "ios": {
       "supportsTablet": true,
+      "buildNumber": "2",
       "bundleIdentifier": "com.henryco.superapp.staging",
       "associatedDomains": ["applinks:staging.henrycogroup.com"]
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#0B0B0C"

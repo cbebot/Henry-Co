@@ -14,6 +14,10 @@ export type FeatureFlags = {
   remoteDatabase: boolean;
   /** Upload binary media via signed API (e.g. Cloudinary upload). */
   mediaUpload: boolean;
+  /** Account tab mock/sandbox checkout button (hide when deferred / not ready). */
+  paymentsDemoUi: boolean;
+  /** Runtime mode + adapter strip for QA (keep off in beta store builds). */
+  runtimeDiagnostics: boolean;
 };
 
 function readBool(key: string, defaultValue: boolean): boolean {
@@ -36,6 +40,8 @@ export function getFeatureFlags(mode: RuntimeMode = getRuntimeMode()): FeatureFl
       liveMonitoring: readBool("EXPO_PUBLIC_FEATURE_LIVE_MONITORING", false),
       remoteDatabase: readBool("EXPO_PUBLIC_FEATURE_REMOTE_DATABASE", false),
       mediaUpload: readBool("EXPO_PUBLIC_FEATURE_MEDIA_UPLOAD", false),
+      paymentsDemoUi: readBool("EXPO_PUBLIC_FEATURE_PAYMENTS_DEMO", true),
+      runtimeDiagnostics: readBool("EXPO_PUBLIC_FEATURE_RUNTIME_DIAGNOSTICS", true),
     };
   }
 
@@ -47,6 +53,8 @@ export function getFeatureFlags(mode: RuntimeMode = getRuntimeMode()): FeatureFl
       liveMonitoring: readBool("EXPO_PUBLIC_FEATURE_LIVE_MONITORING", true),
       remoteDatabase: readBool("EXPO_PUBLIC_FEATURE_REMOTE_DATABASE", true),
       mediaUpload: readBool("EXPO_PUBLIC_FEATURE_MEDIA_UPLOAD", true),
+      paymentsDemoUi: readBool("EXPO_PUBLIC_FEATURE_PAYMENTS_DEMO", false),
+      runtimeDiagnostics: readBool("EXPO_PUBLIC_FEATURE_RUNTIME_DIAGNOSTICS", false),
     };
   }
 
@@ -60,6 +68,8 @@ export function getFeatureFlags(mode: RuntimeMode = getRuntimeMode()): FeatureFl
       approved && readBool("EXPO_PUBLIC_FEATURE_LIVE_MONITORING", Boolean(process.env.EXPO_PUBLIC_SENTRY_DSN)),
     remoteDatabase: approved && readBool("EXPO_PUBLIC_FEATURE_REMOTE_DATABASE", true),
     mediaUpload: approved && readBool("EXPO_PUBLIC_FEATURE_MEDIA_UPLOAD", true),
+    paymentsDemoUi: approved && readBool("EXPO_PUBLIC_FEATURE_PAYMENTS_DEMO", false),
+    runtimeDiagnostics: approved && readBool("EXPO_PUBLIC_FEATURE_RUNTIME_DIAGNOSTICS", false),
   };
 }
 

@@ -8,12 +8,17 @@
       "distribution": "internal",
       "channel": "preview",
       "env": {
-        "EXPO_PUBLIC_APP_ENV": "staging"
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_HENRYCO_ENV": "staging"
       }
     },
     "staging": {
       "extends": "preview",
-      "channel": "staging"
+      "channel": "staging",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_HENRYCO_ENV": "staging"
+      }
     },
     "production": {
       "channel": "production",

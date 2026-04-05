@@ -13,7 +13,8 @@
     "test": "jest",
     "test:ci": "jest --ci",
     "test:coverage": "jest --coverage",
-    "db:seed": "node ./scripts/seed.mjs"
+    "db:seed": "node ./scripts/seed.mjs",
+    "db:reset:staging": "node ./scripts/reset-staging.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

@@ -42,7 +42,7 @@ export default async function SavedPropertiesPage() {
           <p className="acct-kicker">Saved now</p>
           <p className="mt-3 text-3xl font-semibold text-[var(--acct-ink)]">{properties.length}</p>
           <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
-            Properties you've saved to your shortlist.
+            Properties you&apos;ve saved to your shortlist.
           </p>
         </div>
         <div className="acct-card p-5">

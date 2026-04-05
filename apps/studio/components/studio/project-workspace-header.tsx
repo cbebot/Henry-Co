@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { PublicAccountChip } from "@henryco/ui";
-import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioViewer } from "@/lib/studio/auth";
-import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
+import { getStudioAccountUrl, getStudioLoginUrl, getStudioSignupUrl } from "@/lib/studio/links";
 
 const studio = getDivisionConfig("studio");
 
@@ -14,6 +14,7 @@ export async function ProjectWorkspaceHeader() {
   const h = await headers();
   const returnPath = h.get("x-studio-return-path") || "/";
   const loginHref = getStudioLoginUrl(returnPath);
+  const signupHref = getStudioSignupUrl(returnPath);
   const accountUrl = getStudioAccountUrl();
   const chipUser = viewer.user
     ? {
@@ -51,8 +52,11 @@ export async function ProjectWorkspaceHeader() {
           <PublicAccountChip
             user={chipUser}
             loginHref={loginHref}
+            signupHref={signupHref}
             accountHref={accountUrl}
             preferencesHref={getHubUrl("/preferences")}
+            settingsHref={getAccountUrl("/security")}
+            showSignOut
             buttonClassName="border-[var(--studio-line)] bg-black/15 text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.28)] hover:bg-black/25 dark:text-[var(--studio-ink)]"
             dropdownClassName="border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-bg)_100%,#0a1620)]"
             menuItems={[

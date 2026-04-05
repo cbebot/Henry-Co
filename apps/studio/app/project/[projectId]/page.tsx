@@ -8,7 +8,7 @@ import { ProjectProgressTimeline } from "@/components/studio/project-progress-ti
 import { ProjectStatusRail } from "@/components/studio/project-status-rail";
 import { ProjectTeamUpdateComposer } from "@/components/studio/project-team-update-composer";
 import { ProjectWorkspaceHero } from "@/components/studio/project-workspace-hero";
-import { friendlyMilestoneStatus, friendlyPaymentStatus, friendlyRevisionStatus } from "@/lib/studio/project-workspace-copy";
+import { friendlyMilestoneStatus, friendlyRevisionStatus } from "@/lib/studio/project-workspace-copy";
 import {
   addDeliverableAction,
   appendProjectMessageAction,

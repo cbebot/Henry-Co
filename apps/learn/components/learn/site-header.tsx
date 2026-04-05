@@ -2,7 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { Menu } from "lucide-react";
 import { PublicAccountChip, ThemeToggle } from "@henryco/ui";
-import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { BrandMark } from "@/components/learn/ui";
@@ -30,6 +30,7 @@ export async function LearnSiteHeader() {
       loginHref={loginHref}
       accountHref={accountHref}
       preferencesHref={getHubUrl("/preferences")}
+      settingsHref={getAccountUrl("/security")}
       signupHref={signupHref}
       showSignOut
       menuItems={[

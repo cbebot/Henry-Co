@@ -65,7 +65,7 @@ export default async function EmployerNewJobPage() {
                       {eligibility.trustTier.replace(/_/g, " ")}
                     </div>
                     <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
-                      Your posting privileges are based on your company's verification status and account history.
+                      Your posting privileges are based on your company&apos;s verification status and account history.
                     </p>
                   </div>
                   <div className="space-y-2">

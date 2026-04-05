@@ -17,7 +17,7 @@ export default async function PricingPage() {
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
               Choose a package when the scope is clear, or use the custom brief when your project needs
-              something more specific. Either way, pricing is transparent and you know exactly what you're investing in.
+              something more specific. Either way, pricing is transparent and you know exactly what you&apos;re investing in.
             </p>
           </div>
 

@@ -5,8 +5,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Layers3, Mail, Phone } from "lucide-react";
-import type { PublicAccountUser } from "@henryco/ui";
-import { PublicAccountChip } from "@henryco/ui";
+import { getAccountUrl } from "@henryco/config";
+import { type PublicAccountUser, PublicAccountChip } from "@henryco/ui";
 import {
   normalizeCompanySettings,
   type CompanySettingsRecord,
@@ -146,9 +146,10 @@ export default function PublicSiteShell({
                 signupHref={accountChip.signupHref}
                 accountHref={accountChip.accountHref}
                 preferencesHref="/preferences"
+                settingsHref={getAccountUrl("/security")}
                 showSignOut
-                buttonClassName="border-white/14 bg-white/[0.08] text-white hover:border-white/22 hover:bg-white/[0.12]"
-                dropdownClassName="border-zinc-700/80 bg-[#0a0f1f]"
+                dropdownTone="solidDark"
+                chipSurface="onDark"
                 menuItems={[
                   { label: "Divisions directory", href: "/#divisions" },
                   { label: "About", href: "/about" },

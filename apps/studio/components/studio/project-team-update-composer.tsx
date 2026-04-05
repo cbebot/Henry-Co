@@ -20,7 +20,7 @@ export function ProjectTeamUpdateComposer({
           </div>
           <div className="mt-1 text-sm font-semibold text-[var(--studio-ink)]">Post a project update</div>
           <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
-            This appears in the client's project timeline. Keep it clear and concise.
+            This appears in the client&apos;s project timeline. Keep it clear and concise.
           </p>
         </div>
         <ChevronDown
@@ -69,7 +69,7 @@ export function ProjectTeamUpdateComposer({
               required
               rows={4}
               className="studio-textarea mt-1.5 min-h-28 w-full rounded-[1.25rem] px-4 py-3"
-              placeholder="What's changed, what's next, or what the client should know."
+              placeholder="What&apos;s changed, what&apos;s next, or what the client should know."
             />
           </div>
           <label className="flex items-center gap-3 text-sm text-[var(--studio-ink-soft)]">

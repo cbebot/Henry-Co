@@ -1,3 +1,5 @@
+import { HenryCoPublicRouteLoading } from "@henryco/ui";
+
 function PropertyLoadingBar({ widthClass }: { widthClass: string }) {
   return (
     <div
@@ -9,15 +11,16 @@ function PropertyLoadingBar({ widthClass }: { widthClass: string }) {
 export default function Loading() {
   return (
     <div className="property-page property-shell">
-      <div
-        role="status"
-        aria-live="polite"
-        aria-label="Loading page"
-        className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10"
+      <HenryCoPublicRouteLoading
+        tone="onDark"
+        eyebrow="HenryCo Property"
+        title="Loading"
+        subtitle="Preparing listings, search, and your saved context."
+        className="mx-auto max-w-[92rem] px-5 sm:px-8 lg:px-10"
+        spinnerClassName="text-white/80"
       >
         <section className="property-panel rounded-[2rem] p-6 sm:p-8 lg:p-10">
           <div className="space-y-4">
-            <div className="property-kicker">Loading</div>
             <PropertyLoadingBar widthClass="max-w-72" />
             <PropertyLoadingBar widthClass="max-w-4xl" />
             <PropertyLoadingBar widthClass="max-w-3xl" />
@@ -54,7 +57,7 @@ export default function Loading() {
             ))}
           </div>
         </section>
-      </div>
+      </HenryCoPublicRouteLoading>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { PublicAccountChip } from "@henryco/ui";
-import { getHubUrl } from "@henryco/config";
+import { getAccountUrl, getHubUrl } from "@henryco/config";
 import { StudioSiteFooter } from "@/components/studio/site-footer";
 import { StudioSiteHeader } from "@/components/studio/site-header";
 import { getStudioCatalog } from "@/lib/studio/catalog";
@@ -34,6 +34,7 @@ export default async function PublicLayout({ children }: { children: React.React
             loginHref={loginHref}
             accountHref={accountUrl}
             preferencesHref={getHubUrl("/preferences")}
+            settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
             showSignOut
             buttonClassName="border-[var(--studio-line)] bg-black/15 text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.28)] hover:bg-black/25 dark:text-[var(--studio-ink)]"

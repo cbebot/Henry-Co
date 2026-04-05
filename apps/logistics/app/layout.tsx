@@ -51,6 +51,7 @@ export default async function RootLayout({
       signupHref={getLogisticsSharedSignupUrl(returnPath)}
       accountHref={getAccountUrl("/logistics")}
       preferencesHref={getHubUrl("/preferences")}
+      settingsHref={getAccountUrl("/security")}
       showSignOut
       buttonClassName="border-[var(--logistics-line-strong)] bg-[rgba(215,117,57,0.14)] text-[var(--logistics-accent-soft)] hover:bg-[rgba(215,117,57,0.24)]"
       dropdownClassName="border-[var(--logistics-line)] bg-[#120a14]"

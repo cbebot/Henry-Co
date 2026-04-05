@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
+import { getAccountUrl } from "@henryco/config";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
@@ -1336,9 +1337,10 @@ function TopBar({
                 signupHref={accountChip.signupHref}
                 accountHref={accountChip.accountHref}
                 preferencesHref="/preferences"
+                settingsHref={getAccountUrl("/security")}
                 showSignOut
-                buttonClassName="border-white/14 bg-white/[0.08] text-white hover:border-white/22 hover:bg-white/[0.12]"
-                dropdownClassName="border-zinc-700/80 bg-[#0a0f1f]"
+                dropdownTone="solidDark"
+                chipSurface="onDark"
                 menuItems={[
                   { label: "Divisions directory", href: "/#divisions" },
                   { label: "About", href: "/about" },

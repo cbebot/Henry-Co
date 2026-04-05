@@ -75,10 +75,12 @@ export function AccountScreen() {
 
   return (
     <View style={{ gap: spacing.lg }} testID="account-screen">
-      <Text variant="caption" color="textMuted">
-        Runtime: {mode} · remote DB: {flags.remoteDatabase ? "on" : "off"} · payments:{" "}
-        {flags.payments ? "sandbox/deferred" : "mock"}
-      </Text>
+      {flags.runtimeDiagnostics ? (
+        <Text variant="caption" color="textMuted">
+          Runtime: {mode} · remote DB: {flags.remoteDatabase ? "on" : "off"} · payments:{" "}
+          {flags.payments ? "sandbox/deferred" : "mock"}
+        </Text>
+      ) : null}
 
       {session ? (
         <>
@@ -87,15 +89,19 @@ export function AccountScreen() {
             {session.user.email}
           </Text>
           <Button title="Sign out" variant="secondary" onPress={onSignOut} />
-          <Button
-            title="Register for push"
-            variant="ghost"
-            onPress={async () => {
-              const res = await notifications.registerForPush();
-              console.log("Push registration", res);
-            }}
-          />
-          <Button title="Try mock checkout (demo)" variant="ghost" onPress={onMockCheckout} />
+          {mode === "local" || flags.livePush ? (
+            <Button
+              title="Register for push"
+              variant="ghost"
+              onPress={async () => {
+                const res = await notifications.registerForPush();
+                console.log("Push registration", res);
+              }}
+            />
+          ) : null}
+          {flags.paymentsDemoUi ? (
+            <Button title="Try mock checkout (demo)" variant="ghost" onPress={onMockCheckout} />
+          ) : null}
           {checkoutHint ? (
             <Text variant="caption" color="textSecondary">
               {checkoutHint}
