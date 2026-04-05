@@ -110,6 +110,7 @@ export function PublicHeaderClient() {
   const runtime = useMarketplaceRuntime();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [interactive, setInteractive] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -163,6 +164,10 @@ export function PublicHeaderClient() {
   );
 
   useEffect(() => {
+    setInteractive(true);
+  }, []);
+
+  useEffect(() => {
     setMobileOpen(false);
     setAccountMenuOpen(false);
   }, [currentPath]);
@@ -199,8 +204,11 @@ export function PublicHeaderClient() {
   }
 
   return (
-    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6 xl:px-8">
-      <div className="market-panel mx-auto max-w-[1480px] overflow-hidden rounded-[2rem]">
+    <header
+      data-marketplace-interactive={interactive ? "true" : "false"}
+      className="sticky top-0 z-40 px-3 pt-3 sm:px-6 xl:px-8"
+    >
+      <div className="market-panel mx-auto max-w-[1480px] overflow-visible rounded-[2rem]">
         <div className="flex items-center gap-3 border-b border-[var(--market-line)] px-4 py-3 sm:px-5">
           <Link href="/" className="flex shrink-0 items-center gap-3">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[var(--market-line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-sm font-semibold tracking-[0.22em] text-[var(--market-paper-white)]">
@@ -285,8 +293,9 @@ export function PublicHeaderClient() {
                   aria-label={accountMenuOpen ? "Close account menu" : "Open account menu"}
                   aria-expanded={accountMenuOpen}
                   aria-controls="marketplace-account-menu"
+                  disabled={!interactive}
                   onClick={() => setAccountMenuOpen((current) => !current)}
-                  className="inline-flex h-11 min-w-[10.5rem] items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.1)] px-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.14)]"
+                  className="inline-flex h-11 min-w-[10.5rem] items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.1)] px-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.14)] disabled:cursor-wait disabled:opacity-70"
                 >
                   <AccountAvatar
                     avatarUrl={runtime.shell.viewer.avatarUrl}
@@ -303,7 +312,7 @@ export function PublicHeaderClient() {
                 {accountMenuOpen ? (
                   <div
                     id="marketplace-account-menu"
-                    className="absolute right-0 top-full mt-3 w-[19rem] overflow-hidden rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(4,8,18,0.96)] shadow-[0_28px_70px_rgba(0,0,0,0.36)] backdrop-blur-2xl"
+                    className="absolute right-0 top-full z-50 mt-3 w-[19rem] overflow-hidden rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(4,8,18,0.96)] shadow-[0_28px_70px_rgba(0,0,0,0.36)] backdrop-blur-2xl"
                   >
                     <div className="border-b border-[var(--market-line)] px-4 py-4">
                       <div className="flex items-center gap-3">

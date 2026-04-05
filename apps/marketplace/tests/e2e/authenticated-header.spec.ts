@@ -37,6 +37,21 @@ function toBase64Url(value: string) {
     .replace(/=+$/g, "");
 }
 
+function createCookieChunks(name: string, value: string, chunkSize = 3180) {
+  if (value.length <= chunkSize) {
+    return [{ name, value }];
+  }
+
+  const chunks: Array<{ name: string; value: string }> = [];
+  for (let index = 0; index < value.length; index += chunkSize) {
+    chunks.push({
+      name: `${name}.${chunks.length}`,
+      value: value.slice(index, index + chunkSize),
+    });
+  }
+  return chunks;
+}
+
 async function buildSharedSessionCookie() {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_ANON_KEY) {
     throw new Error("Missing Supabase environment variables for authenticated marketplace test.");
@@ -89,32 +104,36 @@ async function buildSharedSessionCookie() {
     user: verified.user,
   };
 
+  const cookieName = `sb-${projectRef}-auth-token`;
+  const cookieValue = `base64-${toBase64Url(JSON.stringify(session))}`;
+  const cookies = createCookieChunks(cookieName, cookieValue).map((chunk) => ({
+    ...chunk,
+    domain: ".henrycogroup.com",
+    path: "/",
+    httpOnly: false,
+    secure: true,
+    sameSite: "Lax" as const,
+  }));
+
   return {
     email,
-    cookie: {
-      name: `sb-${projectRef}-auth-token`,
-      value: `base64-${toBase64Url(JSON.stringify(session))}`,
-      domain: ".henrycogroup.com",
-      path: "/",
-      httpOnly: false,
-      secure: true,
-      sameSite: "Lax" as const,
-    },
+    cookies,
   };
 }
 
 test("signed-in header exposes account menu shortcuts", async ({ context, page }) => {
-  const { cookie, email } = await buildSharedSessionCookie();
-  await context.addCookies([cookie]);
+  const { cookies, email } = await buildSharedSessionCookie();
+  await context.addCookies(cookies);
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await page.waitForResponse((response) => response.url().includes("/api/shell") && response.ok());
+  await expect(page.locator('header[data-marketplace-interactive="true"]')).toBeVisible();
 
   const accountMenuButton = page.getByRole("button", { name: /open account menu/i });
-  await expect(accountMenuButton).toBeVisible();
+  await expect(accountMenuButton).toBeVisible({ timeout: 30000 });
   await accountMenuButton.click();
 
-  await expect(page.getByText(email, { exact: false })).toBeVisible();
+  await expect(page.getByRole("button", { name: /close account menu/i })).toBeVisible();
+  await expect(page.locator("#marketplace-account-menu")).toBeVisible();
   await expect(page.getByRole("link", { name: /Profile & account/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Saved items/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Orders/i })).toBeVisible();

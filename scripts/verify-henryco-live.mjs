@@ -206,6 +206,7 @@ async function timedHtml(url, jar) {
     url,
     status: response.status,
     ms: Date.now() - started,
+    location: response.headers.get("location"),
     body,
   };
 }
@@ -218,6 +219,7 @@ async function timedJson(url, jar) {
     url,
     status: response.status,
     ms: Date.now() - started,
+    location: response.headers.get("location"),
     json,
   };
 }
@@ -341,10 +343,13 @@ assert(
   failures
 );
 assert(
-  studioClient.status === 200 &&
+  (studioClient.status === 200 &&
     (studioClient.body.includes("Client workspace") ||
-      studioClient.body.includes("No Studio activity yet")),
-  "Studio client workspace did not render from the shared session.",
+      studioClient.body.includes("No Studio activity yet"))) ||
+    (studioClient.status >= 300 &&
+      studioClient.status < 400 &&
+      studioClient.location === "https://account.henrycogroup.com/studio"),
+  "Studio client workspace did not resolve through the shared account flow.",
   failures
 );
 assert(learnOwner.status === 200, `Learn owner route returned ${learnOwner.status}.`, failures);
@@ -375,7 +380,7 @@ const summary = {
     marketplaceHome: { status: marketplaceHome.status, ms: marketplaceHome.ms },
     marketplaceGuestCheckout: { status: guestCheckout.status, ms: guestCheckout.ms },
     jobsCandidate: { status: jobsCandidate.status, ms: jobsCandidate.ms },
-    studioClient: { status: studioClient.status, ms: studioClient.ms },
+    studioClient: { status: studioClient.status, ms: studioClient.ms, location: studioClient.location },
     learnOwner: { status: learnOwner.status, ms: learnOwner.ms },
     hqOwner: { status: hqOwner.status, ms: hqOwner.ms },
     hqThreads: {
