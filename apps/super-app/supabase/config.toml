@@ -1,0 +1,10 @@
+# Minimal Supabase CLI config for staging workflows.
+# Point `project_id` at your staging project before running remote commands.
+
+project_id = "replace-with-staging-project-id"
+
+[api]
+enabled = true
+
+[db]
+major_version = 15
