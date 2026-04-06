@@ -581,3 +581,15 @@ export async function runOwnerReport(kind: OwnerReportKind) {
     deliveries,
   };
 }
+
+export async function runOwnerReports(input?: {
+  kinds?: OwnerReportKind[];
+  force?: boolean;
+  now?: Date;
+}) {
+  const summaries = [];
+  for (const kind of input?.kinds ?? ["weekly", "monthly"]) {
+    summaries.push(await runOwnerReport(kind));
+  }
+  return summaries;
+}
