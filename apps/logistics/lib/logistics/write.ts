@@ -105,7 +105,10 @@ export async function createLogisticsRequest(input: CreateLogisticsRequestInput)
   }
 
   if (!pickupLine1 || !dropLine1 || !pickupCity || !dropCity) {
-    return { ok: false, error: "Pickup and delivery addresses need at least a street line and city." };
+    return {
+      ok: false,
+      error: "Pickup and receiving addresses each need at least a street line and city.",
+    };
   }
 
   const zones = await getLogisticsZones();
@@ -205,7 +208,7 @@ export async function createLogisticsRequest(input: CreateLogisticsRequestInput)
       id: dropId,
       shipment_id: shipmentId,
       kind: "dropoff",
-      label: "Delivery",
+      label: "Receiving",
       contact_name: recipientName,
       phone: recipientPhone,
       email: cleanText(input.recipientEmail) || null,

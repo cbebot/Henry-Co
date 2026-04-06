@@ -22,6 +22,9 @@ const urgencies: { value: LogisticsUrgency; label: string }[] = [
   { value: "rush", label: "Rush" },
 ];
 
+const controlClassName =
+  "rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-base text-white outline-none transition focus:border-[var(--logistics-line-strong)] focus:ring-2 focus:ring-[rgba(215,117,57,0.18)] sm:text-sm";
+
 export default function BookRequestForm({
   zones,
   defaultMode,
@@ -88,7 +91,7 @@ export default function BookRequestForm({
               <select
                 name="zoneKey"
                 required
-                className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white"
+                className={controlClassName}
                 defaultValue={zones[0]?.key || ""}
               >
                 {zones.map((z) => (
@@ -100,7 +103,7 @@ export default function BookRequestForm({
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">Speed</span>
-              <select name="urgency" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white">
+              <select name="urgency" required className={controlClassName}>
                 {urgencies.map((u) => (
                   <option key={u.value} value={u.value}>
                     {u.label}
@@ -133,7 +136,7 @@ export default function BookRequestForm({
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">Sender name</span>
-              <input name="senderName" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="senderName" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">Sender phone</span>
@@ -144,7 +147,7 @@ export default function BookRequestForm({
                 inputMode="tel"
                 autoComplete="tel"
                 placeholder="+234…"
-                className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white"
+                className={controlClassName}
               />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
@@ -153,12 +156,12 @@ export default function BookRequestForm({
                 name="senderEmail"
                 type="email"
                 autoComplete="email"
-                className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white"
+                className={controlClassName}
               />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">Recipient name</span>
-              <input name="recipientName" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="recipientName" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">Recipient phone</span>
@@ -167,64 +170,70 @@ export default function BookRequestForm({
                 type="tel"
                 required
                 inputMode="tel"
-                className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white"
+                className={controlClassName}
               />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Recipient email (optional)</span>
-              <input name="recipientEmail" type="email" className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="recipientEmail" type="email" className={controlClassName} />
             </label>
           </div>
         </section>
 
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
           <h2 className="text-lg font-semibold text-white">Pickup</h2>
+          <p className="mt-1 text-sm text-[var(--logistics-muted)]">
+            Where our rider or dispatch team should collect the parcel.
+          </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Street / building</span>
-              <input name="pickupLine1" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="pickupLine1" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">City</span>
-              <input name="pickupCity" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="pickupCity" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">State / region</span>
-              <input name="pickupRegion" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="pickupRegion" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Landmark (optional)</span>
-              <input name="pickupLandmark" className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="pickupLandmark" className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Instructions (optional)</span>
-              <textarea name="pickupInstructions" rows={2} className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <textarea name="pickupInstructions" rows={2} className={controlClassName} />
             </label>
           </div>
         </section>
 
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
-          <h2 className="text-lg font-semibold text-white">Delivery</h2>
+          <h2 className="text-lg font-semibold text-white">Receiving address</h2>
+          <p className="mt-1 text-sm text-[var(--logistics-muted)]">
+            Where the parcel should be handed over to the recipient.
+          </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Street / building</span>
-              <input name="dropLine1" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="dropLine1" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">City</span>
-              <input name="dropCity" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="dropCity" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">State / region</span>
-              <input name="dropRegion" required className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="dropRegion" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Landmark (optional)</span>
-              <input name="dropLandmark" className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="dropLandmark" className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Instructions (optional)</span>
-              <textarea name="dropInstructions" rows={2} className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <textarea name="dropInstructions" rows={2} className={controlClassName} />
             </label>
           </div>
         </section>
@@ -234,15 +243,15 @@ export default function BookRequestForm({
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">Type</span>
-              <input name="parcelType" defaultValue="Parcel" className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="parcelType" defaultValue="Parcel" className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">Weight (kg)</span>
-              <input name="weightKg" type="number" min={0} step={0.1} defaultValue={1} className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="weightKg" type="number" min={0} step={0.1} defaultValue={1} className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
               <span className="text-[var(--logistics-muted)]">Size</span>
-              <select name="sizeTier" className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white">
+              <select name="sizeTier" className={controlClassName}>
                 <option value="small">Small</option>
                 <option value="medium">Medium</option>
                 <option value="large">Large</option>
@@ -255,11 +264,11 @@ export default function BookRequestForm({
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Description (optional)</span>
-              <textarea name="parcelDescription" rows={2} className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <textarea name="parcelDescription" rows={2} className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Preferred pickup time (optional)</span>
-              <input name="scheduledPickupAt" type="datetime-local" className="rounded-2xl border border-[var(--logistics-line)] bg-black/30 px-4 py-3 text-white" />
+              <input name="scheduledPickupAt" type="datetime-local" className={controlClassName} />
             </label>
           </div>
         </section>
