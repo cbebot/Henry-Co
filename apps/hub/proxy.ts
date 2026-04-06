@@ -89,7 +89,7 @@ export function proxy(request: NextRequest) {
   if (
     isHqHost &&
     !rewriteUrl.pathname.startsWith("/owner") &&
-    !rewriteUrl.pathname.startsWith("/api/owner")
+    !rewriteUrl.pathname.startsWith("/api/")
   ) {
     rewriteUrl.pathname =
       rewriteUrl.pathname === "/" ? "/owner" : `/owner${rewriteUrl.pathname}`;

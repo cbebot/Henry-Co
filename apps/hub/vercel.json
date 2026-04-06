@@ -15,7 +15,7 @@
       "destination": "/owner"
     },
     {
-      "source": "/:path((?!owner(?:/|$)|api/owner(?:/|$)).*)",
+      "source": "/:path((?!(?:owner|api)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
@@ -35,7 +35,7 @@
       "destination": "/workspace"
     },
     {
-      "source": "/:path((?!workspace(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
