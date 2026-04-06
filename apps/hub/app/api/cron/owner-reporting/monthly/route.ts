@@ -4,6 +4,10 @@ import { runOwnerReport } from "@/lib/owner-reporting";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+function cleanText(value?: unknown) {
+  return String(value ?? "").trim();
+}
+
 function isAuthorized(request: Request) {
   const secret = cleanText(process.env.CRON_SECRET);
   if (!secret) {
@@ -13,17 +17,16 @@ function isAuthorized(request: Request) {
   return request.headers.get("authorization") === `Bearer ${secret}`;
 }
 
-function cleanText(value?: unknown) {
-  return String(value ?? "").trim();
-}
-
 async function handleRequest(request: Request) {
   if (!isAuthorized(request)) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const summary = await runOwnerReport("monthly");
+    const url = new URL(request.url);
+    const force = !url.searchParams.has("force") ||
+      ["1", "true", "yes"].includes(cleanText(url.searchParams.get("force")).toLowerCase());
+    const summary = await runOwnerReport("monthly", { now: new Date(), force });
     return NextResponse.json(summary, {
       status: summary.ok ? 200 : summary.failed ? 500 : 200,
     });

@@ -7,6 +7,8 @@ import { createAdminSupabase } from "@/lib/supabase";
 
 const LAGOS_TIME_ZONE = "Africa/Lagos";
 const OWNER_REPORT_ENTITY_TYPE = "owner_report";
+const DAY_MS = 24 * 60 * 60 * 1000;
+const LAGOS_OFFSET_MS = 60 * 60 * 1000;
 
 export type OwnerReportKind = "weekly" | "monthly";
 
@@ -68,35 +70,56 @@ function formatMonthLabel(date: Date) {
   }).format(date);
 }
 
-function buildWeeklyPeriod(now: Date) {
-  const end = new Date(now);
-  end.setUTCDate(end.getUTCDate() - 1);
+function toLagosDate(date: Date) {
+  return new Date(date.getTime() + LAGOS_OFFSET_MS);
+}
 
-  const start = new Date(end);
-  start.setUTCDate(start.getUTCDate() - 6);
+function lagosDateAtMidnight(year: number, monthIndex: number, day: number) {
+  return new Date(Date.UTC(year, monthIndex, day) - LAGOS_OFFSET_MS);
+}
+
+function buildWeeklyPeriod(now: Date) {
+  const lagosNow = toLagosDate(now);
+  const weekdayIndex = (lagosNow.getUTCDay() + 6) % 7;
+  const currentWeekStart = lagosDateAtMidnight(
+    lagosNow.getUTCFullYear(),
+    lagosNow.getUTCMonth(),
+    lagosNow.getUTCDate() - weekdayIndex
+  );
+  const start = new Date(currentWeekStart.getTime() - 7 * DAY_MS);
+  const end = new Date(currentWeekStart.getTime() - DAY_MS);
 
   return {
-    key: formatDateKey(end),
+    key: `${formatDateKey(start)}__${formatDateKey(end)}`,
     label: `${formatShortDate(start)} – ${formatShortDate(end)}`,
   };
 }
 
 function buildMonthlyPeriod(now: Date) {
-  const localParts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: LAGOS_TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-  }).formatToParts(now);
-  const year = Number(localParts.find((part) => part.type === "year")?.value || "0");
-  const month = Number(localParts.find((part) => part.type === "month")?.value || "0");
-  const previousMonth = month === 1 ? 12 : month - 1;
-  const previousYear = month === 1 ? year - 1 : year;
-  const anchor = new Date(Date.UTC(previousYear, previousMonth - 1, 15, 12, 0, 0));
+  const lagosNow = toLagosDate(now);
+  const previousMonthStart = lagosDateAtMidnight(
+    lagosNow.getUTCFullYear(),
+    lagosNow.getUTCMonth() - 1,
+    1
+  );
+  const anchor = new Date(previousMonthStart.getTime() + 14 * DAY_MS);
 
   return {
-    key: `${previousYear}-${String(previousMonth).padStart(2, "0")}`,
+    key: new Intl.DateTimeFormat("en-CA", {
+      timeZone: LAGOS_TIME_ZONE,
+      year: "numeric",
+      month: "2-digit",
+    }).format(previousMonthStart),
     label: formatMonthLabel(anchor),
   };
+}
+
+function shouldRunReport(kind: OwnerReportKind, now: Date) {
+  const lagosNow = toLagosDate(now);
+  if (kind === "weekly") {
+    return lagosNow.getUTCDay() === 1;
+  }
+  return lagosNow.getUTCDate() === 1;
 }
 
 async function listOwnerRecipients(): Promise<OwnerRecipient[]> {
@@ -482,9 +505,32 @@ function renderOwnerReportEmail(input: {
   };
 }
 
-export async function runOwnerReport(kind: OwnerReportKind) {
-  const now = new Date();
+export async function runOwnerReport(
+  kind: OwnerReportKind,
+  options?: {
+    now?: Date;
+    force?: boolean;
+  }
+) {
+  const now = options?.now ?? new Date();
   const period = kind === "monthly" ? buildMonthlyPeriod(now) : buildWeeklyPeriod(now);
+
+  if (!options?.force && !shouldRunReport(kind, now)) {
+    return {
+      ok: true,
+      kind,
+      periodKey: period.key,
+      periodLabel: period.label,
+      generatedAt: now.toISOString(),
+      recipients: 0,
+      sent: 0,
+      failed: 0,
+      skipped: 0,
+      scheduleSkipped: true,
+      deliveries: [] as DispatchResult[],
+    };
+  }
+
   const [overview, finance, operations, messaging, recipients] = await Promise.all([
     getOwnerOverviewData(),
     getFinanceCenterData(),
@@ -510,7 +556,7 @@ export async function runOwnerReport(kind: OwnerReportKind) {
 
   for (const recipient of recipients) {
     const entityId = `${kind}:${period.key}:${recipient.email}`;
-    const alreadySent = await hasReportAudit(sentAction, entityId);
+    const alreadySent = options?.force ? false : await hasReportAudit(sentAction, entityId);
     if (alreadySent) {
       deliveries.push({
         email: recipient.email,
@@ -578,6 +624,7 @@ export async function runOwnerReport(kind: OwnerReportKind) {
     sent,
     failed,
     skipped,
+    scheduleSkipped: false,
     deliveries,
   };
 }
@@ -587,9 +634,19 @@ export async function runOwnerReports(input?: {
   force?: boolean;
   now?: Date;
 }) {
+  const now = input?.now ?? new Date();
   const summaries = [];
   for (const kind of input?.kinds ?? ["weekly", "monthly"]) {
-    summaries.push(await runOwnerReport(kind));
+    summaries.push(
+      await runOwnerReport(kind, {
+        now,
+        force: input?.force ?? false,
+      })
+    );
   }
-  return summaries;
+  return {
+    ok: summaries.every((summary) => summary.failed === 0),
+    generatedAt: now.toISOString(),
+    reports: summaries,
+  };
 }
