@@ -1,28 +1,42 @@
 node_modules
+
+# Temporary directories and build artifacts
 .codex-logs/
-apps/company-hub/.expo/
-*.tsbuildinfo
-.vercel
-.env*.local
-.env.production.vercel
 .tmp-*
 .tmp-edge-supabase-profile/
-.claude/
-*.err
-*.out
+.tmp-vercel-env
+.tmp-studio-start.ps1
+*.tsbuildinfo
+.vercel
 .next
 .turbo
 dist
-playwright-report
-test-results
-**/playwright-report/
-**/test-results/
 apps/super-app/dist-web-check
 apps/super-app/dist
 apps/company-hub/dist-check
 apps/company-hub/dist
-.tmp-vercel-env
-.tmp-studio-start.ps1
+
+# Log files
+*.err
+*.out
+*.log
+
+# Environment files (use .env.example instead)
+.env*.local
+.env.production.vercel
+.env.vercel.*
+.env.pull.*
+
+# IDE and tooling
+.claude/
+.expo/
+apps/company-hub/.expo/
+
+# Test artifacts
+playwright-report
+test-results
+**/playwright-report/
+**/test-results/
 
 # Nested repos / legacy directories
 /HenryCo/

@@ -10,7 +10,6 @@ export * from "./public/public-footer";
 export * from "./public/public-button";
 export * from "./public/public-cta";
 export * from "./public/public-section";
-export * from "./staff-surface-retired";
 export * from "./loading/HenryCoActivityIndicator";
 export * from "./loading/ButtonPendingContent";
 export * from "./loading/FormPendingButton";
