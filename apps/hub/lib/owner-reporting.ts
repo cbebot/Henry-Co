@@ -250,10 +250,17 @@ async function sendOwnerReportEmail(input: {
     };
   }
 
-  const from =
+  const rawFrom =
     cleanText(process.env.RESEND_FROM_EMAIL) ||
     cleanText(process.env.RESEND_FROM) ||
     "HenryCo HQ <noreply@henrycogroup.com>";
+  const fromEmail = extractEmail(rawFrom);
+  const fromName = cleanText(rawFrom.replace(/<[^>]+>/g, ""));
+  const from = fromEmail
+    ? fromName
+      ? `${fromName.replace(fromEmail, "").trim() || "HenryCo HQ"} <${fromEmail}>`
+      : fromEmail
+    : "HenryCo HQ <noreply@henrycogroup.com>";
 
   try {
     const response = await fetch("https://api.resend.com/emails", {
