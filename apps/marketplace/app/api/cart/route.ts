@@ -262,7 +262,7 @@ export async function POST(request: Request) {
   revalidatePath("/checkout");
   revalidatePath(`/product/${product.slug}`);
 
-  const shell = await getMarketplaceShellState();
+  const shell = await getMarketplaceShellState({ sessionToken });
   const response = NextResponse.json({
     ok: true,
     shell,

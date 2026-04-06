@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
+import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
 
@@ -76,10 +77,11 @@ export function CartExperience() {
                           <button
                             type="button"
                             disabled={cartBusy}
+                            aria-busy={cartBusy}
                             onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--market-paper-white)]"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--market-paper-white)] disabled:cursor-wait"
                           >
-                            -
+                            {cartBusy ? <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" /> : "-"}
                           </button>
                           <span className="min-w-10 text-center text-sm font-semibold text-[var(--market-paper-white)]">
                             {item.quantity}
@@ -87,10 +89,11 @@ export function CartExperience() {
                           <button
                             type="button"
                             disabled={cartBusy}
+                            aria-busy={cartBusy}
                             onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--market-paper-white)]"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--market-paper-white)] disabled:cursor-wait"
                           >
-                            +
+                            {cartBusy ? <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" /> : "+"}
                           </button>
                         </div>
                         <div className="text-right">
@@ -108,11 +111,16 @@ export function CartExperience() {
                         <button
                           type="button"
                           disabled={saving}
+                          aria-busy={saving}
                           onClick={() => void toggleWishlist(item.productSlug)}
-                          className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                          className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold disabled:cursor-wait"
                         >
-                          <Heart className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
-                          {saving ? "Saving..." : saved ? "Saved for later" : "Move to wishlist"}
+                          {saving ? (
+                            <HenryCoActivityIndicator size="sm" label="Updating wishlist" />
+                          ) : (
+                            <Heart className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
+                          )}
+                          <span>{saving ? "Saving..." : saved ? "Saved for later" : "Move to wishlist"}</span>
                         </button>
                         <Link
                           href={`/product/${item.productSlug}`}

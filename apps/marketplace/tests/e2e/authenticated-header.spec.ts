@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const MARKETPLACE_TEST_BASE_URL =
+  process.env.MARKETPLACE_E2E_BASE_URL || process.env.PLAYWRIGHT_TEST_BASE_URL || "http://127.0.0.1:3016";
 
 async function supabaseAdminFetch(pathname: string, options: RequestInit = {}) {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -106,12 +108,12 @@ async function buildSharedSessionCookie() {
 
   const cookieName = `sb-${projectRef}-auth-token`;
   const cookieValue = `base64-${toBase64Url(JSON.stringify(session))}`;
+  const cookieTarget = new URL(MARKETPLACE_TEST_BASE_URL);
   const cookies = createCookieChunks(cookieName, cookieValue).map((chunk) => ({
     ...chunk,
-    domain: ".henrycogroup.com",
-    path: "/",
+    url: cookieTarget.origin,
     httpOnly: false,
-    secure: true,
+    secure: cookieTarget.protocol === "https:",
     sameSite: "Lax" as const,
   }));
 
@@ -128,15 +130,14 @@ test("signed-in header exposes account menu shortcuts", async ({ context, page }
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator('header[data-marketplace-interactive="true"]')).toBeVisible();
 
-  const accountMenuButton = page.getByRole("button", { name: /open account menu/i });
+  const accountMenuButton = page.getByRole("button", { name: /account menu for/i });
   await expect(accountMenuButton).toBeVisible({ timeout: 30000 });
   await accountMenuButton.click();
 
-  await expect(page.getByRole("button", { name: /close account menu/i })).toBeVisible();
-  await expect(page.locator("#marketplace-account-menu")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Profile & account/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Saved items/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Orders/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /^Settings$/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Sign out/i })).toBeVisible();
+  await expect(page.getByRole("menu", { name: /account menu/i })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: /Profile & account/i })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: /Saved items/i })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: /Orders/i })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: /^Settings$/i })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: /Sign out/i })).toBeVisible();
 });

@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { ButtonPendingContent } from "@henryco/ui";
 import { submitLogisticsBookingAction, type BookingFormState } from "@/app/actions/logistics-booking";
 import type { LogisticsZone } from "@/lib/logistics/types";
 import type { LogisticsServiceType, LogisticsUrgency } from "@/lib/logistics/types";
@@ -58,7 +59,7 @@ export default function BookRequestForm({
               Open tracking
             </Link>
             <Link
-              href="/book"
+              href={defaultMode === "quote" ? "/quote" : "/book"}
               className="inline-flex rounded-full border border-white/25 px-4 py-2 text-sm font-semibold text-white/90"
             >
               Submit another
@@ -273,9 +274,16 @@ export default function BookRequestForm({
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex justify-center rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-8 py-3 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.24)] disabled:opacity-60"
+            className="inline-flex min-w-[12rem] justify-center rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-8 py-3 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.24)] disabled:cursor-wait disabled:opacity-70"
           >
-            {pending ? "Submitting…" : defaultMode === "quote" ? "Request quote" : "Book delivery"}
+            <ButtonPendingContent
+              pending={pending}
+              pendingLabel={defaultMode === "quote" ? "Requesting quote..." : "Booking delivery..."}
+              spinnerLabel={defaultMode === "quote" ? "Requesting quote" : "Booking delivery"}
+              className="gap-2"
+            >
+              {defaultMode === "quote" ? "Request quote" : "Book delivery"}
+            </ButtonPendingContent>
           </button>
         </div>
       </form>

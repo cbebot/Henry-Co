@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Store, UserRound } from "lucide-react";
+import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useMarketplaceFollows } from "@/components/marketplace/runtime-provider";
 
 export function StoreActionsClient({ vendorSlug }: { vendorSlug: string }) {
@@ -14,9 +15,11 @@ export function StoreActionsClient({ vendorSlug }: { vendorSlug: string }) {
       <button
         type="button"
         disabled={busy}
+        aria-busy={busy}
         onClick={() => void toggleFollow(vendorSlug)}
-        className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold"
+        className="market-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait"
       >
+        {busy ? <HenryCoActivityIndicator size="sm" label="Updating store follow" /> : null}
         {busy ? "Updating..." : following ? "Following store" : "Follow this store"}
       </button>
       <Link

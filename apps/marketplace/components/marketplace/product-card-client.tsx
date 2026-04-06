@@ -88,16 +88,21 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
           <button
             type="button"
             disabled={saving}
+            aria-busy={saving}
             onClick={() => void toggleWishlist(product.slug)}
             className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-xl transition",
+              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-xl transition disabled:cursor-wait",
               wishlisted
                 ? "border-[rgba(255,171,151,0.48)] bg-[rgba(255,171,151,0.16)] text-[var(--market-alert)]"
                 : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.12)] text-[var(--market-paper-white)]"
             )}
             aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
           >
-            <Heart className={cn("h-4 w-4", wishlisted ? "fill-current" : "")} />
+            {saving ? (
+              <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating wishlist" />
+            ) : (
+              <Heart className={cn("h-4 w-4", wishlisted ? "fill-current" : "")} />
+            )}
           </button>
         </div>
 

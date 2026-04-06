@@ -453,10 +453,10 @@ export async function searchMarketplace(query: URLSearchParams | Record<string, 
   });
 }
 
-export async function getCartPreview() {
+export async function getCartPreview(options?: { sessionToken?: string | null }) {
   const viewer = await getMarketplaceViewer();
   const cookieStore = await cookies();
-  const token = cookieStore.get("marketplace_cart_token")?.value || null;
+  const token = options?.sessionToken || cookieStore.get("marketplace_cart_token")?.value || null;
 
   try {
     const admin = createAdminSupabase();
@@ -525,10 +525,12 @@ export async function getCartPreview() {
   }
 }
 
-export async function getMarketplaceShellState(): Promise<MarketplaceShellState> {
+export async function getMarketplaceShellState(options?: {
+  sessionToken?: string | null;
+}): Promise<MarketplaceShellState> {
   const [viewer, cart, snapshot, readiness] = await Promise.all([
     getMarketplaceViewer(),
-    getCartPreview(),
+    getCartPreview({ sessionToken: options?.sessionToken }),
     getMarketplaceHomeData(),
     getMarketplaceReadiness(),
   ]);

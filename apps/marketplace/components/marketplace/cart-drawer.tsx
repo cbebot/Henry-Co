@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
+import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useMarketplaceCart, useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
 
@@ -84,19 +85,29 @@ export function MarketplaceCartDrawer() {
                             <button
                               type="button"
                               disabled={cartBusy}
+                              aria-busy={cartBusy}
                               onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.08)]"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.08)] disabled:cursor-wait"
                             >
-                              <Minus className="h-3.5 w-3.5" />
+                              {cartBusy ? (
+                                <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" />
+                              ) : (
+                                <Minus className="h-3.5 w-3.5" />
+                              )}
                             </button>
                             <span className="min-w-6 text-center text-sm font-semibold">{item.quantity}</span>
                             <button
                               type="button"
                               disabled={cartBusy}
+                              aria-busy={cartBusy}
                               onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.08)]"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.08)] disabled:cursor-wait"
                             >
-                              <Plus className="h-3.5 w-3.5" />
+                              {cartBusy ? (
+                                <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" />
+                              ) : (
+                                <Plus className="h-3.5 w-3.5" />
+                              )}
                             </button>
                           </div>
                           <div className="text-right">
@@ -116,10 +127,14 @@ export function MarketplaceCartDrawer() {
                     <button
                       type="button"
                       disabled={cartBusy}
+                      aria-busy={cartBusy}
                       onClick={() => removeCartItem(item.id)}
-                      className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]"
+                      className="mt-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] disabled:cursor-wait"
                     >
-                      Remove
+                      {cartBusy ? (
+                        <HenryCoActivityIndicator size="sm" className="text-[var(--market-muted)]" label="Updating cart" />
+                      ) : null}
+                      <span>{cartBusy ? "Updating..." : "Remove"}</span>
                     </button>
                   </article>
                 ))

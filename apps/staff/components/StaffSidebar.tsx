@@ -110,18 +110,26 @@ function SidebarSection({
 export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSidebarProps) {
   const pathname = usePathname();
   const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
 
   const handleSignOut = async () => {
     if (signingOut) return;
+    setSignOutError(null);
     setSigningOut(true);
     try {
-      await fetch("/api/auth/logout", {
+      const response = await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
         headers: { Accept: "application/json" },
       });
-    } finally {
-      window.location.href = "/login";
+      if (!response.ok) {
+        throw new Error(`Staff logout failed with status ${response.status}`);
+      }
+      window.location.assign("/login");
+    } catch (error) {
+      console.error(error);
+      setSignOutError("We could not sign you out. Try again.");
+      setSigningOut(false);
     }
   };
 
@@ -200,6 +208,11 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
             </>
           </ButtonPendingContent>
         </button>
+        {signOutError ? (
+          <p className="mt-2 px-3 text-xs font-medium text-[var(--staff-critical)]" role="status">
+            {signOutError}
+          </p>
+        ) : null}
       </div>
     </aside>
   );

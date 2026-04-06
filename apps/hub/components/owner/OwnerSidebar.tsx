@@ -98,18 +98,26 @@ export default function OwnerSidebar({ user }: OwnerSidebarProps) {
   const pathname = usePathname();
   const sections = getOwnerNavSections();
   const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
 
   const handleSignOut = async () => {
     if (signingOut) return;
+    setSignOutError(null);
     setSigningOut(true);
     try {
-      await fetch("/api/auth/logout", {
+      const response = await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
         headers: { Accept: "application/json" },
       });
-    } finally {
-      window.location.href = "/owner/login";
+      if (!response.ok) {
+        throw new Error(`Owner logout failed with status ${response.status}`);
+      }
+      window.location.assign("/owner/login");
+    } catch (error) {
+      console.error(error);
+      setSignOutError("We could not sign you out. Try again.");
+      setSigningOut(false);
     }
   };
 
@@ -198,6 +206,11 @@ export default function OwnerSidebar({ user }: OwnerSidebarProps) {
             </>
           </ButtonPendingContent>
         </button>
+        {signOutError ? (
+          <p className="mt-2 px-3 text-xs font-medium text-[var(--acct-red)]" role="status">
+            {signOutError}
+          </p>
+        ) : null}
       </div>
     </aside>
   );

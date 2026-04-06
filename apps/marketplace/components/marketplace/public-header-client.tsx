@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { getAccountUrl, getHubUrl } from "@henryco/config";
+import { getAccountUrl } from "@henryco/config";
 import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import {
   Bell,
@@ -50,35 +50,46 @@ function getViewerInitials(fullName: string | null, email: string | null) {
 
 function MobileSignOutRow({ onNavigate }: { onNavigate: () => void }) {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   return (
-    <button
-      type="button"
-      disabled={busy}
-      onClick={async () => {
-        if (busy) return;
-        setBusy(true);
-        try {
-          await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-        } finally {
-          onNavigate();
-          window.location.assign("/");
-        }
-      }}
-      className="flex w-full items-center justify-center gap-2 rounded-[1.35rem] border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 disabled:cursor-wait disabled:opacity-60"
-    >
-      <ButtonPendingContent
-        pending={busy}
-        pendingLabel="Signing out…"
-        spinnerLabel="Signing out"
-        className="inline-flex"
-        textClassName="inline-flex items-center gap-2 font-semibold"
+    <div className="space-y-2">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={async () => {
+          if (busy) return;
+          setError(null);
+          setBusy(true);
+          try {
+            const response = await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+            if (!response.ok) {
+              throw new Error(`Marketplace logout failed with status ${response.status}`);
+            }
+            onNavigate();
+            window.location.assign("/");
+          } catch (logoutError) {
+            console.error(logoutError);
+            setError("We could not sign you out. Try again.");
+            setBusy(false);
+          }
+        }}
+        className="flex w-full items-center justify-center gap-2 rounded-[1.35rem] border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 disabled:cursor-wait disabled:opacity-60"
       >
-        <>
-          <LogOut className="h-4 w-4 shrink-0" aria-hidden />
-          Sign out
-        </>
-      </ButtonPendingContent>
-    </button>
+        <ButtonPendingContent
+          pending={busy}
+          pendingLabel="Signing out…"
+          spinnerLabel="Signing out"
+          className="inline-flex"
+          textClassName="inline-flex items-center gap-2 font-semibold"
+        >
+          <>
+            <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+            Sign out
+          </>
+        </ButtonPendingContent>
+      </button>
+      {error ? <p className="text-center text-xs font-medium text-red-200">{error}</p> : null}
+    </div>
   );
 }
 
@@ -123,12 +134,13 @@ export function PublicHeaderClient() {
   const runtime = useMarketplaceRuntime();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   const currentPath = useMemo(() => {
     const query = searchParams.toString();
     return `${pathname}${query ? `?${query}` : ""}`;
   }, [pathname, searchParams]);
+  const [mobileOpenPath, setMobileOpenPath] = useState<string | null>(null);
+  const mobileOpen = mobileOpenPath === currentPath;
 
   const loginHref = useMemo(
     () =>
@@ -188,13 +200,9 @@ export function PublicHeaderClient() {
     : null;
 
   useEffect(() => {
-    setMobileOpen(false);
-  }, [currentPath]);
-
-  useEffect(() => {
     if (!mobileOpen) return;
     const onKey = (e: globalThis.KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpen(false);
+      if (e.key === "Escape") setMobileOpenPath(null);
     };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -215,7 +223,7 @@ export function PublicHeaderClient() {
           type="button"
           aria-label="Close navigation"
           className="fixed inset-0 z-40 bg-black/45 backdrop-blur-[2px] motion-reduce:backdrop-blur-none lg:hidden"
-          onClick={() => setMobileOpen(false)}
+          onClick={() => setMobileOpenPath(null)}
         />
       ) : null}
       <div className="market-panel relative z-50 mx-auto max-w-[1480px] overflow-visible rounded-[2rem]">
@@ -304,7 +312,7 @@ export function PublicHeaderClient() {
                 accountHref={getAccountUrl("/")}
                 signupHref={signupHref}
                 signupLabel="Get started"
-                preferencesHref={getHubUrl("/preferences")}
+                preferencesHref={getAccountUrl("/settings")}
                 settingsHref={getAccountUrl("/security")}
                 showSignOut
                 signOutApiPath="/api/auth/logout"
@@ -373,7 +381,7 @@ export function PublicHeaderClient() {
 
             <button
               type="button"
-              onClick={() => setMobileOpen((current) => !current)}
+              onClick={() => setMobileOpenPath((openPath) => (openPath === currentPath ? null : currentPath))}
               className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--market-noir)] lg:hidden"
               aria-expanded={mobileOpen}
               aria-controls="marketplace-public-mobile-nav"
@@ -435,7 +443,7 @@ export function PublicHeaderClient() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={() => setMobileOpenPath(null)}
                   className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
                 >
                   {item.label}
@@ -445,7 +453,7 @@ export function PublicHeaderClient() {
                 <>
                   <Link
                     href={getAccountUrl("/")}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => setMobileOpenPath(null)}
                     className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
                   >
                     <UserRound className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
@@ -453,7 +461,7 @@ export function PublicHeaderClient() {
                   </Link>
                   <Link
                     href="/account/wishlist"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => setMobileOpenPath(null)}
                     className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
                   >
                     <Heart className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
@@ -463,7 +471,7 @@ export function PublicHeaderClient() {
                     type="button"
                     onClick={() => {
                       runtime.openCart();
-                      setMobileOpen(false);
+                      setMobileOpenPath(null);
                     }}
                     className="flex w-full items-center justify-between gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-left text-sm font-semibold text-[var(--market-paper-white)]"
                   >
@@ -479,17 +487,17 @@ export function PublicHeaderClient() {
                   </button>
                   <Link
                     href="/account/orders"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => setMobileOpenPath(null)}
                     className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
                   >
                     <Package className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
                     Orders
                   </Link>
                   <a
-                    href={getHubUrl("/preferences")}
+                    href={getAccountUrl("/settings")}
                     target="_blank"
                     rel="noreferrer"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => setMobileOpenPath(null)}
                     className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
                   >
                     <Globe className="h-4 w-4 text-zinc-400" aria-hidden />
@@ -499,26 +507,26 @@ export function PublicHeaderClient() {
                     href={getAccountUrl("/security")}
                     target="_blank"
                     rel="noreferrer"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => setMobileOpenPath(null)}
                     className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
                   >
                     <Settings2 className="h-4 w-4 text-zinc-400" aria-hidden />
                     Settings
                   </a>
-                  <MobileSignOutRow onNavigate={() => setMobileOpen(false)} />
+                  <MobileSignOutRow onNavigate={() => setMobileOpenPath(null)} />
                 </>
               ) : (
                 <>
                   <Link
                     href={loginHref}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => setMobileOpenPath(null)}
                     className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
                   >
                     Sign in
                   </Link>
                   <Link
                     href={signupHref}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => setMobileOpenPath(null)}
                     className="rounded-[1.35rem] border border-[var(--market-brass)] bg-[var(--market-brass)] px-4 py-3 text-sm font-bold text-[var(--market-noir)]"
                   >
                     Get started
