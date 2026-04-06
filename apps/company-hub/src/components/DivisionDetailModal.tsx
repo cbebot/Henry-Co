@@ -20,6 +20,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { IconButton, Portal } from "react-native-paper";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
+import { contrastOnAccent } from "@/lib/contrastOnAccent";
 import type { Division } from "@/types/division";
 
 type Props = {
@@ -40,6 +42,7 @@ export function DivisionDetailModal({
   isBookmarked = false,
   onToggleBookmark,
 }: Props) {
+  const { palette, resolvedScheme } = useHubAppearance();
   const openSite = useCallback(async () => {
     if (!division) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -71,6 +74,9 @@ export function DivisionDetailModal({
 
   const active = division.status === "active";
   const accent = division.accentHex ?? "#C9A227";
+  const visitFg = contrastOnAccent(accent);
+  const heroBase =
+    resolvedScheme === "light" ? palette.surface : "#0B0B0C";
 
   return (
     <Portal>
@@ -100,8 +106,12 @@ export function DivisionDetailModal({
           >
             <Pressable
               onPress={(e) => e.stopPropagation()}
-              style={{ maxHeight: SCREEN_HEIGHT * 0.9 }}
-              className="rounded-t-3xl border border-hub-line bg-hub-bg"
+              className="rounded-t-3xl border"
+              style={{
+                maxHeight: SCREEN_HEIGHT * 0.9,
+                borderColor: palette.line,
+                backgroundColor: palette.bg,
+              }}
             >
               {/* Hero gradient */}
               <View
@@ -109,7 +119,7 @@ export function DivisionDetailModal({
                 style={{ height: HERO_HEIGHT }}
               >
                 <LinearGradient
-                  colors={[`${accent}40`, `${accent}10`, "#0B0B0C"]}
+                  colors={[`${accent}40`, `${accent}12`, heroBase]}
                   locations={[0, 0.6, 1]}
                   style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
                 >
@@ -127,11 +137,14 @@ export function DivisionDetailModal({
                       color={accent}
                     />
                   </View>
-                  <Text className="text-2xl font-bold text-white">
+                  <Text
+                    className="text-2xl font-bold"
+                    style={{ color: palette.textPrimary }}
+                  >
                     {division.name}
                   </Text>
                   {division.tagline ? (
-                    <Text className="mt-1 text-sm text-hub-muted">
+                    <Text className="mt-1 text-sm" style={{ color: palette.muted }}>
                       {division.tagline}
                     </Text>
                   ) : null}
@@ -141,7 +154,7 @@ export function DivisionDetailModal({
                 <View className="absolute right-2 top-2">
                   <IconButton
                     icon="close"
-                    iconColor="#F4F4F5"
+                    iconColor={palette.textPrimary}
                     size={22}
                     onPress={handleDismiss}
                     accessibilityLabel="Close"
@@ -171,8 +184,8 @@ export function DivisionDetailModal({
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-1">
-                    <MaterialCommunityIcons name="web" size={14} color="#9A9AA3" />
-                    <Text className="text-sm text-hub-muted">
+                    <MaterialCommunityIcons name="web" size={14} color={palette.muted} />
+                    <Text className="text-sm" style={{ color: palette.muted }}>
                       {division.subdomain}
                     </Text>
                   </View>
@@ -184,9 +197,16 @@ export function DivisionDetailModal({
                     {division.sectors.map((sector) => (
                       <View
                         key={sector}
-                        className="rounded-full border border-hub-line bg-hub-surface px-3 py-1"
+                        className="rounded-full border px-3 py-1"
+                        style={{
+                          borderColor: palette.line,
+                          backgroundColor: palette.surface,
+                        }}
                       >
-                        <Text className="text-xs font-medium text-hub-muted">
+                        <Text
+                          className="text-xs font-medium"
+                          style={{ color: palette.muted }}
+                        >
                           {sector}
                         </Text>
                       </View>
@@ -195,7 +215,10 @@ export function DivisionDetailModal({
                 )}
 
                 {/* Description */}
-                <Text className="text-base leading-7 text-[#DCDCE2]">
+                <Text
+                  className="text-base leading-7"
+                  style={{ color: palette.textBody }}
+                >
                   {division.description}
                 </Text>
 
@@ -206,10 +229,18 @@ export function DivisionDetailModal({
                     onPress={openSite}
                     accessibilityRole="button"
                     accessibilityLabel={`Visit ${division.name}`}
-                    className="flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-hub-gold py-3.5"
+                    className="flex-1 flex-row items-center justify-center gap-2 rounded-xl py-3.5"
+                    style={{
+                      backgroundColor: accent,
+                      borderWidth: 1,
+                      borderColor:
+                        visitFg === "#FFFFFF"
+                          ? "rgba(255,255,255,0.2)"
+                          : "rgba(0,0,0,0.12)",
+                    }}
                   >
-                    <MaterialCommunityIcons name="launch" size={18} color="#0B0B0C" />
-                    <Text className="text-sm font-bold text-[#0B0B0C]">
+                    <MaterialCommunityIcons name="launch" size={18} color={visitFg} />
+                    <Text className="text-sm font-bold" style={{ color: visitFg }}>
                       Visit Division
                     </Text>
                   </Pressable>
@@ -219,12 +250,16 @@ export function DivisionDetailModal({
                     onPress={handleShare}
                     accessibilityRole="button"
                     accessibilityLabel="Share division"
-                    className="items-center justify-center rounded-xl border border-hub-line bg-hub-surface p-3.5"
+                    className="items-center justify-center rounded-xl border p-3.5"
+                    style={{
+                      borderColor: palette.line,
+                      backgroundColor: palette.surface,
+                    }}
                   >
                     <MaterialCommunityIcons
                       name="share-variant-outline"
                       size={20}
-                      color="#F4F4F5"
+                      color={palette.textPrimary}
                     />
                   </Pressable>
 
@@ -236,12 +271,16 @@ export function DivisionDetailModal({
                       accessibilityLabel={
                         isBookmarked ? "Remove bookmark" : "Add bookmark"
                       }
-                      className="items-center justify-center rounded-xl border border-hub-line bg-hub-surface p-3.5"
+                      className="items-center justify-center rounded-xl border p-3.5"
+                      style={{
+                        borderColor: palette.line,
+                        backgroundColor: palette.surface,
+                      }}
                     >
                       <MaterialCommunityIcons
                         name={isBookmarked ? "heart" : "heart-outline"}
                         size={20}
-                        color={isBookmarked ? "#E54560" : "#F4F4F5"}
+                        color={isBookmarked ? "#E54560" : palette.textPrimary}
                       />
                     </Pressable>
                   )}

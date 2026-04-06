@@ -5,6 +5,8 @@ import * as Haptics from "expo-haptics";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { Searchbar } from "react-native-paper";
 
+import { HubBrandHeader } from "@/components/HubBrandHeader";
+import { useHubAppearance } from "@/context/HubAppearanceContext";
 import { useHubSearch } from "@/context/HubSearchContext";
 import { DIVISIONS } from "@/data/divisions";
 import type { Division } from "@/types/division";
@@ -22,6 +24,7 @@ function getSearchSuggestions(query: string): Division[] {
 }
 
 export function HubSearchBar() {
+  const { palette } = useHubAppearance();
   const { query, setQuery, clearQuery } = useHubSearch();
   const [localQuery, setLocalQuery] = useState(query);
   const [suggestions, setSuggestions] = useState<Division[]>([]);
@@ -67,6 +70,9 @@ export function HubSearchBar() {
 
   return (
     <View className="z-50 px-4 pb-2 pt-1">
+      <View className="pb-3 pt-2">
+        <HubBrandHeader />
+      </View>
       <Searchbar
         placeholder="Search divisions, services, keywords…"
         onChangeText={handleChange}
@@ -79,16 +85,16 @@ export function HubSearchBar() {
           setTimeout(() => setShowSuggestions(false), 150);
         }}
         icon={() => (
-          <MaterialCommunityIcons name="magnify" size={22} color="#9A9AA3" />
+          <MaterialCommunityIcons name="magnify" size={22} color={palette.muted} />
         )}
         style={{
-          backgroundColor: "#1E1E22",
+          backgroundColor: palette.searchBg,
           borderRadius: 14,
           borderWidth: 1,
-          borderColor: "#2A2A2E",
+          borderColor: palette.searchBorder,
         }}
-        inputStyle={{ fontSize: 15, color: "#F4F4F5" }}
-        placeholderTextColor="#6B6B73"
+        inputStyle={{ fontSize: 15, color: palette.textPrimary }}
+        placeholderTextColor={palette.searchPlaceholder}
         elevation={0}
       />
 
@@ -96,8 +102,10 @@ export function HubSearchBar() {
         <Animated.View
           entering={FadeIn.duration(200)}
           exiting={FadeOut.duration(150)}
-          className="mt-1 overflow-hidden rounded-xl border border-hub-line bg-hub-surface"
+          className="mt-1 overflow-hidden rounded-xl border"
           style={{
+            borderColor: palette.line,
+            backgroundColor: palette.surface,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
@@ -111,9 +119,12 @@ export function HubSearchBar() {
               onPress={() => handleSelectSuggestion(division)}
               accessibilityRole="button"
               accessibilityLabel={`Select ${division.name}`}
-              className={`flex-row items-center gap-3 px-4 py-3 active:bg-white/5 ${
-                idx < suggestions.length - 1 ? "border-b border-hub-line" : ""
-              }`}
+              className="flex-row items-center gap-3 px-4 py-3 active:opacity-90"
+              style={{
+                borderBottomWidth: idx < suggestions.length - 1 ? 1 : 0,
+                borderBottomColor: palette.line,
+                backgroundColor: palette.surface,
+              }}
             >
               <View
                 className="items-center justify-center rounded-lg"
@@ -133,11 +144,19 @@ export function HubSearchBar() {
                 />
               </View>
               <View className="min-w-0 flex-1">
-                <Text className="text-sm font-semibold text-white" numberOfLines={1}>
+                <Text
+                  className="text-sm font-semibold"
+                  style={{ color: palette.textPrimary }}
+                  numberOfLines={1}
+                >
                   {division.name}
                 </Text>
                 {division.tagline ? (
-                  <Text className="text-xs text-hub-muted" numberOfLines={1}>
+                  <Text
+                    className="text-xs"
+                    style={{ color: palette.muted }}
+                    numberOfLines={1}
+                  >
                     {division.tagline}
                   </Text>
                 ) : null}

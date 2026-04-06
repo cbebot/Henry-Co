@@ -59,10 +59,10 @@ export default defineConfig({
   },
   webServer: useWebServer
     ? {
-        command: `next dev --port ${port}`,
+        command: `pnpm build && pnpm exec next start -p ${port}`,
         url: baseURL,
-        reuseExistingServer: !process.env.CI,
-        timeout: 120000,
+        reuseExistingServer: false,
+        timeout: 240000,
       }
     : undefined,
   projects: [

@@ -49,8 +49,14 @@ export function SearchExperience({
   const [suggestBusy, setSuggestBusy] = useState(false);
   const [suggestOpen, setSuggestOpen] = useState(false);
   const searchWrapRef = useRef<HTMLDivElement | null>(null);
+  const hasHydratedRef = useRef(false);
 
   useEffect(() => {
+    if (!hasHydratedRef.current) {
+      hasHydratedRef.current = true;
+      return;
+    }
+
     let active = true;
     const params = new URLSearchParams();
     if (deferredQuery) params.set("q", deferredQuery);

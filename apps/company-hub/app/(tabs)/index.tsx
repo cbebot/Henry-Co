@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { DivisionCardPremium } from "@/components/DivisionCardPremium";
@@ -11,12 +12,14 @@ import { HubSearchBar } from "@/components/HubSearchBar";
 import { NewsCard } from "@/components/NewsCard";
 import { SectionHeader } from "@/components/SectionHeader";
 import { useDivisionModal } from "@/context/DivisionModalContext";
+import { useHubAppearance } from "@/context/HubAppearanceContext";
 import { useHubSearch } from "@/context/HubSearchContext";
 import { DIVISIONS, getFeaturedDivisions } from "@/data/divisions";
 import { matchesQuery } from "@/lib/searchDivisions";
 import { getBookmarks, toggleBookmark } from "@/store/bookmarks";
 
 export default function HomeScreen() {
+  const { palette, resolvedScheme } = useHubAppearance();
   const { query } = useHubSearch();
   const { openDivision } = useDivisionModal();
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
@@ -53,8 +56,16 @@ export default function HomeScreen() {
 
   const spotlight = featured[0] ?? filtered[0];
 
+  const heroTextMuted =
+    resolvedScheme === "dark" ? "#C8C8D0" : palette.textBody;
+  const heroKickerMuted = palette.textSubtle;
+
   return (
-    <SafeAreaView className="flex-1 bg-hub-bg" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: palette.bg }}
+      edges={["top"]}
+    >
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 48 }}
@@ -63,7 +74,12 @@ export default function HomeScreen() {
         <HubSearchBar />
 
         <LinearGradient
-          colors={["#2A2210", "#1A1510", "#0B0B0C"]}
+          colors={
+            resolvedScheme === "dark"
+              ? ["#5C4D18", "#3D3318", "#1A1510", "#0B0B0C"]
+              : ["#F5EED8", "#EBE4D4", "#E8E2DC", "#F2F2F4"]
+          }
+          locations={[0, 0.28, 0.62, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -71,26 +87,46 @@ export default function HomeScreen() {
             borderRadius: 24,
             overflow: "hidden",
             borderWidth: 1,
-            borderColor: "rgba(201, 162, 39, 0.25)",
+            borderColor:
+              resolvedScheme === "dark"
+                ? "rgba(201, 162, 39, 0.35)"
+                : "rgba(201, 162, 39, 0.45)",
           }}
         >
           <View className="px-6 pb-10 pt-10">
-            <Text className="text-xs font-bold uppercase tracking-[0.35em] text-[#C9A227]">
-              Henry &amp; Co.
-            </Text>
-            <Text className="mt-3 text-3xl font-bold leading-tight text-white">
-              Company Hub
-            </Text>
-            <Text className="mt-3 max-w-sm text-base leading-6 text-[#C8C8D0]">
-              One connected entry point to every Henry &amp; Co.
-              division—discover services, explore opportunities, and open the
-              experience that fits your needs.
-            </Text>
-            <View className="mt-6 h-px w-16 bg-[#C9A227]/60" />
-            <Text className="mt-4 text-sm text-[#9A9AA3]">
-              Aligned with henrycogroup.com — refined, accountable, and built to
-              scale.
-            </Text>
+            <Animated.View entering={FadeInDown.duration(520).springify()}>
+              <Text className="text-xs font-bold uppercase tracking-[0.35em] text-[#C9A227]">
+                Henry &amp; Co.
+              </Text>
+            </Animated.View>
+            <Animated.View entering={FadeInUp.delay(80).duration(560).springify()}>
+              <Text
+                className="mt-4 font-bold leading-tight"
+                style={{
+                  color: palette.textPrimary,
+                  fontSize: 26,
+                  lineHeight: 32,
+                }}
+              >
+                Explore the businesses, services, and operating divisions of
+                Henry &amp; Co.
+              </Text>
+            </Animated.View>
+            <Animated.View entering={FadeInUp.delay(140).duration(560).springify()}>
+              <Text
+                className="mt-4 max-w-xl text-base leading-7"
+                style={{ color: heroTextMuted }}
+              >
+                Henry &amp; Co. brings together focused businesses under one
+                respected group identity.
+              </Text>
+            </Animated.View>
+            <Animated.View entering={FadeInUp.delay(200).duration(480).springify()}>
+              <View className="mt-7 h-px w-20 bg-[#C9A227]/70" />
+              <Text className="mt-4 text-sm" style={{ color: heroKickerMuted }}>
+                Premium company network — henrycogroup.com
+              </Text>
+            </Animated.View>
           </View>
         </LinearGradient>
 
@@ -137,7 +173,8 @@ export default function HomeScreen() {
         <View className="mt-10 px-4">
           <Link href="/discover" asChild>
             <Pressable
-              className="items-center rounded-2xl border border-[#C9A227]/40 bg-[#C9A227]/10 py-4 active:opacity-80"
+              className="items-center rounded-2xl border border-[#C9A227]/40 py-4 active:opacity-80"
+              style={{ backgroundColor: "rgba(201, 162, 39, 0.12)" }}
               accessibilityLabel="View full division directory"
               accessibilityRole="button"
             >

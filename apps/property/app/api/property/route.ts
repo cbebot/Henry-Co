@@ -12,7 +12,7 @@ import {
   createSupportThread,
   ensureCustomerProfile,
 } from "@/lib/property/shared-account";
-import { getSharedAccountPropertyPath } from "@/lib/property/links";
+import { getSharedAccountLoginUrl, getSharedAccountPropertyPath } from "@/lib/property/links";
 import {
   createListingFromSubmission,
   removeSavedPropertyForUser,
@@ -66,6 +66,16 @@ function localToIso(value: string) {
 
 function redirectTo(request: Request, target: string) {
   return NextResponse.redirect(new URL(target, request.url), { status: 303 });
+}
+
+/** Cross-origin redirect to shared HenryCo account sign-in with return path on this property origin */
+function redirectToAccountSignIn(request: Request, returnPath: string) {
+  const origin = new URL(request.url).origin;
+  const loginUrl = getSharedAccountLoginUrl({
+    nextPath: returnPath.startsWith("/") ? returnPath : `/${returnPath}`,
+    propertyOrigin: origin,
+  });
+  return NextResponse.redirect(loginUrl, { status: 303 });
 }
 
 function withQuery(target: string, key: string, value: string) {
@@ -238,6 +248,10 @@ export async function POST(request: Request) {
       }
 
       case "inquiry_submit": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+
         const listingId = text(formData, "listing_id");
         const listing = snapshot.listings.find((item) => item.id === listingId);
         if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
@@ -343,6 +357,10 @@ export async function POST(request: Request) {
       }
 
       case "viewing_request": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+
         const listingId = text(formData, "listing_id");
         const listing = snapshot.listings.find((item) => item.id === listingId);
         if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
@@ -444,6 +462,10 @@ export async function POST(request: Request) {
       }
 
       case "listing_submit": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo || "/submit");
+        }
+
         const ownerName = text(formData, "owner_name") || viewer.user?.fullName || "Property owner";
         const ownerEmail = normalizeEmail(text(formData, "owner_email") || viewer.user?.email);
         if (!ownerEmail) return redirectTo(request, withQuery(returnTo, "error", "missing-email"));

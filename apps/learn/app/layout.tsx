@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
 import { getDivisionConfig } from "@henryco/config";
@@ -31,8 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen bg-[var(--learn-bg)] text-[var(--learn-ink)] antialiased">
-        <HenryCoThemeBlocking />
-        <ThemeProvider>{children}</ThemeProvider>
+        <PublicThemeGuard>{children}</PublicThemeGuard>
       </body>
     </html>
   );

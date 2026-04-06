@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { requireRoles } from "@/lib/auth/server";
 
 const cards = [
   {
@@ -41,7 +42,9 @@ const cards = [
   },
 ];
 
-export default function CareAdminPage() {
+export default async function CareAdminPage() {
+  await requireRoles(["owner", "manager", "support", "staff"]);
+
   return (
     <div className="space-y-8">
       <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-8">

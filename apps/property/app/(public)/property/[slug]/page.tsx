@@ -10,8 +10,14 @@ import {
   PropertySectionIntro,
   PropertyStatusBadge,
 } from "@/components/property/ui";
+import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
 import { getPropertyDashboardData, getPropertyBySlug } from "@/lib/property/data";
 import { getPropertyViewer } from "@/lib/property/auth";
+import {
+  getPropertyOrigin,
+  getSharedAccountLoginUrl,
+  getSharedAccountSignupUrl,
+} from "@/lib/property/links";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +47,10 @@ export default async function PropertyDetailPage({
 
   const accountData = viewer.user ? await getPropertyDashboardData() : null;
   const isSaved = Boolean(accountData?.savedListings.some((item) => item.id === data.listing.id));
+  const propertyOrigin = getPropertyOrigin();
+  const returnPath = `/property/${data.listing.slug}`;
+  const loginHref = getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin });
+  const signupHref = getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin });
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
@@ -203,54 +213,65 @@ export default async function PropertyDetailPage({
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
               Ask about this property
             </h2>
-            <form action="/api/property" method="POST" className="mt-6 space-y-4">
-              <input type="hidden" name="intent" value="inquiry_submit" />
-              <input type="hidden" name="listing_id" value={data.listing.id} />
-              <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
+            {viewer.user ? (
+              <form action="/api/property" method="POST" className="mt-6 space-y-4">
+                <input type="hidden" name="intent" value="inquiry_submit" />
+                <input type="hidden" name="listing_id" value={data.listing.id} />
+                <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
 
-              <label className="block">
-                <span className="text-sm font-medium text-[var(--property-ink)]">Name</span>
-                <input
-                  name="name"
-                  required
-                  defaultValue={viewer.user?.fullName || ""}
-                  className="property-input mt-2 rounded-2xl px-4 py-3"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-medium text-[var(--property-ink)]">Email</span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  defaultValue={viewer.user?.email || ""}
-                  className="property-input mt-2 rounded-2xl px-4 py-3"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-medium text-[var(--property-ink)]">Phone</span>
-                <input
-                  name="phone"
-                  className="property-input mt-2 rounded-2xl px-4 py-3"
-                  placeholder="+234..."
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-medium text-[var(--property-ink)]">Message</span>
-                <textarea
-                  name="message"
-                  required
-                  rows={4}
-                  className="property-textarea mt-2 rounded-2xl px-4 py-3"
-                  placeholder="What would you like HenryCo Property to clarify for you?"
-                />
-              </label>
+                <label className="block">
+                  <span className="text-sm font-medium text-[var(--property-ink)]">Name</span>
+                  <input
+                    name="name"
+                    required
+                    defaultValue={viewer.user.fullName || ""}
+                    className="property-input mt-2 rounded-2xl px-4 py-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-medium text-[var(--property-ink)]">Email</span>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    defaultValue={viewer.user.email || ""}
+                    className="property-input mt-2 rounded-2xl px-4 py-3"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-medium text-[var(--property-ink)]">Phone</span>
+                  <input
+                    name="phone"
+                    className="property-input mt-2 rounded-2xl px-4 py-3"
+                    placeholder="+234..."
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-medium text-[var(--property-ink)]">Message</span>
+                  <textarea
+                    name="message"
+                    required
+                    rows={4}
+                    className="property-textarea mt-2 rounded-2xl px-4 py-3"
+                    placeholder="What would you like HenryCo Property to clarify for you?"
+                  />
+                </label>
 
-              <PropertyPendingButton
-                idleLabel="Submit inquiry"
-                pendingLabel="Submitting inquiry"
-              />
-            </form>
+                <PropertyPendingButton
+                  idleLabel="Submit inquiry"
+                  pendingLabel="Submitting inquiry"
+                />
+              </form>
+            ) : (
+              <div className="mt-6">
+                <PropertyPublicAuthGate
+                  title="Sign in to send an inquiry"
+                  description="Inquiries are tied to your HenryCo account so agents can respond securely and you can track follow-up in one place."
+                  loginHref={loginHref}
+                  signupHref={signupHref}
+                />
+              </div>
+            )}
           </section>
 
           <section className="property-panel rounded-[2rem] p-6 sm:p-8">
@@ -258,69 +279,80 @@ export default async function PropertyDetailPage({
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
               Request a viewing
             </h2>
-            <form action="/api/property" method="POST" className="mt-6 space-y-4">
-              <input type="hidden" name="intent" value="viewing_request" />
-              <input type="hidden" name="listing_id" value={data.listing.id} />
-              <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
+            {viewer.user ? (
+              <form action="/api/property" method="POST" className="mt-6 space-y-4">
+                <input type="hidden" name="intent" value="viewing_request" />
+                <input type="hidden" name="listing_id" value={data.listing.id} />
+                <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
 
-              <label className="block">
-                <span className="text-sm font-medium text-[var(--property-ink)]">Attendee name</span>
-                <input
-                  name="attendee_name"
-                  required
-                  defaultValue={viewer.user?.fullName || ""}
-                  className="property-input mt-2 rounded-2xl px-4 py-3"
-                />
-              </label>
-              <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Email</span>
+                  <span className="text-sm font-medium text-[var(--property-ink)]">Attendee name</span>
                   <input
-                    name="attendee_email"
-                    type="email"
+                    name="attendee_name"
                     required
-                    defaultValue={viewer.user?.email || ""}
+                    defaultValue={viewer.user.fullName || ""}
                     className="property-input mt-2 rounded-2xl px-4 py-3"
                   />
                 </label>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className="block">
+                    <span className="text-sm font-medium text-[var(--property-ink)]">Email</span>
+                    <input
+                      name="attendee_email"
+                      type="email"
+                      required
+                      defaultValue={viewer.user.email || ""}
+                      className="property-input mt-2 rounded-2xl px-4 py-3"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[var(--property-ink)]">Phone</span>
+                    <input name="attendee_phone" className="property-input mt-2 rounded-2xl px-4 py-3" />
+                  </label>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className="block">
+                    <span className="text-sm font-medium text-[var(--property-ink)]">Preferred time</span>
+                    <input
+                      name="preferred_date"
+                      type="datetime-local"
+                      required
+                      className="property-input mt-2 rounded-2xl px-4 py-3"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-[var(--property-ink)]">Backup time</span>
+                    <input
+                      name="backup_date"
+                      type="datetime-local"
+                      className="property-input mt-2 rounded-2xl px-4 py-3"
+                    />
+                  </label>
+                </div>
                 <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Phone</span>
-                  <input name="attendee_phone" className="property-input mt-2 rounded-2xl px-4 py-3" />
-                </label>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Preferred time</span>
-                  <input
-                    name="preferred_date"
-                    type="datetime-local"
-                    required
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
+                  <span className="text-sm font-medium text-[var(--property-ink)]">Notes</span>
+                  <textarea
+                    name="notes"
+                    rows={3}
+                    className="property-textarea mt-2 rounded-2xl px-4 py-3"
+                    placeholder="Access, household schedule, or questions for the viewing team."
                   />
                 </label>
-                <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Backup time</span>
-                  <input
-                    name="backup_date"
-                    type="datetime-local"
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                  />
-                </label>
-              </div>
-              <label className="block">
-                <span className="text-sm font-medium text-[var(--property-ink)]">Notes</span>
-                <textarea
-                  name="notes"
-                  rows={3}
-                  className="property-textarea mt-2 rounded-2xl px-4 py-3"
-                  placeholder="Access, household schedule, or questions for the viewing team."
+                <PropertyPendingButton
+                  idleLabel="Request viewing"
+                  pendingLabel="Requesting viewing"
                 />
-              </label>
-              <PropertyPendingButton
-                idleLabel="Request viewing"
-                pendingLabel="Requesting viewing"
-              />
-            </form>
+              </form>
+            ) : (
+              <div className="mt-6">
+                <PropertyPublicAuthGate
+                  title="Sign in to request a viewing"
+                  description="Viewings are scheduled through your HenryCo account so confirmations, reminders, and updates stay in one secure timeline."
+                  loginHref={loginHref}
+                  signupHref={signupHref}
+                />
+              </div>
+            )}
           </section>
         </div>
       </section>

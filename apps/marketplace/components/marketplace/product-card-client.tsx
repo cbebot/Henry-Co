@@ -58,7 +58,6 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
 
   return (
     <motion.article
-      layout
       whileHover={{ y: -6 }}
       className={cn(
         "group relative z-10 flex h-full scroll-mt-40 flex-col overflow-hidden rounded-[2rem] border border-[var(--market-line)] bg-[linear-gradient(180deg,rgba(16,21,32,0.96),rgba(10,14,23,0.9))] shadow-[0_26px_90px_rgba(0,0,0,0.24)] transition duration-300",

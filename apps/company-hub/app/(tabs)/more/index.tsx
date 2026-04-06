@@ -2,6 +2,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
+
 type MenuRow = {
   href: "/more/about" | "/more/contact" | "/more/privacy" | "/more/terms" | "/more/settings";
   label: string;
@@ -43,18 +45,26 @@ const rows: MenuRow[] = [
 ];
 
 export default function MoreIndexScreen() {
+  const { palette } = useHubAppearance();
+
   return (
     <ScrollView
-      className="flex-1 bg-hub-bg"
+      className="flex-1"
+      style={{ backgroundColor: palette.bg }}
       contentContainerStyle={{ paddingBottom: 48 }}
       showsVerticalScrollIndicator={false}
     >
       <View className="px-4 pt-4">
         <Text className="text-xs font-bold uppercase tracking-widest text-[#C9A227]">
-          Henry &amp; Co.
+          Menu
         </Text>
-        <Text className="mt-2 text-2xl font-bold text-white">More</Text>
-        <Text className="mt-2 text-sm leading-6 text-hub-muted">
+        <Text
+          className="mt-2 text-2xl font-bold"
+          style={{ color: palette.textPrimary }}
+        >
+          More
+        </Text>
+        <Text className="mt-2 text-sm leading-6" style={{ color: palette.muted }}>
           Policies, company context, and ways to reach us—consistent with the
           public hub experience.
         </Text>
@@ -64,7 +74,11 @@ export default function MoreIndexScreen() {
         {rows.map((row) => (
           <Link key={row.href} href={row.href} asChild>
             <Pressable
-              className="w-[47%] rounded-2xl border border-hub-line bg-hub-surface p-4 active:opacity-90"
+              className="w-[47%] rounded-2xl border p-4 active:opacity-90"
+              style={{
+                borderColor: palette.line,
+                backgroundColor: palette.surface,
+              }}
               accessibilityLabel={`Navigate to ${row.label}`}
               accessibilityRole="button"
             >
@@ -75,10 +89,13 @@ export default function MoreIndexScreen() {
                   color="#C9A227"
                 />
               </View>
-              <Text className="mt-3 text-base font-semibold text-white">
+              <Text
+                className="mt-3 text-base font-semibold"
+                style={{ color: palette.textPrimary }}
+              >
                 {row.label}
               </Text>
-              <Text className="mt-1 text-xs text-hub-muted">
+              <Text className="mt-1 text-xs" style={{ color: palette.muted }}>
                 {row.subtitle}
               </Text>
             </Pressable>

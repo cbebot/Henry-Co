@@ -21,6 +21,7 @@ export function MarketplaceCartDrawer() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.16, ease: "easeOut" }}
             onClick={closeCart}
             className="fixed inset-0 z-50 bg-[rgba(10,8,6,0.42)] backdrop-blur-sm md:pointer-events-none md:bg-transparent md:backdrop-blur-0"
           />
@@ -28,7 +29,7 @@ export function MarketplaceCartDrawer() {
             initial={{ opacity: 0, x: 48 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 48 }}
-            transition={{ type: "spring", stiffness: 220, damping: 24 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-y-0 right-0 z-[60] flex w-full max-w-[440px] flex-col border-l border-[var(--market-line-strong)] bg-[rgba(5,7,13,0.94)] text-[var(--market-paper-white)] shadow-[0_40px_140px_rgba(0,0,0,0.45)] backdrop-blur-3xl"
           >
             <div className="flex items-center justify-between border-b border-[color:rgba(255,255,255,0.12)] px-6 py-5">

@@ -1,9 +1,15 @@
 import Link from "next/link";
+import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
 import { PropertySectionIntro } from "@/components/property/ui";
 import { PropertyPendingButton } from "@/components/property/form-status";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertySnapshot } from "@/lib/property/data";
-import { getSharedAccountPropertyUrl } from "@/lib/property/links";
+import {
+  getPropertyOrigin,
+  getSharedAccountLoginUrl,
+  getSharedAccountPropertyUrl,
+  getSharedAccountSignupUrl,
+} from "@/lib/property/links";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +21,9 @@ export default async function SubmitListingPage({
   const params = await searchParams;
   const snapshot = await getPropertySnapshot();
   const viewer = await getPropertyViewer();
+  const propertyOrigin = getPropertyOrigin();
+  const submitLoginHref = getSharedAccountLoginUrl({ nextPath: "/submit", propertyOrigin });
+  const submitSignupHref = getSharedAccountSignupUrl({ nextPath: "/submit", propertyOrigin });
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
@@ -47,16 +56,26 @@ export default async function SubmitListingPage({
             ))}
           </div>
 
-          <div className="mt-6 rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5 text-sm leading-7 text-[var(--property-ink-soft)]">
-            Signed in as:{" "}
-            <span className="font-semibold text-[var(--property-ink)]">
-              {viewer.user?.email || "guest submission"}
-            </span>
-            . Your submission will be linked to your HenryCo account.
-          </div>
+          {viewer.user ? (
+            <div className="mt-6 rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5 text-sm leading-7 text-[var(--property-ink-soft)]">
+              Signed in as{" "}
+              <span className="font-semibold text-[var(--property-ink)]">{viewer.user.email}</span>. Your submission
+              will be linked to this HenryCo account for moderation and follow-up.
+            </div>
+          ) : (
+            <div className="mt-6">
+              <PropertyPublicAuthGate
+                title="Sign in to submit a listing"
+                description="Listing submissions require a HenryCo account so verification documents, moderation, and owner communications stay auditable and secure."
+                loginHref={submitLoginHref}
+                signupHref={submitSignupHref}
+              />
+            </div>
+          )}
         </section>
 
         <section id="submission" className="property-panel rounded-[2.3rem] p-6 sm:p-8">
+          {viewer.user ? (
           <form action="/api/property" method="POST" encType="multipart/form-data" className="space-y-5">
             <input type="hidden" name="intent" value="listing_submit" />
             <input type="hidden" name="return_to" value="/submit" />
@@ -67,7 +86,7 @@ export default async function SubmitListingPage({
                 <input
                   name="owner_name"
                   required
-                  defaultValue={viewer.user?.fullName || ""}
+                  defaultValue={viewer.user.fullName || ""}
                   className="property-input mt-2 rounded-2xl px-4 py-3"
                   placeholder="Adaeze Okonkwo"
                 />
@@ -78,7 +97,7 @@ export default async function SubmitListingPage({
                   name="owner_email"
                   type="email"
                   required
-                  defaultValue={viewer.user?.email || ""}
+                  defaultValue={viewer.user.email || ""}
                   className="property-input mt-2 rounded-2xl px-4 py-3"
                   placeholder="owner@company.com"
                 />
@@ -272,6 +291,15 @@ export default async function SubmitListingPage({
               </Link>
             </div>
           </form>
+          ) : (
+            <div className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-6 text-sm text-[var(--property-ink-soft)]">
+              The listing form unlocks after you sign in. Use the panel on the left, or{" "}
+              <Link href={submitLoginHref} className="font-semibold text-[var(--property-ink)] underline-offset-4 hover:underline">
+                sign in here
+              </Link>
+              .
+            </div>
+          )}
         </section>
       </div>
     </main>

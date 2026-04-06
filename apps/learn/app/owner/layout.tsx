@@ -1,18 +1,6 @@
-import type { ReactNode } from "react";
-import { StaffSurfaceRetired } from "@henryco/ui";
+import { redirect } from "next/navigation";
+import { getStaffHqUrl } from "@henryco/config";
 
-export default function LearnOwnerLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  void children;
-  return (
-    <StaffSurfaceRetired
-      division="HenryCo Learn"
-      body="Legacy learning owner dashboards have been retired while the next premium internal workspace is rebuilt."
-      primaryHref="/"
-      primaryLabel="Return to Learn"
-    />
-  );
+export default function LearnOwnerLayout() {
+  redirect(getStaffHqUrl("/learn"));
 }

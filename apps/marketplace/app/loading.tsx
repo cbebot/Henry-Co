@@ -1,8 +1,8 @@
-import { HenryCoPublicRouteLoading } from "@henryco/ui";
+import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 export default function MarketplaceLoading() {
   return (
-    <HenryCoPublicRouteLoading
+    <PublicRouteLoader
       eyebrow="HenryCo Marketplace"
       title="Loading marketplace"
       subtitle="Preparing products, stores, and your personalized experience."

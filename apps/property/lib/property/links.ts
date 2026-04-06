@@ -33,7 +33,7 @@ export function getSharedAccountPropertyPath(panel: PropertyAccountPanel = "over
     return "/property/saved";
   }
 
-  const url = new URL("/property", "https://account.henryco.local");
+  const url = new URL(getAccountUrl("/property"));
   if (panel !== "overview") {
     url.searchParams.set("panel", panel);
   }

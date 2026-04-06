@@ -9,6 +9,7 @@ import { Chip } from "react-native-paper";
 import { DivisionCardPremium } from "@/components/DivisionCardPremium";
 import { HubSearchBar } from "@/components/HubSearchBar";
 import { useDivisionModal } from "@/context/DivisionModalContext";
+import { useHubAppearance } from "@/context/HubAppearanceContext";
 import { useHubSearch } from "@/context/HubSearchContext";
 import { DIVISIONS } from "@/data/divisions";
 import { filterByStatus, matchesQuery } from "@/lib/searchDivisions";
@@ -25,6 +26,7 @@ const FILTER_CHIPS: { key: StatusFilter; label: string }[] = [
 ];
 
 export default function DiscoverScreen() {
+  const { palette } = useHubAppearance();
   const { query } = useHubSearch();
   const { openDivision } = useDivisionModal();
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -89,7 +91,11 @@ export default function DiscoverScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-hub-bg" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: palette.bg }}
+      edges={["top"]}
+    >
       <HubSearchBar />
 
       <View className="flex-row flex-wrap gap-2 px-4 pb-3">
@@ -99,12 +105,13 @@ export default function DiscoverScreen() {
             selected={status === key}
             onPress={() => setStatus(key)}
             style={{
-              backgroundColor: status === key ? "#C9A22733" : "#1E1E22",
+              backgroundColor:
+                status === key ? "#C9A22733" : palette.surfaceElevated,
               borderWidth: 1,
-              borderColor: status === key ? "#C9A227" : "#2A2A2E",
+              borderColor: status === key ? "#C9A227" : palette.line,
             }}
             textStyle={{
-              color: status === key ? "#F5E6B8" : "#C8C8D0",
+              color: status === key ? "#F5E6B8" : palette.textBody,
               fontWeight: "600",
             }}
             selectedColor="#C9A227"
@@ -127,7 +134,7 @@ export default function DiscoverScreen() {
             onRefresh={handleRefresh}
             tintColor="#C9A227"
             colors={["#C9A227"]}
-            progressBackgroundColor="#141416"
+            progressBackgroundColor={palette.surface}
           />
         }
         ListEmptyComponent={
@@ -137,10 +144,16 @@ export default function DiscoverScreen() {
               size={56}
               color="#3A3A40"
             />
-            <Text className="mt-4 text-center text-lg font-semibold text-[#6B6B73]">
+            <Text
+              className="mt-4 text-center text-lg font-semibold"
+              style={{ color: palette.textSubtle }}
+            >
               No divisions found
             </Text>
-            <Text className="mt-2 text-center text-sm leading-5 text-hub-muted">
+            <Text
+              className="mt-2 text-center text-sm leading-5"
+              style={{ color: palette.muted }}
+            >
               Try adjusting your search or filters to discover Henry &amp; Co.
               divisions.
             </Text>

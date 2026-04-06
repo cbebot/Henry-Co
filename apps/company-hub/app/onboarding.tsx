@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
 import { setOnboardingComplete } from "@/store/onboarding";
 
 type Slide = {
@@ -45,6 +46,7 @@ const SLIDES: Slide[] = [
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function OnboardingScreen() {
+  const { palette, resolvedScheme } = useHubAppearance();
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -74,8 +76,11 @@ export default function OnboardingScreen() {
 
   const isLastSlide = currentIndex === SLIDES.length - 1;
 
+  const slideMuted = resolvedScheme === "dark" ? "#C8C8D0" : palette.textBody;
+  const slideFootnote = palette.textSubtle;
+
   return (
-    <View className="flex-1 bg-hub-bg">
+    <View className="flex-1" style={{ backgroundColor: palette.bg }}>
       <ScrollView
         ref={scrollRef}
         horizontal
@@ -111,17 +116,23 @@ export default function OnboardingScreen() {
               />
             </LinearGradient>
 
-            <Text className="mt-8 text-center text-3xl font-bold leading-tight text-white">
+            <Text
+              className="mt-8 text-center text-3xl font-bold leading-tight"
+              style={{ color: palette.textPrimary }}
+            >
               {slide.title}
             </Text>
 
             <View className="mt-4 h-px w-12 bg-[#C9A227]/60" />
 
-            <Text className="mt-4 text-center text-base leading-7 text-[#C8C8D0]">
+            <Text
+              className="mt-4 text-center text-base leading-7"
+              style={{ color: slideMuted }}
+            >
               {slide.description}
             </Text>
 
-            <Text className="mt-6 text-xs text-[#6B6B73]">
+            <Text className="mt-6 text-xs" style={{ color: slideFootnote }}>
               {index + 1} of {SLIDES.length}
             </Text>
           </View>
@@ -133,11 +144,12 @@ export default function OnboardingScreen() {
           {SLIDES.map((slide, index) => (
             <View
               key={slide.title}
-              className={`h-2 rounded-full ${
-                index === currentIndex
-                  ? "w-8 bg-[#C9A227]"
-                  : "w-2 bg-[#3A3A40]"
-              }`}
+              className="h-2 rounded-full"
+              style={{
+                width: index === currentIndex ? 32 : 8,
+                backgroundColor:
+                  index === currentIndex ? "#C9A227" : palette.line,
+              }}
             />
           ))}
         </View>
@@ -157,11 +169,15 @@ export default function OnboardingScreen() {
           <View className="w-full flex-row gap-3">
             <Pressable
               onPress={handleGetStarted}
-              className="flex-1 items-center rounded-2xl border border-hub-line py-4 active:opacity-80"
+              className="flex-1 items-center rounded-2xl border py-4 active:opacity-80"
+              style={{ borderColor: palette.line }}
               accessibilityLabel="Skip onboarding"
               accessibilityRole="button"
             >
-              <Text className="text-base font-semibold text-hub-muted">
+              <Text
+                className="text-base font-semibold"
+                style={{ color: palette.muted }}
+              >
                 Skip
               </Text>
             </Pressable>

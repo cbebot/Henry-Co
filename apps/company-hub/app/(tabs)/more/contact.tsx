@@ -2,7 +2,10 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
+
 export default function ContactScreen() {
+  const { palette } = useHubAppearance();
   const openMail = () => {
     void Linking.openURL(
       "mailto:hello@henrycogroup.com?subject=Henry%20%26%20Co.%20Hub%20inquiry",
@@ -15,12 +18,13 @@ export default function ContactScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-hub-bg"
+      className="flex-1"
+      style={{ backgroundColor: palette.bg }}
       contentContainerStyle={{ paddingBottom: 48 }}
       showsVerticalScrollIndicator={false}
     >
       <View className="px-4 pt-4">
-        <Text className="text-base leading-7 text-[#DCDCE2]">
+        <Text className="text-base leading-7" style={{ color: palette.textBody }}>
           For general inquiries about Henry &amp; Co. and the divisions listed in
           this app, reach us through the channels below. Division-specific
           requests are best routed through each division&apos;s site (use Visit
@@ -47,7 +51,10 @@ export default function ContactScreen() {
               <Text className="text-xs font-bold uppercase tracking-widest text-[#C9A227]">
                 Email
               </Text>
-              <Text className="mt-1 text-lg font-semibold text-white">
+              <Text
+                className="mt-1 text-lg font-semibold"
+                style={{ color: palette.textPrimary }}
+              >
                 hello@henrycogroup.com
               </Text>
             </View>
@@ -58,7 +65,11 @@ export default function ContactScreen() {
       <View className="mt-4 px-4">
         <Pressable
           onPress={openWeb}
-          className="rounded-2xl border border-hub-line bg-hub-surface p-5 active:opacity-80"
+          className="rounded-2xl border p-5 active:opacity-80"
+          style={{
+            borderColor: palette.line,
+            backgroundColor: palette.surface,
+          }}
           accessibilityLabel="Open henrycogroup.com"
           accessibilityRole="button"
         >
@@ -74,7 +85,10 @@ export default function ContactScreen() {
               <Text className="text-xs font-bold uppercase tracking-widest text-[#C9A227]">
                 Website
               </Text>
-              <Text className="mt-1 text-lg font-semibold text-white">
+              <Text
+                className="mt-1 text-lg font-semibold"
+                style={{ color: palette.textPrimary }}
+              >
                 henrycogroup.com
               </Text>
             </View>

@@ -1,5 +1,7 @@
 import { ScrollView, Text, View } from "react-native";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
+
 function Section({
   title,
   children,
@@ -7,24 +9,36 @@ function Section({
   title: string;
   children: React.ReactNode;
 }) {
+  const { palette } = useHubAppearance();
   return (
     <View className="mt-6">
-      <Text className="text-base font-semibold text-white">{title}</Text>
+      <Text
+        className="text-base font-semibold"
+        style={{ color: palette.textPrimary }}
+      >
+        {title}
+      </Text>
       <View className="mt-2">{children}</View>
     </View>
   );
 }
 
 function Body({ children }: { children: React.ReactNode }) {
+  const { palette } = useHubAppearance();
   return (
-    <Text className="text-sm leading-6 text-[#DCDCE2]">{children}</Text>
+    <Text className="text-sm leading-6" style={{ color: palette.textBody }}>
+      {children}
+    </Text>
   );
 }
 
 export default function PrivacyScreen() {
+  const { palette } = useHubAppearance();
+
   return (
     <ScrollView
-      className="flex-1 bg-hub-bg"
+      className="flex-1"
+      style={{ backgroundColor: palette.bg }}
       contentContainerStyle={{ paddingBottom: 48 }}
       showsVerticalScrollIndicator={false}
     >
@@ -32,11 +46,14 @@ export default function PrivacyScreen() {
         <Text className="text-xs font-bold uppercase tracking-widest text-[#C9A227]">
           Privacy Policy
         </Text>
-        <Text className="mt-2 text-sm leading-6 text-hub-muted">
+        <Text
+          className="mt-2 text-sm leading-6"
+          style={{ color: palette.muted }}
+        >
           Last updated: April 5, 2026
         </Text>
 
-        <Text className="mt-4 text-sm leading-6 text-[#DCDCE2]">
+        <Text className="mt-4 text-sm leading-6" style={{ color: palette.textBody }}>
           Henry &amp; Co. Group (&quot;we&quot;, &quot;us&quot;, or
           &quot;our&quot;) operates the Henry &amp; Co. Hub mobile application
           (the &quot;App&quot;). This Privacy Policy explains how we collect,
@@ -48,16 +65,16 @@ export default function PrivacyScreen() {
             We may collect the following categories of information when you use
             the App:
           </Body>
-          <Text className="mt-2 text-sm leading-6 text-[#DCDCE2]">
+          <Text className="mt-2 text-sm leading-6" style={{ color: palette.textBody }}>
             {"\u2022"} Device identifiers and basic technical data (operating
             system, device model, app version) to ensure compatibility and
             diagnose issues.
           </Text>
-          <Text className="mt-1 text-sm leading-6 text-[#DCDCE2]">
+          <Text className="mt-1 text-sm leading-6" style={{ color: palette.textBody }}>
             {"\u2022"} Usage analytics such as screens visited, features used,
             and interaction patterns to improve the App experience.
           </Text>
-          <Text className="mt-1 text-sm leading-6 text-[#DCDCE2]">
+          <Text className="mt-1 text-sm leading-6" style={{ color: palette.textBody }}>
             {"\u2022"} Locally stored preferences including bookmarks, theme
             settings, and onboarding status. This data remains on your device
             and is not transmitted to our servers.
@@ -82,7 +99,7 @@ export default function PrivacyScreen() {
             also disclose information when required by law, to protect our
             rights, or in connection with a merger or acquisition.
           </Body>
-          <Text className="mt-2 text-sm leading-6 text-[#DCDCE2]">
+          <Text className="mt-2 text-sm leading-6" style={{ color: palette.textBody }}>
             Division websites you access through the in-app browser are governed
             by their respective privacy policies. We encourage you to review
             those policies independently.

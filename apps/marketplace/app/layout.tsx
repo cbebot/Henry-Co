@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 import { MarketplaceRuntimeProvider } from "@/components/marketplace/runtime-provider";
-import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { FloatingSupport } from "@henryco/ui/support";
 import { getMarketplaceShellState } from "@/lib/marketplace/data";
 import { getDivisionConfig } from "@henryco/config";
@@ -53,8 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body
         className={`${fraunces.variable} ${manrope.variable} min-h-screen bg-[var(--market-bg)] text-[var(--market-ink)] antialiased`}
       >
-        <HenryCoThemeBlocking />
-        <ThemeProvider>
+        <PublicThemeGuard>
           <MarketplaceRuntimeProvider initialShell={shell}>
             {children}
             <FloatingSupport
@@ -64,7 +63,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               supportUrl="/support"
             />
           </MarketplaceRuntimeProvider>
-        </ThemeProvider>
+        </PublicThemeGuard>
       </body>
     </html>
   );

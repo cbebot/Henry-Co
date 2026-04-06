@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
-import { StaffSurfaceRetired } from "@henryco/ui";
+import { getDivisionConfig, getStaffHqUrl } from "@henryco/config";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -16,16 +16,7 @@ export default async function LogisticsCatchAllPage({
   const isRetiredSupportWorkspace = requestedRoot === "support" && slug.length > 1;
 
   if (STAFF_ROOTS.has(requestedRoot) || isRetiredSupportWorkspace) {
-    return (
-      <StaffSurfaceRetired
-        division="HenryCo Logistics"
-        body="Legacy dispatch, finance, rider, support, and owner dashboards have been retired while HenryCo Logistics prepares a rebuilt premium workspace."
-        primaryHref="/"
-        primaryLabel="Return to Logistics"
-        secondaryHref={getAccountUrl("/")}
-        secondaryLabel="Open HenryCo account"
-      />
-    );
+    redirect(getStaffHqUrl("/logistics"));
   }
 
   const logistics = getDivisionConfig("logistics");

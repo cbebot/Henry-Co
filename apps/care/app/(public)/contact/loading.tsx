@@ -1,17 +1,14 @@
-import { CareLoadingStage } from "@/components/ui/CareLoading";
+import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 export default function ContactLoading() {
   return (
-    <main className="px-5 py-6 sm:px-8 sm:py-8">
-      <CareLoadingStage
+    <main className="care-page min-h-screen bg-[#08101C] px-5 py-6 sm:px-8 sm:py-8">
+      <PublicRouteLoader
+        tone="onDark"
         eyebrow="Henry & Co. Care support"
         title="Opening the Care desk"
-        description="Loading direct channels, live support guidance, and the next clear messaging surface."
-        bullets={[
-          "Loading support and contact channels",
-          "Preparing the message handoff",
-          "Syncing response expectations and guidance",
-        ]}
+        subtitle="Loading direct channels, live support guidance, and the next clear messaging surface."
+        spinnerClassName="text-[color:var(--accent)]"
       />
     </main>
   );

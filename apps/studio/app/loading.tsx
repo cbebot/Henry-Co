@@ -1,8 +1,8 @@
-import { HenryCoPublicRouteLoading } from "@henryco/ui";
+import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 export default function StudioLoading() {
   return (
-    <HenryCoPublicRouteLoading
+    <PublicRouteLoader
       title="Loading HenryCo Studio"
       subtitle="Preparing your creative workspace."
     />

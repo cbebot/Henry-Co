@@ -1,9 +1,9 @@
-import { HenryCoPublicRouteLoading } from "@henryco/ui";
+import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 export default function RootLoading() {
   return (
     <main className="care-page min-h-screen bg-[#08101C] px-5 py-6 sm:px-8 sm:py-8">
-      <HenryCoPublicRouteLoading
+      <PublicRouteLoader
         tone="onDark"
         eyebrow="Henry & Co. Care"
         title="Loading Henry & Co. Care"

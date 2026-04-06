@@ -16,6 +16,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
 import type { Division } from "@/types/division";
 
 type Props = {
@@ -34,6 +35,7 @@ function CarouselCard({
   division: Division;
   onPress: () => void;
 }) {
+  const { palette } = useHubAppearance();
   const scale = useSharedValue(1);
   const accent = division.accentHex ?? "#C9A227";
 
@@ -62,11 +64,11 @@ function CarouselCard({
         onPressOut={handlePressOut}
         accessibilityRole="button"
         accessibilityLabel={`${division.name} featured division`}
-        className="overflow-hidden rounded-2xl border border-hub-line"
-        style={{ height: 180 }}
+        className="overflow-hidden rounded-2xl border"
+        style={{ height: 180, borderColor: palette.line }}
       >
         <LinearGradient
-          colors={[`${accent}35`, `${accent}10`, "#141416"]}
+          colors={[`${accent}35`, `${accent}10`, palette.surface]}
           locations={[0, 0.5, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -87,11 +89,19 @@ function CarouselCard({
                 color={accent}
               />
             </View>
-            <Text className="text-lg font-bold text-white" numberOfLines={1}>
+            <Text
+              className="text-lg font-bold"
+              style={{ color: palette.textPrimary }}
+              numberOfLines={1}
+            >
               {division.name}
             </Text>
             {division.tagline ? (
-              <Text className="mt-0.5 text-sm text-hub-muted" numberOfLines={1}>
+              <Text
+                className="mt-0.5 text-sm"
+                style={{ color: palette.muted }}
+                numberOfLines={1}
+              >
                 {division.tagline}
               </Text>
             ) : null}
@@ -103,6 +113,7 @@ function CarouselCard({
 }
 
 export function FeaturedCarousel({ divisions, onPressDivision }: Props) {
+  const { palette } = useHubAppearance();
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -152,7 +163,7 @@ export function FeaturedCarousel({ divisions, onPressDivision }: Props) {
                 width: idx === activeIndex ? 16 : 6,
                 height: 6,
                 backgroundColor:
-                  idx === activeIndex ? "#C9A227" : "#3A3A40",
+                  idx === activeIndex ? "#C9A227" : palette.line,
               }}
             />
           ))}

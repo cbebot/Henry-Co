@@ -1,18 +1,6 @@
-import type { ReactNode } from "react";
-import { StaffSurfaceRetired } from "@henryco/ui";
+import { redirect } from "next/navigation";
+import { getStaffHqUrl } from "@henryco/config";
 
-export default async function StaffShellLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  void children;
-  return (
-    <StaffSurfaceRetired
-      division="HenryCo Care"
-      body="Legacy staff, rider, support, manager, and owner dashboards have been retired while HenryCo Care prepares a rebuilt premium internal workspace."
-      primaryHref="/"
-      primaryLabel="Return to Fabric Care"
-    />
-  );
+export default async function StaffShellLayout() {
+  redirect(getStaffHqUrl("/care"));
 }

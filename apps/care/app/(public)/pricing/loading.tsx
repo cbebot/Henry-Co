@@ -1,17 +1,14 @@
-import { CareLoadingStage } from "@/components/ui/CareLoading";
+import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 export default function PricingLoading() {
   return (
-    <main className="px-5 py-6 sm:px-8 sm:py-8">
-      <CareLoadingStage
+    <main className="care-page min-h-screen bg-[#08101C] px-5 py-6 sm:px-8 sm:py-8">
+      <PublicRouteLoader
+        tone="onDark"
         eyebrow="Henry & Co. Care pricing"
         title="Loading live pricing context"
-        description="Pulling the current service catalog, pricing visibility, and approval-controlled rates for this view."
-        bullets={[
-          "Loading governed pricing data",
-          "Preparing service and package detail",
-          "Syncing the latest premium rate view",
-        ]}
+        subtitle="Pulling the current service catalog, pricing visibility, and rate detail."
+        spinnerClassName="text-[color:var(--accent)]"
       />
     </main>
   );

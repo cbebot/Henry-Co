@@ -1,4 +1,4 @@
-import { HenryCoPublicRouteLoading } from "@henryco/ui";
+import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 function PropertyLoadingBar({ widthClass }: { widthClass: string }) {
   return (
@@ -11,7 +11,7 @@ function PropertyLoadingBar({ widthClass }: { widthClass: string }) {
 export default function Loading() {
   return (
     <div className="property-page property-shell">
-      <HenryCoPublicRouteLoading
+      <PublicRouteLoader
         tone="onDark"
         eyebrow="HenryCo Property"
         title="Loading"
@@ -57,7 +57,7 @@ export default function Loading() {
             ))}
           </div>
         </section>
-      </HenryCoPublicRouteLoading>
+      </PublicRouteLoader>
     </div>
   );
 }

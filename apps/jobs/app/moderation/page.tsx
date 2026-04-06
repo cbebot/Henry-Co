@@ -1,14 +1,6 @@
-import { StaffSurfaceRetired } from "@henryco/ui";
-
-export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
+import { getStaffHqUrl } from "@henryco/config";
 
 export default async function ModerationPage() {
-  return (
-    <StaffSurfaceRetired
-      division="HenryCo Jobs"
-      body="Legacy moderation dashboards have been retired while HenryCo Jobs prepares a rebuilt premium staff workspace."
-      primaryHref="/"
-      primaryLabel="Return to Jobs"
-    />
-  );
+  redirect(getStaffHqUrl("/jobs"));
 }

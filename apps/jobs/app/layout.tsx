@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Manrope, Newsreader } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
-import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
 
@@ -49,8 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body
         className={`${display.variable} ${sans.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
       >
-        <HenryCoThemeBlocking />
-        <ThemeProvider>{children}</ThemeProvider>
+        <PublicThemeGuard>{children}</PublicThemeGuard>
       </body>
     </html>
   );

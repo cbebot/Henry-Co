@@ -1,5 +1,7 @@
 import { ScrollView, Text, View } from "react-native";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
+
 function Section({
   title,
   children,
@@ -7,24 +9,36 @@ function Section({
   title: string;
   children: React.ReactNode;
 }) {
+  const { palette } = useHubAppearance();
   return (
     <View className="mt-6">
-      <Text className="text-base font-semibold text-white">{title}</Text>
+      <Text
+        className="text-base font-semibold"
+        style={{ color: palette.textPrimary }}
+      >
+        {title}
+      </Text>
       <View className="mt-2">{children}</View>
     </View>
   );
 }
 
 function Body({ children }: { children: React.ReactNode }) {
+  const { palette } = useHubAppearance();
   return (
-    <Text className="text-sm leading-6 text-[#DCDCE2]">{children}</Text>
+    <Text className="text-sm leading-6" style={{ color: palette.textBody }}>
+      {children}
+    </Text>
   );
 }
 
 export default function TermsScreen() {
+  const { palette } = useHubAppearance();
+
   return (
     <ScrollView
-      className="flex-1 bg-hub-bg"
+      className="flex-1"
+      style={{ backgroundColor: palette.bg }}
       contentContainerStyle={{ paddingBottom: 48 }}
       showsVerticalScrollIndicator={false}
     >
@@ -32,11 +46,14 @@ export default function TermsScreen() {
         <Text className="text-xs font-bold uppercase tracking-widest text-[#C9A227]">
           Terms of Use
         </Text>
-        <Text className="mt-2 text-sm leading-6 text-hub-muted">
+        <Text
+          className="mt-2 text-sm leading-6"
+          style={{ color: palette.muted }}
+        >
           Last updated: April 5, 2026
         </Text>
 
-        <Text className="mt-4 text-sm leading-6 text-[#DCDCE2]">
+        <Text className="mt-4 text-sm leading-6" style={{ color: palette.textBody }}>
           These Terms of Use (&quot;Terms&quot;) govern your access to and use
           of the Henry &amp; Co. Hub mobile application (the &quot;App&quot;)
           operated by Henry &amp; Co. Group (&quot;we&quot;, &quot;us&quot;, or
@@ -73,7 +90,7 @@ export default function TermsScreen() {
             website or service through the App, you are subject to that
             division&apos;s applicable terms in addition to these Terms.
           </Body>
-          <Text className="mt-2 text-sm leading-6 text-[#DCDCE2]">
+          <Text className="mt-2 text-sm leading-6" style={{ color: palette.textBody }}>
             We do not guarantee the availability, accuracy, or completeness of
             any division&apos;s services. The App provides information about
             divisions on an &quot;as available&quot; basis.

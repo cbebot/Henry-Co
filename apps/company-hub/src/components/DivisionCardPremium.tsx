@@ -9,6 +9,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
 import type { Division } from "@/types/division";
 
 type Props = {
@@ -30,6 +31,7 @@ export function DivisionCardPremium({
   compact = false,
   index = 0,
 }: Props) {
+  const { palette } = useHubAppearance();
   const scale = useSharedValue(1);
   const active = division.status === "active";
 
@@ -66,7 +68,11 @@ export function DivisionCardPremium({
           onPressOut={handlePressOut}
           accessibilityRole="button"
           accessibilityLabel={`${division.name} division`}
-          className={`mb-3 overflow-hidden rounded-2xl border border-hub-line bg-hub-surface ${compact ? "p-3" : "p-4"}`}
+          className={`mb-3 overflow-hidden rounded-2xl border ${compact ? "p-3" : "p-4"}`}
+          style={{
+            borderColor: palette.line,
+            backgroundColor: palette.surface,
+          }}
         >
           <View className="flex-row items-start gap-3">
             {/* Icon container */}
@@ -88,13 +94,15 @@ export function DivisionCardPremium({
             {/* Text content */}
             <View className="min-w-0 flex-1">
               <Text
-                className={`font-bold text-white ${compact ? "text-base" : "text-lg"}`}
+                className={`font-bold ${compact ? "text-base" : "text-lg"}`}
+                style={{ color: palette.textPrimary }}
                 numberOfLines={1}
               >
                 {division.name}
               </Text>
               <Text
-                className="mt-0.5 text-sm leading-5 text-hub-muted"
+                className="mt-0.5 text-sm leading-5"
+                style={{ color: palette.muted }}
                 numberOfLines={1}
               >
                 {division.tagline}
@@ -113,7 +121,7 @@ export function DivisionCardPremium({
                 <MaterialCommunityIcons
                   name={isBookmarked ? "heart" : "heart-outline"}
                   size={22}
-                  color={isBookmarked ? "#E54560" : "#6B6B73"}
+                  color={isBookmarked ? "#E54560" : palette.textSubtle}
                 />
               </Pressable>
             )}
@@ -122,7 +130,8 @@ export function DivisionCardPremium({
           {/* Summary */}
           {!compact && (
             <Text
-              className="mt-2 text-sm leading-5 text-[#DCDCE2]"
+              className="mt-2 text-sm leading-5"
+              style={{ color: palette.textBody }}
               numberOfLines={2}
             >
               {division.summary}

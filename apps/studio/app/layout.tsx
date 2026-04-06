@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
 import { getDivisionConfig } from "@henryco/config";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
@@ -43,11 +43,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--studio-bg)] text-[var(--studio-ink)] antialiased">
-        <HenryCoThemeBlocking />
-        <ThemeProvider>
+        <PublicThemeGuard>
           {children}
           <StudioToastRoot />
-        </ThemeProvider>
+        </PublicThemeGuard>
       </body>
     </html>
   );

@@ -1,17 +1,14 @@
-import { CareLoadingStage } from "@/components/ui/CareLoading";
+import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 export default function AboutLoading() {
   return (
-    <main className="px-5 py-6 sm:px-8 sm:py-8">
-      <CareLoadingStage
+    <main className="care-page min-h-screen bg-[#08101C] px-5 py-6 sm:px-8 sm:py-8">
+      <PublicRouteLoader
+        tone="onDark"
         eyebrow="Henry & Co. Care"
         title="Preparing the Care story"
-        description="Loading the service story, operating standards, and the next polished public section."
-        bullets={[
-          "Loading brand and trust signals",
-          "Preparing premium service positioning",
-          "Syncing the next public route",
-        ]}
+        subtitle="Loading the service story, operating standards, and the next public section."
+        spinnerClassName="text-[color:var(--accent)]"
       />
     </main>
   );

@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 test("homepage, search, product, cart, and help surfaces load", async ({ page }) => {
+  test.setTimeout(90000);
+
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(
     page.getByRole("banner").getByRole("link", { name: /HC HenryCo Marketplace/i }),
@@ -27,6 +29,8 @@ test("homepage, search, product, cart, and help surfaces load", async ({ page })
   await expect(firstProductLink).toBeVisible();
   await firstProductLink.click();
 
+  await page.waitForURL(/\/product\/.+/);
+  await expect(page.getByRole("heading", { name: /Oro Brass Desk Lamp/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Add to cart|Adding/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Save|Saved/i }).first()).toBeVisible();
 

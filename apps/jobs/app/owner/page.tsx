@@ -1,12 +1,6 @@
-import { StaffSurfaceRetired } from "@henryco/ui";
+import { redirect } from "next/navigation";
+import { getStaffHqUrl } from "@henryco/config";
 
 export default function JobsOwnerRedirectPage() {
-  return (
-    <StaffSurfaceRetired
-      division="HenryCo Jobs"
-      body="Legacy jobs owner dashboards have been retired while the next premium staff workspace is rebuilt."
-      primaryHref="/"
-      primaryLabel="Return to Jobs"
-    />
-  );
+  redirect(getStaffHqUrl("/jobs"));
 }

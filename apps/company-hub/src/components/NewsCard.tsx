@@ -7,6 +7,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
+import { useHubAppearance } from "@/context/HubAppearanceContext";
+
 type Props = {
   title: string;
   date: string;
@@ -17,6 +19,7 @@ type Props = {
 const SPRING_CONFIG = { damping: 15, stiffness: 150 };
 
 export function NewsCard({ title, date, excerpt, onPress }: Props) {
+  const { palette } = useHubAppearance();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -48,19 +51,34 @@ export function NewsCard({ title, date, excerpt, onPress }: Props) {
         disabled={!onPress}
         accessibilityRole={onPress ? "button" : "none"}
         accessibilityLabel={title}
-        className="mb-3 flex-row overflow-hidden rounded-2xl border border-hub-line bg-hub-surface"
+        className="mb-3 flex-row overflow-hidden rounded-2xl border"
+        style={{
+          borderColor: palette.line,
+          backgroundColor: palette.surface,
+        }}
       >
         {/* Gold accent bar */}
-        <View className="w-1 bg-hub-gold" />
+        <View className="w-1 bg-[#C9A227]" />
 
         <View className="min-w-0 flex-1 px-4 py-3.5">
-          <Text className="text-xs font-medium uppercase tracking-wider text-hub-muted">
+          <Text
+            className="text-xs font-medium uppercase tracking-wider"
+            style={{ color: palette.muted }}
+          >
             {date}
           </Text>
-          <Text className="mt-1 text-base font-bold text-white" numberOfLines={2}>
+          <Text
+            className="mt-1 text-base font-bold"
+            style={{ color: palette.textPrimary }}
+            numberOfLines={2}
+          >
             {title}
           </Text>
-          <Text className="mt-1.5 text-sm leading-5 text-[#DCDCE2]" numberOfLines={2}>
+          <Text
+            className="mt-1.5 text-sm leading-5"
+            style={{ color: palette.textBody }}
+            numberOfLines={2}
+          >
             {excerpt}
           </Text>
         </View>
