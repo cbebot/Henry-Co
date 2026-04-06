@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   ChevronDown,
@@ -21,7 +20,11 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from "react";
+import { AvatarFallback } from "../public-shell/avatar-fallback";
 import { cn } from "../lib/cn";
+import { resolvePublicAccountIdentity } from "./account-identity";
+
+export { resolvePublicAccountIdentity, humanizeEmailLocalPart } from "./account-identity";
 
 export type PublicAccountUser = {
   displayName: string;
@@ -50,13 +53,6 @@ function isMenuAction(item: PublicAccountMenuItem): item is PublicAccountMenuAct
   return typeof (item as PublicAccountMenuAction).onClick === "function";
 }
 
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2)
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  return name.slice(0, 2).toUpperCase() || "?";
-}
-
 const MENU_ITEM_SELECTOR = '[role="menuitem"]:not([disabled])';
 
 type DropdownTone = "theme" | "solidDark" | "solidLight";
@@ -65,33 +61,33 @@ type ChipSurface = "theme" | "onDark";
 function dropdownShellClass(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "border-zinc-600/90 bg-zinc-950 text-zinc-100 shadow-[0_24px_80px_-10px_rgba(0,0,0,0.72),0_8px_24px_rgba(0,0,0,0.45)]";
+      return "border border-zinc-700 bg-[#0c0e14] text-zinc-100 shadow-[0_28px_90px_-12px_rgba(0,0,0,0.85),0_12px_32px_rgba(0,0,0,0.55)]";
     case "solidLight":
-      return "border-zinc-200 bg-white text-zinc-900 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.18)]";
+      return "border border-zinc-200/90 bg-white text-zinc-900 shadow-[0_22px_56px_-14px_rgba(15,23,42,0.2),0_8px_20px_rgba(15,23,42,0.08)]";
     default:
-      return "border-zinc-200 bg-white text-zinc-900 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.14)] dark:border-zinc-600/90 dark:bg-zinc-950 dark:text-zinc-100 dark:shadow-[0_24px_80px_-10px_rgba(0,0,0,0.65)]";
+      return "border border-zinc-200/90 bg-white text-zinc-900 shadow-[0_22px_56px_-14px_rgba(15,23,42,0.16),0_8px_20px_rgba(15,23,42,0.06)] dark:border-zinc-700 dark:bg-[#0c0e14] dark:text-zinc-100 dark:shadow-[0_28px_90px_-12px_rgba(0,0,0,0.82),0_12px_32px_rgba(0,0,0,0.5)]";
   }
 }
 
 function identityBlockClass(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "border-b border-zinc-700/80 bg-zinc-900";
+      return "border-b border-zinc-800 bg-[#10131c]";
     case "solidLight":
-      return "border-b border-zinc-200 bg-zinc-100";
+      return "border-b border-zinc-200 bg-zinc-50";
     default:
-      return "border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700/70 dark:bg-zinc-900";
+      return "border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-[#10131c]";
   }
 }
 
 function menuRowClass(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "text-zinc-200 hover:bg-white/[0.07] focus-visible:bg-white/[0.07] focus-visible:ring-amber-400/35";
+      return "text-zinc-200 hover:bg-zinc-800/90 focus-visible:bg-zinc-800/90 focus-visible:ring-2 focus-visible:ring-amber-400/30";
     case "solidLight":
-      return "text-zinc-800 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-amber-600/30";
+      return "text-zinc-800 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-600/25";
     default:
-      return "text-zinc-700 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-amber-500/40 dark:text-zinc-200 dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:focus-visible:ring-amber-400/35";
+      return "text-zinc-700 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-500/30 dark:text-zinc-200 dark:hover:bg-zinc-800/80 dark:focus-visible:bg-zinc-800/80 dark:focus-visible:ring-amber-400/28";
   }
 }
 
@@ -131,11 +127,11 @@ function identitySecondaryClass(tone: DropdownTone) {
 function signOutBarClass(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "border-t border-zinc-700/80";
+      return "border-t border-zinc-800 bg-[#0c0e14]";
     case "solidLight":
-      return "border-t border-zinc-200";
+      return "border-t border-zinc-200 bg-white";
     default:
-      return "border-t border-zinc-200 dark:border-zinc-700/70";
+      return "border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-[#0c0e14]";
   }
 }
 
@@ -262,8 +258,8 @@ export function PublicAccountChip({
   const chipSignedOut = cn(
     "inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.97]",
     chipSurface === "onDark"
-      ? "border-[var(--market-line,white/12)] bg-[rgba(255,255,255,0.06)] text-[var(--market-paper-white,white)] hover:bg-[rgba(255,255,255,0.1)]"
-      : "border-black/12 bg-white text-zinc-800 shadow-sm hover:border-black/20 hover:bg-zinc-50 dark:border-white/12 dark:bg-white/8 dark:text-white/90 dark:hover:border-white/20 dark:hover:bg-white/12"
+      ? "border-zinc-600/80 bg-zinc-900 text-[var(--market-paper-white,white)] hover:border-zinc-500 hover:bg-zinc-800"
+      : "border-black/12 bg-white text-zinc-800 shadow-sm hover:border-black/20 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
   );
 
   const chipCta = cn(
@@ -306,32 +302,25 @@ export function PublicAccountChip({
   }
 
   /* ── Signed-in state ── */
-  const label = user.displayName || user.email || "Account";
+  const { primaryLabel, emailLine, initialsSource } = resolvePublicAccountIdentity(user);
 
   const triggerClass = cn(
-    "flex max-w-[min(220px,calc(100vw-8rem))] min-h-[44px] items-center gap-2 rounded-full border py-1.5 pl-1.5 pr-3 text-left shadow-sm transition active:scale-[0.97]",
+    "flex max-w-[min(200px,calc(100vw-8rem))] min-h-[40px] items-center gap-2 rounded-full border py-1 pl-1 pr-2.5 text-left shadow-sm transition active:scale-[0.98]",
     chipSurface === "onDark"
-      ? "border-[var(--market-line,white/12)] bg-[rgba(255,255,255,0.1)] text-[var(--market-paper-white,white)] hover:bg-[rgba(255,255,255,0.14)] hover:shadow-md"
-      : "border-black/12 bg-white hover:border-black/22 hover:shadow-md dark:border-white/14 dark:bg-zinc-900 dark:hover:border-white/24 dark:hover:shadow-lg"
-  );
-
-  const avatarShell = cn(
-    "relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-amber-400 to-teal-600 text-[11px] font-bold text-white",
-    chipSurface === "onDark"
-      ? "ring-2 ring-[rgba(255,255,255,0.2)] dark:from-amber-500 dark:to-teal-500"
-      : "ring-2 ring-white/80 dark:from-amber-500 dark:to-teal-500 dark:ring-zinc-800"
+      ? "border-zinc-600/85 bg-zinc-900 text-[var(--market-paper-white,white)] hover:border-zinc-500 hover:bg-zinc-800 hover:shadow-md"
+      : "border-zinc-200/90 bg-white hover:border-zinc-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
   );
 
   const chevronClass =
     chipSurface === "onDark"
-      ? "h-3.5 w-3.5 shrink-0 text-[var(--market-muted,zinc-400)] transition-transform duration-200"
+      ? "h-3.5 w-3.5 shrink-0 text-zinc-500 transition-transform duration-200"
       : "h-3.5 w-3.5 shrink-0 text-zinc-400 transition-transform duration-200 dark:text-zinc-500";
 
   const labelClass = cn(
-    "min-w-0 flex-1 truncate text-sm font-semibold",
+    "min-w-0 flex-1 truncate text-[13px] font-semibold leading-tight tracking-[-0.01em]",
     chipSurface === "onDark"
       ? "text-[var(--market-paper-white,white)]"
-      : "text-zinc-900 dark:text-white",
+      : "text-zinc-900 dark:text-zinc-100",
     chipLabelClassName
   );
 
@@ -419,27 +408,22 @@ export function PublicAccountChip({
         ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label={`Account menu for ${label}`}
+        aria-label={`Account menu for ${primaryLabel}`}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls={menuId}
         className={cn(triggerClass, buttonClassName)}
       >
-        <span className={avatarShell}>
-          {user.avatarUrl ? (
-            <Image
-              src={user.avatarUrl}
-              alt=""
-              fill
-              className="object-cover"
-              sizes="32px"
-              unoptimized
-            />
-          ) : (
-            initials(label)
+        <AvatarFallback
+          src={user.avatarUrl}
+          displayName={initialsSource}
+          size="sm"
+          className={cn(
+            chipSurface === "onDark" &&
+              "ring-2 ring-zinc-600/90 dark:from-amber-500 dark:to-teal-600"
           )}
-        </span>
-        <span className={labelClass}>{label}</span>
+        />
+        <span className={labelClass}>{primaryLabel}</span>
         <ChevronDown
           className={cn(chevronClass, open && "rotate-180")}
           aria-hidden
@@ -459,34 +443,34 @@ export function PublicAccountChip({
             dropdownClassName
           )}
         >
-          <div className={cn("px-4 py-3.5", identityBlockClass(resolvedTone))}>
-            <div className="flex items-center gap-3">
-              <span
+          <div className={cn("px-4 py-4", identityBlockClass(resolvedTone))}>
+            <div className="flex items-start gap-3.5">
+              <AvatarFallback
+                src={user.avatarUrl}
+                displayName={initialsSource}
+                size="md"
                 className={cn(
-                  "relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-amber-400 to-teal-600 text-xs font-bold text-white",
-                  resolvedTone === "solidDark" && "from-amber-500 to-teal-500"
+                  resolvedTone === "solidDark" &&
+                    "ring-2 ring-zinc-700 from-amber-500 to-teal-600"
                 )}
-              >
-                {user.avatarUrl ? (
-                  <Image
-                    src={user.avatarUrl}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="40px"
-                    unoptimized
-                  />
-                ) : (
-                  initials(label)
-                )}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className={cn("truncate text-sm font-semibold", identityPrimaryClass(resolvedTone))}>
-                  {label}
+              />
+              <div className="min-w-0 flex-1 pt-0.5">
+                <p
+                  className={cn(
+                    "truncate text-[15px] font-semibold leading-snug tracking-[-0.015em]",
+                    identityPrimaryClass(resolvedTone)
+                  )}
+                >
+                  {primaryLabel}
                 </p>
-                {user.email ? (
-                  <p className={cn("truncate text-xs", identitySecondaryClass(resolvedTone))}>
-                    {user.email}
+                {emailLine ? (
+                  <p
+                    className={cn(
+                      "mt-1 truncate text-[12px] font-medium leading-normal",
+                      identitySecondaryClass(resolvedTone)
+                    )}
+                  >
+                    {emailLine}
                   </p>
                 ) : null}
               </div>

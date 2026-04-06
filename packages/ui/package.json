@@ -9,7 +9,9 @@
     "./footer": "./src/footer/index.ts",
     "./cn": "./src/cn.ts",
     "./public": "./src/public/index.ts",
-    "./support": "./src/support/FloatingSupport.tsx"
+    "./support": "./src/support/FloatingSupport.tsx",
+    "./public-shell": "./src/public-shell/index.ts",
+    "./identity": "./src/public/account-identity.ts"
   },
   "peerDependencies": {
     "next": "^16.1.6",
