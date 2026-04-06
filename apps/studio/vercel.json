@@ -1,8 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "node ../../scripts/vercel/pnpm.mjs install",
-  "buildCommand": "node ../../scripts/vercel/pnpm.mjs build @henryco/studio",
   "crons": [
     {
       "path": "/api/cron/studio-automation",
