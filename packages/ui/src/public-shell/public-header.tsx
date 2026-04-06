@@ -141,8 +141,12 @@ export function PublicHeader({
   const focusRingBar =
     "rounded-md outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]";
   const defaultBarLink =
-    `text-sm font-medium text-zinc-600 transition hover:text-zinc-950 dark:text-white/70 dark:hover:text-white ${focusRingBar}`;
+    `relative text-sm font-medium text-zinc-600 transition hover:text-zinc-950 dark:text-white/70 dark:hover:text-white ${focusRingBar}`;
+  const defaultBarLinkActive =
+    "font-semibold text-zinc-950 after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-px after:rounded-full after:bg-gradient-to-r after:from-amber-500/90 after:via-amber-400/70 after:to-amber-600/50 dark:text-white dark:after:from-amber-400/90 dark:after:via-amber-300/60 dark:after:to-amber-500/40";
   const defaultSheetLink = HenryCoPublicSurfaceTokens.menuSheetLink;
+  const defaultSheetLinkActive =
+    "border-amber-400/55 bg-amber-50/95 font-semibold text-zinc-900 shadow-[0_12px_40px_rgba(245,158,11,0.12)] dark:border-amber-400/35 dark:bg-amber-950/35 dark:text-white";
 
   const focusRingPill =
     "outline-none focus-visible:ring-2 focus-visible:ring-amber-500/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/50 dark:focus-visible:ring-offset-[#0a0f14]";
@@ -299,7 +303,7 @@ export function PublicHeader({
           const active = !item.external && isNavActive(pathname, item.href);
           const barClass = getNavItemClassName
             ? getNavItemClassName(item, active, "bar")
-            : defaultBarLink;
+            : cn(defaultBarLink, active && defaultBarLinkActive);
 
           return item.external ? (
             <a
@@ -312,7 +316,7 @@ export function PublicHeader({
               {item.label}
             </a>
           ) : (
-            <Link key={item.label} href={item.href} className={barClass}>
+            <Link key={item.label} href={item.href} className={barClass} aria-current={active ? "page" : undefined}>
               {item.label}
             </Link>
           );
@@ -369,7 +373,7 @@ export function PublicHeader({
           const active = !item.external && isNavActive(pathname, item.href);
           const sheetClass = getNavItemClassName
             ? getNavItemClassName(item, active, "sheet")
-            : defaultSheetLink;
+            : cn(defaultSheetLink, active && defaultSheetLinkActive);
 
           return item.external ? (
             <a
@@ -382,7 +386,13 @@ export function PublicHeader({
               {item.label}
             </a>
           ) : (
-            <Link key={item.label} href={item.href} onClick={() => setOpen(false)} className={sheetClass}>
+            <Link
+              key={item.label}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              className={sheetClass}
+              aria-current={active ? "page" : undefined}
+            >
               {item.label}
             </Link>
           );
@@ -437,8 +447,16 @@ export function PublicHeader({
         headerClassName
       )}
     >
-      {prepend}
-      <div className={cn("mx-auto w-full", maxWidth, floating && "px-3 sm:px-4")}>
+      {prepend ? <div className="relative z-[70]">{prepend}</div> : null}
+      {open ? (
+        <button
+          type="button"
+          aria-label="Close menu"
+          className="fixed inset-0 z-40 bg-zinc-950/35 backdrop-blur-[2px] motion-reduce:backdrop-blur-none lg:hidden"
+          onClick={() => setOpen(false)}
+        />
+      ) : null}
+      <div className={cn("relative z-[60] mx-auto w-full", maxWidth, floating && "px-3 sm:px-4")}>
         {floating ? (
           <div className={HenryCoPublicSurfaceTokens.floatingHeaderChrome}>{shellInner}</div>
         ) : (

@@ -13,6 +13,18 @@ import "./globals.css";
 
 const logistics = getDivisionConfig("logistics");
 
+function logisticsMetadataBase(): URL {
+  const baseDomain = (process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com").replace(/^https?:\/\//i, "").split("/")[0];
+  const sub = String(logistics.subdomain || "logistics").replace(/^\.+|\.+$/g, "");
+  const prod = `https://${sub}.${baseDomain}`;
+  const candidate = process.env.NODE_ENV === "production" ? prod : "http://localhost:3000";
+  try {
+    return new URL(candidate);
+  } catch {
+    return new URL("https://logistics.henrycogroup.com");
+  }
+}
+
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
@@ -22,11 +34,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: `${logistics.name} | Henry & Co.`,
   description: logistics.description,
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? `https://${logistics.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-      : "http://localhost:3000"
-  ),
+  metadataBase: logisticsMetadataBase(),
   openGraph: {
     title: logistics.name,
     description: logistics.tagline,

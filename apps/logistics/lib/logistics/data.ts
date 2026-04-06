@@ -424,24 +424,42 @@ export async function getLogisticsSnapshot() {
 }
 
 export async function getPublicLogisticsSnapshot() {
-  const snapshot = await getLogisticsSnapshot();
-  const shipmentCount = snapshot.shipments.length;
-  const deliveredCount = snapshot.shipments.filter((shipment) => shipment.lifecycleStatus === "delivered").length;
-  const issueCount = snapshot.issues.filter((issue) => issue.status !== "resolved").length;
+  try {
+    const snapshot = await getLogisticsSnapshot();
+    const shipmentCount = snapshot.shipments.length;
+    const deliveredCount = snapshot.shipments.filter((shipment) => shipment.lifecycleStatus === "delivered").length;
+    const issueCount = snapshot.issues.filter((issue) => issue.status !== "resolved").length;
 
-  return {
-    settings: snapshot.settings,
-    services: LOGISTICS_SERVICES,
-    metrics: LOGISTICS_PUBLIC_METRICS,
-    zones: snapshot.zones,
-    rateCards: snapshot.rateCards,
-    stats: {
-      shipmentCount,
-      deliveredCount,
-      issueCount,
-      activeZones: snapshot.zones.filter((zone) => zone.active).length,
-    },
-  };
+    return {
+      settings: snapshot.settings,
+      services: LOGISTICS_SERVICES,
+      metrics: LOGISTICS_PUBLIC_METRICS,
+      zones: snapshot.zones,
+      rateCards: snapshot.rateCards,
+      stats: {
+        shipmentCount,
+        deliveredCount,
+        issueCount,
+        activeZones: snapshot.zones.filter((zone) => zone.active).length,
+      },
+    };
+  } catch (error) {
+    console.error("[logistics] getPublicLogisticsSnapshot failed; using static fallbacks", error);
+    const zones = DEFAULT_LOGISTICS_ZONES.filter((zone) => zone.active);
+    return {
+      settings: DEFAULT_LOGISTICS_SETTINGS,
+      services: LOGISTICS_SERVICES,
+      metrics: LOGISTICS_PUBLIC_METRICS,
+      zones: zones.length > 0 ? zones : DEFAULT_LOGISTICS_ZONES,
+      rateCards: DEFAULT_RATE_CARDS,
+      stats: {
+        shipmentCount: 0,
+        deliveredCount: 0,
+        issueCount: 0,
+        activeZones: zones.length,
+      },
+    };
+  }
 }
 
 export async function getShipmentByTrackingLookup(input: {

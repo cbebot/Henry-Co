@@ -188,9 +188,17 @@ export function PublicHeaderClient() {
   return (
     <header
       data-marketplace-interactive="true"
-      className="sticky top-0 z-40 px-3 pt-3 sm:px-6 xl:px-8"
+      className="sticky top-0 z-50 px-3 pt-3 sm:px-6 xl:px-8"
     >
-      <div className="market-panel mx-auto max-w-[1480px] overflow-visible rounded-[2rem]">
+      {mobileOpen ? (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          className="fixed inset-0 z-40 bg-black/45 backdrop-blur-[2px] motion-reduce:backdrop-blur-none lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      ) : null}
+      <div className="market-panel relative z-50 mx-auto max-w-[1480px] overflow-visible rounded-[2rem]">
         <div className="flex items-center gap-3 border-b border-[var(--market-line)] px-4 py-3 sm:px-5">
           <Link href="/" className="flex shrink-0 items-center gap-3">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[var(--market-line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-sm font-semibold tracking-[0.22em] text-[var(--market-paper-white)]">
