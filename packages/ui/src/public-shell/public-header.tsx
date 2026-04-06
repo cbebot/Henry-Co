@@ -134,16 +134,24 @@ export function PublicHeader({
     };
   }, [open]);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  const focusRingBar =
+    "rounded-md outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]";
   const defaultBarLink =
-    "text-sm font-medium text-zinc-600 transition hover:text-zinc-950 dark:text-white/70 dark:hover:text-white";
+    `text-sm font-medium text-zinc-600 transition hover:text-zinc-950 dark:text-white/70 dark:hover:text-white ${focusRingBar}`;
   const defaultSheetLink = HenryCoPublicSurfaceTokens.menuSheetLink;
 
+  const focusRingPill =
+    "outline-none focus-visible:ring-2 focus-visible:ring-amber-500/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/50 dark:focus-visible:ring-offset-[#0a0f14]";
   const defaultAuxClass =
-    "rounded-full border border-black/8 bg-white/90 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 dark:border-white/12 dark:bg-zinc-950/55 dark:text-white/85 dark:hover:bg-zinc-900/75";
+    `rounded-full border border-black/8 bg-white/90 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 dark:border-white/12 dark:bg-zinc-950/55 dark:text-white/85 dark:hover:bg-zinc-900/75 ${focusRingPill}`;
   const defaultSecondaryClass =
-    "rounded-full border border-black/12 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-800 shadow-sm transition hover:bg-zinc-50 dark:border-white/12 dark:bg-zinc-900/80 dark:text-white/90 dark:hover:bg-zinc-800/90";
+    `rounded-full border border-black/12 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-800 shadow-sm transition hover:bg-zinc-50 dark:border-white/12 dark:bg-zinc-900/80 dark:text-white/90 dark:hover:bg-zinc-800/90 ${focusRingPill}`;
   const defaultPrimaryClass =
-    "rounded-full border border-amber-600/20 bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700 dark:border-amber-400/30 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400";
+    `rounded-full border border-amber-600/20 bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700 dark:border-amber-400/30 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400 ${focusRingPill}`;
 
   const auxDesktopClass = cn(defaultAuxClass, auxLinkClassName, auxLinkDesktopClassName);
   const secondaryDesktopClass = cn(
@@ -158,11 +166,11 @@ export function PublicHeader({
   );
 
   const defaultAuxSheet =
-    "rounded-full border border-zinc-200 bg-white px-4 py-3 text-center text-sm font-medium text-zinc-700 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200";
+    `rounded-full border border-zinc-200 bg-white px-4 py-3 text-center text-sm font-medium text-zinc-700 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 ${focusRingPill}`;
   const defaultSecondarySheet =
-    "rounded-full border border-zinc-200 bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-800 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
+    `rounded-full border border-zinc-200 bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-800 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 ${focusRingPill}`;
   const defaultPrimarySheet =
-    "rounded-full bg-amber-600 px-4 py-3 text-center text-sm font-semibold text-white dark:bg-amber-500 dark:text-zinc-950";
+    `rounded-full bg-amber-600 px-4 py-3 text-center text-sm font-semibold text-white dark:bg-amber-500 dark:text-zinc-950 ${focusRingPill}`;
 
   const auxSheetClass = cn(defaultAuxSheet, auxLinkClassName);
   const secondarySheetClass = cn(defaultSecondarySheet, secondaryCtaClassName);
@@ -263,7 +271,10 @@ export function PublicHeader({
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
-        <Link href={brand.href || "/"} className="flex min-w-0 items-center gap-3">
+        <Link
+          href={brand.href || "/"}
+          className={cn("flex min-w-0 items-center gap-3", focusRingBar)}
+        >
           {brand.mark}
           {brand.text ? (
             <div className="min-w-0">{brand.text}</div>
@@ -319,11 +330,12 @@ export function PublicHeader({
           type="button"
           onClick={() => setOpen((v) => !v)}
           className={cn(
-            "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200/90 bg-white text-zinc-950 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-white",
+            "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200/90 bg-white text-zinc-950 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]",
             floating && "h-10 w-10 rounded-xl",
             menuButtonClassName
           )}
           aria-expanded={open}
+          aria-controls="henryco-public-mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -334,8 +346,9 @@ export function PublicHeader({
 
   const mobileDrawer = (
     <div
+      id="henryco-public-mobile-nav"
       className={cn(
-        "border-t border-zinc-200/80 transition-[max-height,opacity] duration-300 ease-out dark:border-zinc-800/90 lg:hidden",
+        "border-t border-zinc-200/80 transition-[max-height,opacity] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0 dark:border-zinc-800/90 lg:hidden",
         mobileDrawerClassName,
         open ? "max-h-[min(72vh,560px)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
       )}

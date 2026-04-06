@@ -18,7 +18,7 @@ export const HenryCoPublicSurfaceTokens = {
 
   /** Mobile nav sheet link — light: paper; dark: deep panel (not translucent white) */
   menuSheetLink:
-    "rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-800 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)]",
+    "rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-800 shadow-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-amber-500/45 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] dark:focus-visible:ring-amber-400/40 dark:focus-visible:ring-offset-zinc-950",
 
   /** Desktop toolbar ghost button (aux / secondary) in dark mode */
   toolbarGhostDark:

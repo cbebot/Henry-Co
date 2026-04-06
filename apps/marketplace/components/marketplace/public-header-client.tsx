@@ -168,9 +168,22 @@ export function PublicHeaderClient() {
     : null;
 
   useEffect(() => {
-    const id = requestAnimationFrame(() => setMobileOpen(false));
-    return () => cancelAnimationFrame(id);
+    setMobileOpen(false);
   }, [currentPath]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [mobileOpen]);
 
   return (
     <header
@@ -333,7 +346,9 @@ export function PublicHeaderClient() {
             <button
               type="button"
               onClick={() => setMobileOpen((current) => !current)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)] lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--market-noir)] lg:hidden"
+              aria-expanded={mobileOpen}
+              aria-controls="marketplace-public-mobile-nav"
               aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -367,8 +382,9 @@ export function PublicHeaderClient() {
         </div>
 
         <div
+          id="marketplace-public-mobile-nav"
           className={cn(
-            "overflow-hidden border-t border-[var(--market-line)] transition-[max-height,opacity] duration-300 lg:hidden",
+            "overflow-hidden border-t border-[var(--market-line)] transition-[max-height,opacity] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0 lg:hidden",
             mobileOpen ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0"
           )}
         >
