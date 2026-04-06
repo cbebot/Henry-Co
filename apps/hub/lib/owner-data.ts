@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { logOwnerSurfaceError } from "@/lib/owner-diagnostics";
 import { createAdminSupabase } from "@/lib/supabase";
-import { divisionColor, divisionLabel } from "@/lib/format";
+import { divisionColor, divisionLabel, formatCurrencyAmount } from "@/lib/format";
 import type { WorkforceMember } from "@/lib/owner-workforce-catalog";
 import { OWNER_DIVISION_SLUGS, WORKFORCE_PERMISSION_OPTIONS } from "@/lib/owner-workforce-catalog";
 import {
@@ -147,6 +147,37 @@ function isOpenStatus(value: unknown) {
   return !["closed", "resolved", "delivered", "completed", "paid", "cancelled"].includes(text);
 }
 
+function isWalletFundingPendingStatus(value: unknown) {
+  const text = toText(value).toLowerCase();
+  return Boolean(
+    text &&
+      [
+        "pending",
+        "pending_verification",
+        "awaiting_proof",
+        "proof_uploaded",
+        "review",
+        "under_review",
+        "submitted",
+      ].includes(text)
+  );
+}
+
+function isWalletWithdrawalPendingStatus(value: unknown) {
+  const text = toText(value).toLowerCase();
+  return Boolean(
+    text &&
+      !["completed", "verified", "processed", "paid", "rejected", "cancelled", "failed"].includes(
+        text
+      )
+  );
+}
+
+function isWalletWithdrawalCompletedStatus(value: unknown) {
+  const text = toText(value).toLowerCase();
+  return ["completed", "verified", "processed", "paid"].includes(text);
+}
+
 function isTrue(value: unknown) {
   return value === true || value === "true" || value === 1 || value === "1";
 }
@@ -254,6 +285,8 @@ const getOwnerBaseDataset = cache(async () => {
     customerActivity,
     customerNotifications,
     customerInvoices,
+    walletFundingRequests,
+    walletWithdrawalRequests,
     careBookings,
     carePayments,
     careExpenses,
@@ -280,6 +313,16 @@ const getOwnerBaseDataset = cache(async () => {
     safeSelect("customer_activity", "*", { orderBy: "created_at", ascending: false, limit: 240 }),
     safeSelect("customer_notifications", "*", { orderBy: "created_at", ascending: false, limit: 160 }),
     safeSelect("customer_invoices", "*", { orderBy: "created_at", ascending: false, limit: 80 }),
+    safeSelect("customer_wallet_funding_requests", "*", {
+      orderBy: "created_at",
+      ascending: false,
+      limit: 120,
+    }),
+    safeSelect("customer_wallet_withdrawal_requests", "*", {
+      orderBy: "created_at",
+      ascending: false,
+      limit: 120,
+    }),
     safeSelect("care_bookings", "*", { orderBy: "created_at", ascending: false, limit: 120 }),
     safeSelect("care_payments", "*", { orderBy: "created_at", ascending: false, limit: 120 }),
     safeSelect("care_expenses", "*", { orderBy: "created_at", ascending: false, limit: 120 }),
@@ -320,6 +363,8 @@ const getOwnerBaseDataset = cache(async () => {
     customerActivity,
     customerNotifications,
     customerInvoices,
+    walletFundingRequests,
+    walletWithdrawalRequests,
     careBookings,
     carePayments,
     careExpenses,
@@ -544,6 +589,45 @@ function buildOwnerSignals(
       href: "/owner/finance/invoices",
       source: "customer_invoices",
       createdAt: toNullableText(pendingInvoices[0]?.created_at),
+    });
+  }
+
+  const walletFundingReview = dataset.walletFundingRequests.filter((row) =>
+    isWalletFundingPendingStatus(row.status)
+  );
+  if (walletFundingReview.length) {
+    const amountNaira = sumBy(walletFundingReview, "amount_kobo", 100);
+    signals.push({
+      id: "wallet-funding-review",
+      title: "Wallet funding proofs are waiting for verification",
+      body: `${walletFundingReview.length} wallet funding request(s) totaling ${formatCurrencyAmount(amountNaira)} still need finance confirmation.`,
+      severity: walletFundingReview.length >= 3 ? "critical" : "warning",
+      division: "wallet",
+      href: "/owner/finance",
+      source: "customer_wallet_funding_requests",
+      createdAt: toNullableText(
+        walletFundingReview[0]?.updated_at || walletFundingReview[0]?.created_at
+      ),
+    });
+  }
+
+  const walletWithdrawalsPending = dataset.walletWithdrawalRequests.filter((row) =>
+    isWalletWithdrawalPendingStatus(row.status)
+  );
+  if (walletWithdrawalsPending.length) {
+    const amountNaira = sumBy(walletWithdrawalsPending, "amount_kobo", 100);
+    signals.push({
+      id: "wallet-withdrawals-review",
+      title: "Wallet withdrawals are waiting for payout review",
+      body: `${walletWithdrawalsPending.length} withdrawal request(s) totaling ${formatCurrencyAmount(amountNaira)} are still pending finance action.`,
+      severity:
+        walletWithdrawalsPending.length >= 2 || amountNaira >= 250000 ? "critical" : "warning",
+      division: "wallet",
+      href: "/owner/finance",
+      source: "customer_wallet_withdrawal_requests",
+      createdAt: toNullableText(
+        walletWithdrawalsPending[0]?.updated_at || walletWithdrawalsPending[0]?.created_at
+      ),
     });
   }
 
@@ -937,6 +1021,24 @@ function buildHelperInsights(signals: OwnerSignal[]) {
         severity: "warning",
       });
     }
+    if (signal.id === "wallet-funding-review") {
+      insights.push({
+        id: "wallet-proof-review",
+        title: "Clear wallet proof verification backlog",
+        body: "Open the finance center, confirm bank-transfer proofs, and resolve the oldest wallet requests before customers assume their balance is available.",
+        href: "/owner/finance",
+        severity: "critical",
+      });
+    }
+    if (signal.id === "wallet-withdrawals-review") {
+      insights.push({
+        id: "wallet-payout-review",
+        title: "Release pending wallet withdrawals deliberately",
+        body: "Review payout-account validity, confirm the withdrawable balance trail, and either process or reject each pending withdrawal with a documented reason.",
+        href: "/owner/finance",
+        severity: "critical",
+      });
+    }
   }
 
   return insights.filter(
@@ -1085,6 +1187,21 @@ export async function getFinanceCenterData() {
   const workforce = buildWorkforceMembers(dataset);
   const signals = buildOwnerSignals(dataset, workforce);
   const divisions = buildDivisionSnapshots(dataset, workforce, signals);
+  const pendingWalletFundingRequests = dataset.walletFundingRequests.filter((row) =>
+    isWalletFundingPendingStatus(row.status)
+  );
+  const pendingWalletWithdrawals = dataset.walletWithdrawalRequests.filter((row) =>
+    isWalletWithdrawalPendingStatus(row.status)
+  );
+  const completedWalletWithdrawals = dataset.walletWithdrawalRequests.filter((row) =>
+    isWalletWithdrawalCompletedStatus(row.status)
+  );
+  const totalRevenueNaira = divisions.reduce((sum, division) => sum + division.revenueNaira, 0);
+  const totalExpenseNaira =
+    dataset.careExpenses
+      .filter((row) => toText(row.approval_status).toLowerCase() !== "voided")
+      .reduce((sum, row) => sum + toNumber(row.amount), 0) +
+    sumBy(completedWalletWithdrawals, "amount_kobo", 100);
 
   const revenueByDivision = divisions.map((division) => ({
     slug: division.slug,
@@ -1125,11 +1242,41 @@ export async function getFinanceCenterData() {
         status: toText(row.status) || "unknown",
         createdAt: toNullableText(row.created_at),
       })),
+      ...dataset.walletFundingRequests.map((row) => ({
+        id: `wallet-funding-${toText(row.id)}`,
+        division: "wallet",
+        label: toText(row.payment_reference) || "Wallet funding request",
+        amountNaira: toNumber(row.amount_kobo) / 100,
+        status: toText(row.status) || "unknown",
+        createdAt: toNullableText(row.updated_at || row.created_at),
+      })),
+      ...dataset.walletWithdrawalRequests.map((row) => ({
+        id: `wallet-withdrawal-${toText(row.id)}`,
+        division: "wallet",
+        label: toText(row.payout_reference) || "Wallet withdrawal request",
+        amountNaira: toNumber(row.amount_kobo) / 100,
+        status: toText(row.status) || "unknown",
+        createdAt: toNullableText(row.updated_at || row.created_at),
+      })),
     ]
       .sort((left, right) => hoursSince(left.createdAt) - hoursSince(right.createdAt))
       .slice(0, 18),
+    pendingWalletFundingRequests,
+    pendingWalletWithdrawals,
+    moneyMovement: {
+      recognizedRevenueNaira: totalRevenueNaira,
+      recordedOutflowNaira: totalExpenseNaira,
+      walletFundingPendingNaira: sumBy(pendingWalletFundingRequests, "amount_kobo", 100),
+      walletWithdrawalPendingNaira: sumBy(pendingWalletWithdrawals, "amount_kobo", 100),
+    },
     alerts: signals.filter((signal) =>
-      ["marketplace-payouts", "pending-invoices", "messaging-failures"].includes(signal.id)
+      [
+        "marketplace-payouts",
+        "pending-invoices",
+        "messaging-failures",
+        "wallet-funding-review",
+        "wallet-withdrawals-review",
+      ].includes(signal.id)
     ),
   };
 }
