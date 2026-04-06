@@ -4,7 +4,6 @@ import {
   HenryCoPublicAccountPresets,
   PublicAccountChip,
   PublicHeader,
-  ThemeToggle,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
 
@@ -63,12 +62,8 @@ export function LearnSiteHeaderClient({
           ]}
         />
       }
-      actions={
-        <span className="hidden sm:inline-flex">
-          <ThemeToggle />
-        </span>
-      }
-      showThemeToggle={false}
+      showThemeToggle
+      themeToggleClassName="h-9 w-9 shrink-0 rounded-xl border border-[var(--learn-line)] bg-[rgba(8,14,22,0.45)] text-[var(--learn-ink)] shadow-none hover:bg-[rgba(12,18,28,0.55)] dark:border-[var(--learn-line)]"
       maxWidth="max-w-[92rem]"
       toolbarClassName="px-5 sm:px-8 xl:px-10"
       mobileMenuContainerClassName="px-5 sm:px-8 xl:px-10"

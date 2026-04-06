@@ -5,6 +5,17 @@
  * Reference for visual QA: header mobile sheet, account dropdown, CTA row, hero overlap zones.
  */
 export const HenryCoPublicSurfaceTokens = {
+  /**
+   * Premium floating public header chrome (one elevated bar, calm shadow).
+   * Use with PublicHeader variant="floating".
+   */
+  floatingHeaderChrome:
+    "overflow-hidden rounded-[1.75rem] border border-zinc-200/85 bg-white/97 shadow-[0_22px_60px_-28px_rgba(15,23,42,0.22),0_8px_24px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:border-white/12 dark:bg-[#0b1018]/96 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.72),0_12px_36px_rgba(0,0,0,0.45)]",
+
+  /** Groups theme toggle + account chip into one intentional control strip */
+  identityActionCluster:
+    "flex items-center gap-0.5 rounded-full border border-zinc-200/75 bg-zinc-50/95 p-1 pl-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] dark:border-zinc-700/85 dark:bg-zinc-900/70 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
+
   /** Mobile nav sheet link — light: paper; dark: deep panel (not translucent white) */
   menuSheetLink:
     "rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-800 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)]",

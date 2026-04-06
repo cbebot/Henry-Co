@@ -24,6 +24,7 @@ export function ConfiguredPublicHeader({
   primaryCta,
   secondaryCta,
   auxLink,
+  variant,
   ...rest
 }: ConfiguredProps) {
   const cfg = getSiteNavigationConfig(siteId);
@@ -37,6 +38,7 @@ export function ConfiguredPublicHeader({
       primaryCta={primaryCta ?? cfg.defaultCtas?.primary}
       secondaryCta={secondaryCta ?? cfg.defaultCtas?.secondary}
       auxLink={auxLink ?? cfg.defaultCtas?.aux}
+      variant={variant ?? cfg.headerVariant ?? "default"}
       {...rest}
     />
   );

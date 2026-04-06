@@ -108,6 +108,8 @@ export default function PublicSiteShell({
       ) : (
         <>
       <PublicHeader
+        variant={hubNav.headerVariant ?? "default"}
+        groupIdentityActions={false}
         brand={{
           href: "/",
           name: settings.brand_title || "Henry & Co.",

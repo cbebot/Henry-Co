@@ -15,6 +15,7 @@ export const siteNavHub: SiteNavigationConfig = {
   siteId: "hub",
   primaryNav: hubInnerNav,
   anchorNav: getDivisionConfig("hub").publicNav,
+  headerVariant: "default",
   defaultCtas: {
     aux: { label: "Contact", href: "/contact" },
     primary: { label: "Explore divisions", href: "/#divisions" },

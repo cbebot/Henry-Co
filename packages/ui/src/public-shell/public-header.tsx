@@ -23,9 +23,7 @@ export type PublicHeaderBrand = {
   name: string;
   sub?: string;
   href?: string;
-  /** Optional brand mark element (logo icon, SVG, etc.) */
   mark?: ReactNode;
-  /** When set, replaces the default name + subtitle block (after `mark`, inside the brand link). */
   text?: ReactNode;
 };
 
@@ -36,58 +34,48 @@ export type PublicHeaderProps = {
   secondaryCta?: PublicNavItem;
   auxLink?: PublicNavItem;
   accountMenu?: ReactNode;
-  /** Slot for search bar, cart button, or other actions between nav and account */
   actions?: ReactNode;
-  /** Rendered after the brand link (e.g. tagline pill) before desktop nav */
   afterBrand?: ReactNode;
-  /** When true, account menu and theme toggle render before CTAs on large screens */
   accountMenuFirst?: boolean;
-  /** App-specific header styling tokens */
   headerClassName?: string;
-  /** Rendered inside `<header>`, above the main toolbar row (e.g. division tagline strip). */
   prepend?: ReactNode;
-  /** Show/hide the built-in theme toggle (default: true) */
   showThemeToggle?: boolean;
-  /** When true, theme toggle renders before the account menu (toolbar + mobile row). */
   themeToggleBeforeAccount?: boolean;
-  /** Passed to `ThemeToggle` when `showThemeToggle` is true. */
   themeToggleClassName?: string;
-  /** Replaces the default theme toggle when `showThemeToggle` is true */
   themeToggle?: ReactNode;
-  /** Override the nav container max-width */
   maxWidth?: string;
-  /** Extra classes for the main toolbar row (padding, gaps, etc.). */
-  toolbarClassName?: string;
-  /** Classes for the mobile menu inner container (padding should match the toolbar row). */
-  mobileMenuContainerClassName?: string;
-  /** Classes for the collapsible mobile drawer wrapper (e.g. border color). */
-  mobileDrawerClassName?: string;
-  /** Extra classes on the mobile menu button */
-  menuButtonClassName?: string;
-  /** Merged into default classes for the aux link (desktop bar + mobile sheet) */
-  auxLinkClassName?: string;
-  /** Merged into the aux link on the desktop bar only (e.g. `hidden xl:inline-flex`). */
-  auxLinkDesktopClassName?: string;
-  secondaryCtaClassName?: string;
-  secondaryCtaDesktopClassName?: string;
-  primaryCtaClassName?: string;
-  primaryCtaDesktopClassName?: string;
-  /** Per-item classes for desktop nav (`bar`) and mobile sheet (`sheet`). When omitted, default shell styles apply. */
   getNavItemClassName?: (
     item: PublicNavItem,
     active: boolean,
     placement: "bar" | "sheet"
   ) => string;
-  /** Desktop primary nav row (default: spaced links for shared shells). */
   navClassName?: string;
-  /** Inserted after primary nav links in the mobile sheet (e.g. account shortcut). */
+  toolbarClassName?: string;
+  mobileMenuContainerClassName?: string;
+  mobileDrawerClassName?: string;
+  menuButtonClassName?: string;
+  auxLinkClassName?: string;
+  auxLinkDesktopClassName?: string;
+  secondaryCtaClassName?: string;
+  secondaryCtaDesktopClassName?: string;
+  primaryCtaClassName?: string;
+  primaryCtaDesktopClassName?: string;
   mobileSheetAfterNav?: ReactNode;
-  /** Like `mobileSheetAfterNav` but receives `close` to dismiss the sheet (e.g. before navigation). */
   renderMobileSheetAfterNav?: (close: () => void) => ReactNode;
-  /** Inserted before primary nav links in the mobile sheet (e.g. account block). */
   mobileSheetBeforeNav?: ReactNode;
-  /** When false, the account menu is not repeated in the mobile sheet footer row (default: true). */
   showAccountInMobileSheetFooter?: boolean;
+  /**
+   * `floating` — premium rounded elevated bar (default for division marketing sites).
+   * `default` — full-bleed sticky strip (e.g. hub noir / custom dark shells).
+   */
+  variant?: "default" | "floating";
+  /**
+   * Wrap theme toggle + account chip in one bordered capsule so the identity strip feels intentional.
+   * @default true
+   */
+  groupIdentityActions?: boolean;
+  /** Extra classes on the identity capsule (theme + account) */
+  identityClusterClassName?: string;
 };
 
 export function PublicHeader({
@@ -122,11 +110,15 @@ export function PublicHeader({
   mobileSheetAfterNav,
   renderMobileSheetAfterNav,
   mobileSheetBeforeNav,
-  /** Top mobile toolbar already includes the account chip; duplicating it in the sheet feels cluttered. */
   showAccountInMobileSheetFooter = false,
+  /** Most division shells use full-bleed themed headers; set `"floating"` for elevated rounded chrome. */
+  variant = "default",
+  groupIdentityActions = true,
+  identityClusterClassName,
 }: PublicHeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const floating = variant === "floating";
 
   useEffect(() => {
     if (!open) return;
@@ -177,8 +169,30 @@ export function PublicHeader({
   const primarySheetClass = cn(defaultPrimarySheet, primaryCtaClassName);
 
   const themeToggleNode: ReactNode = showThemeToggle
-    ? (themeToggle ?? <ThemeToggle className={themeToggleClassName} />)
+    ? (themeToggle ?? (
+        <ThemeToggle
+          className={cn(
+            "h-9 w-9 shrink-0 rounded-xl border-zinc-200/90 shadow-sm dark:border-zinc-700/90",
+            themeToggleClassName
+          )}
+        />
+      ))
     : null;
+
+  function wrapIdentity(nodes: ReactNode) {
+    if (!groupIdentityActions) return nodes;
+    return (
+      <div
+        className={cn(
+          HenryCoPublicSurfaceTokens.identityActionCluster,
+          "[&_button]:shrink-0",
+          identityClusterClassName
+        )}
+      >
+        {nodes}
+      </div>
+    );
+  }
 
   const desktopCtas = (
     <>
@@ -200,192 +214,177 @@ export function PublicHeader({
     </>
   );
 
-  const desktopToolbarDefault = (
+  const desktopIdentityOrdered = themeToggleBeforeAccount ? (
     <>
+      {themeToggleNode}
+      {accountMenu}
+    </>
+  ) : (
+    <>
+      {accountMenu}
+      {themeToggleNode}
+    </>
+  );
+
+  const desktopToolbarDefault = (
+    <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
       {actions}
       {desktopCtas}
-      {themeToggleBeforeAccount && themeToggleNode ? (
-        <>
-          {themeToggleNode}
-          {accountMenu}
-        </>
-      ) : (
-        <>
-          {accountMenu}
-          {themeToggleNode}
-        </>
-      )}
-    </>
+      {wrapIdentity(desktopIdentityOrdered)}
+    </div>
   );
 
   const desktopToolbarAccountFirst = (
-    <>
+    <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
       {actions}
-      {themeToggleBeforeAccount && themeToggleNode ? (
-        <>
-          {themeToggleNode}
-          {accountMenu}
-        </>
-      ) : (
-        <>
-          {accountMenu}
-          {themeToggleNode}
-        </>
-      )}
+      {wrapIdentity(desktopIdentityOrdered)}
       {desktopCtas}
-    </>
+    </div>
   );
 
-  const mobileAccountAndTheme = (
+  const mobileIdentityOrdered = themeToggleBeforeAccount ? (
     <>
-      {themeToggleBeforeAccount && themeToggleNode ? (
-        <>
-          {themeToggleNode}
-          {accountMenu}
-        </>
-      ) : (
-        <>
-          {accountMenu}
-          {themeToggleNode}
-        </>
-      )}
+      {themeToggleNode}
+      {accountMenu}
+    </>
+  ) : (
+    <>
+      {accountMenu}
+      {themeToggleNode}
     </>
   );
 
-  return (
-    <header
+  const toolbarRow = (
+    <div
       className={cn(
-        "sticky top-0 z-50 border-b border-black/10 bg-white/96 backdrop-blur-md supports-[backdrop-filter]:bg-white/90 dark:border-white/10 dark:bg-[#0a0f14] dark:backdrop-blur-md supports-[backdrop-filter]:dark:bg-[#0a0f14]/95",
-        headerClassName
+        "flex items-center justify-between gap-3",
+        floating ? "px-4 py-3 sm:px-5" : "px-6 py-4 sm:px-8 lg:px-10",
+        toolbarClassName
       )}
     >
-      {prepend}
-      <div
-        className={cn(
-          "mx-auto flex items-center justify-between gap-4 px-6 py-4 sm:px-8 lg:px-10",
-          maxWidth,
-          toolbarClassName
-        )}
-      >
-        <div className="flex min-w-0 flex-1 items-center gap-4">
-          <Link href={brand.href || "/"} className="flex min-w-0 items-center gap-3">
-            {brand.mark}
-            {brand.text ? (
-              <div className="min-w-0">{brand.text}</div>
-            ) : (
-              <div className="min-w-0">
-                <div className="text-base font-black tracking-[0.02em] text-zinc-950 dark:text-white">
-                  {brand.name}
-                </div>
-                {brand.sub ? (
-                  <div className="truncate text-[11px] uppercase tracking-[0.2em] text-zinc-500 dark:text-white/45">
-                    {brand.sub}
-                  </div>
-                ) : null}
+      <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+        <Link href={brand.href || "/"} className="flex min-w-0 items-center gap-3">
+          {brand.mark}
+          {brand.text ? (
+            <div className="min-w-0">{brand.text}</div>
+          ) : (
+            <div className="min-w-0">
+              <div className="text-base font-black tracking-[0.02em] text-zinc-950 dark:text-white">
+                {brand.name}
               </div>
-            )}
-          </Link>
-          {afterBrand}
-        </div>
-
-        <nav className={navClassName}>
-          {items.map((item) => {
-            const active = !item.external && isNavActive(pathname, item.href);
-            const barClass = getNavItemClassName
-              ? getNavItemClassName(item, active, "bar")
-              : defaultBarLink;
-
-            return item.external ? (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-                className={barClass}
-              >
-                {item.label}
-              </a>
-            ) : (
-              <Link key={item.label} href={item.href} className={barClass}>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="hidden shrink-0 items-center gap-3 lg:flex">
-          {accountMenuFirst ? desktopToolbarAccountFirst : desktopToolbarDefault}
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2 lg:hidden">
-          {actions}
-          {mobileAccountAndTheme}
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-white/90 text-zinc-950 shadow-[0_10px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/12 dark:bg-zinc-950/75 dark:text-white dark:shadow-[0_12px_32px_rgba(0,0,0,0.4)]",
-              menuButtonClassName
-            )}
-            aria-label={open ? "Close menu" : "Open menu"}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
+              {brand.sub ? (
+                <div className="truncate text-[11px] uppercase tracking-[0.2em] text-zinc-500 dark:text-white/45">
+                  {brand.sub}
+                </div>
+              ) : null}
+            </div>
+          )}
+        </Link>
+        {afterBrand}
       </div>
 
+      <nav className={navClassName}>
+        {items.map((item) => {
+          const active = !item.external && isNavActive(pathname, item.href);
+          const barClass = getNavItemClassName
+            ? getNavItemClassName(item, active, "bar")
+            : defaultBarLink;
+
+          return item.external ? (
+            <a
+              key={item.label}
+              href={item.href}
+              target="_blank"
+              rel="noreferrer"
+              className={barClass}
+            >
+              {item.label}
+            </a>
+          ) : (
+            <Link key={item.label} href={item.href} className={barClass}>
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="hidden min-w-0 shrink-0 lg:flex lg:max-w-[min(52%,520px)]">
+        {accountMenuFirst ? desktopToolbarAccountFirst : desktopToolbarDefault}
+      </div>
+
+      <div className="flex min-w-0 shrink-0 items-center gap-2 lg:hidden">
+        {actions}
+        {wrapIdentity(mobileIdentityOrdered)}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className={cn(
+            "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200/90 bg-white text-zinc-950 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-white",
+            floating && "h-10 w-10 rounded-xl",
+            menuButtonClassName
+          )}
+          aria-expanded={open}
+          aria-label={open ? "Close menu" : "Open menu"}
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+    </div>
+  );
+
+  const mobileDrawer = (
+    <div
+      className={cn(
+        "border-t border-zinc-200/80 transition-[max-height,opacity] duration-300 ease-out dark:border-zinc-800/90 lg:hidden",
+        mobileDrawerClassName,
+        open ? "max-h-[min(72vh,560px)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
+      )}
+    >
       <div
         className={cn(
-          "overflow-hidden border-t border-black/10 transition-[max-height,opacity] duration-300 ease-out dark:border-white/10 lg:hidden",
-          mobileDrawerClassName,
-          open
-            ? "max-h-[min(72vh,560px)] opacity-100"
-            : "pointer-events-none max-h-0 opacity-0"
+          "flex max-h-[min(72vh,560px)] flex-col gap-2 overflow-y-auto overscroll-contain py-3",
+          floating ? "px-4 sm:px-5" : "px-6 py-4 sm:px-8 lg:px-10",
+          mobileMenuContainerClassName
         )}
       >
-        <div
-          className={cn(
-            "mx-auto flex max-h-[min(72vh,560px)] flex-col gap-3 overflow-y-auto overscroll-contain px-6 py-4 sm:px-8 lg:px-10",
-            maxWidth,
-            mobileMenuContainerClassName
-          )}
-        >
-          {mobileSheetBeforeNav}
+        <p className="px-1 pb-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
+          Menu
+        </p>
+        {mobileSheetBeforeNav}
 
-          {items.map((item) => {
-            const active = !item.external && isNavActive(pathname, item.href);
-            const sheetClass = getNavItemClassName
-              ? getNavItemClassName(item, active, "sheet")
-              : defaultSheetLink;
+        {items.map((item) => {
+          const active = !item.external && isNavActive(pathname, item.href);
+          const sheetClass = getNavItemClassName
+            ? getNavItemClassName(item, active, "sheet")
+            : defaultSheetLink;
 
-            return item.external ? (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-                className={sheetClass}
-              >
-                {item.label}
-              </a>
-            ) : (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={sheetClass}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+          return item.external ? (
+            <a
+              key={item.label}
+              href={item.href}
+              target="_blank"
+              rel="noreferrer"
+              className={sheetClass}
+            >
+              {item.label}
+            </a>
+          ) : (
+            <Link key={item.label} href={item.href} onClick={() => setOpen(false)} className={sheetClass}>
+              {item.label}
+            </Link>
+          );
+        })}
 
-          {mobileSheetAfterNav}
-          {renderMobileSheetAfterNav ? renderMobileSheetAfterNav(() => setOpen(false)) : null}
+        {mobileSheetAfterNav}
+        {renderMobileSheetAfterNav ? renderMobileSheetAfterNav(() => setOpen(false)) : null}
 
-          <div className="mt-2 flex flex-col gap-3">
+        <div className="mt-3 border-t border-zinc-200/70 pt-3 dark:border-zinc-800/80">
+          <p className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
+            Actions
+          </p>
+          <div className="flex flex-col gap-2">
             {showAccountInMobileSheetFooter ? (
-              <div className="flex justify-end px-1">{accountMenu}</div>
+              <div className="flex justify-stretch px-0.5">{accountMenu}</div>
             ) : null}
             {auxLink ? (
               <Link href={auxLink.href} onClick={() => setOpen(false)} className={auxSheetClass}>
@@ -393,11 +392,7 @@ export function PublicHeader({
               </Link>
             ) : null}
             {secondaryCta ? (
-              <Link
-                href={secondaryCta.href}
-                onClick={() => setOpen(false)}
-                className={secondarySheetClass}
-              >
+              <Link href={secondaryCta.href} onClick={() => setOpen(false)} className={secondarySheetClass}>
                 {secondaryCta.label}
               </Link>
             ) : null}
@@ -408,6 +403,34 @@ export function PublicHeader({
             ) : null}
           </div>
         </div>
+      </div>
+    </div>
+  );
+
+  const shellInner = (
+    <>
+      {toolbarRow}
+      {mobileDrawer}
+    </>
+  );
+
+  return (
+    <header
+      className={cn(
+        "sticky top-0 z-50",
+        floating
+          ? "border-0 bg-transparent pt-2.5 pb-2 sm:pt-3 sm:pb-3"
+          : "border-b border-black/10 bg-white/96 backdrop-blur-md supports-[backdrop-filter]:bg-white/90 dark:border-white/10 dark:bg-[#0a0f14] dark:backdrop-blur-md supports-[backdrop-filter]:dark:bg-[#0a0f14]/95",
+        headerClassName
+      )}
+    >
+      {prepend}
+      <div className={cn("mx-auto w-full", maxWidth, floating && "px-3 sm:px-4")}>
+        {floating ? (
+          <div className={HenryCoPublicSurfaceTokens.floatingHeaderChrome}>{shellInner}</div>
+        ) : (
+          shellInner
+        )}
       </div>
     </header>
   );

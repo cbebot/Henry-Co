@@ -43,4 +43,9 @@ export type SiteNavigationConfig = {
   };
   /** Sticky header stacking hint */
   headerZ?: "site" | "overlay";
+  /**
+   * PublicHeader presentation: `floating` = elevated rounded bar (default for most divisions);
+   * `default` = full-bleed sticky bar (e.g. hub marketing / noir shells).
+   */
+  headerVariant?: "default" | "floating";
 };
