@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { HenryCoPublicAccountPresets, PublicAccountChip, PublicFooter } from "@henryco/ui";
 import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import {
@@ -61,7 +61,7 @@ export async function PublicShell({
             user={chipUser}
             loginHref={loginHref}
             accountHref={accountJobsUrl}
-            preferencesHref={getHubUrl("/preferences")}
+            preferencesHref={getAccountUrl("/settings")}
             settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
             showSignOut

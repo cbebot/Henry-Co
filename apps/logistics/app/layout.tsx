@@ -4,7 +4,7 @@ import { Manrope } from "next/font/google";
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import LogisticsShell from "@/components/layout/LogisticsShell";
 import { getLogisticsSharedLoginUrl, getLogisticsSharedSignupUrl } from "@/lib/logistics-public-links";
@@ -60,7 +60,7 @@ export default async function RootLayout({
       loginHref={getLogisticsSharedLoginUrl(returnPath)}
       signupHref={getLogisticsSharedSignupUrl(returnPath)}
       accountHref={getAccountUrl("/logistics")}
-      preferencesHref={getHubUrl("/preferences")}
+      preferencesHref={getAccountUrl("/settings")}
       settingsHref={getAccountUrl("/security")}
       showSignOut
       buttonClassName="border-[var(--logistics-line-strong)] bg-[rgba(215,117,57,0.14)] text-[var(--logistics-accent-soft)] hover:bg-[rgba(215,117,57,0.24)]"

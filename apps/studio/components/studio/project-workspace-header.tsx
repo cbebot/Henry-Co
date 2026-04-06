@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioViewer } from "@/lib/studio/auth";
 import { getStudioAccountUrl, getStudioLoginUrl, getStudioSignupUrl } from "@/lib/studio/links";
@@ -54,7 +54,7 @@ export async function ProjectWorkspaceHeader() {
             loginHref={loginHref}
             signupHref={signupHref}
             accountHref={accountUrl}
-            preferencesHref={getHubUrl("/preferences")}
+            preferencesHref={getAccountUrl("/settings")}
             settingsHref={getAccountUrl("/security")}
             showSignOut
             buttonClassName="border-[var(--studio-line)] bg-[var(--studio-bg-soft)] text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.35)] hover:bg-[color-mix(in_srgb,var(--studio-bg-soft)_92%,#000)]"

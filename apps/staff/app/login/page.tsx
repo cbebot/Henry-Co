@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAccountUrl, getStaffHqUrl } from "@henryco/config";
-import { getDefaultStaffLandingPath, getStaffViewer } from "@/lib/staff-auth";
-import { createStaffSupabaseServer } from "@/lib/supabase/server";
+import { getCurrentStaffAuthUser, getDefaultStaffLandingPath, getStaffViewer } from "@/lib/staff-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -18,10 +17,7 @@ export default async function StaffLoginPage({
   const params = await searchParams;
   const requestedPath = normalizeStaffNext(params.next);
   const requestedDestination = getStaffHqUrl(requestedPath);
-  const supabase = await createStaffSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentStaffAuthUser();
 
   if (user) {
     const viewer = await getStaffViewer();

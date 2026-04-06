@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl, getHubUrl } from "@henryco/config";
+import { getAccountUrl } from "@henryco/config";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
 import { getPropertyViewer } from "@/lib/property/auth";
@@ -30,7 +30,7 @@ export default async function PublicLayout({ children }: { children: React.React
       user={chipUser}
       loginHref={getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin: origin })}
       accountHref={getSharedAccountPropertyUrl()}
-      preferencesHref={getHubUrl("/preferences")}
+      preferencesHref={getAccountUrl("/settings")}
       settingsHref={getAccountUrl("/security")}
       signupHref={getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin: origin })}
       showSignOut

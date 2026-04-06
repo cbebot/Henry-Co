@@ -44,6 +44,23 @@ export function getSharedAccountPropertyUrl(panel: PropertyAccountPanel = "overv
   return new URL(getSharedAccountPropertyPath(panel), getAccountUrl("/")).toString();
 }
 
+export function sanitizePropertyAuthReturnTarget(
+  value: string | null | undefined,
+  fallback: string,
+  baseOrigin: string
+) {
+  const raw = String(value || "").trim();
+  if (!raw) return fallback;
+
+  try {
+    const target = new URL(raw, baseOrigin);
+    if (target.origin !== new URL(baseOrigin).origin) return fallback;
+    return target.toString();
+  } catch {
+    return fallback;
+  }
+}
+
 export function getSharedAccountLoginUrl(options: {
   nextPath?: string | null;
   propertyOrigin: string;

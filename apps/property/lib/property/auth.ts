@@ -16,6 +16,11 @@ type SharedProfile = {
   avatar_url?: string | null;
 };
 
+type CustomerProfile = {
+  full_name: string | null;
+  avatar_url?: string | null;
+};
+
 type MembershipRow = {
   id: string;
   role: PropertyRole;
@@ -90,11 +95,18 @@ export async function getPropertyViewer(): Promise<PropertyViewer> {
   const admin = createAdminSupabase();
   const normalized = normalizeEmail(user.email);
 
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("full_name, role, avatar_url")
-    .eq("id", user.id)
-    .maybeSingle<SharedProfile>();
+  const [{ data: customerProfile }, { data: profile }] = await Promise.all([
+    admin
+      .from("customer_profiles")
+      .select("full_name, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle<CustomerProfile>(),
+    admin
+      .from("profiles")
+      .select("full_name, role, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle<SharedProfile>(),
+  ]);
 
   let memberships: MembershipRow[] = [];
 
@@ -131,14 +143,15 @@ export async function getPropertyViewer(): Promise<PropertyViewer> {
       id: user.id,
       email: user.email || null,
       fullName:
+        customerProfile?.full_name ||
         profile?.full_name ||
         (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
         (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
         null,
-      avatarUrl: resolveUserAvatarFromSources(profile?.avatar_url ?? null, user.user_metadata as Record<
-        string,
-        unknown
-      > | null),
+      avatarUrl: resolveUserAvatarFromSources(
+        customerProfile?.avatar_url ?? profile?.avatar_url ?? null,
+        user.user_metadata as Record<string, unknown> | null
+      ),
     },
     normalizedEmail: normalized,
     roles,

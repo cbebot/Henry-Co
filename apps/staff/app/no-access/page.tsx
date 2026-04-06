@@ -2,16 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ShieldOff } from "lucide-react";
 import { getAccountUrl, getStaffHqUrl } from "@henryco/config";
-import { createStaffSupabaseServer } from "@/lib/supabase/server";
-import { getDefaultStaffLandingPath, getStaffViewer } from "@/lib/staff-auth";
+import { getCurrentStaffAuthUser, getDefaultStaffLandingPath, getStaffViewer } from "@/lib/staff-auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function StaffNoAccessPage() {
-  const supabase = await createStaffSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentStaffAuthUser();
 
   if (!user) {
     const next = getStaffHqUrl("/no-access");

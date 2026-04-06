@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { BrandMark } from "@/components/learn/ui";
@@ -30,7 +30,7 @@ export async function LearnSiteHeader() {
       accountHref={accountHref}
       loginHref={loginHref}
       signupHref={signupHref}
-      preferencesHref={getHubUrl("/preferences")}
+      preferencesHref={getAccountUrl("/settings")}
       settingsHref={getAccountUrl("/security")}
     />
   );

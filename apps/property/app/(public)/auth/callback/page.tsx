@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-
-function cleanNext(value: string | null) {
-  if (!value || !value.startsWith("/")) return "/owner";
-  return value;
-}
+import { getSharedAccountPropertyUrl, sanitizePropertyAuthReturnTarget } from "@/lib/property/links";
 
 export default function PropertyAuthCallbackPage() {
   const searchParams = useSearchParams();
-  const nextPath = useMemo(() => cleanNext(searchParams.get("next")), [searchParams]);
   const [message, setMessage] = useState("Completing your HenryCo Property sign-in...");
 
   useEffect(() => {
     let active = true;
+    const nextPath = sanitizePropertyAuthReturnTarget(
+      searchParams.get("next"),
+      getSharedAccountPropertyUrl(),
+      window.location.origin
+    );
 
     async function completeAuth() {
       const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
@@ -44,7 +44,7 @@ export default function PropertyAuthCallbackPage() {
     return () => {
       active = false;
     };
-  }, [nextPath]);
+  }, [searchParams]);
 
   return (
     <main className="mx-auto max-w-[42rem] px-5 py-14 sm:px-8">

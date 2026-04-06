@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { MapPin, Sparkles } from "lucide-react";
 import { PropertyListingCard } from "@/components/property/ui";
@@ -12,26 +12,25 @@ export function PropertyRecommendedForYou({
 }: {
   listings: PropertyListing[];
 }) {
-  const [prefs, setPrefs] = useState<PropertySearchPrefsPayload | null>(null);
-
-  useEffect(() => {
+  const [prefs] = useState<PropertySearchPrefsPayload | null>(() => {
     try {
       const raw = typeof window !== "undefined" ? window.localStorage.getItem(PROPERTY_SEARCH_PREFS_KEY) : null;
-      if (!raw) return;
+      if (!raw) return null;
       const parsed = JSON.parse(raw) as Partial<PropertySearchPrefsPayload>;
       if (parsed && typeof parsed.areaSlug === "string" && parsed.areaSlug.trim()) {
-        setPrefs({
+        return {
           areaSlug: parsed.areaSlug.trim(),
           areaName: typeof parsed.areaName === "string" ? parsed.areaName : parsed.areaSlug.trim(),
           kind: typeof parsed.kind === "string" ? parsed.kind : undefined,
           q: typeof parsed.q === "string" ? parsed.q : undefined,
           updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt : new Date().toISOString(),
-        });
+        };
       }
+      return null;
     } catch {
-      /* ignore */
+      return null;
     }
-  }, []);
+  });
 
   const recs = useMemo(() => {
     if (!prefs?.areaSlug) return [];

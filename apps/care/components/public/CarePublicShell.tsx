@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import CareNavbar, { type DivisionPublicConfig } from "@/components/public/CareNavbar";
 import CareFooter from "@/components/public/CareFooter";
 import { getCareSettings } from "@/lib/care-data";
@@ -37,7 +37,7 @@ export default async function CarePublicShell({ children }: { children: ReactNod
       user={chipUser}
       loginHref={loginHref}
       accountHref={accountHref}
-      preferencesHref={getHubUrl("/preferences")}
+      preferencesHref={getAccountUrl("/settings")}
       settingsHref={getAccountUrl("/security")}
       signupHref={signupHref}
       showSignOut

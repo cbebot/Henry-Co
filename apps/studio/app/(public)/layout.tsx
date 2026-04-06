@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl, getHubUrl } from "@henryco/config";
+import { getAccountUrl } from "@henryco/config";
 import { StudioSiteFooter } from "@/components/studio/site-footer";
 import { StudioSiteHeader } from "@/components/studio/site-header";
 import { getStudioCatalog } from "@/lib/studio/catalog";
@@ -34,7 +34,7 @@ export default async function PublicLayout({ children }: { children: React.React
             user={chipUser}
             loginHref={loginHref}
             accountHref={accountUrl}
-            preferencesHref={getHubUrl("/preferences")}
+            preferencesHref={getAccountUrl("/settings")}
             settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
             showSignOut

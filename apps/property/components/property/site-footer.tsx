@@ -20,7 +20,7 @@ const footerColumns = [
     links: [
       { href: "/submit", label: "Submit a listing" },
       { href: "/agent", label: "Agent surface" },
-      { href: "/operations", label: "Operations" },
+      { href: getSharedAccountPropertyUrl("viewings"), label: "Viewings and inquiries" },
       { href: getSharedAccountPropertyUrl("listings"), label: "Listing activity" },
     ],
   },

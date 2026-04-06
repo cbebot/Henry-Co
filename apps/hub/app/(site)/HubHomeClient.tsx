@@ -1337,7 +1337,7 @@ function TopBar({
                 loginHref={accountChip.loginHref}
                 signupHref={accountChip.signupHref}
                 accountHref={accountChip.accountHref}
-                preferencesHref="/preferences"
+                preferencesHref={getAccountUrl("/settings")}
                 settingsHref={getAccountUrl("/security")}
                 showSignOut
                 menuItems={[

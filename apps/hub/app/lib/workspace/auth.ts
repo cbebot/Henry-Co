@@ -10,8 +10,6 @@ import {
   getFallbackDivisionRoles,
   getFamiliesForDivisionRoles,
   getPermissionsForFamilies,
-  getProfileFamilies,
-  isInternalProfileRole,
   normalizeLegacyDivisionRoles,
 } from "@/app/lib/workspace/roles";
 import { getWorkspaceRuntime, workspaceLoginHref } from "@/app/lib/workspace/runtime";
@@ -33,6 +31,7 @@ type MembershipRow = {
   scope_type: string | null;
   scope_id: string | null;
 };
+const LEGACY_PROFILE_FALLBACK_DIVISIONS = new Set<WorkspaceDivision>(["care", "jobs"]);
 
 function normalizeEmail(value?: string | null) {
   const text = String(value || "").trim().toLowerCase();
@@ -41,6 +40,10 @@ function normalizeEmail(value?: string | null) {
 
 function unique<T>(items: T[]) {
   return [...new Set(items)];
+}
+
+function canUseLegacyProfileFallback(division: WorkspaceDivision) {
+  return LEGACY_PROFILE_FALLBACK_DIVISIONS.has(division);
 }
 
 async function createWorkspaceSupabaseServer() {
@@ -197,12 +200,14 @@ export async function getWorkspaceViewer(): Promise<WorkspaceViewer> {
   }
 
   const explicitDivisions = [...explicitDivisionState.keys()];
-  const canUseActivityDivisions =
-    isInternalProfileRole(profileRole) || explicitDivisions.length > 0;
+  const legacyFallbackDivisions = getDefaultVisibleDivisions(profileRole).filter(canUseLegacyProfileFallback);
+  const activityScopedDivisions = activityDivisions.filter(
+    (division) => explicitDivisionState.has(division) || legacyFallbackDivisions.includes(division)
+  );
   const requestedDivisions = unique([
-    ...getDefaultVisibleDivisions(profileRole),
     ...explicitDivisions,
-    ...(canUseActivityDivisions ? activityDivisions : []),
+    ...legacyFallbackDivisions,
+    ...activityScopedDivisions,
   ]);
 
   const memberships: WorkspaceDivisionMembership[] = [];
@@ -211,7 +216,9 @@ export async function getWorkspaceViewer(): Promise<WorkspaceViewer> {
     const cachedExplicit = explicitDivisionState.get(division);
     const rows = cachedExplicit?.rows ?? [];
     const explicitRoles = cachedExplicit?.roles ?? [];
-    const fallbackRoles = getFallbackDivisionRoles(profileRole, division);
+    const fallbackRoles = canUseLegacyProfileFallback(division)
+      ? getFallbackDivisionRoles(profileRole, division)
+      : [];
     const roles = unique([...explicitRoles, ...fallbackRoles]);
 
     if (roles.length === 0) {
@@ -220,7 +227,7 @@ export async function getWorkspaceViewer(): Promise<WorkspaceViewer> {
 
     const source: WorkspaceDivisionMembership["source"] = explicitRoles.length
       ? "explicit"
-      : activityDivisions.includes(division)
+      : activityScopedDivisions.includes(division)
         ? "activity"
         : "fallback";
 
@@ -235,10 +242,7 @@ export async function getWorkspaceViewer(): Promise<WorkspaceViewer> {
     });
   }
 
-  const families = unique([
-    ...getProfileFamilies(profileRole),
-    ...memberships.flatMap((membership) => membership.families),
-  ]);
+  const families = unique(memberships.flatMap((membership) => membership.families));
 
   return {
     user: {

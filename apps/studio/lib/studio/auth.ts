@@ -2,7 +2,7 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
-import { resolveUserAvatarFromSources } from "@henryco/config";
+import { isRecoverableSupabaseAuthError, resolveUserAvatarFromSources } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { reconcileStudioSharedPendingSyncs } from "@/lib/studio/shared-account";
@@ -13,6 +13,11 @@ import type { StudioRole, StudioViewer } from "@/lib/studio/types";
 type SharedProfile = {
   full_name: string | null;
   role?: string | null;
+  avatar_url?: string | null;
+};
+
+type CustomerProfile = {
+  full_name: string | null;
   avatar_url?: string | null;
 };
 
@@ -62,9 +67,16 @@ export function viewerHasRole(viewer: StudioViewer | null | undefined, allowed: 
 
 export async function getStudioViewer(): Promise<StudioViewer> {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
+
+  try {
+    const auth = await supabase.auth.getUser();
+    user = auth.data.user ?? null;
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+  }
 
   if (!user) {
     return {
@@ -85,16 +97,23 @@ export async function getStudioViewer(): Promise<StudioViewer> {
     }).catch(() => null);
   }
 
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("full_name, role, avatar_url")
-    .eq("id", user.id)
-    .maybeSingle<SharedProfile>();
+  const [{ data: customerProfile }, { data: profile }] = await Promise.all([
+    admin
+      .from("customer_profiles")
+      .select("full_name, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle<CustomerProfile>(),
+    admin
+      .from("profiles")
+      .select("full_name, role, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle<SharedProfile>(),
+  ]);
 
-  const avatarUrl = resolveUserAvatarFromSources(profile?.avatar_url ?? null, user.user_metadata as Record<
-    string,
-    unknown
-  > | null);
+  const avatarUrl = resolveUserAvatarFromSources(
+    customerProfile?.avatar_url ?? profile?.avatar_url ?? null,
+    user.user_metadata as Record<string, unknown> | null
+  );
 
   const { data: membershipRows } = await admin
     .from("studio_role_memberships")
@@ -129,6 +148,7 @@ export async function getStudioViewer(): Promise<StudioViewer> {
       id: user.id,
       email: user.email || null,
       fullName:
+        customerProfile?.full_name ||
         profile?.full_name ||
         (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
         (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||

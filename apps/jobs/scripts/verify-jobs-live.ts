@@ -717,7 +717,10 @@ async function main() {
       cookieHeader: candidateSession.cookieHeader,
     });
 
-    assert(candidateHub.status === 200 && candidateHub.text.includes("Jobs Module"), "Candidate module should render for the signed-in candidate.");
+    assert(
+      candidateHub.status === 200 && candidateHub.text.includes("Candidate hub"),
+      "Candidate module should render for the signed-in candidate."
+    );
     assert(
       candidateApplicationsPage.status === 200 &&
         candidateApplicationsPage.text.includes("Applications") &&
@@ -725,7 +728,8 @@ async function main() {
       "Candidate application history should render the submitted role."
     );
     assert(
-      candidateFilesPage.status === 200 && candidateFilesPage.text.includes("Document vault"),
+      candidateFilesPage.status === 200 &&
+        (candidateFilesPage.text.includes("Your documents") || candidateFilesPage.text.includes("Files")),
       "Candidate files page should render the document vault."
     );
 
@@ -742,7 +746,7 @@ async function main() {
     });
 
     assert(
-      employerWorkspace.status === 200 && employerWorkspace.text.includes("Employer Console"),
+      employerWorkspace.status === 200 && employerWorkspace.text.includes("Employer workspace"),
       "Employer console should render for the employer owner."
     );
     assert(

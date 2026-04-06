@@ -43,6 +43,7 @@ export function proxy(request: NextRequest) {
   requestHeaders.set("x-henry-host", host);
   requestHeaders.set("x-henry-proto", proto);
   requestHeaders.set("x-henry-pathname", request.nextUrl.pathname);
+  requestHeaders.set("x-henry-search", request.nextUrl.search);
   requestHeaders.set("x-hub-return-path", `${request.nextUrl.pathname}${request.nextUrl.search}`);
 
   const isWorkspaceHost = host.startsWith("workspace.");

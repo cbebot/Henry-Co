@@ -135,7 +135,7 @@ export default function PublicSiteShell({
               loginHref={accountChip.loginHref}
               signupHref={accountChip.signupHref}
               accountHref={accountChip.accountHref}
-              preferencesHref="/preferences"
+              preferencesHref={getAccountUrl("/settings")}
               settingsHref={getAccountUrl("/security")}
               showSignOut
               menuItems={[
@@ -245,7 +245,7 @@ export default function PublicSiteShell({
                   Contact
                 </Link>
                 <Link
-                  href="/preferences"
+                  href={getAccountUrl("/settings")}
                   className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
                 >
                   Language & preferences

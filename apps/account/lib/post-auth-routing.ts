@@ -26,6 +26,14 @@ type AccessSnapshot = {
   profileRole: string | null;
 };
 
+const STAFF_MEMBERSHIP_TABLES = [
+  "marketplace_role_memberships",
+  "studio_role_memberships",
+  "property_role_memberships",
+  "learn_role_memberships",
+  "logistics_role_memberships",
+] as const;
+
 const INTERNAL_PROFILE_ROLES = new Set([
   "owner",
   "manager",
@@ -114,7 +122,7 @@ async function readAccessSnapshot(user: AuthenticatedUser): Promise<AccessSnapsh
   const admin = createAdminSupabase();
   const normalizedEmailAddress = normalizeEmail(user.email);
 
-  const [{ data: profile }, { data: directOwnerProfile }] = await Promise.all([
+  const [{ data: profile }, { data: directOwnerProfile }, staffMembershipResults] = await Promise.all([
     admin.from("profiles").select("role").eq("id", user.id).maybeSingle<{ role: string | null }>(),
     admin
       .from("owner_profiles")
@@ -122,6 +130,27 @@ async function readAccessSnapshot(user: AuthenticatedUser): Promise<AccessSnapsh
       .eq("user_id", user.id)
       .eq("is_active", true)
       .maybeSingle<{ role: string | null; is_active: boolean }>(),
+    Promise.all(
+      STAFF_MEMBERSHIP_TABLES.map(async (table) => {
+        const filter = normalizedEmailAddress
+          ? `user_id.eq.${user.id},normalized_email.eq.${normalizedEmailAddress}`
+          : `user_id.eq.${user.id}`;
+
+        try {
+          const { data, error } = await admin
+            .from(table)
+            .select("id")
+            .eq("is_active", true)
+            .or(filter)
+            .limit(1);
+
+          if (error) return false;
+          return Boolean(data?.length);
+        } catch {
+          return false;
+        }
+      })
+    ),
   ]);
 
   const ownerProfile =
@@ -142,10 +171,11 @@ async function readAccessSnapshot(user: AuthenticatedUser): Promise<AccessSnapsh
     normalizeRole(user.app_metadata?.role) ||
     normalizeRole(user.user_metadata?.role);
   const ownerRole = normalizeRole(ownerProfile?.role);
+  const hasExplicitStaffMembership = staffMembershipResults.some(Boolean);
 
   return {
     hasOwnerAccess: ownerRole === "owner" || ownerRole === "admin",
-    hasStaffAccess: profileRole ? INTERNAL_PROFILE_ROLES.has(profileRole) : false,
+    hasStaffAccess: hasExplicitStaffMembership || (profileRole ? INTERNAL_PROFILE_ROLES.has(profileRole) : false),
     ownerRole,
     profileRole,
   };

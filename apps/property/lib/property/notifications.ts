@@ -148,7 +148,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: "HenryCo Property received the listing and queued it for editorial, trust, and operations review.",
           bullets: [listingTitle, "You will be notified after review or if changes are requested."],
           ctaLabel: "Open listing workspace",
-          ctaHref: getPropertyWorkspaceUrl("/owner"),
+          ctaHref: getSharedAccountPropertyUrl("listings"),
         },
         whatsapp: `HenryCo Property: ${listingTitle} has been submitted for review.`,
       };
@@ -178,7 +178,7 @@ function buildEventCopy(event: PropertyTemplateKey, payload: Record<string, unkn
           summary: note || "The property could not be approved in its current state.",
           bullets: [listingTitle],
           ctaLabel: "Review listing notes",
-          ctaHref: getPropertyWorkspaceUrl("/owner"),
+          ctaHref: getSharedAccountPropertyUrl("listings"),
         },
         whatsapp: `HenryCo Property updated ${listingTitle}. ${note || "Please review the moderation notes."}`,
       };

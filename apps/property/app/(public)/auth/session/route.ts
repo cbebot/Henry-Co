@@ -3,11 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { getSharedCookieDomain } from "@henryco/config";
 import "@/lib/server-env";
 import { getRequiredEnv } from "@/lib/env";
-
-function cleanNext(value: string | null) {
-  if (!value || !value.startsWith("/")) return "/owner";
-  return value;
-}
+import { getSharedAccountPropertyUrl, sanitizePropertyAuthReturnTarget } from "@/lib/property/links";
 
 function getAuthCookieName(supabaseUrl: string) {
   return `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
@@ -17,7 +13,11 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const accessToken = String(url.searchParams.get("access_token") || "").trim();
   const refreshToken = String(url.searchParams.get("refresh_token") || "").trim();
-  const nextPath = cleanNext(url.searchParams.get("next"));
+  const nextPath = sanitizePropertyAuthReturnTarget(
+    url.searchParams.get("next"),
+    getSharedAccountPropertyUrl(),
+    url.origin
+  );
 
   if (!accessToken || !refreshToken) {
     return NextResponse.redirect(

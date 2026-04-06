@@ -4,11 +4,7 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 import { getSharedCookieDomain } from "@henryco/config";
 import "@/lib/server-env";
 import { getRequiredEnv } from "@/lib/env";
-
-function cleanNext(value: string | null) {
-  if (!value || !value.startsWith("/")) return "/owner";
-  return value;
-}
+import { getSharedAccountPropertyUrl, sanitizePropertyAuthReturnTarget } from "@/lib/property/links";
 
 function getAuthCookieName(supabaseUrl: string) {
   return `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
@@ -18,7 +14,11 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const tokenHash = String(url.searchParams.get("token_hash") || "").trim();
   const type = String(url.searchParams.get("type") || "magiclink").trim() as EmailOtpType;
-  const nextPath = cleanNext(url.searchParams.get("next"));
+  const nextPath = sanitizePropertyAuthReturnTarget(
+    url.searchParams.get("next"),
+    getSharedAccountPropertyUrl(),
+    url.origin
+  );
 
   if (!tokenHash) {
     return NextResponse.redirect(

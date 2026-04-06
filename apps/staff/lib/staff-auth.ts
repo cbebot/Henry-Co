@@ -15,8 +15,6 @@ import {
   getFallbackDivisionRoles,
   getFamiliesForDivisionRoles,
   getPermissionsForFamilies,
-  getProfileFamilies,
-  isInternalProfileRole,
   normalizeLegacyDivisionRoles,
 } from "@/lib/roles";
 import type {
@@ -47,9 +45,28 @@ const STAFF_DIVISION_PATHS: Partial<Record<WorkspaceDivision, string>> = {
   learn: "/learn",
   logistics: "/logistics",
 };
+const LEGACY_PROFILE_FALLBACK_DIVISIONS = new Set<WorkspaceDivision>(["care", "jobs"]);
 
 function unique<T>(items: T[]) {
   return [...new Set(items)];
+}
+
+function canUseLegacyProfileFallback(division: WorkspaceDivision) {
+  return LEGACY_PROFILE_FALLBACK_DIVISIONS.has(division);
+}
+
+type StaffServerSupabase = Awaited<ReturnType<typeof createStaffSupabaseServer>>;
+
+async function readStaffAuthUser(supabase: StaffServerSupabase) {
+  try {
+    const auth = await supabase.auth.getUser();
+    return auth.data.user ?? null;
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+    return null;
+  }
 }
 
 async function readMembershipRows(
@@ -121,18 +138,14 @@ export function getDefaultStaffLandingPath(viewer: WorkspaceViewer) {
   return "/";
 }
 
+export async function getCurrentStaffAuthUser() {
+  const supabase = await createStaffSupabaseServer();
+  return readStaffAuthUser(supabase);
+}
+
 export async function getStaffViewer(): Promise<WorkspaceViewer | null> {
   const supabase = await createStaffSupabaseServer();
-  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
-
-  try {
-    const auth = await supabase.auth.getUser();
-    user = auth.data.user;
-  } catch (error) {
-    if (!isRecoverableSupabaseAuthError(error)) {
-      throw error;
-    }
-  }
+  const user = await readStaffAuthUser(supabase);
 
   if (!user) return null;
 
@@ -173,12 +186,14 @@ export async function getStaffViewer(): Promise<WorkspaceViewer | null> {
   }
 
   const explicitDivisions = [...explicitDivisionState.keys()];
-  const canUseActivityDivisions =
-    isInternalProfileRole(profileRole) || explicitDivisions.length > 0;
+  const legacyFallbackDivisions = getDefaultVisibleDivisions(profileRole).filter(canUseLegacyProfileFallback);
+  const activityScopedDivisions = activityDivisions.filter(
+    (division) => explicitDivisionState.has(division) || legacyFallbackDivisions.includes(division)
+  );
   const requestedDivisions = unique([
-    ...getDefaultVisibleDivisions(profileRole),
     ...explicitDivisions,
-    ...(canUseActivityDivisions ? activityDivisions : []),
+    ...legacyFallbackDivisions,
+    ...activityScopedDivisions,
   ]);
 
   const memberships: WorkspaceDivisionMembership[] = [];
@@ -187,7 +202,9 @@ export async function getStaffViewer(): Promise<WorkspaceViewer | null> {
     const cachedExplicit = explicitDivisionState.get(division);
     const rows = cachedExplicit?.rows ?? [];
     const explicitRoles = cachedExplicit?.roles ?? [];
-    const fallbackRoles = getFallbackDivisionRoles(profileRole, division);
+    const fallbackRoles = canUseLegacyProfileFallback(division)
+      ? getFallbackDivisionRoles(profileRole, division)
+      : [];
     const roles = unique([...explicitRoles, ...fallbackRoles]);
 
     if (roles.length === 0) {
@@ -196,7 +213,7 @@ export async function getStaffViewer(): Promise<WorkspaceViewer | null> {
 
     const source: WorkspaceDivisionMembership["source"] = explicitRoles.length
       ? "explicit"
-      : activityDivisions.includes(division)
+      : activityScopedDivisions.includes(division)
         ? "activity"
         : "fallback";
 
@@ -211,14 +228,11 @@ export async function getStaffViewer(): Promise<WorkspaceViewer | null> {
     });
   }
 
-  const families = unique([
-    ...getProfileFamilies(profileRole),
-    ...memberships.flatMap((membership) => membership.families),
-  ]);
-
-  if (!families.length && memberships.length === 0) {
+  if (memberships.length === 0) {
     return null;
   }
+
+  const families = unique(memberships.flatMap((membership) => membership.families));
 
   return {
     user: {
@@ -254,9 +268,7 @@ async function staffReturnUrlFromRequest(): Promise<string> {
 
 export async function requireStaff(): Promise<WorkspaceViewer> {
   const supabase = await createStaffSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await readStaffAuthUser(supabase);
 
   if (!user) {
     const next = await staffReturnUrlFromRequest();
