@@ -37,6 +37,7 @@ export default function SignupForm() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [country, setCountry] = useState("NG");
   const [phone, setPhone] = useState("");
   const [contactPref, setContactPref] = useState("email");
@@ -58,6 +59,7 @@ export default function SignupForm() {
     if (!fullName.trim()) { setError("Full name is required."); return; }
     if (!email.trim()) { setError("Email is required."); return; }
     if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
+    if (password !== confirmPassword) { setError("Passwords do not match. Check the confirmation field."); return; }
     if (!termsAccepted) { setError("Please accept the terms and privacy policy."); return; }
 
     setLoading(true);
@@ -155,6 +157,30 @@ export default function SignupForm() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium">Confirm password</label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="acct-input pr-10"
+              placeholder="Re-enter your password"
+              required
+              minLength={8}
+              autoComplete="new-password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
+              aria-label={showPassword ? "Hide passwords" : "Show passwords"}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>

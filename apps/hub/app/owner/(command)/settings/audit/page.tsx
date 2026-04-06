@@ -89,11 +89,20 @@ export default async function OwnerAuditPage({
                     {String(row._source || "")}
                   </td>
                   <td>{String(row.action || row.event_type || "event")}</td>
-                  <td className="max-w-[220px] truncate" title={String(row.entity_id || row.entity || "")}>
-                    {String(row.entity || row.entity_id || "system")}
+                  <td className="max-w-[min(280px,28vw)]">
+                    <div className="truncate font-medium text-[var(--acct-ink)]" title={String(row.entityLabel || "")}>
+                      {"entityLabel" in row && row.entityLabel ? String(row.entityLabel) : String(row.entity || row.entity_id || "—")}
+                    </div>
+                    {row.entity_id ? (
+                      <div className="truncate font-mono text-[0.65rem] text-[var(--acct-muted)]" title={String(row.entity_id)}>
+                        ID {String(row.entity_id).slice(0, 8)}…
+                      </div>
+                    ) : null}
                   </td>
-                  <td className="text-sm text-[var(--acct-muted)]">
-                    {String(row.actor_role || row.role || row.actor_id || "—")}
+                  <td className="max-w-[min(240px,26vw)] text-sm">
+                    <div className="truncate text-[var(--acct-ink)]" title={String(row.actorLabel || "")}>
+                      {"actorLabel" in row && row.actorLabel ? String(row.actorLabel) : String(row.actor_role || row.role || "—")}
+                    </div>
                   </td>
                   <td className="whitespace-nowrap text-sm text-[var(--acct-muted)]">
                     {String(row.created_at || "")}

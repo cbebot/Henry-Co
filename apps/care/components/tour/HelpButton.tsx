@@ -24,7 +24,7 @@ export default function HelpButton({
       {/* Floating help button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-[100] flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent)] text-[#07111F] shadow-lg transition hover:scale-105 hover:shadow-xl active:scale-95"
+        className="fixed bottom-24 right-5 z-[60] flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent)] text-[#07111F] shadow-lg transition hover:scale-105 hover:shadow-xl active:scale-95 sm:bottom-6 sm:right-6"
         aria-label="Help"
       >
         <HelpCircle className="h-5 w-5" />

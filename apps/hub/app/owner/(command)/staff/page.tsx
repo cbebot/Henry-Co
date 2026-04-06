@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Users } from "lucide-react";
 import MetricCard from "@/components/owner/MetricCard";
 import StaffMemberCard from "@/components/owner/StaffMemberCard";
@@ -14,7 +15,17 @@ export default async function WorkforceCenterPage() {
       <OwnerPageHeader
         eyebrow="Staff & Workforce Center"
         title="Central workforce control"
-        description="Invite people, assign division-scoped roles, set permissions, and suspend access from one workforce console."
+        description="Executive-grade visibility across HenryCo people: scan the overview, drill into the directory or org tree, then open a full intelligence profile for any member."
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Link href="/owner/staff/directory" className="acct-button-secondary rounded-xl text-sm">
+              Open directory
+            </Link>
+            <Link href="/owner/staff/tree" className="acct-button-primary rounded-xl text-sm">
+              Org tree
+            </Link>
+          </div>
+        }
       />
 
       <OwnerNotice tone="info" title="How updates are saved" body={data.dataHealthNote} />

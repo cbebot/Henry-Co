@@ -102,7 +102,9 @@ export const ownerNavItems: OwnerNavItem[] = [
     icon: Users,
     section: "Workforce",
     children: [
-      { href: "/owner/staff", label: "All Staff", icon: Users },
+      { href: "/owner/staff", label: "Overview", icon: Users },
+      { href: "/owner/staff/directory", label: "Directory", icon: Users },
+      { href: "/owner/staff/tree", label: "Org tree", icon: Network },
       { href: "/owner/staff/invite", label: "Invite Member", icon: UserPlus },
       { href: "/owner/staff/roles", label: "Roles & Permissions", icon: KeyRound },
     ],
@@ -204,8 +206,9 @@ export function getOwnerBreadcrumbs(pathname: string) {
       crumbs.push({ label: divisionLabel(parts[2]), href });
     }
   }
-  if (parts[0] === "owner" && parts[1] === "staff" && parts[2]) {
-    crumbs.push({ label: "Member Detail", href: pathname });
+  if (parts[0] === "owner" && parts[1] === "staff" && parts[2] === "users" && parts[3]) {
+    crumbs.push({ label: "Directory", href: "/owner/staff/directory" });
+    crumbs.push({ label: "Member profile", href: pathname });
   }
   if (parts[0] === "owner" && parts[1] === "operations" && parts[2] === "queues") {
     crumbs.push({ label: "Task Queues", href: pathname });

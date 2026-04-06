@@ -6,6 +6,11 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { divisionColor, divisionLabel } from "@/lib/format";
 import type { WorkforceMember } from "@/lib/owner-workforce-catalog";
 import { OWNER_DIVISION_SLUGS, WORKFORCE_PERMISSION_OPTIONS } from "@/lib/owner-workforce-catalog";
+import {
+  buildWorkforceIdentityMap,
+  formatAuditActorDisplay,
+  formatAuditEntityDisplay,
+} from "@/lib/owner-identity";
 
 export type {
   WorkforceMember,
@@ -972,14 +977,21 @@ export async function getOwnerOverviewData() {
         : `The central command center is live across ${divisions.length} tracked divisions with ${signals.length} current operational signals.`,
     signals: signals.slice(0, 8),
     divisions,
-    recentAudit: [...dataset.staffAuditLogs, ...dataset.auditLogs]
-      .map((row) => ({
-        id: toText(row.id),
-        action: toText(row.action || row.event_type || row.entity || "system.event"),
-        actor: toText(row.actor_role || row.role || "system"),
-        createdAt: toNullableText(row.created_at),
-      }))
-      .slice(0, 8),
+    recentAudit: (() => {
+      const wf = buildWorkforceMembers(dataset);
+      const byId = buildWorkforceIdentityMap(wf);
+      return [...dataset.staffAuditLogs, ...dataset.auditLogs]
+        .map((row) => {
+          const rec = row as JsonRecord;
+          return {
+            id: toText(row.id),
+            action: toText(row.action || row.event_type || row.entity || "system.event"),
+            actor: formatAuditActorDisplay(rec, byId),
+            createdAt: toNullableText(row.created_at),
+          };
+        })
+        .slice(0, 8);
+    })(),
     helperInsights: buildHelperInsights(signals),
   };
 }
@@ -1270,12 +1282,33 @@ export async function getAuditHistoryPageData(options?: {
     });
   }
 
+  const dataset = await getOwnerBaseDataset();
+  const workforce = buildWorkforceMembers(dataset);
+  const identityByUserId = buildWorkforceIdentityMap(workforce);
+
+  type AuditHistoryRow = AuditRow & { actorLabel: string; entityLabel: string };
+
+  const enriched: AuditHistoryRow[] = rows.slice(0, limit).map((row) => {
+    const rec = row as JsonRecord;
+    return {
+      ...row,
+      actorLabel: formatAuditActorDisplay(rec, identityByUserId),
+      entityLabel: formatAuditEntityDisplay(rec, identityByUserId),
+    };
+  });
+
   return {
-    rows: rows.slice(0, limit),
+    rows: enriched,
     navigationTail: nav as Array<JsonRecord & { _source: "navigation" }>,
     view,
     query: options?.q || "",
   };
+}
+
+export async function getWorkforceMemberById(userId: string): Promise<WorkforceMember | null> {
+  const dataset = await getOwnerBaseDataset();
+  const workforce = buildWorkforceMembers(dataset);
+  return workforce.find((m) => m.id === userId) ?? null;
 }
 
 export async function getSecurityCenterData() {

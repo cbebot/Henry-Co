@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { ArrowRight, LifeBuoy, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { getHubUrl } from "@henryco/config";
 import type { DivisionPublicConfig } from "@/components/public/CareNavbar";
 
 function FooterBrandMark({
@@ -143,9 +144,29 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
       </div>
 
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[84rem] flex-col gap-2 px-5 py-5 text-xs uppercase tracking-[0.16em] text-white/46 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
+        <div className="mx-auto flex max-w-[84rem] flex-col gap-3 px-5 py-5 text-xs uppercase tracking-[0.16em] text-white/46 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
           <div>© {year} {division.name}. Premium care services for garments, homes, and workplaces.</div>
-          <div>Pickup delivery • Home cleaning • Office cleaning • Steady support</div>
+          <div className="flex flex-col gap-2 sm:items-end">
+            <div className="flex flex-wrap gap-4 normal-case tracking-normal">
+              <a
+                href={getHubUrl("/terms")}
+                className="text-white/70 underline-offset-4 transition hover:text-white hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Terms
+              </a>
+              <a
+                href={getHubUrl("/privacy")}
+                className="text-white/70 underline-offset-4 transition hover:text-white hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy
+              </a>
+            </div>
+            <div>Pickup delivery • Home cleaning • Office cleaning • Steady support</div>
+          </div>
         </div>
       </div>
     </footer>

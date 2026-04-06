@@ -37,6 +37,31 @@
   --owner-navy-soft: rgba(15, 23, 42, 0.06);
 }
 
+/* next-themes applies `class="dark"` on <html> — mirror account tokens for readable dark surfaces */
+.dark {
+  --acct-bg: #0b0f14;
+  --acct-bg-soft: #141920;
+  --acct-bg-elevated: #1a2028;
+  --acct-surface: #1e252e;
+  --acct-line: #2a3140;
+  --acct-ink: #f0ede8;
+  --acct-muted: #8e8a84;
+  --acct-gold: #d4af37;
+  --acct-gold-soft: rgba(212, 175, 55, 0.12);
+  --acct-green: #34d399;
+  --acct-green-soft: rgba(52, 211, 153, 0.12);
+  --acct-red: #f87171;
+  --acct-red-soft: rgba(248, 113, 113, 0.12);
+  --acct-blue: #60a5fa;
+  --acct-blue-soft: rgba(96, 165, 250, 0.12);
+  --acct-purple: #a78bfa;
+  --acct-purple-soft: rgba(167, 139, 250, 0.12);
+  --acct-orange: #fbbf24;
+  --acct-orange-soft: rgba(251, 191, 36, 0.12);
+  --acct-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --acct-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 body {
   font-family: var(--acct-font-sans);
   background: var(--acct-bg);

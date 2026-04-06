@@ -12,6 +12,7 @@ import {
   PropertySectionIntro,
   PropertyTrustPill,
 } from "@/components/property/ui";
+import { PropertyRecommendedForYou } from "@/components/property/property-recommended-for-you";
 import { getPropertyHomeData } from "@/lib/property/data";
 
 export const dynamic = "force-dynamic";
@@ -117,6 +118,8 @@ export default async function PropertyHomePage() {
           ))}
         </div>
       </section>
+
+      <PropertyRecommendedForYou listings={snapshot.listings} />
 
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <PropertySectionIntro

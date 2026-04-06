@@ -16,7 +16,7 @@ export default function TourWelcomePrompt({
   if (!shouldPrompt) return null;
 
   return (
-    <div className="fixed inset-0 z-[9998] flex items-end justify-center sm:items-center">
+    <div className="fixed inset-0 z-[9998] flex items-center justify-center px-3 py-8">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={skipTour} />
       <div className="relative mx-4 mb-4 w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-300 sm:mb-0">
         <div className="overflow-hidden rounded-[2rem] border border-white/20 bg-white p-8 shadow-2xl dark:bg-[#0F1A2C]">

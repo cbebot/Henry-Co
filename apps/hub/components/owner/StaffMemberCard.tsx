@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { FormPendingButton } from "@henryco/ui";
 import type { WorkforceMember } from "@/lib/owner-workforce-catalog";
@@ -41,7 +42,17 @@ function ToggleButton({ suspended }: { suspended: boolean }) {
   );
 }
 
-export default function StaffMemberCard({ member }: { member: WorkforceMember }) {
+export default function StaffMemberCard({
+  member,
+  showIntelligenceLink = true,
+  showCardIdentityHeader = true,
+}: {
+  member: WorkforceMember;
+  /** When false, hides link to `/owner/staff/users/[id]` (e.g. on that page). */
+  showIntelligenceLink?: boolean;
+  /** When false, hides the top identity strip (e.g. full profile page already shows it). */
+  showCardIdentityHeader?: boolean;
+}) {
   const [saveState, saveAction] = useActionState(saveStaffMemberAction, initialOwnerFormState);
   const [toggleState, toggleAction] = useActionState(toggleStaffMemberStatusAction, initialOwnerFormState);
 
@@ -49,6 +60,19 @@ export default function StaffMemberCard({ member }: { member: WorkforceMember })
 
   return (
     <div className="space-y-3 rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
+      {showCardIdentityHeader ? (
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--acct-line)] pb-3">
+          <div>
+            <div className="text-lg font-semibold text-[var(--acct-ink)]">{member.fullName || member.email || "Member"}</div>
+            {member.email ? <div className="text-sm text-[var(--acct-muted)]">{member.email}</div> : null}
+          </div>
+          {showIntelligenceLink ? (
+            <Link href={`/owner/staff/users/${member.id}`} className="acct-button-secondary rounded-xl px-3 py-2 text-xs font-semibold">
+              Intelligence profile
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
       <form action={saveAction} className="space-y-4">
         <input type="hidden" name="userId" value={member.id} />
         <OwnerFormFeedback state={saveState} />

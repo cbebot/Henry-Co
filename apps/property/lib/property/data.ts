@@ -72,6 +72,17 @@ export async function getPropertyBySlug(slug: string) {
           item.status === "approved" &&
           (item.locationSlug === listing.locationSlug || item.kind === listing.kind)
       )
+      .sort((a, b) => {
+        const score = (x: typeof listing) => {
+          let s = 0;
+          if (x.locationSlug === listing.locationSlug) s += 4;
+          if (x.kind === listing.kind) s += 2;
+          if (x.featured) s += 1;
+          if (x.promoted) s += 1;
+          return s;
+        };
+        return score(b) - score(a);
+      })
       .slice(0, 4),
     inquiries: snapshot.inquiries.filter((item) => item.listingId === listing.id),
     viewings: snapshot.viewingRequests.filter((item) => item.listingId === listing.id),
