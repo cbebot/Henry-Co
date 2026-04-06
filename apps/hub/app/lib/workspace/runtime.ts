@@ -28,15 +28,19 @@ export async function getWorkspaceRuntime() {
     normalizeProto(headerStore.get("x-forwarded-proto")) ||
     (process.env.VERCEL ? "https" : "http");
   const pathname = headerStore.get("x-henry-pathname") || "/workspace";
-  const workspaceHost = host.startsWith("workspace.");
+  const legacyWorkspaceHost = host.startsWith("workspace.");
+  const staffWorkspaceHost = host.startsWith("staffhq.");
+  const workspaceHost = legacyWorkspaceHost || staffWorkspaceHost;
   const basePath = workspaceHost ? "" : "/workspace";
-  const preferredWorkspaceUrl = `https://workspace.${COMPANY.group.baseDomain}`;
+  const preferredWorkspaceUrl = `https://staffhq.${COMPANY.group.baseDomain}`;
   const workspaceUrl = host ? `${proto}://${host}` : preferredWorkspaceUrl;
 
   return {
     host,
     proto,
     pathname,
+    legacyWorkspaceHost,
+    staffWorkspaceHost,
     workspaceHost,
     basePath,
     workspaceUrl,

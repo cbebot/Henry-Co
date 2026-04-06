@@ -3,6 +3,12 @@
   "framework": "nextjs",
   "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
   "buildCommand": "cd ../.. && pnpm --filter @henryco/hub build",
+  "crons": [
+    {
+      "path": "/api/cron/owner-reports",
+      "schedule": "5 7 * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/",
@@ -35,11 +41,31 @@
       "destination": "/workspace"
     },
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "staffhq.henrycogroup.com"
+        }
+      ],
+      "destination": "/workspace"
+    },
+    {
       "source": "/:path((?!(?:workspace|api)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
           "value": "workspace.henrycogroup.com"
+        }
+      ],
+      "destination": "/workspace/:path*"
+    },
+    {
+      "source": "/:path((?!(?:workspace|api)(?:/|$)).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "staffhq.henrycogroup.com"
         }
       ],
       "destination": "/workspace/:path*"

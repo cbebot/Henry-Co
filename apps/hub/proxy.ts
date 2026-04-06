@@ -46,7 +46,9 @@ export function proxy(request: NextRequest) {
   requestHeaders.set("x-henry-search", request.nextUrl.search);
   requestHeaders.set("x-hub-return-path", `${request.nextUrl.pathname}${request.nextUrl.search}`);
 
-  const isWorkspaceHost = host.startsWith("workspace.");
+  const isLegacyWorkspaceHost = host.startsWith("workspace.");
+  const isStaffHqHost = host.startsWith("staffhq.");
+  const isWorkspaceHost = isLegacyWorkspaceHost || isStaffHqHost;
   const isHqHost = host.startsWith("hq.");
   const baseDomain = COMPANY.group.baseDomain;
   const preferredHqOrigin = `https://hq.${baseDomain}`;
@@ -82,9 +84,18 @@ export function proxy(request: NextRequest) {
     return withSecurityHeaders(NextResponse.redirect(redirectUrl, 307));
   }
 
-  if (isWorkspaceHost) {
+  if (isLegacyWorkspaceHost) {
     redirectUrl.href = `${preferredStaffHqOrigin}${request.nextUrl.pathname}${request.nextUrl.search}`;
     return withSecurityHeaders(NextResponse.redirect(redirectUrl, 307));
+  }
+
+  if (
+    isStaffHqHost &&
+    !rewriteUrl.pathname.startsWith("/workspace") &&
+    !rewriteUrl.pathname.startsWith("/api/")
+  ) {
+    rewriteUrl.pathname =
+      rewriteUrl.pathname === "/" ? "/workspace" : `/workspace${rewriteUrl.pathname}`;
   }
 
   if (

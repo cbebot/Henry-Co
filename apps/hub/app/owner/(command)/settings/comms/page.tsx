@@ -58,8 +58,9 @@ export default function OwnerCommsGovernancePage() {
             <Users className="mt-0.5 h-4 w-4 shrink-0 text-[var(--acct-gold)]" />
             <span>
               <span className="font-semibold text-[var(--acct-ink)]">Operators & leadership: </span>
-              The legacy <span className="font-medium text-[var(--acct-ink)]">workspace.</span> staff shell is
-              retired — do not route real work there. Use{" "}
+              <span className="font-medium text-[var(--acct-ink)]">staffhq.</span> is the live staff
+              workspace host. The older <span className="font-medium text-[var(--acct-ink)]">workspace.</span>{" "}
+              hostname is now treated as a legacy alias and should not be used in new links. Use{" "}
               <span className="font-medium text-[var(--acct-ink)]">Team internal chat</span> in HQ for
               coordination, division subdomains only where those apps still expose live consoles, and HQ
               division rooms when a subdomain surface is intentionally retired.

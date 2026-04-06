@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootPage() {
   const runtime = await getWorkspaceRuntime();
 
-  if (runtime.workspaceHost) {
+  if (runtime.legacyWorkspaceHost) {
     redirect(getStaffHqUrl("/"));
   }
 
