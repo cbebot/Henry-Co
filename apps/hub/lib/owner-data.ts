@@ -178,6 +178,70 @@ function isWalletWithdrawalCompletedStatus(value: unknown) {
   return ["completed", "verified", "processed", "paid"].includes(text);
 }
 
+function asRecord(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as JsonRecord)
+    : {};
+}
+
+function isLegacyWalletFundingRow(row: JsonRecord) {
+  return toText(row.reference_type).toLowerCase() === "wallet_funding_request";
+}
+
+function isLegacyWalletWithdrawalRow(row: JsonRecord) {
+  return toText(row.reference_type).toLowerCase() === "wallet_withdrawal_request";
+}
+
+function mapLegacyWalletFundingRequest(row: JsonRecord): JsonRecord {
+  const metadata = asRecord(row.metadata);
+  const rawStatus = toText(row.status).toLowerCase();
+
+  return {
+    id: row.id,
+    created_at: row.created_at,
+    updated_at: row.updated_at || row.created_at,
+    amount_kobo: row.amount_kobo,
+    status: rawStatus === "pending" ? "pending_verification" : rawStatus || "pending_verification",
+    payment_reference: toNullableText(metadata.reference) || toNullableText(row.reference_id),
+    provider: toNullableText(metadata.provider) || "bank_transfer",
+    note: toNullableText(metadata.note),
+    metadata,
+  };
+}
+
+function mapLegacyWalletWithdrawalRequest(row: JsonRecord): JsonRecord {
+  const metadata = asRecord(row.metadata);
+  const rawStatus = toText(row.status).toLowerCase();
+
+  return {
+    id: row.id,
+    created_at: row.created_at,
+    updated_at: row.updated_at || row.created_at,
+    amount_kobo: row.amount_kobo,
+    status: rawStatus === "pending" ? "pending_review" : rawStatus || "pending_review",
+    payout_method_id: toNullableText(metadata.payout_method_id) || toNullableText(row.reference_id),
+    payout_reference:
+      toNullableText(metadata.payout_reference) ||
+      toNullableText(metadata.payout_method_label) ||
+      toNullableText(row.reference_id),
+    metadata,
+  };
+}
+
+function mergeUniqueRows(...groups: JsonRecord[][]) {
+  const seen = new Set<string>();
+  const merged: JsonRecord[] = [];
+
+  for (const row of groups.flat()) {
+    const key = toText(row.id);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    merged.push(row);
+  }
+
+  return merged;
+}
+
 function isTrue(value: unknown) {
   return value === true || value === "true" || value === 1 || value === "1";
 }
@@ -285,8 +349,9 @@ const getOwnerBaseDataset = cache(async () => {
     customerActivity,
     customerNotifications,
     customerInvoices,
-    walletFundingRequests,
-    walletWithdrawalRequests,
+    walletFundingRows,
+    walletWithdrawalRows,
+    walletTransactionRows,
     careBookings,
     carePayments,
     careExpenses,
@@ -323,6 +388,11 @@ const getOwnerBaseDataset = cache(async () => {
       ascending: false,
       limit: 120,
     }),
+    safeSelect("customer_wallet_transactions", "*", {
+      orderBy: "created_at",
+      ascending: false,
+      limit: 240,
+    }),
     safeSelect("care_bookings", "*", { orderBy: "created_at", ascending: false, limit: 120 }),
     safeSelect("care_payments", "*", { orderBy: "created_at", ascending: false, limit: 120 }),
     safeSelect("care_expenses", "*", { orderBy: "created_at", ascending: false, limit: 120 }),
@@ -350,6 +420,18 @@ const getOwnerBaseDataset = cache(async () => {
     safeSelect("audit_logs", "*", { orderBy: "created_at", ascending: false, limit: 80 }),
     listAuthUsers(),
   ]);
+
+  const legacyWalletFundingRequests = walletTransactionRows
+    .filter(isLegacyWalletFundingRow)
+    .map(mapLegacyWalletFundingRequest);
+  const legacyWalletWithdrawalRequests = walletTransactionRows
+    .filter(isLegacyWalletWithdrawalRow)
+    .map(mapLegacyWalletWithdrawalRequest);
+  const walletFundingRequests = mergeUniqueRows(walletFundingRows, legacyWalletFundingRequests);
+  const walletWithdrawalRequests = mergeUniqueRows(
+    walletWithdrawalRows,
+    legacyWalletWithdrawalRequests
+  );
 
   return {
     companySettings,
