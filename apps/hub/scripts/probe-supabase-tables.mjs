@@ -3,26 +3,49 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-const envPath = path.join(root, ".env.vercel.production.hub");
-const raw = fs.readFileSync(envPath, "utf8");
-const env = {};
-for (const line of raw.split("\n")) {
-  const t = line.trim();
-  if (!t || t.startsWith("#")) continue;
-  const eq = t.indexOf("=");
-  if (eq < 1) continue;
-  const k = t.slice(0, eq).trim();
-  let v = t.slice(eq + 1).trim();
-  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
-    v = v.slice(1, -1);
+const ENV_CANDIDATES = [
+  ".env.local",
+  ".env.production.vercel",
+  ".env.vercel.production.hub",
+];
+
+function parseEnvFile(filePath) {
+  const raw = fs.readFileSync(filePath, "utf8");
+  const env = {};
+  for (const line of raw.split("\n")) {
+    const t = line.trim();
+    if (!t || t.startsWith("#")) continue;
+    const eq = t.indexOf("=");
+    if (eq < 1) continue;
+    const k = t.slice(0, eq).trim();
+    let v = t.slice(eq + 1).trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      v = v.slice(1, -1);
+    }
+    env[k] = v;
   }
-  env[k] = v;
+  return env;
 }
+
+const resolvedEnvPath = ENV_CANDIDATES.map((name) => path.join(root, name)).find((filePath) =>
+  fs.existsSync(filePath)
+);
+
+if (!resolvedEnvPath) {
+  console.error(`No Supabase env file was found. Checked: ${ENV_CANDIDATES.join(", ")}`);
+  process.exit(1);
+}
+
+const env = parseEnvFile(resolvedEnvPath);
 
 const base = env.NEXT_PUBLIC_SUPABASE_URL;
 const key = env.SUPABASE_SERVICE_ROLE_KEY;
 if (!base || !key) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.vercel.production.hub");
+  console.error(
+    `Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in ${path.basename(
+      resolvedEnvPath
+    )}`
+  );
   process.exit(1);
 }
 
