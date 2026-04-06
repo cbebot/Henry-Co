@@ -3,7 +3,12 @@
  * Vercel monorepo helper: find pnpm-workspace.yaml by walking up from cwd,
  * then run install or filtered build from the workspace root.
  *
- * Set Vercel "Root Directory" to apps/<division> (e.g. apps/jobs), then use:
+ * For Vercel CLI production deploys from this monorepo, use the repository root
+ * with each app’s vercel.json (see apps/*/vercel.json installCommand and
+ * buildCommand). Uploading only apps/<division> omits workspace root files and
+ * breaks installs.
+ *
+ * Legacy local helper (optional):
  *   installCommand: node ../../scripts/vercel/pnpm.mjs install
  *   buildCommand:   node ../../scripts/vercel/pnpm.mjs build @henryco/jobs
  *
