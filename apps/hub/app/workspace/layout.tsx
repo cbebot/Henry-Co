@@ -16,8 +16,9 @@ const plexMono = IBM_Plex_Mono({
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const metadata: Metadata = {
-  title: "Henry & Co. Workspace Retired",
-  description: "The previous HenryCo staff workspace has been retired pending a premium rebuild.",
+  title: "Henry & Co. Staff HQ",
+  description:
+    "Role-aware HenryCo Staff HQ for managers, operators, finance reviewers, and cross-division teams.",
 };
 
 export default function WorkspaceLayout({
