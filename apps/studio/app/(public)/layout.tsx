@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { PublicAccountChip } from "@henryco/ui";
+import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { getAccountUrl, getHubUrl } from "@henryco/config";
 import { StudioSiteFooter } from "@/components/studio/site-footer";
 import { StudioSiteHeader } from "@/components/studio/site-header";
@@ -30,6 +30,7 @@ export default async function PublicLayout({ children }: { children: React.React
         accountHref={accountUrl}
         accountMenu={
           <PublicAccountChip
+            {...HenryCoPublicAccountPresets.standard}
             user={chipUser}
             loginHref={loginHref}
             accountHref={accountUrl}

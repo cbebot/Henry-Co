@@ -13,6 +13,7 @@ export * from "./public/public-section";
 export * from "./staff-surface-retired";
 export * from "./loading/HenryCoActivityIndicator";
 export * from "./public/public-account-chip";
+export { HenryCoPublicAccountPresets } from "./public/henryco-account-chip-presets";
 export * from "./public/public-route-loading";
 export { PublicHeader, type PublicHeaderProps, type PublicHeaderBrand, type PublicNavItem } from "./public-shell/public-header";
 export { PublicRouteLoader } from "./public-shell/public-route-loader";

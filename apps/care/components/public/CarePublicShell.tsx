@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { headers } from "next/headers";
-import { PublicAccountChip } from "@henryco/ui";
+import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import CareNavbar, { type DivisionPublicConfig } from "@/components/public/CareNavbar";
 import CareFooter from "@/components/public/CareFooter";
@@ -33,6 +33,7 @@ export default async function CarePublicShell({ children }: { children: ReactNod
 
   const accountSlot = (
     <PublicAccountChip
+      {...HenryCoPublicAccountPresets.standard}
       user={chipUser}
       loginHref={loginHref}
       accountHref={accountHref}

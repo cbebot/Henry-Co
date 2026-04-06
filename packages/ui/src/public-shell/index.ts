@@ -4,6 +4,7 @@ export type { PublicHeaderProps, PublicHeaderBrand, PublicNavItem } from "./publ
 export { ConfiguredPublicHeader } from "./configured-public-header";
 
 export { PublicAccountChip } from "../public/public-account-chip";
+export { HenryCoPublicAccountPresets } from "../public/henryco-account-chip-presets";
 export { PublicAccountChip as AccountChip } from "../public/public-account-chip";
 export type {
   PublicAccountUser,

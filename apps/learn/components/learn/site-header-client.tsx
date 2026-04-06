@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  HenryCoPublicAccountPresets,
   PublicAccountChip,
   PublicHeader,
   ThemeToggle,
@@ -47,6 +48,7 @@ export function LearnSiteHeaderClient({
       primaryCta={learnNav.defaultCtas?.primary}
       accountMenu={
         <PublicAccountChip
+          {...HenryCoPublicAccountPresets.standard}
           user={accountChipUser}
           loginHref={loginHref}
           accountHref={accountHref}
@@ -81,8 +83,8 @@ export function LearnSiteHeaderClient({
               .filter(Boolean)
               .join(" ")
           : [
-              "flex rounded-[1.2rem] border border-[var(--learn-line)] bg-white/5 px-4 py-3 text-sm font-semibold text-[var(--learn-ink)] transition hover:border-[var(--learn-line-strong)]",
-              active ? "border-[var(--learn-line-strong)]" : "",
+              "flex rounded-[1.2rem] border border-[var(--learn-line)] bg-[rgba(6,10,16,0.55)] px-4 py-3 text-sm font-semibold text-[var(--learn-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-md transition hover:border-[var(--learn-line-strong)]",
+              active ? "border-[var(--learn-line-strong)] bg-[rgba(8,14,22,0.72)]" : "",
             ]
               .filter(Boolean)
               .join(" ")

@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import HubParticles from "./HubParticles";
 import type { PublicAccountUser } from "@henryco/ui";
-import { cn, PublicAccountChip } from "@henryco/ui";
+import { cn, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import type { DivisionRow } from "../lib/divisions";
 
 type StatusFilter = "all" | "active" | "coming_soon" | "paused";
@@ -1332,6 +1332,7 @@ function TopBar({
           <div className="flex items-center gap-2 sm:gap-3">
             {accountChip ? (
               <PublicAccountChip
+                {...HenryCoPublicAccountPresets.onDarkMarketing}
                 user={accountChip.user}
                 loginHref={accountChip.loginHref}
                 signupHref={accountChip.signupHref}
@@ -1339,8 +1340,6 @@ function TopBar({
                 preferencesHref="/preferences"
                 settingsHref={getAccountUrl("/security")}
                 showSignOut
-                dropdownTone="solidDark"
-                chipSurface="onDark"
                 menuItems={[
                   { label: "Divisions directory", href: "/#divisions" },
                   { label: "About", href: "/about" },

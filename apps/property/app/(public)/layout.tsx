@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { PublicAccountChip } from "@henryco/ui";
+import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { getAccountUrl, getHubUrl } from "@henryco/config";
 import { PropertySiteFooter } from "@/components/property/site-footer";
 import { PropertySiteHeader } from "@/components/property/site-header";
@@ -26,6 +26,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   const accountSlot = (
     <PublicAccountChip
+      {...HenryCoPublicAccountPresets.standard}
       user={chipUser}
       loginHref={getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin: origin })}
       accountHref={getSharedAccountPropertyUrl()}

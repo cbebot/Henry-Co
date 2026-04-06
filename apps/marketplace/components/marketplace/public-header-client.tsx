@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAccountUrl, getHubUrl } from "@henryco/config";
-import { PublicAccountChip } from "@henryco/ui";
+import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import {
   Bell,
   Globe,
@@ -23,15 +23,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { buildSharedAccountLoginUrl, buildSharedAccountSignupUrl } from "@/lib/marketplace/shared-account";
 import { cn } from "@/lib/utils";
+import { marketplaceToolbarNav } from "@henryco/ui/public-shell";
 
-const navLinks = [
-  { href: "/search", label: "Search" },
-  { href: "/deals", label: "Deals" },
-  { href: "/collections/founder-desk", label: "Collections" },
-  { href: "/trust", label: "Trust" },
-  { href: "/sell", label: "Sell" },
-  { href: "/help", label: "Support" },
-];
+const navLinks = marketplaceToolbarNav;
 
 function getViewerLabel(firstName: string | null, fullName: string | null, email: string | null) {
   return firstName || fullName || email?.split("@")[0] || "Account";
@@ -263,6 +257,7 @@ export function PublicHeaderClient() {
 
             <div className="hidden sm:block">
               <PublicAccountChip
+                {...HenryCoPublicAccountPresets.onDarkMarketing}
                 user={chipUser}
                 loginHref={loginHref}
                 accountHref="/account"
@@ -273,8 +268,6 @@ export function PublicHeaderClient() {
                 showSignOut
                 signOutApiPath="/api/auth/logout"
                 signOutRedirectHref="/"
-                dropdownTone="solidDark"
-                chipSurface="onDark"
                 buttonClassName="h-11 min-w-[10.5rem] rounded-full"
                 menuItems={
                   chipUser

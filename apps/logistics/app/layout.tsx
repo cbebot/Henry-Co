@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Manrope } from "next/font/google";
 import { headers } from "next/headers";
-import { HenryCoThemeBlocking, PublicAccountChip, ThemeProvider } from "@henryco/ui";
+import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import LogisticsShell from "@/components/layout/LogisticsShell";
@@ -46,6 +47,7 @@ export default async function RootLayout({
   const returnPath = h.get("x-logistics-return-path") || "/";
   const accountSlot = (
     <PublicAccountChip
+      {...HenryCoPublicAccountPresets.standard}
       user={chipUser}
       loginHref={getLogisticsSharedLoginUrl(returnPath)}
       signupHref={getLogisticsSharedSignupUrl(returnPath)}
@@ -64,10 +66,9 @@ export default async function RootLayout({
   return (
     <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
-        <HenryCoThemeBlocking />
-        <ThemeProvider>
+        <PublicThemeGuard>
           <LogisticsShell accountSlot={accountSlot}>{children}</LogisticsShell>
-        </ThemeProvider>
+        </PublicThemeGuard>
       </body>
     </html>
   );

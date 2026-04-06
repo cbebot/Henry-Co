@@ -4,9 +4,16 @@ import type { CSSProperties, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Layers3, Mail, Phone } from "lucide-react";
+import { Layers3, Mail, Phone } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
-import { type PublicAccountUser, PublicAccountChip } from "@henryco/ui";
+import {
+  type PublicAccountUser,
+  HenryCoPublicAccountPresets,
+  PublicAccountChip,
+  PublicHeader,
+  PublicShellLayout,
+  getSiteNavigationConfig,
+} from "@henryco/ui/public-shell";
 import {
   normalizeCompanySettings,
   type CompanySettingsRecord,
@@ -89,19 +96,23 @@ export default function PublicSiteShell({
     [initialSettings]
   );
   const isHomepage = pathname === "/";
+  const hubNav = useMemo(() => getSiteNavigationConfig("hub"), []);
 
   return (
-    <div
-      className="min-h-screen bg-[var(--site-bg,#050816)] text-[var(--site-text,#ffffff)]"
-      style={{ ["--accent" as string]: settings.brand_accent } as CSSProperties}
-    >
+    <PublicShellLayout className="bg-[var(--site-bg,#050816)] text-[var(--site-text,#ffffff)]">
+      <div
+        style={{ ["--accent" as string]: settings.brand_accent } as CSSProperties}
+      >
       {isHomepage ? (
         children
       ) : (
         <>
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[var(--site-header-bg,rgba(5,8,22,0.84))] backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-3">
+      <PublicHeader
+        brand={{
+          href: "/",
+          name: settings.brand_title || "Henry & Co.",
+          sub: settings.brand_subtitle ?? undefined,
+          mark: (
             <BrandLogo
               src={settings.logo_url}
               alt={settings.brand_title || "Henry & Co."}
@@ -109,107 +120,52 @@ export default function PublicSiteShell({
               wrapperClassName="h-11 w-11"
               imageClassName="max-h-8 max-w-8 p-1"
             />
-
-            <div className="leading-tight">
-              <div className="text-sm font-semibold tracking-[0.18em] text-[var(--site-text,#ffffff)]">
-                {settings.brand_title}
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.26em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-                {settings.brand_subtitle}
-              </div>
-            </div>
-          </Link>
-
-          <nav className="hidden items-center gap-6 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] lg:flex">
-            <Link className="transition hover:text-white" href="/">
-              Home
-            </Link>
-            <Link className="transition hover:text-white" href="/about">
-              About
-            </Link>
-            <Link className="transition hover:text-white" href="/contact">
-              Contact
-            </Link>
-            <Link className="transition hover:text-white" href="/privacy">
-              Privacy
-            </Link>
-            <Link className="transition hover:text-white" href="/terms">
-              Terms
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            {accountChip ? (
-              <PublicAccountChip
-                user={accountChip.user}
-                loginHref={accountChip.loginHref}
-                signupHref={accountChip.signupHref}
-                accountHref={accountChip.accountHref}
-                preferencesHref="/preferences"
-                settingsHref={getAccountUrl("/security")}
-                showSignOut
-                dropdownTone="solidDark"
-                chipSurface="onDark"
-                menuItems={[
-                  { label: "Divisions directory", href: "/#divisions" },
-                  { label: "About", href: "/about" },
-                  { label: "Contact", href: "/contact" },
-                ]}
-              />
-            ) : null}
-            <div className="hidden items-center gap-3 sm:flex">
-              <Link
-                href="/contact"
-                className="rounded-xl border border-white/12 bg-white/5 px-3.5 py-2 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.92))] transition hover:bg-white/10"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/#divisions"
-                className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
-              >
-                Explore
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-white/8 bg-black/15 lg:hidden">
-          <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
-            <Link
-              href="/"
-              className="whitespace-nowrap rounded-full border border-white/12 bg-white/5 px-3 py-1.5 text-xs text-[var(--site-text-soft,rgba(255,255,255,0.78))] transition hover:bg-white/10"
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="whitespace-nowrap rounded-full border border-white/12 bg-white/5 px-3 py-1.5 text-xs text-[var(--site-text-soft,rgba(255,255,255,0.78))] transition hover:bg-white/10"
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="whitespace-nowrap rounded-full border border-white/12 bg-white/5 px-3 py-1.5 text-xs text-[var(--site-text-soft,rgba(255,255,255,0.78))] transition hover:bg-white/10"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/privacy"
-              className="whitespace-nowrap rounded-full border border-white/12 bg-white/5 px-3 py-1.5 text-xs text-[var(--site-text-soft,rgba(255,255,255,0.78))] transition hover:bg-white/10"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="/terms"
-              className="whitespace-nowrap rounded-full border border-white/12 bg-white/5 px-3 py-1.5 text-xs text-[var(--site-text-soft,rgba(255,255,255,0.78))] transition hover:bg-white/10"
-            >
-              Terms
-            </Link>
-          </div>
-        </div>
-      </header>
+          ),
+        }}
+        items={hubNav.primaryNav}
+        auxLink={hubNav.defaultCtas?.aux}
+        primaryCta={hubNav.defaultCtas?.primary}
+        accountMenu={
+          accountChip ? (
+            <PublicAccountChip
+              {...HenryCoPublicAccountPresets.onDarkMarketing}
+              user={accountChip.user}
+              loginHref={accountChip.loginHref}
+              signupHref={accountChip.signupHref}
+              accountHref={accountChip.accountHref}
+              preferencesHref="/preferences"
+              settingsHref={getAccountUrl("/security")}
+              showSignOut
+              menuItems={[
+                { label: "Divisions directory", href: "/#divisions" },
+                { label: "About", href: "/about" },
+                { label: "Contact", href: "/contact" },
+              ]}
+            />
+          ) : null
+        }
+        accountMenuFirst
+        showThemeToggle={false}
+        headerClassName="z-40 border-white/10 bg-[var(--site-header-bg,rgba(5,8,22,0.84))] text-[var(--site-text,#ffffff)] backdrop-blur-2xl"
+        maxWidth="max-w-7xl"
+        toolbarClassName="px-4 py-4 sm:px-6 lg:px-8"
+        mobileMenuContainerClassName="px-4 py-4 sm:px-6 lg:px-8"
+        menuButtonClassName="border-white/12 bg-white/5 text-white hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
+        mobileDrawerClassName="border-white/10 bg-black/20"
+        getNavItemClassName={(_item, active, placement) =>
+          placement === "bar"
+            ? [
+                "text-sm font-medium text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-white",
+                active ? "text-white" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")
+            : "rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm font-medium text-[var(--site-text-soft,rgba(255,255,255,0.92))]"
+        }
+        auxLinkClassName="rounded-xl border border-white/12 bg-white/5 px-3.5 py-2 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.92))] hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
+        primaryCtaClassName="inline-flex items-center gap-2 rounded-xl border-0 bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black hover:opacity-90"
+        navClassName="hidden shrink-0 items-center gap-6 lg:flex"
+      />
 
       <main>{children}</main>
 
@@ -323,6 +279,7 @@ export default function PublicSiteShell({
       </footer>
         </>
       )}
-    </div>
+      </div>
+    </PublicShellLayout>
   );
 }

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
-import { PublicAccountChip, PublicFooter, PublicNavbar } from "@henryco/ui";
+import { HenryCoPublicAccountPresets, PublicAccountChip, PublicFooter } from "@henryco/ui";
+import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import {
   getSharedAccountJobsUrl,
   getSharedAccountLoginUrl,
@@ -47,15 +48,16 @@ export async function PublicShell({
 
   return (
     <div className="jobs-page jobs-shell">
-      <PublicNavbar
+      <PublicHeader
         brand={{ name: jobs.name, sub: jobs.sub }}
-        items={[...jobs.publicNav]}
+        items={[...getSiteNavigationConfig("jobs").primaryNav]}
         primaryCta={resolvedPrimary}
         secondaryCta={resolvedSecondary}
         headerClassName="jobs-public-header"
         auxLink={{ label: "HenryCo account", href: accountJobsUrl, external: true }}
         accountMenu={
           <PublicAccountChip
+            {...HenryCoPublicAccountPresets.standard}
             user={chipUser}
             loginHref={loginHref}
             accountHref={accountJobsUrl}
