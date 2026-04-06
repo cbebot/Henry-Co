@@ -26,6 +26,12 @@ export function createPublicSupabase() {
   });
 }
 
+/** True when service-role seeding / admin reads are available (optional for public SSR). */
+export function hasSupabaseServiceRole() {
+  const { url, serviceKey } = getSupabaseConfig();
+  return Boolean(url && serviceKey);
+}
+
 export function createAdminSupabase() {
   const { url, serviceKey } = getSupabaseConfig();
   if (!url || !serviceKey) {

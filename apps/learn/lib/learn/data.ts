@@ -24,6 +24,7 @@ import type {
 } from "@/lib/learn/types";
 import { getLearnSetting, readLearnCollection } from "@/lib/learn/store";
 import { LEARN_BOOTSTRAP_VERSION, seedLearnBaseline } from "@/lib/learn/seed";
+import { hasSupabaseServiceRole } from "@/lib/supabase";
 
 let bootstrapPromise: Promise<void> | null = null;
 
@@ -407,8 +408,20 @@ async function ensureLearnBootstrap() {
     return;
   }
 
+  // Auto-seed requires the service role. Without it (common misconfig on Vercel),
+  // public pages must still render using empty/fallback reads — never 500 the homepage.
+  if (!hasSupabaseServiceRole()) {
+    return;
+  }
+
   if (!bootstrapPromise) {
-    bootstrapPromise = seedLearnBaseline({ role: "academy_system" }).then(() => undefined);
+    bootstrapPromise = (async () => {
+      try {
+        await seedLearnBaseline({ role: "academy_system" });
+      } catch (err) {
+        console.error("[henryco/learn] bootstrap failed:", err);
+      }
+    })();
   }
 
   await bootstrapPromise;
