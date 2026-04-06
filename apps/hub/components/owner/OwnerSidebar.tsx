@@ -179,23 +179,25 @@ export default function OwnerSidebar({ user }: OwnerSidebarProps) {
               {user.ownerRole || "Owner"}
             </p>
           </div>
-          <button
-            onClick={() => {
-              void handleSignOut();
-            }}
-            disabled={signingOut}
-            className="rounded-lg p-1.5 text-[var(--acct-muted)] hover:bg-[var(--acct-red-soft)] hover:text-[var(--acct-red)] transition-colors"
-            title="Sign out"
-          >
-            <ButtonPendingContent
-              pending={signingOut}
-              pendingLabel="Signing out..."
-              spinnerLabel="Signing out"
-            >
-              <LogOut size={16} />
-            </ButtonPendingContent>
-          </button>
         </div>
+        <button
+          onClick={() => {
+            void handleSignOut();
+          }}
+          disabled={signingOut}
+          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--acct-red)] transition-colors hover:bg-[var(--acct-red-soft)]"
+        >
+          <ButtonPendingContent
+            pending={signingOut}
+            pendingLabel="Signing out..."
+            spinnerLabel="Signing out"
+          >
+            <>
+              <LogOut size={16} />
+              Sign out
+            </>
+          </ButtonPendingContent>
+        </button>
       </div>
     </aside>
   );
