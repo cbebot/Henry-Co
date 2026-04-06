@@ -9,13 +9,15 @@ import {
 } from "@/app/lib/internal-comms-errors";
 import {
   canReadThreadFast,
+  listActiveOwnerIds,
   loadThreadAccessContext,
+  syncThreadMembers,
   type ThreadAccessRow,
 } from "@/app/lib/internal-comms-access";
 
 export const runtime = "nodejs";
 
-const ALLOWED_KINDS = new Set(["dm", "group", "broadcast", "announcement"]);
+const ALLOWED_KINDS = new Set(["group", "broadcast", "announcement"]);
 
 function cleanText(value: unknown, max = 160) {
   const text = String(value ?? "").trim();
@@ -43,7 +45,7 @@ const SEED_THREADS: Array<{
     kind: "broadcast",
     title: "Owner & leadership",
     division: null,
-    visibility: "all_owners",
+    visibility: "members_only",
     welcome:
       "Owner and authorized leadership channel. Customer-facing pages never expose this thread.",
   },
@@ -52,7 +54,7 @@ const SEED_THREADS: Array<{
     kind: "group",
     title: "Division council",
     division: null,
-    visibility: "all_owners",
+    visibility: "members_only",
     welcome: "Cross-division coordination for managers and owners.",
   },
   {
@@ -60,7 +62,7 @@ const SEED_THREADS: Array<{
     kind: "group",
     title: "Marketplace risk & payouts",
     division: "marketplace",
-    visibility: "all_owners",
+    visibility: "members_only",
     welcome: "Escalations for payouts, fraud signals, and seller risk.",
   },
   {
@@ -68,7 +70,7 @@ const SEED_THREADS: Array<{
     kind: "announcement",
     title: "Company announcements",
     division: null,
-    visibility: "all_owners",
+    visibility: "members_only",
     welcome: "Broadcast-style updates. Reply in threads when clarification is needed.",
   },
 ];
@@ -83,7 +85,7 @@ export async function GET(request: Request) {
   const q = url.searchParams.get("q")?.trim().toLowerCase() || "";
 
   const admin = createAdminSupabase();
-  const accessCtx = await loadThreadAccessContext(admin, auth.user.id);
+  const activeOwnerIds = await listActiveOwnerIds(admin);
 
   const { data: existingRows, error: listError } = await admin
     .from("hq_internal_comm_threads")
@@ -108,7 +110,23 @@ export async function GET(request: Request) {
   const slugs = new Set(threads.map((t) => t.slug));
 
   for (const seed of SEED_THREADS) {
-    if (slugs.has(seed.slug)) continue;
+    const existingSeed = threads.find((thread) => thread.slug === seed.slug) ?? null;
+    if (existingSeed) {
+      if (existingSeed.visibility !== seed.visibility) {
+        const { data: updated } = await admin
+          .from("hq_internal_comm_threads")
+          .update({ visibility: seed.visibility })
+          .eq("id", existingSeed.id)
+          .select("id, slug, kind, title, division, visibility, created_at, updated_at")
+          .maybeSingle();
+
+        if (updated) {
+          threads = threads.map((thread) => (thread.id === updated.id ? updated : thread));
+        }
+      }
+      await syncThreadMembers(admin, existingSeed.id, activeOwnerIds, "owner");
+      continue;
+    }
     const { data: inserted, error: insertError } = await admin
       .from("hq_internal_comm_threads")
       .insert({
@@ -127,6 +145,7 @@ export async function GET(request: Request) {
     if (inserted) {
       threads.push(inserted);
       slugs.add(seed.slug);
+      await syncThreadMembers(admin, inserted.id, activeOwnerIds, "owner");
       await admin.from("hq_internal_comm_messages").insert({
         thread_id: inserted.id,
         author_id: auth.user.id,
@@ -135,6 +154,26 @@ export async function GET(request: Request) {
       });
     }
   }
+
+  for (const thread of threads) {
+    if (
+      thread.visibility === "all_owners" &&
+      (thread.kind === "broadcast" || thread.kind === "announcement" || SEED_THREADS.some((seed) => seed.slug === thread.slug))
+    ) {
+      const { data: updated } = await admin
+        .from("hq_internal_comm_threads")
+        .update({ visibility: "members_only" })
+        .eq("id", thread.id)
+        .select("id, slug, kind, title, division, visibility, created_at, updated_at")
+        .maybeSingle();
+      if (updated) {
+        threads = threads.map((row) => (row.id === updated.id ? updated : row));
+      }
+      await syncThreadMembers(admin, thread.id, activeOwnerIds, "owner");
+    }
+  }
+
+  const accessCtx = await loadThreadAccessContext(admin, auth.user.id);
 
   threads = threads.filter((t) => canReadThreadFast(t as ThreadAccessRow, accessCtx));
 
@@ -177,6 +216,7 @@ export async function GET(request: Request) {
         .from("hq_internal_comm_messages")
         .select("id", { count: "exact", head: true })
         .eq("thread_id", t.id)
+        .neq("author_id", auth.user.id)
         .gt("created_at", lastRead);
 
       unread = countError ? 0 : count ?? 0;
@@ -230,6 +270,7 @@ export async function POST(request: Request) {
   }
 
   const admin = createAdminSupabase();
+  const activeOwnerIds = await listActiveOwnerIds(admin);
   const { data: existing } = await admin
     .from("hq_internal_comm_threads")
     .select("id, slug, kind, title, division, visibility, created_at, updated_at")
@@ -240,9 +281,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ thread: existing, existing: true });
   }
 
-  const visibility =
-    kind === "broadcast" || kind === "announcement" ? "all_owners" : "members_only";
-
   const { data: inserted, error } = await admin
     .from("hq_internal_comm_threads")
     .insert({
@@ -250,7 +288,7 @@ export async function POST(request: Request) {
       kind,
       title,
       division,
-      visibility,
+      visibility: "members_only",
     })
     .select("id, slug, kind, title, division, visibility, created_at, updated_at")
     .maybeSingle();
@@ -261,6 +299,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 });
     }
     return NextResponse.json({ error: "Could not create thread." }, { status: 400 });
+  }
+
+  if (kind === "broadcast" || kind === "announcement") {
+    await syncThreadMembers(admin, inserted.id, activeOwnerIds, "owner");
   }
 
   await admin.from("hq_internal_comm_thread_members").upsert(

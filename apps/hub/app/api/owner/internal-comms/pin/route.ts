@@ -7,7 +7,7 @@ import {
   isInternalCommsStorageError,
   logInternalCommsError,
 } from "@/app/lib/internal-comms-errors";
-import { assertThreadReadable } from "@/app/lib/internal-comms-access";
+import { assertThreadReadable, upsertThreadMemberActivity } from "@/app/lib/internal-comms-access";
 
 export const runtime = "nodejs";
 
@@ -37,15 +37,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: gate.message }, { status: gate.status });
   }
 
-  const { error } = await admin.from("hq_internal_comm_thread_members").upsert(
-    {
-      thread_id: threadId,
-      user_id: auth.user.id,
-      pinned,
-      role: "owner",
-    },
-    { onConflict: "thread_id,user_id" }
-  );
+  const error = await upsertThreadMemberActivity(admin, {
+    threadId,
+    userId: auth.user.id,
+    defaultRole: gate.thread.kind === "dm" ? "member" : "owner",
+    pinned,
+  });
 
   if (error) {
     logInternalCommsError("pin", error);

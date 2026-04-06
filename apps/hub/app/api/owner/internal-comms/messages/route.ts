@@ -7,7 +7,12 @@ import {
   isInternalCommsStorageError,
   logInternalCommsError,
 } from "@/app/lib/internal-comms-errors";
-import { assertThreadReadable, assertThreadWritable, loadThreadAccessContext } from "@/app/lib/internal-comms-access";
+import {
+  assertThreadReadable,
+  assertThreadWritable,
+  loadThreadAccessContext,
+  upsertThreadMemberActivity,
+} from "@/app/lib/internal-comms-access";
 import {
   HQ_IC_STORAGE_BUCKET,
   normalizeUploadKind,
@@ -111,15 +116,13 @@ export async function GET(request: Request) {
 
   const messages = Array.isArray(data) ? [...data].reverse() : [];
 
-  const { error: readError } = await admin.from("hq_internal_comm_thread_members").upsert(
-    {
-      thread_id: threadId,
-      user_id: auth.user.id,
-      last_read_at: new Date().toISOString(),
-      role: "owner",
-    },
-    { onConflict: "thread_id,user_id" }
-  );
+  const { thread } = gate;
+  const readError = await upsertThreadMemberActivity(admin, {
+    threadId,
+    userId: auth.user.id,
+    defaultRole: thread.kind === "dm" ? "member" : "owner",
+    lastReadAt: new Date().toISOString(),
+  });
 
   if (readError && process.env.NODE_ENV === "development") {
     console.warn("[internal-comms] read receipt upsert:", readError.message);
@@ -232,10 +235,10 @@ export async function POST(request: Request) {
     if (!v.ok) {
       return NextResponse.json({ error: v.message }, { status: 400 });
     }
-    const attId = String(raw.attachmentId || "").trim();
+    const attachmentId = String(raw.attachmentId || "").trim();
     const path = String(raw.storagePath || "").trim();
-    const prefix = `${threadId}/${auth.user.id}/${attId}/`;
-    if (!attId || !/^[0-9a-f-]{36}$/i.test(attId) || !path.startsWith(prefix)) {
+    const prefix = `${threadId}/${auth.user.id}/${attachmentId}/`;
+    if (!attachmentId || !/^[0-9a-f-]{36}$/i.test(attachmentId) || !path.startsWith(prefix)) {
       return NextResponse.json({ error: "Invalid attachment path." }, { status: 400 });
     }
     const verified = await verifyStorageObject(admin, path, Number(raw.byteSize || 0));
@@ -305,7 +308,6 @@ export async function POST(request: Request) {
       byteSize: Number(raw.byteSize || 0),
     });
     if (!v.ok) continue;
-    const attId = String(raw.attachmentId || "").trim();
     const path = String(raw.storagePath || "").trim();
     const { error: attErr } = await admin.from("hq_internal_comm_attachments").insert({
       message_id: inserted.id,
@@ -366,6 +368,13 @@ export async function POST(request: Request) {
     .from("hq_internal_comm_threads")
     .update({ updated_at: new Date().toISOString() })
     .eq("id", threadId);
+
+  await upsertThreadMemberActivity(admin, {
+    threadId,
+    userId: auth.user.id,
+    defaultRole: gate.thread.kind === "dm" ? "member" : "owner",
+    lastReadAt: new Date().toISOString(),
+  });
 
   return NextResponse.json({ message: messageRow });
 }

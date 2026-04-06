@@ -25,7 +25,7 @@ export default function OwnerMessagingTeamPage() {
 
       <OwnerPanel
         title="Live thread"
-        description="Post updates, decisions, and handoffs. Apply migration 20260405120000_hq_internal_communications if this stays empty after refresh."
+        description="Post updates, decisions, and handoffs. If provisioning looks degraded, apply the HenryCo Hub internal-comms migrations through 20260408120000_hq_internal_comms_attachments_visibility_rls and confirm the health probe passes."
       >
         <InternalTeamCommsClient />
       </OwnerPanel>

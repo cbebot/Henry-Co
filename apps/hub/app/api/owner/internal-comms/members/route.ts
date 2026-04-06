@@ -69,6 +69,7 @@ export async function GET(request: Request) {
   const { data: ownerRows, error: ownerError } = await admin
     .from("owner_profiles")
     .select("user_id, email, role")
+    .eq("is_active", true)
     .limit(200);
 
   if (ownerError) {

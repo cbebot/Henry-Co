@@ -7,7 +7,6 @@ import {
   isInternalCommsStorageError,
   logInternalCommsError,
 } from "@/app/lib/internal-comms-errors";
-import { assertThreadReadable } from "@/app/lib/internal-comms-access";
 
 export const runtime = "nodejs";
 
@@ -20,7 +19,12 @@ async function isPeerAllowed(admin: ReturnType<typeof createAdminSupabase>, peer
     .maybeSingle();
   if (staff) return true;
 
-  const { data: owner } = await admin.from("owner_profiles").select("user_id").eq("user_id", peerUserId).maybeSingle();
+  const { data: owner } = await admin
+    .from("owner_profiles")
+    .select("user_id")
+    .eq("user_id", peerUserId)
+    .eq("is_active", true)
+    .maybeSingle();
   return Boolean(owner);
 }
 
@@ -80,10 +84,6 @@ export async function POST(request: Request) {
   }
 
   if (existing) {
-    const readable = await assertThreadReadable(admin, auth.user.id, existing.id);
-    if (!readable.ok) {
-      return NextResponse.json({ error: "You do not have access to this direct chat." }, { status: 403 });
-    }
     await admin.from("hq_internal_comm_thread_members").upsert(
       [
         {

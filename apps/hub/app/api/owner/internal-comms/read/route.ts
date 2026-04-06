@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireOwner } from "@/app/lib/owner-auth";
 import { ownerAuthDeniedResponse } from "@/lib/owner-api-auth";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
-import { assertThreadReadable } from "@/app/lib/internal-comms-access";
+import { assertThreadReadable, upsertThreadMemberActivity } from "@/app/lib/internal-comms-access";
 
 export const runtime = "nodejs";
 
@@ -32,15 +32,12 @@ export async function POST(request: Request) {
 
   const now = new Date().toISOString();
 
-  const { error } = await admin.from("hq_internal_comm_thread_members").upsert(
-    {
-      thread_id: threadId,
-      user_id: auth.user.id,
-      last_read_at: now,
-      role: "owner",
-    },
-    { onConflict: "thread_id,user_id" }
-  );
+  const error = await upsertThreadMemberActivity(admin, {
+    threadId,
+    userId: auth.user.id,
+    defaultRole: gate.thread.kind === "dm" ? "member" : "owner",
+    lastReadAt: now,
+  });
 
   if (error) {
     return NextResponse.json({ error: "Could not update read state." }, { status: 400 });

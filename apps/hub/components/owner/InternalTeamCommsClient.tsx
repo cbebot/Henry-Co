@@ -72,6 +72,11 @@ type SearchHit = {
   created_at: string;
 };
 
+type HealthPayload = {
+  ok: boolean;
+  checks?: Record<string, { ok: boolean; detail?: string }>;
+};
+
 type UploadKind = "image" | "video" | "file" | "voice";
 
 function mapMimeToKind(mime: string): UploadKind | null {
@@ -197,6 +202,7 @@ export default function InternalTeamCommsClient() {
   const [startingDm, setStartingDm] = useState(false);
   const [uploadBusy, setUploadBusy] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [health, setHealth] = useState<HealthPayload | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -217,6 +223,22 @@ export default function InternalTeamCommsClient() {
       setSelfUserId(data.user?.id ?? null);
     })();
   }, [supabase]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/owner/internal-comms/health", { cache: "no-store" });
+        const payload = (await res.json()) as HealthPayload;
+        if (!cancelled) setHealth(payload);
+      } catch {
+        if (!cancelled) setHealth({ ok: false, checks: {} });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const t = window.setTimeout(() => setDebouncedSearch(searchInput.trim()), 280);
@@ -431,6 +453,48 @@ export default function InternalTeamCommsClient() {
       void supabase.removeChannel(channel);
     };
   }, [supabase, activeId, loadMessages]);
+
+  useEffect(() => {
+    if (!supabase) return;
+
+    const channel = supabase
+      .channel("hq-ic-threads")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "hq_internal_comm_messages",
+        },
+        (payload) => {
+          const threadId = String((payload.new as { thread_id?: string } | null)?.thread_id || "");
+          void loadThreads({ silent: true });
+          if (threadId && threadId === activeId) {
+            void loadMessages(threadId, { silent: true });
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "hq_internal_comm_threads",
+        },
+        () => {
+          void loadThreads({ silent: true });
+        }
+      )
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          setRealtimeDegraded(true);
+        }
+      });
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [supabase, activeId, loadMessages, loadThreads]);
 
   const activeThread = useMemo(
     () => threads.find((t) => t.id === activeId) || null,
@@ -808,6 +872,19 @@ export default function InternalTeamCommsClient() {
             </Link>
           </div>
           <div className="mt-3 space-y-2">
+            {health ? (
+              <div
+                className={`rounded-xl border px-3 py-2 text-xs leading-5 ${
+                  health.ok
+                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                    : "border-[var(--acct-gold)]/30 bg-[var(--acct-gold-soft)] text-[var(--acct-ink)]"
+                }`}
+              >
+                {health.ok
+                  ? "Internal comms storage, memberships, attachments, and presence checks are healthy."
+                  : `Provisioning is incomplete. Apply HenryCo Hub migrations through 20260408120000 and confirm the health probe passes before relying on this room set.`}
+              </div>
+            ) : null}
             <input
               value={roomTitle}
               onChange={(e) => setRoomTitle(e.target.value)}
@@ -824,7 +901,6 @@ export default function InternalTeamCommsClient() {
                 <option value="group">Group room</option>
                 <option value="broadcast">Broadcast room</option>
                 <option value="announcement">Announcement room</option>
-                <option value="dm">Direct room</option>
               </select>
               <input
                 value={roomDivision}
@@ -926,8 +1002,8 @@ export default function InternalTeamCommsClient() {
             {activeThread?.title || "Internal chat"}
           </h2>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Owner-protected HQ surface. Messages use Supabase row-level security, private storage, and realtime delivery
-            with safe fallback to REST.
+            Owner-protected HQ surface. Use direct chat for 1:1 conversations and governed rooms for owner-wide updates.
+            Messages use Supabase row-level security, private storage, and realtime delivery with safe fallback to REST.
           </p>
           {realtimeDegraded ? (
             <p className="mt-2 text-xs font-medium text-[var(--acct-gold)]">

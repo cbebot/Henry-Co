@@ -20,6 +20,18 @@ export type ThreadAccessContext = {
   divisionSet: Set<string>;
 };
 
+export async function listActiveOwnerIds(admin: AdminClient) {
+  const { data } = await admin
+    .from("owner_profiles")
+    .select("user_id, role")
+    .eq("is_active", true)
+    .in("role", ["owner", "admin"]);
+
+  return (data || [])
+    .map((row) => String(row.user_id || "").trim())
+    .filter(Boolean);
+}
+
 export async function fetchThread(admin: AdminClient, threadId: string) {
   const { data, error } = await admin
     .from("hq_internal_comm_threads")
@@ -69,10 +81,7 @@ export function canReadThreadFast(thread: ThreadAccessRow, ctx: ThreadAccessCont
   if (ctx.memberRoleByThread.has(thread.id)) return true;
   const vis = String(thread.visibility || "members_only");
   if (vis !== "all_owners") return false;
-  if (ctx.isOwnerAdmin) return true;
-  const div = thread.division?.trim() || null;
-  if (!div) return ctx.isActiveStaff;
-  return ctx.divisionSet.has(div);
+  return ctx.isOwnerAdmin;
 }
 
 export function canWriteThreadFast(thread: ThreadAccessRow, ctx: ThreadAccessContext): boolean {
@@ -85,6 +94,74 @@ export function canWriteThreadFast(thread: ThreadAccessRow, ctx: ThreadAccessCon
     return true;
   }
   return false;
+}
+
+export async function syncThreadMembers(
+  admin: AdminClient,
+  threadId: string,
+  userIds: string[],
+  role: "owner" | "member" | "observer" = "owner"
+) {
+  const uniqueIds = [...new Set(userIds.map((value) => String(value || "").trim()).filter(Boolean))];
+  if (uniqueIds.length === 0) return null;
+
+  const { error } = await admin.from("hq_internal_comm_thread_members").upsert(
+    uniqueIds.map((userId) => ({
+      thread_id: threadId,
+      user_id: userId,
+      role,
+    })),
+    { onConflict: "thread_id,user_id" }
+  );
+
+  return error ?? null;
+}
+
+export async function upsertThreadMemberActivity(
+  admin: AdminClient,
+  input: {
+    threadId: string;
+    userId: string;
+    defaultRole?: "owner" | "member" | "observer";
+    pinned?: boolean;
+    lastReadAt?: string;
+  }
+) {
+  const { data: existing, error: loadError } = await admin
+    .from("hq_internal_comm_thread_members")
+    .select("role")
+    .eq("thread_id", input.threadId)
+    .eq("user_id", input.userId)
+    .maybeSingle();
+
+  if (loadError) {
+    return loadError;
+  }
+
+  const payload: Record<string, unknown> = {};
+  if (typeof input.pinned === "boolean") payload.pinned = input.pinned;
+  if (typeof input.lastReadAt === "string" && input.lastReadAt.trim()) {
+    payload.last_read_at = input.lastReadAt;
+  }
+
+  if (existing) {
+    if (Object.keys(payload).length === 0) return null;
+    const { error } = await admin
+      .from("hq_internal_comm_thread_members")
+      .update(payload)
+      .eq("thread_id", input.threadId)
+      .eq("user_id", input.userId);
+    return error ?? null;
+  }
+
+  const { error } = await admin.from("hq_internal_comm_thread_members").insert({
+    thread_id: input.threadId,
+    user_id: input.userId,
+    role: input.defaultRole || "owner",
+    ...payload,
+  });
+
+  return error ?? null;
 }
 
 export async function assertThreadReadable(
