@@ -11,7 +11,7 @@ function cleanText(value?: unknown) {
 function isAuthorized(request: Request) {
   const secret = cleanText(process.env.CRON_SECRET);
   if (!secret) {
-    return true;
+    return process.env.NODE_ENV !== "production";
   }
 
   return request.headers.get("authorization") === `Bearer ${secret}`;
@@ -24,8 +24,9 @@ async function handleRequest(request: Request) {
 
   try {
     const url = new URL(request.url);
-    const force = !url.searchParams.has("force") ||
-      ["1", "true", "yes"].includes(cleanText(url.searchParams.get("force")).toLowerCase());
+    const force = ["1", "true", "yes"].includes(
+      cleanText(url.searchParams.get("force")).toLowerCase()
+    );
     const summary = await runOwnerReport("weekly", { now: new Date(), force });
     return NextResponse.json(summary, {
       status: summary.ok ? 200 : summary.failed ? 500 : 200,
