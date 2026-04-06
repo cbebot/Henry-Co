@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getAccountUrl, getHubUrl } from "@henryco/config";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import {
   Bell,
   Globe,
@@ -66,8 +66,18 @@ function MobileSignOutRow({ onNavigate }: { onNavigate: () => void }) {
       }}
       className="flex w-full items-center justify-center gap-2 rounded-[1.35rem] border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 disabled:cursor-wait disabled:opacity-60"
     >
-      <LogOut className="h-4 w-4 shrink-0" aria-hidden />
-      {busy ? "Signing out\u2026" : "Sign out"}
+      <ButtonPendingContent
+        pending={busy}
+        pendingLabel="Signing out…"
+        spinnerLabel="Signing out"
+        className="inline-flex"
+        textClassName="inline-flex items-center gap-2 font-semibold"
+      >
+        <>
+          <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+          Sign out
+        </>
+      </ButtonPendingContent>
     </button>
   );
 }
@@ -83,6 +93,8 @@ function AccountAvatar({
   label: string;
   className?: string;
 }) {
+  const [failed, setFailed] = useState(false);
+  const showImage = Boolean(avatarUrl) && !failed;
   return (
     <span
       className={cn(
@@ -90,8 +102,16 @@ function AccountAvatar({
         className
       )}
     >
-      {avatarUrl ? (
-        <Image src={avatarUrl} alt={`${label} avatar`} fill className="object-cover" sizes="48px" />
+      {showImage && avatarUrl ? (
+        <Image
+          src={avatarUrl}
+          alt={`${label} avatar`}
+          fill
+          className="object-cover"
+          sizes="48px"
+          unoptimized
+          onError={() => setFailed(true)}
+        />
       ) : (
         initials
       )}
@@ -131,7 +151,7 @@ export function PublicHeaderClient() {
   const notificationsHref = useMemo(
     () =>
       runtime.shell.viewer.signedIn
-        ? "/account/notifications"
+        ? getAccountUrl("/notifications")
         : buildSharedAccountLoginUrl(
             "/account/notifications",
             typeof window !== "undefined" ? window.location.origin : undefined
@@ -281,7 +301,7 @@ export function PublicHeaderClient() {
                 {...HenryCoPublicAccountPresets.onDarkMarketing}
                 user={chipUser}
                 loginHref={loginHref}
-                accountHref="/account"
+                accountHref={getAccountUrl("/")}
                 signupHref={signupHref}
                 signupLabel="Get started"
                 preferencesHref={getHubUrl("/preferences")}
@@ -321,7 +341,7 @@ export function PublicHeaderClient() {
 
             {runtime.shell.viewer.signedIn ? (
               <Link
-                href="/account"
+                href={getAccountUrl("/")}
                 className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] sm:hidden"
                 aria-label={`Open account for ${accountIdentity}`}
               >
@@ -424,7 +444,7 @@ export function PublicHeaderClient() {
               {runtime.shell.viewer.signedIn ? (
                 <>
                   <Link
-                    href="/account"
+                    href={getAccountUrl("/")}
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
                   >

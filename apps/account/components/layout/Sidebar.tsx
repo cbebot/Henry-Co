@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { LogOut } from "lucide-react";
+import { HenryCoActivityIndicator } from "@henryco/ui";
 import { getNavSections, type NavItem } from "@/lib/navigation";
 import Logo from "@/components/brand/Logo";
 import NotificationBell from "@/components/notifications/NotificationBell";
@@ -17,6 +19,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   return (
     <Link
       href={item.href}
+      aria-current={active ? "page" : undefined}
       className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
         active
           ? "acct-nav-active"
@@ -33,6 +36,7 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const sections = getNavSections();
+  const [signingOut, setSigningOut] = useState(false);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -40,13 +44,18 @@ export default function Sidebar({ user }: SidebarProps) {
   };
 
   const handleSignOut = async () => {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      cache: "no-store",
-    });
-    router.replace("/login");
-    router.refresh();
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        cache: "no-store",
+      });
+    } finally {
+      router.replace("/login");
+      router.refresh();
+    }
   };
 
   return (
@@ -95,11 +104,20 @@ export default function Sidebar({ user }: SidebarProps) {
             <p className="truncate text-xs text-[var(--acct-muted)]">{user.email}</p>
           </div>
           <button
-            onClick={handleSignOut}
-            className="rounded-lg p-1.5 text-[var(--acct-muted)] hover:bg-[var(--acct-red-soft)] hover:text-[var(--acct-red)] transition-colors"
+            type="button"
+            disabled={signingOut}
+            onClick={() => void handleSignOut()}
+            className="rounded-lg p-1.5 text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-red-soft)] hover:text-[var(--acct-red)] disabled:cursor-wait disabled:opacity-60"
             title="Sign out"
+            aria-busy={signingOut}
           >
-            <LogOut size={16} />
+            {signingOut ? (
+              <span className="inline-flex h-4 w-4 items-center justify-center">
+                <HenryCoActivityIndicator size="sm" label="Signing out" />
+              </span>
+            ) : (
+              <LogOut size={16} />
+            )}
           </button>
         </div>
       </div>

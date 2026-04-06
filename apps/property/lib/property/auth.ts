@@ -1,7 +1,11 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { isRecoverableSupabaseAuthError, normalizeEmail } from "@henryco/config";
+import {
+  isRecoverableSupabaseAuthError,
+  normalizeEmail,
+  resolveUserAvatarFromSources,
+} from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { PropertyRole, PropertyViewer } from "@/lib/property/types";
@@ -9,6 +13,7 @@ import type { PropertyRole, PropertyViewer } from "@/lib/property/types";
 type SharedProfile = {
   full_name: string | null;
   role?: string | null;
+  avatar_url?: string | null;
 };
 
 type MembershipRow = {
@@ -87,7 +92,7 @@ export async function getPropertyViewer(): Promise<PropertyViewer> {
 
   const { data: profile } = await admin
     .from("profiles")
-    .select("full_name, role")
+    .select("full_name, role, avatar_url")
     .eq("id", user.id)
     .maybeSingle<SharedProfile>();
 
@@ -130,6 +135,10 @@ export async function getPropertyViewer(): Promise<PropertyViewer> {
         (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
         (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
         null,
+      avatarUrl: resolveUserAvatarFromSources(profile?.avatar_url ?? null, user.user_metadata as Record<
+        string,
+        unknown
+      > | null),
     },
     normalizedEmail: normalized,
     roles,

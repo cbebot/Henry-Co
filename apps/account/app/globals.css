@@ -175,7 +175,8 @@ body {
 .acct-input {
   width: 100%;
   padding: 0.625rem 0.875rem;
-  font-size: 0.875rem;
+  /* 16px minimum prevents iOS Safari zoom-on-focus while keeping comfortable tap targets */
+  font-size: 1rem;
   color: var(--acct-ink);
   background: var(--acct-bg);
   border: 1px solid var(--acct-line);
@@ -192,7 +193,7 @@ body {
   width: 100%;
   min-height: 100px;
   padding: 0.625rem 0.875rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--acct-ink);
   background: var(--acct-bg);
   border: 1px solid var(--acct-line);

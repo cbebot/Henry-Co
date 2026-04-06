@@ -51,6 +51,7 @@ export type PropertyViewer = {
     id: string;
     email: string | null;
     fullName: string | null;
+    avatarUrl: string | null;
   } | null;
   normalizedEmail: string | null;
   roles: PropertyRole[];

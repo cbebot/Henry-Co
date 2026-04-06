@@ -121,3 +121,25 @@ export function isSupabaseAuthTokenCookie(name?: string | null) {
   const value = String(name || "").trim().toLowerCase();
   return value.startsWith("sb-") && (value.includes("-auth-token") || value.includes("-code-verifier"));
 }
+
+/**
+ * Prefer the canonical profile/customer avatar URL when set; otherwise use OAuth metadata
+ * (e.g. Google `picture`, Supabase `avatar_url`) so chips show real photos without waiting on profile sync.
+ */
+export function resolveUserAvatarFromSources(
+  profileAvatarUrl: string | null | undefined,
+  userMetadata: Record<string, unknown> | null | undefined
+): string | null {
+  const fromProfile = cleanText(profileAvatarUrl);
+  if (fromProfile) return fromProfile;
+
+  const meta =
+    userMetadata && typeof userMetadata === "object" ? (userMetadata as Record<string, unknown>) : {};
+  const fromMeta =
+    typeof meta.avatar_url === "string"
+      ? meta.avatar_url
+      : typeof meta.picture === "string"
+        ? meta.picture
+        : null;
+  return cleanText(fromMeta);
+}

@@ -2,6 +2,7 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
+import { resolveUserAvatarFromSources } from "@henryco/config";
 import { getSharedAccountLoginUrl, normalizeJobsPath } from "@/lib/account";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getCandidateProfileByUserId, getEmployerMembershipsByUser, getInternalProfile } from "@/lib/jobs/data";
@@ -71,8 +72,12 @@ export async function getJobsViewer(): Promise<JobsViewer> {
         null,
       phone:
         candidateProfile?.phone || (typeof profile?.phone === "string" ? profile.phone : null) || null,
-      avatarUrl:
-        candidateProfile?.avatarUrl || (typeof profile?.avatar_url === "string" ? profile.avatar_url : null) || null,
+      avatarUrl: resolveUserAvatarFromSources(
+        candidateProfile?.avatarUrl ||
+          (typeof profile?.avatar_url === "string" ? profile.avatar_url : null) ||
+          null,
+        user.user_metadata as Record<string, unknown> | null
+      ),
     },
     normalizedEmail: normalized,
     internalRole,

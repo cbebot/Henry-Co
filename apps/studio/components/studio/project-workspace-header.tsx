@@ -25,7 +25,7 @@ export async function ProjectWorkspaceHeader() {
     : null;
 
   return (
-    <header className="border-b border-[var(--studio-line)] bg-[color:color-mix(in_srgb,var(--studio-bg)_88%,transparent)]/95 backdrop-blur-xl">
+    <header className="border-b border-[var(--studio-line)] bg-[var(--studio-bg)] shadow-[inset_0_-1px_0_rgba(255,255,255,0.04)]">
       <div className="mx-auto flex max-w-[88rem] flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-10">
         <div className="flex flex-wrap items-center gap-4">
           <Link href="/" className="flex items-center gap-3">
@@ -57,8 +57,8 @@ export async function ProjectWorkspaceHeader() {
             preferencesHref={getHubUrl("/preferences")}
             settingsHref={getAccountUrl("/security")}
             showSignOut
-            buttonClassName="border-[var(--studio-line)] bg-black/15 text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.28)] hover:bg-black/25 dark:text-[var(--studio-ink)]"
-            dropdownClassName="border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-bg)_100%,#0a1620)]"
+            buttonClassName="border-[var(--studio-line)] bg-[var(--studio-bg-soft)] text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.35)] hover:bg-[color-mix(in_srgb,var(--studio-bg-soft)_92%,#000)]"
+            dropdownClassName="border-[var(--studio-line)] bg-[var(--studio-bg-soft)] shadow-[0_24px_64px_rgba(0,0,0,0.45)]"
             menuItems={[
               { label: "View in my account", href: `${accountUrl}?ref=studio-project` },
               { label: "Start another project", href: "/request" },

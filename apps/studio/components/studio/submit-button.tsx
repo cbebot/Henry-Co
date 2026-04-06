@@ -1,7 +1,7 @@
 "use client";
 
-import { LoaderCircle } from "lucide-react";
 import { useFormStatus } from "react-dom";
+import { ButtonPendingContent } from "@henryco/ui";
 
 export function StudioSubmitButton({
   label,
@@ -16,10 +16,17 @@ export function StudioSubmitButton({
     <button
       type="submit"
       disabled={pending}
-      className="studio-button-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
+      className="studio-button-primary inline-flex min-h-[52px] min-w-[200px] items-center justify-center rounded-full px-6 py-4 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-80"
     >
-      {pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
-      {pending ? pendingLabel : label}
+      <ButtonPendingContent
+        pending={pending}
+        pendingLabel={pendingLabel}
+        spinnerLabel={pendingLabel}
+        indicatorSize="sm"
+        textClassName="font-semibold"
+      >
+        {label}
+      </ButtonPendingContent>
     </button>
   );
 }

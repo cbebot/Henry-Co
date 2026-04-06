@@ -1,6 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
+import { resolveUserAvatarFromSources } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { createAdminSupabase, hasSupabaseServiceRole } from "@/lib/supabase";
@@ -11,6 +12,7 @@ import type { LearnRole, LearnViewer } from "@/lib/learn/types";
 type SharedProfile = {
   full_name: string | null;
   role?: string | null;
+  avatar_url?: string | null;
 };
 
 type MembershipRow = {
@@ -84,6 +86,7 @@ function viewerFromUserMetadata(user: {
         (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
         (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
         null,
+      avatarUrl: resolveUserAvatarFromSources(null, user.user_metadata as Record<string, unknown> | null),
     },
     normalizedEmail: normalized,
     roles: uniqueRoles(["learner", ...baseRoles]),
@@ -127,7 +130,7 @@ export async function getLearnViewer(): Promise<LearnViewer> {
     const admin = createAdminSupabase();
     const { data: profile } = await admin
       .from("profiles")
-      .select("full_name, role")
+      .select("full_name, role, avatar_url")
       .eq("id", user.id)
       .maybeSingle<SharedProfile>();
 
@@ -158,6 +161,10 @@ export async function getLearnViewer(): Promise<LearnViewer> {
           (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
           (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
           null,
+        avatarUrl: resolveUserAvatarFromSources(profile?.avatar_url ?? null, user.user_metadata as Record<
+          string,
+          unknown
+        > | null),
       },
       normalizedEmail: normalized,
       roles: uniqueRoles(["learner", ...membershipRoles, ...baseRoles]),

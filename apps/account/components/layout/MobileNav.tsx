@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, LogOut } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
 import { getNavSections } from "@/lib/navigation";
 import Logo from "@/components/brand/Logo";
 import NotificationBell from "@/components/notifications/NotificationBell";
@@ -15,6 +16,7 @@ type MobileNavProps = {
 
 export default function MobileNav({ user }: MobileNavProps) {
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const sections = getNavSections();
@@ -25,13 +27,18 @@ export default function MobileNav({ user }: MobileNavProps) {
   };
 
   const handleSignOut = async () => {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      cache: "no-store",
-    });
-    router.replace("/login");
-    router.refresh();
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        cache: "no-store",
+      });
+    } finally {
+      router.replace("/login");
+      router.refresh();
+    }
   };
 
   return (
@@ -87,6 +94,7 @@ export default function MobileNav({ user }: MobileNavProps) {
                       <Link
                         key={item.href}
                         href={item.href}
+                        aria-current={active ? "page" : undefined}
                         onClick={() => setOpen(false)}
                         className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
                           active
@@ -106,11 +114,22 @@ export default function MobileNav({ user }: MobileNavProps) {
             {/* Sign out */}
             <div className="border-t border-[var(--acct-line)] p-3">
               <button
-                onClick={handleSignOut}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[var(--acct-red)] hover:bg-[var(--acct-red-soft)]"
+                type="button"
+                disabled={signingOut}
+                onClick={() => void handleSignOut()}
+                className="flex w-full min-h-[44px] items-center justify-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--acct-red)] hover:bg-[var(--acct-red-soft)] disabled:cursor-wait disabled:opacity-65"
               >
-                <LogOut size={18} />
-                Sign out
+                <ButtonPendingContent
+                  pending={signingOut}
+                  pendingLabel="Signing out…"
+                  spinnerLabel="Signing out"
+                  textClassName="inline-flex items-center gap-3 font-semibold"
+                >
+                  <>
+                    <LogOut size={18} />
+                    Sign out
+                  </>
+                </ButtonPendingContent>
               </button>
             </div>
           </div>

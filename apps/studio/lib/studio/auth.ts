@@ -2,6 +2,7 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
+import { resolveUserAvatarFromSources } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { reconcileStudioSharedPendingSyncs } from "@/lib/studio/shared-account";
@@ -90,6 +91,11 @@ export async function getStudioViewer(): Promise<StudioViewer> {
     .eq("id", user.id)
     .maybeSingle<SharedProfile>();
 
+  const avatarUrl = resolveUserAvatarFromSources(profile?.avatar_url ?? null, user.user_metadata as Record<
+    string,
+    unknown
+  > | null);
+
   const { data: membershipRows } = await admin
     .from("studio_role_memberships")
     .select("id, role, scope_type, scope_id")
@@ -127,7 +133,7 @@ export async function getStudioViewer(): Promise<StudioViewer> {
         (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
         (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
         null,
-      avatarUrl: profile?.avatar_url || null,
+      avatarUrl,
     },
     normalizedEmail: normalized,
     roles,

@@ -7,6 +7,7 @@ import {
   isRecoverableSupabaseAuthError,
   normalizeEmail,
   normalizePhone,
+  resolveUserAvatarFromSources,
 } from "@henryco/config";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -84,7 +85,10 @@ export const getAccountUser = cache(async (): Promise<AccountUser | null> => {
     id: user.id,
     email,
     fullName,
-    avatarUrl: profile?.avatar_url || null,
+    avatarUrl: resolveUserAvatarFromSources(profile?.avatar_url ?? null, user.user_metadata as Record<
+      string,
+      unknown
+    > | null),
     phone,
     isVerified: profile?.is_verified || false,
     isOwner: !!ownerProfile,

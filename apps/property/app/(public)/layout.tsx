@@ -20,7 +20,7 @@ export default async function PublicLayout({ children }: { children: React.React
     ? {
         displayName: viewer.user.fullName || viewer.user.email || "Your account",
         email: viewer.user.email,
-        avatarUrl: null as string | null,
+        avatarUrl: viewer.user.avatarUrl,
       }
     : null;
 

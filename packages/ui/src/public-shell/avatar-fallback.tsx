@@ -39,7 +39,7 @@ export function AvatarFallback({
   return (
     <span
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-amber-400 to-teal-600 font-bold text-white ring-2 ring-white/80 dark:from-amber-500 dark:to-teal-500 dark:ring-zinc-800",
+        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-amber-400 to-teal-600 font-bold text-white shadow-[0_0_0_1px_rgba(255,255,255,0.22)] ring-2 ring-white/85 dark:from-amber-500 dark:to-teal-500 dark:shadow-[0_0_0_1px_rgba(0,0,0,0.35)] dark:ring-zinc-800",
         sizeClasses[size],
         className
       )}

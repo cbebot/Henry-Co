@@ -75,6 +75,12 @@ export function ProjectPaymentsStack({
               ? "Each milestone begins once the corresponding payment is confirmed. Use the account details below to make your transfer, then upload proof so our team can verify and get started."
               : "A clear breakdown of your project investment — every payment maps directly to your proposal and milestones."}
           </p>
+          {isPriority ? (
+            <div className="mt-4 rounded-[1.25rem] border border-[rgba(151,244,243,0.28)] bg-black/25 px-4 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
+              <span className="font-semibold text-[var(--studio-ink)]">What happens next: </span>
+              Transfer using the verified bank details, then use <strong className="text-[var(--studio-ink)]">Upload payment proof</strong> in this same section. After upload, you will return to your HenryCo account Studio hub while finance confirms privately.
+            </div>
+          ) : null}
         </div>
       </div>
 

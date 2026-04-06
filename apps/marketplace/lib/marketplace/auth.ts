@@ -1,7 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { isRecoverableSupabaseAuthError, normalizeEmail } from "@henryco/config";
+import { isRecoverableSupabaseAuthError, normalizeEmail, resolveUserAvatarFromSources } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -133,7 +133,10 @@ export async function getMarketplaceViewer(): Promise<MarketplaceViewerContext> 
         (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
         (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
         null,
-      avatarUrl: customerProfile?.avatar_url || null,
+      avatarUrl: resolveUserAvatarFromSources(customerProfile?.avatar_url ?? null, user.user_metadata as Record<
+        string,
+        unknown
+      > | null),
     },
     normalizedEmail: email,
     roles,

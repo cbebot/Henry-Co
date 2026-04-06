@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { User } from "lucide-react";
+import { useState } from "react";
 import { initials } from "@/lib/format";
 
 type UserAvatarProps = {
@@ -19,7 +20,10 @@ export default function UserAvatar({
   roundedClassName = "rounded-full",
   className = "",
 }: UserAvatarProps) {
-  if (src) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showPhoto = Boolean(src) && !imageFailed;
+
+  if (showPhoto && src) {
     return (
       <Image
         src={src}
@@ -27,6 +31,8 @@ export default function UserAvatar({
         width={size}
         height={size}
         className={`${roundedClassName} border border-[var(--acct-line)] object-cover ${className}`}
+        unoptimized
+        onError={() => setImageFailed(true)}
       />
     );
   }
