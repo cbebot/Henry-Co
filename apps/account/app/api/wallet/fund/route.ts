@@ -3,6 +3,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
+import { LEGACY_WALLET_TRANSACTION_PENDING_STATUS } from "@/lib/wallet-storage";
 
 function buildFundingReference(userId: string) {
   const stamp = Date.now().toString(36).toUpperCase();
@@ -164,7 +165,7 @@ export async function POST(request: Request) {
         amount_kobo: amountKobo,
         balance_after_kobo: wallet.balance_kobo,
         description: `Wallet funding request — NGN ${amountNaira.toLocaleString()}`,
-        status: "pending_verification",
+        status: LEGACY_WALLET_TRANSACTION_PENDING_STATUS,
         reference_type: "wallet_funding_request",
         reference_id: reference,
         metadata,

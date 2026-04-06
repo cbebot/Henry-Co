@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, Banknote } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import {
+  getPendingWithdrawalHoldKobo,
   getPayoutMethods,
   getWithdrawalPinConfigured,
   getWithdrawalRequests,
@@ -22,6 +23,8 @@ export default async function WalletWithdrawalsPage() {
   ]);
 
   const balanceKobo = Number((wallet as { balance_kobo?: number }).balance_kobo ?? 0);
+  const pendingHoldKobo = getPendingWithdrawalHoldKobo(requests as never);
+  const availableBalanceKobo = Math.max(0, balanceKobo - pendingHoldKobo);
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -40,7 +43,8 @@ export default async function WalletWithdrawalsPage() {
         initialMethods={methods as never}
         initialRequests={requests as never}
         pinConfigured={pinConfigured}
-        balanceKobo={balanceKobo}
+        availableBalanceKobo={availableBalanceKobo}
+        pendingHoldKobo={pendingHoldKobo}
       />
     </div>
   );

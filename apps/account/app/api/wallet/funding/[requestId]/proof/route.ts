@@ -3,6 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
+import { LEGACY_WALLET_TRANSACTION_PENDING_STATUS } from "@/lib/wallet-storage";
 
 type Props = {
   params: Promise<{ requestId: string }>;
@@ -107,7 +108,7 @@ export async function POST(request: Request, { params }: Props) {
         .from("customer_wallet_transactions")
         .update({
           metadata,
-          status: "pending_verification",
+          status: LEGACY_WALLET_TRANSACTION_PENDING_STATUS,
         })
         .eq("id", requestId)
         .eq("user_id", user.id);

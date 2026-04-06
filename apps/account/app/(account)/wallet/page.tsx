@@ -10,10 +10,19 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
-import { getWalletFundingContext, getWalletTransactions } from "@/lib/account-data";
+import {
+  getPendingWithdrawalHoldKobo,
+  getWalletFundingContext,
+  getWalletTransactions,
+  getWithdrawalRequests,
+} from "@/lib/account-data";
 import { formatNaira, formatDateTime, divisionLabel } from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
+import {
+  isPendingWithdrawalStatus,
+  LEGACY_WITHDRAWAL_REQUEST_REFERENCE_TYPE,
+} from "@/lib/wallet-storage";
 
 export const dynamic = "force-dynamic";
 
@@ -37,12 +46,23 @@ const typeColors: Record<string, string> = {
 
 export default async function WalletPage() {
   const user = await requireAccountUser();
-  const { wallet, pending_kobo, requests } = await getWalletFundingContext(user.id);
+  const [{ wallet, pending_kobo, requests }, withdrawalRequests] = await Promise.all([
+    getWalletFundingContext(user.id),
+    getWithdrawalRequests(user.id),
+  ]);
+  const pendingWithdrawalKobo = getPendingWithdrawalHoldKobo(withdrawalRequests as never);
+  const availableBalanceKobo = Math.max(0, Number(wallet.balance_kobo) - pendingWithdrawalKobo);
   const transactions = (await getWalletTransactions(user.id, 50)).filter(
     (transaction: Record<string, string | number>) =>
-      transaction.reference_type !== "wallet_funding_request" ||
-      transaction.status === "completed" ||
-      transaction.status === "verified"
+      (
+        transaction.reference_type !== "wallet_funding_request" ||
+        transaction.status === "completed" ||
+        transaction.status === "verified"
+      ) &&
+      (
+        transaction.reference_type !== LEGACY_WITHDRAWAL_REQUEST_REFERENCE_TYPE ||
+        !isPendingWithdrawalStatus(String(transaction.status || ""))
+      )
   );
 
   return (
@@ -67,10 +87,15 @@ export default async function WalletPage() {
       <div className="acct-card overflow-hidden">
         <div className="bg-gradient-to-br from-[var(--acct-gold)] to-[#A08520] px-6 py-8 text-white">
           <p className="text-sm font-medium text-white/70">Available balance</p>
-          <p className="mt-1 text-4xl font-bold">{formatNaira(wallet.balance_kobo)}</p>
+          <p className="mt-1 text-4xl font-bold">{formatNaira(availableBalanceKobo)}</p>
           <p className="mt-2 text-sm text-white/60">
             HenryCo Wallet &middot; {wallet.currency} &middot; Available across HenryCo services
           </p>
+          {pendingWithdrawalKobo > 0 ? (
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/72">
+              {formatNaira(pendingWithdrawalKobo)} held in pending withdrawal review
+            </p>
+          ) : null}
         </div>
         <div className="grid grid-cols-2 divide-x divide-[var(--acct-line)] border-t border-[var(--acct-line)] sm:grid-cols-4">
           <Link
@@ -140,35 +165,53 @@ export default async function WalletPage() {
         <div className="acct-card p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="acct-kicker">Latest funding requests</p>
+              <p className="acct-kicker">Pending withdrawals</p>
               <p className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-                {requests.length === 0 ? "No funding requests yet" : `${requests.length} request${requests.length === 1 ? "" : "s"} in history`}
+                {pendingWithdrawalKobo > 0
+                  ? `${formatNaira(pendingWithdrawalKobo)} awaiting finance review`
+                  : "No pending withdrawals"}
               </p>
             </div>
-            <Clock className="h-5 w-5 text-[var(--acct-orange)]" />
+            <ArrowUpRight className="h-5 w-5 text-[var(--acct-orange)]" />
           </div>
-          <div className="mt-4 space-y-3">
-            {requests.slice(0, 2).map((request) => (
-              <Link
-                key={request.id}
-                href={`/wallet/funding/${request.id}`}
-                className="block rounded-xl bg-[var(--acct-surface)] px-4 py-3 transition hover:bg-[var(--acct-bg)]"
-              >
-                <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                  {formatNaira(request.amount_kobo)} · {request.reference || request.id}
-                </p>
-                <p className="mt-1 text-xs text-[var(--acct-muted)]">
-                  {request.status.replaceAll("_", " ")}
-                  {request.proof_url ? " · proof uploaded" : " · awaiting proof"}
-                </p>
-              </Link>
-            ))}
-            {requests.length === 0 ? (
-              <p className="text-sm leading-6 text-[var(--acct-muted)]">
-                Create your first funding request to unlock the bank-transfer flow.
+          <p className="mt-4 text-sm leading-6 text-[var(--acct-muted)]">
+            Requests under review stay off your withdrawable balance so the wallet never promises cash twice.
+          </p>
+          <Link href="/wallet/withdrawals" className="acct-button-secondary mt-5 rounded-xl">
+            Open withdrawal lane
+          </Link>
+        </div>
+      </section>
+
+      <section className="acct-card p-5 sm:p-6">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <p className="acct-kicker">Recent funding requests</p>
+            <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Recent requests</h2>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {requests.slice(0, 3).map((request) => (
+            <Link
+              key={request.id}
+              href={`/wallet/funding/${request.id}`}
+              className="block rounded-xl bg-[var(--acct-surface)] px-4 py-3 transition hover:bg-[var(--acct-bg)]"
+            >
+              <p className="text-sm font-semibold text-[var(--acct-ink)]">
+                {formatNaira(request.amount_kobo)} · {request.reference || request.id}
               </p>
-            ) : null}
-          </div>
+              <p className="mt-1 text-xs text-[var(--acct-muted)]">
+                {request.status.replaceAll("_", " ")}
+                {request.proof_url ? " · proof uploaded" : " · awaiting proof"}
+              </p>
+            </Link>
+          ))}
+          {requests.length === 0 ? (
+            <p className="text-sm leading-6 text-[var(--acct-muted)]">
+              Create your first funding request to unlock the bank-transfer flow.
+            </p>
+          ) : null}
         </div>
       </section>
 

@@ -4,6 +4,12 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { hashWithdrawalPin, isValidWithdrawalPinFormat, verifyWithdrawalPin } from "@/lib/wallet-pin";
 import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
+import {
+  buildLegacyWithdrawalPinUpsert,
+  extractLegacyWithdrawalPinHash,
+  isMissingPostgrestResourceError,
+  isLegacyWithdrawalPinRow,
+} from "@/lib/wallet-storage";
 
 export async function POST(request: Request) {
   try {
@@ -28,13 +34,50 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminSupabase();
-    const { data: prefs } = await admin
+    const { data: prefs, error: prefsError } = await admin
       .from("customer_preferences")
       .select("withdrawal_pin_hash")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    const existing = (prefs as { withdrawal_pin_hash?: string } | null)?.withdrawal_pin_hash ?? null;
+    let existing = (prefs as { withdrawal_pin_hash?: string } | null)?.withdrawal_pin_hash ?? null;
+
+    let legacyPinRowId: string | null = null;
+    if (prefsError && !isMissingPostgrestResourceError(prefsError)) {
+      logApiError("wallet/withdrawal/pin load", prefsError);
+      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    }
+
+    if (prefsError && isMissingPostgrestResourceError(prefsError)) {
+      const { data: legacyRows, error: legacyError } = await admin
+        .from("customer_payment_methods")
+        .select("id, type, provider, provider_token")
+        .eq("user_id", user.id);
+
+      if (legacyError) {
+        logApiError("wallet/withdrawal/pin load legacy", legacyError);
+        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      }
+
+      const rows = (legacyRows ?? []) as Array<Record<string, unknown>>;
+      const legacyPinRow = rows.find((row) => isLegacyWithdrawalPinRow(row));
+      legacyPinRowId = legacyPinRow ? String(legacyPinRow.id || "") : null;
+      existing = extractLegacyWithdrawalPinHash(rows);
+    }
+
+    if (!existing) {
+      const { data: legacyRows, error: legacyError } = await admin
+        .from("customer_payment_methods")
+        .select("id, type, provider, provider_token")
+        .eq("user_id", user.id);
+
+      if (!legacyError) {
+        const rows = (legacyRows ?? []) as Array<Record<string, unknown>>;
+        const legacyPinRow = rows.find((row) => isLegacyWithdrawalPinRow(row));
+        legacyPinRowId = legacyPinRow ? String(legacyPinRow.id || "") : legacyPinRowId;
+        existing = extractLegacyWithdrawalPinHash(rows) || existing;
+      }
+    }
 
     if (existing) {
       if (!verifyWithdrawalPin(currentPin, existing)) {
@@ -43,18 +86,35 @@ export async function POST(request: Request) {
     }
 
     const nextHash = hashWithdrawalPin(pin);
-    const { error } = await admin.from("customer_preferences").upsert(
-      {
-        user_id: user.id,
-        withdrawal_pin_hash: nextHash,
-        updated_at: new Date().toISOString(),
-      } as never,
-      { onConflict: "user_id" }
-    );
+    if (!prefsError) {
+      const { error } = await admin.from("customer_preferences").upsert(
+        {
+          user_id: user.id,
+          withdrawal_pin_hash: nextHash,
+          updated_at: new Date().toISOString(),
+        } as never,
+        { onConflict: "user_id" }
+      );
 
-    if (error) {
-      logApiError("wallet/withdrawal/pin", error);
-      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      if (error) {
+        logApiError("wallet/withdrawal/pin", error);
+        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      }
+    } else {
+      const payload = buildLegacyWithdrawalPinUpsert({
+        userId: user.id,
+        hash: nextHash,
+        existingId: legacyPinRowId,
+      });
+      const write = legacyPinRowId
+        ? admin.from("customer_payment_methods").update(payload).eq("id", legacyPinRowId).eq("user_id", user.id)
+        : admin.from("customer_payment_methods").insert(payload as never);
+      const { error } = await write;
+
+      if (error) {
+        logApiError("wallet/withdrawal/pin legacy", error);
+        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ success: true });

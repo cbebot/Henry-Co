@@ -116,8 +116,10 @@ export default async function WalletFundingRequestPage({ params }: Props) {
                 {
                   icon: Building2,
                   label: "Transfer funds",
-                  detail: request.instructions || "Transfer funds using the account details shown above.",
-                  complete: true,
+                  detail: request.proof_url
+                    ? "We have a proof file tied to this transfer. Finance will confirm the payment against the bank reference."
+                    : request.instructions || "Transfer funds using the account details shown above, then upload proof once the transfer is complete.",
+                  complete: Boolean(request.proof_url),
                 },
                 {
                   icon: ShieldCheck,

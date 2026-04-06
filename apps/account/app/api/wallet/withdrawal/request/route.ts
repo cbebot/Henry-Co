@@ -2,9 +2,16 @@ import { NextResponse } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
-import { getWalletSummary } from "@/lib/account-data";
+import { getPendingWithdrawalHoldKobo, getWalletSummary, getWithdrawalRequests } from "@/lib/account-data";
 import { verifyWithdrawalPin } from "@/lib/wallet-pin";
 import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
+import {
+  buildLegacyWithdrawalRequestInsert,
+  extractLegacyWithdrawalPinHash,
+  isLegacyPayoutMethodRow,
+  isMissingPostgrestResourceError,
+  mapLegacyPayoutMethod,
+} from "@/lib/wallet-storage";
 
 export async function POST(request: Request) {
   try {
@@ -31,13 +38,43 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminSupabase();
-    const { data: prefs } = await admin
+    const { data: prefs, error: prefsError } = await admin
       .from("customer_preferences")
       .select("withdrawal_pin_hash")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    const pinHash = (prefs as { withdrawal_pin_hash?: string } | null)?.withdrawal_pin_hash ?? null;
+    let pinHash = (prefs as { withdrawal_pin_hash?: string } | null)?.withdrawal_pin_hash ?? null;
+    if (prefsError && !isMissingPostgrestResourceError(prefsError)) {
+      logApiError("wallet/withdrawal/request prefs", prefsError);
+      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    }
+
+    if (prefsError && isMissingPostgrestResourceError(prefsError)) {
+      const { data: legacyRows, error: legacyError } = await admin
+        .from("customer_payment_methods")
+        .select("id, type, provider, provider_token")
+        .eq("user_id", user.id);
+
+      if (legacyError) {
+        logApiError("wallet/withdrawal/request prefs legacy", legacyError);
+        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      }
+
+      pinHash = extractLegacyWithdrawalPinHash((legacyRows ?? []) as Array<Record<string, unknown>>);
+    }
+
+    if (!pinHash) {
+      const { data: legacyRows, error: legacyError } = await admin
+        .from("customer_payment_methods")
+        .select("id, type, provider, provider_token")
+        .eq("user_id", user.id);
+
+      if (!legacyError) {
+        pinHash = extractLegacyWithdrawalPinHash((legacyRows ?? []) as Array<Record<string, unknown>>);
+      }
+    }
+
     if (!pinHash || !verifyWithdrawalPin(pin, pinHash)) {
       return NextResponse.json({ error: "Withdrawal PIN is required or incorrect." }, { status: 400 });
     }
@@ -50,14 +87,53 @@ export async function POST(request: Request) {
       .eq("is_active", true)
       .maybeSingle();
 
-    if (methodError || !method) {
+    let payoutMethod =
+      method && !methodError
+        ? {
+            id: String((method as { id: string }).id),
+            account_name: null as string | null,
+            bank_name: null as string | null,
+            account_number: null as string | null,
+            is_default: false,
+          }
+        : null;
+
+    if ((!payoutMethod && !methodError) || (methodError && isMissingPostgrestResourceError(methodError))) {
+      const { data: legacyMethods, error: legacyMethodError } = await admin
+        .from("customer_payment_methods")
+        .select("id, type, label, last_four, bank_name, is_default, provider, metadata")
+        .eq("user_id", user.id)
+        .eq("id", payoutMethodId)
+        .maybeSingle();
+
+      if (legacyMethodError) {
+        logApiError("wallet/withdrawal/request payout legacy", legacyMethodError);
+        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      }
+
+      if (legacyMethods && isLegacyPayoutMethodRow(legacyMethods as Record<string, unknown>)) {
+        payoutMethod = mapLegacyPayoutMethod(legacyMethods as Record<string, unknown>);
+      }
+    } else if (methodError) {
+      logApiError("wallet/withdrawal/request payout", methodError);
+      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    }
+
+    if (!payoutMethod) {
       return NextResponse.json({ error: "That payout account is not available." }, { status: 400 });
     }
 
     const wallet = await getWalletSummary(user.id);
     const balance = Number((wallet as { balance_kobo?: number }).balance_kobo ?? 0);
-    if (amountKobo > balance) {
-      return NextResponse.json({ error: "Amount exceeds your available balance." }, { status: 400 });
+    const existingRequests = await getWithdrawalRequests(user.id);
+    const pendingHoldKobo = getPendingWithdrawalHoldKobo(existingRequests);
+    const availableBalance = Math.max(0, balance - pendingHoldKobo);
+
+    if (amountKobo > availableBalance) {
+      return NextResponse.json(
+        { error: "Amount exceeds your available balance after pending withdrawals." },
+        { status: 400 }
+      );
     }
 
     const { data: row, error: insertError } = await admin
@@ -73,10 +149,76 @@ export async function POST(request: Request) {
       .select("id")
       .single();
 
+    if (insertError && isMissingPostgrestResourceError(insertError)) {
+      const walletId = String((wallet as { id?: string | null }).id || "");
+      if (!walletId) {
+        return NextResponse.json({ error: "We couldn’t load your wallet. Please refresh and try again." }, { status: 400 });
+      }
+
+      const { data: legacyRow, error: legacyInsertError } = await admin
+        .from("customer_wallet_transactions")
+        .insert(
+          buildLegacyWithdrawalRequestInsert({
+            walletId,
+            userId: user.id,
+            amountKobo,
+            balanceAfterKobo: balance,
+            payoutMethodId,
+            payoutMethodLabel: payoutMethod.account_name,
+            payoutBankName: payoutMethod.bank_name,
+            payoutLastFour: payoutMethod.account_number?.slice(-4) || null,
+          }) as never
+        )
+        .select("id")
+        .single();
+
+      if (legacyInsertError || !legacyRow) {
+        logApiError("wallet/withdrawal/request legacy insert", legacyInsertError);
+        return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+      }
+
+      await admin.from("customer_activity").insert({
+        user_id: user.id,
+        division: "wallet",
+        activity_type: "wallet_withdrawal_requested",
+        title: `Wallet withdrawal request — NGN ${amountNaira.toLocaleString()}`,
+        description: "Finance will review this withdrawal request before payout.",
+        amount_kobo: amountKobo,
+        status: "pending_review",
+        reference_type: "wallet_withdrawal_request",
+        reference_id: String((legacyRow as { id: string }).id),
+        action_url: "/wallet/withdrawals",
+      } as never);
+
+      await admin.from("customer_notifications").insert({
+        user_id: user.id,
+        division: "wallet",
+        title: "Withdrawal requested",
+        body: `We received your withdrawal request for NGN ${amountNaira.toLocaleString()}. Finance will review and process it.`,
+        category: "wallet",
+        action_url: "/wallet/withdrawals",
+      } as never);
+
+      return NextResponse.json({ success: true, id: String((legacyRow as { id: string }).id) });
+    }
+
     if (insertError || !row) {
       logApiError("wallet/withdrawal/request insert", insertError);
       return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
     }
+
+    await admin.from("customer_activity").insert({
+      user_id: user.id,
+      division: "wallet",
+      activity_type: "wallet_withdrawal_requested",
+      title: `Wallet withdrawal request — NGN ${amountNaira.toLocaleString()}`,
+      description: "Finance will review this withdrawal request before payout.",
+      amount_kobo: amountKobo,
+      status: "pending_review",
+      reference_type: "wallet_withdrawal_request",
+      reference_id: String((row as { id: string }).id),
+      action_url: "/wallet/withdrawals",
+    } as never);
 
     await admin.from("customer_notifications").insert({
       user_id: user.id,

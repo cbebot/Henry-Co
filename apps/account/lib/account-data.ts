@@ -8,6 +8,17 @@ import {
   resolveSafeActionUrl,
 } from "@/lib/notification-center";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
+import {
+  extractLegacyWithdrawalPinHash,
+  isLegacyPayoutMethodRow,
+  isLegacyWithdrawalPinRow,
+  isMissingPostgrestResourceError,
+  isPendingWithdrawalStatus,
+  LEGACY_WALLET_TRANSACTION_PENDING_STATUS,
+  LEGACY_WITHDRAWAL_REQUEST_REFERENCE_TYPE,
+  mapLegacyPayoutMethod,
+  mapLegacyWithdrawalRequest,
+} from "@/lib/wallet-storage";
 
 const admin = () => createAdminSupabase();
 
@@ -62,12 +73,14 @@ export type WalletFundingRequest = {
 
 function mapFundingRequest(row: Record<string, unknown>): WalletFundingRequest {
   const metadata = asObject(row.metadata);
+  const rawStatus = asText(row.status, LEGACY_WALLET_TRANSACTION_PENDING_STATUS);
   return {
     id: asText(row.id),
     created_at: asText(row.created_at),
     amount_kobo: Number(row.amount_kobo) || 0,
     description: asText(row.description),
-    status: asText(row.status, "pending_verification"),
+    status:
+      rawStatus === LEGACY_WALLET_TRANSACTION_PENDING_STATUS ? "pending_verification" : rawStatus,
     provider: asText(metadata.provider, "bank_transfer"),
     reference: asNullableText(metadata.reference),
     note: asNullableText(metadata.note),
@@ -277,7 +290,9 @@ export async function getPaymentMethods(userId: string) {
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });
 
-  return data || [];
+  return ((data ?? []) as Array<Record<string, unknown>>).filter(
+    (row) => !isLegacyPayoutMethodRow(row) && !isLegacyWithdrawalPinRow(row)
+  );
 }
 
 export async function getSecurityLog(userId: string, limit = 20) {
@@ -392,11 +407,34 @@ export async function getPayoutMethods(userId: string) {
     .eq("is_active", true)
     .order("is_default", { ascending: false });
 
-  if (error) {
+  if (error && !isMissingPostgrestResourceError(error)) {
     console.error("[henryco/account] payout methods:", error);
     return [];
   }
-  return data ?? [];
+
+  const { data: legacyRows, error: legacyError } = await admin()
+    .from("customer_payment_methods")
+    .select("id, type, label, last_four, bank_name, is_default, provider, metadata, created_at")
+    .eq("user_id", userId)
+    .order("is_default", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (legacyError) {
+    console.error("[henryco/account] legacy payout methods:", legacyError);
+    return data ?? [];
+  }
+
+  const legacy = ((legacyRows ?? []) as Array<Record<string, unknown>>)
+    .filter((row) => isLegacyPayoutMethodRow(row))
+    .map(mapLegacyPayoutMethod);
+
+  if (error && isMissingPostgrestResourceError(error)) {
+    return legacy;
+  }
+
+  return [...(data ?? []), ...legacy].filter(
+    (item, index, list) => list.findIndex((entry) => String(entry.id) === String(item.id)) === index
+  );
 }
 
 export async function getWithdrawalRequests(userId: string, limit = 40) {
@@ -407,11 +445,32 @@ export async function getWithdrawalRequests(userId: string, limit = 40) {
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) {
+  if (error && !isMissingPostgrestResourceError(error)) {
     console.error("[henryco/account] withdrawal requests:", error);
     return [];
   }
-  return data ?? [];
+
+  const { data: legacyRows, error: legacyError } = await admin()
+    .from("customer_wallet_transactions")
+    .select("id, amount_kobo, status, created_at, metadata, reference_type")
+    .eq("user_id", userId)
+    .eq("reference_type", LEGACY_WITHDRAWAL_REQUEST_REFERENCE_TYPE)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (legacyError) {
+    console.error("[henryco/account] legacy withdrawal requests:", legacyError);
+    return data ?? [];
+  }
+
+  const legacy = ((legacyRows ?? []) as Array<Record<string, unknown>>).map(mapLegacyWithdrawalRequest);
+  if (error && isMissingPostgrestResourceError(error)) {
+    return legacy;
+  }
+
+  return [...(data ?? []), ...legacy]
+    .sort((left, right) => new Date(String(right.created_at)).getTime() - new Date(String(left.created_at)).getTime())
+    .slice(0, limit);
 }
 
 export async function getWithdrawalPinConfigured(userId: string): Promise<boolean> {
@@ -421,6 +480,24 @@ export async function getWithdrawalPinConfigured(userId: string): Promise<boolea
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (error || !data) return false;
-  return Boolean(asNullableText((data as { withdrawal_pin_hash?: string }).withdrawal_pin_hash));
+  if (error && !isMissingPostgrestResourceError(error)) return false;
+  if (!error && data && asNullableText((data as { withdrawal_pin_hash?: string }).withdrawal_pin_hash)) {
+    return true;
+  }
+
+  const { data: legacyRows, error: legacyError } = await admin()
+    .from("customer_payment_methods")
+    .select("type, provider, provider_token")
+    .eq("user_id", userId);
+
+  if (legacyError) return false;
+  return Boolean(extractLegacyWithdrawalPinHash((legacyRows ?? []) as Array<Record<string, unknown>>));
+}
+
+export function getPendingWithdrawalHoldKobo(
+  requests: Array<{ amount_kobo?: number; status?: string | null }>
+) {
+  return requests.reduce((sum, request) => {
+    return isPendingWithdrawalStatus(request.status) ? sum + (Number(request.amount_kobo) || 0) : sum;
+  }, 0);
 }

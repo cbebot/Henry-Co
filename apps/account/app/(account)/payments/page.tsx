@@ -7,9 +7,18 @@ import EmptyState from "@/components/layout/EmptyState";
 
 export const dynamic = "force-dynamic";
 
+type PaymentMethodRow = {
+  id: string;
+  label: string | null;
+  type: string | null;
+  last_four: string | null;
+  bank_name: string | null;
+  is_default: boolean | null;
+};
+
 export default async function PaymentsPage() {
   const user = await requireAccountUser();
-  const methods = await getPaymentMethods(user.id);
+  const methods = (await getPaymentMethods(user.id)) as PaymentMethodRow[];
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -37,13 +46,13 @@ export default async function PaymentsPage() {
         />
       ) : (
         <div className="space-y-3">
-          {methods.map((m: Record<string, string | boolean>) => (
+          {methods.map((m) => (
             <div key={m.id as string} className="acct-card flex items-center gap-4 p-4">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--acct-gold-soft)]">
                 <CreditCard size={20} className="text-[var(--acct-gold)]" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-[var(--acct-ink)]">{m.label}</p>
+                <p className="text-sm font-semibold text-[var(--acct-ink)]">{m.label || "Saved method"}</p>
                 <p className="text-xs text-[var(--acct-muted)]">
                   {m.type === "card" ? `•••• ${m.last_four}` : m.bank_name || m.type}
                   {m.is_default && (

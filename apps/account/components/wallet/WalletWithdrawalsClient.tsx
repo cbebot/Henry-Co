@@ -28,17 +28,21 @@ export default function WalletWithdrawalsClient({
   initialMethods,
   initialRequests,
   pinConfigured,
-  balanceKobo,
+  availableBalanceKobo,
+  pendingHoldKobo,
 }: {
   initialMethods: PayoutMethod[];
   initialRequests: WithdrawalRow[];
   pinConfigured: boolean;
-  balanceKobo: number;
+  availableBalanceKobo: number;
+  pendingHoldKobo: number;
 }) {
   const router = useRouter();
   const [methods, setMethods] = useState(initialMethods);
   const [requests, setRequests] = useState(initialRequests);
   const [hasPin, setHasPin] = useState(pinConfigured);
+  const [availableKobo, setAvailableKobo] = useState(availableBalanceKobo);
+  const [pendingHold, setPendingHold] = useState(pendingHoldKobo);
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
@@ -57,7 +61,10 @@ export default function WalletWithdrawalsClient({
   async function refresh() {
     const res = await fetch("/api/wallet/payout-methods", { cache: "no-store" });
     const payload = (await res.json()) as { methods?: PayoutMethod[] };
-    if (payload.methods) setMethods(payload.methods);
+    if (payload.methods) {
+      setMethods(payload.methods);
+      setPayoutId((current) => current || payload.methods?.[0]?.id || "");
+    }
     router.refresh();
   }
 
@@ -150,6 +157,8 @@ export default function WalletWithdrawalsClient({
         },
         ...prev,
       ]);
+      setAvailableKobo((prev) => Math.max(0, prev - Math.round(naira * 100)));
+      setPendingHold((prev) => prev + Math.round(naira * 100));
       setMessage({ type: "ok", text: "Withdrawal submitted for review." });
       router.refresh();
     } catch (err) {
@@ -267,9 +276,14 @@ export default function WalletWithdrawalsClient({
         <p className="mt-1 text-sm text-[var(--acct-muted)]">
           Available balance:{" "}
           <span className="font-semibold text-[var(--acct-ink)]">
-            ₦{(balanceKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+            ₦{(availableKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
           </span>
         </p>
+        {pendingHold > 0 ? (
+          <p className="mt-2 text-xs leading-6 text-[var(--acct-muted)]">
+            ₦{(pendingHold / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })} is already held in pending withdrawal review.
+          </p>
+        ) : null}
         <form onSubmit={submitWithdrawal} className="mt-4 grid gap-3">
           <input
             className="acct-input rounded-xl"
