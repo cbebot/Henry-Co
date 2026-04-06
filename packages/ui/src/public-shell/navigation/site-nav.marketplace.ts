@@ -1,15 +1,15 @@
+import { getDivisionConfig } from "@henryco/config";
 import type { PublicNavItem } from "../public-header";
 import type { SiteNavigationConfig } from "./types";
 
-/** Secondary toolbar row on marketplace (glass panel header) */
-export const marketplaceToolbarNav: PublicNavItem[] = [
-  { href: "/search", label: "Search" },
-  { href: "/deals", label: "Deals" },
-  { href: "/collections/founder-desk", label: "Collections" },
-  { href: "/trust", label: "Trust" },
-  { href: "/sell", label: "Sell" },
-  { href: "/help", label: "Support" },
-];
+const marketplaceDivision = getDivisionConfig("marketplace");
+
+/** Single source of truth: `packages/config` division `publicNav` (desktop + mobile toolbar). */
+export const marketplaceToolbarNav: PublicNavItem[] = marketplaceDivision.publicNav.map((item) => ({
+  label: item.label,
+  href: item.href,
+  ...("external" in item && item.external ? { external: true as const } : {}),
+}));
 
 export const siteNavMarketplace: SiteNavigationConfig = {
   siteId: "marketplace",

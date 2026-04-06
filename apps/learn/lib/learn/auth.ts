@@ -3,7 +3,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
-import { createAdminSupabase } from "@/lib/supabase";
+import { createAdminSupabase, hasSupabaseServiceRole } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { readLearnCollection } from "@/lib/learn/store";
 import type { LearnRole, LearnViewer } from "@/lib/learn/types";
@@ -65,8 +65,45 @@ export function viewerHasRole(viewer: LearnViewer | null | undefined, allowed: L
   return allowed.some((role) => viewer.roles.includes(role));
 }
 
+function viewerFromUserMetadata(user: {
+  id: string;
+  email?: string | null;
+  app_metadata?: Record<string, unknown>;
+  user_metadata?: Record<string, unknown>;
+}): LearnViewer {
+  const normalized = normalizeEmail(user.email);
+  const baseRoles = mapSharedRoleToLearnRoles(
+    (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null) ||
+      (typeof user.user_metadata?.role === "string" ? user.user_metadata.role : null)
+  );
+  return {
+    user: {
+      id: user.id,
+      email: user.email || null,
+      fullName:
+        (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
+        (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
+        null,
+    },
+    normalizedEmail: normalized,
+    roles: uniqueRoles(["learner", ...baseRoles]),
+    memberships: [],
+  };
+}
+
 export async function getLearnViewer(): Promise<LearnViewer> {
-  const supabase = await createSupabaseServer();
+  let supabase;
+  try {
+    supabase = await createSupabaseServer();
+  } catch {
+    return {
+      user: null,
+      normalizedEmail: null,
+      roles: [],
+      memberships: [],
+    };
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -80,52 +117,60 @@ export async function getLearnViewer(): Promise<LearnViewer> {
     };
   }
 
-  const admin = createAdminSupabase();
   const normalized = normalizeEmail(user.email);
 
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("full_name, role")
-    .eq("id", user.id)
-    .maybeSingle<SharedProfile>();
+  if (!hasSupabaseServiceRole()) {
+    return viewerFromUserMetadata(user);
+  }
 
-  const membershipRows = (
-    await readLearnCollection<MembershipRow>("learn_role_memberships", "created_at", false)
-  ).filter((membership) => {
-    if (membership.is_active === false) return false;
-    if (membership.user_id && membership.user_id === user.id) return true;
-    return !!normalized && membership.normalized_email === normalized;
-  });
+  try {
+    const admin = createAdminSupabase();
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("full_name, role")
+      .eq("id", user.id)
+      .maybeSingle<SharedProfile>();
 
-  const baseRoles = mapSharedRoleToLearnRoles(
-    profile?.role ||
-      (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null) ||
-      (typeof user.user_metadata?.role === "string" ? user.user_metadata.role : null)
-  );
+    const membershipRows = (
+      await readLearnCollection<MembershipRow>("learn_role_memberships", "created_at", false)
+    ).filter((membership) => {
+      if (membership.is_active === false) return false;
+      if (membership.user_id && membership.user_id === user.id) return true;
+      return !!normalized && membership.normalized_email === normalized;
+    });
 
-  const membershipRoles = membershipRows
-    .map((membership) => String(membership.role || "").trim() as LearnRole)
-    .filter(Boolean);
+    const baseRoles = mapSharedRoleToLearnRoles(
+      profile?.role ||
+        (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null) ||
+        (typeof user.user_metadata?.role === "string" ? user.user_metadata.role : null)
+    );
 
-  return {
-    user: {
-      id: user.id,
-      email: user.email || null,
-      fullName:
-        profile?.full_name ||
-        (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
-        (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
-        null,
-    },
-    normalizedEmail: normalized,
-    roles: uniqueRoles(["learner", ...membershipRoles, ...baseRoles]),
-    memberships: membershipRows.map((membership) => ({
-      id: membership.id,
-      role: String(membership.role || "").trim() as LearnRole,
-      scopeType: String(membership.scope_type || "platform"),
-      scopeId: membership.scope_id || null,
-    })),
-  };
+    const membershipRoles = membershipRows
+      .map((membership) => String(membership.role || "").trim() as LearnRole)
+      .filter(Boolean);
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email || null,
+        fullName:
+          profile?.full_name ||
+          (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
+          (typeof user.user_metadata?.name === "string" ? user.user_metadata.name : null) ||
+          null,
+      },
+      normalizedEmail: normalized,
+      roles: uniqueRoles(["learner", ...membershipRoles, ...baseRoles]),
+      memberships: membershipRows.map((membership) => ({
+        id: membership.id,
+        role: String(membership.role || "").trim() as LearnRole,
+        scopeType: String(membership.scope_type || "platform"),
+        scopeId: membership.scope_id || null,
+      })),
+    };
+  } catch {
+    return viewerFromUserMetadata(user);
+  }
 }
 
 export async function requireLearnUser(next?: string) {
