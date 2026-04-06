@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import OwnerLoginClient from "../../components/OwnerLoginClient";
+import { getAccountUrl, getHqUrl } from "@henryco/config";
 import { requireOwner } from "../../lib/owner-auth";
 
 export const metadata: Metadata = {
@@ -23,5 +23,9 @@ export default async function OwnerLoginPage() {
     redirect("/owner");
   }
 
-  return <OwnerLoginClient />;
+  if (auth.reason === "forbidden" || auth.reason === "misconfigured") {
+    redirect("/owner/no-access");
+  }
+
+  redirect(getAccountUrl(`/login?next=${encodeURIComponent(getHqUrl("/owner"))}`));
 }

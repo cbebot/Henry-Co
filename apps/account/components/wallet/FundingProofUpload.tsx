@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileUp, Loader2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
+import { FileUp } from "lucide-react";
 
 export default function FundingProofUpload({
   requestId,
@@ -107,7 +108,9 @@ export default function FundingProofUpload({
           disabled={loading || !file}
           className="acct-button-primary rounded-2xl px-5 py-3"
         >
-          {loading ? <Loader2 size={16} className="animate-spin" /> : "Upload proof"}
+          <ButtonPendingContent pending={loading} pendingLabel="Uploading proof..." spinnerLabel="Uploading proof">
+            Upload proof
+          </ButtonPendingContent>
         </button>
       </div>
     </form>

@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+:root {
+  --staff-bg: #050810;
+  --staff-bg-soft: #0a0e18;
+  --staff-bg-elevated: #101624;
+  --staff-surface: rgba(255, 255, 255, 0.04);
+  --staff-line: rgba(255, 255, 255, 0.08);
+  --staff-ink: #e8e8ec;
+  --staff-muted: rgba(255, 255, 255, 0.55);
+  --staff-gold: #c9a227;
+  --staff-gold-soft: rgba(201, 162, 39, 0.14);
+  --staff-accent: #6b7cff;
+  --staff-accent-soft: rgba(107, 124, 255, 0.12);
+  --staff-success: #34d399;
+  --staff-success-soft: rgba(52, 211, 153, 0.12);
+  --staff-warning: #fbbf24;
+  --staff-warning-soft: rgba(251, 191, 36, 0.12);
+  --staff-critical: #f87171;
+  --staff-critical-soft: rgba(248, 113, 113, 0.12);
+  --staff-sidebar-width: 260px;
+  --staff-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --staff-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 50px rgba(0, 0, 0, 0.35);
+  --staff-shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.45);
+  --staff-radius: 1rem;
+  --staff-radius-lg: 1.25rem;
+  --staff-radius-xl: 1.5rem;
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--staff-font-sans);
+  background: var(--staff-bg);
+  color: var(--staff-ink);
+}
+
+.staff-kicker {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--staff-muted);
+}
+
+.staff-card {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.03) 0%, var(--staff-bg-elevated) 40%);
+  border: 1px solid var(--staff-line);
+  border-radius: var(--staff-radius-xl);
+  box-shadow: var(--staff-shadow);
+}
+
+.staff-panel {
+  background: var(--staff-bg-soft);
+  border: 1px solid var(--staff-line);
+  border-radius: var(--staff-radius-xl);
+}
+
+.staff-sidebar-bg {
+  background: linear-gradient(180deg, #0c1018 0%, #050810 100%);
+  border-color: var(--staff-line);
+}
+
+.staff-nav-active {
+  background: var(--staff-gold-soft);
+  color: var(--staff-gold);
+  font-weight: 600;
+  border-left: 3px solid var(--staff-gold);
+}
+
+.staff-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.staff-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.staff-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--staff-line);
+  border-radius: 2px;
+}
+
+.staff-fade-in {
+  animation: staffFadeIn 0.35s ease;
+}
+@keyframes staffFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.staff-backdrop {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(201, 162, 39, 0.1), transparent 55%),
+    radial-gradient(ellipse 80% 50% at 100% 0%, rgba(107, 124, 255, 0.06), transparent 45%);
+}
+
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}

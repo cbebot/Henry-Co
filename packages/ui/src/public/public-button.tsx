@@ -1,6 +1,7 @@
 import Link from "next/link";
 import * as React from "react";
 import { cn } from "../lib/cn";
+import { ButtonPendingContent } from "../loading/ButtonPendingContent";
 
 type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
@@ -25,6 +26,9 @@ type BaseProps = {
   size?: Size;
   className?: string;
   children: React.ReactNode;
+  pending?: boolean;
+  pendingLabel?: React.ReactNode;
+  spinnerLabel?: string;
 };
 
 type ButtonProps = BaseProps &
@@ -57,11 +61,30 @@ export function PublicButton(props: ButtonProps | LinkProps) {
     );
   }
 
-  const { children, className: _className, ...rest } = props as ButtonProps;
+  const {
+    children,
+    className: _className,
+    pending,
+    pendingLabel,
+    spinnerLabel,
+    disabled,
+    ...rest
+  } = props as ButtonProps;
 
   return (
-    <button className={className} {...rest}>
-      {children}
+    <button
+      className={cn(className, pending && "cursor-wait")}
+      disabled={disabled || pending}
+      data-pending={pending ? "true" : undefined}
+      {...rest}
+    >
+      <ButtonPendingContent
+        pending={Boolean(pending)}
+        pendingLabel={pendingLabel}
+        spinnerLabel={spinnerLabel}
+      >
+        {children}
+      </ButtonPendingContent>
     </button>
   );
 }

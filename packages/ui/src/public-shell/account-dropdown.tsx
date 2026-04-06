@@ -10,11 +10,12 @@
  * when the trigger is custom but the dropdown should match the HenryCo standard.
  */
 
-import { useCallback, useEffect, useId, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import Link from "next/link";
 import { ExternalLink, LayoutDashboard, Globe, LogOut, Settings2 } from "lucide-react";
 import { cn } from "../lib/cn";
+import { ButtonPendingContent } from "../loading/ButtonPendingContent";
 import { AvatarFallback } from "./avatar-fallback";
 import { resolvePublicAccountIdentity } from "../public/account-identity";
 import type { PublicAccountUser, PublicAccountMenuItem } from "../public/public-account-chip";
@@ -123,6 +124,7 @@ export function AccountDropdown({
 }) {
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
+  const [signingOut, setSigningOut] = useState(false);
   const { primaryLabel, emailLine, initialsSource } = resolvePublicAccountIdentity(user);
 
   const close = useCallback(() => onClose(), [onClose]);
@@ -150,6 +152,8 @@ export function AccountDropdown({
   }
 
   async function handleSignOut() {
+    if (signingOut) return;
+    setSigningOut(true);
     try { await fetch(signOutApiPath, { method: "POST", credentials: "include", headers: { Accept: "application/json" } }); } catch { /* still redirect */ }
     finally { window.location.assign(signOutRedirectHref || (typeof window !== "undefined" ? `${window.location.origin}/` : "/")); }
   }
@@ -264,14 +268,23 @@ export function AccountDropdown({
               type="button"
               role="menuitem"
               tabIndex={0}
+              disabled={signingOut}
               className={cn(
                 "mx-1.5 flex w-[calc(100%-0.75rem)] min-h-[40px] items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 outline-none transition-colors hover:bg-red-50 focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-500/40 dark:text-red-400 dark:hover:bg-red-500/12 dark:focus-visible:bg-red-500/12 dark:focus-visible:ring-red-400/35",
                 tone === "solidDark" && "text-red-400 hover:bg-red-500/12 focus-visible:bg-red-500/12"
               )}
               onClick={() => { close(); void handleSignOut(); }}
             >
-              <LogOut className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-              Sign out
+              <ButtonPendingContent
+                pending={signingOut}
+                pendingLabel="Signing out..."
+                spinnerLabel="Signing out"
+              >
+                <>
+                  <LogOut className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+                  Sign out
+                </>
+              </ButtonPendingContent>
             </button>
           ) : null}
         </div>

@@ -22,6 +22,7 @@ import {
 } from "react";
 import { AvatarFallback } from "../public-shell/avatar-fallback";
 import { cn } from "../lib/cn";
+import { ButtonPendingContent } from "../loading/ButtonPendingContent";
 import { resolvePublicAccountIdentity } from "./account-identity";
 
 export { resolvePublicAccountIdentity, humanizeEmailLocalPart } from "./account-identity";
@@ -561,8 +562,16 @@ export function PublicAccountChip({
                     void handleSignOut();
                   }}
                 >
-                  <LogOut className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-                  {signingOut ? "Signing out\u2026" : "Sign out"}
+                  <ButtonPendingContent
+                    pending={signingOut}
+                    pendingLabel="Signing out..."
+                    spinnerLabel="Signing out"
+                  >
+                    <>
+                      <LogOut className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+                      Sign out
+                    </>
+                  </ButtonPendingContent>
                 </button>
               ) : null}
             </div>

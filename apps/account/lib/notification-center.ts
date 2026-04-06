@@ -29,6 +29,7 @@ function isInternalOnlyDestination(url: URL) {
   return (
     host.startsWith("hq.") ||
     host.startsWith("workspace.") ||
+    host.startsWith("staffhq.") ||
     path.startsWith("/owner") ||
     path.startsWith("/workspace")
   );

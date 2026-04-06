@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
 
 const categories = [
   { value: "general", label: "General" },
@@ -100,7 +100,9 @@ export default function NewSupportForm() {
         disabled={loading}
         className="acct-button-primary mt-6 w-full rounded-xl py-3"
       >
-        {loading ? <Loader2 size={18} className="animate-spin" /> : "Submit request"}
+        <ButtonPendingContent pending={loading} pendingLabel="Submitting request..." spinnerLabel="Submitting request">
+          Submit request
+        </ButtonPendingContent>
       </button>
     </form>
   );

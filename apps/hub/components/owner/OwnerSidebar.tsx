@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getAccountUrl } from "@henryco/config";
-import { LogOut, ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
+import { getAccountUrl, getStaffHqUrl } from "@henryco/config";
+import { LogOut, ChevronDown, ChevronRight, ArrowLeft, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { getOwnerNavSections, type OwnerNavItem } from "@/lib/owner-navigation";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import Logo from "@/components/brand/Logo";
 
@@ -97,11 +97,20 @@ function OwnerNavLink({
 export default function OwnerSidebar({ user }: OwnerSidebarProps) {
   const pathname = usePathname();
   const sections = getOwnerNavSections();
+  const [signingOut, setSigningOut] = useState(false);
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseBrowser();
-    await supabase.auth.signOut();
-    window.location.href = "/owner/login";
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      });
+    } finally {
+      window.location.href = "/owner/login";
+    }
   };
 
   return (
@@ -119,14 +128,22 @@ export default function OwnerSidebar({ user }: OwnerSidebarProps) {
         </div>
       </div>
 
-      {/* Back to dashboard */}
-      <Link
-        href={getAccountUrl("/")}
-        className="mx-3 mt-3 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] transition-all"
-      >
-        <ArrowLeft size={14} />
-        Back to HenryCo Account
-      </Link>
+      <div className="mx-3 mt-3 space-y-1">
+        <Link
+          href={getAccountUrl("/")}
+          className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] transition-all"
+        >
+          <ArrowLeft size={14} />
+          Back to HenryCo Account
+        </Link>
+        <a
+          href={getStaffHqUrl("/")}
+          className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] transition-all"
+        >
+          <ExternalLink size={14} />
+          Open Staff HQ
+        </a>
+      </div>
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-3 acct-scrollbar">
@@ -163,11 +180,20 @@ export default function OwnerSidebar({ user }: OwnerSidebarProps) {
             </p>
           </div>
           <button
-            onClick={handleSignOut}
+            onClick={() => {
+              void handleSignOut();
+            }}
+            disabled={signingOut}
             className="rounded-lg p-1.5 text-[var(--acct-muted)] hover:bg-[var(--acct-red-soft)] hover:text-[var(--acct-red)] transition-colors"
             title="Sign out"
           >
-            <LogOut size={16} />
+            <ButtonPendingContent
+              pending={signingOut}
+              pendingLabel="Signing out..."
+              spinnerLabel="Signing out"
+            >
+              <LogOut size={16} />
+            </ButtonPendingContent>
           </button>
         </div>
       </div>

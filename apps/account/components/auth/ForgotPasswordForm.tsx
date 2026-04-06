@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { ButtonPendingContent } from "@henryco/ui";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
-import { Loader2 } from "lucide-react";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -71,7 +71,9 @@ export default function ForgotPasswordForm() {
         />
       </div>
       <button type="submit" disabled={loading} className="acct-button-primary mt-4 w-full rounded-xl py-3">
-        {loading ? <Loader2 size={18} className="animate-spin" /> : "Send reset link"}
+        <ButtonPendingContent pending={loading} pendingLabel="Sending reset link..." spinnerLabel="Sending reset link">
+          Send reset link
+        </ButtonPendingContent>
       </button>
     </form>
   );

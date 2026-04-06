@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Camera } from "lucide-react";
+import { ButtonPendingContent, HenryCoActivityIndicator } from "@henryco/ui";
+import { Camera } from "lucide-react";
 import UserAvatar from "@/components/layout/UserAvatar";
 
 const COUNTRIES = [
@@ -133,7 +134,7 @@ export default function ProfileForm({ profile, email }: Props) {
             disabled={uploading}
             className="absolute -bottom-1.5 -right-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--acct-gold)] text-white shadow-lg transition-transform hover:scale-110"
           >
-            {uploading ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
+            {uploading ? <HenryCoActivityIndicator size="sm" label="Uploading photo" /> : <Camera size={14} />}
           </button>
           <input
             ref={fileRef}
@@ -219,7 +220,9 @@ export default function ProfileForm({ profile, email }: Props) {
       </div>
 
       <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">
-        {loading ? <Loader2 size={16} className="animate-spin" /> : "Save changes"}
+        <ButtonPendingContent pending={loading} pendingLabel="Saving profile..." spinnerLabel="Saving profile">
+          Save changes
+        </ButtonPendingContent>
       </button>
     </form>
   );

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { getStaffHqUrl } from "@henryco/config";
+import { redirect } from "next/navigation";
 import PublicHubPage from "./(site)/page";
-import WorkspacePage from "./workspace/[[...slug]]/page";
+import PublicSiteLayout from "./(site)/layout";
 import { getWorkspaceRuntime } from "@/app/lib/workspace/runtime";
 
 export const dynamic = "force-dynamic";
@@ -27,8 +29,12 @@ export default async function RootPage() {
   const runtime = await getWorkspaceRuntime();
 
   if (runtime.workspaceHost) {
-    return <WorkspacePage params={Promise.resolve({})} />;
+    redirect(getStaffHqUrl("/"));
   }
 
-  return <PublicHubPage />;
+  return (
+    <PublicSiteLayout>
+      <PublicHubPage />
+    </PublicSiteLayout>
+  );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { useFormStatus } from "react-dom";
+import { FormPendingButton } from "@henryco/ui";
 import type { WorkforceMember } from "@/lib/owner-workforce-catalog";
 import {
   OWNER_DIVISION_SLUGS,
@@ -16,20 +16,28 @@ import { OwnerFormFeedback } from "@/components/owner/OwnerFormFeedback";
 import { timeAgo } from "@/lib/format";
 
 function SaveButton() {
-  const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className="acct-button-primary">
-      {pending ? "Saving…" : "Save changes"}
-    </button>
+    <FormPendingButton
+      type="submit"
+      className="acct-button-primary"
+      pendingLabel="Saving..."
+      spinnerLabel="Saving staff changes"
+    >
+      Save changes
+    </FormPendingButton>
   );
 }
 
 function ToggleButton({ suspended }: { suspended: boolean }) {
-  const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className="acct-button-ghost">
-      {pending ? "Updating…" : suspended ? "Reactivate" : "Suspend"}
-    </button>
+    <FormPendingButton
+      type="submit"
+      className="acct-button-ghost"
+      pendingLabel={suspended ? "Reactivating..." : "Suspending..."}
+      spinnerLabel="Updating staff status"
+    >
+      {suspended ? "Reactivate" : "Suspend"}
+    </FormPendingButton>
   );
 }
 

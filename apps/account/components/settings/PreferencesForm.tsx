@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
 
 type Props = {
   preferences: Record<string, boolean | string> | null;
@@ -210,7 +210,9 @@ export default function PreferencesForm({ preferences }: Props) {
       </div>
 
       <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">
-        {loading ? <Loader2 size={16} className="animate-spin" /> : "Save preferences"}
+        <ButtonPendingContent pending={loading} pendingLabel="Saving preferences..." spinnerLabel="Saving preferences">
+          Save preferences
+        </ButtonPendingContent>
       </button>
     </form>
   );

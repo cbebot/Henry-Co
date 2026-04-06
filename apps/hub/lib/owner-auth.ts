@@ -1,6 +1,8 @@
 import "server-only";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getAccountUrl, getHqUrl } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { requireOwner as requireHubOwnerAccess } from "@/app/lib/owner-auth";
@@ -34,16 +36,37 @@ function degradedOwnerUser(auth: HubOwnerSession, error: unknown): OwnerUser {
   };
 }
 
+async function ownerReturnUrlFromRequest() {
+  const h = await headers();
+  let pathname = h.get("x-henry-pathname") || "/owner";
+  const search = h.get("x-henry-search") || "";
+
+  if (!pathname.startsWith("/")) {
+    pathname = `/${pathname}`;
+  }
+
+  if (pathname === "/" || pathname === "") {
+    return getHqUrl("/owner");
+  }
+
+  return getHqUrl(`${pathname}${search}`);
+}
+
 export async function requireOwner(): Promise<OwnerUser> {
   const auth = await requireHubOwnerAccess();
 
   if (!auth.ok) {
-    redirect("/owner/login");
+    if (auth.reason === "forbidden" || auth.reason === "misconfigured") {
+      redirect("/owner/no-access");
+    }
+
+    const next = await ownerReturnUrlFromRequest();
+    redirect(getAccountUrl(`/login?next=${encodeURIComponent(next)}`));
   }
 
   try {
     const admin = createAdminSupabase();
-    const [profileRes, ownerProfileRes] = await Promise.all([
+    const [profileRes, directOwnerProfileRes] = await Promise.all([
       admin
         .from("customer_profiles")
         .select("full_name, avatar_url, phone")
@@ -57,12 +80,24 @@ export async function requireOwner(): Promise<OwnerUser> {
         .maybeSingle(),
     ]);
 
+    const emailOwnerProfileRes =
+      !directOwnerProfileRes.data && auth.user.email
+        ? await admin
+            .from("owner_profiles")
+            .select("role")
+            .eq("email", normalizeEmail(auth.user.email))
+            .eq("is_active", true)
+            .maybeSingle()
+        : { data: null, error: null };
+
     if (profileRes.error) {
       return degradedOwnerUser(auth, profileRes.error);
     }
-    if (ownerProfileRes.error) {
-      return degradedOwnerUser(auth, ownerProfileRes.error);
+    if (directOwnerProfileRes.error || emailOwnerProfileRes.error) {
+      return degradedOwnerUser(auth, directOwnerProfileRes.error || emailOwnerProfileRes.error);
     }
+
+    const ownerProfile = directOwnerProfileRes.data || emailOwnerProfileRes.data;
 
     return {
       id: auth.user.id,
@@ -71,7 +106,7 @@ export async function requireOwner(): Promise<OwnerUser> {
       avatarUrl: profileRes.data?.avatar_url || null,
       phone: profileRes.data?.phone || null,
       isOwner: true,
-      ownerRole: String(ownerProfileRes.data?.role || "owner").trim().toLowerCase() || "owner",
+      ownerRole: String(ownerProfile?.role || "owner").trim().toLowerCase() || "owner",
     };
   } catch (error) {
     return degradedOwnerUser(auth, error);

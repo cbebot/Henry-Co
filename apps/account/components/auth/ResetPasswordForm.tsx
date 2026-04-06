@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ButtonPendingContent } from "@henryco/ui";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function ResetPasswordForm() {
   const [password, setPassword] = useState("");
@@ -73,7 +74,9 @@ export default function ResetPasswordForm() {
         </div>
       </div>
       <button type="submit" disabled={loading} className="acct-button-primary mt-6 w-full rounded-xl py-3">
-        {loading ? <Loader2 size={18} className="animate-spin" /> : "Set new password"}
+        <ButtonPendingContent pending={loading} pendingLabel="Updating password..." spinnerLabel="Updating password">
+          Set new password
+        </ButtonPendingContent>
       </button>
     </form>
   );

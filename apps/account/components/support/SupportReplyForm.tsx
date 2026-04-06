@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Paperclip, Send, Loader2, X } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
+import { Paperclip, Send, X } from "lucide-react";
 
 export default function SupportReplyForm({ threadId }: { threadId: string }) {
   const [message, setMessage] = useState("");
@@ -142,8 +143,12 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
             disabled={loading || !message.trim()}
             className="acct-button-primary rounded-xl px-4"
           >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            {loading ? "Sending..." : "Send reply"}
+            <ButtonPendingContent pending={loading} pendingLabel="Sending reply..." spinnerLabel="Sending reply">
+              <>
+                <Send size={16} />
+                Send reply
+              </>
+            </ButtonPendingContent>
           </button>
         </div>
       </div>

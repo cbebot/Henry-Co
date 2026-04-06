@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../../packages/ui/src";
 
 /* ─── HenryCo Account Platform Tokens ─── */
 :root {
@@ -116,6 +117,12 @@ body {
   filter: brightness(1.1);
   box-shadow: 0 2px 8px rgba(201,162,39,0.3);
 }
+.acct-button-primary:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  filter: none;
+  box-shadow: none;
+}
 
 .acct-button-secondary {
   display: inline-flex;
@@ -134,6 +141,10 @@ body {
 }
 .acct-button-secondary:hover {
   background: var(--acct-line);
+}
+.acct-button-secondary:disabled {
+  cursor: wait;
+  opacity: 0.72;
 }
 
 .acct-button-ghost {
@@ -154,6 +165,10 @@ body {
 .acct-button-ghost:hover {
   background: var(--acct-surface);
   color: var(--acct-ink);
+}
+.acct-button-ghost:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 /* ─── Inputs ─── */
@@ -366,4 +381,15 @@ select.acct-input {
 @keyframes acctFadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@media (pointer: coarse) {
+  .acct-input,
+  .acct-textarea,
+  .acct-select,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
 }

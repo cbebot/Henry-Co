@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ButtonPendingContent } from "@henryco/ui";
 import { normalizeTrustedRedirect } from "@henryco/config";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
-import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 
 const COUNTRIES = [
   { code: "NG", name: "Nigeria", dial: "+234" },
@@ -237,7 +238,9 @@ export default function SignupForm() {
         disabled={loading}
         className="acct-button-primary mt-6 w-full rounded-xl py-3"
       >
-        {loading ? <Loader2 size={18} className="animate-spin" /> : "Create account"}
+        <ButtonPendingContent pending={loading} pendingLabel="Creating account..." spinnerLabel="Creating account">
+          Create account
+        </ButtonPendingContent>
       </button>
     </form>
   );

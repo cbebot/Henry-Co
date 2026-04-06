@@ -1,17 +1,21 @@
 "use client";
 
 import { useActionState } from "react";
-import { useFormStatus } from "react-dom";
+import { FormPendingButton } from "@henryco/ui";
 import { saveDivisionBrandAction } from "@/lib/owner-actions";
 import { initialOwnerFormState } from "@/lib/owner-form-state";
 import { OwnerFormFeedback } from "@/components/owner/OwnerFormFeedback";
 
 function SaveButton({ label }: { label: string }) {
-  const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className="acct-button-primary lg:col-span-2">
-      {pending ? "Saving…" : label}
-    </button>
+    <FormPendingButton
+      type="submit"
+      className="acct-button-primary lg:col-span-2"
+      pendingLabel="Saving..."
+      spinnerLabel="Saving division"
+    >
+      {label}
+    </FormPendingButton>
   );
 }
 

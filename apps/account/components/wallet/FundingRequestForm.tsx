@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Building2, Loader2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
+import { ArrowRight, Building2 } from "lucide-react";
 
 const presetAmounts = [5000, 10000, 25000, 50000, 100000];
 
@@ -146,8 +147,12 @@ export default function FundingRequestForm() {
           disabled={loading}
           className="acct-button-primary rounded-2xl px-5 py-3"
         >
-          {loading ? <Loader2 size={16} className="animate-spin" /> : "Create funding request"}
-          {!loading ? <ArrowRight size={16} /> : null}
+          <ButtonPendingContent pending={loading} pendingLabel="Creating funding request..." spinnerLabel="Creating funding request">
+            <>
+              Create funding request
+              <ArrowRight size={16} />
+            </>
+          </ButtonPendingContent>
         </button>
         <p className="text-xs leading-6 text-[var(--acct-muted)]">
           Wallet balance updates after the HenryCo team confirms the transfer.

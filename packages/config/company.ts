@@ -355,6 +355,11 @@ export function getWorkspaceUrl(path = "/") {
   return `https://workspace.${COMPANY.group.baseDomain}${normalizedPath}`;
 }
 
+export function getStaffHqUrl(path = "/") {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `https://staffhq.${COMPANY.group.baseDomain}${normalizedPath}`;
+}
+
 export function getSharedCookieDomain(hostname?: string | null) {
   const normalizedHost = normalizeHostname(hostname);
   const baseDomain = normalizeHostname(COMPANY.group.baseDomain);

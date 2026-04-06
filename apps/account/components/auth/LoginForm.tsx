@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { isAbsoluteHttpUrl, normalizeTrustedRedirect } from "@henryco/config";
+import { useSearchParams } from "next/navigation";
+import { ButtonPendingContent } from "@henryco/ui";
+import { normalizeTrustedRedirect } from "@henryco/config";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -14,7 +15,6 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,13 +34,10 @@ export default function LoginForm() {
       }
 
       const next = normalizeTrustedRedirect(searchParams.get("next"));
-      if (isAbsoluteHttpUrl(next)) {
-        window.location.assign(next);
-        return;
-      }
-
-      router.push(next);
-      router.refresh();
+      const resolveHref =
+        next === "/" ? "/auth/resolve" : `/auth/resolve?next=${encodeURIComponent(next)}`;
+      window.location.assign(resolveHref);
+      return;
     } catch {
       setError("We couldn't sign you in right now. Please try again.");
     } finally {
@@ -106,7 +103,9 @@ export default function LoginForm() {
         disabled={loading}
         className="acct-button-primary mt-6 w-full rounded-xl py-3"
       >
-        {loading ? <Loader2 size={18} className="animate-spin" /> : "Sign in"}
+        <ButtonPendingContent pending={loading} pendingLabel="Signing in..." spinnerLabel="Signing in">
+          Sign in
+        </ButtonPendingContent>
       </button>
     </form>
   );

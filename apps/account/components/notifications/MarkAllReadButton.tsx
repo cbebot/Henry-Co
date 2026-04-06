@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCheck, Loader2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
+import { CheckCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function MarkAllReadButton() {
@@ -24,8 +25,12 @@ export default function MarkAllReadButton() {
       disabled={loading}
       className="acct-button-ghost text-sm"
     >
-      {loading ? <Loader2 size={14} className="animate-spin" /> : <CheckCheck size={14} />}
-      Mark all read
+      <ButtonPendingContent pending={loading} pendingLabel="Marking all read..." spinnerLabel="Marking all read">
+        <>
+          <CheckCheck size={14} />
+          Mark all read
+        </>
+      </ButtonPendingContent>
     </button>
   );
 }

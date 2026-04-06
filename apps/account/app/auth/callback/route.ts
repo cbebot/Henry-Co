@@ -6,10 +6,10 @@ import {
   normalizeEmail,
   normalizePhone,
   normalizeTrustedRedirect,
-  resolveTrustedRedirect,
 } from "@henryco/config";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
+import { resolveAuthenticatedDestination } from "@/lib/post-auth-routing";
 import { detectSecurityRequestContext, logSecurityEvent } from "@/lib/security-events";
 
 export async function GET(request: Request) {
@@ -81,8 +81,13 @@ export async function GET(request: Request) {
             email: user.email || null,
           },
         });
+        const destination = await resolveAuthenticatedDestination({
+          user,
+          next,
+          origin,
+        });
+        return NextResponse.redirect(destination);
       }
-      return NextResponse.redirect(resolveTrustedRedirect(origin, next));
     }
   }
 

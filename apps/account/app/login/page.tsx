@@ -1,6 +1,10 @@
 import { Suspense } from "react";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import LoginForm from "@/components/auth/LoginForm";
 import Logo from "@/components/brand/Logo";
+import { resolveAuthenticatedDestination } from "@/lib/post-auth-routing";
+import { createSupabaseServer } from "@/lib/supabase/server";
 
 export const metadata = { title: "Sign In — Henry & Co." };
 
@@ -10,6 +14,26 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const params = await searchParams;
+  const supabase = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const headerStore = await headers();
+    const forwardedHost = headerStore.get("x-forwarded-host") || headerStore.get("host");
+    const forwardedProto = headerStore.get("x-forwarded-proto") || "https";
+    const origin = forwardedHost ? `${forwardedProto}://${forwardedHost}` : "https://account.henrycogroup.com";
+
+    redirect(
+      await resolveAuthenticatedDestination({
+        user,
+        next: params.next,
+        origin,
+      })
+    );
+  }
+
   const signupHref = params.next ? `/signup?next=${encodeURIComponent(params.next)}` : "/signup";
 
   return (

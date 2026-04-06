@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
+import { Eye, EyeOff } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
 
@@ -97,7 +98,9 @@ export default function ChangePasswordForm() {
         disabled={loading}
         className="acct-button-primary rounded-xl"
       >
-        {loading ? <Loader2 size={16} className="animate-spin" /> : "Update password"}
+        <ButtonPendingContent pending={loading} pendingLabel="Updating password..." spinnerLabel="Updating password">
+          Update password
+        </ButtonPendingContent>
       </button>
     </form>
   );

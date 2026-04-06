@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { useFormStatus } from "react-dom";
+import { FormPendingButton } from "@henryco/ui";
 import {
   OWNER_DIVISION_SLUGS,
   WORKFORCE_PERMISSION_OPTIONS,
@@ -12,11 +12,15 @@ import { initialOwnerFormState } from "@/lib/owner-form-state";
 import { OwnerFormFeedback } from "@/components/owner/OwnerFormFeedback";
 
 function SubmitButton() {
-  const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className="acct-button-primary">
-      {pending ? "Sending…" : "Send invitation"}
-    </button>
+    <FormPendingButton
+      type="submit"
+      className="acct-button-primary"
+      pendingLabel="Sending invitation..."
+      spinnerLabel="Sending invitation"
+    >
+      Send invitation
+    </FormPendingButton>
   );
 }
 

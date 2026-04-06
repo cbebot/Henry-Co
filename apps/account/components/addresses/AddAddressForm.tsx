@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
 
 export default function AddAddressForm() {
   const [form, setForm] = useState({
@@ -103,7 +103,9 @@ export default function AddAddressForm() {
       </div>
 
       <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">
-        {loading ? <Loader2 size={16} className="animate-spin" /> : "Save address"}
+        <ButtonPendingContent pending={loading} pendingLabel="Saving address..." spinnerLabel="Saving address">
+          Save address
+        </ButtonPendingContent>
       </button>
     </form>
   );

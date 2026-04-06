@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
 import { useRouter } from "next/navigation";
 
 const presetAmounts = [1000, 2000, 5000, 10000, 20000, 50000];
@@ -97,8 +97,9 @@ export default function AddMoneyForm() {
         disabled={loading || !amount}
         className="acct-button-primary mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3"
       >
-        {loading ? <Loader2 size={18} className="animate-spin" /> : null}
-        {loading ? "Creating request…" : "Continue to bank transfer"}
+        <ButtonPendingContent pending={loading} pendingLabel="Creating request..." spinnerLabel="Creating funding request">
+          Continue to bank transfer
+        </ButtonPendingContent>
       </button>
       <p className="mt-3 text-center text-xs text-[var(--acct-muted)]">
         You’ll confirm bank details and upload proof on the next step—balance updates after verification.

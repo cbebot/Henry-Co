@@ -47,10 +47,22 @@ export function proxy(request: NextRequest) {
 
   const isWorkspaceHost = host.startsWith("workspace.");
   const isHqHost = host.startsWith("hq.");
-  const preferredHqOrigin = `https://hq.${COMPANY.group.baseDomain}`;
-  const preferredWorkspaceOrigin = `https://workspace.${COMPANY.group.baseDomain}`;
+  const baseDomain = COMPANY.group.baseDomain;
+  const preferredHqOrigin = `https://hq.${baseDomain}`;
+  const preferredStaffHqOrigin = `https://staffhq.${baseDomain}`;
   const rewriteUrl = request.nextUrl.clone();
   const redirectUrl = request.nextUrl.clone();
+
+  function withSecurityHeaders(res: NextResponse) {
+    res.headers.set("Content-Security-Policy", csp);
+    res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.headers.set("X-Frame-Options", "DENY");
+    res.headers.set("X-Content-Type-Options", "nosniff");
+    res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    res.headers.set("Cross-Origin-Opener-Policy", "same-origin");
+    res.headers.set("Cross-Origin-Resource-Policy", "same-origin");
+    return res;
+  }
 
   if (!isHqHost && request.nextUrl.pathname.startsWith("/owner")) {
     redirectUrl.href = `${preferredHqOrigin}${request.nextUrl.pathname}${request.nextUrl.search}`;
@@ -58,13 +70,20 @@ export function proxy(request: NextRequest) {
   }
 
   if (!isWorkspaceHost && request.nextUrl.pathname.startsWith("/workspace")) {
-    redirectUrl.href = `${preferredWorkspaceOrigin}${request.nextUrl.pathname}${request.nextUrl.search}`;
-    return NextResponse.redirect(redirectUrl, 307);
+    const p = request.nextUrl.pathname;
+    const staffPath =
+      p === "/workspace" || p === "/workspace/"
+        ? "/"
+        : p.startsWith("/workspace/")
+          ? p.slice("/workspace".length)
+          : p;
+    redirectUrl.href = `${preferredStaffHqOrigin}${staffPath === "" ? "/" : staffPath}${request.nextUrl.search}`;
+    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 307));
   }
 
-  if (isWorkspaceHost && !rewriteUrl.pathname.startsWith("/workspace")) {
-    rewriteUrl.pathname =
-      rewriteUrl.pathname === "/" ? "/workspace" : `/workspace${rewriteUrl.pathname}`;
+  if (isWorkspaceHost) {
+    redirectUrl.href = `${preferredStaffHqOrigin}${request.nextUrl.pathname}${request.nextUrl.search}`;
+    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 307));
   }
 
   if (

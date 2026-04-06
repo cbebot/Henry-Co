@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
-import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { COMPANY } from "@henryco/config";
 
 export const metadata: Metadata = {
@@ -34,8 +34,7 @@ export default async function RootLayout({
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
-        <HenryCoThemeBlocking />
-        <ThemeProvider>{children}</ThemeProvider>
+        <PublicThemeGuard>{children}</PublicThemeGuard>
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
 
 type PayoutMethod = {
   id: string;
@@ -201,7 +201,9 @@ export default function WalletWithdrawalsClient({
             required
           />
           <button type="submit" disabled={busy === "payout"} className="acct-button-primary rounded-xl sm:col-span-2">
-            {busy === "payout" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save payout account"}
+            <ButtonPendingContent pending={busy === "payout"} pendingLabel="Saving payout account..." spinnerLabel="Saving payout account">
+              Save payout account
+            </ButtonPendingContent>
           </button>
         </form>
         {methods.length > 0 ? (
@@ -253,7 +255,9 @@ export default function WalletWithdrawalsClient({
             required
           />
           <button type="submit" disabled={busy === "pin"} className="acct-button-secondary rounded-xl sm:col-span-2">
-            {busy === "pin" ? <Loader2 className="h-4 w-4 animate-spin" /> : hasPin ? "Update PIN" : "Set PIN"}
+            <ButtonPendingContent pending={busy === "pin"} pendingLabel={hasPin ? "Updating PIN..." : "Setting PIN..."} spinnerLabel="Saving withdrawal PIN">
+              {hasPin ? "Update PIN" : "Set PIN"}
+            </ButtonPendingContent>
           </button>
         </form>
       </section>
@@ -304,7 +308,9 @@ export default function WalletWithdrawalsClient({
             disabled={busy === "withdraw" || !hasPin || methods.length === 0}
             className="acct-button-primary rounded-xl disabled:opacity-50"
           >
-            {busy === "withdraw" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit withdrawal"}
+            <ButtonPendingContent pending={busy === "withdraw"} pendingLabel="Submitting withdrawal..." spinnerLabel="Submitting withdrawal">
+              Submit withdrawal
+            </ButtonPendingContent>
           </button>
           {!hasPin || methods.length === 0 ? (
             <p className="text-xs text-[var(--acct-muted)]">Set a PIN and save a payout account first.</p>

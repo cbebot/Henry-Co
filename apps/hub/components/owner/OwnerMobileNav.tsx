@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ButtonPendingContent } from "@henryco/ui";
 import { getAccountUrl } from "@henryco/config";
 import { Menu, X, LogOut, ArrowLeft } from "lucide-react";
 import { getOwnerNavSections } from "@/lib/owner-navigation";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import Logo from "@/components/brand/Logo";
 
@@ -21,6 +21,7 @@ type OwnerMobileNavProps = {
 
 export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const pathname = usePathname();
   const sections = getOwnerNavSections();
 
@@ -30,9 +31,17 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
   };
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseBrowser();
-    await supabase.auth.signOut();
-    window.location.href = "/owner/login";
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      });
+    } finally {
+      window.location.href = "/owner/login";
+    }
   };
 
   return (
@@ -152,11 +161,22 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
             {/* Sign out */}
             <div className="border-t border-[var(--acct-line)] p-3">
               <button
-                onClick={handleSignOut}
+                onClick={() => {
+                  void handleSignOut();
+                }}
+                disabled={signingOut}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[var(--acct-red)] hover:bg-[var(--acct-red-soft)]"
               >
-                <LogOut size={18} />
-                Sign out
+                <ButtonPendingContent
+                  pending={signingOut}
+                  pendingLabel="Signing out..."
+                  spinnerLabel="Signing out"
+                >
+                  <>
+                    <LogOut size={18} />
+                    Sign out
+                  </>
+                </ButtonPendingContent>
               </button>
             </div>
           </div>

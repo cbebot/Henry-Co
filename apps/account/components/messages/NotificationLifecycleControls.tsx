@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Archive, CheckCheck, Loader2, MailOpen, Trash2 } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
+import { Archive, CheckCheck, MailOpen, Trash2 } from "lucide-react";
 
 type NotificationLifecycleControlsProps = {
   notificationId: string;
@@ -17,12 +18,16 @@ function ActionButton({
   onClick,
   disabled,
   compact,
+  pending,
+  pendingLabel,
 }: {
   label: string;
   icon: typeof Archive;
   onClick: () => void;
   disabled: boolean;
   compact?: boolean;
+  pending?: boolean;
+  pendingLabel?: string;
 }) {
   return (
     <button
@@ -33,8 +38,16 @@ function ActionButton({
         compact ? "px-2.5 py-1.5 text-[0.7rem]" : ""
       }`}
     >
-      <Icon size={compact ? 13 : 14} />
-      {label}
+      <ButtonPendingContent
+        pending={Boolean(pending)}
+        pendingLabel={pendingLabel}
+        spinnerLabel={pendingLabel || `Updating ${label.toLowerCase()}`}
+      >
+        <>
+          <Icon size={compact ? 13 : 14} />
+          {label}
+        </>
+      </ButtonPendingContent>
     </button>
   );
 }
@@ -80,12 +93,6 @@ export default function NotificationLifecycleControls({
 
   return (
     <div className="flex flex-wrap gap-2">
-      {busy ? (
-        <span className="inline-flex items-center gap-2 rounded-full bg-[var(--acct-surface)] px-3 py-2 text-xs font-semibold text-[var(--acct-muted)]">
-          <Loader2 size={14} className="animate-spin" />
-          Updating
-        </span>
-      ) : null}
       {error ? (
         <span className="inline-flex items-center gap-2 rounded-full bg-[var(--acct-red-soft)] px-3 py-2 text-xs font-semibold text-[var(--acct-red)]">
           {error}
@@ -103,6 +110,8 @@ export default function NotificationLifecycleControls({
         }
         disabled={busy}
         compact={compact}
+        pending={pendingAction === (isRead ? "unread" : "read")}
+        pendingLabel={isRead ? "Marking unread..." : "Marking read..."}
       />
       <ActionButton
         label="Archive"
@@ -112,6 +121,8 @@ export default function NotificationLifecycleControls({
         }
         disabled={busy}
         compact={compact}
+        pending={pendingAction === "archive"}
+        pendingLabel="Archiving..."
       />
       <ActionButton
         label="Delete"
@@ -119,6 +130,8 @@ export default function NotificationLifecycleControls({
         onClick={() => void runAction("DELETE", `/api/notifications/${notificationId}`, "delete")}
         disabled={busy}
         compact={compact}
+        pending={pendingAction === "delete"}
+        pendingLabel="Deleting..."
       />
     </div>
   );
