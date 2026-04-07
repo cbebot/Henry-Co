@@ -290,13 +290,14 @@ async function resolveStudioAssetUrl(path: string | null, bucket = "studio-asset
   if (!path) return null;
   if (/^https?:\/\//i.test(path)) return path;
 
-  const cacheKey = `${bucket}:${path}`;
+  const normalizedPath = path.startsWith(`${bucket}/`) ? path.slice(bucket.length + 1) : path;
+  const cacheKey = `${bucket}:${normalizedPath}`;
   if (studioAssetUrlCache.has(cacheKey)) {
     return studioAssetUrlCache.get(cacheKey) ?? null;
   }
 
   try {
-    const { data, error } = await admin().storage.from(bucket).createSignedUrl(path, 60 * 60);
+    const { data, error } = await admin().storage.from(bucket).createSignedUrl(normalizedPath, 60 * 60);
     const url = error ? null : data?.signedUrl ?? null;
     studioAssetUrlCache.set(cacheKey, url);
     return url;

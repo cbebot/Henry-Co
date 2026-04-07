@@ -1,6 +1,27 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { getSharedCookieDomain } from "@henryco/config";
+import {
+  getSharedCookieDomain,
+  isRecoverableSupabaseAuthError,
+  isSupabaseAuthTokenCookie,
+} from "@henryco/config";
+
+function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse) {
+  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
+  for (const cookie of request.cookies.getAll()) {
+    if (!isSupabaseAuthTokenCookie(cookie.name)) {
+      continue;
+    }
+    request.cookies.set(cookie.name, "");
+    response.cookies.set(cookie.name, "", {
+      domain: cookieDomain,
+      expires: new Date(0),
+      path: "/",
+      sameSite: "lax",
+      secure: true,
+    });
+  }
+}
 
 export async function proxy(request: NextRequest) {
   const reqHeaders = new Headers(request.headers);
@@ -49,7 +70,14 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  try {
+    await supabase.auth.getUser();
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+    clearSupabaseAuthCookies(request, response);
+  }
 
   return response;
 }

@@ -21,11 +21,21 @@ export async function getCarePublicChipUser(): Promise<PublicAccountUser | null>
   if (!user) return null;
 
   const meta = (user.user_metadata || {}) as { full_name?: string; avatar_url?: string };
-  const admin = createAdminSupabase();
-  const [{ data: customerProfile }, { data: profile }] = await Promise.all([
-    admin.from("customer_profiles").select("full_name, avatar_url").eq("id", user.id).maybeSingle(),
-    admin.from("profiles").select("full_name, avatar_url").eq("id", user.id).maybeSingle(),
-  ]);
+  let customerProfile: { full_name?: string | null; avatar_url?: string | null } | null = null;
+  let profile: { full_name?: string | null; avatar_url?: string | null } | null = null;
+
+  try {
+    const admin = createAdminSupabase();
+    const [{ data: customerProfileRow }, { data: profileRow }] = await Promise.all([
+      admin.from("customer_profiles").select("full_name, avatar_url").eq("id", user.id).maybeSingle(),
+      admin.from("profiles").select("full_name, avatar_url").eq("id", user.id).maybeSingle(),
+    ]);
+    customerProfile = customerProfileRow;
+    profile = profileRow;
+  } catch {
+    customerProfile = null;
+    profile = null;
+  }
 
   const name =
     (typeof customerProfile?.full_name === "string" && customerProfile.full_name.trim()) ||

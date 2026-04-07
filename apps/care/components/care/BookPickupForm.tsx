@@ -722,11 +722,15 @@ export default function BookPickupForm({
                 name="return_address"
                 autoComplete="street-address"
                 placeholder="Where we return cleaned items"
-                className={inputCls}
+                className={cn(
+                  inputCls,
+                  returnSameAsPickup ? "cursor-not-allowed opacity-80" : undefined
+                )}
                 value={returnSameAsPickup ? pickupAddress : returnAddress}
                 onChange={(event) => setReturnAddress(event.target.value)}
                 required
-                disabled={returnSameAsPickup}
+                readOnly={returnSameAsPickup}
+                aria-disabled={returnSameAsPickup}
               />
               <p className="text-xs text-zinc-500 dark:text-white/50">
                 Return address is where completed items are delivered after treatment.

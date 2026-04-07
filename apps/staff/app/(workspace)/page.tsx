@@ -20,7 +20,9 @@ export const dynamic = "force-dynamic";
 
 export default async function StaffDashboard() {
   const viewer = await requireStaff();
-  const intelligence = await getStaffIntelligenceSnapshot();
+  const intelligence = await getStaffIntelligenceSnapshot(
+    viewer.divisions.map((item) => item.division)
+  );
   const navItems = getFilteredNavItems(viewer);
   const workspaceLinks = navItems.filter(
     (item) => item.section === "Workspaces" || item.section === "Operations"

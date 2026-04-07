@@ -6,8 +6,10 @@ import { getStaffIntelligenceSnapshot } from "@/lib/intelligence-data";
 export const dynamic = "force-dynamic";
 
 export default async function SupportPage() {
-  await requireStaff();
-  const intelligence = await getStaffIntelligenceSnapshot();
+  const viewer = await requireStaff();
+  const intelligence = await getStaffIntelligenceSnapshot(
+    viewer.divisions.map((item) => item.division)
+  );
   const supportTasks = intelligence.tasks.filter((task) => task.queue.startsWith("support-"));
   const staleTasks = supportTasks.filter((task) => task.status === "stale").length;
   const atRiskTasks = supportTasks.filter((task) => task.status === "at_risk").length;
