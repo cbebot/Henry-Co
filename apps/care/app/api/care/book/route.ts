@@ -1,15 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getOptionalEnv } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+function getCareBookingSupabase() {
+  const url = getOptionalEnv("NEXT_PUBLIC_SUPABASE_URL");
+  const anonKey = getOptionalEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+
+  if (!url || !anonKey) {
+    return null;
+  }
+
+  return createClient(url, anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = getCareBookingSupabase();
+    if (!supabase) {
+      return NextResponse.json(
+        { ok: false, error: "Booking is temporarily unavailable. Please try again shortly." },
+        { status: 500 }
+      );
+    }
+
     const body = await req.json();
 
     const { data, error } = await supabase.rpc("create_care_booking", {

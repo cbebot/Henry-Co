@@ -15,9 +15,16 @@ export async function GET() {
 
   const admin = createAdminSupabase();
   const checks: Record<string, { ok: boolean; detail?: string }> = {};
+  const probeColumns: Record<string, string> = {
+    hq_internal_comm_threads: "id",
+    hq_internal_comm_messages: "id",
+    hq_internal_comm_thread_members: "thread_id",
+    hq_internal_comm_attachments: "id",
+    hq_internal_comm_presence: "user_id",
+  };
 
   async function probeTable(name: string) {
-    const { error } = await admin.from(name).select("id").limit(1);
+    const { error } = await admin.from(name).select(probeColumns[name] || "id").limit(1);
     if (error) {
       logInternalCommsError(`health/${name}`, error);
       checks[name] = {
