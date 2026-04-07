@@ -51,4 +51,4 @@ SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node apps/super-app/scripts/seed.
 - DNS / universal-link verification for production hosts
 - Secret rotation
 
-See `docs/MIGRATION_LOG.md` for integration checkpoints.
+See `./MIGRATION_LOG.md` for integration checkpoints.

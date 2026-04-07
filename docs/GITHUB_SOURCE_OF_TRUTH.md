@@ -39,6 +39,11 @@ Each app under `apps/*` that ships to the web can keep its own `vercel.json` (al
 
 Vercel remains responsible for **hosting**; GitHub Actions remains responsible for **validation** before merge.
 
+### Required references
+
+- Project mapping: [vercel-project-map.md](./vercel-project-map.md)
+- Shared-change redeploy rules: [redeploy-impact-matrix.md](./redeploy-impact-matrix.md)
+
 ## Expo EAS (mobile super-app)
 
 - Config: [`apps/super-app/eas.json`](../apps/super-app/eas.json).

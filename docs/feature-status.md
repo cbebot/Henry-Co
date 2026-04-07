@@ -43,6 +43,18 @@
 | care | `partial` | Public shell |
 | logistics | `partial` | Auth shell; minor lint warnings |
 
+## Web hardening status (live vs flagged)
+
+| Surface | Live status | Flagged behavior | Notes |
+| --- | --- | --- | --- |
+| Account tasks | `live` | none | Real task derivation from trust/support/wallet signals |
+| Account recommendations | `live` | `intelligence_recommendations` | Hidden when flag is disabled |
+| Staff support queue | `live` | none | Prioritized queue from support + triage metadata |
+| Staff operations risk panel | `live` | none | Elevated risk visibility from security signals |
+| Account webhook ingestion | `live` | none | Signed + timestamped + idempotent receipts |
+| Jobs alerts cron | `live` | none | Bearer auth required; fail closed when secret missing |
+| Logistics automation cron | `live` | none | Bearer auth required; fail closed when secret missing |
+
 ## Staging connection log (template)
 
 Update this section as you enable each integration:

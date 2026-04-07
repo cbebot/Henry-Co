@@ -22,11 +22,20 @@
 
 ## Monorepo web apps
 
-- [ ] Per-app Vercel/project linkage and env vars.
-- [ ] Preview URL smoke after merge to main.
+- [ ] Confirm app mapping in `docs/vercel-project-map.md` is still accurate.
+- [ ] Apply any required DB migrations before promoting app builds.
+- [ ] Per-app Vercel linkage and env vars are present for Preview and Production.
+- [ ] Preview smoke checks pass for each changed app:
+  - [ ] authentication/login
+  - [ ] one critical dashboard route
+  - [ ] one critical mutation route (support/wallet/ops/queue as applicable)
+  - [ ] no sensitive auth or cron endpoint is callable without valid auth/signature
+- [ ] Shared package change impact reviewed against `docs/redeploy-impact-matrix.md`.
 - [ ] No service keys in `NEXT_PUBLIC_*`.
+- [ ] Rollback path confirmed (previous successful deployment retained).
 
 ## Post-deploy
 
 - [ ] Update [feature-status.md](./feature-status.md) staging connection table.
 - [ ] Append issues to [known-issues.md](./known-issues.md).
+- [ ] Update [intelligence-rollout-status.md](./intelligence-rollout-status.md) if behavior changed.
