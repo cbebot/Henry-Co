@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ListTodo } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
-import { getDashboardSummary, getWalletFundingContext } from "@/lib/account-data";
+import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
 import { buildAccountTasks } from "@/lib/intelligence-rollout";
 import { getAccountTrustProfile } from "@/lib/trust";
 import PageHeader from "@/components/layout/PageHeader";
@@ -11,19 +11,22 @@ export const dynamic = "force-dynamic";
 
 export default async function TasksPage() {
   const user = await requireAccountUser();
-  const [data, funding, trust] = await Promise.all([
+  const [data, funding, trust, supportThreads] = await Promise.all([
     getDashboardSummary(user.id),
     getWalletFundingContext(user.id),
     getAccountTrustProfile(user.id),
+    getSupportThreads(user.id),
   ]);
+  const openSupportCount = supportThreads.filter((thread: Record<string, unknown>) => {
+    const status = String(thread.status || "");
+    return status !== "resolved" && status !== "closed";
+  }).length;
 
   const tasks = buildAccountTasks({
     userId: user.id,
     unreadNotificationCount: data.unreadNotificationCount,
     pendingFundingKobo: funding.pending_kobo,
-    openSupportCount: data.recentActivity.filter(
-      (item: Record<string, unknown>) => String(item.reference_type || "") === "support_thread"
-    ).length,
+    openSupportCount,
     trust,
   });
 

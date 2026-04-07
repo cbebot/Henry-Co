@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { parseHenryFeatureFlags } from "@henryco/intelligence";
 import { requireAccountUser } from "@/lib/auth";
-import { getDashboardSummary, getWalletFundingContext } from "@/lib/account-data";
+import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
 import { buildAccountRecommendations, buildAccountTasks } from "@/lib/intelligence-rollout";
 import { activityMessageHref } from "@/lib/notification-center";
 import { formatNaira, timeAgo, divisionLabel, divisionColor } from "@/lib/format";
@@ -26,11 +26,16 @@ export const dynamic = "force-dynamic";
 export default async function OverviewPage() {
   const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
   const user = await requireAccountUser();
-  const [data, funding, trust] = await Promise.all([
+  const [data, funding, trust, supportThreads] = await Promise.all([
     getDashboardSummary(user.id),
     getWalletFundingContext(user.id),
     getAccountTrustProfile(user.id),
+    getSupportThreads(user.id),
   ]);
+  const openSupportCount = supportThreads.filter((thread: Record<string, unknown>) => {
+    const status = String(thread.status || "");
+    return status !== "resolved" && status !== "closed";
+  }).length;
 
   const attention = [
     funding.pending_kobo > 0
@@ -90,9 +95,7 @@ export default async function OverviewPage() {
     userId: user.id,
     unreadNotificationCount: data.unreadNotificationCount,
     pendingFundingKobo: funding.pending_kobo,
-    openSupportCount: data.recentActivity.filter(
-      (item: Record<string, unknown>) => String(item.reference_type || "") === "support_thread"
-    ).length,
+    openSupportCount,
     trust,
   });
 
