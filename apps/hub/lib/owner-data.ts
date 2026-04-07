@@ -1140,6 +1140,7 @@ export async function getOwnerOverviewData() {
   const activeStaff = workforce.filter((member) => member.status === "active").length;
   const queuedNotifications = [...dataset.careNotificationQueue, ...dataset.marketplaceNotificationQueue].length;
   const companyTitle = toText(dataset.companySettings?.brand_title) || "Henry & Co.";
+  const briefing = buildOwnerBriefing(signals, divisions, dataset);
 
   return {
     companyTitle,
@@ -1177,6 +1178,7 @@ export async function getOwnerOverviewData() {
         .slice(0, 8);
     })(),
     helperInsights: buildHelperInsights(signals),
+    briefing,
   };
 }
 

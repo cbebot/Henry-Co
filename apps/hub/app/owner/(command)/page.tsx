@@ -40,6 +40,39 @@ export default async function OwnerOverviewPage() {
       />
 
       <OwnerNotice tone="info" title="Data freshness" body={data.dataHealthNote} />
+      <OwnerPanel title="Executive situation room" description="Fast owner read for what matters now.">
+        <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+          <div className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
+            <p className="text-sm font-semibold text-[var(--acct-ink)]">{data.briefing.headline}</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">{data.briefing.focus}</p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-xs text-[var(--acct-muted)]">
+                Open support: {data.briefing.commsHealth.openSupportThreads}
+              </div>
+              <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-xs text-[var(--acct-muted)]">
+                Failed delivery: {data.briefing.commsHealth.failedDeliveries}
+              </div>
+              <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-xs text-[var(--acct-muted)]">
+                WhatsApp skipped: {data.briefing.commsHealth.skippedWhatsApp}
+              </div>
+              <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-xs text-[var(--acct-muted)]">
+                Queued notifications: {data.briefing.commsHealth.queuedNotifications}
+              </div>
+            </div>
+          </div>
+          <div className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">Next best owner actions</p>
+            <div className="mt-3 space-y-2">
+              {data.briefing.nextSteps.slice(0, 4).map((step) => (
+                <Link key={step.title} href={step.href} className="block rounded-xl bg-[var(--acct-surface)] px-3 py-2">
+                  <p className="text-sm font-semibold text-[var(--acct-ink)]">{step.title}</p>
+                  <p className="mt-1 text-xs text-[var(--acct-muted)]">{step.reason}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </OwnerPanel>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <MetricCard label="Live divisions" value={data.metrics.divisionsLive} subtitle="Tracked by the command center" icon={Building2} />
