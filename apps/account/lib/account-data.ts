@@ -468,7 +468,9 @@ export async function getWithdrawalRequests(userId: string, limit = 40) {
     return legacy;
   }
 
-  return [...(data ?? []), ...legacy]
+  const dedicatedIds = new Set(((data ?? []) as Array<{ id?: string }>).map((item) => String(item.id || "")));
+  const legacyOnly = legacy.filter((item) => !dedicatedIds.has(String((item as { id?: string }).id || "")));
+  return [...(data ?? []), ...legacyOnly]
     .sort((left, right) => new Date(String(right.created_at)).getTime() - new Date(String(left.created_at)).getTime())
     .slice(0, limit);
 }

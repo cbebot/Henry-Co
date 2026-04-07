@@ -38,6 +38,17 @@ export async function POST(request: Request) {
       logApiError("profile/update", error);
       return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
     }
+    const normalizedLanguage = language ? normalizeLocale(language) : null;
+    const metadataPatch: Record<string, unknown> = {};
+    if (full_name) metadataPatch.full_name = full_name;
+    if (country) metadataPatch.country = country;
+    if (contact_preference) metadataPatch.contact_preference = contact_preference;
+    if (normalizedLanguage) metadataPatch.language = normalizedLanguage;
+    if (Object.keys(metadataPatch).length > 0) {
+      await admin.auth.admin.updateUserById(user.id, {
+        user_metadata: { ...(user.user_metadata || {}), ...metadataPatch },
+      });
+    }
 
     const res = NextResponse.json({ success: true });
     if (language) {

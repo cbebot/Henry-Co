@@ -154,6 +154,7 @@ export async function submitStudioBriefAction(formData: FormData) {
     requiredFeatures: asList(formData, "requiredFeatures"),
     projectType: String(formData.get("projectType") || "") || null,
     platformPreference: String(formData.get("platformPreference") || "") || null,
+    preferredLanguage: String(formData.get("preferredLanguage") || "") || null,
     designDirection: String(formData.get("designDirection") || "") || null,
     pageRequirements: asList(formData, "pageRequirements"),
     addonServices: asList(formData, "addonServices"),

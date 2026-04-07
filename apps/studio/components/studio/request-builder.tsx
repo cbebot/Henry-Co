@@ -67,6 +67,7 @@ export function StudioRequestBuilder({
   const [selectedProjectType, setSelectedProjectType] = useState(initialProjectType);
   const [selectedPlatform, setSelectedPlatform] = useState(initialPlatform);
   const [selectedDesign, setSelectedDesign] = useState(initialDesign);
+  const [preferredLanguage, setPreferredLanguage] = useState("English");
   const [selectedPages, setSelectedPages] = useState<string[]>([]);
   const [selectedModules, setSelectedModules] = useState<string[]>([]);
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
@@ -234,6 +235,7 @@ export function StudioRequestBuilder({
       <input type="hidden" name="packageIntent" value={pathway} />
       <input type="hidden" name="packageId" value={pathway === "package" ? effectivePackageId : ""} />
       <input type="hidden" name="designDirection" value={selectedDesign} />
+      <input type="hidden" name="preferredLanguage" value={preferredLanguage} />
 
       <section className="studio-panel rounded-[2.8rem] p-6 sm:p-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
@@ -311,6 +313,8 @@ export function StudioRequestBuilder({
               setSelectedPlatform={setSelectedPlatform}
               selectedDesign={selectedDesign}
               setSelectedDesign={setSelectedDesign}
+              preferredLanguage={preferredLanguage}
+              setPreferredLanguage={setPreferredLanguage}
             />
           ) : null}
           {stepIndex === 1 ? (
@@ -373,6 +377,7 @@ export function StudioRequestBuilder({
               <button
                 type="button"
                 onClick={() => goToStep(Math.min(stepIndex + 1, requestSteps.length - 1))}
+                disabled={pathway === "package" && filteredPackages.length === 0}
                 className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
                 {isStepTransitioning ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}

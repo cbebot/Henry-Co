@@ -124,7 +124,12 @@ export async function GET(request: Request) {
           threads = threads.map((thread) => (thread.id === updated.id ? updated : thread));
         }
       }
-      await syncThreadMembers(admin, existingSeed.id, activeOwnerIds, "owner");
+      await syncThreadMembers(
+        admin,
+        existingSeed.id,
+        activeOwnerIds,
+        seed.kind === "announcement" ? "observer" : "owner"
+      );
       continue;
     }
     const { data: inserted, error: insertError } = await admin
@@ -145,7 +150,12 @@ export async function GET(request: Request) {
     if (inserted) {
       threads.push(inserted);
       slugs.add(seed.slug);
-      await syncThreadMembers(admin, inserted.id, activeOwnerIds, "owner");
+      await syncThreadMembers(
+        admin,
+        inserted.id,
+        activeOwnerIds,
+        seed.kind === "announcement" ? "observer" : "owner"
+      );
       await admin.from("hq_internal_comm_messages").insert({
         thread_id: inserted.id,
         author_id: auth.user.id,
@@ -169,7 +179,12 @@ export async function GET(request: Request) {
       if (updated) {
         threads = threads.map((row) => (row.id === updated.id ? updated : row));
       }
-      await syncThreadMembers(admin, thread.id, activeOwnerIds, "owner");
+      await syncThreadMembers(
+        admin,
+        thread.id,
+        activeOwnerIds,
+        thread.kind === "announcement" ? "observer" : "owner"
+      );
     }
   }
 
@@ -302,7 +317,12 @@ export async function POST(request: Request) {
   }
 
   if (kind === "broadcast" || kind === "announcement") {
-    await syncThreadMembers(admin, inserted.id, activeOwnerIds, "owner");
+    await syncThreadMembers(
+      admin,
+      inserted.id,
+      activeOwnerIds,
+      kind === "announcement" ? "observer" : "owner"
+    );
   }
 
   await admin.from("hq_internal_comm_thread_members").upsert(

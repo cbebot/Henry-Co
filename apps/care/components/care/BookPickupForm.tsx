@@ -196,6 +196,7 @@ export default function BookPickupForm({
   const [siteContactName, setSiteContactName] = useState("");
   const [paymentPlan, setPaymentPlan] = useState<PaymentPlan>("book_first");
   const [selectedPickupAddressId, setSelectedPickupAddressId] = useState("");
+  const [selectedReturnAddressId, setSelectedReturnAddressId] = useState("");
   const [pickupAddress, setPickupAddress] = useState("");
   const [returnAddress, setReturnAddress] = useState("");
   const [returnSameAsPickup, setReturnSameAsPickup] = useState(mode === "service");
@@ -210,6 +211,7 @@ export default function BookPickupForm({
       null;
     if (!preferred) return;
     setSelectedPickupAddressId(preferred.id);
+    setSelectedReturnAddressId(preferred.id);
     setPickupAddress(preferred.fullAddress);
     setReturnAddress((current) => current || preferred.fullAddress);
   }, [addressBook]);
@@ -695,6 +697,27 @@ export default function BookPickupForm({
                 />
                 Same as pickup address
               </label>
+              {!returnSameAsPickup && hasAddressBook ? (
+                <select
+                  value={selectedReturnAddressId}
+                  onChange={(event) => {
+                    const nextId = event.target.value;
+                    setSelectedReturnAddressId(nextId);
+                    const nextAddress = addressBook.find((item) => item.id === nextId);
+                    if (nextAddress) {
+                      setReturnAddress(nextAddress.fullAddress);
+                    }
+                  }}
+                  className={inputCls}
+                >
+                  <option value="">Use a custom return address</option>
+                  {addressBook.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              ) : null}
               <input
                 name="return_address"
                 autoComplete="street-address"

@@ -26,6 +26,8 @@ export function StudioRequestPathStep({
   setSelectedPlatform,
   selectedDesign,
   setSelectedDesign,
+  preferredLanguage,
+  setPreferredLanguage,
 }: Pick<
   RequestBuilderSelectionProps,
   | "services"
@@ -44,6 +46,8 @@ export function StudioRequestPathStep({
   | "setSelectedPlatform"
   | "selectedDesign"
   | "setSelectedDesign"
+  | "preferredLanguage"
+  | "setPreferredLanguage"
 >) {
   const projectTypeOptions = filterPricedOptions(requestConfig.projectTypes, serviceKind);
   const platformOptions = filterPricedOptions(requestConfig.platformOptions, serviceKind);
@@ -136,6 +140,11 @@ export function StudioRequestPathStep({
 
       {pathway === "package" ? (
         <div className="mt-8 space-y-4">
+          {filteredPackages.length === 0 ? (
+            <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4 text-sm text-[var(--studio-ink-soft)]">
+              No fixed package is available for this service yet. Switch to the custom project route.
+            </div>
+          ) : null}
           {filteredPackages.map((pkg) => (
             <button
               key={pkg.id}
@@ -247,6 +256,29 @@ export function StudioRequestPathStep({
                 {item}
               </button>
             ))}
+          </div>
+          <div>
+            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+              Preferred project/content language
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {["English", "French", "Arabic", "Portuguese"].map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setPreferredLanguage(item)}
+                  className={joinClassNames(
+                    "rounded-[1.5rem] border p-4 text-left transition duration-200",
+                    preferredLanguage === item
+                      ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
+                      : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.18)]"
+                  )}
+                >
+                  <div className="text-base font-semibold text-[var(--studio-ink)]">{item}</div>
+                </button>
+              ))}
+            </div>
+            <input type="hidden" name="preferredLanguage" value={preferredLanguage} />
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import { getAccountUrl } from "@henryco/config";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -369,6 +369,7 @@ export default function HubHomeClient({
   const [divisions, setDivisions] = useState<DivisionRow[]>(initialDivisionsSafe);
   const [faqItems, setFaqItems] = useState<FaqItem[]>(initialFaqItems);
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
   const [category, setCategory] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [featuredOnly, setFeaturedOnly] = useState(false);
@@ -429,7 +430,7 @@ export default function HubHomeClient({
   );
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
 
     return [...divisions]
       .filter((division) => (featuredOnly ? division.is_featured : true))
@@ -465,7 +466,7 @@ export default function HubHomeClient({
         return hay.includes(q);
       })
       .sort((a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999));
-  }, [divisions, query, category, featuredOnly, statusFilter]);
+  }, [divisions, deferredQuery, category, featuredOnly, statusFilter]);
 
   const featured = useMemo(() => {
     const explicit = [...divisions]
@@ -962,6 +963,9 @@ export default function HubHomeClient({
                     </button>
                   ) : null}
                 </div>
+                {query !== deferredQuery ? (
+                  <div className="text-xs text-white/55">Searching...</div>
+                ) : null}
 
                 {categoryHighlights.length ? (
                   <div>
@@ -1341,9 +1345,9 @@ function TopBar({
                 settingsHref={getAccountUrl("/security")}
                 showSignOut
                 menuItems={[
-                  { label: "Divisions directory", href: "/#divisions" },
-                  { label: "About", href: "/about" },
-                  { label: "Contact", href: "/contact" },
+                  { label: copy.nav.directory, href: "/#divisions" },
+                  { label: copy.nav.about, href: "/about" },
+                  { label: copy.nav.contact, href: "/contact" },
                 ]}
               />
             ) : null}

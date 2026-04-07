@@ -77,6 +77,7 @@ export type SubmitStudioBriefInput = {
   requiredFeatures?: string[];
   projectType?: string | null;
   platformPreference?: string | null;
+  preferredLanguage?: string | null;
   designDirection?: string | null;
   pageRequirements?: string[];
   addonServices?: string[];
@@ -283,6 +284,9 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
   const teams = catalog.teams.length > 0 ? catalog.teams : [];
   const service = serviceByKind(input.serviceKind, services);
   const pkg = packageById(input.packageId, packages);
+  if (input.packageIntent === "package" && !pkg) {
+    throw new Error("Selected package is no longer available for this service.");
+  }
   const team = pickTeam(input, teams);
   const leadId = createId();
   const briefId = createId();
@@ -410,6 +414,9 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
         ? [
             `Project type: ${customRequest.projectType}`,
             `Platform preference: ${customRequest.platformPreference}`,
+            ...(cleanText(input.preferredLanguage)
+              ? [`Preferred language: ${cleanText(input.preferredLanguage)}`]
+              : []),
             `Design direction: ${customRequest.designDirection}`,
           ]
         : []),

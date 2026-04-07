@@ -81,13 +81,15 @@ export function canReadThreadFast(thread: ThreadAccessRow, ctx: ThreadAccessCont
   if (ctx.memberRoleByThread.has(thread.id)) return true;
   const vis = String(thread.visibility || "members_only");
   if (vis !== "all_owners") return false;
-  return ctx.isOwnerAdmin;
+  if (ctx.isOwnerAdmin) return true;
+  if (!thread.division) return ctx.isActiveStaff;
+  return ctx.divisionSet.has(String(thread.division));
 }
 
 export function canWriteThreadFast(thread: ThreadAccessRow, ctx: ThreadAccessContext): boolean {
   const role = ctx.memberRoleByThread.get(thread.id);
   if (role) {
-    return role !== "observer";
+    return role === "owner" || role === "member";
   }
   const vis = String(thread.visibility || "members_only");
   if (vis === "all_owners" && ctx.isOwnerAdmin) {

@@ -21,6 +21,8 @@ export type RequestBuilderSelectionProps = {
   setSelectedPlatform: (value: string) => void;
   selectedDesign: string;
   setSelectedDesign: (value: string) => void;
+  preferredLanguage: string;
+  setPreferredLanguage: (value: string) => void;
   selectedPages: string[];
   setSelectedPages: (value: string[]) => void;
   selectedModules: string[];

@@ -2,6 +2,7 @@ import "server-only";
 
 import { parseHenryFeatureFlags, type SupportQueue } from "@henryco/intelligence";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
+import type { WorkspaceDivision } from "@/lib/types";
 import type { WorkspaceTask } from "@/lib/types";
 
 function toText(value: unknown) {
@@ -29,23 +30,32 @@ function queueFromThread(thread: Record<string, unknown>): SupportQueue {
   return "general";
 }
 
-export async function getStaffIntelligenceSnapshot() {
+export async function getStaffIntelligenceSnapshot(allowedDivisions?: WorkspaceDivision[]) {
   const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
   const admin = createStaffAdminSupabase();
+  const divisionFilter = (allowedDivisions ?? []).filter(Boolean);
+  const hasDivisionFilter = divisionFilter.length > 0;
+
+  const supportQuery = admin
+    .from("support_threads")
+    .select("id, division, category, subject, status, priority, updated_at, metadata")
+    .not("status", "in", "(resolved,closed)")
+    .order("updated_at", { ascending: false })
+    .limit(120);
+  const notificationQuery = admin
+    .from("customer_notifications")
+    .select("id, division, title, category, priority, is_read, created_at")
+    .eq("is_read", false)
+    .order("created_at", { ascending: false })
+    .limit(120);
+  if (hasDivisionFilter) {
+    supportQuery.in("division", divisionFilter);
+    notificationQuery.in("division", divisionFilter);
+  }
 
   const [supportRes, notificationsRes, securityRes] = await Promise.all([
-    admin
-      .from("support_threads")
-      .select("id, division, category, subject, status, priority, updated_at, metadata")
-      .not("status", "in", "(resolved,closed)")
-      .order("updated_at", { ascending: false })
-      .limit(120),
-    admin
-      .from("customer_notifications")
-      .select("id, division, title, category, priority, is_read, created_at")
-      .eq("is_read", false)
-      .order("created_at", { ascending: false })
-      .limit(120),
+    supportQuery,
+    notificationQuery,
     admin
       .from("customer_security_log")
       .select("id, user_id, event_type, risk_level, created_at")

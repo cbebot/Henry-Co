@@ -208,7 +208,7 @@ begin
 
   if exists (
     select 1 from public.hq_internal_comm_thread_members m
-    where m.thread_id = p_thread_id and m.user_id = uid and m.role is distinct from 'observer'
+    where m.thread_id = p_thread_id and m.user_id = uid and lower(coalesce(m.role, 'observer')) in ('owner', 'member')
   ) then
     return true;
   end if;

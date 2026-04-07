@@ -7,8 +7,8 @@ import { getStaffIntelligenceSnapshot } from "@/lib/intelligence-data";
 export const dynamic = "force-dynamic";
 
 export default async function OperationsPage() {
-  await requireStaff();
-  const intelligence = await getStaffIntelligenceSnapshot();
+  const viewer = await requireStaff();
+  const intelligence = await getStaffIntelligenceSnapshot(viewer.divisions.map((item) => item.division));
   const riskTasks = intelligence.riskAlerts.slice(0, 12);
 
   return (
