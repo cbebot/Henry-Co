@@ -24,6 +24,8 @@ export default async function StaffDashboard() {
   const workspaceLinks = navItems.filter(
     (item) => item.section === "Workspaces" || item.section === "Operations"
   );
+  const staleCount = intelligence.tasks.filter((task) => task.status === "stale").length;
+  const riskCount = intelligence.tasks.filter((task) => task.status === "at_risk").length;
 
   const firstName = viewer.user?.fullName?.split(" ")[0] || "there";
 
@@ -62,6 +64,13 @@ export default async function StaffDashboard() {
         />
       </div>
 
+      <div className="mb-8 rounded-2xl border border-[var(--staff-line)] bg-[var(--staff-surface)] px-4 py-3">
+        <p className="text-xs uppercase tracking-[0.14em] text-[var(--staff-muted)]">Operational focus</p>
+        <p className="mt-1 text-sm text-[var(--staff-muted)]">
+          Resolve stale items first ({staleCount}), then at-risk queue items ({riskCount}) to keep customer response quality calm and predictable.
+        </p>
+      </div>
+
       <div className="mb-8">
         <h2 className="staff-kicker mb-4">Your Workspaces</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -80,7 +89,7 @@ export default async function StaffDashboard() {
         </div>
       </div>
 
-      <StaffPanel title="Recent Activity">
+      <StaffPanel title="Priority activity feed">
         <div className="space-y-3">
           {intelligence.tasks.slice(0, 6).map((task) => (
             <a

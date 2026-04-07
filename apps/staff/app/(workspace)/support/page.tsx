@@ -8,6 +8,8 @@ export default async function SupportPage() {
   await requireStaff();
   const intelligence = await getStaffIntelligenceSnapshot();
   const supportTasks = intelligence.tasks.filter((task) => task.queue.startsWith("support-"));
+  const staleTasks = supportTasks.filter((task) => task.status === "stale").length;
+  const atRiskTasks = supportTasks.filter((task) => task.status === "at_risk").length;
 
   return (
     <div className="staff-fade-in">
@@ -24,6 +26,17 @@ export default async function SupportPage() {
         </p>
       </div>
       <StaffPanel title="Prioritized support queue">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-[var(--staff-info-soft)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--staff-info)]">
+            {staleTasks} stale
+          </span>
+          <span className="rounded-full bg-[var(--staff-warning-soft)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--staff-warning)]">
+            {atRiskTasks} at-risk
+          </span>
+          <span className="text-xs text-[var(--staff-muted)]">
+            Queue is auto-prioritized from thread urgency, stale windows, and triage metadata.
+          </span>
+        </div>
         {supportTasks.length === 0 ? (
           <p className="text-sm text-[var(--staff-muted)]">No open support queue items.</p>
         ) : (

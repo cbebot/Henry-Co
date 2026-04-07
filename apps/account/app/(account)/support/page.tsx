@@ -19,6 +19,13 @@ const statusInfo: Record<string, { icon: typeof Clock; color: string; label: str
 export default async function SupportPage() {
   const user = await requireAccountUser();
   const threads = await getSupportThreads(user.id);
+  const openCount = threads.filter((thread: Record<string, unknown>) => {
+    const status = String(thread.status || "");
+    return status !== "resolved" && status !== "closed";
+  }).length;
+  const urgentCount = threads.filter(
+    (thread: Record<string, unknown>) => String(thread.priority || "").toLowerCase() === "high"
+  ).length;
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -32,6 +39,16 @@ export default async function SupportPage() {
           </Link>
         }
       />
+
+      <div className="acct-card p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="acct-chip acct-chip-blue text-[0.65rem]">{openCount} open request(s)</span>
+          <span className="acct-chip acct-chip-red text-[0.65rem]">{urgentCount} escalated</span>
+          <span className="text-xs text-[var(--acct-muted)]">
+            Every message is tracked. If triage marks risk or urgency, staff gets a prioritized queue automatically.
+          </span>
+        </div>
+      </div>
 
       {/* Quick help */}
       <div className="grid gap-3 sm:grid-cols-3">

@@ -9,6 +9,7 @@ export default async function OperationsPage() {
   await requireStaff();
   const intelligence = await getStaffIntelligenceSnapshot();
   const riskTasks = intelligence.riskAlerts.slice(0, 12);
+  const refreshedAt = new Date().toLocaleString();
 
   return (
     <div className="staff-fade-in">
@@ -39,6 +40,9 @@ export default async function OperationsPage() {
       </div>
 
       <StaffPanel title="Risk and anomaly routing">
+        <p className="mb-3 text-xs text-[var(--staff-muted)]">
+          Snapshot refreshed {refreshedAt}. Use this panel to escalate medium/high risk evidence and keep queue pressure visible.
+        </p>
         {riskTasks.length === 0 ? (
           <p className="text-sm text-[var(--staff-muted)]">
             No elevated risk signals to review. Continue monitoring support stale count and unread notifications to

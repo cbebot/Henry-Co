@@ -41,6 +41,11 @@ export default async function SecurityPage() {
       tone: trust.signals.suspiciousEvents > 0 ? "var(--acct-red)" : "var(--acct-green)",
     },
   ];
+  const blockedActions = [
+    !trust.flags.jobsPostingEligible ? "Create verified jobs or higher-trust listings" : null,
+    !trust.flags.marketplaceEligible ? "Access full marketplace seller privileges" : null,
+    trust.signals.suspiciousEvents > 0 ? "Use sensitive financial workflows without review" : null,
+  ].filter(Boolean) as string[];
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -183,6 +188,43 @@ export default async function SecurityPage() {
         </div>
         </div>
       </div>
+
+      <section className="acct-card p-5">
+        <p className="acct-kicker">Trust state guide</p>
+        <div className="mt-3 grid gap-3 lg:grid-cols-2">
+          <div className="rounded-[1.4rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
+            <p className="text-sm font-semibold text-[var(--acct-ink)]">What your current state means</p>
+            <p className="mt-2 text-sm text-[var(--acct-muted)]">
+              You are currently in <span className="font-semibold text-[var(--acct-ink)]">{getTrustTierLabel(trust.tier)}</span>.
+              This state determines access to higher-value workflows and business actions across HenryCo.
+            </p>
+          </div>
+          <div className="rounded-[1.4rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
+            <p className="text-sm font-semibold text-[var(--acct-ink)]">What to do next</p>
+            <p className="mt-2 text-sm text-[var(--acct-muted)]">
+              {trust.nextTier
+                ? `Complete the listed requirements to unlock ${getTrustTierLabel(trust.nextTier)}.`
+                : "You are at the current highest trust lane. Keep your security and profile posture clean to maintain it."}
+            </p>
+          </div>
+        </div>
+        {blockedActions.length > 0 ? (
+          <div className="mt-4 rounded-[1.4rem] border border-[var(--acct-red)]/20 bg-[var(--acct-red-soft)] p-4">
+            <p className="text-sm font-semibold text-[var(--acct-red)]">Currently restricted actions</p>
+            <ul className="mt-2 space-y-1 text-sm text-[var(--acct-muted)]">
+              {blockedActions.map((action) => (
+                <li key={action}>- {action}</li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div className="mt-4 rounded-[1.4rem] border border-[var(--acct-green)]/25 bg-[var(--acct-green-soft)] p-4">
+            <p className="text-sm text-[var(--acct-muted)]">
+              No trust-based restrictions are currently blocking your core account workflows.
+            </p>
+          </div>
+        )}
+      </section>
 
       {/* Change password */}
       <section className="acct-card p-5">

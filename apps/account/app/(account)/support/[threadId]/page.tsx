@@ -26,6 +26,7 @@ export default async function SupportThreadPage({ params }: Props) {
   }
 
   const messages = await getSupportMessages(threadId);
+  const isOpen = thread.status !== "resolved" && thread.status !== "closed";
   return (
     <div className="space-y-6 acct-fade-in">
       <div className="flex items-center gap-3">
@@ -38,6 +39,14 @@ export default async function SupportThreadPage({ params }: Props) {
             {thread.category} &middot; {thread.status}
           </p>
         </div>
+      </div>
+      <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-4 py-3">
+        <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">What happens next</p>
+        <p className="mt-1 text-sm text-[var(--acct-muted)]">
+          {isOpen
+            ? "Your thread is active. New replies move this queue forward and staff triage handles urgency automatically."
+            : "This thread is closed. If your issue returns, open a new request so it can be triaged and tracked cleanly."}
+        </p>
       </div>
       <SupportThreadRoom threadId={threadId} messages={messages} threadStatus={String(thread.status)} />
     </div>

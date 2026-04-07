@@ -106,6 +106,8 @@ export default async function OverviewPage() {
       .map((item: Record<string, unknown>) => String(item.division || "").toLowerCase())
       .filter(Boolean) as Array<"account" | "care" | "marketplace" | "studio" | "jobs" | "property" | "learn" | "logistics">,
   });
+  const blockingTasks = tasks.filter((task) => task.blocking);
+  const highPriorityTasks = tasks.filter((task) => !task.blocking && task.priority !== "low");
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -173,6 +175,20 @@ export default async function OverviewPage() {
         </Link>
       </div>
 
+      <section className="acct-card p-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="acct-chip acct-chip-blue text-[0.65rem]">
+            {blockingTasks.length} blocking
+          </span>
+          <span className="acct-chip acct-chip-gold text-[0.65rem]">
+            {highPriorityTasks.length} high-priority next step{highPriorityTasks.length === 1 ? "" : "s"}
+          </span>
+          <span className="text-xs text-[var(--acct-muted)]">
+            Your Action Center is prioritized from live trust, wallet, support, and notification signals.
+          </span>
+        </div>
+      </section>
+
       {attention.length > 0 ? (
         <section className="acct-card p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
@@ -232,10 +248,17 @@ export default async function OverviewPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="acct-card p-5">
-          <p className="acct-kicker mb-3">Action Center</p>
+          <div className="mb-3">
+            <p className="acct-kicker">Action Center</p>
+            <p className="mt-1 text-xs text-[var(--acct-muted)]">
+              Start with blocking items first, then clear high-priority steps to keep your account fully operational.
+            </p>
+          </div>
           <div className="space-y-3">
             {tasks.length === 0 ? (
-              <p className="text-sm text-[var(--acct-muted)]">No urgent account tasks right now.</p>
+              <p className="text-sm text-[var(--acct-muted)]">
+                No urgent account tasks right now. You are in a healthy operating state.
+              </p>
             ) : (
               tasks.slice(0, 5).map((task) => (
                 <Link
@@ -254,10 +277,21 @@ export default async function OverviewPage() {
                   {task.description ? (
                     <p className="mt-1 text-xs text-[var(--acct-muted)]">{task.description}</p>
                   ) : null}
+                  <p className="mt-2 text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
+                    Source: {task.sourceDivision}
+                  </p>
                 </Link>
               ))
             )}
           </div>
+          {tasks.length > 5 ? (
+            <Link
+              href="/tasks"
+              className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[var(--acct-gold)] hover:underline"
+            >
+              View full task queue <ChevronRight size={14} />
+            </Link>
+          ) : null}
         </section>
 
         {flags.intelligence_recommendations ? (
@@ -280,7 +314,7 @@ export default async function OverviewPage() {
                       <p className="mt-1 text-xs text-[var(--acct-muted)]">{item.description}</p>
                     ) : null}
                     <p className="mt-2 text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                      Why: {item.reasonCodes.join(", ")} · {item.confidence}
+                      Suggested from your account activity and trust state ({item.confidence} confidence)
                     </p>
                   </Link>
                 ))
