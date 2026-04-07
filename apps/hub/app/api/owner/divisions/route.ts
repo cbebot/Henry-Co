@@ -51,7 +51,8 @@ export async function GET() {
     .order("updated_at", { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("[owner/divisions][GET]", error);
+    return NextResponse.json({ error: "Could not load company divisions right now." }, { status: 400 });
   }
 
   return NextResponse.json({ divisions: data ?? [] });
@@ -134,7 +135,8 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("[owner/divisions][POST]", error);
+    return NextResponse.json({ error: "Could not save this division right now." }, { status: 400 });
   }
 
   revalidatePath("/");

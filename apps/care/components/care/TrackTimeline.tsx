@@ -88,7 +88,7 @@ export default function TrackTimeline({
   }
 
   return (
-    <div className="rounded-[32px] border border-black/10 bg-white/80 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_18px_60px_rgba(0,0,0,0.24)]">
+    <div className="rounded-[32px] border border-black/10 bg-white/85 p-6 shadow-[0_14px_34px_rgba(0,0,0,0.06)] backdrop-blur-0 md:shadow-[0_18px_60px_rgba(0,0,0,0.06)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_18px_60px_rgba(0,0,0,0.24)]">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">

@@ -384,6 +384,31 @@ a {
 }
 
 @media (max-width: 767px) {
+  :root {
+    --care-shadow: 0 12px 28px rgba(12, 19, 54, 0.09);
+    --care-shadow-strong: 0 20px 52px rgba(12, 19, 54, 0.14);
+  }
+
+  .care-panel,
+  .care-panel-soft,
+  .care-card,
+  .care-glow-card,
+  .care-chip,
+  .care-dash-card,
+  .care-hero-panel {
+    backdrop-filter: none;
+  }
+
+  .care-grid,
+  .care-noise {
+    background-image: none;
+  }
+
+  .care-top-glow {
+    height: 160px;
+    background: radial-gradient(560px 160px at 50% 0%, rgba(107, 124, 255, 0.11), transparent 72%);
+  }
+
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   select,
   textarea {

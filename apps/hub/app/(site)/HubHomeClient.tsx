@@ -556,11 +556,11 @@ export default function HubHomeClient({
     >
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(1200px_620px_at_18%_8%,rgba(201,162,39,0.22),transparent_55%),radial-gradient(1000px_620px_at_82%_18%,rgba(59,130,246,0.15),transparent_58%),radial-gradient(900px_520px_at_50%_100%,rgba(168,85,247,0.12),transparent_55%)]" />
-        <div className="absolute inset-0 opacity-60">
+        <div className="absolute inset-0 hidden opacity-55 md:block">
           <HubParticles />
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.06)_1px,transparent_0)] [background-size:26px_26px] opacity-30" />
-        <div className="absolute left-1/2 top-[-220px] h-[680px] w-[980px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute inset-0 hidden bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.06)_1px,transparent_0)] [background-size:26px_26px] opacity-30 sm:block" />
+        <div className="absolute left-1/2 top-[-220px] hidden h-[680px] w-[980px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl md:block" />
       </div>
 
       <TopBar
@@ -660,7 +660,7 @@ export default function HubHomeClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.14 }}
-                className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.06] p-5 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl"
+                className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.08] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   <BrandMark
@@ -733,7 +733,7 @@ export default function HubHomeClient({
               initial={reduceMotion ? false : { opacity: 0, y: 20 }}
               animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.14 }}
-              className="relative overflow-hidden rounded-[34px] border border-white/12 bg-white/[0.06] p-6 shadow-[0_30px_120px_rgba(0,0,0,0.32)] backdrop-blur-xl"
+              className="relative overflow-hidden rounded-[34px] border border-white/12 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.2)] backdrop-blur-0 md:shadow-[0_30px_120px_rgba(0,0,0,0.32)] md:backdrop-blur-xl"
             >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.14),transparent_35%),radial-gradient(circle_at_85%_18%,rgba(255,255,255,0.08),transparent_28%)]" />
 
@@ -891,7 +891,7 @@ export default function HubHomeClient({
 
         {featured.length ? (
           <section id="featured" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-            <div className="rounded-[36px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-8">
+            <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/58">
@@ -928,7 +928,7 @@ export default function HubHomeClient({
 
         <section id="divisions" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="rounded-[34px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+            <div className="rounded-[34px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
                 <Search className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                 {copy.directory.eyebrow}
@@ -1110,7 +1110,7 @@ export default function HubHomeClient({
                   />
                 ))
               ) : (
-                <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-10 text-center text-sm text-white/68 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:col-span-2">
+                <div className="rounded-[32px] border border-white/10 bg-white/[0.08] p-10 text-center text-sm text-white/68 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl sm:col-span-2">
                   {copy.directory.empty}
                 </div>
               )}
@@ -1120,7 +1120,7 @@ export default function HubHomeClient({
 
         <section id="ecosystem" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="rounded-[34px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+            <div className="rounded-[34px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
                 <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                 {copy.ecosystem.eyebrow}
@@ -1168,7 +1168,7 @@ export default function HubHomeClient({
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-6 sm:px-6 lg:px-8">
-          <div className="rounded-[36px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-8">
+          <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
             <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
@@ -1225,7 +1225,7 @@ export default function HubHomeClient({
         </section>
 
         <section id="faq" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="rounded-[36px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-8">
+          <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
                 <Globe2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
@@ -1299,7 +1299,7 @@ function TopBar({
   const { copy } = useHubChrome();
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#050816]/80 backdrop-blur-2xl">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#050816]/93 backdrop-blur-0 md:backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <a href="#top" className="flex items-center gap-3">
             <BrandMark

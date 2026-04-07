@@ -10,7 +10,7 @@ export const HenryCoPublicSurfaceTokens = {
    * Use with PublicHeader variant="floating".
    */
   floatingHeaderChrome:
-    "overflow-hidden rounded-[1.75rem] border border-zinc-200/85 bg-white/97 shadow-[0_22px_60px_-28px_rgba(15,23,42,0.22),0_8px_24px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:border-white/12 dark:bg-[#0b1018]/96 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.72),0_12px_36px_rgba(0,0,0,0.45)]",
+    "overflow-hidden rounded-[1.75rem] border border-zinc-200/85 bg-white/97 shadow-[0_14px_34px_-22px_rgba(15,23,42,0.22),0_4px_14px_rgba(15,23,42,0.06)] backdrop-blur-0 lg:backdrop-blur-lg dark:border-white/12 dark:bg-[#0b1018]/96 dark:shadow-[0_20px_54px_-20px_rgba(0,0,0,0.72),0_8px_20px_rgba(0,0,0,0.45)]",
 
   /** Groups theme toggle + account chip into one intentional control strip */
   identityActionCluster:

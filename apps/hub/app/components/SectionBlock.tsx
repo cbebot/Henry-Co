@@ -21,7 +21,7 @@ export default function SectionBlock({
   return (
     <section
       id={section.id || `section-${index + 1}`}
-      className="relative scroll-mt-28 rounded-[34px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.18)] backdrop-blur-2xl sm:p-8"
+      className="relative scroll-mt-28 rounded-[34px] border border-white/10 bg-white/[0.07] p-6 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.18)] md:backdrop-blur-xl sm:p-8"
     >
       {(section.eyebrow || section.title || section.body) && (
         <div className="max-w-3xl">

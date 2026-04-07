@@ -22,7 +22,8 @@ export async function GET() {
     .maybeSingle();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("[owner/settings][GET]", error);
+    return NextResponse.json({ error: "Could not load company settings right now." }, { status: 400 });
   }
 
   return NextResponse.json({ settings: data ?? null });
@@ -54,7 +55,8 @@ export async function POST(request: Request) {
     : await admin.from("company_settings").insert(payload);
 
   if (result.error) {
-    return NextResponse.json({ error: result.error.message }, { status: 400 });
+    console.error("[owner/settings][POST]", result.error);
+    return NextResponse.json({ error: "Could not save company settings right now." }, { status: 400 });
   }
 
   revalidatePath("/");

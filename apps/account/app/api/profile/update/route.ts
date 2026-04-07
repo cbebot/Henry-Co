@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     };
     if (country) updates.country = country;
     if (contact_preference) updates.contact_preference = contact_preference;
-    if (language) updates.language = language;
+    if (language) updates.language = normalizeLocale(language);
 
     const { error } = await admin
       .from("customer_profiles")

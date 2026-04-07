@@ -30,6 +30,7 @@ type CareBookingRow = {
   pickup_address: string | null;
   pickup_date: string | null;
   pickup_slot: string | null;
+  special_instructions: string | null;
   status: string | null;
   quoted_total: number | null;
   amount_paid: number | null;
@@ -52,6 +53,7 @@ type CarePaymentRequestRow = {
 };
 
 export type LinkedCareBooking = CareBookingRow & {
+  return_address: string | null;
   trackUrl: string;
   reviewUrl: string | null;
   payment: {
@@ -92,6 +94,18 @@ function asRecord(value: unknown) {
 function sanitizeAmount(value: unknown) {
   const normalized = Number(value ?? 0);
   return Number.isFinite(normalized) ? Math.max(0, normalized) : 0;
+}
+
+function extractReturnAddress(specialInstructions: string | null | undefined) {
+  const raw = cleanText(specialInstructions);
+  if (!raw) return null;
+  const marker = "return address:";
+  const idx = raw.toLowerCase().indexOf(marker);
+  if (idx < 0) return null;
+  const tail = raw.slice(idx + marker.length).trim();
+  if (!tail) return null;
+  const pipeIndex = tail.indexOf("|");
+  return cleanText(pipeIndex >= 0 ? tail.slice(0, pipeIndex).trim() : tail);
 }
 
 function canLeaveReview(status?: string | null) {
@@ -298,7 +312,7 @@ async function loadBookingsByIds(ids: string[]) {
   const { data } = await admin
     .from("care_bookings")
     .select(
-      "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
+      "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
     )
     .in("id", ids)
     .order("created_at", { ascending: false });
@@ -315,7 +329,7 @@ async function loadBookingsByEmail(email: string | null) {
   const { data } = await admin
     .from("care_bookings")
     .select(
-      "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
+      "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
     )
     .ilike("email", email)
     .order("created_at", { ascending: false })
@@ -335,7 +349,7 @@ async function loadBookingsByPhone(phone: string | null) {
     admin
       .from("care_bookings")
       .select(
-        "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
+        "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
       )
       .in("phone_normalized", variants)
       .order("created_at", { ascending: false })
@@ -343,7 +357,7 @@ async function loadBookingsByPhone(phone: string | null) {
     admin
       .from("care_bookings")
       .select(
-        "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
+        "id, tracking_code, customer_name, email, phone, phone_normalized, service_type, item_summary, pickup_address, pickup_date, pickup_slot, special_instructions, status, quoted_total, amount_paid, balance_due, payment_status, created_at, updated_at"
       )
       .in("phone", variants)
       .order("created_at", { ascending: false })
@@ -588,6 +602,7 @@ function buildLinkedCareBookings(
     const paymentRequest = paymentRequests.get(booking.id) ?? null;
     return {
       ...booking,
+      return_address: extractReturnAddress(booking.special_instructions),
       trackUrl: buildTrackUrl(booking),
       reviewUrl: buildReviewUrl(booking),
       payment: paymentSnapshot(booking, paymentRequest),

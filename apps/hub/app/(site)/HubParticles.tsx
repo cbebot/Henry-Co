@@ -21,6 +21,12 @@ export default function HubParticles() {
   }, [resolvedTheme]);
 
   useEffect(() => {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isMobile || reducedMotion) {
+      return;
+    }
+
     const canvas = ref.current;
     if (!canvas) return;
 
@@ -34,7 +40,7 @@ export default function HubParticles() {
     const particles: Particle[] = [];
     const targetCount = () => {
       const area = W * H;
-      return Math.max(40, Math.min(160, Math.floor(area / 18000)));
+      return Math.max(30, Math.min(90, Math.floor(area / 26000)));
     };
 
     const resize = () => {
@@ -80,7 +86,7 @@ export default function HubParticles() {
         ctx.fill();
       }
 
-      // lines
+      // lines (desktop only, limited linking to preserve frame budget)
       ctx.strokeStyle = palette.line;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -89,7 +95,7 @@ export default function HubParticles() {
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const max = 120;
+          const max = 90;
           if (dist < max) {
             const alpha = 1 - dist / max;
             ctx.globalAlpha = 0.85 * alpha;

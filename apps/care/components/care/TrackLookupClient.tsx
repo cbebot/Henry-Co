@@ -97,6 +97,19 @@ function formatMoney(value?: number | null) {
   return `₦${Number(value || 0).toLocaleString()}`;
 }
 
+function extractReturnAddress(specialInstructions?: string | null) {
+  const raw = String(specialInstructions || "").trim();
+  if (!raw) return null;
+  const marker = "return address:";
+  const idx = raw.toLowerCase().indexOf(marker);
+  if (idx < 0) return null;
+  const tail = raw.slice(idx + marker.length).trim();
+  if (!tail) return null;
+  const pipeIndex = tail.indexOf("|");
+  const result = (pipeIndex >= 0 ? tail.slice(0, pipeIndex) : tail).trim();
+  return result || null;
+}
+
 function familyIcon(family: CareServiceFamily) {
   if (family === "home") return Home;
   if (family === "office") return Building2;
@@ -193,7 +206,7 @@ export default function TrackLookupClient() {
 
   const [code, setCode] = useState(initialCode);
   const [phone, setPhone] = useState(initialPhone);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(Boolean(initialCode));
   const [error, setError] = useState("");
   const [booking, setBooking] = useState<CareBookingTrackRow | null>(null);
   const [searched, setSearched] = useState(Boolean(initialCode));
@@ -255,11 +268,12 @@ export default function TrackLookupClient() {
   const recurring = isRecurringService(summary);
   const reviewEligible = booking ? isReviewEligibleStatus(family, booking.status) : false;
   const payment = booking?.payment ?? null;
+  const returnAddress = extractReturnAddress(booking?.special_instructions);
 
   return (
     <main className="overflow-hidden bg-transparent pb-24 pt-8">
       <section className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
-        <div className="relative overflow-hidden rounded-[44px] border border-black/10 bg-white/80 px-8 py-16 shadow-[0_24px_80px_rgba(0,0,0,0.08)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_24px_100px_rgba(0,0,0,0.28)] sm:py-20 lg:px-14 lg:py-24">
+        <div className="relative overflow-hidden rounded-[44px] border border-black/10 bg-white/85 px-8 py-16 shadow-[0_14px_34px_rgba(0,0,0,0.08)] backdrop-blur-0 md:shadow-[0_24px_80px_rgba(0,0,0,0.08)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_24px_100px_rgba(0,0,0,0.28)] sm:py-20 lg:px-14 lg:py-24">
           <div className="pointer-events-none absolute -left-20 top-0 h-72 w-72 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
           <div className="pointer-events-none absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-zinc-300/30 blur-3xl dark:bg-white/5" />
 
@@ -317,7 +331,7 @@ export default function TrackLookupClient() {
               <button
                 type="submit"
                 disabled={loading}
-                className="care-button-primary group inline-flex h-16 items-center justify-center gap-3 rounded-3xl px-10 text-base font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-70"
+                className="care-button-primary group inline-flex h-16 items-center justify-center gap-3 rounded-3xl px-10 text-base font-semibold transition-[transform,opacity,filter] duration-200 md:hover:scale-[1.02] disabled:opacity-70"
               >
                 {loading ? (
                   <CareLoadingGlyph size="md" className="text-[#07111F]" />
@@ -337,7 +351,7 @@ export default function TrackLookupClient() {
 
       <section className="mx-auto mt-16 max-w-6xl px-6 sm:px-8 lg:px-10">
         {!searched ? (
-          <div className="rounded-3xl border border-black/10 bg-white/80 p-12 text-center shadow-[0_18px_60px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_18px_60px_rgba(0,0,0,0.24)]">
+          <div className="rounded-3xl border border-black/10 bg-white/85 p-12 text-center shadow-[0_14px_34px_rgba(0,0,0,0.06)] backdrop-blur-0 md:shadow-[0_18px_60px_rgba(0,0,0,0.06)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_18px_60px_rgba(0,0,0,0.24)]">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-[color:var(--accent)]/10">
               <Package className="h-10 w-10 text-[color:var(--accent)]" />
             </div>
@@ -363,7 +377,7 @@ export default function TrackLookupClient() {
           />
         ) : booking ? (
           <div className="space-y-10">
-            <div className="rounded-[36px] border border-black/10 bg-white/80 p-10 shadow-[0_18px_60px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_18px_60px_rgba(0,0,0,0.24)]">
+            <div className="rounded-[36px] border border-black/10 bg-white/85 p-10 shadow-[0_14px_34px_rgba(0,0,0,0.06)] backdrop-blur-0 md:shadow-[0_18px_60px_rgba(0,0,0,0.06)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_18px_60px_rgba(0,0,0,0.24)]">
               <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
@@ -382,7 +396,7 @@ export default function TrackLookupClient() {
                     </div>
                   </div>
                   <div
-                    className={`rounded-3xl border px-8 py-4 text-center text-lg font-semibold backdrop-blur-md ${toneClasses(
+                    className={`rounded-3xl border px-8 py-4 text-center text-lg font-semibold ${toneClasses(
                       getTrackingTone(booking.status, family)
                     )}`}
                   >
@@ -442,6 +456,15 @@ export default function TrackLookupClient() {
                     </MiniInfo>
                     <MiniInfo label="Last update">{formatDate(booking.updated_at || booking.created_at)}</MiniInfo>
                   </div>
+                </div>
+              </div>
+              <div className="mt-6 rounded-3xl border border-black/10 bg-zinc-50 p-7 dark:border-white/10 dark:bg-white/[0.05]">
+                <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
+                  <MapPin className="h-4 w-4 text-[color:var(--accent)]" />
+                  Return / delivery address
+                </div>
+                <div className="mt-4 text-[17px] leading-relaxed text-zinc-950 dark:text-white">
+                  {returnAddress || "Same as pickup address unless changed during booking."}
                 </div>
               </div>
 
@@ -543,7 +566,7 @@ export default function TrackLookupClient() {
                 return (
                   <div
                     key={card.title}
-                    className="rounded-3xl border border-black/10 bg-white/80 p-8 shadow-[0_18px_60px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_18px_60px_rgba(0,0,0,0.24)]"
+                    className="rounded-3xl border border-black/10 bg-white/85 p-8 shadow-[0_14px_34px_rgba(0,0,0,0.06)] backdrop-blur-0 md:shadow-[0_18px_60px_rgba(0,0,0,0.06)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_18px_60px_rgba(0,0,0,0.24)]"
                   >
                     <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent)]/10">
                       <CardIcon className="h-6 w-6 text-[color:var(--accent)]" />
@@ -581,7 +604,7 @@ export default function TrackLookupClient() {
               </div>
             ) : null}
           </div>
-        ) : (
+        ) : error ? (
           <div className="rounded-3xl border border-red-400/20 bg-red-500/10 p-12 text-center">
             <div className="text-xl font-semibold text-red-100">Tracking lookup failed</div>
             <div className="mt-3 text-sm leading-relaxed text-red-100/85">{error || "No matching booking was found."}</div>
@@ -597,6 +620,18 @@ export default function TrackLookupClient() {
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
+        ) : (
+          <CareLoadingStage
+            variant="panel"
+            eyebrow="HenryCo Care tracking"
+            title="Finalizing your tracking lookup"
+            description="Preparing service status and timeline details."
+            bullets={[
+              "Loading booking identity",
+              "Resolving latest movement stage",
+              "Preparing your next-step guidance",
+            ]}
+          />
         )}
       </section>
     </main>

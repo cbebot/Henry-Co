@@ -44,7 +44,8 @@ export async function GET() {
     .order("sort_order", { ascending: true });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("[owner/pages][GET]", error);
+    return NextResponse.json({ error: "Could not load company pages right now." }, { status: 400 });
   }
 
   return NextResponse.json({ pages: data ?? [] });
@@ -124,7 +125,8 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("[owner/pages][POST]", error);
+    return NextResponse.json({ error: "Could not save this page right now." }, { status: 400 });
   }
 
   revalidatePath("/");

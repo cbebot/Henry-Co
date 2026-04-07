@@ -443,7 +443,7 @@ export function PublicHeader({
         "sticky top-0 z-50",
         floating
           ? "border-0 bg-transparent pt-2.5 pb-2 sm:pt-3 sm:pb-3"
-          : "border-b border-black/10 bg-white/96 backdrop-blur-md supports-[backdrop-filter]:bg-white/90 dark:border-white/10 dark:bg-[#0a0f14] dark:backdrop-blur-md supports-[backdrop-filter]:dark:bg-[#0a0f14]/95",
+          : "border-b border-black/10 bg-white/96 backdrop-blur-0 md:backdrop-blur-md supports-[backdrop-filter]:bg-white/93 dark:border-white/10 dark:bg-[#0a0f14] dark:backdrop-blur-0 md:dark:backdrop-blur-md supports-[backdrop-filter]:dark:bg-[#0a0f14]/95",
         headerClassName
       )}
     >
@@ -452,7 +452,7 @@ export function PublicHeader({
         <button
           type="button"
           aria-label="Close menu"
-          className="fixed inset-0 z-40 bg-zinc-950/35 backdrop-blur-[2px] motion-reduce:backdrop-blur-none lg:hidden"
+          className="fixed inset-0 z-40 bg-zinc-950/45 lg:hidden"
           onClick={() => setOpen(false)}
         />
       ) : null}

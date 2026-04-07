@@ -44,7 +44,7 @@ export default function MobileNav({ user }: MobileNavProps) {
   return (
     <div className="lg:hidden">
       {/* Top bar */}
-      <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-[var(--acct-line)] bg-[var(--acct-bg-soft)]/95 px-4 backdrop-blur-md">
+      <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-[var(--acct-line)] bg-[var(--acct-bg-soft)]/98 px-4">
         <div className="flex items-center gap-2.5">
           <Logo size={28} />
           <span className="text-sm font-semibold">My Account</span>
@@ -63,11 +63,8 @@ export default function MobileNav({ user }: MobileNavProps) {
       {/* Slide-over drawer */}
       {open && (
         <>
-          <div
-            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-          />
-          <div className="fixed inset-y-0 right-0 z-50 w-[280px] overflow-y-auto bg-[var(--acct-bg-soft)] shadow-2xl acct-scrollbar">
+          <div className="fixed inset-0 z-50 bg-black/45" onClick={() => setOpen(false)} />
+          <div className="fixed inset-y-0 right-0 z-50 w-[280px] overflow-y-auto bg-[var(--acct-bg-soft)] shadow-[0_10px_30px_rgba(0,0,0,0.22)] acct-scrollbar">
             {/* User header */}
             <div className="flex items-center gap-3 border-b border-[var(--acct-line)] p-4">
               <UserAvatar
@@ -96,7 +93,7 @@ export default function MobileNav({ user }: MobileNavProps) {
                         href={item.href}
                         aria-current={active ? "page" : undefined}
                         onClick={() => setOpen(false)}
-                        className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
+                        className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
                           active
                             ? "acct-nav-active"
                             : "text-[var(--acct-muted)] hover:bg-[var(--acct-surface)]"

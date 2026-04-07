@@ -67,7 +67,8 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       return NextResponse.json({ error: "Wallet is not ready yet. Open wallet and retry." }, { status: 400 });
     }
     const pendingWithdrawalKobo = getPendingWithdrawalHoldKobo(withdrawals as never);
-    const availableKobo = Math.max(0, Number(wallet.balance_kobo || 0) - pendingWithdrawalKobo);
+    const currentBalanceKobo = Math.max(0, Number(wallet.balance_kobo || 0));
+    const availableKobo = Math.max(0, currentBalanceKobo - pendingWithdrawalKobo);
     if (availableKobo < amountKobo) {
       return NextResponse.json(
         {
@@ -78,14 +79,31 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       );
     }
 
-    const nextBalanceKobo = availableKobo - amountKobo;
-    const { error: walletUpdateError } = await admin
+    const nextBalanceKobo = Math.max(0, currentBalanceKobo - amountKobo);
+    const { data: existingDebit } = await admin
+      .from("customer_wallet_transactions")
+      .select("id")
+      .eq("reference_type", "studio_payment")
+      .eq("reference_id", paymentRow.id)
+      .eq("type", "debit")
+      .maybeSingle();
+    if (existingDebit?.id) {
+      return NextResponse.json(
+        { error: "A wallet debit for this Studio checkpoint already exists." },
+        { status: 400 }
+      );
+    }
+
+    const { data: walletUpdateRow, error: walletUpdateError } = await admin
       .from("customer_wallets")
       .update({ balance_kobo: nextBalanceKobo, updated_at: new Date().toISOString() } as never)
-      .eq("user_id", user.id);
-    if (walletUpdateError) {
+      .eq("user_id", user.id)
+      .eq("balance_kobo", currentBalanceKobo)
+      .select("id")
+      .maybeSingle();
+    if (walletUpdateError || !walletUpdateRow?.id) {
       return NextResponse.json(
-        { error: "Could not reserve wallet balance right now. Please retry." },
+        { error: "Wallet changed while processing this payment. Please retry once." },
         { status: 500 }
       );
     }

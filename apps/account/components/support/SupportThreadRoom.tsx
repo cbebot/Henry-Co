@@ -48,6 +48,7 @@ export default function SupportThreadRoom({
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [roomHeight, setRoomHeight] = useState<number | null>(null);
+  const viewportRaf = useRef<number | null>(null);
 
   const scrollToLatest = (behavior: ScrollBehavior) => {
     if (!scrollRef.current) return;
@@ -66,17 +67,23 @@ export default function SupportThreadRoom({
 
     const viewport = window.visualViewport;
     const syncViewport = () => {
-      setRoomHeight(Math.max(Math.round(viewport.height), 420));
-      window.requestAnimationFrame(() => scrollToLatest("auto"));
+      if (viewportRaf.current !== null) {
+        window.cancelAnimationFrame(viewportRaf.current);
+      }
+      viewportRaf.current = window.requestAnimationFrame(() => {
+        const nextHeight = Math.max(Math.round(viewport.height), 420);
+        setRoomHeight((prev) => (prev === nextHeight ? prev : nextHeight));
+      });
     };
 
     syncViewport();
     viewport.addEventListener("resize", syncViewport);
-    viewport.addEventListener("scroll", syncViewport);
 
     return () => {
       viewport.removeEventListener("resize", syncViewport);
-      viewport.removeEventListener("scroll", syncViewport);
+      if (viewportRaf.current !== null) {
+        window.cancelAnimationFrame(viewportRaf.current);
+      }
     };
   }, []);
 

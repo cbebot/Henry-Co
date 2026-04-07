@@ -334,6 +334,9 @@ export default function CareBookingsDashboard({
               <DetailCard icon={MapPin} label="Pickup address">
                 {selectedBooking.pickup_address || "Address pending"}
               </DetailCard>
+              <DetailCard icon={MapPin} label="Return / delivery address">
+                {selectedBooking.return_address || "Uses pickup address unless changed during booking"}
+              </DetailCard>
               <DetailCard icon={Truck} label="Tracking code">
                 {selectedBooking.tracking_code || selectedBooking.id}
               </DetailCard>

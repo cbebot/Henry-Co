@@ -10,6 +10,7 @@ import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 
 const COUNTRIES = [
   { code: "NG", name: "Nigeria", dial: "+234" },
+  { code: "BJ", name: "Benin Republic", dial: "+229" },
   { code: "GH", name: "Ghana", dial: "+233" },
   { code: "KE", name: "Kenya", dial: "+254" },
   { code: "ZA", name: "South Africa", dial: "+27" },

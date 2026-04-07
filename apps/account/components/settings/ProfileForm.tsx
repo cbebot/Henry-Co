@@ -3,11 +3,13 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ButtonPendingContent, HenryCoActivityIndicator } from "@henryco/ui";
+import { ALL_LOCALES, LOCALE_LABELS, normalizeLocale, type AppLocale } from "@henryco/i18n";
 import { Camera } from "lucide-react";
 import UserAvatar from "@/components/layout/UserAvatar";
 
 const COUNTRIES = [
   { code: "NG", name: "Nigeria" },
+  { code: "BJ", name: "Benin Republic" },
   { code: "GH", name: "Ghana" },
   { code: "KE", name: "Kenya" },
   { code: "ZA", name: "South Africa" },
@@ -19,13 +21,10 @@ const COUNTRIES = [
   { code: "FR", name: "France" },
 ];
 
-const LANGUAGES = [
-  { value: "en", label: "English" },
-  { value: "fr", label: "French" },
-  { value: "ig", label: "Igbo" },
-  { value: "yo", label: "Yoruba" },
-  { value: "ha", label: "Hausa" },
-];
+const LANGUAGES = ALL_LOCALES.map((locale) => ({
+  value: locale,
+  label: `${LOCALE_LABELS[locale].native} (${LOCALE_LABELS[locale].en})`,
+}));
 
 const CONTACT_PREFS = [
   { value: "email", label: "Email" },
@@ -44,7 +43,7 @@ export default function ProfileForm({ profile, email }: Props) {
   const [phone, setPhone] = useState(profile?.phone || "");
   const [country, setCountry] = useState(profile?.country || "NG");
   const [contactPref, setContactPref] = useState(profile?.contact_preference || "email");
-  const [language, setLanguage] = useState(profile?.language || "en");
+  const [language, setLanguage] = useState(normalizeLocale(profile?.language || "en"));
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -190,7 +189,11 @@ export default function ProfileForm({ profile, email }: Props) {
 
       <div>
         <label className="mb-1.5 block text-sm font-medium">Language</label>
-        <select value={language} onChange={(e) => setLanguage(e.target.value)} className="acct-select">
+        <select
+          value={language}
+          onChange={(e) => setLanguage(normalizeLocale(e.target.value) as AppLocale)}
+          className="acct-select"
+        >
           {LANGUAGES.map((languageOption) => (
             <option key={languageOption.value} value={languageOption.value}>
               {languageOption.label}

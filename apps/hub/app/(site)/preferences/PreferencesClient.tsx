@@ -115,6 +115,12 @@ export default function PreferencesClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale }),
       });
+      await fetch("/api/profile/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: locale }),
+        keepalive: true,
+      });
     } catch {
       /* non-fatal */
     }

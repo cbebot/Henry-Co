@@ -35,7 +35,8 @@ export async function GET() {
     .order("full_name", { ascending: true });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("[owner/people][GET]", error);
+    return NextResponse.json({ error: "Could not load people records right now." }, { status: 400 });
   }
 
   return NextResponse.json({
@@ -120,7 +121,8 @@ export async function POST(request: Request) {
     : await admin.from("company_people").insert(payload);
 
   if (result.error) {
-    return NextResponse.json({ error: result.error.message }, { status: 400 });
+    console.error("[owner/people][POST]", result.error);
+    return NextResponse.json({ error: "Could not save this person record right now." }, { status: 400 });
   }
 
   revalidatePath("/");

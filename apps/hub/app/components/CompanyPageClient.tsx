@@ -225,7 +225,7 @@ export default function CompanyPageClient({
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.08 }}
-            className="relative overflow-hidden rounded-[36px] border border-white/12 bg-white/[0.06] p-6 shadow-[0_30px_120px_rgba(0,0,0,0.3)] backdrop-blur-2xl"
+            className="relative overflow-hidden rounded-[36px] border border-white/12 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.2)] backdrop-blur-0 md:shadow-[0_30px_120px_rgba(0,0,0,0.3)] md:backdrop-blur-xl"
           >
             {page.hero_image_url ? (
               <div className="overflow-hidden rounded-[28px] border border-white/10">
@@ -279,7 +279,7 @@ export default function CompanyPageClient({
 
       {sectionLinks.length ? (
         <section className="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
-          <div className="flex gap-2 overflow-x-auto rounded-[26px] border border-white/10 bg-white/[0.05] p-3 backdrop-blur-xl">
+          <div className="flex gap-2 overflow-x-auto rounded-[26px] border border-white/10 bg-white/[0.08] p-3 backdrop-blur-0 md:backdrop-blur-xl">
             {sectionLinks.map((section) => (
               <a
                 key={section.id}
@@ -304,7 +304,7 @@ export default function CompanyPageClient({
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="rounded-[34px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.18)] backdrop-blur-2xl sm:p-8">
+        <div className="rounded-[34px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_14px_34px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.18)] md:backdrop-blur-xl sm:p-8">
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div>
               <div className="inline-flex items-center rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/56">
