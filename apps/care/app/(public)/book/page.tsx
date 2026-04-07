@@ -19,6 +19,8 @@ import BookingSuccessNotice from "@/components/care/BookingSuccessNotice";
 import BookPickupForm from "@/components/care/BookPickupForm";
 import { getCareBookingCatalog, getCarePricing, getCareSettings } from "@/lib/care-data";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
+import { createAdminSupabase } from "@/lib/supabase";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { createPublicBookingAction } from "./actions";
 
 export const revalidate = 60;
@@ -118,10 +120,11 @@ export default async function BookPage({
   const error = String(params.error || "").trim();
   const tracking = String(params.tracking || "").trim();
 
-  const [pricingItems, catalog, settings] = await Promise.all([
+  const [pricingItems, catalog, settings, bookingIdentity] = await Promise.all([
     getCarePricing(),
     getCareBookingCatalog(),
     getCareSettings(),
+    getBookingIdentity(),
   ]);
 
   return (
@@ -309,6 +312,8 @@ export default async function BookPage({
             <BookPickupForm
               pricingItems={pricingItems}
               catalog={catalog}
+              savedAddresses={bookingIdentity.addresses}
+              defaultContact={bookingIdentity.contact}
               paymentSettings={{
                 accountName: settings.payment_account_name || settings.company_account_name,
                 accountNumber: settings.payment_account_number || settings.company_account_number,
@@ -327,4 +332,46 @@ export default async function BookPage({
       </div>
     </main>
   );
+}
+
+async function getBookingIdentity() {
+  const supabase = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.id) {
+    return { addresses: [], contact: null };
+  }
+
+  const admin = createAdminSupabase();
+  const [{ data: profile }, { data: addresses }] = await Promise.all([
+    admin.from("customer_profiles").select("full_name, phone").eq("id", user.id).maybeSingle(),
+    admin
+      .from("customer_addresses")
+      .select("id, label, line1, line2, city, state, country, is_default")
+      .eq("user_id", user.id)
+      .order("is_default", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(6),
+  ]);
+
+  return {
+    contact: {
+      fullName:
+        String(profile?.full_name || "").trim() ||
+        String(user.user_metadata?.full_name || user.user_metadata?.name || "").trim() ||
+        null,
+      phone: String(profile?.phone || "").trim() || null,
+      email: user.email || null,
+    },
+    addresses: (addresses ?? []).map((row) => ({
+      id: String(row.id),
+      label: String(row.label || row.line1 || "Saved address"),
+      fullAddress: [row.line1, row.line2, row.city, row.state, row.country]
+        .map((part) => String(part || "").trim())
+        .filter(Boolean)
+        .join(", "),
+      isDefault: Boolean(row.is_default),
+    })),
+  };
 }

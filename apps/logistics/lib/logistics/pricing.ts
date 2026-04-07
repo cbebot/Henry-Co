@@ -97,7 +97,7 @@ export function urgencyMultiplier(urgency: LogisticsUrgency) {
 
 export function resolveZone(zoneKey: string | null | undefined, zones: LogisticsZone[] = DEFAULT_LOGISTICS_ZONES) {
   const normalized = String(zoneKey || "").trim().toLowerCase();
-  return zones.find((zone) => zone.key === normalized) ?? zones[0];
+  return zones.find((zone) => zone.key === normalized) ?? null;
 }
 
 export function resolveRateCard(

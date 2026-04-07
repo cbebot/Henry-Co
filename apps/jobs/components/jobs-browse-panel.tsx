@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
 
 const SUGGESTIONS = [
@@ -24,6 +28,9 @@ export function JobsBrowsePanel({
   params: Record<string, string | string[] | undefined>;
   categories: Category[];
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
   const q = paramString(params, "q");
   const category = paramString(params, "category");
   const loc = paramString(params, "loc");
@@ -90,7 +97,24 @@ export function JobsBrowsePanel({
 
   return (
     <div className="space-y-6">
-      <form method="GET" className="space-y-5">
+      <form
+        method="GET"
+        className="space-y-5"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const formData = new FormData(event.currentTarget);
+          const query = new URLSearchParams();
+          formData.forEach((value, key) => {
+            if (typeof value !== "string") return;
+            const text = value.trim();
+            if (!text) return;
+            query.append(key, text);
+          });
+          startTransition(() => {
+            router.replace(`${pathname}?${query.toString()}`);
+          });
+        }}
+      >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
           {employer ? <input type="hidden" name="employer" value={employer} /> : null}
           <label className="sr-only" htmlFor="jobs-q">
@@ -107,8 +131,10 @@ export function JobsBrowsePanel({
           <button
             type="submit"
             className="jobs-button-primary shrink-0 rounded-[1.15rem] px-8 py-3.5 text-sm font-semibold lg:rounded-full lg:px-7"
+            aria-busy={isPending}
+            disabled={isPending}
           >
-            Search
+            {isPending ? "Searching..." : "Search"}
           </button>
         </div>
 
@@ -118,6 +144,7 @@ export function JobsBrowsePanel({
             <Link
               key={item.href}
               href={item.href}
+              aria-busy={isPending}
               className="rounded-full border border-[var(--jobs-line)] bg-[var(--jobs-paper-soft)] px-3.5 py-1.5 text-xs font-semibold text-[var(--jobs-ink)] transition hover:border-[color-mix(in_srgb,var(--jobs-accent)_40%,transparent)] hover:bg-[var(--jobs-accent-soft)]"
             >
               {item.label}

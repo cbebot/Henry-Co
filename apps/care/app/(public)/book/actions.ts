@@ -392,6 +392,7 @@ export async function createPublicBookingAction(formData: FormData) {
     asText(formData, "phone") || String(authenticatedCustomer.profile?.phone || "").trim();
   const phone_normalized = normalizePhone(phone);
   const pickup_address = asText(formData, "pickup_address");
+  const return_address = asNullableText(formData, "return_address");
   const pickup_date = asNullableText(formData, "pickup_date");
   const pickup_slot = asNullableText(formData, "pickup_slot");
   const rawSpecialInstructions = asNullableText(formData, "special_instructions");
@@ -399,6 +400,9 @@ export async function createPublicBookingAction(formData: FormData) {
 
   if (!customer_name || !phone || !pickup_address || !pickup_date || !pickup_slot) {
     redirect("/book?error=Please complete all required booking fields.");
+  }
+  if (bookingMode === "garment" && !String(return_address || "").trim()) {
+    redirect("/book?error=Please provide a return address for delivery completion.");
   }
 
   if (!phone_normalized) {
@@ -476,6 +480,7 @@ export async function createPublicBookingAction(formData: FormData) {
       [
         rawSpecialInstructions,
         paymentPlanSpecialInstruction(paymentPlan),
+        return_address ? `Return address: ${return_address}` : null,
         servicePayload.propertyLabel ? `Property label: ${servicePayload.propertyLabel}` : null,
         servicePayload.siteContactName ? `Site contact: ${servicePayload.siteContactName}` : null,
       ]
@@ -770,8 +775,9 @@ export async function createPublicBookingAction(formData: FormData) {
     pickup_date,
     pickup_slot,
     special_instructions:
-      [rawSpecialInstructions, paymentPlanSpecialInstruction(paymentPlan)].filter(Boolean).join(" | ") ||
-      null,
+      [rawSpecialInstructions, paymentPlanSpecialInstruction(paymentPlan), return_address ? `Return address: ${return_address}` : null]
+        .filter(Boolean)
+        .join(" | ") || null,
     status: "booked",
     quoted_subtotal,
     quoted_urgent_fee,

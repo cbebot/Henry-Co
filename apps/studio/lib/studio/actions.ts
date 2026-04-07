@@ -116,7 +116,7 @@ async function requirePaymentWorkspaceAccess(
   const snapshot = await getStudioSnapshot();
   const payment = snapshot.payments.find((item) => item.id === paymentId);
   if (!payment) {
-    throw new Error("Payment record not found.");
+    redirect(withStudioToast(nextPath, "payment_not_found"));
   }
 
   const access = await requireProjectWorkspaceAccess(payment.projectId, accessKey, nextPath);
@@ -187,7 +187,11 @@ export async function uploadPaymentProofAction(formData: FormData) {
   }
 
   await requirePaymentWorkspaceAccess(paymentId, accessKey, redirectPath);
-  await attachPaymentProof(paymentId, proof);
+  try {
+    await attachPaymentProof(paymentId, proof);
+  } catch {
+    redirect(withStudioToast(redirectPath, "proof_upload_failed"));
+  }
   redirect(withStudioToast(accountStudioAfterProof, "proof_uploaded"));
 }
 
@@ -368,13 +372,17 @@ export async function createProjectUpdateAction(formData: FormData) {
   const redirectPath = String(formData.get("redirectPath") || "/pm");
   if (!projectId) redirect(redirectPath);
 
-  await createProjectUpdate({
-    projectId,
-    kind: String(formData.get("kind") || "manual_update"),
-    title: String(formData.get("title") || ""),
-    summary: String(formData.get("summary") || ""),
-    notifyClient: asBoolean(formData, "notifyClient"),
-  });
+  try {
+    await createProjectUpdate({
+      projectId,
+      kind: String(formData.get("kind") || "manual_update"),
+      title: String(formData.get("title") || ""),
+      summary: String(formData.get("summary") || ""),
+      notifyClient: asBoolean(formData, "notifyClient"),
+    });
+  } catch {
+    redirect(withStudioToast(redirectPath, "project_not_found"));
+  }
   redirect(withStudioToast(redirectPath, "update_logged"));
 }
 

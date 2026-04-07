@@ -28,9 +28,18 @@ const controlClassName =
 export default function BookRequestForm({
   zones,
   defaultMode,
+  savedAddresses,
 }: {
   zones: LogisticsZone[];
   defaultMode: "quote" | "book";
+  savedAddresses?: Array<{
+    id: string;
+    label: string;
+    fullAddress: string;
+    line1: string;
+    city: string;
+    region: string;
+  }>;
 }) {
   const [state, action, pending] = useActionState(submitLogisticsBookingAction, initial);
   const formRef = useRef<HTMLFormElement>(null);
@@ -186,6 +195,34 @@ export default function BookRequestForm({
             Where our rider or dispatch team should collect the parcel.
           </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {(savedAddresses ?? []).length > 0 ? (
+              <label className="grid gap-1 text-sm sm:col-span-2">
+                <span className="text-[var(--logistics-muted)]">Use saved address (optional)</span>
+                <select
+                  className={controlClassName}
+                  onChange={(event) => {
+                    const selected = (savedAddresses ?? []).find((item) => item.id === event.target.value);
+                    if (!selected) return;
+                    const form = event.currentTarget.form;
+                    if (!form) return;
+                    const pickupLine1 = form.elements.namedItem("pickupLine1") as HTMLInputElement | null;
+                    const pickupCity = form.elements.namedItem("pickupCity") as HTMLInputElement | null;
+                    const pickupRegion = form.elements.namedItem("pickupRegion") as HTMLInputElement | null;
+                    if (pickupLine1) pickupLine1.value = selected.line1;
+                    if (pickupCity) pickupCity.value = selected.city;
+                    if (pickupRegion) pickupRegion.value = selected.region;
+                  }}
+                  defaultValue=""
+                >
+                  <option value="">Select saved pickup address</option>
+                  {(savedAddresses ?? []).map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Street / building</span>
               <input name="pickupLine1" required className={controlClassName} />
@@ -215,6 +252,34 @@ export default function BookRequestForm({
             Where the parcel should be handed over to the recipient.
           </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {(savedAddresses ?? []).length > 0 ? (
+              <label className="grid gap-1 text-sm sm:col-span-2">
+                <span className="text-[var(--logistics-muted)]">Use saved address (optional)</span>
+                <select
+                  className={controlClassName}
+                  onChange={(event) => {
+                    const selected = (savedAddresses ?? []).find((item) => item.id === event.target.value);
+                    if (!selected) return;
+                    const form = event.currentTarget.form;
+                    if (!form) return;
+                    const dropLine1 = form.elements.namedItem("dropLine1") as HTMLInputElement | null;
+                    const dropCity = form.elements.namedItem("dropCity") as HTMLInputElement | null;
+                    const dropRegion = form.elements.namedItem("dropRegion") as HTMLInputElement | null;
+                    if (dropLine1) dropLine1.value = selected.line1;
+                    if (dropCity) dropCity.value = selected.city;
+                    if (dropRegion) dropRegion.value = selected.region;
+                  }}
+                  defaultValue=""
+                >
+                  <option value="">Select saved receiving address</option>
+                  {(savedAddresses ?? []).map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-[var(--logistics-muted)]">Street / building</span>
               <input name="dropLine1" required className={controlClassName} />

@@ -21,7 +21,7 @@
       "destination": "/owner"
     },
     {
-      "source": "/:path((?!(?:owner|api)(?:/|$)).*)",
+      "source": "/:path((?!(?:owner|api|privacy|terms)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
@@ -51,7 +51,7 @@
       "destination": "/workspace"
     },
     {
-      "source": "/:path((?!(?:workspace|api)(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api|privacy|terms)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
@@ -61,7 +61,7 @@
       "destination": "/workspace/:path*"
     },
     {
-      "source": "/:path((?!(?:workspace|api)(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api|privacy|terms)(?:/|$)).*)",
       "has": [
         {
           "type": "host",

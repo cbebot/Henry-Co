@@ -33,6 +33,10 @@ function normalizeProto(value?: string | null) {
   return proto === "http" || proto === "https" ? proto : "https";
 }
 
+function isPublicLegalPath(pathname: string) {
+  return pathname === "/privacy" || pathname === "/terms";
+}
+
 export function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   const host =
@@ -91,6 +95,7 @@ export function proxy(request: NextRequest) {
 
   if (
     isStaffHqHost &&
+    !isPublicLegalPath(rewriteUrl.pathname) &&
     !rewriteUrl.pathname.startsWith("/workspace") &&
     !rewriteUrl.pathname.startsWith("/api/")
   ) {
@@ -100,6 +105,7 @@ export function proxy(request: NextRequest) {
 
   if (
     isHqHost &&
+    !isPublicLegalPath(rewriteUrl.pathname) &&
     !rewriteUrl.pathname.startsWith("/owner") &&
     !rewriteUrl.pathname.startsWith("/api/")
   ) {

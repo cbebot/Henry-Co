@@ -45,6 +45,12 @@ type PricingItem = {
   is_active: boolean;
   sort_order: number;
 };
+type SavedAddressOption = {
+  id: string;
+  label: string;
+  fullAddress: string;
+  isDefault: boolean;
+};
 
 type SelectedGarmentItem = {
   pricing_id: string;
@@ -143,6 +149,8 @@ export default function BookPickupForm({
   pricingItems,
   catalog,
   paymentSettings,
+  savedAddresses,
+  defaultContact,
   action,
 }: {
   pricingItems: PricingItem[];
@@ -156,6 +164,12 @@ export default function BookPickupForm({
     supportWhatsApp?: string | null;
     instructions?: string | null;
   };
+  savedAddresses?: SavedAddressOption[];
+  defaultContact?: {
+    fullName?: string | null;
+    phone?: string | null;
+    email?: string | null;
+  } | null;
   action: (formData: FormData) => void | Promise<void>;
 }) {
   const [mode, setMode] = useState<"garment" | "service">("garment");
@@ -181,7 +195,30 @@ export default function BookPickupForm({
   const [propertyLabel, setPropertyLabel] = useState("");
   const [siteContactName, setSiteContactName] = useState("");
   const [paymentPlan, setPaymentPlan] = useState<PaymentPlan>("book_first");
+  const [selectedPickupAddressId, setSelectedPickupAddressId] = useState("");
+  const [pickupAddress, setPickupAddress] = useState("");
+  const [returnAddress, setReturnAddress] = useState("");
+  const [returnSameAsPickup, setReturnSameAsPickup] = useState(mode === "service");
   const deferredSearch = useDeferredValue(search);
+  const addressBook = savedAddresses ?? [];
+  const hasAddressBook = addressBook.length > 0;
+
+  useEffect(() => {
+    const preferred =
+      addressBook.find((item) => item.isDefault) ??
+      addressBook[0] ??
+      null;
+    if (!preferred) return;
+    setSelectedPickupAddressId(preferred.id);
+    setPickupAddress(preferred.fullAddress);
+    setReturnAddress((current) => current || preferred.fullAddress);
+  }, [addressBook]);
+
+  useEffect(() => {
+    if (mode === "service") {
+      setReturnSameAsPickup(true);
+    }
+  }, [mode]);
 
   const activePricing = useMemo(
     () => pricingItems.filter((item) => item.is_active),
@@ -575,6 +612,7 @@ export default function BookPickupForm({
             name="customer_name"
             placeholder="Customer or contact name"
             autoComplete="name"
+            defaultValue={defaultContact?.fullName ?? ""}
             className={inputCls}
             required
           />
@@ -584,6 +622,7 @@ export default function BookPickupForm({
             inputMode="tel"
             autoComplete="tel"
             placeholder="Primary contact number"
+            defaultValue={defaultContact?.phone ?? ""}
             className={inputCls}
             required
           />
@@ -591,19 +630,86 @@ export default function BookPickupForm({
             name="email"
             type="email"
             placeholder="Email for updates and receipts"
+            defaultValue={defaultContact?.email ?? ""}
             className={inputCls}
           />
-          <input
-            name="pickup_address"
-            autoComplete="street-address"
-            placeholder={
-              mode === "garment"
-                ? "Pickup and return address"
-                : "Property, residence, or site address"
-            }
-            className={inputCls}
-            required
-          />
+          <div className="md:col-span-2 grid gap-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
+              Pickup address
+            </p>
+            {hasAddressBook ? (
+              <select
+                value={selectedPickupAddressId}
+                onChange={(event) => {
+                  const nextId = event.target.value;
+                  setSelectedPickupAddressId(nextId);
+                  const nextAddress = addressBook.find((item) => item.id === nextId);
+                  if (nextAddress) {
+                    setPickupAddress(nextAddress.fullAddress);
+                    if (returnSameAsPickup) setReturnAddress(nextAddress.fullAddress);
+                  }
+                }}
+                className={inputCls}
+              >
+                {addressBook.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+            <input
+              name="pickup_address"
+              autoComplete="street-address"
+              placeholder={
+                mode === "garment"
+                  ? "Where we collect your items"
+                  : "Property, residence, or site address"
+              }
+              className={inputCls}
+              value={pickupAddress}
+              onChange={(event) => {
+                setPickupAddress(event.target.value);
+                if (returnSameAsPickup) setReturnAddress(event.target.value);
+              }}
+              required
+            />
+            <p className="text-xs text-zinc-500 dark:text-white/50">
+              Pickup is where our team arrives first.
+            </p>
+          </div>
+          {mode === "garment" ? (
+            <div className="md:col-span-2 grid gap-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
+                Return / delivery address
+              </p>
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-zinc-600 dark:text-white/65">
+                <input
+                  type="checkbox"
+                  checked={returnSameAsPickup}
+                  onChange={(event) => {
+                    const next = event.target.checked;
+                    setReturnSameAsPickup(next);
+                    if (next) setReturnAddress(pickupAddress);
+                  }}
+                />
+                Same as pickup address
+              </label>
+              <input
+                name="return_address"
+                autoComplete="street-address"
+                placeholder="Where we return cleaned items"
+                className={inputCls}
+                value={returnSameAsPickup ? pickupAddress : returnAddress}
+                onChange={(event) => setReturnAddress(event.target.value)}
+                required
+                disabled={returnSameAsPickup}
+              />
+              <p className="text-xs text-zinc-500 dark:text-white/50">
+                Return address is where completed items are delivered after treatment.
+              </p>
+            </div>
+          ) : null}
           <input
             name="pickup_date"
             type="date"

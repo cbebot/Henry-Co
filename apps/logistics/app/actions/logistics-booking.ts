@@ -51,6 +51,14 @@ export async function submitLogisticsBookingAction(
 
   const viewer = await getLogisticsViewer();
   const customerUserId = viewer.user?.id ?? null;
+  const senderPhone = clean(formData.get("senderPhone"));
+  const recipientPhone = clean(formData.get("recipientPhone"));
+  if (senderPhone.replace(/[^\d]/g, "").length < 10) {
+    return { ok: false, error: "Please enter a valid sender phone number." };
+  }
+  if (recipientPhone.replace(/[^\d]/g, "").length < 10) {
+    return { ok: false, error: "Please enter a valid recipient phone number." };
+  }
 
   const input: CreateLogisticsRequestInput = {
     mode,
@@ -58,10 +66,10 @@ export async function submitLogisticsBookingAction(
     urgency,
     zoneKey: zone.key,
     senderName: clean(formData.get("senderName")),
-    senderPhone: clean(formData.get("senderPhone")),
+    senderPhone,
     senderEmail: clean(formData.get("senderEmail")) || null,
     recipientName: clean(formData.get("recipientName")),
-    recipientPhone: clean(formData.get("recipientPhone")),
+    recipientPhone,
     recipientEmail: clean(formData.get("recipientEmail")) || null,
     parcelType: clean(formData.get("parcelType")) || "Parcel",
     parcelDescription: clean(formData.get("parcelDescription")) || null,

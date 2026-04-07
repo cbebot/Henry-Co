@@ -13,6 +13,7 @@ import { requireAccountUser } from "@/lib/auth";
 import { formatCurrencyAmount, formatDate, formatDateTime } from "@/lib/format";
 import { getStudioPaymentRoom } from "@/lib/studio-module";
 import PageHeader from "@/components/layout/PageHeader";
+import { StudioWalletCheckoutButton } from "@/components/studio/StudioWalletCheckoutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -189,6 +190,9 @@ export default async function StudioPaymentPage({
                 <p className="mt-3 text-sm leading-7 text-[var(--acct-muted)]">
                   This payment lane does not show an uploaded proof yet. If you already transferred, continue in the Studio project room or linked support room so the team can confirm the deposit cleanly.
                 </p>
+                {["requested", "overdue"].includes(payment.status) ? (
+                  <StudioWalletCheckoutButton paymentId={payment.id} />
+                ) : null}
               </div>
             )}
           </div>

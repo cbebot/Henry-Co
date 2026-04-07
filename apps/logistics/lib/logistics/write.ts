@@ -114,6 +114,9 @@ export async function createLogisticsRequest(input: CreateLogisticsRequestInput)
   const zones = await getLogisticsZones();
   const rateCards = await getLogisticsRateCards();
   const zone = resolveZone(input.zoneKey, zones);
+  if (!zone) {
+    return { ok: false, error: "Selected zone is no longer available. Please choose a valid zone." };
+  }
   const pricing = buildPricingBreakdown({
     zone,
     serviceType: input.serviceType,

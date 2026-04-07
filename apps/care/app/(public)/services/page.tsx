@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, Building2, Home, Package2, Sparkles } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
-import { getCareBookingCatalog, getCarePricing, groupPricing } from "@/lib/care-data";
+import { getCareBookingCatalog } from "@/lib/care-data";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
 export const revalidate = 60;
@@ -21,12 +21,7 @@ function formatMoney(value: number | string) {
 }
 
 export default async function ServicesPage() {
-  const [pricing, catalog] = await Promise.all([
-    getCarePricing(),
-    getCareBookingCatalog(),
-  ]);
-
-  const groups = groupPricing(pricing);
+  const catalog = await getCareBookingCatalog();
   const homePackages = catalog.packages.filter((item) => item.category_key === "home");
   const officePackages = catalog.packages.filter((item) => item.category_key === "office");
 
@@ -99,50 +94,25 @@ export default async function ServicesPage() {
       </section>
 
       <section className="mx-auto mt-16 max-w-[88rem] px-5 sm:px-8 lg:px-10">
-        <div className="space-y-14">
-          {groups.map((group) => (
-            <section key={group.category} className="care-card rounded-[2.2rem] p-8">
-              <div className="flex flex-col gap-3 border-b border-black/10 pb-6 dark:border-white/10 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <div className="care-kicker">Garment category</div>
-                  <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
-                    {group.category}
-                  </h2>
-                </div>
-                <div className="text-sm text-zinc-500 dark:text-white/56">
-                  {group.rows.length} available item{group.rows.length === 1 ? "" : "s"}
-                </div>
-              </div>
-
-              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {group.rows.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-[1.7rem] border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/[0.04]"
-                  >
-                    <div className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/48">
-                      {item.category}
-                    </div>
-                    <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
-                      {item.item_name}
-                    </div>
-                    {item.description ? (
-                      <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
-                        {item.description}
-                      </p>
-                    ) : null}
-                    <div className="mt-5 flex items-baseline justify-between gap-3">
-                      <div className="text-3xl font-black tracking-[-0.04em] text-[color:var(--accent)]">
-                        {formatMoney(item.price)}
-                      </div>
-                      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/48">
-                        /{item.unit}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+        <div className="grid gap-6 lg:grid-cols-3">
+          {[
+            {
+              title: "Step 1: Scope confirmation",
+              body: "We confirm what is being handled, where the service starts, and what completion looks like.",
+            },
+            {
+              title: "Step 2: Controlled execution",
+              body: "Wardrobe, home, and office lanes follow tailored execution standards instead of one generic checklist.",
+            },
+            {
+              title: "Step 3: Verified completion",
+              body: "Each request ends with a clear completion state, support follow-up path, and a traceable service record.",
+            },
+          ].map((step) => (
+            <div key={step.title} className="care-card rounded-[2rem] p-7">
+              <h3 className="text-xl font-semibold text-zinc-950 dark:text-white">{step.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">{step.body}</p>
+            </div>
           ))}
         </div>
       </section>
@@ -155,16 +125,16 @@ export default async function ServicesPage() {
               Choose the right service, then book with confidence.
             </h2>
             <p className="mt-4 text-sm leading-7 text-white/66">
-              Review what suits your wardrobe, home, or workplace, then move straight into a
-              booking flow that keeps timing, pricing, and service notes clear from the start.
+              Review the service model here, then use the pricing page for exact rates and fee rules
+              before you submit your booking.
             </p>
           </div>
 
           <Link
-            href="/book"
+            href="/pricing"
             className="care-button-primary mt-6 inline-flex items-center gap-2 rounded-full px-6 py-4 text-sm font-semibold lg:mt-0"
           >
-            Plan service
+            Review pricing
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
