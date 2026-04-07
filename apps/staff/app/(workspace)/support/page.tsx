@@ -1,24 +1,53 @@
-import { Headphones } from "lucide-react";
 import { requireStaff } from "@/lib/staff-auth";
-import { StaffPageHeader, StaffEmptyState } from "@/components/StaffPrimitives";
+import { StaffPageHeader, StaffPanel, StaffStatusBadge } from "@/components/StaffPrimitives";
+import { getStaffIntelligenceSnapshot } from "@/lib/intelligence-data";
 
 export const dynamic = "force-dynamic";
 
 export default async function SupportPage() {
   await requireStaff();
+  const intelligence = await getStaffIntelligenceSnapshot();
+  const supportTasks = intelligence.tasks.filter((task) => task.queue.startsWith("support-"));
 
   return (
     <div className="staff-fade-in">
       <StaffPageHeader
         eyebrow="Workspace"
         title="Support Desk"
-        description="Cross-division support queue for customer and internal requests."
+        description="Cross-division support queue with triage-aware priorities and suggested next actions."
       />
-      <StaffEmptyState
-        icon={Headphones}
-        title="Support desk coming soon"
-        description="The support queue will connect to cross-division support threads, tickets, and escalation workflows across all Henry & Co. services."
-      />
+      <div className="mb-5 rounded-2xl border border-[var(--staff-line)] bg-[var(--staff-surface)] px-4 py-3">
+        <p className="text-xs uppercase tracking-[0.14em] text-[var(--staff-muted)]">Queue guidance</p>
+        <p className="mt-1 text-sm text-[var(--staff-muted)]">
+          Handle stale and at-risk items first, then clear normal queue items. Finance and trust-tagged threads should
+          be escalated through their specialist lanes.
+        </p>
+      </div>
+      <StaffPanel title="Prioritized support queue">
+        {supportTasks.length === 0 ? (
+          <p className="text-sm text-[var(--staff-muted)]">No open support queue items.</p>
+        ) : (
+          <div className="space-y-3">
+            {supportTasks.slice(0, 20).map((task) => (
+              <a
+                key={task.id}
+                href={task.href}
+                className="block rounded-xl border border-[var(--staff-line)] bg-[var(--staff-surface)] px-4 py-3"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-[var(--staff-ink)]">{task.title}</p>
+                  <StaffStatusBadge
+                    label={task.status}
+                    tone={task.status === "stale" || task.status === "at_risk" ? "warning" : "info"}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-[var(--staff-muted)]">{task.summary}</p>
+                <p className="mt-2 text-xs text-[var(--staff-muted)]">{task.suggestedAction}</p>
+              </a>
+            ))}
+          </div>
+        )}
+      </StaffPanel>
     </div>
   );
 }

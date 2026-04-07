@@ -45,7 +45,7 @@ const STAFF_DIVISION_PATHS: Partial<Record<WorkspaceDivision, string>> = {
   learn: "/learn",
   logistics: "/logistics",
 };
-const LEGACY_PROFILE_FALLBACK_DIVISIONS = new Set<WorkspaceDivision>(["care", "jobs"]);
+const LEGACY_PROFILE_FALLBACK_DIVISIONS = new Set<WorkspaceDivision>(["care"]);
 
 function unique<T>(items: T[]) {
   return [...new Set(items)];
@@ -56,6 +56,30 @@ function canUseLegacyProfileFallback(division: WorkspaceDivision) {
 }
 
 type StaffServerSupabase = Awaited<ReturnType<typeof createStaffSupabaseServer>>;
+
+async function recordAccessSourceAudit(input: {
+  userId: string;
+  source: "explicit" | "fallback" | "activity";
+  divisions: WorkspaceDivision[];
+}) {
+  try {
+    const h = await headers();
+    const admin = createStaffAdminSupabase();
+    await admin.from("staff_navigation_audit").insert({
+      user_id: input.userId,
+      path: h.get("x-henry-pathname") || "/",
+      division: input.divisions.join(","),
+      referrer: h.get("referer") || null,
+      user_agent: h.get("user-agent") || null,
+      metadata: {
+        access_source: input.source,
+        divisions: input.divisions,
+      },
+    } as never);
+  } catch {
+    // Ignore audit sink failures to avoid blocking access.
+  }
+}
 
 async function readStaffAuthUser(supabase: StaffServerSupabase) {
   try {
@@ -233,6 +257,15 @@ export async function getStaffViewer(): Promise<WorkspaceViewer | null> {
   }
 
   const families = unique(memberships.flatMap((membership) => membership.families));
+
+  const derivedSources = new Set(memberships.map((membership) => membership.source));
+  if (derivedSources.has("fallback") || derivedSources.has("activity")) {
+    await recordAccessSourceAudit({
+      userId: user.id,
+      source: derivedSources.has("fallback") ? "fallback" : "activity",
+      divisions: memberships.map((membership) => membership.division),
+    });
+  }
 
   return {
     user: {

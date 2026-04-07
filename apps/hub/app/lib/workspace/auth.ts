@@ -31,7 +31,7 @@ type MembershipRow = {
   scope_type: string | null;
   scope_id: string | null;
 };
-const LEGACY_PROFILE_FALLBACK_DIVISIONS = new Set<WorkspaceDivision>(["care", "jobs"]);
+const LEGACY_PROFILE_FALLBACK_DIVISIONS = new Set<WorkspaceDivision>(["care"]);
 
 function normalizeEmail(value?: string | null) {
   const text = String(value || "").trim().toLowerCase();
@@ -44,6 +44,31 @@ function unique<T>(items: T[]) {
 
 function canUseLegacyProfileFallback(division: WorkspaceDivision) {
   return LEGACY_PROFILE_FALLBACK_DIVISIONS.has(division);
+}
+
+async function recordAccessSourceAudit(input: {
+  userId: string;
+  source: "explicit" | "fallback" | "activity";
+  divisions: WorkspaceDivision[];
+}) {
+  try {
+    const h = await headers();
+    const admin = createAdminSupabase();
+    await admin.from("staff_navigation_audit").insert({
+      user_id: input.userId,
+      path: h.get("x-henry-pathname") || "/",
+      division: input.divisions.join(","),
+      referrer: h.get("referer") || null,
+      user_agent: h.get("user-agent") || null,
+      metadata: {
+        access_source: input.source,
+        divisions: input.divisions,
+        surface: "hub-workspace",
+      },
+    } as never);
+  } catch {
+    // Ignore audit sink failures to avoid blocking owner/staff access.
+  }
 }
 
 async function createWorkspaceSupabaseServer() {
@@ -243,6 +268,15 @@ export async function getWorkspaceViewer(): Promise<WorkspaceViewer> {
   }
 
   const families = unique(memberships.flatMap((membership) => membership.families));
+
+  const derivedSources = new Set(memberships.map((membership) => membership.source));
+  if (derivedSources.has("fallback") || derivedSources.has("activity")) {
+    await recordAccessSourceAudit({
+      userId: user.id,
+      source: derivedSources.has("fallback") ? "fallback" : "activity",
+      divisions: memberships.map((membership) => membership.division),
+    });
+  }
 
   return {
     user: {

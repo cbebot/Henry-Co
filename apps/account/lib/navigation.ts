@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   Wallet,
   Activity,
+  ListTodo,
   CreditCard,
   Receipt,
   Bell,
@@ -33,6 +34,7 @@ export const accountNavItems: NavItem[] = [
   // Core
   { href: "/", label: "Overview", icon: LayoutDashboard, section: "Account" },
   { href: "/activity", label: "Activity", icon: Activity, section: "Account" },
+  { href: "/tasks", label: "Tasks", icon: ListTodo, section: "Account" },
   { href: "/wallet", label: "Wallet", icon: Wallet, section: "Account" },
   { href: "/payments", label: "Payments", icon: CreditCard, section: "Financial" },
   { href: "/subscriptions", label: "Subscriptions", icon: RefreshCcw, section: "Financial" },

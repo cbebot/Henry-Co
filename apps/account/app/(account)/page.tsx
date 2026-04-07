@@ -12,8 +12,10 @@ import {
   TrendingUp,
   ShieldCheck,
 } from "lucide-react";
+import { parseHenryFeatureFlags } from "@henryco/intelligence";
 import { requireAccountUser } from "@/lib/auth";
 import { getDashboardSummary, getWalletFundingContext } from "@/lib/account-data";
+import { buildAccountRecommendations, buildAccountTasks } from "@/lib/intelligence-rollout";
 import { activityMessageHref } from "@/lib/notification-center";
 import { formatNaira, timeAgo, divisionLabel, divisionColor } from "@/lib/format";
 import { getAccountTrustProfile, getTrustTierLabel } from "@/lib/trust";
@@ -22,6 +24,7 @@ import PageHeader from "@/components/layout/PageHeader";
 export const dynamic = "force-dynamic";
 
 export default async function OverviewPage() {
+  const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
   const user = await requireAccountUser();
   const [data, funding, trust] = await Promise.all([
     getDashboardSummary(user.id),
@@ -82,6 +85,27 @@ export default async function OverviewPage() {
     { href: "/care", label: "Book care", icon: Sparkles, color: "#6B7CFF" },
     { href: "/marketplace", label: "Shop", icon: ShoppingBag, color: "#B2863B" },
   ];
+
+  const tasks = buildAccountTasks({
+    userId: user.id,
+    unreadNotificationCount: data.unreadNotificationCount,
+    pendingFundingKobo: funding.pending_kobo,
+    openSupportCount: data.recentActivity.filter(
+      (item: Record<string, unknown>) => String(item.reference_type || "") === "support_thread"
+    ).length,
+    trust,
+  });
+
+  const recommendations = buildAccountRecommendations({
+    trust,
+    savedJobsCount: data.recentActivity.filter(
+      (item: Record<string, unknown>) =>
+        String(item.division || "") === "jobs" && String(item.activity_type || "").includes("saved")
+    ).length,
+    activeDivisionHints: data.recentActivity
+      .map((item: Record<string, unknown>) => String(item.division || "").toLowerCase())
+      .filter(Boolean) as Array<"account" | "care" | "marketplace" | "studio" | "jobs" | "property" | "learn" | "logistics">,
+  });
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -205,6 +229,66 @@ export default async function OverviewPage() {
           ))}
         </div>
       </section>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <section className="acct-card p-5">
+          <p className="acct-kicker mb-3">Action Center</p>
+          <div className="space-y-3">
+            {tasks.length === 0 ? (
+              <p className="text-sm text-[var(--acct-muted)]">No urgent account tasks right now.</p>
+            ) : (
+              tasks.slice(0, 5).map((task) => (
+                <Link
+                  key={task.id}
+                  href={task.deeplinkTemplate || "/"}
+                  className="block rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-3 hover:border-[var(--acct-gold)]/35"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{task.title}</p>
+                    {task.blocking ? (
+                      <span className="acct-chip acct-chip-red text-[0.65rem]">Blocking</span>
+                    ) : (
+                      <span className="acct-chip acct-chip-blue text-[0.65rem]">{task.priority}</span>
+                    )}
+                  </div>
+                  {task.description ? (
+                    <p className="mt-1 text-xs text-[var(--acct-muted)]">{task.description}</p>
+                  ) : null}
+                </Link>
+              ))
+            )}
+          </div>
+        </section>
+
+        {flags.intelligence_recommendations ? (
+          <section className="acct-card p-5">
+            <p className="acct-kicker mb-3">Smart Recommendations</p>
+            <div className="space-y-3">
+              {recommendations.length === 0 ? (
+                <p className="text-sm text-[var(--acct-muted)]">
+                  Keep using HenryCo services and recommendations will adapt to your activity.
+                </p>
+              ) : (
+                recommendations.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={item.ctaHref}
+                    className="block rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-3 hover:border-[var(--acct-gold)]/35"
+                  >
+                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{item.title}</p>
+                    {item.description ? (
+                      <p className="mt-1 text-xs text-[var(--acct-muted)]">{item.description}</p>
+                    ) : null}
+                    <p className="mt-2 text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
+                      Why: {item.reasonCodes.join(", ")} · {item.confidence}
+                    </p>
+                  </Link>
+                ))
+              )}
+            </div>
+          </section>
+        ) : null}
+      </div>
 
       {/* Two column layout */}
       <div className="grid gap-6 lg:grid-cols-2">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getHqUrl } from "@henryco/config";
 import { ButtonPendingContent } from "@henryco/ui";
 import { Menu, X, LogOut, ExternalLink } from "lucide-react";
 import { resolveIcon } from "@/components/StaffPrimitives";
@@ -124,7 +125,7 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
             {viewer.hasExecutiveAccess && (
               <div className="border-t border-[var(--staff-line)] px-3 py-2">
                 <a
-                  href="https://hq.henrycogroup.com"
+                  href={getHqUrl("/")}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setOpen(false)}

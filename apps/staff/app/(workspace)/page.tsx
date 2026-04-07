@@ -13,11 +13,13 @@ import {
   StaffQuickLink,
   resolveIcon,
 } from "@/components/StaffPrimitives";
+import { getStaffIntelligenceSnapshot } from "@/lib/intelligence-data";
 
 export const dynamic = "force-dynamic";
 
 export default async function StaffDashboard() {
   const viewer = await requireStaff();
+  const intelligence = await getStaffIntelligenceSnapshot();
   const navItems = getFilteredNavItems(viewer);
   const workspaceLinks = navItems.filter(
     (item) => item.section === "Workspaces" || item.section === "Operations"
@@ -36,25 +38,25 @@ export default async function StaffDashboard() {
       <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StaffMetricCard
           label="Active Tasks"
-          value="--"
+          value={String(intelligence.tasks.length)}
           subtitle="Across your divisions"
           icon={ListTodo}
         />
         <StaffMetricCard
           label="Open Queues"
-          value="--"
+          value={String(intelligence.metrics.openSupport)}
           subtitle="Pending assignment"
           icon={Layers}
         />
         <StaffMetricCard
           label="Pending Approvals"
-          value="--"
+          value={String(intelligence.metrics.elevatedRisk)}
           subtitle="Awaiting review"
           icon={ClipboardCheck}
         />
         <StaffMetricCard
           label="Notifications"
-          value="--"
+          value={String(intelligence.metrics.unreadNotifications)}
           subtitle="Unread items"
           icon={Bell}
         />
@@ -79,10 +81,20 @@ export default async function StaffDashboard() {
       </div>
 
       <StaffPanel title="Recent Activity">
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <p className="text-sm text-[var(--staff-muted)]">
-            No recent activity to display. Activity from your divisions will appear here.
-          </p>
+        <div className="space-y-3">
+          {intelligence.tasks.slice(0, 6).map((task) => (
+            <a
+              key={task.id}
+              href={task.href}
+              className="block rounded-xl border border-[var(--staff-line)] bg-[var(--staff-surface)] px-3 py-2"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-[var(--staff-ink)]">{task.title}</p>
+                <span className="text-xs text-[var(--staff-muted)]">{task.status}</span>
+              </div>
+              <p className="mt-1 text-xs text-[var(--staff-muted)]">{task.summary}</p>
+            </a>
+          ))}
         </div>
       </StaffPanel>
     </div>

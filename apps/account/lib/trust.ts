@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getAccountTrustTierLabel, type AccountTrustTier } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 
 function asText(value: unknown, fallback = "") {
@@ -17,7 +18,7 @@ function asObject(value: unknown) {
     : {};
 }
 
-export type TrustTier = "basic" | "verified" | "trusted" | "premium_verified";
+export type TrustTier = AccountTrustTier;
 
 export type AccountTrustProfile = {
   tier: TrustTier;
@@ -40,9 +41,7 @@ export type AccountTrustProfile = {
 };
 
 export function getTrustTierLabel(tier: TrustTier) {
-  return tier
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (match) => match.toUpperCase());
+  return getAccountTrustTierLabel(tier);
 }
 
 function calculateProfileCompletion(profile: Record<string, unknown>, documentCount: number) {
