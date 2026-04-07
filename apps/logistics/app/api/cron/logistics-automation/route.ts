@@ -6,13 +6,21 @@ export const dynamic = "force-dynamic";
 function isAuthorized(request: Request) {
   const secret = String(process.env.CRON_SECRET || "").trim();
   if (!secret) {
-    return true;
+    return false;
   }
 
   return request.headers.get("authorization") === `Bearer ${secret}`;
 }
 
 async function handleRequest(request: Request) {
+  const secret = String(process.env.CRON_SECRET || "").trim();
+  if (!secret) {
+    return NextResponse.json(
+      { ok: false, error: "CRON_SECRET is not configured for logistics automation." },
+      { status: 503 }
+    );
+  }
+
   if (!isAuthorized(request)) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }

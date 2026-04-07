@@ -21,33 +21,38 @@ export async function POST(request: Request) {
     return NextResponse.redirect(new URL(redirectTo, request.url));
   }
 
-  let senderId = user?.id || "studio-support";
-  let senderType = "staff";
-  let threadUserId: string | null = null;
-  let threadSubject = "Studio support";
-
   if (!user) {
-    const admin = createAdminSupabase();
-    const { data: thread } = await admin
-      .from("support_threads")
-      .select("user_id, subject")
-      .eq("id", threadId)
-      .maybeSingle<{ user_id: string | null; subject: string | null }>();
-
-    threadUserId = thread?.user_id || null;
-    threadSubject = thread?.subject || threadSubject;
-    senderId = threadUserId || senderId;
-    senderType = "system";
-  } else {
-    const admin = createAdminSupabase();
-    const { data: thread } = await admin
-      .from("support_threads")
-      .select("user_id, subject")
-      .eq("id", threadId)
-      .maybeSingle<{ user_id: string | null; subject: string | null }>();
-    threadUserId = thread?.user_id || null;
-    threadSubject = thread?.subject || threadSubject;
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
+
+  const admin = createAdminSupabase();
+  const { data: thread } = await admin
+    .from("support_threads")
+    .select("id, user_id, subject")
+    .eq("id", threadId)
+    .maybeSingle<{ id: string; user_id: string | null; subject: string | null }>();
+
+  if (!thread) {
+    return NextResponse.json({ ok: false, error: "Thread not found" }, { status: 404 });
+  }
+
+  const { data: memberships } = await admin
+    .from("studio_role_memberships")
+    .select("role")
+    .eq("is_active", true)
+    .eq("user_id", user.id);
+  const staffRoles = new Set((memberships ?? []).map((row) => String((row as { role?: string }).role || "")));
+  const hasSupportRole = staffRoles.has("studio_owner") || staffRoles.has("client_success");
+
+  const isThreadOwner = thread.user_id === user.id;
+  if (!isThreadOwner && !hasSupportRole) {
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+  }
+
+  const senderId = user.id;
+  const senderType = isThreadOwner ? "customer" : "staff";
+  const threadUserId: string | null = thread.user_id || null;
+  const threadSubject = thread.subject || "Studio support";
 
   await appendSupportMessage({
     threadId,

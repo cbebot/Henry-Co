@@ -3,6 +3,8 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
+import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
+import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempotency";
 
 const ALLOWED_ATTACHMENT_TYPES = new Set([
   "image/jpeg",
@@ -20,6 +22,13 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const prior = await getIdempotentResponse({
+      userId: user.id,
+      routeKey: "support.reply",
+      request,
+    });
+    if (prior) return NextResponse.json(prior);
 
     await ensureAccountProfileRecords(user);
 
@@ -77,23 +86,37 @@ export async function POST(request: Request) {
       });
     }
 
+    const triage = triageSupportInput(body);
+
     // Insert message
-    await admin.from("support_messages").insert({
+    const { error: messageErr } = await admin.from("support_messages").insert({
       thread_id,
       sender_id: user.id,
       sender_type: "customer",
       body,
       attachments: uploadedAttachments,
     });
+    if (messageErr) {
+      return NextResponse.json({ error: "Failed to add support reply" }, { status: 500 });
+    }
 
     // Update thread
-    await admin
+    const { error: threadErr } = await admin
       .from("support_threads")
-      .update({ status: "awaiting_reply", updated_at: new Date().toISOString() })
+      .update({
+        status: "awaiting_reply",
+        priority: triage.shouldEscalate ? "high" : undefined,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", thread_id);
+    if (threadErr) {
+      return NextResponse.json({ error: "Failed to update support thread" }, { status: 500 });
+    }
+
+    const sideEffectFailures: string[] = [];
 
     if (uploadedAttachments.length > 0) {
-      await admin.from("customer_documents").insert(
+      const { error: docsErr } = await admin.from("customer_documents").insert(
         uploadedAttachments.map((attachment) => ({
           user_id: user.id,
           division: thread.division || "support",
@@ -109,9 +132,42 @@ export async function POST(request: Request) {
           },
         }))
       );
+      if (docsErr) sideEffectFailures.push("documents");
     }
 
-    return NextResponse.json({ success: true });
+    try {
+      await emitIntelligenceEvent({
+        name: triage.shouldEscalate ? AccountIntelEvents.supportEscalated : AccountIntelEvents.supportOpened,
+        division: thread.division || "account",
+        eventId: `support_reply:${thread_id}:${Date.now()}`,
+        actor: { kind: "user", subjectRef: user.id, roleHint: "customer" },
+        properties: {
+          title: "Support thread reply",
+          summary: "Customer replied in support thread.",
+          threadId: thread_id,
+          triageIntent: triage.intent,
+          triageQueue: triage.handoffSummary.suggestedQueue || "general",
+          escalated: triage.shouldEscalate,
+          attachments: uploadedAttachments.length,
+        },
+      });
+    } catch {
+      sideEffectFailures.push("intelligence_event");
+    }
+
+    const payload = {
+      success: true,
+      side_effects_ok: sideEffectFailures.length === 0,
+      side_effect_failures: sideEffectFailures,
+    };
+    await rememberIdempotentResponse({
+      userId: user.id,
+      routeKey: "support.reply",
+      request,
+      responsePayload: payload,
+    });
+
+    return NextResponse.json(payload, sideEffectFailures.length ? { status: 207 } : undefined);
   } catch {
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
 import { cookies } from "next/headers";
+import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
+import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempotency";
 
 export async function POST(request: Request) {
   try {
@@ -24,6 +26,13 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    const prior = await getIdempotentResponse({
+      userId: user.id,
+      routeKey: "support.create",
+      request,
+    });
+    if (prior) return NextResponse.json(prior);
+
     const { subject, category, message } = await request.json();
 
     if (!subject || !message) {
@@ -31,6 +40,8 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminSupabase();
+
+    const triage = triageSupportInput(message);
 
     // Create thread
     const { data: thread, error: threadErr } = await admin
@@ -40,6 +51,12 @@ export async function POST(request: Request) {
         subject,
         category: category || "general",
         status: "open",
+        priority: triage.shouldEscalate ? "high" : "normal",
+        metadata: {
+          triage_intent: triage.intent,
+          triage_confidence: triage.confidence,
+          triage_queue: triage.handoffSummary.suggestedQueue || "general",
+        },
       })
       .select("id")
       .single();
@@ -48,34 +65,88 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to create thread" }, { status: 500 });
     }
 
-    // Create first message
-    await admin.from("support_messages").insert({
+    // Create first message (must succeed or thread is rolled back)
+    const { error: messageErr } = await admin.from("support_messages").insert({
       thread_id: thread.id,
       sender_id: user.id,
       sender_type: "customer",
       body: message,
     });
+    if (messageErr) {
+      await admin.from("support_threads").delete().eq("id", thread.id).eq("user_id", user.id);
+      return NextResponse.json({ error: "Failed to create support message" }, { status: 500 });
+    }
+
+    const sideEffectFailures: string[] = [];
 
     // Activity
-    await admin.from("customer_activity").insert({
+    const { error: activityErr } = await admin.from("customer_activity").insert({
       user_id: user.id,
       division: "account",
       activity_type: "support_created",
       title: `Support request: ${subject}`,
+      description: triage.shouldEscalate
+        ? "Support request flagged for human attention."
+        : "Support request submitted and triaged.",
+      status: triage.shouldEscalate ? "escalated" : "open",
       reference_type: "support_thread",
       reference_id: thread.id,
+      metadata: {
+        triage_intent: triage.intent,
+        triage_confidence: triage.confidence,
+        triage_queue: triage.handoffSummary.suggestedQueue || "general",
+      },
     });
+    if (activityErr) sideEffectFailures.push("activity");
 
     // Notification
-    await admin.from("customer_notifications").insert({
+    const { error: notificationErr } = await admin.from("customer_notifications").insert({
       user_id: user.id,
       title: "Support request created",
       body: `Your request "${subject}" has been submitted. We'll get back to you soon.`,
       category: "support",
+      priority: triage.shouldEscalate ? "high" : "normal",
       action_url: `/support/${thread.id}`,
+      detail_payload: {
+        triage_intent: triage.intent,
+        triage_confidence: triage.confidence,
+      },
+    });
+    if (notificationErr) sideEffectFailures.push("notification");
+
+    try {
+      await emitIntelligenceEvent({
+        name: triage.shouldEscalate ? AccountIntelEvents.supportEscalated : AccountIntelEvents.supportOpened,
+        division: "account",
+        eventId: `support_open:${thread.id}`,
+        actor: { kind: "user", subjectRef: user.id, roleHint: "customer" },
+        properties: {
+          title: "Support thread opened",
+          summary: `Support request created with ${triage.intent} intent.`,
+          threadId: thread.id,
+          triageIntent: triage.intent,
+          triageQueue: triage.handoffSummary.suggestedQueue || "general",
+          escalated: triage.shouldEscalate,
+        },
+      });
+    } catch {
+      sideEffectFailures.push("intelligence_event");
+    }
+
+    const payload = {
+      success: true,
+      thread_id: thread.id,
+      side_effects_ok: sideEffectFailures.length === 0,
+      side_effect_failures: sideEffectFailures,
+    };
+    await rememberIdempotentResponse({
+      userId: user.id,
+      routeKey: "support.create",
+      request,
+      responsePayload: payload,
     });
 
-    return NextResponse.json({ success: true, thread_id: thread.id });
+    return NextResponse.json(payload, sideEffectFailures.length ? { status: 207 } : undefined);
   } catch {
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }

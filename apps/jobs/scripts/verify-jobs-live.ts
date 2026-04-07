@@ -571,7 +571,13 @@ async function main() {
     reason: "Verified after identity and employer intent review.",
   });
 
-  const cronResponse = await cronModule.GET();
+  const cronResponse = await cronModule.GET(
+    new Request("http://localhost/api/cron/jobs-alerts", {
+      headers: {
+        authorization: `Bearer ${String(process.env.CRON_SECRET || "")}`,
+      },
+    })
+  );
   const cronPayload = await cronResponse.json();
 
   const candidateDashboard = await data.getCandidateDashboardData(candidateActor.userId);

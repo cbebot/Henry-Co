@@ -5,6 +5,12 @@ import { createJobsInAppNotification, sendJobsEmail } from "@/lib/jobs/notificat
 
 export const dynamic = "force-dynamic";
 
+function isAuthorized(request: Request) {
+  const secret = String(process.env.CRON_SECRET || "").trim();
+  if (!secret) return false;
+  return request.headers.get("authorization") === `Bearer ${secret}`;
+}
+
 function asObject(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   return value as Record<string, unknown>;
@@ -31,7 +37,18 @@ function matchJobs(job: Awaited<ReturnType<typeof getJobPosts>>[number], metadat
     .includes(q);
 }
 
-export async function GET() {
+async function runAlerts(request: Request) {
+  const secret = String(process.env.CRON_SECRET || "").trim();
+  if (!secret) {
+    return NextResponse.json(
+      { ok: false, error: "CRON_SECRET is not configured for jobs alerts." },
+      { status: 503 }
+    );
+  }
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   const admin = createAdminSupabase();
   const [jobs, alertsRes] = await Promise.all([
     getJobPosts(),
@@ -113,4 +130,12 @@ export async function GET() {
     processed,
     notified,
   });
+}
+
+export async function GET(request: Request) {
+  return runAlerts(request);
+}
+
+export async function POST(request: Request) {
+  return runAlerts(request);
 }
