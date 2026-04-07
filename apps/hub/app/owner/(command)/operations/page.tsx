@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AlertTriangle, Layers3, ListTodo, Workflow } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import MetricCard from "@/components/owner/MetricCard";
 import DivisionBadge from "@/components/owner/DivisionBadge";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
@@ -12,6 +13,7 @@ export default async function OperationsCenterPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <OwnerPageHeader
         eyebrow="Operations Center"
         title="Queues, bottlenecks, and stale workflows"

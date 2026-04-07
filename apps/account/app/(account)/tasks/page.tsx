@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ListTodo } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
 import { buildAccountTasks } from "@/lib/intelligence-rollout";
@@ -32,6 +33,7 @@ export default async function TasksPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <PageHeader
         title="Tasks"
         description="Prioritized actions across account, trust, wallet, and support."

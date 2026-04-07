@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RouteLiveRefresh } from "@henryco/ui";
 import MetricCard from "@/components/owner/MetricCard";
 import DivisionBadge from "@/components/owner/DivisionBadge";
 import StatusBadge from "@/components/owner/StatusBadge";
@@ -14,6 +15,7 @@ export default async function FinanceCenterPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <OwnerPageHeader
         eyebrow="Finance Center"
         title="Cross-division money visibility"

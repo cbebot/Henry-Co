@@ -4,6 +4,7 @@ import {
   ClipboardCheck,
   Bell,
 } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireStaff } from "@/lib/staff-auth";
 import { getFilteredNavItems } from "@/lib/navigation";
 import {
@@ -31,6 +32,7 @@ export default async function StaffDashboard() {
 
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh />
       <StaffPageHeader
         eyebrow="Staff HQ"
         title={`Welcome back, ${firstName}`}

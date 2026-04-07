@@ -69,7 +69,7 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-3" data-live-refresh-pause="true">
       {feedback ? (
         <div
           className={`rounded-2xl px-4 py-3 text-sm ${

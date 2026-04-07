@@ -1,9 +1,9 @@
 import { Bell } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getNotificationFeed } from "@/lib/account-data";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
-import MarkAllReadButton from "@/components/notifications/MarkAllReadButton";
 import NotificationsFeed from "@/components/notifications/NotificationsFeed";
 
 export const dynamic = "force-dynamic";
@@ -11,15 +11,14 @@ export const dynamic = "force-dynamic";
 export default async function NotificationsPage() {
   const user = await requireAccountUser();
   const notifications = await getNotificationFeed(user.id, 50);
-  const hasUnread = notifications.some((n) => !n.is_read);
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <PageHeader
         title="Notifications"
         description="Stay updated on everything across HenryCo."
         icon={Bell}
-        actions={hasUnread ? <MarkAllReadButton /> : undefined}
       />
 
       {notifications.length === 0 ? (

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Building2, Wallet } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getWalletFundingContext } from "@/lib/account-data";
 import { formatNaira } from "@/lib/format";
@@ -15,6 +16,7 @@ export default async function WalletFundingPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh />
       <PageHeader
         title="Wallet Funding"
         description="Move funds into your HenryCo wallet through a verification-safe bank transfer flow."

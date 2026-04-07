@@ -46,7 +46,7 @@ export default function ChangePasswordForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md space-y-4">
+    <form onSubmit={handleSubmit} className="max-w-md space-y-4" data-live-refresh-pause="true">
       {message && (
         <div
           className={`rounded-xl px-4 py-3 text-sm ${

@@ -55,7 +55,11 @@ export default function FundingProofUpload({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-[1.55rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5">
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-[1.55rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5"
+      data-live-refresh-pause="true"
+    >
       <div className="flex items-start gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--acct-blue-soft)] text-[var(--acct-blue)]">
           <FileUp size={18} />

@@ -55,7 +55,7 @@ export default function FundingRequestForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="acct-card p-5 sm:p-6">
+    <form onSubmit={handleSubmit} className="acct-card p-5 sm:p-6" data-live-refresh-pause="true">
       <div className="flex flex-col gap-2">
         <p className="acct-kicker">Funding method</p>
         <div className="rounded-[1.4rem] border border-[var(--acct-gold)] bg-[var(--acct-gold-soft)] px-4 py-4">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Banknote } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import {
   getPendingWithdrawalHoldKobo,
@@ -28,6 +29,7 @@ export default async function WalletWithdrawalsPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh />
       <PageHeader
         title="Withdrawals"
         description="Request a bank transfer from your available balance. Finance reviews every withdrawal before payout."

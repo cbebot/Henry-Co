@@ -10,6 +10,7 @@ import {
   Shield,
   Users,
 } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import MetricCard from "@/components/owner/MetricCard";
 import DivisionBadge from "@/components/owner/DivisionBadge";
 import { OwnerPageHeader, OwnerPanel, OwnerNotice, OwnerQuickLink } from "@/components/owner/OwnerPrimitives";
@@ -23,6 +24,7 @@ export default async function OwnerOverviewPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh />
       <OwnerPageHeader
         eyebrow="Central Owner Command Center"
         title={`${data.companyTitle} company brain`}

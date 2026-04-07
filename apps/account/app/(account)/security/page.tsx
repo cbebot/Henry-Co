@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Shield, Key, Smartphone, Clock, Globe, ChevronRight, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getSecurityLog } from "@/lib/account-data";
 import { formatDateTime } from "@/lib/format";
@@ -49,6 +50,7 @@ export default async function SecurityPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh />
       <PageHeader
         title="Security"
         description="Manage your password, sessions, and account security."

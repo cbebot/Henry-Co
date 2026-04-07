@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getSupportMessages, getSupportThreads } from "@/lib/account-data";
 import SupportThreadRoom from "@/components/support/SupportThreadRoom";
@@ -29,6 +30,7 @@ export default async function SupportThreadPage({ params }: Props) {
   const isOpen = thread.status !== "resolved" && thread.status !== "closed";
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh intervalMs={10000} />
       <div className="flex items-center gap-3">
         <Link href="/support" className="acct-button-ghost rounded-xl">
           <ArrowLeft size={16} />

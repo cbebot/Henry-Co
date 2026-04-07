@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RouteLiveRefresh } from "@henryco/ui";
 import DivisionBadge from "@/components/owner/DivisionBadge";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import { getOperationsCenterData } from "@/lib/owner-data";
@@ -10,6 +11,7 @@ export default async function OperationsAlertsPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <OwnerPageHeader
         eyebrow="Alert Board"
         title="Operational alerts requiring owner action"

@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import DivisionBadge from "@/components/owner/DivisionBadge";
 import StatusBadge from "@/components/owner/StatusBadge";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
@@ -10,6 +11,7 @@ export default async function MessagingAlertsPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh />
       <OwnerPageHeader
         eyebrow="Owner Alerts"
         title="Notification failures and skips"

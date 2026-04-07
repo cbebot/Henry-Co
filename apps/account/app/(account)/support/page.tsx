@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LifeBuoy, Plus, MessageSquare, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getSupportThreads } from "@/lib/account-data";
 import { timeAgo, divisionLabel } from "@/lib/format";
@@ -29,6 +30,7 @@ export default async function SupportPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <PageHeader
         title="Support"
         description="Get help with any HenryCo service."

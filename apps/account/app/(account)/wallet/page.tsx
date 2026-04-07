@@ -9,6 +9,7 @@ import {
   Clock,
   ShieldCheck,
 } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import {
   getPendingWithdrawalHoldKobo,
@@ -67,6 +68,7 @@ export default async function WalletPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh />
       <PageHeader
         title="Wallet"
         description="Your HenryCo wallet for payments across Care, Marketplace, Studio, and more."

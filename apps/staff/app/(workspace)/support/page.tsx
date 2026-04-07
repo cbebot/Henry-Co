@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireStaff } from "@/lib/staff-auth";
 import { StaffPageHeader, StaffPanel, StaffStatusBadge } from "@/components/StaffPrimitives";
 import { getStaffIntelligenceSnapshot } from "@/lib/intelligence-data";
@@ -13,6 +14,7 @@ export default async function SupportPage() {
 
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="Workspace"
         title="Support Desk"

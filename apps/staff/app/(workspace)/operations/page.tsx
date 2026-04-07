@@ -1,4 +1,5 @@
 import { Cog } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireStaff } from "@/lib/staff-auth";
 import { StaffMetricCard, StaffPageHeader, StaffPanel, StaffStatusBadge } from "@/components/StaffPrimitives";
 import { getStaffIntelligenceSnapshot } from "@/lib/intelligence-data";
@@ -9,10 +10,10 @@ export default async function OperationsPage() {
   await requireStaff();
   const intelligence = await getStaffIntelligenceSnapshot();
   const riskTasks = intelligence.riskAlerts.slice(0, 12);
-  const refreshedAt = new Date().toLocaleString();
 
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="Operations"
         title="Operations Center"
@@ -41,7 +42,7 @@ export default async function OperationsPage() {
 
       <StaffPanel title="Risk and anomaly routing">
         <p className="mb-3 text-xs text-[var(--staff-muted)]">
-          Snapshot refreshed {refreshedAt}. Use this panel to escalate medium/high risk evidence and keep queue pressure visible.
+          This view refreshes while open so risk evidence, stale support counts, and queue pressure stay current.
         </p>
         {riskTasks.length === 0 ? (
           <p className="text-sm text-[var(--staff-muted)]">

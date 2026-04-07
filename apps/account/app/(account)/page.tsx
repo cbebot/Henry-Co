@@ -13,6 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { parseHenryFeatureFlags } from "@henryco/intelligence";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
 import { buildAccountRecommendations, buildAccountTasks } from "@/lib/intelligence-rollout";
@@ -114,6 +115,7 @@ export default async function OverviewPage() {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh />
       {/* Welcome */}
       <PageHeader
         title={`Welcome back${user.fullName ? `, ${user.fullName.split(" ")[0]}` : ""}`}

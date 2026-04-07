@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Building2, Clock3, ShieldCheck, Wallet } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getWalletFundingRequestById } from "@/lib/account-data";
 import { formatNaira, formatDateTime } from "@/lib/format";
@@ -41,6 +42,7 @@ export default async function WalletFundingRequestPage({ params }: Props) {
 
   return (
     <div className="space-y-6 acct-fade-in">
+      <RouteLiveRefresh />
       <PageHeader
         title="Funding Request"
         description="Transfer details, proof status, and review progress for this wallet funding request."
