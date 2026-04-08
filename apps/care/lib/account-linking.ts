@@ -78,6 +78,22 @@ export async function ensureCareBookingAccountLink(
 ) {
   const supabase = createAdminSupabase();
   await ensureCustomerProfileProjection(input);
+  const normalizedEmail = normalizeEmail(input.email);
+  const normalizedPhone = normalizePhone(input.phone);
+
+  try {
+    await supabase
+      .from("care_bookings")
+      .update({
+        customer_id: input.userId,
+        email: normalizedEmail || undefined,
+        phone_normalized: normalizedPhone || undefined,
+      } as never)
+      .eq("id", input.booking.id);
+  } catch {
+    // Avoid blocking booking creation if a partially provisioned environment
+    // is still missing one of the newer linkage columns.
+  }
 
   const activityTitle =
     input.source === "authenticated_booking"
