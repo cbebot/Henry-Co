@@ -27,9 +27,9 @@ export default async function CandidateAlertsPage({
   const viewer = await requireJobsUser("/candidate/alerts");
   const [data, params] = await Promise.all([
     getCandidateDashboardData(viewer.user!.id),
-    searchParams ?? Promise.resolve({}),
+    searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
   ]);
-  const saved = params.saved === "1";
+  const saved = (params as Record<string, string | string[] | undefined>).saved === "1";
 
   return (
     <WorkspaceShell

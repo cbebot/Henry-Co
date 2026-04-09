@@ -22,9 +22,9 @@ export default async function CandidateApplicationsPage({
   const viewer = await requireJobsUser("/candidate/applications");
   const [data, params] = await Promise.all([
     getCandidateDashboardData(viewer.user!.id),
-    searchParams ?? Promise.resolve({}),
+    searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
   ]);
-  const submittedId = typeof params.submitted === "string" ? params.submitted : null;
+  const submittedId = typeof (params as Record<string, string | string[] | undefined>).submitted === "string" ? (params as Record<string, string | string[] | undefined>).submitted as string : null;
 
   return (
     <WorkspaceShell

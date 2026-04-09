@@ -1,7 +1,7 @@
 import { ArrowLeft, Bot, Headphones, User } from "lucide-react";
 import Link from "next/link";
 import { requireAccountUser } from "@/lib/auth";
-import { getSupportMessages, getSupportThreadById, markNotificationsReadByActionUrl, markNotificationsReadByReference } from "@/lib/account-data";
+import { getSupportMessages, getSupportThreadById, markNotificationsReadByActionUrl, markNotificationsReadByReference, markSupportThreadRead } from "@/lib/account-data";
 import { formatDateTime } from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
 import SupportReplyForm from "@/components/support/SupportReplyForm";
@@ -19,6 +19,7 @@ export default async function SupportThreadPage({ params }: Props) {
   await Promise.all([
     markNotificationsReadByReference(user.id, "support_thread", threadId),
     markNotificationsReadByActionUrl(user.id, `/support/${threadId}`),
+    markSupportThreadRead(user.id, threadId),
   ]);
   const messages = await getSupportMessages(threadId);
   const senderIcon = { customer: User, agent: Headphones, system: Bot };
@@ -28,7 +29,7 @@ export default async function SupportThreadPage({ params }: Props) {
         <Link href="/support" className="acct-button-ghost rounded-xl"><ArrowLeft size={16} /></Link>
         <div><h1 className="acct-display text-lg">{thread.subject}</h1><p className="text-xs text-[var(--acct-muted)]">{thread.category} · {thread.status}</p></div>
       </div>
-      <PageHeader title="Conversation" description="Opening a support thread now clears matching unread notification state. True thread unread state still needs support-schema work because the current thread/message tables do not store read markers." />
+      <PageHeader title="Conversation" description="Messages are marked as read when you open a thread. You can view unread threads from your support overview." />
       <div className="space-y-4">
         {messages.map((message: Record<string, string>) => {
           const SenderIcon = senderIcon[message.sender_type as keyof typeof senderIcon] || User;

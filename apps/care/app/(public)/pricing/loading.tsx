@@ -5,12 +5,12 @@ export default function PricingLoading() {
     <main className="px-5 py-6 sm:px-8 sm:py-8">
       <CareLoadingStage
         eyebrow="Henry & Co. Care pricing"
-        title="Loading live pricing context"
-        description="Pulling the current service catalog, pricing visibility, and approval-controlled rates for this view."
+        title="Service pricing"
+        description="Current rates, packages, and service details."
         bullets={[
-          "Loading governed pricing data",
-          "Preparing service and package detail",
-          "Syncing the latest premium rate view",
+          "Governed pricing data",
+          "Service and package details",
+          "Premium rate schedule",
         ]}
       />
     </main>

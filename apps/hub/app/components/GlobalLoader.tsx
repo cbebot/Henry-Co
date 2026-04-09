@@ -164,7 +164,7 @@ export default function GlobalLoader({
                   </div>
 
                   <div className="mt-4 text-sm font-medium text-white/58">
-                    Preparing experience
+                    HenryCo
                   </div>
                 </div>
               </motion.div>

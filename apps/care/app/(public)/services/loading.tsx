@@ -5,12 +5,12 @@ export default function ServicesLoading() {
     <main className="px-5 py-6 sm:px-8 sm:py-8">
       <CareLoadingStage
         eyebrow="Henry & Co. Care services"
-        title="Loading the service lineup"
-        description="Preparing the service catalog, delivery context, and the next premium public section."
+        title="Our services"
+        description="The full Care service catalog."
         bullets={[
-          "Loading the current service lineup",
-          "Preparing the next premium comparison view",
-          "Syncing service and support context",
+          "Current service lineup",
+          "Premium service comparison",
+          "Service and support details",
         ]}
       />
     </main>

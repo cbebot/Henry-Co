@@ -179,6 +179,56 @@ export async function getSupportMessages(threadId: string) {
   return data || [];
 }
 
+export async function markSupportThreadRead(userId: string, threadId: string) {
+  const now = new Date().toISOString();
+
+  // Update thread-level customer last read timestamp
+  await admin()
+    .from("support_threads")
+    .update({ customer_last_read_at: now })
+    .eq("id", threadId)
+    .eq("user_id", userId);
+
+  // Mark individual messages as read (messages not sent by customer)
+  await admin()
+    .from("support_messages")
+    .update({ is_read: true, read_at: now })
+    .eq("thread_id", threadId)
+    .neq("sender_type", "customer")
+    .eq("is_read", false);
+}
+
+export async function getUnreadSupportCount(userId: string) {
+  // Count threads where there are messages newer than customer_last_read_at
+  const { data: threads } = await admin()
+    .from("support_threads")
+    .select("id, customer_last_read_at")
+    .eq("user_id", userId)
+    .neq("status", "closed");
+
+  if (!threads || threads.length === 0) return 0;
+
+  let unreadCount = 0;
+  for (const thread of threads) {
+    const lastRead = thread.customer_last_read_at;
+    let query = admin()
+      .from("support_messages")
+      .select("*", { count: "exact", head: true })
+      .eq("thread_id", thread.id)
+      .neq("sender_type", "customer")
+      .eq("is_read", false);
+
+    if (lastRead) {
+      query = query.gt("created_at", lastRead);
+    }
+
+    const { count } = await query;
+    if (count && count > 0) unreadCount++;
+  }
+
+  return unreadCount;
+}
+
 export async function getSubscriptions(userId: string) {
   const { data } = await admin()
     .from("customer_subscriptions")
@@ -255,24 +305,36 @@ export async function getSecurityLog(userId: string, limit = 20) {
 }
 
 export async function getDashboardSummary(userId: string) {
-  const [wallet, activity, notifications, subscriptions, invoices] = await Promise.all([
+  const [wallet, activity, notifications, subscriptions, invoices, supportThreads, unreadCount, unreadSupportCount] = await Promise.all([
     getWalletSummary(userId),
     getRecentActivity(userId, 5),
     getNotifications(userId, 5),
     getSubscriptions(userId),
     getInvoices(userId, 3),
+    getSupportThreads(userId),
+    getUnreadNotificationCount(userId),
+    getUnreadSupportCount(userId),
   ]);
 
-  const unreadCount = await getUnreadNotificationCount(userId);
+  const openSupportThreads = supportThreads.filter(
+    (t) => !["closed", "resolved"].includes(String(t.status || "").toLowerCase())
+  );
+
+  const pendingInvoices = invoices.filter(
+    (inv) => String(inv.status || "").toLowerCase() === "pending"
+  );
 
   return {
     wallet,
     recentActivity: activity,
     recentNotifications: notifications,
     unreadNotificationCount: unreadCount,
+    unreadSupportCount,
     activeSubscriptions: subscriptions.filter(
       (subscription) => String(subscription.status || "").trim().toLowerCase() === "active"
     ),
     recentInvoices: invoices,
+    pendingInvoiceCount: pendingInvoices.length,
+    openSupportCount: openSupportThreads.length,
   };
 }

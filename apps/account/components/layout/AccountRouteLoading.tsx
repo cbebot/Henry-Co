@@ -2,8 +2,8 @@ import { Loader2 } from "lucide-react";
 
 /** Lightweight route fallback — no decorative delays; matches real streaming behavior. */
 export default function AccountRouteLoading({
-  title = "Loading",
-  description = "Fetching your latest account data.",
+  title = "Account",
+  description = "Your account overview.",
 }: {
   title?: string;
   description?: string;

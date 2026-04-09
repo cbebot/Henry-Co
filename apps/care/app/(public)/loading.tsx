@@ -5,12 +5,12 @@ export default function PublicLoading() {
     <main className="px-5 py-6 sm:px-8 sm:py-8">
       <CareLoadingStage
         eyebrow="Henry & Co. Care"
-        title="Preparing the public Care experience"
-        description="Loading live service menus, pricing context, and the next polished route so the handoff feels immediate."
+        title="HenryCo Care"
+        description="Service menus, pricing, and everything you need."
         bullets={[
-          "Loading live booking and pricing context",
-          "Preparing the next premium public surface",
-          "Keeping support and payment guidance in sync",
+          "Live booking and pricing",
+          "Premium service catalog",
+          "Support and payment guidance",
         ]}
       />
     </main>

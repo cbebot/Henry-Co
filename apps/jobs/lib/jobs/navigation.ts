@@ -2,6 +2,8 @@ export const candidateNav = [
   { href: "/candidate", label: "Home" },
   { href: "/candidate/profile", label: "Profile" },
   { href: "/candidate/applications", label: "Applications" },
+  { href: "/candidate/conversations", label: "Messages" },
+  { href: "/candidate/interviews", label: "Interviews" },
   { href: "/candidate/saved-jobs", label: "Saved Jobs" },
   { href: "/candidate/alerts", label: "Alerts" },
   { href: "/candidate/files", label: "Files" },
@@ -14,6 +16,7 @@ export const employerNav = [
   { href: "/employer/jobs", label: "Jobs" },
   { href: "/employer/jobs/new", label: "Post Role" },
   { href: "/employer/applicants", label: "Applicants" },
+  { href: "/employer/hiring", label: "Hiring" },
   { href: "/employer/analytics", label: "Analytics" },
   { href: "/employer/settings", label: "Settings" },
 ];

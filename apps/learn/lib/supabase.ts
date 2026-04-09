@@ -12,6 +12,11 @@ function getSupabaseConfig() {
   };
 }
 
+/**
+ * @deprecated Use {@link createSupabaseServer} from `@/lib/supabase/server`
+ * or {@link createSupabaseBrowser} from `@/lib/supabase/browser` instead.
+ * This legacy client does not share cookies across subdomains.
+ */
 export function createPublicSupabase() {
   const { url, anonKey } = getSupabaseConfig();
   if (!url || !anonKey) {

@@ -22,6 +22,11 @@ export function hasAdminSupabaseEnv() {
   return Boolean(url && serviceKey);
 }
 
+/**
+ * @deprecated Use {@link createSupabaseServer} from `@/lib/supabase/server`
+ * or {@link getBrowserSupabase} from `@/lib/supabase/browser` instead.
+ * This legacy client does not share cookies across subdomains.
+ */
 export function createPublicSupabase() {
   const { url, anonKey } = readSupabaseEnv();
   if (!url || !anonKey) {

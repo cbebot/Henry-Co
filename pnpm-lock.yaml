@@ -691,6 +691,14 @@ importers:
 
   packages/config: {}
 
+  packages/i18n:
+    dependencies:
+      react:
+        specifier: '>=19.0.0'
+        version: 19.2.3
+
+  packages/trust: {}
+
   packages/ui:
     dependencies:
       class-variance-authority:

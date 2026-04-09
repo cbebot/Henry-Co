@@ -10,6 +10,9 @@ import {
   ChevronRight,
   TrendingUp,
   ExternalLink,
+  Receipt,
+  MessageSquare,
+  Gift,
 } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import { getDashboardSummary } from "@/lib/account-data";
@@ -73,6 +76,52 @@ export default async function OverviewPage() {
                 ? "Open your live plan"
                 : "Open all active plans"}
           </p>
+        </Link>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Link href="/invoices" className="acct-metric group transition-shadow hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <p className="acct-kicker">Invoices</p>
+            <Receipt size={18} className="text-[var(--acct-orange)]" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">{data.recentInvoices.length}</p>
+          <p className="mt-1 text-xs text-[var(--acct-muted)]">
+            {data.pendingInvoiceCount > 0 ? `${data.pendingInvoiceCount} pending` : "All settled"}
+          </p>
+        </Link>
+
+        <Link href="/support" className="acct-metric group transition-shadow hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <p className="acct-kicker">Support</p>
+            <MessageSquare size={18} className="text-[var(--acct-blue)]" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">{data.openSupportCount}</p>
+          <p className="mt-1 text-xs text-[var(--acct-muted)]">
+            {data.unreadSupportCount > 0
+              ? `${data.unreadSupportCount} with new replies`
+              : data.openSupportCount > 0
+                ? "Open requests"
+                : "No open requests"}
+          </p>
+        </Link>
+
+        <Link href="/referrals" className="acct-metric group transition-shadow hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <p className="acct-kicker">Referrals</p>
+            <Gift size={18} className="text-[var(--acct-green)]" />
+          </div>
+          <p className="mt-2 text-lg font-bold text-[var(--acct-ink)]">Invite & earn</p>
+          <p className="mt-1 text-xs text-[var(--acct-muted)]">Share HenryCo with others</p>
+        </Link>
+
+        <Link href="/wallet" className="acct-metric group transition-shadow hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <p className="acct-kicker">Transactions</p>
+            <Wallet size={18} className="text-[var(--acct-green)]" />
+          </div>
+          <p className="mt-2 text-lg font-bold text-[var(--acct-ink)]">View history</p>
+          <p className="mt-1 text-xs text-[var(--acct-muted)]">Wallet activity & payments</p>
         </Link>
       </div>
 

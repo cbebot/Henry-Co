@@ -1,0 +1,16 @@
+{
+  "name": "@henryco/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./currency": "./currency.ts",
+    "./countries": "./countries.ts",
+    "./timezone": "./timezone.ts",
+    "./phone": "./phone.ts"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0"
+  }
+}
