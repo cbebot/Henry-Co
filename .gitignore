@@ -7,9 +7,12 @@ node_modules
 .claude/
 *.err
 *.out
+.codex-*.log
+.expo/
 .next
 .turbo
 dist
+*.tsbuildinfo
 .tmp-vercel-env
 .tmp-studio-start.ps1
 

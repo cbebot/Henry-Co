@@ -92,8 +92,8 @@ export default async function MarketplaceHomePage() {
 
       {data.products.length === 0 ? (
         <EmptyState
-          title="The catalog is preparing."
-          body="Marketplace schema and public surfaces are live. Products and collections will appear here as soon as approved listings are seeded."
+          title="Catalog not populated yet."
+          body="Marketplace schema and public surfaces are live. Products and collections appear here only after approved listings are published."
           ctaHref="/help"
           ctaLabel="Contact marketplace support"
         />
