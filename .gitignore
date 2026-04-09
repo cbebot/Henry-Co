@@ -20,6 +20,7 @@ apps/company-hub/dist
 *.err
 *.out
 *.log
+codex-*.log
 
 # Environment files (use .env.example instead)
 .env*.local

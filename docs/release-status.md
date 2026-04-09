@@ -1,113 +1,72 @@
-# Release status — MVP stabilization
+# Release Status — Pre-Claude Handoff
 
-**Branch:** `release/mvp-stabilization`  
-**Cut from:** `feature/henryco-super-app`  
-**Last updated:** 2026-04-05  
+**Date**: 2026-04-09
+**Purpose**: Freeze the verified repo state after the targeted correction pass and before the flagship Claude pass.
 
-## Purpose
+## Source Of Truth
 
-Freeze feature work, document reality across the monorepo, and drive staging validation and beta packaging for the **HenryCo Super App** (Expo) while treating division web apps (Next.js) as separate deploy surfaces.
+- Active blocker ledger: `docs/PRODUCT-GAP-LEDGER.md`
+- Support-system truth addendum: `docs/support-platform-audit.md`
+- This file is a handoff snapshot, not a marketing status page.
 
-## Project inventory (high level)
+## Git Truth
 
-### App modules (`apps/*`)
+- `origin/main` fetched on 2026-04-09 is still `00586cc fix(care): persist shared account linkage on bookings`.
+- The targeted account/care/session correction work is local repo work until deployed.
+- The repo has been cleaned so generated logs and stray local app artifacts do not pollute the flagship handoff.
 
-| App | Stack | Role |
-| --- | --- | --- |
-| **super-app** | Expo Router / RN / Web | Mobile-first hub: divisions directory, module deep-links, account, legal, platform adapters |
-| **hub** | Next.js | Corporate / owner / workspace web |
-| **account** | Next.js | Unified account shell (wallet, jobs, property, marketplace shortcuts) |
-| **marketplace** | Next.js | Marketplace storefront + vendor/account areas |
-| **jobs** | Next.js | Careers, candidate, employer, recruiter flows |
-| **learn** | Next.js | Learner / instructor / course surfaces |
-| **property** | Next.js | Listings, trust, submissions |
-| **studio** | Next.js | Studio marketing + client/project workspace |
-| **care** | Next.js | Fabric care public site |
-| **logistics** | Next.js | Logistics portal shell |
+## What Is Actually Stable Repo-Side
 
-### Shared packages (`packages/*`)
+- Account notification read-state now uses real `customer_notifications` persistence.
+- Account summary cards for care, subscriptions, invoices, activity, marketplace, learn, and logistics are more actionable and less misleading.
+- Care account flows now have dedicated booking detail routes.
+- Shared cookie-domain auth continuity is aligned repo-side across account, learn, logistics, and hub owner auth.
+- Care public repo copy is calmer than the earlier noisy version, but it is not yet the final flagship pass.
 
-| Package | Role |
-| --- | --- |
-| `@henryco/config` | Shared workspace config |
-| `@henryco/ui` | Shared UI primitives (e.g. public account chip, loading) |
-| `@henryco/brand` | Brand tokens / assets |
-| `@henryco/i18n` | i18n helpers |
+## What Is Not Yet Safe To Claim
 
-### Super App routes (file-based)
+- Do not claim full support-thread unread/read behavior.
+- Do not claim live subscription sync.
+- Do not claim receipt/download completeness.
+- Do not claim live Care public cleanup.
+- Do not claim resolved logistics local build health in this workspace.
+- Do not claim fully governed shortlist/interview workspace behavior for Jobs without browser-verified proof.
 
-| Route | Screen / purpose |
-| --- | --- |
-| `/(tabs)/` | Hub home |
-| `/(tabs)/directory` | Division directory |
-| `/(tabs)/services` | Services overview |
-| `/(tabs)/account` | Auth, activity, legal links |
-| `/module/[slug]` | Division module detail + deep actions |
-| `/legal/about`, `privacy`, `terms`, `contact`, `faq` | Legal / contact |
-| `+not-found` | 404 |
+## Public Truth Snapshot
 
-### Super App “services” (logical)
+- Care live site: reachable, still shows first-render loading copy, and still appears older than the calmer repo branch.
+- Learn live site: reachable, still exposes learning-loading copy on first render.
+- Jobs live site: reachable, still sells shortlist/interview workspace confidence harder than current governed proof.
+- Logistics live site: reachable, but local repo build truth remains incomplete.
+- Property live site: reachable, still exposes a loading-first response.
+- Studio live site: reachable, still exposes loading/preparing workspace copy.
+- Marketplace live site: reachable, still exposes first-render loading/preparing copy.
 
-| Area | Location | Notes |
-| --- | --- | --- |
-| Platform bundle | `src/platform/bundle.ts` | Composes adapters from mode + flags |
-| Auth | `contracts/auth`, `adapters/mock`, `adapters/supabase` | Mock local; Supabase when configured |
-| Database | `contracts/database`, mock + Supabase | Contact, divisions, activity |
-| Media | `cloudinary.media.ts` | Read URLs; upload mocked/stubbed |
-| Notifications | mock + Expo | Live push behind flag |
-| Payments | mock + deferred | No live PSP in repo |
-| Analytics | console / noop | Replace with vendor adapter |
-| Monitoring | noop + Sentry | DSN from env |
-| Division catalog | `src/domain/divisionCatalog.ts` | Fallback when DB empty |
+## Next-Pass Boundaries
 
-### External integrations (Super App)
+### Already Completed Repo-Side
 
-| Integration | Adapter | Staging note |
-| --- | --- | --- |
-| Supabase Auth + DB | `SupabaseAuthAdapter`, `SupabaseDatabaseAdapter` | Use **staging** project only |
-| Cloudinary | URL building + `CloudinaryMediaAdapter` | Public cloud name is not a secret; uploads need signed API |
-| Sentry | `SentryMonitoringAdapter` | Staging DSN / separate project |
-| Expo Push | `ExpoNotificationsAdapter` | EAS credentials + backend token store (not in repo) |
-| Payments | `DeferredPaymentsAdapter` | Implement Stripe/Paystack adapter server-side |
+- Account dashboard actionability corrections.
+- Care deep-link and booking detail corrections.
+- Session continuity repo alignment.
+- Initial Care public calming pass.
 
-### Environment variables (canonical list)
+### Remaining Repo-Side But Low-Risk
 
-See [env-vars.md](./env-vars.md). Super App uses **only** `EXPO_PUBLIC_*` client vars plus server-side secrets for seeds (`SUPABASE_SERVICE_ROLE_KEY` — never in app).
+- Copy-only cleanup for loading states and lingering wishful empty-state language.
+- Shared formatting helper convergence.
+- Additional passive-card removal where backend support already exists.
 
-### Known placeholders
+### Claude Flagship Work
 
-| Item | Where |
-| --- | --- |
-| EAS `projectId` | `apps/super-app/app.json` → `extra.eas.projectId` still a placeholder string |
-| Payments | `DeferredPaymentsAdapter` returns not-implemented for real checkout |
-| Media upload | Signed upload flow not implemented in client |
-| Activity feed | Mock / partial; unified `activity` table optional |
-| Cross-app SSO | Super App does not embed Next apps; opens URLs |
+- Browser-verified operator and customer workflows.
+- Studio truth audit and schema convergence.
+- Jobs workflow governance and claim alignment.
+- Support-thread unread-state architecture if still required.
 
-### Known unfinished parts (Super App)
+### Deploy / Env / Remote Work
 
-- Live payment provider and server-side confirmation.
-- Push token persistence and notification campaigns.
-- Production `EXPO_PUBLIC_LIVE_SERVICES_APPROVED` governance workflow.
-- Full parity between Supabase `divisions` rows and bundled catalog (seed script exists).
-
-## Verification snapshot (automated)
-
-| Check | Result (2026-04-05) |
-| --- | --- |
-| `pnpm typecheck:all` | Pass |
-| `pnpm lint:all` | Pass (warnings remain in hub/learn/logistics/marketplace — not errors) |
-| `pnpm test:workspace` (super-app Jest) | Pass |
-| `pnpm run ci:validate` | Pass — full monorepo build (2026-04-05) |
-| `expo export --platform web` (super-app) | Pass — 16 static routes emitted |
-
-## Related documents
-
-- [feature-status.md](./feature-status.md)
-- [known-issues.md](./known-issues.md)
-- [architecture-summary.md](./architecture-summary.md)
-- [env-vars.md](./env-vars.md)
-- [deploy-checklist.md](./deploy-checklist.md)
-- [staging-validation.md](./staging-validation.md)
-- [mvp-scope.md](./mvp-scope.md)
-- [beta-release.md](./beta-release.md)
+- Actual deployment of repo-side fixes.
+- Learn env completion.
+- Logistics source-tree restoration or relink.
+- Remote schema or ledger backfill work.
