@@ -1,17 +1,17 @@
 // ---------------------------------------------------------------------------
-// @henryco/i18n  --  Global-readiness foundation
+// @henryco/i18n -- Global-readiness foundation
 //
-// Re-exports every public API from the package sub-modules so consumers can
-// do:  import { formatMoney, getCountry, formatPhone } from '@henryco/i18n';
+// Re-export every public package surface from a single root barrel so
+// consumers can import from "@henryco/i18n" without reaching into subpaths.
 // ---------------------------------------------------------------------------
 
-export * from "./src/index.js";
+export * from "./src/index";
 
 export {
   formatMoney,
   parseCurrencyConfig,
   type CurrencyConfig,
-} from './currency.js';
+} from "./currency";
 
 export {
   COUNTRIES,
@@ -19,7 +19,7 @@ export {
   getCountry,
   getActiveCountries,
   type Country,
-} from './countries.js';
+} from "./countries";
 
 export {
   DEFAULT_TIMEZONE,
@@ -27,10 +27,10 @@ export {
   formatDate,
   formatTime,
   getTimezoneOffset,
-} from './timezone.js';
+} from "./timezone";
 
 export {
   formatPhone,
   normalizePhone,
   getPhonePrefix,
-} from './phone.js';
+} from "./phone";

@@ -1306,8 +1306,6 @@ function buildActivityModule(input: {
     approvals: approvals.slice(0, 8),
     queueLanes,
     insights,
-    sourceMode: (readiness === "planned" ? "planned" : "shared-signals") as "planned" | "shared-signals",
-    sourceSummary: `This module reads shared activity, notification, and support signals for the ${getDivisionConfig(division).shortName} division.`,
     externalUrl: getDivisionUrl(division),
   };
 }
@@ -1416,8 +1414,6 @@ function buildLogisticsModule(
         href: detailHref,
       }),
     ],
-    sourceMode: (readiness === "planned" ? "planned" : "shared-signals") as "planned" | "shared-signals",
-    sourceSummary: "Logistics is reading shared operational events. Dedicated logistics tables are now provisioned and ready for activation.",
     externalUrl: getDivisionUrl("logistics"),
   };
 }

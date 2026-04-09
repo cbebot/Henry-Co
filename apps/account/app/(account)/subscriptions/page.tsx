@@ -2,7 +2,14 @@ import Link from "next/link";
 import { RefreshCcw } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import { getSubscriptions } from "@/lib/account-data";
-import { formatNaira, formatDate, divisionLabel, divisionColor } from "@/lib/format";
+import {
+  formatBillingInterval,
+  formatCurrencyAmount,
+  formatDate,
+  formatSubscriptionStatus,
+  divisionLabel,
+  divisionColor,
+} from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
 
@@ -31,11 +38,11 @@ export default async function SubscriptionsPage() {
                     <p className="text-xs text-[var(--acct-muted)]">{divisionLabel(subscription.division as string)}{subscription.plan_tier ? ` · ${subscription.plan_tier}` : ""}</p>
                   </div>
                 </div>
-                <span className={`acct-chip ${statusChip[subscription.status as string] || "acct-chip-gold"}`}>{subscription.status}</span>
+                <span className={`acct-chip ${statusChip[subscription.status as string] || "acct-chip-gold"}`}>{formatSubscriptionStatus(String(subscription.status || ""))}</span>
               </div>
               <div className="mt-4 grid grid-cols-3 gap-4 rounded-xl bg-[var(--acct-surface)] p-3">
-                <div><p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">Amount</p><p className="mt-0.5 text-sm font-semibold">{formatNaira(subscription.amount_kobo as number)}</p></div>
-                <div><p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">Cycle</p><p className="mt-0.5 text-sm font-semibold capitalize">{subscription.billing_cycle}</p></div>
+                <div><p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">Amount</p><p className="mt-0.5 text-sm font-semibold">{formatCurrencyAmount(Number(subscription.amount_kobo || 0), String(subscription.currency || "NGN"), { unit: "kobo" })}</p></div>
+                <div><p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">Cycle</p><p className="mt-0.5 text-sm font-semibold">{formatBillingInterval(String(subscription.billing_cycle || ""))}</p></div>
                 <div><p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">Renews</p><p className="mt-0.5 text-sm font-semibold">{subscription.current_period_end ? formatDate(subscription.current_period_end as string) : "—"}</p></div>
               </div>
             </Link>

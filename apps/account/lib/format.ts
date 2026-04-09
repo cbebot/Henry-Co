@@ -29,6 +29,52 @@ export function formatCurrencyAmount(
   }).format(normalized);
 }
 
+function humanizeToken(value: string, fallback = "—") {
+  const normalized = String(value || "")
+    .trim()
+    .replace(/[_-]+/g, " ");
+
+  if (!normalized) return fallback;
+  return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+export function formatSubscriptionStatus(status: string): string {
+  const normalized = String(status || "").trim().toLowerCase();
+
+  switch (normalized) {
+    case "past_due":
+      return "Past due";
+    case "trialing":
+      return "Trialing";
+    default:
+      return humanizeToken(normalized, "Unknown");
+  }
+}
+
+export function formatBillingInterval(interval: string): string {
+  const normalized = String(interval || "").trim().toLowerCase();
+
+  switch (normalized) {
+    case "monthly":
+      return "Monthly";
+    case "yearly":
+    case "annual":
+      return normalized === "annual" ? "Annual" : "Yearly";
+    case "quarterly":
+      return "Quarterly";
+    case "weekly":
+      return "Weekly";
+    case "biweekly":
+      return "Every 2 weeks";
+    case "daily":
+      return "Daily";
+    case "one_time":
+      return "One-time";
+    default:
+      return humanizeToken(normalized, "Not set");
+  }
+}
+
 export function formatCompactNumber(value: number): string {
   return new Intl.NumberFormat("en-NG", {
     notation: "compact",

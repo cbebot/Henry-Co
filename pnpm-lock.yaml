@@ -1044,6 +1044,8 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
 
+  packages/trust: {}
+
   packages/ui:
     dependencies:
       '@henryco/config':

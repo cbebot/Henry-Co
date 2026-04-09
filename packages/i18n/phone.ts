@@ -3,7 +3,7 @@
 // Zero external dependencies.
 // ---------------------------------------------------------------------------
 
-import { getCountry, DEFAULT_COUNTRY } from './countries.js';
+import { getCountry, DEFAULT_COUNTRY } from "./countries";
 
 /**
  * Get the E.164 phone prefix for a country code (e.g. "NG" -> "+234").

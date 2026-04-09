@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -66,12 +67,9 @@ export default function LoginForm() {
         <div>
           <div className="mb-1.5 flex items-center justify-between">
             <label className="text-sm font-medium">Password</label>
-            <a
-              href="/forgot-password"
-              className="text-xs text-[var(--acct-gold)] hover:underline"
-            >
+            <Link href="/forgot-password" className="text-xs text-[var(--acct-gold)] hover:underline">
               Forgot password?
-            </a>
+            </Link>
           </div>
           <div className="relative">
             <input

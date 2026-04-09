@@ -165,7 +165,7 @@ export default async function OverviewPage() {
             {data.activeSubscriptions.length}
           </p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            {data.activeSubscriptions.length === 0 ? "No active plans" : "Active plans"}
+            {data.activeSubscriptions.length === 0 ? "No synced active plans" : "Synced active plans"}
           </p>
         </Link>
 

@@ -393,6 +393,93 @@ export async function getSubscriptionById(userId: string, subscriptionId: string
   return data;
 }
 
+function collectSubscriptionReferenceKeys(subscription: Record<string, unknown>) {
+  return Array.from(
+    new Set(
+      [
+        subscription.id,
+        subscription.reference_id,
+        subscription.reference_code,
+        subscription.external_id,
+        subscription.external_reference,
+        subscription.provider_reference,
+        subscription.provider_subscription_id,
+        subscription.subscription_id,
+        subscription.payment_reference,
+      ]
+        .map(asNullableText)
+        .filter(Boolean)
+    )
+  ) as string[];
+}
+
+function rowMatchesReference(
+  row: Record<string, unknown>,
+  referenceKeys: string[],
+  rowFields: string[]
+) {
+  if (referenceKeys.length === 0) return false;
+  const keySet = new Set(referenceKeys);
+
+  return rowFields.some((field) => {
+    const value = asNullableText(row[field]);
+    return value ? keySet.has(value) : false;
+  });
+}
+
+export async function getSubscriptionContext(userId: string, subscriptionId: string) {
+  const [subscription, invoices, supportThreads] = await Promise.all([
+    getSubscriptionById(userId, subscriptionId),
+    getInvoices(userId, 50),
+    getSupportThreads(userId),
+  ]);
+
+  if (!subscription) {
+    return null;
+  }
+
+  const subscriptionRow = subscription as Record<string, unknown>;
+  const division = asNullableText(subscriptionRow.division);
+  const referenceKeys = collectSubscriptionReferenceKeys(subscriptionRow);
+  const hasDivisionFilter = Boolean(division);
+
+  const relatedInvoices = (invoices as Array<Record<string, unknown>>).filter((invoice) => {
+    if (
+      hasDivisionFilter &&
+      asNullableText(invoice.division)?.toLowerCase() !== division?.toLowerCase()
+    ) {
+      return false;
+    }
+
+    return rowMatchesReference(invoice, referenceKeys, [
+      "id",
+      "reference_id",
+      "payment_reference",
+      "invoice_no",
+    ]);
+  });
+
+  const relatedSupportThreads = (supportThreads as Array<Record<string, unknown>>).filter(
+    (thread) => {
+      if (
+        hasDivisionFilter &&
+        asNullableText(thread.division)?.toLowerCase() !== division?.toLowerCase()
+      ) {
+        return false;
+      }
+
+      return rowMatchesReference(thread, referenceKeys, ["id", "reference_id"]);
+    }
+  );
+
+  return {
+    subscription: subscriptionRow,
+    relatedInvoices,
+    relatedSupportThreads,
+    referenceKeys,
+  };
+}
+
 export async function getInvoices(userId: string, limit = 20) {
   const { data } = await admin()
     .from("customer_invoices")
