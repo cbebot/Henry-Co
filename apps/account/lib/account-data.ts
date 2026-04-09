@@ -57,6 +57,66 @@ export async function getUnreadNotificationCount(userId: string) {
   return count || 0;
 }
 
+export async function markNotificationsRead(userId: string, notificationIds?: string[]) {
+  const ids = Array.from(new Set((notificationIds || []).map((value) => String(value || "").trim()).filter(Boolean)));
+  let query = admin()
+    .from("customer_notifications")
+    .update({ is_read: true, read_at: new Date().toISOString() })
+    .eq("user_id", userId);
+
+  if (ids.length > 0) {
+    query = query.in("id", ids);
+  } else {
+    query = query.eq("is_read", false);
+  }
+
+  await query;
+}
+
+export async function markNotificationReadState(
+  userId: string,
+  notificationId: string,
+  isRead: boolean
+) {
+  await admin()
+    .from("customer_notifications")
+    .update({
+      is_read: isRead,
+      read_at: isRead ? new Date().toISOString() : null,
+    })
+    .eq("user_id", userId)
+    .eq("id", notificationId);
+}
+
+export async function markNotificationsReadByReference(
+  userId: string,
+  referenceType: string,
+  referenceId: string
+) {
+  await admin()
+    .from("customer_notifications")
+    .update({
+      is_read: true,
+      read_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId)
+    .eq("reference_type", referenceType)
+    .eq("reference_id", referenceId)
+    .eq("is_read", false);
+}
+
+export async function markNotificationsReadByActionUrl(userId: string, actionUrl: string) {
+  await admin()
+    .from("customer_notifications")
+    .update({
+      is_read: true,
+      read_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId)
+    .eq("action_url", actionUrl)
+    .eq("is_read", false);
+}
+
 export async function getAddresses(userId: string) {
   const { data } = await admin()
     .from("customer_addresses")
@@ -98,6 +158,17 @@ export async function getSupportThreads(userId: string) {
   return data || [];
 }
 
+export async function getSupportThreadById(userId: string, threadId: string) {
+  const { data } = await admin()
+    .from("support_threads")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("id", threadId)
+    .maybeSingle();
+
+  return data;
+}
+
 export async function getSupportMessages(threadId: string) {
   const { data } = await admin()
     .from("support_messages")
@@ -118,6 +189,17 @@ export async function getSubscriptions(userId: string) {
   return data || [];
 }
 
+export async function getSubscriptionById(userId: string, subscriptionId: string) {
+  const { data } = await admin()
+    .from("customer_subscriptions")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("id", subscriptionId)
+    .maybeSingle();
+
+  return data;
+}
+
 export async function getInvoices(userId: string, limit = 20) {
   const { data } = await admin()
     .from("customer_invoices")
@@ -127,6 +209,17 @@ export async function getInvoices(userId: string, limit = 20) {
     .limit(limit);
 
   return data || [];
+}
+
+export async function getInvoiceById(userId: string, invoiceId: string) {
+  const { data } = await admin()
+    .from("customer_invoices")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("id", invoiceId)
+    .maybeSingle();
+
+  return data;
 }
 
 export async function getDocuments(userId: string) {
@@ -177,7 +270,9 @@ export async function getDashboardSummary(userId: string) {
     recentActivity: activity,
     recentNotifications: notifications,
     unreadNotificationCount: unreadCount,
-    activeSubscriptions: subscriptions.filter((s) => s.status === "active"),
+    activeSubscriptions: subscriptions.filter(
+      (subscription) => String(subscription.status || "").trim().toLowerCase() === "active"
+    ),
     recentInvoices: invoices,
   };
 }

@@ -10,8 +10,6 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
-  Tags,
-  Truck,
   Wallet,
 } from "lucide-react";
 
@@ -34,19 +32,14 @@ export const metadata: Metadata = {
 
 const FEATURES = [
   {
-    icon: Tags,
-    title: "One premium request desk",
-    text: "Move between garment care, residential cleaning, and workplace service without losing the details needed for a smooth experience.",
-  },
-  {
     icon: ClipboardList,
-    title: "Clear service detail",
-    text: "Every request captures timing, address notes, service choices, and the estimate you need before you submit.",
+    title: "Clear request detail",
+    text: "The form keeps service type, address notes, timing, and delivery-vs-on-site context readable before you submit.",
   },
   {
     icon: Wallet,
-    title: "Clear estimate preview",
-    text: "Review the current estimate for garment care or cleaning before you send the request.",
+    title: "Estimate before submit",
+    text: "Review the current estimate and payment guidance before the request is sent.",
   },
 ] as const;
 
@@ -54,30 +47,17 @@ const STEPS = [
   {
     step: "01",
     title: "Choose your service type",
-    text: "Start with garment care, home cleaning, or office cleaning, then choose the options that fit the request.",
+    text: "Start with garment pickup, home cleaning, or office cleaning, then choose the service options that match the request.",
   },
   {
     step: "02",
     title: "Add the important details",
-    text: "Set contact details, preferred windows, access notes, and any extras that shape timing or price.",
+    text: "Add contact details, schedule windows, access notes, and anything that affects delivery or on-site completion.",
   },
   {
     step: "03",
     title: "Receive one tracking code",
-    text: "You receive one tracking code for the request, then follow the right timeline for delivery or on-site completion.",
-  },
-] as const;
-
-const VALUE_POINTS = [
-  {
-    icon: Truck,
-    title: "Reliable follow-through",
-    text: "Built for pickup, on-site service timing, payment guidance, and clear updates after booking.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Traceable from the start",
-    text: "One garment order or one cleaning request stays under one readable record with a trackable code.",
+    text: "You get one tracking code, then follow the correct timeline for return delivery or on-site completion.",
   },
 ] as const;
 
@@ -143,16 +123,15 @@ export default async function BookPage({
 
           <div>
             <h1 className="max-w-4xl text-balance care-display text-zinc-950 dark:text-white">
-              Book the right service with less friction and more clarity.
+              Book garment pickup, home cleaning, or office service with one calmer form.
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-white/68 sm:text-lg xl:text-xl">
-              Use one premium booking flow for garment pickup, home cleaning, or office service,
-              with clear pricing, polished wording, and reliable follow-up.
+              Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form now makes that difference explicit before you submit.
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             {FEATURES.map((item) => {
               const Icon = item.icon;
 
@@ -205,9 +184,7 @@ export default async function BookPage({
               What happens after submission
             </div>
             <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-              The request records scope, the current estimate, schedule context, and any access
-              notes. If payment is required before service continues, the confirmation email
-              explains exactly what to do next.
+              The request records scope, estimate, schedule context, and access notes. Garment jobs continue into pickup and return delivery. Home and office jobs continue into scheduled on-site work and final completion checks.
             </p>
           </div>
 
@@ -257,25 +234,14 @@ export default async function BookPage({
             </Link>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {VALUE_POINTS.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div
-                  key={item.title}
-                  className="rounded-3xl border border-black/10 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
-                >
-                  <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
-                    <Icon className="h-4 w-4 text-[color:var(--accent)]" />
-                    {item.title}
-                  </div>
-                  <div className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                    {item.text}
-                  </div>
-                </div>
-              );
-            })}
+          <div className="rounded-3xl border border-black/10 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
+            <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
+              <ShieldCheck className="h-4 w-4 text-[color:var(--accent)]" />
+              Booking truth
+            </div>
+            <div className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
+              One garment order or one cleaning request stays under one readable tracking code, with payment guidance and follow-up attached to the same record.
+            </div>
           </div>
         </section>
 

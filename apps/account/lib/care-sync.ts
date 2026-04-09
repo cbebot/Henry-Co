@@ -10,6 +10,7 @@ import {
   phonesMatch,
 } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
+import { getCareBookingHref } from "@/lib/account-links";
 
 export type CareAccountIdentity = {
   userId: string;
@@ -411,7 +412,7 @@ async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBo
   );
 
   for (const booking of bookings) {
-    const actionUrl = `/care?booking=${encodeURIComponent(booking.id)}`;
+    const actionUrl = getCareBookingHref(booking.id);
     const activityId = activityIds.get(booking.id);
     const notificationId = notificationIds.get(booking.id);
     const activityPayload = {

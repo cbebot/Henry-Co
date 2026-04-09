@@ -1,8 +1,10 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { getSharedCookieDomain } from "@henryco/config";
 
 async function getOwnerSupabaseServerClient() {
   const cookieStore = await cookies();
+  const headerStore = await headers();
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -10,8 +12,19 @@ async function getOwnerSupabaseServerClient() {
   if (!url || !anon) {
     throw new Error("Missing Supabase environment variables.");
   }
+  const cookieDomain = getSharedCookieDomain(
+    headerStore.get("x-forwarded-host") || headerStore.get("host")
+  );
 
   return createServerClient(url, anon, {
+    cookieOptions: cookieDomain
+      ? {
+          domain: cookieDomain,
+          path: "/",
+          sameSite: "lax",
+          secure: true,
+        }
+      : undefined,
     cookies: {
       getAll() {
         return cookieStore.getAll();

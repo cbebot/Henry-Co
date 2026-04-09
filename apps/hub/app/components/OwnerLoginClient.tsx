@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
+import { getSharedCookieDomain } from "@henryco/config";
 import { LockKeyhole, Mail } from "lucide-react";
 
 export default function OwnerLoginClient() {
@@ -18,7 +19,23 @@ export default function OwnerLoginClient() {
 
     if (!url || !anon) return null;
 
-    return createBrowserClient(url, anon);
+    const cookieDomain =
+      typeof window === "undefined" ? undefined : getSharedCookieDomain(window.location.hostname);
+
+    return createBrowserClient(
+      url,
+      anon,
+      cookieDomain
+        ? {
+            cookieOptions: {
+              domain: cookieDomain,
+              path: "/",
+              sameSite: "lax",
+              secure: true,
+            },
+          }
+        : undefined
+    );
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

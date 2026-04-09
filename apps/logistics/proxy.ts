@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { getSharedCookieDomain } from "@henryco/config";
 
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next({
@@ -15,7 +16,16 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
+  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
   const supabase = createServerClient(url, anon, {
+    cookieOptions: cookieDomain
+      ? {
+          domain: cookieDomain,
+          path: "/",
+          sameSite: "lax",
+          secure: true,
+        }
+      : undefined,
     cookies: {
       getAll() {
         return request.cookies.getAll();
