@@ -2,8 +2,8 @@ import { HenryCoActivityIndicator } from "@henryco/ui";
 
 /** Lightweight route fallback — no decorative delays or fake progress bars. */
 export default function AccountRouteLoading({
-  title = "Loading",
-  description = "Fetching your latest account data.",
+  title = "Account",
+  description = "Your account overview.",
 }: {
   title?: string;
   description?: string;

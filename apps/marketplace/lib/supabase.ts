@@ -8,6 +8,11 @@ const SUPABASE_SERVICE_KEY =
   getOptionalEnv("NEXT_PUBLIC_SUPABASE_SERVICE_KEY") ||
   "";
 
+/**
+ * @deprecated Use {@link createSupabaseServer} from `@/lib/supabase/server`
+ * or {@link getBrowserSupabase} from `@/lib/supabase/browser` instead.
+ * This legacy client does not share cookies across subdomains.
+ */
 export function createPublicSupabase() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     throw new Error("Supabase public environment variables are missing.");

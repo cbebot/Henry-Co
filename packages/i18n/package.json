@@ -1,10 +1,14 @@
 {
   "name": "@henryco/i18n",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
+    ".": "./index.ts",
+    "./currency": "./currency.ts",
+    "./countries": "./countries.ts",
+    "./timezone": "./timezone.ts",
+    "./phone": "./phone.ts",
     "./react": "./src/react.tsx",
     "./server": "./src/server.ts",
     "./locale-route": "./src/locale-route.ts"

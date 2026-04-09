@@ -2,7 +2,14 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
-import { getSupportMessages, getSupportThreads } from "@/lib/account-data";
+import {
+  getSupportMessages,
+  getSupportThreadById,
+  markNotificationsReadByActionUrl,
+  markNotificationsReadByReference,
+  markSupportThreadRead,
+} from "@/lib/account-data";
+import PageHeader from "@/components/layout/PageHeader";
 import SupportThreadRoom from "@/components/support/SupportThreadRoom";
 
 export const dynamic = "force-dynamic";
@@ -12,8 +19,7 @@ type Props = { params: Promise<{ threadId: string }> };
 export default async function SupportThreadPage({ params }: Props) {
   const { threadId } = await params;
   const user = await requireAccountUser();
-  const threads = await getSupportThreads(user.id);
-  const thread = threads.find((t: Record<string, string>) => t.id === threadId);
+  const thread = (await getSupportThreadById(user.id, threadId)) as Record<string, unknown> | null;
 
   if (!thread) {
     return (
@@ -25,9 +31,17 @@ export default async function SupportThreadPage({ params }: Props) {
       </div>
     );
   }
-
+  await Promise.all([
+    markNotificationsReadByReference(user.id, "support_thread", threadId),
+    markNotificationsReadByActionUrl(user.id, `/support/${threadId}`),
+    markSupportThreadRead(user.id, threadId),
+  ]);
   const messages = await getSupportMessages(threadId);
-  const isOpen = thread.status !== "resolved" && thread.status !== "closed";
+  const status = String(thread.status || "open");
+  const subject = String(thread.subject || "Support conversation");
+  const category = String(thread.category || "general");
+  const isOpen = status !== "resolved" && status !== "closed";
+
   return (
     <div className="space-y-6 acct-fade-in">
       <RouteLiveRefresh intervalMs={10000} />
@@ -35,12 +49,10 @@ export default async function SupportThreadPage({ params }: Props) {
         <Link href="/support" className="acct-button-ghost rounded-xl">
           <ArrowLeft size={16} />
         </Link>
-        <div>
-          <h1 className="acct-display text-lg">{thread.subject}</h1>
-          <p className="text-xs text-[var(--acct-muted)]">
-            {thread.category} &middot; {thread.status}
-          </p>
-        </div>
+        <PageHeader
+          title={subject}
+          description={`${category} · ${status.replaceAll("_", " ")}`}
+        />
       </div>
       <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-4 py-3">
         <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">What happens next</p>
@@ -50,7 +62,7 @@ export default async function SupportThreadPage({ params }: Props) {
             : "This thread is closed. If your issue returns, open a new request so it can be triaged and tracked cleanly."}
         </p>
       </div>
-      <SupportThreadRoom threadId={threadId} messages={messages} threadStatus={String(thread.status)} />
+      <SupportThreadRoom threadId={threadId} messages={messages} threadStatus={status} />
     </div>
   );
 }

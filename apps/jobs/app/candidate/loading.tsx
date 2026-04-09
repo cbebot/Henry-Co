@@ -3,9 +3,9 @@ import { JobsWorkspaceLoading } from "@/components/loading-state";
 export default function Loading() {
   return (
     <JobsWorkspaceLoading
-      kicker="Candidate hub"
-      title="Loading your profile and applications."
-      body="Your applications, saved roles, alerts, and documents are being loaded."
+      kicker="Candidate workspace"
+      title="Your roles, applications, and profile."
+      body="Applications, saved roles, alerts, files, and recruiter updates in one view."
     />
   );
 }

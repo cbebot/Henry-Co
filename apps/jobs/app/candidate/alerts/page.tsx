@@ -29,7 +29,7 @@ export default async function CandidateAlertsPage({
     getCandidateDashboardData(viewer.user!.id),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
   ]);
-  const saved = params.saved === "1";
+  const saved = (params as Record<string, string | string[] | undefined>).saved === "1";
 
   return (
     <WorkspaceShell
