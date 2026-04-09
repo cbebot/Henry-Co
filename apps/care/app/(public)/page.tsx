@@ -7,7 +7,6 @@ import {
   Building2,
   CheckCircle2,
   Clock3,
-  Home,
   PhoneCall,
   Repeat,
   ShieldCheck,
@@ -36,8 +35,14 @@ export const metadata: Metadata = {
     "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from HenryCo Care.",
 };
 
+const nairaFormatter = new Intl.NumberFormat("en-NG", {
+  style: "currency",
+  currency: "NGN",
+  maximumFractionDigits: 0,
+});
+
 function formatMoney(value: number | string) {
-  return `₦${Number(value || 0).toLocaleString()}`;
+  return nairaFormatter.format(Number(value || 0));
 }
 
 function stars(count: number) {
@@ -64,24 +69,6 @@ export default async function CareHomePage() {
   const supportEmail = settings.support_email || care.supportEmail;
   const supportPhone = settings.support_phone || care.supportPhone;
   const heroImageUrl = settings.hero_image_url?.trim() || null;
-
-  const serviceHighlights = [
-    {
-      icon: Sparkles,
-      title: "Garment care and delivery",
-      body: "Dry cleaning, laundry, pressing, stain rescue, delicate handling, and a tracked pickup-to-return delivery experience.",
-    },
-    {
-      icon: Home,
-      title: "Home cleaning",
-      body: "One-time, deep, and recurring home care shaped around your property, preferred timing, and the finish you expect.",
-    },
-    {
-      icon: Building2,
-      title: "Office cleaning",
-      body: "Professional office and commercial cleaning with reliable scheduling, site-ready coordination, and repeatable standards.",
-    },
-  ] as const;
 
   const clientProfiles = [
     {
@@ -162,7 +149,7 @@ export default async function CareHomePage() {
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68 sm:text-xl">
                 {settings.hero_subtitle ||
-                  "Book garment care, recurring home cleaning, and office cleaning through one refined service experience with clear communication, reliable timing, and premium follow-through."}
+                  "Book garment pickup and return delivery, recurring home cleaning, or office cleaning through one calmer service flow with clear timing, payment follow-up, and live updates."}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
@@ -183,14 +170,14 @@ export default async function CareHomePage() {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 {[
-                  "Pickup and delivery support",
-                  "Recurring home and office plans",
-                  "Clear tracking and updates",
+                  "Garments return in delivery",
+                  "Homes and offices finish on-site",
+                  "Clear tracking and payment follow-up",
                 ].map((item) => (
                   <span
-                  key={item}
-                  className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white/62"
-                >
+                    key={item}
+                    className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white/62"
+                  >
                     {item}
                   </span>
                 ))}
@@ -237,40 +224,30 @@ export default async function CareHomePage() {
                 />
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
-                <MetricCard
-                  label="Service types"
-                  value={String(catalog.serviceTypes.length)}
-                  note="Across wardrobe, residence, and workplace"
-                />
-                <MetricCard
-                  label="Packages"
-                  value={String(catalog.packages.length)}
-                  note="One-time and recurring care structures"
-                />
-                <MetricCard
-                  label="Add-ons"
-                  value={String(catalog.addOns.length)}
-                  note="Quote-aware service modifiers"
-                />
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-3">
-                {serviceHighlights.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <div
-                      key={item.title}
-                      className="rounded-[1.8rem] border border-white/10 bg-white/[0.04] p-5"
-                    >
-                      <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--accent)]/12">
-                        <Icon className="h-5 w-5 text-[color:var(--accent)]" />
-                      </div>
-                      <div className="mt-4 text-lg font-semibold text-white">{item.title}</div>
-                      <p className="mt-2 text-sm leading-7 text-white/64">{item.body}</p>
-                    </div>
-                  );
-                })}
+              <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.04] p-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
+                  Service clarity
+                </div>
+                <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Garments</p>
+                    <p className="mt-1 text-sm leading-6 text-white/64">
+                      Pickup, treatment, finishing, and return delivery.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">Homes</p>
+                    <p className="mt-1 text-sm leading-6 text-white/64">
+                      Scheduled arrival, on-site work, and completion checks.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">Offices</p>
+                    <p className="mt-1 text-sm leading-6 text-white/64">
+                      Site access, service delivery, and final sign-off.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -532,24 +509,6 @@ function InfoPanel({
       </div>
       <div className="mt-4 text-xl font-semibold text-white">{value}</div>
       <div className="mt-2 text-sm leading-7 text-white/62">{note}</div>
-    </div>
-  );
-}
-
-function MetricCard({
-  label,
-  value,
-  note,
-}: {
-  label: string;
-  value: string;
-  note: string;
-}) {
-  return (
-    <div className="rounded-[1.8rem] border border-white/10 bg-[#06101a]/55 p-5">
-      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/48">{label}</div>
-      <div className="mt-3 text-4xl font-black tracking-[-0.05em] text-white">{value}</div>
-      <div className="mt-2 text-sm leading-6 text-white/58">{note}</div>
     </div>
   );
 }

@@ -36,3 +36,5 @@ export function getBrowserSupabase() {
 
   return browserClient;
 }
+
+export const createSupabaseBrowser = getBrowserSupabase;

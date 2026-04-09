@@ -100,6 +100,10 @@ function authErrorMessage(error: unknown) {
 
 export function isRecoverableSupabaseAuthError(error: unknown) {
   const code = authErrorCode(error);
+  const name =
+    error && typeof error === "object" && "name" in error
+      ? String((error as { name?: unknown }).name || "").trim().toLowerCase()
+      : "";
   const message = authErrorMessage(error);
 
   if (
@@ -111,9 +115,13 @@ export function isRecoverableSupabaseAuthError(error: unknown) {
   }
 
   return (
+    name === "authsessionmissingerror" ||
+    message.includes("auth session missing") ||
     message.includes("refresh token not found") ||
     message.includes("refresh token already used") ||
-    message.includes("invalid refresh token")
+    message.includes("invalid refresh token") ||
+    message.includes("jwt expired") ||
+    message.includes("session from session_id claim in jwt does not exist")
   );
 }
 

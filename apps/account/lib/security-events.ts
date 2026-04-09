@@ -3,6 +3,21 @@ import "server-only";
 import { headers } from "next/headers";
 import { createAdminSupabase } from "@/lib/supabase";
 
+export type SecurityRequestContext = {
+  ipAddress: string | null;
+  userAgent: string | null;
+  locationSummary: string | null;
+};
+
+export type SecurityEventInput = {
+  userId: string;
+  eventType: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  locationSummary?: string | null;
+  metadata?: Record<string, unknown>;
+};
+
 function asText(value: unknown, fallback = "") {
   return typeof value === "string" ? value : fallback;
 }
@@ -16,6 +31,10 @@ function asObject(value: unknown) {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+}
+
+function compact(parts: Array<string | null | undefined>) {
+  return parts.map((value) => String(value || "").trim()).filter(Boolean);
 }
 
 function humanize(value: string) {
@@ -121,54 +140,69 @@ export function buildSecurityEventView(row: Record<string, unknown>) {
   };
 }
 
-export async function detectSecurityRequestContext() {
-  const headerStore = await headers();
-  const forwardedFor = headerStore.get("x-forwarded-for");
-  const ipAddress =
-    forwardedFor?.split(",").map((item) => item.trim()).filter(Boolean)[0] ||
-    headerStore.get("x-real-ip") ||
-    null;
+export async function detectSecurityRequestContext(): Promise<SecurityRequestContext> {
+  try {
+    const headerStore = await headers();
+    const forwardedFor = headerStore.get("x-forwarded-for") || "";
+    const ipAddress =
+      forwardedFor.split(",")[0]?.trim() ||
+      headerStore.get("x-real-ip") ||
+      headerStore.get("cf-connecting-ip") ||
+      headerStore.get("x-vercel-forwarded-for") ||
+      null;
+    const userAgent = headerStore.get("user-agent") || null;
+    const locationSummary =
+      compact([
+        headerStore.get("x-vercel-ip-city"),
+        headerStore.get("x-appengine-city"),
+        headerStore.get("x-vercel-ip-country"),
+        headerStore.get("cf-ipcountry"),
+        headerStore.get("cloudfront-viewer-country"),
+      ]).join(", ") || null;
 
-  return {
-    ipAddress,
-    userAgent: headerStore.get("user-agent"),
-    locationSummary: null as string | null,
-  };
+    return { ipAddress, userAgent, locationSummary };
+  } catch {
+    return {
+      ipAddress: null,
+      userAgent: null,
+      locationSummary: null,
+    };
+  }
 }
 
-export async function logSecurityEvent(input: {
-  userId: string;
-  eventType: string;
-  ipAddress?: string | null;
-  userAgent?: string | null;
-  locationSummary?: string | null;
-  metadata?: Record<string, unknown>;
-}) {
-  const admin = createAdminSupabase();
-  const classification = classifySecurityEvent(input.eventType);
-  const userAgent = asNullableText(input.userAgent);
-  const payload = {
-    user_id: input.userId,
-    event_type: input.eventType,
-    ip_address: asNullableText(input.ipAddress),
-    user_agent: userAgent,
-    event_category: classification.category,
-    risk_level: classification.riskLevel,
-    device_summary: summarizeUserAgent(userAgent),
-    location_summary: summarizeLocation({
-      ipAddress: asNullableText(input.ipAddress),
-      locationSummary: asNullableText(input.locationSummary),
-    }),
-    metadata: input.metadata || {},
-  };
+export async function logSecurityEvent(input: SecurityEventInput) {
+  try {
+    const admin = createAdminSupabase();
+    const classification = classifySecurityEvent(input.eventType);
+    const userAgent = asNullableText(input.userAgent);
+    const payload = {
+      user_id: input.userId,
+      event_type: input.eventType,
+      ip_address: asNullableText(input.ipAddress),
+      user_agent: userAgent,
+      event_category: classification.category,
+      risk_level: classification.riskLevel,
+      device_summary: summarizeUserAgent(userAgent),
+      location_summary: summarizeLocation({
+        ipAddress: asNullableText(input.ipAddress),
+        locationSummary: asNullableText(input.locationSummary),
+      }),
+      metadata: {
+        ...(input.metadata ?? {}),
+        ...(input.locationSummary ? { location_summary: input.locationSummary } : {}),
+      },
+    };
 
-  const { error } = await admin.from("customer_security_log").insert(payload as never);
-  if (!error) return;
+    const { error } = await admin.from("customer_security_log").insert(payload as never);
+    if (!error) return;
 
-  await admin.from("customer_security_log").insert({
-    user_id: input.userId,
-    event_type: input.eventType,
-    ip_address: asNullableText(input.ipAddress),
-    user_agent: userAgent,
-  } as never);
+    await admin.from("customer_security_log").insert({
+      user_id: input.userId,
+      event_type: input.eventType,
+      ip_address: asNullableText(input.ipAddress),
+      user_agent: userAgent,
+    } as never);
+  } catch {
+    // Security logging should never block auth completion.
+  }
 }
