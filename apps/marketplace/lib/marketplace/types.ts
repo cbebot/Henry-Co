@@ -184,6 +184,17 @@ export type MarketplaceReview = {
   createdAt: string;
 };
 
+export type MarketplaceSellerDocumentRecord = {
+  kind: "businessRegistration" | "founderIdentity" | "payoutProof" | "other";
+  name: string;
+  fileUrl: string;
+  mimeType: string | null;
+  size: number | null;
+  publicId: string | null;
+  uploadedAt: string;
+  status: "uploaded" | "under_review" | "approved" | "rejected";
+};
+
 export type MarketplaceCartItem = {
   id: string;
   productSlug: string;
@@ -315,7 +326,7 @@ export type MarketplaceVendorApplication = {
   progressStep: string;
   submittedAt: string;
   reviewNote: string | null;
-  documents: Record<string, string>;
+  documents: Record<string, MarketplaceSellerDocumentRecord>;
   draftPayload: Record<string, unknown>;
   agreementAcceptedAt: string | null;
 };

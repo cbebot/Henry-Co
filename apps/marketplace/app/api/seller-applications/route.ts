@@ -4,6 +4,7 @@ import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { sendMarketplaceEvent } from "@/lib/marketplace/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
+import type { MarketplaceSellerDocumentRecord } from "@/lib/marketplace/types";
 
 export const runtime = "nodejs";
 
@@ -16,9 +17,63 @@ type SellerApplicationPayload = {
   phone?: string;
   categoryFocus?: string;
   story?: string;
-  documents?: Record<string, string>;
+  documents?: Record<string, MarketplaceSellerDocumentRecord | string>;
   agreementAccepted?: boolean;
 };
+
+function normalizeDocuments(
+  documents: SellerApplicationPayload["documents"]
+): Record<string, MarketplaceSellerDocumentRecord> {
+  if (!documents || typeof documents !== "object") return {};
+
+  return Object.entries(documents).reduce<Record<string, MarketplaceSellerDocumentRecord>>((accumulator, [key, value]) => {
+    if (typeof value === "string" && value.trim()) {
+      accumulator[key] = {
+        kind:
+          key === "businessRegistration" || key === "founderIdentity" || key === "payoutProof"
+            ? key
+            : "other",
+        name: value.split("/").pop() || `${key}.pdf`,
+        fileUrl: value.trim(),
+        mimeType: null,
+        size: null,
+        publicId: null,
+        uploadedAt: new Date().toISOString(),
+        status: "uploaded",
+      };
+      return accumulator;
+    }
+
+    if (!value || typeof value !== "object" || Array.isArray(value)) return accumulator;
+    const document = value as Partial<MarketplaceSellerDocumentRecord>;
+    if (!document.fileUrl || !document.name) return accumulator;
+    accumulator[key] = {
+      kind:
+        document.kind === "businessRegistration" ||
+        document.kind === "founderIdentity" ||
+        document.kind === "payoutProof" ||
+        document.kind === "other"
+          ? document.kind
+          : key === "businessRegistration" || key === "founderIdentity" || key === "payoutProof"
+            ? key
+            : "other",
+      name: document.name,
+      fileUrl: document.fileUrl,
+      mimeType: document.mimeType || null,
+      size: typeof document.size === "number" ? document.size : null,
+      publicId: document.publicId || null,
+      uploadedAt: document.uploadedAt || new Date().toISOString(),
+      status:
+        document.status === "uploaded" ||
+        document.status === "under_review" ||
+        document.status === "approved" ||
+        document.status === "rejected"
+          ? document.status
+          : "uploaded",
+    };
+    return accumulator;
+  }, {});
+}
 
 function slugify(value: string) {
   return value
@@ -67,11 +122,24 @@ export async function POST(request: Request) {
   const categoryFocus = String(payload.categoryFocus || "").trim();
   const story = String(payload.story || "").trim();
   const progressStep = String(payload.progressStep || "start").trim();
-  const documents = payload.documents && typeof payload.documents === "object" ? payload.documents : {};
+  const documents = normalizeDocuments(payload.documents);
   const agreementAccepted = Boolean(payload.agreementAccepted);
+  const missingCriticalDocuments = ["founderIdentity", "payoutProof"].filter((key) => !documents[key]?.fileUrl);
 
   if (mode === "submit" && (!storeName || !storeSlug || !legalName)) {
     return NextResponse.json({ error: "Store identity is incomplete." }, { status: 400 });
+  }
+
+  if (mode === "submit" && missingCriticalDocuments.length > 0) {
+    return NextResponse.json(
+      {
+        error:
+          missingCriticalDocuments.length === 1
+            ? `Upload the ${missingCriticalDocuments[0] === "founderIdentity" ? "founder identity" : "payout proof"} document before submitting.`
+            : "Founder identity and payout proof must be uploaded before submission.",
+      },
+      { status: 400 }
+    );
   }
 
   if (mode === "submit" && !agreementAccepted) {

@@ -10,6 +10,12 @@ import {
   mapLegacyPayoutMethod,
 } from "@/lib/wallet-storage";
 
+function normalizeAccountNumber(value: unknown) {
+  return String(value || "")
+    .replace(/\s+/g, "")
+    .replace(/[^\d]/g, "");
+}
+
 export async function GET() {
   try {
     const supabase = await createSupabaseServer();
@@ -76,7 +82,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const bankName = String(body.bank_name || "").trim();
     const accountName = String(body.account_name || "").trim();
-    const accountNumber = String(body.account_number || "").replace(/\s+/g, "");
+    const accountNumber = normalizeAccountNumber(body.account_number);
 
     if (!bankName || !accountName || !accountNumber || accountNumber.length < 8) {
       return NextResponse.json(
@@ -102,6 +108,22 @@ export async function POST(request: Request) {
       const existingLegacy = ((legacyRows ?? []) as Array<Record<string, unknown>>).filter((row) =>
         isLegacyPayoutMethodRow(row)
       );
+
+      const duplicateLegacy = existingLegacy.some((row) => {
+        const metadata = (row.metadata && typeof row.metadata === "object" ? row.metadata : {}) as Record<
+          string,
+          unknown
+        >;
+        return normalizeAccountNumber(metadata.account_number) === accountNumber;
+      });
+
+      if (duplicateLegacy) {
+        return NextResponse.json(
+          { error: "That bank account is already saved for payouts." },
+          { status: 409 }
+        );
+      }
+
       const isDefault = existingLegacy.length === 0;
 
       if (isDefault) {
@@ -152,6 +174,26 @@ export async function POST(request: Request) {
     }
 
     const isDefault = (count ?? 0) === 0;
+
+    const { data: existing, error: existingError } = await admin
+      .from("customer_payout_methods")
+      .select("id, account_number")
+      .eq("user_id", userId)
+      .eq("is_active", true);
+
+    if (existingError && isMissingPostgrestResourceError(existingError)) {
+      return insertLegacyMethod();
+    }
+
+    if (existingError) {
+      logApiError("wallet/payout-methods POST existing", existingError);
+      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    }
+
+    const duplicate = (existing ?? []).some((row) => normalizeAccountNumber(row.account_number) === accountNumber);
+    if (duplicate) {
+      return NextResponse.json({ error: "That bank account is already saved for payouts." }, { status: 409 });
+    }
 
     if (isDefault) {
       await admin.from("customer_payout_methods").update({ is_default: false }).eq("user_id", userId);

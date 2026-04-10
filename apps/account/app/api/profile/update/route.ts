@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildLocaleCookieOptions, normalizeLocale } from "@henryco/i18n/server";
+import { DEFAULT_COUNTRY, getCountry } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -17,18 +18,24 @@ export async function POST(request: Request) {
     await ensureAccountProfileRecords(user);
 
     const { full_name, phone, country, contact_preference, language } = await request.json();
+    const normalizedCountry =
+      String(country || "").trim().toUpperCase() || DEFAULT_COUNTRY;
+    const region = getCountry(normalizedCountry) || getCountry(DEFAULT_COUNTRY)!;
+    const normalizedLanguage = language ? normalizeLocale(language) : normalizeLocale(region.locale);
 
     const admin = createAdminSupabase();
     const updates: Record<string, unknown> = {
       full_name: full_name || null,
       phone: normalizePhone(phone || null),
       email: user.email || null,
+      country: normalizedCountry,
+      currency: region.currencyCode,
+      timezone: region.timezone,
       updated_at: new Date().toISOString(),
       last_seen_at: new Date().toISOString(),
     };
-    if (country) updates.country = country;
     if (contact_preference) updates.contact_preference = contact_preference;
-    if (language) updates.language = normalizeLocale(language);
+    updates.language = normalizedLanguage;
 
     const { error } = await admin
       .from("customer_profiles")
@@ -38,12 +45,13 @@ export async function POST(request: Request) {
       logApiError("profile/update", error);
       return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
     }
-    const normalizedLanguage = language ? normalizeLocale(language) : null;
     const metadataPatch: Record<string, unknown> = {};
     if (full_name) metadataPatch.full_name = full_name;
-    if (country) metadataPatch.country = country;
+    metadataPatch.country = normalizedCountry;
     if (contact_preference) metadataPatch.contact_preference = contact_preference;
-    if (normalizedLanguage) metadataPatch.language = normalizedLanguage;
+    metadataPatch.language = normalizedLanguage;
+    metadataPatch.currency = region.currencyCode;
+    metadataPatch.timezone = region.timezone;
     if (Object.keys(metadataPatch).length > 0) {
       await admin.auth.admin.updateUserById(user.id, {
         user_metadata: { ...(user.user_metadata || {}), ...metadataPatch },
@@ -51,12 +59,12 @@ export async function POST(request: Request) {
     }
 
     const res = NextResponse.json({ success: true });
-    if (language) {
+    if (language || country) {
       const host =
         request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
         request.headers.get("host") ||
         "";
-      const loc = normalizeLocale(language);
+      const loc = normalizedLanguage;
       const o = buildLocaleCookieOptions(loc, host);
       res.cookies.set(o.name, o.value, {
         path: o.path,

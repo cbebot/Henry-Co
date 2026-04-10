@@ -3,23 +3,24 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ButtonPendingContent, HenryCoActivityIndicator } from "@henryco/ui";
-import { ALL_LOCALES, LOCALE_LABELS, normalizeLocale, type AppLocale } from "@henryco/i18n";
+import {
+  ALL_LOCALES,
+  LOCALE_LABELS,
+  getActiveCountries,
+  getCountry,
+  normalizeLocale,
+  type AppLocale,
+} from "@henryco/i18n";
 import { Camera } from "lucide-react";
 import UserAvatar from "@/components/layout/UserAvatar";
 
-const COUNTRIES = [
-  { code: "NG", name: "Nigeria" },
-  { code: "BJ", name: "Benin Republic" },
-  { code: "GH", name: "Ghana" },
-  { code: "KE", name: "Kenya" },
-  { code: "ZA", name: "South Africa" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "US", name: "United States" },
-  { code: "CA", name: "Canada" },
-  { code: "AE", name: "United Arab Emirates" },
-  { code: "DE", name: "Germany" },
-  { code: "FR", name: "France" },
-];
+const COUNTRIES = getActiveCountries().map((country) => ({
+  code: country.code,
+  name: country.name,
+  currency: country.currencyCode,
+  timezone: country.timezone,
+  locale: country.locale,
+}));
 
 const LANGUAGES = ALL_LOCALES.map((locale) => ({
   value: locale,
@@ -50,6 +51,7 @@ export default function ProfileForm({ profile, email }: Props) {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const selectedCountry = getCountry(country) || getCountry("NG")!;
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -185,6 +187,14 @@ export default function ProfileForm({ profile, email }: Props) {
             placeholder="+234..."
           />
         </div>
+      </div>
+
+      <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
+        <span className="font-semibold text-[var(--acct-ink)]">Regional defaults:</span>{" "}
+        {selectedCountry.name} · {selectedCountry.currencyCode} display · {selectedCountry.timezone}.
+        {selectedCountry.currencyCode === "NGN"
+          ? " Wallet settlement also runs in NGN."
+          : " Wallet settlement still runs in NGN until local settlement rails are enabled."}
       </div>
 
       <div>

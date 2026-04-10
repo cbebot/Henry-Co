@@ -9,10 +9,11 @@ export async function getPropertySnapshot() {
 
 export async function getPropertyHomeData() {
   const snapshot = await getPropertySnapshot();
+  const isLive = (status: string) => status === "published" || status === "approved";
   return {
     ...snapshot,
-    featuredListings: snapshot.listings.filter((listing) => listing.status === "approved" && listing.featured),
-    promotedListings: snapshot.listings.filter((listing) => listing.status === "approved" && listing.promoted),
+    featuredListings: snapshot.listings.filter((listing) => isLive(listing.status) && listing.featured),
+    promotedListings: snapshot.listings.filter((listing) => isLive(listing.status) && listing.promoted),
   };
 }
 
@@ -34,7 +35,7 @@ export async function searchProperties(
   const furnishedOnly = String(getValue("furnished") || "") === "1";
 
   return snapshot.listings.filter((listing) => {
-    if (listing.status !== "approved") return false;
+    if (!["published", "approved"].includes(listing.status)) return false;
     if (kind && listing.kind !== kind) return false;
     if (area && listing.locationSlug !== area) return false;
     if (managedOnly && !listing.managedByHenryCo) return false;
@@ -69,7 +70,7 @@ export async function getPropertyBySlug(slug: string) {
       .filter(
         (item) =>
           item.slug !== slug &&
-          item.status === "approved" &&
+          ["published", "approved"].includes(item.status) &&
           (item.locationSlug === listing.locationSlug || item.kind === listing.kind)
       )
       .sort((a, b) => {
@@ -97,7 +98,7 @@ export async function getAreaBySlug(slug: string) {
   return {
     area,
     listings: snapshot.listings.filter(
-      (item) => item.locationSlug === slug && item.status === "approved"
+      (item) => item.locationSlug === slug && ["published", "approved"].includes(item.status)
     ),
   };
 }

@@ -35,7 +35,7 @@ export function PropertyRecommendedForYou({
   const recs = useMemo(() => {
     if (!prefs?.areaSlug) return [];
     return listings
-      .filter((l) => l.status === "approved" && l.locationSlug === prefs.areaSlug)
+      .filter((l) => ["published", "approved"].includes(l.status) && l.locationSlug === prefs.areaSlug)
       .filter((l) => (prefs.kind ? l.kind === prefs.kind : true))
       .sort((a, b) => {
         const f = (x: PropertyListing) => (x.featured ? 1 : 0) + (x.promoted ? 1 : 0);

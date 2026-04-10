@@ -2,6 +2,7 @@ import "server-only";
 
 import type { User } from "@supabase/supabase-js";
 import { normalizeEmail, normalizePhone } from "@henryco/config";
+import { DEFAULT_COUNTRY, getCountry, normalizeLocale } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type CustomerProfileRow = {
@@ -10,6 +11,10 @@ type CustomerProfileRow = {
   full_name: string | null;
   phone: string | null;
   avatar_url: string | null;
+  country?: string | null;
+  language?: string | null;
+  currency?: string | null;
+  timezone?: string | null;
 };
 
 function asText(value: unknown) {
@@ -59,10 +64,16 @@ export async function ensureAccountProfileRecords(user: User) {
   const fullName = fullNameFromUser(user);
   const phone = phoneFromUser(user);
   const avatarUrl = avatarFromUser(user);
+  const countryCode =
+    String(user.user_metadata?.country || "").trim().toUpperCase() || DEFAULT_COUNTRY;
+  const country = getCountry(countryCode) || getCountry(DEFAULT_COUNTRY)!;
+  const language = normalizeLocale(
+    typeof user.user_metadata?.language === "string" ? user.user_metadata.language : country.locale
+  );
 
   const { data: existingProfile } = await admin
     .from("customer_profiles")
-    .select("id, email, full_name, phone, avatar_url")
+    .select("id, email, full_name, phone, avatar_url, country, language, currency, timezone")
     .eq("id", user.id)
     .maybeSingle<CustomerProfileRow>();
 
@@ -72,6 +83,9 @@ export async function ensureAccountProfileRecords(user: User) {
       is_active: true,
       last_seen_at: now,
       updated_at: now,
+      currency: existingProfile.currency || country.currencyCode,
+      timezone: existingProfile.timezone || country.timezone,
+      language: existingProfile.language || language,
     };
 
     if (fullName && fullName !== existingProfile.full_name) {
@@ -86,6 +100,10 @@ export async function ensureAccountProfileRecords(user: User) {
       updates.avatar_url = avatarUrl;
     }
 
+    if (countryCode && countryCode !== existingProfile.country) {
+      updates.country = countryCode;
+    }
+
     await admin.from("customer_profiles").update(updates as never).eq("id", user.id);
   } else {
     await admin.from("customer_profiles").insert({
@@ -94,6 +112,10 @@ export async function ensureAccountProfileRecords(user: User) {
       full_name: fullName,
       phone,
       avatar_url: avatarUrl,
+      country: country.code,
+      language,
+      currency: country.currencyCode,
+      timezone: country.timezone,
       is_active: true,
       onboarded_at: now,
       last_seen_at: now,

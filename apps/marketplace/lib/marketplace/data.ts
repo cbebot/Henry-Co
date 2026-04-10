@@ -28,6 +28,7 @@ import type {
   MarketplacePayoutRequest,
   MarketplaceProduct,
   MarketplaceReview,
+  MarketplaceSellerDocumentRecord,
   MarketplaceShellCartItem,
   MarketplaceShellState,
   MarketplaceSupportThread,
@@ -99,6 +100,67 @@ function buildKpis(input: Pick<MarketplaceHomeData, "vendors" | "products" | "re
 
 function getFallbackSnapshot() {
   return localDemoFallbackEnabled() ? demoHomeData : emptyHomeData;
+}
+
+function normalizeSellerDocuments(input: unknown): Record<string, MarketplaceSellerDocumentRecord> {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+
+  return Object.entries(input as Record<string, unknown>).reduce<Record<string, MarketplaceSellerDocumentRecord>>(
+    (accumulator, [key, value]) => {
+      if (typeof value === "string" && value.trim()) {
+        accumulator[key] = {
+          kind:
+            key === "businessRegistration" || key === "founderIdentity" || key === "payoutProof"
+              ? key
+              : "other",
+          name: value.split("/").pop() || `${key}.pdf`,
+          fileUrl: value,
+          mimeType: null,
+          size: null,
+          publicId: null,
+          uploadedAt: new Date(0).toISOString(),
+          status: "uploaded",
+        };
+        return accumulator;
+      }
+
+      if (!value || typeof value !== "object" || Array.isArray(value)) return accumulator;
+
+      const document = value as Record<string, unknown>;
+      const fileUrl = typeof document.fileUrl === "string" ? document.fileUrl.trim() : "";
+      if (!fileUrl) return accumulator;
+
+      accumulator[key] = {
+        kind:
+          document.kind === "businessRegistration" ||
+          document.kind === "founderIdentity" ||
+          document.kind === "payoutProof" ||
+          document.kind === "other"
+            ? document.kind
+            : key === "businessRegistration" || key === "founderIdentity" || key === "payoutProof"
+              ? key
+              : "other",
+        name: typeof document.name === "string" && document.name.trim() ? document.name.trim() : fileUrl.split("/").pop() || `${key}.pdf`,
+        fileUrl,
+        mimeType: typeof document.mimeType === "string" && document.mimeType.trim() ? document.mimeType.trim() : null,
+        size: Number.isFinite(Number(document.size)) ? Number(document.size) : null,
+        publicId: typeof document.publicId === "string" && document.publicId.trim() ? document.publicId.trim() : null,
+        uploadedAt:
+          typeof document.uploadedAt === "string" && document.uploadedAt.trim()
+            ? document.uploadedAt.trim()
+            : new Date().toISOString(),
+        status:
+          document.status === "uploaded" ||
+          document.status === "under_review" ||
+          document.status === "approved" ||
+          document.status === "rejected"
+            ? document.status
+            : "uploaded",
+      };
+      return accumulator;
+    },
+    {}
+  );
 }
 
 function filterValue(value: string) {
@@ -876,10 +938,7 @@ export async function getBuyerDashboardData() {
             progressStep: String(applicationRes.data.progress_step || "start"),
             submittedAt: String(applicationRes.data.submitted_at || new Date().toISOString()),
             reviewNote: applicationRes.data.review_note ? String(applicationRes.data.review_note) : null,
-            documents:
-              applicationRes.data.documents_json && typeof applicationRes.data.documents_json === "object"
-                ? (applicationRes.data.documents_json as Record<string, string>)
-                : {},
+            documents: normalizeSellerDocuments(applicationRes.data.documents_json),
             draftPayload:
               applicationRes.data.draft_payload && typeof applicationRes.data.draft_payload === "object"
                 ? (applicationRes.data.draft_payload as Record<string, unknown>)

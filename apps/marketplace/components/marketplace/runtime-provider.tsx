@@ -22,7 +22,7 @@ import {
 } from "@/lib/marketplace/post-auth-intent";
 import { getBrowserSupabaseOptional } from "@/lib/supabase/browser";
 
-type ToastTone = "success" | "error" | "info";
+export type ToastTone = "success" | "error" | "info";
 
 type ToastItem = {
   id: string;
@@ -56,6 +56,7 @@ type MarketplaceRuntimeContextValue = {
   openCart: () => void;
   closeCart: () => void;
   dismissToast: (id: string) => void;
+  pushToast: (title: string, tone: ToastTone, body?: string) => void;
   refreshShell: (silent?: boolean) => Promise<void>;
   addToCart: (input: AddToCartInput, quantity?: number) => Promise<boolean>;
   updateCartQuantity: (itemId: string, quantity: number) => Promise<void>;
@@ -568,6 +569,7 @@ export function MarketplaceRuntimeProvider({
         openCart: () => setCartOpen(true),
         closeCart: () => setCartOpen(false),
         dismissToast,
+        pushToast,
         refreshShell,
         addToCart,
         updateCartQuantity,

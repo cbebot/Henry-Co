@@ -13,8 +13,10 @@ import type {
   PropertyInquiry,
   PropertyListing,
   PropertyListingApplication,
+  PropertyListingInspection,
   PropertyManagedRecord,
   PropertyNotificationRecord,
+  PropertyPolicyEvent,
   PropertySavedListing,
   PropertyService,
   PropertySnapshot,
@@ -49,7 +51,9 @@ function dedupeById<T extends { id: string }>(items: T[]) {
 }
 
 function buildRuntimeMetrics(input: Omit<PropertySnapshot, "metrics">): PropertySnapshot["metrics"] {
-  const approvedListings = input.listings.filter((listing) => listing.status === "approved").length;
+  const approvedListings = input.listings.filter((listing) =>
+    ["published", "approved"].includes(listing.status)
+  ).length;
   const managedPortfolio = input.managedRecords.filter((record) => record.status === "active").length;
   const viewingPipeline = input.viewingRequests.filter((request) =>
     ["requested", "scheduled", "confirmed"].includes(request.status)
@@ -217,6 +221,8 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     inquiries,
     viewingRequests,
     applications,
+    inspections,
+    policyEvents,
     managedRecords,
     campaigns,
     notifications,
@@ -231,6 +237,8 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     listJsonCollection<PropertyInquiry>("inquiries"),
     listJsonCollection<PropertyViewingRequest>("viewings"),
     listJsonCollection<PropertyListingApplication>("applications"),
+    listJsonCollection<PropertyListingInspection>("inspections"),
+    listJsonCollection<PropertyPolicyEvent>("policy-events"),
     listJsonCollection<PropertyManagedRecord>("managed-records"),
     listJsonCollection<PropertyFeaturedCampaign>("campaigns"),
     listJsonCollection<PropertyNotificationRecord>("notifications"),
@@ -247,6 +255,8 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     inquiries,
     viewingRequests,
     applications,
+    inspections,
+    policyEvents,
     managedRecords: dedupeById(managedRecords),
     campaigns: dedupeById(campaigns),
     notifications,
@@ -302,6 +312,24 @@ export async function upsertPropertyListing(listing: PropertyListing) {
     ownerEmail: normalizeEmail(listing.ownerEmail),
     updatedAt: new Date().toISOString(),
   } satisfies PropertyListing);
+}
+
+export async function upsertPropertyInspection(inspection: PropertyListingInspection) {
+  await writeJsonRecord("inspections", inspection.id, {
+    ...inspection,
+    updatedAt: new Date().toISOString(),
+  } satisfies PropertyListingInspection);
+}
+
+export async function appendPropertyPolicyEvent(event: Omit<PropertyPolicyEvent, "id" | "createdAt">) {
+  const payload: PropertyPolicyEvent = {
+    id: createId(),
+    createdAt: new Date().toISOString(),
+    ...event,
+  };
+
+  await writeJsonRecord("policy-events", payload.id, payload);
+  return payload;
 }
 
 export async function upsertPropertyInquiry(inquiry: PropertyInquiry) {
@@ -373,6 +401,8 @@ export async function createListingFromSubmission(input: {
   summary: string;
   description: string;
   kind: PropertyListing["kind"];
+  serviceType?: PropertyListing["serviceType"];
+  intent?: PropertyListing["intent"];
   locationSlug: string;
   locationLabel: string;
   district: string;
@@ -397,6 +427,10 @@ export async function createListingFromSubmission(input: {
   featured?: boolean;
   gallery?: string[];
   amenities?: string[];
+  riskScore?: number;
+  riskFlags?: string[];
+  policyVersion?: string;
+  policySummary?: string | null;
 }) {
   const listing: PropertyListing = {
     id: createId(),
@@ -405,6 +439,9 @@ export async function createListingFromSubmission(input: {
     summary: cleanText(input.summary),
     description: cleanText(input.description),
     kind: input.kind,
+    serviceType:
+      input.serviceType ?? (input.kind === "managed" ? "managed_property" : input.kind),
+    intent: input.intent ?? "owner_listed",
     status: "submitted",
     visibility: "private",
     locationSlug: cleanText(input.locationSlug),
@@ -437,6 +474,10 @@ export async function createListingFromSubmission(input: {
       input.sizeSqm ? `${input.sizeSqm} sqm` : "Editorial review",
     ],
     verificationNotes: ["Submitted for moderation"],
+    riskScore: Math.max(0, Math.min(100, Math.round(Number(input.riskScore ?? 40)))),
+    riskFlags: input.riskFlags ?? [],
+    policyVersion: cleanText(input.policyVersion) || "v1",
+    policySummary: input.policySummary ?? null,
     availableFrom: null,
     availableNow: true,
     ownerUserId: input.ownerUserId ?? null,

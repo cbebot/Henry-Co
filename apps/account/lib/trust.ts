@@ -2,6 +2,7 @@ import "server-only";
 
 import { getAccountTrustTierLabel, type AccountTrustTier } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
+import { getContactOverlapSummary } from "@/lib/contact-review";
 
 function asText(value: unknown, fallback = "") {
   return typeof value === "string" ? value : fallback;
@@ -37,6 +38,8 @@ export type AccountTrustProfile = {
     accountAgeDays: number;
     settledTransactions: number;
     suspiciousEvents: number;
+    duplicateEmailMatches: number;
+    duplicatePhoneMatches: number;
   };
 };
 
@@ -77,7 +80,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
         .limit(80),
       admin
         .from("customer_security_log")
-        .select("id, event_type, risk_level")
+        .select("id, event_type, created_at")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(40),
@@ -90,6 +93,11 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
   const walletTransactions = (walletRes.data ?? []) as Array<Record<string, unknown>>;
   const securityEvents = (securityRes.data ?? []) as Array<Record<string, unknown>>;
   const authUser = authRes.data.user;
+  const overlaps = await getContactOverlapSummary({
+    userId,
+    email: asNullableText(profile.email) || authUser?.email || null,
+    phone: asNullableText(profile.phone),
+  });
 
   const emailVerified = Boolean(authUser?.email_confirmed_at);
   const phonePresent = Boolean(asNullableText(profile.phone));
@@ -108,9 +116,12 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
     return status === "completed" || (status === "verified" && referenceType !== "wallet_funding_request");
   }).length;
   const suspiciousEvents = securityEvents.filter((row) => {
-    const risk = asText(row.risk_level).toLowerCase();
     const eventType = asText(row.event_type).toLowerCase();
-    return risk === "high" || eventType.includes("suspicious") || eventType.includes("failed");
+    return (
+      eventType.includes("suspicious") ||
+      eventType.includes("failed") ||
+      eventType.includes("blocked")
+    );
   }).length;
   const completedActivityCount = activity.filter((row) => {
     const status = asText(row.status).toLowerCase();
@@ -128,6 +139,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
   if (settledTransactions >= 1) score += 10;
   if (settledTransactions >= 3) score += 8;
   if (suspiciousEvents === 0) score += 8;
+  if (overlaps.reviewRequired) score -= 12;
   score = Math.min(score, 100);
 
   const tier: TrustTier =
@@ -136,14 +148,16 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
     profileCompletion >= 70 &&
     accountAgeDays >= 90 &&
     settledTransactions >= 3 &&
-    suspiciousEvents === 0
+    suspiciousEvents === 0 &&
+    !overlaps.reviewRequired
       ? "premium_verified"
       : emailVerified &&
           phonePresent &&
           profileCompletion >= 62 &&
           accountAgeDays >= 30 &&
           settledTransactions >= 1 &&
-          suspiciousEvents === 0
+          suspiciousEvents === 0 &&
+          !overlaps.reviewRequired
         ? "trusted"
         : emailVerified && phonePresent && profileCompletion >= 48
           ? "verified"
@@ -156,6 +170,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
     accountAgeDays >= 30 ? `Account history spans ${accountAgeDays} days.` : null,
     settledTransactions >= 1 ? "Verified transaction history exists." : null,
     suspiciousEvents === 0 ? "No recent high-risk security events were found." : null,
+    ...overlaps.reasons,
   ].filter(Boolean) as string[];
 
   const nextTier: TrustTier | null =
@@ -173,18 +188,27 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
           !emailVerified ? "Verify your email address." : null,
           !phonePresent ? "Add a usable phone number." : null,
           profileCompletion < 48 ? "Complete more of your profile and add proof documents." : null,
+          overlaps.reviewRequired
+            ? "A shared contact detail needs manual trust review before higher-trust actions unlock."
+            : null,
         ]
       : nextTier === "trusted"
         ? [
             accountAgeDays < 30 ? "Build more account age before trusted status unlocks." : null,
             settledTransactions < 1 ? "Complete at least one verified transaction or funding cycle." : null,
             suspiciousEvents > 0 ? "Keep the account clear of suspicious access warnings." : null,
+            overlaps.reviewRequired
+              ? "Resolve contact overlap review before trusted seller, payout, or property lanes unlock."
+              : null,
           ]
         : nextTier === "premium_verified"
           ? [
               accountAgeDays < 90 ? "Maintain a longer clean account history." : null,
               settledTransactions < 3 ? "Build a stronger verified transaction record." : null,
               completedActivityCount < 8 ? "Use more HenryCo divisions with clean outcomes." : null,
+              overlaps.reviewRequired
+                ? "Keep duplicate-contact review clear before premium trust can be granted."
+                : null,
             ]
           : [];
 
@@ -196,7 +220,8 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
     requirements: requirements.filter(Boolean) as string[],
     flags: {
       jobsPostingEligible: tier !== "basic",
-      marketplaceEligible: tier === "trusted" || tier === "premium_verified",
+      marketplaceEligible:
+        (tier === "trusted" || tier === "premium_verified") && !overlaps.reviewRequired,
     },
     signals: {
       emailVerified,
@@ -205,6 +230,8 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
       accountAgeDays,
       settledTransactions,
       suspiciousEvents,
+      duplicateEmailMatches: overlaps.emailMatches,
+      duplicatePhoneMatches: overlaps.phoneMatches,
     },
   };
 }

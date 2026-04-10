@@ -23,6 +23,8 @@ export function ProductDetailActions({
   const adding = pendingCartSlugs.includes(product.slug);
   const saving = pendingWishlistSlugs.includes(product.slug);
   const followingBusy = vendor ? pendingFollowSlugs.includes(vendor.slug) : false;
+  const wishlisted = isWishlisted(product.slug);
+  const following = vendor ? isFollowing(vendor.slug) : false;
 
   const payload = {
     productSlug: product.slug,
@@ -63,14 +65,18 @@ export function ProductDetailActions({
             onClick={() => void toggleWishlist(product.slug)}
             disabled={saving}
             aria-busy={saving}
-            className="market-button-secondary inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait"
+            className={`inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait ${
+              wishlisted
+                ? "border border-[rgba(221,182,120,0.26)] bg-[rgba(221,182,120,0.14)] text-[var(--market-paper-white)]"
+                : "market-button-secondary"
+            }`}
           >
             {saving ? (
               <HenryCoActivityIndicator size="sm" label="Updating wishlist" />
             ) : (
-              <Heart className={`h-4 w-4 ${isWishlisted(product.slug) ? "fill-current" : ""}`} />
+              <Heart className={`h-4 w-4 ${wishlisted ? "fill-current" : ""}`} />
             )}
-            {saving ? "Saving…" : isWishlisted(product.slug) ? "Saved" : "Save"}
+            {saving ? "Saving…" : wishlisted ? "Saved to wishlist" : "Save"}
           </button>
           {vendor ? (
             <button
@@ -78,14 +84,18 @@ export function ProductDetailActions({
               onClick={() => void toggleFollow(vendor.slug)}
               disabled={followingBusy}
               aria-busy={followingBusy}
-              className="market-button-secondary inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait"
+              className={`inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait ${
+                following
+                  ? "border border-[rgba(117,209,255,0.26)] bg-[rgba(117,209,255,0.12)] text-[var(--market-paper-white)]"
+                  : "market-button-secondary"
+              }`}
             >
               {followingBusy ? (
                 <HenryCoActivityIndicator size="sm" label="Updating store follow" />
               ) : (
                 <Store className="h-4 w-4" />
               )}
-              {followingBusy ? "Updating…" : isFollowing(vendor.slug) ? "Following store" : "Follow store"}
+              {followingBusy ? "Updating…" : following ? "Following store" : "Follow store"}
             </button>
           ) : null}
           <Link href="/search" className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold">
@@ -105,13 +115,17 @@ export function ProductDetailActions({
             onClick={() => void toggleWishlist(product.slug)}
             disabled={saving}
             aria-busy={saving}
-            aria-label={saving ? "Updating wishlist" : isWishlisted(product.slug) ? "Remove from wishlist" : "Save to wishlist"}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)]"
+            aria-label={saving ? "Updating wishlist" : wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+            className={`inline-flex h-12 w-12 items-center justify-center rounded-full border text-[var(--market-paper-white)] ${
+              wishlisted
+                ? "border-[rgba(221,182,120,0.26)] bg-[rgba(221,182,120,0.14)]"
+                : "border-[var(--market-line)] bg-[rgba(255,255,255,0.04)]"
+            }`}
           >
             {saving ? (
               <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating wishlist" />
             ) : (
-              <Heart className={`h-4 w-4 ${isWishlisted(product.slug) ? "fill-current" : ""}`} />
+              <Heart className={`h-4 w-4 ${wishlisted ? "fill-current" : ""}`} />
             )}
           </button>
           {vendor ? (
@@ -120,8 +134,12 @@ export function ProductDetailActions({
               onClick={() => void toggleFollow(vendor.slug)}
               disabled={followingBusy}
               aria-busy={followingBusy}
-              aria-label={followingBusy ? "Updating store follow" : isFollowing(vendor.slug) ? "Following store" : "Follow store"}
-              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)]"
+              aria-label={followingBusy ? "Updating store follow" : following ? "Following store" : "Follow store"}
+              className={`inline-flex h-12 w-12 items-center justify-center rounded-full border text-[var(--market-paper-white)] ${
+                following
+                  ? "border-[rgba(117,209,255,0.26)] bg-[rgba(117,209,255,0.12)]"
+                  : "border-[var(--market-line)] bg-[rgba(255,255,255,0.04)]"
+              }`}
             >
               {followingBusy ? (
                 <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating store follow" />

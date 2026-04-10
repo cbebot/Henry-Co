@@ -2,6 +2,7 @@ import { PropertyMetricCard, PropertyStatusBadge, PropertyWorkspaceShell } from 
 import { requirePropertyRoles } from "@/lib/property/auth";
 import { getPropertySnapshot } from "@/lib/property/data";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -9,8 +10,8 @@ export default async function AdminPage() {
   await requirePropertyRoles(["property_admin"], "/admin");
   const snapshot = await getPropertySnapshot();
 
-  const approved = snapshot.listings.filter((item) => item.status === "approved").length;
-  const submitted = snapshot.listings.filter((item) => item.status === "submitted").length;
+  const approved = snapshot.listings.filter((item) => ["published", "approved"].includes(item.status)).length;
+  const submitted = snapshot.listings.filter((item) => !["published", "approved", "archived"].includes(item.status)).length;
   const messagingFailures = snapshot.notifications.filter((item) => item.status === "failed").length;
   const emailConfigured = Boolean(process.env.RESEND_API_KEY);
   const whatsappConfigured = Boolean(
@@ -30,6 +31,15 @@ export default async function AdminPage() {
         <PropertyMetricCard label="Pending" value={String(submitted)} hint="Listings waiting for moderation or revision." />
         <PropertyMetricCard label="Notifications" value={String(snapshot.notifications.length)} hint="Recorded email and WhatsApp delivery events." />
         <PropertyMetricCard label="Failures" value={String(messagingFailures)} hint="Notification records marked as failed." />
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link
+          href="/admin/listings"
+          className="property-button inline-flex rounded-full px-6 py-3 text-sm font-semibold"
+        >
+          Open governance queue
+        </Link>
       </div>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">

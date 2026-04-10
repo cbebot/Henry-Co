@@ -3,24 +3,19 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
+import { getActiveCountries } from "@henryco/i18n";
 import { normalizeTrustedRedirect } from "@henryco/config";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 
-const COUNTRIES = [
-  { code: "NG", name: "Nigeria", dial: "+234" },
-  { code: "BJ", name: "Benin Republic", dial: "+229" },
-  { code: "GH", name: "Ghana", dial: "+233" },
-  { code: "KE", name: "Kenya", dial: "+254" },
-  { code: "ZA", name: "South Africa", dial: "+27" },
-  { code: "GB", name: "United Kingdom", dial: "+44" },
-  { code: "US", name: "United States", dial: "+1" },
-  { code: "CA", name: "Canada", dial: "+1" },
-  { code: "AE", name: "United Arab Emirates", dial: "+971" },
-  { code: "DE", name: "Germany", dial: "+49" },
-  { code: "FR", name: "France", dial: "+33" },
-];
+const COUNTRIES = getActiveCountries().map((country) => ({
+  code: country.code,
+  name: country.name,
+  dial: country.phonePrefix,
+  currency: country.currencyCode,
+  timezone: country.timezone,
+}));
 
 const CONTACT_PREFS = [
   { value: "email", label: "Email" },
@@ -77,6 +72,8 @@ export default function SignupForm() {
             country,
             phone: fullPhone,
             contact_preference: contactPref,
+            currency: selectedCountry?.currency || "NGN",
+            timezone: selectedCountry?.timezone || "Africa/Lagos",
           },
         },
       });
@@ -218,6 +215,12 @@ export default function SignupForm() {
               />
             </div>
           </div>
+        </div>
+
+        <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
+          {selectedCountry?.currency === "NGN"
+            ? "Your regional defaults will follow this country selection."
+            : `Your display defaults can follow ${selectedCountry?.currency}, but wallet settlement currently remains NGN-only until local payment rails go live.`}
         </div>
 
         <div>

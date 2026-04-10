@@ -31,6 +31,10 @@ function numberValue(formData: FormData, key: string, fallback = 0) {
   return Number.isFinite(value) ? value : fallback;
 }
 
+function truthyValue(formData: FormData, key: string) {
+  return ["1", "true", "yes", "on"].includes(text(formData, key).toLowerCase());
+}
+
 function makeRef(prefix: string) {
   const now = new Date();
   const date = `${now.getUTCFullYear()}${String(now.getUTCMonth() + 1).padStart(2, "0")}${String(
@@ -191,9 +195,52 @@ function redirectToSharedAccountLogin(request: Request, nextPath: string) {
   return redirectTo(request, buildSharedAccountLoginUrl(nextPath, new URL(request.url).origin));
 }
 
+function wantsJson(request: Request, formData: FormData) {
+  return (
+    text(formData, "response_mode") === "json" ||
+    (request.headers.get("accept") || "").includes("application/json")
+  );
+}
+
+function mapAddressRow(row: Record<string, unknown>) {
+  return {
+    id: String(row.id),
+    label: String(row.label || ""),
+    recipient: String(row.recipient_name || ""),
+    phone: String(row.phone || ""),
+    line1: String(row.line1 || ""),
+    line2: row.line2 ? String(row.line2) : null,
+    city: String(row.city || ""),
+    region: String(row.region || ""),
+    country: String(row.country || "Nigeria"),
+    isDefault: Boolean(row.is_default),
+  };
+}
+
+function mapReviewRow(
+  row: Record<string, unknown>,
+  productSlug: string,
+  vendorSlug: string | null,
+  buyerName: string
+) {
+  return {
+    id: String(row.id),
+    productSlug,
+    vendorSlug: vendorSlug || "vendor",
+    buyerName,
+    rating: Number(row.rating || 0),
+    title: String(row.title || ""),
+    body: String(row.body || ""),
+    verifiedPurchase: Boolean(row.is_verified_purchase),
+    status: String(row.status || "pending"),
+    createdAt: String(row.created_at || new Date().toISOString()),
+  };
+}
+
 export async function POST(request: Request) {
   const formData = await request.formData();
   const intent = text(formData, "intent");
+  const json = wantsJson(request, formData);
   const viewer = await getMarketplaceViewer();
   const admin = createAdminSupabase();
   const snapshot = await getMarketplaceHomeData();
@@ -757,7 +804,8 @@ export async function POST(request: Request) {
       case "address_upsert": {
         if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/addresses");
 
-        const isDefault = text(formData, "is_default") === "on";
+        const addressId = text(formData, "address_id");
+        const isDefault = truthyValue(formData, "is_default");
         if (isDefault) {
           await admin
             .from("marketplace_addresses")
@@ -765,7 +813,7 @@ export async function POST(request: Request) {
             .eq("user_id", viewer.user.id);
         }
 
-        await admin.from("marketplace_addresses").insert({
+        const addressPayload = {
           user_id: viewer.user.id,
           normalized_email: normalizeEmail(viewer.user.email),
           label: text(formData, "label"),
@@ -777,10 +825,107 @@ export async function POST(request: Request) {
           region: text(formData, "region"),
           country: text(formData, "country") || "Nigeria",
           is_default: isDefault,
-        } as never);
+        };
+
+        const mutation = addressId
+          ? admin
+              .from("marketplace_addresses")
+              .update(addressPayload as never)
+              .eq("id", addressId)
+              .eq("user_id", viewer.user.id)
+              .select("*")
+              .maybeSingle()
+          : admin
+              .from("marketplace_addresses")
+              .insert(addressPayload as never)
+              .select("*")
+              .maybeSingle();
+
+        const { data: address, error: addressError } = await mutation;
+        if (addressError || !address) {
+          if (json) {
+            return NextResponse.json(
+              { error: addressError?.message || "Address save failed." },
+              { status: 400 }
+            );
+          }
+          return redirectTo(request, "/account/addresses?error=save-failed");
+        }
 
         revalidatePath("/account/addresses");
+        if (json) {
+          return NextResponse.json({
+            ok: true,
+            address: mapAddressRow(address as Record<string, unknown>),
+            mode: addressId ? "updated" : "created",
+          });
+        }
         return redirectTo(request, "/account/addresses?saved=1");
+      }
+
+      case "address_delete": {
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/addresses");
+
+        const addressId = text(formData, "address_id");
+        if (!addressId) {
+          if (json) {
+            return NextResponse.json({ error: "Address not found." }, { status: 400 });
+          }
+          return redirectTo(request, "/account/addresses?error=missing-address");
+        }
+
+        await admin
+          .from("marketplace_addresses")
+          .delete()
+          .eq("id", addressId)
+          .eq("user_id", viewer.user.id);
+
+        revalidatePath("/account/addresses");
+        if (json) {
+          return NextResponse.json({ ok: true, addressId });
+        }
+        return redirectTo(request, "/account/addresses?deleted=1");
+      }
+
+      case "address_default": {
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/addresses");
+
+        const addressId = text(formData, "address_id");
+        if (!addressId) {
+          if (json) {
+            return NextResponse.json({ error: "Address not found." }, { status: 400 });
+          }
+          return redirectTo(request, "/account/addresses?error=missing-address");
+        }
+
+        await admin
+          .from("marketplace_addresses")
+          .update({ is_default: false } as never)
+          .eq("user_id", viewer.user.id);
+
+        const { data: address, error: addressError } = await admin
+          .from("marketplace_addresses")
+          .update({ is_default: true } as never)
+          .eq("id", addressId)
+          .eq("user_id", viewer.user.id)
+          .select("*")
+          .maybeSingle();
+
+        if (addressError || !address) {
+          if (json) {
+            return NextResponse.json(
+              { error: addressError?.message || "Default address update failed." },
+              { status: 400 }
+            );
+          }
+          return redirectTo(request, "/account/addresses?error=default-failed");
+        }
+
+        revalidatePath("/account/addresses");
+        if (json) {
+          return NextResponse.json({ ok: true, address: mapAddressRow(address as Record<string, unknown>) });
+        }
+        return redirectTo(request, "/account/addresses?default=1");
       }
 
       case "review_submit": {
@@ -817,7 +962,7 @@ export async function POST(request: Request) {
           verifiedOrderIdSet.has(String(item.order_id))
         );
 
-        await admin.from("marketplace_reviews").insert({
+        const reviewPayload = {
           order_item_id: verifiedItem?.id ? String(verifiedItem.id) : null,
           product_id: product.id,
           vendor_id:
@@ -831,7 +976,23 @@ export async function POST(request: Request) {
           body: text(formData, "body"),
           is_verified_purchase: Boolean(verifiedItem?.id),
           status: verifiedItem?.id ? "published" : "pending",
-        } as never);
+        };
+
+        const { data: createdReview, error: reviewError } = await admin
+          .from("marketplace_reviews")
+          .insert(reviewPayload as never)
+          .select("*")
+          .maybeSingle();
+
+        if (reviewError || !createdReview) {
+          if (json) {
+            return NextResponse.json(
+              { error: reviewError?.message || "Review submission failed." },
+              { status: 400 }
+            );
+          }
+          return redirectTo(request, "/account/reviews?error=review-failed");
+        }
 
         const { data: publishedReviews } = await admin
           .from("marketplace_reviews")
@@ -853,8 +1014,47 @@ export async function POST(request: Request) {
             .eq("id", product.id);
         }
 
+        const vendorId =
+          reviewPayload.vendor_id ||
+          snapshot.vendors.find((item) => item.slug === product.vendorSlug)?.id ||
+          null;
+
+        if (vendorId) {
+          const { data: vendorPublishedReviews } = await admin
+            .from("marketplace_reviews")
+            .select("rating")
+            .eq("vendor_id", vendorId)
+            .eq("status", "published");
+
+          const vendorRatings = (vendorPublishedReviews ?? [])
+            .map((item: Record<string, unknown>) => Number(item.rating || 0))
+            .filter((value) => value > 0);
+
+          if (vendorRatings.length) {
+            const vendorAverage = vendorRatings.reduce((sum, value) => sum + value, 0) / vendorRatings.length;
+            await admin
+              .from("marketplace_vendors")
+              .update({
+                review_score: vendorAverage.toFixed(2),
+              } as never)
+              .eq("id", vendorId);
+          }
+        }
+
         revalidatePath("/account/reviews");
         revalidatePath(`/product/${product.slug}`);
+        if (json) {
+          return NextResponse.json({
+            ok: true,
+            review: mapReviewRow(
+              createdReview as Record<string, unknown>,
+              product.slug,
+              product.vendorSlug,
+              viewer.user.fullName || "HenryCo Buyer"
+            ),
+            mode: reviewPayload.is_verified_purchase ? "published" : "pending",
+          });
+        }
         return redirectTo(request, "/account/reviews?submitted=1");
       }
 

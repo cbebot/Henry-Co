@@ -146,6 +146,15 @@ function assert(condition, message) {
   }
 }
 
+function decodeHtml(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
 function toUrl(pathname) {
   return new URL(pathname, baseURL).toString();
 }
@@ -198,7 +207,10 @@ async function checkRoute(pathname, needle, label = pathname, options = {}) {
   const { response, body } = await fetchText(pathname, options);
   assert(response.ok, `${label} returned ${response.status}`);
   if (needle) {
-    assert(body.includes(needle), `${label} did not include expected content: ${needle}`);
+    assert(
+      decodeHtml(body).includes(needle),
+      `${label} did not include expected content: ${needle}`
+    );
   }
 }
 

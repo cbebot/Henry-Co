@@ -46,7 +46,7 @@ export default async function ReferralsPage() {
     <div className="space-y-6 acct-fade-in">
       <PageHeader
         title="Referrals"
-        description="Invite friends to HenryCo and earn rewards when they sign up and transact."
+        description="Invite qualified customers to HenryCo and track rewards through pending, reviewed, and credited states."
         icon={Users}
       />
 
@@ -115,7 +115,7 @@ export default async function ReferralsPage() {
               They sign up
             </p>
             <p className="mt-1 text-xs text-[var(--acct-muted)]">
-              When someone creates a HenryCo account using your referral link, we track the referral automatically.
+              We track the referred account only once. Self-referrals, duplicate households, and recycled signups do not qualify.
             </p>
           </div>
           <div className="rounded-xl bg-[var(--acct-surface)] p-4">
@@ -123,12 +123,27 @@ export default async function ReferralsPage() {
               3
             </div>
             <p className="text-sm font-semibold text-[var(--acct-ink)]">
-              Earn rewards
+              Rewards clear after qualification
             </p>
             <p className="mt-1 text-xs text-[var(--acct-muted)]">
-              Once your referral converts, you earn a reward credited to your HenryCo wallet.
+              Rewards are only credited after a qualifying transaction clears verification and abuse review. Pending rewards are not spendable.
             </p>
           </div>
+        </div>
+      </div>
+
+      <div className="acct-card p-5">
+        <p className="acct-kicker mb-3">Referral Policy</p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[
+            "A qualifying conversion means the referred account completed an eligible HenryCo action that passed payment and trust verification.",
+            "HenryCo can hold, reverse, or cancel rewards for self-referrals, duplicate conversion loops, reversals, refunds, or suspicious reward patterns.",
+            "Your dashboard shows referral matches and reward history separately so tracked signups are not mistaken for credited wallet earnings.",
+          ].map((item) => (
+            <div key={item} className="rounded-xl bg-[var(--acct-surface)] p-4 text-sm leading-7 text-[var(--acct-muted)]">
+              {item}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -191,7 +206,7 @@ export default async function ReferralsPage() {
           <EmptyState
             icon={Gift}
             title="No rewards yet"
-            description="Rewards are credited when your referrals convert. Your reward history will appear here."
+            description="Credited rewards will appear here after qualifying conversions clear verification and anti-abuse review."
           />
         ) : (
           <div className="acct-card divide-y divide-[var(--acct-line)]">

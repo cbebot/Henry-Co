@@ -12,12 +12,14 @@ import {
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import {
+  getProfile,
   getPendingWithdrawalHoldKobo,
   getWalletFundingContext,
   getWalletTransactions,
   getWithdrawalRequests,
 } from "@/lib/account-data";
 import { formatNaira, formatDateTime, divisionLabel } from "@/lib/format";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
 import {
@@ -47,10 +49,17 @@ const typeColors: Record<string, string> = {
 
 export default async function WalletPage() {
   const user = await requireAccountUser();
-  const [{ wallet, pending_kobo, requests }, withdrawalRequests] = await Promise.all([
+  const [{ wallet, pending_kobo, requests }, withdrawalRequests, profile] = await Promise.all([
     getWalletFundingContext(user.id),
     getWithdrawalRequests(user.id),
+    getProfile(user.id),
   ]);
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
   const pendingWithdrawalKobo = getPendingWithdrawalHoldKobo(withdrawalRequests as never);
   const availableBalanceKobo = Math.max(0, Number(wallet.balance_kobo) - pendingWithdrawalKobo);
   const transactions = (await getWalletTransactions(user.id, 50)).filter(
@@ -92,6 +101,9 @@ export default async function WalletPage() {
           <p className="mt-1 text-4xl font-bold">{formatNaira(availableBalanceKobo)}</p>
           <p className="mt-2 text-sm text-white/60">
             HenryCo Wallet &middot; {wallet.currency} &middot; Available across HenryCo services
+          </p>
+          <p className="mt-2 text-xs text-white/72">
+            {region.settlementNote}
           </p>
           {pendingWithdrawalKobo > 0 ? (
             <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/72">
@@ -136,7 +148,13 @@ export default async function WalletPage() {
         {[
           { label: "Pending review stays separate", desc: "Funding only moves into available balance after confirmation." },
           { label: "Works across HenryCo", desc: "Use the same wallet for Care, Marketplace, Studio, and more." },
-          { label: "Secure and traceable", desc: "Every funding request, proof upload, and balance change is recorded." },
+          {
+            label: "Settlement truth",
+            desc:
+              region.currencyCode === "NGN"
+                ? "Your wallet display and settlement currency are aligned."
+                : `Your profile can display ${region.currencyCode}, but wallet settlement still runs in NGN today.`,
+          },
         ].map((cue) => (
           <div key={cue.label} className="rounded-xl bg-[var(--acct-surface)] p-4">
             <p className="text-sm font-semibold text-[var(--acct-ink)]">{cue.label}</p>
@@ -250,7 +268,10 @@ export default async function WalletPage() {
                     </p>
                     <p className="text-xs text-[var(--acct-muted)]">
                       {tx.division ? divisionLabel(tx.division as string) + " · " : ""}
-                      {formatDateTime(tx.created_at as string)}
+                      {formatDateTime(tx.created_at as string, {
+                        locale: region.locale,
+                        timezone: region.timezone,
+                      })}
                     </p>
                   </div>
                   <p

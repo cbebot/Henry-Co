@@ -120,6 +120,8 @@ export async function recordReferralConversion(
   referralCode: string,
   refereeId: string
 ) {
+  if (!referralCode || !refereeId) return null;
+
   // Find the pending referral row with this code
   const { data: referral } = await admin()
     .from("referrals")
@@ -131,6 +133,16 @@ export async function recordReferralConversion(
     .maybeSingle();
 
   if (!referral) return null;
+  if (String(referral.referrer_id || "") === refereeId) return null;
+
+  const { data: existingRefereeReferral } = await admin()
+    .from("referrals")
+    .select("id")
+    .eq("referee_id", refereeId)
+    .limit(1)
+    .maybeSingle();
+
+  if (existingRefereeReferral?.id) return null;
 
   // Update the referral with the referee and mark as converted
   const { error } = await admin()

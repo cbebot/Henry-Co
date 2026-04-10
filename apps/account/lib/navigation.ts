@@ -10,6 +10,7 @@ import {
   MapPin,
   FileText,
   Shield,
+  ShieldCheck,
   Settings,
   ShoppingBag,
   Sparkles,
@@ -43,6 +44,7 @@ export const accountNavItems: NavItem[] = [
   { href: "/support", label: "Support", icon: LifeBuoy, section: "Account" },
   { href: "/addresses", label: "Addresses", icon: MapPin, section: "Account" },
   { href: "/documents", label: "Documents", icon: FileText, section: "Account" },
+  { href: "/verification", label: "Verification", icon: ShieldCheck, section: "Account" },
   // Divisions
   { href: "/care", label: "Care", icon: Sparkles, section: "Services" },
   { href: "/marketplace", label: "Marketplace", icon: ShoppingBag, section: "Services" },

@@ -1,8 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { PropertyEmptyState, PropertyListingCard, PropertySearchBar, PropertySectionIntro } from "@/components/property/ui";
 import { getPropertySnapshot, searchProperties } from "@/lib/property/data";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Search property listings | HenryCo Property",
+  description:
+    "Search HenryCo Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
+};
 
 type SearchParams = {
   q?: string;
@@ -11,6 +17,19 @@ type SearchParams = {
   managed?: string;
   furnished?: string;
 };
+
+function buildSearchHref(params: SearchParams, removeKey?: keyof SearchParams) {
+  const next = new URLSearchParams();
+
+  (Object.entries(params) as Array<[keyof SearchParams, string | undefined]>).forEach(([key, value]) => {
+    if (removeKey === key) return;
+    if (!value) return;
+    next.set(key, value);
+  });
+
+  const query = next.toString();
+  return query ? `/search?${query}` : "/search";
+}
 
 export default async function PropertySearchPage({
   searchParams,
@@ -26,8 +45,8 @@ export default async function PropertySearchPage({
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker="Search"
-        title="Browse listings with less clutter and more conviction."
-        description="Filter across rent, sale, commercial, managed, and short-let surfaces without losing the context that serious decisions need."
+        title="Search serious listings without losing your filters or your pace."
+        description="The filter state stays shareable in the URL, the results update without a blunt refresh, and every listing carries clearer trust context before you commit attention."
       />
 
       <div className="mt-8">
@@ -44,18 +63,23 @@ export default async function PropertySearchPage({
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-        <div className="text-sm text-[var(--property-ink-soft)]">
+        <div
+          className="text-sm text-[var(--property-ink-soft)]"
+          role="status"
+          aria-live="polite"
+        >
           {results.length} live {results.length === 1 ? "listing" : "listings"} found
         </div>
         {active.length ? (
           <div className="flex flex-wrap gap-2">
             {active.map(([key, value]) => (
-              <span
+              <Link
                 key={key}
+                href={buildSearchHref(params, key as keyof SearchParams)}
                 className="rounded-full border border-[var(--property-line)] px-3 py-1 text-xs text-[var(--property-ink-soft)]"
               >
-                {key}: {value}
-              </span>
+                {key}: {value} ×
+              </Link>
             ))}
             <Link href="/search" className="text-xs font-semibold text-[var(--property-accent-strong)]">
               Clear filters
@@ -74,7 +98,7 @@ export default async function PropertySearchPage({
         <div className="mt-8">
           <PropertyEmptyState
             title="No listings match this combination yet."
-            body="Try removing a filter, broadening the area, or switching from a precise search phrase to a market category."
+            body="Try broadening the area, removing one filter at a time, or switching from a precise phrase to the property type you want HenryCo to surface."
             action={
               <Link
                 href="/search"

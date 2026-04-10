@@ -416,6 +416,7 @@ export function WorkspaceShell({
         </section>
         {children}
       </main>
+      <MarketplaceToastStack />
     </div>
   );
 }

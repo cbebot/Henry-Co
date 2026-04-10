@@ -1,5 +1,6 @@
 import "server-only";
 
+import { normalizeEmail, normalizePhone } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type OptionalString = string | null | undefined;
@@ -54,7 +55,7 @@ async function resolveUserId(input: { userId?: string | null; email?: string | n
   const direct = cleanText(input.userId);
   if (direct) return direct;
 
-  const email = cleanText(input.email).toLowerCase();
+  const email = normalizeEmail(input.email);
   if (!email) return null;
 
   const admin = createAdminSupabase();
@@ -86,7 +87,7 @@ export async function ensureCustomerProfile(input: {
   phone?: string | null;
 }) {
   const userId = await resolveUserId(input);
-  const email = cleanText(input.email).toLowerCase();
+  const email = normalizeEmail(input.email);
   if (!userId || !email) return null;
 
   const admin = createAdminSupabase();
@@ -95,7 +96,7 @@ export async function ensureCustomerProfile(input: {
       id: userId,
       email,
       full_name: cleanText(input.fullName) || null,
-      phone: cleanText(input.phone) || null,
+      phone: normalizePhone(input.phone),
       is_active: true,
     } as never,
     { onConflict: "id" }

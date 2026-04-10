@@ -227,7 +227,7 @@ export async function upsertLearnRecord(
 ) {
   if (await hasLearnTable(table)) {
     const admin = createAdminSupabase();
-    await writeWithSchemaRetry(table, payload, (nextPayload) =>
+    await writeWithSchemaRetry(table, payload, async (nextPayload) =>
       admin.from(table).upsert(nextPayload as never, {
         onConflict: options?.onConflict || "id",
       })
@@ -246,7 +246,7 @@ export async function insertLearnRecord(
 ) {
   if (await hasLearnTable(table)) {
     const admin = createAdminSupabase();
-    await writeWithSchemaRetry(table, payload, (nextPayload) =>
+    await writeWithSchemaRetry(table, payload, async (nextPayload) =>
       admin.from(table).insert(nextPayload as never)
     );
     return;

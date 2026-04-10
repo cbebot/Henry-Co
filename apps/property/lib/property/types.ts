@@ -1,6 +1,7 @@
 export type PropertyListingKind =
   | "rent"
   | "sale"
+  | "land"
   | "commercial"
   | "managed"
   | "shortlet";
@@ -8,10 +9,39 @@ export type PropertyListingKind =
 export type PropertyListingStatus =
   | "draft"
   | "submitted"
+  | "awaiting_documents"
+  | "awaiting_eligibility"
+  | "inspection_requested"
+  | "inspection_scheduled"
+  | "under_review"
+  | "requires_correction"
+  | "verified"
+  | "published"
   | "changes_requested"
   | "approved"
   | "rejected"
+  | "blocked"
+  | "escalated"
   | "archived";
+
+export type PropertyListingIntent =
+  | "owner_listed"
+  | "agent_listed"
+  | "agent_assisted"
+  | "inspection_request"
+  | "managed_property"
+  | "verified_property";
+
+export type PropertyListingServiceType =
+  | "rent"
+  | "sale"
+  | "shortlet"
+  | "land"
+  | "commercial"
+  | "agent_assisted"
+  | "inspection_request"
+  | "managed_property"
+  | "verified_property";
 
 export type PropertyInquiryStatus =
   | "new"
@@ -98,6 +128,8 @@ export type PropertyListing = {
   summary: string;
   description: string;
   kind: PropertyListingKind;
+  serviceType: PropertyListingServiceType;
+  intent: PropertyListingIntent;
   status: PropertyListingStatus;
   visibility: "public" | "private";
   locationSlug: string;
@@ -124,6 +156,10 @@ export type PropertyListing = {
   trustBadges: string[];
   headlineMetrics: string[];
   verificationNotes: string[];
+  riskScore: number;
+  riskFlags: string[];
+  policyVersion: string;
+  policySummary: string | null;
   availableFrom: string | null;
   availableNow: boolean;
   ownerUserId: string | null;
@@ -134,6 +170,48 @@ export type PropertyListing = {
   agentId: string | null;
   listedAt: string;
   updatedAt: string;
+};
+
+export type PropertyListingInspectionStatus =
+  | "requested"
+  | "scheduled"
+  | "completed"
+  | "waived"
+  | "failed"
+  | "cancelled";
+
+export type PropertyListingInspection = {
+  id: string;
+  listingId: string;
+  requestedByUserId: string | null;
+  status: PropertyListingInspectionStatus;
+  reason: string;
+  scheduledFor: string | null;
+  assignedAgentId: string | null;
+  locationNotes: string | null;
+  outcomeNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PropertyPolicyEvent = {
+  id: string;
+  listingId: string;
+  actorUserId: string | null;
+  actorRole: "system" | "owner" | "staff";
+  eventType:
+    | "policy_evaluated"
+    | "status_transition"
+    | "inspection_created"
+    | "inspection_updated"
+    | "override_applied"
+    | "risk_flag_added"
+    | "risk_flag_removed";
+  fromStatus: PropertyListingStatus | null;
+  toStatus: PropertyListingStatus | null;
+  reason: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
 };
 
 export type PropertyInquiry = {
@@ -269,6 +347,8 @@ export type PropertySnapshot = {
   inquiries: PropertyInquiry[];
   viewingRequests: PropertyViewingRequest[];
   applications: PropertyListingApplication[];
+  inspections: PropertyListingInspection[];
+  policyEvents: PropertyPolicyEvent[];
   managedRecords: PropertyManagedRecord[];
   campaigns: PropertyFeaturedCampaign[];
   notifications: PropertyNotificationRecord[];

@@ -20,11 +20,21 @@ import {
   upsertPropertyApplication,
   upsertPropertyInquiry,
   upsertPropertyListing,
+  upsertPropertyInspection,
+  appendPropertyPolicyEvent,
   upsertPropertyManagedRecord,
   upsertPropertyViewingRequest,
   uploadPropertyDocument,
   uploadPropertyMedia,
 } from "@/lib/property/store";
+import {
+  PROPERTY_POLICY_VERSION,
+  evaluatePropertySubmissionPolicy,
+} from "@/lib/property/policy";
+import {
+  getPropertyTrustSignals,
+  getPropertyWalletSummary,
+} from "@/lib/property/trust";
 import type {
   PropertyListing,
   PropertyListingApplication,
@@ -472,12 +482,16 @@ export async function POST(request: Request) {
 
         const ownerPhone = text(formData, "owner_phone");
         const baseGallery = listValue(formData, "gallery_urls");
+        const serviceType = (text(formData, "service_type") || "rent") as PropertyListing["serviceType"];
+        const intentType = (text(formData, "listing_intent") || "owner_listed") as PropertyListing["intent"];
 
         const listing = await createListingFromSubmission({
           title: text(formData, "title"),
           summary: text(formData, "summary"),
           description: text(formData, "description"),
           kind: (text(formData, "kind") || "rent") as PropertyListing["kind"],
+          serviceType,
+          intent: intentType,
           locationSlug: text(formData, "location_slug"),
           locationLabel: text(formData, "location_label"),
           district: text(formData, "district"),
@@ -499,6 +513,7 @@ export async function POST(request: Request) {
           ownerEmail,
           gallery: baseGallery,
           amenities: listValue(formData, "amenities"),
+          policyVersion: PROPERTY_POLICY_VERSION,
         });
 
         const mediaFiles = formData
@@ -511,12 +526,12 @@ export async function POST(request: Request) {
         const uploadedMedia = await uploadFilesAsMedia(listing.id, mediaFiles);
         const gallery = dedupe([...listing.gallery, ...uploadedMedia]);
 
-        const updatedListing: PropertyListing = {
+        const updatedListingBase: PropertyListing = {
           ...listing,
           gallery,
           heroImage: gallery[0] || listing.heroImage,
         };
-        await upsertPropertyListing(updatedListing);
+        await upsertPropertyListing(updatedListingBase);
 
         await ensureCustomerProfile({
           userId: viewer.user?.id ?? null,
@@ -531,6 +546,90 @@ export async function POST(request: Request) {
           verificationFiles
         );
 
+        const [wallet, trust] = await Promise.all([
+          getPropertyWalletSummary(viewer.user.id),
+          getPropertyTrustSignals(viewer.user.id),
+        ]);
+
+        const policy = evaluatePropertySubmissionPolicy({
+          viewer: { userId: viewer.user.id, email: viewer.user.email },
+          wallet: { balanceKobo: wallet.balanceKobo, currency: wallet.currency },
+          trust,
+          submission: {
+            serviceType,
+            intent: intentType,
+            kind: updatedListingBase.kind,
+            price: updatedListingBase.price,
+            mediaCount: updatedListingBase.gallery.length,
+            verificationDocCount: verificationDocs.length,
+            locationSlug: updatedListingBase.locationSlug,
+          },
+        });
+
+        const policyListing: PropertyListing = {
+          ...updatedListingBase,
+          status: policy.nextStatus,
+          verificationNotes: dedupe([policy.summary, ...updatedListingBase.verificationNotes]).slice(0, 8),
+          trustBadges: dedupe([
+            ...updatedListingBase.trustBadges,
+            policy.required.requiresInspection ? "Inspection required" : "Queued for review",
+          ]).slice(0, 6),
+          riskScore: policy.riskScore,
+          riskFlags: policy.riskFlags,
+          policyVersion: PROPERTY_POLICY_VERSION,
+          policySummary: policy.summary,
+        };
+
+        await upsertPropertyListing(policyListing);
+
+        await appendPropertyPolicyEvent({
+          listingId: listing.id,
+          actorUserId: viewer.user.id,
+          actorRole: "owner",
+          eventType: "policy_evaluated",
+          fromStatus: "submitted",
+          toStatus: policy.nextStatus,
+          reason: policy.summary,
+          metadata: {
+            serviceType,
+            intent: intentType,
+            riskScore: policy.riskScore,
+            riskFlags: policy.riskFlags,
+            required: policy.required,
+            walletBalanceKobo: wallet.balanceKobo,
+            trustTier: trust.tier,
+            trustScore: trust.score,
+          },
+        });
+
+        if (policy.required.requiresInspection) {
+          const inspectionId = randomUUID();
+          await upsertPropertyInspection({
+            id: inspectionId,
+            listingId: listing.id,
+            requestedByUserId: viewer.user.id,
+            status: policy.nextStatus === "inspection_scheduled" ? "scheduled" : "requested",
+            reason: policy.summary,
+            scheduledFor: null,
+            assignedAgentId: null,
+            locationNotes: null,
+            outcomeNotes: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+
+          await appendPropertyPolicyEvent({
+            listingId: listing.id,
+            actorUserId: null,
+            actorRole: "system",
+            eventType: "inspection_created",
+            fromStatus: null,
+            toStatus: policy.nextStatus,
+            reason: "Inspection record created on submission.",
+            metadata: { inspectionId },
+          });
+        }
+
         await syncListingApplication({
           snapshot,
           listingId: listing.id,
@@ -540,7 +639,8 @@ export async function POST(request: Request) {
           phone: ownerPhone,
           email: ownerEmail,
           verificationDocs,
-          status: "submitted",
+          status: policy.nextStatus === "rejected" ? "rejected" : "submitted",
+          reviewNote: policy.userGuidance.headline,
         });
 
         await appendCustomerActivity({
@@ -576,6 +676,8 @@ export async function POST(request: Request) {
           entityId: listing.id,
           payload: {
             listingTitle: listing.title,
+            policyStatus: policy.nextStatus,
+            policySummary: policy.summary,
           },
         });
 
@@ -586,7 +688,7 @@ export async function POST(request: Request) {
           entityId: listing.id,
           payload: {
             listingTitle: listing.title,
-            note: `New listing submission from ${ownerName} is waiting for moderation.`,
+            note: `New listing submission from ${ownerName} entered policy state: ${policy.nextStatus.replaceAll("_", " ")}.`,
           },
         });
 
@@ -619,12 +721,8 @@ export async function POST(request: Request) {
           .filter((value): value is File => value instanceof File && value.size > 0);
         const uploadedMedia = await uploadFilesAsMedia(listing.id, mediaFiles);
         const gallery = dedupe([...listing.gallery, ...extraGallery, ...uploadedMedia]);
-        const nextStatus: PropertyListingStatus =
-          listing.status === "changes_requested" ||
-          listing.status === "rejected" ||
-          listing.status === "draft"
-            ? "submitted"
-            : listing.status;
+
+        const isLive = ["published", "approved"].includes(listing.status);
 
         const updatedListing: PropertyListing = {
           ...listing,
@@ -645,15 +743,9 @@ export async function POST(request: Request) {
             : listing.amenities,
           gallery,
           heroImage: gallery[0] || listing.heroImage,
-          status: nextStatus,
-          visibility: nextStatus === "approved" ? listing.visibility : "private",
-          verificationNotes:
-            nextStatus === "submitted"
-              ? dedupe(["Updated and resubmitted for moderation", ...listing.verificationNotes]).slice(
-                  0,
-                  5
-                )
-              : listing.verificationNotes,
+          status: listing.status,
+          visibility: isLive ? listing.visibility : "private",
+          verificationNotes: dedupe(["Listing updated", ...listing.verificationNotes]).slice(0, 8),
         };
 
         await upsertPropertyListing(updatedListing);
@@ -663,6 +755,59 @@ export async function POST(request: Request) {
           { userId: viewer.user.id, email: viewer.normalizedEmail || listing.ownerEmail },
           verificationFiles
         );
+
+        const existingApplication = snapshot.applications.find((item) => item.listingId === listing.id);
+        const mergedDocUrls = dedupe([
+          ...(existingApplication?.verificationDocs ?? []).map((doc) => doc.url),
+          ...verificationDocs.map((doc) => doc.url),
+        ]);
+
+        const [wallet, trust] = await Promise.all([
+          getPropertyWalletSummary(viewer.user.id),
+          getPropertyTrustSignals(viewer.user.id),
+        ]);
+
+        const policy = evaluatePropertySubmissionPolicy({
+          viewer: { userId: viewer.user.id, email: viewer.user.email },
+          wallet: { balanceKobo: wallet.balanceKobo, currency: wallet.currency },
+          trust,
+          submission: {
+            serviceType: updatedListing.serviceType,
+            intent: updatedListing.intent,
+            kind: updatedListing.kind,
+            price: updatedListing.price,
+            mediaCount: updatedListing.gallery.length,
+            verificationDocCount: mergedDocUrls.length,
+            locationSlug: updatedListing.locationSlug,
+          },
+        });
+
+        const nextStatus: PropertyListingStatus = isLive ? listing.status : policy.nextStatus;
+
+        await upsertPropertyListing({
+          ...updatedListing,
+          status: nextStatus,
+          verificationNotes: dedupe([policy.summary, ...updatedListing.verificationNotes]).slice(0, 8),
+          trustBadges: dedupe([
+            ...updatedListing.trustBadges,
+            policy.required.requiresInspection ? "Inspection required" : "Queued for review",
+          ]).slice(0, 6),
+          riskScore: policy.riskScore,
+          riskFlags: policy.riskFlags,
+          policyVersion: PROPERTY_POLICY_VERSION,
+          policySummary: policy.summary,
+        });
+
+        await appendPropertyPolicyEvent({
+          listingId: listing.id,
+          actorUserId: viewer.user.id,
+          actorRole: "owner",
+          eventType: "status_transition",
+          fromStatus: listing.status,
+          toStatus: nextStatus,
+          reason: "Listing updated and policy re-evaluated.",
+          metadata: { policySummary: policy.summary },
+        });
 
         await syncListingApplication({
           snapshot,
@@ -674,6 +819,7 @@ export async function POST(request: Request) {
           email: listing.ownerEmail || viewer.user.email || "",
           verificationDocs,
           status: "submitted",
+          reviewNote: policy.userGuidance.headline,
         });
 
         await appendCustomerActivity({
@@ -688,7 +834,7 @@ export async function POST(request: Request) {
           actionUrl: getSharedAccountPropertyPath("listings"),
         });
 
-        if (nextStatus === "submitted") {
+        if (nextStatus !== listing.status && !isLive) {
           await sendPropertyEvent({
             event: "listing_submitted",
             userId: viewer.user.id,
@@ -699,6 +845,8 @@ export async function POST(request: Request) {
             entityId: listing.id,
             payload: {
               listingTitle: listing.title,
+              policyStatus: nextStatus,
+              policySummary: policy.summary,
             },
           });
         }
@@ -718,23 +866,29 @@ export async function POST(request: Request) {
         const listing = snapshot.listings.find((item) => item.id === listingId);
         if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
 
-        const decision = (text(formData, "decision") || "changes_requested") as PropertyListingStatus;
+        const decision = (text(formData, "decision") || "requires_correction") as PropertyListingStatus;
         const note = text(formData, "note");
-        const status =
-          decision === "approved" || decision === "rejected" || decision === "changes_requested"
+        const status: PropertyListingStatus =
+          decision === "published" ||
+          decision === "approved" ||
+          decision === "rejected" ||
+          decision === "requires_correction" ||
+          decision === "changes_requested" ||
+          decision === "blocked" ||
+          decision === "escalated"
             ? decision
-            : "changes_requested";
+            : "requires_correction";
 
         const updatedListing: PropertyListing = {
           ...listing,
           status,
-          visibility: status === "approved" ? "public" : "private",
+          visibility: status === "published" || status === "approved" ? "public" : "private",
           featured: bool(formData, "featured"),
           promoted: bool(formData, "promoted"),
           agentId: text(formData, "agent_id") || listing.agentId,
           trustBadges:
-            status === "approved"
-              ? dedupe([...listing.trustBadges, "HenryCo reviewed"])
+            status === "published" || status === "approved"
+              ? dedupe([...listing.trustBadges, "HenryCo reviewed", "Publication cleared"])
               : listing.trustBadges,
           verificationNotes: note
             ? dedupe([note, ...listing.verificationNotes]).slice(0, 6)
@@ -743,14 +897,25 @@ export async function POST(request: Request) {
 
         await upsertPropertyListing(updatedListing);
 
+        await appendPropertyPolicyEvent({
+          listingId: listing.id,
+          actorUserId: viewer.user?.id ?? null,
+          actorRole: "staff",
+          eventType: "status_transition",
+          fromStatus: listing.status,
+          toStatus: status,
+          reason: note || "Staff decision applied.",
+          metadata: { featured: updatedListing.featured, promoted: updatedListing.promoted },
+        });
+
         const existingApplication = snapshot.applications.find((item) => item.listingId === listing.id);
         if (existingApplication) {
           await upsertPropertyApplication({
             ...existingApplication,
             status:
-              status === "approved"
+              status === "published" || status === "approved"
                 ? "approved"
-                : status === "rejected"
+              : status === "rejected"
                   ? "rejected"
                   : "under_review",
             reviewNote: note || existingApplication.reviewNote,
@@ -762,19 +927,19 @@ export async function POST(request: Request) {
           userId: listing.ownerUserId,
           email: listing.ownerEmail,
           activityType: "property_listing_reviewed",
-          title: `${listing.title} ${status === "approved" ? "approved" : "updated"}`,
+          title: `${listing.title} ${status === "published" || status === "approved" ? "published" : "updated"}`,
           description: note || `Listing status changed to ${status}.`,
           status,
           referenceType: "property_listing",
           referenceId: listing.id,
           actionUrl:
-            status === "approved"
+            status === "published" || status === "approved"
               ? `/property/${listing.slug}`
               : getSharedAccountPropertyPath("listings"),
         });
 
         await sendPropertyEvent({
-          event: status === "approved" ? "listing_approved" : "listing_rejected",
+          event: status === "published" || status === "approved" ? "listing_approved" : "listing_rejected",
           userId: listing.ownerUserId,
           normalizedEmail: listing.normalizedEmail,
           recipientEmail: listing.ownerEmail,

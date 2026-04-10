@@ -1,6 +1,21 @@
-export function formatNaira(kobo: number): string {
+function resolveLocale(
+  options?: string | { locale?: string; timezone?: string }
+) {
+  return typeof options === "string" ? options : options?.locale || "en-NG";
+}
+
+function resolveTimezone(
+  options?: string | { locale?: string; timezone?: string }
+) {
+  return typeof options === "object" ? options?.timezone : undefined;
+}
+
+export function formatNaira(
+  kobo: number,
+  options?: string | { locale?: string }
+): string {
   const naira = kobo / 100;
-  return new Intl.NumberFormat("en-NG", {
+  return new Intl.NumberFormat(resolveLocale(options), {
     style: "currency",
     currency: "NGN",
     minimumFractionDigits: naira % 1 === 0 ? 0 : 2,
@@ -15,18 +30,22 @@ export function formatCurrencyAmount(
     unit?: "naira" | "kobo";
     notation?: Intl.NumberFormatOptions["notation"];
     maximumFractionDigits?: number;
+    locale?: string;
   }
 ): string {
   const unit = options?.unit || "naira";
   const normalized = unit === "kobo" ? amount / 100 : amount;
 
-  return new Intl.NumberFormat(currency === "NGN" ? "en-NG" : "en-US", {
-    style: "currency",
-    currency,
-    notation: options?.notation,
-    minimumFractionDigits: normalized % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: options?.maximumFractionDigits ?? 2,
-  }).format(normalized);
+  return new Intl.NumberFormat(
+    options?.locale || (currency === "NGN" ? "en-NG" : "en-US"),
+    {
+      style: "currency",
+      currency,
+      notation: options?.notation,
+      minimumFractionDigits: normalized % 1 === 0 ? 0 : 2,
+      maximumFractionDigits: options?.maximumFractionDigits ?? 2,
+    }
+  ).format(normalized);
 }
 
 function humanizeToken(value: string, fallback = "—") {
@@ -89,21 +108,29 @@ export function formatPercent(value: number, maximumFractionDigits = 1): string 
   }).format(value / 100);
 }
 
-export function formatDate(dateStr: string): string {
-  return new Intl.DateTimeFormat("en-NG", {
+export function formatDate(
+  dateStr: string,
+  options?: string | { locale?: string; timezone?: string }
+): string {
+  return new Intl.DateTimeFormat(resolveLocale(options), {
     day: "numeric",
     month: "short",
     year: "numeric",
+    ...(resolveTimezone(options) ? { timeZone: resolveTimezone(options) } : {}),
   }).format(new Date(dateStr));
 }
 
-export function formatDateTime(dateStr: string): string {
-  return new Intl.DateTimeFormat("en-NG", {
+export function formatDateTime(
+  dateStr: string,
+  options?: string | { locale?: string; timezone?: string }
+): string {
+  return new Intl.DateTimeFormat(resolveLocale(options), {
     day: "numeric",
     month: "short",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    ...(resolveTimezone(options) ? { timeZone: resolveTimezone(options) } : {}),
   }).format(new Date(dateStr));
 }
 

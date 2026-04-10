@@ -2,11 +2,12 @@ import Link from "next/link";
 import { Shield, Key, Smartphone, Clock, Globe, ChevronRight, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
-import { getSecurityLog } from "@/lib/account-data";
+import { getProfile, getSecurityLog } from "@/lib/account-data";
 import { formatDateTime } from "@/lib/format";
 import { buildSecurityEventView } from "@/lib/security-events";
 import { getAccountTrustProfile, getTrustTierLabel } from "@/lib/trust";
 import { securityMessageHref } from "@/lib/notification-center";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import PageHeader from "@/components/layout/PageHeader";
 import ChangePasswordForm from "@/components/security/ChangePasswordForm";
 import EmptyState from "@/components/layout/EmptyState";
@@ -15,10 +16,17 @@ export const dynamic = "force-dynamic";
 
 export default async function SecurityPage() {
   const user = await requireAccountUser();
-  const [logs, trust] = await Promise.all([
+  const [logs, trust, profile] = await Promise.all([
     getSecurityLog(user.id, 10),
     getAccountTrustProfile(user.id),
+    getProfile(user.id),
   ]);
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
   const events = logs.map((log) => buildSecurityEventView(log as Record<string, unknown>));
   const securitySignals = [
     {
@@ -41,11 +49,25 @@ export default async function SecurityPage() {
       value: `${trust.signals.suspiciousEvents}`,
       tone: trust.signals.suspiciousEvents > 0 ? "var(--acct-red)" : "var(--acct-green)",
     },
+    {
+      label: "Contact review",
+      value:
+        trust.signals.duplicateEmailMatches > 0 || trust.signals.duplicatePhoneMatches > 0
+          ? "Manual review"
+          : "Clear",
+      tone:
+        trust.signals.duplicateEmailMatches > 0 || trust.signals.duplicatePhoneMatches > 0
+          ? "var(--acct-gold)"
+          : "var(--acct-green)",
+    },
   ];
   const blockedActions = [
     !trust.flags.jobsPostingEligible ? "Create verified jobs or higher-trust listings" : null,
     !trust.flags.marketplaceEligible ? "Access full marketplace seller privileges" : null,
     trust.signals.suspiciousEvents > 0 ? "Use sensitive financial workflows without review" : null,
+    trust.signals.duplicateEmailMatches > 0 || trust.signals.duplicatePhoneMatches > 0
+      ? "Use higher-trust seller, property-publishing, or payout workflows until contact review clears"
+      : null,
   ].filter(Boolean) as string[];
 
   return (
@@ -109,9 +131,9 @@ export default async function SecurityPage() {
                 ))}
               </div>
             </div>
-            <div className="rounded-[1.5rem] bg-[var(--acct-bg-elevated)] p-4">
-              <div className="flex items-center gap-2">
-                <AlertTriangle size={16} className="text-[var(--acct-gold)]" />
+          <div className="rounded-[1.5rem] bg-[var(--acct-bg-elevated)] p-4">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={16} className="text-[var(--acct-gold)]" />
                 <p className="text-sm font-semibold text-[var(--acct-ink)]">
                   {trust.nextTier ? `What unlocks ${getTrustTierLabel(trust.nextTier)}` : "Top trust lane reached"}
                 </p>
@@ -130,6 +152,13 @@ export default async function SecurityPage() {
             </div>
           </div>
         </section>
+
+      <section className="acct-card p-5">
+        <p className="acct-kicker">Regional context</p>
+        <div className="mt-3 rounded-[1.4rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4 text-sm leading-7 text-[var(--acct-muted)]">
+          {region.countryName} · {region.locale} · {region.timezone}. {region.settlementNote}
+        </div>
+      </section>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
         <div className="acct-card p-5">
@@ -282,7 +311,10 @@ export default async function SecurityPage() {
                   </p>
                   <p className="mt-1 text-[0.72rem] text-[var(--acct-muted)]">
                     {event.ipAddress ? `${event.ipAddress} · ` : ""}
-                    {formatDateTime(event.createdAt)}
+                    {formatDateTime(event.createdAt, {
+                      locale: region.locale,
+                      timezone: region.timezone,
+                    })}
                   </p>
                 </div>
                 <ChevronRight size={16} className="shrink-0 text-[var(--acct-muted)]" />

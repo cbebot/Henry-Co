@@ -17,6 +17,10 @@ const CURRENCY_MAP: Record<string, CurrencyConfig> = {
   XOF: { code: 'XOF', symbol: 'CFA', decimals: 0, locale: 'fr-BJ' },
   GHS: { code: 'GHS', symbol: 'GH\u20B5', decimals: 2, locale: 'en-GH' },
   EUR: { code: 'EUR', symbol: '\u20AC', decimals: 2, locale: 'de-DE' },
+  KES: { code: 'KES', symbol: 'KSh', decimals: 2, locale: 'en-KE' },
+  ZAR: { code: 'ZAR', symbol: 'R', decimals: 2, locale: 'en-ZA' },
+  CAD: { code: 'CAD', symbol: 'CA$', decimals: 2, locale: 'en-CA' },
+  AED: { code: 'AED', symbol: 'AED', decimals: 2, locale: 'en-AE' },
 };
 
 const DEFAULT_CURRENCY = 'NGN';
