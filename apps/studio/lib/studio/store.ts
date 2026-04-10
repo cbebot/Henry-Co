@@ -377,7 +377,7 @@ async function upsertTableRecord(
 ) {
   if (await hasStudioTable(table)) {
     const admin = createAdminSupabase();
-    await writeWithSchemaRetry(table, payload, (nextPayload) =>
+    await writeWithSchemaRetry(table, payload, async (nextPayload) =>
       admin.from(table).upsert(nextPayload as never, {
         onConflict: options?.onConflict || "id",
       })
@@ -396,7 +396,7 @@ async function insertTableRecord(
 ) {
   if (await hasStudioTable(table)) {
     const admin = createAdminSupabase();
-    await writeWithSchemaRetry(table, payload, (nextPayload) =>
+    await writeWithSchemaRetry(table, payload, async (nextPayload) =>
       admin.from(table).insert(nextPayload as never)
     );
     return;
