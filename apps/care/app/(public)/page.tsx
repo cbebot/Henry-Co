@@ -69,6 +69,7 @@ export default async function CareHomePage() {
   const supportEmail = settings.support_email || care.supportEmail;
   const supportPhone = settings.support_phone || care.supportPhone;
   const heroImageUrl = settings.hero_image_url?.trim() || null;
+  const hasReviews = reviews.length > 0;
 
   const clientProfiles = [
     {
@@ -397,13 +398,15 @@ export default async function CareHomePage() {
           </div>
 
           <div className="care-card rounded-[2.3rem] p-8">
-            <div className="care-kicker">Client reviews</div>
+            <div className="care-kicker">{hasReviews ? "Client reviews" : "Service trust"}</div>
             <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
-              Real feedback from clients who have experienced the service.
+              {hasReviews
+                ? "Real feedback from clients who have experienced the service."
+                : "Trust signals that make the service feel credible before the first booking."}
             </h2>
 
             <div className="mt-6 grid gap-4">
-              {reviews.length > 0 ? (
+              {hasReviews ? (
                 reviews.slice(0, 3).map((review) => (
                   <div
                     key={review.id}
@@ -437,10 +440,11 @@ export default async function CareHomePage() {
               ) : (
                 <div className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-8 text-center dark:border-white/10 dark:bg-white/[0.04]">
                   <div className="text-xl font-semibold text-zinc-950 dark:text-white">
-                    Client reviews will appear here
+                    Clear pricing, tracked handoffs, and direct support stay visible from the start.
                   </div>
                   <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
-                    Recent feedback is added here once it has been checked for accuracy and quality.
+                    HenryCo Care shows the service path, pickup logic, and support channels up front so
+                    customers do not have to guess what happens after they book.
                   </p>
                 </div>
               )}
