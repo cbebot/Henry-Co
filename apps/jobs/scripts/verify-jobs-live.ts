@@ -99,21 +99,28 @@ function assert(condition: unknown, message: string): asserts condition {
 }
 
 function loadEnv() {
-  const text = fs.readFileSync(path.resolve(repoRoot, ".env.local"), "utf8").replace(/^\uFEFF/, "");
+  for (const name of [".env.local", ".env.production.vercel", ".env.vercel.production.jobs"]) {
+    const filePath = path.resolve(repoRoot, name);
+    if (!fs.existsSync(filePath)) continue;
 
-  for (const raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (!line || line.startsWith("#")) continue;
-    const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
-    if (!match) continue;
-    let value = match[2].trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
+    const text = fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/, "");
+
+    for (const raw of text.split(/\r?\n/)) {
+      const line = raw.trim();
+      if (!line || line.startsWith("#")) continue;
+      const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
+      if (!match) continue;
+      let value = match[2].trim();
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
+        value = value.slice(1, -1);
+      }
+      if (!process.env[match[1]]) {
+        process.env[match[1]] = value;
+      }
     }
-    process.env[match[1]] = value;
   }
 }
 

@@ -38,6 +38,12 @@ import {
   sendSupportReplyWhatsApp,
   type SupportWhatsAppDeliveryResult,
 } from "@/lib/support/whatsapp";
+import {
+  syncSupportAssignmentToAccountThread,
+  syncSupportReplyToAccountThread,
+  syncSupportStatusToAccountThread,
+  syncSupportViewToAccountThread,
+} from "@/lib/support/account-sync";
 import { notifyStaffRoles } from "@/lib/staff-alerts";
 
 const SUPPORT_EVENT_TYPES = {
@@ -640,6 +646,9 @@ function projectThreads(rows: SupportLogRow[], viewerUserId?: string | null) {
         id: row.id,
         kind: "customer",
         title:
+          asText(details?.origin) === "account_portal"
+            ? "Customer reply received"
+            :
           attachmentCount > 0
             ? `Customer email received • ${attachmentCount} attachment${attachmentCount === 1 ? "" : "s"}`
             : "Customer email received",
@@ -1015,6 +1024,15 @@ export async function assignSupportThread(input: {
     },
   });
 
+  try {
+    await syncSupportAssignmentToAccountThread({
+      threadId: thread.threadId,
+      assigneeId: input.assignee?.id ?? null,
+    });
+  } catch {
+    // Cross-surface sync should not block the operational action.
+  }
+
   return thread;
 }
 
@@ -1047,6 +1065,15 @@ export async function updateSupportThreadStatus(input: {
     },
   });
 
+  try {
+    await syncSupportStatusToAccountThread({
+      threadId: thread.threadId,
+      status: input.status,
+    });
+  } catch {
+    // Cross-surface sync should not block the operational action.
+  }
+
   return thread;
 }
 
@@ -1075,6 +1102,14 @@ export async function addSupportInternalNote(input: {
       note: input.note,
     },
   });
+
+  try {
+    await syncSupportViewToAccountThread({
+      threadId: thread.threadId,
+    });
+  } catch {
+    // Cross-surface sync should not block the operational action.
+  }
 
   return thread;
 }
@@ -1255,6 +1290,17 @@ export async function sendSupportReply(input: {
       whatsapp_conversation_type: whatsappResult.conversationType,
     },
   });
+
+  try {
+    await syncSupportReplyToAccountThread({
+      threadId: thread.threadId,
+      senderId: input.actorUserId,
+      message: input.message,
+      status: input.nextStatus || "open",
+    });
+  } catch {
+    // Cross-surface sync should not block the operational action.
+  }
 
   if (input.nextStatus) {
     await updateSupportThreadStatus({

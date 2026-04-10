@@ -165,6 +165,35 @@ function extractCookie(response) {
   return raw.split(";")[0];
 }
 
+function readRedirectTarget(response, body) {
+  const location = response.headers.get("location") || "";
+  if (location) return location;
+
+  const metaMatch = body.match(/<meta[^>]+id="__next-page-redirect"[^>]+content="[^"]*url=([^"]+)"/i);
+  if (metaMatch?.[1]) return metaMatch[1];
+
+  const digestMatch = body.match(/NEXT_REDIRECT;replace;([^;]+);307;/i);
+  if (digestMatch?.[1]) return digestMatch[1];
+
+  return "";
+}
+
+function assertSharedAccountRedirect(pathname, expectedPrefix, label) {
+  return fetchText(pathname).then(({ response, body }) => {
+    const redirectTarget = readRedirectTarget(response, body);
+    const redirectLike =
+      response.status === 307 ||
+      (response.status === 200 &&
+        (body.includes("__next-page-redirect") || body.includes("NEXT_REDIRECT;replace;")));
+
+    assert(redirectLike, `${label} redirect returned ${response.status}`);
+    assert(
+      redirectTarget.startsWith(expectedPrefix),
+      `${label} redirect target was not shared account: ${redirectTarget || "missing location"}`
+    );
+  });
+}
+
 async function checkRoute(pathname, needle, label = pathname, options = {}) {
   const { response, body } = await fetchText(pathname, options);
   assert(response.ok, `${label} returned ${response.status}`);
@@ -231,35 +260,23 @@ if (order?.order_no) {
   warnings.push("Skipped track route verification because no live marketplace order was available.");
 }
 
-{
-  const { response } = await fetchText("/login?next=%2Faccount");
-  const location = response.headers.get("location") || "";
-  assert(response.status === 307, `/login redirect returned ${response.status}`);
-  assert(
-    location.startsWith("https://account.henrycogroup.com/login?next="),
-    `/login redirect target was not shared account: ${location || "missing location"}`
-  );
-}
+await assertSharedAccountRedirect(
+  "/login?next=%2Faccount",
+  "https://account.henrycogroup.com/login?next=",
+  "/login"
+);
 
-{
-  const { response } = await fetchText("/signup?next=%2Faccount");
-  const location = response.headers.get("location") || "";
-  assert(response.status === 307, `/signup redirect returned ${response.status}`);
-  assert(
-    location.startsWith("https://account.henrycogroup.com/signup?next="),
-    `/signup redirect target was not shared account: ${location || "missing location"}`
-  );
-}
+await assertSharedAccountRedirect(
+  "/signup?next=%2Faccount",
+  "https://account.henrycogroup.com/signup?next=",
+  "/signup"
+);
 
-{
-  const { response } = await fetchText("/admin");
-  const location = response.headers.get("location") || "";
-  assert(response.status === 307, `/admin redirect returned ${response.status}`);
-  assert(
-    location.startsWith("https://account.henrycogroup.com/login?next="),
-    `/admin redirect target was not shared account login: ${location || "missing location"}`
-  );
-}
+await assertSharedAccountRedirect(
+  "/admin",
+  "https://account.henrycogroup.com/login?next=",
+  "/admin"
+);
 
 {
   const shellResponse = await fetch(toUrl("/api/shell"), { redirect: "manual" });

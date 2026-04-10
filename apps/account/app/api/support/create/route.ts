@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server";
+import {
+  mapAccountSupportCategoryToDivision,
+} from "@henryco/config";
 import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
+import { ensureAccountProfileRecords } from "@/lib/account-profile";
+import { mirrorCareSupportThreadOpened } from "@/lib/support-sync";
 import { cookies } from "next/headers";
 import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
 import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempotency";
+
+function cleanText(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
 
 export async function POST(request: Request) {
   try {
@@ -40,25 +49,29 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminSupabase();
+    await ensureAccountProfileRecords(user);
 
     const triage = triageSupportInput(message);
+    const division = mapAccountSupportCategoryToDivision(category);
+
+    const { data: customerProfile } = await admin
+      .from("customer_profiles")
+      .select("full_name, phone")
+      .eq("id", user.id)
+      .maybeSingle();
 
     // Create thread
     const { data: thread, error: threadErr } = await admin
       .from("support_threads")
       .insert({
         user_id: user.id,
-        subject,
+        subject: cleanText(subject),
+        division,
         category: category || "general",
         status: "open",
         priority: triage.shouldEscalate ? "high" : "normal",
-        metadata: {
-          triage_intent: triage.intent,
-          triage_confidence: triage.confidence,
-          triage_queue: triage.handoffSummary.suggestedQueue || "general",
-        },
       })
-      .select("id")
+      .select("id, division, category, priority, status")
       .single();
 
     if (threadErr || !thread) {
@@ -79,10 +92,31 @@ export async function POST(request: Request) {
 
     const sideEffectFailures: string[] = [];
 
+    if (thread.division === "care") {
+      try {
+        await mirrorCareSupportThreadOpened({
+          threadId: thread.id,
+          subject,
+          category: thread.category,
+          priority: thread.priority,
+          status: thread.status,
+          message,
+          customer: {
+            userId: user.id,
+            email: user.email,
+            fullName: cleanText(customerProfile?.full_name) || cleanText(user.user_metadata?.full_name) || cleanText(user.user_metadata?.name) || user.email || "Customer",
+            phone: cleanText(customerProfile?.phone) || cleanText(user.user_metadata?.phone),
+          },
+        });
+      } catch {
+        sideEffectFailures.push("care_support_bridge");
+      }
+    }
+
     // Activity
     const { error: activityErr } = await admin.from("customer_activity").insert({
       user_id: user.id,
-      division: "account",
+      division,
       activity_type: "support_created",
       title: `Support request: ${subject}`,
       description: triage.shouldEscalate
@@ -102,11 +136,14 @@ export async function POST(request: Request) {
     // Notification
     const { error: notificationErr } = await admin.from("customer_notifications").insert({
       user_id: user.id,
+      division,
       title: "Support request created",
       body: `Your request "${subject}" has been submitted. We'll get back to you soon.`,
       category: "support",
       priority: triage.shouldEscalate ? "high" : "normal",
       action_url: `/support/${thread.id}`,
+      reference_type: "support_thread",
+      reference_id: thread.id,
       detail_payload: {
         triage_intent: triage.intent,
         triage_confidence: triage.confidence,
@@ -117,7 +154,7 @@ export async function POST(request: Request) {
     try {
       await emitIntelligenceEvent({
         name: triage.shouldEscalate ? AccountIntelEvents.supportEscalated : AccountIntelEvents.supportOpened,
-        division: "account",
+        division,
         eventId: `support_open:${thread.id}`,
         actor: { kind: "user", subjectRef: user.id, roleHint: "customer" },
         properties: {

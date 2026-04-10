@@ -253,6 +253,11 @@ async function appendProjectUpdate(projectId: string, kind: string, title: strin
     kind: update.kind,
     title: update.title,
     summary: update.summary,
+    description: update.summary,
+    metadata: {
+      kind: update.kind,
+      summary: update.summary,
+    },
   });
 
   return update;
@@ -442,6 +447,23 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
       page_requirements: customRequest.pageRequirements,
       addon_services: customRequest.addonServices,
       inspiration_summary: customRequest.inspirationSummary,
+      brief_id: brief.id,
+      user_id: input.userId ?? null,
+      status: "pending",
+      title: customRequest.projectType,
+      description: customRequest.designDirection,
+      priority: "normal",
+      updated_at: customRequest.createdAt,
+      metadata: {
+        lead_id: customRequest.leadId,
+        created_at: customRequest.createdAt,
+        project_type: customRequest.projectType,
+        platform_preference: customRequest.platformPreference,
+        design_direction: customRequest.designDirection,
+        page_requirements: customRequest.pageRequirements,
+        addon_services: customRequest.addonServices,
+        inspiration_summary: customRequest.inspirationSummary,
+      },
     });
   }
   await upsertStudioRecord("studio_proposal_upsert", proposal, meta);

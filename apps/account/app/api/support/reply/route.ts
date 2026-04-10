@@ -3,6 +3,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
+import { mirrorCareSupportCustomerReply } from "@/lib/support-sync";
 import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
 import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempotency";
 
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
     // Verify thread ownership
     const { data: thread } = await admin
       .from("support_threads")
-      .select("id, user_id, division")
+      .select("id, user_id, division, category, priority, subject")
       .eq("id", thread_id)
       .eq("user_id", user.id)
       .maybeSingle();
@@ -87,6 +88,11 @@ export async function POST(request: Request) {
     }
 
     const triage = triageSupportInput(body);
+    const { data: customerProfile } = await admin
+      .from("customer_profiles")
+      .select("full_name, phone")
+      .eq("id", user.id)
+      .maybeSingle();
 
     // Insert message
     const { error: messageErr } = await admin.from("support_messages").insert({
@@ -114,6 +120,34 @@ export async function POST(request: Request) {
     }
 
     const sideEffectFailures: string[] = [];
+
+    if (thread.division === "care") {
+      try {
+        await mirrorCareSupportCustomerReply({
+          threadId: thread_id,
+          subject: String(thread.subject || "Support conversation"),
+          category: String(thread.category || "general"),
+          priority: String(thread.priority || "normal"),
+          status: "awaiting_reply",
+          message: body,
+          attachments: uploadedAttachments,
+          customer: {
+            userId: user.id,
+            email: user.email,
+            fullName:
+              String(customerProfile?.full_name || "").trim() ||
+              String(user.user_metadata?.full_name || user.user_metadata?.name || "").trim() ||
+              user.email ||
+              "Customer",
+            phone:
+              String(customerProfile?.phone || "").trim() ||
+              String(user.user_metadata?.phone || "").trim(),
+          },
+        });
+      } catch {
+        sideEffectFailures.push("care_support_bridge");
+      }
+    }
 
     if (uploadedAttachments.length > 0) {
       const { error: docsErr } = await admin.from("customer_documents").insert(

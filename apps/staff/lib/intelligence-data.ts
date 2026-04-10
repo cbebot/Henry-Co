@@ -21,13 +21,55 @@ function hoursSince(value: unknown) {
 }
 
 function queueFromThread(thread: Record<string, unknown>): SupportQueue {
-  const metadata = (thread.metadata as Record<string, unknown> | null) || null;
-  const triageQueue = String(metadata?.triage_queue || "").toLowerCase();
-  if (triageQueue === "finance" || triageQueue === "trust") return triageQueue;
   const category = String(thread.category || "").toLowerCase();
-  if (category.includes("billing") || category.includes("wallet")) return "finance";
-  if (category.includes("verify") || category.includes("kyc")) return "trust";
+  const subject = String(thread.subject || "").toLowerCase();
+  if (
+    category.includes("billing") ||
+    category.includes("wallet") ||
+    subject.includes("invoice") ||
+    subject.includes("refund") ||
+    subject.includes("payout")
+  ) {
+    return "finance";
+  }
+  if (
+    category.includes("verify") ||
+    category.includes("kyc") ||
+    subject.includes("trust") ||
+    subject.includes("fraud") ||
+    subject.includes("identity")
+  ) {
+    return "trust";
+  }
   return "general";
+}
+
+function supportHrefForThread(thread: Record<string, unknown>) {
+  const division = toText(thread.division).toLowerCase();
+
+  if (division === "care") return "/care";
+  if (division === "marketplace") return "/marketplace";
+  if (division === "studio") return "/studio";
+  if (division === "jobs") return "/jobs";
+  if (division === "learn") return "/learn";
+  if (division === "property") return "/property";
+  if (division === "logistics") return "/logistics";
+
+  return "/support";
+}
+
+function normalizeTaskDivision(value: unknown): WorkspaceTask["division"] {
+  const division = toText(value).toLowerCase();
+
+  if (division === "care") return "care";
+  if (division === "marketplace") return "marketplace";
+  if (division === "studio") return "studio";
+  if (division === "jobs") return "jobs";
+  if (division === "property") return "property";
+  if (division === "learn") return "learn";
+  if (division === "logistics") return "logistics";
+
+  return "care";
 }
 
 export async function getStaffIntelligenceSnapshot(allowedDivisions?: WorkspaceDivision[]) {
@@ -38,7 +80,7 @@ export async function getStaffIntelligenceSnapshot(allowedDivisions?: WorkspaceD
 
   const supportQuery = admin
     .from("support_threads")
-    .select("id, division, category, subject, status, priority, updated_at, metadata")
+    .select("id, division, category, subject, status, priority, updated_at, assigned_to")
     .not("status", "in", "(resolved,closed)")
     .order("updated_at", { ascending: false })
     .limit(120);
@@ -49,7 +91,7 @@ export async function getStaffIntelligenceSnapshot(allowedDivisions?: WorkspaceD
     .order("created_at", { ascending: false })
     .limit(120);
   if (hasDivisionFilter) {
-    supportQuery.in("division", divisionFilter);
+    supportQuery.or(`division.in.(${divisionFilter.join(",")}),division.eq.account,division.is.null`);
     notificationQuery.in("division", divisionFilter);
   }
 
@@ -75,11 +117,11 @@ export async function getStaffIntelligenceSnapshot(allowedDivisions?: WorkspaceD
     const status = stale ? "stale" : priority === "high" || priority === "urgent" ? "at_risk" : "active";
     return {
       id: `support:${toText(thread.id)}`,
-      division: (toText(thread.division).toLowerCase() as WorkspaceTask["division"]) || "care",
+      division: normalizeTaskDivision(thread.division),
       title,
       summary: `${toText(thread.category) || "general"} · ${toText(thread.status) || "open"}`,
       queue: `support-${queue}`,
-      href: "/support",
+      href: supportHrefForThread(thread),
       status,
       priority: stale ? 95 : priority === "high" || priority === "urgent" ? 85 : 65,
       suggestedAction:

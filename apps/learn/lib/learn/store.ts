@@ -27,6 +27,60 @@ function fallbackEventType(table: string) {
   return `learn_store_${table}`;
 }
 
+function extractMissingColumn(error: unknown, table: string) {
+  const message = cleanText((error as { message?: string } | null | undefined)?.message);
+  const match = message.match(/Could not find the '([^']+)' column of '([^']+)'/i);
+
+  if (!match) {
+    return null;
+  }
+
+  if (cleanText(match[2]) && cleanText(match[2]) !== cleanText(table)) {
+    return null;
+  }
+
+  return cleanText(match[1]) || null;
+}
+
+function withoutColumn(payload: Record<string, unknown>, column: string) {
+  if (!column || !(column in payload)) {
+    return null;
+  }
+
+  const nextPayload = { ...payload };
+  delete nextPayload[column];
+  return nextPayload;
+}
+
+async function writeWithSchemaRetry(
+  table: string,
+  payload: Record<string, unknown>,
+  operation: (nextPayload: Record<string, unknown>) => Promise<{ error: unknown }>
+) {
+  let nextPayload = { ...payload };
+  const seenColumns = new Set<string>();
+
+  for (;;) {
+    const result = await operation(nextPayload);
+    if (!result.error) {
+      return;
+    }
+
+    const missingColumn = extractMissingColumn(result.error, table);
+    if (!missingColumn || seenColumns.has(missingColumn)) {
+      throw result.error;
+    }
+
+    const strippedPayload = withoutColumn(nextPayload, missingColumn);
+    if (!strippedPayload) {
+      throw result.error;
+    }
+
+    seenColumns.add(missingColumn);
+    nextPayload = strippedPayload;
+  }
+}
+
 export function createId() {
   return crypto.randomUUID();
 }
@@ -137,6 +191,11 @@ export async function readLearnCollection<T extends Record<string, unknown>>(
         query = query.order(orderBy, { ascending });
       }
       const { data, error } = await query;
+      if (error && orderBy && extractMissingColumn(error, table) === cleanText(orderBy)) {
+        const retry = await admin.from(table).select("*");
+        if (retry.error) throw retry.error;
+        return (retry.data ?? []) as T[];
+      }
       if (error) throw error;
       return (data ?? []) as T[];
     }
@@ -168,10 +227,11 @@ export async function upsertLearnRecord(
 ) {
   if (await hasLearnTable(table)) {
     const admin = createAdminSupabase();
-    const { error } = await admin.from(table).upsert(payload as never, {
-      onConflict: options?.onConflict || "id",
-    });
-    if (error) throw error;
+    await writeWithSchemaRetry(table, payload, (nextPayload) =>
+      admin.from(table).upsert(nextPayload as never, {
+        onConflict: options?.onConflict || "id",
+      })
+    );
     return;
   }
 
@@ -186,8 +246,9 @@ export async function insertLearnRecord(
 ) {
   if (await hasLearnTable(table)) {
     const admin = createAdminSupabase();
-    const { error } = await admin.from(table).insert(payload as never);
-    if (error) throw error;
+    await writeWithSchemaRetry(table, payload, (nextPayload) =>
+      admin.from(table).insert(nextPayload as never)
+    );
     return;
   }
 

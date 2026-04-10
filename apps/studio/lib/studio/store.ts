@@ -55,6 +55,7 @@ const STUDIO_STORE_ROUTE = "/studio/store";
 
 let studioBucketEnsured = false;
 const tablePresenceCache = new Map<string, boolean>();
+const tableColumnSupportCache = new Map<string, boolean>();
 
 function stableSecret() {
   return (
@@ -221,6 +222,82 @@ function studioFallbackEventType(table: string) {
   return `studio_store_${table}`;
 }
 
+function extractMissingColumn(error: unknown, table: string) {
+  const message = cleanText((error as { message?: string } | null | undefined)?.message);
+  const match = message.match(/Could not find the '([^']+)' column of '([^']+)'/i);
+
+  if (!match) {
+    return null;
+  }
+
+  if (cleanText(match[2]) && cleanText(match[2]) !== cleanText(table)) {
+    return null;
+  }
+
+  return cleanText(match[1]) || null;
+}
+
+function withoutColumn(payload: Record<string, unknown>, column: string) {
+  if (!column || !(column in payload)) {
+    return null;
+  }
+
+  const nextPayload = { ...payload };
+  delete nextPayload[column];
+  return nextPayload;
+}
+
+function tableColumnCacheKey(table: string, columns: string[]) {
+  return `${cleanText(table)}:${columns.map((column) => cleanText(column)).join(",")}`;
+}
+
+async function tableHasColumns(table: string, columns: string[]) {
+  const cacheKey = tableColumnCacheKey(table, columns);
+  if (tableColumnSupportCache.has(cacheKey)) {
+    return tableColumnSupportCache.get(cacheKey) ?? false;
+  }
+
+  try {
+    const admin = createAdminSupabase();
+    const { error } = await admin.from(table).select(columns.join(",")).limit(1);
+    const hasColumns = !error;
+    tableColumnSupportCache.set(cacheKey, hasColumns);
+    return hasColumns;
+  } catch {
+    tableColumnSupportCache.set(cacheKey, false);
+    return false;
+  }
+}
+
+async function writeWithSchemaRetry(
+  table: string,
+  payload: Record<string, unknown>,
+  operation: (nextPayload: Record<string, unknown>) => Promise<{ error: unknown }>
+) {
+  let nextPayload = { ...payload };
+  const seenColumns = new Set<string>();
+
+  for (;;) {
+    const result = await operation(nextPayload);
+    if (!result.error) {
+      return;
+    }
+
+    const missingColumn = extractMissingColumn(result.error, table);
+    if (!missingColumn || seenColumns.has(missingColumn)) {
+      throw result.error;
+    }
+
+    const strippedPayload = withoutColumn(nextPayload, missingColumn);
+    if (!strippedPayload) {
+      throw result.error;
+    }
+
+    seenColumns.add(missingColumn);
+    nextPayload = strippedPayload;
+  }
+}
+
 async function hasStudioTable(table: string) {
   if (tablePresenceCache.has(table)) {
     return tablePresenceCache.get(table) ?? false;
@@ -300,10 +377,11 @@ async function upsertTableRecord(
 ) {
   if (await hasStudioTable(table)) {
     const admin = createAdminSupabase();
-    const { error } = await admin.from(table).upsert(payload as never, {
-      onConflict: options?.onConflict || "id",
-    });
-    if (error) throw error;
+    await writeWithSchemaRetry(table, payload, (nextPayload) =>
+      admin.from(table).upsert(nextPayload as never, {
+        onConflict: options?.onConflict || "id",
+      })
+    );
     return;
   }
 
@@ -318,8 +396,9 @@ async function insertTableRecord(
 ) {
   if (await hasStudioTable(table)) {
     const admin = createAdminSupabase();
-    const { error } = await admin.from(table).insert(payload as never);
-    if (error) throw error;
+    await writeWithSchemaRetry(table, payload, (nextPayload) =>
+      admin.from(table).insert(nextPayload as never)
+    );
     return;
   }
 
@@ -336,6 +415,11 @@ async function selectRows<T extends Record<string, unknown>>(table: string, sele
       }
 
       const { data, error } = await query;
+      if (error && orderBy && extractMissingColumn(error, table) === cleanText(orderBy)) {
+        const retry = await admin.from(table).select(select);
+        if (retry.error) throw retry.error;
+        return ((retry.data ?? []) as unknown) as T[];
+      }
       if (error) throw error;
       return ((data ?? []) as unknown) as T[];
     }
@@ -360,24 +444,36 @@ export async function upsertStudioCollectionRecord(
 }
 
 function mapLead(row: Record<string, unknown>): StudioLead {
+  const metadata = safeRecord(row.metadata);
+
   return {
     id: cleanText(row.id),
     createdAt: cleanText(row.created_at),
     updatedAt: cleanText(row.updated_at),
     userId: cleanText(row.user_id) || null,
     normalizedEmail: normalizeEmail(row.normalized_email as string | null),
-    customerName: cleanText(row.customer_name),
-    companyName: cleanText(row.company_name) || null,
-    phone: cleanText(row.phone) || null,
-    serviceKind: cleanText(row.service_kind) as StudioLead["serviceKind"],
+    customerName:
+      cleanText(row.customer_name) ||
+      cleanText(row.full_name) ||
+      cleanText(metadata?.customer_name ?? metadata?.full_name),
+    companyName: cleanText(row.company_name) || cleanText(metadata?.company_name) || null,
+    phone: cleanText(row.phone) || cleanText(metadata?.phone) || null,
+    serviceKind:
+      (cleanText(row.service_kind) ||
+        cleanText(row.service_type) ||
+        cleanText(metadata?.service_kind ?? metadata?.service_type) ||
+        "custom_software") as StudioLead["serviceKind"],
     status: cleanText(row.status) as StudioLead["status"],
-    readinessScore: asNumber(row.readiness_score),
-    businessType: cleanText(row.business_type),
-    budgetBand: cleanText(row.budget_band),
-    urgency: cleanText(row.urgency),
-    requestedPackageId: cleanText(row.requested_package_id) || null,
-    preferredTeamId: cleanText(row.preferred_team_id) || null,
-    matchedTeamId: cleanText(row.matched_team_id) || null,
+    readinessScore: asNumber(row.readiness_score ?? metadata?.readiness_score),
+    businessType: cleanText(row.business_type) || cleanText(metadata?.business_type),
+    budgetBand: cleanText(row.budget_band) || cleanText(metadata?.budget_band),
+    urgency: cleanText(row.urgency) || cleanText(metadata?.urgency),
+    requestedPackageId:
+      cleanText(row.requested_package_id) || cleanText(metadata?.requested_package_id) || null,
+    preferredTeamId:
+      cleanText(row.preferred_team_id) || cleanText(metadata?.preferred_team_id) || null,
+    matchedTeamId:
+      cleanText(row.matched_team_id) || cleanText(metadata?.matched_team_id) || null,
   };
 }
 
@@ -433,34 +529,62 @@ function mapBrief(row: Record<string, unknown>): StudioBrief {
 }
 
 function mapCustomRequest(row: Record<string, unknown>): StudioCustomRequest {
+  const metadata = safeRecord(row.metadata);
+  const metadataLeadId = cleanText(metadata?.lead_id ?? metadata?.leadId);
+  const metadataCreatedAt = cleanText(metadata?.created_at ?? metadata?.createdAt);
+  const metadataProjectType = cleanText(metadata?.project_type ?? metadata?.projectType);
+  const metadataPlatformPreference = cleanText(
+    metadata?.platform_preference ?? metadata?.platformPreference
+  );
+  const metadataDesignDirection = cleanText(
+    metadata?.design_direction ?? metadata?.designDirection
+  );
+  const metadataPageRequirements = arrayOfText(
+    metadata?.page_requirements ?? metadata?.pageRequirements
+  );
+  const metadataAddonServices = arrayOfText(metadata?.addon_services ?? metadata?.addonServices);
+  const metadataInspirationSummary = cleanText(
+    metadata?.inspiration_summary ?? metadata?.inspirationSummary
+  );
+
   return {
     id: cleanText(row.id),
-    leadId: cleanText(row.lead_id),
-    createdAt: cleanText(row.created_at),
-    projectType: cleanText(row.project_type),
-    platformPreference: cleanText(row.platform_preference),
-    designDirection: cleanText(row.design_direction),
-    pageRequirements: arrayOfText(row.page_requirements),
-    addonServices: arrayOfText(row.addon_services),
-    inspirationSummary: cleanText(row.inspiration_summary),
+    leadId: cleanText(row.lead_id) || metadataLeadId,
+    createdAt: cleanText(row.created_at) || metadataCreatedAt,
+    projectType: cleanText(row.project_type) || metadataProjectType || cleanText(row.title),
+    platformPreference: cleanText(row.platform_preference) || metadataPlatformPreference,
+    designDirection:
+      cleanText(row.design_direction) || metadataDesignDirection || cleanText(row.description),
+    pageRequirements: arrayOfText(row.page_requirements).length
+      ? arrayOfText(row.page_requirements)
+      : metadataPageRequirements,
+    addonServices: arrayOfText(row.addon_services).length
+      ? arrayOfText(row.addon_services)
+      : metadataAddonServices,
+    inspirationSummary: cleanText(row.inspiration_summary) || metadataInspirationSummary,
   };
 }
 
 function mapPayment(row: Record<string, unknown>): StudioPayment {
+  const metadata = safeRecord(row.metadata);
+
   return {
     id: cleanText(row.id),
     projectId: cleanText(row.project_id),
-    milestoneId: cleanText(row.milestone_id) || null,
+    milestoneId: cleanText(row.milestone_id) || cleanText(metadata?.milestone_id) || null,
     createdAt: cleanText(row.created_at),
     updatedAt: cleanText(row.updated_at),
-    label: cleanText(row.label),
-    amount: asNumber(row.amount),
+    label: cleanText(row.label) || cleanText(metadata?.label),
+    amount:
+      row.amount_kobo != null
+        ? asNumber(row.amount_kobo) / 100
+        : asNumber(row.amount ?? metadata?.amount),
     currency: cleanText(row.currency) || "NGN",
     status: cleanText(row.status) as StudioPayment["status"],
-    dueDate: cleanText(row.due_date) || null,
-    method: cleanText(row.method),
-    proofUrl: cleanText(row.proof_url) || null,
-    proofName: cleanText(row.proof_name) || null,
+    dueDate: cleanText(row.due_date) || cleanText(metadata?.due_date) || null,
+    method: cleanText(row.method) || cleanText(row.payment_method) || cleanText(metadata?.method),
+    proofUrl: cleanText(row.proof_url) || cleanText(metadata?.proof_url) || null,
+    proofName: cleanText(row.proof_name) || cleanText(metadata?.proof_name) || null,
   };
 }
 
@@ -522,34 +646,51 @@ function mapMessage(row: Record<string, unknown>): StudioProjectMessage {
 }
 
 function mapNotification(row: Record<string, unknown>): StudioNotification {
+  const legacyCategory = cleanText(row.category);
+  const legacyActionLabel = cleanText(row.action_label);
+  const [legacyChannel, legacyStatus] = legacyActionLabel.includes(":")
+    ? legacyActionLabel.split(":", 2)
+    : ["", legacyActionLabel];
+  const actionUrl = cleanText(row.action_url);
+  const legacyEntityId = actionUrl.startsWith("entity:") ? cleanText(actionUrl.slice("entity:".length)) : "";
+  const legacyTemplateKey = legacyCategory.startsWith("studio:")
+    ? cleanText(legacyCategory.slice("studio:".length))
+    : legacyCategory;
+  const rawStatus = cleanText(row.status) || legacyStatus;
+
   return {
     id: cleanText(row.id),
     createdAt: cleanText(row.created_at),
-    entityId: cleanText(row.entity_id) || null,
-    channel: cleanText(row.channel) === "whatsapp" ? "whatsapp" : "email",
-    templateKey: cleanText(row.template_key),
+    entityId: cleanText(row.entity_id) || legacyEntityId || null,
+    channel:
+      cleanText(row.channel) === "whatsapp" || cleanText(legacyChannel) === "whatsapp"
+        ? "whatsapp"
+        : "email",
+    templateKey: cleanText(row.template_key) || legacyTemplateKey,
     recipient: cleanText(row.recipient),
-    subject: cleanText(row.subject),
+    subject: cleanText(row.subject) || cleanText(row.title),
     status:
-      cleanText(row.status) === "sent"
+      rawStatus === "sent"
         ? "sent"
-        : cleanText(row.status) === "failed"
+        : rawStatus === "failed"
           ? "failed"
-          : cleanText(row.status) === "skipped"
+          : rawStatus === "skipped"
             ? "skipped"
             : "queued",
-    reason: cleanText(row.reason) || null,
+    reason: cleanText(row.reason) || cleanText(row.body) || null,
   };
 }
 
 function mapProjectUpdate(row: Record<string, unknown>): StudioProjectUpdate {
+  const metadata = safeRecord(row.metadata);
+
   return {
     id: cleanText(row.id),
     projectId: cleanText(row.project_id),
     createdAt: cleanText(row.created_at),
-    kind: cleanText(row.kind),
+    kind: cleanText(row.kind) || cleanText(metadata?.kind),
     title: cleanText(row.title),
-    summary: cleanText(row.summary),
+    summary: cleanText(row.summary) || cleanText(row.description) || cleanText(metadata?.summary),
   };
 }
 
@@ -668,6 +809,23 @@ async function upsertLead(lead: StudioLead, meta?: UpsertMeta) {
     preferred_team_id: lead.preferredTeamId,
     matched_team_id: lead.matchedTeamId,
     deposit_requested: lead.status === "won",
+    full_name: lead.customerName,
+    email: normalizeEmail(lead.normalizedEmail || meta?.email),
+    service_type: lead.serviceKind,
+    description: `${lead.serviceKind.replaceAll("_", " ")} request in ${lead.budgetBand}.`,
+    metadata: {
+      customer_name: lead.customerName,
+      company_name: lead.companyName,
+      phone: safePhone(lead.phone),
+      service_kind: lead.serviceKind,
+      readiness_score: Math.max(0, Math.min(100, Math.round(lead.readinessScore))),
+      business_type: lead.businessType,
+      budget_band: lead.budgetBand,
+      urgency: lead.urgency,
+      requested_package_id: lead.requestedPackageId,
+      preferred_team_id: lead.preferredTeamId,
+      matched_team_id: lead.matchedTeamId,
+    },
     created_at: lead.createdAt,
     updated_at: lead.updatedAt,
   };
@@ -755,6 +913,25 @@ async function upsertProposal(proposal: StudioProposal, meta?: UpsertMeta) {
       package_id: proposal.packageId,
       scope_bullets: proposal.scopeBullets,
       comparison_notes: proposal.comparisonNotes,
+      brief_id: null,
+      user_id: meta?.userId ?? null,
+      description: proposal.summary,
+      price_kobo: Math.round(asNumber(proposal.investment) * 100),
+      timeline: proposal.validUntil,
+      payment_terms: `Deposit: ${paymentDisplay(proposal.depositAmount, proposal.currency)}`,
+      notes: proposal.comparisonNotes.join(" "),
+      metadata: {
+        lead_id: proposal.leadId,
+        investment: Math.round(asNumber(proposal.investment)),
+        deposit_amount: Math.round(asNumber(proposal.depositAmount)),
+        currency: proposal.currency,
+        valid_until: proposal.validUntil,
+        team_id: proposal.teamId,
+        service_id: proposal.serviceId,
+        package_id: proposal.packageId,
+        scope_bullets: proposal.scopeBullets,
+        comparison_notes: proposal.comparisonNotes,
+      },
       created_at: proposal.createdAt,
       updated_at: proposal.updatedAt,
     },
@@ -820,6 +997,19 @@ async function upsertProject(project: StudioProject, meta?: UpsertMeta) {
       package_id: project.packageId,
       team_id: project.teamId,
       confidence: Math.max(0, Math.min(100, Math.round(asNumber(project.confidence)))),
+      user_id: project.clientUserId,
+      description: project.summary,
+      metadata: {
+        lead_id: project.leadId,
+        client_user_id: project.clientUserId,
+        normalized_email: normalizeEmail(project.normalizedEmail || meta?.email),
+        summary: project.summary,
+        next_action: project.nextAction,
+        service_id: project.serviceId,
+        package_id: project.packageId,
+        team_id: project.teamId,
+        confidence: Math.max(0, Math.min(100, Math.round(asNumber(project.confidence)))),
+      },
       created_at: project.createdAt,
       updated_at: project.updatedAt,
     },
@@ -891,12 +1081,24 @@ async function upsertPayment(payment: StudioPayment, meta?: UpsertMeta) {
       milestone_id: payment.milestoneId,
       label: payment.label,
       amount: Math.round(asNumber(payment.amount)),
+      amount_kobo: Math.round(asNumber(payment.amount) * 100),
       currency: payment.currency,
       status: payment.status,
       due_date: payment.dueDate,
       method: payment.method,
+      payment_method: payment.method,
+      reference: payment.id,
       proof_url: payment.proofUrl,
       proof_name: payment.proofName,
+      metadata: {
+        milestone_id: payment.milestoneId,
+        label: payment.label,
+        amount: Math.round(asNumber(payment.amount)),
+        due_date: payment.dueDate,
+        method: payment.method,
+        proof_url: payment.proofUrl,
+        proof_name: payment.proofName,
+      },
       created_at: payment.createdAt,
       updated_at: payment.updatedAt,
     },
@@ -1113,25 +1315,49 @@ async function upsertReview(review: StudioReview, meta?: UpsertMeta) {
 }
 
 async function appendNotification(notification: StudioNotification, meta?: UpsertMeta) {
+  const supportsModernNotificationShape = await tableHasColumns("studio_notifications", [
+    "entity_id",
+    "channel",
+    "template_key",
+    "recipient",
+    "subject",
+    "status",
+    "reason",
+  ]);
+
   await insertTableRecord(
     "studio_notifications",
-    {
-      id: notification.id,
-      user_id: meta?.userId ?? null,
-      normalized_email: normalizeEmail(meta?.email),
-      entity_type: "record",
-      entity_id: notification.entityId,
-      channel: notification.channel,
-      template_key: notification.templateKey,
-      recipient: notification.recipient,
-      subject: notification.subject,
-      status: notification.status,
-      reason: notification.reason,
-      payload: {
-        created_at: notification.createdAt,
-      },
-      created_at: notification.createdAt,
-    },
+    supportsModernNotificationShape
+      ? {
+          id: notification.id,
+          user_id: meta?.userId ?? null,
+          normalized_email: normalizeEmail(meta?.email),
+          entity_type: "record",
+          entity_id: notification.entityId,
+          channel: notification.channel,
+          template_key: notification.templateKey,
+          recipient: notification.recipient,
+          subject: notification.subject,
+          status: notification.status,
+          reason: notification.reason,
+          payload: {
+            created_at: notification.createdAt,
+          },
+          created_at: notification.createdAt,
+        }
+      : {
+          id: notification.id,
+          user_id: meta?.userId ?? null,
+          title: notification.subject,
+          body: notification.reason || `Studio ${notification.channel} update`,
+          category: `studio:${notification.templateKey}`,
+          priority: notification.status === "failed" ? "high" : "normal",
+          is_read: false,
+          action_url: notification.entityId ? `entity:${notification.entityId}` : null,
+          action_label: `${notification.channel}:${notification.status}`,
+          division: "studio",
+          created_at: notification.createdAt,
+        },
     meta
   );
 
@@ -1155,23 +1381,30 @@ function buildProposal(
   milestoneRows: ProposalMilestoneRow[]
 ): StudioProposal {
   const id = cleanText(row.id);
+  const metadata = safeRecord(row.metadata);
+
   return {
     id,
-    leadId: cleanText(row.lead_id),
+    leadId: cleanText(row.lead_id) || cleanText(metadata?.lead_id),
     createdAt: cleanText(row.created_at),
-    updatedAt: cleanText(row.updated_at),
+    updatedAt: cleanText(row.updated_at) || cleanText(row.created_at),
     accessKey: proposalAccessKey(id),
     status: cleanText(row.status) as StudioProposal["status"],
     title: cleanText(row.title),
-    summary: cleanText(row.summary),
-    investment: asNumber(row.investment),
-    depositAmount: asNumber(row.deposit_amount),
-    currency: cleanText(row.currency) || "NGN",
-    validUntil: cleanText(row.valid_until),
-    teamId: cleanText(row.team_id) || null,
-    serviceId: cleanText(row.service_id),
-    packageId: cleanText(row.package_id) || null,
-    scopeBullets: arrayOfText(row.scope_bullets),
+    summary: cleanText(row.summary) || cleanText(row.description) || cleanText(metadata?.summary),
+    investment:
+      row.price_kobo != null
+        ? asNumber(row.price_kobo) / 100
+        : asNumber(row.investment ?? metadata?.investment),
+    depositAmount: asNumber(row.deposit_amount ?? metadata?.deposit_amount),
+    currency: cleanText(row.currency) || cleanText(metadata?.currency) || "NGN",
+    validUntil: cleanText(row.valid_until) || cleanText(metadata?.valid_until),
+    teamId: cleanText(row.team_id) || cleanText(metadata?.team_id) || null,
+    serviceId: cleanText(row.service_id) || cleanText(metadata?.service_id),
+    packageId: cleanText(row.package_id) || cleanText(metadata?.package_id) || null,
+    scopeBullets: arrayOfText(row.scope_bullets).length
+      ? arrayOfText(row.scope_bullets)
+      : arrayOfText(metadata?.scope_bullets),
     milestones: milestoneRows
       .filter((item) => item.proposalId === id)
       .sort((left, right) => left.sortOrder - right.sortOrder)
@@ -1182,7 +1415,9 @@ function buildProposal(
         description: item.description,
         dueLabel: item.dueLabel,
       })),
-    comparisonNotes: arrayOfText(row.comparison_notes),
+    comparisonNotes: arrayOfText(row.comparison_notes).length
+      ? arrayOfText(row.comparison_notes)
+      : arrayOfText(metadata?.comparison_notes),
   };
 }
 
@@ -1192,23 +1427,28 @@ function buildProject(
   milestoneRows: ProjectMilestoneRow[]
 ): StudioProject {
   const id = cleanText(row.id);
+  const metadata = safeRecord(row.metadata);
+
   return {
     id,
     proposalId: cleanText(row.proposal_id),
-    leadId: cleanText(row.lead_id),
+    leadId: cleanText(row.lead_id) || cleanText(metadata?.lead_id),
     createdAt: cleanText(row.created_at),
     updatedAt: cleanText(row.updated_at),
     accessKey: projectAccessKey(id),
-    clientUserId: cleanText(row.client_user_id) || null,
-    normalizedEmail: normalizeEmail(row.normalized_email as string | null),
+    clientUserId:
+      cleanText(row.client_user_id) || cleanText(row.user_id) || cleanText(metadata?.client_user_id) || null,
+    normalizedEmail: normalizeEmail(
+      (row.normalized_email as string | null) || cleanText(metadata?.normalized_email)
+    ),
     status: cleanText(row.status) as StudioProject["status"],
     title: cleanText(row.title),
-    summary: cleanText(row.summary),
-    nextAction: cleanText(row.next_action),
-    serviceId: cleanText(row.service_id),
-    packageId: cleanText(row.package_id) || null,
-    teamId: cleanText(row.team_id) || null,
-    confidence: asNumber(row.confidence),
+    summary: cleanText(row.summary) || cleanText(row.description) || cleanText(metadata?.summary),
+    nextAction: cleanText(row.next_action) || cleanText(metadata?.next_action),
+    serviceId: cleanText(row.service_id) || cleanText(metadata?.service_id),
+    packageId: cleanText(row.package_id) || cleanText(metadata?.package_id) || null,
+    teamId: cleanText(row.team_id) || cleanText(metadata?.team_id) || null,
+    confidence: asNumber(row.confidence ?? metadata?.confidence),
     assignments: assignmentRows
       .filter((item) => cleanText(item.project_id) === id)
       .map((item) => ({
