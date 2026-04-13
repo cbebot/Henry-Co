@@ -757,6 +757,7 @@ export async function POST(request: Request) {
       case "address_upsert": {
         if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/addresses");
 
+        const addressId = text(formData, "address_id");
         const isDefault = text(formData, "is_default") === "on";
         if (isDefault) {
           await admin
@@ -765,9 +766,7 @@ export async function POST(request: Request) {
             .eq("user_id", viewer.user.id);
         }
 
-        await admin.from("marketplace_addresses").insert({
-          user_id: viewer.user.id,
-          normalized_email: normalizeEmail(viewer.user.email),
+        const basePayload = {
           label: text(formData, "label"),
           recipient_name: text(formData, "recipient_name"),
           phone: text(formData, "phone"),
@@ -777,10 +776,101 @@ export async function POST(request: Request) {
           region: text(formData, "region"),
           country: text(formData, "country") || "Nigeria",
           is_default: isDefault,
-        } as never);
+        };
+
+        if (addressId) {
+          await admin
+            .from("marketplace_addresses")
+            .update(basePayload as never)
+            .eq("id", addressId)
+            .eq("user_id", viewer.user.id);
+
+          await logMarketplaceAction({
+            eventType: "address_updated",
+            actorUserId: viewer.user.id,
+            actorEmail: viewer.user.email,
+            entityType: "address",
+            entityId: addressId,
+            details: { label: basePayload.label },
+          });
+        } else {
+          await admin.from("marketplace_addresses").insert({
+            ...basePayload,
+            user_id: viewer.user.id,
+            normalized_email: normalizeEmail(viewer.user.email),
+          } as never);
+
+          await logMarketplaceAction({
+            eventType: "address_created",
+            actorUserId: viewer.user.id,
+            actorEmail: viewer.user.email,
+            entityType: "address",
+            entityId: null,
+            details: { label: basePayload.label },
+          });
+        }
 
         revalidatePath("/account/addresses");
         return redirectTo(request, "/account/addresses?saved=1");
+      }
+
+      case "address_delete": {
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/addresses");
+
+        const addressId = text(formData, "address_id");
+        if (!addressId) {
+          return redirectTo(request, "/account/addresses?error=missing-address");
+        }
+
+        await admin
+          .from("marketplace_addresses")
+          .delete()
+          .eq("id", addressId)
+          .eq("user_id", viewer.user.id);
+
+        await logMarketplaceAction({
+          eventType: "address_deleted",
+          actorUserId: viewer.user.id,
+          actorEmail: viewer.user.email,
+          entityType: "address",
+          entityId: addressId,
+          details: {},
+        });
+
+        revalidatePath("/account/addresses");
+        return redirectTo(request, "/account/addresses?deleted=1");
+      }
+
+      case "address_set_default": {
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/addresses");
+
+        const addressId = text(formData, "address_id");
+        if (!addressId) {
+          return redirectTo(request, "/account/addresses?error=missing-address");
+        }
+
+        await admin
+          .from("marketplace_addresses")
+          .update({ is_default: false } as never)
+          .eq("user_id", viewer.user.id);
+
+        await admin
+          .from("marketplace_addresses")
+          .update({ is_default: true } as never)
+          .eq("id", addressId)
+          .eq("user_id", viewer.user.id);
+
+        await logMarketplaceAction({
+          eventType: "address_set_default",
+          actorUserId: viewer.user.id,
+          actorEmail: viewer.user.email,
+          entityType: "address",
+          entityId: addressId,
+          details: {},
+        });
+
+        revalidatePath("/account/addresses");
+        return redirectTo(request, "/account/addresses?default=1");
       }
 
       case "review_submit": {

@@ -3,6 +3,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { getPendingWithdrawalHoldKobo, getWalletSummary, getWithdrawalRequests } from "@/lib/account-data";
+import { requireVerification } from "@/lib/verification";
 import { verifyWithdrawalPin } from "@/lib/wallet-pin";
 import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
 import {
@@ -22,6 +23,12 @@ export async function POST(request: Request) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     await ensureAccountProfileRecords(user);
+
+    // KYC gate: withdrawals require verified identity.
+    const verification = await requireVerification(user.id);
+    if (!verification.allowed) {
+      return NextResponse.json({ error: verification.reason }, { status: 403 });
+    }
 
     const body = await request.json();
     const amountNaira = Number(body.amountNaira ?? body.amount_naira ?? 0);

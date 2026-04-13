@@ -1,10 +1,12 @@
-import { Users, Gift, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Users, Gift, Clock, CheckCircle, XCircle, ShieldAlert, Sparkles } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
 import {
   getUserReferralCode,
   getUserReferrals,
   getReferralRewards,
   getReferralStats,
+  REFERRAL_QUALIFY_HOLD_DAYS,
+  REFERRAL_REWARD_KOBO,
 } from "@/lib/referral-data";
 import { formatNaira, formatDate } from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
@@ -14,19 +16,37 @@ import CopyReferralCode from "@/components/referral/CopyReferralCode";
 export const dynamic = "force-dynamic";
 
 const statusChip: Record<string, string> = {
-  pending: "acct-chip-orange",
-  converted: "acct-chip-green",
+  pending: "acct-chip-gold",
+  converted: "acct-chip-orange",
+  qualified: "acct-chip-green",
+  flagged: "acct-chip-red",
   expired: "acct-chip-red",
 };
 const rewardChip: Record<string, string> = {
+  held: "acct-chip-orange",
   pending: "acct-chip-orange",
+  released: "acct-chip-green",
   paid: "acct-chip-green",
   cancelled: "acct-chip-red",
 };
 const statusIcon: Record<string, typeof Clock> = {
   pending: Clock,
-  converted: CheckCircle,
+  converted: Sparkles,
+  qualified: CheckCircle,
+  flagged: ShieldAlert,
   expired: XCircle,
+};
+const statusLabel: Record<string, string> = {
+  pending: "Awaiting signup",
+  converted: "Signed up · hold period",
+  qualified: "Qualified · reward unlocked",
+  flagged: "Flagged · fraud guard",
+  expired: "Expired",
+};
+const flagReasonLabel: Record<string, string> = {
+  self_referral: "Self-referral blocked",
+  duplicate_email: "Duplicate referee email",
+  device_reuse: "Device reuse",
 };
 
 export default async function ReferralsPage() {
@@ -39,7 +59,7 @@ export default async function ReferralsPage() {
   ]);
 
   const referralsWithReferee = referrals.filter(
-    (r: Record<string, unknown>) => r.referee_id != null
+    (r: Record<string, unknown>) => r.referred_user_id != null || r.status === "flagged"
   );
 
   return (
@@ -54,6 +74,11 @@ export default async function ReferralsPage() {
       <div className="acct-card p-5">
         <p className="acct-kicker mb-3">Your Referral Code</p>
         <CopyReferralCode code={code} />
+        <p className="mt-3 text-xs text-[var(--acct-muted)]">
+          Reward: {formatNaira(REFERRAL_REWARD_KOBO)} per qualified referral. Rewards
+          unlock after the referee completes a paid order within the{" "}
+          {REFERRAL_QUALIFY_HOLD_DAYS}-day hold window.
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -68,12 +93,31 @@ export default async function ReferralsPage() {
         </div>
         <div className="acct-card p-4">
           <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
-            Converted
+            Signed Up
           </p>
           <p className="mt-1 text-2xl font-bold text-[var(--acct-ink)]">
             {stats.converted}
           </p>
         </div>
+        <div className="acct-card p-4">
+          <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
+            Qualified
+          </p>
+          <p className="mt-1 text-2xl font-bold text-emerald-600">
+            {stats.qualified}
+          </p>
+        </div>
+        <div className="acct-card p-4">
+          <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
+            Flagged
+          </p>
+          <p className="mt-1 text-2xl font-bold text-[var(--acct-alert,#E85858)]">
+            {stats.flagged}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <div className="acct-card p-4">
           <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
             Pending Rewards
@@ -84,7 +128,7 @@ export default async function ReferralsPage() {
         </div>
         <div className="acct-card p-4">
           <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
-            Earned Rewards
+            Released Rewards
           </p>
           <p className="mt-1 text-2xl font-bold text-emerald-600">
             {formatNaira(stats.paidRewards)}
@@ -104,7 +148,8 @@ export default async function ReferralsPage() {
               Share your code
             </p>
             <p className="mt-1 text-xs text-[var(--acct-muted)]">
-              Copy your unique referral code or link and share it with friends, family, or colleagues.
+              Share your unique code or link. Friends who visit any HenryCo
+              subdomain with your link get tracked automatically.
             </p>
           </div>
           <div className="rounded-xl bg-[var(--acct-surface)] p-4">
@@ -112,10 +157,12 @@ export default async function ReferralsPage() {
               2
             </div>
             <p className="text-sm font-semibold text-[var(--acct-ink)]">
-              They sign up
+              They transact
             </p>
             <p className="mt-1 text-xs text-[var(--acct-muted)]">
-              When someone creates a HenryCo account using your referral link, we track the referral automatically.
+              After signup, the referral enters a {REFERRAL_QUALIFY_HOLD_DAYS}-day
+              hold window. Your referral qualifies when they complete a paid
+              order, booking, or transaction.
             </p>
           </div>
           <div className="rounded-xl bg-[var(--acct-surface)] p-4">
@@ -123,10 +170,12 @@ export default async function ReferralsPage() {
               3
             </div>
             <p className="text-sm font-semibold text-[var(--acct-ink)]">
-              Earn rewards
+              Reward released
             </p>
             <p className="mt-1 text-xs text-[var(--acct-muted)]">
-              Once your referral converts, you earn a reward credited to your HenryCo wallet.
+              Qualified referrals credit {formatNaira(REFERRAL_REWARD_KOBO)} to
+              your HenryCo wallet after finance review. Fraudulent attempts are
+              automatically blocked.
             </p>
           </div>
         </div>
@@ -144,9 +193,14 @@ export default async function ReferralsPage() {
         ) : (
           <div className="acct-card divide-y divide-[var(--acct-line)]">
             {referralsWithReferee.map(
-              (referral: Record<string, string | number>) => {
+              (referral: Record<string, string | number | null>) => {
                 const status = String(referral.status || "pending");
                 const StatusIcon = statusIcon[status] || Clock;
+                const label = statusLabel[status] || status;
+                const flagReason = referral.flag_reason
+                  ? flagReasonLabel[String(referral.flag_reason)] ||
+                    String(referral.flag_reason)
+                  : null;
                 return (
                   <div
                     key={referral.id as string}
@@ -155,26 +209,38 @@ export default async function ReferralsPage() {
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--acct-surface)]">
                       <StatusIcon
                         size={18}
-                        className="text-[var(--acct-muted)]"
+                        className={
+                          status === "flagged"
+                            ? "text-[var(--acct-alert,#E85858)]"
+                            : status === "qualified"
+                              ? "text-emerald-600"
+                              : "text-[var(--acct-muted)]"
+                        }
                       />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                        Referral {referral.referral_code}
+                        {referral.referred_email_normalized
+                          ? String(referral.referred_email_normalized)
+                          : "Referred signup"}
                       </p>
                       <p className="text-xs text-[var(--acct-muted)]">
                         {referral.created_at
                           ? formatDate(referral.created_at as string)
                           : ""}
                         {referral.converted_at
-                          ? ` · Converted ${formatDate(referral.converted_at as string)}`
+                          ? ` · Signed up ${formatDate(referral.converted_at as string)}`
                           : ""}
+                        {referral.qualified_at
+                          ? ` · Qualified ${formatDate(referral.qualified_at as string)}`
+                          : ""}
+                        {flagReason ? ` · ${flagReason}` : ""}
                       </p>
                     </div>
                     <span
                       className={`acct-chip ${statusChip[status] || "acct-chip-gold"}`}
                     >
-                      {status}
+                      {label}
                     </span>
                   </div>
                 );
@@ -191,12 +257,12 @@ export default async function ReferralsPage() {
           <EmptyState
             icon={Gift}
             title="No rewards yet"
-            description="Rewards are credited when your referrals convert. Your reward history will appear here."
+            description="Rewards are credited when your referrals qualify. Your reward history will appear here."
           />
         ) : (
           <div className="acct-card divide-y divide-[var(--acct-line)]">
-            {rewards.map((reward: Record<string, string | number>) => {
-              const status = String(reward.status || "pending");
+            {rewards.map((reward: Record<string, string | number | null>) => {
+              const status = String(reward.reward_status || "held");
               return (
                 <div
                   key={reward.id as string}
@@ -207,11 +273,16 @@ export default async function ReferralsPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                      {reward.description || "Referral Reward"}
+                      {reward.reason
+                        ? String(reward.reason).replace(/_/g, " ")
+                        : "Referral Reward"}
                     </p>
                     <p className="text-xs text-[var(--acct-muted)]">
                       {reward.created_at
                         ? formatDate(reward.created_at as string)
+                        : ""}
+                      {reward.released_at
+                        ? ` · Released ${formatDate(reward.released_at as string)}`
                         : ""}
                     </p>
                   </div>

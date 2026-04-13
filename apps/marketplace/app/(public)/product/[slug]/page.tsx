@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
+import { ProductGallery } from "@/components/marketplace/product-gallery";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
 import { getMarketplaceProductBySlug } from "@/lib/marketplace/data";
 import { formatCurrency } from "@/lib/utils";
@@ -21,42 +21,7 @@ export default async function ProductPage({
   return (
     <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-8 pb-28 sm:px-6 xl:px-8">
       <section className="grid gap-6 xl:grid-cols-[1.06fr,0.94fr]">
-        <div className="space-y-4">
-          <article className="market-panel overflow-hidden rounded-[2.3rem]">
-            <div className="relative aspect-[4/4.55]">
-              <Image
-                src={
-                  data.product.gallery[0] ||
-                  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1600&q=80"
-                }
-                alt={data.product.title}
-                fill
-                sizes="(max-width: 1280px) 100vw, 54vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.72)] via-transparent to-transparent" />
-            </div>
-          </article>
-
-          {data.product.gallery.length > 1 ? (
-            <div className="grid gap-4 sm:grid-cols-3">
-              {data.product.gallery.slice(1, 4).map((image, index) => (
-                <div
-                  key={`${image}-${index}`}
-                  className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)]"
-                >
-                  <Image
-                    src={image}
-                    alt={`${data.product.title} ${index + 2}`}
-                    fill
-                    sizes="33vw"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        <ProductGallery images={data.product.gallery} title={data.product.title} />
 
         <div className="space-y-6 xl:sticky xl:top-28 xl:self-start">
           <article className="market-paper rounded-[2.3rem] p-6 sm:p-8">
