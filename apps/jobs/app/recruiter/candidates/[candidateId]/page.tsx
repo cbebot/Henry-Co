@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireJobsRoles } from "@/lib/auth";
 import { getCandidateProfileByUserId } from "@/lib/jobs/data";
 import { recruiterNav } from "@/lib/jobs/navigation";
+import { TrustPassportPanel } from "@/components/trust-passport";
 import { SectionCard, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
@@ -18,16 +19,22 @@ export default async function RecruiterCandidateDetailPage({
 
   return (
     <WorkspaceShell area="recruiter" title="Candidate Detail" subtitle="Readiness, skills, and profile depth for a single candidate." nav={recruiterNav} activeHref="/recruiter" accent="linear-gradient(135deg,#1d3f6f 0%,#3266b4 55%,#6db7ff 100%)">
-      <SectionCard title={profile.fullName || "Candidate"} body={profile.summary}>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm text-[var(--jobs-muted)]">
-            {profile.readinessLabel} · Profile strength {profile.trustScore}%
+      <div className="space-y-4">
+        <SectionCard title={profile.fullName || "Candidate"} body={profile.summary}>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm text-[var(--jobs-muted)]">
+              {profile.readinessLabel} · Profile strength {profile.trustScore}%
+            </div>
+            <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm text-[var(--jobs-muted)]">
+              Skills: {profile.skills.join(", ")}
+            </div>
           </div>
-          <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm text-[var(--jobs-muted)]">
-            Skills: {profile.skills.join(", ")}
-          </div>
-        </div>
-      </SectionCard>
+        </SectionCard>
+
+        <SectionCard title="Trust passport" body="Recruiters should use this breakdown before escalating, shortlisting, or trusting self-claimed candidate quality.">
+          <TrustPassportPanel title="Candidate passport" passport={profile.trustPassport} limit={5} />
+        </SectionCard>
+      </div>
     </WorkspaceShell>
   );
 }

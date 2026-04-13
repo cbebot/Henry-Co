@@ -310,36 +310,78 @@ export function CampaignBanner({ campaign }: { campaign: MarketplaceCampaign }) 
 }
 
 export function TrustPassport({ vendor }: { vendor: MarketplaceVendor }) {
+  const passport = vendor.trustPassport;
+  const signalCards =
+    passport?.signals.slice(0, 4) || [
+      {
+        id: "verification",
+        label: "Verification",
+        value: vendor.verificationLevel,
+      },
+      {
+        id: "fulfillment",
+        label: "Fulfillment",
+        value: `${vendor.fulfillmentRate}%`,
+      },
+      {
+        id: "dispute",
+        label: "Dispute rate",
+        value: `${vendor.disputeRate}%`,
+      },
+      {
+        id: "sla",
+        label: "Response SLA",
+        value: `${vendor.responseSlaHours}h`,
+      },
+    ];
+
   return (
     <section className="market-paper rounded-[2rem] p-6 sm:p-8">
-      <div className="flex items-center gap-3">
-        <ShieldCheck className="h-5 w-5 text-[var(--market-brass)]" />
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-          Trust Passport
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <ShieldCheck className="h-5 w-5 text-[var(--market-brass)]" />
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+              Trust Passport
+            </p>
+            {passport ? (
+              <p className="mt-1 text-sm leading-7 text-[var(--market-muted)]">{passport.summary}</p>
+            ) : null}
+          </div>
+        </div>
+        {passport ? (
+          <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-right">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">Trust posture</p>
+            <p className="mt-2 text-2xl font-semibold text-[var(--market-paper-white)]">{passport.score}</p>
+            <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--market-brass)]">{passport.label}</p>
+          </div>
+        ) : null}
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <TrustPassportCard
-          icon={<CheckCircle2 className="h-5 w-5" />}
-          label="Verification"
-          value={vendor.verificationLevel}
-        />
-        <TrustPassportCard
-          icon={<Truck className="h-5 w-5" />}
-          label="Fulfillment"
-          value={`${vendor.fulfillmentRate}%`}
-        />
-        <TrustPassportCard
-          icon={<Store className="h-5 w-5" />}
-          label="Dispute Rate"
-          value={`${vendor.disputeRate}%`}
-        />
-        <TrustPassportCard
-          icon={<ShieldCheck className="h-5 w-5" />}
-          label="Response SLA"
-          value={`${vendor.responseSlaHours}h`}
-        />
+        {signalCards.map((signal, index) => (
+          <TrustPassportCard
+            key={signal.id}
+            icon={
+              index === 0 ? <CheckCircle2 className="h-5 w-5" /> : index === 1 ? <Truck className="h-5 w-5" /> : index === 2 ? <Store className="h-5 w-5" /> : <ShieldCheck className="h-5 w-5" />
+            }
+            label={signal.label}
+            value={signal.value}
+            detail={"detail" in signal ? signal.detail : undefined}
+          />
+        ))}
       </div>
+      {passport?.suspiciousFlags.length ? (
+        <div className="mt-5 rounded-[1.5rem] border border-[rgba(255,171,151,0.26)] bg-[rgba(126,33,18,0.08)] px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-alert)]">
+            Operator watch
+          </p>
+          <div className="mt-3 space-y-2 text-sm leading-7 text-[var(--market-muted)]">
+            {passport.suspiciousFlags.map((flag) => (
+              <p key={flag}>{flag}</p>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -348,16 +390,19 @@ function TrustPassportCard({
   icon,
   label,
   value,
+  detail,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
+  detail?: string;
 }) {
   return (
     <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4">
       <div className="flex items-center gap-3 text-[var(--market-brass)]">{icon}</div>
       <p className="mt-4 text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{label}</p>
       <p className="mt-2 text-2xl font-semibold capitalize text-[var(--market-paper-white)]">{value}</p>
+      {detail ? <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{detail}</p> : null}
     </div>
   );
 }

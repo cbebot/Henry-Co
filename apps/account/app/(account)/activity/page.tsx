@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Activity } from "lucide-react";
 import { requireAccountUser } from "@/lib/auth";
-import { getRecentActivity } from "@/lib/account-data";
+import { getProfile, getRecentActivity } from "@/lib/account-data";
 import { activityMessageHref } from "@/lib/notification-center";
-import { timeAgo, divisionLabel, divisionColor, formatNaira } from "@/lib/format";
+import { timeAgo, divisionLabel, divisionColor, formatCurrencyAmount } from "@/lib/format";
+import { resolveAccountLedgerCurrencyTruth } from "@/lib/currency-truth";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
 
@@ -11,7 +12,10 @@ export const dynamic = "force-dynamic";
 
 export default async function ActivityPage() {
   const user = await requireAccountUser();
-  const activity = await getRecentActivity(user.id, 50);
+  const [activity, profile] = await Promise.all([
+    getRecentActivity(user.id, 50),
+    getProfile(user.id),
+  ]);
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -30,6 +34,14 @@ export default async function ActivityPage() {
       ) : (
         <div className="acct-card divide-y divide-[var(--acct-line)]">
           {activity.map((item: Record<string, string | number | null>) => (
+            (() => {
+              const truth = resolveAccountLedgerCurrencyTruth(item as Record<string, unknown>, {
+                country: profile?.country as string | null | undefined,
+                preferredCurrency: profile?.currency as string | null | undefined,
+                locale: profile?.language as string | null | undefined,
+              });
+
+              return (
             <Link
               key={item.id as string}
               href={activityMessageHref(String(item.id || ""))}
@@ -60,10 +72,15 @@ export default async function ActivityPage() {
               </div>
               {item.amount_kobo && (
                 <p className="shrink-0 text-sm font-semibold text-[var(--acct-ink)]">
-                  {formatNaira(item.amount_kobo as number)}
+                  {formatCurrencyAmount(Number(item.amount_kobo || 0), truth.pricingCurrency, {
+                    unit: "kobo",
+                    locale: truth.locale,
+                  })}
                 </p>
               )}
             </Link>
+              );
+            })()
           ))}
         </div>
       )}

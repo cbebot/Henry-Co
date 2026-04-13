@@ -9,9 +9,32 @@ export * from "./src/index";
 
 export {
   formatMoney,
+  formatMoneyMajor,
+  normalizeCurrencyCode,
   parseCurrencyConfig,
+  resolveCurrencyLocale,
   type CurrencyConfig,
+  type MoneyFormatOptions,
 } from "./currency";
+
+export {
+  DEFAULT_BASE_CURRENCY,
+  DEFAULT_SETTLEMENT_CURRENCY,
+  LIVE_SETTLEMENT_CURRENCIES,
+  buildInvoiceLineItemsPayload,
+  extractCurrencyContext,
+  isLiveSettlementCurrency,
+  resolveHenryCoRailCapability,
+  resolveCurrencyTruth,
+  serializeCurrencyContext,
+  withCurrencyContext,
+  type HenryCoCommerceDivision,
+  type HenryCoPaymentMethod,
+  type HenryCoRailCapability,
+  type HenryCoRailCapabilityInput,
+  type CurrencyTruthContext,
+  type CurrencyTruthInput,
+} from "./commerce";
 
 export {
   COUNTRIES,

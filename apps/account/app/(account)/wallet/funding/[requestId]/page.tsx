@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowLeft, Building2, Clock3, ShieldCheck, Wallet } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
-import { getWalletFundingRequestById } from "@/lib/account-data";
-import { formatNaira, formatDateTime } from "@/lib/format";
+import { getProfile, getWalletFundingRequestById } from "@/lib/account-data";
+import { formatCurrencyAmount, formatDateTime } from "@/lib/format";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import PageHeader from "@/components/layout/PageHeader";
 import FundingProofUpload from "@/components/wallet/FundingProofUpload";
 import CopyValueButton from "@/components/ui/CopyValueButton";
@@ -27,7 +28,16 @@ function statusChip(status: string) {
 export default async function WalletFundingRequestPage({ params }: Props) {
   const { requestId } = await params;
   const user = await requireAccountUser();
-  const request = await getWalletFundingRequestById(user.id, requestId);
+  const [request, profile] = await Promise.all([
+    getWalletFundingRequestById(user.id, requestId),
+    getProfile(user.id),
+  ]);
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
 
   if (!request) {
     return (
@@ -39,6 +49,11 @@ export default async function WalletFundingRequestPage({ params }: Props) {
       </div>
     );
   }
+
+  const settlementAmount = formatCurrencyAmount(request.amount_kobo, region.settlementCurrency, {
+    unit: "kobo",
+    locale: region.locale,
+  });
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -78,7 +93,10 @@ export default async function WalletFundingRequestPage({ params }: Props) {
                 ) : null}
               </div>
               <p className="mt-3 text-sm leading-7 text-white/75">
-                {formatNaira(request.amount_kobo)} created on {formatDateTime(request.created_at)}.
+                {settlementAmount} created on {formatDateTime(request.created_at, { locale: region.locale, timezone: region.timezone })}.
+              </p>
+              <p className="mt-2 text-xs leading-6 text-white/72">
+                Display {region.displayCurrency} · Settlement {region.settlementCurrency}. Funding requests do not convert balances before verification.
               </p>
             </div>
 

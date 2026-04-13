@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { withCurrencyContext } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -29,6 +30,15 @@ export async function POST(request: Request) {
     const pin = String(body.pin || "");
 
     const amountKobo = Math.round(amountNaira * 100);
+    const withdrawalMetadata = withCurrencyContext(
+      { requested_from: "account_wallet" },
+      {
+        pricingCurrency: "NGN",
+        settlementCurrency: "NGN",
+        baseCurrency: "NGN",
+        originalCurrency: "NGN",
+      }
+    );
     if (!amountKobo || amountKobo < 10000) {
       return NextResponse.json({ error: "Minimum withdrawal is NGN 100." }, { status: 400 });
     }
@@ -144,7 +154,7 @@ export async function POST(request: Request) {
         amount_kobo: amountKobo,
         currency: "NGN",
         status: "pending_review",
-        metadata: { requested_from: "account_wallet" },
+        metadata: withdrawalMetadata,
       } as never)
       .select("id")
       .single();
@@ -188,6 +198,9 @@ export async function POST(request: Request) {
         reference_type: "wallet_withdrawal_request",
         reference_id: String((legacyRow as { id: string }).id),
         action_url: "/wallet/withdrawals",
+        metadata: {
+          currency_context: withdrawalMetadata.currency_context,
+        },
       } as never);
 
       await admin.from("customer_notifications").insert({
@@ -218,6 +231,9 @@ export async function POST(request: Request) {
       reference_type: "wallet_withdrawal_request",
       reference_id: String((row as { id: string }).id),
       action_url: "/wallet/withdrawals",
+      metadata: {
+        currency_context: withdrawalMetadata.currency_context,
+      },
     } as never);
 
     await admin.from("customer_notifications").insert({

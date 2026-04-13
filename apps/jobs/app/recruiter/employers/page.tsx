@@ -53,8 +53,10 @@ export default async function RecruiterEmployersPage({
                       <div className="flex flex-wrap items-center gap-3">
                         <div className="font-semibold">{employer.name}</div>
                         <StatusPill label={employer.verificationStatus} tone={toneForVerification(employer.verificationStatus)} />
+                        <StatusPill label={employer.trustPassport.label} tone={toneForVerification(employer.trustPassport.riskBand === "low" ? "verified" : employer.verificationStatus)} />
                       </div>
                       <div className="mt-1 text-sm text-[var(--jobs-muted)]">{employer.industry} · Profile strength {employer.trustScore}%</div>
+                      <div className="mt-2 text-xs leading-6 text-[var(--jobs-muted)]">{employer.trustPassport.summary}</div>
                     </div>
                     <form action={updateEmployerVerificationAction} className="grid gap-3 sm:grid-cols-[minmax(0,150px)_minmax(0,220px)_auto]">
                       <input type="hidden" name="employerSlug" value={employer.slug} />

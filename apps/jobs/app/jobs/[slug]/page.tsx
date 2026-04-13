@@ -5,6 +5,7 @@ import { EmptyState, InlineNotice } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { PublicShell } from "@/components/public-shell";
+import { TrustPassportPanel } from "@/components/trust-passport";
 import { StatusPill } from "@/components/workspace-shell";
 import { getSharedAccountLoginUrl, getSharedAccountSignupUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
@@ -452,22 +453,14 @@ export default async function JobDetailPage({
             <div id="employer-trust" className="jobs-panel scroll-mt-24 rounded-[2rem] p-6">
               <h2 className="jobs-section-title">Employer trust</h2>
               <p className="mt-2 text-sm font-semibold">{job.employerName}</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] p-4">
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--jobs-muted)]">Status</div>
-                  <div className="mt-2 text-lg font-semibold">
-                    {job.employerVerification === "verified" ? "Verified" : "Under review"}
-                  </div>
-                </div>
-                <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] p-4">
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--jobs-muted)]">Applicants</div>
-                  <div className="mt-2 text-lg font-semibold">{job.applicationCount}</div>
-                </div>
+              <div className="mt-4">
+                <TrustPassportPanel
+                  title="Role trust"
+                  body={`Trust here comes from the employer record, moderation state, pay clarity, and how structured the hiring workflow is.${job.employerResponseSlaHours ? ` ${job.employerName} aims to respond within about ${job.employerResponseSlaHours} hours.` : ""}`}
+                  passport={job.trustPassport}
+                  limit={4}
+                />
               </div>
-              <p className="mt-4 text-sm leading-7 text-[var(--jobs-muted)]">
-                Our trust indicators are based on profile quality, verification status, and hiring behaviour — not a paid badge, but a better starting point than an anonymous board post.
-                {job.employerResponseSlaHours ? ` This employer aims to respond within about ${job.employerResponseSlaHours} hours.` : ""}
-              </p>
               <Link href={`/employers/${job.employerSlug}`} className="mt-4 inline-flex text-sm font-semibold text-[var(--jobs-accent)]">
                 View employer page
               </Link>

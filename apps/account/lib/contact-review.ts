@@ -10,6 +10,15 @@ export type ContactOverlapSummary = {
   reasons: string[];
 };
 
+export type SignupContactPreflight = {
+  emailExists: boolean;
+  phoneReviewRequired: boolean;
+  duplicateEmailMatches: number;
+  duplicatePhoneMatches: number;
+  reasons: string[];
+  canProceed: boolean;
+};
+
 function maskEmail(value: string) {
   const normalized = normalizeEmail(value);
   if (!normalized) return "hidden email";
@@ -30,7 +39,7 @@ function maskPhone(value: string) {
 }
 
 export async function getContactOverlapSummary(input: {
-  userId: string;
+  userId?: string | null;
   email?: string | null;
   phone?: string | null;
 }): Promise<ContactOverlapSummary> {
@@ -44,14 +53,14 @@ export async function getContactOverlapSummary(input: {
           .from("customer_profiles")
           .select("id", { count: "exact", head: true })
           .eq("email", email)
-          .neq("id", input.userId)
+          .neq("id", input.userId || "00000000-0000-0000-0000-000000000000")
       : Promise.resolve({ count: 0, error: null } as const),
     phone
       ? admin
           .from("customer_profiles")
           .select("id", { count: "exact", head: true })
           .eq("phone", phone)
-          .neq("id", input.userId)
+          .neq("id", input.userId || "00000000-0000-0000-0000-000000000000")
       : Promise.resolve({ count: 0, error: null } as const),
   ]);
 
@@ -76,5 +85,30 @@ export async function getContactOverlapSummary(input: {
     phoneMatches,
     reviewRequired: emailMatches > 0 || phoneMatches > 0,
     reasons,
+  };
+}
+
+export async function getSignupContactPreflight(input: {
+  email?: string | null;
+  phone?: string | null;
+}): Promise<SignupContactPreflight> {
+  const overlap = await getContactOverlapSummary({
+    email: input.email,
+    phone: input.phone,
+  });
+  const reasons = [
+    overlap.emailMatches > 0
+      ? "This email already belongs to a HenryCo account. Sign in or reset your password instead of opening a second account."
+      : null,
+    ...overlap.reasons,
+  ].filter(Boolean) as string[];
+
+  return {
+    emailExists: overlap.emailMatches > 0,
+    phoneReviewRequired: overlap.phoneMatches > 0,
+    duplicateEmailMatches: overlap.emailMatches,
+    duplicatePhoneMatches: overlap.phoneMatches,
+    reasons,
+    canProceed: overlap.emailMatches === 0,
   };
 }

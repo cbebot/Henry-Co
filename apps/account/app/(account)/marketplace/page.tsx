@@ -1,6 +1,7 @@
 import { ShoppingBag } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
+import { getProfile } from "@/lib/account-data";
 import {
   getDivisionActivity,
   getDivisionInvoices,
@@ -9,18 +10,21 @@ import {
   getMarketplaceDivisionSummary,
 } from "@/lib/division-data";
 import DivisionModulePage from "@/components/divisions/DivisionModulePage";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 
 export const dynamic = "force-dynamic";
 
 export default async function MarketplacePage() {
   const user = await requireAccountUser();
-  const [activityResult, notificationsResult, supportThreadsResult, invoicesResult, summaryResult] =
+  const profilePromise = getProfile(user.id);
+  const [activityResult, notificationsResult, supportThreadsResult, invoicesResult, summaryResult, profile] =
     await Promise.allSettled([
       getDivisionActivity(user.id, "marketplace"),
       getDivisionNotifications(user.id, "marketplace"),
       getDivisionSupportThreads(user.id, "marketplace"),
       getDivisionInvoices(user.id, "marketplace"),
       getMarketplaceDivisionSummary(user.id),
+      profilePromise,
     ]);
 
   const activity = activityResult.status === "fulfilled" ? activityResult.value : [];
@@ -31,6 +35,13 @@ export default async function MarketplacePage() {
     summaryResult.status === "fulfilled"
       ? summaryResult.value
       : { orders: [], disputes: [], application: null, memberships: [], payouts: [], sellerActive: false, issue: "Marketplace module unavailable." };
+  const profileData = profile.status === "fulfilled" ? profile.value : null;
+  const region = resolveAccountRegionalContext({
+    country: profileData?.country as string | null | undefined,
+    currency: profileData?.currency as string | null | undefined,
+    timezone: profileData?.timezone as string | null | undefined,
+    language: profileData?.language as string | null | undefined,
+  });
 
   return (
     <>
@@ -44,6 +55,11 @@ export default async function MarketplacePage() {
         notifications={notifications}
         supportThreads={supportThreads}
         invoices={invoices}
+        viewerRegion={{
+          countryCode: region.countryCode,
+          locale: region.locale,
+          displayCurrency: region.displayCurrency,
+        }}
         features={[
           {
             label: `Orders${summary.orders.length ? ` (${summary.orders.length})` : ""}`,

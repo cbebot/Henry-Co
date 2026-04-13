@@ -2,6 +2,7 @@ import "server-only";
 
 import { readPropertyRuntimeSnapshot } from "@/lib/property/store";
 import { getPropertyViewer } from "@/lib/property/auth";
+import { parsePropertySearchState, runPropertySearch } from "@/lib/property/search";
 
 export async function getPropertySnapshot() {
   return readPropertyRuntimeSnapshot();
@@ -21,40 +22,7 @@ export async function searchProperties(
   query: URLSearchParams | Record<string, string | string[] | undefined>
 ) {
   const snapshot = await getPropertySnapshot();
-  const getValue = (key: string) =>
-    query instanceof URLSearchParams
-      ? query.get(key)
-      : Array.isArray(query[key])
-        ? query[key]?.[0]
-        : query[key];
-
-  const search = String(getValue("q") || "").trim().toLowerCase();
-  const kind = String(getValue("kind") || "").trim().toLowerCase();
-  const area = String(getValue("area") || "").trim().toLowerCase();
-  const managedOnly = String(getValue("managed") || "") === "1";
-  const furnishedOnly = String(getValue("furnished") || "") === "1";
-
-  return snapshot.listings.filter((listing) => {
-    if (!["published", "approved"].includes(listing.status)) return false;
-    if (kind && listing.kind !== kind) return false;
-    if (area && listing.locationSlug !== area) return false;
-    if (managedOnly && !listing.managedByHenryCo) return false;
-    if (furnishedOnly && !listing.furnished) return false;
-
-    if (!search) return true;
-
-    return [
-      listing.title,
-      listing.summary,
-      listing.description,
-      listing.locationLabel,
-      listing.district,
-      ...listing.amenities,
-    ]
-      .join(" ")
-      .toLowerCase()
-      .includes(search);
-  });
+  return runPropertySearch(snapshot.listings, parsePropertySearchState(query));
 }
 
 export async function getPropertyBySlug(slug: string) {

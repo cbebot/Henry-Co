@@ -2,10 +2,21 @@ import Link from "next/link";
 import { Truck } from "lucide-react";
 import { getDivisionUrl } from "@henryco/config";
 import { requireAccountUser } from "@/lib/auth";
-import { getDivisionActivity, getDivisionInvoices, getDivisionNotifications, getDivisionSupportThreads } from "@/lib/division-data";
-import { getLogisticsShipmentsForAccountUser, logisticsTrackUrl } from "@/lib/logistics-module";
+import {
+  getDivisionActivity,
+  getDivisionInvoices,
+  getDivisionNotifications,
+  getDivisionSupportThreads,
+} from "@/lib/division-data";
+import { getProfile } from "@/lib/account-data";
+import {
+  getLogisticsShipmentsForAccountUser,
+  logisticsTrackUrl,
+  type AccountLogisticsShipmentRow,
+} from "@/lib/logistics-module";
 import DivisionModulePage from "@/components/divisions/DivisionModulePage";
-import { formatNaira } from "@/lib/format";
+import { formatCurrencyAmount } from "@/lib/format";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 
 export const dynamic = "force-dynamic";
 
@@ -16,13 +27,20 @@ export default async function LogisticsPage() {
       ? user.email.trim().toLowerCase()
       : null;
 
-  const [activity, notifications, supportThreads, invoices, shipments] = await Promise.all([
+  const [activity, notifications, supportThreads, invoices, shipments, profile] = await Promise.all([
     getDivisionActivity(user.id, "logistics"),
     getDivisionNotifications(user.id, "logistics"),
     getDivisionSupportThreads(user.id, "logistics"),
     getDivisionInvoices(user.id, "logistics"),
     getLogisticsShipmentsForAccountUser(user.id, email),
+    getProfile(user.id),
   ]);
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
 
   const logisticsOrigin = getDivisionUrl("logistics");
 
@@ -36,7 +54,7 @@ export default async function LogisticsPage() {
             for security. Links open with your code prefilled.
           </p>
           <ul className="grid gap-2 sm:grid-cols-2">
-            {shipments.map((row) => (
+            {shipments.map((row: AccountLogisticsShipmentRow) => (
               <li key={row.id}>
                 <a
                   href={logisticsTrackUrl(row.tracking_code)}
@@ -54,7 +72,11 @@ export default async function LogisticsPage() {
                     {row.zone_label || "Lane"} · {row.service_type.replaceAll("_", " ")} · {row.urgency}
                   </div>
                   <div className="text-xs font-medium text-[var(--acct-ink)]">
-                    Indicative {formatNaira(Number(row.amount_quoted) || 0)}
+                    Indicative{" "}
+                    {formatCurrencyAmount(Number(row.amount_quoted) || 0, row.currency || "NGN", {
+                      unit: "naira",
+                      locale: region.locale,
+                    })}
                   </div>
                 </a>
               </li>
@@ -72,6 +94,11 @@ export default async function LogisticsPage() {
         notifications={notifications}
         supportThreads={supportThreads}
         invoices={invoices}
+        viewerRegion={{
+          countryCode: region.countryCode,
+          locale: region.locale,
+          displayCurrency: region.displayCurrency,
+        }}
         features={[
           { label: "Book delivery", description: "Pickup & drop-off request", href: `${logisticsOrigin}/book` },
           { label: "Track", description: "Status, map context, timeline", href: `${logisticsOrigin}/track` },

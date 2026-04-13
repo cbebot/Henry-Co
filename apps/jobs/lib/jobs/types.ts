@@ -8,6 +8,31 @@ export type JobsRole =
 
 export type StageTone = "neutral" | "good" | "warn" | "danger";
 
+export type TrustSignalTone = StageTone;
+
+export type TrustRiskBand = "low" | "moderate" | "elevated";
+
+export type TrustSignal = {
+  id: string;
+  label: string;
+  value: string;
+  detail: string;
+  tone: TrustSignalTone;
+  ownerImpact: string;
+};
+
+export type TrustPassport = {
+  score: number;
+  label: string;
+  riskBand: TrustRiskBand;
+  summary: string;
+  strengths: string[];
+  warnings: string[];
+  nextSteps: string[];
+  suspiciousFlags: string[];
+  signals: TrustSignal[];
+};
+
 export type JobsViewer = {
   user: {
     id: string;
@@ -56,6 +81,7 @@ export type CandidateProfile = {
   verificationStatus: "unverified" | "ready" | "verified";
   readinessLabel: string;
   updatedAt: string | null;
+  trustPassport: TrustPassport;
 };
 
 export type CandidateDocument = {
@@ -90,6 +116,7 @@ export type EmployerProfile = {
   openRoleCount: number;
   verificationNotes: string[];
   updatedAt: string | null;
+  trustPassport: TrustPassport;
 };
 
 export type JobPost = {
@@ -129,6 +156,7 @@ export type JobPost = {
   postedAt: string;
   closesAt: string | null;
   applicationCount: number;
+  trustPassport: TrustPassport;
 };
 
 export type SavedJob = {

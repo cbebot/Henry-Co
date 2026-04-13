@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
+import { withCurrencyContext } from "@henryco/i18n";
 import { inferCareServiceFamily } from "@/lib/care-tracking";
 import { getCareSettings } from "@/lib/care-data";
 import {
@@ -347,6 +348,19 @@ function buildRequestPayloadDefaults(
   } satisfies Record<string, unknown>;
 }
 
+function withPaymentCurrencyContext(
+  payload: Record<string, unknown>,
+  currency: string | null | undefined
+) {
+  const normalizedCurrency = asText(currency) || "NGN";
+  return withCurrencyContext(payload, {
+    pricingCurrency: normalizedCurrency,
+    settlementCurrency: normalizedCurrency,
+    baseCurrency: normalizedCurrency,
+    originalCurrency: normalizedCurrency,
+  });
+}
+
 async function getBookingById(bookingId: string) {
   const supabase = createAdminSupabase();
   const { data, error } = await supabase
@@ -414,13 +428,13 @@ export async function ensureBookingPaymentRequest(input: EnsurePaymentRequestInp
 
   if (existing?.id) {
     const currentPayload = asRecord(existing.payload) || {};
-    const nextPayload = {
+    const nextPayload = withPaymentCurrencyContext({
       ...payloadDefaults,
       ...currentPayload,
       verification_status:
         asText(currentPayload.verification_status) || "awaiting_receipt",
       receipt_submissions: normalizeReceiptSubmissions(currentPayload.receipt_submissions),
-    };
+    }, existing.currency || settings.payment_currency || "NGN");
 
     await supabase
       .from("care_payment_requests")
@@ -456,11 +470,11 @@ export async function ensureBookingPaymentRequest(input: EnsurePaymentRequestInp
     } satisfies PaymentRequestRow;
   }
 
-  const payload = {
+  const payload = withPaymentCurrencyContext({
     ...payloadDefaults,
     verification_status: "awaiting_receipt",
     receipt_submissions: [],
-  };
+  }, settings.payment_currency || "NGN");
 
   const { data, error } = await supabase
     .from("care_payment_requests")
@@ -512,14 +526,14 @@ export async function markPaymentRequestDeliveryState(input: {
   }
 
   const currentPayload = asRecord(data.payload) || {};
-  const nextPayload = {
+  const nextPayload = withPaymentCurrencyContext({
     ...currentPayload,
     last_delivery_status: input.deliveryStatus,
     last_delivery_reason: asText(input.reason),
     last_delivery_message_id: asText(input.messageId),
     last_delivery_notification_id: asText(input.notificationId),
     last_delivery_at: new Date().toISOString(),
-  };
+  }, asText(currentPayload.currency) || "NGN");
 
   await supabase
     .from("care_payment_requests")
@@ -725,7 +739,7 @@ export async function submitPaymentProof(input: SubmitPaymentProofInput) {
     ),
   };
 
-  const nextPayload = {
+  const nextPayload = withPaymentCurrencyContext({
     ...payload,
     verification_status: keepApprovedState ? "approved" : "receipt_submitted",
     latest_submission_at: submittedAt,
@@ -737,7 +751,7 @@ export async function submitPaymentProof(input: SubmitPaymentProofInput) {
     latest_follow_up_submission_at: keepApprovedState ? submittedAt : null,
     latest_follow_up_submission_source: keepApprovedState ? submission.source : null,
     receipt_submissions: [submission, ...submissions],
-  };
+  }, request.currency || "NGN");
 
   const supabase = createAdminSupabase();
   const { error } = await supabase
@@ -978,7 +992,7 @@ export async function reviewPaymentProof(input: ReviewPaymentProofInput) {
       });
     }
 
-    const nextPayload = {
+    const nextPayload = withPaymentCurrencyContext({
       ...payload,
       verification_status: "approved",
       latest_review_decision: "approve",
@@ -990,7 +1004,7 @@ export async function reviewPaymentProof(input: ReviewPaymentProofInput) {
       approved_payment_id: paymentId,
       approved_amount: approvedAmount,
       approved_reference: approvedReference,
-    };
+    }, request.currency || "NGN");
 
     await supabase
       .from("care_payment_requests")
@@ -1052,7 +1066,7 @@ export async function reviewPaymentProof(input: ReviewPaymentProofInput) {
     };
   }
 
-  const nextPayload = {
+  const nextPayload = withPaymentCurrencyContext({
     ...payload,
     verification_status: reviewStatus,
     latest_review_decision: input.decision,
@@ -1061,7 +1075,7 @@ export async function reviewPaymentProof(input: ReviewPaymentProofInput) {
     reviewed_by_user_id: input.actorUserId,
     reviewed_by_role: input.actorRole,
     reviewed_by_name: input.actorName,
-  };
+  }, request.currency || "NGN");
 
   await supabase
     .from("care_payment_requests")

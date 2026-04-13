@@ -1,11 +1,11 @@
+import {
+  formatMoney,
+  formatMoneyMajor,
+  resolveCurrencyLocale,
+} from "@henryco/i18n";
+
 export function formatNaira(kobo: number): string {
-  const naira = kobo / 100;
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: naira % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(naira);
+  return formatMoney(kobo, "NGN", { locale: "en-NG" });
 }
 
 export function formatCurrencyAmount(
@@ -18,15 +18,21 @@ export function formatCurrencyAmount(
   }
 ): string {
   const unit = options?.unit || "naira";
-  const normalized = unit === "kobo" ? amount / 100 : amount;
+  const locale = resolveCurrencyLocale(currency);
 
-  return new Intl.NumberFormat(currency === "NGN" ? "en-NG" : "en-US", {
-    style: "currency",
-    currency,
+  if (unit === "kobo") {
+    return formatMoney(amount, currency, {
+      locale,
+      notation: options?.notation,
+      maximumFractionDigits: options?.maximumFractionDigits,
+    });
+  }
+
+  return formatMoneyMajor(amount, currency, {
+    locale,
     notation: options?.notation,
-    minimumFractionDigits: normalized % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: options?.maximumFractionDigits ?? 2,
-  }).format(normalized);
+    maximumFractionDigits: options?.maximumFractionDigits,
+  });
 }
 
 export function formatCompactNumber(value: number): string {

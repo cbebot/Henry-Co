@@ -10,6 +10,13 @@ export interface CurrencyConfig {
   locale: string;
 }
 
+export interface MoneyFormatOptions {
+  locale?: string;
+  notation?: Intl.NumberFormatOptions["notation"];
+  minimumFractionDigits?: number;
+  maximumFractionDigits?: number;
+}
+
 const CURRENCY_MAP: Record<string, CurrencyConfig> = {
   NGN: { code: 'NGN', symbol: '\u20A6', decimals: 2, locale: 'en-NG' },
   USD: { code: 'USD', symbol: '$', decimals: 2, locale: 'en-US' },
@@ -23,14 +30,28 @@ const CURRENCY_MAP: Record<string, CurrencyConfig> = {
   AED: { code: 'AED', symbol: 'AED', decimals: 2, locale: 'en-AE' },
 };
 
-const DEFAULT_CURRENCY = 'NGN';
+export const DEFAULT_CURRENCY = 'NGN';
+
+export function normalizeCurrencyCode(code: string | null | undefined): string {
+  const normalized = String(code || "").trim().toUpperCase();
+  return normalized || DEFAULT_CURRENCY;
+}
+
+export function resolveCurrencyLocale(
+  currencyCode: string,
+  locale?: string | null
+): string {
+  const explicit = String(locale || "").trim();
+  if (explicit) return explicit;
+  return parseCurrencyConfig(currencyCode).locale;
+}
 
 /**
  * Look up the configuration for a given ISO 4217 currency code.
  * Falls back to NGN when the code is unknown.
  */
 export function parseCurrencyConfig(code: string): CurrencyConfig {
-  const upper = code.toUpperCase();
+  const upper = normalizeCurrencyCode(code);
   return CURRENCY_MAP[upper] ?? CURRENCY_MAP[DEFAULT_CURRENCY];
 }
 
@@ -45,16 +66,43 @@ export function parseCurrencyConfig(code: string): CurrencyConfig {
 export function formatMoney(
   amountKobo: number,
   currencyCode: string = DEFAULT_CURRENCY,
+  options?: MoneyFormatOptions,
 ): string {
   const config = parseCurrencyConfig(currencyCode);
   const major = amountKobo / Math.pow(10, config.decimals);
 
-  const formatter = new Intl.NumberFormat(config.locale, {
-    style: 'currency',
-    currency: config.code,
-    minimumFractionDigits: config.decimals,
-    maximumFractionDigits: config.decimals,
-  });
+  return formatMoneyMajor(major, config.code, options);
+}
 
-  return formatter.format(major);
+export function formatMoneyMajor(
+  amountMajor: number,
+  currencyCode: string = DEFAULT_CURRENCY,
+  options?: MoneyFormatOptions,
+): string {
+  const config = parseCurrencyConfig(currencyCode);
+  const normalizedAmount = Number.isFinite(amountMajor) ? amountMajor : 0;
+  const minimumFractionDigits =
+    options?.minimumFractionDigits ??
+    (config.decimals === 0
+      ? 0
+      : normalizedAmount % 1 === 0
+        ? 0
+        : Math.min(2, config.decimals));
+  const maximumFractionDigits = Math.max(
+    minimumFractionDigits,
+    options?.maximumFractionDigits ?? config.decimals
+  );
+
+  const formatter = new Intl.NumberFormat(
+    resolveCurrencyLocale(config.code, options?.locale),
+    {
+      style: 'currency',
+      currency: config.code,
+      notation: options?.notation,
+      minimumFractionDigits,
+      maximumFractionDigits,
+    }
+  );
+
+  return formatter.format(normalizedAmount);
 }

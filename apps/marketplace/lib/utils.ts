@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { formatMoneyMajor, resolveCurrencyLocale } from "@henryco/i18n";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -8,13 +9,11 @@ export function cn(...inputs: ClassValue[]) {
 export function formatCurrency(
   amount: number,
   currency: string = "NGN",
-  locale: string = "en-NG"
+  locale?: string
 ) {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return formatMoneyMajor(amount, currency, {
+    locale: resolveCurrencyLocale(currency, locale),
+  });
 }
 
 export function formatDate(value?: string | null, locale: string = "en-NG") {

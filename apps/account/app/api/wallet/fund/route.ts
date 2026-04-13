@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { withCurrencyContext } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
@@ -81,17 +82,26 @@ export async function POST(request: Request) {
 
     const reference = buildFundingReference(user.id);
 
-    const metadata = {
-      provider,
-      reference,
-      note: note || null,
-      bank_name: rail.bankName,
-      account_name: rail.accountName,
-      account_number: rail.accountNumber,
-      instructions: rail.instructions,
-      support_email: rail.supportEmail,
-      support_whatsapp: rail.supportWhatsApp,
-    };
+    const railCurrency = rail.currency || "NGN";
+    const metadata = withCurrencyContext(
+      {
+        provider,
+        reference,
+        note: note || null,
+        bank_name: rail.bankName,
+        account_name: rail.accountName,
+        account_number: rail.accountNumber,
+        instructions: rail.instructions,
+        support_email: rail.supportEmail,
+        support_whatsapp: rail.supportWhatsApp,
+      },
+      {
+        pricingCurrency: railCurrency,
+        settlementCurrency: railCurrency,
+        baseCurrency: railCurrency,
+        originalCurrency: railCurrency,
+      }
+    );
 
     // Preferred: dedicated funding requests table (avoids legacy transaction CHECK issues)
     const dedicatedInsert = await admin
@@ -100,7 +110,7 @@ export async function POST(request: Request) {
         user_id: user.id,
         provider: "bank_transfer",
         amount_kobo: amountKobo,
-        currency: rail.currency || "NGN",
+        currency: railCurrency,
         status: "pending_verification",
         payment_reference: reference,
         source_division: "account",
@@ -127,6 +137,7 @@ export async function POST(request: Request) {
         metadata: {
           provider,
           reference,
+          currency_context: metadata.currency_context,
         },
       });
 
@@ -194,11 +205,12 @@ export async function POST(request: Request) {
       reference_type: "wallet_funding_request",
       reference_id: transaction.id,
       action_url: `/wallet/funding/${transaction.id}`,
-      metadata: {
-        provider,
-        reference,
-      },
-    });
+        metadata: {
+          provider,
+          reference,
+          currency_context: metadata.currency_context,
+        },
+      });
 
     await admin.from("customer_notifications").insert({
       user_id: user.id,

@@ -62,9 +62,7 @@ export async function getJobsViewer(): Promise<JobsViewer> {
   if (internalRole === "owner") {
     roles.push("owner", "admin", "recruiter", "moderator");
   } else if (internalRole === "manager") {
-    roles.push("admin", "recruiter", "moderator");
-  } else if (internalRole === "support" || internalRole === "staff") {
-    roles.push("recruiter", "moderator");
+    roles.push("admin", "recruiter");
   }
 
   return {

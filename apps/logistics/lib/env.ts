@@ -1,3 +1,5 @@
+import { formatMoneyMajor, resolveCurrencyLocale } from "@henryco/i18n";
+
 export function cleanEnv(value?: string | null) {
   return String(value || "")
     .replace(/\r\n|\r|\n/g, "")
@@ -63,9 +65,7 @@ export function normalizePhone(value?: string | null) {
 }
 
 export function formatCurrency(value: number, currency = "NGN") {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatMoneyMajor(value, currency, {
+    locale: resolveCurrencyLocale(currency),
+  });
 }

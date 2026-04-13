@@ -8,7 +8,8 @@ import {
   ExternalLink,
   type LucideIcon,
 } from "lucide-react";
-import { timeAgo, formatNaira, divisionLabel, divisionColor } from "@/lib/format";
+import { timeAgo, formatCurrencyAmount, divisionLabel, divisionColor } from "@/lib/format";
+import { resolveAccountLedgerCurrencyTruth } from "@/lib/currency-truth";
 import { activityMessageHref, notificationMessageHref } from "@/lib/notification-center";
 import PageHeader from "@/components/layout/PageHeader";
 
@@ -23,6 +24,11 @@ type DivisionModulePageProps = {
   supportThreads: Record<string, string>[];
   invoices: Record<string, string | number>[];
   features: { label: string; description: string; href?: string }[];
+  viewerRegion?: {
+    countryCode?: string | null;
+    locale?: string | null;
+    displayCurrency?: string | null;
+  };
 };
 
 export default function DivisionModulePage({
@@ -36,6 +42,7 @@ export default function DivisionModulePage({
   supportThreads,
   invoices,
   features,
+  viewerRegion,
 }: DivisionModulePageProps) {
   const color = divisionColor(divisionKey);
   const label = divisionLabel(divisionKey);
@@ -138,6 +145,17 @@ export default function DivisionModulePage({
           ) : (
             <div className="space-y-2">
               {activity.slice(0, 5).map((item) => (
+                (() => {
+                  const truth = resolveAccountLedgerCurrencyTruth(
+                    item as Record<string, unknown>,
+                    {
+                      country: viewerRegion?.countryCode,
+                      locale: viewerRegion?.locale,
+                      preferredCurrency: viewerRegion?.displayCurrency,
+                    }
+                  );
+
+                  return (
                 <Link
                   key={item.id as string}
                   href={activityMessageHref(String(item.id || ""))}
@@ -147,9 +165,16 @@ export default function DivisionModulePage({
                   <p className="mt-0.5 text-xs text-[var(--acct-muted)]">
                     {item.status ? `${item.status} · ` : ""}
                     {timeAgo(item.created_at as string)}
-                    {item.amount_kobo ? ` · ${formatNaira(item.amount_kobo as number)}` : ""}
+                    {item.amount_kobo
+                      ? ` · ${formatCurrencyAmount(Number(item.amount_kobo || 0), truth.pricingCurrency, {
+                          unit: "kobo",
+                          locale: truth.locale,
+                        })}`
+                      : ""}
                   </p>
                 </Link>
+                  );
+                })()
               ))}
             </div>
           )}
@@ -211,18 +236,42 @@ export default function DivisionModulePage({
           </div>
           <div className="space-y-2">
             {invoices.slice(0, 5).map((inv) => (
-              <div
-                key={inv.id as string}
-                className="flex items-center justify-between rounded-xl bg-[var(--acct-surface)] px-4 py-3"
-              >
-                <div>
-                  <p className="text-sm font-medium text-[var(--acct-ink)]">
-                    {inv.description || `Invoice ${inv.invoice_no}`}
-                  </p>
-                  <p className="text-xs text-[var(--acct-muted)]">{inv.invoice_no}</p>
-                </div>
-                <p className="text-sm font-semibold">{formatNaira(inv.total_kobo as number)}</p>
-              </div>
+              (() => {
+                const truth = resolveAccountLedgerCurrencyTruth(
+                  inv as Record<string, unknown>,
+                  {
+                    country: viewerRegion?.countryCode,
+                    locale: viewerRegion?.locale,
+                    preferredCurrency: viewerRegion?.displayCurrency,
+                  }
+                );
+
+                return (
+                  <div
+                    key={inv.id as string}
+                    className="flex items-center justify-between rounded-xl bg-[var(--acct-surface)] px-4 py-3"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-[var(--acct-ink)]">
+                        {inv.description || `Invoice ${inv.invoice_no}`}
+                      </p>
+                      <p className="text-xs text-[var(--acct-muted)]">
+                        {inv.invoice_no}
+                        {!truth.supportsNativeSettlement &&
+                        truth.pricingCurrency !== truth.settlementCurrency
+                          ? ` · settles in ${truth.settlementCurrency}`
+                          : ""}
+                      </p>
+                    </div>
+                    <p className="text-sm font-semibold">
+                      {formatCurrencyAmount(Number(inv.total_kobo || 0), truth.pricingCurrency, {
+                        unit: "kobo",
+                        locale: truth.locale,
+                      })}
+                    </p>
+                  </div>
+                );
+              })()
             ))}
           </div>
         </section>

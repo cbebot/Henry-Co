@@ -4,22 +4,37 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 import { ArrowRight, Building2 } from "lucide-react";
+import { formatMoneyMajor } from "@henryco/i18n";
 
 const presetAmounts = [5000, 10000, 25000, 50000, 100000];
 
-export default function FundingRequestForm() {
+export default function FundingRequestForm({
+  settlementCurrency,
+  locale,
+  displayCurrency,
+  settlementMessage,
+}: {
+  settlementCurrency: string;
+  locale: string;
+  displayCurrency: string;
+  settlementMessage: string;
+}) {
   const [amount, setAmount] = useState("10000");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const router = useRouter();
+  const formatMajor = (value: number) =>
+    formatMoneyMajor(value, settlementCurrency, {
+      locale,
+    });
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const amountNaira = Number(amount);
 
     if (!amountNaira || amountNaira < 100) {
-      setMessage({ type: "error", text: "Minimum amount is NGN 100." });
+      setMessage({ type: "error", text: `Minimum amount is ${formatMajor(100)}.` });
       return;
     }
 
@@ -97,7 +112,7 @@ export default function FundingRequestForm() {
                 : "border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)]"
             }`}
           >
-            NGN {preset.toLocaleString()}
+            {formatMajor(preset)}
           </button>
         ))}
       </div>
@@ -114,7 +129,7 @@ export default function FundingRequestForm() {
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
               className="acct-input text-lg font-semibold"
-              placeholder="Enter amount in naira"
+              placeholder={`Enter amount in ${settlementCurrency}`}
             />
           </div>
 
@@ -131,15 +146,18 @@ export default function FundingRequestForm() {
           </div>
         </div>
 
-        <div className="rounded-[1.5rem] bg-[var(--acct-surface)] p-4">
-          <p className="acct-kicker">Funding flow</p>
-          <ol className="mt-3 space-y-3 text-sm leading-6 text-[var(--acct-muted)]">
-            <li>1. Create the request so HenryCo generates the correct reference.</li>
-            <li>2. Transfer the exact amount using the bank details on the next page.</li>
-            <li>3. Upload proof right away so the payment can be confirmed and the balance can become available.</li>
-          </ol>
+          <div className="rounded-[1.5rem] bg-[var(--acct-surface)] p-4">
+            <p className="acct-kicker">Funding flow</p>
+            <ol className="mt-3 space-y-3 text-sm leading-6 text-[var(--acct-muted)]">
+              <li>1. Create the request so HenryCo generates the correct reference.</li>
+              <li>2. Transfer the exact amount using the bank details on the next page.</li>
+              <li>3. Upload proof right away so the payment can be confirmed and the balance can become available.</li>
+            </ol>
+            <p className="mt-4 text-xs leading-6 text-[var(--acct-muted)]">
+              Display currency: {displayCurrency}. Settlement currency: {settlementCurrency}. {settlementMessage}
+            </p>
+          </div>
         </div>
-      </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <button

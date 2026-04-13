@@ -6,6 +6,7 @@ import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData, getMarketplaceShellState } from "@/lib/marketplace/data";
 import { logMarketplaceAction } from "@/lib/marketplace/notifications";
+import { summarizeMarketplaceCartCurrencies } from "@/lib/cart-truth";
 import { createAdminSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -221,6 +222,32 @@ export async function POST(request: Request) {
   const admin = createAdminSupabase();
   const { viewer, cartId, sessionToken } = await resolveCartId(payload.sessionToken || null);
   const vendor = snapshot.vendors.find((item) => item.slug === product.vendorSlug) ?? null;
+  const { data: existingCartRows } = await admin
+    .from("marketplace_cart_items")
+    .select("product_id, quantity, price")
+    .eq("cart_id", cartId);
+  const candidateCurrencySummary = summarizeMarketplaceCartCurrencies([
+    ...(existingCartRows ?? []).map((row: Record<string, unknown>) => {
+      const existingProduct = snapshot.products.find((item) => item.id === String(row.product_id));
+      return {
+        quantity: Number(row.quantity || 0),
+        price: Number(row.price || 0),
+        currency: existingProduct?.currency || "NGN",
+      };
+    }),
+    {
+      quantity,
+      price: product.basePrice,
+      currency: product.currency,
+    },
+  ]);
+
+  if (candidateCurrencySummary.mixedPricing) {
+    return NextResponse.json(
+      { error: candidateCurrencySummary.blockingReason },
+      { status: 409 }
+    );
+  }
 
   const { data: existingItem } = await admin
     .from("marketplace_cart_items")

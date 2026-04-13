@@ -1,5 +1,7 @@
 import "server-only";
 
+import { withCurrencyContext } from "@henryco/i18n";
+
 export const LEGACY_PAYOUT_METHOD_TYPE = "bank_account";
 export const LEGACY_PAYOUT_PROVIDER = "manual_payout";
 export const LEGACY_WITHDRAWAL_PIN_TYPE = "wallet";
@@ -182,12 +184,20 @@ export function buildLegacyWithdrawalRequestInsert(input: {
     status: LEGACY_WALLET_TRANSACTION_PENDING_STATUS,
     reference_type: LEGACY_WITHDRAWAL_REQUEST_REFERENCE_TYPE,
     reference_id: input.payoutMethodId,
-    metadata: {
-      requested_from: "account_wallet",
-      payout_method_id: input.payoutMethodId,
-      payout_method_label: input.payoutMethodLabel,
-      payout_bank_name: input.payoutBankName,
-      payout_last_four: input.payoutLastFour,
-    },
+    metadata: withCurrencyContext(
+      {
+        requested_from: "account_wallet",
+        payout_method_id: input.payoutMethodId,
+        payout_method_label: input.payoutMethodLabel,
+        payout_bank_name: input.payoutBankName,
+        payout_last_four: input.payoutLastFour,
+      },
+      {
+        pricingCurrency: "NGN",
+        settlementCurrency: "NGN",
+        baseCurrency: "NGN",
+        originalCurrency: "NGN",
+      }
+    ),
   };
 }

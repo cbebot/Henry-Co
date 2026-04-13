@@ -57,6 +57,16 @@ function defaultPreferences(userId: string, updatedAt: string) {
   };
 }
 
+function shouldRealignRegionalField(input: {
+  value: string | null | undefined;
+  nigeriaDefault: string;
+  countryCode: string;
+}) {
+  if (!input.value) return true;
+  if (input.countryCode === DEFAULT_COUNTRY) return false;
+  return input.value === input.nigeriaDefault;
+}
+
 export async function ensureAccountProfileRecords(user: User) {
   const admin = createAdminSupabase();
   const now = new Date().toISOString();
@@ -64,8 +74,8 @@ export async function ensureAccountProfileRecords(user: User) {
   const fullName = fullNameFromUser(user);
   const phone = phoneFromUser(user);
   const avatarUrl = avatarFromUser(user);
-  const countryCode =
-    String(user.user_metadata?.country || "").trim().toUpperCase() || DEFAULT_COUNTRY;
+  const metadataCountryCode = String(user.user_metadata?.country || "").trim().toUpperCase();
+  const countryCode = metadataCountryCode || DEFAULT_COUNTRY;
   const country = getCountry(countryCode) || getCountry(DEFAULT_COUNTRY)!;
   const language = normalizeLocale(
     typeof user.user_metadata?.language === "string" ? user.user_metadata.language : country.locale
@@ -78,13 +88,27 @@ export async function ensureAccountProfileRecords(user: User) {
     .maybeSingle<CustomerProfileRow>();
 
   if (existingProfile?.id) {
+    const nextCountryCode = existingProfile.country || metadataCountryCode || DEFAULT_COUNTRY;
+    const nextCountry = getCountry(nextCountryCode) || getCountry(DEFAULT_COUNTRY)!;
     const updates: Record<string, unknown> = {
       email: email || existingProfile.email,
       is_active: true,
       last_seen_at: now,
       updated_at: now,
-      currency: existingProfile.currency || country.currencyCode,
-      timezone: existingProfile.timezone || country.timezone,
+      currency: shouldRealignRegionalField({
+        value: existingProfile.currency,
+        nigeriaDefault: getCountry(DEFAULT_COUNTRY)!.currencyCode,
+        countryCode: nextCountry.code,
+      })
+        ? nextCountry.currencyCode
+        : existingProfile.currency,
+      timezone: shouldRealignRegionalField({
+        value: existingProfile.timezone,
+        nigeriaDefault: getCountry(DEFAULT_COUNTRY)!.timezone,
+        countryCode: nextCountry.code,
+      })
+        ? nextCountry.timezone
+        : existingProfile.timezone,
       language: existingProfile.language || language,
     };
 
@@ -100,8 +124,8 @@ export async function ensureAccountProfileRecords(user: User) {
       updates.avatar_url = avatarUrl;
     }
 
-    if (countryCode && countryCode !== existingProfile.country) {
-      updates.country = countryCode;
+    if (metadataCountryCode && metadataCountryCode !== existingProfile.country) {
+      updates.country = metadataCountryCode;
     }
 
     await admin.from("customer_profiles").update(updates as never).eq("id", user.id);

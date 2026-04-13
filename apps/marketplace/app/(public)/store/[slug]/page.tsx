@@ -14,6 +14,7 @@ export default async function StorePage({
   const { slug } = await params;
   const data = await getMarketplaceVendorBySlug(slug);
   if (!data) notFound();
+  const vendorPassport = data.vendor.trustPassport;
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
@@ -27,8 +28,9 @@ export default async function StorePage({
           </div>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             <div className="market-soft rounded-[1.5rem] px-5 py-5">
-              <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--market-muted)]">Trust score</p>
-              <p className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-ink)]">{data.vendor.trustScore}%</p>
+              <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--market-muted)]">Trust posture</p>
+              <p className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-ink)]">{vendorPassport?.score ?? data.vendor.trustScore}</p>
+              <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{vendorPassport?.label || "Store trust score"}</p>
             </div>
             <div className="market-soft rounded-[1.5rem] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--market-muted)]">Response SLA</p>
@@ -55,6 +57,12 @@ export default async function StorePage({
               </div>
             ))}
           </div>
+          {vendorPassport ? (
+            <div className="mt-6 rounded-[1.5rem] border border-[color:rgba(255,255,255,0.12)] bg-[color:rgba(255,255,255,0.04)] px-5 py-5">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-[color:rgba(255,255,255,0.56)]">Trust summary</p>
+              <p className="mt-3 text-sm leading-7 text-[color:rgba(255,255,255,0.72)]">{vendorPassport.summary}</p>
+            </div>
+          ) : null}
           <div className="mt-6 rounded-[1.5rem] border border-[color:rgba(255,255,255,0.12)] bg-[color:rgba(255,255,255,0.04)] px-5 py-5">
             <p className="text-[11px] uppercase tracking-[0.2em] text-[color:rgba(255,255,255,0.56)]">Support</p>
             <p className="mt-3 text-sm text-[color:rgba(255,255,255,0.72)]">{data.vendor.supportEmail}</p>
@@ -64,6 +72,12 @@ export default async function StorePage({
       </section>
 
       <TrustPassport vendor={data.vendor} />
+
+      {vendorPassport?.warnings.length ? (
+        <section className="rounded-[1.9rem] border border-[rgba(255,171,151,0.18)] bg-[rgba(126,33,18,0.08)] px-6 py-5 text-sm leading-7 text-[var(--market-muted)]">
+          {vendorPassport.warnings.join(" ")}
+        </section>
+      ) : null}
 
       {data.reviews.length ? (
         <section className="grid gap-5 lg:grid-cols-2">

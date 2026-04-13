@@ -25,6 +25,7 @@ import {
   getSharedAccountPropertyUrl,
   getSharedAccountSignupUrl,
 } from "@/lib/property/links";
+import type { PropertyListing } from "@/lib/property/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -36,7 +37,7 @@ type SearchParams = {
   removed?: string;
 };
 
-function getTrustCopy(listing: Awaited<ReturnType<typeof getPropertyBySlug>>["listing"]) {
+function getTrustCopy(listing: PropertyListing) {
   if (listing.managedByHenryCo) {
     return {
       title: "Managed by HenryCo",
@@ -50,7 +51,7 @@ function getTrustCopy(listing: Awaited<ReturnType<typeof getPropertyBySlug>>["li
     };
   }
 
-  if (listing.trustBadges.some((badge) => badge.toLowerCase().includes("review"))) {
+  if (listing.trustBadges.some((badge: string) => badge.toLowerCase().includes("review"))) {
     return {
       title: "Reviewed before publication",
       body:
@@ -92,6 +93,38 @@ function getViewingFlow(listingTitle: string) {
         "If you want to move forward, HenryCo may request identity, affordability, or company documents before the next approval step.",
     },
   ];
+}
+
+function getInquiryNextStep(status: string) {
+  switch (status) {
+    case "assigned":
+      return "A HenryCo relationship lead is assigned. The next reply should come through your account timeline instead of an untracked side chat.";
+    case "in_progress":
+      return "The listing team is actively clarifying the request. Watch the account timeline for the next operational update.";
+    case "closed":
+      return "This inquiry has been closed. If your situation changed, open the property again and send a fresh note with the new requirement.";
+    case "acknowledged":
+      return "HenryCo has acknowledged the request and will route the next action from here.";
+    case "new":
+    default:
+      return "The inquiry is recorded and waiting for the first follow-up step from HenryCo Property.";
+  }
+}
+
+function getViewingNextStep(status: string) {
+  switch (status) {
+    case "scheduled":
+      return "The team is locking the calendar, access details, and reminder timing before the appointment.";
+    case "confirmed":
+      return "The viewing is confirmed. Bring any affordability or identity documents HenryCo requested for the next stage.";
+    case "completed":
+      return "The viewing is complete. If you want to proceed, HenryCo may ask for application or verification documents next.";
+    case "cancelled":
+      return "This request was cancelled. Submit a new request when you are ready for a different time.";
+    case "requested":
+    default:
+      return "HenryCo is still confirming access, location readiness, and the appointment window before the viewing is fixed.";
+  }
 }
 
 export default async function PropertyDetailPage({
@@ -325,6 +358,9 @@ export default async function PropertyDetailPage({
                       </div>
                       <PropertyStatusBadge status={myInquiry.status} />
                     </div>
+                    <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+                      {getInquiryNextStep(myInquiry.status)}
+                    </p>
                   </div>
                 ) : null}
                 {myViewing ? (
@@ -341,6 +377,9 @@ export default async function PropertyDetailPage({
                       </div>
                       <PropertyStatusBadge status={myViewing.status} />
                     </div>
+                    <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+                      {getViewingNextStep(myViewing.status)}
+                    </p>
                   </div>
                 ) : null}
                 <Link
@@ -375,7 +414,7 @@ export default async function PropertyDetailPage({
             </div>
           </section>
 
-          <section className="property-panel rounded-[2rem] p-6 sm:p-8">
+          <section id="inquiry" className="property-panel rounded-[2rem] p-6 sm:p-8">
             <div className="property-kicker">Inquiry</div>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
               Ask about this property
@@ -445,7 +484,7 @@ export default async function PropertyDetailPage({
             )}
           </section>
 
-          <section className="property-panel rounded-[2rem] p-6 sm:p-8">
+          <section id="viewing" className="property-panel rounded-[2rem] p-6 sm:p-8">
             <div className="property-kicker">Viewing request</div>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
               Request a viewing

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Bell, Bookmark, CheckCircle2, CircleAlert, FileCheck2, Sparkles } from "lucide-react";
 import { EmptyState } from "@/components/feedback";
+import { TrustPassportPanel } from "@/components/trust-passport";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateDashboardData } from "@/lib/jobs/data";
 import { candidateNav } from "@/lib/jobs/navigation";
@@ -122,24 +123,29 @@ export default async function CandidateOverviewPage() {
           body="A stronger profile helps employers take your applications seriously."
         >
           <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-[1.7rem] bg-[var(--jobs-paper-soft)] p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <div className="jobs-kicker">Readiness score</div>
-                  <div className="mt-3 text-4xl font-semibold tracking-tight">{data.profile?.trustScore ?? 0}%</div>
-                  <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
-                    {data.profile?.readinessLabel ||
-                      "Complete your profile to improve how employers see your applications."}
-                  </p>
-                </div>
-                <div className="rounded-[1.5rem] bg-white/80 p-4 text-[var(--jobs-accent)]">
-                  <FileCheck2 className="h-6 w-6" />
+            {data.profile ? (
+              <TrustPassportPanel
+                title="Readiness score"
+                body={data.profile.readinessLabel || "Complete your profile to improve how employers see your applications."}
+                passport={data.profile.trustPassport}
+                limit={4}
+              />
+            ) : (
+              <div className="rounded-[1.7rem] bg-[var(--jobs-paper-soft)] p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <div className="jobs-kicker">Readiness score</div>
+                    <div className="mt-3 text-4xl font-semibold tracking-tight">0%</div>
+                    <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
+                      Complete your profile to improve how employers see your applications.
+                    </p>
+                  </div>
+                  <div className="rounded-[1.5rem] bg-white/80 p-4 text-[var(--jobs-accent)]">
+                    <FileCheck2 className="h-6 w-6" />
+                  </div>
                 </div>
               </div>
-              <div className="mt-5 h-2 overflow-hidden rounded-full bg-[var(--jobs-line)]">
-                <div className="h-full rounded-full bg-[var(--jobs-accent)]" style={{ width: `${data.profile?.trustScore ?? 0}%` }} />
-              </div>
-            </div>
+            )}
 
             <div className="space-y-3">
               {data.profileChecklist.map((item) => (

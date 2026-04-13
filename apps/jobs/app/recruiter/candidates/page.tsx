@@ -20,8 +20,9 @@ export default async function RecruiterCandidatesPage() {
                 <div>
                   <div className="font-semibold">{candidate!.fullName || "Candidate"}</div>
                   <div className="mt-1 text-sm text-[var(--jobs-muted)]">{candidate!.headline || candidate!.summary || "Profile in progress"}</div>
+                  <div className="mt-2 text-xs text-[var(--jobs-muted)]">{candidate!.trustPassport.label} · {candidate!.trustPassport.summary}</div>
                 </div>
-                <span className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold">{candidate!.trustScore}</span>
+                <span className="rounded-full bg-[var(--jobs-accent-soft)] px-3 py-1 text-xs font-semibold">{candidate!.trustPassport.score}%</span>
               </div>
             </Link>
           ))}

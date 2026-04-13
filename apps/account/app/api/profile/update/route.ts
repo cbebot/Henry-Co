@@ -6,6 +6,8 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
 import { normalizePhone } from "@henryco/config";
+import { getContactOverlapSummary } from "@/lib/contact-review";
+import { detectSecurityRequestContext, logSecurityEvent } from "@/lib/security-events";
 
 export async function POST(request: Request) {
   try {
@@ -45,6 +47,34 @@ export async function POST(request: Request) {
       logApiError("profile/update", error);
       return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
     }
+
+    const contactReview = await getContactOverlapSummary({
+      userId: user.id,
+      email: user.email || null,
+      phone: normalizePhone(phone || null),
+    });
+
+    if (contactReview.reviewRequired) {
+      const context = await detectSecurityRequestContext();
+      await logSecurityEvent({
+        userId: user.id,
+        eventType:
+          contactReview.emailMatches > 0 && contactReview.phoneMatches > 0
+            ? "duplicate_contact_review_required"
+            : contactReview.emailMatches > 0
+              ? "duplicate_email_detected"
+              : "duplicate_phone_detected",
+        ipAddress: context.ipAddress,
+        userAgent: context.userAgent,
+        locationSummary: context.locationSummary,
+        metadata: {
+          emailMatches: contactReview.emailMatches,
+          phoneMatches: contactReview.phoneMatches,
+          reasons: contactReview.reasons,
+        },
+      });
+    }
+
     const metadataPatch: Record<string, unknown> = {};
     if (full_name) metadataPatch.full_name = full_name;
     metadataPatch.country = normalizedCountry;
@@ -58,7 +88,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const res = NextResponse.json({ success: true });
+    const res = NextResponse.json({ success: true, contact_review: contactReview });
     if (language || country) {
       const host =
         request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||

@@ -7,6 +7,10 @@ import {
   deriveSellerTrustProfile,
   titleCaseMarketplaceValue,
 } from "@/lib/marketplace/governance";
+import {
+  buildMarketplaceProductTrustPassport,
+  buildMarketplaceVendorTrustPassport,
+} from "@/lib/marketplace/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   demoHomeData,
@@ -406,12 +410,44 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
       createdAt: String(row.created_at || new Date().toISOString()),
     }));
 
+    const reviewsByVendorSlug = new Map<string, MarketplaceReview[]>();
+    const reviewsByProductSlug = new Map<string, MarketplaceReview[]>();
+
+    for (const review of reviews) {
+      const vendorReviews = reviewsByVendorSlug.get(review.vendorSlug) ?? [];
+      vendorReviews.push(review);
+      reviewsByVendorSlug.set(review.vendorSlug, vendorReviews);
+
+      const productReviews = reviewsByProductSlug.get(review.productSlug) ?? [];
+      productReviews.push(review);
+      reviewsByProductSlug.set(review.productSlug, productReviews);
+    }
+
+    const vendorsWithPassport: MarketplaceVendor[] = vendors.map((vendor) => ({
+      ...vendor,
+      trustPassport: buildMarketplaceVendorTrustPassport({
+        vendor,
+        publishedReviews: reviewsByVendorSlug.get(vendor.slug) ?? [],
+        productCount: products.filter((product) => product.vendorSlug === vendor.slug).length,
+      }),
+    }));
+
+    const vendorWithPassportMap = new Map(vendorsWithPassport.map((item) => [item.slug, item]));
+    const productsWithPassport: MarketplaceProduct[] = products.map((product) => ({
+      ...product,
+      trustPassport: buildMarketplaceProductTrustPassport({
+        product,
+        vendor: product.vendorSlug ? vendorWithPassportMap.get(product.vendorSlug) ?? null : null,
+        publishedReviews: reviewsByProductSlug.get(product.slug) ?? [],
+      }),
+    }));
+
     const snapshot = {
-      kpis: buildKpis({ vendors, products, reviews }),
+      kpis: buildKpis({ vendors: vendorsWithPassport, products: productsWithPassport, reviews }),
       categories,
       brands,
-      vendors,
-      products,
+      vendors: vendorsWithPassport,
+      products: productsWithPassport,
       collections,
       campaigns,
       reviews,
@@ -569,6 +605,7 @@ export async function getCartPreview(options?: { sessionToken?: string | null })
         price: Number(row.price || 0),
         compareAtPrice: row.compare_at_price == null ? null : Number(row.compare_at_price),
         vendorSlug: product?.vendorSlug || null,
+        currency: product?.currency || "NGN",
       } satisfies MarketplaceCartItem;
     });
 
@@ -1216,6 +1253,7 @@ export async function getStaffQueueData() {
     const [
       applicationsRes,
       productsRes,
+      reviewsRes,
       disputesRes,
       payoutsRes,
       ordersRes,
@@ -1227,6 +1265,7 @@ export async function getStaffQueueData() {
     ] = await Promise.all([
       admin.from("marketplace_vendor_applications").select("*").order("submitted_at", { ascending: false }),
       admin.from("marketplace_products").select("*").order("updated_at", { ascending: false }),
+      admin.from("marketplace_reviews").select("*").order("created_at", { ascending: false }),
       admin.from("marketplace_disputes").select("*").order("updated_at", { ascending: false }),
       admin.from("marketplace_payout_requests").select("*").order("created_at", { ascending: false }),
       admin.from("marketplace_orders").select("*").order("placed_at", { ascending: false }),
@@ -1240,6 +1279,7 @@ export async function getStaffQueueData() {
     if (
       applicationsRes.error ||
       productsRes.error ||
+      reviewsRes.error ||
       disputesRes.error ||
       payoutsRes.error ||
       ordersRes.error ||
@@ -1255,6 +1295,7 @@ export async function getStaffQueueData() {
     return {
       applications: applicationsRes.data ?? [],
       products: productsRes.data ?? [],
+      reviews: reviewsRes.data ?? [],
       disputes: disputesRes.data ?? [],
       payouts: payoutsRes.data ?? [],
       orders: ordersRes.data ?? [],
@@ -1268,6 +1309,7 @@ export async function getStaffQueueData() {
     return {
       applications: [] as Array<Record<string, unknown>>,
       products: [] as Array<Record<string, unknown>>,
+      reviews: [] as Array<Record<string, unknown>>,
       disputes: [] as Array<Record<string, unknown>>,
       payouts: [] as Array<Record<string, unknown>>,
       orders: [] as Array<Record<string, unknown>>,

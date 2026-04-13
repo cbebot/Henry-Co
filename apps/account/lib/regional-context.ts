@@ -7,6 +7,7 @@ import {
   formatMoney,
   getCountry,
   normalizeLocale,
+  resolveCurrencyTruth,
   type AppLocale,
 } from "@henryco/i18n";
 
@@ -16,8 +17,14 @@ export type AccountRegionalContext = {
   locale: string;
   appLocale: AppLocale;
   currencyCode: string;
+  displayCurrency: string;
+  pricingCurrency: string;
+  settlementCurrency: string;
+  baseCurrency: string;
+  supportsNativeSettlement: boolean;
   timezone: string;
   settlementNote: string;
+  settlementLabel: string;
 };
 
 export function resolveAccountRegionalContext(input: {
@@ -29,7 +36,12 @@ export function resolveAccountRegionalContext(input: {
   const country =
     getCountry(String(input.country || "").trim()) || getCountry(DEFAULT_COUNTRY)!;
   const appLocale = normalizeLocale(input.language || country.locale);
-  const currencyCode = String(input.currency || country.currencyCode || "NGN").toUpperCase();
+  const truth = resolveCurrencyTruth({
+    country: country.code,
+    locale: country.locale,
+    preferredCurrency: input.currency || country.currencyCode,
+    detectedCurrency: input.currency || country.currencyCode,
+  });
   const timezone = String(input.timezone || country.timezone || "Africa/Lagos");
 
   return {
@@ -37,12 +49,15 @@ export function resolveAccountRegionalContext(input: {
     countryName: country.name,
     locale: country.locale,
     appLocale,
-    currencyCode,
+    currencyCode: truth.displayCurrency,
+    displayCurrency: truth.displayCurrency,
+    pricingCurrency: truth.pricingCurrency,
+    settlementCurrency: truth.settlementCurrency,
+    baseCurrency: truth.baseCurrency,
+    supportsNativeSettlement: truth.supportsNativeSettlement,
     timezone,
-    settlementNote:
-      currencyCode === "NGN"
-        ? "Wallet settlement currently runs in NGN."
-        : `Display defaults can follow ${currencyCode}, but wallet settlement currently remains NGN-only while local settlement rails are not yet live.`,
+    settlementNote: truth.settlementMessage,
+    settlementLabel: truth.settlementLabel,
   };
 }
 
@@ -51,7 +66,9 @@ export function formatRegionalMoney(
   context: AccountRegionalContext,
   currencyCode = context.currencyCode
 ) {
-  return formatMoney(amountKobo, currencyCode);
+  return formatMoney(amountKobo, currencyCode, {
+    locale: context.locale,
+  });
 }
 
 export function formatRegionalDate(

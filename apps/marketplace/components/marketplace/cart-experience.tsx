@@ -5,11 +5,13 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
+import { summarizeMarketplaceCartCurrencies } from "@/lib/cart-truth";
 import { formatCurrency } from "@/lib/utils";
 
 export function CartExperience() {
   const { cart, cartBusy, updateCartQuantity } = useMarketplaceCart();
   const { isWishlisted, pendingWishlistSlugs, toggleWishlist } = useMarketplaceWishlist();
+  const cartSummary = summarizeMarketplaceCartCurrencies(cart.items);
 
   const grouped = Object.entries(
     cart.items.reduce<Record<string, typeof cart.items>>((accumulator, item) => {
@@ -150,26 +152,38 @@ export function CartExperience() {
           <div className="flex items-center justify-between">
             <span>Subtotal</span>
             <span className="font-semibold text-[var(--market-paper-white)]">
-              {formatCurrency(cart.subtotal, cart.items[0]?.currency || "NGN")}
+              {cartSummary.mixedPricing
+                ? cartSummary.currencies.join(" + ")
+                : formatCurrency(cartSummary.subtotal, cartSummary.primaryCurrency || "NGN")}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span>Estimated shipping</span>
             <span className="font-semibold text-[var(--market-paper-white)]">
-              {cart.subtotal > 350000 ? "Free" : formatCurrency(18000, cart.items[0]?.currency || "NGN")}
+              {cartSummary.shipping == null
+                ? "Quoted at supported checkout"
+                : cartSummary.shipping === 0
+                  ? "Free"
+                  : formatCurrency(cartSummary.shipping, cartSummary.primaryCurrency || "NGN")}
             </span>
           </div>
         </div>
         <div className="mt-6 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]">
-          Each vendor segment stays visible during checkout so buyers understand delivery timing, payment state, and post-order support before confirming.
+          {cartSummary.blockingReason || cartSummary.helperText}
         </div>
         <div className="mt-6 grid gap-3">
-          <Link
-            href="/checkout"
-            className="market-button-primary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
-          >
-            Continue to checkout
-          </Link>
+          {cartSummary.canCheckout ? (
+            <Link
+              href="/checkout"
+              className="market-button-primary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
+            >
+              Continue to checkout
+            </Link>
+          ) : (
+            <div className="rounded-full border border-[rgba(255,171,151,0.24)] bg-[rgba(126,33,18,0.08)] px-5 py-3 text-center text-sm font-semibold text-[var(--market-paper-white)]">
+              Checkout is paused until pricing and settlement truth line up.
+            </div>
+          )}
           <Link
             href="/search"
             className="market-button-secondary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"

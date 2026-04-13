@@ -390,7 +390,8 @@ export function MarketplaceRuntimeProvider({
       });
 
       if (!response.ok) {
-        throw new Error("Cart update failed.");
+        const result = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(result?.error || "Cart update failed.");
       }
 
       const payload = (await response.json()) as { shell: MarketplaceShellState };

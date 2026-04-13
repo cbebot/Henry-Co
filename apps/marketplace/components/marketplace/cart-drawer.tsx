@@ -6,12 +6,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useMarketplaceCart, useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
+import { summarizeMarketplaceCartCurrencies } from "@/lib/cart-truth";
 import { formatCurrency } from "@/lib/utils";
 
 export function MarketplaceCartDrawer() {
   const runtime = useMarketplaceRuntime();
   const { cart, cartBusy, cartOpen, closeCart, pendingCartSlugs, updateCartQuantity, removeCartItem } = useMarketplaceCart();
   const cartSyncing = cartBusy || pendingCartSlugs.length > 0;
+  const cartSummary = summarizeMarketplaceCartCurrencies(cart.items);
 
   return (
     <AnimatePresence>
@@ -165,11 +167,13 @@ export function MarketplaceCartDrawer() {
               <div className="flex items-center justify-between text-sm text-[var(--market-muted)]">
                 <span>Subtotal</span>
                 <span className="text-base font-semibold text-[var(--market-paper-white)]">
-                  {formatCurrency(cart.subtotal, cart.items[0]?.currency || "NGN")}
+                  {cartSummary.mixedPricing
+                    ? cartSummary.currencies.join(" + ")
+                    : formatCurrency(cartSummary.subtotal, cartSummary.primaryCurrency || "NGN")}
                 </span>
               </div>
               <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
-                Split-order clarity, delivery windows, and payment states stay visible again at checkout.
+                {cartSummary.blockingReason || cartSummary.helperText}
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {cartSyncing ? (
@@ -188,9 +192,11 @@ export function MarketplaceCartDrawer() {
                     <Link
                       href="/checkout"
                       onClick={closeCart}
-                      className="market-button-primary inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold"
+                      className={`inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold ${
+                        cartSummary.canCheckout ? "market-button-primary" : "border border-[rgba(255,171,151,0.24)] bg-[rgba(126,33,18,0.08)] text-[var(--market-paper-white)] pointer-events-none"
+                      }`}
                     >
-                      Checkout
+                      {cartSummary.canCheckout ? "Checkout" : "Checkout paused"}
                     </Link>
                   </>
                 )}

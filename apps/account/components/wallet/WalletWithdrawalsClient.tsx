@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
+import { formatMoney, formatMoneyMajor } from "@henryco/i18n";
 
 type PayoutMethod = {
   id: string;
@@ -30,12 +31,18 @@ export default function WalletWithdrawalsClient({
   pinConfigured,
   availableBalanceKobo,
   pendingHoldKobo,
+  settlementCurrency,
+  displayCurrency,
+  locale,
 }: {
   initialMethods: PayoutMethod[];
   initialRequests: WithdrawalRow[];
   pinConfigured: boolean;
   availableBalanceKobo: number;
   pendingHoldKobo: number;
+  settlementCurrency: string;
+  displayCurrency: string;
+  locale: string;
 }) {
   const router = useRouter();
   const [methods, setMethods] = useState(initialMethods);
@@ -57,6 +64,14 @@ export default function WalletWithdrawalsClient({
   const [amount, setAmount] = useState("");
   const [payoutId, setPayoutId] = useState(methods[0]?.id ?? "");
   const [withdrawPin, setWithdrawPin] = useState("");
+  const formatMinor = (amountKobo: number) =>
+    formatMoney(amountKobo, settlementCurrency, {
+      locale,
+    });
+  const formatMajor = (amountMajor: number) =>
+    formatMoneyMajor(amountMajor, settlementCurrency, {
+      locale,
+    });
 
   async function refresh() {
     const res = await fetch("/api/wallet/payout-methods", { cache: "no-store" });
@@ -130,7 +145,7 @@ export default function WalletWithdrawalsClient({
     setMessage(null);
     const naira = Number(amount);
     if (!Number.isFinite(naira) || naira < 100) {
-      setMessage({ type: "err", text: "Enter at least NGN 100." });
+      setMessage({ type: "err", text: `Enter at least ${formatMajor(100)}.` });
       setBusy(null);
       return;
     }
@@ -276,21 +291,24 @@ export default function WalletWithdrawalsClient({
         <p className="mt-1 text-sm text-[var(--acct-muted)]">
           Available balance:{" "}
           <span className="font-semibold text-[var(--acct-ink)]">
-            ₦{(availableKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+            {formatMinor(availableKobo)}
           </span>
         </p>
         {pendingHold > 0 ? (
           <p className="mt-2 text-xs leading-6 text-[var(--acct-muted)]">
-            ₦{(pendingHold / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })} is already held in pending withdrawal review.
+            {formatMinor(pendingHold)} is already held in pending withdrawal review.
           </p>
         ) : null}
+        <p className="mt-2 text-xs leading-6 text-[var(--acct-muted)]">
+          Display currency: {displayCurrency}. Withdrawal settlement stays in {settlementCurrency}.
+        </p>
         <form onSubmit={submitWithdrawal} className="mt-4 grid gap-3">
           <input
             className="acct-input rounded-xl"
             type="number"
             min={100}
             step={1}
-            placeholder="Amount (NGN)"
+            placeholder={`Amount (${settlementCurrency})`}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
@@ -344,11 +362,17 @@ export default function WalletWithdrawalsClient({
                 className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[var(--acct-surface)] px-4 py-3 text-sm"
               >
                 <span className="font-semibold text-[var(--acct-ink)]">
-                  ₦{(r.amount_kobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+                  {formatMinor(r.amount_kobo)}
                 </span>
                 <span className="text-[var(--acct-muted)]">{statusLabel(r.status)}</span>
                 <span className="text-xs text-[var(--acct-muted)]">
-                  {new Date(r.created_at).toLocaleString()}
+                  {new Intl.DateTimeFormat(locale, {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }).format(new Date(r.created_at))}
                 </span>
               </li>
             ))}

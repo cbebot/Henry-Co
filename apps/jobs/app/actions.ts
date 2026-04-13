@@ -9,6 +9,7 @@ import {
   createEmployerProfile,
   createJobPost,
   markJobsNotificationRead,
+  reviewJobPost,
   saveCandidateProfile,
   submitApplication,
   toggleSavedJob,
@@ -231,6 +232,36 @@ export async function updateEmployerVerificationAction(formData: FormData) {
   const employerSlug = String(formData.get("employerSlug") || "");
   if (returnTo) {
     redirect(`${returnTo}?updated=${encodeURIComponent(employerSlug)}`);
+  }
+}
+
+export async function reviewJobPostAction(formData: FormData) {
+  const viewer = await requireJobsRoles(["recruiter", "admin", "owner", "moderator"]);
+
+  await reviewJobPost({
+    actor: {
+      userId: viewer.user!.id,
+      email: viewer.user!.email,
+      fullName: viewer.user!.fullName,
+      role: viewer.internalRole,
+    },
+    jobSlug: String(formData.get("jobSlug") || ""),
+    moderationStatus: String(formData.get("moderationStatus") || "pending_review") as
+      | "approved"
+      | "pending_review"
+      | "flagged"
+      | "draft",
+    reason: String(formData.get("reason") || ""),
+  });
+
+  const jobSlug = String(formData.get("jobSlug") || "");
+  revalidatePath("/recruiter");
+  revalidatePath("/recruiter/jobs");
+  revalidatePath(`/jobs/${jobSlug}`);
+
+  const returnTo = getSafeReturnTo(formData);
+  if (returnTo) {
+    redirect(`${returnTo}?moderated=${encodeURIComponent(jobSlug)}`);
   }
 }
 

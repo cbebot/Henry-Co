@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
+import { withCurrencyContext } from "@henryco/i18n";
 import { getDivisionUrl } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, slugify } from "@/lib/env";
@@ -53,6 +54,30 @@ function asObject(value: unknown): Record<string, unknown> {
 
 function asUniqueList(values: Array<string | null | undefined>) {
   return [...new Set(values.map((value) => asText(value)).filter(Boolean))];
+}
+
+function withJobsCurrencyContext(metadata: Record<string, unknown>) {
+  const currency =
+    asText(metadata.currency as string) ||
+    asText(metadata.salaryCurrency as string) ||
+    asText(metadata.salary_currency as string) ||
+    "NGN";
+  const hasMoneySignals =
+    Number(metadata.salaryMin) > 0 ||
+    Number(metadata.salaryMax) > 0 ||
+    Boolean(asText(metadata.salaryExpectation as string)) ||
+    Boolean(asText(metadata.compensationBand as string));
+
+  if (!hasMoneySignals) {
+    return metadata;
+  }
+
+  return withCurrencyContext(metadata, {
+    pricingCurrency: currency,
+    settlementCurrency: "NGN",
+    baseCurrency: "NGN",
+    originalCurrency: currency,
+  });
 }
 
 function toJobsUrl(pathname: string) {
@@ -134,7 +159,7 @@ async function upsertActivityState(input: {
         title: input.title,
         description: input.description,
         status: input.status,
-        metadata: input.metadata,
+        metadata: withJobsCurrencyContext(input.metadata),
         reference_type: input.referenceType ?? null,
         reference_id: input.referenceId ?? null,
         action_url: actionUrl || null,
@@ -155,7 +180,7 @@ async function upsertActivityState(input: {
       title: input.title,
       description: input.description,
       status: input.status,
-      metadata: input.metadata,
+      metadata: withJobsCurrencyContext(input.metadata),
       reference_type: input.referenceType ?? null,
       reference_id: input.referenceId ?? null,
       action_url: actionUrl || null,
@@ -197,7 +222,7 @@ async function upsertReferenceActivityState(input: {
         title: input.title,
         description: input.description,
         status: input.status,
-        metadata: input.metadata,
+        metadata: withJobsCurrencyContext(input.metadata),
         reference_type: input.referenceType ?? null,
         reference_id: input.referenceId,
         action_url: actionUrl || null,
@@ -218,7 +243,7 @@ async function upsertReferenceActivityState(input: {
       title: input.title,
       description: input.description,
       status: input.status,
-      metadata: input.metadata,
+      metadata: withJobsCurrencyContext(input.metadata),
       reference_type: input.referenceType ?? null,
       reference_id: input.referenceId,
       action_url: actionUrl || null,
@@ -1534,6 +1559,92 @@ export async function updateEmployerVerification(input: {
     entityId: input.employerSlug,
     reason: input.reason ?? null,
     newValues: { status: input.status },
+  });
+}
+
+export async function reviewJobPost(input: {
+  actor: Actor;
+  jobSlug: string;
+  moderationStatus: "approved" | "pending_review" | "flagged" | "draft";
+  reason?: string | null;
+}) {
+  const admin = createAdminSupabase();
+  const { data: row } = await admin
+    .from("customer_activity")
+    .select("*")
+    .eq("division", JOBS_DIVISION)
+    .eq("activity_type", JOBS_ACTIVITY_JOB_POST)
+    .eq("reference_id", input.jobSlug)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!row) {
+    throw new Error("Job post not found.");
+  }
+
+  const item = row as Record<string, unknown>;
+  const metadata = asObject(item.metadata);
+  const moderationStatus = input.moderationStatus;
+  const isPublished = moderationStatus === "approved";
+  const nextStatus =
+    moderationStatus === "approved"
+      ? "published"
+      : moderationStatus === "flagged"
+        ? "flagged"
+        : moderationStatus;
+  const ownerUserId = asText(item.user_id as string);
+  const title = asText(metadata.title as string) || "Job post";
+
+  await admin
+    .from("customer_activity")
+    .update({
+      status: nextStatus,
+      metadata: {
+        ...metadata,
+        isPublished,
+        moderationStatus,
+        moderationDecisionReason: input.reason || null,
+        moderationReviewedAt: new Date().toISOString(),
+        moderationReviewedBy: input.actor.userId,
+        updatedAt: new Date().toISOString(),
+      },
+    } as never)
+    .eq("id", asText(item.id as string));
+
+  if (ownerUserId) {
+    await createJobsInAppNotification({
+      userId: ownerUserId,
+      title:
+        moderationStatus === "approved"
+          ? "Job approved"
+          : moderationStatus === "flagged"
+            ? "Job flagged"
+            : "Job moderation updated",
+      body:
+        moderationStatus === "approved"
+          ? `${title} is now live in HenryCo Jobs.`
+          : moderationStatus === "flagged"
+            ? `${title} has been flagged and needs correction before it can be trusted as a live posting.`
+            : `${title} moved to ${moderationStatus.replace(/_/g, " ")}.`,
+      actionUrl: `/employer/jobs/${input.jobSlug}`,
+      actionLabel: "Open job",
+      priority: moderationStatus === "approved" ? "normal" : "high",
+      referenceType: "jobs_post",
+      referenceId: input.jobSlug,
+    });
+  }
+
+  await logAudit({
+    actor: input.actor,
+    action: "jobs_post_moderation_reviewed",
+    entityType: "jobs_post",
+    entityId: input.jobSlug,
+    reason: input.reason ?? null,
+    newValues: {
+      moderationStatus,
+      isPublished,
+    },
   });
 }
 

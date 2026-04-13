@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   Building2,
   CalendarRange,
@@ -83,6 +84,33 @@ const fraudRails = [
   "Listings are expected to describe the actual property state, access conditions, and readiness honestly.",
 ];
 
+const workflowStates = [
+  {
+    title: "Awaiting documents",
+    tone: "Documents first",
+    body:
+      "HenryCo still needs proof files before the listing can move forward. This usually means ownership context, marketing authority, or the kind of paperwork required for the listing type.",
+  },
+  {
+    title: "Inspection or guided verification",
+    tone: "Location check",
+    body:
+      "A company agent may confirm the location, access flow, or operational readiness before the property is shown more widely or moved into a stronger trust lane.",
+  },
+  {
+    title: "Under review",
+    tone: "Editorial + trust review",
+    body:
+      "The record is being checked for clarity, accuracy, fraud risk, and presentation quality. The goal is a serious listing that people can act on with confidence.",
+  },
+  {
+    title: "Approved for publication",
+    tone: "Public search ready",
+    body:
+      "The listing has cleared HenryCo's publication threshold. It can still carry managed, reviewed, or verification-sensitive notes, and major changes can send it back into review.",
+  },
+];
+
 export default async function TrustPage() {
   const snapshot = await getPropertySnapshot();
 
@@ -92,6 +120,22 @@ export default async function TrustPage() {
         kicker="Trust"
         title="A calmer trust standard for property listings, viewings, and managed follow-through."
         description="HenryCo Property is designed to feel clear before it feels fast. We review what gets published, explain what each trust state means, and keep viewing and follow-up records inside a real operating flow."
+        actions={
+          <>
+            <Link
+              href="/search"
+              className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
+            >
+              Search trust-ready listings
+            </Link>
+            <Link
+              href="/submit"
+              className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
+            >
+              Submit a property
+            </Link>
+          </>
+        }
       />
 
       <div className="mt-8">
@@ -167,6 +211,28 @@ export default async function TrustPage() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="mt-10 property-panel rounded-[2rem] p-6 sm:p-8">
+        <div className="property-kicker">Operational states users may see</div>
+        <div className="mt-5 grid gap-4 xl:grid-cols-2">
+          {workflowStates.map((state) => (
+            <article
+              key={state.title}
+              className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5"
+            >
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-accent-strong)]">
+                {state.tone}
+              </div>
+              <h2 className="mt-3 text-lg font-semibold text-[var(--property-ink)]">
+                {state.title}
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+                {state.body}
+              </p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="mt-10 property-panel rounded-[2rem] p-6 sm:p-8">

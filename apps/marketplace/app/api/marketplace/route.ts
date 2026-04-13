@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { withCurrencyContext } from "@henryco/i18n";
 import { getDivisionConfig } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
@@ -16,6 +17,7 @@ import {
 } from "@/lib/marketplace/governance";
 import { logMarketplaceAction, sendMarketplaceEvent } from "@/lib/marketplace/notifications";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
+import { summarizeMarketplaceCartCurrencies } from "@/lib/cart-truth";
 import { createAdminSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -57,6 +59,82 @@ function textLike(value?: string | null) {
 
 function normalizeTimeline(input: unknown) {
   return Array.isArray(input) ? input.map((item) => textLike(String(item))).filter(Boolean) : [];
+}
+
+function withMarketplaceCurrencyContext(
+  payload: Record<string, unknown>,
+  currency = "NGN"
+) {
+  const normalizedCurrency = textLike(currency) || "NGN";
+  const hasMoneySignals =
+    Number(payload.subtotal) > 0 ||
+    Number(payload.shippingTotal) > 0 ||
+    Number(payload.grandTotal) > 0 ||
+    Number(payload.amount) > 0 ||
+    Number(payload.commissionAmount) > 0 ||
+    Number(payload.netVendorAmount) > 0;
+
+  if (!hasMoneySignals) {
+    return payload;
+  }
+
+  return withCurrencyContext(payload, {
+    pricingCurrency: normalizedCurrency,
+    settlementCurrency: "NGN",
+    baseCurrency: "NGN",
+    originalCurrency: normalizedCurrency,
+  });
+}
+
+async function refreshReviewAggregates(
+  admin: ReturnType<typeof createAdminSupabase>,
+  input: {
+    productId: string;
+    vendorId: string | null;
+  }
+) {
+  const { data: productPublishedReviews } = await admin
+    .from("marketplace_reviews")
+    .select("rating")
+    .eq("product_id", input.productId)
+    .eq("status", "published")
+    .eq("is_verified_purchase", true);
+
+  const productRatings = (productPublishedReviews ?? [])
+    .map((item: Record<string, unknown>) => Number(item.rating || 0))
+    .filter((value) => value > 0);
+
+  await admin
+    .from("marketplace_products")
+    .update({
+      review_count: productRatings.length,
+      rating: productRatings.length
+        ? (productRatings.reduce((sum, value) => sum + value, 0) / productRatings.length).toFixed(2)
+        : 0,
+    } as never)
+    .eq("id", input.productId);
+
+  if (!input.vendorId) return;
+
+  const { data: vendorPublishedReviews } = await admin
+    .from("marketplace_reviews")
+    .select("rating")
+    .eq("vendor_id", input.vendorId)
+    .eq("status", "published")
+    .eq("is_verified_purchase", true);
+
+  const vendorRatings = (vendorPublishedReviews ?? [])
+    .map((item: Record<string, unknown>) => Number(item.rating || 0))
+    .filter((value) => value > 0);
+
+  await admin
+    .from("marketplace_vendors")
+    .update({
+      review_score: vendorRatings.length
+        ? (vendorRatings.reduce((sum, value) => sum + value, 0) / vendorRatings.length).toFixed(2)
+        : 0,
+    } as never)
+    .eq("id", input.vendorId);
 }
 
 async function appendOrderTimeline(
@@ -138,7 +216,10 @@ async function writeMarketplaceEvent(
       actor_email: normalizeEmail(input.actorEmail) ?? null,
       entity_type: input.entityType ?? null,
       entity_id: input.entityId ?? null,
-      payload: input.payload ?? {},
+      payload: withMarketplaceCurrencyContext(
+        input.payload ?? {},
+        textLike((input.payload ?? {}).currency as string) || "NGN"
+      ),
     } as never);
   } catch {
     // ignore until event schema is available everywhere
@@ -399,14 +480,31 @@ export async function POST(request: Request) {
         const shippingRegion = text(formData, "shipping_region");
         const buyerName = text(formData, "buyer_name") || viewer.user.fullName || "HenryCo Buyer";
         const buyerPhone = text(formData, "buyer_phone");
+        const cartCurrencySummary = summarizeMarketplaceCartCurrencies(
+          cartItems.map((item: Record<string, unknown>) => {
+            const product = snapshot.products.find((entry) => entry.id === String(item.product_id));
+            return {
+              quantity: Number(item.quantity || 0),
+              price: Number(item.price || 0),
+              currency: product?.currency || "NGN",
+            };
+          })
+        );
+
+        if (!cartCurrencySummary.canCheckout) {
+          return redirectTo(
+            request,
+            `/checkout?error=${encodeURIComponent(cartCurrencySummary.blockingReason || "currency-truth")}`
+          );
+        }
 
         const subtotal = cartItems.reduce(
           (sum, item: Record<string, unknown>) =>
             sum + Number(item.price || 0) * Number(item.quantity || 0),
           0
         );
-        const shippingTotal = subtotal > 350000 ? 0 : 18000;
-        const grandTotal = subtotal + shippingTotal;
+        const shippingTotal = cartCurrencySummary.shipping ?? (subtotal > 350000 ? 0 : 18000);
+        const grandTotal = cartCurrencySummary.grandTotal ?? subtotal + shippingTotal;
         const { count: priorOrderCount } = await admin
           .from("marketplace_orders")
           .select("id", { count: "exact", head: true })
@@ -953,6 +1051,13 @@ export async function POST(request: Request) {
                 .select("id")
                 .in("id", orderIds)
                 .eq("user_id", viewer.user.id)
+                .in("status", [
+                  "delivered",
+                  "delivered_pending_confirmation",
+                  "awaiting_auto_release",
+                  "payout_releasable",
+                  "payout_released",
+                ])
             ).data ?? []
           : [];
         const verifiedOrderIdSet = new Set(
@@ -978,11 +1083,51 @@ export async function POST(request: Request) {
           status: verifiedItem?.id ? "published" : "pending",
         };
 
-        const { data: createdReview, error: reviewError } = await admin
-          .from("marketplace_reviews")
-          .insert(reviewPayload as never)
-          .select("*")
-          .maybeSingle();
+        const existingReviewQuery = verifiedItem?.id
+          ? await admin
+              .from("marketplace_reviews")
+              .select("*")
+              .eq("user_id", viewer.user.id)
+              .eq("order_item_id", String(verifiedItem.id))
+              .maybeSingle()
+          : await admin
+              .from("marketplace_reviews")
+              .select("*")
+              .eq("user_id", viewer.user.id)
+              .eq("product_id", product.id)
+              .in("status", ["pending", "published"])
+              .maybeSingle();
+
+        if (existingReviewQuery.data && !verifiedItem?.id) {
+          if (json) {
+            return NextResponse.json(
+              { error: "A review for this product is already in moderation or published." },
+              { status: 409 }
+            );
+          }
+          return redirectTo(request, "/account/reviews?error=review-exists");
+        }
+
+        const reviewMutation = existingReviewQuery.data
+          ? admin
+              .from("marketplace_reviews")
+              .update({
+                rating,
+                title: reviewPayload.title,
+                body: reviewPayload.body,
+                is_verified_purchase: reviewPayload.is_verified_purchase,
+                status: reviewPayload.status,
+              } as never)
+              .eq("id", existingReviewQuery.data.id)
+              .select("*")
+              .maybeSingle()
+          : admin
+              .from("marketplace_reviews")
+              .insert(reviewPayload as never)
+              .select("*")
+              .maybeSingle();
+
+        const { data: createdReview, error: reviewError } = await reviewMutation;
 
         if (reviewError || !createdReview) {
           if (json) {
@@ -994,54 +1139,17 @@ export async function POST(request: Request) {
           return redirectTo(request, "/account/reviews?error=review-failed");
         }
 
-        const { data: publishedReviews } = await admin
-          .from("marketplace_reviews")
-          .select("rating")
-          .eq("product_id", product.id)
-          .eq("status", "published");
-        const ratings = (publishedReviews ?? [])
-          .map((item: Record<string, unknown>) => Number(item.rating || 0))
-          .filter((value) => value > 0);
-
-        if (ratings.length) {
-          const average = ratings.reduce((sum, value) => sum + value, 0) / ratings.length;
-          await admin
-            .from("marketplace_products")
-            .update({
-              review_count: ratings.length,
-              rating: average.toFixed(2),
-            } as never)
-            .eq("id", product.id);
-        }
-
         const vendorId =
           reviewPayload.vendor_id ||
           snapshot.vendors.find((item) => item.slug === product.vendorSlug)?.id ||
           null;
-
-        if (vendorId) {
-          const { data: vendorPublishedReviews } = await admin
-            .from("marketplace_reviews")
-            .select("rating")
-            .eq("vendor_id", vendorId)
-            .eq("status", "published");
-
-          const vendorRatings = (vendorPublishedReviews ?? [])
-            .map((item: Record<string, unknown>) => Number(item.rating || 0))
-            .filter((value) => value > 0);
-
-          if (vendorRatings.length) {
-            const vendorAverage = vendorRatings.reduce((sum, value) => sum + value, 0) / vendorRatings.length;
-            await admin
-              .from("marketplace_vendors")
-              .update({
-                review_score: vendorAverage.toFixed(2),
-              } as never)
-              .eq("id", vendorId);
-          }
-        }
+        await refreshReviewAggregates(admin, {
+          productId: product.id,
+          vendorId: vendorId ? String(vendorId) : null,
+        });
 
         revalidatePath("/account/reviews");
+        revalidatePath("/moderation/reviews");
         revalidatePath(`/product/${product.slug}`);
         if (json) {
           return NextResponse.json({
@@ -2025,6 +2133,67 @@ export async function POST(request: Request) {
         revalidatePath("/vendor/store");
         revalidatePath("/vendor/settings");
         return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}saved=1`);
+      }
+
+      case "moderation_review_decision": {
+        if (!viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin", "moderation"])) {
+          return redirectTo(request, "/account");
+        }
+
+        const reviewId = text(formData, "review_id");
+        const decision = text(formData, "decision");
+        const note = text(formData, "review_note");
+        const nextStatus = decision === "publish" ? "published" : "hidden";
+        const { data: review } = await admin
+          .from("marketplace_reviews")
+          .select("*")
+          .eq("id", reviewId)
+          .maybeSingle();
+
+        if (!review) {
+          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-review`);
+        }
+
+        await admin
+          .from("marketplace_reviews")
+          .update({
+            status: nextStatus,
+            moderation_note: note || null,
+            reviewed_by: viewer.user?.id ?? null,
+            reviewed_at: new Date().toISOString(),
+          } as never)
+          .eq("id", reviewId);
+
+        await refreshReviewAggregates(admin, {
+          productId: String(review.product_id),
+          vendorId: review.vendor_id ? String(review.vendor_id) : null,
+        });
+
+        await writeMarketplaceEvent(admin, {
+          eventType: "moderation_review_decision_recorded",
+          actorUserId: viewer.user?.id ?? null,
+          actorEmail: viewer.user?.email ?? null,
+          entityType: "review",
+          entityId: reviewId,
+          payload: {
+            decision: nextStatus,
+            verifiedPurchase: Boolean(review.is_verified_purchase),
+            note,
+            productId: review.product_id,
+            vendorId: review.vendor_id,
+          },
+        });
+
+        revalidatePath("/moderation/reviews");
+        revalidatePath(`/product/${snapshot.products.find((item) => item.id === String(review.product_id))?.slug || ""}`);
+        if (review.vendor_id) {
+          const vendorSlug = snapshot.vendors.find((item) => item.id === String(review.vendor_id))?.slug;
+          if (vendorSlug) {
+            revalidatePath(`/store/${vendorSlug}`);
+          }
+        }
+
+        return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}decision=${nextStatus}`);
       }
 
       case "payout_decision": {

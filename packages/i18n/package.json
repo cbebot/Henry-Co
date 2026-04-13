@@ -6,6 +6,7 @@
   "exports": {
     ".": "./index.ts",
     "./currency": "./currency.ts",
+    "./commerce": "./commerce.ts",
     "./countries": "./countries.ts",
     "./timezone": "./timezone.ts",
     "./phone": "./phone.ts",

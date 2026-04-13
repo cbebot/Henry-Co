@@ -2,9 +2,11 @@ import { redirect } from "next/navigation";
 import { Building2 } from "lucide-react";
 import { getDivisionUrl } from "@henryco/config";
 import { requireAccountUser } from "@/lib/auth";
+import { getProfile } from "@/lib/account-data";
 import { getDivisionActivity, getDivisionInvoices, getDivisionNotifications, getDivisionSupportThreads } from "@/lib/division-data";
 import { getSavedPropertiesForUser } from "@/lib/property-module";
 import DivisionModulePage from "@/components/divisions/DivisionModulePage";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 
 export const dynamic = "force-dynamic";
 
@@ -42,13 +44,20 @@ export default async function PropertyPage({ searchParams }: PropertyPageProps) 
     params.panel && params.panel in panelCopy
       ? (params.panel as keyof typeof panelCopy)
       : "overview";
-  const [activity, notifications, supportThreads, invoices, savedProperties] = await Promise.all([
+  const [activity, notifications, supportThreads, invoices, savedProperties, profile] = await Promise.all([
     getDivisionActivity(user.id, "property"),
     getDivisionNotifications(user.id, "property"),
     getDivisionSupportThreads(user.id, "property"),
     getDivisionInvoices(user.id, "property"),
     getSavedPropertiesForUser(user.id),
+    getProfile(user.id),
   ]);
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
 
   const savedCount = savedProperties.length;
   const inquiryCount = countByActivity(activity, ["property_inquiry"]);
@@ -81,6 +90,11 @@ export default async function PropertyPage({ searchParams }: PropertyPageProps) 
       notifications={notifications}
       supportThreads={supportThreads}
       invoices={invoices}
+      viewerRegion={{
+        countryCode: region.countryCode,
+        locale: region.locale,
+        displayCurrency: region.displayCurrency,
+      }}
       features={[
         {
           label: `Saved properties · ${savedCount}`,

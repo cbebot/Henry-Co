@@ -32,6 +32,7 @@ export function SearchExperience({
   initialItems,
   initialQuery,
 }: SearchExperienceProps) {
+  const suggestionListId = "marketplace-search-suggestions";
   const [query, setQuery] = useState(initialQuery.q || "");
   const [category, setCategory] = useState(initialQuery.category || "");
   const [brand, setBrand] = useState(initialQuery.brand || "");
@@ -165,7 +166,9 @@ export function SearchExperience({
               }}
               onFocus={() => setSuggestOpen(true)}
               autoComplete="off"
+              role="combobox"
               aria-autocomplete="list"
+              aria-controls={suggestionListId}
               aria-expanded={suggestOpen && suggestions.length > 0}
               placeholder="Desk lamp, cashmere throw, executive chair"
               className="w-full bg-transparent text-sm text-[var(--market-paper-white)] outline-none placeholder:text-[rgba(213,224,245,0.42)]"
@@ -178,11 +181,12 @@ export function SearchExperience({
           </div>
           {suggestOpen && suggestions.length > 0 ? (
             <ul
+              id={suggestionListId}
               role="listbox"
               className="absolute left-0 right-0 top-full z-30 mt-2 max-h-72 overflow-auto rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(6,10,20,0.98)] py-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl"
             >
               {suggestions.map((item) => (
-                <li key={item.slug} role="option">
+                <li key={item.slug} role="option" aria-selected={false}>
                   <Link
                     href={`/product/${item.slug}`}
                     onClick={() => setSuggestOpen(false)}

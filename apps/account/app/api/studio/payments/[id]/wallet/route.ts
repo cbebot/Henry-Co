@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { normalizeEmail } from "@henryco/config";
+import { withCurrencyContext } from "@henryco/i18n";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getPendingWithdrawalHoldKobo, getWalletSummary, getWithdrawalRequests } from "@/lib/account-data";
@@ -109,6 +110,21 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
     }
 
     const debitReference = `studio-wallet-${paymentRow.id}`;
+    const walletMetadata = withCurrencyContext(
+      {
+        source: "studio_wallet_checkout",
+        project_id: projectRow.id,
+        project_title: projectRow.title,
+        payment_currency: paymentRow.currency || "NGN",
+        debit_reference: debitReference,
+      },
+      {
+        pricingCurrency: paymentRow.currency || "NGN",
+        settlementCurrency: String(wallet.currency || "NGN"),
+        baseCurrency: String(wallet.currency || "NGN"),
+        originalCurrency: paymentRow.currency || "NGN",
+      }
+    );
     await admin.from("customer_wallet_transactions").insert({
       wallet_id: walletId,
       user_id: user.id,
@@ -119,13 +135,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       status: "completed",
       reference_type: "studio_payment",
       reference_id: paymentRow.id,
-      metadata: {
-        source: "studio_wallet_checkout",
-        project_id: projectRow.id,
-        project_title: projectRow.title,
-        payment_currency: paymentRow.currency || "NGN",
-        debit_reference: debitReference,
-      },
+      metadata: walletMetadata,
     } as never);
 
     await admin
@@ -149,7 +159,11 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       reference_type: "studio_payment",
       reference_id: paymentRow.id,
       action_url: `/studio/payments/${paymentRow.id}`,
-      metadata: { project_id: projectRow.id, debit_reference: debitReference },
+      metadata: {
+        project_id: projectRow.id,
+        debit_reference: debitReference,
+        currency_context: walletMetadata.currency_context,
+      },
     } as never);
     await admin.from("customer_notifications").insert({
       user_id: user.id,

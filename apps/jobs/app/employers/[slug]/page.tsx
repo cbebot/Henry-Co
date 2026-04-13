@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { EmptyState } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { PublicShell } from "@/components/public-shell";
+import { TrustPassportPanel } from "@/components/trust-passport";
 import { getEmployerProfileBySlug } from "@/lib/jobs/data";
 
 export const dynamic = "force-dynamic";
@@ -50,30 +51,12 @@ export default async function EmployerPage({
           </section>
           <aside className="space-y-4">
             <div className="jobs-panel rounded-[2rem] p-6">
-              <h2 className="jobs-section-title">Trust snapshot</h2>
-              <div className="mt-4 space-y-3">
-                <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] p-4">
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--jobs-muted)]">Verification</div>
-                  <div className="mt-2 text-lg font-semibold">
-                    {employer.verificationStatus === "verified" ? "Verified" : "Pending review"}
-                  </div>
-                </div>
-                {employer.responseSlaHours ? (
-                  <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] p-4">
-                    <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--jobs-muted)]">Response time</div>
-                    <div className="mt-2 text-lg font-semibold">~{employer.responseSlaHours} hours</div>
-                  </div>
-                ) : null}
-                {employer.remotePolicy ? (
-                  <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] p-4">
-                    <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--jobs-muted)]">Remote policy</div>
-                    <div className="mt-2 text-lg font-semibold capitalize">{employer.remotePolicy}</div>
-                  </div>
-                ) : null}
-              </div>
-              <p className="mt-4 text-sm leading-7 text-[var(--jobs-muted)]">
-                Trust indicators are based on profile completeness, verification status, and hiring activity.
-              </p>
+              <TrustPassportPanel
+                title="Trust snapshot"
+                body="Employer trust is tied to verification, profile clarity, response discipline, and visible hiring seriousness."
+                passport={employer.trustPassport}
+                limit={4}
+              />
             </div>
             <div className="jobs-panel rounded-[2rem] p-6">
               <h2 className="jobs-section-title">Culture &amp; values</h2>

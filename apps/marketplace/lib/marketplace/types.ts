@@ -72,6 +72,28 @@ export type PayoutStatus =
 export type ReviewStatus = "pending" | "published" | "hidden";
 export type DisputeStatus = "open" | "investigating" | "resolved" | "rejected";
 export type CampaignSurface = "hero" | "editorial" | "deals" | "category" | "checkout";
+export type TrustSignalTone = "positive" | "neutral" | "warning" | "critical";
+export type TrustRiskBand = "low" | "guarded" | "elevated" | "high";
+
+export type TrustSignal = {
+  id: string;
+  label: string;
+  value: string;
+  tone: TrustSignalTone;
+  detail: string;
+};
+
+export type TrustPassport = {
+  score: number;
+  label: string;
+  riskBand: TrustRiskBand;
+  summary: string;
+  strengths: string[];
+  warnings: string[];
+  nextSteps: string[];
+  suspiciousFlags: string[];
+  signals: TrustSignal[];
+};
 
 export type MarketplaceKpi = {
   label: string;
@@ -119,6 +141,7 @@ export type MarketplaceVendor = {
   ownerType: "company" | "vendor";
   supportEmail: string;
   supportPhone: string;
+  trustPassport?: TrustPassport;
 };
 
 export type MarketplaceProduct = {
@@ -147,6 +170,7 @@ export type MarketplaceProduct = {
   deliveryNote: string;
   leadTime: string;
   codEligible: boolean;
+  trustPassport?: TrustPassport;
 };
 
 export type MarketplaceCollection = {
@@ -202,6 +226,7 @@ export type MarketplaceCartItem = {
   price: number;
   compareAtPrice: number | null;
   vendorSlug: string | null;
+  currency: string;
 };
 
 export type MarketplaceOrderItem = {

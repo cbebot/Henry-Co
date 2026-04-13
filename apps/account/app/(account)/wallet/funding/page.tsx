@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowRight, Building2, Wallet } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
-import { getWalletFundingContext } from "@/lib/account-data";
-import { formatNaira } from "@/lib/format";
+import { getProfile, getWalletFundingContext } from "@/lib/account-data";
+import { formatCurrencyAmount, formatDateTime } from "@/lib/format";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import PageHeader from "@/components/layout/PageHeader";
 import FundingRequestForm from "@/components/wallet/FundingRequestForm";
 import CopyValueButton from "@/components/ui/CopyValueButton";
@@ -12,7 +13,25 @@ export const dynamic = "force-dynamic";
 
 export default async function WalletFundingPage() {
   const user = await requireAccountUser();
-  const data = await getWalletFundingContext(user.id);
+  const [data, profile] = await Promise.all([
+    getWalletFundingContext(user.id),
+    getProfile(user.id),
+  ]);
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
+  const settlementAmount = (amountKobo: number) =>
+    formatCurrencyAmount(amountKobo, data.wallet.currency || region.settlementCurrency, {
+      unit: "kobo",
+      locale: region.locale,
+    });
+  const fundingCapability =
+    data.rail.capabilities.find(
+      (item) => item.division === "account" && item.paymentMethod === "bank_transfer"
+    ) || null;
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -34,22 +53,25 @@ export default async function WalletFundingPage() {
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-white/70">
               Wallet balance
             </p>
-            <p className="mt-3 text-4xl font-semibold">{formatNaira(data.wallet.balance_kobo)}</p>
+            <p className="mt-3 text-4xl font-semibold">{settlementAmount(data.wallet.balance_kobo)}</p>
             <p className="mt-2 max-w-xl text-sm leading-7 text-white/72">
               Verified balance is ready to spend. Pending funding sits separately until finance clears the transfer.
+            </p>
+            <p className="mt-2 max-w-xl text-xs leading-6 text-white/72">
+              Display {region.displayCurrency} · Settlement {region.settlementCurrency}. {fundingCapability?.paymentMessage || region.settlementNote}
             </p>
           </div>
           <div className="grid gap-3 border-t border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5 sm:grid-cols-2">
             <div className="rounded-[1.4rem] bg-[var(--acct-surface)] p-4">
               <p className="acct-kicker">Verified</p>
               <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
-                {formatNaira(data.wallet.balance_kobo)}
+                {settlementAmount(data.wallet.balance_kobo)}
               </p>
             </div>
             <div className="rounded-[1.4rem] bg-[var(--acct-surface)] p-4">
               <p className="acct-kicker">Pending verification</p>
               <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
-                {formatNaira(data.pending_kobo)}
+                {settlementAmount(data.pending_kobo)}
               </p>
             </div>
           </div>
@@ -89,11 +111,25 @@ export default async function WalletFundingPage() {
                 {data.rail.accountNumber || "Pending"}
               </p>
             </div>
+            <div className="rounded-2xl bg-[var(--acct-surface)] p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Settlement truth</p>
+              <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">
+                {fundingCapability?.paymentLabel || "Bank transfer"} settles in {region.settlementCurrency}
+              </p>
+              <p className="mt-1 text-xs leading-6 text-[var(--acct-muted)]">
+                {fundingCapability?.paymentMessage || region.settlementNote}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <FundingRequestForm />
+      <FundingRequestForm
+        settlementCurrency={region.settlementCurrency}
+        locale={region.locale}
+        displayCurrency={region.displayCurrency}
+        settlementMessage={fundingCapability?.paymentMessage || region.settlementNote}
+      />
 
       <section className="acct-card p-5 sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
@@ -130,10 +166,10 @@ export default async function WalletFundingPage() {
                     )}
                   </div>
                   <p className="mt-3 text-sm font-semibold text-[var(--acct-ink)]">
-                    {formatNaira(request.amount_kobo)} · {request.reference || request.id}
+                    {settlementAmount(request.amount_kobo)} · {request.reference || request.id}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">
-                    Created {new Intl.DateTimeFormat("en-NG", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(request.created_at))}
+                    Created {formatDateTime(request.created_at, { locale: region.locale, timezone: region.timezone })}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-sm font-semibold text-[var(--acct-gold)]">

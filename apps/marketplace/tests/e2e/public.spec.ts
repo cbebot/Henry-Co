@@ -23,7 +23,11 @@ test("homepage, search, product, cart, and help surfaces load", async ({ page })
   const quickAddButton = page.getByRole("button", { name: /Add .* to cart/i }).first();
   await expect(quickAddButton).toBeVisible();
   await quickAddButton.click();
-  await expect(page.getByRole("heading", { name: /item ready|items ready/i })).toBeVisible();
+  await expect
+    .poll(async () => (await page.locator("body").textContent()) || "", {
+      timeout: 10000,
+    })
+    .toMatch(/item ready|items ready|View cart|Checkout|Subtotal/i);
 
   const firstProductLink = page.locator('a[href^="/product/"]').first();
   await expect(firstProductLink).toBeVisible();

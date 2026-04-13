@@ -4,6 +4,7 @@ import { getCandidateDashboardData } from "@/lib/jobs/data";
 import { candidateNav } from "@/lib/jobs/navigation";
 import { InlineNotice } from "@/components/feedback";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
+import { TrustPassportPanel } from "@/components/trust-passport";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
@@ -37,20 +38,29 @@ export default async function CandidateProfilePage({
       accent="linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%)"
       rightRail={
         <>
-          <SectionCard title="Profile trust">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <div className="jobs-kicker">Verification</div>
-                  <div className="mt-2 text-3xl font-semibold">{profile?.trustScore ?? 0}</div>
+          {profile ? (
+            <TrustPassportPanel
+              title="Profile trust"
+              body={profile.readinessLabel || "Complete your profile to improve how employers see your applications."}
+              passport={profile.trustPassport}
+              limit={4}
+            />
+          ) : (
+            <SectionCard title="Profile trust">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <div className="jobs-kicker">Verification</div>
+                    <div className="mt-2 text-3xl font-semibold">0</div>
+                  </div>
+                  <StatusPill label="unverified" tone={toneForVerification("unverified")} />
                 </div>
-                <StatusPill label={profile?.verificationStatus ?? "unverified"} tone={toneForVerification(profile?.verificationStatus ?? "unverified")} />
+                <p className="text-sm leading-7 text-[var(--jobs-muted)]">
+                  Complete your profile to improve how employers see your applications.
+                </p>
               </div>
-              <p className="text-sm leading-7 text-[var(--jobs-muted)]">
-                {profile?.readinessLabel || "Complete your profile to improve how employers see your applications."}
-              </p>
-            </div>
-          </SectionCard>
+            </SectionCard>
+          )}
           <SectionCard title="Documents">
             <div className="space-y-3 text-sm text-[var(--jobs-muted)]">
               <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
@@ -71,6 +81,22 @@ export default async function CandidateProfilePage({
             title="Profile saved"
             body="Your profile has been updated. Changes are visible to employers when you apply."
           />
+        ) : null}
+
+        {profile ? (
+          <SectionCard title="Trust breakdown" body="This is the same candidate passport recruiters use when deciding how much manual review your application needs.">
+            <div className="grid gap-3 md:grid-cols-2">
+              {profile.trustPassport.signals.map((item) => (
+                <div key={item.id} className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm font-semibold">{item.label}</div>
+                    <StatusPill label={item.value} tone={toneForVerification(profile.verificationStatus)} />
+                  </div>
+                  <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">{item.detail}</p>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
         ) : null}
 
         <SectionCard title="Edit your profile" body="This information is shared with employers when you apply to roles.">

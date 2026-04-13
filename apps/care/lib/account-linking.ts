@@ -1,5 +1,6 @@
 import "server-only";
 
+import { formatMoneyMajor, withCurrencyContext } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, normalizePhone } from "@henryco/config";
 
@@ -39,7 +40,7 @@ function buildNotificationBody(booking: BookingLinkRecord) {
   const balanceDue = Number(booking.balance_due || 0);
 
   if (balanceDue > 0) {
-    return `Tracking ${booking.tracking_code} is linked to your account. Outstanding balance: ₦${balanceDue.toLocaleString()}.`;
+    return `Tracking ${booking.tracking_code} is linked to your account. Outstanding balance: ${formatMoneyMajor(balanceDue, "NGN")}.`;
   }
 
   return `Tracking ${booking.tracking_code} is linked to your account and ready for live status follow-up.`;
@@ -118,11 +119,16 @@ export async function ensureCareBookingAccountLink(
         description: buildActivitySummary(input.booking),
         status: input.booking.status || null,
         action_url: actionUrl,
-        metadata: {
+        metadata: withCurrencyContext({
           tracking_code: input.booking.tracking_code,
           source: input.source,
           balance_due: Number(input.booking.balance_due || 0),
-        },
+        }, {
+          pricingCurrency: "NGN",
+          settlementCurrency: "NGN",
+          baseCurrency: "NGN",
+          originalCurrency: "NGN",
+        }),
       } as never)
       .eq("id", existingActivity.id);
   } else {
@@ -136,11 +142,16 @@ export async function ensureCareBookingAccountLink(
       reference_type: "care_booking",
       reference_id: input.booking.id,
       action_url: actionUrl,
-      metadata: {
+      metadata: withCurrencyContext({
         tracking_code: input.booking.tracking_code,
         source: input.source,
         balance_due: Number(input.booking.balance_due || 0),
-      },
+      }, {
+        pricingCurrency: "NGN",
+        settlementCurrency: "NGN",
+        baseCurrency: "NGN",
+        originalCurrency: "NGN",
+      }),
     } as never);
   }
 

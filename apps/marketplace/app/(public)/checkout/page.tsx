@@ -1,15 +1,43 @@
 import Link from "next/link";
+import { resolveHenryCoRailCapability } from "@henryco/i18n";
 import { LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
 import { EmptyState, PageIntro } from "@/components/marketplace/shell";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
+import { summarizeMarketplaceCartCurrencies } from "@/lib/cart-truth";
 import { getCartPreview } from "@/lib/marketplace/data";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-export default async function CheckoutPage() {
+export default async function CheckoutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const [viewer, cart] = await Promise.all([getMarketplaceViewer(), getCartPreview()]);
+  const cartSummary = summarizeMarketplaceCartCurrencies(cart.items);
+  const error = decodeURIComponent((await searchParams).error || "");
+  const bankTransferCapability = resolveHenryCoRailCapability({
+    division: "marketplace",
+    paymentMethod: "bank_transfer",
+    pricingCurrency: "NGN",
+    settlementCurrency: "NGN",
+    baseCurrency: "NGN",
+    originalCurrency: "NGN",
+    enabled: true,
+    manualVerification: true,
+  });
+  const codCapability = resolveHenryCoRailCapability({
+    division: "marketplace",
+    paymentMethod: "cash_on_delivery",
+    pricingCurrency: "NGN",
+    settlementCurrency: "NGN",
+    baseCurrency: "NGN",
+    originalCurrency: "NGN",
+    enabled: true,
+    manualVerification: false,
+  });
 
   if (!cart.items.length) {
     return (
@@ -20,6 +48,47 @@ export default async function CheckoutPage() {
           ctaHref="/search"
           ctaLabel="Browse products"
         />
+      </div>
+    );
+  }
+
+  if (!cartSummary.canCheckout) {
+    return (
+      <div className="mx-auto max-w-[1280px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
+        <PageIntro
+          kicker="Checkout truth"
+          title="This basket cannot enter checkout yet."
+          description={error || cartSummary.blockingReason || cartSummary.helperText}
+        />
+        <div className="grid gap-6 lg:grid-cols-[1.02fr,0.98fr]">
+          <EmptyState
+            title="Settlement is paused"
+            body={cartSummary.helperText}
+            ctaHref="/cart"
+            ctaLabel="Return to cart"
+          />
+          <section className="market-paper rounded-[2rem] p-6 sm:p-8">
+            <p className="market-kicker">Why HenryCo is blocking this checkout</p>
+            <div className="mt-5 space-y-4 text-sm leading-7 text-[var(--market-muted)]">
+              <p>
+                {cartSummary.mixedPricing
+                  ? `This basket currently mixes ${cartSummary.currencies.join(", ")} pricing. HenryCo Marketplace does not merge multi-currency baskets into one payment session yet.`
+                  : cartSummary.blockingReason}
+              </p>
+              <p>
+                Display currency can be localized, but settlement must stay honest. HenryCo Marketplace still settles through its live NGN-first rail.
+              </p>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/cart" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
+                Fix basket
+              </Link>
+              <Link href="/search" className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
+                Browse supported pricing
+              </Link>
+            </div>
+          </section>
+        </div>
       </div>
     );
   }
@@ -77,7 +146,7 @@ export default async function CheckoutPage() {
     );
   }
 
-  const estimatedShipping = cart.subtotal > 350000 ? 0 : 18000;
+  const estimatedShipping = cartSummary.shipping ?? 0;
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
@@ -138,6 +207,9 @@ export default async function CheckoutPage() {
                   <span className="block text-sm leading-7 text-[var(--market-muted)]">
                     Upload your receipt after transfer. The payment team reviews it and your order timeline updates across notifications and tracking.
                   </span>
+                  <span className="block text-xs leading-6 text-[var(--market-muted)]">
+                    {bankTransferCapability.paymentMessage}
+                  </span>
                 </span>
               </label>
               <label className="flex items-start gap-3 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4">
@@ -148,6 +220,9 @@ export default async function CheckoutPage() {
                   </span>
                   <span className="block text-sm leading-7 text-[var(--market-muted)]">
                     Available on eligible orders only. Seller acceptance and delivery updates will still appear in the same order timeline.
+                  </span>
+                  <span className="block text-xs leading-6 text-[var(--market-muted)]">
+                    {codCapability.paymentMessage}
                   </span>
                 </span>
               </label>
@@ -180,7 +255,7 @@ export default async function CheckoutPage() {
                   <p className="mt-1 text-[var(--market-muted)]">Qty {item.quantity}</p>
                 </div>
                 <p className="font-semibold text-[var(--market-paper-white)]">
-                  {formatCurrency(item.price * item.quantity)}
+                  {formatCurrency(item.price * item.quantity, item.currency)}
                 </p>
               </div>
             ))}
@@ -188,23 +263,25 @@ export default async function CheckoutPage() {
           <div className="mt-6 space-y-3 border-t border-[var(--market-line)] pt-5 text-sm text-[var(--market-muted)]">
             <div className="flex items-center justify-between">
               <span>Subtotal</span>
-              <span className="font-semibold text-[var(--market-paper-white)]">{formatCurrency(cart.subtotal)}</span>
+              <span className="font-semibold text-[var(--market-paper-white)]">
+                {formatCurrency(cartSummary.subtotal, cartSummary.primaryCurrency || "NGN")}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span>Shipping</span>
               <span className="font-semibold text-[var(--market-paper-white)]">
-                {estimatedShipping ? formatCurrency(estimatedShipping) : "Free"}
+                {estimatedShipping ? formatCurrency(estimatedShipping, cartSummary.primaryCurrency || "NGN") : "Free"}
               </span>
             </div>
             <div className="flex items-center justify-between text-base">
               <span className="font-semibold text-[var(--market-paper-white)]">Estimated total</span>
               <span className="font-semibold text-[var(--market-paper-white)]">
-                {formatCurrency(cart.subtotal + estimatedShipping)}
+                {formatCurrency(cartSummary.grandTotal ?? cartSummary.subtotal + estimatedShipping, cartSummary.primaryCurrency || "NGN")}
               </span>
             </div>
           </div>
           <div className="mt-6 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-sm leading-7 text-[var(--market-muted)]">
-            Payment reminders, review updates, shipping notices, and support history all stay in the same order timeline.
+            {cartSummary.helperText} Payment reminders, review updates, shipping notices, and support history all stay in the same order timeline.
           </div>
           <Link href="/trust" className="mt-6 inline-block text-sm font-semibold text-[var(--market-brass)]">
             Review trust and moderation standards

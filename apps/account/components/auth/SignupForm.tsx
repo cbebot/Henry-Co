@@ -15,6 +15,7 @@ const COUNTRIES = getActiveCountries().map((country) => ({
   dial: country.phonePrefix,
   currency: country.currencyCode,
   timezone: country.timezone,
+  locale: country.locale,
 }));
 
 const CONTACT_PREFS = [
@@ -41,6 +42,7 @@ export default function SignupForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reviewNote, setReviewNote] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -51,6 +53,7 @@ export default function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setReviewNote(null);
 
     if (!fullName.trim()) { setError("Full name is required."); return; }
     if (!email.trim()) { setError("Email is required."); return; }
@@ -62,6 +65,37 @@ export default function SignupForm() {
     try {
       const supabase = createSupabaseBrowser();
       const fullPhone = phone.trim() ? `${selectedCountry?.dial || ""}${phone.trim().replace(/^0+/, "")}` : null;
+      const preflightResponse = await fetch("/api/auth/preflight", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          phone: fullPhone,
+        }),
+      });
+
+      if (preflightResponse.ok) {
+        const preflight = (await preflightResponse.json()) as {
+          emailExists?: boolean;
+          phoneReviewRequired?: boolean;
+          reasons?: string[];
+        };
+
+        if (preflight.emailExists) {
+          setError(
+            preflight.reasons?.[0] ||
+              "This email already belongs to a HenryCo account. Sign in or reset your password instead."
+          );
+          return;
+        }
+
+        if (preflight.phoneReviewRequired) {
+          setReviewNote(
+            preflight.reasons?.find((reason) => reason.toLowerCase().includes("phone")) ||
+              "This phone number is already linked to another HenryCo account. You can still create a basic account, but higher-trust actions will stay under manual review until ownership is confirmed."
+          );
+        }
+      }
 
       const { error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
@@ -74,6 +108,7 @@ export default function SignupForm() {
             contact_preference: contactPref,
             currency: selectedCountry?.currency || "NGN",
             timezone: selectedCountry?.timezone || "Africa/Lagos",
+            language: selectedCountry?.locale || "en",
           },
         },
       });
@@ -97,6 +132,11 @@ export default function SignupForm() {
         <p className="mt-2 text-sm text-[var(--acct-muted)]">
           We&apos;ve sent a verification link to <strong>{email}</strong>. Click it to activate your account.
         </p>
+        {reviewNote ? (
+          <div className="mt-4 rounded-xl border border-[var(--acct-gold)]/20 bg-[var(--acct-gold-soft)] px-4 py-3 text-left text-xs leading-relaxed text-[var(--acct-muted)]">
+            {reviewNote}
+          </div>
+        ) : null}
         <button onClick={() => router.push(buildLoginHref(next))} className="acct-button-secondary mt-4">
           Back to sign in
         </button>
@@ -111,6 +151,11 @@ export default function SignupForm() {
           {error}
         </div>
       )}
+      {reviewNote ? (
+        <div className="mb-4 rounded-xl border border-[var(--acct-gold)]/20 bg-[var(--acct-gold-soft)] px-4 py-3 text-sm text-[var(--acct-muted)]">
+          {reviewNote}
+        </div>
+      ) : null}
 
       <div className="space-y-4">
         <div>

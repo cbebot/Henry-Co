@@ -3,6 +3,11 @@ import "server-only";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail } from "@/lib/env";
 import { DEFAULT_PIPELINE, JOBS_DIFFERENTIATORS, JOBS_STAGE_ORDER } from "@/lib/jobs/content";
+import {
+  buildCandidateTrustPassport,
+  buildEmployerTrustPassport,
+  buildJobTrustPassport,
+} from "@/lib/jobs/trust";
 import type {
   ApplicationJourney,
   ApplicationStageStep,
@@ -121,18 +126,6 @@ function calculateCompletionScore(input: {
   if (asObjectArray(input.profile.education).length > 0) score += 8;
   if (asStringArray(input.profile.portfolioLinks).length > 0) score += 6;
   if (input.documents.some((doc) => doc.kind === "resume")) score += 16;
-  return Math.min(score, 100);
-}
-
-function calculateTrustScore(input: {
-  completionScore: number;
-  verificationStatus: string;
-  documents: CandidateDocument[];
-}) {
-  let score = input.completionScore;
-  if (input.verificationStatus === "verified") score += 18;
-  if (input.documents.some((doc) => doc.kind === "certification")) score += 6;
-  if (input.documents.some((doc) => doc.kind === "portfolio")) score += 4;
   return Math.min(score, 100);
 }
 
@@ -583,6 +576,27 @@ function buildEmployerProfile(input: {
     ...asStringArray(verification.verificationNotes),
     asString(verification.reason || verificationRow?.description),
   ].filter(Boolean);
+  const trustPassport = buildEmployerTrustPassport({
+    slug,
+    verificationStatus,
+    trustScore: Math.min(
+      asNumber(
+        verification.trustScore,
+        asNumber(profile.trustScore, verificationStatus === "verified" ? 82 : 54)
+      ),
+      100
+    ),
+    responseSlaHours: Math.max(asNumber(profile.responseSlaHours, 24), 0),
+    website: asNullableString(profile.website || company?.href),
+    locations: asStringArray(profile.locations),
+    culturePoints: asStringArray(profile.culturePoints),
+    verificationNotes,
+    openRoleCount: input.openRoleCount,
+    benefitsHeadline: asString(
+      profile.benefitsHeadline,
+      "Clear process, responsive communication, and serious hiring intent."
+    ),
+  });
 
   return {
     slug,
@@ -605,13 +619,7 @@ function buildEmployerProfile(input: {
     ),
     culturePoints: asStringArray(profile.culturePoints),
     verificationStatus,
-    trustScore: Math.min(
-      asNumber(
-        verification.trustScore,
-        asNumber(profile.trustScore, verificationStatus === "verified" ? 82 : 54)
-      ),
-      100
-    ),
+    trustScore: trustPassport.score,
     responseSlaHours: Math.max(asNumber(profile.responseSlaHours, 24), 0),
     employerType: asBoolean(profile.internal, profile.employerType === "internal" || slug.startsWith("henryco"))
       ? "internal"
@@ -619,6 +627,7 @@ function buildEmployerProfile(input: {
     openRoleCount: input.openRoleCount,
     verificationNotes,
     updatedAt: asNullableString(profile.updatedAt || verification.updatedAt || profileRow?.created_at || company?.updated_at),
+    trustPassport,
   };
 }
 
@@ -639,8 +648,7 @@ function buildJobPost(input: {
   const salaryMax = asNullableNumber(content.salaryMax);
   const currency = asString(content.currency, "NGN");
   const slug = asString(content.slug || row.reference_id || row.id);
-
-  return {
+  const jobBase = {
     id: asString(row.id),
     slug,
     title: asString(content.title || row.title),
@@ -687,6 +695,21 @@ function buildJobPost(input: {
     postedAt: asString(content.postedAt || row.created_at, new Date().toISOString()),
     closesAt: asNullableString(content.closesAt),
     applicationCount: input.applicationCount,
+  } satisfies Omit<JobPost, "trustPassport">;
+
+  return {
+    ...jobBase,
+    trustPassport: buildJobTrustPassport({
+      employerName,
+      employerVerification: jobBase.employerVerification,
+      employerTrustScore: jobBase.employerTrustScore,
+      moderationStatus: jobBase.moderationStatus,
+      salaryMin,
+      salaryMax,
+      pipelineStages: jobBase.pipelineStages,
+      trustHighlights: jobBase.trustHighlights,
+      internal: jobBase.internal,
+    }),
   };
 }
 
@@ -877,7 +900,7 @@ export async function getEmployerMembershipsByUser(
 
 export async function getCandidateProfileByUserId(userId: string): Promise<CandidateProfile | null> {
   const admin = createAdminSupabase();
-  const [baseRes, profileRes, docsRes] = await Promise.all([
+  const [baseRes, profileRes, docsRes, applicationsRes, securityRes] = await Promise.all([
     admin.from("customer_profiles").select("*").eq("id", userId).maybeSingle(),
     admin
       .from("customer_activity")
@@ -894,6 +917,20 @@ export async function getCandidateProfileByUserId(userId: string): Promise<Candi
       .eq("division", JOBS_DIVISION)
       .eq("user_id", userId)
       .order("created_at", { ascending: false }),
+    admin
+      .from("customer_activity")
+      .select("status, metadata")
+      .eq("division", JOBS_DIVISION)
+      .eq("activity_type", JOBS_ACTIVITY_APPLICATION)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(30),
+    admin
+      .from("customer_security_log")
+      .select("event_type, risk_level, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(40),
   ]);
 
   const base = asObject(baseRes.data);
@@ -916,7 +953,15 @@ export async function getCandidateProfileByUserId(userId: string): Promise<Candi
     ((asNullableString(profile.verificationStatus) ||
       (asBoolean(base.is_verified) ? "verified" : completionScore >= 70 ? "ready" : "unverified")) as CandidateProfile["verificationStatus"]) ||
     "unverified";
-  const trustScore = calculateTrustScore({ completionScore, verificationStatus, documents });
+  const trustPassport = buildCandidateTrustPassport({
+    completionScore,
+    verificationStatus,
+    documents,
+    profile,
+    applications: (applicationsRes.data ?? []) as Array<Record<string, unknown>>,
+    securityEvents: (securityRes.data ?? []) as Array<Record<string, unknown>>,
+  });
+  const trustScore = trustPassport.score;
 
   return {
     userId,
@@ -943,6 +988,7 @@ export async function getCandidateProfileByUserId(userId: string): Promise<Candi
     verificationStatus,
     readinessLabel: getReadinessLabel(trustScore),
     updatedAt: asNullableString(profile.updatedAt || profileRow.created_at),
+    trustPassport,
   };
 }
 

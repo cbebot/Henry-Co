@@ -49,6 +49,7 @@ export default function ProfileForm({ profile, email }: Props) {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [contactReviewNote, setContactReviewNote] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const selectedCountry = getCountry(country) || getCountry("NG")!;
@@ -80,6 +81,7 @@ export default function ProfileForm({ profile, email }: Props) {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+    setContactReviewNote(null);
 
     try {
       const res = await fetch("/api/profile/update", {
@@ -98,6 +100,12 @@ export default function ProfileForm({ profile, email }: Props) {
       if (!res.ok) throw new Error(data.error || "Failed to update");
 
       setMessage({ type: "success", text: "Profile updated" });
+      if (data.contact_review?.reviewRequired) {
+        setContactReviewNote(
+          data.contact_review.reasons?.[0] ||
+            "A shared contact detail was detected. Higher-trust actions stay under manual review until ownership is confirmed."
+        );
+      }
       router.refresh();
     } catch (err: unknown) {
       setMessage({ type: "error", text: err instanceof Error ? err.message : "Something went wrong" });
@@ -119,6 +127,11 @@ export default function ProfileForm({ profile, email }: Props) {
           {message.text}
         </div>
       )}
+      {contactReviewNote ? (
+        <div className="rounded-xl border border-[var(--acct-gold)]/20 bg-[var(--acct-gold-soft)] px-4 py-3 text-sm text-[var(--acct-muted)]">
+          {contactReviewNote}
+        </div>
+      ) : null}
 
       {/* Avatar */}
       <div className="flex items-center gap-5">

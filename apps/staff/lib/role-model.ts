@@ -1,0 +1,190 @@
+import type { OpsTone } from "@/lib/ops-types";
+
+export type WorkforceRoleBoundary = {
+  id: string;
+  title: string;
+  division: string;
+  tone: OpsTone;
+  canSee: string[];
+  canDo: string[];
+  cannotDo: string[];
+  queue: string;
+  escalates: string[];
+  logs: string[];
+  ownerSummary: string[];
+};
+
+export const WORKFORCE_ROLE_MODEL: WorkforceRoleBoundary[] = [
+  {
+    id: "owner",
+    title: "Owner",
+    division: "Cross-division",
+    tone: "critical",
+    canSee: [
+      "Cross-division health, trust exceptions, neglected queues, and finance truth gaps.",
+      "Sensitive moderation, payout, dispute, and override activity across all divisions.",
+    ],
+    canDo: [
+      "Override only the highest-severity trust, payout, and staffing exceptions.",
+      "Review daily and weekly operational summaries with direct drill-down into live workflows.",
+    ],
+    cannotDo: [
+      "Silently bypass audit logging or mutate financial truth without leaving a paper trail.",
+    ],
+    queue: "Executive command, unresolved escalations, and cross-division incidents.",
+    escalates: ["Board-level or legal/compliance events outside normal operator control."],
+    logs: ["Owner override reason", "Affected entity", "Operator chain", "Timestamp"],
+    ownerSummary: ["Critical incidents", "Neglected queues", "Override patterns", "Division throughput"],
+  },
+  {
+    id: "executive_ops",
+    title: "Executive Operations / Command",
+    division: "Cross-division",
+    tone: "warning",
+    canSee: [
+      "Operations center, queue age, stale support, alert backlogs, and staff responsiveness.",
+    ],
+    canDo: [
+      "Route escalations, assign follow-up ownership, and pressure-test queue neglect before it becomes a customer incident.",
+    ],
+    cannotDo: [
+      "Approve payouts or moderation overrides without the relevant finance or compliance authority.",
+    ],
+    queue: "Cross-division queue pressure and neglected work.",
+    escalates: ["Owner", "Finance review", "Compliance"],
+    logs: ["Escalation destination", "Reason", "Queue age evidence"],
+    ownerSummary: ["Stuck work", "Response discipline", "Cross-division anomaly routing"],
+  },
+  {
+    id: "manager",
+    title: "Manager",
+    division: "Division leadership",
+    tone: "warning",
+    canSee: ["Owned division queues, staff performance, and active escalations within the division."],
+    canDo: [
+      "Approve ordinary workflow steps, reassign work, and intervene on stale queues inside the division boundary.",
+    ],
+    cannotDo: ["Cross-division finance overrides", "Silent trust-critical changes"],
+    queue: "Division backlog, staffing load, and escalation handoff.",
+    escalates: ["Owner", "Executive operations", "Compliance if trust or policy risk appears"],
+    logs: ["Assignment changes", "Approvals", "Reasons for escalations"],
+    ownerSummary: ["Queue discipline", "Approval quality", "Slow or weak staff performance"],
+  },
+  {
+    id: "support",
+    title: "Support",
+    division: "Care, Marketplace, Jobs, Learn, Property, Logistics",
+    tone: "info",
+    canSee: ["Support threads, customer timelines, and division-specific next steps."],
+    canDo: ["Respond, resolve, escalate, add internal notes, and keep customer-facing promises current."],
+    cannotDo: ["Moderation decisions", "Payout release", "Trust-score overrides"],
+    queue: "Customer support and follow-up tasks.",
+    escalates: ["Manager", "Moderation", "Finance when money or trust is involved"],
+    logs: ["Responses", "Internal notes", "Escalation reasons"],
+    ownerSummary: ["Backlog age", "Response speed", "Resolution quality"],
+  },
+  {
+    id: "moderation",
+    title: "Moderator / Trust / Compliance",
+    division: "Marketplace, Jobs, Property, Learn",
+    tone: "critical",
+    canSee: ["Trust passports, suspicious patterns, review authenticity, and publication gates."],
+    canDo: ["Approve, reject, hold, flag, escalate, and document trust-sensitive decisions."],
+    cannotDo: ["Release money without finance authority", "Hide serious exceptions from owner visibility"],
+    queue: "Publication review, trust alerts, review authenticity, and risk spikes.",
+    escalates: ["Owner", "Executive operations", "Finance if payout or refund risk appears"],
+    logs: ["Decision reason", "Before/after state", "Evidence", "Reviewer identity"],
+    ownerSummary: ["Risk spikes", "Override behavior", "Moderation quality drift"],
+  },
+  {
+    id: "finance",
+    title: "Finance / Payout / Payment Review",
+    division: "Marketplace, Care, Studio, Logistics, Shared account",
+    tone: "critical",
+    canSee: ["Payment proofs, payout queues, wallet truth, invoice context, and settlement exceptions."],
+    canDo: ["Verify, hold, release, reject, refund where policy allows, and annotate financial decisions."],
+    cannotDo: ["Invent unsupported settlement rails", "Mutate balances without audit context"],
+    queue: "Pending finance decisions, ledger truth gaps, and settlement exceptions.",
+    escalates: ["Owner", "Compliance", "Support when customer communication is required"],
+    logs: ["Decision, amount, settlement context, note, reviewer identity"],
+    ownerSummary: ["Pending payouts", "Ledger truth gaps", "Refund and dispute pressure"],
+  },
+  {
+    id: "marketplace_ops",
+    title: "Marketplace Operations",
+    division: "Marketplace",
+    tone: "warning",
+    canSee: ["Seller applications, listing approvals, order exceptions, disputes, and review queues."],
+    canDo: ["Approve, reject, route, and follow exact Marketplace operator workflows."],
+    cannotDo: ["Bypass moderation or finance checkpoints"],
+    queue: "Seller review, catalog review, disputes, payouts, and notification failures.",
+    escalates: ["Finance", "Moderation", "Owner alerts"],
+    logs: ["Application decisions", "Product moderation", "Dispute notes", "Payout actions"],
+    ownerSummary: ["Seller backlog", "Dispute pressure", "Trust-passport anomalies"],
+  },
+  {
+    id: "jobs_ops",
+    title: "Jobs Operations",
+    division: "Jobs",
+    tone: "warning",
+    canSee: ["Candidate flow, employer verification, recruiter queue, anti-bypass signals, and moderation review."],
+    canDo: ["Review job posts, inspect trust passports, route suspicious hiring activity, and work recruiter queues."],
+    cannotDo: ["Grant recruiter/moderator power through profile shortcuts", "Hide moderation exceptions"],
+    queue: "Applications, employer verification, post moderation, and alert failures.",
+    escalates: ["Owner", "Compliance", "Recruiter leadership"],
+    logs: ["Moderation decisions", "Verification review", "Escalation reasons"],
+    ownerSummary: ["Hiring risk", "Queue neglect", "Weak recruiter follow-through"],
+  },
+  {
+    id: "care_ops",
+    title: "Care Operations",
+    division: "Care",
+    tone: "info",
+    canSee: ["Bookings, rider/service issues, support escalations, and payment follow-up."],
+    canDo: ["Resolve service exceptions, schedule follow-up, and escalate trust or finance-sensitive cases."],
+    cannotDo: ["Marketplace or jobs moderation decisions"],
+    queue: "Bookings, rider issues, and care support backlog.",
+    escalates: ["Manager", "Finance", "Owner when systemic service failures appear"],
+    logs: ["Booking updates", "Support notes", "Resolution outcomes"],
+    ownerSummary: ["Service exceptions", "Queue age", "Payment follow-up pressure"],
+  },
+  {
+    id: "logistics_ops",
+    title: "Logistics Operations / Rider Control",
+    division: "Logistics",
+    tone: "warning",
+    canSee: ["Dispatch, route exceptions, proof issues, and failed delivery handling."],
+    canDo: ["Dispatch, reassign, escalate failed proof, and annotate route recovery work."],
+    cannotDo: ["Silent proof overrides without audit evidence"],
+    queue: "Dispatch, failed delivery, and proof recovery.",
+    escalates: ["Manager", "Finance", "Owner for systemic delivery failure"],
+    logs: ["Dispatch change", "Proof review", "Failed-delivery notes"],
+    ownerSummary: ["Route exceptions", "Proof failure rate", "Dispatch responsiveness"],
+  },
+  {
+    id: "studio_delivery",
+    title: "Studio Operations / Delivery",
+    division: "Studio",
+    tone: "info",
+    canSee: ["Proposals, milestones, deliverables, client feedback, blockers, and handoffs."],
+    canDo: ["Track progress, escalate blockers, document notes, and keep delivery state clean."],
+    cannotDo: ["Payout override outside studio finance policy"],
+    queue: "Milestones, blockers, deliverable review, and client feedback.",
+    escalates: ["Project manager", "Studio finance", "Owner for delivery risk"],
+    logs: ["Milestone movement", "Internal note", "Blocker routing"],
+    ownerSummary: ["Project risk", "Delivery slippage", "Client feedback themes"],
+  },
+  {
+    id: "developer_workspace",
+    title: "Developer / Studio Production",
+    division: "Studio / Internal platform",
+    tone: "success",
+    canSee: ["Project progress, blockers, handoffs, issue logs, and deployment awareness."],
+    canDo: ["Move delivery work, note blockers, and maintain project execution evidence."],
+    cannotDo: ["Mutate client finance records without studio finance approval"],
+    queue: "Active builds, handoff risk, blocker clearing, and release awareness.",
+    escalates: ["Project manager", "Owner when deployment or delivery risk is systemic"],
+    logs: ["Blocker notes", "Handoff state", "Release-linked activity"],
+    ownerSummary: ["Blocker age", "Handoff quality", "Delivery seriousness"],
+  },
+];

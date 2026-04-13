@@ -1,6 +1,7 @@
 import "server-only";
 
 import { normalizeEmail, normalizePhone } from "@henryco/config";
+import { buildInvoiceLineItemsPayload } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type OptionalString = string | null | undefined;
@@ -276,7 +277,12 @@ export async function upsertCustomerInvoice(input: {
     total_kobo: toKobo(input.total),
     currency: cleanText(input.currency) || "NGN",
     description: input.description,
-    line_items: input.lineItems ?? [],
+    line_items: buildInvoiceLineItemsPayload(input.lineItems, {
+      pricingCurrency: cleanText(input.currency) || "NGN",
+      settlementCurrency: "NGN",
+      baseCurrency: "NGN",
+      originalCurrency: cleanText(input.currency) || "NGN",
+    }),
     payment_method: cleanText(input.paymentMethod) || null,
     payment_reference: cleanText(input.paymentReference) || null,
     reference_type: cleanText(input.referenceType) || null,

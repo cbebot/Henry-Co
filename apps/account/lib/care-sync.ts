@@ -1,6 +1,7 @@
 import "server-only";
 
 import { after } from "next/server";
+import { formatMoneyMajor, withCurrencyContext } from "@henryco/i18n";
 import {
   emailsMatch,
   getDivisionUrl,
@@ -217,7 +218,7 @@ function buildNotificationBody(booking: CareBookingRow) {
   const balanceDue = sanitizeAmount(booking.balance_due);
 
   if (balanceDue > 0) {
-    return `Tracking ${booking.tracking_code || booking.id} is available in your account. Outstanding balance: ₦${balanceDue.toLocaleString()}.`;
+    return `Tracking ${booking.tracking_code || booking.id} is available in your account. Outstanding balance: ${formatMoneyMajor(balanceDue, "NGN")}.`;
   }
 
   return `Tracking ${booking.tracking_code || booking.id} is available in your account with live service status.`;
@@ -253,7 +254,7 @@ function buildNextAction(booking: CareBookingRow, paymentRequest: CarePaymentReq
     label: "Pay and upload receipt",
     description:
       balanceDue > 0
-        ? `Outstanding balance: ₦${balanceDue.toLocaleString()}. Upload the receipt once payment is complete.`
+        ? `Outstanding balance: ${formatMoneyMajor(balanceDue, "NGN")}. Upload the receipt once payment is complete.`
         : "Open the booking and confirm the current payment instructions.",
     href: trackUrl,
     tone: "warning",
@@ -434,11 +435,16 @@ async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBo
       description: buildActivityDescription(booking),
       status: booking.status || null,
       action_url: actionUrl,
-      metadata: {
+      metadata: withCurrencyContext({
         tracking_code: booking.tracking_code,
         balance_due: sanitizeAmount(booking.balance_due),
         synced_via: "care_identity_reconciliation",
-      },
+      }, {
+        pricingCurrency: "NGN",
+        settlementCurrency: "NGN",
+        baseCurrency: "NGN",
+        originalCurrency: "NGN",
+      }),
     };
     const notificationPayload = {
       title: "Care booking available in your account",

@@ -460,6 +460,35 @@ export async function StaffResourcePage({
                 <p className="market-kicker">{review.verifiedPurchase ? "verified purchase" : "manual review"}</p>
                 <h2 className="mt-3 text-xl font-semibold tracking-tight text-[var(--market-ink)]">{review.title}</h2>
                 <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{review.body}</p>
+                <div className="mt-4 flex flex-wrap gap-3 text-xs uppercase tracking-[0.16em] text-[var(--market-muted)]">
+                  <span>{review.status}</span>
+                  <span>{review.rating}/5</span>
+                  <span>{review.vendorSlug}</span>
+                </div>
+                <form action="/api/marketplace" method="POST" className="mt-4 flex flex-wrap gap-3">
+                  <input type="hidden" name="intent" value="moderation_review_decision" />
+                  <input type="hidden" name="review_id" value={review.id} />
+                  <input type="hidden" name="return_to" value={`${root}/${resource}`} />
+                  <input
+                    name="review_note"
+                    className="market-input min-w-[220px] rounded-full px-4 py-2"
+                    placeholder="Moderation note"
+                  />
+                  <button
+                    name="decision"
+                    value="publish"
+                    className="market-button-primary rounded-full px-4 py-2 text-sm font-semibold"
+                  >
+                    Publish
+                  </button>
+                  <button
+                    name="decision"
+                    value="hide"
+                    className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+                  >
+                    Hide
+                  </button>
+                </form>
               </article>
             ))
           ) : (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
+import { resolveCurrencyTruth } from "@henryco/i18n";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
@@ -17,6 +18,11 @@ export default async function ProductPage({
   const { slug } = await params;
   const data = await getMarketplaceProductBySlug(slug);
   if (!data) notFound();
+  const currencyTruth = resolveCurrencyTruth({
+    detectedCurrency: data.product.currency,
+    pricingCurrency: data.product.currency,
+  });
+  const productPassport = data.product.trustPassport;
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-8 pb-28 sm:px-6 xl:px-8">
@@ -50,6 +56,9 @@ export default async function ProductPage({
                     {formatCurrency(data.product.compareAtPrice, data.product.currency)}
                   </p>
                 ) : null}
+                <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
+                  {currencyTruth.settlementMessage}
+                </p>
               </div>
               <div className="space-y-1 text-right text-sm text-[var(--market-muted)]">
                 <p>{data.product.leadTime}</p>
@@ -115,14 +124,14 @@ export default async function ProductPage({
           </article>
 
           <article className="market-panel rounded-[2rem] p-6">
-            <p className="market-kicker">Why this listing feels safer</p>
+            <p className="market-kicker">Listing trust passport</p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {[
+              {(productPassport?.signals.map((signal) => `${signal.label}: ${signal.value}. ${signal.detail}`) || [
                 `${data.product.stock} units currently visible to inventory`,
                 data.product.codEligible ? "Cash on delivery eligible where supported" : "Manual verification flow available",
                 data.vendor ? `${data.vendor.name} seller passport is linked directly from this page` : "Vendor trust surface is still pending linkage",
                 `${data.product.reviewCount} review${data.product.reviewCount === 1 ? "" : "s"} at ${data.product.rating.toFixed(1)} average rating`,
-              ].map((item) => (
+              ]).map((item) => (
                 <div
                   key={item}
                   className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]"
@@ -131,6 +140,11 @@ export default async function ProductPage({
                 </div>
               ))}
             </div>
+            {productPassport?.warnings.length ? (
+              <div className="mt-4 rounded-[1.35rem] border border-[rgba(255,171,151,0.2)] bg-[rgba(126,33,18,0.08)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]">
+                {productPassport.warnings.join(" ")}
+              </div>
+            ) : null}
           </article>
         </div>
       </section>
