@@ -43,7 +43,7 @@ alter table public.customer_verification_submissions enable row level security;
 drop trigger if exists customer_verification_submissions_updated_at on public.customer_verification_submissions;
 create trigger customer_verification_submissions_updated_at
 before update on public.customer_verification_submissions
-for each row execute function public.account_set_updated_at();
+for each row execute function public.handle_updated_at();
 
 -- Index for admin queries filtering by verification status.
 create index if not exists customer_profiles_verification_status_idx

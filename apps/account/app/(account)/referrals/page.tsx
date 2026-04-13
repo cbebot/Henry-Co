@@ -59,7 +59,7 @@ export default async function ReferralsPage() {
   ]);
 
   const referralsWithReferee = referrals.filter(
-    (r: Record<string, unknown>) => r.referred_user_id != null || r.status === "flagged"
+    (r: Record<string, unknown>) => r.referee_id != null || r.status === "flagged"
   );
 
   return (
@@ -235,8 +235,8 @@ export default async function ReferralsPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                        {referral.referred_email_normalized
-                          ? String(referral.referred_email_normalized)
+                        {referral.referee_email
+                          ? String(referral.referee_email)
                           : "Referred signup"}
                       </p>
                       <p className="text-xs text-[var(--acct-muted)]">
@@ -277,7 +277,7 @@ export default async function ReferralsPage() {
         ) : (
           <div className="acct-card divide-y divide-[var(--acct-line)]">
             {rewards.map((reward: Record<string, string | number | null>) => {
-              const status = String(reward.reward_status || "held");
+              const status = String(reward.status || "held");
               return (
                 <div
                   key={reward.id as string}
@@ -296,8 +296,8 @@ export default async function ReferralsPage() {
                       {reward.created_at
                         ? formatDate(reward.created_at as string)
                         : ""}
-                      {reward.released_at
-                        ? ` · Released ${formatDate(reward.released_at as string)}`
+                      {reward.paid_at
+                        ? ` · Paid ${formatDate(reward.paid_at as string)}`
                         : ""}
                     </p>
                   </div>
