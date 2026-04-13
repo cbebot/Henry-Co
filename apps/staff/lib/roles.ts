@@ -1,5 +1,6 @@
 import "server-only";
 
+import { DIVISION_ROLE_CATALOG } from "@/lib/types";
 import type {
   DivisionRole,
   PlatformRoleFamily,
@@ -389,8 +390,15 @@ export function normalizeLegacyDivisionRoles(
   division: WorkspaceDivision,
   rawRole: string | null | undefined
 ) {
+  const normalized = String(rawRole || "").trim().toLowerCase();
+  const directRoles = DIVISION_ROLE_CATALOG[division] as readonly string[];
+
+  if (directRoles.includes(normalized)) {
+    return [normalized as DivisionRole];
+  }
+
   return unique(
-    LEGACY_DIVISION_ROLE_MAP[division][String(rawRole || "").trim().toLowerCase()] ?? []
+    LEGACY_DIVISION_ROLE_MAP[division][normalized] ?? []
   );
 }
 

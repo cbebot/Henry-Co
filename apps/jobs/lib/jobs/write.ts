@@ -26,6 +26,10 @@ import {
 } from "@/lib/jobs/data";
 import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
 import {
+  syncJobsCandidateTrustSnapshot,
+  syncJobsEmployerTrustSnapshot,
+} from "@/lib/jobs/trust-state";
+import {
   createJobsInAppNotification,
   sendJobsEmail,
   sendJobsWhatsApp,
@@ -482,6 +486,13 @@ export async function saveCandidateProfile(input: {
 
   await ensurePreferences(input.actor.userId);
 
+  await syncJobsCandidateTrustSnapshot({
+    userId: input.actor.userId,
+    actor: input.actor,
+    reason: "Candidate profile saved.",
+    changeSource: "candidate_profile_saved",
+  });
+
   await logAudit({
     actor: input.actor,
     action: "jobs_candidate_profile_saved",
@@ -539,6 +550,13 @@ export async function uploadCandidateAsset(input: {
       name: input.file.name,
       fileUrl: uploaded.secureUrl,
     },
+  });
+
+  await syncJobsCandidateTrustSnapshot({
+    userId: input.actor.userId,
+    actor: input.actor,
+    reason: `Candidate ${input.kind} asset uploaded.`,
+    changeSource: "candidate_document_uploaded",
   });
 
   return data;
@@ -742,6 +760,13 @@ export async function submitApplication(input: {
       ],
     } as never);
   }
+
+  await syncJobsCandidateTrustSnapshot({
+    userId: input.actor.userId,
+    actor: input.actor,
+    reason: `Application submitted for ${job.title}.`,
+    changeSource: "jobs_application_submitted",
+  });
 
   await createJobsInAppNotification({
     userId: input.actor.userId,
@@ -976,6 +1001,13 @@ export async function createEmployerProfile(input: {
     referenceType: "jobs_employer",
     referenceId: slug,
     actionUrl: "/employer/company",
+  });
+
+  await syncJobsEmployerTrustSnapshot({
+    employerSlug: slug,
+    actor: input.actor,
+    reason: "Employer profile created and submitted for verification.",
+    changeSource: "jobs_employer_created",
   });
 
   await createJobsInAppNotification({
@@ -1307,6 +1339,15 @@ export async function advanceApplicationStage(input: {
     } as never);
   }
 
+  if (existing.candidateUserId) {
+    await syncJobsCandidateTrustSnapshot({
+      userId: existing.candidateUserId,
+      actor: input.actor,
+      reason: `Application moved to ${input.stage}.`,
+      changeSource: "jobs_application_stage_changed",
+    });
+  }
+
   await createJobsInAppNotification({
     userId: existing.candidateUserId,
     title: `Application moved to ${input.stage}`,
@@ -1415,6 +1456,9 @@ export async function updateEmployerVerification(input: {
   reason?: string | null;
 }) {
   const admin = createAdminSupabase();
+  const previousEmployer = (
+    await getEmployerProfileBySlug(input.employerSlug, { includeUnpublished: true })
+  )?.employer;
   const { data: profileRow } = await admin
     .from("customer_activity")
     .select("*")
@@ -1503,6 +1547,28 @@ export async function updateEmployerVerification(input: {
       } as never)
       .eq("id", item.id);
   }
+
+  await syncJobsEmployerTrustSnapshot({
+    employerSlug: input.employerSlug,
+    actor: input.actor,
+    reason: input.reason || `Employer verification changed to ${input.status}.`,
+    changeSource: "jobs_employer_verification_override",
+    override: {
+      key: "verification_status",
+      oldValue: {
+        status: previousEmployer?.verificationStatus ?? null,
+        trustScore: previousEmployer?.trustScore ?? null,
+      },
+      newValue: {
+        status: input.status,
+        trustScore,
+      },
+      reason: input.reason || `Employer verification changed to ${input.status}.`,
+      metadata: {
+        employerName,
+      },
+    },
+  });
 
   const { data: employerMembers } = await admin
     .from("customer_activity")

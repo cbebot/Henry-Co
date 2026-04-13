@@ -6,6 +6,21 @@ export type JobsRole =
   | "owner"
   | "moderator";
 
+export type JobsStaffMembershipRole =
+  | "recruiter"
+  | "employer_success"
+  | "jobs_support"
+  | "jobs_moderator"
+  | "internal_recruitment_coordinator"
+  | "talent_success";
+
+export type JobsStaffMembership = {
+  id: string;
+  role: JobsStaffMembershipRole;
+  scopeType: string;
+  scopeId: string | null;
+};
+
 export type StageTone = "neutral" | "good" | "warn" | "danger";
 
 export type TrustSignalTone = StageTone;
@@ -44,6 +59,7 @@ export type JobsViewer = {
   normalizedEmail: string | null;
   internalRole: string | null;
   roles: JobsRole[];
+  staffMemberships: JobsStaffMembership[];
   employerMemberships: EmployerMembership[];
   candidateProfile: CandidateProfile | null;
 };

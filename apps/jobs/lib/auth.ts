@@ -6,15 +6,74 @@ import { isRecoverableSupabaseAuthError, resolveUserAvatarFromSources } from "@h
 import { getSharedAccountLoginUrl, normalizeJobsPath } from "@/lib/account";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getCandidateProfileByUserId, getEmployerMembershipsByUser, getInternalProfile } from "@/lib/jobs/data";
-import type { JobsRole, JobsViewer } from "@/lib/jobs/types";
+import type { JobsRole, JobsStaffMembership, JobsViewer } from "@/lib/jobs/types";
 
 function uniqueRoles(roles: JobsRole[]) {
   return [...new Set(roles)];
 }
 
+function uniqueStaffMemberships(memberships: JobsStaffMembership[]) {
+  const seen = new Set<string>();
+
+  return memberships.filter((membership) => {
+    const key = `${membership.role}:${membership.scopeType}:${membership.scopeId || ""}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
+function hasStaffRole(memberships: JobsStaffMembership[], allowed: JobsStaffMembership["role"][]) {
+  return memberships.some((membership) => allowed.includes(membership.role));
+}
+
+async function getJobsStaffMemberships(
+  supabase: Awaited<ReturnType<typeof createSupabaseServer>>,
+  userId: string,
+  normalizedEmail: string | null
+): Promise<JobsStaffMembership[]> {
+  const byUserPromise = supabase
+    .from("jobs_role_memberships")
+    .select("id, role, scope_type, scope_id")
+    .eq("is_active", true)
+    .eq("user_id", userId);
+
+  const byEmailPromise = normalizedEmail
+    ? supabase
+        .from("jobs_role_memberships")
+        .select("id, role, scope_type, scope_id")
+        .eq("is_active", true)
+        .eq("normalized_email", normalizedEmail)
+    : Promise.resolve({ data: [], error: null });
+
+  const [byUser, byEmail] = await Promise.all([byUserPromise, byEmailPromise]);
+  const rows = [...(byUser.data ?? []), ...(byEmail.data ?? [])];
+
+  return uniqueStaffMemberships(
+    rows.map((row) => ({
+      id: String(row.id),
+      role: String(row.role) as JobsStaffMembership["role"],
+      scopeType: String(row.scope_type || "platform"),
+      scopeId: typeof row.scope_id === "string" && row.scope_id.trim() ? row.scope_id : null,
+    }))
+  );
+}
+
 export function viewerHasRole(viewer: JobsViewer | null | undefined, allowed: JobsRole[]) {
   if (!viewer) return false;
   return allowed.some((role) => viewer.roles.includes(role));
+}
+
+export function getJobsActorRole(viewer: JobsViewer | null | undefined) {
+  if (!viewer) return null;
+  if (viewer.roles.includes("owner")) return "owner";
+  if (viewer.roles.includes("admin")) return "admin";
+  if (viewer.roles.includes("moderator")) return "moderator";
+  if (viewer.roles.includes("recruiter")) return "recruiter";
+  if (viewer.roles.includes("employer")) return "employer";
+  return viewer.internalRole;
 }
 
 export async function getJobsViewer(): Promise<JobsViewer> {
@@ -36,16 +95,18 @@ export async function getJobsViewer(): Promise<JobsViewer> {
       normalizedEmail: null,
       internalRole: null,
       roles: [],
+      staffMemberships: [],
       employerMemberships: [],
       candidateProfile: null,
     };
   }
 
   const normalized = normalizeEmail(user.email);
-  const [{ profile, ownerProfile }, employerMemberships, candidateProfile] = await Promise.all([
+  const [{ profile, ownerProfile }, employerMemberships, candidateProfile, staffMemberships] = await Promise.all([
     getInternalProfile(user.id),
     getEmployerMembershipsByUser(user.id, normalized),
     getCandidateProfileByUserId(user.id),
+    getJobsStaffMemberships(supabase, user.id, normalized),
   ]);
 
   const internalRole =
@@ -61,8 +122,16 @@ export async function getJobsViewer(): Promise<JobsViewer> {
 
   if (internalRole === "owner") {
     roles.push("owner", "admin", "recruiter", "moderator");
-  } else if (internalRole === "manager") {
-    roles.push("admin", "recruiter");
+  } else if (hasStaffRole(staffMemberships, ["employer_success"])) {
+    roles.push("admin");
+  }
+
+  if (hasStaffRole(staffMemberships, ["recruiter", "internal_recruitment_coordinator"])) {
+    roles.push("recruiter");
+  }
+
+  if (hasStaffRole(staffMemberships, ["jobs_moderator"])) {
+    roles.push("moderator");
   }
 
   return {
@@ -87,6 +156,7 @@ export async function getJobsViewer(): Promise<JobsViewer> {
     normalizedEmail: normalized,
     internalRole,
     roles: uniqueRoles(roles),
+    staffMemberships,
     employerMemberships,
     candidateProfile,
   };

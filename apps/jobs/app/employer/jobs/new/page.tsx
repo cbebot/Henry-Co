@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createJobPostAction } from "@/app/actions";
-import { requireJobsRoles } from "@/lib/auth";
+import { getJobsActorRole, requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
 import { employerNav } from "@/lib/jobs/navigation";
 import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
@@ -21,7 +21,7 @@ export default async function EmployerNewJobPage() {
         userId: viewer.user!.id,
         email: viewer.user!.email,
         employerSlug: membership.employerSlug,
-        actorRole: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+        actorRole: getJobsActorRole(viewer),
       })
     : null;
 

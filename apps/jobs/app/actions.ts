@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireJobsRoles, requireJobsUser } from "@/lib/auth";
+import { getJobsActorRole, requireJobsRoles, requireJobsUser } from "@/lib/auth";
 import {
   addApplicationNote,
   advanceApplicationStage,
@@ -33,7 +33,7 @@ export async function saveCandidateProfileAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     email: viewer.user!.email,
     fullName: viewer.user!.fullName,
@@ -59,7 +59,7 @@ export async function uploadCandidateDocumentAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     kind,
     file,
@@ -80,7 +80,7 @@ export async function toggleSavedJobAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     jobSlug,
   });
@@ -99,7 +99,7 @@ export async function createJobAlertAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     label: String(formData.get("label") || "Jobs alert"),
     criteria: {
@@ -122,7 +122,7 @@ export async function submitApplicationAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     formData,
   });
@@ -140,7 +140,7 @@ export async function createEmployerProfileAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     formData,
   });
@@ -157,7 +157,7 @@ export async function createJobPostAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+      role: getJobsActorRole(viewer),
     },
     formData,
   });
@@ -175,7 +175,7 @@ export async function advanceApplicationStageAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+      role: getJobsActorRole(viewer),
     },
     applicationId: String(formData.get("applicationId") || ""),
     stage: String(formData.get("stage") || "reviewing"),
@@ -198,7 +198,7 @@ export async function addApplicationNoteAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+      role: getJobsActorRole(viewer),
     },
     applicationId: String(formData.get("applicationId") || ""),
     note: String(formData.get("note") || ""),
@@ -219,7 +219,7 @@ export async function updateEmployerVerificationAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     employerSlug: String(formData.get("employerSlug") || ""),
     status: String(formData.get("status") || "pending") as "pending" | "verified" | "watch" | "rejected",
@@ -243,7 +243,7 @@ export async function reviewJobPostAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     jobSlug: String(formData.get("jobSlug") || ""),
     moderationStatus: String(formData.get("moderationStatus") || "pending_review") as
@@ -272,7 +272,7 @@ export async function markNotificationReadAction(formData: FormData) {
       userId: viewer.user!.id,
       email: viewer.user!.email,
       fullName: viewer.user!.fullName,
-      role: viewer.internalRole,
+      role: getJobsActorRole(viewer),
     },
     notificationId: String(formData.get("notificationId") || ""),
   });
