@@ -13,6 +13,7 @@ import {
   DollarSign,
   Users,
   Settings,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -30,6 +31,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   DollarSign,
   Users,
   Settings,
+  ShieldCheck,
 };
 
 export function resolveIcon(name: string): LucideIcon {

@@ -68,6 +68,12 @@ export const staffNavItems: WorkspaceNavItem[] = [
     section: "Operations",
   },
   {
+    href: "/kyc",
+    label: "KYC Review",
+    icon: "ShieldCheck",
+    section: "Operations",
+  },
+  {
     href: "/workforce",
     label: "Workforce",
     icon: "Users",
@@ -93,6 +99,7 @@ const DIVISION_NAV_MAP: Record<string, WorkspaceDivision> = {
 
 const PERMISSION_NAV_MAP: Record<string, WorkspacePermission> = {
   "/finance": "division.finance",
+  "/kyc": "division.moderate",
   "/workforce": "staff.directory.view",
   "/settings": "settings.view",
 };

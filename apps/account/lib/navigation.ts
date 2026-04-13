@@ -20,6 +20,7 @@ import {
   Building2,
   Briefcase,
   RefreshCcw,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -53,7 +54,9 @@ export const accountNavItems: NavItem[] = [
   { href: "/logistics", label: "Logistics", icon: Truck, section: "Services" },
   { href: "/property", label: "Property", icon: Building2, section: "Services" },
   { href: "/jobs", label: "Jobs", icon: Briefcase, section: "Services" },
-  // Settings
+  // Trust & Settings
+  { href: "/referrals", label: "Referrals", icon: Users, section: "Settings" },
+  { href: "/verify", label: "Verify Identity", icon: ShieldCheck, section: "Settings" },
   { href: "/security", label: "Security", icon: Shield, section: "Settings" },
   { href: "/settings", label: "Preferences", icon: Settings, section: "Settings" },
 ];

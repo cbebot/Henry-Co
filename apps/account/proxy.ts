@@ -8,6 +8,8 @@ import {
 } from "@henryco/config";
 
 const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password", "/reset-password", "/auth/callback"];
+const REFERRAL_COOKIE_NAME = "hc_ref";
+const REFERRAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse) {
   const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
@@ -27,6 +29,20 @@ function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse) 
   }
 }
 
+function captureReferralCode(request: NextRequest, response: NextResponse) {
+  const ref = request.nextUrl.searchParams.get("ref");
+  if (!ref || ref.length > 64) return;
+  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
+  response.cookies.set(REFERRAL_COOKIE_NAME, ref, {
+    path: "/",
+    domain: cookieDomain,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: true,
+    maxAge: REFERRAL_COOKIE_MAX_AGE,
+  });
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
@@ -40,7 +56,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/auth") ||
     pathname.includes(".")
   ) {
-    return NextResponse.next();
+    const publicResponse = NextResponse.next();
+    captureReferralCode(request, publicResponse);
+    return publicResponse;
   }
 
   let response = NextResponse.next({ request });
@@ -93,6 +111,8 @@ export async function proxy(request: NextRequest) {
     loginUrl.searchParams.set("next", `${pathname}${search}`);
     return NextResponse.redirect(loginUrl);
   }
+
+  captureReferralCode(request, response);
 
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");

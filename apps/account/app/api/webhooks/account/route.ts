@@ -4,6 +4,7 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { sendAccountEmail } from "@/lib/email/send";
 import { welcomeEmail, securityAlertEmail, walletFundedEmail } from "@/lib/email/templates";
 import { logSecurityEvent } from "@/lib/security-events";
+import { qualifyReferralsByReferee } from "@/lib/referral-data";
 
 const WEBHOOK_TTL_SECONDS = 5 * 60;
 
@@ -194,6 +195,15 @@ export async function POST(request: Request) {
           action_url: clean(payload.action_url) || null,
           division: clean(payload.division) || null,
         });
+        break;
+      }
+      case "referral.qualify": {
+        // Another HenryCo app (marketplace, care, property, etc.) is
+        // signalling that `user_id` has completed a qualifying transaction.
+        // Qualify any outstanding converted referrals so the reward unlocks.
+        const reason =
+          clean(payload.reason) || `${clean(payload.division) || "order"}_paid`;
+        await qualifyReferralsByReferee(userId, { reason });
         break;
       }
       default:

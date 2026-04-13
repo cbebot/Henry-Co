@@ -1,16 +1,22 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import {
+  buildSharedCookieHandlers,
+  buildSupabaseCookieOptions,
   getSharedCookieDomain,
   normalizeEmail,
   normalizePhone,
   normalizeTrustedRedirect,
+  resolveRequestCookieDomain,
 } from "@henryco/config";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
 import { resolveAuthenticatedDestination } from "@/lib/post-auth-routing";
+import { recordReferralConversion } from "@/lib/referral-data";
 import { detectSecurityRequestContext, logSecurityEvent } from "@/lib/security-events";
+
+const REFERRAL_COOKIE_NAME = "hc_ref";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -19,31 +25,16 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = await cookies();
+    const headerStore = await headers();
+    const cookieDomain =
+      resolveRequestCookieDomain((name) => headerStore.get(name)) ||
+      getSharedCookieDomain(new URL(origin).hostname);
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
-        cookieOptions: (() => {
-          const cookieDomain = getSharedCookieDomain(new URL(origin).hostname);
-          return cookieDomain
-            ? {
-                domain: cookieDomain,
-                path: "/",
-                sameSite: "lax",
-                secure: true,
-              }
-            : undefined;
-        })(),
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(tokens) {
-            for (const { name, value, options } of tokens) {
-              cookieStore.set(name, value, options);
-            }
-          },
-        },
+        cookieOptions: buildSupabaseCookieOptions(cookieDomain),
+        cookies: buildSharedCookieHandlers(cookieStore, cookieDomain),
       }
     );
 
@@ -81,6 +72,39 @@ export async function GET(request: Request) {
             email: user.email || null,
           },
         });
+
+        // Referral conversion — only fires if a referral code was captured
+        // in the hc_ref cookie (or ?ref= query param) at signup time. Idempotent
+        // on referred_user_id, so duplicate callbacks don't double-count.
+        const referralCode =
+          searchParams.get("ref") || cookieStore.get(REFERRAL_COOKIE_NAME)?.value || null;
+        if (referralCode) {
+          try {
+            await recordReferralConversion({
+              referralCode,
+              refereeId: user.id,
+              refereeEmail: user.email || null,
+              refereePhone: phone,
+              refereeIp: context.ipAddress,
+              refereeUserAgent: context.userAgent,
+              source: "auth_callback",
+            });
+          } catch {
+            // Referral capture must never block the signup flow itself.
+          }
+          // Clear the cookie regardless of outcome so the guard can't be
+          // retried by replaying the callback.
+          try {
+            cookieStore.set(REFERRAL_COOKIE_NAME, "", {
+              domain: cookieDomain,
+              path: "/",
+              maxAge: 0,
+            });
+          } catch {
+            // read-only cookie context — ignore.
+          }
+        }
+
         const destination = await resolveAuthenticatedDestination({
           user,
           next,

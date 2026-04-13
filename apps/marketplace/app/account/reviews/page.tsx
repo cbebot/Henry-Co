@@ -8,7 +8,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AccountReviewsPage() {
   await requireMarketplaceUser("/account/reviews");
-  const [buyer, snapshot] = await Promise.all([getBuyerDashboardData(), getMarketplaceHomeData()]);
+  const [buyer, snapshot] = await Promise.all([
+    getBuyerDashboardData(),
+    getMarketplaceHomeData(),
+  ]);
 
   return (
     <WorkspaceShell

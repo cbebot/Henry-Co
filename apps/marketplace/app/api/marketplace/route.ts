@@ -880,6 +880,15 @@ export async function POST(request: Request) {
           .eq("id", addressId)
           .eq("user_id", viewer.user.id);
 
+        await logMarketplaceAction({
+          eventType: "address_deleted",
+          actorUserId: viewer.user.id,
+          actorEmail: viewer.user.email,
+          entityType: "address",
+          entityId: addressId,
+          details: {},
+        });
+
         revalidatePath("/account/addresses");
         if (json) {
           return NextResponse.json({ ok: true, addressId });
@@ -887,7 +896,7 @@ export async function POST(request: Request) {
         return redirectTo(request, "/account/addresses?deleted=1");
       }
 
-      case "address_default": {
+      case "address_set_default": {
         if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/addresses");
 
         const addressId = text(formData, "address_id");
@@ -920,6 +929,15 @@ export async function POST(request: Request) {
           }
           return redirectTo(request, "/account/addresses?error=default-failed");
         }
+
+        await logMarketplaceAction({
+          eventType: "address_set_default",
+          actorUserId: viewer.user.id,
+          actorEmail: viewer.user.email,
+          entityType: "address",
+          entityId: addressId,
+          details: {},
+        });
 
         revalidatePath("/account/addresses");
         if (json) {
