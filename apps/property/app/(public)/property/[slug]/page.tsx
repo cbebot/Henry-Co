@@ -36,7 +36,7 @@ type SearchParams = {
   removed?: string;
 };
 
-function getTrustCopy(listing: Awaited<ReturnType<typeof getPropertyBySlug>>["listing"]) {
+function getTrustCopy(listing: NonNullable<Awaited<ReturnType<typeof getPropertyBySlug>>>["listing"]) {
   if (listing.managedByHenryCo) {
     return {
       title: "Managed by HenryCo",
