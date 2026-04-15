@@ -1,16 +1,26 @@
-import { getDivisionUrl } from "@henryco/config";
-import { Briefcase, ShieldCheck, UserRoundSearch, Users, Workflow } from "lucide-react";
+import { Briefcase } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
+import OperationalWorkspace from "@/components/OperationalWorkspace";
+import { StaffEmptyState, StaffPageHeader } from "@/components/StaffPrimitives";
 import { requireStaff } from "@/lib/staff-auth";
-import { StaffPageHeader, StaffEmptyState } from "@/components/StaffPrimitives";
-import { StaffWorkspaceLaunchpad } from "@/components/StaffWorkspaceLaunchpad";
+import {
+  filterWorkspaceRecords,
+  getDivisionWorkspaceData,
+  getSelectedRecordId,
+  parseWorkspaceFilters,
+} from "@/lib/workspace-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function JobsPage() {
+export default async function JobsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const viewer = await requireStaff();
-  const hasJobs = viewer.divisions.some((d) => d.division === "jobs");
+  const hasDivision = viewer.divisions.some((item) => item.division === "jobs");
 
-  if (!hasJobs) {
+  if (!hasDivision) {
     return (
       <div className="staff-fade-in">
         <StaffPageHeader eyebrow="Workspace" title="Jobs Operations" />
@@ -23,49 +33,33 @@ export default async function JobsPage() {
     );
   }
 
+  const [filters, data] = await Promise.all([
+    parseWorkspaceFilters(searchParams),
+    getDivisionWorkspaceData(viewer, "jobs"),
+  ]);
+  const records = filterWorkspaceRecords(data.records, filters);
+  const selectedRecordId = getSelectedRecordId(records, filters);
+
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="Workspace"
         title="Jobs Operations"
-        description="Manage job postings, applications, employer accounts, and recruitment pipelines."
+        description="Recruiter alert failures, unread queue pressure, and jobs support work now resolve from one truth-based operations surface."
       />
-      <StaffWorkspaceLaunchpad
-        overview="The live jobs controls already exist inside HenryJobs. This workspace now acts as a launchpad into recruiter, moderation, owner, and admin routes instead of showing a passive placeholder."
-        links={[
-          {
-            href: `${getDivisionUrl("jobs")}/recruiter/pipeline`,
-            label: "Recruiter pipeline",
-            description: "Advance candidates, inspect hiring stages, and keep recruiter action real.",
-            icon: Workflow,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("jobs")}/moderation`,
-            label: "Moderation queue",
-            description: "Review employers, visibility risks, and trust-sensitive workflow decisions.",
-            icon: ShieldCheck,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("jobs")}/recruiter/candidates`,
-            label: "Candidate review",
-            description: "Inspect candidate records, messages, and live recruitment movement.",
-            icon: UserRoundSearch,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("jobs")}/owner`,
-            label: "Owner control",
-            description: "Open the owner-side operational overview for jobs governance.",
-            icon: Users,
-            readiness: "live",
-          },
-        ]}
-        notes={[
-          "Use the moderation route for trust and anti-bypass review, not the public-facing jobs pages.",
-          "The jobs live verifier is now loading production env fallbacks so cron and governed workflow checks report real failures instead of missing-secret noise.",
-        ]}
+
+      <OperationalWorkspace
+        basePath="/jobs"
+        filters={filters}
+        queues={data.queues}
+        metrics={data.metrics}
+        insights={data.insights}
+        records={records}
+        selectedRecordId={selectedRecordId}
+        emptyTitle={data.emptyTitle}
+        emptyDescription={data.emptyDescription}
+        focusNote={data.focusNote}
       />
     </div>
   );

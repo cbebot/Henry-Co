@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
+import { getStaffHqUrl } from "@henryco/config";
 import { logOwnerSurfaceError } from "@/lib/owner-diagnostics";
 import { createAdminSupabase } from "@/lib/supabase";
 import { divisionColor, divisionLabel, formatCurrencyAmount } from "@/lib/format";
@@ -136,6 +137,29 @@ function normalizeDivisionSlug(value: unknown) {
   const text = toText(value).toLowerCase();
   if (!text) return null;
   return DIVISION_ALIASES[text] || text;
+}
+
+function buildStaffWorkspaceHref(
+  path: string,
+  params?: Record<string, string | null | undefined>
+) {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params ?? {})) {
+    const text = toText(value);
+    if (text) {
+      search.set(key, text);
+    }
+  }
+
+  const query = search.toString();
+  return getStaffHqUrl(query ? `${path}?${query}` : path);
+}
+
+function buildStaffQueueHref(path: string, queue: string, record?: string | null) {
+  return buildStaffWorkspaceHref(path, {
+    queue,
+    record,
+  });
 }
 
 function sumBy(rows: JsonRecord[], field: string, divisor = 1) {
@@ -587,7 +611,9 @@ function buildOwnerSignals(
       body: `${openSupport.length} support threads still need movement, with ${staleSupport.length} already stale.`,
       severity: staleSupport.length >= 5 ? "critical" : "warning",
       division: null,
-      href: "/owner/operations/alerts",
+      href: buildStaffWorkspaceHref("/support", {
+        status: "open",
+      }),
       source: "support_threads",
       createdAt: toNullableText(openSupport[0]?.updated_at),
     });
@@ -600,7 +626,9 @@ function buildOwnerSignals(
       body: `${urgentSupport.length} urgent or high-priority threads require immediate owner visibility.`,
       severity: "critical",
       division: null,
-      href: "/owner/operations/alerts",
+      href: buildStaffWorkspaceHref("/support", {
+        thread: toText(urgentSupport[0]?.id),
+      }),
       source: "support_threads",
       createdAt: toNullableText(urgentSupport[0]?.updated_at),
     });
@@ -620,7 +648,7 @@ function buildOwnerSignals(
       body: `${overdueCareBookings.length} care bookings are past the promised day without a resolved state.`,
       severity: overdueCareBookings.length >= 10 ? "critical" : "warning",
       division: "care",
-      href: "/owner/divisions/care",
+      href: buildStaffQueueHref("/care", "overdue-bookings"),
       source: "care_bookings",
       createdAt: toNullableText(overdueCareBookings[0]?.updated_at),
     });
@@ -636,7 +664,7 @@ function buildOwnerSignals(
       body: `${pendingMarketplacePayouts.length} marketplace payout requests are still sitting in the review backlog.`,
       severity: pendingMarketplacePayouts.length >= 2 ? "critical" : "warning",
       division: "marketplace",
-      href: "/owner/finance",
+      href: buildStaffQueueHref("/marketplace", "marketplace-payouts"),
       source: "marketplace_payout_requests",
       createdAt: toNullableText(pendingMarketplacePayouts[0]?.updated_at),
     });
@@ -652,7 +680,7 @@ function buildOwnerSignals(
       body: `${pendingMarketplaceApplications.length} vendor applications are waiting for trust and moderation review.`,
       severity: "warning",
       division: "marketplace",
-      href: "/owner/divisions/marketplace",
+      href: buildStaffQueueHref("/marketplace", "vendor-review"),
       source: "marketplace_vendor_applications",
       createdAt: toNullableText(pendingMarketplaceApplications[0]?.submitted_at),
     });
@@ -668,7 +696,7 @@ function buildOwnerSignals(
       body: `${pendingInvoices.length} customer invoices remain unpaid or unresolved across the shared platform.`,
       severity: "warning",
       division: null,
-      href: "/owner/finance/invoices",
+      href: buildStaffQueueHref("/finance", "pending-invoices"),
       source: "customer_invoices",
       createdAt: toNullableText(pendingInvoices[0]?.created_at),
     });
@@ -723,7 +751,10 @@ function buildOwnerSignals(
       body: `${failedDeliveryQueue.length} notification queue item(s) failed delivery. Open the messaging queue to read provider diagnostics — do not rely on raw errors in summaries.`,
       severity: "critical",
       division: normalizeDivisionSlug(failedDeliveryQueue[0].division) || "marketplace",
-      href: "/owner/messaging/queues",
+      href:
+        normalizeDivisionSlug(failedDeliveryQueue[0].division) === "care"
+          ? buildStaffQueueHref("/care", "delivery-failures")
+          : buildStaffQueueHref("/marketplace", "delivery-failures"),
       source: "notification_queue",
       createdAt: toNullableText(
         failedDeliveryQueue[0].updated_at || failedDeliveryQueue[0].created_at
@@ -743,7 +774,7 @@ function buildOwnerSignals(
       body: `${skippedWhatsApp.length} WhatsApp alerts were skipped because recipient contact data was missing.`,
       severity: "warning",
       division: null,
-      href: "/owner/messaging",
+      href: buildStaffQueueHref("/operations", "delivery-failures"),
       source: "notification_queue",
       createdAt: toNullableText(skippedWhatsApp[0]?.updated_at || skippedWhatsApp[0]?.created_at),
     });
@@ -764,7 +795,7 @@ function buildOwnerSignals(
       body: "Recent automation runs reported retry failures or blocked execution states.",
       severity: "warning",
       division: "marketplace",
-      href: "/owner/ai/signals",
+      href: buildStaffQueueHref("/marketplace", "delivery-failures"),
       source: "marketplace_automation_runs",
       createdAt: toNullableText(automationRunsWithFailures[0]?.started_at),
     });
@@ -782,7 +813,7 @@ function buildOwnerSignals(
       body: `${studioPendingDeposits.length} studio payment or project records are still sitting in pending-deposit states.`,
       severity: "warning",
       division: "studio",
-      href: "/owner/divisions/studio",
+      href: buildStaffQueueHref("/studio", "deposit-control"),
       source: "customer_activity",
       createdAt: toNullableText(studioPendingDeposits[0]?.created_at),
     });
@@ -801,7 +832,7 @@ function buildOwnerSignals(
       body: `${propertySubmissionQueue.length} property listing submissions are still awaiting reply or triage.`,
       severity: "warning",
       division: "property",
-      href: "/owner/divisions/property",
+      href: buildStaffQueueHref("/property", "listing-review"),
       source: "support_threads",
       createdAt: toNullableText(propertySubmissionQueue[0]?.updated_at),
     });
@@ -815,7 +846,7 @@ function buildOwnerSignals(
       body: `${pendingStaff.length} staff accounts have been created or invited but have not become active yet.`,
       severity: "info",
       division: null,
-      href: "/owner/staff",
+      href: buildStaffQueueHref("/workforce", "pending-onboarding"),
       source: "supabase_auth",
       createdAt: pendingStaff[0]?.createdAt ?? null,
     });
@@ -1081,7 +1112,7 @@ function buildHelperInsights(signals: OwnerSignal[]) {
         id: "fix-owner-email-sender",
         title: "Stabilize notification delivery",
         body: "Open the messaging queue, identify the failing channel (email, SMS, WhatsApp), and fix configuration or templates. Provider details stay in the queue rows — resolve at source rather than masking.",
-        href: "/owner/messaging/queues",
+        href: signal.href,
         severity: "critical",
       });
     }
@@ -1090,7 +1121,7 @@ function buildHelperInsights(signals: OwnerSignal[]) {
         id: "close-open-invites",
         title: "Finish dormant staff onboarding",
         body: "Some invited people have not completed their first sign-in. Review division assignment and re-send invitations before expanding the team further.",
-        href: "/owner/staff",
+        href: signal.href,
         severity: "info",
       });
     }
@@ -1099,7 +1130,7 @@ function buildHelperInsights(signals: OwnerSignal[]) {
         id: "care-sla-recovery",
         title: "Run a care SLA recovery sweep",
         body: "Overdue care bookings are visible in the live booking table. Focus on status progression, payment closure, and customer reassurance before queue age increases further.",
-        href: "/owner/divisions/care",
+        href: signal.href,
         severity: "warning",
       });
     }

@@ -1,16 +1,26 @@
-import { getDivisionUrl } from "@henryco/config";
-import { Building2, MapPinned, ShieldCheck, UserRound } from "lucide-react";
+import { Building2 } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
+import OperationalWorkspace from "@/components/OperationalWorkspace";
+import { StaffEmptyState, StaffPageHeader } from "@/components/StaffPrimitives";
 import { requireStaff } from "@/lib/staff-auth";
-import { StaffPageHeader, StaffEmptyState } from "@/components/StaffPrimitives";
-import { StaffWorkspaceLaunchpad } from "@/components/StaffWorkspaceLaunchpad";
+import {
+  filterWorkspaceRecords,
+  getDivisionWorkspaceData,
+  getSelectedRecordId,
+  parseWorkspaceFilters,
+} from "@/lib/workspace-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function PropertyPage() {
+export default async function PropertyPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const viewer = await requireStaff();
-  const hasProperty = viewer.divisions.some((d) => d.division === "property");
+  const hasDivision = viewer.divisions.some((item) => item.division === "property");
 
-  if (!hasProperty) {
+  if (!hasDivision) {
     return (
       <div className="staff-fade-in">
         <StaffPageHeader eyebrow="Workspace" title="Property Operations" />
@@ -23,45 +33,33 @@ export default async function PropertyPage() {
     );
   }
 
+  const [filters, data] = await Promise.all([
+    parseWorkspaceFilters(searchParams),
+    getDivisionWorkspaceData(viewer, "property"),
+  ]);
+  const records = filterWorkspaceRecords(data.records, filters);
+  const selectedRecordId = getSelectedRecordId(records, filters);
+
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="Workspace"
         title="Property Operations"
-        description="Manage property listings, inquiries, viewings, and agent relationships."
+        description="Listing review, inquiry handling, and property support routing now sit in one role-scoped operations lane."
       />
-      <StaffWorkspaceLaunchpad
-        overview="HenryCo Property already exposes owner, admin, operations, moderation, and agent routes. This workspace now sends people there instead of pretending a separate property command center exists."
-        links={[
-          {
-            href: `${getDivisionUrl("property")}/owner`,
-            label: "Owner overview",
-            description: "Inspect listing readiness, trust posture, and platform signals.",
-            icon: Building2,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("property")}/operations`,
-            label: "Operations",
-            description: "Run viewing coordination, inquiry handling, and property ops.",
-            icon: MapPinned,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("property")}/moderation`,
-            label: "Moderation",
-            description: "Review listing trust and moderation-sensitive workflow actions.",
-            icon: ShieldCheck,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("property")}/agent`,
-            label: "Agent surface",
-            description: "Verify what agents can actually see and action on the live site.",
-            icon: UserRound,
-            readiness: "live",
-          },
-        ]}
+
+      <OperationalWorkspace
+        basePath="/property"
+        filters={filters}
+        queues={data.queues}
+        metrics={data.metrics}
+        insights={data.insights}
+        records={records}
+        selectedRecordId={selectedRecordId}
+        emptyTitle={data.emptyTitle}
+        emptyDescription={data.emptyDescription}
+        focusNote={data.focusNote}
       />
     </div>
   );

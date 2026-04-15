@@ -1,16 +1,26 @@
-import { getDivisionUrl } from "@henryco/config";
-import { BanknoteArrowDown, Headphones, Palette, Rocket, Workflow } from "lucide-react";
+import { Palette } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
+import OperationalWorkspace from "@/components/OperationalWorkspace";
+import { StaffEmptyState, StaffPageHeader } from "@/components/StaffPrimitives";
 import { requireStaff } from "@/lib/staff-auth";
-import { StaffPageHeader, StaffEmptyState } from "@/components/StaffPrimitives";
-import { StaffWorkspaceLaunchpad } from "@/components/StaffWorkspaceLaunchpad";
+import {
+  filterWorkspaceRecords,
+  getDivisionWorkspaceData,
+  getSelectedRecordId,
+  parseWorkspaceFilters,
+} from "@/lib/workspace-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function StudioPage() {
+export default async function StudioPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const viewer = await requireStaff();
-  const hasStudio = viewer.divisions.some((d) => d.division === "studio");
+  const hasDivision = viewer.divisions.some((item) => item.division === "studio");
 
-  if (!hasStudio) {
+  if (!hasDivision) {
     return (
       <div className="staff-fade-in">
         <StaffPageHeader eyebrow="Workspace" title="Studio Operations" />
@@ -23,48 +33,33 @@ export default async function StudioPage() {
     );
   }
 
+  const [filters, data] = await Promise.all([
+    parseWorkspaceFilters(searchParams),
+    getDivisionWorkspaceData(viewer, "studio"),
+  ]);
+  const records = filterWorkspaceRecords(data.records, filters);
+  const selectedRecordId = getSelectedRecordId(records, filters);
+
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="Workspace"
         title="Studio Operations"
-        description="Manage leads, active projects, milestones, and delivery pipelines."
+        description="Project delivery, lead qualification, and studio payment communication failures now stay visible in one delivery workspace."
       />
-      <StaffWorkspaceLaunchpad
-        overview="Studio has live sales, PM, finance, support, and owner surfaces already. This workspace now routes operators into those real controls rather than duplicating a fake studio dashboard."
-        links={[
-          {
-            href: `${getDivisionUrl("studio")}/sales/leads`,
-            label: "Sales leads",
-            description: "Review incoming briefs, lead quality, and proposal movement.",
-            icon: Rocket,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("studio")}/pm/projects`,
-            label: "PM projects",
-            description: "Track milestones, revisions, and delivery state on active work.",
-            icon: Workflow,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("studio")}/finance/invoices`,
-            label: "Finance invoices",
-            description: "Handle invoicing and payment visibility inside the studio runtime.",
-            icon: BanknoteArrowDown,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("studio")}/support`,
-            label: "Client support",
-            description: "Open the studio support thread surface for active client issues.",
-            icon: Headphones,
-            readiness: "live",
-          },
-        ]}
-        notes={[
-          "Studio writes now retry without stale schema-cache columns like budget_band, so lead intake survives older production schema caches instead of failing hard.",
-        ]}
+
+      <OperationalWorkspace
+        basePath="/studio"
+        filters={filters}
+        queues={data.queues}
+        metrics={data.metrics}
+        insights={data.insights}
+        records={records}
+        selectedRecordId={selectedRecordId}
+        emptyTitle={data.emptyTitle}
+        emptyDescription={data.emptyDescription}
+        focusNote={data.focusNote}
       />
     </div>
   );

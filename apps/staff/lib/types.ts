@@ -203,3 +203,52 @@ export type WorkspaceNavSection = {
   label: string;
   items: WorkspaceNavItem[];
 };
+
+export type WorkspaceActionTone = "primary" | "secondary" | "warning" | "critical";
+
+export type WorkspaceRecordAction = {
+  label: string;
+  href: string;
+  tone: WorkspaceActionTone;
+  external?: boolean;
+};
+
+export type WorkspaceRecordDetail = {
+  label: string;
+  value: string;
+  note?: string | null;
+};
+
+export type WorkspaceRecord = {
+  id: string;
+  division: string;
+  queue: string;
+  queueLabel: string;
+  title: string;
+  summary: string;
+  statusLabel: string;
+  statusTone: "info" | "success" | "warning" | "critical";
+  priorityLabel: string;
+  priorityTone: "info" | "success" | "warning" | "critical";
+  updatedAt: string | null;
+  ownerLabel?: string | null;
+  amountLabel?: string | null;
+  sourceLabel: string;
+  sourceHref: string;
+  evidence: string[];
+  notes: string[];
+  details: WorkspaceRecordDetail[];
+  actions: WorkspaceRecordAction[];
+};
+
+export type WorkspaceQueueOption = {
+  value: string;
+  label: string;
+  count: number;
+};
+
+export type WorkspaceListFilters = {
+  q: string;
+  queue: string;
+  record: string;
+};

@@ -1,13 +1,23 @@
-import { getDivisionUrl, getHqUrl } from "@henryco/config";
-import { IdCard, ShieldCheck, Users } from "lucide-react";
-import { requireStaff } from "@/lib/staff-auth";
+import { Users } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
+import OperationalWorkspace from "@/components/OperationalWorkspace";
+import { StaffEmptyState, StaffPageHeader } from "@/components/StaffPrimitives";
 import { viewerHasPermission } from "@/lib/roles";
-import { StaffPageHeader, StaffEmptyState } from "@/components/StaffPrimitives";
-import { StaffWorkspaceLaunchpad } from "@/components/StaffWorkspaceLaunchpad";
+import { requireStaff } from "@/lib/staff-auth";
+import {
+  filterWorkspaceRecords,
+  getSelectedRecordId,
+  getWorkforceWorkspaceData,
+  parseWorkspaceFilters,
+} from "@/lib/workspace-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function WorkforcePage() {
+export default async function WorkforcePage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const viewer = await requireStaff();
   const hasDirectory = viewerHasPermission(viewer, "staff.directory.view");
 
@@ -24,49 +34,33 @@ export default async function WorkforcePage() {
     );
   }
 
+  const [filters, data] = await Promise.all([
+    parseWorkspaceFilters(searchParams),
+    getWorkforceWorkspaceData(viewer),
+  ]);
+  const records = filterWorkspaceRecords(data.records, filters);
+  const selectedRecordId = getSelectedRecordId(records, filters);
+
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="Operations"
         title="Workforce"
-        description="Staff directory, team assignments, division membership, and workforce analytics."
+        description="Role governance, dormant invites, membership coverage, and suspicious staff-change patterns now sit in one workforce control surface."
       />
-      <StaffWorkspaceLaunchpad
-        readiness="partial"
-        overview="Workforce control already exists in the owner hub and some division-specific staff routes. This page now routes supervisors into those live staff-management surfaces instead of a false empty shell."
-        links={[
-          {
-            href: `${getHqUrl("/owner/staff")}`,
-            label: "Staff control",
-            description: "Open the owner-side staff overview and assignment control.",
-            icon: Users,
-            readiness: "live",
-          },
-          {
-            href: `${getHqUrl("/owner/staff/directory")}`,
-            label: "Directory",
-            description: "Inspect live user records and search the active workforce.",
-            icon: IdCard,
-            readiness: "live",
-          },
-          {
-            href: `${getHqUrl("/owner/staff/roles")}`,
-            label: "Role governance",
-            description: "Review roles, governance, and privileged access posture.",
-            icon: ShieldCheck,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("care")}/owner/staff`,
-            label: "Care staff roster",
-            description: "Check a live division-specific staff surface while shared workforce unification is still incomplete.",
-            icon: Users,
-            readiness: "live",
-          },
-        ]}
-        notes={[
-          "This remains partial because one unified workforce management surface is not live yet; use the hub owner routes for actual governance.",
-        ]}
+
+      <OperationalWorkspace
+        basePath="/workforce"
+        filters={filters}
+        queues={data.queues}
+        metrics={data.metrics}
+        insights={data.insights}
+        records={records}
+        selectedRecordId={selectedRecordId}
+        emptyTitle={data.emptyTitle}
+        emptyDescription={data.emptyDescription}
+        focusNote={data.focusNote}
       />
     </div>
   );

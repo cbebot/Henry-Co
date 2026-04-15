@@ -1,115 +1,87 @@
-import {
-  ListTodo,
-  Layers,
-  ClipboardCheck,
-  Bell,
-} from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireStaff } from "@/lib/staff-auth";
 import { getFilteredNavItems } from "@/lib/navigation";
+import OperationalWorkspace from "@/components/OperationalWorkspace";
 import {
   StaffPageHeader,
-  StaffMetricCard,
-  StaffPanel,
   StaffQuickLink,
   resolveIcon,
 } from "@/components/StaffPrimitives";
-import { getStaffIntelligenceSnapshot } from "@/lib/intelligence-data";
+import {
+  filterWorkspaceRecords,
+  getSelectedRecordId,
+  getStaffDashboardData,
+  parseWorkspaceFilters,
+} from "@/lib/workspace-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function StaffDashboard() {
+export default async function StaffDashboard({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const viewer = await requireStaff();
-  const intelligence = await getStaffIntelligenceSnapshot(
-    viewer.divisions.map((item) => item.division)
-  );
-  const navItems = getFilteredNavItems(viewer);
-  const workspaceLinks = navItems.filter(
+  const [filters, data] = await Promise.all([
+    parseWorkspaceFilters(searchParams),
+    getStaffDashboardData(viewer),
+  ]);
+
+  const records = filterWorkspaceRecords(data.records, filters);
+  const selectedRecordId = getSelectedRecordId(records, filters);
+  const navItems = getFilteredNavItems(viewer).filter(
     (item) => item.section === "Workspaces" || item.section === "Operations"
   );
-  const staleCount = intelligence.tasks.filter((task) => task.status === "stale").length;
-  const riskCount = intelligence.tasks.filter((task) => task.status === "at_risk").length;
-
+  const workspaceCounts = new Map(
+    (data.workspaceCards as Array<{ division: string; count: number }>).map((item) => [
+      item.division,
+      item.count,
+    ])
+  );
   const firstName = viewer.user?.fullName?.split(" ")[0] || "there";
 
   return (
-    <div className="staff-fade-in">
-      <RouteLiveRefresh />
+    <div className="staff-fade-in space-y-8">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="Staff HQ"
         title={`Welcome back, ${firstName}`}
-        description="Your unified command center for Henry & Co. operations across all divisions."
+        description="This dashboard is now queue-first: live operational pressure, role-scoped work, and exact drill-downs instead of decorative metrics."
       />
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StaffMetricCard
-          label="Active Tasks"
-          value={String(intelligence.tasks.length)}
-          subtitle="Across your divisions"
-          icon={ListTodo}
-        />
-        <StaffMetricCard
-          label="Open Queues"
-          value={String(intelligence.metrics.openSupport)}
-          subtitle="Pending assignment"
-          icon={Layers}
-        />
-        <StaffMetricCard
-          label="Pending Approvals"
-          value={String(intelligence.metrics.elevatedRisk)}
-          subtitle="Awaiting review"
-          icon={ClipboardCheck}
-        />
-        <StaffMetricCard
-          label="Notifications"
-          value={String(intelligence.metrics.unreadNotifications)}
-          subtitle="Unread items"
-          icon={Bell}
-        />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {navItems.map((item) => {
+          const Icon = resolveIcon(item.icon);
+          const divisionKey = item.href.replace("/", "");
+          const count = workspaceCounts.get(divisionKey) ?? 0;
+          return (
+            <StaffQuickLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              description={
+                count > 0
+                  ? `${count} live queue item${count === 1 ? "" : "s"} currently visible.`
+                  : `${item.label} is clear right now or waiting on the next live event.`
+              }
+              icon={Icon}
+            />
+          );
+        })}
       </div>
 
-      <div className="mb-8 rounded-2xl border border-[var(--staff-line)] bg-[var(--staff-surface)] px-4 py-3">
-        <p className="text-xs uppercase tracking-[0.14em] text-[var(--staff-muted)]">Operational focus</p>
-        <p className="mt-1 text-sm text-[var(--staff-muted)]">
-          Resolve stale items first ({staleCount}), then at-risk queue items ({riskCount}) to keep customer response quality calm and predictable.
-        </p>
-      </div>
-
-      <div className="mb-8">
-        <h2 className="staff-kicker mb-4">Your Workspaces</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {workspaceLinks.map((item) => {
-            const Icon = resolveIcon(item.icon);
-            return (
-              <StaffQuickLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                description={`${item.label} operations and management`}
-                icon={Icon}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      <StaffPanel title="Priority activity feed">
-        <div className="space-y-3">
-          {intelligence.tasks.slice(0, 6).map((task) => (
-            <a
-              key={task.id}
-              href={task.href}
-              className="block rounded-xl border border-[var(--staff-line)] bg-[var(--staff-surface)] px-3 py-2"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-[var(--staff-ink)]">{task.title}</p>
-                <span className="text-xs text-[var(--staff-muted)]">{task.status}</span>
-              </div>
-              <p className="mt-1 text-xs text-[var(--staff-muted)]">{task.summary}</p>
-            </a>
-          ))}
-        </div>
-      </StaffPanel>
+      <OperationalWorkspace
+        basePath="/"
+        filters={filters}
+        queues={data.queues}
+        metrics={data.metrics}
+        insights={data.insights}
+        records={records}
+        selectedRecordId={selectedRecordId}
+        emptyTitle={data.emptyTitle}
+        emptyDescription={data.emptyDescription}
+        focusNote={data.focusNote}
+      />
     </div>
   );
 }

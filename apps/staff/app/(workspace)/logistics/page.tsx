@@ -1,16 +1,26 @@
-import { getDivisionUrl } from "@henryco/config";
-import { Headphones, PackageSearch, Truck, UserRound } from "lucide-react";
+import { Truck } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
+import OperationalWorkspace from "@/components/OperationalWorkspace";
+import { StaffEmptyState, StaffPageHeader } from "@/components/StaffPrimitives";
 import { requireStaff } from "@/lib/staff-auth";
-import { StaffPageHeader, StaffEmptyState } from "@/components/StaffPrimitives";
-import { StaffWorkspaceLaunchpad } from "@/components/StaffWorkspaceLaunchpad";
+import {
+  filterWorkspaceRecords,
+  getDivisionWorkspaceData,
+  getSelectedRecordId,
+  parseWorkspaceFilters,
+} from "@/lib/workspace-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function LogisticsPage() {
+export default async function LogisticsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const viewer = await requireStaff();
-  const hasLogistics = viewer.divisions.some((d) => d.division === "logistics");
+  const hasDivision = viewer.divisions.some((item) => item.division === "logistics");
 
-  if (!hasLogistics) {
+  if (!hasDivision) {
     return (
       <div className="staff-fade-in">
         <StaffPageHeader eyebrow="Workspace" title="Logistics Dispatch" />
@@ -23,49 +33,33 @@ export default async function LogisticsPage() {
     );
   }
 
+  const [filters, data] = await Promise.all([
+    parseWorkspaceFilters(searchParams),
+    getDivisionWorkspaceData(viewer, "logistics"),
+  ]);
+  const records = filterWorkspaceRecords(data.records, filters);
+  const selectedRecordId = getSelectedRecordId(records, filters);
+
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="Workspace"
         title="Logistics Dispatch"
-        description="Manage shipments, tracking, fleet dispatch, and delivery coordination."
+        description="This view is now honest about the current dispatch gap: shared support, tracking truth, and the exact backend work still needed for a dedicated ops console."
       />
-      <StaffWorkspaceLaunchpad
-        readiness="partial"
-        overview="A dedicated logistics backoffice is not fully live yet. These routes are the truthful surfaces available today: public customer and support flows in HenryCo Logistics, plus the shared staff queues in Staff HQ."
-        links={[
-          {
-            href: "/support",
-            label: "Staff support desk",
-            description: "Use the shared support queue while the dedicated dispatch console is still unfinished.",
-            icon: Headphones,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("logistics")}/support`,
-            label: "Customer support surface",
-            description: "Inspect the live customer-side logistics support journey.",
-            icon: UserRound,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("logistics")}/track`,
-            label: "Tracking flow",
-            description: "Verify the public tracking path that customers rely on today.",
-            icon: PackageSearch,
-            readiness: "live",
-          },
-          {
-            href: `${getDivisionUrl("logistics")}/customer`,
-            label: "Customer dashboard",
-            description: "Check the current customer-side logistics experience while dispatch tooling catches up.",
-            icon: Truck,
-            readiness: "partial",
-          },
-        ]}
-        notes={[
-          "This is intentionally marked partial because there is still no dedicated logistics staff dispatch console comparable to care, jobs, or studio.",
-        ]}
+
+      <OperationalWorkspace
+        basePath="/logistics"
+        filters={filters}
+        queues={data.queues}
+        metrics={data.metrics}
+        insights={data.insights}
+        records={records}
+        selectedRecordId={selectedRecordId}
+        emptyTitle={data.emptyTitle}
+        emptyDescription={data.emptyDescription}
+        focusNote={data.focusNote}
       />
     </div>
   );
