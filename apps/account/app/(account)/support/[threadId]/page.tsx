@@ -36,7 +36,7 @@ export default async function SupportThreadPage({ params }: Props) {
     markNotificationsReadByActionUrl(user.id, `/support/${threadId}`),
     markSupportThreadRead(user.id, threadId),
   ]);
-  const messages = await getSupportMessages(threadId);
+  const messages = await getSupportMessages(user.id, threadId);
   const status = String(thread.status || "open");
   const subject = String(thread.subject || "Support conversation");
   const category = String(thread.category || "general");

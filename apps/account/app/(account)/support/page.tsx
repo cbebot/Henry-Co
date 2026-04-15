@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 const statusInfo: Record<string, { icon: typeof Clock; color: string; label: string }> = {
   open: { icon: AlertCircle, color: "var(--acct-blue)", label: "Open" },
   awaiting_reply: { icon: Clock, color: "var(--acct-orange)", label: "Awaiting reply" },
+  pending_customer: { icon: Clock, color: "var(--acct-orange)", label: "Awaiting your reply" },
   in_progress: { icon: MessageSquare, color: "var(--acct-purple)", label: "In progress" },
   resolved: { icon: CheckCircle2, color: "var(--acct-green)", label: "Resolved" },
   closed: { icon: CheckCircle2, color: "var(--acct-muted)", label: "Closed" },

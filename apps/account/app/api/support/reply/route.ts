@@ -6,6 +6,7 @@ import { uploadOwnedAsset } from "@/lib/cloudinary";
 import { mirrorCareSupportCustomerReply } from "@/lib/support-sync";
 import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
 import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempotency";
+import { isMissingPostgrestResourceError } from "@/lib/wallet-storage";
 
 const ALLOWED_ATTACHMENT_TYPES = new Set([
   "image/jpeg",
@@ -15,6 +16,48 @@ const ALLOWED_ATTACHMENT_TYPES = new Set([
   "application/pdf",
   "text/plain",
 ]);
+
+function normalizeIntelDivision(value: string | null | undefined) {
+  switch (String(value || "").trim().toLowerCase()) {
+    case "wallet":
+    case "care":
+    case "marketplace":
+    case "jobs":
+    case "learn":
+    case "studio":
+    case "property":
+    case "logistics":
+    case "account":
+    case "hub":
+    case "hq":
+    case "staff":
+    case "system":
+      return String(value || "").trim().toLowerCase() as
+        | "wallet"
+        | "care"
+        | "marketplace"
+        | "jobs"
+        | "learn"
+        | "studio"
+        | "property"
+        | "logistics"
+        | "account"
+        | "hub"
+        | "hq"
+        | "staff"
+        | "system";
+    default:
+      return "account";
+  }
+}
+
+function firstRpcRow<T>(data: T | T[] | null | undefined) {
+  if (Array.isArray(data)) {
+    return (data[0] ?? null) as T | null;
+  }
+
+  return (data ?? null) as T | null;
+}
 
 export async function POST(request: Request) {
   try {
@@ -57,16 +100,6 @@ export async function POST(request: Request) {
 
     const admin = createAdminSupabase();
 
-    // Verify thread ownership
-    const { data: thread } = await admin
-      .from("support_threads")
-      .select("id, user_id, division, category, priority, subject")
-      .eq("id", thread_id)
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (!thread) return NextResponse.json({ error: "Thread not found" }, { status: 404 });
-
     const uploadedAttachments: Array<Record<string, unknown>> = [];
     for (const attachment of attachments.slice(0, 4)) {
       const upload = await uploadOwnedAsset(attachment, user.id, {
@@ -94,29 +127,88 @@ export async function POST(request: Request) {
       .eq("id", user.id)
       .maybeSingle();
 
-    // Insert message
-    const { error: messageErr } = await admin.from("support_messages").insert({
-      thread_id,
-      sender_id: user.id,
-      sender_type: "customer",
-      body,
-      attachments: uploadedAttachments,
+    const { data: rpcData, error: rpcError } = await supabase.rpc("customer_reply_support_thread", {
+      p_thread_id: thread_id,
+      p_body: body,
+      p_attachments: uploadedAttachments,
+      p_priority: triage.shouldEscalate ? "high" : null,
     });
-    if (messageErr) {
-      return NextResponse.json({ error: "Failed to add support reply" }, { status: 500 });
+
+    let thread = firstRpcRow<{
+      id: string;
+      division: string | null;
+      category: string | null;
+      priority: string | null;
+      status: string | null;
+      subject: string | null;
+    }>(rpcData as
+      | {
+          id: string;
+          division: string | null;
+          category: string | null;
+          priority: string | null;
+          status: string | null;
+          subject: string | null;
+        }
+      | Array<{
+          id: string;
+          division: string | null;
+          category: string | null;
+          priority: string | null;
+          status: string | null;
+          subject: string | null;
+        }>
+      | null);
+
+    if (rpcError) {
+      if (!isMissingPostgrestResourceError(rpcError)) {
+        return NextResponse.json(
+          { error: rpcError.message || "Failed to add support reply" },
+          { status: 500 }
+        );
+      }
+
+      const { data: legacyThread } = await admin
+        .from("support_threads")
+        .select("id, user_id, division, category, priority, subject")
+        .eq("id", thread_id)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!legacyThread) return NextResponse.json({ error: "Thread not found" }, { status: 404 });
+
+      const { error: messageErr } = await admin.from("support_messages").insert({
+        thread_id,
+        sender_id: user.id,
+        sender_type: "customer",
+        body,
+        attachments: uploadedAttachments,
+      });
+      if (messageErr) {
+        return NextResponse.json({ error: "Failed to add support reply" }, { status: 500 });
+      }
+
+      const { error: threadErr } = await admin
+        .from("support_threads")
+        .update({
+          status: "awaiting_reply",
+          priority: triage.shouldEscalate ? "high" : undefined,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", thread_id);
+      if (threadErr) {
+        return NextResponse.json({ error: "Failed to update support thread" }, { status: 500 });
+      }
+
+      thread = {
+        ...legacyThread,
+        status: "awaiting_reply",
+        priority: triage.shouldEscalate ? "high" : legacyThread.priority,
+      };
     }
 
-    // Update thread
-    const { error: threadErr } = await admin
-      .from("support_threads")
-      .update({
-        status: "awaiting_reply",
-        priority: triage.shouldEscalate ? "high" : undefined,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", thread_id);
-    if (threadErr) {
-      return NextResponse.json({ error: "Failed to update support thread" }, { status: 500 });
+    if (!thread) {
+      return NextResponse.json({ error: "Thread not found" }, { status: 404 });
     }
 
     const sideEffectFailures: string[] = [];
@@ -172,7 +264,7 @@ export async function POST(request: Request) {
     try {
       await emitIntelligenceEvent({
         name: triage.shouldEscalate ? AccountIntelEvents.supportEscalated : AccountIntelEvents.supportOpened,
-        division: thread.division || "account",
+        division: normalizeIntelDivision(thread.division),
         eventId: `support_reply:${thread_id}:${Date.now()}`,
         actor: { kind: "user", subjectRef: user.id, roleHint: "customer" },
         properties: {

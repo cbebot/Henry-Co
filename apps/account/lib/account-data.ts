@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { getDivisionBrand, type DivisionBrand } from "@/lib/branding";
 import {
   isHiddenNotification,
@@ -35,6 +36,19 @@ function asObject(value: unknown) {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+}
+
+async function getScopedSupportSupabase(userId: string) {
+  const supabase = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || user.id !== userId) {
+    return null;
+  }
+
+  return supabase;
 }
 
 function resolveNotificationKey(row: Record<string, unknown>) {
@@ -292,28 +306,43 @@ export async function getProfile(userId: string) {
 }
 
 export async function getSupportThreads(userId: string) {
-  const { data } = await admin()
+  const scoped = await getScopedSupportSupabase(userId);
+  const query = (scoped ?? admin())
     .from("support_threads")
     .select("*")
-    .eq("user_id", userId)
     .order("updated_at", { ascending: false });
+  const { data } = scoped ? await query : await query.eq("user_id", userId);
 
   return data || [];
 }
 
 export async function getSupportThreadById(userId: string, threadId: string) {
-  const { data } = await admin()
-    .from("support_threads")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("id", threadId)
-    .maybeSingle();
+  const scoped = await getScopedSupportSupabase(userId);
+  const client = scoped ?? admin();
+  const query = client.from("support_threads").select("*").eq("id", threadId);
+  const { data } = scoped
+    ? await query.maybeSingle()
+    : await query.eq("user_id", userId).maybeSingle();
 
   return data;
 }
 
-export async function getSupportMessages(threadId: string) {
-  const { data } = await admin()
+export async function getSupportMessages(userId: string, threadId: string) {
+  const scoped = await getScopedSupportSupabase(userId);
+  if (!scoped) {
+    const { data: thread } = await admin()
+      .from("support_threads")
+      .select("id")
+      .eq("id", threadId)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!thread) {
+      return [];
+    }
+  }
+
+  const { data } = await (scoped ?? admin())
     .from("support_messages")
     .select("*")
     .eq("thread_id", threadId)
@@ -323,16 +352,29 @@ export async function getSupportMessages(threadId: string) {
 }
 
 export async function markSupportThreadRead(userId: string, threadId: string) {
+  const scoped = await getScopedSupportSupabase(userId);
+  if (scoped) {
+    const { error } = await scoped.rpc("customer_mark_support_thread_read", {
+      p_thread_id: threadId,
+    });
+
+    if (!error) {
+      return;
+    }
+
+    if (!isMissingPostgrestResourceError(error)) {
+      throw error;
+    }
+  }
+
   const now = new Date().toISOString();
 
-  // Update thread-level customer last read timestamp
   await admin()
     .from("support_threads")
     .update({ customer_last_read_at: now })
     .eq("id", threadId)
     .eq("user_id", userId);
 
-  // Mark individual messages as read (messages not sent by customer)
   await admin()
     .from("support_messages")
     .update({ is_read: true, read_at: now })
@@ -342,19 +384,22 @@ export async function markSupportThreadRead(userId: string, threadId: string) {
 }
 
 export async function getUnreadSupportCount(userId: string) {
-  // Count threads where there are messages newer than customer_last_read_at
-  const { data: threads } = await admin()
+  const scoped = await getScopedSupportSupabase(userId);
+  const client = scoped ?? admin();
+  const threadQuery = client
     .from("support_threads")
     .select("id, customer_last_read_at")
-    .eq("user_id", userId)
     .neq("status", "closed");
+  const { data: threads } = scoped
+    ? await threadQuery
+    : await threadQuery.eq("user_id", userId);
 
   if (!threads || threads.length === 0) return 0;
 
   let unreadCount = 0;
   for (const thread of threads) {
     const lastRead = thread.customer_last_read_at;
-    let query = admin()
+    let query = client
       .from("support_messages")
       .select("*", { count: "exact", head: true })
       .eq("thread_id", thread.id)

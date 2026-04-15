@@ -2,35 +2,29 @@ import { NextResponse } from "next/server";
 import {
   mapAccountSupportCategoryToDivision,
 } from "@henryco/config";
-import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { mirrorCareSupportThreadOpened } from "@/lib/support-sync";
-import { cookies } from "next/headers";
 import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
 import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempotency";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { isMissingPostgrestResourceError } from "@/lib/wallet-storage";
 
 function cleanText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function firstRpcRow<T>(data: T | T[] | null | undefined) {
+  if (Array.isArray(data)) {
+    return (data[0] ?? null) as T | null;
+  }
+
+  return (data ?? null) as T | null;
+}
+
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll(); },
-          setAll(tokens) {
-            for (const { name, value, options } of tokens) {
-              try { cookieStore.set(name, value, options); } catch {}
-            }
-          },
-        },
-      }
-    );
+    const supabase = await createSupabaseServer();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -60,34 +54,78 @@ export async function POST(request: Request) {
       .eq("id", user.id)
       .maybeSingle();
 
-    // Create thread
-    const { data: thread, error: threadErr } = await admin
-      .from("support_threads")
-      .insert({
-        user_id: user.id,
-        subject: cleanText(subject),
-        division,
-        category: category || "general",
-        status: "open",
-        priority: triage.shouldEscalate ? "high" : "normal",
-      })
-      .select("id, division, category, priority, status")
-      .single();
+    const { data: rpcData, error: rpcError } = await supabase.rpc("customer_create_support_thread", {
+      p_subject: cleanText(subject),
+      p_category: category || "general",
+      p_division: division,
+      p_message: message,
+      p_priority: triage.shouldEscalate ? "high" : "normal",
+    });
 
-    if (threadErr || !thread) {
-      return NextResponse.json({ error: "Failed to create thread" }, { status: 500 });
+    let thread = firstRpcRow<{
+      id: string;
+      division: string;
+      category: string;
+      priority: string;
+      status: string;
+    }>(rpcData as
+      | {
+          id: string;
+          division: string;
+          category: string;
+          priority: string;
+          status: string;
+        }
+      | Array<{
+          id: string;
+          division: string;
+          category: string;
+          priority: string;
+          status: string;
+        }>
+      | null);
+
+    if (rpcError) {
+      if (!isMissingPostgrestResourceError(rpcError)) {
+        return NextResponse.json(
+          { error: rpcError.message || "Failed to create thread" },
+          { status: 500 }
+        );
+      }
+
+      const { data: legacyThread, error: threadErr } = await admin
+        .from("support_threads")
+        .insert({
+          user_id: user.id,
+          subject: cleanText(subject),
+          division,
+          category: category || "general",
+          status: "open",
+          priority: triage.shouldEscalate ? "high" : "normal",
+        })
+        .select("id, division, category, priority, status")
+        .single();
+
+      if (threadErr || !legacyThread) {
+        return NextResponse.json({ error: "Failed to create thread" }, { status: 500 });
+      }
+
+      const { error: messageErr } = await admin.from("support_messages").insert({
+        thread_id: legacyThread.id,
+        sender_id: user.id,
+        sender_type: "customer",
+        body: message,
+      });
+      if (messageErr) {
+        await admin.from("support_threads").delete().eq("id", legacyThread.id).eq("user_id", user.id);
+        return NextResponse.json({ error: "Failed to create support message" }, { status: 500 });
+      }
+
+      thread = legacyThread;
     }
 
-    // Create first message (must succeed or thread is rolled back)
-    const { error: messageErr } = await admin.from("support_messages").insert({
-      thread_id: thread.id,
-      sender_id: user.id,
-      sender_type: "customer",
-      body: message,
-    });
-    if (messageErr) {
-      await admin.from("support_threads").delete().eq("id", thread.id).eq("user_id", user.id);
-      return NextResponse.json({ error: "Failed to create support message" }, { status: 500 });
+    if (!thread) {
+      return NextResponse.json({ error: "Failed to create thread" }, { status: 500 });
     }
 
     const sideEffectFailures: string[] = [];
@@ -114,7 +152,7 @@ export async function POST(request: Request) {
     }
 
     // Activity
-    const { error: activityErr } = await admin.from("customer_activity").insert({
+    const { error: activityErr } = await supabase.from("customer_activity").insert({
       user_id: user.id,
       division,
       activity_type: "support_created",
@@ -134,7 +172,7 @@ export async function POST(request: Request) {
     if (activityErr) sideEffectFailures.push("activity");
 
     // Notification
-    const { error: notificationErr } = await admin.from("customer_notifications").insert({
+    const { error: notificationErr } = await supabase.from("customer_notifications").insert({
       user_id: user.id,
       division,
       title: "Support request created",
