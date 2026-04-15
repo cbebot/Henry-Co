@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, RefreshCcw } from "lucide-react";
 import type { PropertyArea } from "@/lib/property/types";
@@ -22,14 +22,12 @@ export function PropertySearchBar({
   const [area, setArea] = useState(defaults?.area || "");
   const [managed, setManaged] = useState(defaults?.managed === "1");
   const [furnished, setFurnished] = useState(defaults?.furnished === "1");
-
-  useEffect(() => {
-    setQ(defaults?.q || "");
-    setKind(defaults?.kind || "");
-    setArea(defaults?.area || "");
-    setManaged(defaults?.managed === "1");
-    setFurnished(defaults?.furnished === "1");
-  }, [defaults?.area, defaults?.furnished, defaults?.kind, defaults?.managed, defaults?.q]);
+  const searchId = useId();
+  const kindId = useId();
+  const areaId = useId();
+  const managedId = useId();
+  const furnishedId = useId();
+  const helpId = useId();
 
   function persistPrefs(next: { area: string; kind: string; q: string }) {
     if (typeof window === "undefined") return;
@@ -83,17 +81,20 @@ export function PropertySearchBar({
   return (
     <form
       className="property-paper grid gap-4 rounded-[1.9rem] p-5 lg:grid-cols-[1.4fr,0.9fr,0.9fr,auto]"
+      role="search"
       onSubmit={(event) => {
         event.preventDefault();
         navigate();
       }}
       aria-busy={isPending}
+      aria-describedby={helpId}
     >
-      <label className="block">
+      <label className="block" htmlFor={searchId}>
         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
           Search
         </span>
         <input
+          id={searchId}
           name="q"
           value={q}
           onChange={(event) => setQ(event.target.value)}
@@ -102,11 +103,12 @@ export function PropertySearchBar({
         />
       </label>
 
-      <label className="block">
+      <label className="block" htmlFor={kindId}>
         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
           Category
         </span>
         <select
+          id={kindId}
           name="kind"
           value={kind}
           onChange={(event) => setKind(event.target.value)}
@@ -121,11 +123,12 @@ export function PropertySearchBar({
         </select>
       </label>
 
-      <label className="block">
+      <label className="block" htmlFor={areaId}>
         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
           Area
         </span>
         <select
+          id={areaId}
           name="area"
           value={area}
           onChange={(event) => setArea(event.target.value)}
@@ -165,9 +168,11 @@ export function PropertySearchBar({
           <RefreshCcw className="h-3.5 w-3.5" />
           Reset filters
         </button>
-        <div className="flex flex-wrap gap-3 text-xs text-[var(--property-ink-soft)]">
-          <label className="inline-flex items-center gap-2">
+        <fieldset className="flex flex-wrap gap-3 text-xs text-[var(--property-ink-soft)]">
+          <legend className="sr-only">Property filters</legend>
+          <label className="inline-flex items-center gap-2" htmlFor={managedId}>
             <input
+              id={managedId}
               type="checkbox"
               name="managed"
               value="1"
@@ -176,8 +181,9 @@ export function PropertySearchBar({
             />
             Managed only
           </label>
-          <label className="inline-flex items-center gap-2">
+          <label className="inline-flex items-center gap-2" htmlFor={furnishedId}>
             <input
+              id={furnishedId}
               type="checkbox"
               name="furnished"
               value="1"
@@ -186,8 +192,8 @@ export function PropertySearchBar({
             />
             Furnished
           </label>
-        </div>
-        <p className="text-xs text-[var(--property-ink-muted)]" aria-live="polite">
+        </fieldset>
+        <p id={helpId} className="text-xs text-[var(--property-ink-muted)]" aria-live="polite">
           {isPending
             ? "Refreshing results without losing your place."
             : "Filters stay in the URL so you can share the exact search or come back to it later."}

@@ -1,6 +1,32 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { createDivisionMetadata, toSeoDescription } from "@henryco/config";
 import { getStudioCaseStudyBySlug } from "@/lib/studio/catalog";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const caseStudy = await getStudioCaseStudyBySlug(slug);
+
+  if (!caseStudy) {
+    return createDivisionMetadata("studio", {
+      title: "Case study not found | HenryCo Studio",
+      description: "The requested studio case study could not be found.",
+      path: `/work/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  return createDivisionMetadata("studio", {
+    title: `${caseStudy.name} | HenryCo Studio`,
+    description: toSeoDescription(caseStudy.challenge, caseStudy.impact),
+    path: `/work/${slug}`,
+  });
+}
 
 export default async function CaseStudyDetailPage({
   params,

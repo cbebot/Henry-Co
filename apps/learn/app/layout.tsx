@@ -3,25 +3,15 @@ import { cookies } from "next/headers";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 
 const learn = getDivisionConfig("learn");
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("learn", {
   title: learn.name,
   description: learn.description,
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? `https://${learn.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-      : "http://localhost:3018"
-  ),
-  openGraph: {
-    title: learn.name,
-    description: learn.tagline,
-    siteName: learn.name,
-    type: "website",
-  },
-};
+  openGraphDescription: learn.tagline,
+});
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();

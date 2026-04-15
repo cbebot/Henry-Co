@@ -4,23 +4,15 @@ import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { COMPANY } from "@henryco/config";
+import { COMPANY, createDivisionMetadata } from "@henryco/config";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("hub", {
   title: "Henry & Co. Company Hub",
   description: "Premium multi-division ecosystem for Henry & Co.",
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? `https://${COMPANY.group.baseDomain}`
-      : "http://localhost:3000"
-  ),
-  openGraph: {
-    title: "Henry & Co.",
-    description: COMPANY.group.mission,
-    siteName: "Henry & Co.",
-    type: "website",
-  },
-};
+  openGraphTitle: "Henry & Co.",
+  openGraphDescription: COMPANY.group.mission,
+  siteName: "Henry & Co.",
+});
 
 export default async function RootLayout({
   children,

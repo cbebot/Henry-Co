@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { createDivisionMetadata, toSeoDescription } from "@henryco/config";
 import {
   CalendarRange,
   FileCheck2,
@@ -28,6 +30,37 @@ import {
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getPropertyBySlug(slug);
+
+  if (!data || !["published", "approved"].includes(data.listing.status)) {
+    return createDivisionMetadata("property", {
+      title: "Property not found | HenryCo Property",
+      description: "The requested property listing could not be found.",
+      path: `/property/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  const description = toSeoDescription(data.listing.summary, data.listing.description, 158);
+
+  return createDivisionMetadata("property", {
+    title: `${data.listing.title} | HenryCo Property`,
+    description,
+    openGraphTitle: data.listing.title,
+    openGraphDescription: description,
+    path: `/property/${data.listing.slug}`,
+    images: data.listing.heroImage
+      ? [{ url: data.listing.heroImage, alt: data.listing.title }]
+      : undefined,
+  });
+}
 
 type SearchParams = {
   inquiry?: string;

@@ -1,7 +1,33 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { createDivisionMetadata, toSeoDescription } from "@henryco/config";
 import { formatCurrency } from "@/lib/env";
 import { getStudioCatalog, getStudioServiceBySlug } from "@/lib/studio/catalog";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const service = await getStudioServiceBySlug(slug);
+
+  if (!service) {
+    return createDivisionMetadata("studio", {
+      title: "Service not found | HenryCo Studio",
+      description: "The requested studio service could not be found.",
+      path: `/services/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  return createDivisionMetadata("studio", {
+    title: `${service.name} | HenryCo Studio`,
+    description: toSeoDescription(service.summary, service.headline),
+    path: `/services/${service.slug}`,
+  });
+}
 
 export default async function ServiceDetailPage({
   params,

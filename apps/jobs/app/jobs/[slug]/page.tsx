@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bell, CheckCircle2, CircleAlert, Clock3 } from "lucide-react";
+import {
+  createDivisionMetadata,
+  getAbsoluteDivisionUrl,
+  toSeoDescription,
+  toSeoPlainText,
+} from "@henryco/config";
 import { EmptyState, InlineNotice } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
@@ -12,6 +19,34 @@ import { getCandidateDashboardData, getJobPostBySlug, getJobPosts } from "@/lib/
 import { submitApplicationAction, toggleSavedJobAction } from "@/app/actions";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const job = await getJobPostBySlug(slug);
+
+  if (!job) {
+    return createDivisionMetadata("jobs", {
+      title: "Role not found | HenryCo Jobs",
+      description: "The requested job post could not be found.",
+      path: `/jobs/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  const description = toSeoDescription(job.summary, job.description, 158);
+
+  return createDivisionMetadata("jobs", {
+    title: `${job.title} | ${job.employerName} | HenryCo Jobs`,
+    description,
+    openGraphTitle: `${job.title} at ${job.employerName}`,
+    openGraphDescription: description,
+    path: `/jobs/${job.slug}`,
+  });
+}
 
 function toneForStage(stage: string) {
   if (stage === "hired" || stage === "offer") return "good" as const;
@@ -47,6 +82,57 @@ export default async function JobDetailPage({
   if (!job) {
     notFound();
   }
+  const jobUrl = getAbsoluteDivisionUrl("jobs", `/jobs/${job.slug}`);
+  const jobJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: toSeoPlainText(job.summary || job.description),
+    datePosted: job.postedAt,
+    validThrough: job.closesAt || undefined,
+    employmentType: job.employmentType,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job.employerName,
+    },
+    identifier: {
+      "@type": "PropertyValue",
+      name: job.employerName,
+      value: job.slug,
+    },
+    jobLocation:
+      job.workMode === "remote"
+        ? undefined
+        : {
+            "@type": "Place",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: job.location,
+            },
+          },
+    jobLocationType: job.workMode === "remote" ? "TELECOMMUTE" : undefined,
+    applicantLocationRequirements:
+      job.workMode === "remote"
+        ? {
+            "@type": "Country",
+            name: "Nigeria",
+          }
+        : undefined,
+    baseSalary:
+      job.salaryMin != null && job.salaryMax != null
+        ? {
+            "@type": "MonetaryAmount",
+            currency: job.currency,
+            value: {
+              "@type": "QuantitativeValue",
+              minValue: job.salaryMin,
+              maxValue: job.salaryMax,
+            },
+          }
+        : undefined,
+    directApply: true,
+    url: jobUrl,
+  };
 
   const candidateData = viewer.user ? await getCandidateDashboardData(viewer.user.id) : null;
   const existingJourney =
@@ -81,6 +167,11 @@ export default async function JobDetailPage({
       }
       secondaryCta={{ label: "How applying works", href: "/help#apply" }}
     >
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jobJsonLd) }}
+      />
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <section className="jobs-panel rounded-[2.6rem] p-7 sm:p-9">
           <div className="flex flex-wrap gap-2">

@@ -5,23 +5,13 @@ import { LocaleProvider } from "@henryco/i18n/react";
 import { getConsentCopy } from "@henryco/i18n/server";
 import { EcosystemPreferences } from "@henryco/ui/public";
 import { getAccountUrl } from "@henryco/config";
+import { createDivisionMetadata, createMetadataBase, getDivisionUrl } from "@henryco/config";
 import PublicSiteShell from "../components/PublicSiteShell";
 import { HubPublicProviders } from "../components/HubPublicProviders";
 import { getCompanySettings } from "../lib/company-settings";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
 import { getHubPublicChipUser } from "@/lib/hub-public-viewer";
-
-function toMetadataUrl(domain?: string | null) {
-  const clean = String(domain || "").trim().replace(/^https?:\/\//i, "").replace(/\/+$/, "");
-  if (!clean) return undefined;
-
-  try {
-    return new URL(`https://${clean}`);
-  } catch {
-    return undefined;
-  }
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getCompanySettings();
@@ -31,18 +21,18 @@ export async function generateMetadata(): Promise<Metadata> {
     settings.brand_description ||
     "Explore the businesses, services, and operating divisions of Henry & Co.";
   const icon = settings.favicon_url || settings.logo_url || undefined;
-
-  return {
-    metadataBase: toMetadataUrl(settings.base_domain),
+  const metadata = createDivisionMetadata("hub", {
     title,
     description,
-    icons: icon
-      ? {
-          icon: [{ url: icon }],
-          shortcut: [{ url: icon }],
-          apple: [{ url: icon }],
-        }
-      : undefined,
+    openGraphTitle: title,
+    openGraphDescription: description,
+    siteName: settings.brand_title || "Henry & Co.",
+    icon,
+  });
+
+  return {
+    ...metadata,
+    metadataBase: createMetadataBase(settings.base_domain, getDivisionUrl("hub")),
   };
 }
 

@@ -1,6 +1,32 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { createDivisionMetadata, toSeoDescription } from "@henryco/config";
 import { getStudioCatalog, getStudioTeamBySlug } from "@/lib/studio/catalog";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const team = await getStudioTeamBySlug(slug);
+
+  if (!team) {
+    return createDivisionMetadata("studio", {
+      title: "Team not found | HenryCo Studio",
+      description: "The requested studio team could not be found.",
+      path: `/teams/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  return createDivisionMetadata("studio", {
+    title: `${team.name} | HenryCo Studio`,
+    description: toSeoDescription(team.summary),
+    path: `/teams/${team.slug}`,
+  });
+}
 
 export default async function TeamDetailPage({
   params,

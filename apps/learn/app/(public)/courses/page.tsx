@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
+import { createDivisionMetadata } from "@henryco/config";
 import { getCourseCatalog, getPublicAcademyData } from "@/lib/learn/data";
 import { CourseCard, LearnEmptyState, LearnSectionIntro } from "@/components/learn/ui";
 import { getSharedAuthUrl } from "@/lib/learn/links";
 import Link from "next/link";
 
-export const metadata = { title: "Courses - HenryCo Learn" };
+export const metadata: Metadata = createDivisionMetadata("learn", {
+  title: "Courses | HenryCo Learn",
+  description:
+    "Browse HenryCo Learn courses by topic, level, and learning path, then enroll with one HenryCo account.",
+  path: "/courses",
+});
 
 export default async function CoursesPage({
   searchParams,

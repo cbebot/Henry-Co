@@ -1,12 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Award, BookOpen, BriefcaseBusiness, ChartNoAxesCombined, GraduationCap, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { CourseCard, LearnMetricCard, LearnPanel, LearnSectionIntro, PathCard, QuickMetricStrip } from "@/components/learn/ui";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getPublicAcademyData } from "@/lib/learn/data";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 
 const learn = getDivisionConfig("learn");
+export const metadata: Metadata = createDivisionMetadata("learn", {
+  path: "/",
+});
 
 function learnHeroFirstName(viewer: Awaited<ReturnType<typeof getLearnViewer>>) {
   if (!viewer.user) return null;

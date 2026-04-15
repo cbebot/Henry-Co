@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Filter, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { ProductCard } from "@/components/marketplace/shell";
 import type {
@@ -32,6 +33,7 @@ export function SearchExperience({
   initialItems,
   initialQuery,
 }: SearchExperienceProps) {
+  const router = useRouter();
   const [query, setQuery] = useState(initialQuery.q || "");
   const [category, setCategory] = useState(initialQuery.category || "");
   const [brand, setBrand] = useState(initialQuery.brand || "");
@@ -48,8 +50,17 @@ export function SearchExperience({
   >([]);
   const [suggestBusy, setSuggestBusy] = useState(false);
   const [suggestOpen, setSuggestOpen] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const searchWrapRef = useRef<HTMLDivElement | null>(null);
   const hasHydratedRef = useRef(false);
+  const searchInputId = useId();
+  const searchLabelId = useId();
+  const suggestionsId = useId();
+  const categoryId = useId();
+  const brandId = useId();
+  const verifiedId = useId();
+  const codId = useId();
+  const filterDialogTitleId = useId();
 
   useEffect(() => {
     if (!hasHydratedRef.current) {
@@ -123,11 +134,43 @@ export function SearchExperience({
     function onDocDown(event: MouseEvent) {
       if (!searchWrapRef.current?.contains(event.target as Node)) {
         setSuggestOpen(false);
+        setActiveSuggestionIndex(-1);
       }
     }
     document.addEventListener("mousedown", onDocDown);
     return () => document.removeEventListener("mousedown", onDocDown);
   }, []);
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMobileFiltersOpen(false);
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [mobileFiltersOpen]);
+
+  useEffect(() => {
+    if (!suggestions.length) {
+      setActiveSuggestionIndex(-1);
+      return;
+    }
+
+    setActiveSuggestionIndex((current) =>
+      current >= suggestions.length ? suggestions.length - 1 : current
+    );
+  }, [suggestions]);
+
+  function openSuggestion(slug: string) {
+    if (!slug) return;
+    setSuggestOpen(false);
+    setActiveSuggestionIndex(-1);
+    router.push(`/product/${slug}`);
+  }
 
   const sortedItems = useMemo(() => {
     const next = [...items];
@@ -153,20 +196,67 @@ export function SearchExperience({
   const filters = (
     <div className="space-y-5">
       <div className="market-paper rounded-[1.8rem] p-5">
-        <p className="text-sm font-semibold text-[var(--market-paper-white)]">Search intent</p>
+        <label
+          id={searchLabelId}
+          htmlFor={searchInputId}
+          className="text-sm font-semibold text-[var(--market-paper-white)]"
+        >
+          Search intent
+        </label>
         <div ref={searchWrapRef} className="relative mt-3">
           <div className="flex items-center gap-3 rounded-[1.3rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3">
             <Search className="h-4 w-4 shrink-0 text-[var(--market-muted)]" />
             <input
+              id={searchInputId}
               value={query}
               onChange={(event) => {
                 setQuery(event.target.value);
                 setSuggestOpen(true);
+                setActiveSuggestionIndex(-1);
               }}
               onFocus={() => setSuggestOpen(true)}
+              onKeyDown={(event) => {
+                if (!suggestions.length) {
+                  if (event.key === "Escape") {
+                    setSuggestOpen(false);
+                  }
+                  return;
+                }
+
+                if (event.key === "ArrowDown") {
+                  event.preventDefault();
+                  setSuggestOpen(true);
+                  setActiveSuggestionIndex((current) =>
+                    current < suggestions.length - 1 ? current + 1 : 0
+                  );
+                } else if (event.key === "ArrowUp") {
+                  event.preventDefault();
+                  setSuggestOpen(true);
+                  setActiveSuggestionIndex((current) =>
+                    current > 0 ? current - 1 : suggestions.length - 1
+                  );
+                } else if (event.key === "Enter" && activeSuggestionIndex >= 0) {
+                  event.preventDefault();
+                  const activeSlug = suggestions[activeSuggestionIndex]?.slug;
+                  if (activeSlug) {
+                    openSuggestion(activeSlug);
+                  }
+                } else if (event.key === "Escape") {
+                  setSuggestOpen(false);
+                  setActiveSuggestionIndex(-1);
+                }
+              }}
               autoComplete="off"
+              role="combobox"
               aria-autocomplete="list"
+              aria-labelledby={searchLabelId}
+              aria-controls={suggestions.length ? suggestionsId : undefined}
               aria-expanded={suggestOpen && suggestions.length > 0}
+              aria-activedescendant={
+                suggestOpen && activeSuggestionIndex >= 0
+                  ? `${suggestionsId}-option-${activeSuggestionIndex}`
+                  : undefined
+              }
               placeholder="Desk lamp, cashmere throw, executive chair"
               className="w-full bg-transparent text-sm text-[var(--market-paper-white)] outline-none placeholder:text-[rgba(213,224,245,0.42)]"
             />
@@ -178,15 +268,28 @@ export function SearchExperience({
           </div>
           {suggestOpen && suggestions.length > 0 ? (
             <ul
+              id={suggestionsId}
               role="listbox"
+              aria-label="Suggested products"
               className="absolute left-0 right-0 top-full z-30 mt-2 max-h-72 overflow-auto rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(6,10,20,0.98)] py-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl"
             >
-              {suggestions.map((item) => (
-                <li key={item.slug} role="option">
+              {suggestions.map((item, index) => (
+                <li
+                  key={item.slug}
+                  id={`${suggestionsId}-option-${index}`}
+                  role="option"
+                  aria-selected={activeSuggestionIndex === index}
+                >
                   <Link
                     href={`/product/${item.slug}`}
-                    onClick={() => setSuggestOpen(false)}
-                    className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.06)]"
+                    onClick={() => {
+                      setSuggestOpen(false);
+                      setActiveSuggestionIndex(-1);
+                    }}
+                    onMouseEnter={() => setActiveSuggestionIndex(index)}
+                    className={`flex items-center justify-between gap-3 px-4 py-2.5 text-sm text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.06)] ${
+                      activeSuggestionIndex === index ? "bg-[rgba(255,255,255,0.06)]" : ""
+                    }`}
                   >
                     <span className="min-w-0 truncate font-medium">{item.title}</span>
                     <span className="shrink-0 text-xs text-[var(--market-muted)]">
@@ -201,8 +304,14 @@ export function SearchExperience({
       </div>
 
       <div className="market-paper rounded-[1.8rem] p-5">
-        <p className="text-sm font-semibold text-[var(--market-paper-white)]">Category</p>
+        <label
+          htmlFor={categoryId}
+          className="text-sm font-semibold text-[var(--market-paper-white)]"
+        >
+          Category
+        </label>
         <select
+          id={categoryId}
           value={category}
           onChange={(event) => setCategory(event.target.value)}
           className="market-select mt-3 rounded-[1.2rem] px-4 py-3"
@@ -217,8 +326,14 @@ export function SearchExperience({
       </div>
 
       <div className="market-paper rounded-[1.8rem] p-5">
-        <p className="text-sm font-semibold text-[var(--market-paper-white)]">Brand</p>
+        <label
+          htmlFor={brandId}
+          className="text-sm font-semibold text-[var(--market-paper-white)]"
+        >
+          Brand
+        </label>
         <select
+          id={brandId}
           value={brand}
           onChange={(event) => setBrand(event.target.value)}
           className="market-select mt-3 rounded-[1.2rem] px-4 py-3"
@@ -235,12 +350,28 @@ export function SearchExperience({
       <div className="market-paper rounded-[1.8rem] p-5">
         <p className="text-sm font-semibold text-[var(--market-paper-white)]">Trust filters</p>
         <div className="mt-4 space-y-3">
-          <label className="flex items-center gap-3 rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-[var(--market-paper-white)]">
-            <input checked={verified} onChange={(event) => setVerified(event.target.checked)} type="checkbox" />
+          <label
+            htmlFor={verifiedId}
+            className="flex items-center gap-3 rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-[var(--market-paper-white)]"
+          >
+            <input
+              id={verifiedId}
+              checked={verified}
+              onChange={(event) => setVerified(event.target.checked)}
+              type="checkbox"
+            />
             Verified sellers only
           </label>
-          <label className="flex items-center gap-3 rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-[var(--market-paper-white)]">
-            <input checked={cod} onChange={(event) => setCod(event.target.checked)} type="checkbox" />
+          <label
+            htmlFor={codId}
+            className="flex items-center gap-3 rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-[var(--market-paper-white)]"
+          >
+            <input
+              id={codId}
+              checked={cod}
+              onChange={(event) => setCod(event.target.checked)}
+              type="checkbox"
+            />
             Cash on delivery eligible
           </label>
         </div>
@@ -339,13 +470,21 @@ export function SearchExperience({
       </section>
 
       {mobileFiltersOpen ? (
-        <div className="fixed inset-0 z-[65] bg-[rgba(2,4,10,0.58)] backdrop-blur-md xl:hidden">
+        <div
+          className="fixed inset-0 z-[65] bg-[rgba(2,4,10,0.58)] backdrop-blur-md xl:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={filterDialogTitleId}
+        >
           <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[2rem] border-t border-[var(--market-line)] bg-[rgba(5,7,13,0.96)] p-4 shadow-[0_-24px_80px_rgba(0,0,0,0.36)]">
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-lg font-semibold text-[var(--market-paper-white)]">Filters</p>
+              <p id={filterDialogTitleId} className="text-lg font-semibold text-[var(--market-paper-white)]">
+                Filters
+              </p>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
+                aria-label="Close marketplace filters"
                 className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
               >
                 Done

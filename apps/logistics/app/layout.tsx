@@ -4,7 +4,7 @@ import { Manrope } from "next/font/google";
 import { headers } from "next/headers";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import LogisticsShell from "@/components/layout/LogisticsShell";
 import { getLogisticsSharedLoginUrl, getLogisticsSharedSignupUrl } from "@/lib/logistics-public-links";
@@ -13,35 +13,19 @@ import "./globals.css";
 
 const logistics = getDivisionConfig("logistics");
 
-function logisticsMetadataBase(): URL {
-  const baseDomain = (process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com").replace(/^https?:\/\//i, "").split("/")[0];
-  const sub = String(logistics.subdomain || "logistics").replace(/^\.+|\.+$/g, "");
-  const prod = `https://${sub}.${baseDomain}`;
-  const candidate = process.env.NODE_ENV === "production" ? prod : "http://localhost:3000";
-  try {
-    return new URL(candidate);
-  } catch {
-    return new URL("https://logistics.henrycogroup.com");
-  }
-}
-
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
   display: "swap",
 });
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("logistics", {
   title: `${logistics.name} | Henry & Co.`,
   description: logistics.description,
-  metadataBase: logisticsMetadataBase(),
-  openGraph: {
-    title: logistics.name,
-    description: logistics.tagline,
-    siteName: logistics.name,
-    type: "website",
-  },
-};
+  openGraphTitle: logistics.name,
+  openGraphDescription: logistics.tagline,
+  siteName: logistics.name,
+});
 
 export default async function RootLayout({
   children,

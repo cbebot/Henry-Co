@@ -1,14 +1,22 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, ShieldCheck, Sparkles } from "lucide-react";
 import { EmptyState } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { JobsBrowsePanel } from "@/components/jobs-browse-panel";
 import { PublicShell } from "@/components/public-shell";
+import { createDivisionMetadata } from "@henryco/config";
 import { getSharedAccountSignupUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
 import { getEmployerProfiles, getJobsHomeData, searchJobs } from "@/lib/jobs/data";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = createDivisionMetadata("jobs", {
+  title: "Browse jobs | HenryCo Jobs",
+  description:
+    "Search open roles by category, location, work mode, trust level, and hiring context on HenryCo Jobs.",
+  path: "/jobs",
+});
 
 export default async function JobsPage({
   searchParams,

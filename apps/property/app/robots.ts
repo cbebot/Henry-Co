@@ -2,15 +2,12 @@ import type { MetadataRoute } from "next";
 import { createPublicRobots } from "@henryco/config";
 
 export default function robots(): MetadataRoute.Robots {
-  return createPublicRobots("care", [
+  return createPublicRobots("property", [
+    "/account",
+    "/admin",
+    "/agent",
     "/api/",
     "/login",
-    "/workspace/",
-    "/owner",
-    "/manager",
     "/support",
-    "/rider",
-    "/staff",
-    "/unsubscribe",
   ]);
 }

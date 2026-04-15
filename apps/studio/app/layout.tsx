@@ -4,7 +4,7 @@ import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 
 const sans = Plus_Jakarta_Sans({
@@ -19,21 +19,11 @@ const display = Space_Grotesk({
 
 const studio = getDivisionConfig("studio");
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("studio", {
   title: studio.name,
   description: studio.description,
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? `https://${studio.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-      : "http://localhost:3000"
-  ),
-  openGraph: {
-    title: studio.name,
-    description: studio.tagline,
-    siteName: studio.name,
-    type: "website",
-  },
-};
+  openGraphDescription: studio.tagline,
+});
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();

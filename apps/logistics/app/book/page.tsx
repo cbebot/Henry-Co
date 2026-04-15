@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { createDivisionMetadata } from "@henryco/config";
 import BookRequestForm from "@/components/booking/BookRequestForm";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getLogisticsZones } from "@/lib/logistics/data";
 import { getLogisticsViewer } from "@/lib/logistics/auth";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("logistics", {
   title: "Book a delivery | HenryCo Logistics",
   description: "Submit a pickup and delivery request with governed pricing and live tracking.",
-};
+  path: "/book",
+});
 
 export const dynamic = "force-dynamic";
 

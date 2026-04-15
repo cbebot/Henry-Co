@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { createDivisionMetadata } from "@henryco/config";
 import CompanyPageClient from "../../components/CompanyPageClient";
 import {
   createFallbackCompanyPage,
@@ -12,10 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const { page } = await getCompanyPage("terms");
   const resolved = page ?? createFallbackCompanyPage("terms");
 
-  return {
+  return createDivisionMetadata("hub", {
     title: resolved.seo_title || resolved.title,
     description: resolved.seo_description || resolved.intro || resolved.subtitle || undefined,
-  };
+    path: "/terms",
+  });
 }
 
 export default async function TermsPage() {

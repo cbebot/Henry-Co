@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -11,10 +12,14 @@ import {
 } from "lucide-react";
 import { JobCard } from "@/components/job-card";
 import { HeroLink, PublicShell } from "@/components/public-shell";
+import { createDivisionMetadata } from "@henryco/config";
 import { getSharedAccountJobsUrl } from "@/lib/account";
 import { getJobsHomeData } from "@/lib/jobs/data";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = createDivisionMetadata("jobs", {
+  path: "/",
+});
 const accountJobsUrl = getSharedAccountJobsUrl();
 
 export default async function HomePage() {

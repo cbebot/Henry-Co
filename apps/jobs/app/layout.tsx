@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Manrope, Newsreader } from "next/font/google";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
@@ -21,22 +21,11 @@ export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   const jobs = getDivisionConfig("jobs");
-  const domain =
-    process.env.NODE_ENV === "production"
-      ? `https://${jobs.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-      : "http://localhost:3000";
-
-  return {
+  return createDivisionMetadata("jobs", {
     title: jobs.name,
     description: jobs.description,
-    metadataBase: new URL(domain),
-    openGraph: {
-      title: jobs.name,
-      description: jobs.tagline,
-      siteName: jobs.name,
-      type: "website",
-    },
-  };
+    openGraphDescription: jobs.tagline,
+  });
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

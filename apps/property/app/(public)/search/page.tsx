@@ -1,14 +1,16 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { createDivisionMetadata } from "@henryco/config";
 import { PropertyEmptyState, PropertyListingCard, PropertySearchBar, PropertySectionIntro } from "@/components/property/ui";
 import { getPropertySnapshot, searchProperties } from "@/lib/property/data";
 
-export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
+export const revalidate = 300;
+export const metadata: Metadata = createDivisionMetadata("property", {
   title: "Search property listings | HenryCo Property",
   description:
     "Search HenryCo Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
-};
+  path: "/search",
+});
 
 type SearchParams = {
   q?: string;
@@ -40,6 +42,13 @@ export default async function PropertySearchPage({
   const snapshot = await getPropertySnapshot();
   const results = await searchProperties(params);
   const active = Object.entries(params).filter(([, value]) => Boolean(value));
+  const searchStateKey = [
+    params.q || "",
+    params.kind || "",
+    params.area || "",
+    params.managed || "",
+    params.furnished || "",
+  ].join("|");
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
@@ -51,6 +60,7 @@ export default async function PropertySearchPage({
 
       <div className="mt-8">
         <PropertySearchBar
+          key={searchStateKey}
           areas={snapshot.areas}
           defaults={{
             q: params.q,

@@ -1,11 +1,49 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Layers3, Quote, Star } from "lucide-react";
+import {
+  createDivisionMetadata,
+  getAbsoluteDivisionUrl,
+  toSeoDescription,
+  toSeoPlainText,
+} from "@henryco/config";
 import { getCourseBySlug } from "@/lib/learn/data";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { enrollInCourseAction, toggleSavedCourseAction } from "@/lib/learn/actions";
 import { getAccountLearnUrl, getLearnCourseRoomUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { ActionLink, CourseCard, LearnMarkdown, LearnPanel, LearnSectionIntro, LearnStatusBadge } from "@/components/learn/ui";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getCourseBySlug(slug);
+
+  if (!data) {
+    return createDivisionMetadata("learn", {
+      title: "Course not found | HenryCo Learn",
+      description: "The requested course could not be found.",
+      path: `/courses/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  const description = toSeoDescription(data.course.subtitle, data.course.description, 158);
+
+  return createDivisionMetadata("learn", {
+    title: `${data.course.title} | HenryCo Learn`,
+    description,
+    openGraphTitle: data.course.title,
+    openGraphDescription: description,
+    path: `/courses/${data.course.slug}`,
+    images: data.course.heroImageUrl
+      ? [{ url: data.course.heroImageUrl, alt: data.course.title }]
+      : undefined,
+  });
+}
 
 export default async function CourseDetailPage({
   params,
@@ -18,11 +56,63 @@ export default async function CourseDetailPage({
   if (!data) notFound();
 
   const { course, category, instructor, modules, quiz, questions, reviews, related, paths, enrollment, saved, averageRating } = data;
+  const courseUrl = getAbsoluteDivisionUrl("learn", `/courses/${course.slug}`);
+  const courseJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: course.title,
+    description: toSeoPlainText(course.subtitle || course.description),
+    provider: {
+      "@type": "Organization",
+      name: "HenryCo Learn",
+      url: getAbsoluteDivisionUrl("learn", "/"),
+    },
+    educationalLevel: course.difficulty,
+    image: course.heroImageUrl || undefined,
+    courseCode: course.slug,
+    offers:
+      course.accessModel === "free" || course.price === 0
+        ? {
+            "@type": "Offer",
+            url: courseUrl,
+            price: 0,
+            priceCurrency: course.currency,
+            availability: "https://schema.org/InStock",
+          }
+        : course.price
+          ? {
+              "@type": "Offer",
+              url: courseUrl,
+              price: course.price,
+              priceCurrency: course.currency,
+              availability: "https://schema.org/InStock",
+            }
+          : undefined,
+    aggregateRating:
+      reviews.length > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: averageRating,
+            reviewCount: reviews.length,
+          }
+        : undefined,
+    instructor: instructor
+      ? {
+          "@type": "Person",
+          name: instructor.fullName,
+        }
+      : undefined,
+  };
   const canStart = enrollment && ["active", "completed"].includes(enrollment.status);
   const signInHref = getSharedAuthUrl("login", `/courses/${course.slug}`);
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+      />
       <section className="learn-panel learn-hero rounded-[2.8rem] p-8 sm:p-10 xl:p-12">
         <div className="flex flex-wrap items-center gap-2">
           <LearnStatusBadge label={course.visibility} tone={course.visibility === "public" ? "signal" : "warning"} />

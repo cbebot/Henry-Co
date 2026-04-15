@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import localFont from "next/font/local";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
@@ -39,21 +39,11 @@ const display = localFont({
 
 const property = getDivisionConfig("property");
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("property", {
   title: property.name,
   description: property.description,
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? `https://${property.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-      : "http://localhost:3000"
-  ),
-  openGraph: {
-    title: property.name,
-    description: property.tagline,
-    siteName: property.name,
-    type: "website",
-  },
-};
+  openGraphDescription: property.tagline,
+});
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();

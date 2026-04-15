@@ -1,9 +1,35 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { createDivisionMetadata } from "@henryco/config";
 import { PropertyListingCard, PropertySectionIntro } from "@/components/property/ui";
 import { getAreaBySlug } from "@/lib/property/data";
 import { formatCurrency } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getAreaBySlug(slug);
+
+  if (!data) {
+    return createDivisionMetadata("property", {
+      title: "Area not found | HenryCo Property",
+      description: "The requested property area could not be found on HenryCo Property.",
+      path: `/area/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  return createDivisionMetadata("property", {
+    title: `${data.area.name} property market | HenryCo Property`,
+    description: data.area.hero || data.area.marketNote,
+    path: `/area/${data.area.slug}`,
+  });
+}
 
 export default async function AreaPage({
   params,

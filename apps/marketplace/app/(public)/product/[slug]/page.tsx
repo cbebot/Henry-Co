@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
+import {
+  createDivisionMetadata,
+  getAbsoluteDivisionUrl,
+  toSeoDescription,
+  toSeoPlainText,
+} from "@henryco/config";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
@@ -8,6 +15,36 @@ import { getMarketplaceProductBySlug } from "@/lib/marketplace/data";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getMarketplaceProductBySlug(slug);
+
+  if (!data) {
+    return createDivisionMetadata("marketplace", {
+      title: "Product not found | Henry & Co. Marketplace",
+      description: "The requested marketplace product could not be found.",
+      path: `/product/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  const description = toSeoDescription(data.product.summary, data.product.description, 158);
+  const image = data.product.gallery[0];
+
+  return createDivisionMetadata("marketplace", {
+    title: `${data.product.title} | Henry & Co. Marketplace`,
+    description,
+    openGraphTitle: data.product.title,
+    openGraphDescription: description,
+    path: `/product/${data.product.slug}`,
+    images: image ? [{ url: image, alt: data.product.title }] : undefined,
+  });
+}
 
 export default async function ProductPage({
   params,
@@ -17,9 +54,54 @@ export default async function ProductPage({
   const { slug } = await params;
   const data = await getMarketplaceProductBySlug(slug);
   if (!data) notFound();
+  const productUrl = getAbsoluteDivisionUrl("marketplace", `/product/${data.product.slug}`);
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: data.product.title,
+    description: toSeoPlainText(data.product.summary || data.product.description),
+    sku: data.product.sku,
+    image: data.product.gallery,
+    category: data.category?.name,
+    brand: data.brand
+      ? {
+          "@type": "Brand",
+          name: data.brand.name,
+        }
+      : undefined,
+    aggregateRating:
+      data.product.reviewCount > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: data.product.rating,
+            reviewCount: data.product.reviewCount,
+          }
+        : undefined,
+    offers: {
+      "@type": "Offer",
+      url: productUrl,
+      priceCurrency: data.product.currency,
+      price: data.product.basePrice,
+      availability:
+        data.product.stock > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      seller: data.vendor
+        ? {
+            "@type": "Organization",
+            name: data.vendor.name,
+          }
+        : undefined,
+    },
+  };
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-8 pb-28 sm:px-6 xl:px-8">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <section className="grid gap-6 xl:grid-cols-[1.06fr,0.94fr]">
         <ProductMediaGallery title={data.product.title} gallery={data.product.gallery} />
 

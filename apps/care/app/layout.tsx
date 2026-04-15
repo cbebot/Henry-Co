@@ -5,6 +5,7 @@ import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/serve
 import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { createDivisionMetadata } from "@henryco/config";
 import { getCareSettings } from "@/lib/care-data";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,13 +15,12 @@ export async function generateMetadata(): Promise<Metadata> {
     settings.hero_subtitle ||
     "Garment care, home cleaning, and workplace upkeep with clearer booking, steadier tracking, and calmer support.";
 
-  return {
+  return createDivisionMetadata("care", {
     title,
     description,
-    icons: {
-      icon: settings.favicon_url || settings.logo_url || undefined,
-    },
-  };
+    openGraphDescription: description,
+    icon: settings.favicon_url || settings.logo_url || undefined,
+  });
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

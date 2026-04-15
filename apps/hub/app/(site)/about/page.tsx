@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { createDivisionMetadata } from "@henryco/config";
 import AboutLeadershipGrid from "../../components/AboutLeadershipGrid";
 import CompanyPageClient from "../../components/CompanyPageClient";
 import { getPublishedPeople } from "../../lib/about-people";
@@ -14,10 +15,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const { page } = await getCompanyPage("about");
   const resolved = page ?? createFallbackCompanyPage("about");
 
-  return {
+  return createDivisionMetadata("hub", {
     title: resolved.seo_title || resolved.title,
     description: resolved.seo_description || resolved.intro || resolved.subtitle || undefined,
-  };
+    path: "/about",
+  });
 }
 
 export default async function AboutPage() {

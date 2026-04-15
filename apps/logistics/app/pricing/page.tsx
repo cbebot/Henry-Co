@@ -1,15 +1,17 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { createDivisionMetadata } from "@henryco/config";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { DEFAULT_RATE_CARDS } from "@/lib/logistics/pricing";
 import { formatCurrency } from "@/lib/env";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("logistics", {
   title: "Pricing | HenryCo Logistics",
   description: "Zone-based logistics pricing with indicative rate cards and promise windows.",
-};
+  path: "/pricing",
+});
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function PricingPage() {
   const { zones, rateCards } = await getPublicLogisticsSnapshot();

@@ -1,7 +1,7 @@
 import { LearnSiteHeader } from "@/components/learn/site-header";
 import { LearnSiteFooter } from "@/components/learn/site-footer";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (

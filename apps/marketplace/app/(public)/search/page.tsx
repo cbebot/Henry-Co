@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
+import { createDivisionMetadata } from "@henryco/config";
 import { PageIntro } from "@/components/marketplace/shell";
 import { SearchExperience } from "@/components/marketplace/search-experience";
 import { getMarketplaceHomeData, searchMarketplace } from "@/lib/marketplace/data";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = createDivisionMetadata("marketplace", {
+  title: "Search | Henry & Co. Marketplace",
+  description:
+    "Search premium marketplace listings by query, verified seller, brand, category, and delivery trust signals.",
+  path: "/search",
+});
 
 export default async function SearchPage({
   searchParams,

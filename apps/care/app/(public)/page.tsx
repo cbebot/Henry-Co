@@ -13,7 +13,7 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 
 import CareFlow from "@/components/care/CareFlow";
 import {
@@ -30,9 +30,12 @@ export const revalidate = 60;
 const care = getDivisionConfig("care");
 
 export const metadata: Metadata = {
-  title: care.name,
-  description:
-    "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from HenryCo Care.",
+  ...createDivisionMetadata("care", {
+    title: care.name,
+    description:
+      "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from HenryCo Care.",
+    path: "/",
+  }),
 };
 
 const nairaFormatter = new Intl.NumberFormat("en-NG", {

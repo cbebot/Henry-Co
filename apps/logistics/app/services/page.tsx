@@ -1,13 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { createDivisionMetadata } from "@henryco/config";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("logistics", {
   title: "Services | HenryCo Logistics",
   description: "Same-day, scheduled, dispatch, and inter-city logistics services with governed pricing.",
-};
+  path: "/services",
+});
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function ServicesPage() {
   const { services, settings } = await getPublicLogisticsSnapshot();

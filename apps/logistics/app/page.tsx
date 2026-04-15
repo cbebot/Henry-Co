@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, MapPin, Radio, Shield } from "lucide-react";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import type { Metadata } from "next";
+import { createDivisionMetadata, getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { LOGISTICS_FAQS } from "@/lib/logistics/content";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+export const metadata: Metadata = createDivisionMetadata("logistics", {
+  path: "/",
+});
 
 export default async function LogisticsHomePage() {
   const logistics = getDivisionConfig("logistics");

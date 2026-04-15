@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -17,8 +18,12 @@ import {
   VendorCard,
 } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
+import { createDivisionMetadata } from "@henryco/config";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = createDivisionMetadata("marketplace", {
+  path: "/",
+});
 
 export default async function MarketplaceHomePage() {
   const data = await getMarketplaceHomeData();

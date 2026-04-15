@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { createDivisionMetadata } from "@henryco/config";
 import { PropertyListingCard, PropertyManagedRecordCard, PropertyPortfolioStats, PropertySectionIntro } from "@/components/property/ui";
 import { getPropertySnapshot } from "@/lib/property/data";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+export const metadata: Metadata = createDivisionMetadata("property", {
+  title: "Managed property services | HenryCo Property",
+  description:
+    "Explore HenryCo Property's managed-property operations, owner services, and active managed listings.",
+  path: "/managed",
+});
 
 export default async function ManagedPropertyPage() {
   const snapshot = await getPropertySnapshot();

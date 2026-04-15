@@ -1,14 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createDivisionMetadata("logistics", {
   title: "Support | HenryCo Logistics",
   description: "Contact HenryCo Logistics support or continue a conversation from your HenryCo account.",
-};
+  path: "/support",
+});
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function SupportPage() {
   const logistics = getDivisionConfig("logistics");

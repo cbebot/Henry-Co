@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getStaffHqUrl } from "@henryco/config";
+import { COMPANY, createDivisionMetadata, getStaffHqUrl } from "@henryco/config";
 import { redirect } from "next/navigation";
 import PublicHubPage from "./(site)/page";
 import PublicSiteLayout from "./(site)/layout";
@@ -16,13 +16,21 @@ export async function generateMetadata(): Promise<Metadata> {
       title: "Henry & Co. Staff Workspace",
       description:
         "Role-aware internal workspace for HenryCo staff, managers, operators, and shared division teams.",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
-  return {
+  return createDivisionMetadata("hub", {
     title: "Henry & Co. Company Hub",
     description: "Premium multi-division ecosystem for Henry & Co.",
-  };
+    openGraphTitle: "Henry & Co.",
+    openGraphDescription: COMPANY.group.mission,
+    siteName: "Henry & Co.",
+    path: "/",
+  });
 }
 
 export default async function RootPage() {

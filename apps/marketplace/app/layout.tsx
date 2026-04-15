@@ -6,7 +6,7 @@ import { MarketplaceRuntimeProvider } from "@/components/marketplace/runtime-pro
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { FloatingSupport } from "@henryco/ui/support";
 import { getMarketplaceShellState } from "@/lib/marketplace/data";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 
 const fraunces = Fraunces({
@@ -25,21 +25,11 @@ export const revalidate = 0;
 export async function generateMetadata(): Promise<Metadata> {
   const marketplace = getDivisionConfig("marketplace");
 
-  return {
+  return createDivisionMetadata("marketplace", {
     title: marketplace.name,
     description: marketplace.description,
-    metadataBase: new URL(
-      process.env.NODE_ENV === "production"
-        ? `https://${marketplace.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-        : "http://localhost:3000"
-    ),
-    openGraph: {
-      title: marketplace.name,
-      description: marketplace.tagline,
-      siteName: marketplace.name,
-      type: "website",
-    },
-  };
+    openGraphDescription: marketplace.tagline,
+  });
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

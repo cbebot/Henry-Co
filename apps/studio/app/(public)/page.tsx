@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Layers3, Sparkles, Target, Waypoints } from "lucide-react";
+import { createDivisionMetadata } from "@henryco/config";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { formatCurrency } from "@/lib/env";
+
+export const metadata: Metadata = createDivisionMetadata("studio", {
+  path: "/",
+});
 
 export default async function StudioHomePage() {
   const catalog = await getStudioCatalog();

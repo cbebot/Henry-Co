@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Building2, CalendarRange, ShieldCheck, Sparkles } from "lucide-react";
+import { createDivisionMetadata } from "@henryco/config";
 import {
   PropertyAgentCard,
   PropertyAreaCard,
@@ -15,7 +17,10 @@ import {
 import { PropertyRecommendedForYou } from "@/components/property/property-recommended-for-you";
 import { getPropertyHomeData } from "@/lib/property/data";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+export const metadata: Metadata = createDivisionMetadata("property", {
+  path: "/",
+});
 
 export default async function PropertyHomePage() {
   const snapshot = await getPropertyHomeData();
