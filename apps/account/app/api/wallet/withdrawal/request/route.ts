@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -27,6 +28,32 @@ export async function POST(request: Request) {
     // KYC gate: withdrawals require verified identity.
     const verification = await requireVerification(user.id);
     if (!verification.allowed) {
+      try {
+        await createAdminSupabase().from("customer_activity").insert({
+          user_id: user.id,
+          division: "wallet",
+          activity_type: "wallet_withdrawal_blocked",
+          title: "Wallet withdrawal blocked",
+          description: verification.reason,
+          status: "blocked",
+          reference_type: "wallet_withdrawal_request",
+          reference_id: user.id,
+          action_url: "/verification",
+          metadata: buildCanonicalActivityMetadata({
+            division: "wallet",
+            activityType: "wallet_withdrawal_blocked",
+            status: "blocked",
+            referenceType: "wallet_withdrawal_request",
+            referenceId: user.id,
+            metadata: {
+              verification_status: verification.status,
+              gate: "require_verification",
+            },
+          }),
+        } as never);
+      } catch {
+        // Do not block the response if the analytics write fails.
+      }
       return NextResponse.json({ error: verification.reason }, { status: 403 });
     }
 
@@ -195,6 +222,17 @@ export async function POST(request: Request) {
         reference_type: "wallet_withdrawal_request",
         reference_id: String((legacyRow as { id: string }).id),
         action_url: "/wallet/withdrawals",
+        metadata: buildCanonicalActivityMetadata({
+          division: "wallet",
+          activityType: "wallet_withdrawal_requested",
+          status: "pending_review",
+          referenceType: "wallet_withdrawal_request",
+          referenceId: String((legacyRow as { id: string }).id),
+          metadata: {
+            payout_method_id: payoutMethodId,
+            available_balance_kobo: availableBalance,
+          },
+        }),
       } as never);
 
       await admin.from("customer_notifications").insert({
@@ -225,6 +263,17 @@ export async function POST(request: Request) {
       reference_type: "wallet_withdrawal_request",
       reference_id: String((row as { id: string }).id),
       action_url: "/wallet/withdrawals",
+      metadata: buildCanonicalActivityMetadata({
+        division: "wallet",
+        activityType: "wallet_withdrawal_requested",
+        status: "pending_review",
+        referenceType: "wallet_withdrawal_request",
+        referenceId: String((row as { id: string }).id),
+        metadata: {
+          payout_method_id: payoutMethodId,
+          available_balance_kobo: availableBalance,
+        },
+      }),
     } as never);
 
     await admin.from("customer_notifications").insert({

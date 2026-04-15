@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
@@ -124,10 +125,17 @@ export async function POST(request: Request) {
         reference_type: "wallet_funding_request",
         reference_id: requestId,
         action_url: `/wallet/funding/${requestId}`,
-        metadata: {
-          provider,
-          reference,
-        },
+        metadata: buildCanonicalActivityMetadata({
+          division: "wallet",
+          activityType: "wallet_funding_requested",
+          status: "pending_verification",
+          referenceType: "wallet_funding_request",
+          referenceId: requestId,
+          metadata: {
+            provider,
+            reference,
+          },
+        }),
       });
 
       await admin.from("customer_notifications").insert({
@@ -194,10 +202,17 @@ export async function POST(request: Request) {
       reference_type: "wallet_funding_request",
       reference_id: transaction.id,
       action_url: `/wallet/funding/${transaction.id}`,
-      metadata: {
-        provider,
-        reference,
-      },
+      metadata: buildCanonicalActivityMetadata({
+        division: "wallet",
+        activityType: "wallet_funding_requested",
+        status: "pending_verification",
+        referenceType: "wallet_funding_request",
+        referenceId: String(transaction.id),
+        metadata: {
+          provider,
+          reference,
+        },
+      }),
     });
 
     await admin.from("customer_notifications").insert({

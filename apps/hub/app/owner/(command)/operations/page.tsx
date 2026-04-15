@@ -20,6 +20,9 @@ export default async function OperationsCenterPage() {
         description="Bookings, disputes, inquiries, applications, support, and shared workflow pressure are centralized here so the owner can jump straight into the right operational surface."
         actions={
           <>
+            <Link href="/owner/operations/analytics" className="acct-button-secondary">
+              Analytics truth
+            </Link>
             <Link href="/owner/operations/queues" className="acct-button-secondary">
               Task queues
             </Link>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   mapAccountSupportCategoryToDivision,
 } from "@henryco/config";
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -125,11 +126,18 @@ export async function POST(request: Request) {
       status: triage.shouldEscalate ? "escalated" : "open",
       reference_type: "support_thread",
       reference_id: thread.id,
-      metadata: {
-        triage_intent: triage.intent,
-        triage_confidence: triage.confidence,
-        triage_queue: triage.handoffSummary.suggestedQueue || "general",
-      },
+      metadata: buildCanonicalActivityMetadata({
+        division,
+        activityType: "support_created",
+        status: triage.shouldEscalate ? "escalated" : "open",
+        referenceType: "support_thread",
+        referenceId: thread.id,
+        metadata: {
+          triage_intent: triage.intent,
+          triage_confidence: triage.confidence,
+          triage_queue: triage.handoffSummary.suggestedQueue || "general",
+        },
+      }),
     });
     if (activityErr) sideEffectFailures.push("activity");
 

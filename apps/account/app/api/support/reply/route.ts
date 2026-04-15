@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -168,6 +169,32 @@ export async function POST(request: Request) {
       );
       if (docsErr) sideEffectFailures.push("documents");
     }
+
+    const { error: activityErr } = await admin.from("customer_activity").insert({
+      user_id: user.id,
+      division: thread.division || "account",
+      activity_type: "support_replied",
+      title: `Replied to ${String(thread.subject || "support thread").trim() || "support thread"}`,
+      description: "Customer replied inside an open support conversation.",
+      status: triage.shouldEscalate ? "escalated" : "awaiting_reply",
+      reference_type: "support_thread",
+      reference_id: thread_id,
+      action_url: `/support/${thread_id}`,
+      metadata: buildCanonicalActivityMetadata({
+        division: thread.division || "account",
+        activityType: "support_replied",
+        status: triage.shouldEscalate ? "escalated" : "awaiting_reply",
+        referenceType: "support_thread",
+        referenceId: thread_id,
+        metadata: {
+          triageIntent: triage.intent,
+          triageQueue: triage.handoffSummary.suggestedQueue || "general",
+          escalated: triage.shouldEscalate,
+          attachmentCount: uploadedAttachments.length,
+        },
+      }),
+    });
+    if (activityErr) sideEffectFailures.push("activity");
 
     try {
       await emitIntelligenceEvent({

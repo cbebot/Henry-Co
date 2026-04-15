@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   HenryEventNames,
+  buildCanonicalActivityMetadata,
   nextAccountSteps,
   noopSink,
   trackEvent,
@@ -42,11 +43,18 @@ export async function emitIntelligenceEvent(
     status: String(event.properties.status || "recorded"),
     reference_type: "intel_event",
     reference_id: String(event.eventId || ""),
-    metadata: {
-      ...event.properties,
-      event_name: event.name,
-      correlation_id: event.correlationId || null,
-    },
+    metadata: buildCanonicalActivityMetadata({
+      division: event.division,
+      activityType: `intel:${event.name}`,
+      status: String(event.properties.status || "recorded"),
+      referenceType: "intel_event",
+      referenceId: String(event.eventId || ""),
+      metadata: {
+        ...event.properties,
+        event_name: event.name,
+        correlation_id: event.correlationId || null,
+      },
+    }),
   } as never);
 }
 

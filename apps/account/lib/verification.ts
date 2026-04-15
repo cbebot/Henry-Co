@@ -1,5 +1,6 @@
 import "server-only";
 
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 
 const admin = () => createAdminSupabase();
@@ -105,6 +106,28 @@ export async function submitVerificationDocument(
     .eq("id", userId)
     .in("verification_status" as never, ["none", "rejected"]);
 
+  await adminClient.from("customer_activity").insert({
+    user_id: userId,
+    division: "account",
+    activity_type: "verification_submitted",
+    title: `Verification document submitted: ${getDocumentTypeLabel(input.documentType)}`,
+    description: "Identity verification is now waiting for review.",
+    status: "pending",
+    reference_type: "verification_submission",
+    reference_id: input.documentId,
+    action_url: "/verify",
+    metadata: buildCanonicalActivityMetadata({
+      division: "account",
+      activityType: "verification_submitted",
+      status: "pending",
+      referenceType: "verification_submission",
+      referenceId: input.documentId,
+      metadata: {
+        document_type: input.documentType,
+      },
+    }),
+  } as never);
+
   return { ok: true };
 }
 
@@ -191,6 +214,33 @@ export async function reviewVerificationSubmission(
         .eq("id", userId);
     }
   }
+
+  await adminClient.from("customer_activity").insert({
+    user_id: String(submission.user_id),
+    division: "account",
+    activity_type: "verification_resolved",
+    title: `Verification ${decision}`,
+    description:
+      decision === "approved"
+        ? "Identity verification has been approved."
+        : note || "Verification documents were not approved.",
+    status: decision === "approved" ? "verified" : "rejected",
+    reference_type: "verification_submission",
+    reference_id: submissionId,
+    action_url: "/verification",
+    metadata: buildCanonicalActivityMetadata({
+      division: "account",
+      activityType: "verification_resolved",
+      status: decision === "approved" ? "verified" : "rejected",
+      referenceType: "verification_submission",
+      referenceId: submissionId,
+      metadata: {
+        document_type: String(submission.document_type || ""),
+        reviewer_id: reviewerUserId,
+        decision,
+      },
+    }),
+  } as never);
 
   return { ok: true };
 }

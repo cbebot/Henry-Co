@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendAccountEmail } from "@/lib/email/send";
 import { welcomeEmail, securityAlertEmail, walletFundedEmail } from "@/lib/email/templates";
@@ -136,6 +137,27 @@ export async function POST(request: Request) {
     switch (eventName) {
       case "account.welcome": {
         if (email) await sendAccountEmail(email, welcomeEmail(name));
+        await admin.from("customer_activity").insert({
+          user_id: userId,
+          division: "account",
+          activity_type: "account_created",
+          title: "HenryCo account created",
+          description: "Shared account onboarding completed.",
+          status: "active",
+          reference_type: "account",
+          reference_id: userId,
+          action_url: "/",
+          metadata: buildCanonicalActivityMetadata({
+            division: "account",
+            activityType: "account_created",
+            status: "active",
+            referenceType: "account",
+            referenceId: userId,
+            metadata: {
+              webhook_event_id: eventId,
+            },
+          }),
+        } as never);
         break;
       }
       case "security.alert": {
@@ -182,6 +204,14 @@ export async function POST(request: Request) {
           reference_id: clean(payload.reference_id) || null,
           amount_kobo: asNumber(payload.amount_kobo, 0) || null,
           action_url: clean(payload.action_url) || null,
+          metadata: buildCanonicalActivityMetadata({
+            division: clean(payload.division) || "account",
+            activityType: clean(payload.activity_type) || "event",
+            status: clean(payload.status) || null,
+            referenceType: clean(payload.reference_type) || null,
+            referenceId: clean(payload.reference_id) || null,
+            metadata: payload,
+          }),
         });
         break;
       }

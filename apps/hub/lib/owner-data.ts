@@ -1,6 +1,13 @@
 import "server-only";
 
 import { cache } from "react";
+import {
+  HENRY_FUNNEL_DEFINITIONS,
+  readActivityAnalytics,
+  summarizeExperimentReadiness,
+  summarizeFunnels,
+  summarizeIntegrity,
+} from "@henryco/intelligence";
 import { logOwnerSurfaceError } from "@/lib/owner-diagnostics";
 import { createAdminSupabase } from "@/lib/supabase";
 import { divisionColor, divisionLabel, formatCurrencyAmount } from "@/lib/format";
@@ -1263,6 +1270,181 @@ export async function getOperationsCenterData() {
     alerts: signals.filter((signal) => signal.severity !== "good"),
     recentActivity: dataset.customerActivity.slice(0, 16),
     divisions,
+  };
+}
+
+export async function getAnalyticsCenterData() {
+  const [dataset, activityRows] = await Promise.all([
+    getOwnerBaseDataset(),
+    safeSelect("customer_activity", "*", { orderBy: "created_at", ascending: false, limit: 800 }),
+  ]);
+
+  const sourceRows = activityRows.length ? activityRows : dataset.customerActivity;
+  const normalizedRows = sourceRows
+    .map(readActivityAnalytics)
+    .filter((row): row is NonNullable<ReturnType<typeof readActivityAnalytics>> => Boolean(row));
+  const integrity = summarizeIntegrity(sourceRows);
+  const funnels = summarizeFunnels(sourceRows);
+  const experimentReadiness = summarizeExperimentReadiness(sourceRows);
+  const observedFunnelKeys = new Set(funnels.map((funnel) => funnel.key));
+  const blockedOutcomes = new Set(["blocked", "failed", "rejected"]);
+
+  const divisionSummaryMap = new Map<
+    string,
+    {
+      division: string;
+      label: string;
+      eventCount: number;
+      funnelRows: number;
+      blockedRows: number;
+      supportRows: number;
+      trustRows: number;
+      financeRows: number;
+      notificationRows: number;
+    }
+  >();
+
+  for (const row of normalizedRows) {
+    const current = divisionSummaryMap.get(row.division) || {
+      division: row.division,
+      label: divisionLabel(row.division),
+      eventCount: 0,
+      funnelRows: 0,
+      blockedRows: 0,
+      supportRows: 0,
+      trustRows: 0,
+      financeRows: 0,
+      notificationRows: 0,
+    };
+
+    current.eventCount += 1;
+    if (row.analytics.funnelKey) current.funnelRows += 1;
+    if (blockedOutcomes.has(row.analytics.outcome)) current.blockedRows += 1;
+    if (row.analytics.touches.support) current.supportRows += 1;
+    if (row.analytics.touches.trust) current.trustRows += 1;
+    if (row.analytics.touches.finance) current.financeRows += 1;
+    if (row.analytics.touches.notification) current.notificationRows += 1;
+    divisionSummaryMap.set(row.division, current);
+  }
+
+  const divisionSummary = [...divisionSummaryMap.values()].sort(
+    (left, right) => right.eventCount - left.eventCount
+  );
+
+  const coverageGaps = HENRY_FUNNEL_DEFINITIONS.filter(
+    (definition) => !observedFunnelKeys.has(definition.key)
+  ).map((definition) => ({
+    key: definition.key,
+    division: definition.division,
+    label: definition.label,
+    description: definition.description,
+    reason: `No recent canonical rows were observed for this funnel in the current owner analytics sample.`,
+  }));
+
+  const notices = [
+    integrity.canonicalRows < integrity.totalRows
+      ? {
+          id: "canonical-gap",
+          tone: "warning" as const,
+          title: "Canonical coverage is still catching up",
+          body: `${integrity.canonicalRows} of ${integrity.totalRows} sampled activity rows currently resolve into the shared canonical model.`,
+        }
+      : {
+          id: "canonical-healthy",
+          tone: "good" as const,
+          title: "Canonical event truth is flowing",
+          body: `All sampled activity rows in the owner analytics sample resolve into the shared canonical analytics contract.`,
+        },
+    integrity.possibleDuplicateRows > 0
+      ? {
+          id: "duplicates-present",
+          tone: "warning" as const,
+          title: "Duplicate-style activity still needs attention",
+          body: `${integrity.possibleDuplicateRows} possible duplicate rows were detected by canonical event, subject, and entity correlation.`,
+        }
+      : {
+          id: "duplicates-clear",
+          tone: "good" as const,
+          title: "No duplicate spikes detected in the sample",
+          body: "The current owner sample does not show repeated rows with the same subject, canonical event, entity, and outcome fingerprint.",
+        },
+    coverageGaps.length
+      ? {
+          id: "coverage-gaps",
+          tone: "info" as const,
+          title: "Some funnels still lack recent observable traffic",
+          body: `${coverageGaps.length} tracked funnels have no recent canonical rows in the current owner sample. This can mean either missing instrumentation or no recent activity.`,
+        }
+      : {
+          id: "coverage-complete",
+          tone: "good" as const,
+          title: "Every tracked funnel has recent sample coverage",
+          body: "The current owner analytics sample includes recent canonical rows for every tracked funnel definition.",
+        },
+  ];
+
+  return {
+    metrics: {
+      totalActivityRows: integrity.totalRows,
+      canonicalCoverageRate:
+        integrity.totalRows > 0
+          ? Math.round((integrity.canonicalRows / integrity.totalRows) * 100)
+          : 0,
+      funnelRows: integrity.funnelRows,
+      duplicateRows: integrity.possibleDuplicateRows,
+      blockedRows: normalizedRows.filter((row) => blockedOutcomes.has(row.analytics.outcome)).length,
+      restrictedExperimentRows: experimentReadiness.restrictedRows,
+    },
+    notices,
+    integrity,
+    funnels,
+    experimentReadiness,
+    divisionSummary,
+    coverageGaps,
+    frictionSummary: [
+      {
+        id: "support",
+        label: "Support-linked events",
+        count: integrity.supportRows,
+        href: "/owner/operations/alerts",
+        description: "Threads, dispute pressure, and support recovery states that can distort conversion if unresolved.",
+      },
+      {
+        id: "trust",
+        label: "Trust-linked events",
+        count: integrity.trustRows,
+        href: "/owner/settings/security",
+        description: "Verification, KYC, trust, and proof-dependent transitions that affect completion rates.",
+      },
+      {
+        id: "finance",
+        label: "Finance-linked events",
+        count: integrity.financeRows,
+        href: "/owner/finance",
+        description: "Payment, payout, wallet, and revenue-sensitive transitions that must stay experiment-safe.",
+      },
+      {
+        id: "notifications",
+        label: "Notification-linked events",
+        count: integrity.notificationRows,
+        href: "/owner/messaging/queues",
+        description: "Read or delivery-linked lifecycle events that can support notification-to-action reporting.",
+      },
+    ],
+    recentActivity: normalizedRows.slice(0, 18).map((row) => ({
+      id: row.id,
+      division: row.division,
+      canonicalName: row.analytics.canonicalName,
+      activityType: row.activityType,
+      classification: row.analytics.classification,
+      outcome: row.analytics.outcome,
+      funnelKey: row.analytics.funnelKey,
+      funnelLabel:
+        HENRY_FUNNEL_DEFINITIONS.find((definition) => definition.key === row.analytics.funnelKey)
+          ?.label || null,
+      entityType: row.analytics.entityType,
+      createdAt: row.createdAt,
+    })),
   };
 }
 

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
@@ -143,9 +144,17 @@ export async function POST(request: Request, { params }: Props) {
       reference_type: "wallet_funding_request",
       reference_id: requestId,
       action_url: `/wallet/funding/${requestId}`,
-      metadata: {
-        proof_url: upload.secureUrl,
-      },
+      metadata: buildCanonicalActivityMetadata({
+        division: "wallet",
+        activityType: "wallet_funding_proof_uploaded",
+        status: "pending_verification",
+        referenceType: "wallet_funding_request",
+        referenceId: requestId,
+        metadata: {
+          proof_url: upload.secureUrl,
+          proof_name: proof.name,
+        },
+      }),
     });
 
     await admin.from("customer_notifications").insert({

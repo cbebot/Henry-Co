@@ -1,5 +1,6 @@
 import "server-only";
 
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, normalizePhone } from "@henryco/config";
 
@@ -118,11 +119,18 @@ export async function ensureCareBookingAccountLink(
         description: buildActivitySummary(input.booking),
         status: input.booking.status || null,
         action_url: actionUrl,
-        metadata: {
-          tracking_code: input.booking.tracking_code,
-          source: input.source,
-          balance_due: Number(input.booking.balance_due || 0),
-        },
+        metadata: buildCanonicalActivityMetadata({
+          division: "care",
+          activityType: "care_booking",
+          status: input.booking.status,
+          referenceType: "care_booking",
+          referenceId: input.booking.id,
+          metadata: {
+            tracking_code: input.booking.tracking_code,
+            source: input.source,
+            balance_due: Number(input.booking.balance_due || 0),
+          },
+        }),
       } as never)
       .eq("id", existingActivity.id);
   } else {
@@ -136,11 +144,18 @@ export async function ensureCareBookingAccountLink(
       reference_type: "care_booking",
       reference_id: input.booking.id,
       action_url: actionUrl,
-      metadata: {
-        tracking_code: input.booking.tracking_code,
-        source: input.source,
-        balance_due: Number(input.booking.balance_due || 0),
-      },
+      metadata: buildCanonicalActivityMetadata({
+        division: "care",
+        activityType: "care_booking",
+        status: input.booking.status,
+        referenceType: "care_booking",
+        referenceId: input.booking.id,
+        metadata: {
+          tracking_code: input.booking.tracking_code,
+          source: input.source,
+          balance_due: Number(input.booking.balance_due || 0),
+        },
+      }),
     } as never);
   }
 

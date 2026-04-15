@@ -1,5 +1,6 @@
 import "server-only";
 
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type OptionalString = string | null | undefined;
@@ -82,7 +83,14 @@ export async function appendCustomerActivity(input: {
     reference_id: cleanText(input.referenceId) || null,
     amount_kobo: input.amount == null ? null : toKobo(input.amount),
     action_url: cleanText(input.actionUrl) || null,
-    metadata: input.metadata ?? {},
+    metadata: buildCanonicalActivityMetadata({
+      division: "logistics",
+      activityType: input.activityType,
+      status: input.status,
+      referenceType: input.referenceType,
+      referenceId: input.referenceId,
+      metadata: input.metadata,
+    }),
   } as never);
 }
 

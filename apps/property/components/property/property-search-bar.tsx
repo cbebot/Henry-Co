@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useEffectEvent, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, RefreshCcw } from "lucide-react";
 import type { PropertyArea } from "@/lib/property/types";
 import { PROPERTY_SEARCH_PREFS_KEY, type PropertySearchPrefsPayload } from "@/lib/property/prefs";
+
+type PropertySearchDefaults = {
+  q?: string;
+  kind?: string;
+  area?: string;
+  managed?: string;
+  furnished?: string;
+};
 
 export function PropertySearchBar({
   areas,
@@ -12,7 +20,7 @@ export function PropertySearchBar({
   submitLabel = "Search properties",
 }: {
   areas: PropertyArea[];
-  defaults?: { q?: string; kind?: string; area?: string; managed?: string; furnished?: string };
+  defaults?: PropertySearchDefaults;
   submitLabel?: string;
 }) {
   const router = useRouter();
@@ -23,13 +31,17 @@ export function PropertySearchBar({
   const [managed, setManaged] = useState(defaults?.managed === "1");
   const [furnished, setFurnished] = useState(defaults?.furnished === "1");
 
+  const syncDefaults = useEffectEvent((nextDefaults?: PropertySearchDefaults) => {
+    setQ(nextDefaults?.q || "");
+    setKind(nextDefaults?.kind || "");
+    setArea(nextDefaults?.area || "");
+    setManaged(nextDefaults?.managed === "1");
+    setFurnished(nextDefaults?.furnished === "1");
+  });
+
   useEffect(() => {
-    setQ(defaults?.q || "");
-    setKind(defaults?.kind || "");
-    setArea(defaults?.area || "");
-    setManaged(defaults?.managed === "1");
-    setFurnished(defaults?.furnished === "1");
-  }, [defaults?.area, defaults?.furnished, defaults?.kind, defaults?.managed, defaults?.q]);
+    syncDefaults(defaults);
+  }, [defaults]);
 
   function persistPrefs(next: { area: string; kind: string; q: string }) {
     if (typeof window === "undefined") return;

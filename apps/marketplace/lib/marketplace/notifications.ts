@@ -1,5 +1,6 @@
 import "server-only";
 
+import { buildCanonicalActionMetadata } from "@henryco/intelligence";
 import { getDivisionConfig } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { renderMarketplaceEmailTemplate, type MarketplaceTemplateInput, type MarketplaceTemplateKey } from "@/lib/email/marketplace-templates";
@@ -90,6 +91,89 @@ function ownerAlertEmail() {
     cleanText(process.env.RESEND_SUPPORT_INBOX) ||
     marketplace.supportEmail
   );
+}
+
+function actionProjectionCopy(eventType: string) {
+  switch (cleanText(eventType)) {
+    case "cart_item_added":
+      return {
+        title: "Cart updated",
+        body: "A product was added to the marketplace cart.",
+        status: "saved",
+      };
+    case "wishlist_added":
+      return {
+        title: "Wishlist updated",
+        body: "A product was saved to the marketplace wishlist.",
+        status: "saved",
+      };
+    case "wishlist_removed":
+      return {
+        title: "Wishlist updated",
+        body: "A product was removed from the marketplace wishlist.",
+        status: "removed",
+      };
+    case "vendor_followed":
+      return {
+        title: "Store followed",
+        body: "A marketplace store was added to the following list.",
+        status: "saved",
+      };
+    case "vendor_unfollowed":
+      return {
+        title: "Store unfollowed",
+        body: "A marketplace store was removed from the following list.",
+        status: "removed",
+      };
+    case "address_set_default":
+      return {
+        title: "Default address updated",
+        body: "Marketplace checkout default address changed.",
+        status: "updated",
+      };
+    case "address_deleted":
+      return {
+        title: "Address deleted",
+        body: "A marketplace address was removed.",
+        status: "removed",
+      };
+    default:
+      return null;
+  }
+}
+
+async function recordMarketplaceActionEvent(input: {
+  eventType: string;
+  actorUserId?: string | null;
+  actorEmail?: string | null;
+  entityType?: string | null;
+  entityId?: string | null;
+  details?: Record<string, unknown>;
+}) {
+  try {
+    const admin = createAdminSupabase();
+    await admin.from("marketplace_events").insert({
+      event_type: input.eventType,
+      user_id: input.actorUserId ?? null,
+      normalized_email: normalizeEmail(input.actorEmail) ?? null,
+      actor_user_id: input.actorUserId ?? null,
+      actor_email: normalizeEmail(input.actorEmail) ?? null,
+      entity_type: input.entityType ?? null,
+      entity_id: input.entityId ?? null,
+      payload: {
+        ...(input.details ?? {}),
+        ...buildCanonicalActionMetadata({
+          division: "marketplace",
+          eventType: input.eventType,
+          entityType: input.entityType,
+          entityId: input.entityId,
+          details: input.details,
+        }),
+      },
+    } as never);
+  } catch {
+    // ignore until marketplace_events exists everywhere
+  }
 }
 
 function isMarketingEvent(event: MarketplaceTemplateKey) {
@@ -1627,5 +1711,33 @@ export async function logMarketplaceAction(input: {
   entityId?: string | null;
   details?: Record<string, unknown>;
 }) {
-  await logMarketplaceAudit(input);
+  await Promise.allSettled([
+    logMarketplaceAudit(input),
+    recordMarketplaceActionEvent(input),
+    (() => {
+      const projection = actionProjectionCopy(input.eventType);
+      if (!projection) return Promise.resolve(null);
+      return syncMarketplaceAccountProjection({
+        userId: input.actorUserId,
+        normalizedEmail: normalizeEmail(input.actorEmail) ?? null,
+        title: projection.title,
+        body: projection.body,
+        category: input.eventType,
+        priority: projection.status === "removed" ? "low" : "normal",
+        entityType: input.entityType,
+        entityId: input.entityId,
+        metadata: {
+          ...(input.details ?? {}),
+          ...buildCanonicalActionMetadata({
+            division: "marketplace",
+            eventType: input.eventType,
+            entityType: input.entityType,
+            entityId: input.entityId,
+            details: input.details,
+          }),
+        },
+        status: projection.status,
+      });
+    })(),
+  ]);
 }

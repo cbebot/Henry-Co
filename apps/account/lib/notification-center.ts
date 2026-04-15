@@ -1,5 +1,6 @@
 import "server-only";
 
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getDivisionBrand } from "@/lib/branding";
 
@@ -190,12 +191,19 @@ export async function updateNotificationLifecycle(input: {
     reference_type: "customer_notification",
     reference_id: referenceId || asText(row.id),
     action_url: notificationMessageHref(asText(row.id)),
-    metadata: {
-      ...metadata,
-      notificationId: asText(row.id),
-      lifecycleAction: input.action,
-      updatedAt: now,
-    },
+    metadata: buildCanonicalActivityMetadata({
+      division: asNullableText(row.division) || "account",
+      activityType: `notification_${input.action}`,
+      status: input.action,
+      referenceType: "customer_notification",
+      referenceId: referenceId || asText(row.id),
+      metadata: {
+        ...metadata,
+        notificationId: asText(row.id),
+        lifecycleAction: input.action,
+        updatedAt: now,
+      },
+    }),
   } as never);
 
   return { ok: true as const };
