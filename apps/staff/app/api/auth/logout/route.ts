@@ -3,7 +3,7 @@ import { createStaffSupabaseServer } from "@/lib/supabase/server";
 
 export async function POST() {
   const supabase = await createStaffSupabaseServer();
-  const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut({ scope: "global" });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

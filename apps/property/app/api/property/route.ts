@@ -225,7 +225,7 @@ export async function POST(request: Request) {
     switch (intent) {
       case "wishlist_toggle": {
         if (!viewer.user) {
-          return redirectTo(request, `/login?next=${encodeURIComponent(returnTo)}`);
+          return redirectToAccountSignIn(request, returnTo);
         }
 
         const listingId = text(formData, "listing_id");
@@ -698,7 +698,7 @@ export async function POST(request: Request) {
 
       case "listing_update": {
         if (!viewer.user) {
-          return redirectTo(request, `/login?next=${encodeURIComponent("/owner")}`);
+          return redirectToAccountSignIn(request, "/owner");
         }
 
         const listingId = text(formData, "listing_id");

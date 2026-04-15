@@ -10,6 +10,7 @@ import { securityMessageHref } from "@/lib/notification-center";
 import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import PageHeader from "@/components/layout/PageHeader";
 import ChangePasswordForm from "@/components/security/ChangePasswordForm";
+import GlobalSignOutCard from "@/components/security/GlobalSignOutCard";
 import EmptyState from "@/components/layout/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +34,23 @@ export default async function SecurityPage() {
       label: "Verified email",
       value: trust.signals.emailVerified ? "Confirmed" : "Needs attention",
       tone: trust.signals.emailVerified ? "var(--acct-green)" : "var(--acct-red)",
+    },
+    {
+      label: "Identity status",
+      value:
+        trust.signals.verificationStatus === "verified"
+          ? "Verified"
+          : trust.signals.verificationStatus === "pending"
+            ? "Under review"
+            : trust.signals.verificationStatus === "rejected"
+              ? "Needs resubmission"
+              : "Not submitted",
+      tone:
+        trust.signals.verificationStatus === "verified"
+          ? "var(--acct-green)"
+          : trust.signals.verificationStatus === "pending"
+            ? "var(--acct-gold)"
+            : "var(--acct-red)",
     },
     {
       label: "Trusted phone",
@@ -64,6 +82,13 @@ export default async function SecurityPage() {
   const blockedActions = [
     !trust.flags.jobsPostingEligible ? "Create verified jobs or higher-trust listings" : null,
     !trust.flags.marketplaceEligible ? "Access full marketplace seller privileges" : null,
+    !trust.flags.propertyPublishingEligible
+      ? "Publish property-owner workflows without added identity review"
+      : null,
+    !trust.flags.payoutEligible ? "Use payout and finance-sensitive actions without review" : null,
+    !trust.flags.staffElevationEligible
+      ? "Use staff-sensitive or finance-sensitive elevation paths without stronger identity proof"
+      : null,
     trust.signals.suspiciousEvents > 0 ? "Use sensitive financial workflows without review" : null,
     trust.signals.duplicateEmailMatches > 0 || trust.signals.duplicatePhoneMatches > 0
       ? "Use higher-trust seller, property-publishing, or payout workflows until contact review clears"
@@ -75,7 +100,7 @@ export default async function SecurityPage() {
       <RouteLiveRefresh />
       <PageHeader
         title="Security"
-        description="Manage your password, sessions, and account security."
+        description="Review recent security activity, change your password, and end HenryCo sessions when needed."
         icon={Shield}
       />
 
@@ -212,7 +237,9 @@ export default async function SecurityPage() {
             <div>
               <p className="text-sm font-semibold">Operational access</p>
               <p className="text-xs text-[var(--acct-muted)]">
-                {trust.flags.jobsPostingEligible ? "Higher-trust business actions available" : "More verification needed"}
+                {trust.flags.jobsPostingEligible && trust.flags.payoutEligible
+                  ? "Higher-trust business and payout actions available"
+                  : "More verification needed"}
               </p>
             </div>
           </div>
@@ -263,13 +290,23 @@ export default async function SecurityPage() {
         <ChangePasswordForm />
       </section>
 
+      <section className="acct-card p-5">
+        <p className="acct-kicker mb-4">Session Control</p>
+        <GlobalSignOutCard />
+      </section>
+
       {/* Recent security events */}
       <section className="acct-card p-5">
-        <p className="acct-kicker mb-4">Recent Security Events</p>
+        <p className="acct-kicker mb-2">Recent Security Activity</p>
+        <p className="mb-4 text-sm leading-7 text-[var(--acct-muted)]">
+          Sign-ins, sign-outs, device fingerprints, and suspicious access signals are recorded
+          here so session continuity remains reviewable even before separate per-device revoke
+          controls ship.
+        </p>
         {events.length === 0 ? (
           <EmptyState
             icon={Shield}
-            title="No recent security events"
+            title="No recent security activity"
             description="Sign-ins, session closures, alerts, and sensitive account changes will appear here."
           />
         ) : (

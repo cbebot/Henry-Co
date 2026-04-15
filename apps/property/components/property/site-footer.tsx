@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
-import { getSharedAccountPropertyUrl } from "@/lib/property/links";
+import { getPropertyOrigin, getSharedAccountLoginUrl, getSharedAccountPropertyUrl } from "@/lib/property/links";
 
 const property = getDivisionConfig("property");
 
@@ -29,7 +29,10 @@ const footerColumns = [
     links: [
       { href: getSharedAccountPropertyUrl(), label: "Property activity" },
       { href: getSharedAccountPropertyUrl("viewings"), label: "Viewings and inquiries" },
-      { href: "/login", label: "HenryCo account sign-in" },
+      {
+        href: getSharedAccountLoginUrl({ propertyOrigin: getPropertyOrigin() }),
+        label: "HenryCo account sign-in",
+      },
     ],
   },
 ];

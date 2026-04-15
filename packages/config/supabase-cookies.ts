@@ -16,6 +16,39 @@ export type SupabaseCookieHandlers = {
   setAll: (cookies: SupabaseCookieTuple[]) => void;
 };
 
+type WritableCookieOptions = Record<string, unknown>;
+
+export function buildSharedCookieWriteOptions(
+  options: WritableCookieOptions | undefined,
+  cookieDomain: string | undefined,
+): WritableCookieOptions | undefined {
+  if (!options && !cookieDomain) {
+    return undefined;
+  }
+
+  const merged: WritableCookieOptions = {
+    ...(options || {}),
+  };
+
+  if (cookieDomain && merged.domain == null) {
+    merged.domain = cookieDomain;
+  }
+
+  if (merged.path == null) {
+    merged.path = "/";
+  }
+
+  if (merged.sameSite == null) {
+    merged.sameSite = "lax";
+  }
+
+  if (cookieDomain && merged.secure == null) {
+    merged.secure = true;
+  }
+
+  return merged;
+}
+
 /**
  * Build cookie handlers for `@supabase/ssr` server clients that *force* the
  * resolved shared cookie domain onto every cookie written.
@@ -38,9 +71,7 @@ export function buildSharedCookieHandlers(
     setAll(cookiesToSet) {
       try {
         for (const { name, value, options } of cookiesToSet) {
-          const merged = cookieDomain
-            ? { ...(options || {}), domain: cookieDomain, path: "/" }
-            : options;
+          const merged = buildSharedCookieWriteOptions(options, cookieDomain);
           cookieStore.set(name, value, merged);
         }
       } catch {

@@ -3,7 +3,11 @@ import { createClient } from "@supabase/supabase-js";
 import { getSharedCookieDomain } from "@henryco/config";
 import "@/lib/server-env";
 import { getRequiredEnv } from "@/lib/env";
-import { getSharedAccountPropertyUrl, sanitizePropertyAuthReturnTarget } from "@/lib/property/links";
+import {
+  getSharedAccountLoginUrl,
+  getSharedAccountPropertyUrl,
+  sanitizePropertyAuthReturnTarget,
+} from "@/lib/property/links";
 
 function getAuthCookieName(supabaseUrl: string) {
   return `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
@@ -21,7 +25,11 @@ export async function GET(request: Request) {
 
   if (!accessToken || !refreshToken) {
     return NextResponse.redirect(
-      new URL(`/login?next=${encodeURIComponent(nextPath)}&error=missing-session`, request.url),
+      getSharedAccountLoginUrl({
+        nextTarget: nextPath,
+        propertyOrigin: url.origin,
+        error: "missing-session",
+      }),
       { status: 303 }
     );
   }
@@ -48,12 +56,11 @@ export async function GET(request: Request) {
 
   if (error || !data.session) {
     return NextResponse.redirect(
-      new URL(
-        `/login?next=${encodeURIComponent(nextPath)}&error=${encodeURIComponent(
-          (error?.message || "session-failed").slice(0, 80)
-        )}`,
-        request.url
-      ),
+      getSharedAccountLoginUrl({
+        nextTarget: nextPath,
+        propertyOrigin: url.origin,
+        error: (error?.message || "session-failed").slice(0, 80),
+      }),
       { status: 303 }
     );
   }

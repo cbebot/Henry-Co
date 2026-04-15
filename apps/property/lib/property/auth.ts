@@ -8,6 +8,7 @@ import {
 } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { getPropertyOrigin, getSharedAccountLoginUrl } from "@/lib/property/links";
 import type { PropertyRole, PropertyViewer } from "@/lib/property/types";
 
 type SharedProfile = {
@@ -168,8 +169,12 @@ export async function requirePropertyUser(next?: string) {
   const viewer = await getPropertyViewer();
 
   if (!viewer.user) {
-    const suffix = next ? `?next=${encodeURIComponent(next)}` : "";
-    redirect(`/login${suffix}`);
+    redirect(
+      getSharedAccountLoginUrl({
+        nextPath: next || "/",
+        propertyOrigin: getPropertyOrigin(),
+      })
+    );
   }
 
   return viewer;

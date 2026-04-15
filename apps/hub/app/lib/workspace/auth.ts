@@ -3,7 +3,12 @@ import "server-only";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
-import { getSharedCookieDomain, isRecoverableSupabaseAuthError } from "@henryco/config";
+import {
+  buildSharedCookieHandlers,
+  buildSupabaseCookieOptions,
+  isRecoverableSupabaseAuthError,
+  resolveRequestCookieDomain,
+} from "@henryco/config";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
 import {
   getDefaultVisibleDivisions,
@@ -74,36 +79,14 @@ async function recordAccessSourceAudit(input: {
 async function createWorkspaceSupabaseServer() {
   const cookieStore = await cookies();
   const headerStore = await headers();
-  const cookieDomain = getSharedCookieDomain(
-    headerStore.get("x-forwarded-host") || headerStore.get("host")
-  );
+  const cookieDomain = resolveRequestCookieDomain((name) => headerStore.get(name));
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || "",
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
     {
-      cookieOptions: cookieDomain
-        ? {
-            domain: cookieDomain,
-            path: "/",
-            sameSite: "lax",
-            secure: true,
-          }
-        : undefined,
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(tokens) {
-          try {
-            for (const { name, value, options } of tokens) {
-              cookieStore.set(name, value, options);
-            }
-          } catch {
-            // Server components can be read-only.
-          }
-        },
-      },
+      cookieOptions: buildSupabaseCookieOptions(cookieDomain),
+      cookies: buildSharedCookieHandlers(cookieStore, cookieDomain),
     }
   );
 }

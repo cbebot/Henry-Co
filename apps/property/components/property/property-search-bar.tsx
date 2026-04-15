@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, RefreshCcw } from "lucide-react";
 import type { PropertyArea } from "@/lib/property/types";
@@ -22,14 +22,6 @@ export function PropertySearchBar({
   const [area, setArea] = useState(defaults?.area || "");
   const [managed, setManaged] = useState(defaults?.managed === "1");
   const [furnished, setFurnished] = useState(defaults?.furnished === "1");
-
-  useEffect(() => {
-    setQ(defaults?.q || "");
-    setKind(defaults?.kind || "");
-    setArea(defaults?.area || "");
-    setManaged(defaults?.managed === "1");
-    setFurnished(defaults?.furnished === "1");
-  }, [defaults?.area, defaults?.furnished, defaults?.kind, defaults?.managed, defaults?.q]);
 
   function persistPrefs(next: { area: string; kind: string; q: string }) {
     if (typeof window === "undefined") return;

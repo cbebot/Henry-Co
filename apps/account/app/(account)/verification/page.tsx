@@ -30,6 +30,13 @@ export default async function VerificationPage() {
   );
   const restrictedActions = [
     !trust.flags.marketplaceEligible ? "Marketplace seller approval and higher-trust listing actions stay gated." : null,
+    !trust.flags.propertyPublishingEligible
+      ? "Property publishing and owner-operating workflows stay in elevated review posture."
+      : null,
+    !trust.flags.payoutEligible ? "Sensitive payout and finance actions stay gated until identity proof is stronger." : null,
+    !trust.flags.staffElevationEligible
+      ? "Staff-sensitive escalation remains blocked until premium verified identity posture is reached."
+      : null,
     trust.signals.suspiciousEvents > 0 ? "Sensitive payout and finance actions stay under review." : null,
     trust.tier === "basic" ? "Higher-risk submissions may require more documents before they can move forward." : null,
     trust.signals.duplicateEmailMatches > 0 || trust.signals.duplicatePhoneMatches > 0
@@ -69,6 +76,16 @@ export default async function VerificationPage() {
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {[
               ["Email verified", trust.signals.emailVerified ? "Confirmed" : "Needs action"],
+              [
+                "Identity verification",
+                trust.signals.verificationStatus === "verified"
+                  ? "Verified"
+                  : trust.signals.verificationStatus === "pending"
+                    ? "Under review"
+                    : trust.signals.verificationStatus === "rejected"
+                      ? "Needs resubmission"
+                      : "Not submitted",
+              ],
               ["Phone on file", trust.signals.phonePresent ? "Present" : "Missing"],
               ["Profile completion", `${trust.signals.profileCompletion}%`],
               ["Clean security posture", trust.signals.suspiciousEvents === 0 ? "Clear" : "Needs review"],

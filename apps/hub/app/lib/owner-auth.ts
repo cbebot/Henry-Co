@@ -1,6 +1,11 @@
 import { cookies, headers } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { getSharedCookieDomain, isRecoverableSupabaseAuthError } from "@henryco/config";
+import {
+  buildSharedCookieHandlers,
+  buildSupabaseCookieOptions,
+  isRecoverableSupabaseAuthError,
+  resolveRequestCookieDomain,
+} from "@henryco/config";
 import { logOwnerSurfaceError } from "@/lib/owner-diagnostics";
 
 async function getOwnerSupabaseServerClient() {
@@ -18,33 +23,11 @@ async function getOwnerSupabaseServerClient() {
     return null;
   }
 
-  const cookieDomain = getSharedCookieDomain(
-    headerStore.get("x-forwarded-host") || headerStore.get("host")
-  );
+  const cookieDomain = resolveRequestCookieDomain((name) => headerStore.get(name));
 
   return createServerClient(url, anon, {
-    cookieOptions: cookieDomain
-      ? {
-          domain: cookieDomain,
-          path: "/",
-          sameSite: "lax",
-          secure: true,
-        }
-      : undefined,
-    cookies: {
-      getAll() {
-        return cookieStore.getAll();
-      },
-      setAll(cookiesToSet) {
-        try {
-          for (const { name, value, options } of cookiesToSet) {
-            cookieStore.set(name, value, options);
-          }
-        } catch {
-          // Read-only in some server contexts. Safe to ignore there.
-        }
-      },
-    },
+    cookieOptions: buildSupabaseCookieOptions(cookieDomain),
+    cookies: buildSharedCookieHandlers(cookieStore, cookieDomain),
   });
 }
 

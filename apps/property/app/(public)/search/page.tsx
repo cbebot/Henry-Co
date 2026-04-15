@@ -51,6 +51,7 @@ export default async function PropertySearchPage({
 
       <div className="mt-8">
         <PropertySearchBar
+          key={`${params.q || ""}|${params.kind || ""}|${params.area || ""}|${params.managed || ""}|${params.furnished || ""}`}
           areas={snapshot.areas}
           defaults={{
             q: params.q,

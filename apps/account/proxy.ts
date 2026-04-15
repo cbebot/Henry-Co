@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import {
+  buildSharedCookieWriteOptions,
   getHqUrl,
   getSharedCookieDomain,
   isRecoverableSupabaseAuthError,
@@ -61,23 +62,21 @@ export async function proxy(request: NextRequest) {
     return publicResponse;
   }
 
-  let response = NextResponse.next({ request });
+  const response = NextResponse.next({ request });
+  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookieOptions: (() => {
-        const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
-        return cookieDomain
-          ? {
-              domain: cookieDomain,
-              path: "/",
-              sameSite: "lax",
-              secure: true,
-            }
-          : undefined;
-      })(),
+      cookieOptions: cookieDomain
+        ? {
+            domain: cookieDomain,
+            path: "/",
+            sameSite: "lax",
+            secure: true,
+          }
+        : undefined,
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -85,8 +84,11 @@ export async function proxy(request: NextRequest) {
         setAll(tokens) {
           for (const { name, value, options } of tokens) {
             request.cookies.set(name, value);
-            response = NextResponse.next({ request });
-            response.cookies.set(name, value, options);
+            response.cookies.set(
+              name,
+              value,
+              buildSharedCookieWriteOptions(options, cookieDomain)
+            );
           }
         },
       },

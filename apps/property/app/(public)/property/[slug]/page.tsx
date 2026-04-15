@@ -298,7 +298,10 @@ export default async function PropertyDetailPage({
                 </form>
               ) : (
                 <Link
-                  href={`/login?next=${encodeURIComponent(`/property/${data.listing.slug}`)}`}
+                  href={getSharedAccountLoginUrl({
+                    nextPath: `/property/${data.listing.slug}`,
+                    propertyOrigin: getPropertyOrigin(),
+                  })}
                   className="property-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
                   <Heart className="h-4 w-4" />
