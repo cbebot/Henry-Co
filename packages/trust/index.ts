@@ -3,7 +3,20 @@ export {
   detectSuspiciousContent,
   sanitizeForDisplay,
   calculateTrustScore,
-} from "./detect.js";
+} from "./detect";
+
+export {
+  applyVerificationTrustControls,
+  clampSharedTrustTier,
+  getVerificationGateCopy,
+  normalizeVerificationStatus,
+  rankSharedTrustTier,
+  satisfiesVerificationRequirement,
+  type SharedTrustTier,
+  type SharedVerificationStatus,
+  type VerificationGateCopy,
+  type VerificationRequirementLevel,
+} from "./verification";
 
 export {
   type ModerationAction,
@@ -15,4 +28,4 @@ export {
   SEVERITY_LABELS,
   ACTION_LABELS,
   shouldAutoFlag,
-} from "./moderation.js";
+} from "./moderation";

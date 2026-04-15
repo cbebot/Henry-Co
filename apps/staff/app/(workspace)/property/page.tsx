@@ -28,11 +28,18 @@ export default async function PropertyPage() {
       <StaffPageHeader
         eyebrow="Workspace"
         title="Property Operations"
-        description="Manage property listings, inquiries, viewings, and agent relationships."
+        description="Run property governance, inspections, viewings, and managed follow-through from the real live property surfaces."
       />
       <StaffWorkspaceLaunchpad
-        overview="HenryCo Property already exposes owner, admin, operations, moderation, and agent routes. This workspace now sends people there instead of pretending a separate property command center exists."
+        overview="HenryCo Property now has a real governance queue, inspection ops surface, moderation posture view, and live agent workflow. This workspace sends staff directly into those reviewable production surfaces."
         links={[
+          {
+            href: `${getDivisionUrl("property")}/admin/listings`,
+            label: "Governance queue",
+            description: "Review listing trust evidence, inspection state, corrections, and publication decisions.",
+            icon: ShieldCheck,
+            readiness: "live",
+          },
           {
             href: `${getDivisionUrl("property")}/owner`,
             label: "Owner overview",
@@ -43,14 +50,14 @@ export default async function PropertyPage() {
           {
             href: `${getDivisionUrl("property")}/operations`,
             label: "Operations",
-            description: "Run viewing coordination, inquiry handling, and property ops.",
+            description: "Run inspection scheduling, viewing coordination, and managed-property operations.",
             icon: MapPinned,
             readiness: "live",
           },
           {
             href: `${getDivisionUrl("property")}/moderation`,
             label: "Moderation",
-            description: "Review listing trust and moderation-sensitive workflow actions.",
+            description: "Track blocked, escalated, and correction-heavy cases before they hit publication.",
             icon: ShieldCheck,
             readiness: "live",
           },

@@ -18,6 +18,14 @@ type SearchParams = {
   furnished?: string;
 };
 
+const FILTER_LABELS: Record<keyof SearchParams, string> = {
+  q: "Search",
+  kind: "Category",
+  area: "Area",
+  managed: "Managed",
+  furnished: "Furnished",
+};
+
 function buildSearchHref(params: SearchParams, removeKey?: keyof SearchParams) {
   const next = new URLSearchParams();
 
@@ -69,6 +77,7 @@ export default async function PropertySearchPage({
           aria-live="polite"
         >
           {results.length} live {results.length === 1 ? "listing" : "listings"} found
+          {active.length ? ` across ${active.length} active filter${active.length === 1 ? "" : "s"}` : ""}
         </div>
         {active.length ? (
           <div className="flex flex-wrap gap-2">
@@ -78,7 +87,13 @@ export default async function PropertySearchPage({
                 href={buildSearchHref(params, key as keyof SearchParams)}
                 className="rounded-full border border-[var(--property-line)] px-3 py-1 text-xs text-[var(--property-ink-soft)]"
               >
-                {key}: {value} ×
+                {FILTER_LABELS[key as keyof SearchParams]}:{" "}
+                {key === "managed"
+                  ? "Yes"
+                  : key === "furnished"
+                    ? "Yes"
+                    : value}{" "}
+                ×
               </Link>
             ))}
             <Link href="/search" className="text-xs font-semibold text-[var(--property-accent-strong)]">

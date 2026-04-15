@@ -17,70 +17,94 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Trust standards | HenryCo Property",
   description:
-    "How HenryCo Property reviews listings, handles viewings, protects against false inventory, and explains managed or verified listing states.",
+    "How HenryCo Property governs listing submissions, documents, inspections, managed operations, and publication safety.",
 };
 
-const preApprovalRails = [
+const trustRails = [
   {
-    title: "Serious listings only",
+    title: "The public site is not an open dump",
     body:
-      "HenryCo does not treat the public property surface like an unfiltered classifieds wall. Weak copy, vague pricing, missing context, and incomplete listing identity all trigger review instead of immediate publication.",
+      "A listing does not go live just because somebody filled a form. HenryCo holds every submission privately first, then decides whether the documents, authority, identity, and property reality are strong enough for public release.",
   },
   {
-    title: "Documents and ownership context",
+    title: "Documents depend on the listing path",
     body:
-      "Depending on the listing type, we may request proof of ownership, an agent mandate, lease authority, company paperwork, or other supporting files before a property is approved.",
+      "Owner-listed, agent-led, managed, commercial, land, and inspection-sensitive submissions do not carry the same evidence burden. HenryCo asks for the documents that actually explain the path instead of hiding requirements until later.",
   },
   {
-    title: "Inspection and location review",
+    title: "Inspection is operational, not decorative",
     body:
-      "Some listings move through an inspection or guided verification path. That can include a HenryCo agent confirming the location, the access process, and whether the listing is actually ready to be shown.",
+      "If a listing needs an inspection, that becomes a tracked workflow. It can be requested, scheduled, completed, waived, failed, or cancelled, and publication should not pretend the check is done when it is not.",
   },
 ];
 
-const badgeGuide = [
+const statusGuide = [
   {
-    title: "Managed by HenryCo",
+    title: "Awaiting documents",
     body:
-      "HenryCo is actively involved in the listing, coordination, and follow-through. That usually means stronger viewing support, cleaner updates, and more continuity after the first contact.",
+      "HenryCo still needs stronger authority, ownership, management, or supporting evidence before the listing can move deeper into review.",
   },
   {
-    title: "Verified or reviewed",
+    title: "Awaiting eligibility",
     body:
-      "The listing has passed a stronger trust check than a basic submission. The exact depth can vary, but it means the record has been reviewed rather than simply uploaded.",
+      "Identity, duplicate-contact review, or another trust prerequisite is still unresolved. The listing is held privately until that is cleared.",
   },
   {
-    title: "Under review or awaiting trust checks",
+    title: "Inspection requested or scheduled",
     body:
-      "The property is still being assessed. It may be waiting on documents, a location check, or a manual decision before HenryCo makes it public or continues the next operational step.",
+      "HenryCo has decided that a site check matters for this listing path. The listing is not treated as fully trusted until that inspection rail is closed properly.",
+  },
+  {
+    title: "Under review, approved, or published",
+    body:
+      "Once the trust gates are satisfied, the listing can move into editorial review, approval, and then public visibility if the remaining quality checks pass.",
   },
 ];
 
 const expectationColumns = [
   {
-    heading: "For seekers",
+    heading: "What HenryCo checks",
     bullets: [
-      "You should expect clearer trust context before you spend time on a viewing.",
-      "A viewing request is treated like an operational record, not a casual message that disappears in chat.",
-      "If a listing needs extra checks, HenryCo may confirm access, location, or documents before the next step moves forward.",
-      "For higher-trust or higher-value properties, additional applicant documents can still be required after a viewing.",
+      "Whether the submitter appears authorised to market, manage, or request inspection for the property.",
+      "Whether the media, pricing, occupancy reality, and location context are serious enough for a premium platform.",
+      "Whether the account trust posture is strong enough for higher-risk listing paths.",
+      "Whether a managed listing is truly asking for HenryCo operations, not just a badge.",
     ],
   },
   {
-    heading: "For owners and agents",
+    heading: "What owners and agents should expect",
     bullets: [
-      "A submission stays private until HenryCo approves it for public visibility.",
-      "You may be asked for stronger media, better pricing clarity, or proof that you are authorised to market the property.",
-      "Managed, verified, or inspection-sensitive listings move through stricter review rails before publication.",
-      "If we request changes, the goal is a cleaner and more trustworthy listing, not administrative noise.",
+      "Direct uploads are better than pasted document links because staff need a reviewable file trail.",
+      "If a listing is weak, HenryCo may request better proof, stronger copy, or clearer readiness details before it moves.",
+      "Managed and non-managed listings are different paths; approval for one should not silently imply the other.",
+      "If a listing gets held or escalated, the goal is cleaner publication truth, not bureaucratic noise.",
     ],
   },
 ];
 
-const fraudRails = [
-  "False, duplicated, or misleading listings can be held back, corrected, escalated, or blocked.",
-  "Shared-contact or identity inconsistencies can trigger manual review before publication.",
-  "Listings are expected to describe the actual property state, access conditions, and readiness honestly.",
+const policyCards = [
+  {
+    title: "Managed vs non-managed",
+    body:
+      "Managed listings imply HenryCo operational involvement after acceptance. Non-managed listings can still be reviewed and published, but the owner or agent remains responsible for the operating reality after first contact.",
+  },
+  {
+    title: "Duplicate-contact resistance",
+    body:
+      "If the same email or phone appears across multiple HenryCo accounts or submissions, the listing may stay in manual review until the ownership picture is clearer.",
+  },
+  {
+    title: "Inspection and viewing continuity",
+    body:
+      "HenryCo treats inspections and viewings as tracked workflows. Requests, schedules, and follow-up should remain visible to staff and to the account history instead of vanishing into chat.",
+  },
+];
+
+const nextSteps = [
+  "Submitters see a private listing record first, not instant publication.",
+  "HenryCo reviews the evidence, the trust posture, and whether the listing belongs on a managed, non-managed, or inspection-sensitive rail.",
+  "If more information is needed, the listing can move into corrections, document hold, eligibility hold, or escalation before publication.",
+  "Only after those checks are coherent should the listing move toward approval and public release.",
 ];
 
 export default async function TrustPage() {
@@ -90,8 +114,8 @@ export default async function TrustPage() {
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker="Trust"
-        title="A calmer trust standard for property listings, viewings, and managed follow-through."
-        description="HenryCo Property is designed to feel clear before it feels fast. We review what gets published, explain what each trust state means, and keep viewing and follow-up records inside a real operating flow."
+        title="HenryCo Property is governed before it is public."
+        description="The trust layer is meant to feel calm and understandable, but it is still serious. Documents are path-specific, inspections are real workflows, and managed versus non-managed publication is not blurred together."
       />
 
       <div className="mt-8">
@@ -101,31 +125,31 @@ export default async function TrustPage() {
       <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <PropertyTrustPill
           icon={<ShieldCheck className="h-5 w-5" />}
-          title="Reviewed before public release"
-          body="Listings are held back when the trust context is still too weak for a serious public search."
+          title="Private before publication"
+          body="Every listing enters a private review state before HenryCo considers public release."
+        />
+        <PropertyTrustPill
+          icon={<FileCheck2 className="h-5 w-5" />}
+          title="Document-aware"
+          body="Required evidence depends on the listing path instead of one vague upload request for everyone."
         />
         <PropertyTrustPill
           icon={<CalendarRange className="h-5 w-5" />}
-          title="Viewings tracked properly"
-          body="Requests, confirmations, reminders, and updates move through a recorded workflow instead of disappearing into chat."
+          title="Inspection truth"
+          body="Inspection-sensitive listings keep a visible operational status instead of a vague promise."
         />
         <PropertyTrustPill
           icon={<Building2 className="h-5 w-5" />}
-          title="Managed-property continuity"
-          body="Where HenryCo manages the listing, the experience continues beyond first contact into coordinated follow-through."
-        />
-        <PropertyTrustPill
-          icon={<Sparkles className="h-5 w-5" />}
-          title="Premium, human review"
-          body="The trust layer is there to make the experience clearer and safer, not heavier or more intimidating."
+          title="Managed clarity"
+          body="Managed listings are handled as a real operating commitment, not just a trust label."
         />
       </div>
 
       <section className="mt-10 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Before a listing goes live</div>
+          <div className="property-kicker">Core trust rails</div>
           <div className="mt-5 space-y-4">
-            {preApprovalRails.map((item) => (
+            {trustRails.map((item) => (
               <article
                 key={item.title}
                 className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5"
@@ -141,9 +165,9 @@ export default async function TrustPage() {
         </div>
 
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">What the trust labels mean</div>
+          <div className="property-kicker">What the listing states mean</div>
           <div className="mt-5 space-y-4">
-            {badgeGuide.map((item) => (
+            {statusGuide.map((item) => (
               <article
                 key={item.title}
                 className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5"
@@ -169,11 +193,23 @@ export default async function TrustPage() {
         ))}
       </section>
 
+      <section className="mt-10 grid gap-6 xl:grid-cols-3">
+        {policyCards.map((card) => (
+          <article key={card.title} className="property-panel rounded-[2rem] p-6 sm:p-8">
+            <div className="flex items-center gap-3 text-[var(--property-accent-strong)]">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <h2 className="mt-4 text-xl font-semibold text-[var(--property-ink)]">{card.title}</h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">{card.body}</p>
+          </article>
+        ))}
+      </section>
+
       <section className="mt-10 property-panel rounded-[2rem] p-6 sm:p-8">
-        <div className="property-kicker">Fraud prevention and false-listing protection</div>
+        <div className="property-kicker">What happens next after submission</div>
         <div className="mt-5 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-          {fraudRails.map((rail) => (
-            <p key={rail}>• {rail}</p>
+          {nextSteps.map((item) => (
+            <p key={item}>• {item}</p>
           ))}
         </div>
       </section>

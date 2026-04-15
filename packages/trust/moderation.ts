@@ -5,7 +5,7 @@
 import {
   detectOffPlatformContact,
   detectSuspiciousContent,
-} from "./detect.js";
+} from "./detect";
 
 // ---- Core types ----------------------------------------------------------
 

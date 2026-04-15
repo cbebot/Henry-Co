@@ -1,5 +1,6 @@
 import "server-only";
 
+import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { normalizeEmail, normalizePhone } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -23,6 +24,7 @@ export type PropertyTrustSignals = {
     suspiciousEvents: number;
     duplicateEmailMatches: number;
     duplicatePhoneMatches: number;
+    verificationStatus: "none" | "pending" | "verified" | "rejected";
   };
 };
 
@@ -45,7 +47,11 @@ export async function getPropertyTrustSignals(userId: string): Promise<PropertyT
   const admin = createAdminSupabase();
 
   const [profileRes, securityRes, authRes] = await Promise.all([
-    admin.from("customer_profiles").select("email, phone").eq("id", userId).maybeSingle(),
+    admin
+      .from("customer_profiles")
+      .select("email, phone, verification_status")
+      .eq("id", userId)
+      .maybeSingle(),
     admin
       .from("customer_security_log")
       .select("id, event_type, created_at")
@@ -79,6 +85,7 @@ export async function getPropertyTrustSignals(userId: string): Promise<PropertyT
 
   const emailVerified = Boolean(authUser?.email_confirmed_at);
   const phonePresent = Boolean(normalizedPhone);
+  const verificationStatus = normalizeVerificationStatus(profile.verification_status);
   const accountAgeDays = authUser?.created_at
     ? Math.max(
         0,
@@ -105,7 +112,7 @@ export async function getPropertyTrustSignals(userId: string): Promise<PropertyT
   if (duplicateEmailMatches > 0 || duplicatePhoneMatches > 0) score -= 10;
   score = Math.max(0, Math.min(100, score));
 
-  const tier: PropertyTrustSignals["tier"] =
+  const baseTier: PropertyTrustSignals["tier"] =
     emailVerified &&
     phonePresent &&
     accountAgeDays >= 90 &&
@@ -124,9 +131,30 @@ export async function getPropertyTrustSignals(userId: string): Promise<PropertyT
           ? "verified"
           : "basic";
 
+  const verificationControlledTrust = applyVerificationTrustControls({
+    verificationStatus,
+    baseScore: score,
+    baseTier: baseTier === "trusted" ? "trusted" : baseTier === "verified" ? "verified" : "basic",
+    verifiedBonus: 0,
+    caps: {
+      none: {
+        maxScore: 52,
+        maxTier: "basic",
+      },
+      pending: {
+        maxScore: 66,
+        maxTier: "verified",
+      },
+      rejected: {
+        maxScore: 34,
+        maxTier: "basic",
+      },
+    },
+  });
+
   return {
-    tier,
-    score,
+    tier: verificationControlledTrust.tier,
+    score: verificationControlledTrust.score,
     signals: {
       emailVerified,
       phonePresent,
@@ -134,6 +162,7 @@ export async function getPropertyTrustSignals(userId: string): Promise<PropertyT
       suspiciousEvents,
       duplicateEmailMatches,
       duplicatePhoneMatches,
+      verificationStatus,
     },
   };
 }

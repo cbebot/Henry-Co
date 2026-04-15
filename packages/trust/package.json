@@ -6,6 +6,7 @@
   "exports": {
     ".": "./index.ts",
     "./detect": "./detect.ts",
-    "./moderation": "./moderation.ts"
+    "./moderation": "./moderation.ts",
+    "./verification": "./verification.ts"
   }
 }

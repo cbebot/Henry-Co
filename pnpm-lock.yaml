@@ -674,6 +674,9 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../../packages/trust
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
