@@ -1,10 +1,17 @@
 import "server-only";
 
+import {
+  getVerificationGateCopy,
+  normalizeVerificationStatus,
+  satisfiesVerificationRequirement,
+  type SharedVerificationStatus,
+  type VerificationRequirementLevel,
+} from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 
 const admin = () => createAdminSupabase();
 
-export type VerificationStatus = "none" | "pending" | "verified" | "rejected";
+export type VerificationStatus = SharedVerificationStatus;
 
 export type VerificationSubmission = {
   id: string;
@@ -21,6 +28,9 @@ export type VerificationState = {
   submittedAt: string | null;
   reviewedAt: string | null;
   reviewerNote: string | null;
+  pendingSubmissionCount: number;
+  approvedSubmissionCount: number;
+  rejectedSubmissionCount: number;
 };
 
 const DOC_TYPE_LABELS: Record<string, string> = {
@@ -61,7 +71,7 @@ export async function getVerificationState(userId: string): Promise<Verification
   }));
 
   return {
-    status: (String(profile.verification_status || "none")) as VerificationStatus,
+    status: normalizeVerificationStatus(profile.verification_status),
     submissions,
     submittedAt: profile.verification_submitted_at
       ? String(profile.verification_submitted_at)
@@ -72,6 +82,9 @@ export async function getVerificationState(userId: string): Promise<Verification
     reviewerNote: profile.verification_note
       ? String(profile.verification_note)
       : null,
+    pendingSubmissionCount: submissions.filter((item) => item.status === "pending").length,
+    approvedSubmissionCount: submissions.filter((item) => item.status === "approved").length,
+    rejectedSubmissionCount: submissions.filter((item) => item.status === "rejected").length,
   };
 }
 
@@ -87,20 +100,48 @@ export async function submitVerificationDocument(
   }
 ) {
   const adminClient = admin();
+  const now = new Date().toISOString();
 
-  await adminClient.from("customer_verification_submissions").insert({
-    user_id: userId,
-    document_type: input.documentType,
-    document_id: input.documentId,
-    status: "pending",
-  } as never);
+  const { data: existing } = await adminClient
+    .from("customer_verification_submissions")
+    .select("id, status")
+    .eq("user_id", userId)
+    .eq("document_type", input.documentType)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const existingRow = (existing || null) as { id?: string; status?: string } | null;
+
+  if (existingRow?.id && ["pending", "rejected"].includes(String(existingRow.status || ""))) {
+    await adminClient
+      .from("customer_verification_submissions")
+      .update({
+        document_id: input.documentId,
+        status: "pending",
+        reviewer_id: null,
+        reviewer_note: null,
+        reviewed_at: null,
+        submitted_at: now,
+      } as never)
+      .eq("id", existingRow.id);
+  } else {
+    await adminClient.from("customer_verification_submissions").insert({
+      user_id: userId,
+      document_type: input.documentType,
+      document_id: input.documentId,
+      status: "pending",
+      submitted_at: now,
+    } as never);
+  }
 
   // Mark the profile as pending if it isn't already verified.
   await adminClient
     .from("customer_profiles")
     .update({
       verification_status: "pending",
-      verification_submitted_at: new Date().toISOString(),
+      verification_submitted_at: now,
+      verification_note: null,
     } as never)
     .eq("id", userId)
     .in("verification_status" as never, ["none", "rejected"]);
@@ -202,7 +243,7 @@ export async function reviewVerificationSubmission(
  */
 export async function requireVerification(
   userId: string,
-  requiredLevel: "verified" = "verified"
+  requiredLevel: VerificationRequirementLevel = "verified"
 ): Promise<{ allowed: true } | { allowed: false; reason: string; status: VerificationStatus }> {
   const { data: rawProfile } = await admin()
     .from("customer_profiles")
@@ -211,21 +252,17 @@ export async function requireVerification(
     .maybeSingle();
 
   const profile = rawProfile as Record<string, unknown> | null;
-  const status = String(profile?.verification_status || "none") as VerificationStatus;
+  const status = normalizeVerificationStatus(profile?.verification_status);
 
-  if (requiredLevel === "verified" && status === "verified") {
+  if (satisfiesVerificationRequirement(status, requiredLevel)) {
     return { allowed: true };
   }
 
-  const reasons: Record<string, string> = {
-    none: "Identity verification is required. Please submit your documents in the Verify section of your account.",
-    pending: "Your identity documents are under review. This action will be available once verification is complete.",
-    rejected: "Your verification was not approved. Please resubmit your documents or contact support.",
-  };
+  const copy = getVerificationGateCopy(status, requiredLevel);
 
   return {
     allowed: false,
-    reason: reasons[status] || reasons.none,
+    reason: `${copy.detail} Open /verification to continue.`,
     status,
   };
 }

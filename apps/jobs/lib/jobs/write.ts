@@ -439,7 +439,6 @@ export async function saveCandidateProfile(input: {
     workHistory: parseJsonArray(input.formData.get("workHistory")),
     education: parseJsonArray(input.formData.get("education")),
     certifications: parseJsonArray(input.formData.get("certifications")),
-    verificationStatus: asText(input.formData.get("verificationStatus")) || "unverified",
     updatedAt: new Date().toISOString(),
   };
 
@@ -1061,7 +1060,7 @@ export async function createJobPost(input: {
   });
   const cooldownTriggered = !isPrivileged && recentEmployerJobs.length >= 3;
   const moderationStatus =
-    internal || eligibility.autoApprovalAllowed
+    internal || (eligibility.autoApprovalAllowed && eligibility.verificationStatus === "verified")
       ? "approved"
       : cooldownTriggered
         ? "draft"
@@ -1115,6 +1114,7 @@ export async function createJobPost(input: {
         postingEligibility: {
           trustTier: eligibility.trustTier,
           trustScore: eligibility.trustScore,
+          verificationStatus: eligibility.verificationStatus,
           verifiedEmail: eligibility.verifiedEmail,
           membershipActive: eligibility.membershipActive,
           employerProfileReady: eligibility.employerProfileReady,

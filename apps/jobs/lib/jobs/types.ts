@@ -53,7 +53,7 @@ export type CandidateProfile = {
   skills: string[];
   completionScore: number;
   trustScore: number;
-  verificationStatus: "unverified" | "ready" | "verified";
+  verificationStatus: "unverified" | "pending" | "verified" | "rejected";
   readinessLabel: string;
   updatedAt: string | null;
 };

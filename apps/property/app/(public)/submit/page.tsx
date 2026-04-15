@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getAccountUrl } from "@henryco/config";
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
 import { PropertySectionIntro } from "@/components/property/ui";
 import { PropertySubmissionForm } from "@/components/property/submit/PropertySubmissionForm";
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function SubmitListingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ submitted?: string }>;
+  searchParams: Promise<{ submitted?: string; policy?: string; verification?: string }>;
 }) {
   const params = await searchParams;
   const snapshot = await getPropertySnapshot();
@@ -36,6 +37,21 @@ export default async function SubmitListingPage({
         <div className="mt-6 rounded-[1.8rem] border border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] px-5 py-4 text-sm text-[var(--property-sage-soft)]">
           Listing submitted. HenryCo Property logged the record, queued moderation, and routed the
           follow-up notification flow.
+          {params.policy ? (
+            <span className="block pt-2 text-[var(--property-ink-soft)]">
+              Current policy state: {params.policy.replaceAll("_", " ")}.
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+      {params.verification && params.verification !== "verified" ? (
+        <div className="mt-4 rounded-[1.8rem] border border-[rgba(190,131,58,0.35)] bg-[rgba(190,131,58,0.12)] px-5 py-4 text-sm text-[var(--property-ink)]">
+          Higher-risk property submissions stay in eligibility review until your HenryCo identity verification is approved.
+          <div className="mt-3">
+            <Link href={getAccountUrl("/verification")} className="inline-flex rounded-full bg-[var(--property-ink)] px-4 py-2 text-xs font-semibold text-white">
+              Open account verification
+            </Link>
+          </div>
         </div>
       ) : null}
 

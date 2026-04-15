@@ -103,7 +103,18 @@ export default async function EmployerNewJobPage() {
         <SectionCard title="Create a new role" body="Fill in the details below. New posts may go through a brief review before going live.">
           {eligibility ? (
             <div className="mb-5 space-y-3">
-              {eligibility.autoApprovalAllowed ? (
+              {eligibility.verificationStatus !== "verified" ? (
+                <div className="space-y-3">
+                  <InlineNotice
+                    tone="warn"
+                    title={eligibility.verificationGate.headline}
+                    body={`${eligibility.verificationGate.detail} Jobs posting stays blocked until that review is approved.`}
+                  />
+                  <Link href={eligibility.verificationGate.href} className="jobs-button-secondary inline-flex rounded-full px-4 py-2 text-sm font-semibold">
+                    {eligibility.verificationGate.actionLabel}
+                  </Link>
+                </div>
+              ) : eligibility.autoApprovalAllowed ? (
                 <InlineNotice
                   tone="success"
                   title="Direct publishing available"

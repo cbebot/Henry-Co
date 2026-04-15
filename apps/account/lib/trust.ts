@@ -1,5 +1,10 @@
 import "server-only";
 
+import {
+  applyVerificationTrustControls,
+  normalizeVerificationStatus,
+  type SharedVerificationStatus,
+} from "@henryco/trust";
 import { getAccountTrustTierLabel, type AccountTrustTier } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getContactOverlapSummary } from "@/lib/contact-review";
@@ -40,6 +45,7 @@ export type AccountTrustProfile = {
     suspiciousEvents: number;
     duplicateEmailMatches: number;
     duplicatePhoneMatches: number;
+    verificationStatus: SharedVerificationStatus;
   };
 };
 
@@ -101,6 +107,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
 
   const emailVerified = Boolean(authUser?.email_confirmed_at);
   const phonePresent = Boolean(asNullableText(profile.phone));
+  const verificationStatus = normalizeVerificationStatus(profile.verification_status);
   const profileCompletion = calculateProfileCompletion(profile, documents.length);
   const accountAgeDays = authUser?.created_at
     ? Math.max(
@@ -142,7 +149,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
   if (overlaps.reviewRequired) score -= 12;
   score = Math.min(score, 100);
 
-  const tier: TrustTier =
+  const baseTier: TrustTier =
     emailVerified &&
     phonePresent &&
     profileCompletion >= 70 &&
@@ -160,10 +167,42 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
           !overlaps.reviewRequired
         ? "trusted"
         : emailVerified && phonePresent && profileCompletion >= 48
-          ? "verified"
+        ? "verified"
           : "basic";
 
+  const verificationControlledTrust = applyVerificationTrustControls({
+    verificationStatus,
+    baseScore: score,
+    baseTier,
+    verifiedBonus: 16,
+    caps: {
+      none: {
+        maxScore: 54,
+        maxTier: "basic",
+      },
+      pending: {
+        maxScore: 72,
+        maxTier: "verified",
+      },
+      rejected: {
+        maxScore: 36,
+        maxTier: "basic",
+      },
+    },
+  });
+
+  score = verificationControlledTrust.score;
+  const tier = verificationControlledTrust.tier;
+
   const reasons = [
+    verificationStatus === "verified"
+      ? "Identity verification is approved."
+      : verificationStatus === "pending"
+        ? "Identity verification has been submitted and is under review."
+        : verificationStatus === "rejected"
+          ? "Identity verification needs more information before higher-trust actions can unlock."
+          : "Identity verification has not been completed yet."
+    ,
     emailVerified ? "Email ownership is verified." : null,
     phonePresent ? "A contact phone is on file." : null,
     profileCompletion >= 48 ? "Profile completion is strong enough for verified workflows." : null,
@@ -185,6 +224,9 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
   const requirements =
     nextTier === "verified"
       ? [
+          verificationStatus !== "verified"
+            ? "Complete identity verification so trust-based lanes stop relying on optimistic profile signals."
+            : null,
           !emailVerified ? "Verify your email address." : null,
           !phonePresent ? "Add a usable phone number." : null,
           profileCompletion < 48 ? "Complete more of your profile and add proof documents." : null,
@@ -194,6 +236,9 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
         ]
       : nextTier === "trusted"
         ? [
+            verificationStatus !== "verified"
+              ? "Identity verification approval is required before trusted seller, employer, property, and payout lanes can unlock."
+              : null,
             accountAgeDays < 30 ? "Build more account age before trusted status unlocks." : null,
             settledTransactions < 1 ? "Complete at least one verified transaction or funding cycle." : null,
             suspiciousEvents > 0 ? "Keep the account clear of suspicious access warnings." : null,
@@ -203,6 +248,9 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
           ]
         : nextTier === "premium_verified"
           ? [
+              verificationStatus !== "verified"
+                ? "Premium trust is reserved for accounts that have already passed identity verification."
+                : null,
               accountAgeDays < 90 ? "Maintain a longer clean account history." : null,
               settledTransactions < 3 ? "Build a stronger verified transaction record." : null,
               completedActivityCount < 8 ? "Use more HenryCo divisions with clean outcomes." : null,
@@ -219,9 +267,11 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
     nextTier,
     requirements: requirements.filter(Boolean) as string[],
     flags: {
-      jobsPostingEligible: tier !== "basic",
+      jobsPostingEligible: verificationStatus === "verified" && tier !== "basic",
       marketplaceEligible:
-        (tier === "trusted" || tier === "premium_verified") && !overlaps.reviewRequired,
+        verificationStatus === "verified" &&
+        (tier === "trusted" || tier === "premium_verified") &&
+        !overlaps.reviewRequired,
     },
     signals: {
       emailVerified,
@@ -232,6 +282,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
       suspiciousEvents,
       duplicateEmailMatches: overlaps.emailMatches,
       duplicatePhoneMatches: overlaps.phoneMatches,
+      verificationStatus,
     },
   };
 }

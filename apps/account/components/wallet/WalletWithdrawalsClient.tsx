@@ -30,12 +30,18 @@ export default function WalletWithdrawalsClient({
   pinConfigured,
   availableBalanceKobo,
   pendingHoldKobo,
+  verificationGate,
 }: {
   initialMethods: PayoutMethod[];
   initialRequests: WithdrawalRow[];
   pinConfigured: boolean;
   availableBalanceKobo: number;
   pendingHoldKobo: number;
+  verificationGate: {
+    status: "none" | "pending" | "verified" | "rejected";
+    headline: string;
+    detail: string;
+  };
 }) {
   const router = useRouter();
   const [methods, setMethods] = useState(initialMethods);
@@ -57,6 +63,7 @@ export default function WalletWithdrawalsClient({
   const [amount, setAmount] = useState("");
   const [payoutId, setPayoutId] = useState(methods[0]?.id ?? "");
   const [withdrawPin, setWithdrawPin] = useState("");
+  const withdrawalsUnlocked = verificationGate.status === "verified";
 
   async function refresh() {
     const res = await fetch("/api/wallet/payout-methods", { cache: "no-store" });
@@ -284,6 +291,18 @@ export default function WalletWithdrawalsClient({
             ₦{(pendingHold / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })} is already held in pending withdrawal review.
           </p>
         ) : null}
+        {!withdrawalsUnlocked ? (
+          <div className="mt-4 rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-4 py-4">
+            <p className="text-sm font-semibold text-[var(--acct-ink)]">{verificationGate.headline}</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">{verificationGate.detail}</p>
+            <a
+              href="/verification"
+              className="mt-3 inline-flex rounded-full bg-[var(--acct-gold)] px-4 py-2 text-xs font-semibold text-white"
+            >
+              Open verification
+            </a>
+          </div>
+        ) : null}
         <form onSubmit={submitWithdrawal} className="mt-4 grid gap-3">
           <input
             className="acct-input rounded-xl"
@@ -319,15 +338,19 @@ export default function WalletWithdrawalsClient({
           />
           <button
             type="submit"
-            disabled={busy === "withdraw" || !hasPin || methods.length === 0}
+            disabled={busy === "withdraw" || !hasPin || methods.length === 0 || !withdrawalsUnlocked}
             className="acct-button-primary rounded-xl disabled:opacity-50"
           >
             <ButtonPendingContent pending={busy === "withdraw"} pendingLabel="Submitting withdrawal..." spinnerLabel="Submitting withdrawal">
               Submit withdrawal
             </ButtonPendingContent>
           </button>
-          {!hasPin || methods.length === 0 ? (
-            <p className="text-xs text-[var(--acct-muted)]">Set a PIN and save a payout account first.</p>
+          {!hasPin || methods.length === 0 || !withdrawalsUnlocked ? (
+            <p className="text-xs text-[var(--acct-muted)]">
+              {!withdrawalsUnlocked
+                ? "Identity verification must be approved before withdrawals can be requested."
+                : "Set a PIN and save a payout account first."}
+            </p>
           ) : null}
         </form>
       </section>

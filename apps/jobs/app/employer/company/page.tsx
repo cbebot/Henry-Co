@@ -1,7 +1,10 @@
+import Link from "next/link";
+import { getAccountUrl } from "@henryco/config";
 import { createEmployerProfileAction } from "@/app/actions";
 import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
 import { employerNav } from "@/lib/jobs/navigation";
+import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
 import { InlineNotice } from "@/components/feedback";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
@@ -27,6 +30,14 @@ export default async function EmployerCompanyPage({
   const membership = data.memberships[0];
   const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true }) : null;
   const employer = companyRecord?.employer ?? null;
+  const eligibility = membership
+    ? await getEmployerPostingEligibility({
+        userId: viewer.user!.id,
+        email: viewer.user!.email,
+        employerSlug: membership.employerSlug,
+        actorRole: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+      })
+    : null;
   const created = typeof params.created === "string" ? params.created : null;
 
   return (
@@ -53,6 +64,20 @@ export default async function EmployerCompanyPage({
                   ? `${employer.openRoleCount} open role${employer.openRoleCount === 1 ? "" : "s"}. You aim to respond to candidates within ${employer.responseSlaHours} hours.`
                   : "Create your company profile to begin the verification process and set up your public employer page."}
               </p>
+              {eligibility && eligibility.verificationStatus !== "verified" ? (
+                <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
+                  <div className="text-sm font-semibold">{eligibility.verificationGate.headline}</div>
+                  <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
+                    {eligibility.verificationGate.detail}
+                  </p>
+                  <Link
+                    href={eligibility.verificationGate.href}
+                    className="mt-3 inline-flex rounded-full bg-[var(--jobs-accent)] px-4 py-2 text-xs font-semibold text-white"
+                  >
+                    {eligibility.verificationGate.actionLabel}
+                  </Link>
+                </div>
+              ) : null}
             </div>
           </SectionCard>
           <SectionCard title="Tips for a strong profile">
@@ -72,6 +97,18 @@ export default async function EmployerCompanyPage({
             title="Employer profile saved"
             body={`${created} has been saved. Your company profile is now in the verification queue.`}
           />
+        ) : null}
+        {eligibility && eligibility.verificationStatus !== "verified" ? (
+          <div className="space-y-3">
+            <InlineNotice
+              tone="warn"
+              title={eligibility.verificationGate.headline}
+              body={`${eligibility.verificationGate.detail} Complete account verification before expecting role posting or employer trust upgrades to unlock.`}
+            />
+            <Link href={getAccountUrl("/verification")} className="jobs-button-secondary inline-flex rounded-full px-4 py-2 text-sm font-semibold">
+              Open account verification
+            </Link>
+          </div>
         ) : null}
 
         <SectionCard title="Company details" body="This information appears on your public employer page and helps candidates evaluate your company.">

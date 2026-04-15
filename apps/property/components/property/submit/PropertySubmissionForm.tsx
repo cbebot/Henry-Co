@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { PropertyPendingButton } from "@/components/property/form-status";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getAccountUrl } from "@henryco/config";
+import { LoaderCircle } from "lucide-react";
+import { ButtonPendingContent } from "@henryco/ui";
 import { getSharedAccountPropertyUrl } from "@/lib/property/links";
 
 type AreaOption = { id: string; slug: string; name: string };
@@ -13,6 +15,20 @@ type Props = {
     fullName: string;
     email: string;
   };
+};
+
+type SubmissionFeedback = {
+  listingId: string;
+  listingSlug: string;
+  listingTitle: string;
+  policyStatus: string;
+  policySummary: string;
+  nextStepLabel: string;
+  guidanceHeadline: string;
+  guidanceBullets: string[];
+  verificationStatus: "none" | "pending" | "verified" | "rejected";
+  requiresInspection: boolean;
+  requiresEnhancedKyc: boolean;
 };
 
 type ServiceType =
@@ -120,8 +136,14 @@ function intentLabel(intent: Intent) {
 }
 
 export function PropertySubmissionForm({ areas, defaults }: Props) {
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [serviceType, setServiceType] = useState<ServiceType>("rent");
   const [intent, setIntent] = useState<Intent>("owner_listed");
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [submissionFeedback, setSubmissionFeedback] = useState<SubmissionFeedback | null>(null);
+  const [selectedMediaCount, setSelectedMediaCount] = useState(0);
+  const [selectedVerificationCount, setSelectedVerificationCount] = useState(0);
 
   const requirements = useMemo(() => requiredForService(serviceType), [serviceType]);
   const computedKind = useMemo(() => kindForService(serviceType), [serviceType]);
@@ -134,14 +156,80 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
     return ["owner_listed", "agent_listed", "agent_assisted"];
   }, [serviceType]);
 
-  // Keep intent valid for the currently selected service type.
-  if (!intentOptions.includes(intent)) {
-    // React 19: deterministic sync update is fine here.
-    setIntent(intentOptions[0]);
+  useEffect(() => {
+    if (!intentOptions.includes(intent)) {
+      setIntent(intentOptions[0]);
+    }
+  }, [intent, intentOptions]);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    setSubmitting(true);
+    setMessage(null);
+    setSubmissionFeedback(null);
+
+    try {
+      const response = await fetch("/api/property", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "x-henryco-async": "1",
+        },
+        body: formData,
+      });
+
+      const payload = (await response.json().catch(() => null)) as
+        | {
+            ok?: boolean;
+            error?: string;
+            message?: string;
+            submission?: SubmissionFeedback;
+          }
+        | null;
+
+      if (!response.ok || !payload?.ok || !payload.submission) {
+        throw new Error(payload?.error || "Property submission could not be completed.");
+      }
+
+      setMessage({
+        type: "success",
+        text:
+          payload.message ||
+          "Listing submitted. HenryCo Property queued moderation and trust review.",
+      });
+      setSubmissionFeedback(payload.submission);
+      formRef.current?.reset();
+      setServiceType("rent");
+      setIntent("owner_listed");
+      setSelectedMediaCount(0);
+      setSelectedVerificationCount(0);
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text:
+          error instanceof Error
+            ? error.message
+            : "Property submission could not be completed.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
-    <form action="/api/property" method="POST" encType="multipart/form-data" className="space-y-5">
+    <form
+      ref={formRef}
+      action="/api/property"
+      method="POST"
+      encType="multipart/form-data"
+      onSubmit={(event) => void handleSubmit(event)}
+      className="space-y-5"
+      data-live-refresh-pause="true"
+    >
       <input type="hidden" name="intent" value="listing_submit" />
       <input type="hidden" name="return_to" value="/submit" />
 
@@ -190,9 +278,9 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
               Eligibility
             </div>
-            <div className="mt-2 text-sm text-[var(--property-ink)]">Wallet floor or inspection</div>
+            <div className="mt-2 text-sm text-[var(--property-ink)]">Wallet floor, inspection, or approved identity</div>
             <div className="mt-1 text-xs text-[var(--property-ink-soft)]">
-              Some listings require a N10,000 verified balance unless you choose inspection.
+              Higher-risk listings can pause in eligibility review until account verification or inspection truth is in place.
             </div>
           </div>
         </div>
@@ -449,7 +537,13 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             multiple
             accept="image/*"
             className="property-input mt-2 rounded-2xl px-4 py-3"
+            onChange={(event) => setSelectedMediaCount(event.target.files?.length || 0)}
           />
+          {selectedMediaCount > 0 ? (
+            <p className="mt-2 text-xs text-[var(--property-ink-soft)]">
+              {selectedMediaCount} media file{selectedMediaCount === 1 ? "" : "s"} ready for upload.
+            </p>
+          ) : null}
         </label>
         <label className="block">
           <span className="text-sm font-medium text-[var(--property-ink)]">Verification documents</span>
@@ -459,7 +553,14 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             multiple
             accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
             className="property-input mt-2 rounded-2xl px-4 py-3"
+            onChange={(event) => setSelectedVerificationCount(event.target.files?.length || 0)}
           />
+          {selectedVerificationCount > 0 ? (
+            <p className="mt-2 text-xs text-[var(--property-ink-soft)]">
+              {selectedVerificationCount} verification file
+              {selectedVerificationCount === 1 ? "" : "s"} ready for trust review.
+            </p>
+          ) : null}
         </label>
       </div>
 
@@ -491,14 +592,93 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </ul>
       </div>
 
+      {message ? (
+        <div
+          className={`rounded-[1.6rem] border px-5 py-4 text-sm leading-7 ${
+            message.type === "success"
+              ? "border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] text-[var(--property-sage-soft)]"
+              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[var(--property-alert)]"
+          }`}
+        >
+          {message.text}
+        </div>
+      ) : null}
+
+      {submissionFeedback ? (
+        <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
+                Live policy result
+              </div>
+              <div className="mt-2 text-lg font-semibold text-[var(--property-ink)]">
+                {submissionFeedback.guidanceHeadline}
+              </div>
+              <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
+                {submissionFeedback.policySummary}
+              </p>
+            </div>
+            <div className="rounded-full border border-[var(--property-line)] bg-black/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
+              {submissionFeedback.policyStatus.replaceAll("_", " ")}
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {submissionFeedback.guidanceBullets.map((item) => (
+              <div
+                key={item}
+                className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href={getSharedAccountPropertyUrl("listings")}
+              className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
+            >
+              Open property account
+            </Link>
+            {submissionFeedback.verificationStatus !== "verified" ? (
+              <Link
+                href={getAccountUrl("/verification")}
+                className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
+              >
+                Open account verification
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
       <div className="flex flex-wrap items-center gap-3">
-        <PropertyPendingButton idleLabel="Submit listing" pendingLabel="Submitting listing" />
+        <button
+          type="submit"
+          disabled={submitting}
+          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80"
+        >
+          <ButtonPendingContent
+            pending={submitting}
+            pendingLabel="Submitting listing..."
+            spinnerLabel="Submitting property listing"
+          >
+            Submit listing
+          </ButtonPendingContent>
+        </button>
         <Link
           href={getSharedAccountPropertyUrl("listings")}
           className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
         >
           Open property account
         </Link>
+        {submitting ? (
+          <span className="inline-flex items-center gap-2 text-xs text-[var(--property-ink-soft)]">
+            <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+            Uploading media and verification files without leaving the page
+          </span>
+        ) : null}
       </div>
     </form>
   );

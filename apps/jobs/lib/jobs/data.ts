@@ -1,5 +1,6 @@
 import "server-only";
 
+import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail } from "@/lib/env";
 import { DEFAULT_PIPELINE, JOBS_DIFFERENTIATORS, JOBS_STAGE_ORDER } from "@/lib/jobs/content";
@@ -126,14 +127,40 @@ function calculateCompletionScore(input: {
 
 function calculateTrustScore(input: {
   completionScore: number;
-  verificationStatus: string;
+  verificationStatus: unknown;
   documents: CandidateDocument[];
 }) {
   let score = input.completionScore;
-  if (input.verificationStatus === "verified") score += 18;
+  if (normalizeVerificationStatus(input.verificationStatus) === "verified") score += 18;
   if (input.documents.some((doc) => doc.kind === "certification")) score += 6;
   if (input.documents.some((doc) => doc.kind === "portfolio")) score += 4;
-  return Math.min(score, 100);
+  return applyVerificationTrustControls({
+    verificationStatus: input.verificationStatus,
+    baseScore: score,
+    baseTier:
+      score >= 88
+        ? "premium_verified"
+        : score >= 68
+          ? "trusted"
+          : score >= 45
+            ? "verified"
+            : "basic",
+    verifiedBonus: 0,
+    caps: {
+      none: {
+        maxScore: 54,
+        maxTier: "basic",
+      },
+      pending: {
+        maxScore: 68,
+        maxTier: "verified",
+      },
+      rejected: {
+        maxScore: 36,
+        maxTier: "basic",
+      },
+    },
+  }).score;
 }
 
 function getReadinessLabel(score: number) {
@@ -141,6 +168,14 @@ function getReadinessLabel(score: number) {
   if (score >= 68) return "Strong profile";
   if (score >= 45) return "Needs proof";
   return "Needs structure";
+}
+
+function toCandidateVerificationStatus(status: unknown): CandidateProfile["verificationStatus"] {
+  const normalized = normalizeVerificationStatus(status);
+  if (normalized === "verified") return "verified";
+  if (normalized === "pending") return "pending";
+  if (normalized === "rejected") return "rejected";
+  return "unverified";
 }
 
 function stageRank(stage: string) {
@@ -912,10 +947,11 @@ export async function getCandidateProfileByUserId(userId: string): Promise<Candi
     base,
     documents,
   });
-  const verificationStatus =
-    ((asNullableString(profile.verificationStatus) ||
-      (asBoolean(base.is_verified) ? "verified" : completionScore >= 70 ? "ready" : "unverified")) as CandidateProfile["verificationStatus"]) ||
-    "unverified";
+  const verificationStatus = toCandidateVerificationStatus(
+    asNullableString(base.verification_status) ||
+      (asBoolean(base.is_verified) ? "verified" : null) ||
+      asNullableString(profile.verificationStatus)
+  );
   const trustScore = calculateTrustScore({ completionScore, verificationStatus, documents });
 
   return {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, RefreshCcw } from "lucide-react";
 import type { PropertyArea } from "@/lib/property/types";
@@ -17,19 +17,29 @@ export function PropertySearchBar({
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [q, setQ] = useState(defaults?.q || "");
-  const [kind, setKind] = useState(defaults?.kind || "");
-  const [area, setArea] = useState(defaults?.area || "");
-  const [managed, setManaged] = useState(defaults?.managed === "1");
-  const [furnished, setFurnished] = useState(defaults?.furnished === "1");
+  const defaultsState = {
+    q: defaults?.q || "",
+    kind: defaults?.kind || "",
+    area: defaults?.area || "",
+    managed: defaults?.managed === "1",
+    furnished: defaults?.furnished === "1",
+  };
+  const defaultsKey = JSON.stringify(defaultsState);
+  const [syncedDefaultsKey, setSyncedDefaultsKey] = useState(defaultsKey);
+  const [q, setQ] = useState(defaultsState.q);
+  const [kind, setKind] = useState(defaultsState.kind);
+  const [area, setArea] = useState(defaultsState.area);
+  const [managed, setManaged] = useState(defaultsState.managed);
+  const [furnished, setFurnished] = useState(defaultsState.furnished);
 
-  useEffect(() => {
-    setQ(defaults?.q || "");
-    setKind(defaults?.kind || "");
-    setArea(defaults?.area || "");
-    setManaged(defaults?.managed === "1");
-    setFurnished(defaults?.furnished === "1");
-  }, [defaults?.area, defaults?.furnished, defaults?.kind, defaults?.managed, defaults?.q]);
+  if (syncedDefaultsKey !== defaultsKey) {
+    setSyncedDefaultsKey(defaultsKey);
+    setQ(defaultsState.q);
+    setKind(defaultsState.kind);
+    setArea(defaultsState.area);
+    setManaged(defaultsState.managed);
+    setFurnished(defaultsState.furnished);
+  }
 
   function persistPrefs(next: { area: string; kind: string; q: string }) {
     if (typeof window === "undefined") return;

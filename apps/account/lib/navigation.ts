@@ -56,7 +56,7 @@ export const accountNavItems: NavItem[] = [
   { href: "/jobs", label: "Jobs", icon: Briefcase, section: "Services" },
   // Trust & Settings
   { href: "/referrals", label: "Referrals", icon: Users, section: "Settings" },
-  { href: "/verify", label: "Submit KYC", icon: ShieldCheck, section: "Settings" },
+  { href: "/verification", label: "Submit KYC", icon: ShieldCheck, section: "Settings" },
   { href: "/security", label: "Security", icon: Shield, section: "Settings" },
   { href: "/settings", label: "Preferences", icon: Settings, section: "Settings" },
 ];

@@ -8,7 +8,11 @@ import {
 } from "@henryco/config";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
 import { createAdminSupabase } from "@/lib/supabase";
-import { submitVerificationDocument } from "@/lib/verification";
+import {
+  getDocumentTypeLabel,
+  getVerificationState,
+  submitVerificationDocument,
+} from "@/lib/verification";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_TYPES = new Set([
@@ -24,6 +28,33 @@ const VALID_DOC_TYPES = new Set([
   "address_proof",
   "business_cert",
 ]);
+
+function wantsJson(request: Request) {
+  return (
+    request.headers.get("x-henryco-async") === "1" ||
+    request.headers.get("accept")?.includes("application/json")
+  );
+}
+
+function redirectOrJson(
+  request: Request,
+  input:
+    | { ok: false; error: string; status: number; code: string }
+    | { ok: true; payload: Record<string, unknown> }
+) {
+  if (wantsJson(request)) {
+    if (!input.ok) {
+      return NextResponse.json({ error: input.error, code: input.code }, { status: input.status });
+    }
+    return NextResponse.json(input.payload);
+  }
+
+  if (!input.ok) {
+    return NextResponse.redirect(new URL(`/verification?error=${input.code}`, request.url));
+  }
+
+  return NextResponse.redirect(new URL("/verification?submitted=1", request.url));
+}
 
 export async function POST(request: Request) {
   try {
@@ -43,6 +74,9 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
+      if (wantsJson(request)) {
+        return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+      }
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
@@ -51,27 +85,39 @@ export async function POST(request: Request) {
     const file = formData.get("file") as File | null;
 
     if (!VALID_DOC_TYPES.has(documentType)) {
-      return NextResponse.redirect(
-        new URL("/verify?error=invalid_type", request.url)
-      );
+      return redirectOrJson(request, {
+        ok: false,
+        error: "That document type is not supported.",
+        status: 400,
+        code: "invalid_type",
+      });
     }
 
     if (!file || file.size <= 0) {
-      return NextResponse.redirect(
-        new URL("/verify?error=no_file", request.url)
-      );
+      return redirectOrJson(request, {
+        ok: false,
+        error: "Select a file before uploading.",
+        status: 400,
+        code: "no_file",
+      });
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.redirect(
-        new URL("/verify?error=too_large", request.url)
-      );
+      return redirectOrJson(request, {
+        ok: false,
+        error: "File size must be 10 MB or less.",
+        status: 400,
+        code: "too_large",
+      });
     }
 
     if (!ALLOWED_TYPES.has(file.type.toLowerCase())) {
-      return NextResponse.redirect(
-        new URL("/verify?error=invalid_format", request.url)
-      );
+      return redirectOrJson(request, {
+        ok: false,
+        error: "Upload a JPG, PNG, WebP, or PDF file.",
+        status: 400,
+        code: "invalid_format",
+      });
     }
 
     // Upload to Cloudinary in a private folder.
@@ -105,19 +151,67 @@ export async function POST(request: Request) {
       .select("id")
       .maybeSingle();
 
+    if (!docRecord?.id) {
+      throw new Error("Document record could not be created.");
+    }
+
     // Link the document to the verification submission.
     await submitVerificationDocument(user.id, {
       documentType,
-      documentId: docRecord?.id || "",
+      documentId: docRecord.id,
     });
 
-    return NextResponse.redirect(
-      new URL("/verify?submitted=true", request.url)
-    );
+    await admin.from("customer_activity").insert({
+      user_id: user.id,
+      division: "account",
+      activity_type: "verification_document_submitted",
+      title: `${getDocumentTypeLabel(documentType)} submitted for review`,
+      description: `${file.name} is now attached to your identity verification queue.`,
+      status: "pending",
+      reference_type: "verification_document",
+      reference_id: docRecord.id,
+      action_url: "/verification",
+      metadata: {
+        document_type: documentType,
+        source: "account_verification",
+      },
+    } as never);
+
+    await admin.from("customer_notifications").insert({
+      user_id: user.id,
+      division: "account",
+      title: "Verification document received",
+      body: `${getDocumentTypeLabel(documentType)} is now in the review queue.`,
+      category: "verification",
+      action_url: "/verification",
+      reference_type: "verification_document",
+      reference_id: docRecord.id,
+    } as never);
+
+    const verification = await getVerificationState(user.id);
+    const submission =
+      verification.submissions.find((item) => item.documentType === documentType) || null;
+
+    if (!submission) {
+      throw new Error("Verification submission could not be refreshed.");
+    }
+
+    return redirectOrJson(request, {
+      ok: true,
+      payload: {
+        ok: true,
+        message: `${getDocumentTypeLabel(documentType)} uploaded successfully.`,
+        verification,
+        submission,
+      },
+    });
   } catch (err) {
     console.error("[verify] Upload error:", err);
-    return NextResponse.redirect(
-      new URL("/verify?error=upload_failed", request.url)
-    );
+    return redirectOrJson(request, {
+      ok: false,
+      error: err instanceof Error ? err.message : "Upload failed.",
+      status: 500,
+      code: "upload_failed",
+    });
   }
 }

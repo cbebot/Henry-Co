@@ -78,6 +78,48 @@ function redirectTo(request: Request, target: string) {
   return NextResponse.redirect(new URL(target, request.url), { status: 303 });
 }
 
+function wantsJson(request: Request) {
+  return (
+    request.headers.get("x-henryco-async") === "1" ||
+    request.headers.get("accept")?.includes("application/json")
+  );
+}
+
+function respondError(
+  request: Request,
+  returnTo: string,
+  input: { message: string; code: string; status?: number; extra?: Record<string, unknown> }
+) {
+  if (wantsJson(request)) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: input.message,
+        code: input.code,
+        ...(input.extra || {}),
+      },
+      { status: input.status ?? 400 }
+    );
+  }
+
+  return redirectTo(request, withQuery(returnTo, "error", input.code));
+}
+
+function respondSuccess(
+  request: Request,
+  redirectTarget: string,
+  payload: Record<string, unknown>
+) {
+  if (wantsJson(request)) {
+    return NextResponse.json({
+      ok: true,
+      ...payload,
+    });
+  }
+
+  return redirectTo(request, redirectTarget);
+}
+
 /** Cross-origin redirect to shared HenryCo account sign-in with return path on this property origin */
 function redirectToAccountSignIn(request: Request, returnPath: string) {
   const origin = new URL(request.url).origin;
@@ -473,12 +515,31 @@ export async function POST(request: Request) {
 
       case "listing_submit": {
         if (!viewer.user) {
+          if (wantsJson(request)) {
+            return NextResponse.json(
+              {
+                ok: false,
+                error: "Authentication required.",
+                code: "auth_required",
+                loginUrl: getSharedAccountLoginUrl({
+                  nextPath: "/submit",
+                  propertyOrigin: new URL(request.url).origin,
+                }).toString(),
+              },
+              { status: 401 }
+            );
+          }
           return redirectToAccountSignIn(request, returnTo || "/submit");
         }
 
         const ownerName = text(formData, "owner_name") || viewer.user?.fullName || "Property owner";
         const ownerEmail = normalizeEmail(text(formData, "owner_email") || viewer.user?.email);
-        if (!ownerEmail) return redirectTo(request, withQuery(returnTo, "error", "missing-email"));
+        if (!ownerEmail) {
+          return respondError(request, returnTo, {
+            message: "Owner email is required before the listing can enter trust review.",
+            code: "missing-email",
+          });
+        }
 
         const ownerPhone = text(formData, "owner_phone");
         const baseGallery = listValue(formData, "gallery_urls");
@@ -693,7 +754,28 @@ export async function POST(request: Request) {
         });
 
         revalidatePropertyRoutes(listing.slug);
-        return redirectTo(request, "/submit?submitted=1");
+        let submitRedirect = withQuery("/submit", "submitted", "1");
+        submitRedirect = withQuery(submitRedirect, "policy", policy.nextStatus);
+        if (trust.signals.verificationStatus !== "verified") {
+          submitRedirect = withQuery(submitRedirect, "verification", trust.signals.verificationStatus);
+        }
+        return respondSuccess(request, submitRedirect, {
+          message:
+            "Listing submitted. HenryCo Property queued policy review, moderation, and follow-up notifications.",
+          submission: {
+            listingId: listing.id,
+            listingSlug: listing.slug,
+            listingTitle: listing.title,
+            policyStatus: policy.nextStatus,
+            policySummary: policy.summary,
+            nextStepLabel: policy.userGuidance.nextStepLabel,
+            guidanceHeadline: policy.userGuidance.headline,
+            guidanceBullets: policy.userGuidance.bullets,
+            verificationStatus: trust.signals.verificationStatus,
+            requiresInspection: policy.required.requiresInspection,
+            requiresEnhancedKyc: policy.required.requiresEnhancedKyc,
+          },
+        });
       }
 
       case "listing_update": {
@@ -1070,13 +1152,11 @@ export async function POST(request: Request) {
         return redirectTo(request, withQuery(returnTo, "error", "unknown-intent"));
     }
   } catch (error) {
-    return redirectTo(
-      request,
-      withQuery(
-        returnTo,
-        "error",
-        error instanceof Error ? error.message.slice(0, 120) : "mutation-failed"
-      )
-    );
+    return respondError(request, returnTo, {
+      message:
+        error instanceof Error ? error.message : "Property submission could not be completed.",
+      code: "mutation-failed",
+      status: 500,
+    });
   }
 }

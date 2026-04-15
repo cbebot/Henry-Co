@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { getAccountUrl } from "@henryco/config";
 import { saveCandidateProfileAction } from "@/app/actions";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateDashboardData } from "@/lib/jobs/data";
@@ -10,7 +12,8 @@ export const dynamic = "force-dynamic";
 
 function toneForVerification(status: string) {
   if (status === "verified") return "good" as const;
-  if (status === "ready") return "warn" as const;
+  if (status === "pending") return "warn" as const;
+  if (status === "rejected") return "danger" as const;
   return "neutral" as const;
 }
 
@@ -49,6 +52,14 @@ export default async function CandidateProfilePage({
               <p className="text-sm leading-7 text-[var(--jobs-muted)]">
                 {profile?.readinessLabel || "Complete your profile to improve how employers see your applications."}
               </p>
+              {profile?.verificationStatus !== "verified" ? (
+                <Link
+                  href={getAccountUrl("/verification")}
+                  className="inline-flex rounded-full bg-[var(--jobs-accent-soft)] px-4 py-2 text-xs font-semibold text-[var(--jobs-accent)]"
+                >
+                  Open account verification
+                </Link>
+              ) : null}
             </div>
           </SectionCard>
           <SectionCard title="Documents">

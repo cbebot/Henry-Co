@@ -17,9 +17,9 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-function trustToState(profile: AccountTrustProfile["tier"]): UserContext["trustState"] {
-  if (profile === "premium_verified" || profile === "trusted") return "verified";
-  if (profile === "verified") return "pending_review";
+function trustToState(profile: AccountTrustProfile): UserContext["trustState"] {
+  if (profile.signals.verificationStatus === "verified") return "verified";
+  if (profile.signals.verificationStatus === "pending") return "pending_review";
   return "needs_action";
 }
 
@@ -64,7 +64,7 @@ export function buildAccountTasks(input: {
       title: "Complete trust verification steps",
       description: input.trust.requirements[0] || "Upgrade trust tier to unlock more capabilities.",
       sourceDivision: "account",
-      deeplinkTemplate: "/security",
+      deeplinkTemplate: "/verification",
       priority: "high",
       blocking: input.trust.tier === "basic",
       createdAt: nowIso(),
@@ -120,7 +120,7 @@ export function buildAccountRecommendations(input: {
 }) {
   const context: UserContext = {
     roleHint: "buyer",
-    trustState: trustToState(input.trust.tier),
+    trustState: trustToState(input.trust),
     profileCompleteness: Math.max(0, Math.min(1, input.trust.signals.profileCompletion / 100)),
     recentDivisions: input.activeDivisionHints || ["account"],
     savedJobIds: input.savedJobsCount > 0 ? ["saved-jobs"] : [],

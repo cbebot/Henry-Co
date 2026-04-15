@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getVerificationGateCopy } from "@henryco/trust";
 import type {
   PropertyListing,
   PropertyListingIntent,
@@ -28,6 +29,7 @@ export type PropertyPolicyContext = {
       suspiciousEvents: number;
       duplicateEmailMatches: number;
       duplicatePhoneMatches: number;
+      verificationStatus: "none" | "pending" | "verified" | "rejected";
     };
   };
   submission: {
@@ -143,6 +145,22 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
     flags.push("new_account");
   }
 
+  const requiresIdentityApproval =
+    ctx.submission.serviceType === "sale" ||
+    ctx.submission.serviceType === "land" ||
+    ctx.submission.serviceType === "commercial" ||
+    ctx.submission.serviceType === "managed_property" ||
+    ctx.submission.serviceType === "verified_property" ||
+    ctx.submission.intent === "agent_listed" ||
+    ctx.submission.intent === "agent_assisted" ||
+    isHighValue(ctx.submission.price);
+  const verificationGate = getVerificationGateCopy(ctx.trust.signals.verificationStatus, "verified");
+
+  if (requiresIdentityApproval && ctx.trust.signals.verificationStatus !== "verified") {
+    risk += ctx.trust.signals.verificationStatus === "pending" ? 8 : 16;
+    flags.push("identity_verification_required");
+  }
+
   if (isHighValue(ctx.submission.price)) {
     risk += 8;
     flags.push("high_value");
@@ -181,10 +199,11 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
 
   const allowsWalletBypassViaInspection = true;
   const walletGateSatisfied = hasWalletFloor || isTrusted || requiresInspection;
+  const identityGateSatisfied = !requiresIdentityApproval || ctx.trust.signals.verificationStatus === "verified";
 
   let nextStatus: PropertyListingStatus = "under_review";
 
-  if (!walletGateSatisfied) nextStatus = "awaiting_eligibility";
+  if (!identityGateSatisfied || !walletGateSatisfied) nextStatus = "awaiting_eligibility";
   else if (ctx.submission.verificationDocCount < baseDocs.verificationDocsMin) nextStatus = "awaiting_documents";
   else if (requiresInspection) nextStatus = "inspection_requested";
   else nextStatus = "under_review";
@@ -197,6 +216,9 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
 
   const bullets: string[] = [];
   bullets.push("Your submission is private until HenryCo approves it for publication.");
+  if (!identityGateSatisfied) {
+    bullets.push(`${verificationGate.detail} Open account verification before expecting publication review to continue.`);
+  }
   if (!hasWalletFloor && !isTrusted) {
     bullets.push("Eligibility: this listing requires either a N10,000 verified balance or an inspection workflow.");
   }
@@ -215,7 +237,9 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
 
   const headline =
     nextStatus === "awaiting_eligibility"
-      ? "Eligibility check required"
+      ? !identityGateSatisfied
+        ? verificationGate.headline
+        : "Eligibility check required"
       : nextStatus === "awaiting_documents"
         ? "Documents required before review"
         : nextStatus === "inspection_requested"
@@ -224,7 +248,9 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
 
   const nextStepLabel =
     nextStatus === "awaiting_eligibility"
-      ? "Unlock eligibility"
+      ? !identityGateSatisfied
+        ? verificationGate.actionLabel
+        : "Unlock eligibility"
       : nextStatus === "awaiting_documents"
         ? "Upload documents"
         : nextStatus === "inspection_requested"

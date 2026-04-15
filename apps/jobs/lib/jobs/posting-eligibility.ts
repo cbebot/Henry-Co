@@ -1,5 +1,7 @@
 import "server-only";
 
+import { getAccountUrl } from "@henryco/config";
+import { applyVerificationTrustControls, getVerificationGateCopy, normalizeVerificationStatus } from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getEmployerMembershipsByUser, getEmployerProfileBySlug } from "@/lib/jobs/data";
 import type { EmployerProfile } from "@/lib/jobs/types";
@@ -16,12 +18,19 @@ export type PostingChecklistItem = {
 export type EmployerPostingEligibility = {
   trustTier: TrustTier;
   trustScore: number;
+  verificationStatus: "none" | "pending" | "verified" | "rejected";
   verifiedEmail: boolean;
   membershipActive: boolean;
   employerProfileReady: boolean;
   employerVerificationAllowed: boolean;
   canSubmitForReview: boolean;
   autoApprovalAllowed: boolean;
+  verificationGate: {
+    headline: string;
+    detail: string;
+    actionLabel: string;
+    href: string;
+  };
   employer: EmployerProfile | null;
   checklist: PostingChecklistItem[];
   requirements: string[];
@@ -174,6 +183,27 @@ export async function getEmployerPostingEligibility(input: {
     suspiciousEvents,
     completedActivityCount,
   });
+  const verificationStatus = normalizeVerificationStatus(profile.verification_status);
+  const verificationControlledTrust = applyVerificationTrustControls({
+    verificationStatus,
+    baseScore: trust.score,
+    baseTier: trust.tier,
+    verifiedBonus: 0,
+    caps: {
+      none: {
+        maxScore: 54,
+        maxTier: "basic",
+      },
+      pending: {
+        maxScore: 68,
+        maxTier: "verified",
+      },
+      rejected: {
+        maxScore: 36,
+        maxTier: "basic",
+      },
+    },
+  });
 
   const employer = employerProfile?.employer ?? null;
   const membershipActive = Boolean(membership && membership.status !== "revoked");
@@ -187,12 +217,14 @@ export async function getEmployerPostingEligibility(input: {
   );
   const employerVerificationAllowed = employer?.verificationStatus !== "rejected";
   const autoApprovalAllowed = ["owner", "manager"].includes(asText(input.actorRole).toLowerCase());
+  const verificationGate = getVerificationGateCopy(verificationStatus, "verified");
   const canSubmitForReview =
     membershipActive &&
     employerProfileReady &&
     employerVerificationAllowed &&
     emailVerified &&
-    (trust.tier === "verified" || trust.tier === "trusted" || trust.tier === "premium_verified");
+    verificationStatus === "verified" &&
+    verificationControlledTrust.tier !== "basic";
 
   const checklist: PostingChecklistItem[] = [
     {
@@ -208,10 +240,16 @@ export async function getEmployerPostingEligibility(input: {
       complete: emailVerified,
     },
     {
+      id: "identity",
+      label: "Identity verification",
+      detail: "Employer posting is blocked until the account owner passes shared HenryCo identity verification.",
+      complete: verificationStatus === "verified",
+    },
+    {
       id: "trust",
       label: "Shared account trust tier",
       detail: "Jobs posting now requires at least the shared HenryCo Verified trust lane.",
-      complete: trust.tier !== "basic",
+      complete: verificationControlledTrust.tier !== "basic",
     },
     {
       id: "company",
@@ -230,14 +268,21 @@ export async function getEmployerPostingEligibility(input: {
   const requirements = checklist.filter((item) => !item.complete).map((item) => item.detail);
 
   return {
-    trustTier: trust.tier,
-    trustScore: trust.score,
+    trustTier: verificationControlledTrust.tier,
+    trustScore: verificationControlledTrust.score,
+    verificationStatus,
     verifiedEmail: emailVerified,
     membershipActive,
     employerProfileReady,
     employerVerificationAllowed,
     canSubmitForReview,
     autoApprovalAllowed,
+    verificationGate: {
+      headline: verificationGate.headline,
+      detail: verificationGate.detail,
+      actionLabel: verificationGate.actionLabel,
+      href: getAccountUrl("/verification"),
+    },
     employer,
     checklist,
     requirements,

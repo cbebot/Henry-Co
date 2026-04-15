@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getDivisionConfig } from "@henryco/config";
+import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
@@ -21,6 +22,36 @@ import { createAdminSupabase } from "@/lib/supabase";
 export const runtime = "nodejs";
 
 const marketplace = getDivisionConfig("marketplace");
+
+function getVendorVerificationLevel(status: unknown) {
+  const normalized = normalizeVerificationStatus(status);
+  if (normalized === "verified") return "gold";
+  if (normalized === "pending") return "silver";
+  return "bronze";
+}
+
+function getVendorTrustScore(status: unknown) {
+  return applyVerificationTrustControls({
+    verificationStatus: status,
+    baseScore: 82,
+    baseTier: "trusted",
+    verifiedBonus: 0,
+    caps: {
+      none: {
+        maxScore: 54,
+        maxTier: "basic",
+      },
+      pending: {
+        maxScore: 68,
+        maxTier: "verified",
+      },
+      rejected: {
+        maxScore: 34,
+        maxTier: "basic",
+      },
+    },
+  }).score;
+}
 
 function text(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
@@ -1317,6 +1348,16 @@ export async function POST(request: Request) {
           .eq("id", applicationId);
 
         if (decision === "approved") {
+          const { data: ownerProfile } = await admin
+            .from("customer_profiles")
+            .select("verification_status")
+            .eq("id", application.user_id)
+            .maybeSingle();
+          const sharedVerificationStatus = normalizeVerificationStatus(
+            (ownerProfile as { verification_status?: string | null } | null)?.verification_status
+          );
+          const vendorVerificationLevel = getVendorVerificationLevel(sharedVerificationStatus);
+          const vendorTrustScore = getVendorTrustScore(sharedVerificationStatus);
           const { data: vendor } = await admin
             .from("marketplace_vendors")
             .upsert({
@@ -1326,8 +1367,8 @@ export async function POST(request: Request) {
               owner_user_id: application.user_id,
               owner_type: "vendor",
               status: "approved",
-              verification_level: "gold",
-              trust_score: 82,
+              verification_level: vendorVerificationLevel,
+              trust_score: vendorTrustScore,
               response_sla_hours: 6,
               fulfillment_rate: 93,
               dispute_rate: 2.5,
@@ -1335,7 +1376,14 @@ export async function POST(request: Request) {
               followers_count: 0,
               accent: "#4D5F34",
               hero_image_url: snapshot.vendors[1]?.heroImage || null,
-              badges: ["Approved vendor"],
+              badges: [
+                "Approved vendor",
+                sharedVerificationStatus === "verified"
+                  ? "Identity verified"
+                  : sharedVerificationStatus === "pending"
+                    ? "Identity under review"
+                    : "Identity required",
+              ],
               support_email: application.normalized_email,
               support_phone: application.contact_phone,
             } as never, { onConflict: "slug" })

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionUrl } from "@henryco/config";
+import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 
 const admin = () => createAdminSupabase();
@@ -181,9 +182,10 @@ function trustScore(input: {
   completionScoreValue: number;
   profile: Record<string, unknown>;
   documents: Array<Record<string, unknown>>;
+  verificationStatus: unknown;
 }) {
   let score = input.completionScoreValue;
-  if (asText(input.profile.verificationStatus) === "verified") score += 18;
+  if (normalizeVerificationStatus(input.verificationStatus) === "verified") score += 18;
   if (input.documents.some((document) => asText(asObject(document.metadata).documentKind) === "certification")) score += 6;
   if (
     input.documents.some((document) => asText(asObject(document.metadata).documentKind) === "portfolio") ||
@@ -191,7 +193,34 @@ function trustScore(input: {
   ) {
     score += 4;
   }
-  return Math.min(score, 100);
+
+  return applyVerificationTrustControls({
+    verificationStatus: input.verificationStatus,
+    baseScore: score,
+    baseTier:
+      score >= 88
+        ? "premium_verified"
+        : score >= 68
+          ? "trusted"
+          : score >= 45
+            ? "verified"
+            : "basic",
+    verifiedBonus: 0,
+    caps: {
+      none: {
+        maxScore: 54,
+        maxTier: "basic",
+      },
+      pending: {
+        maxScore: 68,
+        maxTier: "verified",
+      },
+      rejected: {
+        maxScore: 36,
+        maxTier: "basic",
+      },
+    },
+  }).score;
 }
 
 function readinessLabel(score: number) {
@@ -376,11 +405,13 @@ export async function getJobsModuleData(userId: string) {
     completionScoreValue: profileCompletion,
     profile,
     documents,
+    verificationStatus: profileRow.verification_status,
   });
   const hasResume = documents.some((document) => asText(asObject(document.metadata).documentKind) === "resume");
   const hasPortfolio =
     documents.some((document) => asText(asObject(document.metadata).documentKind) === "portfolio") ||
     asStringArray(profile.portfolioLinks).length > 0;
+  const verificationStatus = normalizeVerificationStatus(profileRow.verification_status);
   const profileChecklist = [
     {
       id: "identity",
@@ -395,6 +426,13 @@ export async function getJobsModuleData(userId: string) {
       detail: "Headline and summary explain what you do beyond a blank record.",
       complete: Boolean(asNullableText(profile.headline) && asNullableText(profile.summary)),
       href: toJobsUrl("/candidate/profile"),
+    },
+    {
+      id: "verification",
+      label: "Identity verification",
+      detail: "Jobs trust stays capped until your HenryCo account has cleared identity review.",
+      complete: verificationStatus === "verified",
+      href: "/verification",
     },
     {
       id: "proof",
