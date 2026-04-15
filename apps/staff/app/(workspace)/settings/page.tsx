@@ -1,13 +1,23 @@
-import { getHqUrl } from "@henryco/config";
-import { BellRing, LockKeyhole, Radio, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
+import { RouteLiveRefresh } from "@henryco/ui";
 import { requireStaff } from "@/lib/staff-auth";
 import { viewerHasPermission } from "@/lib/roles";
+import OperationalWorkspace from "@/components/OperationalWorkspace";
 import { StaffPageHeader, StaffEmptyState } from "@/components/StaffPrimitives";
-import { StaffWorkspaceLaunchpad } from "@/components/StaffWorkspaceLaunchpad";
+import {
+  filterWorkspaceRecords,
+  getSelectedRecordId,
+  getSettingsWorkspaceData,
+  parseWorkspaceFilters,
+} from "@/lib/workspace-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const viewer = await requireStaff();
   const hasSettings = viewerHasPermission(viewer, "settings.view");
 
@@ -24,49 +34,33 @@ export default async function SettingsPage() {
     );
   }
 
+  const [filters, data] = await Promise.all([
+    parseWorkspaceFilters(searchParams),
+    getSettingsWorkspaceData(viewer),
+  ]);
+  const records = filterWorkspaceRecords(data.records, filters);
+  const selectedRecordId = getSelectedRecordId(records, filters);
+
   return (
     <div className="staff-fade-in">
+      <RouteLiveRefresh intervalMs={12000} />
       <StaffPageHeader
         eyebrow="System"
         title="Settings"
-        description="Platform configuration, notification preferences, and system administration."
+        description="System-grade delivery failures, access-change audit pressure, and configuration-adjacent control work now land here before deeper owner-level admin routes."
       />
-      <StaffWorkspaceLaunchpad
-        readiness="partial"
-        overview="System settings already live inside the owner hub. This page now routes administrators to the real config surfaces instead of showing a passive placeholder."
-        links={[
-          {
-            href: `${getHqUrl("/owner/settings")}`,
-            label: "System overview",
-            description: "Open the live owner settings surface for platform-level configuration.",
-            icon: Settings,
-            readiness: "live",
-          },
-          {
-            href: `${getHqUrl("/owner/settings/comms")}`,
-            label: "Comms settings",
-            description: "Inspect internal messaging and communication posture.",
-            icon: Radio,
-            readiness: "live",
-          },
-          {
-            href: `${getHqUrl("/owner/settings/security")}`,
-            label: "Security settings",
-            description: "Review security controls, trust posture, and hardened owner settings.",
-            icon: LockKeyhole,
-            readiness: "live",
-          },
-          {
-            href: `${getHqUrl("/owner/messaging/alerts")}`,
-            label: "Alert failures",
-            description: "Check owner-side delivery failures and notification health.",
-            icon: BellRing,
-            readiness: "live",
-          },
-        ]}
-        notes={[
-          "This page is still marked partial because some personal preferences are distributed across other apps, but the system-grade settings routes above are live now.",
-        ]}
+
+      <OperationalWorkspace
+        basePath="/settings"
+        filters={filters}
+        queues={data.queues}
+        metrics={data.metrics}
+        insights={data.insights}
+        records={records}
+        selectedRecordId={selectedRecordId}
+        emptyTitle={data.emptyTitle}
+        emptyDescription={data.emptyDescription}
+        focusNote={data.focusNote}
       />
     </div>
   );
