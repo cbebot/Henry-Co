@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { getSharedCookieDomain } from "@henryco/config";
+import {
+  buildSharedCookieHandlers,
+  buildSupabaseCookieOptions,
+  getSharedCookieDomain,
+} from "@henryco/config";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -18,22 +22,8 @@ export async function GET(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookieOptions: cookieDomain
-        ? {
-            domain: cookieDomain,
-            path: "/",
-            sameSite: "lax",
-            secure: true,
-          }
-        : undefined,
-      cookies: {
-        getAll: () => cookieStore.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        },
-      },
+      cookieOptions: buildSupabaseCookieOptions(cookieDomain),
+      cookies: buildSharedCookieHandlers(cookieStore, cookieDomain),
     }
   );
 

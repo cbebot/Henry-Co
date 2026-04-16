@@ -19,11 +19,12 @@ export async function POST() {
       locationSummary: context.locationSummary,
       metadata: {
         source: "account_logout_route",
+        scope: "global",
       },
     });
   }
 
-  const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut({ scope: "global" });
   if (error) {
     logApiError("auth/logout", error);
     return NextResponse.json({ error: USER_FACING_GENERIC }, { status: 500 });

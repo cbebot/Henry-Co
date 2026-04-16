@@ -3,10 +3,7 @@ import { getOptionalEnv } from "@/lib/env";
 
 const SUPABASE_URL = getOptionalEnv("NEXT_PUBLIC_SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY = getOptionalEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") || "";
-const SUPABASE_SERVICE_KEY =
-  getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY") ||
-  getOptionalEnv("NEXT_PUBLIC_SUPABASE_SERVICE_KEY") ||
-  "";
+const SUPABASE_SERVICE_KEY = getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY") || "";
 
 /**
  * @deprecated Use {@link createSupabaseServer} from `@/lib/supabase/server`

@@ -61,28 +61,50 @@ export function sanitizePropertyAuthReturnTarget(
   }
 }
 
+type PropertySharedAccountAuthOptions = {
+  nextPath?: string | null;
+  nextTarget?: string | null;
+  propertyOrigin?: string | null;
+  error?: string | null;
+};
+
+function buildPropertySharedAccountAuthUrl(
+  mode: "login" | "signup",
+  options: PropertySharedAccountAuthOptions = {}
+) {
+  const propertyOrigin = options.propertyOrigin || getPropertyOrigin();
+  const fallbackTarget = new URL(
+    sanitizePropertyPath(options.nextPath, "/"),
+    propertyOrigin
+  ).toString();
+  const nextTarget = sanitizePropertyAuthReturnTarget(
+    options.nextTarget,
+    fallbackTarget,
+    propertyOrigin
+  );
+  const url = new URL(mode === "login" ? "/login" : "/signup", getAccountUrl("/"));
+  url.searchParams.set("next", nextTarget);
+  url.searchParams.set("division", "property");
+  if (options.error) {
+    url.searchParams.set("error", options.error);
+  }
+  return url.toString();
+}
+
 export function getSharedAccountLoginUrl(options: {
   nextPath?: string | null;
-  propertyOrigin: string;
+  nextTarget?: string | null;
+  propertyOrigin?: string | null;
+  error?: string | null;
 }) {
-  const url = new URL("/login", getAccountUrl("/"));
-  url.searchParams.set(
-    "next",
-    new URL(sanitizePropertyPath(options.nextPath, "/"), options.propertyOrigin).toString()
-  );
-  url.searchParams.set("division", "property");
-  return url.toString();
+  return buildPropertySharedAccountAuthUrl("login", options);
 }
 
 export function getSharedAccountSignupUrl(options: {
   nextPath?: string | null;
-  propertyOrigin: string;
+  nextTarget?: string | null;
+  propertyOrigin?: string | null;
+  error?: string | null;
 }) {
-  const url = new URL("/signup", getAccountUrl("/"));
-  url.searchParams.set(
-    "next",
-    new URL(sanitizePropertyPath(options.nextPath, "/"), options.propertyOrigin).toString()
-  );
-  url.searchParams.set("division", "property");
-  return url.toString();
+  return buildPropertySharedAccountAuthUrl("signup", options);
 }

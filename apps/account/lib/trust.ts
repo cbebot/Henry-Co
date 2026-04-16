@@ -35,9 +35,15 @@ export type AccountTrustProfile = {
   flags: {
     jobsPostingEligible: boolean;
     marketplaceEligible: boolean;
+    instructorEligible: boolean;
+    payoutEligible: boolean;
+    propertyPublishingEligible: boolean;
+    staffElevationEligible: boolean;
   };
   signals: {
     emailVerified: boolean;
+    identityVerified: boolean;
+    verificationStatus: SharedVerificationStatus;
     phonePresent: boolean;
     profileCompletion: number;
     accountAgeDays: number;
@@ -45,7 +51,6 @@ export type AccountTrustProfile = {
     suspiciousEvents: number;
     duplicateEmailMatches: number;
     duplicatePhoneMatches: number;
-    verificationStatus: SharedVerificationStatus;
   };
 };
 
@@ -106,8 +111,9 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
   });
 
   const emailVerified = Boolean(authUser?.email_confirmed_at);
-  const phonePresent = Boolean(asNullableText(profile.phone));
   const verificationStatus = normalizeVerificationStatus(profile.verification_status);
+  const identityVerified = verificationStatus === "verified";
+  const phonePresent = Boolean(asNullableText(profile.phone));
   const profileCompletion = calculateProfileCompletion(profile, documents.length);
   const accountAgeDays = authUser?.created_at
     ? Math.max(
@@ -137,6 +143,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
 
   let score = 0;
   if (emailVerified) score += 22;
+  if (identityVerified) score += 10;
   if (phonePresent) score += 14;
   score += Math.round(profileCompletion * 0.22);
   if (accountAgeDays >= 30) score += 12;
@@ -146,6 +153,7 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
   if (settledTransactions >= 1) score += 10;
   if (settledTransactions >= 3) score += 8;
   if (suspiciousEvents === 0) score += 8;
+  if (verificationStatus === "rejected") score -= 8;
   if (overlaps.reviewRequired) score -= 12;
   score = Math.min(score, 100);
 
@@ -204,6 +212,13 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
           : "Identity verification has not been completed yet."
     ,
     emailVerified ? "Email ownership is verified." : null,
+    identityVerified ? "Document-backed identity verification is complete." : null,
+    verificationStatus === "pending"
+      ? "Identity documents are currently under review."
+      : null,
+    verificationStatus === "rejected"
+      ? "Identity verification needs attention before the strongest trust lanes can unlock."
+      : null,
     phonePresent ? "A contact phone is on file." : null,
     profileCompletion >= 48 ? "Profile completion is strong enough for verified workflows." : null,
     accountAgeDays >= 30 ? `Account history spans ${accountAgeDays} days.` : null,
@@ -228,6 +243,9 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
             ? "Complete identity verification so trust-based lanes stop relying on optimistic profile signals."
             : null,
           !emailVerified ? "Verify your email address." : null,
+          !identityVerified
+            ? "Complete identity verification for seller, property, payout, and finance-sensitive workflows."
+            : null,
           !phonePresent ? "Add a usable phone number." : null,
           profileCompletion < 48 ? "Complete more of your profile and add proof documents." : null,
           overlaps.reviewRequired
@@ -267,14 +285,34 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
     nextTier,
     requirements: requirements.filter(Boolean) as string[],
     flags: {
-      jobsPostingEligible: verificationStatus === "verified" && tier !== "basic",
+      jobsPostingEligible:
+        tier !== "basic" &&
+        emailVerified &&
+        identityVerified &&
+        !overlaps.reviewRequired,
       marketplaceEligible:
-        verificationStatus === "verified" &&
+        identityVerified &&
         (tier === "trusted" || tier === "premium_verified") &&
+        !overlaps.reviewRequired,
+      instructorEligible:
+        tier !== "basic" && emailVerified && identityVerified && !overlaps.reviewRequired,
+      payoutEligible:
+        identityVerified &&
+        (tier === "trusted" || tier === "premium_verified") &&
+        suspiciousEvents === 0 &&
+        !overlaps.reviewRequired,
+      propertyPublishingEligible:
+        tier !== "basic" && identityVerified && !overlaps.reviewRequired,
+      staffElevationEligible:
+        identityVerified &&
+        tier === "premium_verified" &&
+        suspiciousEvents === 0 &&
         !overlaps.reviewRequired,
     },
     signals: {
       emailVerified,
+      identityVerified,
+      verificationStatus,
       phonePresent,
       profileCompletion,
       accountAgeDays,
@@ -282,7 +320,6 @@ export async function getAccountTrustProfile(userId: string): Promise<AccountTru
       suspiciousEvents,
       duplicateEmailMatches: overlaps.emailMatches,
       duplicatePhoneMatches: overlaps.phoneMatches,
-      verificationStatus,
     },
   };
 }

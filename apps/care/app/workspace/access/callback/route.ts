@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { getSharedCookieDomain } from "@henryco/config";
+import {
+  buildSharedCookieWriteOptions,
+  buildSupabaseCookieOptions,
+  getSharedCookieDomain,
+} from "@henryco/config";
 import { buildStaffLoginUrl, STAFF_RECOVERY_ROUTE } from "@/lib/auth/routes";
 
 function createRouteSupabase(request: NextRequest, response: NextResponse) {
@@ -10,21 +14,14 @@ function createRouteSupabase(request: NextRequest, response: NextResponse) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookieOptions: cookieDomain
-        ? {
-            domain: cookieDomain,
-            path: "/",
-            sameSite: "lax",
-            secure: true,
-          }
-        : undefined,
+      cookieOptions: buildSupabaseCookieOptions(cookieDomain),
       cookies: {
         getAll() {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, buildSharedCookieWriteOptions(options, cookieDomain));
           });
         },
       },

@@ -52,7 +52,6 @@ function getSupabase() {
   const url = getOptionalEnv("NEXT_PUBLIC_SUPABASE_URL");
   const key =
     getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY") ||
-    getOptionalEnv("NEXT_PUBLIC_SUPABASE_SERVICE_KEY") ||
     getOptionalEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 
   if (!url || !key) {

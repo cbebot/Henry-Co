@@ -5,10 +5,7 @@ function readSupabaseEnv() {
   return {
     url: getOptionalEnv("NEXT_PUBLIC_SUPABASE_URL") || "",
     anonKey: getOptionalEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") || "",
-    serviceKey:
-      getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY") ||
-      getOptionalEnv("NEXT_PUBLIC_SUPABASE_SERVICE_KEY") ||
-      "",
+    serviceKey: getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY") || "",
   };
 }
 

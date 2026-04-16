@@ -3,7 +3,11 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getSharedCookieDomain } from "@henryco/config";
+import {
+  buildSharedCookieHandlers,
+  buildSupabaseCookieOptions,
+  resolveRequestCookieDomain,
+} from "@henryco/config";
 import { buildStaffLoginUrl } from "@/lib/auth/routes";
 import { homeForRole, normalizeRole, type AppRole } from "@/lib/auth/roles";
 import { getOptionalEnv } from "@/lib/env";
@@ -44,33 +48,11 @@ export async function getServerSupabase() {
 
   const cookieStore = await cookies();
   const headerStore = await headers();
-  const cookieDomain = getSharedCookieDomain(
-    headerStore.get("x-forwarded-host") || headerStore.get("host")
-  );
+  const cookieDomain = resolveRequestCookieDomain((name) => headerStore.get(name));
 
   return createServerClient(url, anon, {
-    cookieOptions: cookieDomain
-      ? {
-          domain: cookieDomain,
-          path: "/",
-          sameSite: "lax",
-          secure: true,
-        }
-      : undefined,
-    cookies: {
-      getAll() {
-        return cookieStore.getAll();
-      },
-      setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        } catch {
-          // no-op
-        }
-      },
-    },
+    cookieOptions: buildSupabaseCookieOptions(cookieDomain),
+    cookies: buildSharedCookieHandlers(cookieStore, cookieDomain),
   });
 }
 

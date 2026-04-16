@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import {
+  buildSharedCookieWriteOptions,
   getSharedCookieDomain,
   isRecoverableSupabaseAuthError,
   isSupabaseAuthTokenCookie,
@@ -56,7 +57,7 @@ export async function proxy(request: NextRequest) {
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value, options }) => {
           request.cookies.set(name, value);
-          response.cookies.set(name, value, options);
+          response.cookies.set(name, value, buildSharedCookieWriteOptions(options, cookieDomain));
         });
       },
     },
