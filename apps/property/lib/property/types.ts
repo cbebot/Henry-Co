@@ -264,6 +264,7 @@ export type PropertyListingApplication = {
     url: string;
     kind: string;
   }>;
+  submissionContext: Record<string, string> | null;
   status: "submitted" | "under_review" | "approved" | "rejected";
   reviewNote: string | null;
   createdAt: string;

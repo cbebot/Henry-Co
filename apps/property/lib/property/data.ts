@@ -2,6 +2,8 @@ import "server-only";
 
 import { readPropertyRuntimeSnapshot } from "@/lib/property/store";
 import { getPropertyViewer } from "@/lib/property/auth";
+import { isPropertyListingReviewQueueStatus } from "@/lib/property/governance";
+import { getPropertyListingContactReviewMap } from "@/lib/property/trust";
 
 export async function getPropertySnapshot() {
   return readPropertyRuntimeSnapshot();
@@ -196,16 +198,53 @@ export async function getAgentWorkspaceData() {
 
 export async function getOperationsWorkspaceData() {
   const snapshot = await getPropertySnapshot();
+  const pendingListings = snapshot.listings
+    .filter((item) => isPropertyListingReviewQueueStatus(item.status))
+    .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 
   return {
-    pendingListings: snapshot.listings.filter((item) =>
-      ["submitted", "changes_requested"].includes(item.status)
-    ),
+    pendingListings,
     pendingInquiries: snapshot.inquiries.filter((item) => item.status !== "closed"),
     pendingViewings: snapshot.viewingRequests.filter((item) =>
       ["requested", "scheduled", "confirmed"].includes(item.status)
     ),
+    inspections: snapshot.inspections
+      .filter((item) => ["requested", "scheduled"].includes(item.status))
+      .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1)),
     managedRecords: snapshot.managedRecords,
     campaigns: snapshot.campaigns,
+  };
+}
+
+export async function getPropertyGovernanceWorkspaceData() {
+  const snapshot = await getPropertySnapshot();
+  const queue = snapshot.listings
+    .filter((listing) => isPropertyListingReviewQueueStatus(listing.status))
+    .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
+
+  return {
+    snapshot,
+    queue,
+    applicationsByListingId: new Map(
+      snapshot.applications.map((application) => [application.listingId, application])
+    ),
+    inspectionsByListingId: new Map(
+      snapshot.inspections.map((inspection) => [inspection.listingId, inspection])
+    ),
+    contactReviewMap: await getPropertyListingContactReviewMap(
+      queue.map((listing) => ({
+        id: listing.id,
+        ownerEmail: listing.ownerEmail,
+        ownerPhone: listing.ownerPhone,
+      }))
+    ),
+    policyEventsByListingId: new Map(
+      queue.map((listing) => [
+        listing.id,
+        snapshot.policyEvents
+          .filter((event) => event.listingId === listing.id)
+          .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)),
+      ])
+    ),
   };
 }

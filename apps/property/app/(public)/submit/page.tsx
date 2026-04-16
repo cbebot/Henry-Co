@@ -29,8 +29,8 @@ export default async function SubmitListingPage({
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker="Submit"
-        title="Submit a property for editorial review, trust checks, and premium marketing."
-        description="Owners and agents can submit listings with media, verification documents, and contact context. HenryCo Property reviews the submission before it becomes public."
+        title="Submit a property through the right trust path before HenryCo ever considers publication."
+        description="HenryCo Property routes each submission by service type, authority reality, inspection sensitivity, and account trust. The form adapts to the path, documents upload directly, and every listing stays private until governance clears it."
       />
 
       {params.submitted === "1" ? (
@@ -60,9 +60,9 @@ export default async function SubmitListingPage({
           <div className="property-kicker">Submission standards</div>
           <div className="mt-6 space-y-4">
             {[
-              ["Editorial review", "Weak copy, weak media, and unclear pricing do not go public untouched."],
-              ["Trust checks", "Owner details, verification files, and readiness notes are attached before approval."],
-              ["Managed upsell path", "Relevant submissions can move into HenryCo managed-property operations after review."],
+              ["Service-aware routing", "Residential, commercial, managed, agent-assisted, and inspection-led submissions do not all face the same evidence or review path."],
+              ["Direct trust uploads", "Authority proof, ownership evidence, management instructions, and supporting files upload directly into the review record."],
+              ["Managed vs non-managed clarity", "Managed submissions imply HenryCo operational involvement after acceptance. Non-managed listings can still be reviewed without pretending HenryCo is running them."],
             ].map(([title, body]) => (
               <div key={title} className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5">
                 <div className="text-xl font-semibold text-[var(--property-ink)]">{title}</div>
@@ -75,7 +75,7 @@ export default async function SubmitListingPage({
             <div className="mt-6 rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5 text-sm leading-7 text-[var(--property-ink-soft)]">
               Signed in as{" "}
               <span className="font-semibold text-[var(--property-ink)]">{viewer.user.email}</span>. Your submission
-              will be linked to this HenryCo account for moderation and follow-up.
+              will be linked to this HenryCo account for moderation, identity-aware trust review, and follow-up.
             </div>
           ) : (
             <div className="mt-6">

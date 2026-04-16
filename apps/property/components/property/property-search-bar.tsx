@@ -6,14 +6,49 @@ import { ArrowRight, RefreshCcw } from "lucide-react";
 import type { PropertyArea } from "@/lib/property/types";
 import { PROPERTY_SEARCH_PREFS_KEY, type PropertySearchPrefsPayload } from "@/lib/property/prefs";
 
+type PropertySearchDefaults = {
+  q?: string;
+  kind?: string;
+  area?: string;
+  managed?: string;
+  furnished?: string;
+};
+
 export function PropertySearchBar({
   areas,
   defaults,
   submitLabel = "Search properties",
 }: {
   areas: PropertyArea[];
-  defaults?: { q?: string; kind?: string; area?: string; managed?: string; furnished?: string };
+  defaults?: PropertySearchDefaults;
   submitLabel?: string;
+}) {
+  const defaultsKey = [
+    defaults?.q || "",
+    defaults?.kind || "",
+    defaults?.area || "",
+    defaults?.managed || "",
+    defaults?.furnished || "",
+  ].join("|");
+
+  return (
+    <PropertySearchBarInner
+      key={defaultsKey}
+      areas={areas}
+      defaults={defaults}
+      submitLabel={submitLabel}
+    />
+  );
+}
+
+function PropertySearchBarInner({
+  areas,
+  defaults,
+  submitLabel,
+}: {
+  areas: PropertyArea[];
+  defaults?: PropertySearchDefaults;
+  submitLabel: string;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -45,7 +80,7 @@ export function PropertySearchBar({
     if (typeof window === "undefined") return;
     try {
       if (!next.area) return;
-      const areaName = areas.find((a) => a.slug === next.area)?.name || next.area;
+      const areaName = areas.find((item) => item.slug === next.area)?.name || next.area;
       const payload: PropertySearchPrefsPayload = {
         areaSlug: next.area,
         areaName,
@@ -142,9 +177,9 @@ export function PropertySearchBar({
           className="property-select mt-2 rounded-2xl px-4 py-3"
         >
           <option value="">All areas</option>
-          {areas.map((area) => (
-            <option key={area.id} value={area.slug}>
-              {area.name}
+          {areas.map((item) => (
+            <option key={item.id} value={item.slug}>
+              {item.name}
             </option>
           ))}
         </select>

@@ -32,14 +32,34 @@ import {
   evaluatePropertySubmissionPolicy,
 } from "@/lib/property/policy";
 import {
+  countPropertyUploadFiles,
+  getPropertyIntentOptions,
+  getPropertyKindForService,
+  getPropertySubmissionBlueprint,
+  readPropertySubmissionContext,
+  validatePropertySubmissionBlueprint,
+  validatePropertyUploadFile,
+  type PropertyDocumentKind,
+  type PropertySubmissionBlueprint,
+  type PropertySubmissionContext,
+} from "@/lib/property/submission";
+import {
+  isPropertyListingPublicStatus,
+  resolveListingStatusFromInspectionStatus,
+} from "@/lib/property/governance";
+import {
   getPropertyTrustSignals,
   getPropertyWalletSummary,
 } from "@/lib/property/trust";
 import type {
   PropertyListing,
   PropertyListingApplication,
+  PropertyListingInspection,
+  PropertyListingInspectionStatus,
+  PropertyListingIntent,
   PropertyListingStatus,
   PropertyRole,
+  PropertyListingServiceType,
 } from "@/lib/property/types";
 
 export const runtime = "nodejs";
@@ -165,6 +185,195 @@ function dedupe(values: string[]) {
   return [...new Set(values.filter(Boolean))];
 }
 
+function fileValues(formData: FormData, key: string) {
+  return formData
+    .getAll(key)
+    .filter((value): value is File => value instanceof File && value.size > 0);
+}
+
+const DOCUMENT_UPLOAD_FIELDS = [
+  {
+    field: "ownership_docs",
+    kind: "ownership_proof",
+    customerDocumentType: "property_ownership_proof",
+  },
+  {
+    field: "authority_docs",
+    kind: "authority_proof",
+    customerDocumentType: "property_authority_proof",
+  },
+  {
+    field: "management_docs",
+    kind: "management_authorization",
+    customerDocumentType: "property_management_authorization",
+  },
+  {
+    field: "identity_docs",
+    kind: "identity_evidence",
+    customerDocumentType: "property_identity_evidence",
+  },
+  {
+    field: "supporting_docs",
+    kind: "supporting_document",
+    customerDocumentType: "property_supporting_document",
+  },
+  {
+    field: "inspection_docs",
+    kind: "inspection_evidence",
+    customerDocumentType: "property_inspection_evidence",
+  },
+] as const;
+
+type PropertyDocumentUploadFieldName = (typeof DOCUMENT_UPLOAD_FIELDS)[number]["field"];
+
+type PropertyDocumentRecord = PropertyListingApplication["verificationDocs"][number];
+
+function emptyDocumentKindCounts() {
+  return {
+    ownership_proof: 0,
+    authority_proof: 0,
+    management_authorization: 0,
+    identity_evidence: 0,
+    supporting_document: 0,
+    inspection_evidence: 0,
+  } satisfies Record<PropertyDocumentKind, number>;
+}
+
+function isPropertyDocumentKind(value: string): value is PropertyDocumentKind {
+  return Object.hasOwn(emptyDocumentKindCounts(), value);
+}
+
+function countDocumentKinds(documents: PropertyDocumentRecord[]) {
+  const counts = emptyDocumentKindCounts();
+
+  for (const document of documents) {
+    const kind = String(document.kind || "").trim().toLowerCase();
+    if (isPropertyDocumentKind(kind)) {
+      counts[kind] += 1;
+    } else {
+      counts.supporting_document += 1;
+    }
+  }
+
+  return counts;
+}
+
+function totalDocumentCount(counts: Record<PropertyDocumentKind, number>) {
+  return Object.values(counts).reduce((sum, value) => sum + value, 0);
+}
+
+function mergeVerificationDocs(
+  existing: PropertyDocumentRecord[],
+  incoming: PropertyDocumentRecord[]
+) {
+  return Array.from(
+    new Map(
+      [...existing, ...incoming].map((document) => [
+        `${document.url}::${document.kind}::${document.name}`,
+        document,
+      ])
+    ).values()
+  );
+}
+
+function mergeSubmissionContext(
+  existing: Record<string, string> | null | undefined,
+  incoming: PropertySubmissionContext
+) {
+  return {
+    ...(existing || {}),
+    ...Object.fromEntries(
+      Object.entries(incoming).filter(([, value]) => Boolean(String(value || "").trim()))
+    ),
+  } satisfies Record<string, string>;
+}
+
+function formatSubmissionContextForSupport(
+  blueprint: PropertySubmissionBlueprint,
+  context: Record<string, string>
+) {
+  return blueprint.contextFields
+    .map((field) => {
+      const value = String(context[field.name] || "").trim();
+      if (!value) return null;
+      return `${field.label}: ${value}`;
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+function resolveInspectionDrivenStatus(
+  currentStatus: PropertyListingStatus,
+  policyStatus: PropertyListingStatus,
+  inspectionStatus: PropertyListingInspectionStatus
+) {
+  if (policyStatus === "awaiting_documents" || policyStatus === "awaiting_eligibility") {
+    if (inspectionStatus === "failed") return "blocked" satisfies PropertyListingStatus;
+    if (inspectionStatus === "cancelled") return "changes_requested" satisfies PropertyListingStatus;
+    return policyStatus;
+  }
+
+  return resolveListingStatusFromInspectionStatus(currentStatus || policyStatus, inspectionStatus);
+}
+
+function getInspectionStatusSummary(status: PropertyListingInspectionStatus) {
+  switch (status) {
+    case "requested":
+      return "Inspection requested";
+    case "scheduled":
+      return "Inspection scheduled";
+    case "completed":
+      return "Inspection completed";
+    case "waived":
+      return "Inspection waived";
+    case "failed":
+      return "Inspection failed";
+    case "cancelled":
+      return "Inspection cancelled";
+    default:
+      return status;
+  }
+}
+
+function getDocumentUploadsFromFormData(formData: FormData) {
+  const uploads = DOCUMENT_UPLOAD_FIELDS.map((field) => ({
+    ...field,
+    files: fileValues(formData, field.field),
+  })).filter((entry) => entry.files.length > 0);
+
+  const legacyVerificationDocs = fileValues(formData, "verification_docs");
+  if (legacyVerificationDocs.length > 0) {
+    uploads.push({
+      field: "supporting_docs",
+      kind: "supporting_document",
+      customerDocumentType: "property_supporting_document",
+      files: legacyVerificationDocs,
+    });
+  }
+
+  return uploads;
+}
+
+function validateUploadFiles(files: File[], mode: "media" | "document") {
+  const errors: string[] = [];
+
+  for (const file of files) {
+    const validationError = validatePropertyUploadFile(file, mode);
+    if (validationError) {
+      errors.push(validationError);
+    }
+  }
+
+  return errors;
+}
+
+function toApplicationStatus(status: PropertyListingStatus): PropertyListingApplication["status"] {
+  if (status === "approved" || status === "published") return "approved";
+  if (status === "rejected") return "rejected";
+  if (status === "submitted") return "submitted";
+  return "under_review";
+}
+
 function isListingOwner(
   viewer: Awaited<ReturnType<typeof getPropertyViewer>>,
   listing: PropertyListing
@@ -194,29 +403,40 @@ async function uploadFilesAsMedia(listingId: string, files: File[]) {
 async function uploadFilesAsDocuments(
   listingId: string,
   owner: { userId?: string | null; email?: string | null },
-  files: File[]
+  uploads: Array<{
+    field: PropertyDocumentUploadFieldName;
+    kind: PropertyDocumentKind;
+    customerDocumentType: string;
+    files: File[];
+  }>
 ) {
-  const documents: Array<{ name: string; url: string; kind: string }> = [];
+  const documents: PropertyDocumentRecord[] = [];
 
-  for (const file of files) {
-    const url = await uploadPropertyDocument(listingId, file);
-    documents.push({
-      name: file.name,
-      url,
-      kind: file.type || "document",
-    });
+  for (const upload of uploads) {
+    for (const file of upload.files) {
+      const url = await uploadPropertyDocument(`${listingId}/${upload.kind}`, file);
+      documents.push({
+        name: file.name,
+        url,
+        kind: upload.kind,
+      });
 
-    await appendCustomerDocument({
-      userId: owner.userId,
-      email: owner.email,
-      name: file.name,
-      type: "property_verification",
-      fileUrl: url,
-      fileSize: file.size,
-      mimeType: file.type || null,
-      referenceType: "property_listing",
-      referenceId: listingId,
-    });
+      await appendCustomerDocument({
+        userId: owner.userId,
+        email: owner.email,
+        name: file.name,
+        type: upload.customerDocumentType,
+        fileUrl: url,
+        fileSize: file.size,
+        mimeType: file.type || null,
+        referenceType: "property_listing",
+        referenceId: listingId,
+        metadata: {
+          propertyDocumentKind: upload.kind,
+          propertyUploadField: upload.field,
+        },
+      });
+    }
   }
 
   return documents;
@@ -228,9 +448,11 @@ async function syncListingApplication(input: {
   userId?: string | null;
   normalizedEmail?: string | null;
   applicantName: string;
+  companyName?: string | null;
   phone?: string | null;
   email: string;
-  verificationDocs: Array<{ name: string; url: string; kind: string }>;
+  verificationDocs: PropertyDocumentRecord[];
+  submissionContext?: Record<string, string> | null;
   status?: PropertyListingApplication["status"];
   reviewNote?: string | null;
 }) {
@@ -243,17 +465,76 @@ async function syncListingApplication(input: {
     userId: input.userId ?? existing?.userId ?? null,
     normalizedEmail: input.normalizedEmail ?? existing?.normalizedEmail ?? null,
     applicantName: input.applicantName,
-    companyName: existing?.companyName || null,
+    companyName: input.companyName ?? existing?.companyName ?? null,
     phone: input.phone ?? existing?.phone ?? null,
     email: input.email,
-    verificationDocs: input.verificationDocs.length
-      ? input.verificationDocs
-      : existing?.verificationDocs || [],
+    verificationDocs:
+      input.verificationDocs.length || existing?.verificationDocs?.length
+        ? mergeVerificationDocs(existing?.verificationDocs || [], input.verificationDocs)
+        : [],
+    submissionContext:
+      input.submissionContext && Object.keys(input.submissionContext).length
+        ? mergeSubmissionContext(existing?.submissionContext, input.submissionContext)
+        : existing?.submissionContext || null,
     status: input.status || existing?.status || "submitted",
     reviewNote: input.reviewNote ?? existing?.reviewNote ?? null,
     createdAt: existing?.createdAt || now,
     updatedAt: now,
   });
+}
+
+async function ensureListingInspectionRecord(input: {
+  snapshot: Awaited<ReturnType<typeof getPropertySnapshot>>;
+  listingId: string;
+  requestedByUserId: string | null;
+  policyStatus: PropertyListingStatus;
+  policySummary: string;
+  inspectionNotes?: string | null;
+}) {
+  const existing = input.snapshot.inspections.find((inspection) => inspection.listingId === input.listingId);
+  const nextStatus: PropertyListingInspectionStatus =
+    existing?.status === "scheduled"
+      ? "scheduled"
+      : existing?.status === "completed" ||
+          existing?.status === "waived" ||
+          existing?.status === "failed" ||
+          existing?.status === "cancelled"
+        ? existing.status
+        : "requested";
+
+  const payload: PropertyListingInspection = {
+    id: existing?.id || randomUUID(),
+    listingId: input.listingId,
+    requestedByUserId: existing?.requestedByUserId ?? input.requestedByUserId,
+    status: nextStatus,
+    reason: input.policySummary,
+    scheduledFor: existing?.scheduledFor ?? null,
+    assignedAgentId: existing?.assignedAgentId ?? null,
+    locationNotes: input.inspectionNotes || existing?.locationNotes || null,
+    outcomeNotes: existing?.outcomeNotes ?? null,
+    createdAt: existing?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  await upsertPropertyInspection(payload);
+
+  await appendPropertyPolicyEvent({
+    listingId: input.listingId,
+    actorUserId: existing ? input.requestedByUserId : null,
+    actorRole: existing ? "owner" : "system",
+    eventType: existing ? "inspection_updated" : "inspection_created",
+    fromStatus: null,
+    toStatus: input.policyStatus,
+    reason: existing
+      ? "Inspection requirement remained active after policy re-evaluation."
+      : "Inspection record created from listing policy review.",
+    metadata: {
+      inspectionId: payload.id,
+      inspectionStatus: payload.status,
+    },
+  });
+
+  return payload;
 }
 
 export async function POST(request: Request) {
@@ -543,22 +824,90 @@ export async function POST(request: Request) {
 
         const ownerPhone = text(formData, "owner_phone");
         const baseGallery = listValue(formData, "gallery_urls");
-        const serviceType = (text(formData, "service_type") || "rent") as PropertyListing["serviceType"];
-        const intentType = (text(formData, "listing_intent") || "owner_listed") as PropertyListing["intent"];
+        const serviceType = (
+          text(formData, "service_type") || "rent"
+        ) as PropertyListingServiceType;
+        const requestedIntent = text(formData, "listing_intent") as PropertyListingIntent;
+        const allowedIntentOptions = getPropertyIntentOptions(serviceType);
+        const intentType = allowedIntentOptions.includes(requestedIntent)
+          ? requestedIntent
+          : allowedIntentOptions[0];
+        const blueprint = getPropertySubmissionBlueprint(serviceType, intentType);
+        const submissionContext = readPropertySubmissionContext(formData, blueprint);
+        const uploadCounts = countPropertyUploadFiles(formData);
+        const mediaFiles = fileValues(formData, "media");
+        const documentUploads = getDocumentUploadsFromFormData(formData);
+        const title = text(formData, "title");
+        const summary = text(formData, "summary");
+        const description = text(formData, "description");
+        const locationSlug = text(formData, "location_slug");
+        const locationLabel = text(formData, "location_label");
+        const district = text(formData, "district");
+        const addressLine = text(formData, "address_line");
+        const price = numberValue(formData, "price");
+        const priceInterval = text(formData, "price_interval") || "per year";
+        const validationErrors = [
+          ...validateUploadFiles(mediaFiles, "media"),
+          ...documentUploads.flatMap((upload) => validateUploadFiles(upload.files, "document")),
+          ...validatePropertySubmissionBlueprint({
+            blueprint,
+            context: submissionContext,
+            uploadCounts,
+          }).errors,
+        ];
+
+        if (!ownerPhone) {
+          validationErrors.push("Phone is required so HenryCo can coordinate trust review and inspection.");
+        }
+        if (!title) validationErrors.push("Listing title is required.");
+        if (!summary) validationErrors.push("Short summary is required.");
+        if (!description) validationErrors.push("Description is required.");
+        if (!locationSlug) validationErrors.push("Area is required.");
+        if (!locationLabel) validationErrors.push("Location label is required.");
+        if (!district) validationErrors.push("District is required.");
+        if (!addressLine) validationErrors.push("Address line is required.");
+        if (blueprint.showPriceFields && (!price || price <= 0)) {
+          validationErrors.push("A valid price is required for this submission path.");
+        }
+        if (blueprint.showPriceFields && !priceInterval) {
+          validationErrors.push("Price interval is required for this submission path.");
+        }
+        if (serviceType !== "inspection_request" && baseGallery.length + mediaFiles.length === 0) {
+          validationErrors.push(
+            "Add at least one photo or existing media URL so review does not start from an empty listing shell."
+          );
+        }
+        if (documentUploads.reduce((sum, upload) => sum + upload.files.length, 0) < blueprint.docsMin) {
+          validationErrors.push(
+            `${blueprint.serviceTitle} needs at least ${blueprint.docsMin} supporting document${
+              blueprint.docsMin === 1 ? "" : "s"
+            } before it can enter trust review.`
+          );
+        }
+
+        if (validationErrors.length > 0) {
+          return respondError(request, returnTo, {
+            message: validationErrors[0] || "Property submission requirements were not met.",
+            code: "submission-validation",
+            extra: {
+              errors: validationErrors,
+            },
+          });
+        }
 
         const listing = await createListingFromSubmission({
-          title: text(formData, "title"),
-          summary: text(formData, "summary"),
-          description: text(formData, "description"),
-          kind: (text(formData, "kind") || "rent") as PropertyListing["kind"],
+          title,
+          summary,
+          description,
+          kind: getPropertyKindForService(serviceType),
           serviceType,
           intent: intentType,
-          locationSlug: text(formData, "location_slug"),
-          locationLabel: text(formData, "location_label"),
-          district: text(formData, "district"),
-          addressLine: text(formData, "address_line"),
-          price: numberValue(formData, "price") || 0,
-          priceInterval: text(formData, "price_interval") || "per year",
+          locationSlug,
+          locationLabel,
+          district,
+          addressLine,
+          price: price || 0,
+          priceInterval,
           bedrooms: numberValue(formData, "bedrooms"),
           bathrooms: numberValue(formData, "bathrooms"),
           sizeSqm: numberValue(formData, "size_sqm"),
@@ -566,7 +915,8 @@ export async function POST(request: Request) {
           furnished: bool(formData, "furnished"),
           petFriendly: bool(formData, "pet_friendly"),
           shortletReady: bool(formData, "shortlet_ready"),
-          managedByHenryCo: bool(formData, "managed_by_henryco"),
+          managedByHenryCo:
+            bool(formData, "managed_by_henryco") || serviceType === "managed_property",
           ownerUserId: viewer.user?.id ?? null,
           normalizedEmail: viewer.normalizedEmail ?? ownerEmail,
           ownerName,
@@ -576,13 +926,6 @@ export async function POST(request: Request) {
           amenities: listValue(formData, "amenities"),
           policyVersion: PROPERTY_POLICY_VERSION,
         });
-
-        const mediaFiles = formData
-          .getAll("media")
-          .filter((value): value is File => value instanceof File && value.size > 0);
-        const verificationFiles = formData
-          .getAll("verification_docs")
-          .filter((value): value is File => value instanceof File && value.size > 0);
 
         const uploadedMedia = await uploadFilesAsMedia(listing.id, mediaFiles);
         const gallery = dedupe([...listing.gallery, ...uploadedMedia]);
@@ -604,8 +947,9 @@ export async function POST(request: Request) {
         const verificationDocs = await uploadFilesAsDocuments(
           listing.id,
           { userId: viewer.user?.id ?? null, email: ownerEmail },
-          verificationFiles
+          documentUploads
         );
+        const documentKindCounts = countDocumentKinds(verificationDocs);
 
         const [wallet, trust] = await Promise.all([
           getPropertyWalletSummary(viewer.user.id),
@@ -619,20 +963,44 @@ export async function POST(request: Request) {
           submission: {
             serviceType,
             intent: intentType,
-            kind: updatedListingBase.kind,
+            kind: blueprint.kind,
             price: updatedListingBase.price,
             mediaCount: updatedListingBase.gallery.length,
-            verificationDocCount: verificationDocs.length,
+            verificationDocCount: totalDocumentCount(documentKindCounts),
             locationSlug: updatedListingBase.locationSlug,
+            ownershipProofCount: documentKindCounts.ownership_proof,
+            authorityProofCount: documentKindCounts.authority_proof,
+            managementAuthorizationCount: documentKindCounts.management_authorization,
+            identityEvidenceCount: documentKindCounts.identity_evidence,
+            inspectionEvidenceCount: documentKindCounts.inspection_evidence,
           },
         });
+        let nextStatus = policy.nextStatus;
+        let inspectionRecord: PropertyListingInspection | null = null;
+
+        if (policy.required.requiresInspection) {
+          inspectionRecord = await ensureListingInspectionRecord({
+            snapshot,
+            listingId: listing.id,
+            requestedByUserId: viewer.user.id,
+            policyStatus: policy.nextStatus,
+            policySummary: policy.summary,
+            inspectionNotes: submissionContext.inspection_notes || null,
+          });
+          nextStatus = resolveInspectionDrivenStatus(
+            "submitted",
+            policy.nextStatus,
+            inspectionRecord.status
+          );
+        }
 
         const policyListing: PropertyListing = {
           ...updatedListingBase,
-          status: policy.nextStatus,
+          status: nextStatus,
           verificationNotes: dedupe([policy.summary, ...updatedListingBase.verificationNotes]).slice(0, 8),
           trustBadges: dedupe([
             ...updatedListingBase.trustBadges,
+            serviceType === "managed_property" ? "Managed track" : "Owner or agent governed",
             policy.required.requiresInspection ? "Inspection required" : "Queued for review",
           ]).slice(0, 6),
           riskScore: policy.riskScore,
@@ -649,7 +1017,7 @@ export async function POST(request: Request) {
           actorRole: "owner",
           eventType: "policy_evaluated",
           fromStatus: "submitted",
-          toStatus: policy.nextStatus,
+          toStatus: nextStatus,
           reason: policy.summary,
           metadata: {
             serviceType,
@@ -660,36 +1028,11 @@ export async function POST(request: Request) {
             walletBalanceKobo: wallet.balanceKobo,
             trustTier: trust.tier,
             trustScore: trust.score,
+            verificationStatus: trust.signals.verificationStatus,
+            submissionContext,
+            documentKindCounts,
           },
         });
-
-        if (policy.required.requiresInspection) {
-          const inspectionId = randomUUID();
-          await upsertPropertyInspection({
-            id: inspectionId,
-            listingId: listing.id,
-            requestedByUserId: viewer.user.id,
-            status: policy.nextStatus === "inspection_scheduled" ? "scheduled" : "requested",
-            reason: policy.summary,
-            scheduledFor: null,
-            assignedAgentId: null,
-            locationNotes: null,
-            outcomeNotes: null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-
-          await appendPropertyPolicyEvent({
-            listingId: listing.id,
-            actorUserId: null,
-            actorRole: "system",
-            eventType: "inspection_created",
-            fromStatus: null,
-            toStatus: policy.nextStatus,
-            reason: "Inspection record created on submission.",
-            metadata: { inspectionId },
-          });
-        }
 
         await syncListingApplication({
           snapshot,
@@ -697,12 +1040,20 @@ export async function POST(request: Request) {
           userId: viewer.user?.id ?? null,
           normalizedEmail: ownerEmail,
           applicantName: ownerName,
+          companyName: submissionContext.agency_name || null,
           phone: ownerPhone,
           email: ownerEmail,
           verificationDocs,
-          status: policy.nextStatus === "rejected" ? "rejected" : "submitted",
+          submissionContext:
+            Object.keys(submissionContext).length > 0 ? submissionContext : null,
+          status: toApplicationStatus(nextStatus),
           reviewNote: policy.userGuidance.headline,
         });
+
+        const supportContextBlock = formatSubmissionContextForSupport(
+          blueprint,
+          Object.keys(submissionContext).length > 0 ? submissionContext : {}
+        );
 
         await appendCustomerActivity({
           userId: viewer.user?.id ?? null,
@@ -710,11 +1061,16 @@ export async function POST(request: Request) {
           activityType: "property_listing_submitted",
           title: `Submitted ${listing.title}`,
           description: listing.summary,
-          status: "submitted",
+          status: nextStatus,
           referenceType: "property_listing",
           referenceId: listing.id,
           actionUrl: getSharedAccountPropertyPath("listings"),
-          metadata: { listingId: listing.id },
+          metadata: {
+            listingId: listing.id,
+            serviceType,
+            intent: intentType,
+            status: nextStatus,
+          },
         });
 
         await createSupportThread({
@@ -724,7 +1080,13 @@ export async function POST(request: Request) {
           category: "listing_submission",
           referenceType: "property_listing",
           referenceId: listing.id,
-          initialMessage: `${listing.summary}\n\n${listing.description}`,
+          initialMessage: [
+            listing.summary,
+            listing.description,
+            supportContextBlock ? `Submission context\n${supportContextBlock}` : null,
+          ]
+            .filter(Boolean)
+            .join("\n\n"),
         });
 
         await sendPropertyEvent({
@@ -737,7 +1099,7 @@ export async function POST(request: Request) {
           entityId: listing.id,
           payload: {
             listingTitle: listing.title,
-            policyStatus: policy.nextStatus,
+            policyStatus: nextStatus,
             policySummary: policy.summary,
           },
         });
@@ -749,13 +1111,15 @@ export async function POST(request: Request) {
           entityId: listing.id,
           payload: {
             listingTitle: listing.title,
-            note: `New listing submission from ${ownerName} entered policy state: ${policy.nextStatus.replaceAll("_", " ")}.`,
+            note: `New listing submission from ${ownerName} entered policy state: ${nextStatus.replaceAll("_", " ")}${
+              inspectionRecord ? ` with ${getInspectionStatusSummary(inspectionRecord.status).toLowerCase()}.` : "."
+            }`,
           },
         });
 
         revalidatePropertyRoutes(listing.slug);
         let submitRedirect = withQuery("/submit", "submitted", "1");
-        submitRedirect = withQuery(submitRedirect, "policy", policy.nextStatus);
+        submitRedirect = withQuery(submitRedirect, "policy", nextStatus);
         if (trust.signals.verificationStatus !== "verified") {
           submitRedirect = withQuery(submitRedirect, "verification", trust.signals.verificationStatus);
         }
@@ -766,7 +1130,7 @@ export async function POST(request: Request) {
             listingId: listing.id,
             listingSlug: listing.slug,
             listingTitle: listing.title,
-            policyStatus: policy.nextStatus,
+            policyStatus: nextStatus,
             policySummary: policy.summary,
             nextStepLabel: policy.userGuidance.nextStepLabel,
             guidanceHeadline: policy.userGuidance.headline,
@@ -794,17 +1158,34 @@ export async function POST(request: Request) {
         ]);
         if (!canEdit) return redirectTo(request, "/owner");
 
+        const existingApplication = snapshot.applications.find((item) => item.listingId === listing.id);
+        const blueprint = getPropertySubmissionBlueprint(listing.serviceType, listing.intent);
+        const currentContext = readPropertySubmissionContext(formData, blueprint);
+        const mergedSubmissionContext = mergeSubmissionContext(
+          existingApplication?.submissionContext,
+          currentContext
+        );
         const extraGallery = listValue(formData, "gallery_urls");
-        const mediaFiles = formData
-          .getAll("media")
-          .filter((value): value is File => value instanceof File && value.size > 0);
-        const verificationFiles = formData
-          .getAll("verification_docs")
-          .filter((value): value is File => value instanceof File && value.size > 0);
+        const mediaFiles = fileValues(formData, "media");
+        const documentUploads = getDocumentUploadsFromFormData(formData);
+        const uploadErrors = [
+          ...validateUploadFiles(mediaFiles, "media"),
+          ...documentUploads.flatMap((upload) => validateUploadFiles(upload.files, "document")),
+        ];
+        if (uploadErrors.length > 0) {
+          return respondError(request, returnTo, {
+            message: uploadErrors[0] || "Property files could not be processed.",
+            code: "upload-validation",
+            extra: {
+              errors: uploadErrors,
+            },
+          });
+        }
+
         const uploadedMedia = await uploadFilesAsMedia(listing.id, mediaFiles);
         const gallery = dedupe([...listing.gallery, ...extraGallery, ...uploadedMedia]);
 
-        const isLive = ["published", "approved"].includes(listing.status);
+        const isLive = isPropertyListingPublicStatus(listing.status);
 
         const updatedListing: PropertyListing = {
           ...listing,
@@ -819,7 +1200,8 @@ export async function POST(request: Request) {
           furnished: bool(formData, "furnished"),
           petFriendly: bool(formData, "pet_friendly"),
           shortletReady: bool(formData, "shortlet_ready"),
-          managedByHenryCo: bool(formData, "managed_by_henryco"),
+          managedByHenryCo:
+            bool(formData, "managed_by_henryco") || listing.serviceType === "managed_property",
           amenities: listValue(formData, "amenities").length
             ? listValue(formData, "amenities")
             : listing.amenities,
@@ -830,19 +1212,16 @@ export async function POST(request: Request) {
           verificationNotes: dedupe(["Listing updated", ...listing.verificationNotes]).slice(0, 8),
         };
 
-        await upsertPropertyListing(updatedListing);
-
         const verificationDocs = await uploadFilesAsDocuments(
           listing.id,
           { userId: viewer.user.id, email: viewer.normalizedEmail || listing.ownerEmail },
-          verificationFiles
+          documentUploads
         );
-
-        const existingApplication = snapshot.applications.find((item) => item.listingId === listing.id);
-        const mergedDocUrls = dedupe([
-          ...(existingApplication?.verificationDocs ?? []).map((doc) => doc.url),
-          ...verificationDocs.map((doc) => doc.url),
-        ]);
+        const mergedVerificationDocs = mergeVerificationDocs(
+          existingApplication?.verificationDocs || [],
+          verificationDocs
+        );
+        const documentKindCounts = countDocumentKinds(mergedVerificationDocs);
 
         const [wallet, trust] = await Promise.all([
           getPropertyWalletSummary(viewer.user.id),
@@ -859,12 +1238,48 @@ export async function POST(request: Request) {
             kind: updatedListing.kind,
             price: updatedListing.price,
             mediaCount: updatedListing.gallery.length,
-            verificationDocCount: mergedDocUrls.length,
+            verificationDocCount: totalDocumentCount(documentKindCounts),
             locationSlug: updatedListing.locationSlug,
+            ownershipProofCount: documentKindCounts.ownership_proof,
+            authorityProofCount: documentKindCounts.authority_proof,
+            managementAuthorizationCount: documentKindCounts.management_authorization,
+            identityEvidenceCount: documentKindCounts.identity_evidence,
+            inspectionEvidenceCount: documentKindCounts.inspection_evidence,
           },
         });
 
-        const nextStatus: PropertyListingStatus = isLive ? listing.status : policy.nextStatus;
+        const activeInspection = snapshot.inspections.find(
+          (inspection) =>
+            inspection.listingId === listing.id &&
+            ["requested", "scheduled", "completed", "waived", "failed", "cancelled"].includes(
+              inspection.status
+            )
+        );
+
+        let nextStatus: PropertyListingStatus = isLive ? listing.status : policy.nextStatus;
+        let inspectionRecord: PropertyListingInspection | null = null;
+
+        if (!isLive && activeInspection) {
+          nextStatus = resolveInspectionDrivenStatus(
+            listing.status,
+            policy.nextStatus,
+            activeInspection.status
+          );
+        } else if (!isLive && policy.required.requiresInspection) {
+          inspectionRecord = await ensureListingInspectionRecord({
+            snapshot,
+            listingId: listing.id,
+            requestedByUserId: viewer.user.id,
+            policyStatus: policy.nextStatus,
+            policySummary: policy.summary,
+            inspectionNotes: mergedSubmissionContext.inspection_notes || null,
+          });
+          nextStatus = resolveInspectionDrivenStatus(
+            listing.status,
+            policy.nextStatus,
+            inspectionRecord.status
+          );
+        }
 
         await upsertPropertyListing({
           ...updatedListing,
@@ -872,6 +1287,7 @@ export async function POST(request: Request) {
           verificationNotes: dedupe([policy.summary, ...updatedListing.verificationNotes]).slice(0, 8),
           trustBadges: dedupe([
             ...updatedListing.trustBadges,
+            updatedListing.managedByHenryCo ? "Managed track" : "Owner or agent governed",
             policy.required.requiresInspection ? "Inspection required" : "Queued for review",
           ]).slice(0, 6),
           riskScore: policy.riskScore,
@@ -888,7 +1304,13 @@ export async function POST(request: Request) {
           fromStatus: listing.status,
           toStatus: nextStatus,
           reason: "Listing updated and policy re-evaluated.",
-          metadata: { policySummary: policy.summary },
+          metadata: {
+            policySummary: policy.summary,
+            verificationStatus: trust.signals.verificationStatus,
+            submissionContext: mergedSubmissionContext,
+            documentKindCounts,
+            inspectionId: inspectionRecord?.id || activeInspection?.id || null,
+          },
         });
 
         await syncListingApplication({
@@ -897,10 +1319,14 @@ export async function POST(request: Request) {
           userId: viewer.user.id,
           normalizedEmail: viewer.normalizedEmail || listing.normalizedEmail,
           applicantName: listing.ownerName || viewer.user.fullName || "Listing owner",
+          companyName:
+            mergedSubmissionContext.agency_name || existingApplication?.companyName || null,
           phone: listing.ownerPhone,
           email: listing.ownerEmail || viewer.user.email || "",
           verificationDocs,
-          status: "submitted",
+          submissionContext:
+            Object.keys(mergedSubmissionContext).length > 0 ? mergedSubmissionContext : null,
+          status: toApplicationStatus(nextStatus),
           reviewNote: policy.userGuidance.headline,
         });
 
@@ -934,7 +1360,14 @@ export async function POST(request: Request) {
         }
 
         revalidatePropertyRoutes(listing.slug);
-        return redirectTo(request, withQuery(returnTo, "updated", "1"));
+        return respondSuccess(request, withQuery(returnTo, "updated", "1"), {
+          message: "Listing updated and re-evaluated against HenryCo Property trust rules.",
+          listing: {
+            listingId: listing.id,
+            status: nextStatus,
+            policySummary: policy.summary,
+          },
+        });
       }
 
       case "listing_decision": {
@@ -960,6 +1393,41 @@ export async function POST(request: Request) {
           decision === "escalated"
             ? decision
             : "requires_correction";
+        const openInspection = snapshot.inspections.find(
+          (inspection) =>
+            inspection.listingId === listing.id && ["requested", "scheduled"].includes(inspection.status)
+        );
+
+        if (
+          ["requires_correction", "changes_requested", "rejected", "blocked", "escalated"].includes(
+            status
+          ) &&
+          !note
+        ) {
+          return respondError(request, returnTo, {
+            message: "A note is required when a listing is being held, corrected, rejected, blocked, or escalated.",
+            code: "decision-note-required",
+          });
+        }
+
+        if ((status === "published" || status === "approved") && openInspection) {
+          return respondError(request, returnTo, {
+            message:
+              "Finish or waive the active inspection before publishing this listing. Publication should not skip an open trust check.",
+            code: "inspection-still-open",
+          });
+        }
+
+        if (
+          (status === "published" || status === "approved") &&
+          ["awaiting_documents", "awaiting_eligibility"].includes(listing.status)
+        ) {
+          return respondError(request, returnTo, {
+            message:
+              "Resolve the current document or eligibility hold before forcing publication. The trust gate is still incomplete.",
+            code: "trust-gate-incomplete",
+          });
+        }
 
         const updatedListing: PropertyListing = {
           ...listing,
@@ -1038,6 +1506,150 @@ export async function POST(request: Request) {
 
         revalidatePropertyRoutes(listing.slug);
         return redirectTo(request, withQuery(returnTo, "decision", status));
+      }
+
+      case "inspection_update": {
+        if (
+          !requireRoles(viewer, [
+            "managed_ops",
+            "relationship_manager",
+            "listing_manager",
+            "moderation",
+            "property_admin",
+          ])
+        ) {
+          return redirectTo(request, "/account");
+        }
+
+        const inspectionId = text(formData, "inspection_id");
+        const listingId = text(formData, "listing_id");
+        const existingInspection =
+          snapshot.inspections.find((item) => item.id === inspectionId) ||
+          snapshot.inspections.find((item) => item.listingId === listingId);
+        const listing = snapshot.listings.find(
+          (item) => item.id === (existingInspection?.listingId || listingId)
+        );
+        if (!listing) {
+          return respondError(request, returnTo, {
+            message: "Associated listing could not be found.",
+            code: "missing-listing",
+          });
+        }
+
+        const inspection: PropertyListingInspection =
+          existingInspection || {
+            id: randomUUID(),
+            listingId: listing.id,
+            requestedByUserId: viewer.user?.id ?? null,
+            status: "requested",
+            reason: "Inspection workflow created from staff review.",
+            scheduledFor: null,
+            assignedAgentId: null,
+            locationNotes: null,
+            outcomeNotes: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+
+        const nextInspectionStatus = (
+          text(formData, "status") || inspection.status
+        ) as PropertyListingInspectionStatus;
+        const scheduledFor = localToIso(text(formData, "scheduled_for")) || inspection.scheduledFor;
+        const locationNotes = text(formData, "location_notes") || inspection.locationNotes || null;
+        const outcomeNotes = text(formData, "outcome_notes") || inspection.outcomeNotes || null;
+        const reason =
+          text(formData, "reason") ||
+          outcomeNotes ||
+          locationNotes ||
+          inspection.reason ||
+          "Inspection workflow updated.";
+
+        const updatedInspection: PropertyListingInspection = {
+          ...inspection,
+          status: nextInspectionStatus,
+          scheduledFor,
+          assignedAgentId: text(formData, "assigned_agent_id") || inspection.assignedAgentId,
+          locationNotes,
+          outcomeNotes,
+          reason,
+          updatedAt: new Date().toISOString(),
+        };
+
+        await upsertPropertyInspection(updatedInspection);
+
+        const nextListingStatus = isPropertyListingPublicStatus(listing.status)
+          ? listing.status
+          : resolveInspectionDrivenStatus(listing.status, listing.status, nextInspectionStatus);
+
+        if (nextListingStatus !== listing.status) {
+          await upsertPropertyListing({
+            ...listing,
+            status: nextListingStatus,
+            visibility: isPropertyListingPublicStatus(nextListingStatus) ? "public" : "private",
+            verificationNotes: dedupe([
+              `${getInspectionStatusSummary(nextInspectionStatus)} by HenryCo Property`,
+              ...listing.verificationNotes,
+            ]).slice(0, 8),
+          });
+        }
+
+        await appendPropertyPolicyEvent({
+          listingId: listing.id,
+          actorUserId: viewer.user?.id ?? null,
+          actorRole: "staff",
+          eventType: "inspection_updated",
+          fromStatus: listing.status,
+          toStatus: nextListingStatus,
+          reason,
+          metadata: {
+            inspectionId: updatedInspection.id,
+            inspectionStatus: nextInspectionStatus,
+            scheduledFor: updatedInspection.scheduledFor,
+            assignedAgentId: updatedInspection.assignedAgentId,
+          },
+        });
+
+        const existingApplication = snapshot.applications.find((item) => item.listingId === listing.id);
+        if (existingApplication) {
+          await upsertPropertyApplication({
+            ...existingApplication,
+            status:
+              nextInspectionStatus === "completed" || nextInspectionStatus === "waived"
+                ? "under_review"
+                : nextInspectionStatus === "failed"
+                  ? "rejected"
+                  : existingApplication.status,
+            reviewNote: reason,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+
+        await appendCustomerActivity({
+          userId: listing.ownerUserId,
+          email: listing.ownerEmail,
+          activityType: "property_inspection_updated",
+          title: `${listing.title} inspection updated`,
+          description: reason,
+          status: nextInspectionStatus,
+          referenceType: "property_listing",
+          referenceId: listing.id,
+          actionUrl: getSharedAccountPropertyPath("listings"),
+          metadata: {
+            inspectionId: updatedInspection.id,
+            inspectionStatus: nextInspectionStatus,
+          },
+        });
+
+        revalidatePropertyRoutes(listing.slug);
+        return respondSuccess(request, withQuery(returnTo, "inspection", nextInspectionStatus), {
+          message: "Inspection workflow updated.",
+          inspection: {
+            inspectionId: updatedInspection.id,
+            listingId: listing.id,
+            status: nextInspectionStatus,
+            listingStatus: nextListingStatus,
+          },
+        });
       }
 
       case "inquiry_update": {

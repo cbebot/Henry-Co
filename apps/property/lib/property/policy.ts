@@ -40,6 +40,11 @@ export type PropertyPolicyContext = {
     mediaCount: number;
     verificationDocCount: number;
     locationSlug: string;
+    ownershipProofCount: number;
+    authorityProofCount: number;
+    managementAuthorizationCount: number;
+    identityEvidenceCount: number;
+    inspectionEvidenceCount: number;
   };
 };
 
@@ -124,8 +129,26 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
 
   const flags: string[] = [];
   let risk = baseRiskForService(ctx.submission.serviceType);
+  const requiresAuthorityProof =
+    ctx.submission.intent === "agent_listed" || ctx.submission.intent === "agent_assisted";
+  const requiresManagementAuthorization =
+    ctx.submission.serviceType === "managed_property" ||
+    ctx.submission.intent === "managed_property";
+  const requiresIdentityApproval =
+    ctx.submission.serviceType === "sale" ||
+    ctx.submission.serviceType === "land" ||
+    ctx.submission.serviceType === "commercial" ||
+    ctx.submission.serviceType === "managed_property" ||
+    ctx.submission.serviceType === "verified_property" ||
+    ctx.submission.intent === "agent_listed" ||
+    ctx.submission.intent === "agent_assisted" ||
+    isHighValue(ctx.submission.price);
+  const verificationGate = getVerificationGateCopy(
+    ctx.trust.signals.verificationStatus,
+    "verified"
+  );
 
-  if (ctx.submission.intent === "agent_listed" || ctx.submission.intent === "agent_assisted") {
+  if (requiresAuthorityProof) {
     risk += 6;
     flags.push("agent_flow");
   }
@@ -176,35 +199,64 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
     flags.push("missing_docs");
   }
 
+  if (requiresAuthorityProof && ctx.submission.authorityProofCount === 0) {
+    risk += 10;
+    flags.push("missing_authority_proof");
+  }
+
+  if (
+    !requiresAuthorityProof &&
+    ctx.submission.serviceType !== "inspection_request" &&
+    ctx.submission.ownershipProofCount === 0 &&
+    ctx.submission.verificationDocCount === 0
+  ) {
+    risk += 8;
+    flags.push("missing_primary_authority");
+  }
+
+  if (requiresManagementAuthorization && ctx.submission.managementAuthorizationCount === 0) {
+    risk += 10;
+    flags.push("missing_management_authorization");
+  }
+
   if (ctx.submission.intent === "inspection_request") {
     flags.push("inspection_requested_by_user");
+  }
+
+  if (Number(ctx.wallet.balanceKobo || 0) > 0) {
+    risk -= 2;
   }
 
   risk = clampScore(risk);
 
   const requiresManualReview = true; // Property always has editorial review rails.
-  const requiresEnhancedKyc = risk >= 85 || ctx.submission.serviceType === "land";
+  const requiresEnhancedKyc =
+    risk >= 85 ||
+    ctx.submission.serviceType === "land" ||
+    (requiresIdentityApproval && ctx.trust.signals.verificationStatus !== "verified" && risk >= 78);
 
   const requiresInspection =
     ctx.submission.intent === "inspection_request" ||
     ctx.submission.serviceType === "managed_property" ||
     ctx.submission.serviceType === "verified_property" ||
-    risk >= 78;
+    ctx.submission.serviceType === "land" ||
+    risk >= 76;
 
-  // Wallet floor: allow immediate posting only for mature accounts, else require inspection / review.
-  const walletFloorKobo = 10_000 * 100;
-  const hasWalletFloor = Number(ctx.wallet.balanceKobo || 0) >= walletFloorKobo;
-  const isTrusted =
-    ctx.trust.tier === "trusted" || ctx.trust.tier === "premium_verified";
-
-  const allowsWalletBypassViaInspection = true;
-  const walletGateSatisfied = hasWalletFloor || isTrusted || requiresInspection;
-  const identityGateSatisfied = !requiresIdentityApproval || ctx.trust.signals.verificationStatus === "verified";
+  const identityGateSatisfied = ctx.trust.signals.verificationStatus === "verified";
+  const documentGateSatisfied =
+    ctx.submission.verificationDocCount >= baseDocs.verificationDocsMin &&
+    (!requiresAuthorityProof || ctx.submission.authorityProofCount > 0) &&
+    (!requiresManagementAuthorization || ctx.submission.managementAuthorizationCount > 0);
+  const eligibilityHoldRequired =
+    (requiresIdentityApproval && !identityGateSatisfied) ||
+    ctx.trust.signals.duplicateEmailMatches > 0 ||
+    ctx.trust.signals.duplicatePhoneMatches > 0 ||
+    (ctx.trust.signals.suspiciousEvents > 0 && requiresIdentityApproval);
 
   let nextStatus: PropertyListingStatus = "under_review";
 
-  if (!identityGateSatisfied || !walletGateSatisfied) nextStatus = "awaiting_eligibility";
-  else if (ctx.submission.verificationDocCount < baseDocs.verificationDocsMin) nextStatus = "awaiting_documents";
+  if (eligibilityHoldRequired) nextStatus = "awaiting_eligibility";
+  else if (!documentGateSatisfied) nextStatus = "awaiting_documents";
   else if (requiresInspection) nextStatus = "inspection_requested";
   else nextStatus = "under_review";
 
@@ -216,14 +268,25 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
 
   const bullets: string[] = [];
   bullets.push("Your submission is private until HenryCo approves it for publication.");
-  if (!identityGateSatisfied) {
-    bullets.push(`${verificationGate.detail} Open account verification before expecting publication review to continue.`);
+  if (requiresIdentityApproval && !identityGateSatisfied) {
+    bullets.push(
+      `${verificationGate.detail} Open account verification before expecting publication review to continue.`
+    );
   }
-  if (!hasWalletFloor && !isTrusted) {
-    bullets.push("Eligibility: this listing requires either a N10,000 verified balance or an inspection workflow.");
+  if (!documentGateSatisfied && baseDocs.verificationDocsMin > 0) {
+    bullets.push(
+      `Documents: ${baseDocs.verificationDocsMin}+ proof files are expected for this listing path before public review can clear.`
+    );
   }
-  if (baseDocs.verificationDocsMin > 0) {
-    bullets.push(`Documents: ${baseDocs.verificationDocsMin}+ proof files may be required based on listing type.`);
+  if (requiresAuthorityProof && ctx.submission.authorityProofCount === 0) {
+    bullets.push(
+      "Authority proof: broker or agent-led submissions stay held until HenryCo can see a mandate or equivalent approval."
+    );
+  }
+  if (requiresManagementAuthorization && ctx.submission.managementAuthorizationCount === 0) {
+    bullets.push(
+      "Managed listing authorization: HenryCo needs a management instruction or equivalent written authority before this can move as a managed listing."
+    );
   }
   if (requiresInspection) {
     bullets.push("Inspection: HenryCo may send an agent to verify the property and location before it goes live.");
@@ -234,10 +297,13 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
   if (requiresEnhancedKyc) {
     bullets.push("Enhanced verification: higher-risk listings may require extra identity or ownership proof.");
   }
+  if (ctx.submission.serviceType === "managed_property") {
+    bullets.push("Managed vs non-managed: managed listings only move forward when HenryCo can support the operating handoff, not just publish the listing.");
+  }
 
   const headline =
     nextStatus === "awaiting_eligibility"
-      ? !identityGateSatisfied
+      ? requiresIdentityApproval && !identityGateSatisfied
         ? verificationGate.headline
         : "Eligibility check required"
       : nextStatus === "awaiting_documents"
@@ -248,9 +314,9 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
 
   const nextStepLabel =
     nextStatus === "awaiting_eligibility"
-      ? !identityGateSatisfied
+      ? requiresIdentityApproval && !identityGateSatisfied
         ? verificationGate.actionLabel
-        : "Unlock eligibility"
+        : "Resolve eligibility"
       : nextStatus === "awaiting_documents"
         ? "Upload documents"
         : nextStatus === "inspection_requested"
@@ -266,8 +332,8 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
       requiresInspection,
       requiresEnhancedKyc,
       requiresManualReview,
-      requiresWalletFloorKobo: walletFloorKobo,
-      allowsWalletBypassViaInspection,
+      requiresWalletFloorKobo: 0,
+      allowsWalletBypassViaInspection: false,
     },
     nextStatus,
     summary,
