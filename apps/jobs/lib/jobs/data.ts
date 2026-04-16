@@ -4,6 +4,7 @@ import { applyVerificationTrustControls, normalizeVerificationStatus } from "@he
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail } from "@/lib/env";
 import { DEFAULT_PIPELINE, JOBS_DIFFERENTIATORS, JOBS_STAGE_ORDER } from "@/lib/jobs/content";
+import { deriveJobTrustHighlights } from "@/lib/jobs/trust";
 import type {
   ApplicationJourney,
   ApplicationStageStep,
@@ -716,7 +717,25 @@ function buildJobPost(input: {
     employerResponseSlaHours: asNullableNumber(
       content.employerResponseSlaHours ?? input.employer?.responseSlaHours ?? null
     ),
-    trustHighlights: asStringArray(content.trustHighlights),
+    trustHighlights:
+      asStringArray(content.trustHighlights).length > 0
+        ? asStringArray(content.trustHighlights)
+        : deriveJobTrustHighlights({
+            employerVerificationStatus: asString(
+              content.employerVerification || input.employer?.verificationStatus,
+              "pending"
+            ),
+            employerTrustScore: asNumber(
+              content.employerTrustScore,
+              input.employer?.trustScore ?? 54
+            ),
+            responseSlaHours: asNullableNumber(
+              content.employerResponseSlaHours ?? input.employer?.responseSlaHours ?? null
+            ),
+            employerType: asBoolean(content.internal, input.employer?.employerType === "internal")
+              ? "internal"
+              : "external",
+          }),
     pipelineStages:
       asStringArray(content.pipelineStages).length > 0 ? asStringArray(content.pipelineStages) : [...DEFAULT_PIPELINE],
     postedAt: asString(content.postedAt || row.created_at, new Date().toISOString()),

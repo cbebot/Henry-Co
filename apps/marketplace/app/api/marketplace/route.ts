@@ -15,6 +15,7 @@ import {
   getAutoReleaseAt,
   titleCaseMarketplaceValue,
 } from "@/lib/marketplace/governance";
+import { checkReviewAuthenticity, syncVendorTrustScore } from "@/lib/marketplace/trust";
 import { logMarketplaceAction, sendMarketplaceEvent } from "@/lib/marketplace/notifications";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -30,23 +31,33 @@ function getVendorVerificationLevel(status: unknown) {
   return "bronze";
 }
 
-function getVendorTrustScore(status: unknown) {
+/**
+ * Initial trust score for a newly approved vendor.
+ * Uses verification status to set a reasonable starting point —
+ * the score will be recalculated from real behavioral signals by
+ * syncVendorTrustScore() as the vendor operates.
+ *
+ * Base: 58 (new vendor starting point), not 82 — a new seller has
+ * no track record yet and should earn higher trust through behavior.
+ * Verified identity allows a slightly higher initial score.
+ */
+function getInitialVendorTrustScore(status: unknown) {
   return applyVerificationTrustControls({
     verificationStatus: status,
-    baseScore: 82,
-    baseTier: "trusted",
-    verifiedBonus: 0,
+    baseScore: 58,
+    baseTier: "basic_verified" as never,
+    verifiedBonus: 8,
     caps: {
       none: {
-        maxScore: 54,
+        maxScore: 48,
         maxTier: "basic",
       },
       pending: {
-        maxScore: 68,
+        maxScore: 60,
         maxTier: "verified",
       },
       rejected: {
-        maxScore: 34,
+        maxScore: 30,
         maxTier: "basic",
       },
     },
@@ -985,6 +996,10 @@ export async function POST(request: Request) {
         if (!product) return redirectTo(request, "/account/reviews?error=missing-product");
 
         const rating = Math.min(5, Math.max(1, numberValue(formData, "rating", 5)));
+        const reviewTitle = text(formData, "title");
+        const reviewBody = text(formData, "body");
+
+        // Determine verified-purchase status before running authenticity check
         const { data: orderItems } = await admin
           .from("marketplace_order_items")
           .select("id, order_id, vendor_id")
@@ -1010,21 +1025,55 @@ export async function POST(request: Request) {
         const verifiedItem = (orderItems ?? []).find((item: Record<string, unknown>) =>
           verifiedOrderIdSet.has(String(item.order_id))
         );
+        const isVerifiedPurchase = Boolean(verifiedItem?.id);
+
+        // ---- Authenticity checks (duplicate guard, rate limit, content safety)
+        const authenticityCheck = await checkReviewAuthenticity({
+          userId: viewer.user.id,
+          productId: product.id,
+          title: reviewTitle,
+          body: reviewBody,
+          isVerifiedPurchase,
+        });
+
+        if (!authenticityCheck.allowed) {
+          if (json) {
+            return NextResponse.json(
+              { error: authenticityCheck.blockReason ?? "Review not accepted." },
+              { status: 422 }
+            );
+          }
+          return redirectTo(
+            request,
+            `/account/reviews?error=review-blocked&reason=${encodeURIComponent(
+              authenticityCheck.blockReason ?? "review-not-accepted"
+            )}`
+          );
+        }
+
+        // Status: verified purchases publish immediately; unverified go to pending.
+        // Content flagged for medium-severity goes to pending regardless.
+        const reviewStatus =
+          isVerifiedPurchase && !authenticityCheck.requiresModeration
+            ? "published"
+            : "pending";
+
+        const vendorId =
+          verifiedItem?.vendor_id
+            ? String(verifiedItem.vendor_id)
+            : snapshot.vendors.find((item) => item.slug === product.vendorSlug)?.id ?? null;
 
         const reviewPayload = {
           order_item_id: verifiedItem?.id ? String(verifiedItem.id) : null,
           product_id: product.id,
-          vendor_id:
-            verifiedItem?.vendor_id
-              ? String(verifiedItem.vendor_id)
-              : snapshot.vendors.find((item) => item.slug === product.vendorSlug)?.id ?? null,
+          vendor_id: vendorId,
           user_id: viewer.user.id,
           buyer_name: viewer.user.fullName || "HenryCo Buyer",
           rating,
-          title: text(formData, "title"),
-          body: text(formData, "body"),
-          is_verified_purchase: Boolean(verifiedItem?.id),
-          status: verifiedItem?.id ? "published" : "pending",
+          title: reviewTitle,
+          body: reviewBody,
+          is_verified_purchase: isVerifiedPurchase,
+          status: reviewStatus,
         };
 
         const { data: createdReview, error: reviewError } = await admin
@@ -1043,6 +1092,17 @@ export async function POST(request: Request) {
           return redirectTo(request, "/account/reviews?error=review-failed");
         }
 
+        // If medium-severity content detected, queue for moderation review
+        if (authenticityCheck.requiresModeration && createdReview?.id) {
+          await createModerationCase(admin, {
+            subjectType: "review",
+            subjectId: String(createdReview.id),
+            queue: "review_content_check",
+            note: `Content flag: ${authenticityCheck.moderationReason ?? "suspicious content detected"} (severity: ${authenticityCheck.moderationSeverity ?? "medium"})`,
+          });
+        }
+
+        // Recalculate product rating from published reviews only
         const { data: publishedReviews } = await admin
           .from("marketplace_reviews")
           .select("rating")
@@ -1063,31 +1123,12 @@ export async function POST(request: Request) {
             .eq("id", product.id);
         }
 
-        const vendorId =
-          reviewPayload.vendor_id ||
-          snapshot.vendors.find((item) => item.slug === product.vendorSlug)?.id ||
-          null;
-
-        if (vendorId) {
-          const { data: vendorPublishedReviews } = await admin
-            .from("marketplace_reviews")
-            .select("rating")
-            .eq("vendor_id", vendorId)
-            .eq("status", "published");
-
-          const vendorRatings = (vendorPublishedReviews ?? [])
-            .map((item: Record<string, unknown>) => Number(item.rating || 0))
-            .filter((value) => value > 0);
-
-          if (vendorRatings.length) {
-            const vendorAverage = vendorRatings.reduce((sum, value) => sum + value, 0) / vendorRatings.length;
-            await admin
-              .from("marketplace_vendors")
-              .update({
-                review_score: vendorAverage.toFixed(2),
-              } as never)
-              .eq("id", vendorId);
-          }
+        // Sync vendor trust score if this is a verified-purchase review
+        // (unverified reviews that enter "pending" do not affect trust yet)
+        if (vendorId && isVerifiedPurchase && reviewStatus === "published") {
+          void syncVendorTrustScore(vendorId, "verified_review_published").catch(() => {
+            // Best-effort trust sync — do not block review creation
+          });
         }
 
         revalidatePath("/account/reviews");
@@ -1101,7 +1142,7 @@ export async function POST(request: Request) {
               product.vendorSlug,
               viewer.user.fullName || "HenryCo Buyer"
             ),
-            mode: reviewPayload.is_verified_purchase ? "published" : "pending",
+            mode: reviewStatus,
           });
         }
         return redirectTo(request, "/account/reviews?submitted=1");
@@ -1357,7 +1398,7 @@ export async function POST(request: Request) {
             (ownerProfile as { verification_status?: string | null } | null)?.verification_status
           );
           const vendorVerificationLevel = getVendorVerificationLevel(sharedVerificationStatus);
-          const vendorTrustScore = getVendorTrustScore(sharedVerificationStatus);
+          const vendorTrustScore = getInitialVendorTrustScore(sharedVerificationStatus);
           const { data: vendor } = await admin
             .from("marketplace_vendors")
             .upsert({
@@ -1389,6 +1430,16 @@ export async function POST(request: Request) {
             } as never, { onConflict: "slug" })
             .select("id")
             .maybeSingle();
+
+          // Seed initial trust snapshot for audit trail
+          if (vendor?.id) {
+            void syncVendorTrustScore(
+              String(vendor.id),
+              "vendor_application_approved"
+            ).catch(() => {
+              // Best-effort — do not block application approval
+            });
+          }
 
           await admin.from("marketplace_role_memberships").upsert({
             user_id: application.user_id,
@@ -1758,6 +1809,14 @@ export async function POST(request: Request) {
               ? "HenryCo marked the affected payout segment as refunded."
               : "HenryCo returned the payout segment to controlled release monitoring.",
           ]);
+
+          // Sync vendor trust score on dispute resolution — dispute rate changes
+          if (dispute.vendor_id) {
+            void syncVendorTrustScore(
+              String(dispute.vendor_id),
+              `dispute_resolved_${resolutionType}`
+            ).catch(() => {});
+          }
         } else {
           await admin
             .from("marketplace_order_groups")
@@ -2052,6 +2111,14 @@ export async function POST(request: Request) {
               statusLabel: fulfillmentStatus,
             },
           });
+
+          // Sync vendor trust score on delivery — fulfillment rate changes
+          if (fulfillmentStatus === "delivered" && group.vendor_id) {
+            void syncVendorTrustScore(
+              String(group.vendor_id),
+              "order_delivered"
+            ).catch(() => {});
+          }
         }
 
         await syncOrderLifecycle(admin, String(group.order_no || ""));
