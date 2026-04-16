@@ -1,5 +1,6 @@
 export * from "./public-button";
 export * from "./public-cta";
+export * from "./consent-state";
 export * from "./ecosystem-preferences";
 export * from "./public-footer";
 export * from "./public-navbar";
