@@ -57,6 +57,15 @@ export const HenryEventNames = {
   SECURITY_SIGNAL_RECORDED: "henry.security_signal.signal.recorded",
   WALLET_DEPOSIT_INITIATED: "henry.wallet.deposit.initiated",
   WALLET_WITHDRAW_REQUESTED: "henry.wallet.withdraw.requested",
+  // Jobs trust events
+  JOBS_EMPLOYER_TRUST_COMPUTED: "henry.jobs.employer_trust.computed",
+  JOBS_INTERVIEW_NO_SHOW: "henry.jobs.interview.no_show",
+  JOBS_EMPLOYER_MODERATION_INCIDENT: "henry.jobs.employer.moderation_incident",
+  // Marketplace trust events
+  MARKETPLACE_SELLER_TRUST_RECALCULATED: "henry.marketplace.seller_trust.recalculated",
+  MARKETPLACE_REVIEW_FLAGGED: "henry.marketplace.review.flagged",
+  MARKETPLACE_REVIEW_BLOCKED: "henry.marketplace.review.blocked",
+  MARKETPLACE_DISPUTE_TRUST_IMPACT: "henry.marketplace.dispute.trust_impact",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
