@@ -168,17 +168,6 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
     flags.push("new_account");
   }
 
-  const requiresIdentityApproval =
-    ctx.submission.serviceType === "sale" ||
-    ctx.submission.serviceType === "land" ||
-    ctx.submission.serviceType === "commercial" ||
-    ctx.submission.serviceType === "managed_property" ||
-    ctx.submission.serviceType === "verified_property" ||
-    ctx.submission.intent === "agent_listed" ||
-    ctx.submission.intent === "agent_assisted" ||
-    isHighValue(ctx.submission.price);
-  const verificationGate = getVerificationGateCopy(ctx.trust.signals.verificationStatus, "verified");
-
   if (requiresIdentityApproval && ctx.trust.signals.verificationStatus !== "verified") {
     risk += ctx.trust.signals.verificationStatus === "pending" ? 8 : 16;
     flags.push("identity_verification_required");
