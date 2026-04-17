@@ -28,4 +28,5 @@ export {
   SEVERITY_LABELS,
   ACTION_LABELS,
   shouldAutoFlag,
+  escalateSeverityForRepeatOffender,
 } from "./moderation";

@@ -15,7 +15,13 @@ const EMAIL_RE =
 const SOCIAL_HANDLE_RE = /(?:^|\s)@[a-zA-Z0-9_]{2,30}\b/g;
 
 const MESSAGING_APP_RE =
-  /\b(whatsapp|telegram|signal|viber|wechat|line\s?app|imessage|fb\s?messenger)\b/gi;
+  /\b(whatsapp|telegram|signal|viber|wechat|line\s?app|imessage|fb\s?messenger|snapchat\s?me|dm\s?me|slide\s+into)\b/gi;
+
+// QR codes are a contact-info bypass mechanism — a photo with embedded contact
+// details cannot be scanned by a text filter, so even a *reference* to a QR
+// code in a message/listing is treated as a medium-severity bypass signal.
+const QR_CODE_RE =
+  /\b(qr\s*code|scan\s+(my|this|the)\s+(qr|code)|scan\s+to\s+contact|contact\s+via\s+qr)\b/gi;
 
 const SOCIAL_URL_RE =
   /https?:\/\/(?:www\.)?(?:facebook|fb|instagram|twitter|x|tiktok|linkedin|snapchat|threads)\.com\/[^\s)]+/gi;
@@ -65,6 +71,13 @@ export function detectOffPlatformContact(text: string): OffPlatformResult {
     if (severity !== "high") severity = "medium";
   }
 
+  // Medium severity: QR codes (image-channel bypass)
+  const qrRefs = text.match(QR_CODE_RE);
+  if (qrRefs) {
+    patterns.push(...qrRefs.map((q) => q.trim()));
+    if (severity !== "high") severity = "medium";
+  }
+
   // Low severity: social handles
   const handles = text.match(SOCIAL_HANDLE_RE);
   if (handles) {
@@ -98,6 +111,8 @@ const SUSPICIOUS_PATTERNS: PatternEntry[] = [
   { re: /\b(click\s+this\s+link|verify\s+your\s+account|confirm\s+your\s+(identity|password|credentials)|log\s*in\s+here|reset\s+your\s+password)\b/gi, reason: "Phishing language detected", severity: "high" },
   // Advance-fee / too-good-to-be-true
   { re: /\b(you('ve)?\s+won|congratulations\s+you|claim\s+your\s+prize|free\s+money|guaranteed\s+income|no\s+risk)\b/gi, reason: "Advance-fee or too-good-to-be-true language", severity: "medium" },
+  // Payout diversion — attempts to route money or deals outside the platform
+  { re: /\b(pay\s+(me\s+)?directly|send\s+(payment\s+)?to\s+my\s+(account|number|wallet)|pay\s+outside|outside\s+(the\s+)?platform|avoid\s+(the\s+)?platform\s+fee|skip\s+(the\s+)?fee|off[-\s]?platform\s+deal|deal\s+outside|contact\s+me\s+(outside|directly|off)|reach\s+me\s+(outside|off[-\s]?platform)|let'?s\s+(talk|connect)\s+outside)\b/gi, reason: "Payout diversion or off-platform deal language", severity: "high" },
 ];
 
 export interface SuspiciousContentResult {

@@ -84,7 +84,10 @@ export default async function CandidateProfilePage({
           />
         ) : null}
 
-        <SectionCard title="Edit your profile" body="This information is shared with employers when you apply to roles.">
+        <SectionCard
+          title="Edit your profile"
+          body="Professional details here are visible to employers when you apply to roles. Phone and email are held by HenryCo for verification and trust scoring only — they are not passed to employers."
+        >
           <form action={saveCandidateProfileAction} className="grid gap-4">
             <div className="grid gap-4 md:grid-cols-2">
               <input
@@ -93,13 +96,6 @@ export default async function CandidateProfilePage({
                 className="jobs-input"
                 defaultValue={profile?.fullName || viewer.user!.fullName || ""}
                 placeholder="Full name"
-              />
-              <input
-                name="phone"
-                autoComplete="tel"
-                className="jobs-input"
-                defaultValue={profile?.phone || viewer.user!.phone || ""}
-                placeholder="Phone number"
               />
             </div>
             <input name="headline" className="jobs-input" defaultValue={profile?.headline || ""} placeholder="Headline" />
