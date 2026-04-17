@@ -17,16 +17,36 @@ import {
   VendorCard,
 } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
 export default async function MarketplaceHomePage() {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
   const data = await getMarketplaceHomeData();
   const featuredProducts = data.products.filter((item) => item.featured).slice(0, 6);
   const newInProducts = [...data.products].slice(0, 4);
   const featuredCategories = data.categories.filter((item) => item.featured).slice(0, 4);
   const leadVendor = data.vendors[0] ?? null;
   const supportVendor = data.vendors[1] ?? leadVendor;
+  const [sellerBodyStart, sellerBodyEnd = ""] = copy.home.sellerBody.split("/sell");
+  const kpis = data.kpis.map((item, index) => ({
+    ...item,
+    label:
+      index === 0
+        ? copy.kpiLabels.verifiedStores
+        : index === 1
+          ? copy.kpiLabels.activeListings
+          : copy.kpiLabels.trustRating,
+    hint:
+      index === 0
+        ? copy.kpiHints.verifiedStores
+        : index === 1
+          ? copy.kpiHints.activeListings
+          : copy.kpiHints.trustRating,
+  }));
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-8 sm:px-6 xl:px-8">
@@ -36,16 +56,14 @@ export default async function MarketplaceHomePage() {
           <div className="relative max-w-4xl space-y-7">
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
               <Sparkles className="h-3.5 w-3.5 text-[var(--market-brass)]" />
-              Refined premium marketplace
+              {copy.home.heroKicker}
             </div>
             <div className="space-y-4">
               <h1 className="market-display max-w-5xl text-[var(--market-paper-white)]">
-                Buy from verified stores without the noise, clutter, or trust guesswork.
+                {copy.home.heroTitle}
               </h1>
               <p className="max-w-2xl text-base leading-8 text-[var(--market-muted)]">
-                HenryCo Marketplace turns multi-vendor commerce into a calmer experience: cleaner discovery,
-                quick-add from every card, split-order clarity, stronger seller passports, and a single
-                HenryCo account for orders, payments, reviews, and support.
+                {copy.home.heroBody}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -53,30 +71,17 @@ export default async function MarketplaceHomePage() {
                 href="/search"
                 className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Explore the catalog <ArrowRight className="h-4 w-4" />
+                {copy.home.primaryCta} <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/sell"
                 className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Sell on HenryCo
+                {copy.home.secondaryCta}
               </Link>
             </div>
             <div className="grid gap-3 pt-2 sm:grid-cols-3">
-              {[
-                {
-                  title: "Quick-add everywhere",
-                  body: "Small card-level cart controls, instant mini-cart updates, and no clumsy refresh loops.",
-                },
-                {
-                  title: "Verified trust rails",
-                  body: "Seller passports, delivery promises, review quality, and stock ownership stay easy to read.",
-                },
-                {
-                  title: "One account, less friction",
-                  body: "Orders, payments, wishlist, follows, and notifications stay together in one HenryCo account.",
-                },
-              ].map((item) => (
+              {copy.home.quickCards.map((item) => (
                 <div
                   key={item.title}
                   className="rounded-[1.55rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4"
@@ -90,25 +95,11 @@ export default async function MarketplaceHomePage() {
         </article>
 
         <article className="market-paper rounded-[2.8rem] p-7 sm:p-8">
-          <p className="market-kicker">Why this feels different</p>
+          <p className="market-kicker">{copy.home.whyKicker}</p>
           <div className="mt-5 space-y-4">
-            {[
-              {
-                icon: ShieldCheck,
-                title: "Trust is visible before payment",
-                body: "Verification level, dispute rate, support responsiveness, and fulfillment reliability stay close to the buying decision.",
-              },
-              {
-                icon: Truck,
-                title: "Split-order clarity stays readable",
-                body: "When inventory comes from different vendors or HenryCo stock, delivery segmentation stays obvious instead of becoming checkout confusion.",
-              },
-              {
-                icon: Store,
-                title: "Sellers are curated, not dumped into a grid",
-                body: "The marketplace favors stronger stores, cleaner listings, and better post-order accountability over catalog sprawl.",
-              },
-            ].map(({ icon: Icon, title, body }) => (
+            {copy.home.whyCards.map(({ title, body }, index) => {
+              const Icon = [ShieldCheck, Truck, Store][index] ?? ShieldCheck;
+              return (
               <div
                 key={title}
                 className="rounded-[1.65rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-5"
@@ -121,21 +112,22 @@ export default async function MarketplaceHomePage() {
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{body}</p>
               </div>
-            ))}
+              );
+            })}
           </div>
         </article>
       </section>
 
-      <KpiGrid items={data.kpis} />
+      <KpiGrid items={kpis} />
 
       {data.campaigns[0] ? <CampaignBanner campaign={data.campaigns[0]} /> : null}
 
       {data.products.length === 0 ? (
         <EmptyState
-          title="The catalog is being prepared."
-          body="Approved products, collections, and campaigns will appear here as they go live."
+          title={copy.home.emptyTitle}
+          body={copy.home.emptyBody}
           ctaHref="/help"
-          ctaLabel="Contact marketplace support"
+          ctaLabel={copy.home.emptyCta}
         />
       ) : null}
 
@@ -143,13 +135,13 @@ export default async function MarketplaceHomePage() {
         <article className="market-paper rounded-[2.2rem] p-6 sm:p-8">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="market-kicker">Category discovery</p>
+              <p className="market-kicker">{copy.home.categoryKicker}</p>
               <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-                Discover by mood, room, and trust level.
+                {copy.home.categoryTitle}
               </h2>
             </div>
             <Link href="/search" className="text-sm font-semibold text-[var(--market-brass)]">
-              Open search
+              {copy.home.categoryLink}
             </Link>
           </div>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -174,9 +166,9 @@ export default async function MarketplaceHomePage() {
         <article className="market-panel rounded-[2.2rem] p-6 sm:p-8">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="market-kicker">Fresh approvals</p>
+              <p className="market-kicker">{copy.home.freshKicker}</p>
               <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-                New in the marketplace right now.
+                {copy.home.freshTitle}
               </h2>
             </div>
             <WandSparkles className="h-5 w-5 text-[var(--market-brass)]" />
@@ -209,13 +201,13 @@ export default async function MarketplaceHomePage() {
       <section className="space-y-5">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="market-kicker">Featured products</p>
+            <p className="market-kicker">{copy.home.featuredKicker}</p>
             <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-              Premium cards, instant carting, and cleaner buying signals.
+              {copy.home.featuredTitle}
             </h2>
           </div>
           <Link href="/search" className="text-sm font-semibold text-[var(--market-brass)]">
-            Browse all
+            {copy.home.browseAll}
           </Link>
         </div>
         <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
@@ -227,49 +219,45 @@ export default async function MarketplaceHomePage() {
 
       <section className="grid gap-6 xl:grid-cols-[0.82fr,1.18fr]">
         <div className="space-y-5">
-          <div>
-            <p className="market-kicker">Editorial collections</p>
+        <div>
+            <p className="market-kicker">{copy.home.collectionsKicker}</p>
             <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-              Curated rails that guide decisions without shouting.
+              {copy.home.collectionsTitle}
             </h2>
           </div>
           <div className="grid gap-5">
             {data.collections.map((collection) => (
-              <CollectionCard key={collection.slug} collection={collection} />
+              <CollectionCard key={collection.slug} collection={collection} copy={copy} />
             ))}
           </div>
         </div>
 
         <div className="space-y-5">
-          <div>
-            <p className="market-kicker">Trusted stores</p>
+        <div>
+            <p className="market-kicker">{copy.home.vendorsKicker}</p>
             <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-              Verified vendors with clearer accountability.
+              {copy.home.vendorsTitle}
             </h2>
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
             {data.vendors.map((vendor) => (
-              <VendorCard key={vendor.slug} vendor={vendor} />
+              <VendorCard key={vendor.slug} vendor={vendor} copy={copy} />
             ))}
           </div>
         </div>
       </section>
 
-      {leadVendor ? <TrustPassport vendor={leadVendor} /> : null}
+      {leadVendor ? <TrustPassport vendor={leadVendor} copy={copy} /> : null}
 
       {supportVendor ? (
         <section className="grid gap-6 xl:grid-cols-[1fr,0.94fr]">
           <article className="market-panel rounded-[2.2rem] p-6 sm:p-8">
-            <p className="market-kicker">Marketplace standards</p>
+            <p className="market-kicker">{copy.home.standardsKicker}</p>
             <h2 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-              Built for trust, clarity, and a calmer buying experience.
+              {copy.home.standardsTitle}
             </h2>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {[
-                "Seller applications, moderation, and approvals are reviewed through dedicated HenryCo review lanes.",
-                "Order updates, reviews, support, and payments stay connected to the same buyer account.",
-                "Support, payment review, and delivery operations stay organized so responses remain consistent.",
-              ].map((item) => (
+              {copy.home.standardsBullets.map((item) => (
                 <div
                   key={item}
                   className="rounded-[1.55rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]"
@@ -281,19 +269,17 @@ export default async function MarketplaceHomePage() {
           </article>
 
           <article className="market-paper rounded-[2.2rem] p-6 sm:p-8">
-            <p className="market-kicker">Seller quality</p>
+            <p className="market-kicker">{copy.home.sellerKicker}</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-              Serious sellers start inside their HenryCo account.
+              {copy.home.sellerTitle}
             </h2>
             <p className="mt-4 text-sm leading-7 text-[var(--market-muted)]">
-              Public visitors can learn about selling on <Link href="/sell" className="text-[var(--market-brass)]">/sell</Link>, while the application, draft progress, review updates, and approval status stay inside the seller account experience.
+              {sellerBodyStart}
+              <Link href="/sell" className="text-[var(--market-brass)]">/sell</Link>
+              {sellerBodyEnd}
             </p>
             <div className="mt-5 grid gap-3">
-              {[
-                "Draft saving and progress visibility",
-                "Private document handling in the right place",
-                "Clear approval updates for every seller",
-              ].map((item) => (
+              {copy.home.sellerBullets.map((item) => (
                 <div
                   key={item}
                   className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm font-medium text-[var(--market-paper-white)]"

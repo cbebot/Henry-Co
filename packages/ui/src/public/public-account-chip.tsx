@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { formatSurfaceTemplate, getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import {
   ChevronDown,
   ExternalLink,
@@ -178,11 +180,14 @@ export function PublicAccountChip({
 }) {
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const surfaceCopy = getSurfaceCopy(locale);
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
   const resolvedTone: DropdownTone = dropdownTone;
+  const localize = (label: string) => translateSurfaceLabel(locale, label);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -281,21 +286,21 @@ export function PublicAccountChip({
       >
         <Link
           href={loginHref}
-          aria-label="Sign in to your HenryCo account"
-          title="Sign in to save progress and access your account"
+          aria-label={surfaceCopy.publicAccount.signInAria}
+          title={surfaceCopy.publicAccount.signInTitle}
           className={cn(chipSignedOut, buttonClassName)}
         >
           <LogIn className="h-4 w-4 shrink-0 opacity-70" aria-hidden />
-          Sign in
+          {localize("Sign in")}
         </Link>
         {signupHref ? (
           <Link
             href={signupHref}
             className={cn(chipCta, buttonClassName)}
-            aria-label="Create a HenryCo account"
+            aria-label={surfaceCopy.publicAccount.signUpAria}
           >
             <UserPlus className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-            {signupLabel}
+            {localize(signupLabel)}
           </Link>
         ) : null}
       </div>
@@ -339,7 +344,7 @@ export function PublicAccountChip({
           {item.icon ? (
             <span className="shrink-0 opacity-80 [&_svg]:h-4 [&_svg]:w-4">{item.icon}</span>
           ) : null}
-          <span className="truncate">{item.label}</span>
+          <span className="truncate">{localize(item.label)}</span>
         </span>
         {item.badge ? (
           <span className="shrink-0 text-xs font-semibold tabular-nums">{item.badge}</span>
@@ -409,7 +414,9 @@ export function PublicAccountChip({
         ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label={`Account menu for ${primaryLabel}`}
+        aria-label={formatSurfaceTemplate(surfaceCopy.publicAccount.accountMenuFor, {
+          name: primaryLabel,
+        })}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls={menuId}
@@ -436,7 +443,7 @@ export function PublicAccountChip({
           ref={menuRef}
           id={menuId}
           role="menu"
-          aria-label="Account menu"
+          aria-label={surfaceCopy.publicAccount.accountMenu}
           onKeyDown={handleMenuKeyDown}
           className={cn(
             "absolute right-0 z-[60] mt-2.5 w-[min(280px,calc(100vw-1.5rem))] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
@@ -493,7 +500,7 @@ export function PublicAccountChip({
                 )}
                 aria-hidden
               />
-              Profile & account
+              {localize("Profile & account")}
             </Link>
 
             {preferencesHref ? (
@@ -511,7 +518,7 @@ export function PublicAccountChip({
                   )}
                   aria-hidden
                 />
-                Language & preferences
+                {localize("Language & preferences")}
               </Link>
             ) : null}
 
@@ -542,7 +549,7 @@ export function PublicAccountChip({
                     )}
                     aria-hidden
                   />
-                  Settings
+                  {localize("Settings")}
                 </Link>
               ) : null}
 
@@ -564,12 +571,12 @@ export function PublicAccountChip({
                 >
                   <ButtonPendingContent
                     pending={signingOut}
-                    pendingLabel="Signing out..."
-                    spinnerLabel="Signing out"
+                    pendingLabel={surfaceCopy.publicAccount.signingOut}
+                    spinnerLabel={surfaceCopy.publicAccount.signOut}
                   >
                     <>
                       <LogOut className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-                      Sign out
+                      {surfaceCopy.publicAccount.signOut}
                     </>
                   </ButtonPendingContent>
                 </button>

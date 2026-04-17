@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Download, ShieldCheck, Trash2 } from "lucide-react";
+import { formatSurfaceTemplate, getSurfaceCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import {
   buildHenryCoConsentState,
   DEFAULT_HENRYCO_CONSENT,
@@ -60,6 +62,8 @@ function Toggle({
 }
 
 export default function PrivacyDataControls() {
+  const locale = useHenryCoLocale();
+  const copy = getSurfaceCopy(locale);
   // Lazy initializer: readStoredHenryCoConsent() returns null in SSR (isBrowser guard),
   // so server and initial client render both start from DEFAULT. Any stored consent is
   // picked up immediately on client before first paint — no useEffect cascade needed.
@@ -69,7 +73,7 @@ export default function PrivacyDataControls() {
   const [saved, setSaved] = useState(false);
 
   const lastUpdated = useMemo(() => {
-    if (!consent.updatedAt) return "Not yet saved";
+    if (!consent.updatedAt) return copy.privacyControls.notYetSaved;
 
     const date = new Date(consent.updatedAt);
     if (Number.isNaN(date.getTime())) return consent.updatedAt;
@@ -79,7 +83,7 @@ export default function PrivacyDataControls() {
       month: "short",
       day: "numeric",
     });
-  }, [consent.updatedAt]);
+  }, [consent.updatedAt, copy.privacyControls.notYetSaved]);
 
   function saveConsent() {
     const nextConsent = buildHenryCoConsentState({
@@ -105,52 +109,50 @@ export default function PrivacyDataControls() {
           <ShieldCheck size={18} />
         </div>
         <div>
-          <p className="acct-kicker">Privacy & Data Controls</p>
+          <p className="acct-kicker">{copy.privacyControls.kicker}</p>
           <h2 id="privacy-controls-title" className="mt-1 text-lg font-semibold text-[var(--acct-ink)]">
-            Optional tracking stays off until you enable it
+            {copy.privacyControls.title}
           </h2>
           <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
-            Essential storage keeps sign-in, checkout, navigation, and security-critical flows stable.
-            These controls only affect optional cross-site preferences, analytics, personalization,
-            and marketing runtimes.
+            {copy.privacyControls.description}
           </p>
           <p className="mt-2 text-xs uppercase tracking-[0.16em] text-[var(--acct-muted)]">
-            Last saved: {lastUpdated}
+            {formatSurfaceTemplate(copy.privacyControls.lastSaved, { date: lastUpdated })}
           </p>
         </div>
       </div>
 
       <div className="space-y-3">
         <Toggle
-          label="Essential"
-          description="Required for session integrity, sign-in continuity, and core HenryCo product flows."
+          label={copy.privacyControls.essentialLabel}
+          description={copy.privacyControls.essentialDescription}
           checked
           disabled
           onChange={() => undefined}
         />
         <Toggle
-          label="Preferences"
-          description="Remembers optional interface choices across HenryCo sites."
+          label={copy.privacyControls.preferencesLabel}
+          description={copy.privacyControls.preferencesDescription}
           checked={consent.preferences}
           onChange={(value) => setConsent((current) => ({ ...current, preferences: value }))}
         />
         <Toggle
-          label="Personalized experience"
-          description="Allows non-essential recommendations and contextual hints based on how you use HenryCo."
+          label={copy.privacyControls.personalizedExperienceLabel}
+          description={copy.privacyControls.personalizedExperienceDescription}
           checked={consent.personalizedExperience}
           onChange={(value) =>
             setConsent((current) => ({ ...current, personalizedExperience: value }))
           }
         />
         <Toggle
-          label="Analytics"
-          description="Permits optional measurement and device-intelligence runtimes when they are configured."
+          label={copy.privacyControls.analyticsLabel}
+          description={copy.privacyControls.analyticsDescription}
           checked={consent.analytics}
           onChange={(value) => setConsent((current) => ({ ...current, analytics: value }))}
         />
         <Toggle
-          label="Marketing"
-          description="Permits optional remarketing and marketing-oriented engagement runtimes when programs are active."
+          label={copy.privacyControls.marketingLabel}
+          description={copy.privacyControls.marketingDescription}
           checked={consent.marketing}
           onChange={(value) => setConsent((current) => ({ ...current, marketing: value }))}
         />
@@ -158,7 +160,7 @@ export default function PrivacyDataControls() {
 
       <div className="flex flex-wrap gap-3">
         <button type="button" onClick={saveConsent} className="acct-button-primary rounded-xl">
-          {saved ? "Saved" : "Save privacy controls"}
+          {saved ? copy.privacyControls.saved : copy.privacyControls.save}
         </button>
         <button
           type="button"
@@ -173,38 +175,36 @@ export default function PrivacyDataControls() {
           }}
           className="rounded-xl border border-[var(--acct-line)] px-4 py-2 text-sm font-semibold text-[var(--acct-ink)] transition-colors hover:bg-[var(--acct-surface)]"
         >
-          Keep essential only
+          {copy.privacyControls.essentialOnly}
         </button>
       </div>
 
       <div className="rounded-[1.4rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
-        <p className="text-sm font-semibold text-[var(--acct-ink)]">Manual data requests</p>
+        <p className="text-sm font-semibold text-[var(--acct-ink)]">{copy.privacyControls.manualRequestsTitle}</p>
         <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
-          Self-serve tools currently cover profile edits, notification preferences, locale, and these
-          consent settings. Data export, account closure, or deletion requests are reviewed manually so
-          finance, trust, fraud-prevention, support, and audit records are not removed incorrectly.
+          {copy.privacyControls.manualRequestsBody}
         </p>
 
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             href={buildSupportPrefill(
-              "Data export request",
-              "I want a copy of the personal data currently available through my HenryCo account. Please confirm what can be exported directly and what records must be retained for operational, finance, trust, fraud-prevention, or audit reasons."
+              copy.privacyControls.exportSubject,
+              copy.privacyControls.exportMessage
             )}
             className="inline-flex items-center gap-2 rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-4 py-2 text-sm font-semibold text-[var(--acct-ink)] transition-colors hover:bg-[var(--acct-bg)]"
           >
             <Download size={16} />
-            Request data export
+            {copy.privacyControls.requestDataExport}
           </Link>
           <Link
             href={buildSupportPrefill(
-              "Account closure or deletion review",
-              "I want to close or delete my HenryCo account. Please review what can be removed now, what must be retained, and any follow-up steps required for finance, trust, wallet, support, or audit records."
+              copy.privacyControls.deletionSubject,
+              copy.privacyControls.deletionMessage
             )}
             className="inline-flex items-center gap-2 rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-4 py-2 text-sm font-semibold text-[var(--acct-ink)] transition-colors hover:bg-[var(--acct-bg)]"
           >
             <Trash2 size={16} />
-            Request closure or deletion review
+            {copy.privacyControls.requestDeletionReview}
           </Link>
         </div>
       </div>

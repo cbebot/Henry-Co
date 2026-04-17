@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { getJobsPublicCopy } from "@/lib/public-copy";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { HenryCoPublicAccountPresets, PublicAccountChip, PublicFooter } from "@henryco/ui";
 import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import {
@@ -23,17 +25,19 @@ export async function PublicShell({
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
 }) {
+  const locale = await getJobsPublicLocale();
+  const copy = getJobsPublicCopy(locale);
   const viewer = await getJobsViewer();
   const resolvedPrimary =
     primaryCta ??
     (viewer.user
-      ? { label: "My hiring hub", href: "/candidate" }
-      : { label: "Browse open jobs", href: "/jobs" });
+      ? { label: copy.home.candidateHub, href: "/candidate" }
+      : { label: copy.home.browseJobs, href: "/jobs" });
   const resolvedSecondary =
     secondaryCta ??
     (viewer.user
-      ? { label: "Saved jobs", href: "/candidate/saved-jobs" }
-      : { label: "Hire with HenryCo", href: "/hire" });
+      ? { label: copy.shell.savedJobs, href: "/candidate/saved-jobs" }
+      : { label: copy.home.hireWithHenryCo, href: "/hire" });
   const h = await headers();
   const returnPath = h.get("x-jobs-return-path") || "/";
   const loginHref = getSharedAccountLoginUrl(normalizeJobsPath(returnPath));
@@ -54,7 +58,7 @@ export async function PublicShell({
         primaryCta={resolvedPrimary}
         secondaryCta={resolvedSecondary}
         headerClassName="jobs-public-header"
-        auxLink={{ label: "HenryCo account", href: accountJobsUrl, external: true }}
+        auxLink={{ label: copy.shell.account, href: accountJobsUrl, external: true }}
         accountMenu={
           <PublicAccountChip
             {...HenryCoPublicAccountPresets.standard}
@@ -66,11 +70,11 @@ export async function PublicShell({
             signupHref={signupHref}
             showSignOut
             menuItems={[
-              { label: "Candidate home", href: "/candidate" },
-              { label: "Applications", href: "/candidate/applications" },
-              { label: "Saved jobs", href: "/candidate/saved-jobs" },
-              { label: "Browse jobs", href: "/jobs" },
-              { label: "Hire with HenryCo", href: "/hire" },
+              { label: copy.shell.candidateHome, href: "/candidate" },
+              { label: copy.shell.applications, href: "/candidate/applications" },
+              { label: copy.shell.savedJobs, href: "/candidate/saved-jobs" },
+              { label: copy.home.browseJobs, href: "/jobs" },
+              { label: copy.home.hireWithHenryCo, href: "/hire" },
             ]}
           />
         }
@@ -82,30 +86,30 @@ export async function PublicShell({
         support={{ email: jobs.supportEmail, phone: jobs.supportPhone }}
         groups={[
           {
-            title: "Discover",
+            title: copy.shell.discover,
             links: [
-              { label: "Jobs", href: "/jobs" },
-              { label: "Talent", href: "/talent" },
-              { label: "Trust", href: "/trust" },
-              { label: "Help", href: "/help" },
+              { label: copy.shell.jobs, href: "/jobs" },
+              { label: copy.shell.talent, href: "/talent" },
+              { label: copy.shell.trust, href: "/trust" },
+              { label: copy.shell.help, href: "/help" },
             ],
           },
           {
-            title: "For teams",
+            title: copy.shell.forTeams,
             links: [
-              { label: "Candidates", href: "/candidate" },
-              { label: "Hire with HenryCo", href: "/hire" },
-              { label: "Employer workspace", href: "/employer" },
-              { label: "Recruiters", href: "/recruiter" },
-              { label: "Careers", href: "/careers" },
+              { label: copy.shell.candidateHome, href: "/candidate" },
+              { label: copy.home.hireWithHenryCo, href: "/hire" },
+              { label: copy.shell.employerWorkspace, href: "/employer" },
+              { label: copy.shell.recruiters, href: "/recruiter" },
+              { label: copy.shell.careers, href: "/careers" },
             ],
           },
           {
-            title: "HenryCo",
+            title: copy.shell.henryCo,
             links: [
-              { label: "My HenryCo account", href: accountJobsUrl, external: true },
-              { label: "Internal Careers", href: "/careers" },
-              { label: "Group Hub", href: "https://henrycogroup.com", external: true },
+              { label: copy.shell.account, href: accountJobsUrl, external: true },
+              { label: copy.shell.internalCareers, href: "/careers" },
+              { label: copy.shell.groupHub, href: "https://henrycogroup.com", external: true },
             ],
           },
         ]}

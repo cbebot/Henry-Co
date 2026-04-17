@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, RefreshCcw } from "lucide-react";
 import type { PropertyArea } from "@/lib/property/types";
 import { PROPERTY_SEARCH_PREFS_KEY, type PropertySearchPrefsPayload } from "@/lib/property/prefs";
+import type { PropertyPublicCopy } from "@/lib/public-copy";
 
 type PropertySearchDefaults = {
   q?: string;
@@ -18,10 +19,12 @@ export function PropertySearchBar({
   areas,
   defaults,
   submitLabel = "Search properties",
+  copy,
 }: {
   areas: PropertyArea[];
   defaults?: PropertySearchDefaults;
   submitLabel?: string;
+  copy?: PropertyPublicCopy;
 }) {
   const defaultsKey = [
     defaults?.q || "",
@@ -37,6 +40,7 @@ export function PropertySearchBar({
       areas={areas}
       defaults={defaults}
       submitLabel={submitLabel}
+      copy={copy}
     />
   );
 }
@@ -45,10 +49,12 @@ function PropertySearchBarInner({
   areas,
   defaults,
   submitLabel,
+  copy,
 }: {
   areas: PropertyArea[];
   defaults?: PropertySearchDefaults;
   submitLabel: string;
+  copy?: PropertyPublicCopy;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -135,21 +141,21 @@ function PropertySearchBarInner({
       aria-busy={isPending}
     >
       <label className="block">
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
-          Search
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
+          {copy?.searchBar.search ?? "Search"}
         </span>
         <input
           name="q"
           value={q}
           onChange={(event) => setQ(event.target.value)}
-          placeholder="Ikoyi penthouse, serviced residence, office suite..."
+          placeholder={copy?.searchBar.searchPlaceholder ?? "Ikoyi penthouse, serviced residence, office suite..."}
           className="property-input mt-2 rounded-2xl px-4 py-3"
         />
       </label>
 
       <label className="block">
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
-          Category
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
+          {copy?.searchBar.category ?? "Category"}
         </span>
         <select
           name="kind"
@@ -157,18 +163,18 @@ function PropertySearchBarInner({
           onChange={(event) => setKind(event.target.value)}
           className="property-select mt-2 rounded-2xl px-4 py-3"
         >
-          <option value="">All categories</option>
-          <option value="rent">Residential rent</option>
-          <option value="sale">Residential sale</option>
-          <option value="commercial">Commercial</option>
-          <option value="managed">Managed</option>
-          <option value="shortlet">Short-let</option>
+          <option value="">{copy?.searchBar.allCategories ?? "All categories"}</option>
+          <option value="rent">{copy?.searchBar.residentialRent ?? "Residential rent"}</option>
+          <option value="sale">{copy?.searchBar.residentialSale ?? "Residential sale"}</option>
+          <option value="commercial">{copy?.searchBar.commercial ?? "Commercial"}</option>
+          <option value="managed">{copy?.searchBar.managed ?? "Managed"}</option>
+          <option value="shortlet">{copy?.searchBar.shortlet ?? "Short-let"}</option>
         </select>
       </label>
 
       <label className="block">
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
-          Area
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">
+          {copy?.searchBar.area ?? "Area"}
         </span>
         <select
           name="area"
@@ -176,7 +182,7 @@ function PropertySearchBarInner({
           onChange={(event) => setArea(event.target.value)}
           className="property-select mt-2 rounded-2xl px-4 py-3"
         >
-          <option value="">All areas</option>
+          <option value="">{copy?.searchBar.allAreas ?? "All areas"}</option>
           {areas.map((item) => (
             <option key={item.id} value={item.slug}>
               {item.name}
@@ -191,7 +197,7 @@ function PropertySearchBarInner({
           disabled={isPending}
           className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
         >
-          {isPending ? "Updating results" : submitLabel}
+          {isPending ? (copy?.searchBar.updatingResults ?? "Updating results") : submitLabel}
           <ArrowRight className="h-4 w-4" />
         </button>
         <button
@@ -208,7 +214,7 @@ function PropertySearchBarInner({
           className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--property-line)] px-4 py-2 text-xs font-semibold text-[var(--property-ink-soft)] transition hover:border-[var(--property-accent-strong)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <RefreshCcw className="h-3.5 w-3.5" />
-          Reset filters
+          {copy?.searchBar.resetFilters ?? "Reset filters"}
         </button>
         <div className="flex flex-wrap gap-3 text-xs text-[var(--property-ink-soft)]">
           <label className="inline-flex items-center gap-2">
@@ -219,7 +225,7 @@ function PropertySearchBarInner({
               checked={managed}
               onChange={(event) => setManaged(event.target.checked)}
             />
-            Managed only
+            {copy?.searchBar.managedOnly ?? "Managed only"}
           </label>
           <label className="inline-flex items-center gap-2">
             <input
@@ -229,13 +235,13 @@ function PropertySearchBarInner({
               checked={furnished}
               onChange={(event) => setFurnished(event.target.checked)}
             />
-            Furnished
+            {copy?.searchBar.furnished ?? "Furnished"}
           </label>
         </div>
         <p className="text-xs text-[var(--property-ink-muted)]" aria-live="polite">
           {isPending
-            ? "Refreshing results without losing your place."
-            : "Filters stay in the URL so you can share the exact search or come back to it later."}
+            ? copy?.searchBar.refreshingResults ?? "Refreshing results without losing your place."
+            : copy?.searchBar.shareableFilters ?? "Filters stay in the URL so you can share the exact search or come back to it later."}
         </p>
       </div>
     </form>

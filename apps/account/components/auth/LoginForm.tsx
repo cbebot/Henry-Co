@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { getAuthCopy, getSurfaceCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { normalizeTrustedRedirect } from "@henryco/config";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
@@ -9,6 +11,9 @@ import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm() {
+  const locale = useHenryCoLocale();
+  const authCopy = getAuthCopy(locale);
+  const surfaceCopy = getSurfaceCopy(locale);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +34,7 @@ export default function LoginForm() {
       });
 
       if (authError) {
-        setError(mapAccountAuthMessage(authError.message, "sign_in"));
+        setError(mapAccountAuthMessage(authError.message, "sign_in", locale));
         return;
       }
 
@@ -39,7 +44,7 @@ export default function LoginForm() {
       window.location.assign(resolveHref);
       return;
     } catch {
-      setError("We couldn't sign you in right now. Please try again.");
+      setError(surfaceCopy.accountForms.signInUnavailable);
     } finally {
       setLoading(false);
     }
@@ -55,13 +60,13 @@ export default function LoginForm() {
 
       <div className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Email</label>
+          <label className="mb-1.5 block text-sm font-medium">{authCopy.login.emailLabel}</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="acct-input"
-            placeholder="you@example.com"
+            placeholder={surfaceCopy.accountForms.emailPlaceholder}
             required
             autoComplete="email"
           />
@@ -69,12 +74,12 @@ export default function LoginForm() {
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label className="text-sm font-medium">Password</label>
+            <label className="text-sm font-medium">{authCopy.login.passwordLabel}</label>
             <a
               href="/forgot-password"
               className="text-xs text-[var(--acct-gold)] hover:underline"
             >
-              Forgot password?
+              {authCopy.login.forgotPassword}
             </a>
           </div>
           <div className="relative">
@@ -83,7 +88,7 @@ export default function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="acct-input pr-10"
-              placeholder="Your password"
+              placeholder={surfaceCopy.accountForms.passwordPlaceholder}
               required
               autoComplete="current-password"
             />
@@ -103,8 +108,8 @@ export default function LoginForm() {
         disabled={loading}
         className="acct-button-primary mt-6 w-full rounded-xl py-3"
       >
-        <ButtonPendingContent pending={loading} pendingLabel="Signing in..." spinnerLabel="Signing in">
-          Sign in
+        <ButtonPendingContent pending={loading} pendingLabel={surfaceCopy.accountForms.signInBusy} spinnerLabel={authCopy.login.submitButton}>
+          {authCopy.login.submitButton}
         </ButtonPendingContent>
       </button>
     </form>

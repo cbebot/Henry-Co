@@ -7,6 +7,8 @@ import { Heart, ShoppingBag, Star } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useEffect, useRef, useState } from "react";
 import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import type { MarketplaceProduct } from "@/lib/marketplace/types";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -14,6 +16,8 @@ const fallbackImage =
   "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80";
 
 export function ProductCardClient({ product }: { product: MarketplaceProduct }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const copy = getMarketplacePublicCopy(locale);
   const { addToCart, pendingCartSlugs } = useMarketplaceCart();
   const { isWishlisted, pendingWishlistSlugs, toggleWishlist } = useMarketplaceWishlist();
   const saving = pendingWishlistSlugs.includes(product.slug);
@@ -75,13 +79,13 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.9)] via-[rgba(4,7,13,0.12)] to-transparent" />
 
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full border border-[rgba(255,255,255,0.14)] bg-[rgba(4,7,13,0.62)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
-              {product.inventoryOwnerType === "company" ? "HenryCo stocked" : "Verified seller"}
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full border border-[rgba(255,255,255,0.14)] bg-[rgba(4,7,13,0.62)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
+              {product.inventoryOwnerType === "company" ? copy.productCard.stockedByHenryCo : copy.productCard.verifiedSeller}
             </span>
             {product.stock > 0 && product.stock <= 3 ? (
               <span className="rounded-full bg-[rgba(255,171,151,0.92)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-noir)]">
-                Only {product.stock} left
+                {copy.productCard.onlyLeft.replace("{count}", String(product.stock))}
               </span>
             ) : null}
           </div>
@@ -96,10 +100,10 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
                 ? "border-[rgba(255,171,151,0.48)] bg-[rgba(255,171,151,0.16)] text-[var(--market-alert)]"
                 : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.12)] text-[var(--market-paper-white)]"
             )}
-            aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+            aria-label={wishlisted ? copy.productCard.removeFromWishlist : copy.productCard.saveToWishlist}
           >
             {saving ? (
-              <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating wishlist" />
+              <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label={copy.productCard.updatingWishlist} />
             ) : (
               <Heart className={cn("h-4 w-4", wishlisted ? "fill-current" : "")} />
             )}
@@ -123,7 +127,7 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
             </p>
             {product.codEligible ? (
               <span className="rounded-full border border-[rgba(144,215,186,0.22)] bg-[rgba(144,215,186,0.12)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-success)]">
-                COD ready
+                {copy.productCard.codReady}
               </span>
             ) : null}
           </div>
@@ -164,10 +168,10 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
                     ? "bg-[var(--market-success)] text-[var(--market-noir)]"
                     : "market-button-primary"
               )}
-              aria-label={`Add ${product.title} to cart`}
+              aria-label={`${copy.productCard.addToCart} ${product.title}`}
             >
               {adding ? (
-                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label="Adding to cart" />
+                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir)]" label={copy.productCard.addingToCart} />
               ) : (
                 <ShoppingBag className="h-4 w-4" />
               )}
@@ -177,7 +181,7 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
               href={`/product/${product.slug}`}
               className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--market-line-strong)] bg-[rgba(255,255,255,0.04)] px-4 text-sm font-semibold text-[var(--market-paper-white)] transition hover:border-[rgba(117,209,255,0.42)] hover:text-[var(--market-paper-white)]"
             >
-              View
+              {copy.productCard.view}
             </Link>
           </div>
         </div>

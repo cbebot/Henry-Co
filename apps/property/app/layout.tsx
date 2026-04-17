@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { getDivisionConfig } from "@henryco/config";
+import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
@@ -62,7 +63,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
-        <PublicThemeGuard>{children}</PublicThemeGuard>
+        <PublicThemeGuard>
+          <LocaleProvider locale={lang}>{children}</LocaleProvider>
+        </PublicThemeGuard>
       </body>
     </html>
   );

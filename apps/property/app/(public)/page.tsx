@@ -14,26 +14,33 @@ import {
 } from "@/components/property/ui";
 import { PropertyRecommendedForYou } from "@/components/property/property-recommended-for-you";
 import { getPropertyHomeData } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
+import { getPropertyPublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
 export default async function PropertyHomePage() {
+  const locale = await getPropertyPublicLocale();
+  const copy = getPropertyPublicCopy(locale);
   const snapshot = await getPropertyHomeData();
   const heroCampaign = snapshot.campaigns[0] ?? null;
+  const metrics = snapshot.metrics.map((item, index) => ({
+    ...item,
+    label: copy.home.metrics[index]?.label ?? item.label,
+    hint: copy.home.metrics[index]?.hint ?? item.hint,
+  }));
 
   return (
     <main className="pb-20">
       <section className="mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
           <div className="property-panel rounded-[3rem] px-7 py-8 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
-            <div className="property-kicker">HenryCo Property</div>
+            <div className="property-kicker">{copy.home.heroKicker}</div>
             <h1 className="property-display mt-6 max-w-5xl text-[var(--property-ink)]">
-              Property discovery for people who do not want noise, guesswork, or weak follow-through.
+              {copy.home.heroTitle}
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--property-ink-soft)] sm:text-lg">
-              Browse curated rentals, sale inventory, commercial spaces, and managed homes with
-              better listing quality, stronger trust notes, structured viewing requests, and calmer
-              owner communication.
+              {copy.home.heroBody}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -41,53 +48,41 @@ export default async function PropertyHomePage() {
                 href="/search"
                 className="property-button-primary inline-flex items-center gap-3 rounded-full px-6 py-4 text-sm font-semibold"
               >
-                Explore listings
+                {copy.home.primaryCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/submit"
                 className="property-button-secondary inline-flex rounded-full px-6 py-4 text-sm font-semibold"
               >
-                Submit a property
+                {copy.home.secondaryCta}
               </Link>
             </div>
 
             <div className="mt-10">
-              <PropertySearchBar areas={snapshot.areas} submitLabel="Start a calm search" />
+              <PropertySearchBar areas={snapshot.areas} submitLabel={copy.home.searchSubmit} copy={copy} />
             </div>
           </div>
 
           <div className="grid gap-6">
             <div className="property-panel rounded-[2.5rem] p-6 sm:p-8">
-              <div className="property-kicker">Why this feels different</div>
+              <div className="property-kicker">{copy.home.whyKicker}</div>
               <div className="mt-5 grid gap-4">
-                {[
-                  {
-                    icon: ShieldCheck,
-                    title: "Trust signals on every serious listing",
-                    body: "Managed status, verification notes, and readiness context are surfaced before contact is made.",
-                  },
-                  {
-                    icon: CalendarRange,
-                    title: "Viewing flow with less waste",
-                    body: "Requests, confirmation, reminders, and agent assignment are structured to reduce dead-end tours.",
-                  },
-                  {
-                    icon: Building2,
-                    title: "Managed-property layer beyond lead capture",
-                    body: "HenryCo can keep operating the home, short-let, or portfolio after the listing goes live.",
-                  },
-                ].map((item) => (
+                {copy.home.whyCards.map((item, index) => {
+                  const icons = [ShieldCheck, CalendarRange, Building2];
+                  const Icon = icons[index] ?? ShieldCheck;
+                  return (
                   <div key={item.title} className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
-                    <item.icon className="h-5 w-5 text-[var(--property-accent-strong)]" />
+                    <Icon className="h-5 w-5 text-[var(--property-accent-strong)]" />
                     <div className="mt-4 text-xl font-semibold text-[var(--property-ink)]">{item.title}</div>
                     <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">{item.body}</p>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            <PropertyMetricGrid items={snapshot.metrics} />
+            <PropertyMetricGrid items={metrics} />
           </div>
         </div>
       </section>
@@ -100,38 +95,39 @@ export default async function PropertyHomePage() {
 
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <PropertySectionIntro
-          kicker="Featured listings"
-          title="Premium homes and workspaces with stronger context before the first viewing."
-          description="The featured surface prioritizes better photography, clearer positioning, tighter moderation, and listings with higher-conviction next steps."
+          kicker={copy.home.featuredKicker}
+          title={copy.home.featuredTitle}
+          description={copy.home.featuredDescription}
           actions={
             <Link
               href="/search"
               className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
             >
-              View all listings
+              {copy.home.featuredCta}
             </Link>
           }
         />
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {snapshot.featuredListings.slice(0, 3).map((listing) => (
-            <PropertyListingCard key={listing.id} listing={listing} />
+            <PropertyListingCard key={listing.id} listing={listing} copy={copy} />
           ))}
         </div>
       </section>
 
-      <PropertyRecommendedForYou listings={snapshot.listings} />
+      <PropertyRecommendedForYou listings={snapshot.listings} copy={copy} />
 
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <PropertySectionIntro
-          kicker="Areas"
-          title="Location pages that explain the market, not just the stock."
-          description="Each area surface gives serious renters and buyers the market context, hotspots, and trust rails behind the shortlist."
+          kicker={copy.home.areasKicker}
+          title={copy.home.areasTitle}
+          description={copy.home.areasDescription}
         />
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {snapshot.areas.map((area) => (
             <PropertyAreaCard
               key={area.id}
               area={area}
+              copy={copy}
               count={snapshot.listings.filter((listing) => listing.status === "approved" && listing.locationSlug === area.slug).length}
             />
           ))}
@@ -141,14 +137,12 @@ export default async function PropertyHomePage() {
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[0.94fr_1.06fr]">
           <div className="property-panel rounded-[2.5rem] p-6 sm:p-8">
-            <div className="property-kicker">Managed-property services</div>
+            <div className="property-kicker">{copy.home.managedKicker}</div>
             <h2 className="property-heading mt-4">
-              A property platform that continues after marketing, inquiries, and move-in.
+              {copy.home.managedTitle}
             </h2>
             <p className="mt-5 text-base leading-8 text-[var(--property-ink-soft)]">
-              HenryCo Property is designed to market, qualify, coordinate, and then keep operating
-              selected properties through owner reporting, inspections, maintenance coordination,
-              and ongoing trust services.
+              {copy.home.managedBody}
             </p>
             <div className="mt-6 space-y-4">
               {snapshot.services.map((service) => (
@@ -174,27 +168,28 @@ export default async function PropertyHomePage() {
             <PropertyPortfolioStats
               listings={snapshot.listings.filter((item) => item.status === "approved")}
               managedRecords={snapshot.managedRecords}
+              copy={copy}
             />
             <div className="grid gap-4 md:grid-cols-2">
               <PropertyTrustPill
                 icon={<Sparkles className="h-5 w-5" />}
-                title="Editorial moderation"
-                body="Listing quality is improved before publication so premium inventory does not look like clutter."
+                title={copy.home.trustPills[0].title}
+                body={copy.home.trustPills[0].body}
               />
               <PropertyTrustPill
                 icon={<ShieldCheck className="h-5 w-5" />}
-                title="Owner and operator trust notes"
-                body="Trust rails are attached to listings so serious inquiries start with better information."
+                title={copy.home.trustPills[1].title}
+                body={copy.home.trustPills[1].body}
               />
               <PropertyTrustPill
                 icon={<CalendarRange className="h-5 w-5" />}
-                title="Viewing accountability"
-                body="Scheduling and reminders are tracked server-side, which reduces low-confidence follow-up."
+                title={copy.home.trustPills[2].title}
+                body={copy.home.trustPills[2].body}
               />
               <PropertyTrustPill
                 icon={<Building2 className="h-5 w-5" />}
-                title="Unified HenryCo memory"
-                body="Saved properties, inquiries, and viewings are mirrored for future cross-division account continuity."
+                title={copy.home.trustPills[3].title}
+                body={copy.home.trustPills[3].body}
               />
             </div>
           </div>
@@ -203,9 +198,9 @@ export default async function PropertyHomePage() {
 
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <PropertySectionIntro
-          kicker="Differentiators"
-          title="Designed to be calmer, tighter, and more operationally serious than a classified board."
-          description="These are the product and operations choices that turn the platform into a trust surface, not just a listing dump."
+          kicker={copy.home.differentiatorsKicker}
+          title={copy.home.differentiatorsTitle}
+          description={copy.home.differentiatorsDescription}
         />
         <div className="mt-8 grid gap-5 xl:grid-cols-2">
           {snapshot.differentiators.slice(0, 4).map((item) => (
@@ -216,9 +211,9 @@ export default async function PropertyHomePage() {
 
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <PropertySectionIntro
-          kicker="Relationship managers"
-          title="People behind the listings, viewings, and managed-property follow-through."
-          description="The operator layer is visible because premium real estate decisions need stronger coordination than anonymous form handoffs."
+          kicker={copy.home.agentsKicker}
+          title={copy.home.agentsTitle}
+          description={copy.home.agentsDescription}
         />
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {snapshot.agents.map((agent) => (

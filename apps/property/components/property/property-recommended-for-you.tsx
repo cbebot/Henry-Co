@@ -6,12 +6,19 @@ import { MapPin, Sparkles } from "lucide-react";
 import { PropertyListingCard } from "@/components/property/ui";
 import type { PropertyListing } from "@/lib/property/types";
 import { PROPERTY_SEARCH_PREFS_KEY, type PropertySearchPrefsPayload } from "@/lib/property/prefs";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
+import { getPropertyPublicCopy } from "@/lib/public-copy";
+import type { PropertyPublicCopy } from "@/lib/public-copy";
 
 export function PropertyRecommendedForYou({
   listings,
+  copy,
 }: {
   listings: PropertyListing[];
+  copy?: PropertyPublicCopy;
 }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const fallbackCopy = copy ?? getPropertyPublicCopy(locale);
   const [prefs] = useState<PropertySearchPrefsPayload | null>(() => {
     try {
       const raw = typeof window !== "undefined" ? window.localStorage.getItem(PROPERTY_SEARCH_PREFS_KEY) : null;
@@ -55,14 +62,14 @@ export function PropertyRecommendedForYou({
           <div>
             <div className="property-kicker flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-[var(--property-accent-strong)]" />
-              Recommended for you
+              {fallbackCopy.recommended.title}
             </div>
             <h2 className="property-heading mt-3 max-w-2xl">
               Listings in {prefs.areaName}
               {prefs.kind ? ` · ${prefs.kind}` : ""}
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--property-ink-soft)]">
-              Based on your last area selection on this device. Clear your browser data to reset.
+              {fallbackCopy.recommended.body}
             </p>
           </div>
           <Link
@@ -70,12 +77,12 @@ export function PropertyRecommendedForYou({
             className="property-button-secondary inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
           >
             <MapPin className="h-4 w-4" />
-            Open full search
+            {fallbackCopy.recommended.openFullSearch}
           </Link>
         </div>
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {recs.map((listing) => (
-            <PropertyListingCard key={listing.id} listing={listing} />
+            <PropertyListingCard key={listing.id} listing={listing} copy={fallbackCopy} />
           ))}
         </div>
       </div>

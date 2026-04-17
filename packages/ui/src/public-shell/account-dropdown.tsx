@@ -14,6 +14,8 @@ import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import Link from "next/link";
 import { ExternalLink, LayoutDashboard, Globe, LogOut, Settings2 } from "lucide-react";
+import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn } from "../lib/cn";
 import { ButtonPendingContent } from "../loading/ButtonPendingContent";
 import { AvatarFallback } from "./avatar-fallback";
@@ -125,7 +127,10 @@ export function AccountDropdown({
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
   const [signingOut, setSigningOut] = useState(false);
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const surfaceCopy = getSurfaceCopy(locale);
   const { primaryLabel, emailLine, initialsSource } = resolvePublicAccountIdentity(user);
+  const localize = (label: string) => translateSurfaceLabel(locale, label);
 
   const close = useCallback(() => onClose(), [onClose]);
 
@@ -171,7 +176,7 @@ export function AccountDropdown({
       <>
         <span className="flex min-w-0 flex-1 items-center gap-2.5">
           {item.icon ? <span className="shrink-0 opacity-80 [&_svg]:h-4 [&_svg]:w-4">{item.icon}</span> : null}
-          <span className="truncate">{item.label}</span>
+          <span className="truncate">{localize(item.label)}</span>
         </span>
         {item.badge ? <span className="shrink-0 text-xs font-semibold tabular-nums">{item.badge}</span> : null}
       </>
@@ -204,7 +209,7 @@ export function AccountDropdown({
       ref={menuRef}
       id={menuId}
       role="menu"
-      aria-label="Account menu"
+      aria-label={surfaceCopy.publicAccount.accountMenu}
       onKeyDown={handleKeyDown}
       className={cn(
         "absolute right-0 z-[60] mt-2.5 w-[min(280px,calc(100vw-1.5rem))] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
@@ -246,11 +251,11 @@ export function AccountDropdown({
       </div>
       <div className="py-1.5">
         <Link href={accountHref} role="menuitem" tabIndex={0} className={rowBase} onClick={close}>
-          <LayoutDashboard className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> Profile & account
+          <LayoutDashboard className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize("Profile & account")}
         </Link>
         {preferencesHref ? (
           <Link href={preferencesHref} role="menuitem" tabIndex={0} className={rowBase} onClick={close}>
-            <Globe className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> Language & preferences
+            <Globe className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize("Language & preferences")}
           </Link>
         ) : null}
         {menuItems.length > 0 ? <div role="separator" className={cn("mx-4 my-1.5 h-px", toneSep(tone))} /> : null}
@@ -260,7 +265,7 @@ export function AccountDropdown({
         <div className={cn("py-1.5", toneFooter(tone))}>
           {settingsHref ? (
             <Link href={settingsHref} role="menuitem" tabIndex={0} className={rowBase} onClick={close}>
-              <Settings2 className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> Settings
+              <Settings2 className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize("Settings")}
             </Link>
           ) : null}
           {showSignOut ? (
@@ -277,12 +282,12 @@ export function AccountDropdown({
             >
               <ButtonPendingContent
                 pending={signingOut}
-                pendingLabel="Signing out..."
-                spinnerLabel="Signing out"
+                pendingLabel={surfaceCopy.publicAccount.signingOut}
+                spinnerLabel={surfaceCopy.publicAccount.signOut}
               >
                 <>
                   <LogOut className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-                  Sign out
+                  {surfaceCopy.publicAccount.signOut}
                 </>
               </ButtonPendingContent>
             </button>

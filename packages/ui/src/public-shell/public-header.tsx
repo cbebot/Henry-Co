@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn } from "../lib/cn";
 import { ThemeToggle } from "../public/theme-toggle";
 import { HenryCoPublicSurfaceTokens } from "./surface-tokens";
@@ -118,7 +120,10 @@ export function PublicHeader({
 }: PublicHeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const surfaceCopy = getSurfaceCopy(locale);
   const floating = variant === "floating";
+  const localize = (label: string) => translateSurfaceLabel(locale, label);
 
   useEffect(() => {
     if (!open) return;
@@ -210,17 +215,17 @@ export function PublicHeader({
     <>
       {auxLink ? (
         <Link href={auxLink.href} className={auxDesktopClass}>
-          {auxLink.label}
+          {localize(auxLink.label)}
         </Link>
       ) : null}
       {secondaryCta ? (
         <Link href={secondaryCta.href} className={secondaryDesktopClass}>
-          {secondaryCta.label}
+          {localize(secondaryCta.label)}
         </Link>
       ) : null}
       {primaryCta ? (
         <Link href={primaryCta.href} className={primaryDesktopClass}>
-          {primaryCta.label}
+          {localize(primaryCta.label)}
         </Link>
       ) : null}
     </>
@@ -313,11 +318,11 @@ export function PublicHeader({
               rel="noreferrer"
               className={barClass}
             >
-              {item.label}
+              {localize(item.label)}
             </a>
           ) : (
             <Link key={item.label} href={item.href} className={barClass} aria-current={active ? "page" : undefined}>
-              {item.label}
+              {localize(item.label)}
             </Link>
           );
         })}
@@ -340,7 +345,7 @@ export function PublicHeader({
           )}
           aria-expanded={open}
           aria-controls="henryco-public-mobile-nav"
-          aria-label={open ? "Close menu" : "Open menu"}
+          aria-label={open ? surfaceCopy.publicHeader.closeMenu : surfaceCopy.publicHeader.openMenu}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -365,7 +370,7 @@ export function PublicHeader({
         )}
       >
         <p className="px-1 pb-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
-          Menu
+          {surfaceCopy.publicHeader.menu}
         </p>
         {mobileSheetBeforeNav}
 
@@ -383,7 +388,7 @@ export function PublicHeader({
               rel="noreferrer"
               className={sheetClass}
             >
-              {item.label}
+              {localize(item.label)}
             </a>
           ) : (
             <Link
@@ -393,7 +398,7 @@ export function PublicHeader({
               className={sheetClass}
               aria-current={active ? "page" : undefined}
             >
-              {item.label}
+              {localize(item.label)}
             </Link>
           );
         })}
@@ -403,7 +408,7 @@ export function PublicHeader({
 
         <div className="mt-3 border-t border-zinc-200/70 pt-3 dark:border-zinc-800/80">
           <p className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-400 dark:text-zinc-500">
-            Actions
+            {surfaceCopy.publicHeader.actions}
           </p>
           <div className="flex flex-col gap-2">
             {showAccountInMobileSheetFooter ? (
@@ -411,17 +416,17 @@ export function PublicHeader({
             ) : null}
             {auxLink ? (
               <Link href={auxLink.href} onClick={() => setOpen(false)} className={auxSheetClass}>
-                {auxLink.label}
+                {localize(auxLink.label)}
               </Link>
             ) : null}
             {secondaryCta ? (
               <Link href={secondaryCta.href} onClick={() => setOpen(false)} className={secondarySheetClass}>
-                {secondaryCta.label}
+                {localize(secondaryCta.label)}
               </Link>
             ) : null}
             {primaryCta ? (
               <Link href={primaryCta.href} onClick={() => setOpen(false)} className={primarySheetClass}>
-                {primaryCta.label}
+                {localize(primaryCta.label)}
               </Link>
             ) : null}
           </div>
@@ -451,7 +456,7 @@ export function PublicHeader({
       {open ? (
         <button
           type="button"
-          aria-label="Close menu"
+          aria-label={surfaceCopy.publicHeader.closeMenu}
           className="fixed inset-0 z-40 bg-zinc-950/45 lg:hidden"
           onClick={() => setOpen(false)}
         />

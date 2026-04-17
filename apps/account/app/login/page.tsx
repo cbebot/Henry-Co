@@ -1,12 +1,18 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getAuthCopy } from "@henryco/i18n";
 import LoginForm from "@/components/auth/LoginForm";
 import Logo from "@/components/brand/Logo";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { resolveAuthenticatedDestination } from "@/lib/post-auth-routing";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
-export const metadata = { title: "Sign In — Henry & Co." };
+export async function generateMetadata() {
+  const locale = await getAccountAppLocale();
+  const copy = getAuthCopy(locale);
+  return { title: `${copy.login.submitButton} — Henry & Co.` };
+}
 
 export default async function LoginPage({
   searchParams,
@@ -35,6 +41,8 @@ export default async function LoginPage({
   }
 
   const signupHref = params.next ? `/signup?next=${encodeURIComponent(params.next)}` : "/signup";
+  const locale = await getAccountAppLocale();
+  const copy = getAuthCopy(locale);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4">
@@ -43,9 +51,9 @@ export default async function LoginPage({
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center">
             <Logo size={48} />
           </div>
-          <h1 className="acct-display text-2xl">Welcome back</h1>
+          <h1 className="acct-display text-2xl">{copy.login.heading}</h1>
           <p className="mt-1.5 text-sm text-[var(--acct-muted)]">
-            Sign in to your HenryCo account
+            {copy.login.subheading}
           </p>
         </div>
 
@@ -54,9 +62,9 @@ export default async function LoginPage({
         </Suspense>
 
         <p className="mt-6 text-center text-xs text-[var(--acct-muted)]">
-          Don&apos;t have an account?{" "}
+          {copy.login.signupPrompt}{" "}
           <a href={signupHref} className="font-medium text-[var(--acct-gold)] hover:underline">
-            Create one
+            {copy.login.signupCta}
           </a>
         </p>
       </div>

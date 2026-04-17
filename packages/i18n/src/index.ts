@@ -7,6 +7,7 @@ export * from "./state-copy";
 export * from "./marketplace-copy";
 export * from "./jobs-copy";
 export * from "./care-copy";
+export * from "./surface-copy";
 export * from "./resolve-locale";
 export * from "./cookie";
 export * from "./locale-route";

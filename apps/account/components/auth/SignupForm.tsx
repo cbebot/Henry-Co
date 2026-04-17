@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
-import { getActiveCountries } from "@henryco/i18n";
+import { formatSurfaceTemplate, getActiveCountries, getAuthCopy, getSurfaceCopy } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { normalizeTrustedRedirect } from "@henryco/config";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
@@ -17,19 +18,15 @@ const COUNTRIES = getActiveCountries().map((country) => ({
   timezone: country.timezone,
 }));
 
-const CONTACT_PREFS = [
-  { value: "email", label: "Email" },
-  { value: "whatsapp", label: "WhatsApp" },
-  { value: "phone", label: "Phone call" },
-  { value: "in_app", label: "In-app only" },
-];
-
 function buildLoginHref(next: string | null) {
   const safeNext = normalizeTrustedRedirect(next);
   return safeNext === "/" ? "/login" : `/login?next=${encodeURIComponent(safeNext)}`;
 }
 
 export default function SignupForm() {
+  const locale = useHenryCoLocale();
+  const authCopy = getAuthCopy(locale);
+  const surfaceCopy = getSurfaceCopy(locale);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,16 +44,22 @@ export default function SignupForm() {
   const next = searchParams.get("next");
 
   const selectedCountry = COUNTRIES.find((c) => c.code === country);
+  const CONTACT_PREFS = [
+    { value: "email", label: surfaceCopy.accountForms.contactEmail },
+    { value: "whatsapp", label: surfaceCopy.accountForms.contactWhatsapp },
+    { value: "phone", label: surfaceCopy.accountForms.contactPhone },
+    { value: "in_app", label: surfaceCopy.accountForms.contactInApp },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!fullName.trim()) { setError("Full name is required."); return; }
-    if (!email.trim()) { setError("Email is required."); return; }
-    if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
-    if (password !== confirmPassword) { setError("Passwords do not match. Check the confirmation field."); return; }
-    if (!termsAccepted) { setError("Please accept the terms and privacy policy."); return; }
+    if (!fullName.trim()) { setError(surfaceCopy.accountForms.fullNameRequired); return; }
+    if (!email.trim()) { setError(surfaceCopy.accountForms.emailRequired); return; }
+    if (password.length < 8) { setError(authCopy.errors.passwordTooShort); return; }
+    if (password !== confirmPassword) { setError(surfaceCopy.accountForms.passwordsDoNotMatch); return; }
+    if (!termsAccepted) { setError(surfaceCopy.accountForms.acceptTermsRequired); return; }
 
     setLoading(true);
     try {
@@ -78,10 +81,10 @@ export default function SignupForm() {
         },
       });
 
-      if (authError) { setError(mapAccountAuthMessage(authError.message, "sign_up")); return; }
+      if (authError) { setError(mapAccountAuthMessage(authError.message, "sign_up", locale)); return; }
       setSuccess(true);
     } catch {
-      setError("We couldn't create your account right now. Please try again.");
+      setError(surfaceCopy.accountForms.createAccountUnavailable);
     } finally {
       setLoading(false);
     }
@@ -93,12 +96,12 @@ export default function SignupForm() {
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--acct-green-soft)]">
           <CheckCircle2 size={24} className="text-[var(--acct-green)]" />
         </div>
-        <h2 className="text-lg font-semibold">Check your email</h2>
+        <h2 className="text-lg font-semibold">{surfaceCopy.accountForms.checkEmailTitle}</h2>
         <p className="mt-2 text-sm text-[var(--acct-muted)]">
-          We&apos;ve sent a verification link to <strong>{email}</strong>. Click it to activate your account.
+          {formatSurfaceTemplate(surfaceCopy.accountForms.verificationSent, { email })}
         </p>
         <button onClick={() => router.push(buildLoginHref(next))} className="acct-button-secondary mt-4">
-          Back to sign in
+          {surfaceCopy.accountForms.backToSignIn}
         </button>
       </div>
     );
@@ -114,39 +117,39 @@ export default function SignupForm() {
 
       <div className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Full name</label>
+          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.fullNameLabel}</label>
           <input
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             className="acct-input"
-            placeholder="Your full name"
+            placeholder={surfaceCopy.accountForms.fullNamePlaceholder}
             required
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Email</label>
+          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.emailLabel}</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="acct-input"
-            placeholder="you@example.com"
+            placeholder={surfaceCopy.accountForms.emailPlaceholder}
             required
             autoComplete="email"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Password</label>
+          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.passwordLabel}</label>
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="acct-input pr-10"
-              placeholder="Min. 8 characters"
+              placeholder={surfaceCopy.accountForms.minPasswordPlaceholder}
               required
               minLength={8}
               autoComplete="new-password"
@@ -162,14 +165,14 @@ export default function SignupForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Confirm password</label>
+          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.confirmPasswordLabel}</label>
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="acct-input pr-10"
-              placeholder="Re-enter your password"
+              placeholder={surfaceCopy.accountForms.confirmPasswordPlaceholder}
               required
               minLength={8}
               autoComplete="new-password"
@@ -178,7 +181,7 @@ export default function SignupForm() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
-              aria-label={showPassword ? "Hide passwords" : "Show passwords"}
+              aria-label={showPassword ? surfaceCopy.accountForms.hidePasswords : surfaceCopy.accountForms.showPasswords}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
@@ -187,7 +190,7 @@ export default function SignupForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Country</label>
+            <label className="mb-1.5 block text-sm font-medium">{surfaceCopy.accountForms.countryLabel}</label>
             <select
               value={country}
               onChange={(e) => setCountry(e.target.value)}
@@ -201,7 +204,7 @@ export default function SignupForm() {
             </select>
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Phone number</label>
+            <label className="mb-1.5 block text-sm font-medium">{surfaceCopy.accountForms.phoneLabel}</label>
             <div className="flex gap-2">
               <span className="flex items-center rounded-l-[var(--acct-radius)] border border-r-0 border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 text-sm text-[var(--acct-muted)]">
                 {selectedCountry?.dial}
@@ -211,7 +214,7 @@ export default function SignupForm() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
                 className="acct-input rounded-l-none"
-                placeholder="8012345678"
+                placeholder={surfaceCopy.accountForms.phonePlaceholder}
               />
             </div>
           </div>
@@ -219,12 +222,14 @@ export default function SignupForm() {
 
         <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
           {selectedCountry?.currency === "NGN"
-            ? "Your regional defaults will follow this country selection."
-            : `Your display defaults can follow ${selectedCountry?.currency}, but wallet settlement currently remains NGN-only until local payment rails go live.`}
+            ? surfaceCopy.accountForms.regionalDefaultsLocal
+            : formatSurfaceTemplate(surfaceCopy.accountForms.regionalDefaultsNgnOnly, {
+                currency: selectedCountry?.currency || "NGN",
+              })}
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Preferred contact method</label>
+          <label className="mb-2 block text-sm font-medium">{surfaceCopy.accountForms.preferredContactLabel}</label>
           <div className="grid grid-cols-2 gap-2">
             {CONTACT_PREFS.map((pref) => (
               <button
@@ -251,13 +256,13 @@ export default function SignupForm() {
             className="mt-0.5 h-4 w-4 rounded border-[var(--acct-line)] accent-[var(--acct-gold)]"
           />
           <span className="text-xs leading-relaxed text-[var(--acct-muted)]">
-            I agree to the HenryCo{" "}
+            {surfaceCopy.accountForms.termsAgreementStart}{" "}
             <a href="https://henrycogroup.com/terms" className="text-[var(--acct-gold)] hover:underline" target="_blank" rel="noopener">
-              Terms of Service
+              {surfaceCopy.accountForms.termsLink}
             </a>{" "}
-            and{" "}
+            {surfaceCopy.accountForms.termsAgreementMiddle}{" "}
             <a href="https://henrycogroup.com/privacy" className="text-[var(--acct-gold)] hover:underline" target="_blank" rel="noopener">
-              Privacy Policy
+              {surfaceCopy.accountForms.privacyLink}
             </a>
           </span>
         </label>
@@ -268,8 +273,8 @@ export default function SignupForm() {
         disabled={loading}
         className="acct-button-primary mt-6 w-full rounded-xl py-3"
       >
-        <ButtonPendingContent pending={loading} pendingLabel="Creating account..." spinnerLabel="Creating account">
-          Create account
+        <ButtonPendingContent pending={loading} pendingLabel={surfaceCopy.accountForms.createAccountBusy} spinnerLabel={authCopy.signup.submitButton}>
+          {authCopy.signup.submitButton}
         </ButtonPendingContent>
       </button>
     </form>

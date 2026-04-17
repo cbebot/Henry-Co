@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLearnPublicLocale } from "@/lib/locale-server";
@@ -30,7 +31,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen bg-[var(--learn-bg)] text-[var(--learn-ink)] antialiased">
-        <PublicThemeGuard>{children}</PublicThemeGuard>
+        <PublicThemeGuard>
+          <LocaleProvider locale={lang}>{children}</LocaleProvider>
+        </PublicThemeGuard>
       </body>
     </html>
   );

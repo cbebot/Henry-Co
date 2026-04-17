@@ -22,6 +22,7 @@ import type {
   PropertyListing,
   PropertyManagedRecord,
 } from "@/lib/property/types";
+import type { PropertyPublicCopy } from "@/lib/public-copy";
 
 export function PropertySectionIntro({
   kicker,
@@ -103,11 +104,14 @@ export function PropertyListingCard({
   listing,
   href,
   saved,
+  copy,
 }: {
   listing: PropertyListing;
   href?: string;
   saved?: boolean;
+  copy?: PropertyPublicCopy;
 }) {
+  const listingCopy = copy?.listingCard;
   const target = href || `/property/${listing.slug}`;
 
   return (
@@ -132,7 +136,7 @@ export function PropertyListingCard({
         </div>
         {saved ? (
           <div className="absolute right-4 top-4 rounded-full bg-[color:rgba(16,10,8,0.72)] px-3 py-1 text-xs font-semibold text-white">
-            Saved
+            {listingCopy?.saved ?? "Saved"}
           </div>
         ) : null}
       </div>
@@ -150,10 +154,10 @@ export function PropertyListingCard({
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-sm text-[var(--property-ink-soft)] md:grid-cols-4">
-          <Stat icon={<BedDouble className="h-4 w-4" />} value={listing.bedrooms ? `${listing.bedrooms} beds` : "Open plan"} />
-          <Stat icon={<Building2 className="h-4 w-4" />} value={listing.bathrooms ? `${listing.bathrooms} baths` : listing.kind} />
-          <Stat icon={<SquareStack className="h-4 w-4" />} value={listing.sizeSqm ? `${listing.sizeSqm} sqm` : "Premium fit"} />
-          <Stat icon={<CarFront className="h-4 w-4" />} value={listing.parkingSpaces ? `${listing.parkingSpaces} parking` : "No parking"} />
+          <Stat icon={<BedDouble className="h-4 w-4" />} value={listing.bedrooms ? `${listing.bedrooms} ${listingCopy?.beds ?? "beds"}` : listingCopy?.openPlan ?? "Open plan"} />
+          <Stat icon={<Building2 className="h-4 w-4" />} value={listing.bathrooms ? `${listing.bathrooms} ${listingCopy?.baths ?? "baths"}` : listing.kind} />
+          <Stat icon={<SquareStack className="h-4 w-4" />} value={listing.sizeSqm ? `${listing.sizeSqm} ${listingCopy?.sqm ?? "sqm"}` : listingCopy?.premiumFit ?? "Premium fit"} />
+          <Stat icon={<CarFront className="h-4 w-4" />} value={listing.parkingSpaces ? `${listing.parkingSpaces} ${listingCopy?.parking ?? "parking"}` : listingCopy?.noParking ?? "No parking"} />
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-4">
@@ -167,7 +171,7 @@ export function PropertyListingCard({
             href={target}
             className="property-button-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
           >
-            View
+            {listingCopy?.view ?? "View"}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -185,7 +189,16 @@ function Stat({ icon, value }: { icon: React.ReactNode; value: string }) {
   );
 }
 
-export function PropertyAreaCard({ area, count }: { area: PropertyArea; count: number }) {
+export function PropertyAreaCard({
+  area,
+  count,
+  copy,
+}: {
+  area: PropertyArea;
+  count: number;
+  copy?: PropertyPublicCopy;
+}) {
+  const areaCopy = copy?.areaCard;
   return (
     <article className="property-paper overflow-hidden rounded-[1.9rem]">
       <div className="bg-[radial-gradient(circle_at_top_left,rgba(232,184,148,0.26),transparent_40%),linear-gradient(135deg,rgba(191,122,71,0.22),rgba(18,13,10,0.06))] px-5 py-8">
@@ -201,22 +214,22 @@ export function PropertyAreaCard({ area, count }: { area: PropertyArea; count: n
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/10 p-4">
-            <div className="text-xs uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">Average rent</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">{areaCopy?.averageRent ?? "Average rent"}</div>
             <div className="mt-2 text-lg font-semibold text-[var(--property-ink)]">
               {formatCurrency(area.averageRent)}
             </div>
           </div>
           <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/10 p-4">
-            <div className="text-xs uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">Average sale</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-[var(--property-ink-muted)]">{areaCopy?.averageSale ?? "Average sale"}</div>
             <div className="mt-2 text-lg font-semibold text-[var(--property-ink)]">
               {formatCurrency(area.averageSale)}
             </div>
           </div>
         </div>
         <div className="flex items-center justify-between gap-4">
-          <div className="text-sm text-[var(--property-ink-soft)]">{count} live listings</div>
+          <div className="text-sm text-[var(--property-ink-soft)]">{count} {areaCopy?.liveListings ?? "live listings"}</div>
           <Link href={`/area/${area.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--property-accent-strong)]">
-            Explore area
+            {areaCopy?.exploreArea ?? "Explore area"}
             <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
@@ -526,10 +539,13 @@ export function PropertyQuickFacts({ listing }: { listing: PropertyListing }) {
 export function PropertyPortfolioStats({
   listings,
   managedRecords,
+  copy,
 }: {
   listings: PropertyListing[];
   managedRecords: PropertyManagedRecord[];
+  copy?: PropertyPublicCopy;
 }) {
+  const statsCopy = copy?.stats;
   const managed = listings.filter((item) => item.managedByHenryCo).length;
   const featured = listings.filter((item) => item.featured).length;
   const portfolioValue = managedRecords.reduce((sum, item) => sum + item.portfolioValue, 0);
@@ -537,30 +553,30 @@ export function PropertyPortfolioStats({
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <div className="property-paper rounded-[1.8rem] p-5">
-        <div className="property-kicker">Managed stock</div>
+        <div className="property-kicker">{statsCopy?.managedStock ?? "Managed stock"}</div>
         <div className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[var(--property-ink)]">
           {managed}
         </div>
         <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-          Listings currently running through HenryCo managed-property rails.
+          {statsCopy?.managedStockBody ?? "Listings currently running through HenryCo managed-property rails."}
         </p>
       </div>
       <div className="property-paper rounded-[1.8rem] p-5">
-        <div className="property-kicker">Featured surfaces</div>
+        <div className="property-kicker">{statsCopy?.featuredSurfaces ?? "Featured surfaces"}</div>
         <div className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[var(--property-ink)]">
           {featured}
         </div>
         <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-          Listings currently elevated across editorial and campaign surfaces.
+          {statsCopy?.featuredSurfacesBody ?? "Listings currently elevated across editorial and campaign surfaces."}
         </p>
       </div>
       <div className="property-paper rounded-[1.8rem] p-5">
-        <div className="property-kicker">Managed value</div>
+        <div className="property-kicker">{statsCopy?.managedValue ?? "Managed value"}</div>
         <div className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[var(--property-ink)]">
           {formatCompactNumber(portfolioValue)}
         </div>
         <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-          Combined managed-property portfolio value under HenryCo trust operations.
+          {statsCopy?.managedValueBody ?? "Combined managed-property portfolio value under HenryCo trust operations."}
         </p>
       </div>
     </div>

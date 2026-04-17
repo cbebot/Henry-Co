@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { JobPost } from "@/lib/jobs/types";
+import type { JobsPublicCopy } from "@/lib/public-copy";
 import { StatusPill } from "@/components/workspace-shell";
 
 function postedLabel(value: string) {
@@ -19,24 +20,39 @@ function postedLabel(value: string) {
   return new Intl.DateTimeFormat("en-NG", { day: "numeric", month: "short" }).format(new Date(value));
 }
 
-export function JobCard({ job }: { job: JobPost }) {
+const DEFAULT_COPY: JobsPublicCopy["card"] = {
+  internal: "Internal",
+  verifiedEmployer: "Verified employer",
+  featured: "Featured",
+  highTrust: "High trust",
+  response: "response",
+  applicants: "Applicants",
+  soFar: "so far",
+  compensation: "Compensation discussed in process",
+  verified: "Verified employer",
+  inProgress: "Verification in progress",
+  posted: "Posted",
+  viewRole: "View role",
+};
+
+export function JobCard({ job, copy = DEFAULT_COPY }: { job: JobPost; copy?: JobsPublicCopy["card"] }) {
   return (
     <article className="jobs-panel rounded-[2rem] p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_26px_60px_rgba(10,31,34,0.08)]">
       <div className="flex flex-wrap items-center gap-2">
-        {job.internal ? <StatusPill label="Internal" tone="good" /> : null}
-        {job.employerVerification === "verified" ? <StatusPill label="Verified employer" tone="neutral" /> : null}
-        {job.featured ? <StatusPill label="Featured" tone="warn" /> : null}
+        {job.internal ? <StatusPill label={copy.internal} tone="good" /> : null}
+        {job.employerVerification === "verified" ? <StatusPill label={copy.verifiedEmployer} tone="neutral" /> : null}
+        {job.featured ? <StatusPill label={copy.featured} tone="warn" /> : null}
         <span className="rounded-full border border-[var(--jobs-line)] bg-[var(--jobs-paper-soft)] px-3 py-1 text-xs font-semibold text-[var(--jobs-ink)]">
           {job.categoryName}
         </span>
         {job.employerTrustScore >= 70 ? (
           <span className="rounded-full bg-[var(--jobs-success-soft)] px-3 py-1 text-xs font-semibold text-[var(--jobs-success)]">
-            High trust
+            {copy.highTrust}
           </span>
         ) : null}
         {job.employerResponseSlaHours ? (
           <span className="rounded-full bg-[var(--jobs-paper-soft)] px-3 py-1 text-xs font-semibold text-[var(--jobs-muted)]">
-            ~{job.employerResponseSlaHours}h response
+            ~{job.employerResponseSlaHours}h {copy.response}
           </span>
         ) : null}
       </div>
@@ -53,10 +69,10 @@ export function JobCard({ job }: { job: JobPost }) {
           </div>
           <div className="mt-6 text-right">
             <div className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--jobs-muted)]">
-              Applicants
+              {copy.applicants}
             </div>
             <div className="mt-2 text-2xl font-semibold">{job.applicationCount}</div>
-            <div className="text-xs text-[var(--jobs-muted)]">so far</div>
+            <div className="text-xs text-[var(--jobs-muted)]">{copy.soFar}</div>
           </div>
         </div>
       </div>
@@ -95,20 +111,20 @@ export function JobCard({ job }: { job: JobPost }) {
 
       <div className="mt-6 flex flex-col gap-4 border-t border-[var(--jobs-line)] pt-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <p className="text-sm font-semibold">{job.salaryLabel || "Compensation discussed in process"}</p>
+          <p className="text-sm font-semibold">{job.salaryLabel || copy.compensation}</p>
           <p className="text-xs text-[var(--jobs-muted)]">
             <span className="inline-flex items-center gap-1">
               <ShieldCheck className="h-3.5 w-3.5" />
-              {job.employerVerification === "verified" ? "Verified employer" : "Verification in progress"}
+              {job.employerVerification === "verified" ? copy.verified : copy.inProgress}
             </span>
           </p>
           <p className="text-xs text-[var(--jobs-muted)]">
             <Clock3 className="mr-1 inline-block h-3.5 w-3.5" />
-            Posted {postedLabel(job.postedAt)}
+            {copy.posted} {postedLabel(job.postedAt)}
           </p>
         </div>
         <Link href={`/jobs/${job.slug}`} className="jobs-button-secondary inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold">
-          View role <ArrowRight className="ml-1 inline-block h-4 w-4" />
+          {copy.viewRole} <ArrowRight className="ml-1 inline-block h-4 w-4" />
         </Link>
       </div>
     </article>

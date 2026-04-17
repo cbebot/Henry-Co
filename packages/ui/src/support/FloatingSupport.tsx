@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, type FormEvent } from "react";
+import { formatSurfaceTemplate, getSurfaceCopy } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 
 type SupportMessage = {
   id: string;
@@ -87,12 +89,15 @@ export function FloatingSupport({
   supportUrl,
   supportEmail,
 }: FloatingSupportProps) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const surfaceCopy = getSurfaceCopy(locale);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const defaultKnowledgeActive = knowledge === DEFAULT_KNOWLEDGE;
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -138,16 +143,17 @@ export function FloatingSupport({
 
     await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 400));
 
-    const knowledgeAnswer = matchKnowledge(text, knowledge);
+    const knowledgeAnswer =
+      locale === "en" || !defaultKnowledgeActive ? matchKnowledge(text, knowledge) : null;
 
     if (knowledgeAnswer) {
       addMessage("assistant", knowledgeAnswer);
     } else {
       const escalation = supportUrl
-        ? `I am not sure about that specific question. You can contact our support team here: ${supportUrl}`
+        ? formatSurfaceTemplate(surfaceCopy.floatingSupport.fallbackWithUrl, { url: supportUrl })
         : supportEmail
-          ? `I am not sure about that one. Please email ${supportEmail} and our team will help you directly.`
-          : "I am not sure about that specific question. Please reach out to our support team for more detailed help.";
+          ? formatSurfaceTemplate(surfaceCopy.floatingSupport.fallbackWithEmail, { email: supportEmail })
+          : surfaceCopy.floatingSupport.fallbackGeneral;
       addMessage("assistant", escalation);
     }
 
@@ -158,7 +164,7 @@ export function FloatingSupport({
     <>
       <button
         onClick={() => setOpen((value) => !value)}
-        aria-label={open ? "Close help" : "Get help"}
+        aria-label={open ? surfaceCopy.floatingSupport.closeHelp : surfaceCopy.floatingSupport.openHelp}
         className="fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"
         style={{ backgroundColor: accent }}
       >
@@ -187,12 +193,12 @@ export function FloatingSupport({
               H
             </div>
             <div className="flex-1">
-              <div className="text-sm font-semibold text-white">{divisionName} Help</div>
-              <div className="text-xs text-white/70">Ask us anything</div>
+              <div className="text-sm font-semibold text-white">{divisionName}</div>
+              <div className="text-xs text-white/70">{surfaceCopy.floatingSupport.askAnything}</div>
             </div>
             <button
               onClick={close}
-              aria-label="Close"
+              aria-label={surfaceCopy.floatingSupport.closeHelp}
               className="rounded-lg p-1 text-white/70 transition hover:bg-white/20 hover:text-white"
             >
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
@@ -206,10 +212,10 @@ export function FloatingSupport({
               <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
                 <div className="text-2xl">Hi</div>
                 <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  How can we help?
+                  {surfaceCopy.floatingSupport.greeting}
                 </p>
                 <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                  Ask about services, orders, bookings, or account flows.
+                  {surfaceCopy.floatingSupport.greetingBody}
                 </p>
               </div>
             )}
@@ -248,7 +254,7 @@ export function FloatingSupport({
                 ref={inputRef}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Type a message..."
+                placeholder={surfaceCopy.floatingSupport.placeholder}
                 className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm outline-none transition focus:border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 dark:focus:border-zinc-600"
               />
               <button
@@ -267,7 +273,7 @@ export function FloatingSupport({
                 href={supportUrl}
                 className="mt-2 block text-center text-xs text-zinc-400 transition hover:text-zinc-600 dark:hover:text-zinc-300"
               >
-                Need more help? Contact support directly
+                {surfaceCopy.floatingSupport.contactSupportDirectly}
               </a>
             )}
           </form>

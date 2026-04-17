@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import type { AppLocale } from "./locales";
+import { getSurfaceCopy, type SurfaceCopy } from "./surface-copy";
 
 type LocaleContextValue = {
   locale: AppLocale;
@@ -30,4 +31,8 @@ export function useHenryCoLocale(): AppLocale {
 
 export function useOptionalHenryCoLocale(): AppLocale | null {
   return useContext(LocaleContext)?.locale ?? null;
+}
+
+export function useHenryCoSurfaceCopy(): SurfaceCopy {
+  return getSurfaceCopy(useHenryCoLocale());
 }

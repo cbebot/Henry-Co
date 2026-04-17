@@ -12,9 +12,12 @@ import {
 } from "lucide-react";
 import { MarketplaceCartDrawer } from "@/components/marketplace/cart-drawer";
 import { getAccountUrl } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
 import { MarketplaceToastStack } from "@/components/marketplace/toast-stack";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 import { cn } from "@/lib/utils";
 import type {
   MarketplaceCampaign,
@@ -44,7 +47,9 @@ export function PublicSurface({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function PublicFooter() {
+export async function PublicFooter() {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
   return (
     <footer className="mt-20 border-t border-[var(--market-line)] bg-[rgba(2,4,10,0.84)] text-[var(--market-paper-white)] backdrop-blur-2xl">
       <div className="mx-auto max-w-[1480px] px-4 py-14 sm:px-6 xl:px-8">
@@ -60,11 +65,10 @@ export function PublicFooter() {
               </div>
               <div className="space-y-4">
                 <p className="max-w-3xl font-[family:var(--font-marketplace-display)] text-[2.8rem] leading-[1.02] tracking-[-0.05em] text-[var(--market-paper-white)] sm:text-[3.4rem]">
-                  Dark-glass commerce with cleaner trust, calmer hierarchy, and sharper post-order care.
+                  {copy.footer.brandSubtitle}
                 </p>
                 <p className="max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-                  HenryCo Marketplace is built for high-trust buying, verified sellers, and a cleaner
-                  experience from checkout to delivery.
+                  {copy.footer.brandBody}
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -72,50 +76,43 @@ export function PublicFooter() {
                   href="/search"
                   className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
-                  Explore the catalog <ArrowRight className="h-4 w-4" />
+                  {copy.home.primaryCta} <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href={getAccountUrl("/marketplace")}
                   className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
-                  Open HenryCo account <ArrowUpRight className="h-4 w-4" />
+                  {copy.home.secondaryCta} <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
 
             <FooterColumn
-              title="Shop"
-              links={[
-                { href: "/search", label: "Search the marketplace" },
-                { href: "/deals", label: "Deals and timed edits" },
-                { href: "/trust", label: "Trust passport" },
-                { href: "/policies/buyer-protection", label: "Buyer protection policy" },
-                { href: "/help", label: "Support and resolution" },
-              ]}
+              title={copy.footer.shopTitle}
+              links={copy.footer.shopLinks}
             />
 
             <FooterColumn
-              title="Sell"
+              title={copy.footer.sellTitle}
               links={[
-                { href: "/sell", label: "Why sell on HenryCo" },
-                { href: "/sell/pricing", label: "Seller pricing and fees" },
-                { href: "/policies/seller-policy", label: "Seller policy" },
-                { href: "/account/seller-application", label: "Seller application" },
-                { href: "/vendor", label: "Vendor workspace" },
-                { href: getAccountUrl("/marketplace"), label: "HenryCo account", external: true },
+                ...copy.footer.sellLinks,
+                {
+                  href: getAccountUrl("/marketplace"),
+                  label: translateSurfaceLabel(locale, "HenryCo account"),
+                  external: true,
+                },
               ]}
             />
 
             <div className="space-y-4 text-sm text-[var(--market-muted)]">
               <p className="font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
-                Support
+                {copy.footer.supportTitle}
               </p>
               <p>marketplace@henrycogroup.com</p>
               <p>+234 913 395 7084</p>
               <p>marketplace.henrycogroup.com</p>
               <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7">
-                Orders, seller conversations, support updates, and payment records stay connected in
-                one HenryCo account.
+                {copy.footer.supportBody}
               </div>
             </div>
           </div>
@@ -201,7 +198,14 @@ export function ProductCard({ product }: { product: MarketplaceProduct }) {
   return <ProductCardClient product={product} />;
 }
 
-export function VendorCard({ vendor }: { vendor: MarketplaceVendor }) {
+export function VendorCard({
+  vendor,
+  copy,
+}: {
+  vendor: MarketplaceVendor;
+  copy?: ReturnType<typeof getMarketplacePublicCopy>;
+}) {
+  const localeCopy = copy ?? getMarketplacePublicCopy("en");
   const imageSrc =
     vendor.heroImage ||
     "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80";
@@ -238,15 +242,15 @@ export function VendorCard({ vendor }: { vendor: MarketplaceVendor }) {
           <p className="text-sm leading-7 text-[var(--market-muted)]">{vendor.description}</p>
         </div>
         <div className="grid grid-cols-3 gap-3 text-center">
-          <TrustStat label="Trust" value={`${vendor.trustScore}%`} />
-          <TrustStat label="SLA" value={`${vendor.responseSlaHours}h`} />
-          <TrustStat label="Reviews" value={vendor.reviewScore.toFixed(1)} />
+          <TrustStat label={localeCopy.trustPassport.verification} value={`${vendor.trustScore}%`} />
+          <TrustStat label={localeCopy.trustPassport.responseSla} value={`${vendor.responseSlaHours}h`} />
+          <TrustStat label={localeCopy.trustPassport.title} value={vendor.reviewScore.toFixed(1)} />
         </div>
         <Link
           href={`/store/${vendor.slug}`}
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
         >
-          Visit store <ChevronRight className="h-4 w-4" />
+          {localeCopy.trustPassport.visitStore} <ChevronRight className="h-4 w-4" />
         </Link>
       </div>
     </article>
@@ -262,7 +266,14 @@ function TrustStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function CollectionCard({ collection }: { collection: MarketplaceCollection }) {
+export function CollectionCard({
+  collection,
+  copy,
+}: {
+  collection: MarketplaceCollection;
+  copy?: ReturnType<typeof getMarketplacePublicCopy>;
+}) {
+  const localeCopy = copy ?? getMarketplacePublicCopy("en");
   return (
     <article className="market-panel rounded-[1.95rem] p-6">
       <p className="market-kicker">{collection.kicker}</p>
@@ -275,7 +286,7 @@ export function CollectionCard({ collection }: { collection: MarketplaceCollecti
         href={`/collections/${collection.slug}`}
         className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
       >
-        Explore collection <ArrowRight className="h-4 w-4" />
+        {localeCopy.home.categoryLink} <ArrowRight className="h-4 w-4" />
       </Link>
     </article>
   );
@@ -309,34 +320,41 @@ export function CampaignBanner({ campaign }: { campaign: MarketplaceCampaign }) 
   );
 }
 
-export function TrustPassport({ vendor }: { vendor: MarketplaceVendor }) {
+export function TrustPassport({
+  vendor,
+  copy,
+}: {
+  vendor: MarketplaceVendor;
+  copy?: ReturnType<typeof getMarketplacePublicCopy>;
+}) {
+  const localeCopy = copy ?? getMarketplacePublicCopy("en");
   return (
     <section className="market-paper rounded-[2rem] p-6 sm:p-8">
       <div className="flex items-center gap-3">
         <ShieldCheck className="h-5 w-5 text-[var(--market-brass)]" />
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-          Trust Passport
+          {localeCopy.trustPassport.title}
         </p>
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <TrustPassportCard
           icon={<CheckCircle2 className="h-5 w-5" />}
-          label="Verification"
+          label={localeCopy.trustPassport.verification}
           value={vendor.verificationLevel}
         />
         <TrustPassportCard
           icon={<Truck className="h-5 w-5" />}
-          label="Fulfillment"
+          label={localeCopy.trustPassport.fulfillment}
           value={`${vendor.fulfillmentRate}%`}
         />
         <TrustPassportCard
           icon={<Store className="h-5 w-5" />}
-          label="Dispute Rate"
+          label={localeCopy.trustPassport.disputeRate}
           value={`${vendor.disputeRate}%`}
         />
         <TrustPassportCard
           icon={<ShieldCheck className="h-5 w-5" />}
-          label="Response SLA"
+          label={localeCopy.trustPassport.responseSla}
           value={`${vendor.responseSlaHours}h`}
         />
       </div>
@@ -362,7 +380,7 @@ function TrustPassportCard({
   );
 }
 
-export function WorkspaceShell({
+export async function WorkspaceShell({
   title,
   description,
   nav,
@@ -375,10 +393,12 @@ export function WorkspaceShell({
   actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
   return (
     <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[300px,1fr] xl:px-8">
       <aside className="market-panel rounded-[2.1rem] p-4">
-        <p className="market-kicker">Workspace</p>
+        <p className="market-kicker">{copy.workspace.kicker}</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">{title}</h1>
         <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{description}</p>
         <nav className="mt-6 space-y-2">
@@ -403,7 +423,7 @@ export function WorkspaceShell({
         <section className="market-panel rounded-[2.1rem] p-6 sm:p-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="market-kicker">Operator Surface</p>
+              <p className="market-kicker">{copy.workspace.operatorKicker}</p>
               <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
                 {title}
               </h2>

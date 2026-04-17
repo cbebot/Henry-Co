@@ -1,3 +1,5 @@
+import { getAuthCopy, type AppLocale } from "@henryco/i18n";
+
 export type AccountAuthMessageContext =
   | "sign_in"
   | "sign_up"
@@ -5,61 +7,64 @@ export type AccountAuthMessageContext =
   | "reset_password"
   | "change_password";
 
-function fallbackMessage(context: AccountAuthMessageContext) {
+function fallbackMessage(context: AccountAuthMessageContext, locale: AppLocale) {
+  const copy = getAuthCopy(locale);
   if (context === "forgot_password") {
-    return "We couldn't send the reset link right now. Please try again shortly.";
+    return copy.errors.generic;
   }
 
   if (context === "reset_password" || context === "change_password") {
-    return "We couldn't update your password right now. Please try again.";
+    return copy.errors.sessionExpired;
   }
 
-  return "We couldn't complete that right now. Please try again.";
+  return copy.errors.generic;
 }
 
 export function mapAccountAuthMessage(
   message: string | null | undefined,
-  context: AccountAuthMessageContext
+  context: AccountAuthMessageContext,
+  locale: AppLocale = "en"
 ) {
+  const copy = getAuthCopy(locale);
   const clean = String(message || "").trim();
   if (!clean) {
-    return fallbackMessage(context);
+    return fallbackMessage(context, locale);
   }
 
   if (/invalid login credentials/i.test(clean)) {
-    return "Email or password is incorrect.";
+    return copy.errors.invalidCredentials;
   }
 
   if (/email.*not.*confirm|confirm.*email/i.test(clean)) {
-    return "Check your inbox and confirm your email before signing in.";
+    return copy.errors.generic;
   }
 
   if (/too many requests|rate limit/i.test(clean)) {
-    return "Too many attempts right now. Please wait a moment and try again.";
+    return copy.errors.generic;
   }
 
   if (/database error|saving new user|creating new user/i.test(clean)) {
-    return "We couldn't finish online account setup just now. Email hello@henrycogroup.com and the HenryCo team will help you complete access.";
+    return copy.errors.generic;
   }
 
   if (/already registered|user already registered/i.test(clean)) {
-    return "This email is already linked to a HenryCo account. Sign in instead or reset your password.";
+    return copy.errors.generic;
   }
 
   if (/weak password|password should/i.test(clean)) {
-    return "Choose a stronger password with at least 8 characters.";
+    return copy.errors.passwordTooShort;
   }
 
   if (
     (context === "reset_password" || context === "change_password") &&
     /expired|session.*missing|session.*not found|invalid token|token has expired/i.test(clean)
   ) {
-    return "This password link has expired. Request a new reset email and try again.";
+    return copy.errors.sessionExpired;
   }
 
   if (context === "forgot_password" && /rate limit/i.test(clean)) {
-    return "We couldn't send another reset email just yet. Please wait a moment and try again.";
+    return copy.errors.generic;
   }
 
-  return clean;
+  return copy.errors.generic;
 }

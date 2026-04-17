@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Newsreader } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
+import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getJobsPublicLocale } from "@/lib/locale-server";
@@ -48,7 +49,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body
         className={`${display.variable} ${sans.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
       >
-        <PublicThemeGuard>{children}</PublicThemeGuard>
+        <PublicThemeGuard>
+          <LocaleProvider locale={lang}>{children}</LocaleProvider>
+        </PublicThemeGuard>
       </body>
     </html>
   );

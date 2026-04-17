@@ -7,6 +7,12 @@ export { getStateCopy, type StateCopy } from "./state-copy";
 export { getMarketplaceCopy, type MarketplaceCopy } from "./marketplace-copy";
 export { getJobsCopy, type JobsCopy } from "./jobs-copy";
 export { getCareCopy, type CareCopy } from "./care-copy";
+export {
+  getSurfaceCopy,
+  translateSurfaceLabel,
+  formatSurfaceTemplate,
+  type SurfaceCopy,
+} from "./surface-copy";
 export { deepLTranslate, deepLTranslateMany, isDeepLSupported, type DeepLTranslateResult } from "./deepl";
 export {
   formatDate,

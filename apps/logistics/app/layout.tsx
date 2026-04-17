@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Manrope } from "next/font/google";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
@@ -77,7 +78,9 @@ export default async function RootLayout({
     <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <PublicThemeGuard>
-          <LogisticsShell accountSlot={accountSlot}>{children}</LogisticsShell>
+          <LocaleProvider locale={lang}>
+            <LogisticsShell accountSlot={accountSlot}>{children}</LogisticsShell>
+          </LocaleProvider>
         </PublicThemeGuard>
       </body>
     </html>
