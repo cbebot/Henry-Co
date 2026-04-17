@@ -3,6 +3,7 @@ import "server-only";
 import { normalizeEmail } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
+import { isMissingPostgrestResourceError } from "@/lib/wallet-storage";
 
 type StudioTable =
   | "studio_projects"
@@ -261,6 +262,24 @@ async function readStudioFallbackRows<T extends Record<string, unknown>>(table: 
   }
 
   return [...merged.values()];
+}
+
+async function writeStudioFallbackRow(table: StudioTable, payload: Record<string, unknown>) {
+  const { error } = await admin().from("care_security_logs").insert({
+    event_type: `studio_store_${table}`,
+    route: "/studio/store",
+    role: "finance",
+    success: true,
+    details: {
+      record_id: cleanText(payload.id),
+      payload,
+      table,
+    },
+  } as never);
+
+  if (error) {
+    throw error;
+  }
 }
 
 async function readStudioRows<T extends Record<string, unknown>>(table: StudioTable, orderBy = "created_at") {
@@ -716,4 +735,54 @@ export async function getStudioPaymentRoom(userId: string, email: string | null,
       : null,
     paymentRail: await getSharedPaymentRail(),
   };
+}
+
+export async function persistStudioPaymentRecord(input: {
+  id: string;
+  projectId: string;
+  label: string;
+  amount: number;
+  currency: string;
+  status: string;
+  dueDate: string | null;
+  method: string;
+  proofUrl: string | null;
+  proofName: string | null;
+  milestoneId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}) {
+  const payload = {
+    id: input.id,
+    project_id: input.projectId,
+    label: input.label,
+    amount: input.amount,
+    currency: input.currency,
+    status: input.status,
+    due_date: input.dueDate,
+    method: input.method,
+    proof_url: input.proofUrl,
+    proof_name: input.proofName,
+    milestone_id: input.milestoneId,
+    created_at: input.createdAt,
+    updated_at: input.updatedAt,
+  };
+
+  if (await hasStudioTable("studio_payments")) {
+    const { error } = await admin().from("studio_payments").upsert(payload as never, {
+      onConflict: "id",
+    });
+
+    if (!error) {
+      return;
+    }
+
+    if (!isMissingPostgrestResourceError(error)) {
+      throw error;
+    }
+
+    studioTablePresence.set("studio_payments", false);
+  }
+
+  await writeStudioFallbackRow("studio_payments", payload);
 }
