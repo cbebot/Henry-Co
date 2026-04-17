@@ -112,9 +112,7 @@ function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function formatMoney(value: number | string) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function treatmentCharge(value: TreatmentType) {
   if (value === "stain") return 500;

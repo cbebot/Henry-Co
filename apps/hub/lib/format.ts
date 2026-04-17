@@ -1,11 +1,7 @@
+import { formatMoney, formatPrice, parseCurrencyConfig } from "@henryco/i18n";
+
 export function formatNaira(kobo: number): string {
-  const naira = kobo / 100;
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: naira % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(naira);
+  return formatMoney(kobo, "NGN");
 }
 
 export function formatCurrencyAmount(
@@ -18,11 +14,18 @@ export function formatCurrencyAmount(
   }
 ): string {
   const unit = options?.unit || "naira";
-  const normalized = unit === "kobo" ? amount / 100 : amount;
 
-  return new Intl.NumberFormat(currency === "NGN" ? "en-NG" : "en-US", {
+  if (!options?.notation && !options?.maximumFractionDigits) {
+    return unit === "kobo"
+      ? formatMoney(amount, currency)
+      : formatPrice(amount, currency);
+  }
+
+  const normalized = unit === "kobo" ? amount / 100 : amount;
+  const config = parseCurrencyConfig(currency);
+  return new Intl.NumberFormat(config.locale, {
     style: "currency",
-    currency,
+    currency: config.code,
     notation: options?.notation,
     minimumFractionDigits: normalized % 1 === 0 ? 0 : 2,
     maximumFractionDigits: options?.maximumFractionDigits ?? 2,

@@ -45,9 +45,7 @@ export const metadata: Metadata = {
     "Intake control room for booking lookup, garment registration, urgent handling, status movement, and payment recording.",
 };
 
-function formatMoney(value: number | string) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function formatDate(value?: string | null) {
   if (!value) return "—";

@@ -32,9 +32,7 @@ export const metadata: Metadata = {
     "Manager command dashboard for intake, live operations, inflow, and expense control.",
 };
 
-function formatMoney(value: number | string) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function formatDate(value?: string | null) {
   if (!value) return "—";

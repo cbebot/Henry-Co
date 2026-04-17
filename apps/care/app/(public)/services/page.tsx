@@ -16,9 +16,7 @@ export const metadata: Metadata = {
     "Explore garment care, home cleaning, office cleaning, pickup, delivery, and recurring services from HenryCo Care.",
 };
 
-function formatMoney(value: number | string) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 export default async function ServicesPage() {
   const catalog = await getCareBookingCatalog();

@@ -23,9 +23,7 @@ export const metadata: Metadata = {
     "Manager expense control room for recording operational costs with clean auditability.",
 };
 
-function formatMoney(value: number | string) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function formatDate(value?: string | null) {
   if (!value) return "—";

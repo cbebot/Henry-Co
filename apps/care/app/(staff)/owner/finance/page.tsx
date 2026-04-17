@@ -33,9 +33,7 @@ export const metadata: Metadata = {
     "Finance command center for revenue, expenses, approvals, trends, profit/loss, and operational alerts.",
 };
 
-function formatMoney(value: number) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function formatDateTime(value?: string | null) {
   if (!value) return "—";

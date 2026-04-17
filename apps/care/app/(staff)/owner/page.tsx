@@ -34,9 +34,7 @@ export const metadata: Metadata = {
     "Owner control room for bookings, finance, security, reviews, and company-wide operations.",
 };
 
-function formatMoney(value: number) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function formatDateTime(value?: string | null) {
   if (!value) return "—";

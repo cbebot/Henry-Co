@@ -13,9 +13,7 @@ export const metadata: Metadata = {
   description: "Support refunds, communication, and service recovery costs.",
 };
 
-function formatMoney(value: number) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 export default async function SupportExpensesPage() {
   await requireRoles(["owner", "support"]);

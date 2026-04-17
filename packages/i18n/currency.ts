@@ -58,3 +58,29 @@ export function formatMoney(
 
   return formatter.format(major);
 }
+
+/**
+ * Format a monetary amount stored in the major unit (e.g. 2500 NGN, not kobo)
+ * into a human-readable string. This is the variant most app-level code needs
+ * since prices in the DB are typically stored as major-unit numbers.
+ *
+ * @param amount - Amount in major currency unit (e.g. 2500 = ₦2,500.00)
+ * @param currencyCode - ISO 4217 code. Defaults to "NGN".
+ * @returns Formatted string, e.g. "₦2,500"
+ */
+export function formatPrice(
+  amount: number | string | null | undefined,
+  currencyCode: string = DEFAULT_CURRENCY,
+): string {
+  const num = Number(amount || 0);
+  const config = parseCurrencyConfig(currencyCode);
+
+  const formatter = new Intl.NumberFormat(config.locale, {
+    style: 'currency',
+    currency: config.code,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: config.decimals,
+  });
+
+  return formatter.format(num);
+}

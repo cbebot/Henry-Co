@@ -62,10 +62,4 @@ export function normalizePhone(value?: string | null) {
   return null;
 }
 
-export function formatCurrency(value: number, currency = "NGN") {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+export { formatPrice as formatCurrency } from "@henryco/i18n";

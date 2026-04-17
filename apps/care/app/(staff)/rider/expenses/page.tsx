@@ -13,9 +13,7 @@ export const metadata: Metadata = {
   description: "Rider fuel, toll, repair, and movement expense recording.",
 };
 
-function formatMoney(value: number) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 export default async function RiderExpensesPage() {
   await requireRoles(["owner", "manager", "rider"]);

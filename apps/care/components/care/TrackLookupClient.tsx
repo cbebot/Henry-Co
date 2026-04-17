@@ -93,9 +93,7 @@ function formatDate(value?: string | null) {
   });
 }
 
-function formatMoney(value?: number | null) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function extractReturnAddress(specialInstructions?: string | null) {
   const raw = String(specialInstructions || "").trim();

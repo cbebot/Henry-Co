@@ -9,6 +9,7 @@ export * from "./src/index";
 
 export {
   formatMoney,
+  formatPrice,
   parseCurrencyConfig,
   type CurrencyConfig,
 } from "./currency";

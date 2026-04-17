@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { maskEmail, maskPhone } from "@henryco/config";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
 import { StoreActionsClient } from "@/components/marketplace/store-actions-client";
 import { getMarketplaceVendorBySlug } from "@/lib/marketplace/data";
@@ -57,8 +58,8 @@ export default async function StorePage({
           </div>
           <div className="mt-6 rounded-[1.5rem] border border-[color:rgba(255,255,255,0.12)] bg-[color:rgba(255,255,255,0.04)] px-5 py-5">
             <p className="text-[11px] uppercase tracking-[0.2em] text-[color:rgba(255,255,255,0.56)]">Support</p>
-            <p className="mt-3 text-sm text-[color:rgba(255,255,255,0.72)]">{data.vendor.supportEmail}</p>
-            <p className="mt-2 text-sm text-[color:rgba(255,255,255,0.72)]">{data.vendor.supportPhone}</p>
+            <p className="mt-3 text-sm text-[color:rgba(255,255,255,0.72)]">{maskEmail(data.vendor.supportEmail)}</p>
+            <p className="mt-2 text-sm text-[color:rgba(255,255,255,0.72)]">{maskPhone(data.vendor.supportPhone)}</p>
           </div>
         </article>
       </section>

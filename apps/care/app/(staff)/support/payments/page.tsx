@@ -36,9 +36,7 @@ function readParam(value?: string | string[]) {
   return Array.isArray(value) ? String(value[0] || "").trim() : String(value || "").trim();
 }
 
-function formatMoney(value?: number | null) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function formatDateTime(value?: string | null) {
   if (!value) return "—";

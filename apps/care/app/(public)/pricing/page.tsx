@@ -21,9 +21,7 @@ export const metadata: Metadata = {
     "Transparent garment pricing, home cleaning packages, office cleaning packages, and service add-ons across HenryCo Care.",
 };
 
-function formatMoney(value: number | string) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 export default async function PricingPage() {
   const [settings, items, catalog] = await Promise.all([

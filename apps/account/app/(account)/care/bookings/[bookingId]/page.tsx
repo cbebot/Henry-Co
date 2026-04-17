@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, CalendarClock, ExternalLink, LifeBuoy, MapPin, Receipt, Sparkles, Wallet } from "lucide-react";
+import { formatPrice } from "@henryco/i18n";
 import { requireAccountUser } from "@/lib/auth";
 import { markNotificationsReadByActionUrl, markNotificationsReadByReference } from "@/lib/account-data";
 import { getDivisionInvoices, getDivisionSupportThreads } from "@/lib/division-data";
@@ -9,7 +10,7 @@ import { listLinkedCareBookingsForUser } from "@/lib/care-sync";
 import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
-function formatMoney(value: number | null | undefined) { return `₦${Number(value || 0).toLocaleString()}`; }
+function formatMoney(value: number | null | undefined) { return formatPrice(value); }
 function toneClasses(tone: "normal" | "warning" | "success") { return tone === "success" ? "border-emerald-400/25 bg-emerald-500/10 text-emerald-700" : tone === "warning" ? "border-amber-400/25 bg-amber-500/10 text-amber-700" : "border-sky-400/25 bg-sky-500/10 text-sky-700"; }
 function renderExternalAction(href: string, label: string) { return isExternalHref(href) ? <a href={href} target="_blank" rel="noopener noreferrer" className="acct-button-secondary rounded-xl">{label} <ExternalLink size={14} /></a> : <Link href={href} className="acct-button-secondary rounded-xl">{label}</Link>; }
 

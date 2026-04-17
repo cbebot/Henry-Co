@@ -1,20 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+export { formatPrice as formatCurrency } from "@henryco/i18n";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-
-export function formatCurrency(
-  amount: number,
-  currency: string = "NGN",
-  locale: string = "en-NG"
-) {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
 }
 
 export function formatDate(value?: string | null, locale: string = "en-NG") {

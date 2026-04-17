@@ -22,9 +22,7 @@ export const metadata: Metadata = {
   description: "Every cloth recorded online, searchable, archived cleanly, and structured for accountability.",
 };
 
-function formatMoney(value?: number | null) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 export default async function OwnerRecordsPage({
   searchParams,

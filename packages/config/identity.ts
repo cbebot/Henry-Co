@@ -86,6 +86,33 @@ export function phonesMatch(
   );
 }
 
+/**
+ * Mask an email address for display: shows first 2 characters + domain.
+ * e.g. "john@example.com" → "jo***@example.com"
+ */
+export function maskEmail(value?: string | null): string {
+  const email = normalizeEmail(value);
+  if (!email) return "hidden";
+
+  const [localPart, domain = ""] = email.split("@");
+  if (!localPart) return email;
+
+  const visible = localPart.slice(0, Math.min(2, localPart.length));
+  return `${visible}${"*".repeat(Math.max(1, localPart.length - visible.length))}@${domain}`;
+}
+
+/**
+ * Mask a phone number for display: shows only last 4 digits.
+ * e.g. "+2348024287292" → "**********7292"
+ */
+export function maskPhone(value?: string | null): string {
+  const phone = normalizePhone(value);
+  if (!phone) return "hidden";
+
+  const tail = phone.slice(-4);
+  return `${"*".repeat(Math.max(4, phone.length - 4))}${tail}`;
+}
+
 function authErrorCode(error: unknown) {
   if (!error || typeof error !== "object") return "";
   const value = "code" in error ? String((error as { code?: unknown }).code || "") : "";

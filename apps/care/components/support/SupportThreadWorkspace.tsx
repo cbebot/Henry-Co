@@ -139,10 +139,7 @@ function isImageAttachment(
   return String(attachment.mimeType || "").startsWith("image/");
 }
 
-function formatMoney(value?: number | null) {
-  if (value === null || value === undefined) return "—";
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function labelText(value?: string | null, fallback = "—") {
   const normalized = String(value || "")

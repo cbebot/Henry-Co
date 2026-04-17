@@ -24,6 +24,7 @@ import {
 } from "@/lib/care-data";
 import { getCarePublicChipUser } from "@/lib/care-public-viewer";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
+import { formatMoney } from "@/lib/format";
 
 export const revalidate = 60;
 
@@ -34,16 +35,6 @@ export const metadata: Metadata = {
   description:
     "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from HenryCo Care.",
 };
-
-const nairaFormatter = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  maximumFractionDigits: 0,
-});
-
-function formatMoney(value: number | string) {
-  return nairaFormatter.format(Number(value || 0));
-}
 
 function stars(count: number) {
   return Array.from({ length: Math.max(0, Math.min(5, Number(count) || 0)) });

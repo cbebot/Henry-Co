@@ -1,5 +1,6 @@
 import "server-only";
 
+import { formatPrice } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 import { buildCarePublicUrl } from "@/lib/care-links";
 import { getCareSettings } from "@/lib/care-data";
@@ -86,7 +87,7 @@ function asNumber(value: unknown, fallback = 0) {
 }
 
 function formatMoney(value: number) {
-  return `₦${Number(value || 0).toLocaleString()}`;
+  return formatPrice(value);
 }
 
 function formatMonthLabel(date: Date) {

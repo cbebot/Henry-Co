@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useTransition } from "react";
 import { Building2, Clock3, ExternalLink, HeartOff, MapPin, MessageCircleMore, Scale, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { formatPrice as formatCurrency } from "@henryco/i18n";
 import type { SavedPropertyCard } from "@/lib/property-module";
 import EmptyState from "@/components/layout/EmptyState";
 
@@ -13,11 +14,7 @@ type SavedPropertiesBoardProps = {
 };
 
 function formatPrice(amount: number, currency: string, interval: string) {
-  const formatted = new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: currency || "NGN",
-    maximumFractionDigits: 0,
-  }).format(amount || 0);
+  const formatted = formatCurrency(amount, currency || "NGN");
 
   if (!interval || interval === "once") {
     return formatted;

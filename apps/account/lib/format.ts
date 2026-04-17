@@ -1,3 +1,5 @@
+import { formatMoney, formatPrice, parseCurrencyConfig } from "@henryco/i18n";
+
 function resolveLocale(
   options?: string | { locale?: string; timezone?: string }
 ) {
@@ -12,15 +14,9 @@ function resolveTimezone(
 
 export function formatNaira(
   kobo: number,
-  options?: string | { locale?: string }
+  _options?: string | { locale?: string }
 ): string {
-  const naira = kobo / 100;
-  return new Intl.NumberFormat(resolveLocale(options), {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: naira % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(naira);
+  return formatMoney(kobo, "NGN");
 }
 
 export function formatCurrencyAmount(
@@ -34,13 +30,20 @@ export function formatCurrencyAmount(
   }
 ): string {
   const unit = options?.unit || "naira";
-  const normalized = unit === "kobo" ? amount / 100 : amount;
 
+  if (!options?.notation && !options?.maximumFractionDigits) {
+    return unit === "kobo"
+      ? formatMoney(amount, currency)
+      : formatPrice(amount, currency);
+  }
+
+  const normalized = unit === "kobo" ? amount / 100 : amount;
+  const config = parseCurrencyConfig(currency);
   return new Intl.NumberFormat(
-    options?.locale || (currency === "NGN" ? "en-NG" : "en-US"),
+    options?.locale || config.locale,
     {
       style: "currency",
-      currency,
+      currency: config.code,
       notation: options?.notation,
       minimumFractionDigits: normalized % 1 === 0 ? 0 : 2,
       maximumFractionDigits: options?.maximumFractionDigits ?? 2,

@@ -17,9 +17,7 @@ type PaymentProofFormProps = {
   onSubmitted?: () => Promise<void> | void;
 };
 
-function formatMoney(value?: number | null) {
-  return `₦${Number(value || 0).toLocaleString()}`;
-}
+import { formatMoney } from "@/lib/format";
 
 function todayValue() {
   return new Date().toISOString().slice(0, 16);

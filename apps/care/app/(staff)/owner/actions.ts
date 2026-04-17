@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
+import { formatPrice } from "@henryco/i18n";
 import { createHmac, randomBytes, randomUUID, timingSafeEqual } from "crypto";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -703,7 +704,7 @@ function renderTemplate(
 }
 
 function formatCurrencyAmount(amount: number, currency = "NGN") {
-  return `${currency} ${Math.max(0, Number(amount || 0)).toLocaleString()}`;
+  return formatPrice(amount, currency);
 }
 
 function formatRoleLabel(role?: string | null) {
