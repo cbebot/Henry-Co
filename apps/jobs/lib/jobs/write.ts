@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { getDivisionUrl } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, slugify } from "@/lib/env";
@@ -126,6 +127,14 @@ async function upsertActivityState(input: {
 
   const { data: existing } = await query.order("created_at", { ascending: false }).limit(1).maybeSingle();
   const actionUrl = input.actionUrl ? toJobsUrl(input.actionUrl) : asText((existing as Record<string, unknown> | null)?.action_url as string);
+  const metadata = buildCanonicalActivityMetadata({
+    division: JOBS_DIVISION,
+    activityType: input.activityType,
+    status: input.status,
+    referenceType: input.referenceType,
+    referenceId: input.referenceId,
+    metadata: input.metadata,
+  });
 
   if (existing?.id) {
     const { data } = await admin
@@ -134,7 +143,7 @@ async function upsertActivityState(input: {
         title: input.title,
         description: input.description,
         status: input.status,
-        metadata: input.metadata,
+        metadata,
         reference_type: input.referenceType ?? null,
         reference_id: input.referenceId ?? null,
         action_url: actionUrl || null,
@@ -155,7 +164,7 @@ async function upsertActivityState(input: {
       title: input.title,
       description: input.description,
       status: input.status,
-      metadata: input.metadata,
+      metadata,
       reference_type: input.referenceType ?? null,
       reference_id: input.referenceId ?? null,
       action_url: actionUrl || null,
@@ -188,6 +197,14 @@ async function upsertReferenceActivityState(input: {
     .limit(1)
     .maybeSingle();
   const actionUrl = input.actionUrl ? toJobsUrl(input.actionUrl) : asText((existing as Record<string, unknown> | null)?.action_url as string);
+  const metadata = buildCanonicalActivityMetadata({
+    division: JOBS_DIVISION,
+    activityType: input.activityType,
+    status: input.status,
+    referenceType: input.referenceType,
+    referenceId: input.referenceId,
+    metadata: input.metadata,
+  });
 
   if (existing?.id) {
     const { data } = await admin
@@ -197,7 +214,7 @@ async function upsertReferenceActivityState(input: {
         title: input.title,
         description: input.description,
         status: input.status,
-        metadata: input.metadata,
+        metadata,
         reference_type: input.referenceType ?? null,
         reference_id: input.referenceId,
         action_url: actionUrl || null,
@@ -218,7 +235,7 @@ async function upsertReferenceActivityState(input: {
       title: input.title,
       description: input.description,
       status: input.status,
-      metadata: input.metadata,
+      metadata,
       reference_type: input.referenceType ?? null,
       reference_id: input.referenceId,
       action_url: actionUrl || null,
@@ -547,10 +564,17 @@ export async function toggleSavedJob(input: {
         description: `${job.employerName} · ${job.location}`,
         status: "removed",
         action_url: toJobsUrl("/candidate/saved-jobs"),
-        metadata: {
-          ...asObject(existing.metadata),
-          removedAt: new Date().toISOString(),
-        },
+        metadata: buildCanonicalActivityMetadata({
+          division: JOBS_DIVISION,
+          activityType: JOBS_ACTIVITY_SAVED,
+          status: "removed",
+          referenceType: "jobs_post",
+          referenceId: job.slug,
+          metadata: {
+            ...asObject(existing.metadata),
+            removedAt: new Date().toISOString(),
+          },
+        }),
       } as never)
       .eq("id", existing.id);
     await logAudit({
@@ -572,12 +596,19 @@ export async function toggleSavedJob(input: {
     reference_type: "jobs_post",
     reference_id: job.slug,
     action_url: toJobsUrl(`/jobs/${job.slug}`),
-    metadata: {
-      jobSlug: job.slug,
-      jobTitle: job.title,
-      employerSlug: job.employerSlug,
-      employerName: job.employerName,
-    },
+    metadata: buildCanonicalActivityMetadata({
+      division: JOBS_DIVISION,
+      activityType: JOBS_ACTIVITY_SAVED,
+      status: "saved",
+      referenceType: "jobs_post",
+      referenceId: job.slug,
+      metadata: {
+        jobSlug: job.slug,
+        jobTitle: job.title,
+        employerSlug: job.employerSlug,
+        employerName: job.employerName,
+      },
+    }),
   } as never);
 
   await createJobsInAppNotification({
@@ -693,7 +724,14 @@ export async function submitApplication(input: {
     reference_type: "jobs_application",
     reference_id: applicationId,
     action_url: toJobsUrl("/candidate/applications"),
-    metadata,
+    metadata: buildCanonicalActivityMetadata({
+      division: JOBS_DIVISION,
+      activityType: JOBS_ACTIVITY_APPLICATION,
+      status: "applied",
+      referenceType: "jobs_application",
+      referenceId: applicationId,
+      metadata,
+    }),
   } as never);
 
   const threadId = await ensureApplicationThread({
@@ -1253,7 +1291,14 @@ export async function advanceApplicationStage(input: {
     .from("customer_activity")
     .update({
       status: input.stage,
-      metadata: nextMetadata,
+      metadata: buildCanonicalActivityMetadata({
+        division: JOBS_DIVISION,
+        activityType: JOBS_ACTIVITY_APPLICATION,
+        status: input.stage,
+        referenceType: "jobs_application",
+        referenceId: input.applicationId,
+        metadata: nextMetadata,
+      }),
       action_url: toJobsUrl("/candidate/applications"),
     } as never)
     .eq("reference_id", input.applicationId)
@@ -1433,18 +1478,25 @@ export async function updateEmployerVerification(input: {
       .from("customer_activity")
       .update({
         action_url: toJobsUrl("/employer/company"),
-        metadata: {
-          ...profileMetadata,
-          verificationStatus: input.status,
-          verificationNotes: asUniqueList([
-            ...(Array.isArray(profileMetadata.verificationNotes)
-              ? (profileMetadata.verificationNotes as Array<string | null | undefined>)
-              : []),
-            input.reason || `Verification changed to ${input.status}`,
-          ]),
-          trustScore,
-          updatedAt: new Date().toISOString(),
-        },
+        metadata: buildCanonicalActivityMetadata({
+          division: JOBS_DIVISION,
+          activityType: JOBS_ACTIVITY_EMPLOYER_PROFILE,
+          status: String(profileRow.status || "active"),
+          referenceType: "jobs_employer",
+          referenceId: input.employerSlug,
+          metadata: {
+            ...profileMetadata,
+            verificationStatus: input.status,
+            verificationNotes: asUniqueList([
+              ...(Array.isArray(profileMetadata.verificationNotes)
+                ? (profileMetadata.verificationNotes as Array<string | null | undefined>)
+                : []),
+              input.reason || `Verification changed to ${input.status}`,
+            ]),
+            trustScore,
+            updatedAt: new Date().toISOString(),
+          },
+        }),
       } as never)
       .eq("id", profileRow.id);
   }
@@ -1465,16 +1517,23 @@ export async function updateEmployerVerification(input: {
       .from("customer_activity")
       .update({
         status: shouldUnpublish ? "flagged" : item.status,
-        metadata: {
-          ...metadata,
-          employerVerification: input.status,
-          isPublished: shouldUnpublish ? false : metadata.isPublished,
-          moderationStatus:
-            shouldUnpublish
-              ? "flagged"
-              : metadata.moderationStatus || (metadata.isPublished ? "approved" : "pending_review"),
-          updatedAt: new Date().toISOString(),
-        },
+        metadata: buildCanonicalActivityMetadata({
+          division: JOBS_DIVISION,
+          activityType: JOBS_ACTIVITY_JOB_POST,
+          status: String(shouldUnpublish ? "flagged" : item.status || ""),
+          referenceType: "jobs_post",
+          referenceId: asText(item.reference_id as string),
+          metadata: {
+            ...metadata,
+            employerVerification: input.status,
+            isPublished: shouldUnpublish ? false : metadata.isPublished,
+            moderationStatus:
+              shouldUnpublish
+                ? "flagged"
+                : metadata.moderationStatus || (metadata.isPublished ? "approved" : "pending_review"),
+            updatedAt: new Date().toISOString(),
+          },
+        }),
       } as never)
       .eq("id", item.id);
   }

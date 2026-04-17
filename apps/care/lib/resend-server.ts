@@ -26,11 +26,11 @@ export type ResendReceivedEmailListItem = {
 let resendClient: Resend | null = null;
 
 export function getResendApiKey() {
-  return getOptionalEnv("RESEND_API_KEY");
+  return getOptionalEnv("INBOUND_EMAIL_API_KEY") || getOptionalEnv("RESEND_API_KEY");
 }
 
 function getRawResendWebhookSecret() {
-  return getOptionalEnv("RESEND_WEBHOOK_SECRET");
+  return getOptionalEnv("INBOUND_EMAIL_WEBHOOK_SECRET") || getOptionalEnv("RESEND_WEBHOOK_SECRET");
 }
 
 export function getResendWebhookSecret() {
@@ -39,7 +39,8 @@ export function getResendWebhookSecret() {
 }
 
 export function getResendSupportInbox() {
-  const supportInbox = getOptionalEnv("RESEND_SUPPORT_INBOX");
+  const supportInbox =
+    getOptionalEnv("INBOUND_SUPPORT_INBOX") || getOptionalEnv("RESEND_SUPPORT_INBOX");
   if (supportInbox) {
     return supportInbox;
   }

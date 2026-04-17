@@ -18,7 +18,12 @@ import {
   getWalletTransactions,
   getWithdrawalRequests,
 } from "@/lib/account-data";
-import { formatNaira, formatDateTime, divisionLabel } from "@/lib/format";
+import {
+  formatPricingAmount,
+  formatSettlementAmount,
+  resolveAccountCurrencyTruth,
+} from "@/lib/currency-truth";
+import { formatDateTime, divisionLabel } from "@/lib/format";
 import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
@@ -49,7 +54,7 @@ const typeColors: Record<string, string> = {
 
 export default async function WalletPage() {
   const user = await requireAccountUser();
-  const [{ wallet, pending_kobo, requests }, withdrawalRequests, profile] = await Promise.all([
+  const [{ wallet, pending_kobo, rail, requests }, withdrawalRequests, profile] = await Promise.all([
     getWalletFundingContext(user.id),
     getWithdrawalRequests(user.id),
     getProfile(user.id),
@@ -59,6 +64,21 @@ export default async function WalletPage() {
     currency: profile?.currency as string | null | undefined,
     timezone: profile?.timezone as string | null | undefined,
     language: profile?.language as string | null | undefined,
+  });
+  const walletTruth = resolveAccountCurrencyTruth(region, {
+    pricingCurrency: String(wallet.currency || "NGN"),
+    settlementCurrency: String(wallet.settlement_currency || wallet.currency || "NGN"),
+    baseCurrency: String(wallet.base_currency || "NGN"),
+    exchangeRateSource:
+      typeof wallet.exchange_rate_source === "string" ? wallet.exchange_rate_source : null,
+    exchangeRateTimestamp:
+      typeof wallet.exchange_rate_timestamp === "string"
+        ? wallet.exchange_rate_timestamp
+        : null,
+  });
+  const fundingTruth = resolveAccountCurrencyTruth(region, {
+    pricingCurrency: String(rail.currency || wallet.currency || "NGN"),
+    settlementCurrency: String(rail.currency || wallet.currency || "NGN"),
   });
   const pendingWithdrawalKobo = getPendingWithdrawalHoldKobo(withdrawalRequests as never);
   const availableBalanceKobo = Math.max(0, Number(wallet.balance_kobo) - pendingWithdrawalKobo);
@@ -98,16 +118,23 @@ export default async function WalletPage() {
       <div className="acct-card overflow-hidden">
         <div className="bg-gradient-to-br from-[var(--acct-gold)] to-[#A08520] px-6 py-8 text-white">
           <p className="text-sm font-medium text-white/70">Available balance</p>
-          <p className="mt-1 text-4xl font-bold">{formatNaira(availableBalanceKobo)}</p>
+          <p className="mt-1 text-4xl font-bold">
+            {formatSettlementAmount(availableBalanceKobo, walletTruth)}
+          </p>
           <p className="mt-2 text-sm text-white/60">
-            HenryCo Wallet &middot; {wallet.currency} &middot; Available across HenryCo services
+            HenryCo Wallet &middot; Settles in {walletTruth.settlementCurrency} &middot; Available across HenryCo services
           </p>
           <p className="mt-2 text-xs text-white/72">
             {region.settlementNote}
           </p>
+          {!walletTruth.displayMatchesPricing ? (
+            <p className="mt-2 text-xs text-white/72">
+              Profile display preference is {walletTruth.displayCurrency}. No converted wallet balance is shown until live FX-backed display logic exists.
+            </p>
+          ) : null}
           {pendingWithdrawalKobo > 0 ? (
             <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/72">
-              {formatNaira(pendingWithdrawalKobo)} held in pending withdrawal review
+              {formatSettlementAmount(pendingWithdrawalKobo, walletTruth)} held in pending withdrawal review
             </p>
           ) : null}
         </div>
@@ -169,10 +196,10 @@ export default async function WalletPage() {
             <div>
               <p className="acct-kicker">Pending funding</p>
               <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
-                {formatNaira(pending_kobo)}
+                {formatSettlementAmount(pending_kobo, fundingTruth)}
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">
-                Money stays here until transfer proof is uploaded and the HenryCo team confirms the payment.
+                Money stays here until transfer proof is uploaded and the HenryCo team confirms the payment in {fundingTruth.settlementCurrency}.
               </p>
             </div>
             <ShieldCheck className="h-5 w-5 text-[var(--acct-blue)]" />
@@ -188,7 +215,7 @@ export default async function WalletPage() {
               <p className="acct-kicker">Pending withdrawals</p>
               <p className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
                 {pendingWithdrawalKobo > 0
-                  ? `${formatNaira(pendingWithdrawalKobo)} awaiting finance review`
+                  ? `${formatSettlementAmount(pendingWithdrawalKobo, walletTruth)} awaiting finance review`
                   : "No pending withdrawals"}
               </p>
             </div>
@@ -219,7 +246,16 @@ export default async function WalletPage() {
               className="block rounded-xl bg-[var(--acct-surface)] px-4 py-3 transition hover:bg-[var(--acct-bg)]"
             >
               <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                {formatNaira(request.amount_kobo)} · {request.reference || request.id}
+                {formatPricingAmount(
+                  request.amount_kobo,
+                  resolveAccountCurrencyTruth(region, {
+                    pricingCurrency: request.pricing_currency,
+                    settlementCurrency: request.settlement_currency,
+                    baseCurrency: request.base_currency,
+                    exchangeRateSource: request.exchange_rate_source,
+                    exchangeRateTimestamp: request.exchange_rate_timestamp,
+                  })
+                )} · {request.reference || request.id}
               </p>
               <p className="mt-1 text-xs text-[var(--acct-muted)]">
                 {request.status.replaceAll("_", " ")}
@@ -250,6 +286,19 @@ export default async function WalletPage() {
               const Icon = typeIcons[tx.type as string] || ArrowUpRight;
               const color = typeColors[tx.type as string] || "var(--acct-muted)";
               const isCredit = ["credit", "refund", "bonus", "cashback"].includes(tx.type as string);
+              const txTruth = resolveAccountCurrencyTruth(region, {
+                pricingCurrency: String(tx.pricing_currency || tx.currency || wallet.currency || "NGN"),
+                settlementCurrency: String(
+                  tx.settlement_currency || wallet.settlement_currency || wallet.currency || "NGN"
+                ),
+                baseCurrency: String(tx.base_currency || wallet.base_currency || "NGN"),
+                exchangeRateSource:
+                  typeof tx.exchange_rate_source === "string" ? tx.exchange_rate_source : null,
+                exchangeRateTimestamp:
+                  typeof tx.exchange_rate_timestamp === "string"
+                    ? tx.exchange_rate_timestamp
+                    : null,
+              });
 
               return (
                 <div
@@ -278,7 +327,8 @@ export default async function WalletPage() {
                     className="shrink-0 text-sm font-semibold"
                     style={{ color: isCredit ? "var(--acct-green)" : "var(--acct-red)" }}
                   >
-                    {isCredit ? "+" : "-"}{formatNaira(tx.amount_kobo as number)}
+                    {isCredit ? "+" : "-"}
+                    {formatPricingAmount(Number(tx.amount_kobo || 0), txTruth)}
                   </p>
                 </div>
               );

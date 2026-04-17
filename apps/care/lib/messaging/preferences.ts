@@ -72,6 +72,7 @@ function getPreferenceSecret() {
   return (
     cleanText(process.env.MARKETING_PREFERENCES_SECRET) ||
     cleanText(process.env.CRON_SECRET) ||
+    cleanText(process.env.INBOUND_EMAIL_WEBHOOK_SECRET) ||
     cleanText(process.env.RESEND_WEBHOOK_SECRET) ||
     cleanText(process.env.SUPABASE_SERVICE_ROLE_KEY) ||
     "local-care-preferences-secret"

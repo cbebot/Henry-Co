@@ -18,10 +18,20 @@ import {
 import { parseHenryFeatureFlags } from "@henryco/intelligence";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
-import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
+import {
+  getDashboardSummary,
+  getProfile,
+  getSupportThreads,
+  getWalletFundingContext,
+} from "@/lib/account-data";
+import {
+  formatSettlementAmount,
+  resolveAccountCurrencyTruth,
+} from "@/lib/currency-truth";
 import { buildAccountRecommendations, buildAccountTasks } from "@/lib/intelligence-rollout";
 import { activityMessageHref } from "@/lib/notification-center";
-import { formatNaira, timeAgo, divisionLabel, divisionColor } from "@/lib/format";
+import { timeAgo, divisionLabel, divisionColor } from "@/lib/format";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import { getAccountTrustProfile, getTrustTierLabel } from "@/lib/trust";
 import PageHeader from "@/components/layout/PageHeader";
 
@@ -30,12 +40,36 @@ export const dynamic = "force-dynamic";
 export default async function OverviewPage() {
   const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
   const user = await requireAccountUser();
-  const [data, funding, trust, supportThreads] = await Promise.all([
+  const [data, funding, trust, supportThreads, profile] = await Promise.all([
     getDashboardSummary(user.id),
     getWalletFundingContext(user.id),
     getAccountTrustProfile(user.id),
     getSupportThreads(user.id),
+    getProfile(user.id),
   ]);
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
+  const walletTruth = resolveAccountCurrencyTruth(region, {
+    pricingCurrency: String(data.wallet.currency || "NGN"),
+    settlementCurrency: String(data.wallet.settlement_currency || data.wallet.currency || "NGN"),
+    baseCurrency: String(data.wallet.base_currency || "NGN"),
+    exchangeRateSource:
+      typeof data.wallet.exchange_rate_source === "string"
+        ? data.wallet.exchange_rate_source
+        : null,
+    exchangeRateTimestamp:
+      typeof data.wallet.exchange_rate_timestamp === "string"
+        ? data.wallet.exchange_rate_timestamp
+        : null,
+  });
+  const fundingTruth = resolveAccountCurrencyTruth(region, {
+    pricingCurrency: String(funding.wallet.currency || "NGN"),
+    settlementCurrency: String(funding.rail.currency || funding.wallet.currency || "NGN"),
+  });
   const openSupportCount = supportThreads.filter((thread: Record<string, unknown>) => {
     const status = String(thread.status || "");
     return status !== "resolved" && status !== "closed";
@@ -45,7 +79,7 @@ export default async function OverviewPage() {
     funding.pending_kobo > 0
       ? {
           label: "Pending wallet verification",
-          detail: `${formatNaira(funding.pending_kobo)} is still waiting for finance confirmation.`,
+          detail: `${formatSettlementAmount(funding.pending_kobo, fundingTruth)} is still waiting for finance confirmation.${walletTruth.displayMatchesPricing ? "" : ` Wallet settlement still runs in ${walletTruth.settlementCurrency}.`}`,
           href: "/wallet/funding",
           tone: "var(--acct-blue)",
           icon: ShieldCheck,
@@ -134,10 +168,15 @@ export default async function OverviewPage() {
             <Wallet size={18} className="text-[var(--acct-green)]" />
           </div>
           <p className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">
-            {formatNaira(data.wallet.balance_kobo)}
+            {formatSettlementAmount(Number(data.wallet.balance_kobo || 0), walletTruth)}
           </p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Shared wallet &middot; Use across HenryCo services
+            Shared wallet &middot; Settles in {walletTruth.settlementCurrency}
+          </p>
+          <p className="mt-1 text-[0.7rem] text-[var(--acct-muted)]">
+            {walletTruth.displayMatchesPricing
+              ? "Display and settlement are aligned for your wallet."
+              : `Profile display preference: ${walletTruth.displayCurrency}. No converted wallet balance is shown.`}
           </p>
         </Link>
 

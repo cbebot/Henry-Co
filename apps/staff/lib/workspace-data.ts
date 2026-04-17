@@ -1650,8 +1650,10 @@ async function listWorkforceUsers() {
 async function listRoleMembershipSummary() {
   const admin = createStaffAdminSupabase();
   const membershipTables: Array<{ division: WorkspaceDivision; table: string }> = [
+    { division: "care", table: "care_role_memberships" },
     { division: "marketplace", table: "marketplace_role_memberships" },
     { division: "studio", table: "studio_role_memberships" },
+    { division: "jobs", table: "jobs_role_memberships" },
     { division: "property", table: "property_role_memberships" },
     { division: "learn", table: "learn_role_memberships" },
     { division: "logistics", table: "logistics_role_memberships" },

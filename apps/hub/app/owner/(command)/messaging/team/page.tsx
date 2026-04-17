@@ -1,5 +1,6 @@
 import Link from "next/link";
 import InternalTeamCommsClient from "@/components/owner/InternalTeamCommsClient";
+import { MessagingHubNav } from "@/components/owner/MessagingHubNav";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,8 @@ export default function OwnerMessagingTeamPage() {
           </>
         }
       />
+
+      <MessagingHubNav />
 
       <OwnerPanel
         title="Live thread"

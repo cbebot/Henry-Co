@@ -25,7 +25,7 @@ const appRoot = process.cwd();
 const repoRoot = path.resolve(appRoot, "../..");
 
 for (const file of [
-  path.join(repoRoot, ".env.production.vercel"),
+  path.join(repoRoot, ".env.production.local"),
   path.join(appRoot, ".env.local"),
   path.join(repoRoot, ".vercel", ".env.production.local"),
 ]) {

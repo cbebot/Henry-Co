@@ -2,9 +2,14 @@ import Link from "next/link";
 import { ArrowRight, Building2, Wallet } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
-import { getWalletFundingContext } from "@/lib/account-data";
-import { formatNaira } from "@/lib/format";
+import { getProfile, getWalletFundingContext } from "@/lib/account-data";
+import {
+  formatPricingAmount,
+  formatSettlementAmount,
+  resolveAccountCurrencyTruth,
+} from "@/lib/currency-truth";
 import PageHeader from "@/components/layout/PageHeader";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import FundingRequestForm from "@/components/wallet/FundingRequestForm";
 import CopyValueButton from "@/components/ui/CopyValueButton";
 
@@ -12,7 +17,33 @@ export const dynamic = "force-dynamic";
 
 export default async function WalletFundingPage() {
   const user = await requireAccountUser();
-  const data = await getWalletFundingContext(user.id);
+  const [data, profile] = await Promise.all([
+    getWalletFundingContext(user.id),
+    getProfile(user.id),
+  ]);
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
+  const walletTruth = resolveAccountCurrencyTruth(region, {
+    pricingCurrency: String(data.wallet.currency || "NGN"),
+    settlementCurrency: String(data.wallet.settlement_currency || data.wallet.currency || "NGN"),
+    baseCurrency: String(data.wallet.base_currency || "NGN"),
+    exchangeRateSource:
+      typeof data.wallet.exchange_rate_source === "string"
+        ? data.wallet.exchange_rate_source
+        : null,
+    exchangeRateTimestamp:
+      typeof data.wallet.exchange_rate_timestamp === "string"
+        ? data.wallet.exchange_rate_timestamp
+        : null,
+  });
+  const fundingTruth = resolveAccountCurrencyTruth(region, {
+    pricingCurrency: String(data.rail.currency || data.wallet.currency || "NGN"),
+    settlementCurrency: String(data.rail.currency || data.wallet.currency || "NGN"),
+  });
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -34,22 +65,29 @@ export default async function WalletFundingPage() {
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-white/70">
               Wallet balance
             </p>
-            <p className="mt-3 text-4xl font-semibold">{formatNaira(data.wallet.balance_kobo)}</p>
-            <p className="mt-2 max-w-xl text-sm leading-7 text-white/72">
-              Verified balance is ready to spend. Pending funding sits separately until finance clears the transfer.
+            <p className="mt-3 text-4xl font-semibold">
+              {formatSettlementAmount(Number(data.wallet.balance_kobo || 0), walletTruth)}
             </p>
+            <p className="mt-2 max-w-xl text-sm leading-7 text-white/72">
+              Verified balance is ready to spend. Pending funding sits separately until finance clears the transfer in {fundingTruth.settlementCurrency}.
+            </p>
+            {!walletTruth.displayMatchesPricing ? (
+              <p className="mt-2 max-w-xl text-xs leading-6 text-white/70">
+                Display preference remains {walletTruth.displayCurrency}, but no converted wallet amount is shown on this page.
+              </p>
+            ) : null}
           </div>
           <div className="grid gap-3 border-t border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5 sm:grid-cols-2">
             <div className="rounded-[1.4rem] bg-[var(--acct-surface)] p-4">
               <p className="acct-kicker">Verified</p>
               <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
-                {formatNaira(data.wallet.balance_kobo)}
+                {formatSettlementAmount(Number(data.wallet.balance_kobo || 0), walletTruth)}
               </p>
             </div>
             <div className="rounded-[1.4rem] bg-[var(--acct-surface)] p-4">
               <p className="acct-kicker">Pending verification</p>
               <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
-                {formatNaira(data.pending_kobo)}
+                {formatSettlementAmount(Number(data.pending_kobo || 0), fundingTruth)}
               </p>
             </div>
           </div>
@@ -79,6 +117,15 @@ export default async function WalletFundingPage() {
                 {data.rail.accountName ? <CopyValueButton value={data.rail.accountName} /> : null}
               </div>
               <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">{data.rail.accountName || "Pending"}</p>
+            </div>
+            <div className="rounded-2xl bg-[var(--acct-surface)] p-4">
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Settlement currency</p>
+                <span className="acct-chip acct-chip-blue text-[0.6rem]">{fundingTruth.settlementCurrency}</span>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">
+                Funding requests settle in {fundingTruth.settlementCurrency}. Display preference {fundingTruth.displayCurrency} does not change the transfer rail.
+              </p>
             </div>
             <div className="rounded-2xl bg-[var(--acct-surface)] p-4">
               <div className="flex items-start justify-between gap-2">
@@ -130,7 +177,16 @@ export default async function WalletFundingPage() {
                     )}
                   </div>
                   <p className="mt-3 text-sm font-semibold text-[var(--acct-ink)]">
-                    {formatNaira(request.amount_kobo)} · {request.reference || request.id}
+                    {formatPricingAmount(
+                      request.amount_kobo,
+                      resolveAccountCurrencyTruth(region, {
+                        pricingCurrency: request.pricing_currency,
+                        settlementCurrency: request.settlement_currency,
+                        baseCurrency: request.base_currency,
+                        exchangeRateSource: request.exchange_rate_source,
+                        exchangeRateTimestamp: request.exchange_rate_timestamp,
+                      })
+                    )} · {request.reference || request.id}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">
                     Created {new Intl.DateTimeFormat("en-NG", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(request.created_at))}

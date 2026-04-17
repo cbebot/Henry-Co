@@ -2,9 +2,14 @@ import Link from "next/link";
 import { ArrowLeft, Building2, Clock3, ShieldCheck, Wallet } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
-import { getWalletFundingRequestById } from "@/lib/account-data";
-import { formatNaira, formatDateTime } from "@/lib/format";
+import { getProfile, getWalletFundingRequestById } from "@/lib/account-data";
+import {
+  formatPricingAmount,
+  resolveAccountCurrencyTruth,
+} from "@/lib/currency-truth";
+import { formatDateTime } from "@/lib/format";
 import PageHeader from "@/components/layout/PageHeader";
+import { resolveAccountRegionalContext } from "@/lib/regional-context";
 import FundingProofUpload from "@/components/wallet/FundingProofUpload";
 import CopyValueButton from "@/components/ui/CopyValueButton";
 
@@ -27,7 +32,10 @@ function statusChip(status: string) {
 export default async function WalletFundingRequestPage({ params }: Props) {
   const { requestId } = await params;
   const user = await requireAccountUser();
-  const request = await getWalletFundingRequestById(user.id, requestId);
+  const [request, profile] = await Promise.all([
+    getWalletFundingRequestById(user.id, requestId),
+    getProfile(user.id),
+  ]);
 
   if (!request) {
     return (
@@ -39,6 +47,20 @@ export default async function WalletFundingRequestPage({ params }: Props) {
       </div>
     );
   }
+
+  const region = resolveAccountRegionalContext({
+    country: profile?.country as string | null | undefined,
+    currency: profile?.currency as string | null | undefined,
+    timezone: profile?.timezone as string | null | undefined,
+    language: profile?.language as string | null | undefined,
+  });
+  const fundingTruth = resolveAccountCurrencyTruth(region, {
+    pricingCurrency: request.pricing_currency || request.currency || "NGN",
+    settlementCurrency: request.settlement_currency || request.currency || "NGN",
+    baseCurrency: request.base_currency || "NGN",
+    exchangeRateSource: request.exchange_rate_source,
+    exchangeRateTimestamp: request.exchange_rate_timestamp,
+  });
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -78,8 +100,13 @@ export default async function WalletFundingRequestPage({ params }: Props) {
                 ) : null}
               </div>
               <p className="mt-3 text-sm leading-7 text-white/75">
-                {formatNaira(request.amount_kobo)} created on {formatDateTime(request.created_at)}.
+                {formatPricingAmount(request.amount_kobo, fundingTruth)} created on {formatDateTime(request.created_at)}.
               </p>
+              {!fundingTruth.displayMatchesPricing ? (
+                <p className="mt-2 text-xs leading-6 text-white/72">
+                  Profile display preference is {fundingTruth.displayCurrency}, but this transfer request stays in {fundingTruth.pricingCurrency}.
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-4 border-t border-[var(--acct-line)] p-5 sm:grid-cols-2">
@@ -165,6 +192,15 @@ export default async function WalletFundingRequestPage({ params }: Props) {
             <p className="mt-3 text-sm leading-6 text-[var(--acct-muted)]">
               {request.note || "No extra note was added for this request."}
             </p>
+          </section>
+
+          <section className="acct-card p-5">
+            <p className="acct-kicker">Currency truth</p>
+            <div className="mt-3 space-y-2 text-sm leading-6 text-[var(--acct-muted)]">
+              <p>Pricing currency: <span className="font-semibold text-[var(--acct-ink)]">{fundingTruth.pricingCurrency}</span></p>
+              <p>Settlement currency: <span className="font-semibold text-[var(--acct-ink)]">{fundingTruth.settlementCurrency}</span></p>
+              <p>Display preference: <span className="font-semibold text-[var(--acct-ink)]">{fundingTruth.displayCurrency}</span></p>
+            </div>
           </section>
 
           <section className="acct-card p-5">

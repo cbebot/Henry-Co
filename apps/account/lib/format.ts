@@ -1,3 +1,5 @@
+import { formatMoney, parseCurrencyConfig, resolveCurrencyLocale } from "@henryco/i18n";
+
 function resolveLocale(
   options?: string | { locale?: string; timezone?: string }
 ) {
@@ -14,13 +16,10 @@ export function formatNaira(
   kobo: number,
   options?: string | { locale?: string }
 ): string {
-  const naira = kobo / 100;
-  return new Intl.NumberFormat(resolveLocale(options), {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: naira % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(naira);
+  return formatMoney(kobo, "NGN", {
+    locale: resolveLocale(options),
+    unit: "minor",
+  });
 }
 
 export function formatCurrencyAmount(
@@ -34,18 +33,16 @@ export function formatCurrencyAmount(
   }
 ): string {
   const unit = options?.unit || "naira";
-  const normalized = unit === "kobo" ? amount / 100 : amount;
+  const config = parseCurrencyConfig(currency);
+  const normalized = unit === "kobo" ? amount / Math.pow(10, config.decimals) : amount;
 
-  return new Intl.NumberFormat(
-    options?.locale || (currency === "NGN" ? "en-NG" : "en-US"),
-    {
-      style: "currency",
-      currency,
-      notation: options?.notation,
-      minimumFractionDigits: normalized % 1 === 0 ? 0 : 2,
-      maximumFractionDigits: options?.maximumFractionDigits ?? 2,
-    }
-  ).format(normalized);
+  return formatMoney(normalized, currency, {
+    unit: "major",
+    locale: options?.locale || resolveCurrencyLocale(currency),
+    notation: options?.notation,
+    minimumFractionDigits: normalized % 1 === 0 ? 0 : config.decimals,
+    maximumFractionDigits: options?.maximumFractionDigits ?? config.decimals,
+  });
 }
 
 function humanizeToken(value: string, fallback = "—") {

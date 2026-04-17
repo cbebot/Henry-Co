@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const ENV_CANDIDATES = [
   ".env.local",
-  ".env.production.vercel",
+  ".env.production.local",
+  ".vercel/.env.production.local",
   ".env.vercel.production.hub",
 ];
 

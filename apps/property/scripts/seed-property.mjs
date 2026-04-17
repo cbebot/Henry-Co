@@ -21,11 +21,11 @@ function loadEnvFile(filepath) {
 }
 
 loadEnvFile(path.join(rootDir, ".env.local"));
-loadEnvFile(path.join(rootDir, ".env.production.vercel"));
+loadEnvFile(path.join(rootDir, ".env.production.local"));
+loadEnvFile(path.join(rootDir, ".vercel", ".env.production.local"));
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.log("[property:seed] Skipping because Supabase admin credentials are not available.");

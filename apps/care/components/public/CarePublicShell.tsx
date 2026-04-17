@@ -37,7 +37,7 @@ export default async function CarePublicShell({ children }: { children: ReactNod
       user={chipUser}
       loginHref={loginHref}
       accountHref={accountHref}
-      preferencesHref={getAccountUrl("/settings")}
+      preferencesHref={getAccountUrl("/settings#privacy-controls")}
       settingsHref={getAccountUrl("/security")}
       signupHref={signupHref}
       showSignOut

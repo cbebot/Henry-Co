@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { Manrope, Newsreader } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
-import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { PublicThemeGuard, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
+import { LocaleProvider } from "@henryco/i18n/react";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getJobsLocale } from "@/lib/locale-server";
 import "./globals.css";
 
 const display = Newsreader({
@@ -40,8 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const lang = await getJobsLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
@@ -49,7 +49,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body
         className={`${display.variable} ${sans.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
       >
-        <PublicThemeGuard>{children}</PublicThemeGuard>
+        <PublicThemeGuard>
+          <ThirdPartyRuntimeProviders>
+            <LocaleProvider locale={lang}>{children}</LocaleProvider>
+          </ThirdPartyRuntimeProviders>
+        </PublicThemeGuard>
       </body>
     </html>
   );

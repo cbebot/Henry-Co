@@ -33,6 +33,8 @@ export { PublicFooter } from "../public/public-footer";
 export { ThemeToggle } from "../public/theme-toggle";
 export { EcosystemPreferences } from "../public/ecosystem-preferences";
 export { HenryCoPublicRouteLoading, HenryCoPublicInlineLoading, HenryCoPublicContentSkeleton } from "../public/public-route-loading";
+export { ThirdPartyRuntimeProviders, useHenryCoVisitorData } from "./third-party-runtime-providers";
+export { ConsentNotice } from "./consent-notice";
 
 export * from "./navigation";
 export { HenryCoPublicSurfaceTokens } from "./surface-tokens";

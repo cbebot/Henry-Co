@@ -1,9 +1,9 @@
 import { getDivisionConfig, getDivisionUrl } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/config/email";
 import {
   extractEmailAddress,
   formatCurrency,
   getOptionalEnv,
-  sanitizeHeaderValue,
 } from "@/lib/env";
 import { getAccountLearnUrl } from "@/lib/learn/links";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -138,14 +138,6 @@ function toText(layout: EmailLayout) {
     "",
     ...(layout.actionLabel && layout.actionHref ? [`${layout.actionLabel}: ${layout.actionHref}`] : []),
   ].join("\n");
-}
-
-function fromAddress() {
-  const raw = sanitizeHeaderValue(
-    process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM || `${learn.name} <onboarding@resend.dev>`
-  );
-  const email = extractEmailAddress(raw) || "onboarding@resend.dev";
-  return `${learn.name} <${email}>`;
 }
 
 async function getOwnerRecipients() {
@@ -286,7 +278,7 @@ async function sendEmail(input: {
   }
 
   const resendKey = getOptionalEnv("RESEND_API_KEY");
-  if (!resendKey) {
+  if (!resendKey && !process.env.BREVO_API_KEY) {
     return addLearnNotificationRecord({
       userId: audience.userId,
       normalizedEmail: audience.normalizedEmail,
@@ -302,23 +294,17 @@ async function sendEmail(input: {
     });
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: fromAddress(),
-      to: [recipient],
-      reply_to: learn.supportEmail,
-      subject: input.layout.subject,
-      html: renderEmail(input.layout),
-      text: toText(input.layout),
-    }),
+  const result = await sendTransactionalEmail({
+    to: recipient,
+    subject: input.layout.subject,
+    html: renderEmail(input.layout),
+    text: toText(input.layout),
+    fromName: learn.name,
+    fromEmail: "noreply@henrycogroup.com",
+    replyTo: learn.supportEmail,
+    missingConfigStatus: "queued",
+    tags: ["learn", input.templateKey],
   });
-
-  const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
   return addLearnNotificationRecord({
     userId: audience.userId,
     normalizedEmail: audience.normalizedEmail,
@@ -327,10 +313,8 @@ async function sendEmail(input: {
     recipient,
     title: input.title,
     body: toText(input.layout),
-    status: response.ok ? "sent" : "failed",
-    reason: response.ok
-      ? payload?.id ?? null
-      : payload?.message || `Resend rejected the email with status ${response.status}.`,
+    status: result.ok ? "sent" : result.status === "queued" ? "queued" : "failed",
+    reason: result.ok ? result.messageId : result.reason,
     entityType: input.entityType || null,
     entityId: input.entityId || null,
   });

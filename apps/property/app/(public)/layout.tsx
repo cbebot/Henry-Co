@@ -30,7 +30,7 @@ export default async function PublicLayout({ children }: { children: React.React
       user={chipUser}
       loginHref={getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin: origin })}
       accountHref={getSharedAccountPropertyUrl()}
-      preferencesHref={getAccountUrl("/settings")}
+      preferencesHref={getAccountUrl("/settings#privacy-controls")}
       settingsHref={getAccountUrl("/security")}
       signupHref={getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin: origin })}
       showSignOut

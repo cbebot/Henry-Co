@@ -9,8 +9,13 @@ export * from "./src/index";
 
 export {
   formatMoney,
+  normalizeCurrencyCode,
   parseCurrencyConfig,
+  resolveCurrencyLocale,
+  resolveCurrencyTruthContext,
   type CurrencyConfig,
+  type CurrencyTruthContext,
+  type FormatMoneyOptions,
 } from "./currency";
 
 export {

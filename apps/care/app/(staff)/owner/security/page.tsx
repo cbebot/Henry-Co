@@ -291,7 +291,7 @@ export default async function OwnerSecurityPage({
     new Set(logs.map((row) => String(row.event_type || "").toLowerCase()).filter(Boolean))
   ).sort();
 
-  const emailConfigured = Boolean(String(process.env.RESEND_API_KEY || "").trim());
+  const emailConfigured = Boolean(String(process.env.BREVO_API_KEY || "").trim());
   const whatsappStatus = String(whatsapp.phone?.status || "unknown").toUpperCase();
   const ownerAlertEmail = String(process.env.OWNER_ALERT_EMAIL || "").trim() || "Fallback to owner role recipients";
   const ownerAlertWhatsApp = String(process.env.OWNER_ALERT_WHATSAPP || "").trim() || "Not configured";
@@ -332,7 +332,7 @@ export default async function OwnerSecurityPage({
         {!emailConfigured ? (
           <div className="mt-6 rounded-2xl border border-amber-300/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-100">
             Production mail transport is not armed on this deployment yet. Transactional emails are being queued,
-            but live external delivery still requires `RESEND_API_KEY` in the Care Vercel project.
+            but live external delivery still requires `BREVO_API_KEY` in the Care Vercel project.
           </div>
         ) : null}
       </section>

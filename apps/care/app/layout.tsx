@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
-import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { PublicThemeGuard, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { getCareSettings } from "@/lib/care-data";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -34,10 +34,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className="min-h-screen bg-white text-zinc-950 antialiased dark:bg-[#08101C] dark:text-white"
       >
         <PublicThemeGuard>
-          <Suspense fallback={null}>
-            <CareToaster />
-          </Suspense>
-          {children}
+          <ThirdPartyRuntimeProviders>
+            <Suspense fallback={null}>
+              <CareToaster />
+            </Suspense>
+            {children}
+          </ThirdPartyRuntimeProviders>
         </PublicThemeGuard>
       </body>
     </html>

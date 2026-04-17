@@ -1,7 +1,12 @@
 import "server-only";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { isRecoverableSupabaseAuthError, resolveUserAvatarFromSources } from "@henryco/config";
+import {
+  isRecoverableSupabaseAuthError,
+  readPassiveSupabaseUserFromCookies,
+  resolveUserAvatarFromSources,
+} from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { createAdminSupabase, hasSupabaseServiceRole } from "@/lib/supabase";
@@ -99,17 +104,35 @@ function viewerFromUserMetadata(user: {
   };
 }
 
+function emptyLearnViewer(): LearnViewer {
+  return {
+    user: null,
+    normalizedEmail: null,
+    roles: [],
+    memberships: [],
+  };
+}
+
+export async function getPassiveLearnViewer(): Promise<LearnViewer> {
+  const cookieStore = await cookies();
+  const user = readPassiveSupabaseUserFromCookies(
+    cookieStore.getAll(),
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+  );
+
+  if (!user) {
+    return emptyLearnViewer();
+  }
+
+  return viewerFromUserMetadata(user);
+}
+
 export async function getLearnViewer(): Promise<LearnViewer> {
   let supabase;
   try {
     supabase = await createSupabaseServer();
   } catch {
-    return {
-      user: null,
-      normalizedEmail: null,
-      roles: [],
-      memberships: [],
-    };
+    return emptyLearnViewer();
   }
 
   let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
@@ -123,12 +146,7 @@ export async function getLearnViewer(): Promise<LearnViewer> {
   }
 
   if (!user) {
-    return {
-      user: null,
-      normalizedEmail: null,
-      roles: [],
-      memberships: [],
-    };
+    return emptyLearnViewer();
   }
 
   const normalized = normalizeEmail(user.email);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 
 const categories = [
@@ -14,10 +14,28 @@ const categories = [
   { value: "other", label: "Other" },
 ];
 
+const validCategoryValues = new Set(categories.map((category) => category.value));
+
+function normalizePrefillCategory(value: string | null) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return validCategoryValues.has(normalized) ? normalized : "general";
+}
+
+function normalizePrefillText(value: string | null, maxLength: number) {
+  return String(value || "").trim().slice(0, maxLength);
+}
+
 export default function NewSupportForm() {
-  const [subject, setSubject] = useState("");
-  const [category, setCategory] = useState("general");
-  const [message, setMessage] = useState("");
+  const searchParams = useSearchParams();
+  const [subject, setSubject] = useState(() =>
+    normalizePrefillText(searchParams.get("subject"), 160)
+  );
+  const [category, setCategory] = useState(() =>
+    normalizePrefillCategory(searchParams.get("category"))
+  );
+  const [message, setMessage] = useState(() =>
+    normalizePrefillText(searchParams.get("message"), 4000)
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();

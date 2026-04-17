@@ -1,5 +1,6 @@
 import { RouteLiveRefresh } from "@henryco/ui";
 import DivisionBadge from "@/components/owner/DivisionBadge";
+import { MessagingHubNav } from "@/components/owner/MessagingHubNav";
 import StatusBadge from "@/components/owner/StatusBadge";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import { getMessagingCenterData } from "@/lib/owner-data";
@@ -17,6 +18,8 @@ export default async function MessagingAlertsPage() {
         title="Notification failures and skips"
         description="The owner alert board surfaces delivery problems immediately, including the live invalid sender issue already present in marketplace email alerts."
       />
+
+      <MessagingHubNav />
 
       <OwnerPanel title="Failed or skipped owner alerts" description="These need configuration or data fixes.">
         <div className="space-y-3">

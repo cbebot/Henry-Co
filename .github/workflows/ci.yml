@@ -23,8 +23,22 @@ env:
   NEXT_PUBLIC_BASE_DOMAIN: henrycogroup.com
 
 jobs:
+  repo-guardrails:
+    name: Secret and env guardrails
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Secret and env guardrails
+        run: node ./scripts/ci/repo-guardrails.mjs --mode=repo
+
   lint-typecheck-test-build:
     name: Lint, typecheck, test, build
+    needs: repo-guardrails
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

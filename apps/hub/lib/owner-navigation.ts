@@ -118,6 +118,7 @@ export const ownerNavItems: OwnerNavItem[] = [
     section: "Communications",
     children: [
       { href: "/owner/messaging", label: "Overview", icon: Mail },
+      { href: "/owner/messaging/inbox", label: "Incoming email", icon: Mail },
       { href: "/owner/messaging/team", label: "Team internal chat", icon: MessagesSquare },
       { href: "/owner/messaging/queues", label: "Delivery Queues", icon: Megaphone },
       { href: "/owner/messaging/alerts", label: "Owner Alerts", icon: Siren },
@@ -215,6 +216,9 @@ export function getOwnerBreadcrumbs(pathname: string) {
   }
   if (parts[0] === "owner" && parts[1] === "messaging" && parts[2] === "queues") {
     crumbs.push({ label: "Delivery Queues", href: pathname });
+  }
+  if (parts[0] === "owner" && parts[1] === "messaging" && parts[2] === "inbox") {
+    crumbs.push({ label: "Incoming email", href: pathname });
   }
   if (parts[0] === "owner" && parts[1] === "messaging" && parts[2] === "alerts") {
     crumbs.push({ label: "Owner Alerts", href: pathname });

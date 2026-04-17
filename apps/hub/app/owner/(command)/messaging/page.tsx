@@ -1,6 +1,7 @@
 import Link from "next/link";
 import MetricCard from "@/components/owner/MetricCard";
 import DivisionBadge from "@/components/owner/DivisionBadge";
+import { MessagingHubNav } from "@/components/owner/MessagingHubNav";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import { getMessagingCenterData } from "@/lib/owner-data";
 import { Mail, MessageSquareWarning, Siren, Zap } from "lucide-react";
@@ -18,11 +19,14 @@ export default async function MessagingCenterPage() {
         description="Email, WhatsApp, and automation-state visibility is now centralized so the owner can inspect queue failures and alert posture without hopping into division-specific admin tools."
         actions={
           <>
+            <Link href="/owner/messaging/inbox" className="acct-button-secondary">Incoming email</Link>
             <Link href="/owner/messaging/queues" className="acct-button-secondary">Delivery queues</Link>
             <Link href="/owner/messaging/alerts" className="acct-button-primary">Alert failures</Link>
           </>
         }
       />
+
+      <MessagingHubNav />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Queue items" value={data.metrics.total} subtitle="Observed message rows" icon={Mail} />

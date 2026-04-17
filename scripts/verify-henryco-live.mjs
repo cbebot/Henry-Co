@@ -4,7 +4,8 @@ import path from "node:path";
 const repoRoot = process.cwd();
 const envFiles = [
   path.join(repoRoot, ".env.local"),
-  path.join(repoRoot, ".env.production.vercel"),
+  path.join(repoRoot, ".env.production.local"),
+  path.join(repoRoot, ".vercel", ".env.production.local"),
 ];
 
 for (const file of envFiles) {

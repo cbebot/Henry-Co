@@ -7,11 +7,16 @@
     "node": "24.x"
   },
   "scripts": {
+    "prepare": "husky",
+    "guardrails:repo": "node ./scripts/ci/repo-guardrails.mjs --mode=repo",
+    "guardrails:staged": "node ./scripts/ci/repo-guardrails.mjs --mode=staged",
+    "migrations:validate": "node ./scripts/ci/validate-migrations.mjs",
+    "migrations:validate:strict": "node ./scripts/ci/validate-migrations.mjs --strict",
     "build:all": "pnpm -r --filter \"./apps/*\" run build",
     "lint:all": "pnpm -r --filter \"./apps/*\" run lint",
     "typecheck:all": "pnpm -r --filter \"./apps/*\" run typecheck",
     "test:workspace": "pnpm --filter @henryco/super-app run test:ci",
-    "ci:validate": "pnpm run lint:all && pnpm run typecheck:all && pnpm run test:workspace && pnpm run build:all",
+    "ci:validate": "pnpm run guardrails:repo && pnpm run migrations:validate && pnpm run lint:all && pnpm run typecheck:all && pnpm run test:workspace && pnpm run build:all",
     "build:logistics": "pnpm --filter @henryco/logistics build",
     "lint:logistics": "pnpm --filter @henryco/logistics lint",
     "typecheck:logistics": "pnpm --filter @henryco/logistics typecheck",
@@ -34,6 +39,7 @@
     "@henryco/config": "workspace:^"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
     "next": "16.1.6"
   }
 }

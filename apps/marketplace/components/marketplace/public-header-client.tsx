@@ -312,7 +312,7 @@ export function PublicHeaderClient() {
                 accountHref={getAccountUrl("/")}
                 signupHref={signupHref}
                 signupLabel="Get started"
-                preferencesHref={getAccountUrl("/settings")}
+                preferencesHref={getAccountUrl("/settings#privacy-controls")}
                 settingsHref={getAccountUrl("/security")}
                 showSignOut
                 signOutApiPath="/api/auth/logout"

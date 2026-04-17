@@ -30,7 +30,8 @@ function loadEnvFile(filePath: string) {
 }
 
 loadEnvFile(resolve(workspaceRoot, ".env.local"));
-loadEnvFile(resolve(workspaceRoot, ".env.production.vercel"));
+loadEnvFile(resolve(workspaceRoot, ".env.production.local"));
+loadEnvFile(resolve(workspaceRoot, ".vercel", ".env.production.local"));
 
 const port = Number(process.env.LEARN_E2E_PORT || 3018);
 const baseURL = process.env.LEARN_E2E_BASE_URL || `http://127.0.0.1:${port}`;

@@ -2,13 +2,13 @@ import Link from "next/link";
 import { Award, BookOpen, BriefcaseBusiness, ChartNoAxesCombined, GraduationCap, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
 import { CourseCard, LearnMetricCard, LearnPanel, LearnSectionIntro, PathCard, QuickMetricStrip } from "@/components/learn/ui";
-import { getLearnViewer } from "@/lib/learn/auth";
+import { getPassiveLearnViewer } from "@/lib/learn/auth";
 import { getPublicAcademyData } from "@/lib/learn/data";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 
 const learn = getDivisionConfig("learn");
 
-function learnHeroFirstName(viewer: Awaited<ReturnType<typeof getLearnViewer>>) {
+function learnHeroFirstName(viewer: Awaited<ReturnType<typeof getPassiveLearnViewer>>) {
   if (!viewer.user) return null;
   const full = viewer.user.fullName?.trim();
   if (full) return full.split(/\s+/)[0] ?? null;
@@ -17,7 +17,7 @@ function learnHeroFirstName(viewer: Awaited<ReturnType<typeof getLearnViewer>>) 
 }
 
 export default async function HomePage() {
-  const [academy, viewer] = await Promise.all([getPublicAcademyData(), getLearnViewer()]);
+  const [academy, viewer] = await Promise.all([getPublicAcademyData(), getPassiveLearnViewer()]);
   const heroFirstName = learnHeroFirstName(viewer);
   const featuredCourses = academy.courses.filter((item) => item.featured).slice(0, 4);
   const featuredPaths = academy.paths.filter((item) => item.featured).slice(0, 3);

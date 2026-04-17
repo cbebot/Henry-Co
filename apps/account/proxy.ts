@@ -4,28 +4,9 @@ import {
   getHqUrl,
   getSharedCookieDomain,
   isRecoverableSupabaseAuthError,
-  isSupabaseAuthTokenCookie,
 } from "@henryco/config";
 
 const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password", "/reset-password", "/auth/callback"];
-
-function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse) {
-  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
-  for (const cookie of request.cookies.getAll()) {
-    if (!isSupabaseAuthTokenCookie(cookie.name)) {
-      continue;
-    }
-
-    request.cookies.set(cookie.name, "");
-    response.cookies.set(cookie.name, "", {
-      domain: cookieDomain,
-      expires: new Date(0),
-      path: "/",
-      sameSite: "lax",
-      secure: true,
-    });
-  }
-}
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -84,8 +65,8 @@ export async function proxy(request: NextRequest) {
     if (!isRecoverableSupabaseAuthError(error)) {
       throw error;
     }
-
-    clearSupabaseAuthCookies(request, response);
+    // Treat recoverable auth ambiguity as unauthenticated for this request,
+    // but do not destroy the shared session outside explicit logout.
   }
 
   if (!user) {

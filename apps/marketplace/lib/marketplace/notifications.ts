@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionConfig } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/config/email";
 import { normalizeEmail } from "@/lib/env";
 import { renderMarketplaceEmailTemplate, type MarketplaceTemplateInput, type MarketplaceTemplateKey } from "@/lib/email/marketplace-templates";
 import { syncMarketplaceAccountProjection } from "@/lib/marketplace/projections";
@@ -44,8 +45,14 @@ const marketplaceBaseUrl =
     : "http://localhost:3000";
 
 function getMarketplaceSenderAddress() {
-  const fallback = "onboarding@resend.dev";
-  const candidate = cleanText(process.env.RESEND_FROM_EMAIL || process.env.RESEND_SUPPORT_INBOX || marketplace.supportEmail)
+  const fallback = "noreply@henrycogroup.com";
+  const candidate = cleanText(
+    process.env.MARKETPLACE_SENDER_EMAIL ||
+      process.env.BREVO_SENDER_EMAIL ||
+      process.env.RESEND_FROM_EMAIL ||
+      process.env.RESEND_SUPPORT_INBOX ||
+      marketplace.supportEmail
+  )
     .replace(/[\r\n]+/g, "")
     .trim();
 
@@ -87,7 +94,8 @@ const cooldownByEvent: Partial<Record<MarketplaceTemplateKey, number>> = {
 function ownerAlertEmail() {
   return (
     cleanText(process.env.MARKETPLACE_OWNER_ALERT_EMAIL) ||
-    cleanText(process.env.RESEND_SUPPORT_INBOX) ||
+    cleanText(process.env.OWNER_ALERT_EMAIL) ||
+    cleanText(process.env.BREVO_REPLY_TO_EMAIL) ||
     marketplace.supportEmail
   );
 }
@@ -996,93 +1004,82 @@ async function performEmailDelivery(
   }
 
   const rendered = renderMarketplaceEmailTemplate(template);
-  const resendKey = cleanText(process.env.RESEND_API_KEY);
+  const result = await sendTransactionalEmail({
+    to: email,
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+    fromName: marketplace.name,
+    fromEmail: getMarketplaceSenderAddress(),
+    replyTo: ownerAlertEmail(),
+    missingConfigStatus: "queued",
+    tags: ["marketplace", template.templateKey],
+  });
 
-  if (!resendKey) {
+  if (result.status === "queued") {
     await updateQueueRecord(queueId, "queued", {
       payload: { template, rendered },
-      reason: "RESEND_API_KEY is not configured.",
+      reason: result.reason,
+      provider: result.provider ?? null,
       attemptCount,
     });
     await createAttemptRecord({
       queueId,
       channel: "email",
       status: "queued",
-      reason: "RESEND_API_KEY is not configured.",
+      reason: result.reason,
+      provider: result.provider ?? null,
       payload: { template, rendered },
     });
-    return { ok: false, status: "queued", reason: "RESEND_API_KEY is not configured.", messageId: null, provider: "resend" };
+    return {
+      ok: false,
+      status: "queued",
+      reason: result.reason,
+      messageId: null,
+      provider: result.provider,
+    };
   }
 
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: `${marketplace.name} <${getMarketplaceSenderAddress()}>`,
-        to: [email],
-        subject: rendered.subject,
-        html: rendered.html,
-        text: rendered.text,
-      }),
-    });
-
-    const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-    if (!response.ok) {
-      const reason = payload?.message || `Resend rejected the email with status ${response.status}.`;
-      await updateQueueRecord(queueId, "failed", {
-        payload: { template, rendered },
-        reason,
-        provider: "resend",
-        attemptCount,
-      });
-      await createAttemptRecord({
-        queueId,
-        channel: "email",
-        status: "failed",
-        provider: "resend",
-        reason,
-        payload: { template, rendered },
-      });
-      return { ok: false, status: "failed", reason, messageId: null, provider: "resend" };
-    }
-
-    await updateQueueRecord(queueId, "sent", {
-      payload: { template, rendered },
-      provider: "resend",
-      messageId: payload?.id ?? null,
-      attemptCount,
-    });
-    await createAttemptRecord({
-      queueId,
-      channel: "email",
-      status: "sent",
-      provider: "resend",
-      messageId: payload?.id ?? null,
-      payload: { template, rendered },
-    });
-    return { ok: true, status: "sent", reason: null, messageId: payload?.id ?? null, provider: "resend" };
-  } catch (error) {
-    const reason = error instanceof Error ? error.message : "Email delivery failed.";
+  if (!result.ok) {
+    const reason = result.reason || "Email delivery failed.";
     await updateQueueRecord(queueId, "failed", {
       payload: { template },
       reason,
-      provider: "resend",
+      provider: result.provider ?? null,
       attemptCount,
     });
     await createAttemptRecord({
       queueId,
       channel: "email",
       status: "failed",
-      provider: "resend",
+      provider: result.provider ?? null,
       reason,
       payload: { template },
     });
-    return { ok: false, status: "failed", reason, messageId: null, provider: "resend" };
+    return { ok: false, status: "failed", reason, messageId: null, provider: result.provider };
   }
+
+  await updateQueueRecord(queueId, "sent", {
+    payload: { template, rendered },
+    provider: "brevo",
+    messageId: result.messageId ?? null,
+    attemptCount,
+  });
+  await createAttemptRecord({
+    queueId,
+    channel: "email",
+    status: "sent",
+    provider: "brevo",
+    messageId: result.messageId ?? null,
+    payload: { template, rendered },
+  });
+  return {
+    ok: true,
+    status: "sent",
+    reason: null,
+    messageId: result.messageId ?? null,
+    provider: "brevo",
+  };
 }
 
 async function sendViaTwilio(phone: string, body: string): Promise<DeliveryResult> {

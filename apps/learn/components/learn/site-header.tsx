@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
-import { getLearnViewer } from "@/lib/learn/auth";
+import { getPassiveLearnViewer } from "@/lib/learn/auth";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { BrandMark } from "@/components/learn/ui";
 import { LearnSiteHeaderClient } from "@/components/learn/site-header-client";
@@ -8,7 +8,7 @@ import { LearnSiteHeaderClient } from "@/components/learn/site-header-client";
 const learn = getDivisionConfig("learn");
 
 export async function LearnSiteHeader() {
-  const viewer = await getLearnViewer();
+  const viewer = await getPassiveLearnViewer();
   const h = await headers();
   const returnPath = h.get("x-learn-return-path") || "/";
   const accountHref = getAccountLearnUrl();
@@ -30,7 +30,7 @@ export async function LearnSiteHeader() {
       accountHref={accountHref}
       loginHref={loginHref}
       signupHref={signupHref}
-      preferencesHref={getAccountUrl("/settings")}
+      preferencesHref={getAccountUrl("/settings#privacy-controls")}
       settingsHref={getAccountUrl("/security")}
     />
   );

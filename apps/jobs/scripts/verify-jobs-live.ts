@@ -99,7 +99,12 @@ function assert(condition: unknown, message: string): asserts condition {
 }
 
 function loadEnv() {
-  for (const name of [".env.local", ".env.production.vercel", ".env.vercel.production.jobs"]) {
+  for (const name of [
+    ".env.local",
+    ".env.production.local",
+    ".vercel/.env.production.local",
+    ".env.vercel.production.jobs",
+  ]) {
     const filePath = path.resolve(repoRoot, name);
     if (!fs.existsSync(filePath)) continue;
 

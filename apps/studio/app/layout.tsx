@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { PublicThemeGuard, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
 import { getDivisionConfig } from "@henryco/config";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { LocaleProvider } from "@henryco/i18n/react";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getStudioLocale } from "@/lib/locale-server";
 
 const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -36,16 +37,19 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const lang = await getStudioLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--studio-bg)] text-[var(--studio-ink)] antialiased">
         <PublicThemeGuard>
-          {children}
-          <StudioToastRoot />
+          <ThirdPartyRuntimeProviders>
+            <LocaleProvider locale={lang}>
+              {children}
+              <StudioToastRoot />
+            </LocaleProvider>
+          </ThirdPartyRuntimeProviders>
         </PublicThemeGuard>
       </body>
     </html>

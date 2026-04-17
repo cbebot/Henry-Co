@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTheme } from "next-themes";
-import { getSharedCookieDomain } from "@henryco/config";
 import {
   ALL_LOCALES,
   LOCALE_LABELS,
@@ -11,47 +10,14 @@ import {
   type AppLocale,
   type EcosystemConsentCopy,
 } from "@henryco/i18n";
+import {
+  buildHenryCoConsentState,
+  DEFAULT_HENRYCO_CONSENT,
+  persistHenryCoConsent,
+  readStoredHenryCoConsent,
+  type HenryCoConsentState,
+} from "@henryco/ui/public";
 import { Globe, ShieldCheck, Palette, Check, Sun, Moon, Monitor } from "lucide-react";
-
-const STORAGE_KEY = "henryco-ecosystem-consent";
-const COOKIE_KEY = "henryco_ecosystem_consent";
-
-type ConsentState = {
-  essential: true;
-  preferences: boolean;
-  analytics: boolean;
-  marketing: boolean;
-  personalizedExperience: boolean;
-  updatedAt: string;
-};
-
-const DEFAULT_CONSENT: ConsentState = {
-  essential: true,
-  preferences: false,
-  analytics: false,
-  marketing: false,
-  personalizedExperience: false,
-  updatedAt: "",
-};
-
-function readCookie(name: string) {
-  if (typeof document === "undefined") return undefined;
-  const prefix = `${name}=`;
-  return document.cookie
-    .split(";")
-    .map((p) => p.trim())
-    .find((p) => p.startsWith(prefix))
-    ?.slice(prefix.length);
-}
-
-function persistConsent(value: ConsentState, host: string) {
-  const serialized = JSON.stringify(value);
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, serialized);
-  const domain = getSharedCookieDomain(host);
-  const domainPart = domain ? `; domain=${domain}` : "";
-  document.cookie = `${COOKIE_KEY}=${encodeURIComponent(serialized)}; path=/; max-age=31536000; samesite=lax${domainPart}`;
-}
 
 const THEME_OPTIONS = [
   { value: "system", label: "System", Icon: Monitor },
@@ -67,35 +33,17 @@ export default function PreferencesClient({
   copy: EcosystemConsentCopy;
 }) {
   const [ready, setReady] = useState(false);
-  const [consent, setConsent] = useState<ConsentState>(DEFAULT_CONSENT);
+  const [consent, setConsent] = useState<HenryCoConsentState>(DEFAULT_HENRYCO_CONSENT);
   const [localeChoice, setLocaleChoice] = useState<AppLocale>(initialLocale);
   const [saved, setSaved] = useState(false);
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    try {
-      let raw: string | null = null;
-      if (typeof window !== "undefined") {
-        const local = window.localStorage.getItem(STORAGE_KEY);
-        const cookie = readCookie(COOKIE_KEY);
-        raw = local || (cookie ? decodeURIComponent(cookie) : "") || null;
-      }
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<ConsentState>;
-        setConsent({
-          essential: true,
-          preferences: Boolean(parsed.preferences),
-          analytics: Boolean(parsed.analytics),
-          marketing: Boolean(parsed.marketing),
-          personalizedExperience: Boolean(parsed.personalizedExperience),
-          updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt : "",
-        });
-      }
-    } catch {
-      /* ignore parse errors */
-    } finally {
-      setReady(true);
+    const storedConsent = readStoredHenryCoConsent();
+    if (storedConsent) {
+      setConsent(storedConsent);
     }
+    setReady(true);
   }, []);
 
   const lastUpdated = useMemo(() => {
@@ -127,14 +75,13 @@ export default function PreferencesClient({
   }, []);
 
   function save() {
-    const payload: ConsentState = {
+    const payload = buildHenryCoConsentState({
       ...consent,
-      essential: true,
       updatedAt: new Date().toISOString(),
-    };
+    });
     setConsent(payload);
     if (typeof window !== "undefined") {
-      persistConsent(payload, window.location.hostname);
+      persistHenryCoConsent(payload, window.location.hostname);
     }
     void persistLocale(localeChoice);
     setSaved(true);
@@ -286,14 +233,13 @@ export default function PreferencesClient({
         <button
           type="button"
           onClick={() => {
-            setConsent({
-              essential: true,
-              preferences: false,
-              analytics: false,
-              marketing: false,
-              personalizedExperience: false,
-              updatedAt: "",
+            const essentialOnly = buildHenryCoConsentState({
+              updatedAt: new Date().toISOString(),
             });
+            setConsent(essentialOnly);
+            if (typeof window !== "undefined") {
+              persistHenryCoConsent(essentialOnly, window.location.hostname);
+            }
           }}
           className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
         >

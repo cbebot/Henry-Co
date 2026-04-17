@@ -10,6 +10,27 @@ export interface CurrencyConfig {
   locale: string;
 }
 
+export interface FormatMoneyOptions {
+  locale?: string | null;
+  unit?: "major" | "minor";
+  notation?: Intl.NumberFormatOptions["notation"];
+  minimumFractionDigits?: number;
+  maximumFractionDigits?: number;
+  currencyDisplay?: Intl.NumberFormatOptions["currencyDisplay"];
+  signDisplay?: Intl.NumberFormatOptions["signDisplay"];
+  includeCode?: boolean;
+}
+
+export interface CurrencyTruthContext {
+  displayCurrency: string;
+  pricingCurrency: string;
+  settlementCurrency: string;
+  baseCurrency: string;
+  locale: string;
+  exchangeRateSource: string | null;
+  exchangeRateTimestamp: string | null;
+}
+
 const CURRENCY_MAP: Record<string, CurrencyConfig> = {
   NGN: { code: 'NGN', symbol: '\u20A6', decimals: 2, locale: 'en-NG' },
   USD: { code: 'USD', symbol: '$', decimals: 2, locale: 'en-US' },
@@ -25,12 +46,24 @@ const CURRENCY_MAP: Record<string, CurrencyConfig> = {
 
 const DEFAULT_CURRENCY = 'NGN';
 
+export function normalizeCurrencyCode(code?: string | null): string {
+  const normalized = String(code || "").trim().toUpperCase();
+  return normalized || DEFAULT_CURRENCY;
+}
+
+export function resolveCurrencyLocale(
+  currencyCode: string,
+  preferredLocale?: string | null,
+): string {
+  return preferredLocale || parseCurrencyConfig(currencyCode).locale;
+}
+
 /**
  * Look up the configuration for a given ISO 4217 currency code.
  * Falls back to NGN when the code is unknown.
  */
 export function parseCurrencyConfig(code: string): CurrencyConfig {
-  const upper = code.toUpperCase();
+  const upper = normalizeCurrencyCode(code);
   return CURRENCY_MAP[upper] ?? CURRENCY_MAP[DEFAULT_CURRENCY];
 }
 
@@ -43,18 +76,60 @@ export function parseCurrencyConfig(code: string): CurrencyConfig {
  * @returns Formatted string, e.g. "\u20A61,500.00"
  */
 export function formatMoney(
-  amountKobo: number,
+  amount: number,
   currencyCode: string = DEFAULT_CURRENCY,
+  options?: FormatMoneyOptions,
 ): string {
   const config = parseCurrencyConfig(currencyCode);
-  const major = amountKobo / Math.pow(10, config.decimals);
+  const normalizedAmount =
+    (options?.unit || "minor") === "major"
+      ? amount
+      : amount / Math.pow(10, config.decimals);
+  const minimumFractionDigits =
+    options?.minimumFractionDigits ?? (Number.isInteger(normalizedAmount) ? 0 : config.decimals);
+  const maximumFractionDigits = options?.maximumFractionDigits ?? config.decimals;
 
-  const formatter = new Intl.NumberFormat(config.locale, {
+  const formatter = new Intl.NumberFormat(resolveCurrencyLocale(config.code, options?.locale), {
     style: 'currency',
     currency: config.code,
-    minimumFractionDigits: config.decimals,
-    maximumFractionDigits: config.decimals,
+    currencyDisplay: options?.currencyDisplay,
+    notation: options?.notation,
+    signDisplay: options?.signDisplay,
+    minimumFractionDigits,
+    maximumFractionDigits,
   });
 
-  return formatter.format(major);
+  const formatted = formatter.format(normalizedAmount);
+  return options?.includeCode ? `${formatted} ${config.code}` : formatted;
+}
+
+export function resolveCurrencyTruthContext(
+  input: Partial<CurrencyTruthContext> & {
+    displayCurrency?: string | null;
+    pricingCurrency?: string | null;
+    settlementCurrency?: string | null;
+    baseCurrency?: string | null;
+    locale?: string | null;
+    exchangeRateSource?: string | null;
+    exchangeRateTimestamp?: string | null;
+  },
+): CurrencyTruthContext {
+  const pricingCurrency = normalizeCurrencyCode(
+    input.pricingCurrency || input.settlementCurrency || input.displayCurrency,
+  );
+  const settlementCurrency = normalizeCurrencyCode(
+    input.settlementCurrency || input.pricingCurrency || pricingCurrency,
+  );
+  const baseCurrency = normalizeCurrencyCode(input.baseCurrency || settlementCurrency);
+  const displayCurrency = normalizeCurrencyCode(input.displayCurrency || pricingCurrency);
+
+  return {
+    displayCurrency,
+    pricingCurrency,
+    settlementCurrency,
+    baseCurrency,
+    locale: resolveCurrencyLocale(pricingCurrency, input.locale),
+    exchangeRateSource: input.exchangeRateSource || null,
+    exchangeRateTimestamp: input.exchangeRateTimestamp || null,
+  };
 }

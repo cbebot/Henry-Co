@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
@@ -25,7 +26,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased">
         <HenryCoThemeBlocking />
         <ThemeProvider>
-          <LocaleProvider locale={locale}>{children}</LocaleProvider>
+          <ThirdPartyRuntimeProviders>
+            <LocaleProvider locale={locale}>{children}</LocaleProvider>
+          </ThirdPartyRuntimeProviders>
+          <ConsentNotice preferencesHref="/settings#privacy-controls" />
         </ThemeProvider>
       </body>
     </html>

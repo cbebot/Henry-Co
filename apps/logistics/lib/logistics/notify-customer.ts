@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionUrl } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/config/email";
 import { getOptionalEnv } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendLogisticsWhatsAppText } from "@/lib/logistics/whatsapp";
@@ -80,30 +81,20 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
     "— HenryCo Logistics",
   ].join("\n");
 
-  const resendKey = cleanText(process.env.RESEND_API_KEY);
-  const from =
-    cleanText(process.env.RESEND_FROM_EMAIL) ||
-    cleanText(process.env.RESEND_FROM) ||
-    "HenryCo Logistics <onboarding@resend.dev>";
-
   const email = cleanText(input.senderEmail);
-  if (email && resendKey) {
+  if (email) {
     try {
-      const response = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from,
-          to: [email],
-          subject,
-          text: bodyText,
-        }),
+      const result = await sendTransactionalEmail({
+        to: email,
+        subject,
+        text: bodyText,
+        fromName: "HenryCo Logistics",
+        fromEmail: "noreply@henrycogroup.com",
+        replyTo: "support@henrycogroup.com",
+        missingConfigStatus: "queued",
+        tags: ["logistics", input.mode],
       });
-      const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-      if (response.ok && payload?.id) {
+      if (result.ok) {
         await logNotificationRow({
           shipmentId: input.shipmentId,
           channel: "email",
@@ -119,8 +110,8 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
           templateKey: input.mode === "quote" ? "quote_created" : "booking_created",
           recipient: email,
           subject,
-          status: "failed",
-          reason: payload?.message || `HTTP ${response.status}`,
+          status: result.status === "queued" ? "skipped" : "failed",
+          reason: result.reason,
         });
       }
     } catch (err) {
@@ -134,16 +125,6 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
         reason: err instanceof Error ? err.message : "email_send_error",
       });
     }
-  } else if (email) {
-    await logNotificationRow({
-      shipmentId: input.shipmentId,
-      channel: "email",
-      templateKey: input.mode === "quote" ? "quote_created" : "booking_created",
-      recipient: email,
-      subject,
-      status: "skipped",
-      reason: "RESEND_API_KEY is not configured.",
-    });
   }
 
   const wa = await sendLogisticsWhatsAppText({

@@ -1463,6 +1463,8 @@ export async function ingestInboundSupportEmail(input: InboundSupportEmailInput)
   const customerName = sender.name || "Customer";
   const settings = await getCareSettings();
   const internalAddresses = [
+    extractMailbox(process.env.BREVO_SENDER_EMAIL).email,
+    extractMailbox(process.env.BREVO_REPLY_TO_EMAIL).email,
     extractMailbox(process.env.RESEND_FROM_EMAIL).email,
     extractMailbox(process.env.RESEND_FROM).email,
     extractMailbox(settings.support_email).email,

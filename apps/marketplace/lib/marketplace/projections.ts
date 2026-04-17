@@ -1,5 +1,6 @@
 import "server-only";
 
+import { buildCanonicalActivityMetadata } from "@henryco/intelligence";
 import { getDivisionUrl } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -85,7 +86,14 @@ export async function syncMarketplaceAccountProjection(input: {
       reference_type: input.entityType ?? "marketplace",
       reference_id: input.entityId ?? null,
       amount_kobo: input.amountKobo ?? null,
-      metadata,
+      metadata: buildCanonicalActivityMetadata({
+        division: "marketplace",
+        activityType: cleanText(input.category) || "marketplace_update",
+        status: cleanText(input.status) || "active",
+        referenceType: input.entityType ?? "marketplace",
+        referenceId: input.entityId ?? null,
+        metadata,
+      }),
       action_url: actionUrl,
     } as never),
     admin.from("customer_notifications").insert({

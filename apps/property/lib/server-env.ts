@@ -46,7 +46,8 @@ function loadEnvFile(filepath: string) {
 if (!envState.__henrycoPropertyEnvLoaded) {
   loadEnvFile(resolve(workspaceRoot, ".env"));
   loadEnvFile(resolve(workspaceRoot, ".env.local"));
-  loadEnvFile(resolve(workspaceRoot, ".env.production.vercel"));
+  loadEnvFile(resolve(workspaceRoot, ".env.production.local"));
+  loadEnvFile(resolve(workspaceRoot, ".vercel/.env.production.local"));
   loadEnvFile(resolve(workspaceRoot, "apps/care/.env.local"));
   loadEnvFile(resolve(workspaceRoot, "apps/care/.env.production.whatsapp"));
   envState.__henrycoPropertyEnvLoaded = true;

@@ -22,11 +22,12 @@ apps/company-hub/dist
 *.log
 codex-*.log
 
-# Environment files (use .env.example instead)
-.env*.local
-.env.production.vercel
-.env.vercel.*
-.env.pull.*
+# Environment files (track only explicit examples)
+.env
+.env.*
+!.env.example
+!**/.env.example
+!**/.env.*.example
 
 # IDE and tooling
 .claude/

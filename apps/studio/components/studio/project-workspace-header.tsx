@@ -54,7 +54,7 @@ export async function ProjectWorkspaceHeader() {
             loginHref={loginHref}
             signupHref={signupHref}
             accountHref={accountUrl}
-            preferencesHref={getAccountUrl("/settings")}
+            preferencesHref={getAccountUrl("/settings#privacy-controls")}
             settingsHref={getAccountUrl("/security")}
             showSignOut
             buttonClassName="border-[var(--studio-line)] bg-[var(--studio-bg-soft)] text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.35)] hover:bg-[color-mix(in_srgb,var(--studio-bg-soft)_92%,#000)]"

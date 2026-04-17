@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getPathBySlug } from "@/lib/learn/data";
-import { getLearnViewer } from "@/lib/learn/auth";
+import { getPassiveLearnViewer } from "@/lib/learn/auth";
 import { ActionLink, LearnPanel, LearnSectionIntro, LearnStatusBadge } from "@/components/learn/ui";
 
 export default async function PathDetailPage({
@@ -9,7 +9,7 @@ export default async function PathDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const viewer = await getLearnViewer();
+  const viewer = await getPassiveLearnViewer();
   const data = await getPathBySlug(slug, viewer);
   if (!data) notFound();
 

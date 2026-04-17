@@ -279,13 +279,13 @@ export default async function SupportOverviewPage() {
           subtitle="Support needs reliable reply delivery, inbound capture, and automation visibility."
         >
           <div className="grid gap-4">
-            <div className={`rounded-[1.5rem] border p-4 ${readinessTone(Boolean(process.env.RESEND_API_KEY))}`}>
+            <div className={`rounded-[1.5rem] border p-4 ${readinessTone(Boolean(process.env.BREVO_API_KEY))}`}>
               <div className="flex items-center gap-2 text-sm font-semibold">
                 <Mail className="h-4 w-4" />
                 Outbound email replies
               </div>
               <p className="mt-2 text-sm leading-7 opacity-90">
-                {process.env.RESEND_API_KEY
+                {process.env.BREVO_API_KEY
                   ? "Customer replies, booking confirmations, proof reminders, and staff notifications can all leave the platform."
                   : "Outbound email is blocked because the email transport key is missing in this runtime."}
               </p>

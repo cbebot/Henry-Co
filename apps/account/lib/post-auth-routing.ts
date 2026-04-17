@@ -27,8 +27,10 @@ type AccessSnapshot = {
 };
 
 const STAFF_MEMBERSHIP_TABLES = [
+  "care_role_memberships",
   "marketplace_role_memberships",
   "studio_role_memberships",
+  "jobs_role_memberships",
   "property_role_memberships",
   "learn_role_memberships",
   "logistics_role_memberships",

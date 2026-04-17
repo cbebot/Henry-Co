@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import localFont from "next/font/local";
 import { getDivisionConfig } from "@henryco/config";
-import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { PublicThemeGuard, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
+import { LocaleProvider } from "@henryco/i18n/react";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getPropertyLocale } from "@/lib/locale-server";
 import "./globals.css";
 
 const sans = localFont({
@@ -56,14 +57,17 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const lang = await getPropertyLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
-        <PublicThemeGuard>{children}</PublicThemeGuard>
+        <PublicThemeGuard>
+          <ThirdPartyRuntimeProviders>
+            <LocaleProvider locale={lang}>{children}</LocaleProvider>
+          </ThirdPartyRuntimeProviders>
+        </PublicThemeGuard>
       </body>
     </html>
   );

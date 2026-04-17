@@ -135,7 +135,7 @@ export default function PublicSiteShell({
               loginHref={accountChip.loginHref}
               signupHref={accountChip.signupHref}
               accountHref={accountChip.accountHref}
-              preferencesHref={getAccountUrl("/settings")}
+              preferencesHref={getAccountUrl("/settings#privacy-controls")}
               settingsHref={getAccountUrl("/security")}
               showSignOut
               menuItems={[

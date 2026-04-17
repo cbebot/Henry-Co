@@ -19,6 +19,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs-pro-react": "^2.7.1",
     "@henryco/config": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "class-variance-authority": "^0.7.1",

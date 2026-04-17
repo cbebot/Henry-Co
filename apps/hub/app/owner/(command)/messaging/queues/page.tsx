@@ -1,4 +1,5 @@
 import DivisionBadge from "@/components/owner/DivisionBadge";
+import { MessagingHubNav } from "@/components/owner/MessagingHubNav";
 import StatusBadge from "@/components/owner/StatusBadge";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import { getMessagingCenterData } from "@/lib/owner-data";
@@ -16,6 +17,8 @@ export default async function MessagingQueuesPage() {
         title="Email and WhatsApp queue diagnostics"
         description="Every observed queue row from the live care and marketplace delivery systems is normalized here for owner visibility."
       />
+
+      <MessagingHubNav />
 
       <OwnerPanel title="Queue rows" description="Latest delivery-health telemetry.">
         <table className="owner-table">

@@ -115,8 +115,10 @@ async function readMembershipRows(
 ) {
   const admin = createAdminSupabase();
   const tableByDivision: Partial<Record<WorkspaceDivision, string>> = {
+    care: "care_role_memberships",
     marketplace: "marketplace_role_memberships",
     studio: "studio_role_memberships",
+    jobs: "jobs_role_memberships",
     property: "property_role_memberships",
     learn: "learn_role_memberships",
     logistics: "logistics_role_memberships",

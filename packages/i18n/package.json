@@ -9,6 +9,8 @@
     "./countries": "./countries.ts",
     "./timezone": "./timezone.ts",
     "./phone": "./phone.ts",
+    "./format-date": "./src/format-date.ts",
+    "./format-number": "./src/format-number.ts",
     "./react": "./src/react.tsx",
     "./server": "./src/server.ts",
     "./locale-route": "./src/locale-route.ts"

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export * from "./analytics";
+
 export const henryDivisionSchema = z.enum([
   "hub",
   "account",

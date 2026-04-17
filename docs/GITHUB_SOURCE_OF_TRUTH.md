@@ -18,12 +18,20 @@ Workflow: [.github/workflows/ci.yml](../.github/workflows/ci.yml)
 
 On every push and pull request targeting `main` / `master` it runs:
 
-1. **Lint** — `pnpm run lint:all` (all workspace apps under `apps/*`).
-2. **Typecheck** — `pnpm run typecheck:all`.
-3. **Tests** — `pnpm run test:workspace` (HenryCo super-app Jest suite today).
-4. **Build validation** — `pnpm run build:all` (Next.js apps; packages without a `build` script are skipped by pnpm).
+1. **Secret/env guardrails** — `node ./scripts/ci/repo-guardrails.mjs --mode=repo`.
+2. **Lint** — `pnpm run lint:all` (all workspace apps under `apps/*`).
+3. **Typecheck** — `pnpm run typecheck:all`.
+4. **Tests** — `pnpm run test:workspace` (HenryCo super-app Jest suite today).
+5. **Build validation** — `pnpm run build:all` (Next.js apps; packages without a `build` script are skipped by pnpm).
 
 CI injects **non-secret placeholder** Supabase-related env vars so `next build` can run without real keys. Real values still come from **Vercel** (web) or **EAS** (mobile) at deploy time.
+
+The guardrail step blocks:
+
+- tracked `.env*` files that are not `.env.example` templates
+- public-prefixed server secret names such as `NEXT_PUBLIC_*SECRET*` or `NEXT_PUBLIC_*SERVICE_ROLE*`
+- non-placeholder literal assignments to sensitive server env keys in tracked env/docs/workflow files
+- high-confidence leaked secret literals such as private key blocks or provider tokens
 
 ## Vercel (web / admin Next.js apps)
 
@@ -64,6 +72,7 @@ The EAS workflow **skips** entirely if `EXPO_TOKEN` is missing (e.g. forks).
 From the repo root:
 
 ```bash
+pnpm run guardrails:repo
 pnpm run ci:validate   # same steps as CI (lint + typecheck + test + build)
 ```
 

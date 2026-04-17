@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionConfig, getDivisionUrl } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/config/email";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type DispatchStatus = "sent" | "queued" | "skipped" | "failed";
@@ -199,64 +200,62 @@ export async function sendJobsEmail(
     };
   }
 
-  const resendKey = cleanText(process.env.RESEND_API_KEY);
-  const from = cleanText(process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM) || `HenryCo Jobs <${jobs.supportEmail}>`;
   const rendered = renderEmailTemplate({
     ...template,
     ctaHref: toAbsoluteJobsUrl(template.ctaHref),
   });
 
-  if (!resendKey) {
+  const result = await sendTransactionalEmail({
+    to: recipient,
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+    fromName: jobs.name,
+    fromEmail: jobs.supportEmail,
+    replyTo: jobs.supportEmail,
+    missingConfigStatus: "queued",
+    tags: ["jobs", template.key],
+  });
+
+  if (result.status === "queued") {
     await logNotificationAudit({
       actorId: options?.actorId,
       actorRole: options?.actorRole,
       action: "jobs_email_queued",
       entityType: options?.entityType,
       entityId: options?.entityId,
-      reason: "RESEND_API_KEY is not configured.",
+      reason: result.reason,
       payload: { to: recipient, template: template.key, subject: rendered.subject },
     });
     return {
       ok: false,
       status: "queued",
-      reason: "RESEND_API_KEY is not configured.",
+      reason: result.reason,
       messageId: null,
     };
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [recipient],
-      subject: rendered.subject,
-      html: rendered.html,
-      text: rendered.text,
-    }),
-  });
-
-  const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-  const ok = response.ok && Boolean(payload?.id);
-
   await logNotificationAudit({
     actorId: options?.actorId,
     actorRole: options?.actorRole,
-    action: ok ? "jobs_email_sent" : "jobs_email_failed",
+    action: result.ok ? "jobs_email_sent" : "jobs_email_failed",
     entityType: options?.entityType,
     entityId: options?.entityId,
-    reason: ok ? null : payload?.message || `Resend rejected the email with status ${response.status}.`,
-    payload: { to: recipient, template: template.key, subject: rendered.subject, resendId: payload?.id ?? null },
+    reason: result.reason,
+    payload: {
+      to: recipient,
+      template: template.key,
+      subject: rendered.subject,
+      provider: result.provider,
+      messageId: result.messageId,
+    },
   });
 
   return {
-    ok,
-    status: ok ? "sent" : "failed",
-    reason: ok ? null : payload?.message || `Resend rejected the email with status ${response.status}.`,
-    messageId: payload?.id ?? null,
+    ok: result.ok,
+    status: result.ok ? "sent" : "failed",
+    reason: result.reason,
+    messageId: result.messageId,
   };
 }
 

@@ -61,7 +61,7 @@ export async function PublicShell({
             user={chipUser}
             loginHref={loginHref}
             accountHref={accountJobsUrl}
-            preferencesHref={getAccountUrl("/settings")}
+            preferencesHref={getAccountUrl("/settings#privacy-controls")}
             settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
             showSignOut

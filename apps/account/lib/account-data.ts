@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { getDivisionBrand, type DivisionBrand } from "@/lib/branding";
 import {
   isHiddenNotification,
@@ -56,6 +57,13 @@ export type WalletFundingRequest = {
   id: string;
   created_at: string;
   amount_kobo: number;
+  currency: string;
+  pricing_currency: string;
+  display_currency: string;
+  settlement_currency: string;
+  base_currency: string;
+  exchange_rate_source: string | null;
+  exchange_rate_timestamp: string | null;
   description: string;
   status: string;
   provider: string;
@@ -78,6 +86,13 @@ function mapFundingRequest(row: Record<string, unknown>): WalletFundingRequest {
     id: asText(row.id),
     created_at: asText(row.created_at),
     amount_kobo: Number(row.amount_kobo) || 0,
+    currency: asText(row.currency, "NGN"),
+    pricing_currency: asText(row.pricing_currency, asText(row.currency, "NGN")),
+    display_currency: asText(row.display_currency, asText(row.currency, "NGN")),
+    settlement_currency: asText(row.settlement_currency, "NGN"),
+    base_currency: asText(row.base_currency, "NGN"),
+    exchange_rate_source: asNullableText(row.exchange_rate_source),
+    exchange_rate_timestamp: asNullableText(row.exchange_rate_timestamp),
     description: asText(row.description),
     status:
       rawStatus === LEGACY_WALLET_TRANSACTION_PENDING_STATUS ? "pending_verification" : rawStatus,
@@ -103,6 +118,22 @@ function mapDedicatedFundingRequest(row: Record<string, unknown>): WalletFunding
     id: asText(row.id),
     created_at: asText(row.created_at),
     amount_kobo: Number(row.amount_kobo) || 0,
+    currency: asText(row.currency, asText(metadata.currency, "NGN")),
+    pricing_currency: asText(
+      row.pricing_currency,
+      asText(row.currency, asText(metadata.currency, "NGN"))
+    ),
+    display_currency: asText(
+      row.display_currency,
+      asText(row.currency, asText(metadata.currency, "NGN"))
+    ),
+    settlement_currency: asText(
+      row.settlement_currency,
+      asText(row.currency, asText(metadata.currency, "NGN"))
+    ),
+    base_currency: asText(row.base_currency, "NGN"),
+    exchange_rate_source: asNullableText(row.exchange_rate_source),
+    exchange_rate_timestamp: asNullableText(row.exchange_rate_timestamp),
     description: ref ? `Wallet funding — ${ref}` : "Wallet funding request",
     status: asText(row.status, "pending_verification"),
     provider: asText(row.provider, "bank_transfer"),
@@ -122,11 +153,38 @@ function mapDedicatedFundingRequest(row: Record<string, unknown>): WalletFunding
 export async function getWalletSummary(userId: string) {
   const { data: wallet } = await admin()
     .from("customer_wallets")
-    .select("id, balance_kobo, currency, is_active")
+    .select(
+      "id, balance_kobo, currency, display_currency, settlement_currency, base_currency, exchange_rate_source, exchange_rate_timestamp, is_active"
+    )
     .eq("user_id", userId)
     .maybeSingle();
 
-  return wallet || { id: null, balance_kobo: 0, currency: "NGN", is_active: true };
+  return (
+    wallet || {
+      id: null,
+      balance_kobo: 0,
+      currency: "NGN",
+      display_currency: "NGN",
+      settlement_currency: "NGN",
+      base_currency: "NGN",
+      exchange_rate_source: null,
+      exchange_rate_timestamp: null,
+      is_active: true,
+    }
+  );
+}
+
+async function getScopedSupportSupabase(userId: string) {
+  const supabase = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || user.id !== userId) {
+    return null;
+  }
+
+  return supabase;
 }
 
 export async function getWalletTransactions(userId: string, limit = 20) {
@@ -292,28 +350,43 @@ export async function getProfile(userId: string) {
 }
 
 export async function getSupportThreads(userId: string) {
-  const { data } = await admin()
+  const scoped = await getScopedSupportSupabase(userId);
+  const query = (scoped ?? admin())
     .from("support_threads")
     .select("*")
-    .eq("user_id", userId)
     .order("updated_at", { ascending: false });
+  const { data } = scoped ? await query : await query.eq("user_id", userId);
 
   return data || [];
 }
 
 export async function getSupportThreadById(userId: string, threadId: string) {
-  const { data } = await admin()
-    .from("support_threads")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("id", threadId)
-    .maybeSingle();
+  const scoped = await getScopedSupportSupabase(userId);
+  const client = scoped ?? admin();
+  const query = client.from("support_threads").select("*").eq("id", threadId);
+  const { data } = scoped
+    ? await query.maybeSingle()
+    : await query.eq("user_id", userId).maybeSingle();
 
   return data;
 }
 
-export async function getSupportMessages(threadId: string) {
-  const { data } = await admin()
+export async function getSupportMessages(userId: string, threadId: string) {
+  const scoped = await getScopedSupportSupabase(userId);
+  if (!scoped) {
+    const { data: thread } = await admin()
+      .from("support_threads")
+      .select("id")
+      .eq("id", threadId)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!thread) {
+      return [];
+    }
+  }
+
+  const { data } = await (scoped ?? admin())
     .from("support_messages")
     .select("*")
     .eq("thread_id", threadId)
@@ -323,16 +396,29 @@ export async function getSupportMessages(threadId: string) {
 }
 
 export async function markSupportThreadRead(userId: string, threadId: string) {
+  const scoped = await getScopedSupportSupabase(userId);
+  if (scoped) {
+    const { error } = await scoped.rpc("customer_mark_support_thread_read", {
+      p_thread_id: threadId,
+    });
+
+    if (!error) {
+      return;
+    }
+
+    if (!isMissingPostgrestResourceError(error)) {
+      throw error;
+    }
+  }
+
   const now = new Date().toISOString();
 
-  // Update thread-level customer last read timestamp
   await admin()
     .from("support_threads")
     .update({ customer_last_read_at: now })
     .eq("id", threadId)
     .eq("user_id", userId);
 
-  // Mark individual messages as read (messages not sent by customer)
   await admin()
     .from("support_messages")
     .update({ is_read: true, read_at: now })
@@ -342,19 +428,22 @@ export async function markSupportThreadRead(userId: string, threadId: string) {
 }
 
 export async function getUnreadSupportCount(userId: string) {
-  // Count threads where there are messages newer than customer_last_read_at
-  const { data: threads } = await admin()
+  const scoped = await getScopedSupportSupabase(userId);
+  const client = scoped ?? admin();
+  const threadQuery = client
     .from("support_threads")
     .select("id, customer_last_read_at")
-    .eq("user_id", userId)
     .neq("status", "closed");
+  const { data: threads } = scoped
+    ? await threadQuery
+    : await threadQuery.eq("user_id", userId);
 
   if (!threads || threads.length === 0) return 0;
 
   let unreadCount = 0;
   for (const thread of threads) {
     const lastRead = thread.customer_last_read_at;
-    let query = admin()
+    let query = client
       .from("support_messages")
       .select("*", { count: "exact", head: true })
       .eq("thread_id", thread.id)

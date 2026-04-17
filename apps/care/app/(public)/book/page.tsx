@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
+import { cookies } from "next/headers";
 import Link from "next/link";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, readPassiveSupabaseUserFromCookies } from "@henryco/config";
 import {
   ArrowRight,
   CalendarCheck2,
@@ -18,7 +19,6 @@ import BookPickupForm from "@/components/care/BookPickupForm";
 import { getCareBookingCatalog, getCarePricing, getCareSettings } from "@/lib/care-data";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 import { createAdminSupabase } from "@/lib/supabase";
-import { createSupabaseServer } from "@/lib/supabase/server";
 import { createPublicBookingAction } from "./actions";
 
 export const revalidate = 60;
@@ -301,10 +301,11 @@ export default async function BookPage({
 }
 
 async function getBookingIdentity() {
-  const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const cookieStore = await cookies();
+  const user = readPassiveSupabaseUserFromCookies(
+    cookieStore.getAll(),
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+  );
   if (!user?.id) {
     return { addresses: [], contact: null };
   }

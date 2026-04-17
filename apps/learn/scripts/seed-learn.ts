@@ -20,7 +20,7 @@ function loadEnvFile(filepath: string) {
 }
 
 loadEnvFile(path.join(rootDir, ".env.local"));
-loadEnvFile(path.join(rootDir, ".env.production.vercel"));
+loadEnvFile(path.join(rootDir, ".env.production.local"));
 loadEnvFile(path.join(rootDir, ".vercel", ".env.production.local"));
 
 async function run() {

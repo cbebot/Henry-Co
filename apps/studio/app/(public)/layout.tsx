@@ -34,7 +34,7 @@ export default async function PublicLayout({ children }: { children: React.React
             user={chipUser}
             loginHref={loginHref}
             accountHref={accountUrl}
-            preferencesHref={getAccountUrl("/settings")}
+            preferencesHref={getAccountUrl("/settings#privacy-controls")}
             settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
             showSignOut

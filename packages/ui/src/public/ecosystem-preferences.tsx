@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { getSharedCookieDomain } from "@henryco/config";
 import {
   ALL_LOCALES,
   LOCALE_LABELS,
@@ -11,77 +10,15 @@ import {
   type EcosystemConsentCopy,
 } from "@henryco/i18n";
 import { ShieldCheck } from "lucide-react";
+import {
+  buildHenryCoConsentState,
+  DEFAULT_HENRYCO_CONSENT,
+  persistHenryCoConsent,
+  readStoredHenryCoConsent,
+  type HenryCoConsentState,
+} from "./consent-state";
 
-const LEGACY_LS = "henryco-care-cookie-consent";
-const LEGACY_COOKIE = "henryco_care_cookie_consent";
-const STORAGE_KEY = "henryco-ecosystem-consent";
-const COOKIE_KEY = "henryco_ecosystem_consent";
 export const HENRYCO_OPEN_PREFERENCES_EVENT = "henryco:open-preferences";
-
-type ConsentState = {
-  essential: true;
-  preferences: boolean;
-  analytics: boolean;
-  marketing: boolean;
-  personalizedExperience: boolean;
-  updatedAt: string;
-};
-
-const DEFAULT_CONSENT: ConsentState = {
-  essential: true,
-  preferences: false,
-  analytics: false,
-  marketing: false,
-  personalizedExperience: false,
-  updatedAt: "",
-};
-
-function readCookie(name: string) {
-  if (typeof document === "undefined") return undefined;
-  const prefix = `${name}=`;
-  return document.cookie
-    .split(";")
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(prefix))
-    ?.slice(prefix.length);
-}
-
-function persistConsent(value: ConsentState, host: string) {
-  const serialized = JSON.stringify(value);
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, serialized);
-  const domain = getSharedCookieDomain(host);
-  const domainPart = domain ? `; domain=${domain}` : "";
-  document.cookie = `${COOKIE_KEY}=${encodeURIComponent(serialized)}; path=/; max-age=31536000; samesite=lax${domainPart}`;
-}
-
-function migrateLegacyConsent(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const local = window.localStorage.getItem(LEGACY_LS);
-    const cookie = readCookie(LEGACY_COOKIE);
-    const raw = local || (cookie ? decodeURIComponent(cookie) : "");
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<ConsentState>;
-    const migrated: ConsentState = {
-      essential: true,
-      preferences: Boolean(parsed.preferences),
-      analytics: Boolean(parsed.analytics),
-      marketing: Boolean(parsed.marketing),
-      personalizedExperience: Boolean(
-        (parsed as { personalizedExperience?: boolean }).personalizedExperience
-      ),
-      updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt : new Date().toISOString(),
-    };
-    const host = window.location.hostname;
-    persistConsent(migrated, host);
-    window.localStorage.removeItem(LEGACY_LS);
-    document.cookie = `${LEGACY_COOKIE}=; path=/; max-age=0`;
-    return JSON.stringify(migrated);
-  } catch {
-    return null;
-  }
-}
 
 const BANNER_DELAY_MS = 4000;
 
@@ -99,7 +36,7 @@ export function EcosystemPreferences({
   bannerDelayMs?: number;
 }) {
   const [ready, setReady] = useState(false);
-  const [consent, setConsent] = useState<ConsentState>(DEFAULT_CONSENT);
+  const [consent, setConsent] = useState<HenryCoConsentState>(DEFAULT_HENRYCO_CONSENT);
   const [showBanner, setShowBanner] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [localeChoice, setLocaleChoice] = useState<AppLocale>(initialLocale);
@@ -109,36 +46,16 @@ export function EcosystemPreferences({
   }, [initialLocale]);
 
   useEffect(() => {
-    try {
-      let raw = migrateLegacyConsent();
-
-      if (!raw && typeof window !== "undefined") {
-        const local = window.localStorage.getItem(STORAGE_KEY);
-        const cookie = readCookie(COOKIE_KEY);
-        raw = local || (cookie ? decodeURIComponent(cookie) : "") || null;
-      }
-
-      if (!raw) {
-        const delay = bannerDelayMs > 0 ? bannerDelayMs : 0;
-        const timer = setTimeout(() => setShowBanner(true), delay);
-        setReady(true);
-        return () => clearTimeout(timer);
-      }
-
-      const parsed = JSON.parse(raw) as Partial<ConsentState>;
-      setConsent({
-        essential: true,
-        preferences: Boolean(parsed.preferences),
-        analytics: Boolean(parsed.analytics),
-        marketing: Boolean(parsed.marketing),
-        personalizedExperience: Boolean(parsed.personalizedExperience),
-        updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt : "",
-      });
-    } catch {
-      setShowBanner(true);
-    } finally {
+    const storedConsent = readStoredHenryCoConsent();
+    if (!storedConsent) {
+      const delay = bannerDelayMs > 0 ? bannerDelayMs : 0;
+      const timer = setTimeout(() => setShowBanner(true), delay);
       setReady(true);
+      return () => clearTimeout(timer);
     }
+
+    setConsent(storedConsent);
+    setReady(true);
     return undefined;
   }, [bannerDelayMs]);
 
@@ -177,15 +94,14 @@ export function EcosystemPreferences({
     }
   }
 
-  function save(next: Omit<ConsentState, "updatedAt">) {
-    const payload: ConsentState = {
+  function save(next: Omit<HenryCoConsentState, "updatedAt">) {
+    const payload = buildHenryCoConsentState({
       ...next,
-      essential: true,
       updatedAt: new Date().toISOString(),
-    };
+    });
     setConsent(payload);
     if (typeof window !== "undefined") {
-      persistConsent(payload, window.location.hostname);
+      persistHenryCoConsent(payload, window.location.hostname);
     }
     setShowBanner(false);
     setShowPanel(false);

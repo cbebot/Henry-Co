@@ -16,6 +16,8 @@ export type AccountRegionalContext = {
   locale: string;
   appLocale: AppLocale;
   currencyCode: string;
+  settlementCurrencyCode: string;
+  baseCurrencyCode: string;
   timezone: string;
   settlementNote: string;
 };
@@ -38,6 +40,8 @@ export function resolveAccountRegionalContext(input: {
     locale: country.locale,
     appLocale,
     currencyCode,
+    settlementCurrencyCode: "NGN",
+    baseCurrencyCode: "NGN",
     timezone,
     settlementNote:
       currencyCode === "NGN"
@@ -51,7 +55,7 @@ export function formatRegionalMoney(
   context: AccountRegionalContext,
   currencyCode = context.currencyCode
 ) {
-  return formatMoney(amountKobo, currencyCode);
+  return formatMoney(amountKobo, currencyCode, { locale: context.locale });
 }
 
 export function formatRegionalDate(

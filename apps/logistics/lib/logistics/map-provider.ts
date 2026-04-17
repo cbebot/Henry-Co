@@ -81,7 +81,9 @@ export function buildLogisticsMapViewport(input: {
         )}&layer=mapnik`
       : null;
 
-  const mapboxToken = String(process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "").trim();
+  const mapboxToken = String(
+    process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ""
+  ).trim();
   const googleKey = String(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "").trim();
 
   let provider: MapProviderId = "none";

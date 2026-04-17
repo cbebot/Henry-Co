@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionConfig } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/config/email";
 import "@/lib/server-env";
 import { normalizeEmail, normalizePhone } from "@/lib/env";
 import {
@@ -228,41 +229,31 @@ async function sendEmail(
     return { ok: false, status: "skipped", reason: "Recipient email is missing.", messageId: null };
   }
 
-  const resendKey = cleanText(process.env.RESEND_API_KEY);
   const property = getDivisionConfig("property");
   const rendered = renderPropertyEmailTemplate(notification.email);
 
-  if (!resendKey) {
-    return { ok: false, status: "queued", reason: "RESEND_API_KEY is not configured.", messageId: null };
-  }
-
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: `${property.name} <${process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev"}>`,
-        to: [recipient],
-        subject: rendered.subject,
-        html: rendered.html,
-        text: rendered.text,
-      }),
+    const result = await sendTransactionalEmail({
+      to: recipient,
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+      fromName: property.name,
+      fromEmail: "noreply@henrycogroup.com",
+      replyTo: property.supportEmail,
+      missingConfigStatus: "queued",
+      tags: ["property", notification.email.templateKey],
     });
-
-    const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-    if (!response.ok) {
+    if (!result.ok) {
       return {
         ok: false,
-        status: "failed",
-        reason: payload?.message || `Resend rejected the email with status ${response.status}.`,
+        status: result.status === "queued" ? "queued" : "failed",
+        reason: result.reason,
         messageId: null,
       };
     }
 
-    return { ok: true, status: "sent", reason: null, messageId: payload?.id ?? null };
+    return { ok: true, status: "sent", reason: null, messageId: result.messageId };
   } catch (error) {
     return {
       ok: false,

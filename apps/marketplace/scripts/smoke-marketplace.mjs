@@ -21,7 +21,8 @@ function loadEnvFile(filepath) {
 }
 
 loadEnvFile(path.join(rootDir, ".env.local"));
-loadEnvFile(path.join(rootDir, ".env.production.vercel"));
+loadEnvFile(path.join(rootDir, ".env.production.local"));
+loadEnvFile(path.join(rootDir, ".vercel", ".env.production.local"));
 
 const port = Number(process.env.MARKETPLACE_E2E_PORT || 3016);
 const defaultBaseUrl =
@@ -63,8 +64,7 @@ if (missingFiles.length) {
 }
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   process.exit(missingFiles.length ? 1 : 0);

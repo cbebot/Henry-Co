@@ -1,22 +1,16 @@
 import "server-only";
 
-import { isRecoverableSupabaseAuthError, resolveUserAvatarFromSources } from "@henryco/config";
+import { cookies } from "next/headers";
+import { readPassiveSupabaseUserFromCookies, resolveUserAvatarFromSources } from "@henryco/config";
 import type { PublicAccountUser } from "@henryco/ui";
 import { createAdminSupabase } from "@/lib/supabase";
-import { createSupabaseServer } from "@/lib/supabase/server";
 
 export async function getCarePublicChipUser(): Promise<PublicAccountUser | null> {
-  const supabase = await createSupabaseServer();
-  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
-
-  try {
-    const auth = await supabase.auth.getUser();
-    user = auth.data.user ?? null;
-  } catch (error) {
-    if (!isRecoverableSupabaseAuthError(error)) {
-      throw error;
-    }
-  }
+  const cookieStore = await cookies();
+  const user = readPassiveSupabaseUserFromCookies(
+    cookieStore.getAll(),
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+  );
 
   if (!user) return null;
 

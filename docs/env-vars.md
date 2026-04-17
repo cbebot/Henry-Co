@@ -47,6 +47,10 @@ Each app documents its own `.env.example` (if present). Typical patterns:
 
 ## Secret scan
 
-Repo grep for `sk_live`, long `api_key` literals, and passwords should stay clean. Re-run before release:
+Use the real repo guardrail instead of ad-hoc grep:
 
-`rg -i "sk_live|sk_test|api_key\\s*[:=]" apps packages --glob '*.{ts,tsx,js}'`
+```bash
+pnpm run guardrails:repo
+```
+
+This checks tracked env-file hygiene, public-vs-server env naming, and a small set of high-confidence leaked-secret patterns without printing secret values.

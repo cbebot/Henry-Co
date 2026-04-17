@@ -53,4 +53,5 @@ export {
   PublicLocaleProvider,
   PublicPreferencesProvider,
 } from "./public-shell/public-providers";
+export { ThirdPartyRuntimeProviders, useHenryCoVisitorData } from "./public-shell/third-party-runtime-providers";
 export type { PublicMobileMenu } from "./public-shell";

@@ -3,9 +3,16 @@ import "server-only";
 import { getAccountUrl } from "@henryco/config";
 import { sendTransactionalEmail } from "@henryco/config/email";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
+import { createStaffSupabaseServer } from "@/lib/supabase/server";
 import type { WorkspaceDivision } from "@/lib/types";
 
 type JsonRecord = Record<string, unknown>;
+type PostgrestLikeError = {
+  code?: string | null;
+  message?: string | null;
+  details?: string | null;
+  hint?: string | null;
+};
 
 type SupportThreadRow = {
   id: string;
@@ -116,10 +123,6 @@ export const STAFF_SUPPORT_STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
   { value: "open", label: "Open" },
   { value: "awaiting_reply", label: "Awaiting reply" },
-  { value: "pending_customer", label: "Pending customer" },
-  { value: "in_progress", label: "In progress" },
-  { value: "resolved", label: "Resolved" },
-  { value: "closed", label: "Closed" },
 ] as const;
 
 export const STAFF_SUPPORT_MAILBOX_OPTIONS = [
@@ -142,6 +145,67 @@ function cleanNullableText(value: unknown) {
 
 function isRecord(value: unknown): value is JsonRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function getErrorText(error: PostgrestLikeError | null | undefined) {
+  return [
+    typeof error?.message === "string" ? error.message : "",
+    typeof error?.details === "string" ? error.details : "",
+    typeof error?.hint === "string" ? error.hint : "",
+  ]
+    .join(" ")
+    .trim()
+    .toLowerCase();
+}
+
+function isMissingPostgrestResourceError(error: PostgrestLikeError | null | undefined) {
+  const code = String(error?.code || "").trim().toUpperCase();
+  const text = getErrorText(error);
+
+  if (code === "PGRST202" || code === "PGRST205" || code === "42703") {
+    return true;
+  }
+
+  return (
+    text.includes("schema cache") ||
+    text.includes("could not find the table") ||
+    text.includes("could not find the function") ||
+    (text.includes("column") && text.includes("does not exist")) ||
+    (text.includes("relation") && text.includes("does not exist"))
+  );
+}
+
+function firstRpcRow<T>(data: T | T[] | null | undefined) {
+  if (Array.isArray(data)) {
+    return (data[0] ?? null) as T | null;
+  }
+
+  return (data ?? null) as T | null;
+}
+
+async function runStaffSupportRpc<T>(
+  functionName: string,
+  args: Record<string, unknown>,
+  fallbackMessage: string
+) {
+  const supabase = await createStaffSupabaseServer();
+  const { data, error } = await supabase.rpc(functionName, args);
+
+  if (error) {
+    if (isMissingPostgrestResourceError(error)) {
+      return {
+        missing: true,
+        data: null as T | null,
+      };
+    }
+
+    throw new Error(error.message || fallbackMessage);
+  }
+
+  return {
+    missing: false,
+    data: firstRpcRow<T>(data as T | T[] | null | undefined),
+  };
 }
 
 function normalizeDivision(value: unknown) {
@@ -172,6 +236,29 @@ function formatPriorityLabel(value: string) {
 
 function isArchiveStatus(status: string) {
   return status === "resolved" || status === "closed";
+}
+
+function normalizeSupportedThreadStatus(
+  value: unknown,
+  fallback: "open" | "awaiting_reply" = "open"
+) {
+  const normalized = cleanText(value).toLowerCase();
+  if (!normalized) return fallback;
+
+  if (normalized === "pending_customer" || normalized === "in_progress") {
+    return "open" as const;
+  }
+
+  if (
+    normalized === "open" ||
+    normalized === "awaiting_reply" ||
+    normalized === "resolved" ||
+    normalized === "closed"
+  ) {
+    return normalized;
+  }
+
+  throw new Error(`Unsupported support status "${normalized}".`);
 }
 
 function isVisibleToViewer(division: string | null, viewerDivisions: WorkspaceDivision[]) {
@@ -579,6 +666,15 @@ export async function markSupportThreadViewedForStaff(input: {
   viewerDivisions: WorkspaceDivision[];
 }) {
   const row = await getThreadRowForViewer(input.threadId, input.viewerDivisions);
+  const rpc = await runStaffSupportRpc(
+    "staff_mark_support_thread_read",
+    { p_thread_id: row.id },
+    "Support read state could not be updated."
+  );
+  if (!rpc.missing) {
+    return;
+  }
+
   const admin = createStaffAdminSupabase();
   const now = new Date().toISOString();
 
@@ -612,6 +708,18 @@ export async function assignSupportThreadForStaff(input: {
   assigneeId: string | null;
 }) {
   const row = await getThreadRowForViewer(input.threadId, input.viewerDivisions);
+  const rpc = await runStaffSupportRpc(
+    "staff_assign_support_thread",
+    {
+      p_thread_id: row.id,
+      p_assignee_user_id: input.assigneeId,
+    },
+    "Support assignment could not be updated."
+  );
+  if (!rpc.missing) {
+    return;
+  }
+
   const admin = createStaffAdminSupabase();
   const { error } = await admin
     .from("support_threads")
@@ -633,6 +741,18 @@ export async function updateSupportThreadPriorityForStaff(input: {
 }) {
   const row = await getThreadRowForViewer(input.threadId, input.viewerDivisions);
   const nextPriority = cleanText(input.priority) || "normal";
+  const rpc = await runStaffSupportRpc(
+    "staff_update_support_thread_priority",
+    {
+      p_thread_id: row.id,
+      p_priority: nextPriority,
+    },
+    "Support priority could not be updated."
+  );
+  if (!rpc.missing) {
+    return;
+  }
+
   const admin = createStaffAdminSupabase();
   const { error } = await admin
     .from("support_threads")
@@ -659,7 +779,19 @@ export async function updateSupportThreadStatusForStaff(input: {
   status: string;
 }) {
   const row = await getThreadRowForViewer(input.threadId, input.viewerDivisions);
-  const nextStatus = cleanText(input.status) || "open";
+  const nextStatus = normalizeSupportedThreadStatus(input.status, "open");
+  const rpc = await runStaffSupportRpc(
+    "staff_update_support_thread_status",
+    {
+      p_thread_id: row.id,
+      p_status: nextStatus,
+    },
+    "Support status could not be updated."
+  );
+  if (!rpc.missing) {
+    return;
+  }
+
   const now = new Date().toISOString();
   const admin = createStaffAdminSupabase();
   const { error } = await admin
@@ -681,8 +813,10 @@ export async function updateSupportThreadStatusForStaff(input: {
     await appendSystemMessage(row.id, "Support marked this thread resolved.");
   } else if (nextStatus === "closed") {
     await appendSystemMessage(row.id, "Support closed this thread.");
-  } else if (isArchiveStatus(cleanText(row.status))) {
+  } else if (isArchiveStatus(cleanText(row.status)) && !isArchiveStatus(nextStatus)) {
     await appendSystemMessage(row.id, "Support reopened this thread.");
+  } else if (nextStatus === "open" && cleanText(row.status) !== "open") {
+    await appendSystemMessage(row.id, "Support returned this thread to active handling.");
   }
 }
 
@@ -698,6 +832,74 @@ export async function replyToSupportThreadForStaff(input: {
   const replyBody = cleanText(input.message);
   if (!replyBody) {
     throw new Error("Write a reply before sending.");
+  }
+  const nextStatus = normalizeSupportedThreadStatus(input.nextStatus, "open");
+  const rpc = await runStaffSupportRpc<{
+    id: string;
+    user_id: string;
+    division: string | null;
+    category: string | null;
+    priority: string | null;
+    status: string | null;
+    subject: string | null;
+  }>(
+    "staff_reply_support_thread",
+    {
+      p_thread_id: row.id,
+      p_body: replyBody,
+      p_next_status: nextStatus,
+      p_attachments: [],
+    },
+    "Support reply could not be sent."
+  );
+
+  if (!rpc.missing) {
+    const updatedThread = rpc.data ?? {
+      id: row.id,
+      user_id: row.user_id,
+      division: row.division,
+      category: row.category,
+      priority: row.priority,
+      status: nextStatus,
+      subject: row.subject,
+    };
+    const customerContacts = await loadUserContacts([updatedThread.user_id]);
+    const customer = customerContacts.get(updatedThread.user_id) ?? null;
+    const customerEmail = customer?.email || null;
+
+    let emailStatus: "sent" | "queued" | "skipped" | "failed" = "skipped";
+    let emailReason: string | null = "Customer email is not available on this thread.";
+
+    if (customerEmail) {
+      const emailTemplate = buildEmailHtml(
+        {
+          ...row,
+          subject: updatedThread.subject,
+          division: updatedThread.division,
+          category: updatedThread.category,
+          priority: updatedThread.priority,
+          status: updatedThread.status,
+        },
+        replyBody
+      );
+      const email = await sendTransactionalEmail({
+        to: customerEmail,
+        subject: emailTemplate.subject,
+        html: emailTemplate.html,
+        fromName: "HenryCo Support",
+        missingConfigStatus: "queued",
+        tags: ["support", normalizeDivision(updatedThread.division) || "account"],
+      });
+      emailStatus = email.status;
+      emailReason = email.reason;
+    }
+
+    return {
+      emailStatus,
+      emailReason,
+      statusLabel: formatStatusLabel(cleanText(updatedThread.status) || nextStatus),
+      priorityLabel: formatPriorityLabel(cleanText(updatedThread.priority) || "normal"),
+    };
   }
 
   const now = new Date().toISOString();
@@ -719,12 +921,12 @@ export async function replyToSupportThreadForStaff(input: {
   const { error: threadError } = await admin
     .from("support_threads")
     .update({
-      status: cleanText(input.nextStatus) || "pending_customer",
+      status: nextStatus,
       assigned_to: input.viewerId,
       updated_at: now,
       staff_last_read_at: now,
-      resolved_at: cleanText(input.nextStatus) === "resolved" ? now : null,
-      closed_at: cleanText(input.nextStatus) === "closed" ? now : null,
+      resolved_at: nextStatus === "resolved" ? now : null,
+      closed_at: nextStatus === "closed" ? now : null,
     })
     .eq("id", row.id);
 
@@ -738,7 +940,7 @@ export async function replyToSupportThreadForStaff(input: {
     title: "Support replied",
     body: summarizeBody(replyBody),
     category: "support",
-    priority: cleanText(input.nextStatus) === "resolved" ? "normal" : "high",
+    priority: nextStatus === "resolved" || nextStatus === "closed" ? "normal" : "high",
     action_url: `/support/${row.id}`,
     reference_type: "support_thread",
     reference_id: row.id,
@@ -752,7 +954,7 @@ export async function replyToSupportThreadForStaff(input: {
     activity_type: "support_replied",
     title: `Support replied: ${cleanText(row.subject) || "Support conversation"}`,
     description: summarizeBody(replyBody),
-    status: cleanText(input.nextStatus) || "pending_customer",
+    status: nextStatus,
     reference_type: "support_thread",
     reference_id: row.id,
     action_url: `/support/${row.id}`,
@@ -785,7 +987,7 @@ export async function replyToSupportThreadForStaff(input: {
   return {
     emailStatus,
     emailReason,
-    statusLabel: formatStatusLabel(cleanText(input.nextStatus) || "pending_customer"),
+    statusLabel: formatStatusLabel(nextStatus),
     priorityLabel: formatPriorityLabel(cleanText(row.priority) || "normal"),
   };
 }
