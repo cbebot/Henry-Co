@@ -9,12 +9,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
-    const message = await sendMessage(conversationId, senderId, senderType, body.trim());
-    if (!message) {
+    const result = await sendMessage(conversationId, senderId, senderType, body.trim());
+
+    if (result.blocked) {
+      return NextResponse.json({ error: result.blockReason ?? "Message blocked by platform policy." }, { status: 422 });
+    }
+
+    if (!result.message) {
       return NextResponse.json({ error: "Failed to send message." }, { status: 500 });
     }
 
-    return NextResponse.json({ message });
+    return NextResponse.json({ message: result.message });
   } catch {
     return NextResponse.json({ error: "Internal server error." }, { status: 500 });
   }

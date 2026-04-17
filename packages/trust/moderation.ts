@@ -80,6 +80,48 @@ export interface AutoFlagResult {
   severity: ModerationSeverity;
 }
 
+// ---- Repeat-offender escalation -----------------------------------------
+
+/**
+ * Escalates a moderation severity based on prior unresolved bypass-related
+ * flags for the same actor.  Callers pass the count of open or recent trust
+ * flags for the user/entity; this function returns the adjusted severity.
+ *
+ * Escalation rules:
+ *  - 0–1 prior flags: no change.
+ *  - 2–3 prior flags: escalate low→medium, medium→high.
+ *  - 4+ prior flags:  escalate to at least "high"; critical stays critical.
+ *
+ * The caller is responsible for querying `trust_flags` and passing the count.
+ * This function is intentionally pure (no I/O) so it stays testable.
+ */
+export function escalateSeverityForRepeatOffender(
+  baseSeverity: ModerationSeverity,
+  priorFlagCount: number
+): ModerationSeverity {
+  if (priorFlagCount <= 1) return baseSeverity;
+
+  const RANK: Record<ModerationSeverity, number> = {
+    low: 0,
+    medium: 1,
+    high: 2,
+    critical: 3,
+  };
+  const RANK_TO: ModerationSeverity[] = ["low", "medium", "high", "critical"];
+
+  let rank = RANK[baseSeverity] ?? 0;
+
+  if (priorFlagCount >= 4) {
+    // Four or more priors: force to at least "high"
+    rank = Math.max(rank, RANK["high"]);
+  } else {
+    // 2–3 priors: bump one step
+    rank = Math.min(rank + 1, RANK["critical"]);
+  }
+
+  return RANK_TO[rank] ?? "high";
+}
+
 /**
  * Combines off-platform contact detection and suspicious content detection
  * to decide whether a piece of content should be automatically flagged for

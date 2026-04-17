@@ -1,6 +1,10 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
+import {
+  shouldAutoFlag,
+  escalateSeverityForRepeatOffender,
+} from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 import type {
   HiringPipeline,
@@ -28,11 +32,6 @@ function asStringArray(value: unknown) {
   return Array.isArray(value)
     ? value.map((item) => asString(item).trim()).filter(Boolean)
     : [];
-}
-
-function asObject(value: unknown): Record<string, unknown> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  return value as Record<string, unknown>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -279,12 +278,46 @@ export async function sendMessage(
   senderId: string,
   senderType: string,
   body: string
-): Promise<Message | null> {
+): Promise<{ message: Message | null; blocked: boolean; blockReason: string | null }> {
+  const autoFlag = shouldAutoFlag(body);
+
+  // Repeat-offender escalation: look up unresolved trust flags for this sender
+  // over the past 30 days and escalate the base severity before the block decision.
+  let effectiveSeverity = autoFlag.severity;
+  if (autoFlag.flag) {
+    const flagWindow = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const adminEarly = createAdminSupabase();
+    const { count: priorFlagCount } = await adminEarly
+      .from("trust_flags")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", senderId)
+      .is("resolved_at", null)
+      .gte("created_at", flagWindow);
+    effectiveSeverity = escalateSeverityForRepeatOffender(
+      autoFlag.severity,
+      priorFlagCount ?? 0
+    );
+  }
+
+  // Block high/critical messages outright — do not persist them.
+  // This is consistent with the review authenticity policy in marketplace/trust.ts.
+  if (autoFlag.flag && (effectiveSeverity === "high" || effectiveSeverity === "critical")) {
+    return {
+      message: null,
+      blocked: true,
+      blockReason:
+        "This message could not be sent because it contains content that violates platform policy. " +
+        "Keep all communication, contact details, and payment arrangements inside HenryCo.",
+    };
+  }
+
   const admin = createAdminSupabase();
   const now = new Date().toISOString();
   const id = randomUUID();
 
-  const offPlatform = detectOffPlatformContact(body);
+  // Medium severity (after repeat-offender escalation): allow delivery but flag for moderation review.
+  const isFlagged = autoFlag.flag && effectiveSeverity === "medium";
+  const flagReason = isFlagged ? autoFlag.reason : null;
 
   const { data, error } = await admin
     .from("jobs_messages")
@@ -295,10 +328,8 @@ export async function sendMessage(
       sender_type: senderType,
       body,
       is_read: false,
-      is_flagged: offPlatform.detected,
-      flag_reason: offPlatform.detected
-        ? `Off-platform contact detected: ${offPlatform.patterns.join(", ")}`
-        : null,
+      is_flagged: isFlagged,
+      flag_reason: flagReason,
       created_at: now,
     })
     .select("*")
@@ -306,7 +337,7 @@ export async function sendMessage(
 
   if (error) {
     console.error("[hiring] sendMessage error:", error.message);
-    return null;
+    return { message: null, blocked: false, blockReason: null };
   }
 
   // Update conversation last_message_at
@@ -315,19 +346,19 @@ export async function sendMessage(
     .update({ last_message_at: now } as never)
     .eq("id", conversationId);
 
-  // If off-platform contact detected, auto-add to moderation queue
-  if (offPlatform.detected && data) {
+  // Enqueue medium-severity flagged messages for moderation review
+  if (isFlagged && data) {
     await admin.from("jobs_moderation_queue").insert({
       id: randomUUID(),
       entity_type: "message",
       entity_id: id,
-      reason: `Off-platform contact detected: ${offPlatform.patterns.join(", ")}`,
+      reason: flagReason,
       status: "pending",
       created_at: now,
     });
   }
 
-  return data ? mapMessage(data as Record<string, unknown>) : null;
+  return { message: data ? mapMessage(data as Record<string, unknown>) : null, blocked: false, blockReason: null };
 }
 
 export async function markMessagesRead(
@@ -503,58 +534,3 @@ export async function flagMessage(
   return true;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Off-platform contact detection                                     */
-/* ------------------------------------------------------------------ */
-
-export function detectOffPlatformContact(text: string): {
-  detected: boolean;
-  patterns: string[];
-} {
-  const patterns: string[] = [];
-
-  // Phone numbers: international formats, with/without country code
-  const phoneRegex =
-    /(?:\+?\d{1,4}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g;
-  if (phoneRegex.test(text)) {
-    patterns.push("phone number");
-  }
-
-  // Email addresses
-  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-  if (emailRegex.test(text)) {
-    patterns.push("email address");
-  }
-
-  // Social media handles and platforms
-  const socialPatterns = [
-    { regex: /@[a-zA-Z0-9_]{2,30}/g, label: "social media handle" },
-    {
-      regex:
-        /(?:whatsapp|telegram|signal|viber|wechat|line)\s*[:\-]?\s*[\w.+@]/i,
-      label: "messaging app reference",
-    },
-    {
-      regex:
-        /(?:instagram|facebook|twitter|linkedin|tiktok|snapchat)\.com\/[\w.-]+/i,
-      label: "social media link",
-    },
-    {
-      regex: /(?:ig|fb|tw|li)\s*[:\-]\s*[\w.-]+/i,
-      label: "social media shorthand",
-    },
-  ];
-
-  for (const { regex, label } of socialPatterns) {
-    if (regex.test(text)) {
-      if (!patterns.includes(label)) {
-        patterns.push(label);
-      }
-    }
-  }
-
-  return {
-    detected: patterns.length > 0,
-    patterns,
-  };
-}

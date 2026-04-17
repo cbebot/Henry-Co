@@ -13,7 +13,11 @@
 // ---------------------------------------------------------------------------
 import "server-only";
 
-import { shouldAutoFlag, type ModerationSeverity } from "@henryco/trust";
+import {
+  shouldAutoFlag,
+  escalateSeverityForRepeatOffender,
+  type ModerationSeverity,
+} from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 import type { MarketplaceVendor } from "@/lib/marketplace/types";
 import {
@@ -211,9 +215,26 @@ export async function checkReviewAuthenticity(input: {
   const contentToCheck = [input.title, input.body].filter(Boolean).join(" ");
   const autoFlag = shouldAutoFlag(contentToCheck);
 
+  // Repeat-offender escalation: look up unresolved trust flags for this
+  // reviewer over the past 30 days and bump severity before the block decision.
+  let effectiveSeverity = autoFlag.severity;
+  if (autoFlag.flag) {
+    const flagWindow = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const { count: priorFlagCount } = await admin
+      .from("trust_flags")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", input.userId)
+      .is("resolved_at", null)
+      .gte("created_at", flagWindow);
+    effectiveSeverity = escalateSeverityForRepeatOffender(
+      autoFlag.severity,
+      priorFlagCount ?? 0
+    );
+  }
+
   if (
     autoFlag.flag &&
-    (autoFlag.severity === "high" || autoFlag.severity === "critical")
+    (effectiveSeverity === "high" || effectiveSeverity === "critical")
   ) {
     // Block entirely — do not create a draft review
     return {
@@ -223,21 +244,21 @@ export async function checkReviewAuthenticity(input: {
         "Please rewrite it without suspicious or off-platform language.",
       requiresModeration: false,
       moderationReason: autoFlag.reason,
-      moderationSeverity: autoFlag.severity,
+      moderationSeverity: effectiveSeverity,
       isVerifiedPurchase: input.isVerifiedPurchase,
     };
   }
 
-  // Medium severity: allow the review but hold for moderation
+  // Medium severity (after repeat-offender escalation): allow but hold for moderation
   const requiresModeration =
-    autoFlag.flag && autoFlag.severity === "medium";
+    autoFlag.flag && effectiveSeverity === "medium";
 
   return {
     allowed: true,
     blockReason: null,
     requiresModeration,
     moderationReason: requiresModeration ? autoFlag.reason : null,
-    moderationSeverity: requiresModeration ? (autoFlag.severity as ModerationSeverity) : null,
+    moderationSeverity: requiresModeration ? (effectiveSeverity as ModerationSeverity) : null,
     isVerifiedPurchase: input.isVerifiedPurchase,
   };
 }

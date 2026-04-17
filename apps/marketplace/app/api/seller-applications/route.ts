@@ -1,5 +1,9 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import {
+  shouldAutoFlag,
+  escalateSeverityForRepeatOffender,
+} from "@henryco/trust";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { sendMarketplaceEvent } from "@/lib/marketplace/notifications";
@@ -144,6 +148,39 @@ export async function POST(request: Request) {
 
   if (mode === "submit" && !agreementAccepted) {
     return NextResponse.json({ error: "Agreement acceptance is required before submission." }, { status: 400 });
+  }
+
+  // Content safety: block submissions whose store story contains high/critical
+  // off-platform contact attempts or payout diversion language.
+  // Repeat-offender escalation: if this user has recent unresolved trust flags
+  // the base severity is bumped before the block decision.
+  if (mode === "submit" && story) {
+    const storyFlag = shouldAutoFlag(story);
+    let effectiveSeverity = storyFlag.severity;
+    if (storyFlag.flag) {
+      const adminCheck = createAdminSupabase();
+      const flagWindow = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { count: priorFlagCount } = await adminCheck
+        .from("trust_flags")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", viewer.user.id)
+        .is("resolved_at", null)
+        .gte("created_at", flagWindow);
+      effectiveSeverity = escalateSeverityForRepeatOffender(
+        storyFlag.severity,
+        priorFlagCount ?? 0
+      );
+    }
+    if (storyFlag.flag && (effectiveSeverity === "high" || effectiveSeverity === "critical")) {
+      return NextResponse.json(
+        {
+          error:
+            "The store story contains content that cannot be accepted. " +
+            "Remove any contact details, off-platform payment instructions, or bypass language before resubmitting.",
+        },
+        { status: 422 }
+      );
+    }
   }
 
   const admin = createAdminSupabase();
