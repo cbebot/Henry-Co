@@ -7,6 +7,7 @@ import { notifyStaffRoles } from "@/lib/staff-alerts";
 import { inferCareServiceFamily, isReviewEligibleStatus } from "@/lib/care-tracking";
 import { normalizeCareSettings } from "@/lib/care-settings-shared";
 import { normalizePhone } from "@henryco/config";
+import { shouldAutoFlag } from "@henryco/trust";
 
 export const runtime = "nodejs";
 
@@ -66,6 +67,27 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { ok: false, error: "Tracking code, phone, rating, and review text are required." },
         { status: 400 }
+      );
+    }
+
+    // Content safety on review text — block high/critical off-platform bypass language.
+    // This catches embedded phone numbers, WhatsApp links, payout diversion, etc.
+    // Care reviews have no authenticated user ID, so no trust_flags write is possible;
+    // the block itself is the deterrent. Medium severity is allowed through (human
+    // moderation approval handles it via is_approved: false on all care reviews).
+    const reviewTextFlag = shouldAutoFlag(reviewText);
+    if (
+      reviewTextFlag.flag &&
+      (reviewTextFlag.severity === "high" || reviewTextFlag.severity === "critical")
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "The review text contains content that cannot be accepted. " +
+            "Remove any contact details, payment instructions, or off-platform language.",
+        },
+        { status: 422 }
       );
     }
 

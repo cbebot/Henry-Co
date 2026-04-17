@@ -13,6 +13,7 @@
 // ---------------------------------------------------------------------------
 import "server-only";
 
+import { randomUUID } from "node:crypto";
 import {
   shouldAutoFlag,
   escalateSeverityForRepeatOffender,
@@ -236,6 +237,25 @@ export async function checkReviewAuthenticity(input: {
     autoFlag.flag &&
     (effectiveSeverity === "high" || effectiveSeverity === "critical")
   ) {
+    // Write a trust_flags record before returning — best-effort, never let a
+    // failed write prevent the block from being returned to the caller.
+    try {
+      await admin.from("trust_flags").insert({
+        id: randomUUID(),
+        user_id: input.userId,
+        flag_type: "off_platform_contact",
+        reason: autoFlag.reason,
+        severity: effectiveSeverity,
+        source: "system",
+        entity_type: "review",
+        entity_id: null, // review was not persisted
+        metadata: { product_id: input.productId },
+        created_at: new Date().toISOString(),
+        resolved_at: null,
+      });
+    } catch {
+      // Tolerate — block is unconditional
+    }
     // Block entirely — do not create a draft review
     return {
       allowed: false,

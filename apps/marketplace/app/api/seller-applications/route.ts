@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import {
@@ -172,6 +173,25 @@ export async function POST(request: Request) {
       );
     }
     if (storyFlag.flag && (effectiveSeverity === "high" || effectiveSeverity === "critical")) {
+      // Write a trust_flags record so future escalation checks count this attempt.
+      // Best-effort: block response is unconditional regardless of write success.
+      try {
+        await createAdminSupabase().from("trust_flags").insert({
+          id: randomUUID(),
+          user_id: viewer.user.id,
+          flag_type: "off_platform_contact",
+          reason: storyFlag.reason,
+          severity: effectiveSeverity,
+          source: "system",
+          entity_type: "application",
+          entity_id: null,
+          metadata: { context: "seller_application_story" },
+          created_at: new Date().toISOString(),
+          resolved_at: null,
+        });
+      } catch {
+        // Tolerate — block is unconditional
+      }
       return NextResponse.json(
         {
           error:

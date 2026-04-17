@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createHash, randomUUID } from "crypto";
+import { shouldAutoFlag } from "@henryco/trust";
 
 export type CareUploadedAsset = {
   secureUrl: string;
@@ -14,6 +15,8 @@ type UploadConfig = {
   oversizeMessage: string;
   invalidTypeMessage: string;
   resourcePath?: string;
+  /** When true, OCR text extraction runs if CLOUDINARY_OCR_ENABLED=1. */
+  ocrApplicable?: boolean;
 };
 
 const ALLOWED_IMAGE_TYPES = new Set([
@@ -57,15 +60,6 @@ function sanitizeFileSlug(value: string) {
     .slice(0, 48);
 }
 
-function buildUploadSignature(input: {
-  folder: string;
-  publicId: string;
-  timestamp: number;
-  apiSecret: string;
-}) {
-  const payload = `folder=${input.folder}&public_id=${input.publicId}&timestamp=${input.timestamp}${input.apiSecret}`;
-  return createHash("sha1").update(payload).digest("hex");
-}
 
 async function uploadCareAssetInternal(
   file: File,
@@ -92,12 +86,20 @@ async function uploadCareAssetInternal(
   const fileSlug = sanitizeFileSlug(file.name.replace(/\.[^/.]+$/, "")) || "upload";
   const publicId = `${sanitizeFileSlug(options.publicIdPrefix) || "care"}-${fileSlug}-${randomUUID().slice(0, 8)}`;
   const timestamp = Math.floor(Date.now() / 1000);
-  const signature = buildUploadSignature({
-    folder,
-    publicId,
-    timestamp,
-    apiSecret,
-  });
+
+  // OCR extraction is gated on CLOUDINARY_OCR_ENABLED=1 and only applies to
+  // image uploads (ocrApplicable flag set by callers, absent for video/receipts).
+  // Parameters sorted alphabetically in signature: folder < ocr < public_id < timestamp.
+  const ocrEnabled =
+    config.ocrApplicable === true &&
+    process.env.CLOUDINARY_OCR_ENABLED === "1";
+
+  // Build the signature payload with all parameters sorted alphabetically.
+  // When OCR is enabled, "ocr=adv_ocr" is inserted between "folder" and "public_id".
+  const signaturePayload = ocrEnabled
+    ? `folder=${folder}&ocr=adv_ocr&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`
+    : `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
+  const signature = createHash("sha1").update(signaturePayload).digest("hex");
 
   const form = new FormData();
   form.set("file", file, file.name);
@@ -106,6 +108,7 @@ async function uploadCareAssetInternal(
   form.set("signature", signature);
   form.set("folder", folder);
   form.set("public_id", publicId);
+  if (ocrEnabled) form.set("ocr", "adv_ocr");
 
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${cloudName}/${config.resourcePath || "auto/upload"}`,
@@ -120,6 +123,14 @@ async function uploadCareAssetInternal(
         secure_url?: string;
         public_id?: string;
         error?: { message?: string };
+        info?: {
+          ocr?: {
+            adv_ocr?: {
+              status?: string;
+              data?: Array<{ fullTextAnnotation?: { text?: string } }>;
+            };
+          };
+        };
       }
     | null;
 
@@ -127,6 +138,28 @@ async function uploadCareAssetInternal(
     throw new Error(
       payload?.error?.message || "Image upload failed. Please try again with a smaller file."
     );
+  }
+
+  // Run content safety on any OCR-extracted text. Treat absent or non-complete
+  // OCR status as "no text found" and proceed normally.
+  if (ocrEnabled) {
+    const ocrData = payload.info?.ocr?.adv_ocr;
+    if (ocrData?.status === "complete") {
+      const extractedText = ocrData.data?.[0]?.fullTextAnnotation?.text ?? "";
+      if (extractedText) {
+        const ocrFlag = shouldAutoFlag(extractedText);
+        if (ocrFlag.flag && (ocrFlag.severity === "high" || ocrFlag.severity === "critical")) {
+          throw new Error(
+            "The uploaded image contains content that cannot be accepted. " +
+              "Remove any contact details, QR codes, or off-platform language and re-upload."
+          );
+        }
+        // Medium severity: log for audit — no trust_flags user available in care
+        if (ocrFlag.flag && ocrFlag.severity === "medium") {
+          console.warn("[care/cloudinary] OCR medium flag on upload:", ocrFlag.reason, publicId);
+        }
+      }
+    }
   }
 
   return {
@@ -148,6 +181,7 @@ export async function uploadCareImage(
     missingFileMessage: "No image file was provided.",
     oversizeMessage: "Please upload an image under 8MB.",
     invalidTypeMessage: "Please upload a JPG, PNG, or WebP image.",
+    ocrApplicable: true, // OCR text extraction runs when CLOUDINARY_OCR_ENABLED=1
   });
 }
 

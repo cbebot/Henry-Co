@@ -302,6 +302,25 @@ export async function sendMessage(
   // Block high/critical messages outright — do not persist them.
   // This is consistent with the review authenticity policy in marketplace/trust.ts.
   if (autoFlag.flag && (effectiveSeverity === "high" || effectiveSeverity === "critical")) {
+    // Write a trust_flags record so repeat-offender escalation has something to count.
+    // Best-effort: never let a failed write prevent the block response from being returned.
+    try {
+      await createAdminSupabase().from("trust_flags").insert({
+        id: randomUUID(),
+        user_id: senderId,
+        flag_type: "off_platform_contact",
+        reason: autoFlag.reason,
+        severity: effectiveSeverity,
+        source: "system",
+        entity_type: "message",
+        entity_id: null, // message was not persisted
+        metadata: { conversation_id: conversationId, sender_type: senderType },
+        created_at: new Date().toISOString(),
+        resolved_at: null,
+      });
+    } catch {
+      // Tolerate — the block is unconditional regardless of writeback success
+    }
     return {
       message: null,
       blocked: true,
