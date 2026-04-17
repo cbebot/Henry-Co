@@ -2,9 +2,14 @@ import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { isRtlLocale } from "@henryco/i18n/server";
-import { ConsentNotice, PublicThemeGuard, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
+import {
+  ConsentNotice,
+  LocaleSuggestion,
+  PublicThemeGuard,
+  ThirdPartyRuntimeProviders,
+} from "@henryco/ui/public-shell";
 import { COMPANY } from "@henryco/config";
-import { getHubPublicLocale } from "@/lib/locale-server";
+import { getHubPublicLocale, getHubLocaleSuggestion } from "@/lib/locale-server";
 
 export const metadata: Metadata = {
   title: "Henry & Co. Company Hub",
@@ -27,7 +32,10 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const lang = await getHubPublicLocale();
+  const [lang, suggestedLocale] = await Promise.all([
+    getHubPublicLocale(),
+    getHubLocaleSuggestion(),
+  ]);
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
@@ -36,6 +44,7 @@ export default async function RootLayout({
         <PublicThemeGuard>
           <ThirdPartyRuntimeProviders>{children}</ThirdPartyRuntimeProviders>
           <ConsentNotice preferencesHref="/preferences" />
+          <LocaleSuggestion suggestedLocale={suggestedLocale} currentLocale={lang} />
         </PublicThemeGuard>
       </body>
     </html>

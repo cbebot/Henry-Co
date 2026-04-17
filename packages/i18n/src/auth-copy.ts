@@ -241,11 +241,261 @@ const AR: Partial<AuthCopy> = {
   },
 };
 
+// ─── Tier B: Architecture-ready scaffold ────────────────────────────────────
+
+const DE: Partial<AuthCopy> = {
+  login: {
+    heading: "Willkommen zurück",
+    subheading: "Melden Sie sich an, um mit Ihrem Henry & Co.-Konto fortzufahren.",
+    emailLabel: "E-Mail-Adresse",
+    passwordLabel: "Passwort",
+    rememberMe: "Angemeldet bleiben",
+    forgotPassword: "Passwort vergessen?",
+    submitButton: "Anmelden",
+    signupPrompt: "Noch kein Konto?",
+    signupCta: "Konto erstellen",
+  },
+  signup: {
+    heading: "Konto erstellen",
+    subheading: "Ein Konto für alle Henry & Co.-Bereiche.",
+    fullNameLabel: "Vollständiger Name",
+    emailLabel: "E-Mail-Adresse",
+    passwordLabel: "Passwort",
+    confirmPasswordLabel: "Passwort bestätigen",
+    consentLine: "Mit der Fortführung akzeptieren Sie unsere Nutzungsbedingungen und Datenschutzerklärung.",
+    submitButton: "Konto erstellen",
+    loginPrompt: "Bereits ein Konto?",
+    loginCta: "Anmelden",
+  },
+  reset: {
+    heading: "Passwort zurücksetzen",
+    subheading: "Wir senden Ihnen einen sicheren Reset-Link per E-Mail.",
+    emailLabel: "E-Mail-Adresse",
+    submitButton: "Link senden",
+    success: "Link gesendet. Bitte prüfen Sie Ihre E-Mails.",
+  },
+  errors: {
+    invalidCredentials: "E-Mail oder Passwort ist falsch.",
+    invalidEmail: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    passwordTooShort: "Das Passwort muss mindestens 8 Zeichen lang sein.",
+    sessionExpired: "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    generic: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+  },
+};
+
+const ZH: Partial<AuthCopy> = {
+  login: {
+    heading: "欢迎回来",
+    subheading: "登录以继续使用您的 Henry & Co. 账户。",
+    emailLabel: "电子邮件地址",
+    passwordLabel: "密码",
+    rememberMe: "记住我",
+    forgotPassword: "忘记密码？",
+    submitButton: "登录",
+    signupPrompt: "还没有账户？",
+    signupCta: "创建账户",
+  },
+  signup: {
+    heading: "创建您的账户",
+    subheading: "一个账户，畅享所有 Henry & Co. 服务。",
+    fullNameLabel: "全名",
+    emailLabel: "电子邮件地址",
+    passwordLabel: "密码",
+    confirmPasswordLabel: "确认密码",
+    consentLine: "继续即表示您同意我们的服务条款和隐私声明。",
+    submitButton: "创建账户",
+    loginPrompt: "已有账户？",
+    loginCta: "登录",
+  },
+  reset: {
+    heading: "重置密码",
+    subheading: "我们将向您的邮箱发送一个安全的重置链接。",
+    emailLabel: "电子邮件地址",
+    submitButton: "发送重置链接",
+    success: "重置链接已发送。请检查您的电子邮件。",
+  },
+  errors: {
+    invalidCredentials: "电子邮件或密码不正确。",
+    invalidEmail: "请输入有效的电子邮件地址。",
+    passwordTooShort: "密码至少需要 8 个字符。",
+    sessionExpired: "您的会话已过期。请重新登录。",
+    generic: "出现了问题。请重试。",
+  },
+};
+
+const HI: Partial<AuthCopy> = {
+  login: {
+    heading: "वापस स्वागत है",
+    subheading: "अपने Henry & Co. खाते के साथ जारी रखने के लिए साइन इन करें।",
+    emailLabel: "ईमेल पता",
+    passwordLabel: "पासवर्ड",
+    rememberMe: "मुझे याद रखें",
+    forgotPassword: "पासवर्ड भूल गए?",
+    submitButton: "साइन इन करें",
+    signupPrompt: "अभी तक खाता नहीं है?",
+    signupCta: "खाता बनाएं",
+  },
+  signup: {
+    heading: "अपना खाता बनाएं",
+    subheading: "Henry & Co. के सभी विभागों के लिए एक खाता।",
+    fullNameLabel: "पूरा नाम",
+    emailLabel: "ईमेल पता",
+    passwordLabel: "पासवर्ड",
+    confirmPasswordLabel: "पासवर्ड की पुष्टि करें",
+    consentLine: "जारी रखकर आप हमारी शर्तें और गोपनीयता नोटिस स्वीकार करते हैं।",
+    submitButton: "खाता बनाएं",
+    loginPrompt: "पहले से खाता है?",
+    loginCta: "साइन इन करें",
+  },
+  reset: {
+    heading: "अपना पासवर्ड रीसेट करें",
+    subheading: "हम आपके इनबॉक्स में एक सुरक्षित रीसेट लिंक भेजेंगे।",
+    emailLabel: "ईमेल पता",
+    submitButton: "रीसेट लिंक भेजें",
+    success: "रीसेट लिंक भेजा गया। कृपया अपना ईमेल जांचें।",
+  },
+  errors: {
+    invalidCredentials: "ईमेल या पासवर्ड गलत है।",
+    invalidEmail: "कृपया एक वैध ईमेल पता दर्ज करें।",
+    passwordTooShort: "पासवर्ड कम से कम 8 वर्णों का होना चाहिए।",
+    sessionExpired: "आपका सत्र समाप्त हो गया। कृपया फिर से साइन इन करें।",
+    generic: "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+  },
+};
+
+// ─── Nigerian regional ───────────────────────────────────────────────────────
+
+const IG: Partial<AuthCopy> = {
+  login: {
+    heading: "Nnọọ, ọ bịakwasịa",
+    subheading: "Banye ka ị gaa n'ihu na akaụntụ gị nke Henry & Co.",
+    emailLabel: "Adreesị email",
+    passwordLabel: "Paswọọdụ",
+    rememberMe: "Cheta m",
+    forgotPassword: "Ichefuo paswọọdụ?",
+    submitButton: "Banye",
+    signupPrompt: "Onweghị akaụntụ gị?",
+    signupCta: "Mepụta akaụntụ",
+  },
+  signup: {
+    heading: "Mepụta akaụntụ gị",
+    subheading: "Otu akaụntụ maka ngalaba Henry & Co. niile.",
+    fullNameLabel: "Aha zuru oke",
+    emailLabel: "Adreesị email",
+    passwordLabel: "Paswọọdụ",
+    confirmPasswordLabel: "Nkwenye paswọọdụ",
+    consentLine: "Site n'ịga n'ihu, ị nabatara ụkpụrụ anyị na Nkọwa nzuzo.",
+    submitButton: "Mepụta akaụntụ",
+    loginPrompt: "Ị nweela akaụntụ?",
+    loginCta: "Banye",
+  },
+  reset: {
+    heading: "Tọgharia paswọọdụ gị",
+    subheading: "Anyị ga-eziga njikọ ntọgharia na email gị.",
+    emailLabel: "Adreesị email",
+    submitButton: "Ziga njikọ",
+    success: "Ezigara njikọ. Biko lelee email gị.",
+  },
+  errors: {
+    invalidCredentials: "Email ma ọ bụ paswọọdụ ezighi ezi.",
+    invalidEmail: "Biko tinye adreesị email ziri ezi.",
+    passwordTooShort: "Paswọọdụ kwesịrị inwe opekata mpe mkpụrụedemede 8.",
+    sessionExpired: "Oge nchekwa gị agwụla. Biko banyezie.",
+    generic: "Ihe ọjọọ mere. Biko nwalee ọzọ.",
+  },
+};
+
+const YO: Partial<AuthCopy> = {
+  login: {
+    heading: "Ẹ káàbọ̀ padà",
+    subheading: "Wọlé láti bá àkọọ́lẹ̀ rẹ Henry & Co. lọ siwájú.",
+    emailLabel: "Àdírẹ́sì ímeèlì",
+    passwordLabel: "Ọ̀rọ̀ aṣínà",
+    rememberMe: "Rántí mi",
+    forgotPassword: "Ẹ̀ gbà ọ̀rọ̀ aṣínà?",
+    submitButton: "Wọlé",
+    signupPrompt: "Kò sí àkọọ́lẹ̀ rẹ̀ tó?",
+    signupCta: "Ṣẹ̀dá àkọọ́lẹ̀",
+  },
+  signup: {
+    heading: "Ṣẹ̀dá àkọọ́lẹ̀ rẹ",
+    subheading: "Àkọọ́lẹ̀ kan fún gbogbo ẹ̀ka Henry & Co.",
+    fullNameLabel: "Orúkọ ní kíkún",
+    emailLabel: "Àdírẹ́sì ímeèlì",
+    passwordLabel: "Ọ̀rọ̀ aṣínà",
+    confirmPasswordLabel: "Jẹ́rìí ọ̀rọ̀ aṣínà",
+    consentLine: "Nípa títẹ̀síwájú, o gba Àwọn Ìṣọ̀ àti Ìpolówó Àṣírí wa.",
+    submitButton: "Ṣẹ̀dá àkọọ́lẹ̀",
+    loginPrompt: "Ó ti ní àkọọ́lẹ̀ tẹ́lẹ̀?",
+    loginCta: "Wọlé",
+  },
+  reset: {
+    heading: "Tún ọ̀rọ̀ aṣínà rẹ ṣe",
+    subheading: "A máa rán ọ́ atúnsè aláìléwu sí ìbộsọ rẹ.",
+    emailLabel: "Àdírẹ́sì ímeèlì",
+    submitButton: "Firanṣẹ́ atúnsè",
+    success: "Atúnsè tí a fi ránṣẹ́. Ẹ ṣàyẹ̀wò ímeèlì rẹ.",
+  },
+  errors: {
+    invalidCredentials: "Ímeèlì tàbí ọ̀rọ̀ aṣínà kò tọ̀.",
+    invalidEmail: "Jọwọ ẹ tẹ àdírẹ́sì ímeèlì tó wúlò.",
+    passwordTooShort: "Ọ̀rọ̀ aṣínà gbọdọ̀ ní ó kéré jùlọ ọ̀rọ̀ 8.",
+    sessionExpired: "Àkókò ìgbà iṣẹ́ rẹ ti parí. Jọwọ wọlé ní ẹ̀ẹ̀kejì.",
+    generic: "Nǹkan kan ti ṣẹlẹ̀. Jọwọ gbìyànjú lẹ́ẹ̀kan sí.",
+  },
+};
+
+const HA: Partial<AuthCopy> = {
+  login: {
+    heading: "Barka da dawowar ku",
+    subheading: "Yi shiga don ci gaba da asusun ku na Henry & Co.",
+    emailLabel: "Adireshin imel",
+    passwordLabel: "Kalmar sirri",
+    rememberMe: "Ka tuna ni",
+    forgotPassword: "Manta kalmar sirri?",
+    submitButton: "Yi shiga",
+    signupPrompt: "Ba ku da asusu tukuna?",
+    signupCta: "Ƙirƙiri asusu",
+  },
+  signup: {
+    heading: "Ƙirƙiri asusun ku",
+    subheading: "Asusu ɗaya don dukkan sassan Henry & Co.",
+    fullNameLabel: "Cikakken suna",
+    emailLabel: "Adireshin imel",
+    passwordLabel: "Kalmar sirri",
+    confirmPasswordLabel: "Tabbatar da kalmar sirri",
+    consentLine: "Ta hanyar ci gaba, kun yarda da Sharuɗɗanmu da Sanarwar Sirri.",
+    submitButton: "Ƙirƙiri asusu",
+    loginPrompt: "Kuna da asusu tuni?",
+    loginCta: "Yi shiga",
+  },
+  reset: {
+    heading: "Sake saita kalmar sirri",
+    subheading: "Za mu aika muku da hanyar sake saita a imel ɗinku.",
+    emailLabel: "Adireshin imel",
+    submitButton: "Aika hanyar sake saita",
+    success: "An aika hanyar. Da fatan za ku duba imel ɗinku.",
+  },
+  errors: {
+    invalidCredentials: "Imel ko kalmar sirri ba daidai ba ne.",
+    invalidEmail: "Da fatan za ku shigar da adireshin imel ingantacce.",
+    passwordTooShort: "Kalmar sirri dole ne ta ƙunshi haruffa 8 aƙalla.",
+    sessionExpired: "Zaman ku ya ƙare. Da fatan za ku yi shiga a sake.",
+    generic: "Wani abu ya faru. Da fatan za ku sake gwadawa.",
+  },
+};
+
 const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<AuthCopy>>> = {
   fr: FR,
   es: ES,
   pt: PT,
   ar: AR,
+  de: DE,
+  zh: ZH,
+  hi: HI,
+  ig: IG,
+  yo: YO,
+  ha: HA,
 };
 
 export function getAuthCopy(locale: AppLocale): AuthCopy {

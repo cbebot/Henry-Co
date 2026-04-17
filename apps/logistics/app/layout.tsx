@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
-import { Manrope } from "next/font/google";
 import { headers } from "next/headers";
+import { Manrope } from "next/font/google";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import LogisticsShell from "@/components/layout/LogisticsShell";
 import { getLogisticsSharedLoginUrl, getLogisticsSharedSignupUrl } from "@/lib/logistics-public-links";
 import { getLogisticsPublicChipUser } from "@/lib/logistics-public-viewer";
@@ -48,10 +48,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const [lang, h, chipUser] = await Promise.all([
+    getLogisticsPublicLocale(),
+    headers(),
+    getLogisticsPublicChipUser(),
+  ]);
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
-  const [h, chipUser] = await Promise.all([headers(), getLogisticsPublicChipUser()]);
   const returnPath = h.get("x-logistics-return-path") || "/";
   const accountSlot = (
     <PublicAccountChip

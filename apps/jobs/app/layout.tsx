@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { Manrope, Newsreader } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
 
 const display = Newsreader({
@@ -40,8 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const lang = await getJobsPublicLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (

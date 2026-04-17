@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
 import { getDivisionConfig } from "@henryco/config";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 
 const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -36,8 +36,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const lang = await getStudioPublicLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (

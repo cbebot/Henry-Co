@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import localFont from "next/font/local";
 import { getDivisionConfig } from "@henryco/config";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
 
 const sans = localFont({
@@ -56,8 +56,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const lang = await getPropertyPublicLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (

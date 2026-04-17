@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 import { MarketplaceRuntimeProvider } from "@/components/marketplace/runtime-provider";
@@ -7,7 +6,8 @@ import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { FloatingSupport } from "@henryco/ui/support";
 import { getMarketplaceShellState } from "@/lib/marketplace/data";
 import { getDivisionConfig } from "@henryco/config";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { isRtlLocale } from "@henryco/i18n/server";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -43,10 +43,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const [lang, shell] = await Promise.all([
+    getMarketplacePublicLocale(),
+    getMarketplaceShellState(),
+  ]);
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
-  const shell = await getMarketplaceShellState();
 
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>

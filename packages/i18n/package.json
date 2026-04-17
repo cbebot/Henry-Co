@@ -11,7 +11,9 @@
     "./phone": "./phone.ts",
     "./react": "./src/react.tsx",
     "./server": "./src/server.ts",
-    "./locale-route": "./src/locale-route.ts"
+    "./locale-route": "./src/locale-route.ts",
+    "./format-date": "./src/format-date.ts",
+    "./format-number": "./src/format-number.ts"
   },
   "peerDependencies": {
     "next": "^16.0.0",
