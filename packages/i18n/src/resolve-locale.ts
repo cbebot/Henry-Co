@@ -22,6 +22,15 @@ function localeFromCountry(country: string | null | undefined): AppLocale | null
   const PT_COUNTRIES = ["PT", "BR", "AO", "MZ", "GW", "CV", "ST", "TL"];
   if (PT_COUNTRIES.includes(c)) return "pt";
 
+  // Tier B — architecture-ready scaffold
+  const DE_COUNTRIES = ["DE", "AT", "LI"];
+  if (DE_COUNTRIES.includes(c)) return "de";
+
+  const ZH_COUNTRIES = ["CN", "TW", "SG", "HK", "MO"];
+  if (ZH_COUNTRIES.includes(c)) return "zh";
+
+  if (c === "IN") return "hi";
+
   return null;
 }
 

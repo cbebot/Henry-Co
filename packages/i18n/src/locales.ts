@@ -3,8 +3,13 @@ export const DEFAULT_LOCALE = "en";
 /** Locales with professionally reviewed full UI catalogs for the hub + consent surfaces. */
 export const PRIMARY_LOCALES = ["en", "fr"] as const;
 
-/** Extended locales aligned with account profile `language` options; long-form copy may match English until native QA. */
-export const ALL_LOCALES = ["en", "fr", "ig", "yo", "ha", "ar", "es", "pt"] as const;
+/**
+ * Extended locales aligned with account profile `language` options.
+ * Tier A (production-ready): en, fr, es, ar, pt
+ * Tier B (architecture-ready scaffold): de, zh, hi
+ * Legacy Nigerian: ig, yo, ha
+ */
+export const ALL_LOCALES = ["en", "fr", "ig", "yo", "ha", "ar", "es", "pt", "de", "zh", "hi"] as const;
 
 export type AppLocale = (typeof ALL_LOCALES)[number];
 
@@ -25,14 +30,20 @@ export const LOCALE_LABELS: Record<
   AppLocale,
   { en: string; native: string }
 > = {
+  // Tier A — production-ready
   en: { en: "English", native: "English" },
   fr: { en: "French", native: "Français" },
+  es: { en: "Spanish", native: "Español" },
+  ar: { en: "Arabic", native: "العربية" },
+  pt: { en: "Portuguese", native: "Português" },
+  // Tier B — architecture-ready scaffold
+  de: { en: "German", native: "Deutsch" },
+  zh: { en: "Chinese", native: "中文" },
+  hi: { en: "Hindi", native: "हिन्दी" },
+  // Nigerian regional
   ig: { en: "Igbo", native: "Igbo" },
   yo: { en: "Yoruba", native: "Yorùbá" },
   ha: { en: "Hausa", native: "Hausa" },
-  ar: { en: "Arabic", native: "العربية" },
-  es: { en: "Spanish", native: "Español" },
-  pt: { en: "Portuguese", native: "Português" },
 };
 
 export function isRtlLocale(locale: AppLocale): boolean {

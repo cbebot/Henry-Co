@@ -121,11 +121,139 @@ const FR: Partial<AuthCopy> = {
   },
 };
 
+const ES: Partial<AuthCopy> = {
+  login: {
+    heading: "Bienvenido de vuelta",
+    subheading: "Inicia sesión para continuar con tu cuenta Henry & Co.",
+    emailLabel: "Correo electrónico",
+    passwordLabel: "Contraseña",
+    rememberMe: "Recuérdame",
+    forgotPassword: "¿Olvidaste tu contraseña?",
+    submitButton: "Iniciar sesión",
+    signupPrompt: "¿Aún no tienes una cuenta?",
+    signupCta: "Crear cuenta",
+  },
+  signup: {
+    heading: "Crea tu cuenta",
+    subheading: "Una sola cuenta para todas las divisiones de Henry & Co.",
+    fullNameLabel: "Nombre completo",
+    emailLabel: "Correo electrónico",
+    passwordLabel: "Contraseña",
+    confirmPasswordLabel: "Confirmar contraseña",
+    consentLine: "Al continuar, aceptas nuestros Términos y Aviso de privacidad.",
+    submitButton: "Crear cuenta",
+    loginPrompt: "¿Ya tienes una cuenta?",
+    loginCta: "Iniciar sesión",
+  },
+  reset: {
+    heading: "Restablece tu contraseña",
+    subheading: "Te enviaremos un enlace seguro de restablecimiento a tu correo.",
+    emailLabel: "Correo electrónico",
+    submitButton: "Enviar enlace",
+    success: "Enlace enviado. Revisa tu correo electrónico.",
+  },
+  errors: {
+    invalidCredentials: "El correo o la contraseña son incorrectos.",
+    invalidEmail: "Ingresa una dirección de correo válida.",
+    passwordTooShort: "La contraseña debe tener al menos 8 caracteres.",
+    sessionExpired: "Tu sesión expiró. Inicia sesión de nuevo.",
+    generic: "Algo salió mal. Inténtalo de nuevo.",
+  },
+};
+
+const PT: Partial<AuthCopy> = {
+  login: {
+    heading: "Bem-vindo de volta",
+    subheading: "Faça login para continuar com sua conta Henry & Co.",
+    emailLabel: "Endereço de e-mail",
+    passwordLabel: "Senha",
+    rememberMe: "Lembrar de mim",
+    forgotPassword: "Esqueceu a senha?",
+    submitButton: "Entrar",
+    signupPrompt: "Ainda não tem uma conta?",
+    signupCta: "Criar conta",
+  },
+  signup: {
+    heading: "Crie sua conta",
+    subheading: "Uma conta para todas as divisões da Henry & Co.",
+    fullNameLabel: "Nome completo",
+    emailLabel: "Endereço de e-mail",
+    passwordLabel: "Senha",
+    confirmPasswordLabel: "Confirmar senha",
+    consentLine: "Ao continuar, você aceita nossos Termos e Aviso de privacidade.",
+    submitButton: "Criar conta",
+    loginPrompt: "Já tem uma conta?",
+    loginCta: "Entrar",
+  },
+  reset: {
+    heading: "Redefina sua senha",
+    subheading: "Enviaremos um link seguro de redefinição para seu e-mail.",
+    emailLabel: "Endereço de e-mail",
+    submitButton: "Enviar link",
+    success: "Link enviado. Verifique seu e-mail.",
+  },
+  errors: {
+    invalidCredentials: "E-mail ou senha incorretos.",
+    invalidEmail: "Insira um endereço de e-mail válido.",
+    passwordTooShort: "A senha deve ter pelo menos 8 caracteres.",
+    sessionExpired: "Sua sessão expirou. Faça login novamente.",
+    generic: "Algo deu errado. Tente novamente.",
+  },
+};
+
+const AR: Partial<AuthCopy> = {
+  login: {
+    heading: "مرحباً بعودتك",
+    subheading: "سجّل الدخول للمتابعة مع حسابك في Henry & Co.",
+    emailLabel: "البريد الإلكتروني",
+    passwordLabel: "كلمة المرور",
+    rememberMe: "تذكّرني",
+    forgotPassword: "نسيت كلمة المرور؟",
+    submitButton: "تسجيل الدخول",
+    signupPrompt: "ليس لديك حساب بعد؟",
+    signupCta: "إنشاء حساب",
+  },
+  signup: {
+    heading: "أنشئ حسابك",
+    subheading: "حساب واحد لجميع أقسام Henry & Co.",
+    fullNameLabel: "الاسم الكامل",
+    emailLabel: "البريد الإلكتروني",
+    passwordLabel: "كلمة المرور",
+    confirmPasswordLabel: "تأكيد كلمة المرور",
+    consentLine: "بالمتابعة، تقبل شروطنا وإشعار الخصوصية.",
+    submitButton: "إنشاء حساب",
+    loginPrompt: "هل لديك حساب بالفعل؟",
+    loginCta: "تسجيل الدخول",
+  },
+  reset: {
+    heading: "إعادة تعيين كلمة المرور",
+    subheading: "سنرسل رابط إعادة تعيين آمن إلى بريدك الإلكتروني.",
+    emailLabel: "البريد الإلكتروني",
+    submitButton: "إرسال الرابط",
+    success: "تم إرسال الرابط. يرجى مراجعة بريدك الإلكتروني.",
+  },
+  errors: {
+    invalidCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    invalidEmail: "يرجى إدخال عنوان بريد إلكتروني صحيح.",
+    passwordTooShort: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+    sessionExpired: "انتهت صلاحية جلستك. يرجى تسجيل الدخول مجدداً.",
+    generic: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  },
+};
+
+const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<AuthCopy>>> = {
+  fr: FR,
+  es: ES,
+  pt: PT,
+  ar: AR,
+};
+
 export function getAuthCopy(locale: AppLocale): AuthCopy {
-  if (locale === "fr") {
+  const overrides = LOCALE_OVERRIDES[locale];
+  if (overrides) {
     return deepMergeMessages(
       EN as unknown as Record<string, unknown>,
-      FR as unknown as Record<string, unknown>,
+      overrides as unknown as Record<string, unknown>,
     ) as unknown as AuthCopy;
   }
   return EN;

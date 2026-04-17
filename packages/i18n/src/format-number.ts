@@ -1,14 +1,20 @@
 import type { AppLocale } from "./locales";
 
 const LOCALE_MAP: Record<AppLocale, string> = {
+  // Tier A
   en: "en-NG",
   fr: "fr-FR",
+  es: "es-ES",
+  ar: "ar-EG",
+  pt: "pt-BR",
+  // Tier B
+  de: "de-DE",
+  zh: "zh-CN",
+  hi: "hi-IN",
+  // Nigerian regional
   ig: "en-NG",
   yo: "en-NG",
   ha: "en-NG",
-  ar: "ar-EG",
-  es: "es-ES",
-  pt: "pt-BR",
 };
 
 export interface FormatNumberOptions extends Intl.NumberFormatOptions {

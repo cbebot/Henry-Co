@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { cookies } from "next/headers";
-import { LOCALE_COOKIE, normalizeLocale, isRtlLocale } from "@henryco/i18n/server";
+import { isRtlLocale } from "@henryco/i18n/server";
 import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { getCareSettings } from "@/lib/care-data";
+import { getCarePublicLocale } from "@/lib/locale-server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getCareSettings();
@@ -24,8 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const lang = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const lang = await getCarePublicLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (

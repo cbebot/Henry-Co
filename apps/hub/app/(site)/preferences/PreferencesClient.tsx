@@ -10,6 +10,7 @@ import {
   type AppLocale,
   type EcosystemConsentCopy,
 } from "@henryco/i18n";
+import { formatDate } from "@henryco/i18n/format-date";
 import {
   buildHenryCoConsentState,
   DEFAULT_HENRYCO_CONSENT,
@@ -50,10 +51,7 @@ export default function PreferencesClient({
     if (!consent.updatedAt) return copy.panel.lastUpdatedNever;
     const date = new Date(consent.updatedAt);
     if (Number.isNaN(date.getTime())) return consent.updatedAt;
-    return `${copy.panel.lastUpdated}: ${date.toLocaleDateString(
-      localeChoice === "fr" ? "fr-FR" : localeChoice === "ar" ? "ar-EG" : localeChoice === "es" ? "es-ES" : localeChoice === "pt" ? "pt-BR" : "en-NG",
-      { year: "numeric", month: "short", day: "numeric" }
-    )}`;
+    return `${copy.panel.lastUpdated}: ${formatDate(date, { locale: localeChoice, year: "numeric", month: "short", day: "numeric" })}`;
   }, [consent.updatedAt, copy.panel.lastUpdated, copy.panel.lastUpdatedNever, localeChoice]);
 
   const persistLocale = useCallback(async (locale: AppLocale) => {
@@ -153,7 +151,7 @@ export default function PreferencesClient({
       <section className="mb-10">
         <div className="flex items-center gap-2.5 mb-5">
           <Palette className="h-5 w-5 text-[color:var(--accent,#C9A227)]" />
-          <h2 className="text-lg font-semibold text-white">Theme</h2>
+          <h2 className="text-lg font-semibold text-white">{copy.panel.theme}</h2>
         </div>
         <div className="flex gap-2">
           {THEME_OPTIONS.map(({ value, label, Icon }) => {
@@ -228,7 +226,7 @@ export default function PreferencesClient({
           className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent,#C9A227)] px-6 py-3 text-sm font-semibold text-black transition-opacity hover:opacity-90"
         >
           {saved ? <Check className="h-4 w-4" /> : null}
-          {saved ? "Saved" : copy.panel.save}
+          {saved ? copy.panel.savedConfirmation : copy.panel.save}
         </button>
         <button
           type="button"

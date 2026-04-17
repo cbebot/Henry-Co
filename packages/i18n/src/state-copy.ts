@@ -88,11 +88,106 @@ const FR: Partial<StateCopy> = {
   },
 };
 
+const ES: Partial<StateCopy> = {
+  loading: {
+    default: "Cargando…",
+    data: "Cargando datos…",
+    content: "Cargando contenido…",
+  },
+  empty: {
+    default: "Aún no hay nada aquí.",
+    noResults: "No se encontraron resultados.",
+    noItems: "No hay elementos disponibles.",
+  },
+  error: {
+    default: "Algo salió mal.",
+    notFound: "La página solicitada no fue encontrada.",
+    unauthorized: "Necesitas iniciar sesión para continuar.",
+    forbidden: "No tienes permiso para realizar esta acción.",
+    network: "Error de red. Comprueba tu conexión e inténtalo de nuevo.",
+    server: "Error del servidor. Inténtalo de nuevo en breve.",
+    tryAgain: "Intentar de nuevo",
+    contactSupport: "Contactar soporte",
+  },
+  confirm: {
+    title: "¿Estás seguro?",
+    warning: "Esta acción no se puede deshacer.",
+    cancel: "Cancelar",
+    proceed: "Continuar",
+  },
+};
+
+const PT: Partial<StateCopy> = {
+  loading: {
+    default: "Carregando…",
+    data: "Carregando dados…",
+    content: "Carregando conteúdo…",
+  },
+  empty: {
+    default: "Ainda não há nada aqui.",
+    noResults: "Nenhum resultado encontrado.",
+    noItems: "Nenhum item disponível.",
+  },
+  error: {
+    default: "Algo deu errado.",
+    notFound: "A página solicitada não foi encontrada.",
+    unauthorized: "Você precisa fazer login para continuar.",
+    forbidden: "Você não tem permissão para esta ação.",
+    network: "Erro de rede. Verifique sua conexão e tente novamente.",
+    server: "Erro do servidor. Tente novamente em breve.",
+    tryAgain: "Tentar novamente",
+    contactSupport: "Contatar suporte",
+  },
+  confirm: {
+    title: "Tem certeza?",
+    warning: "Esta ação não pode ser desfeita.",
+    cancel: "Cancelar",
+    proceed: "Continuar",
+  },
+};
+
+const AR: Partial<StateCopy> = {
+  loading: {
+    default: "جارٍ التحميل…",
+    data: "جارٍ تحميل البيانات…",
+    content: "جارٍ تحميل المحتوى…",
+  },
+  empty: {
+    default: "لا يوجد شيء هنا بعد.",
+    noResults: "لم يتم العثور على نتائج.",
+    noItems: "لا توجد عناصر متاحة.",
+  },
+  error: {
+    default: "حدث خطأ ما.",
+    notFound: "الصفحة المطلوبة غير موجودة.",
+    unauthorized: "تحتاج إلى تسجيل الدخول للمتابعة.",
+    forbidden: "ليس لديك صلاحية للقيام بهذا الإجراء.",
+    network: "خطأ في الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+    server: "خطأ في الخادم. يرجى المحاولة مرة أخرى قريباً.",
+    tryAgain: "حاول مرة أخرى",
+    contactSupport: "تواصل مع الدعم",
+  },
+  confirm: {
+    title: "هل أنت متأكد؟",
+    warning: "لا يمكن التراجع عن هذا الإجراء.",
+    cancel: "إلغاء",
+    proceed: "متابعة",
+  },
+};
+
+const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<StateCopy>>> = {
+  fr: FR,
+  es: ES,
+  pt: PT,
+  ar: AR,
+};
+
 export function getStateCopy(locale: AppLocale): StateCopy {
-  if (locale === "fr") {
+  const overrides = LOCALE_OVERRIDES[locale];
+  if (overrides) {
     return deepMergeMessages(
       EN as unknown as Record<string, unknown>,
-      FR as unknown as Record<string, unknown>,
+      overrides as unknown as Record<string, unknown>,
     ) as unknown as StateCopy;
   }
   return EN;
