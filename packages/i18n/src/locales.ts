@@ -5,9 +5,9 @@ export const PRIMARY_LOCALES = ["en", "fr"] as const;
 
 /**
  * Extended locales aligned with account profile `language` options.
- * Tier A (production-ready): en, fr, es, ar, pt
- * Tier B (architecture-ready scaffold): de, zh, hi
- * Legacy Nigerian: ig, yo, ha
+ * Tier A (production-ready copy): en, fr, es, ar, pt
+ * Tier B (architecture-ready scaffold): de, zh, hi — registered, detected, copy falls back to EN
+ * Nigerian regional: ig, yo, ha
  */
 export const ALL_LOCALES = ["en", "fr", "ig", "yo", "ha", "ar", "es", "pt", "de", "zh", "hi"] as const;
 

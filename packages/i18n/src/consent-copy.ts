@@ -24,7 +24,7 @@ export type EcosystemConsentCopy = {
     personalized: { title: string; description: string };
     keepEssential: string;
     save: string;
-    /** Label for the theme section heading in preferences page. */
+    /** Label for the theme section heading in the preferences page. */
     theme: string;
     /** Confirmation label shown briefly after saving preferences. */
     savedConfirmation: string;
@@ -305,12 +305,12 @@ const HA: Partial<EcosystemConsentCopy> = {
   language: { label: "Yare", hint: "Ana amfani da shi a shafukan Henry & Co. waɗanda ke goyan bayan zaɓinka." },
 };
 
-// Tier B — architecture-ready scaffold; EN fallback for untranslated strings
+// Tier B — architecture-ready scaffold; UI copy falls back to EN for untranslated strings
 const DE: Partial<EcosystemConsentCopy> = {
   banner: {
     eyebrow: "Erfahrungseinstellungen",
     title: "Wählen Sie, wie Henry & Co. Einstellungen auf diesem Gerät speichert.",
-    body: "Wesentlicher Speicher sichert Sicherheit, Navigation und Kernprozesse. Optionale Kategorien helfen, Sprach- und Interface-Einstellungen zu speichern, Qualität zu messen und gezielte Kommunikation zu unterstützen.",
+    body: "Wesentlicher Speicher sichert Sicherheit, Navigation und Kernprozesse. Optionale Kategorien helfen, Sprach- und Interface-Einstellungen zu speichern und Qualität zu messen.",
     essentialOnly: "Nur Wesentliches",
     customize: "Anpassen",
     acceptAll: "Alle akzeptieren",
@@ -368,7 +368,7 @@ const HI: Partial<EcosystemConsentCopy> = {
   banner: {
     eyebrow: "अनुभव प्राथमिकताएं",
     title: "चुनें कि Henry & Co. इस डिवाइस पर सेटिंग्स कैसे संग्रहीत करे।",
-    body: "आवश्यक संग्रहण सुरक्षा, नेविगेशन और मुख्य प्रवाह को विश्वसनीय रखता है। वैकल्पिक श्रेणियां भाषा और इंटरफेस विकल्पों को याद रखने, गुणवत्ता मापने में मदद करती हैं।",
+    body: "आवश्यक संग्रहण सुरक्षा, नेविगेशन और मुख्य प्रवाह को विश्वसनीय रखता है। वैकल्पिक श्रेणियां भाषा और इंटरफेस विकल्पों को याद रखने में मदद करती हैं।",
     essentialOnly: "केवल आवश्यक",
     customize: "अनुकूलित करें",
     acceptAll: "सभी स्वीकार करें",
