@@ -1,7 +1,10 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
-import { shouldAutoFlag } from "@henryco/trust";
+import {
+  shouldAutoFlag,
+  escalateSeverityForRepeatOffender,
+} from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 import type {
   HiringPipeline,
@@ -278,9 +281,27 @@ export async function sendMessage(
 ): Promise<{ message: Message | null; blocked: boolean; blockReason: string | null }> {
   const autoFlag = shouldAutoFlag(body);
 
+  // Repeat-offender escalation: look up unresolved trust flags for this sender
+  // over the past 30 days and escalate the base severity before the block decision.
+  let effectiveSeverity = autoFlag.severity;
+  if (autoFlag.flag) {
+    const flagWindow = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const adminEarly = createAdminSupabase();
+    const { count: priorFlagCount } = await adminEarly
+      .from("trust_flags")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", senderId)
+      .is("resolved_at", null)
+      .gte("created_at", flagWindow);
+    effectiveSeverity = escalateSeverityForRepeatOffender(
+      autoFlag.severity,
+      priorFlagCount ?? 0
+    );
+  }
+
   // Block high/critical messages outright — do not persist them.
   // This is consistent with the review authenticity policy in marketplace/trust.ts.
-  if (autoFlag.flag && (autoFlag.severity === "high" || autoFlag.severity === "critical")) {
+  if (autoFlag.flag && (effectiveSeverity === "high" || effectiveSeverity === "critical")) {
     return {
       message: null,
       blocked: true,
@@ -294,8 +315,8 @@ export async function sendMessage(
   const now = new Date().toISOString();
   const id = randomUUID();
 
-  // Medium severity: allow delivery but flag for moderation review.
-  const isFlagged = autoFlag.flag && autoFlag.severity === "medium";
+  // Medium severity (after repeat-offender escalation): allow delivery but flag for moderation review.
+  const isFlagged = autoFlag.flag && effectiveSeverity === "medium";
   const flagReason = isFlagged ? autoFlag.reason : null;
 
   const { data, error } = await admin

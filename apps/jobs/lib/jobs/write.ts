@@ -404,7 +404,10 @@ export async function saveCandidateProfile(input: {
 }) {
   const admin = createAdminSupabase();
   const fullName = asText(input.formData.get("fullName")) || input.fullName || "";
-  const phone = asText(input.formData.get("phone")) || input.phone || "";
+  // phone is captured at account / KYC level (passed via input.phone from the
+  // trusted viewer session); it must NOT be updated from candidate-facing form
+  // data to prevent crafted POST requests from overwriting it.
+  const phone = input.phone || "";
   const headline = asText(input.formData.get("headline"));
   const summary = asText(input.formData.get("summary"));
   const location = asText(input.formData.get("location"));
