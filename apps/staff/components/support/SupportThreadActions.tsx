@@ -44,7 +44,6 @@ export default function SupportThreadActions({
   assignedToId,
   viewerId,
   priority,
-  status,
 }: {
   threadId: string;
   assignedToId: string | null;
@@ -56,7 +55,6 @@ export default function SupportThreadActions({
   const [isPending, startTransition] = useTransition();
   const draftKey = `henryco-staff-support-draft:${threadId}`;
   const [message, setMessage] = useState(() => readDraftMessage(draftKey));
-  const [nextStatus, setNextStatus] = useState("pending_customer");
   const [feedback, setFeedback] = useState<{ tone: FeedbackTone; text: string } | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -87,7 +85,6 @@ export default function SupportThreadActions({
 
   const isMine = assignedToId === viewerId;
   const isEscalated = priority === "high" || priority === "urgent";
-  const canResolve = status !== "resolved" && status !== "closed";
 
   return (
     <div className="space-y-4" data-live-refresh-pause="true">
@@ -138,42 +135,31 @@ export default function SupportThreadActions({
             runMutation(() =>
               updateSharedSupportThreadStatusAction({
                 threadId,
-                status: canResolve ? "resolved" : "open",
+                status: status === "awaiting_reply" ? "open" : "awaiting_reply",
               })
             )
           }
           className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-[var(--staff-line)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--staff-ink)] transition hover:bg-[var(--staff-info-soft)] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {canResolve ? <CheckCircle2 className="h-4 w-4" /> : <RotateCcw className="h-4 w-4" />}
-          {canResolve ? "Resolve" : "Reopen"}
+          {status === "awaiting_reply" ? (
+            <RotateCcw className="h-4 w-4" />
+          ) : (
+            <CheckCircle2 className="h-4 w-4" />
+          )}
+          {status === "awaiting_reply" ? "Mark active" : "Mark awaiting reply"}
         </button>
       </div>
 
       <div className="rounded-[1.8rem] border border-[var(--staff-line)] bg-white p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--staff-muted)]">
               Reply
             </p>
             <p className="mt-1 text-sm text-[var(--staff-muted)]">
-              This posts in the shared HenryCo support room and also attempts outbound email when the customer email is available.
+              This posts in the shared HenryCo support room, keeps the thread active, and attempts outbound email when the customer email is available.
             </p>
           </div>
-
-          <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--staff-muted)]">
-            Next status
-            <select
-              value={nextStatus}
-              onChange={(event) => setNextStatus(event.target.value)}
-              className="h-11 rounded-2xl border border-[var(--staff-line)] bg-[var(--staff-surface)] px-3 text-sm font-semibold text-[var(--staff-ink)] outline-none"
-            >
-              <option value="pending_customer">Pending customer</option>
-              <option value="in_progress">In progress</option>
-              <option value="awaiting_reply">Awaiting reply</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
-            </select>
-          </label>
         </div>
 
         <textarea
@@ -197,7 +183,7 @@ export default function SupportThreadActions({
                 const result = await replyToSharedSupportThreadAction({
                   threadId,
                   message,
-                  nextStatus,
+                  nextStatus: "open",
                 });
 
                 if (result.ok) {

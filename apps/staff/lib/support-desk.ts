@@ -116,10 +116,6 @@ export const STAFF_SUPPORT_STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
   { value: "open", label: "Open" },
   { value: "awaiting_reply", label: "Awaiting reply" },
-  { value: "pending_customer", label: "Pending customer" },
-  { value: "in_progress", label: "In progress" },
-  { value: "resolved", label: "Resolved" },
-  { value: "closed", label: "Closed" },
 ] as const;
 
 export const STAFF_SUPPORT_MAILBOX_OPTIONS = [
@@ -172,6 +168,26 @@ function formatPriorityLabel(value: string) {
 
 function isArchiveStatus(status: string) {
   return status === "resolved" || status === "closed";
+}
+
+function normalizeSupportedThreadStatus(
+  value: unknown,
+  fallback: "open" | "awaiting_reply" = "open"
+) {
+  const normalized = cleanText(value).toLowerCase();
+  if (!normalized) return fallback;
+
+  if (normalized === "pending_customer" || normalized === "in_progress") {
+    return "open" as const;
+  }
+
+  if (normalized === "open" || normalized === "awaiting_reply") {
+    return normalized;
+  }
+
+  throw new Error(
+    "Resolved and closed support states are still blocked by the shared support status schema."
+  );
 }
 
 function isVisibleToViewer(division: string | null, viewerDivisions: WorkspaceDivision[]) {
@@ -659,7 +675,7 @@ export async function updateSupportThreadStatusForStaff(input: {
   status: string;
 }) {
   const row = await getThreadRowForViewer(input.threadId, input.viewerDivisions);
-  const nextStatus = cleanText(input.status) || "open";
+  const nextStatus = normalizeSupportedThreadStatus(input.status, "open");
   const now = new Date().toISOString();
   const admin = createStaffAdminSupabase();
   const { error } = await admin
@@ -667,8 +683,8 @@ export async function updateSupportThreadStatusForStaff(input: {
     .update({
       status: nextStatus,
       updated_at: now,
-      resolved_at: nextStatus === "resolved" ? now : null,
-      closed_at: nextStatus === "closed" ? now : null,
+      resolved_at: null,
+      closed_at: null,
       staff_last_read_at: now,
     })
     .eq("id", row.id);
@@ -677,12 +693,8 @@ export async function updateSupportThreadStatusForStaff(input: {
     throw new Error(error.message || "Support status could not be updated.");
   }
 
-  if (nextStatus === "resolved") {
-    await appendSystemMessage(row.id, "Support marked this thread resolved.");
-  } else if (nextStatus === "closed") {
-    await appendSystemMessage(row.id, "Support closed this thread.");
-  } else if (isArchiveStatus(cleanText(row.status))) {
-    await appendSystemMessage(row.id, "Support reopened this thread.");
+  if (nextStatus === "open" && cleanText(row.status) !== "open") {
+    await appendSystemMessage(row.id, "Support returned this thread to active handling.");
   }
 }
 
@@ -699,6 +711,7 @@ export async function replyToSupportThreadForStaff(input: {
   if (!replyBody) {
     throw new Error("Write a reply before sending.");
   }
+  const nextStatus = normalizeSupportedThreadStatus(input.nextStatus, "open");
 
   const now = new Date().toISOString();
   const admin = createStaffAdminSupabase();
@@ -719,12 +732,12 @@ export async function replyToSupportThreadForStaff(input: {
   const { error: threadError } = await admin
     .from("support_threads")
     .update({
-      status: cleanText(input.nextStatus) || "pending_customer",
+      status: nextStatus,
       assigned_to: input.viewerId,
       updated_at: now,
       staff_last_read_at: now,
-      resolved_at: cleanText(input.nextStatus) === "resolved" ? now : null,
-      closed_at: cleanText(input.nextStatus) === "closed" ? now : null,
+      resolved_at: null,
+      closed_at: null,
     })
     .eq("id", row.id);
 
@@ -738,7 +751,7 @@ export async function replyToSupportThreadForStaff(input: {
     title: "Support replied",
     body: summarizeBody(replyBody),
     category: "support",
-    priority: cleanText(input.nextStatus) === "resolved" ? "normal" : "high",
+    priority: "high",
     action_url: `/support/${row.id}`,
     reference_type: "support_thread",
     reference_id: row.id,
@@ -752,7 +765,7 @@ export async function replyToSupportThreadForStaff(input: {
     activity_type: "support_replied",
     title: `Support replied: ${cleanText(row.subject) || "Support conversation"}`,
     description: summarizeBody(replyBody),
-    status: cleanText(input.nextStatus) || "pending_customer",
+    status: nextStatus,
     reference_type: "support_thread",
     reference_id: row.id,
     action_url: `/support/${row.id}`,
@@ -785,7 +798,7 @@ export async function replyToSupportThreadForStaff(input: {
   return {
     emailStatus,
     emailReason,
-    statusLabel: formatStatusLabel(cleanText(input.nextStatus) || "pending_customer"),
+    statusLabel: formatStatusLabel(nextStatus),
     priorityLabel: formatPriorityLabel(cleanText(row.priority) || "normal"),
   };
 }
