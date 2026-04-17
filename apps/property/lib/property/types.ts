@@ -160,6 +160,17 @@ export type PropertyListing = {
   riskFlags: string[];
   policyVersion: string;
   policySummary: string | null;
+  pricingRuleBookKey: string | null;
+  pricingRuleVersion: string | null;
+  feeBreakdown: {
+    currency: string;
+    lines: Array<{
+      code: string;
+      label: string;
+      amount: number;
+    }>;
+    total: number;
+  } | null;
   availableFrom: string | null;
   availableNow: boolean;
   ownerUserId: string | null;

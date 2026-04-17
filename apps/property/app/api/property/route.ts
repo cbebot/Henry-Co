@@ -13,6 +13,7 @@ import {
   ensureCustomerProfile,
 } from "@/lib/property/shared-account";
 import { getSharedAccountLoginUrl, getSharedAccountPropertyPath } from "@/lib/property/links";
+import { computePropertySubmissionFeeBreakdown } from "@henryco/pricing";
 import {
   createListingFromSubmission,
   removeSavedPropertyForUser,
@@ -994,6 +995,12 @@ export async function POST(request: Request) {
           );
         }
 
+        const feeBreakdown = computePropertySubmissionFeeBreakdown({
+          serviceType,
+          requiresInspection: policy.required.requiresInspection,
+          premiumPlacementRequested: Boolean(updatedListingBase.featured || updatedListingBase.promoted),
+        });
+
         const policyListing: PropertyListing = {
           ...updatedListingBase,
           status: nextStatus,
@@ -1007,6 +1014,17 @@ export async function POST(request: Request) {
           riskFlags: policy.riskFlags,
           policyVersion: PROPERTY_POLICY_VERSION,
           policySummary: policy.summary,
+          pricingRuleBookKey: feeBreakdown.meta.ruleBookKey,
+          pricingRuleVersion: feeBreakdown.meta.ruleVersion,
+          feeBreakdown: {
+            currency: feeBreakdown.currency,
+            lines: feeBreakdown.lines.map((line) => ({
+              code: line.code,
+              label: line.label,
+              amount: line.amount.amount,
+            })),
+            total: feeBreakdown.totals.customerTotal.amount,
+          },
         };
 
         await upsertPropertyListing(policyListing);
@@ -1025,6 +1043,9 @@ export async function POST(request: Request) {
             riskScore: policy.riskScore,
             riskFlags: policy.riskFlags,
             required: policy.required,
+            pricingRuleBookKey: feeBreakdown.meta.ruleBookKey,
+            pricingRuleVersion: feeBreakdown.meta.ruleVersion,
+            feeBreakdown,
             walletBalanceKobo: wallet.balanceKobo,
             trustTier: trust.tier,
             trustScore: trust.score,

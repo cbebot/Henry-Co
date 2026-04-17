@@ -20,6 +20,22 @@ export default async function FinancePage() {
         {data.orders.slice(0, 4).map((order: Record<string, unknown>) => (
           <article key={String(order.id)} className="market-paper rounded-[1.75rem] p-5">
             <p className="market-kicker">{String(order.order_no || "Order")}</p>
+            {order.pricing_breakdown && typeof order.pricing_breakdown === "object" ? (
+              <div className="mt-3 grid gap-2 text-sm text-[var(--market-muted)]">
+                {Array.isArray((order.pricing_breakdown as any).lines)
+                  ? ((order.pricing_breakdown as any).lines as any[])
+                      .slice(0, 6)
+                      .map((line, idx) => (
+                        <div key={idx} className="flex items-center justify-between gap-3">
+                          <span>{String(line?.label || line?.code || "Fee")}</span>
+                          <span className="font-semibold text-[var(--market-ink)]">
+                            {formatCurrency(Number(line?.amount?.amount ?? line?.amount ?? 0))}
+                          </span>
+                        </div>
+                      ))
+                  : null}
+              </div>
+            ) : null}
             <form action="/api/marketplace" method="POST" className="mt-4 flex flex-wrap gap-3">
               <input type="hidden" name="intent" value="payment_verify" />
               <input type="hidden" name="order_no" value={String(order.order_no || "")} />
