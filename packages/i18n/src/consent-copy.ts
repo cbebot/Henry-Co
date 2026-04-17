@@ -24,6 +24,10 @@ export type EcosystemConsentCopy = {
     personalized: { title: string; description: string };
     keepEssential: string;
     save: string;
+    /** Label for the theme section heading in preferences page. */
+    theme: string;
+    /** Confirmation label shown briefly after saving preferences. */
+    savedConfirmation: string;
   };
   language: {
     label: string;
@@ -70,6 +74,8 @@ const EN: EcosystemConsentCopy = {
     },
     keepEssential: "Keep essential only",
     save: "Save preferences",
+    theme: "Theme",
+    savedConfirmation: "Saved",
   },
   language: {
     label: "Language",
@@ -116,6 +122,8 @@ const FR: Partial<EcosystemConsentCopy> = {
     },
     keepEssential: "Garder l’essentiel",
     save: "Enregistrer",
+    theme: "Thème",
+    savedConfirmation: "Enregistré",
   },
   language: {
     label: "Langue",
@@ -146,6 +154,8 @@ const IG: Partial<EcosystemConsentCopy> = {
     marketing: { title: "Ahịa", description: "Na-enyere aka ịme mkpọsa mgbe mmemme ndị ahụ na-arụ ọrụ." },
     keepEssential: "Jide naanị ihe dị mkpa",
     save: "Chekwaa nhọrọ",
+    theme: "Isiokwu",
+    savedConfirmation: "Echekwara",
   },
   language: { label: "Asụsụ", hint: "Na-emetụta saịtị Henry & Co. niile nke na-akwado nhọrọ gị." },
 };
@@ -173,6 +183,8 @@ const AR: Partial<EcosystemConsentCopy> = {
     marketing: { title: "التسويق", description: "يمكّن التسويق المحدد النطاق عند تفعيل تلك البرامج." },
     keepEssential: "الاحتفاظ بالأساسي فقط",
     save: "حفظ التفضيلات",
+    theme: "المظهر",
+    savedConfirmation: "تم الحفظ",
   },
   language: { label: "اللغة", hint: "ينطبق على مواقع Henry & Co. التي تدعم اختيارك." },
 };
@@ -200,6 +212,8 @@ const ES: Partial<EcosystemConsentCopy> = {
     marketing: { title: "Marketing", description: "Habilita remarketing cuidadosamente definido cuando esos programas están activos." },
     keepEssential: "Mantener solo esencial",
     save: "Guardar preferencias",
+    theme: "Tema",
+    savedConfirmation: "Guardado",
   },
   language: { label: "Idioma", hint: "Se aplica en los sitios de Henry & Co. que admiten tu selección." },
 };
@@ -227,16 +241,169 @@ const PT: Partial<EcosystemConsentCopy> = {
     marketing: { title: "Marketing", description: "Habilita remarketing cuidadosamente definido quando esses programas estão ativos." },
     keepEssential: "Manter apenas essencial",
     save: "Salvar preferências",
+    theme: "Tema",
+    savedConfirmation: "Salvo",
   },
   language: { label: "Idioma", hint: "Aplica-se nos sites da Henry & Co. que suportam sua seleção." },
+};
+
+const YO: Partial<EcosystemConsentCopy> = {
+  banner: {
+    eyebrow: "Àwọn àṣàyàn ìrírí",
+    title: "Yan bí Henry & Co. ṣe tọ́jú àwọn ètò lórí ẹ̀rọ yìí.",
+    body: "Ìpamọ́ pàtàkì ń pa ààbò, ìtọ́nisọ́nà, àti àwọn ìlànà pàtàkì mọ́. Àwọn ẹ̀ka àṣàyàn ń ràn lọ́wọ́ láti rántí ède àti àwọn àṣàyàn atọkùn.",
+    essentialOnly: "Pàtàkì nìkan",
+    customize: "Ṣàgbékalẹ̀",
+    acceptAll: "Gba gbogbo rẹ̀",
+  },
+  fab: "Ìkọ̀kọ̀",
+  panel: {
+    eyebrow: "Ìṣàkóso ìkọ̀kọ̀",
+    title: "Ṣàyẹ̀wò ìkọ̀kọ̀ àti ìmójútó àdáni",
+    lastUpdated: "Ìgbà tó kẹ́yìn tí a ṣe àtúnṣe",
+    lastUpdatedNever: "Kò tíì tọ́jú rí",
+    close: "Padé",
+    essential: { title: "Pàtàkì", description: "Pàtàkì fún ààbò, àkókò ìwọlé, àwọn ìlànà iṣòwò, àti ìtọ́nisọ́nà." },
+    preferences: { title: "Àwọn àṣàyàn", description: "Ń rántí ède, àwọ̀ àti àwọn àṣàyàn ètò fún ìrírí tó ní ìbámu." },
+    personalized: { title: "Ìrírí àdáni", description: "Fún àwọn ìmọ̀ràn tó bá irú bí o ṣe ń lo àwọn ojú-òpó Henry & Co. mu." },
+    analytics: { title: "Ìtúpalẹ̀", description: "Ń ṣe ìwọ̀n àwọn àbájáde ìdáwèwọ̀le àti ìṣòro láti mú àwọn ọjà dára sí i." },
+    marketing: { title: "Títajà", description: "Ń ṣiṣẹ́ títajà ní àkókò tí àwọn ètò wọ̀nyí bá ń ṣiṣẹ́." },
+    keepEssential: "Pa pàtàkì nìkan mọ́",
+    save: "Tọ́jú àwọn àṣàyàn",
+    theme: "Àwọ̀",
+    savedConfirmation: "Tọ́jú",
+  },
+  language: { label: "Èdè", hint: "Ń ṣiṣẹ́ lórí àwọn ojú-òpó Henry & Co. tó ń gbà àṣàyàn rẹ." },
+};
+
+const HA: Partial<EcosystemConsentCopy> = {
+  banner: {
+    eyebrow: "Zaɓuɓɓukan ƙwarewa",
+    title: "Zaɓi yadda Henry & Co. ke ajiye saiti a wannan na'ura.",
+    body: "Ajiyar muhimmanci yana kiyaye tsaro, kewayawa, da hanyoyin aiki. Rukunonin zaɓi na taimakawa wajen tuna yare da zaɓuɓɓukan mu'amala.",
+    essentialOnly: "Muhimmanci kawai",
+    customize: "Daidaita",
+    acceptAll: "Karɓi duka",
+  },
+  fab: "Sirri",
+  panel: {
+    eyebrow: "Sarrafa sirri",
+    title: "Bincika sirri da keɓaɓɓen saiti",
+    lastUpdated: "An sabunta ƙarshe",
+    lastUpdatedNever: "Ba a ajiye tukuna",
+    close: "Rufe",
+    essential: { title: "Muhimmanci", description: "Ana buƙata don tsaro, zaman aiki, biyan kuɗi, da kewayawa." },
+    preferences: { title: "Zaɓuɓɓuka", description: "Yana tuna yare, jigo, da zaɓuɓɓukan tsari don ƙwarewa mai daidaituwa." },
+    personalized: { title: "Ƙwarewa ta musamman", description: "Yana ba da damar shawarwarin da suka dace bisa yadda kake amfani da shafukan Henry & Co.." },
+    analytics: { title: "Bincike", description: "Yana auna ingancin shafi da matsaloli don inganta kayayyaki." },
+    marketing: { title: "Talla", description: "Yana ba da damar sake yin talla idan waɗannan shirye-shiryen suna aiki." },
+    keepEssential: "Kiyaye muhimmanci kawai",
+    save: "Ajiye zaɓuɓɓuka",
+    theme: "Jigo",
+    savedConfirmation: "An ajiye",
+  },
+  language: { label: "Yare", hint: "Ana amfani da shi a shafukan Henry & Co. waɗanda ke goyan bayan zaɓinka." },
+};
+
+// Tier B — architecture-ready scaffold; EN fallback for untranslated strings
+const DE: Partial<EcosystemConsentCopy> = {
+  banner: {
+    eyebrow: "Erfahrungseinstellungen",
+    title: "Wählen Sie, wie Henry & Co. Einstellungen auf diesem Gerät speichert.",
+    body: "Wesentlicher Speicher sichert Sicherheit, Navigation und Kernprozesse. Optionale Kategorien helfen, Sprach- und Interface-Einstellungen zu speichern, Qualität zu messen und gezielte Kommunikation zu unterstützen.",
+    essentialOnly: "Nur Wesentliches",
+    customize: "Anpassen",
+    acceptAll: "Alle akzeptieren",
+  },
+  fab: "Datenschutz",
+  panel: {
+    eyebrow: "Datenschutzeinstellungen",
+    title: "Datenschutz und Personalisierung",
+    lastUpdated: "Zuletzt aktualisiert",
+    lastUpdatedNever: "Noch nicht gespeichert",
+    close: "Schließen",
+    essential: { title: "Wesentlich", description: "Erforderlich für Sicherheit, Sitzungsintegrität, Zahlungsprozesse und Navigation." },
+    preferences: { title: "Einstellungen", description: "Speichert Sprache, Design und Layout für ein konsistentes Erlebnis." },
+    personalized: { title: "Personalisiertes Erlebnis", description: "Ermöglicht maßgeschneiderte Empfehlungen basierend auf Ihrer Nutzung der Henry & Co. Seiten." },
+    analytics: { title: "Analysen", description: "Hilft bei der Messung von Seitenqualität und Problemen zur verantwortungsvollen Produktverbesserung." },
+    marketing: { title: "Marketing", description: "Ermöglicht gezieltes Remarketing, wenn diese Programme aktiv sind." },
+    keepEssential: "Nur Wesentliches behalten",
+    save: "Einstellungen speichern",
+    theme: "Design",
+    savedConfirmation: "Gespeichert",
+  },
+  language: { label: "Sprache", hint: "Gilt für Henry & Co. Seiten, die Ihre Auswahl unterstützen." },
+};
+
+const ZH: Partial<EcosystemConsentCopy> = {
+  banner: {
+    eyebrow: "体验偏好",
+    title: "选择 Henry & Co. 如何在此设备上存储设置。",
+    body: "基本存储确保安全性、导航和核心流程的可靠运行。可选类别有助于记住语言和界面选择、衡量质量并在项目启用时支持精准推广。",
+    essentialOnly: "仅基本",
+    customize: "自定义",
+    acceptAll: "全部接受",
+  },
+  fab: "隐私",
+  panel: {
+    eyebrow: "隐私设置",
+    title: "查看隐私和个性化",
+    lastUpdated: "最后更新",
+    lastUpdatedNever: "尚未保存",
+    close: "关闭",
+    essential: { title: "基本", description: "安全性、会话完整性、结账流程和核心导航所必需。" },
+    preferences: { title: "偏好", description: "记住语言、主题和布局选择，保持一致的体验。" },
+    personalized: { title: "个性化体验", description: "根据您使用 Henry & Co. 网站的方式提供量身定制的推荐。" },
+    analytics: { title: "分析", description: "帮助衡量页面质量和摩擦，以负责任的方式改进产品。" },
+    marketing: { title: "营销", description: "在相关项目激活时启用精准再营销。" },
+    keepEssential: "仅保留基本",
+    save: "保存偏好",
+    theme: "主题",
+    savedConfirmation: "已保存",
+  },
+  language: { label: "语言", hint: "适用于支持您所选语言的 Henry & Co. 网站。" },
+};
+
+const HI: Partial<EcosystemConsentCopy> = {
+  banner: {
+    eyebrow: "अनुभव प्राथमिकताएं",
+    title: "चुनें कि Henry & Co. इस डिवाइस पर सेटिंग्स कैसे संग्रहीत करे।",
+    body: "आवश्यक संग्रहण सुरक्षा, नेविगेशन और मुख्य प्रवाह को विश्वसनीय रखता है। वैकल्पिक श्रेणियां भाषा और इंटरफेस विकल्पों को याद रखने, गुणवत्ता मापने में मदद करती हैं।",
+    essentialOnly: "केवल आवश्यक",
+    customize: "अनुकूलित करें",
+    acceptAll: "सभी स्वीकार करें",
+  },
+  fab: "गोपनीयता",
+  panel: {
+    eyebrow: "गोपनीयता नियंत्रण",
+    title: "गोपनीयता और वैयक्तिकरण की समीक्षा करें",
+    lastUpdated: "अंतिम अपडेट",
+    lastUpdatedNever: "अभी तक सहेजा नहीं गया",
+    close: "बंद करें",
+    essential: { title: "आवश्यक", description: "सुरक्षा, सत्र अखंडता, चेकआउट प्रवाह और मुख्य नेविगेशन के लिए आवश्यक।" },
+    preferences: { title: "प्राथमिकताएं", description: "एक सुसंगत अनुभव के लिए भाषा, थीम और लेआउट विकल्प याद रखता है।" },
+    personalized: { title: "वैयक्तिकृत अनुभव", description: "Henry & Co. साइटों के उपयोग के आधार पर अनुकूलित सिफारिशों की अनुमति देता है।" },
+    analytics: { title: "विश्लेषण", description: "उत्पादों को जिम्मेदारी से बेहतर बनाने के लिए पृष्ठ गुणवत्ता मापने में मदद करता है।" },
+    marketing: { title: "मार्केटिंग", description: "उन कार्यक्रमों के सक्रिय होने पर सावधानीपूर्वक रीमार्केटिंग सक्षम करता है।" },
+    keepEssential: "केवल आवश्यक रखें",
+    save: "प्राथमिकताएं सहेजें",
+    theme: "थीम",
+    savedConfirmation: "सहेजा गया",
+  },
+  language: { label: "भाषा", hint: "Henry & Co. साइटों पर लागू होता है जो आपके चयन का समर्थन करती हैं।" },
 };
 
 const LOCALE_COPY: Partial<Record<AppLocale, Partial<EcosystemConsentCopy>>> = {
   fr: FR,
   ig: IG,
+  yo: YO,
+  ha: HA,
   ar: AR,
   es: ES,
   pt: PT,
+  de: DE,
+  zh: ZH,
+  hi: HI,
 };
 
 export function getConsentCopy(locale: AppLocale): EcosystemConsentCopy {
