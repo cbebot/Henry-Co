@@ -74,6 +74,7 @@ export async function POST(request: Request) {
         public_id: upload.publicId,
         kind,
         normalized_email: normalizeEmail(user.email),
+        ...(upload.ocrWarning ? { ocr_flag: upload.ocrWarning } : {}),
       },
     } as never);
 
