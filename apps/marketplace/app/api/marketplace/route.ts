@@ -19,6 +19,7 @@ import { checkReviewAuthenticity, syncVendorTrustScore } from "@/lib/marketplace
 import { logMarketplaceAction, sendMarketplaceEvent } from "@/lib/marketplace/notifications";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
+import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
 
 export const runtime = "nodejs";
 
@@ -447,8 +448,13 @@ export async function POST(request: Request) {
             sum + Number(item.price || 0) * Number(item.quantity || 0),
           0
         );
-        const shippingTotal = subtotal > 350000 ? 0 : 18000;
-        const grandTotal = subtotal + shippingTotal;
+        const breakdown = computeMarketplaceCheckoutBreakdown({
+          itemsSubtotalAmount: subtotal,
+        });
+        const shippingTotal = breakdown.lines.find((line) => line.code === "delivery")?.amount.amount ?? 0;
+        const platformFeeTotal =
+          breakdown.lines.find((line) => line.code === "platform_fee")?.amount.amount ?? 0;
+        const grandTotal = breakdown.totals.customerTotal.amount;
         const { count: priorOrderCount } = await admin
           .from("marketplace_orders")
           .select("id", { count: "exact", head: true })
@@ -473,6 +479,8 @@ export async function POST(request: Request) {
             shipping_total: shippingTotal,
             discount_total: 0,
             grand_total: grandTotal,
+            platform_fee_total: platformFeeTotal,
+            pricing_breakdown: breakdown as unknown as Record<string, unknown>,
             buyer_name: buyerName,
             buyer_email: viewer.user.email,
             buyer_phone: buyerPhone || null,
