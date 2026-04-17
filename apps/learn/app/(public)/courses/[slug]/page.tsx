@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Layers3, Quote, Star } from "lucide-react";
 import { getCourseBySlug } from "@/lib/learn/data";
-import { getLearnViewer } from "@/lib/learn/auth";
+import { getPassiveLearnViewer } from "@/lib/learn/auth";
 import { enrollInCourseAction, toggleSavedCourseAction } from "@/lib/learn/actions";
 import { getAccountLearnUrl, getLearnCourseRoomUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
@@ -13,7 +13,7 @@ export default async function CourseDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const viewer = await getLearnViewer();
+  const viewer = await getPassiveLearnViewer();
   const data = await getCourseBySlug(slug, viewer);
   if (!data) notFound();
 

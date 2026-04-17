@@ -1,6 +1,6 @@
 import { CheckCircle2, FileStack, Sparkles, UsersRound } from "lucide-react";
 import { submitTeacherApplicationAction } from "@/lib/learn/actions";
-import { getLearnViewer } from "@/lib/learn/auth";
+import { getPassiveLearnViewer } from "@/lib/learn/auth";
 import { getTeacherApplicationForViewer } from "@/lib/learn/data";
 import { getSharedAuthUrl } from "@/lib/learn/links";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
@@ -25,7 +25,7 @@ export default async function TeachPage({
   searchParams: Promise<{ submitted?: string }>;
 }) {
   const params = await searchParams;
-  const viewer = await getLearnViewer();
+  const viewer = await getPassiveLearnViewer();
   const application = viewer.user ? await getTeacherApplicationForViewer(viewer) : null;
   const canEdit =
     !application ||

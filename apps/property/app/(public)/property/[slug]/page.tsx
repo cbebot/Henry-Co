@@ -25,6 +25,7 @@ import {
   getSharedAccountPropertyUrl,
   getSharedAccountSignupUrl,
 } from "@/lib/property/links";
+import type { PropertyListing } from "@/lib/property/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -36,7 +37,7 @@ type SearchParams = {
   removed?: string;
 };
 
-function getTrustCopy(listing: Awaited<ReturnType<typeof getPropertyBySlug>>["listing"]) {
+function getTrustCopy(listing: PropertyListing) {
   if (listing.managedByHenryCo) {
     return {
       title: "Managed by HenryCo",

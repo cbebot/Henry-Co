@@ -130,6 +130,137 @@ export function isSupabaseAuthTokenCookie(name?: string | null) {
   return value.startsWith("sb-") && (value.includes("-auth-token") || value.includes("-code-verifier"));
 }
 
+type SupabaseCookieEntry = {
+  name: string;
+  value: string;
+};
+
+type PassiveSupabaseCookieUser = {
+  id: string;
+  email?: string | null;
+  app_metadata?: Record<string, unknown>;
+  user_metadata?: Record<string, unknown>;
+};
+
+type PassiveSupabaseCookieSession = {
+  access_token?: string;
+  expires_at?: number;
+  user?: PassiveSupabaseCookieUser | null;
+};
+
+function decodeBase64Url(value: string) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padding = (4 - (normalized.length % 4)) % 4;
+  const base64 = `${normalized}${"=".repeat(padding)}`;
+
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(base64, "base64").toString("utf8");
+  }
+
+  if (typeof atob === "function") {
+    return decodeURIComponent(
+      Array.from(atob(base64))
+        .map((char) => `%${char.charCodeAt(0).toString(16).padStart(2, "0")}`)
+        .join("")
+    );
+  }
+
+  throw new Error("No base64 decoder available for Supabase session parsing.");
+}
+
+function parseJsonObject(value: string) {
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function readJwtPayload(accessToken?: string | null) {
+  const parts = String(accessToken || "").split(".");
+  if (parts.length < 2) return null;
+
+  try {
+    const decoded = decodeBase64Url(parts[1] || "");
+    return parseJsonObject(decoded);
+  } catch {
+    return null;
+  }
+}
+
+export function getSupabaseAuthCookieBaseName(supabaseUrl?: string | null) {
+  const value = String(supabaseUrl || "").trim();
+  if (!value) return null;
+
+  try {
+    const ref = new URL(value).hostname.split(".")[0]?.trim();
+    return ref ? `sb-${ref}-auth-token` : null;
+  } catch {
+    return null;
+  }
+}
+
+export function readPassiveSupabaseSessionFromCookies(
+  cookies: SupabaseCookieEntry[],
+  supabaseUrl?: string | null
+) {
+  const baseName = getSupabaseAuthCookieBaseName(supabaseUrl);
+  if (!baseName) return null;
+
+  const direct = cookies.find((cookie) => cookie.name === baseName)?.value || null;
+  const chunkValue =
+    direct ||
+    cookies
+      .filter((cookie) => cookie.name.startsWith(`${baseName}.`))
+      .sort((left, right) => left.name.localeCompare(right.name))
+      .map((cookie) => cookie.value)
+      .join("");
+
+  if (!chunkValue) {
+    return null;
+  }
+
+  const encoded = chunkValue.startsWith("base64-") ? chunkValue.slice("base64-".length) : chunkValue;
+
+  try {
+    const decoded = chunkValue.startsWith("base64-") ? decodeBase64Url(encoded) : chunkValue;
+    const parsed = parseJsonObject(decoded);
+    return parsed as PassiveSupabaseCookieSession | null;
+  } catch {
+    return null;
+  }
+}
+
+export function readPassiveSupabaseUserFromCookies(
+  cookies: SupabaseCookieEntry[],
+  supabaseUrl?: string | null,
+  options?: { now?: number }
+) {
+  const session = readPassiveSupabaseSessionFromCookies(cookies, supabaseUrl);
+  if (!session?.user || typeof session.user !== "object" || typeof session.user.id !== "string") {
+    return null;
+  }
+
+  const now = options?.now ?? Date.now();
+  const sessionExpiry =
+    typeof session.expires_at === "number" && Number.isFinite(session.expires_at)
+      ? session.expires_at * 1000
+      : null;
+  const jwtPayload = readJwtPayload(session.access_token);
+  const jwtExpiry =
+    jwtPayload && typeof jwtPayload.exp === "number" && Number.isFinite(jwtPayload.exp)
+      ? jwtPayload.exp * 1000
+      : null;
+  const expiresAt = sessionExpiry && jwtExpiry ? Math.min(sessionExpiry, jwtExpiry) : sessionExpiry || jwtExpiry;
+
+  if (expiresAt && expiresAt <= now) {
+    return null;
+  }
+
+  return session.user;
+}
+
 /**
  * Prefer the canonical profile/customer avatar URL when set; otherwise use OAuth metadata
  * (e.g. Google `picture`, Supabase `avatar_url`) so chips show real photos without waiting on profile sync.
