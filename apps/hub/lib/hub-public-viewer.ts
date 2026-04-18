@@ -6,7 +6,12 @@ import { createAdminSupabase } from "@/lib/supabase";
 import { createHubSupabaseServer } from "@/lib/supabase/server";
 
 export async function getHubPublicChipUser(): Promise<PublicAccountUser | null> {
-  const supabase = await createHubSupabaseServer();
+  let supabase: Awaited<ReturnType<typeof createHubSupabaseServer>>;
+  try {
+    supabase = await createHubSupabaseServer();
+  } catch {
+    return null;
+  }
   let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
 
   try {
