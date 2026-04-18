@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { getSharedCookieDomain } from "@henryco/config";
 import {
-  PUBLIC_SELECTOR_LOCALES,
   getLocaleDisplayLabel,
+  getUserSelectableLocales,
   isPublicSelectorLocale,
   normalizeLocale,
   isRtlLocale,
@@ -166,10 +166,7 @@ export function EcosystemPreferences({
     })}`;
   }, [consent.updatedAt, copy.panel.lastUpdated, copy.panel.lastUpdatedNever, initialLocale]);
 
-  const localeOptions = useMemo(() => {
-    if (isPublicSelectorLocale(localeChoice)) return PUBLIC_SELECTOR_LOCALES;
-    return [localeChoice, ...PUBLIC_SELECTOR_LOCALES.filter((code) => code !== localeChoice)];
-  }, [localeChoice]);
+  const localeOptions = useMemo(() => getUserSelectableLocales(localeChoice), [localeChoice]);
 
   function getLocaleOptionLabel(locale: AppLocale) {
     const base = getLocaleDisplayLabel(locale);

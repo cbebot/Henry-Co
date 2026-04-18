@@ -1,9 +1,15 @@
 export type CareSettingsRecord = {
   hero_badge: string;
+  hero_badge_i18n?: Record<string, unknown> | string | null;
   hero_title: string;
+  hero_title_i18n?: Record<string, unknown> | string | null;
   hero_subtitle: string;
+  hero_subtitle_i18n?: Record<string, unknown> | string | null;
   about_title: string;
+  about_title_i18n?: Record<string, unknown> | string | null;
   about_body: string;
+  about_body_i18n?: Record<string, unknown> | string | null;
+  locale_overrides?: Record<string, unknown> | string | null;
   pickup_hours: string | null;
   pricing_note: string | null;
   support_email: string | null;
@@ -59,19 +65,43 @@ export function normalizeCareSettings(input?: SettingsSource): CareSettingsRecor
 
   return {
     hero_badge: asText(source.hero_badge, "Garment, home, and workplace care"),
+    hero_badge_i18n:
+      source.hero_badge_i18n && typeof source.hero_badge_i18n === "object"
+        ? (source.hero_badge_i18n as Record<string, unknown>)
+        : asNullableText(source.hero_badge_i18n),
     hero_title: asText(
       source.hero_title,
       "Quiet service logistics for wardrobes, homes, and workplaces."
     ),
+    hero_title_i18n:
+      source.hero_title_i18n && typeof source.hero_title_i18n === "object"
+        ? (source.hero_title_i18n as Record<string, unknown>)
+        : asNullableText(source.hero_title_i18n),
     hero_subtitle: asText(
       source.hero_subtitle,
       "Book pickup, cleaning, and recurring upkeep through one polished system with clearer status, calmer support, and better follow-through."
     ),
+    hero_subtitle_i18n:
+      source.hero_subtitle_i18n && typeof source.hero_subtitle_i18n === "object"
+        ? (source.hero_subtitle_i18n as Record<string, unknown>)
+        : asNullableText(source.hero_subtitle_i18n),
     about_title: asText(source.about_title, "Built for disciplined service, not vague promises."),
+    about_title_i18n:
+      source.about_title_i18n && typeof source.about_title_i18n === "object"
+        ? (source.about_title_i18n as Record<string, unknown>)
+        : asNullableText(source.about_title_i18n),
     about_body: asText(
       source.about_body,
       "HenryCo Care is structured to keep booking, dispatch, execution, and support readable from the first request to the final handoff."
     ),
+    about_body_i18n:
+      source.about_body_i18n && typeof source.about_body_i18n === "object"
+        ? (source.about_body_i18n as Record<string, unknown>)
+        : asNullableText(source.about_body_i18n),
+    locale_overrides:
+      source.locale_overrides && typeof source.locale_overrides === "object"
+        ? (source.locale_overrides as Record<string, unknown>)
+        : asNullableText(source.locale_overrides),
     pickup_hours: asNullableText(source.pickup_hours),
     pricing_note: asNullableText(source.pricing_note),
     support_email: asNullableText(source.support_email),

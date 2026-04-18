@@ -22,7 +22,7 @@ export default async function NotificationMessageBoardPage({
   const { id } = await params;
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const data = await getNotificationMessageBoard(user.id, id);
+  const data = await getNotificationMessageBoard(user.id, id, locale);
 
   if (!data) {
     notFound();

@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ThirdPartyRuntimeProviders>
             <LocaleProvider locale={locale}>{children}</LocaleProvider>
           </ThirdPartyRuntimeProviders>
-          <ConsentNotice preferencesHref="/settings#privacy-controls" />
+          <ConsentNotice preferencesHref="/settings#privacy-controls" locale={locale} />
         </ThemeProvider>
       </body>
     </html>

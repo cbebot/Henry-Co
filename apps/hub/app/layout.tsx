@@ -43,7 +43,7 @@ export default async function RootLayout({
       <body className="min-h-screen antialiased">
         <PublicThemeGuard>
           <ThirdPartyRuntimeProviders>{children}</ThirdPartyRuntimeProviders>
-          <ConsentNotice preferencesHref="/preferences" />
+          <ConsentNotice preferencesHref="/preferences" locale={lang} />
           <LocaleSuggestion suggestedLocale={suggestedLocale} currentLocale={lang} />
         </PublicThemeGuard>
       </body>

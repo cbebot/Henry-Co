@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuthCopy } from "@henryco/i18n";
 import LoginForm from "@/components/auth/LoginForm";
+import LoginLanguageAccess from "@/components/auth/LoginLanguageAccess";
 import Logo from "@/components/brand/Logo";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { resolveAuthenticatedDestination } from "@/lib/post-auth-routing";
@@ -47,6 +48,8 @@ export default async function LoginPage({
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4">
       <div className="w-full max-w-md acct-fade-in">
+        <LoginLanguageAccess initialLocale={locale} />
+
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center">
             <Logo size={48} />

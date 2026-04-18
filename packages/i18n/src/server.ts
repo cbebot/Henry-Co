@@ -15,6 +15,7 @@ export {
   type SurfaceCopy,
 } from "./surface-copy";
 export { deepLTranslate, deepLTranslateMany, isDeepLSupported, type DeepLTranslateResult } from "./deepl";
+export { resolveLocalizedDynamicField, type LocaleTextMap } from "./dynamic-content";
 export {
   formatDate,
   formatDateLong,
@@ -41,8 +42,10 @@ export {
   normalizeLocale,
   isAppLocale,
   isPublicSelectorLocale,
+  isScaffoldLocale,
   isRtlLocale,
   getLocaleDisplayLabel,
+  getUserSelectableLocales,
   localeFromAcceptLanguage,
   LOCALE_COOKIE,
   LOCALE_LABELS,

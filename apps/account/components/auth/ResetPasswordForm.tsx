@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getAuthCopy, getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function ResetPasswordForm() {
+  const locale = useHenryCoLocale();
+  const authCopy = getAuthCopy(locale);
+  const surfaceCopy = getSurfaceCopy(locale);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [show, setShow] = useState(false);
@@ -18,8 +24,8 @@ export default function ResetPasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirm) { setError("Passwords do not match"); return; }
-    if (password.length < 8) { setError("Password must be at least 8 characters"); return; }
+    if (password !== confirm) { setError(surfaceCopy.accountForms.passwordsDoNotMatch); return; }
+    if (password.length < 8) { setError(authCopy.errors.passwordTooShort); return; }
 
     setError(null);
     setLoading(true);
@@ -27,11 +33,11 @@ export default function ResetPasswordForm() {
     try {
       const supabase = createSupabaseBrowser();
       const { error: updateErr } = await supabase.auth.updateUser({ password });
-      if (updateErr) { setError(mapAccountAuthMessage(updateErr.message, "reset_password")); return; }
+      if (updateErr) { setError(mapAccountAuthMessage(updateErr.message, "reset_password", locale)); return; }
       setSuccess(true);
       setTimeout(() => router.push("/"), 2000);
     } catch {
-      setError("We couldn't update your password right now. Please try again.");
+      setError(t("We couldn’t update your password right now. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -45,8 +51,8 @@ export default function ResetPasswordForm() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="text-lg font-semibold">Password updated</h2>
-        <p className="mt-2 text-sm text-[var(--acct-muted)]">Redirecting to your account...</p>
+        <h2 className="text-lg font-semibold">{t("Password updated")}</h2>
+        <p className="mt-2 text-sm text-[var(--acct-muted)]">{t("Redirecting to your account...")}</p>
       </div>
     );
   }
@@ -58,24 +64,24 @@ export default function ResetPasswordForm() {
       )}
       <div className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">New password</label>
+          <label className="mb-1.5 block text-sm font-medium">{t("New password")}</label>
           <div className="relative">
             <input type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
-              className="acct-input pr-10" placeholder="Min. 8 characters" required minLength={8} />
+              className="acct-input pr-10" placeholder={surfaceCopy.accountForms.minPasswordPlaceholder} required minLength={8} />
             <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]">
               {show ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Confirm password</label>
+          <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.confirmPasswordLabel}</label>
           <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)}
-            className="acct-input" placeholder="Repeat new password" required />
+            className="acct-input" placeholder={t("Repeat new password")} required />
         </div>
       </div>
       <button type="submit" disabled={loading} className="acct-button-primary mt-6 w-full rounded-xl py-3">
-        <ButtonPendingContent pending={loading} pendingLabel="Updating password..." spinnerLabel="Updating password">
-          Set new password
+        <ButtonPendingContent pending={loading} pendingLabel={t("Updating password...")} spinnerLabel={t("Updating password...")}>
+          {t("Set new password")}
         </ButtonPendingContent>
       </button>
     </form>

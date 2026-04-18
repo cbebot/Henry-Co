@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { AppLocale } from "@henryco/i18n";
 import { getDivisionBrand } from "@/lib/branding";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
@@ -8,6 +9,7 @@ import {
   notificationMessageHref,
   resolveSafeActionUrl,
 } from "@/lib/notification-center";
+import { resolveNotificationPresentation } from "@/lib/notification-localization";
 import { buildSecurityEventView } from "@/lib/security-events";
 
 function asText(value: unknown, fallback = "") {
@@ -52,10 +54,21 @@ export type MessageHistoryItem = {
   kind: "notification" | "activity" | "security";
 };
 
+function localizeNotificationRow(row: Record<string, unknown>, locale?: AppLocale) {
+  if (!locale) return row;
+  const localized = resolveNotificationPresentation({ row, locale });
+  return {
+    ...row,
+    title: localized.title,
+    body: localized.body,
+  };
+}
+
 async function buildRelatedHistory(
   userId: string,
   row: Record<string, unknown>,
-  excludeId: string
+  excludeId: string,
+  locale?: AppLocale,
 ): Promise<MessageHistoryItem[]> {
   const admin = createAdminSupabase();
   const referenceType = asNullableText(row.reference_type);
@@ -104,6 +117,7 @@ async function buildRelatedHistory(
   return [
     ...((notificationsRes.data ?? []) as Array<Record<string, unknown>>)
       .filter((item) => !isHiddenNotification(item) && asText(item.id) !== excludeId)
+      .map((item) => localizeNotificationRow(item, locale))
       .map((item) => ({
         id: asText(item.id),
         title: asText(item.title, "Notification"),
@@ -129,7 +143,11 @@ async function buildRelatedHistory(
     .slice(0, 6);
 }
 
-export async function getNotificationMessageBoard(userId: string, notificationId: string) {
+export async function getNotificationMessageBoard(
+  userId: string,
+  notificationId: string,
+  locale?: AppLocale,
+) {
   const admin = createAdminSupabase();
   const { data } = await admin
     .from("customer_notifications")
@@ -142,9 +160,9 @@ export async function getNotificationMessageBoard(userId: string, notificationId
     return null;
   }
 
-  const row = data as Record<string, unknown>;
+  const row = localizeNotificationRow(data as Record<string, unknown>, locale);
   const source = await getDivisionBrand(resolveNotificationKey(row));
-  const history = await buildRelatedHistory(userId, row, asText(row.id));
+  const history = await buildRelatedHistory(userId, row, asText(row.id), locale);
 
   return {
     source,
@@ -162,7 +180,11 @@ export async function getNotificationMessageBoard(userId: string, notificationId
   };
 }
 
-export async function getActivityMessageBoard(userId: string, activityId: string) {
+export async function getActivityMessageBoard(
+  userId: string,
+  activityId: string,
+  locale?: AppLocale,
+) {
   const admin = createAdminSupabase();
   const { data } = await admin
     .from("customer_activity")
@@ -177,7 +199,7 @@ export async function getActivityMessageBoard(userId: string, activityId: string
 
   const row = data as Record<string, unknown>;
   const source = await getDivisionBrand(asNullableText(row.division) || "account");
-  const history = await buildRelatedHistory(userId, row, asText(row.id));
+  const history = await buildRelatedHistory(userId, row, asText(row.id), locale);
 
   return {
     source,
@@ -196,7 +218,11 @@ export async function getActivityMessageBoard(userId: string, activityId: string
   };
 }
 
-export async function getSecurityMessageBoard(userId: string, eventId: string) {
+export async function getSecurityMessageBoard(
+  userId: string,
+  eventId: string,
+  locale?: AppLocale,
+) {
   const admin = createAdminSupabase();
   const { data: event } = await admin
     .from("customer_security_log")
@@ -227,6 +253,7 @@ export async function getSecurityMessageBoard(userId: string, eventId: string) {
       const body = asText(row.body).toLowerCase();
       return title.includes("security") || body.includes("security") || body.includes("login");
     })
+    .map((row) => localizeNotificationRow(row, locale))
     .map((row) => ({
       id: asText(row.id),
       title: asText(row.title, "Security notification"),

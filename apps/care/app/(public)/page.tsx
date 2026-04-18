@@ -14,6 +14,7 @@ import {
   Star,
 } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
+import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 
 import CareFlow from "@/components/care/CareFlow";
 import {
@@ -25,11 +26,18 @@ import {
 import { getCarePublicChipUser } from "@/lib/care-public-viewer";
 import { getCarePublicLocale } from "@/lib/locale-server";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
 
 export const revalidate = 60;
 
 const care = getDivisionConfig("care");
+const HERO_TITLE_FALLBACKS: Partial<Record<string, string>> = {
+  fr: "Un service de confiance pour les vetements, les maisons et les lieux de travail.",
+  es: "Cuida prendas, hogares y espacios de trabajo con un solo equipo de servicio de confianza.",
+  pt: "Cuide de roupas, casas e locais de trabalho com uma unica equipa de servico de confianca.",
+  ar: "اعتنِ بالملابس والمنازل وأماكن العمل مع فريق خدمة موثوق واحد.",
+  de: "Pflege fuer Kleidung, Zuhause und Arbeitsorte mit einem einzigen verlaesslichen Serviceteam.",
+  it: "Cura capi, case e luoghi di lavoro con un solo team di servizio affidabile.",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getCarePublicLocale();
@@ -67,6 +75,33 @@ export default async function CareHomePage() {
     getCarePublicChipUser(),
   ]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const [heroBadge, heroTitle, heroSubtitle] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "hero_badge",
+      locale,
+      fallback: t("Garment care, home cleaning, and office cleaning"),
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "hero_title",
+      locale,
+      fallback:
+        HERO_TITLE_FALLBACKS[locale] ||
+        t("Care for garments, homes, and workplaces with one trusted service team."),
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "hero_subtitle",
+      locale,
+      fallback: t(
+        "Book garment pickup and return delivery, recurring home cleaning, or office cleaning through one calmer service flow with clear timing, payment follow-up, and live updates.",
+      ),
+      machineTranslate: locale !== "en",
+    }),
+  ]);
 
   const careHeroFirstName = chipUser
     ? chipUser.displayName.trim().split(/\s+/)[0] || null
@@ -126,9 +161,6 @@ export default async function CareHomePage() {
     },
   ] as const;
 
-  const heroTitle =
-    settings.hero_title || t("Care for garments, homes, and workplaces with one trusted service team.");
-
   return (
     <main
       className="overflow-hidden bg-transparent pb-24"
@@ -155,7 +187,7 @@ export default async function CareHomePage() {
             <div>
               <div className="care-chip inline-flex rounded-full px-5 py-3 text-sm font-semibold text-white/76">
                 <ShieldCheck className="h-5 w-5 text-[color:var(--accent)]" />
-                {settings.hero_badge || t("Garment care, home cleaning, and office cleaning")}
+                {heroBadge}
               </div>
 
               {chipUser ? (
@@ -172,10 +204,7 @@ export default async function CareHomePage() {
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68 sm:text-xl">
-                {settings.hero_subtitle ||
-                  t(
-                    "Book garment pickup and return delivery, recurring home cleaning, or office cleaning through one calmer service flow with clear timing, payment follow-up, and live updates.",
-                  )}
+                {heroSubtitle}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">

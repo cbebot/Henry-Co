@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { AppLocale } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getDivisionBrand, type DivisionBrand } from "@/lib/branding";
 import {
@@ -7,6 +8,7 @@ import {
   notificationMessageHref,
   resolveSafeActionUrl,
 } from "@/lib/notification-center";
+import { resolveNotificationPresentation } from "@/lib/notification-localization";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
 import {
   extractLegacyWithdrawalPinHash,
@@ -44,6 +46,16 @@ function resolveNotificationKey(row: Record<string, unknown>) {
     (asText(row.reference_type).startsWith("wallet_") ? "wallet" : null) ||
     "general"
   );
+}
+
+function localizeNotificationRow(row: Record<string, unknown>, locale?: AppLocale) {
+  if (!locale) return row;
+  const localized = resolveNotificationPresentation({ row, locale });
+  return {
+    ...row,
+    title: localized.title,
+    body: localized.body,
+  };
 }
 
 export type EnrichedNotification = Record<string, unknown> & {
@@ -164,17 +176,22 @@ export async function getNotifications(userId: string, limit = 20) {
   );
 }
 
-export async function getNotificationFeed(userId: string, limit = 20): Promise<EnrichedNotification[]> {
+export async function getNotificationFeed(
+  userId: string,
+  limit = 20,
+  locale?: AppLocale,
+): Promise<EnrichedNotification[]> {
   const notifications = (await getNotifications(userId, limit)) as Array<Record<string, unknown>>;
   return Promise.all(
     notifications.map(async (notification) => {
-      const source = await getDivisionBrand(resolveNotificationKey(notification));
+      const localizedNotification = localizeNotificationRow(notification, locale);
+      const source = await getDivisionBrand(resolveNotificationKey(localizedNotification));
       return {
-        ...notification,
+        ...localizedNotification,
         source,
-        message_href: notificationMessageHref(asText(notification.id)),
+        message_href: notificationMessageHref(asText(localizedNotification.id)),
         related_url: await resolveSafeActionUrl(
-          notification.action_url,
+          localizedNotification.action_url,
           source.key,
           source.primaryUrl
         ),
@@ -183,9 +200,9 @@ export async function getNotificationFeed(userId: string, limit = 20): Promise<E
   );
 }
 
-export async function getNotificationBellFeed(userId: string, limit = 8) {
+export async function getNotificationBellFeed(userId: string, limit = 8, locale?: AppLocale) {
   const [items, unreadCount] = await Promise.all([
-    getNotificationFeed(userId, limit),
+    getNotificationFeed(userId, limit, locale),
     getUnreadNotificationCount(userId),
   ]);
 
@@ -536,11 +553,11 @@ export async function getSecurityLog(userId: string, limit = 20) {
   return data || [];
 }
 
-export async function getDashboardSummary(userId: string) {
+export async function getDashboardSummary(userId: string, locale?: AppLocale) {
   const [wallet, activity, notifications, subscriptions, invoices, supportThreads, unreadCount, unreadSupportCount] = await Promise.all([
     getWalletSummary(userId),
     getRecentActivity(userId, 5),
-    getNotificationFeed(userId, 5),
+    getNotificationFeed(userId, 5, locale),
     getSubscriptions(userId),
     getInvoices(userId, 3),
     getSupportThreads(userId),

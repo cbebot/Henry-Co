@@ -4,9 +4,9 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTheme } from "next-themes";
 import { getSharedCookieDomain } from "@henryco/config";
 import {
-  ALL_LOCALES,
   LOCALE_LABELS,
-  normalizeLocale,
+  getUserSelectableLocales,
+  isPublicSelectorLocale,
   isRtlLocale,
   type AppLocale,
   type EcosystemConsentCopy,
@@ -74,6 +74,10 @@ export default function PreferencesClient({
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
+    setLocaleChoice(initialLocale);
+  }, [initialLocale]);
+
+  useEffect(() => {
     try {
       let raw: string | null = null;
       if (typeof window !== "undefined") {
@@ -105,6 +109,7 @@ export default function PreferencesClient({
     if (Number.isNaN(date.getTime())) return consent.updatedAt;
     return `${copy.panel.lastUpdated}: ${formatDate(date, { locale: localeChoice, year: "numeric", month: "short", day: "numeric" })}`;
   }, [consent.updatedAt, copy.panel.lastUpdated, copy.panel.lastUpdatedNever, localeChoice]);
+  const languageOptions = useMemo(() => getUserSelectableLocales(localeChoice), [localeChoice]);
 
   const persistLocale = useCallback(async (locale: AppLocale) => {
     try {
@@ -174,7 +179,7 @@ export default function PreferencesClient({
         </div>
         <p className="mb-4 text-sm text-white/55">{copy.language.hint}</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {ALL_LOCALES.map((code) => {
+          {languageOptions.map((code) => {
             const active = code === localeChoice;
             return (
               <button
@@ -191,6 +196,11 @@ export default function PreferencesClient({
               >
                 <span className="text-sm font-semibold text-white">{LOCALE_LABELS[code].native}</span>
                 <span className="text-xs text-white/45">{LOCALE_LABELS[code].en}</span>
+                {!isPublicSelectorLocale(code) ? (
+                  <span className="mt-2 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-white/58">
+                    Scaffold
+                  </span>
+                ) : null}
                 {active ? (
                   <Check className="absolute top-2.5 end-2.5 h-4 w-4 text-[color:var(--accent,#C9A227)]" />
                 ) : null}

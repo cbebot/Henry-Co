@@ -126,7 +126,7 @@ export default async function SecurityMessageBoardPage({
   const { id } = await params;
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const data = await getSecurityMessageBoard(user.id, id);
+  const data = await getSecurityMessageBoard(user.id, id, locale);
 
   if (!data) {
     notFound();

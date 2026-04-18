@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent } from "@henryco/ui";
 
 type Props = {
@@ -45,6 +47,8 @@ function Toggle({
 }
 
 export default function PreferencesForm({ preferences }: Props) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [prefs, setPrefs] = useState({
     email_marketing: preferences?.email_marketing ?? true,
     email_transactional: preferences?.email_transactional ?? true,
@@ -81,10 +85,10 @@ export default function PreferencesForm({ preferences }: Props) {
       });
 
       if (!res.ok) throw new Error("Failed to save");
-      setMessage({ type: "success", text: "Preferences saved" });
+      setMessage({ type: "success", text: t("Preferences saved") });
       router.refresh();
     } catch {
-      setMessage({ type: "error", text: "Failed to save preferences" });
+      setMessage({ type: "error", text: t("Failed to save preferences") });
     } finally {
       setLoading(false);
     }
@@ -105,44 +109,44 @@ export default function PreferencesForm({ preferences }: Props) {
       )}
 
       <div className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
-        <p className="acct-kicker mb-3">Delivery channels</p>
+        <p className="acct-kicker mb-3">{t("Delivery channels")}</p>
         <p className="mb-3 text-xs leading-5 text-[var(--acct-muted)]">
-          Turn on every channel you want to use — email, in-app, WhatsApp, and SMS can be active at the same time.
+          {t("Turn on every channel you want to use. Email, in-app, WhatsApp, and SMS can all stay active at the same time.")}
         </p>
         <div className="space-y-3">
           <Toggle
-            label="Marketing emails"
-            description="Promotions, new features, and offers"
+            label={t("Marketing emails")}
+            description={t("Promotions, new features, and offers")}
             checked={prefs.email_marketing as boolean}
             onChange={(v) => update("email_marketing", v)}
           />
           <Toggle
-            label="Transaction emails"
-            description="Receipts, confirmations, and alerts"
+            label={t("Transaction emails")}
+            description={t("Receipts, confirmations, and alerts")}
             checked={prefs.email_transactional as boolean}
             onChange={(v) => update("email_transactional", v)}
           />
           <Toggle
-            label="Weekly digest"
-            description="A calmer summary instead of separate message noise"
+            label={t("Weekly digest")}
+            description={t("A calmer summary instead of separate message noise")}
             checked={prefs.email_digest as boolean}
             onChange={(v) => update("email_digest", v)}
           />
           <Toggle
-            label="In-app notifications"
-            description="Notification center and bell activity inside your dashboard"
+            label={t("In-app notifications")}
+            description={t("Notification center and bell activity inside your dashboard")}
             checked={prefs.push_enabled as boolean}
             onChange={(v) => update("push_enabled", v)}
           />
           <Toggle
-            label="WhatsApp updates"
-            description="Important delivery and project movement through WhatsApp where supported"
+            label={t("WhatsApp updates")}
+            description={t("Important delivery and project movement through WhatsApp where supported")}
             checked={prefs.whatsapp_enabled as boolean}
             onChange={(v) => update("whatsapp_enabled", v)}
           />
           <Toggle
-            label="SMS updates"
-            description="Short urgent updates through SMS for time-sensitive flows"
+            label={t("SMS updates")}
+            description={t("Short urgent updates through SMS for time-sensitive flows")}
             checked={prefs.sms_enabled as boolean}
             onChange={(v) => update("sms_enabled", v)}
           />
@@ -150,59 +154,59 @@ export default function PreferencesForm({ preferences }: Props) {
       </div>
 
       <div className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
-        <p className="acct-kicker mb-3">Division sources</p>
+        <p className="acct-kicker mb-3">{t("Division sources")}</p>
         <div className="space-y-3">
           <Toggle
-            label="Care notifications"
-            description="Bookings, tracking, and service status"
+            label={t("Care notifications")}
+            description={t("Bookings, tracking, and service status")}
             checked={prefs.notification_care as boolean}
             onChange={(v) => update("notification_care", v)}
           />
           <Toggle
-            label="Marketplace notifications"
-            description="Orders, seller updates, and disputes"
+            label={t("Marketplace notifications")}
+            description={t("Orders, seller updates, and disputes")}
             checked={prefs.notification_marketplace as boolean}
             onChange={(v) => update("notification_marketplace", v)}
           />
           <Toggle
-            label="Studio notifications"
-            description="Proposal movement, project room updates, and payment steps"
+            label={t("Studio notifications")}
+            description={t("Proposal movement, project room updates, and payment steps")}
             checked={prefs.notification_studio as boolean}
             onChange={(v) => update("notification_studio", v)}
           />
           <Toggle
-            label="Jobs notifications"
-            description="Application movement, recruiter updates, and alerts"
+            label={t("Jobs notifications")}
+            description={t("Application movement, recruiter updates, and alerts")}
             checked={prefs.notification_jobs as boolean}
             onChange={(v) => update("notification_jobs", v)}
           />
           <Toggle
-            label="Learn notifications"
-            description="Course activity, progress, and certification updates"
+            label={t("Learn notifications")}
+            description={t("Course activity, progress, and certification updates")}
             checked={prefs.notification_learn as boolean}
             onChange={(v) => update("notification_learn", v)}
           />
           <Toggle
-            label="Property notifications"
-            description="Inquiries, viewings, and listing progress"
+            label={t("Property notifications")}
+            description={t("Inquiries, viewings, and listing progress")}
             checked={prefs.notification_property as boolean}
             onChange={(v) => update("notification_property", v)}
           />
           <Toggle
-            label="Logistics notifications"
-            description="Shipment movement and delivery updates"
+            label={t("Logistics notifications")}
+            description={t("Shipment movement and delivery updates")}
             checked={prefs.notification_logistics as boolean}
             onChange={(v) => update("notification_logistics", v)}
           />
           <Toggle
-            label="Wallet notifications"
-            description="Funding requests, balance changes, and verification alerts"
+            label={t("Wallet notifications")}
+            description={t("Funding requests, balance changes, and verification alerts")}
             checked={prefs.notification_wallet as boolean}
             onChange={(v) => update("notification_wallet", v)}
           />
           <Toggle
-            label="Security alerts"
-            description="Login attempts and sensitive account changes"
+            label={t("Security alerts")}
+            description={t("Login attempts and sensitive account changes")}
             checked={prefs.notification_security as boolean}
             onChange={(v) => update("notification_security", v)}
           />
@@ -210,8 +214,8 @@ export default function PreferencesForm({ preferences }: Props) {
       </div>
 
       <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">
-        <ButtonPendingContent pending={loading} pendingLabel="Saving preferences..." spinnerLabel="Saving preferences">
-          Save preferences
+        <ButtonPendingContent pending={loading} pendingLabel={t("Saving preferences...")} spinnerLabel={t("Saving preferences...")}>
+          {t("Save preferences")}
         </ButtonPendingContent>
       </button>
     </form>

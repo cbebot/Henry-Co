@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function NotificationsPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const notifications = await getNotificationFeed(user.id, 50);
+  const notifications = await getNotificationFeed(user.id, 50, locale);
 
   return (
     <div className="space-y-6 acct-fade-in">

@@ -52,6 +52,25 @@ export function isPublicSelectorLocale(locale: AppLocale): boolean {
   return PUBLIC_SELECTOR_LOCALES.includes(locale);
 }
 
+export function isScaffoldLocale(locale: AppLocale): boolean {
+  return INTERNAL_SCAFFOLD_LOCALES.includes(locale);
+}
+
+/**
+ * Public-facing selectors should expose the final public locale policy while
+ * still preserving any already-saved scaffold locale as an explicit option.
+ */
+export function getUserSelectableLocales(
+  ...preservedLocales: Array<AppLocale | null | undefined>
+): AppLocale[] {
+  const extras = preservedLocales.filter(
+    (locale): locale is AppLocale =>
+      Boolean(locale && isAppLocale(locale) && isScaffoldLocale(locale)),
+  );
+
+  return Array.from(new Set<AppLocale>([...PUBLIC_SELECTOR_LOCALES, ...extras]));
+}
+
 export function normalizeLocale(value: string | null | undefined): AppLocale {
   const trimmed = String(value || "").trim().toLowerCase();
   const base = trimmed.split("-")[0] || "";

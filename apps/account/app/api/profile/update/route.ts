@@ -1,11 +1,23 @@
 import { NextResponse } from "next/server";
 import { buildLocaleCookieOptions, normalizeLocale } from "@henryco/i18n/server";
 import { DEFAULT_COUNTRY, getCountry } from "@henryco/i18n";
+import { normalizePhone } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { USER_FACING_SAVE, logApiError } from "@/lib/user-facing-error";
-import { normalizePhone } from "@henryco/config";
+
+type ProfileUpdateBody = {
+  full_name?: string | null;
+  phone?: string | null;
+  country?: string | null;
+  contact_preference?: string | null;
+  language?: string | null;
+};
+
+function hasOwn(body: ProfileUpdateBody, key: keyof ProfileUpdateBody) {
+  return Object.prototype.hasOwnProperty.call(body, key);
+}
 
 export async function POST(request: Request) {
   try {
@@ -17,64 +29,114 @@ export async function POST(request: Request) {
 
     await ensureAccountProfileRecords(user);
 
-    const { full_name, phone, country, contact_preference, language } = await request.json();
-    const normalizedCountry =
-      String(country || "").trim().toUpperCase() || DEFAULT_COUNTRY;
-    const region = getCountry(normalizedCountry) || getCountry(DEFAULT_COUNTRY)!;
-    const normalizedLanguage = language ? normalizeLocale(language) : normalizeLocale(region.locale);
-
+    const body = (await request.json()) as ProfileUpdateBody;
     const admin = createAdminSupabase();
+
+    const { data: currentProfile, error: profileError } = await admin
+      .from("customer_profiles")
+      .select("full_name, phone, country, contact_preference, language, currency, timezone")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      logApiError("profile/update:load-current", profileError);
+      return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    }
+
+    const currentCountry =
+      String(currentProfile?.country || user.user_metadata?.country || DEFAULT_COUNTRY).trim().toUpperCase() ||
+      DEFAULT_COUNTRY;
+    const nextCountry = hasOwn(body, "country")
+      ? String(body.country || "").trim().toUpperCase() || currentCountry
+      : currentCountry;
+    const resolvedCountry = getCountry(nextCountry) || getCountry(currentCountry) || getCountry(DEFAULT_COUNTRY)!;
+
+    const currentLanguage =
+      typeof currentProfile?.language === "string" && currentProfile.language.trim()
+        ? currentProfile.language
+        : typeof user.user_metadata?.language === "string" && user.user_metadata.language.trim()
+          ? user.user_metadata.language
+          : normalizeLocale(resolvedCountry.locale);
+    const nextLanguage = hasOwn(body, "language")
+      ? normalizeLocale(body.language)
+      : normalizeLocale(currentLanguage);
+
+    const now = new Date().toISOString();
     const updates: Record<string, unknown> = {
-      full_name: full_name || null,
-      phone: normalizePhone(phone || null),
+      id: user.id,
       email: user.email || null,
-      country: normalizedCountry,
-      currency: region.currencyCode,
-      timezone: region.timezone,
-      updated_at: new Date().toISOString(),
-      last_seen_at: new Date().toISOString(),
+      updated_at: now,
+      last_seen_at: now,
     };
-    if (contact_preference) updates.contact_preference = contact_preference;
-    updates.language = normalizedLanguage;
+
+    if (hasOwn(body, "full_name")) {
+      updates.full_name = body.full_name?.trim() || null;
+    }
+
+    if (hasOwn(body, "phone")) {
+      updates.phone = normalizePhone(body.phone || null);
+    }
+
+    if (hasOwn(body, "contact_preference")) {
+      updates.contact_preference = body.contact_preference?.trim() || null;
+    }
+
+    if (hasOwn(body, "country")) {
+      updates.country = resolvedCountry.code;
+      updates.currency = resolvedCountry.currencyCode;
+      updates.timezone = resolvedCountry.timezone;
+    }
+
+    if (hasOwn(body, "language")) {
+      updates.language = nextLanguage;
+    }
 
     const { error } = await admin
       .from("customer_profiles")
-      .upsert({ id: user.id, ...updates }, { onConflict: "id" });
+      .upsert(updates, { onConflict: "id" });
 
     if (error) {
       logApiError("profile/update", error);
       return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
     }
+
     const metadataPatch: Record<string, unknown> = {};
-    if (full_name) metadataPatch.full_name = full_name;
-    metadataPatch.country = normalizedCountry;
-    if (contact_preference) metadataPatch.contact_preference = contact_preference;
-    metadataPatch.language = normalizedLanguage;
-    metadataPatch.currency = region.currencyCode;
-    metadataPatch.timezone = region.timezone;
+    if (hasOwn(body, "full_name") && body.full_name?.trim()) metadataPatch.full_name = body.full_name.trim();
+    if (hasOwn(body, "contact_preference")) metadataPatch.contact_preference = body.contact_preference?.trim() || null;
+    if (hasOwn(body, "country")) {
+      metadataPatch.country = resolvedCountry.code;
+      metadataPatch.currency = resolvedCountry.currencyCode;
+      metadataPatch.timezone = resolvedCountry.timezone;
+    }
+    if (hasOwn(body, "language")) metadataPatch.language = nextLanguage;
+
     if (Object.keys(metadataPatch).length > 0) {
       await admin.auth.admin.updateUserById(user.id, {
         user_metadata: { ...(user.user_metadata || {}), ...metadataPatch },
       });
     }
 
-    const res = NextResponse.json({ success: true });
-    if (language || country) {
+    const response = NextResponse.json({
+      success: true,
+      language: hasOwn(body, "language") ? nextLanguage : currentLanguage,
+      country: hasOwn(body, "country") ? resolvedCountry.code : currentCountry,
+    });
+
+    if (hasOwn(body, "language")) {
       const host =
         request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
         request.headers.get("host") ||
         "";
-      const loc = normalizedLanguage;
-      const o = buildLocaleCookieOptions(loc, host);
-      res.cookies.set(o.name, o.value, {
-        path: o.path,
-        maxAge: o.maxAge,
-        sameSite: o.sameSite,
-        ...(o.domain ? { domain: o.domain } : {}),
+      const localeCookie = buildLocaleCookieOptions(nextLanguage, host);
+      response.cookies.set(localeCookie.name, localeCookie.value, {
+        path: localeCookie.path,
+        maxAge: localeCookie.maxAge,
+        sameSite: localeCookie.sameSite,
+        ...(localeCookie.domain ? { domain: localeCookie.domain } : {}),
       });
     }
 
-    return res;
+    return response;
   } catch (error) {
     logApiError("profile/update", error);
     return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });

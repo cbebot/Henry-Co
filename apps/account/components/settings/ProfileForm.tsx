@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { formatSurfaceTemplate, getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent, HenryCoActivityIndicator } from "@henryco/ui";
 import {
-  ALL_LOCALES,
-  LOCALE_LABELS,
   getActiveCountries,
   getCountry,
+  getLocaleDisplayLabel,
+  getUserSelectableLocales,
+  isPublicSelectorLocale,
   normalizeLocale,
   type AppLocale,
 } from "@henryco/i18n";
@@ -19,12 +22,7 @@ const COUNTRIES = getActiveCountries().map((country) => ({
   name: country.name,
   currency: country.currencyCode,
   timezone: country.timezone,
-  locale: country.locale,
-}));
-
-const LANGUAGES = ALL_LOCALES.map((locale) => ({
-  value: locale,
-  label: `${LOCALE_LABELS[locale].native} (${LOCALE_LABELS[locale].en})`,
+  availability: country.availability,
 }));
 
 const CONTACT_PREFS = [
@@ -37,14 +35,20 @@ const CONTACT_PREFS = [
 type Props = {
   profile: Record<string, string | null> | null;
   email: string | null;
+  effectiveLocale: AppLocale;
 };
 
-export default function ProfileForm({ profile, email }: Props) {
+export default function ProfileForm({ profile, email, effectiveLocale }: Props) {
+  const locale = useHenryCoLocale();
+  const surfaceCopy = getSurfaceCopy(locale);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const profileLanguage = profile?.language ? normalizeLocale(profile.language) : null;
+  const currentLanguage = normalizeLocale(effectiveLocale);
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [phone, setPhone] = useState(profile?.phone || "");
   const [country, setCountry] = useState(profile?.country || "NG");
   const [contactPref, setContactPref] = useState(profile?.contact_preference || "email");
-  const [language, setLanguage] = useState(normalizeLocale(profile?.language || "en"));
+  const [language, setLanguage] = useState(profileLanguage || currentLanguage);
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -52,6 +56,74 @@ export default function ProfileForm({ profile, email }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const selectedCountry = getCountry(country) || getCountry("NG")!;
+  const selectedAvailability = selectedCountry.availability;
+  const languageOptions = getUserSelectableLocales(currentLanguage, profileLanguage).map((localeOption) => ({
+    value: localeOption,
+    label: isPublicSelectorLocale(localeOption)
+      ? getLocaleDisplayLabel(localeOption)
+      : `${getLocaleDisplayLabel(localeOption)} - Scaffold`,
+  }));
+
+  useEffect(() => {
+    setFullName(profile?.full_name || "");
+    setPhone(profile?.phone || "");
+    setCountry(profile?.country || "NG");
+    setContactPref(profile?.contact_preference || "email");
+    setLanguage(profileLanguage || currentLanguage);
+    setAvatarUrl(profile?.avatar_url || "");
+  }, [
+    currentLanguage,
+    profile?.avatar_url,
+    profile?.contact_preference,
+    profile?.country,
+    profile?.full_name,
+    profile?.phone,
+    profileLanguage,
+  ]);
+
+  function localizeProfileError(message: string) {
+    switch (message) {
+      case "Unauthorized":
+        return t("Please sign in to continue.");
+      case "Upload failed":
+      case "No file provided":
+        return t("Upload failed");
+      case "We couldn’t save your changes. Please try again.":
+      case "We couldn't save your changes. Please try again.":
+        return t("We couldn’t save your changes. Please try again.");
+      default:
+        return t(message);
+    }
+  }
+
+  const availabilityLabel =
+    selectedAvailability === "active"
+      ? t("Active")
+      : selectedAvailability === "limited"
+        ? t("Limited")
+        : selectedAvailability === "coming_soon"
+          ? t("Coming soon")
+          : selectedAvailability === "language_only"
+            ? t("Language only")
+            : t("Unavailable");
+
+  const availabilityNotes =
+    selectedAvailability === "active"
+      ? [t("Services may vary by region.")]
+      : selectedAvailability === "limited"
+        ? [
+            t("Services may vary by region."),
+            t("Some HenryCo divisions are not yet available in this country."),
+          ]
+        : selectedAvailability === "coming_soon"
+          ? [
+              t("Some HenryCo divisions are not yet available in this country."),
+              t("Language preference does not guarantee local service availability."),
+            ]
+          : [
+              t("Language preference does not guarantee local service availability."),
+              t("Some HenryCo divisions are not yet available in this country."),
+            ];
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -67,10 +139,13 @@ export default function ProfileForm({ profile, email }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload failed");
       setAvatarUrl(data.avatar_url);
-      setMessage({ type: "success", text: "Photo updated" });
+      setMessage({ type: "success", text: t("Photo updated") });
       router.refresh();
     } catch (err: unknown) {
-      setMessage({ type: "error", text: err instanceof Error ? err.message : "Upload failed" });
+      setMessage({
+        type: "error",
+        text: err instanceof Error ? localizeProfileError(err.message) : t("Upload failed"),
+      });
     } finally {
       setUploading(false);
     }
@@ -95,12 +170,18 @@ export default function ProfileForm({ profile, email }: Props) {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update");
+      if (!res.ok) throw new Error(data.error || "We couldn’t save your changes. Please try again.");
 
-      setMessage({ type: "success", text: "Profile updated" });
+      setMessage({ type: "success", text: t("Profile updated") });
       router.refresh();
     } catch (err: unknown) {
-      setMessage({ type: "error", text: err instanceof Error ? err.message : "Something went wrong" });
+      setMessage({
+        type: "error",
+        text:
+          err instanceof Error
+            ? localizeProfileError(err.message)
+            : t("We couldn’t save your changes. Please try again."),
+      });
     } finally {
       setLoading(false);
     }
@@ -135,7 +216,7 @@ export default function ProfileForm({ profile, email }: Props) {
             disabled={uploading}
             className="absolute -bottom-1.5 -right-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--acct-gold)] text-white shadow-lg transition-transform hover:scale-110"
           >
-            {uploading ? <HenryCoActivityIndicator size="sm" label="Uploading photo" /> : <Camera size={14} />}
+            {uploading ? <HenryCoActivityIndicator size="sm" label={t("Uploading photo")} /> : <Camera size={14} />}
           </button>
           <input
             ref={fileRef}
@@ -146,31 +227,31 @@ export default function ProfileForm({ profile, email }: Props) {
           />
         </div>
         <div>
-          <p className="text-sm font-medium text-[var(--acct-ink)]">Profile photo</p>
-          <p className="text-xs text-[var(--acct-muted)]">JPG, PNG or WebP. Max 5 MB.</p>
+          <p className="text-sm font-medium text-[var(--acct-ink)]">{t("Profile photo")}</p>
+          <p className="text-xs text-[var(--acct-muted)]">{t("JPG, PNG or WebP. Max 5 MB.")}</p>
         </div>
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium">Email</label>
+        <label className="mb-1.5 block text-sm font-medium">{t("Email")}</label>
         <input type="email" value={email || ""} disabled className="acct-input opacity-60" />
-        <p className="mt-1 text-xs text-[var(--acct-muted)]">Contact support to change your email</p>
+        <p className="mt-1 text-xs text-[var(--acct-muted)]">{t("Contact support to change your email")}</p>
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium">Full name</label>
+        <label className="mb-1.5 block text-sm font-medium">{t("Full name")}</label>
         <input
           type="text"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           className="acct-input"
-          placeholder="Your full name"
+          placeholder={t("Your full name")}
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Country</label>
+          <label className="mb-1.5 block text-sm font-medium">{surfaceCopy.accountForms.countryLabel}</label>
           <select value={country} onChange={(e) => setCountry(e.target.value)} className="acct-select">
             {COUNTRIES.map((c) => (
               <option key={c.code} value={c.code}>{c.name}</option>
@@ -178,7 +259,7 @@ export default function ProfileForm({ profile, email }: Props) {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Phone</label>
+          <label className="mb-1.5 block text-sm font-medium">{surfaceCopy.accountForms.phoneLabel}</label>
           <input
             type="tel"
             value={phone}
@@ -190,30 +271,41 @@ export default function ProfileForm({ profile, email }: Props) {
       </div>
 
       <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
-        <span className="font-semibold text-[var(--acct-ink)]">Regional defaults:</span>{" "}
+        <span className="font-semibold text-[var(--acct-ink)]">{t("Regional defaults")}:</span>{" "}
         {selectedCountry.name} · {selectedCountry.currencyCode} display · {selectedCountry.timezone}.
         {selectedCountry.currencyCode === "NGN"
-          ? " Wallet settlement also runs in NGN."
-          : " Wallet settlement still runs in NGN until local settlement rails are enabled."}
+          ? ` ${t("Wallet settlement also runs in NGN.")}`
+          : ` ${formatSurfaceTemplate(surfaceCopy.accountForms.regionalDefaultsNgnOnly, {
+              currency: selectedCountry.currencyCode,
+            })}`}
+      </div>
+
+      <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
+        <span className="font-semibold text-[var(--acct-ink)]">{t("Service availability")}:</span>{" "}
+        {availabilityLabel}. {availabilityNotes.join(" ")}
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium">Language</label>
+        <label className="mb-1.5 block text-sm font-medium">{t("Language")}</label>
         <select
           value={language}
           onChange={(e) => setLanguage(normalizeLocale(e.target.value) as AppLocale)}
+          dir="auto"
           className="acct-select"
         >
-          {LANGUAGES.map((languageOption) => (
-            <option key={languageOption.value} value={languageOption.value}>
+          {languageOptions.map((languageOption) => (
+            <option key={languageOption.value} value={languageOption.value} dir="auto">
               {languageOption.label}
             </option>
           ))}
         </select>
+        <p className="mt-1 text-xs text-[var(--acct-muted)]">
+          {t("Language preference does not guarantee local service availability.")}
+        </p>
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium">Preferred contact method</label>
+        <label className="mb-2 block text-sm font-medium">{surfaceCopy.accountForms.preferredContactLabel}</label>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {CONTACT_PREFS.map((pref) => (
             <button
@@ -226,15 +318,15 @@ export default function ProfileForm({ profile, email }: Props) {
                   : "border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)] hover:border-[var(--acct-gold)]/40"
               }`}
             >
-              {pref.label}
+              {t(pref.label)}
             </button>
           ))}
         </div>
       </div>
 
       <button type="submit" disabled={loading} className="acct-button-primary rounded-xl">
-        <ButtonPendingContent pending={loading} pendingLabel="Saving profile..." spinnerLabel="Saving profile">
-          Save changes
+        <ButtonPendingContent pending={loading} pendingLabel={t("Saving profile...")} spinnerLabel={t("Saving profile...")}>
+          {t("Save changes")}
         </ButtonPendingContent>
       </button>
     </form>

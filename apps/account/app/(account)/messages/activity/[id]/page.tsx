@@ -32,7 +32,7 @@ export default async function ActivityMessageBoardPage({
   const { id } = await params;
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const data = await getActivityMessageBoard(user.id, id);
+  const data = await getActivityMessageBoard(user.id, id, locale);
 
   if (!data) {
     notFound();

@@ -17,7 +17,7 @@ export default async function TasksPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const copy = getAccountCopy(locale);
   const [data, funding, trust, supportThreads] = await Promise.all([
-    getDashboardSummary(user.id),
+    getDashboardSummary(user.id, locale),
     getWalletFundingContext(user.id),
     getAccountTrustProfile(user.id),
     getSupportThreads(user.id),

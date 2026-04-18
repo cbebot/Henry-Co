@@ -38,8 +38,8 @@ function localeFromCountry(country: string | null | undefined): AppLocale | null
 
 /**
  * Single resolution order for the ecosystem:
- * 1. Authenticated saved language (caller supplies from profile)
- * 2. Guest cookie `henryco_locale`
+ * 1. Explicit locale cookie `henryco_locale`
+ * 2. Authenticated saved language (caller supplies from profile)
  * 3. Accept-Language
  * 4. Country / region hint (non-invasive, from CDN headers)
  * 5. Platform default (`en`)
@@ -50,14 +50,14 @@ export function resolveLocaleOrder(input: {
   acceptLanguage?: string | null;
   country?: string | null;
 }): AppLocale {
-  const saved = input.savedLanguage?.trim();
-  if (saved && isAppLocale(normalizeLocale(saved))) {
-    return normalizeLocale(saved);
-  }
-
   const cookie = input.cookieLocale?.trim();
   if (cookie && isAppLocale(normalizeLocale(cookie))) {
     return normalizeLocale(cookie);
+  }
+
+  const saved = input.savedLanguage?.trim();
+  if (saved && isAppLocale(normalizeLocale(saved))) {
+    return normalizeLocale(saved);
   }
 
   const fromAL = localeFromAcceptLanguage(input.acceptLanguage || null);

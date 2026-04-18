@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { AlertTriangle, CheckCircle2, Mail, X, XCircle } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -21,6 +22,20 @@ type CareToastItem = CareToastInput & {
 
 const TOAST_EVENT = "care:toast";
 const URL_TOAST_KEYS = ["ok", "error", "warn", "message", "info"] as const;
+const DISMISS_TOAST_LABELS: Record<AppLocale, string> = {
+  en: "Dismiss notification",
+  fr: "Fermer la notification",
+  es: "Cerrar la notificacion",
+  pt: "Fechar notificacao",
+  ar: "إغلاق الإشعار",
+  de: "Benachrichtigung schliessen",
+  it: "Chiudi notifica",
+  ig: "Mechie ozi a",
+  yo: "Pa ifitonileti yii",
+  ha: "Rufe wannan sanarwar",
+  zh: "关闭通知",
+  hi: "सूचना बंद करें",
+};
 
 function randomToastId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -113,12 +128,15 @@ export function emitCareToast(input: CareToastInput) {
   );
 }
 
-export default function CareToaster() {
+export default function CareToaster({ locale = "en" }: { locale?: AppLocale }) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [items, setItems] = useState<CareToastItem[]>([]);
   const consumedUrlSignature = useRef<string>("");
+  const dismissLabel =
+    DISMISS_TOAST_LABELS[locale] ||
+    translateSurfaceLabel(locale, "Dismiss notification");
 
   useEffect(() => {
     function onToast(event: Event) {
@@ -209,7 +227,7 @@ export default function CareToaster() {
                       setItems((current) => current.filter((entry) => entry.id !== item.id))
                     }
                     className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white/68 transition hover:bg-white/[0.10] hover:text-white"
-                    aria-label="Dismiss notification"
+                    aria-label={dismissLabel}
                   >
                     <X className="h-4 w-4" />
                   </button>

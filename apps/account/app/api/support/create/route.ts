@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import {
   mapAccountSupportCategoryToDivision,
 } from "@henryco/config";
+import { LOCALE_COOKIE, normalizeLocale } from "@henryco/i18n/server";
 import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
+import { buildNotificationLocalization } from "@/lib/notification-localization";
 import { mirrorCareSupportThreadOpened } from "@/lib/support-sync";
 import { cookies } from "next/headers";
 import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
@@ -56,9 +58,15 @@ export async function POST(request: Request) {
 
     const { data: customerProfile } = await admin
       .from("customer_profiles")
-      .select("full_name, phone")
+      .select("full_name, phone, language")
       .eq("id", user.id)
       .maybeSingle();
+    const notificationLocale = normalizeLocale(
+      cookieStore.get(LOCALE_COOKIE)?.value ||
+        cleanText(customerProfile?.language) ||
+        cleanText(user.user_metadata?.language) ||
+        "en",
+    );
 
     // Create thread
     const { data: thread, error: threadErr } = await admin
@@ -147,6 +155,13 @@ export async function POST(request: Request) {
       detail_payload: {
         triage_intent: triage.intent,
         triage_confidence: triage.confidence,
+        localization: buildNotificationLocalization({
+          key: "support.request.created",
+          locale: notificationLocale,
+          params: { subject: cleanText(subject) },
+          renderedTitle: "Support request created",
+          renderedBody: `Your request "${subject}" has been submitted. We'll get back to you soon.`,
+        }),
       },
     });
     if (notificationErr) sideEffectFailures.push("notification");

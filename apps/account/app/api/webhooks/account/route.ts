@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
+import { normalizeLocale } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendAccountEmail } from "@/lib/email/send";
 import { welcomeEmail, securityAlertEmail, walletFundedEmail } from "@/lib/email/templates";
+import { buildNotificationLocalization } from "@/lib/notification-localization";
 import { logSecurityEvent } from "@/lib/security-events";
 import { qualifyReferralsByReferee } from "@/lib/referral-data";
 
@@ -126,23 +128,28 @@ export async function POST(request: Request) {
     // Get user profile for email
     const { data: profile } = await admin
       .from("customer_profiles")
-      .select("full_name, email")
+      .select("full_name, email, language")
       .eq("id", userId)
       .maybeSingle();
 
     const email = profile?.email;
     const name = profile?.full_name || "";
+    const preferredLocale = normalizeLocale(clean(payload.locale) || profile?.language || "en");
 
     switch (eventName) {
       case "account.welcome": {
-        if (email) await sendAccountEmail(email, welcomeEmail(name));
+        if (email) await sendAccountEmail(email, welcomeEmail(name, preferredLocale));
         break;
       }
       case "security.alert": {
         if (email) {
           await sendAccountEmail(
             email,
-            securityAlertEmail(clean(payload.event_name) || "Security event", clean(payload.details) || "")
+            securityAlertEmail(
+              clean(payload.event_name) || "Security event",
+              clean(payload.details) || "",
+              preferredLocale,
+            )
           );
         }
         await logSecurityEvent({
@@ -165,7 +172,12 @@ export async function POST(request: Request) {
         if (email) {
           await sendAccountEmail(
             email,
-            walletFundedEmail(name, asNumber(payload.amount_naira), asNumber(payload.new_balance_naira))
+            walletFundedEmail(
+              name,
+              asNumber(payload.amount_naira),
+              asNumber(payload.new_balance_naira),
+              preferredLocale,
+            )
           );
         }
         break;
@@ -186,14 +198,32 @@ export async function POST(request: Request) {
         break;
       }
       case "notification.send": {
+        const fallbackTitle = clean(payload.title) || "Notification";
+        const fallbackBody = clean(payload.body) || "";
+        const messageKey = clean(payload.message_key);
+        const detailPayload = asObject(payload.detail_payload);
         await admin.from("customer_notifications").insert({
           user_id: userId,
-          title: clean(payload.title) || "Notification",
-          body: clean(payload.body) || "",
+          title: fallbackTitle,
+          body: fallbackBody,
           category: clean(payload.category) || "general",
           priority: clean(payload.priority) || "normal",
           action_url: clean(payload.action_url) || null,
           division: clean(payload.division) || null,
+          detail_payload: {
+            ...detailPayload,
+            ...(messageKey
+              ? {
+                  localization: buildNotificationLocalization({
+                    key: messageKey,
+                    locale: preferredLocale,
+                    params: asObject(payload.message_params),
+                    renderedTitle: fallbackTitle,
+                    renderedBody: fallbackBody,
+                  }),
+                }
+              : {}),
+          },
         });
         break;
       }

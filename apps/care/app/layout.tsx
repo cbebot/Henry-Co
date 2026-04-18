@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { isRtlLocale } from "@henryco/i18n/server";
+import {
+  isRtlLocale,
+  resolveLocalizedDynamicField,
+  translateSurfaceLabel,
+} from "@henryco/i18n/server";
 import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
@@ -8,11 +12,26 @@ import { getCareSettings } from "@/lib/care-data";
 import { getCarePublicLocale } from "@/lib/locale-server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getCareSettings();
-  const title = settings.hero_title || "Henry & Co. Care";
-  const description =
-    settings.hero_subtitle ||
-    "Garment care, home cleaning, and workplace upkeep with clearer booking, steadier tracking, and calmer support.";
+  const [settings, locale] = await Promise.all([getCareSettings(), getCarePublicLocale()]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const [title, description] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "hero_title",
+      locale,
+      fallback: "Henry & Co. Care",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "hero_subtitle",
+      locale,
+      fallback: t(
+        "Garment care, home cleaning, and workplace upkeep with clearer booking, steadier tracking, and calmer support.",
+      ),
+      machineTranslate: locale !== "en",
+    }),
+  ]);
 
   return {
     title,
@@ -34,7 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       >
         <PublicThemeGuard>
           <Suspense fallback={null}>
-            <CareToaster />
+            <CareToaster locale={lang} />
           </Suspense>
           {children}
         </PublicThemeGuard>

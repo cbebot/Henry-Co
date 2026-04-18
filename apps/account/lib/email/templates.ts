@@ -1,14 +1,242 @@
 // HenryCo Account Email Templates
 // All templates return plain HTML strings for Resend
 
+import type { AppLocale } from "@henryco/i18n";
+
 const BRAND_COLOR = "#C9A227";
 const BG_COLOR = "#FAFAF8";
 const DARK_TEXT = "#1A1814";
 const MUTED_TEXT = "#6B6560";
 
-function layout(content: string) {
+function getNumberLocale(locale: AppLocale) {
+  if (locale === "fr") return "fr-FR";
+  if (locale === "es") return "es-ES";
+  if (locale === "pt") return "pt-PT";
+  if (locale === "ar") return "ar-EG";
+  if (locale === "de") return "de-DE";
+  if (locale === "it") return "it-IT";
+  return "en-NG";
+}
+
+function formatNaira(value: number, locale: AppLocale) {
+  return value.toLocaleString(getNumberLocale(locale));
+}
+
+function getEmailCopy(locale: AppLocale) {
+  if (locale === "fr") {
+    return {
+      footerManage: "Gerer le compte",
+      footerReason: "Vous recevez ceci parce que vous avez un compte HenryCo.",
+      welcomeSubject: "Bienvenue chez HenryCo",
+      welcomeTitle: (name: string) => `Bienvenue chez Henry & Co., ${name || "vous"} !`,
+      welcomeIntro: "Votre compte HenryCo unifie est pret. Depuis ici, vous pouvez tout gerer sur Care, Marketplace, Studio et les autres services.",
+      welcomeListIntro: "Voici ce que vous pouvez faire :",
+      welcomeList: [
+        "Approvisionner votre portefeuille HenryCo pour des paiements rapides",
+        "Suivre les commandes, reservations et projets",
+        "Gerer vos adresses et moyens de paiement",
+        "Obtenir un support unifie sur tous les services",
+      ],
+      welcomeButton: "Ouvrir votre tableau de bord",
+      securitySubject: (event: string) => `Alerte securite : ${event}`,
+      securityTitle: "Alerte securite",
+      securityIntro: "Nous avons detecte un evenement de securite sur votre compte HenryCo :",
+      securityEvent: "Evenement",
+      securityAction: "Si ce n'etait pas vous, changez votre mot de passe immediatement et contactez le support.",
+      securityButton: "Verifier la securite",
+      walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} ajoutes a votre portefeuille`,
+      walletTitle: "Portefeuille approvisionne",
+      walletIntro: (name: string) => `Bonjour ${name || "vous"}, des fonds ont ete ajoutes a votre portefeuille HenryCo.`,
+      walletAmount: "Montant ajoute",
+      walletBalance: "Nouveau solde",
+      walletButton: "Voir le portefeuille",
+    };
+  }
+
+  if (locale === "es") {
+    return {
+      footerManage: "Gestionar cuenta",
+      footerReason: "Recibes esto porque tienes una cuenta con HenryCo.",
+      welcomeSubject: "Bienvenido a HenryCo",
+      welcomeTitle: (name: string) => `Bienvenido a Henry & Co., ${name || "alli"}!`,
+      welcomeIntro: "Tu cuenta unificada de HenryCo ya esta lista. Desde aqui puedes gestionar Care, Marketplace, Studio y mas.",
+      welcomeListIntro: "Esto es lo que puedes hacer:",
+      welcomeList: [
+        "Recargar tu billetera HenryCo para pagos rapidos",
+        "Seguir pedidos, reservas y proyectos",
+        "Gestionar direcciones y metodos de pago",
+        "Recibir soporte unificado en todos los servicios",
+      ],
+      welcomeButton: "Ir al panel",
+      securitySubject: (event: string) => `Alerta de seguridad: ${event}`,
+      securityTitle: "Alerta de seguridad",
+      securityIntro: "Detectamos un evento de seguridad en tu cuenta HenryCo:",
+      securityEvent: "Evento",
+      securityAction: "Si no fuiste tu, cambia tu contrasena de inmediato y contacta con soporte.",
+      securityButton: "Revisar seguridad",
+      walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} agregados a tu billetera`,
+      walletTitle: "Billetera recargada",
+      walletIntro: (name: string) => `Hola ${name || "alli"}, se agrego dinero a tu billetera HenryCo.`,
+      walletAmount: "Monto agregado",
+      walletBalance: "Nuevo saldo",
+      walletButton: "Ver billetera",
+    };
+  }
+
+  if (locale === "pt") {
+    return {
+      footerManage: "Gerir conta",
+      footerReason: "Recebeu isto porque tem uma conta HenryCo.",
+      welcomeSubject: "Bem-vindo a HenryCo",
+      welcomeTitle: (name: string) => `Bem-vindo a Henry & Co., ${name || "voce"}!`,
+      welcomeIntro: "A sua conta unificada HenryCo esta pronta. A partir daqui pode gerir Care, Marketplace, Studio e muito mais.",
+      welcomeListIntro: "Veja o que pode fazer:",
+      welcomeList: [
+        "Carregar a carteira HenryCo para pagamentos rapidos",
+        "Acompanhar pedidos, reservas e projetos",
+        "Gerir moradas e metodos de pagamento",
+        "Receber suporte unificado em todos os servicos",
+      ],
+      welcomeButton: "Ir para o painel",
+      securitySubject: (event: string) => `Alerta de seguranca: ${event}`,
+      securityTitle: "Alerta de seguranca",
+      securityIntro: "Detetamos um evento de seguranca na sua conta HenryCo:",
+      securityEvent: "Evento",
+      securityAction: "Se nao foi voce, altere a sua palavra-passe imediatamente e contacte o suporte.",
+      securityButton: "Rever seguranca",
+      walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} adicionados a sua carteira`,
+      walletTitle: "Carteira carregada",
+      walletIntro: (name: string) => `Ola ${name || "voce"}, foi adicionado dinheiro a sua carteira HenryCo.`,
+      walletAmount: "Montante adicionado",
+      walletBalance: "Novo saldo",
+      walletButton: "Ver carteira",
+    };
+  }
+
+  if (locale === "ar") {
+    return {
+      footerManage: "إدارة الحساب",
+      footerReason: "وصلتك هذه الرسالة لأن لديك حسابًا لدى HenryCo.",
+      welcomeSubject: "مرحبًا بك في HenryCo",
+      welcomeTitle: (name: string) => `مرحبًا بك في Henry & Co.، ${name || "هناك"}!`,
+      welcomeIntro: "حسابك الموحد في HenryCo جاهز الآن. من هنا يمكنك إدارة Care وMarketplace وStudio والمزيد.",
+      welcomeListIntro: "يمكنك الآن القيام بما يلي:",
+      welcomeList: [
+        "تمويل محفظة HenryCo لمدفوعات أسرع",
+        "متابعة الطلبات والحجوزات والمشاريع",
+        "إدارة العناوين ووسائل الدفع",
+        "الحصول على دعم موحد عبر كل الخدمات",
+      ],
+      welcomeButton: "الذهاب إلى لوحتك",
+      securitySubject: (event: string) => `تنبيه أمني: ${event}`,
+      securityTitle: "تنبيه أمني",
+      securityIntro: "رصدنا حدثًا أمنيًا على حسابك في HenryCo:",
+      securityEvent: "الحدث",
+      securityAction: "إذا لم تكن أنت، فغيّر كلمة المرور فورًا وتواصل مع الدعم.",
+      securityButton: "مراجعة الأمان",
+      walletSubject: (amount: number) => `تمت إضافة NGN ${formatNaira(amount, locale)} إلى محفظتك`,
+      walletTitle: "تم تمويل المحفظة",
+      walletIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت إضافة أموال إلى محفظة HenryCo الخاصة بك.`,
+      walletAmount: "المبلغ المضاف",
+      walletBalance: "الرصيد الجديد",
+      walletButton: "عرض المحفظة",
+    };
+  }
+
+  if (locale === "de") {
+    return {
+      footerManage: "Konto verwalten",
+      footerReason: "Sie erhalten diese Nachricht, weil Sie ein HenryCo-Konto besitzen.",
+      welcomeSubject: "Willkommen bei HenryCo",
+      welcomeTitle: (name: string) => `Willkommen bei Henry & Co., ${name || "da"}!`,
+      welcomeIntro: "Ihr einheitliches HenryCo-Konto ist bereit. Von hier aus verwalten Sie Care, Marketplace, Studio und mehr.",
+      welcomeListIntro: "Das koennen Sie jetzt tun:",
+      welcomeList: [
+        "Ihre HenryCo Wallet fuer schnelle Zahlungen aufladen",
+        "Bestellungen, Buchungen und Projekte verfolgen",
+        "Adressen und Zahlungsmethoden verwalten",
+        "Einheitlichen Support ueber alle Services erhalten",
+      ],
+      welcomeButton: "Zum Dashboard",
+      securitySubject: (event: string) => `Sicherheitswarnung: ${event}`,
+      securityTitle: "Sicherheitswarnung",
+      securityIntro: "Wir haben ein Sicherheitsereignis in Ihrem HenryCo-Konto erkannt:",
+      securityEvent: "Ereignis",
+      securityAction: "Wenn Sie das nicht waren, aendern Sie sofort Ihr Passwort und kontaktieren Sie den Support.",
+      securityButton: "Sicherheit pruefen",
+      walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} wurden Ihrer Wallet gutgeschrieben`,
+      walletTitle: "Wallet aufgeladen",
+      walletIntro: (name: string) => `Hallo ${name || "da"}, Ihrem HenryCo Wallet wurden Mittel gutgeschrieben.`,
+      walletAmount: "Hinzugefuegter Betrag",
+      walletBalance: "Neuer Kontostand",
+      walletButton: "Wallet ansehen",
+    };
+  }
+
+  if (locale === "it") {
+    return {
+      footerManage: "Gestisci account",
+      footerReason: "Hai ricevuto questo messaggio perche hai un account HenryCo.",
+      welcomeSubject: "Benvenuto in HenryCo",
+      welcomeTitle: (name: string) => `Benvenuto in Henry & Co., ${name || "li"}!`,
+      welcomeIntro: "Il tuo account HenryCo unificato e pronto. Da qui puoi gestire Care, Marketplace, Studio e altro ancora.",
+      welcomeListIntro: "Ecco cosa puoi fare:",
+      welcomeList: [
+        "Ricaricare il tuo HenryCo Wallet per pagamenti rapidi",
+        "Monitorare ordini, prenotazioni e progetti",
+        "Gestire indirizzi e metodi di pagamento",
+        "Ottenere supporto unificato su tutti i servizi",
+      ],
+      welcomeButton: "Vai alla dashboard",
+      securitySubject: (event: string) => `Avviso di sicurezza: ${event}`,
+      securityTitle: "Avviso di sicurezza",
+      securityIntro: "Abbiamo rilevato un evento di sicurezza sul tuo account HenryCo:",
+      securityEvent: "Evento",
+      securityAction: "Se non eri tu, cambia subito la password e contatta il supporto.",
+      securityButton: "Controlla sicurezza",
+      walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} aggiunti al tuo wallet`,
+      walletTitle: "Wallet ricaricato",
+      walletIntro: (name: string) => `Ciao ${name || "li"}, del denaro e stato aggiunto al tuo HenryCo Wallet.`,
+      walletAmount: "Importo aggiunto",
+      walletBalance: "Nuovo saldo",
+      walletButton: "Visualizza wallet",
+    };
+  }
+
+  return {
+    footerManage: "Manage account",
+    footerReason: "You received this because you have an account with HenryCo.",
+    welcomeSubject: "Welcome to HenryCo",
+    welcomeTitle: (name: string) => `Welcome to Henry & Co., ${name || "there"}!`,
+    welcomeIntro: "Your unified HenryCo account is ready. From here you can manage everything across all our services - Care, Marketplace, Studio, and more.",
+    welcomeListIntro: "Here's what you can do:",
+    welcomeList: [
+      "Fund your HenryCo Wallet for quick payments",
+      "Track orders, bookings, and projects",
+      "Manage addresses and payment methods",
+      "Get unified support across all services",
+    ],
+    welcomeButton: "Go to your dashboard",
+    securitySubject: (event: string) => `Security alert: ${event}`,
+    securityTitle: "Security alert",
+    securityIntro: "We detected a security event on your HenryCo account:",
+    securityEvent: "Event",
+    securityAction: "If this wasn't you, please change your password immediately and contact support.",
+    securityButton: "Review security",
+    walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} added to your wallet`,
+    walletTitle: "Wallet funded",
+    walletIntro: (name: string) => `Hi ${name || "there"}, money has been added to your HenryCo Wallet.`,
+    walletAmount: "Amount added",
+    walletBalance: "New balance",
+    walletButton: "View wallet",
+  };
+}
+
+function layout(content: string, locale: AppLocale = "en") {
+  const copy = getEmailCopy(locale);
+  const dir = locale === "ar" ? "rtl" : "ltr";
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${locale}" dir="${dir}">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
   body { margin: 0; padding: 0; background: ${BG_COLOR}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: ${DARK_TEXT}; }
@@ -30,71 +258,76 @@ function layout(content: string) {
   <div class="brand"><div class="brand-logo">H</div></div>
   <div class="card">${content}</div>
   <div class="footer">
-    <p>Henry & Co. Group &middot; <a href="https://account.henrycogroup.com" style="color:${BRAND_COLOR}">Manage account</a></p>
-    <p>You received this because you have an account with HenryCo.</p>
+    <p>Henry & Co. Group &middot; <a href="https://account.henrycogroup.com" style="color:${BRAND_COLOR}">${copy.footerManage}</a></p>
+    <p>${copy.footerReason}</p>
   </div>
 </div>
 </body>
 </html>`;
 }
 
-export function welcomeEmail(name: string) {
+export function welcomeEmail(name: string, locale: AppLocale = "en") {
+  const copy = getEmailCopy(locale);
   return {
-    subject: "Welcome to HenryCo",
+    subject: copy.welcomeSubject,
     html: layout(`
-      <h1>Welcome to Henry & Co., ${name || "there"}!</h1>
-      <p>Your unified HenryCo account is ready. From here you can manage everything across all our services — Care, Marketplace, Studio, and more.</p>
-      <p>Here's what you can do:</p>
+      <h1>${copy.welcomeTitle(name)}</h1>
+      <p>${copy.welcomeIntro}</p>
+      <p>${copy.welcomeListIntro}</p>
       <ul style="color:${MUTED_TEXT};font-size:15px;line-height:2;">
-        <li>Fund your HenryCo Wallet for quick payments</li>
-        <li>Track orders, bookings, and projects</li>
-        <li>Manage addresses and payment methods</li>
-        <li>Get unified support across all services</li>
+        ${copy.welcomeList.map((item) => `<li>${item}</li>`).join("")}
       </ul>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com" class="btn">Go to your dashboard</a>
+        <a href="https://account.henrycogroup.com" class="btn">${copy.welcomeButton}</a>
       </p>
-    `),
+    `, locale),
   };
 }
 
-export function securityAlertEmail(event: string, details: string) {
+export function securityAlertEmail(event: string, details: string, locale: AppLocale = "en") {
+  const copy = getEmailCopy(locale);
   return {
-    subject: `Security alert: ${event}`,
+    subject: copy.securitySubject(event),
     html: layout(`
-      <h1>Security Alert</h1>
-      <p>We detected a security event on your HenryCo account:</p>
+      <h1>${copy.securityTitle}</h1>
+      <p>${copy.securityIntro}</p>
       <div class="metric">
-        <div class="metric-label">Event</div>
+        <div class="metric-label">${copy.securityEvent}</div>
         <div class="metric-value" style="font-size:16px;">${event}</div>
       </div>
       <p>${details}</p>
-      <p>If this wasn't you, please change your password immediately and contact support.</p>
+      <p>${copy.securityAction}</p>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/security" class="btn">Review security</a>
+        <a href="https://account.henrycogroup.com/security" class="btn">${copy.securityButton}</a>
       </p>
-    `),
+    `, locale),
   };
 }
 
-export function walletFundedEmail(name: string, amountNaira: number, newBalanceNaira: number) {
+export function walletFundedEmail(
+  name: string,
+  amountNaira: number,
+  newBalanceNaira: number,
+  locale: AppLocale = "en",
+) {
+  const copy = getEmailCopy(locale);
   return {
-    subject: `NGN ${amountNaira.toLocaleString()} added to your wallet`,
+    subject: copy.walletSubject(amountNaira),
     html: layout(`
-      <h1>Wallet funded</h1>
-      <p>Hi ${name || "there"}, money has been added to your HenryCo Wallet.</p>
+      <h1>${copy.walletTitle}</h1>
+      <p>${copy.walletIntro(name)}</p>
       <div class="metric">
-        <div class="metric-label">Amount added</div>
-        <div class="metric-value" style="color:#10B981;">+NGN ${amountNaira.toLocaleString()}</div>
+        <div class="metric-label">${copy.walletAmount}</div>
+        <div class="metric-value" style="color:#10B981;">+NGN ${formatNaira(amountNaira, locale)}</div>
       </div>
       <div class="metric">
-        <div class="metric-label">New balance</div>
-        <div class="metric-value">NGN ${newBalanceNaira.toLocaleString()}</div>
+        <div class="metric-label">${copy.walletBalance}</div>
+        <div class="metric-value">NGN ${formatNaira(newBalanceNaira, locale)}</div>
       </div>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/wallet" class="btn">View wallet</a>
+        <a href="https://account.henrycogroup.com/wallet" class="btn">${copy.walletButton}</a>
       </p>
-    `),
+    `, locale),
   };
 }
 

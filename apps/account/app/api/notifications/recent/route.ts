@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getNotificationBellFeed } from "@/lib/account-data";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 export async function GET(request: Request) {
   try {
@@ -15,7 +16,8 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const limit = Math.min(Math.max(Number(searchParams.get("limit") || 8), 3), 12);
-    const payload = await getNotificationBellFeed(user.id, limit);
+    const locale = await getAccountAppLocale();
+    const payload = await getNotificationBellFeed(user.id, limit, locale);
 
     return NextResponse.json(payload, {
       headers: {
