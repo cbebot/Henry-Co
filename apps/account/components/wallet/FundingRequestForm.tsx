@@ -2,24 +2,50 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 import { ArrowRight, Building2 } from "lucide-react";
 
 const presetAmounts = [5000, 10000, 25000, 50000, 100000];
 
 export default function FundingRequestForm() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [amount, setAmount] = useState("10000");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const router = useRouter();
 
+  function localizeFundingError(message: string) {
+    switch (message) {
+      case "Unauthorized":
+        return t("Please sign in to continue.");
+      case "Enter at least NGN 100 to create a funding request.":
+      case "Minimum amount is NGN 100.":
+        return t("Minimum amount is NGN 100.");
+      case "For this flow, the maximum is NGN 100,000 per request.":
+        return t("For this flow, the maximum is NGN 100,000 per request.");
+      case "This funding method is not available yet.":
+        return t("This funding method is not available yet.");
+      case "We couldn’t open your wallet. Please try again shortly.":
+        return t("We couldn’t open your wallet. Please try again shortly.");
+      case "We couldn’t create your funding request. Your account may need a quick wallet setup—try again in a moment or contact support.":
+      case "Unable to create funding request.":
+        return t("Unable to create funding request.");
+      case "Something went wrong. Please try again.":
+        return t("Something went wrong");
+      default:
+        return t(message);
+    }
+  }
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const amountNaira = Number(amount);
 
     if (!amountNaira || amountNaira < 100) {
-      setMessage({ type: "error", text: "Minimum amount is NGN 100." });
+      setMessage({ type: "error", text: t("Minimum amount is NGN 100.") });
       return;
     }
 
@@ -39,7 +65,7 @@ export default function FundingRequestForm() {
 
       const data = (await response.json()) as { error?: string; requestId?: string };
       if (!response.ok || !data.requestId) {
-        throw new Error(data.error || "Unable to create funding request.");
+        throw new Error(localizeFundingError(data.error || "Unable to create funding request."));
       }
 
       router.push(`/wallet/funding/${data.requestId}`);
@@ -47,7 +73,7 @@ export default function FundingRequestForm() {
     } catch (error) {
       setMessage({
         type: "error",
-        text: error instanceof Error ? error.message : "Unable to create funding request.",
+        text: error instanceof Error ? localizeFundingError(error.message) : t("Unable to create funding request."),
       });
     } finally {
       setLoading(false);
@@ -57,16 +83,16 @@ export default function FundingRequestForm() {
   return (
     <form onSubmit={handleSubmit} className="acct-card p-5 sm:p-6" data-live-refresh-pause="true">
       <div className="flex flex-col gap-2">
-        <p className="acct-kicker">Funding method</p>
+        <p className="acct-kicker">{t("Funding method")}</p>
         <div className="rounded-[1.4rem] border border-[var(--acct-gold)] bg-[var(--acct-gold-soft)] px-4 py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 text-[var(--acct-gold)]">
               <Building2 size={18} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[var(--acct-ink)]">Bank transfer</p>
+              <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("Bank transfer")}</p>
               <p className="mt-1 text-xs leading-5 text-[var(--acct-muted)]">
-                Create a funding request, complete the transfer, then upload proof so the HenryCo team can confirm it.
+                {t("Create a funding request, complete the transfer, then upload proof so the HenryCo team can confirm it.")}
               </p>
             </div>
           </div>
@@ -97,7 +123,7 @@ export default function FundingRequestForm() {
                 : "border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)]"
             }`}
           >
-            NGN {preset.toLocaleString()}
+            NGN {preset.toLocaleString(locale === "en" ? "en-NG" : locale)}
           </button>
         ))}
       </div>
@@ -106,7 +132,7 @@ export default function FundingRequestForm() {
         <div className="space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-[var(--acct-ink)]">
-              Amount
+              {t("Amount")}
             </label>
             <input
               type="number"
@@ -114,48 +140,48 @@ export default function FundingRequestForm() {
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
               className="acct-input text-lg font-semibold"
-              placeholder="Enter amount in naira"
+              placeholder={t("Enter amount in naira")}
             />
           </div>
 
           <div>
             <label className="mb-1.5 block text-sm font-medium text-[var(--acct-ink)]">
-              Payment note
+              {t("Payment note")}
             </label>
             <textarea
               value={note}
               onChange={(event) => setNote(event.target.value)}
               className="acct-textarea min-h-[120px]"
-              placeholder="Optional note for finance, for example the bank account or expected transfer time."
+              placeholder={t("Optional note for finance, for example the bank account or expected transfer time.")}
             />
           </div>
         </div>
 
         <div className="rounded-[1.5rem] bg-[var(--acct-surface)] p-4">
-          <p className="acct-kicker">Funding flow</p>
+          <p className="acct-kicker">{t("Funding flow")}</p>
           <ol className="mt-3 space-y-3 text-sm leading-6 text-[var(--acct-muted)]">
-            <li>1. Create the request so HenryCo generates the correct reference.</li>
-            <li>2. Transfer the exact amount using the bank details on the next page.</li>
-            <li>3. Upload proof right away so the payment can be confirmed and the balance can become available.</li>
+            <li>{t("1. Create the request so HenryCo generates the correct reference.")}</li>
+            <li>{t("2. Transfer the exact amount using the bank details on the next page.")}</li>
+            <li>{t("3. Upload proof right away so the payment can be confirmed and the balance can become available.")}</li>
           </ol>
         </div>
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <button
-          type="submit"
-          disabled={loading}
-          className="acct-button-primary rounded-2xl px-5 py-3"
-        >
-          <ButtonPendingContent pending={loading} pendingLabel="Creating funding request..." spinnerLabel="Creating funding request">
+        type="submit"
+        disabled={loading}
+        className="acct-button-primary rounded-2xl px-5 py-3"
+      >
+          <ButtonPendingContent pending={loading} pendingLabel={t("Creating funding request...")} spinnerLabel={t("Creating funding request...")}>
             <>
-              Create funding request
+              {t("Create funding request")}
               <ArrowRight size={16} />
             </>
           </ButtonPendingContent>
         </button>
         <p className="text-xs leading-6 text-[var(--acct-muted)]">
-          Wallet balance updates after the HenryCo team confirms the transfer.
+          {t("Wallet balance updates after the HenryCo team confirms the transfer.")}
         </p>
       </div>
     </form>

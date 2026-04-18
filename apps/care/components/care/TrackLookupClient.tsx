@@ -4,6 +4,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  formatSurfaceTemplate,
+  translateSurfaceLabel,
+  type AppLocale,
+} from "@henryco/i18n";
+import {
   ArrowRight,
   Building2,
   Calendar,
@@ -82,8 +87,8 @@ function toneClasses(tone: ReturnType<typeof getTrackingTone>) {
   return "border-amber-400/30 bg-amber-500/10 text-amber-100";
 }
 
-function formatDate(value?: string | null) {
-  if (!value) return "Not yet scheduled";
+function formatDate(value: string | null | undefined, fallback: string) {
+  if (!value) return fallback;
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
   return d.toLocaleDateString("en-NG", {
@@ -116,38 +121,44 @@ function familyIcon(family: CareServiceFamily) {
   return Package;
 }
 
-function familyHeadline(family: CareServiceFamily) {
-  if (family === "home") return "Home cleaning visit status";
-  if (family === "office") return "Office cleaning visit status";
-  return "Wardrobe care order status";
+function familyHeadline(locale: AppLocale, family: CareServiceFamily) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  if (family === "home") return t("Home cleaning visit status");
+  if (family === "office") return t("Office cleaning visit status");
+  return t("Wardrobe care order status");
 }
 
-function familySubcopy(family: CareServiceFamily) {
+function familySubcopy(locale: AppLocale, family: CareServiceFamily) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
   if (family === "home") {
-    return "Cleaner scheduling, arrival, on-site work, inspection, and visit completion are tracked here.";
+    return t("Cleaner scheduling, arrival, on-site work, inspection, and visit completion are tracked here.");
   }
   if (family === "office") {
-    return "Schedule confirmation, site access, execution progress, checklist completion, and sign-off are tracked here.";
+    return t("Schedule confirmation, site access, execution progress, checklist completion, and sign-off are tracked here.");
   }
-  return "Pickup, facility handling, finishing, quality checks, and return delivery are tracked here.";
+  return t("Pickup, facility handling, finishing, quality checks, and return delivery are tracked here.");
 }
 
-function experienceCards(family: CareServiceFamily) {
+function experienceCards(locale: AppLocale, family: CareServiceFamily) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
   if (family === "home") {
     return [
       {
-        title: "Visit clarity",
-        body: "Residential teams can move from scheduled to en route, in progress, completed, and inspection-confirmed without ambiguity.",
+        title: t("Visit clarity"),
+        body: t("Residential teams can move from scheduled to en route, in progress, completed, and inspection-confirmed without ambiguity."),
         icon: Home,
       },
       {
-        title: "Recurring visibility",
-        body: "Recurring-home bookings keep their cadence and preferred window visible inside the same tracking view.",
+        title: t("Recurring visibility"),
+        body: t("Recurring-home bookings keep their cadence and preferred window visible inside the same tracking view."),
         icon: Calendar,
       },
       {
-        title: "Trust after completion",
-        body: "Customers can see when the work finished, when inspection closed, and when follow-up should happen.",
+        title: t("Trust after completion"),
+        body: t("Customers can see when the work finished, when inspection closed, and when follow-up should happen."),
         icon: CheckCircle2,
       },
     ];
@@ -156,18 +167,18 @@ function experienceCards(family: CareServiceFamily) {
   if (family === "office") {
     return [
       {
-        title: "Operational readiness",
-        body: "Commercial visits now show schedule confirmation, access readiness, and on-site execution states clearly.",
+        title: t("Operational readiness"),
+        body: t("Commercial visits now show schedule confirmation, access readiness, and on-site execution states clearly."),
         icon: Building2,
       },
       {
-        title: "Checklist confidence",
-        body: "Office-cleaning progress is structured around section completion and sign-off, not garment-style movement statuses.",
+        title: t("Checklist confidence"),
+        body: t("Office-cleaning progress is structured around section completion and sign-off, not garment-style movement statuses."),
         icon: ShieldCheck,
       },
       {
-        title: "Contract continuity",
-        body: "Recurring service cadence stays visible so contract-style customers are not left guessing.",
+        title: t("Contract continuity"),
+        body: t("Recurring service cadence stays visible so contract-style customers are not left guessing."),
         icon: Calendar,
       },
     ];
@@ -175,27 +186,34 @@ function experienceCards(family: CareServiceFamily) {
 
   return [
       {
-        title: "Transparent movement",
-        body: "Pickup, facility intake, finishing, packing, and return delivery now follow a wardrobe-specific movement timeline.",
+        title: t("Transparent movement"),
+        body: t("Pickup, facility intake, finishing, packing, and return delivery now follow a wardrobe-specific movement timeline."),
         icon: Truck,
       },
     {
-      title: "Cleaner communication",
-      body: "The status language follows the real garment-care journey instead of generic service terms.",
+      title: t("Cleaner communication"),
+      body: t("The status language follows the real garment-care journey instead of generic service terms."),
       icon: Sparkles,
     },
     {
-      title: "Trust through clarity",
-      body: "Customers can understand exactly where the order is in the care cycle without needing support intervention.",
+      title: t("Trust through clarity"),
+      body: t("Customers can understand exactly where the order is in the care cycle without needing support intervention."),
       icon: CheckCircle2,
     },
   ];
 }
 
-export default function TrackLookupClient() {
+export default function TrackLookupClient({
+  locale,
+}: {
+  locale: AppLocale;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const bootstrapped = useRef(false);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const tf = (template: string, values: Record<string, string | number>) =>
+    formatSurfaceTemplate(template, values);
 
   const initialCode = useMemo(
     () => searchParams.get("code") || searchParams.get("tracking_code") || "",
@@ -216,7 +234,7 @@ export default function TrackLookupClient() {
     const finalPhone = (nextPhone ?? phone).trim();
 
     if (!finalCode) {
-      setError("Please enter your tracking code.");
+      setError(t("Please enter your tracking code."));
       setBooking(null);
       return;
     }
@@ -240,14 +258,14 @@ export default function TrackLookupClient() {
 
       if (!res.ok || !data?.ok) {
         setBooking(null);
-        setError(data?.error || "No matching booking found.");
+        setError(data?.error || t("No matching booking found."));
         return;
       }
 
       setBooking(data.booking as CareBookingTrackRow);
     } catch {
       setBooking(null);
-      setError("Unable to fetch tracking details right now.");
+      setError(t("Unable to fetch tracking details right now."));
     } finally {
       setLoading(false);
     }
@@ -280,22 +298,22 @@ export default function TrackLookupClient() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-3 rounded-3xl border border-black/10 bg-white/75 px-6 py-3 text-sm font-medium text-zinc-700 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-white/72">
               <Package className="h-5 w-5 text-[color:var(--accent)]" />
-              <span>Service tracking</span>
+              <span>{t("Service tracking")}</span>
             </div>
 
             <h1 className="mt-8 text-balance text-6xl font-black leading-[0.95] tracking-[-0.055em] text-zinc-950 dark:text-white sm:text-7xl lg:text-[82px]">
-              Track the exact
+              {t("Track the exact")}
               <br />
-              stage of service.
+              {t("stage of service.")}
             </h1>
 
             <p className="mt-6 max-w-2xl text-xl leading-relaxed text-zinc-600 dark:text-white/68">
-              Wardrobe care follows movement and delivery. Home and office cleaning follow
-              on-site execution and completion quality. The timeline shown here matches the type
-              of service you booked.
+              {t(
+                "Wardrobe care follows movement and delivery. Home and office cleaning follow on-site execution and completion quality. The timeline shown here matches the type of service you booked.",
+              )}
             </p>
 
-            {justBooked && initialCode ? <BookingSuccessNotice tracking={initialCode} /> : null}
+            {justBooked && initialCode ? <BookingSuccessNotice locale={locale} tracking={initialCode} /> : null}
           </div>
 
           <form
@@ -324,7 +342,7 @@ export default function TrackLookupClient() {
                 name="phone"
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
-                placeholder="Phone number (optional)"
+                placeholder={t("Phone number (optional)")}
                 className="h-16 rounded-3xl border border-black/10 bg-white/80 px-6 text-lg font-medium text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--accent)]/50 focus:outline-none dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:placeholder:text-white/35"
               />
 
@@ -338,13 +356,13 @@ export default function TrackLookupClient() {
                 ) : (
                   <Search className="h-5 w-5" />
                 )}
-                {loading ? "Checking..." : "Track service"}
+                {loading ? t("Checking...") : t("Track service")}
               </button>
             </div>
           </form>
 
           <div className="mt-6 text-xs font-medium uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
-            Use your real booking code, for example: TRK-N0RFUKI5
+            {t("Use your real booking code, for example: TRK-N0RFUKI5")}
           </div>
         </div>
       </section>
@@ -356,23 +374,25 @@ export default function TrackLookupClient() {
               <Package className="h-10 w-10 text-[color:var(--accent)]" />
             </div>
             <p className="mt-8 text-2xl font-semibold text-zinc-950 dark:text-white">
-              Your service details are one code away
+              {t("Your service details are one code away")}
             </p>
             <p className="mt-4 text-lg text-zinc-600 dark:text-white/65">
-              Enter the tracking code above to see the current stage, the right timeline for the
-              service, and the next step you should expect.
+              {t(
+                "Enter the tracking code above to see the current stage, the right timeline for the service, and the next step you should expect.",
+              )}
             </p>
           </div>
         ) : loading ? (
           <CareLoadingStage
+            locale={locale}
             variant="panel"
-            eyebrow="HenryCo Care tracking"
-            title="Looking up your service"
-            description="Checking the latest status, payment details, and what happens next."
+            eyebrow={t("HenryCo Care tracking")}
+            title={t("Looking up your service")}
+            description={t("Checking the latest status, payment details, and what happens next.")}
             bullets={[
-              "Looking up your tracking reference",
-              "Loading the service timeline",
-              "Preparing the next verified handoff",
+              t("Looking up your tracking reference"),
+              t("Loading the service timeline"),
+              t("Preparing the next verified handoff"),
             ]}
           />
         ) : booking ? (
@@ -381,7 +401,7 @@ export default function TrackLookupClient() {
               <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
-                    Tracking Code
+                    {t("Tracking code")}
                   </div>
                   <div className="mt-2 font-mono text-4xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-5xl">
                     {booking.tracking_code}
@@ -392,7 +412,7 @@ export default function TrackLookupClient() {
                   <div className="rounded-3xl border border-black/10 bg-zinc-50 px-5 py-4 text-center dark:border-white/10 dark:bg-white/[0.05]">
                     <div className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-white/70">
                       <Icon className="h-4 w-4 text-[color:var(--accent)]" />
-                      {getServiceFamilyLabel(family)}
+                      {t(getServiceFamilyLabel(family))}
                     </div>
                   </div>
                   <div
@@ -400,35 +420,41 @@ export default function TrackLookupClient() {
                       getTrackingTone(booking.status, family)
                     )}`}
                   >
-                    {getTrackingStatusLabel(booking.status, family)}
+                    {t(getTrackingStatusLabel(booking.status, family))}
                   </div>
                 </div>
               </div>
 
               <div className="mt-8 rounded-[30px] border border-black/10 bg-zinc-50/90 p-6 dark:border-white/10 dark:bg-white/[0.05]">
                 <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
-                  {familyHeadline(family)}
+                  {familyHeadline(locale, family)}
                 </div>
                 <div className="mt-3 text-2xl font-semibold text-zinc-950 dark:text-white">
                   {booking.service_type}
                 </div>
                 <div className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                  {familySubcopy(family)}
+                  {familySubcopy(locale, family)}
                 </div>
               </div>
 
               <div className="mt-10 grid gap-6 md:grid-cols-2">
-                <DataCard icon={User} label="Customer">
+                <DataCard icon={User} label={t("Customer")}>
                   {booking.customer_name}
                 </DataCard>
-                <DataCard icon={Package} label="Service">
+                <DataCard icon={Package} label={t("Service")}>
                   {booking.service_type}
                 </DataCard>
-                <DataCard icon={Calendar} label={family === "garment" ? "Pickup date" : "Visit date"}>
-                  {formatDate(booking.pickup_date)}
+                <DataCard
+                  icon={Calendar}
+                  label={family === "garment" ? t("Pickup date") : t("Visit date")}
+                >
+                  {formatDate(booking.pickup_date, t("Not yet scheduled"))}
                 </DataCard>
-                <DataCard icon={Clock3} label={family === "garment" ? "Pickup slot" : "Service window"}>
-                  {summary?.serviceWindow || booking.pickup_slot || "Not yet scheduled"}
+                <DataCard
+                  icon={Clock3}
+                  label={family === "garment" ? t("Pickup slot") : t("Service window")}
+                >
+                  {summary?.serviceWindow || booking.pickup_slot || t("Not yet scheduled")}
                 </DataCard>
               </div>
 
@@ -436,7 +462,7 @@ export default function TrackLookupClient() {
                 <div className="rounded-3xl border border-black/10 bg-zinc-50 p-7 dark:border-white/10 dark:bg-white/[0.05]">
                   <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
                     <MapPin className="h-4 w-4 text-[color:var(--accent)]" />
-                    Service address
+                    {t("Service address")}
                   </div>
                   <div className="mt-4 text-[17px] leading-relaxed text-zinc-950 dark:text-white">
                     {booking.pickup_address}
@@ -446,30 +472,31 @@ export default function TrackLookupClient() {
                 <div className="rounded-3xl border border-black/10 bg-zinc-50 p-7 dark:border-white/10 dark:bg-white/[0.05]">
                   <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
                     <Wallet className="h-4 w-4 text-[color:var(--accent)]" />
-                    Payment snapshot
+                    {t("Payment snapshot")}
                   </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <MiniInfo label="Quoted total">{formatMoney(booking.quoted_total)}</MiniInfo>
-                    <MiniInfo label="Balance due">{formatMoney(booking.balance_due)}</MiniInfo>
-                    <MiniInfo label="Payment status">
-                      {payment?.verificationLabel || booking.payment_status || "unpaid"}
+                    <MiniInfo label={t("Quoted total")}>{formatMoney(booking.quoted_total)}</MiniInfo>
+                    <MiniInfo label={t("Balance due")}>{formatMoney(booking.balance_due)}</MiniInfo>
+                    <MiniInfo label={t("Payment status")}>
+                      {payment?.verificationLabel || booking.payment_status || t("unpaid")}
                     </MiniInfo>
-                    <MiniInfo label="Last update">{formatDate(booking.updated_at || booking.created_at)}</MiniInfo>
+                    <MiniInfo label={t("Last update")}>{formatDate(booking.updated_at || booking.created_at, t("Not yet scheduled"))}</MiniInfo>
                   </div>
                 </div>
               </div>
               <div className="mt-6 rounded-3xl border border-black/10 bg-zinc-50 p-7 dark:border-white/10 dark:bg-white/[0.05]">
                 <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
                   <MapPin className="h-4 w-4 text-[color:var(--accent)]" />
-                  Return / delivery address
+                  {t("Return / delivery address")}
                 </div>
                 <div className="mt-4 text-[17px] leading-relaxed text-zinc-950 dark:text-white">
-                  {returnAddress || "Same as pickup address unless changed during booking."}
+                  {returnAddress || t("Same as pickup address unless changed during booking.")}
                 </div>
               </div>
 
               {payment ? (
                 <PaymentProofForm
+                  locale={locale}
                   trackingCode={booking.tracking_code}
                   initialPhone={booking.phone}
                   amountDue={payment.amountDue}
@@ -488,7 +515,7 @@ export default function TrackLookupClient() {
                 <div className="mt-6 rounded-3xl border border-black/10 bg-zinc-50 p-7 dark:border-white/10 dark:bg-white/[0.05]">
                   <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
                     <Phone className="h-4 w-4 text-[color:var(--accent)]" />
-                    Contact number
+                    {t("Contact number")}
                   </div>
                   <div className="mt-4 text-[17px] leading-relaxed text-zinc-950 dark:text-white">
                     {booking.phone}
@@ -500,7 +527,7 @@ export default function TrackLookupClient() {
                 <div className="mt-6 rounded-3xl border border-black/10 bg-zinc-50 p-7 dark:border-white/10 dark:bg-white/[0.05]">
                   <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
                     <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
-                    Service details
+                    {t("Service details")}
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2">
@@ -512,24 +539,28 @@ export default function TrackLookupClient() {
                       summary.zoneLabel,
                       summary.propertyLabel,
                       summary.siteContactName,
-                      ...summary.preferredDays.map((day) => `Day: ${day}`),
+                      ...summary.preferredDays.map((day) => tf("Day: {day}", { day })),
                       ...summary.addOnLabels,
                     ]
-                      .filter(Boolean)
+                      .filter((item): item is string => Boolean(item))
                       .map((item) => (
                         <span
                           key={item}
                           className="rounded-full border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-white/70"
                         >
-                          {item}
+                          {t(item)}
                         </span>
                       ))}
                   </div>
 
                   {recurring ? (
                     <div className="mt-5 rounded-2xl border border-[color:var(--accent)]/20 bg-[color:var(--accent)]/10 p-4 text-sm text-zinc-700 dark:text-white/80">
-                      This booking is tied to a recurring service cadence. The current visit window is visible here, and
-                      the recurring pattern is {summary.frequencyLabel?.toLowerCase()}.
+                      {tf(
+                        "This booking is tied to a recurring service cadence. The current visit window is visible here, and the recurring pattern is {frequency}.",
+                        {
+                          frequency: String(summary.frequencyLabel || "").toLowerCase(),
+                        },
+                      )}
                     </div>
                   ) : null}
                 </div>
@@ -537,7 +568,7 @@ export default function TrackLookupClient() {
                 <div className="mt-6 rounded-3xl border border-black/10 bg-zinc-50 p-7 dark:border-white/10 dark:bg-white/[0.05]">
                   <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
                     <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
-                    Order summary
+                    {t("Order summary")}
                   </div>
                   <div className="mt-4 text-[17px] leading-relaxed text-zinc-950 dark:text-white">
                     {booking.item_summary}
@@ -549,7 +580,7 @@ export default function TrackLookupClient() {
                 <div className="mt-6 rounded-3xl border border-black/10 bg-zinc-50 p-7 dark:border-white/10 dark:bg-white/[0.05]">
                   <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
                     <ShieldCheck className="h-4 w-4 text-[color:var(--accent)]" />
-                    Special instructions
+                    {t("Special instructions")}
                   </div>
                   <div className="mt-4 text-[17px] leading-relaxed text-zinc-950 dark:text-white">
                     {booking.special_instructions}
@@ -558,10 +589,10 @@ export default function TrackLookupClient() {
               ) : null}
             </div>
 
-            <TrackTimeline family={family} status={booking.status} />
+            <TrackTimeline locale={locale} family={family} status={booking.status} />
 
             <div className="grid gap-6 lg:grid-cols-3">
-              {experienceCards(family).map((card) => {
+              {experienceCards(locale, family).map((card) => {
                 const CardIcon = card.icon;
                 return (
                   <div
@@ -585,20 +616,21 @@ export default function TrackLookupClient() {
             {reviewEligible ? (
               <div className="rounded-[32px] border border-[color:var(--accent)]/20 bg-[color:var(--accent)]/10 p-8">
                 <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                  Completed booking
+                  {t("Completed booking")}
                 </div>
                 <div className="mt-3 text-3xl font-bold tracking-[-0.03em] text-zinc-950 dark:text-white">
-                  Leave a verified review for this service.
+                  {t("Leave a verified review for this service.")}
                 </div>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-                  This service has been completed, so you can now share a verified review linked to
-                  your tracking code and booking phone number.
+                  {t(
+                    "This service has been completed, so you can now share a verified review linked to your tracking code and booking phone number.",
+                  )}
                 </p>
                 <Link
                   href={`/review?code=${encodeURIComponent(booking.tracking_code)}&phone=${encodeURIComponent(booking.phone || "")}`}
                   className="care-button-primary mt-6 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
-                  Share your review
+                  {t("Share your review")}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -606,8 +638,8 @@ export default function TrackLookupClient() {
           </div>
         ) : error ? (
           <div className="rounded-3xl border border-red-400/20 bg-red-500/10 p-12 text-center">
-            <div className="text-xl font-semibold text-red-100">Tracking lookup failed</div>
-            <div className="mt-3 text-sm leading-relaxed text-red-100/85">{error || "No matching booking was found."}</div>
+            <div className="text-xl font-semibold text-red-100">{t("Tracking lookup failed")}</div>
+            <div className="mt-3 text-sm leading-relaxed text-red-100/85">{error || t("No matching booking was found.")}</div>
             <button
               type="button"
               onClick={() => {
@@ -616,20 +648,21 @@ export default function TrackLookupClient() {
               }}
               className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-red-300/20 bg-red-500/10 px-5 py-3 text-sm font-semibold text-red-100"
             >
-              Try again
+              {t("Try again")}
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         ) : (
           <CareLoadingStage
+            locale={locale}
             variant="panel"
-            eyebrow="HenryCo Care tracking"
-            title="Finalizing your tracking lookup"
-            description="Preparing service status and timeline details."
+            eyebrow={t("HenryCo Care tracking")}
+            title={t("Finalizing your tracking lookup")}
+            description={t("Preparing service status and timeline details.")}
             bullets={[
-              "Loading booking identity",
-              "Resolving latest movement stage",
-              "Preparing your next-step guidance",
+              t("Loading booking identity"),
+              t("Resolving latest movement stage"),
+              t("Preparing your next-step guidance"),
             ]}
           />
         )}

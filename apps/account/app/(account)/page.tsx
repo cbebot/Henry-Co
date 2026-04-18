@@ -16,20 +16,29 @@ import {
   Gift,
 } from "lucide-react";
 import { parseHenryFeatureFlags } from "@henryco/intelligence";
+import { formatAccountTemplate, getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
 import { buildAccountRecommendations, buildAccountTasks } from "@/lib/intelligence-rollout";
 import { activityMessageHref } from "@/lib/notification-center";
-import { formatNaira, timeAgo, divisionLabel, divisionColor } from "@/lib/format";
-import { getAccountTrustProfile, getTrustTierLabel } from "@/lib/trust";
+import { formatNaira, timeAgoLocalized, divisionLabel, divisionColor } from "@/lib/format";
+import { getAccountTrustProfile } from "@/lib/trust";
+import {
+  getLocalizedTrustRequirements,
+  getLocalizedTrustTierLabel,
+  localizeAccountRecommendation,
+  localizeAccountTask,
+} from "@/lib/account-localization";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 
 export default async function OverviewPage() {
   const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
-  const user = await requireAccountUser();
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const copy = getAccountCopy(locale);
   const [data, funding, trust, supportThreads] = await Promise.all([
     getDashboardSummary(user.id),
     getWalletFundingContext(user.id),
@@ -40,12 +49,13 @@ export default async function OverviewPage() {
     const status = String(thread.status || "");
     return status !== "resolved" && status !== "closed";
   }).length;
+  const trustRequirements = getLocalizedTrustRequirements(copy, trust);
 
   const attention = [
     funding.pending_kobo > 0
       ? {
-          label: "Pending wallet verification",
-          detail: `${formatNaira(funding.pending_kobo)} is still waiting for finance confirmation.`,
+          label: copy.overview.pendingWalletVerification,
+          detail: copy.overview.pendingWalletVerificationDetail,
           href: "/wallet/funding",
           tone: "var(--acct-blue)",
           icon: ShieldCheck,
@@ -53,8 +63,8 @@ export default async function OverviewPage() {
       : null,
     data.unreadNotificationCount > 0
       ? {
-          label: "Unread notifications",
-          detail: `${data.unreadNotificationCount} update${data.unreadNotificationCount === 1 ? "" : "s"} are still waiting for you.`,
+          label: copy.overview.unreadNotificationsAttention,
+          detail: copy.overview.unreadNotificationsAttentionDetail,
           href: "/notifications",
           tone: "var(--acct-gold)",
           icon: Bell,
@@ -62,8 +72,8 @@ export default async function OverviewPage() {
       : null,
     data.activeSubscriptions.length > 0
       ? {
-          label: "Active plans in motion",
-          detail: `${data.activeSubscriptions.length} subscription${data.activeSubscriptions.length === 1 ? "" : "s"} are currently running.`,
+          label: copy.overview.activePlansInMotion,
+          detail: copy.overview.activePlansInMotionDetail,
           href: "/subscriptions",
           tone: "var(--acct-purple)",
           icon: TrendingUp,
@@ -71,10 +81,10 @@ export default async function OverviewPage() {
       : null,
     trust.nextTier
       ? {
-          label: `Unlock ${getTrustTierLabel(trust.nextTier)}`,
-          detail:
-            trust.requirements[0] ||
-            "Your next trust tier needs stronger verification and cleaner account history.",
+          label: formatAccountTemplate(copy.overview.unlockTier, {
+            tier: getLocalizedTrustTierLabel(copy, trust.nextTier),
+          }),
+          detail: trustRequirements[0] || copy.overview.nextTierFallback,
           href: "/security",
           tone: "var(--acct-red)",
           icon: ShieldCheck,
@@ -89,10 +99,10 @@ export default async function OverviewPage() {
   }>;
 
   const quickActions = [
-    { href: "/wallet", label: "Add money", icon: Wallet, color: "var(--acct-green)" },
-    { href: "/support", label: "Get help", icon: LifeBuoy, color: "var(--acct-blue)" },
-    { href: "/care", label: "Book care", icon: Sparkles, color: "#6B7CFF" },
-    { href: "/marketplace", label: "Shop", icon: ShoppingBag, color: "#B2863B" },
+    { href: "/wallet", label: copy.overview.addMoney, icon: Wallet, color: "var(--acct-green)" },
+    { href: "/support", label: copy.overview.getHelp, icon: LifeBuoy, color: "var(--acct-blue)" },
+    { href: "/care", label: copy.overview.bookCare, icon: Sparkles, color: "#6B7CFF" },
+    { href: "/marketplace", label: copy.overview.shop, icon: ShoppingBag, color: "#B2863B" },
   ];
 
   const tasks = buildAccountTasks({
@@ -101,7 +111,7 @@ export default async function OverviewPage() {
     pendingFundingKobo: funding.pending_kobo,
     openSupportCount,
     trust,
-  });
+  }).map((task) => localizeAccountTask(copy, task, trustRequirements));
 
   const recommendations = buildAccountRecommendations({
     trust,
@@ -112,7 +122,7 @@ export default async function OverviewPage() {
     activeDivisionHints: data.recentActivity
       .map((item: Record<string, unknown>) => String(item.division || "").toLowerCase())
       .filter(Boolean) as Array<"account" | "care" | "marketplace" | "studio" | "jobs" | "property" | "learn" | "logistics">,
-  });
+  }).map((item) => localizeAccountRecommendation(copy, item));
   const blockingTasks = tasks.filter((task) => task.blocking);
   const highPriorityTasks = tasks.filter((task) => !task.blocking && task.priority !== "low");
 
@@ -121,8 +131,8 @@ export default async function OverviewPage() {
       <RouteLiveRefresh />
       {/* Welcome */}
       <PageHeader
-        title={`Welcome back${user.fullName ? `, ${user.fullName.split(" ")[0]}` : ""}`}
-        description="Your HenryCo command center — everything across all divisions, one place."
+        title={`${copy.overview.welcomeBack}${user.fullName ? `, ${user.fullName.split(" ")[0]}` : ""}`}
+        description={copy.overview.description}
       />
 
       {/* Metric cards */}
@@ -130,55 +140,55 @@ export default async function OverviewPage() {
         {/* Wallet */}
         <Link href="/wallet" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="acct-kicker">Wallet Balance</p>
+            <p className="acct-kicker">{copy.overview.walletBalance}</p>
             <Wallet size={18} className="text-[var(--acct-green)]" />
           </div>
           <p className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">
             {formatNaira(data.wallet.balance_kobo)}
           </p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Shared wallet &middot; Use across HenryCo services
+            {copy.overview.walletHint}
           </p>
         </Link>
 
         {/* Notifications */}
         <Link href="/notifications" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="acct-kicker">Notifications</p>
+            <p className="acct-kicker">{copy.overview.notifications}</p>
             <Bell size={18} className="text-[var(--acct-gold)]" />
           </div>
           <p className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">
             {data.unreadNotificationCount}
           </p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            {data.unreadNotificationCount === 0 ? "All caught up" : "Unread messages"}
+            {data.unreadNotificationCount === 0 ? copy.overview.allCaughtUp : copy.overview.unreadMessages}
           </p>
         </Link>
 
         {/* Subscriptions */}
         <Link href="/subscriptions" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="acct-kicker">Active Subscriptions</p>
+            <p className="acct-kicker">{copy.overview.activeSubscriptions}</p>
             <TrendingUp size={18} className="text-[var(--acct-purple)]" />
           </div>
           <p className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">
             {data.activeSubscriptions.length}
           </p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            {data.activeSubscriptions.length === 0 ? "No synced active plans" : "Synced active plans"}
+            {data.activeSubscriptions.length === 0 ? copy.overview.noActivePlans : copy.overview.syncedPlans}
           </p>
         </Link>
 
         <Link href="/security" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="acct-kicker">Trust Tier</p>
+            <p className="acct-kicker">{copy.overview.trustTier}</p>
             <ShieldCheck size={18} className="text-[var(--acct-blue)]" />
           </div>
           <p className="mt-2 text-xl font-bold text-[var(--acct-ink)]">
-            {getTrustTierLabel(trust.tier)}
+            {getLocalizedTrustTierLabel(copy, trust.tier)}
           </p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Score {trust.score} · {trust.flags.jobsPostingEligible ? "Business actions unlocked" : "More verification needed"}
+            {copy.overview.scoreLabel} {trust.score} · {trust.flags.jobsPostingEligible ? copy.overview.businessActionsUnlocked : copy.overview.moreVerificationNeeded}
           </p>
         </Link>
       </div>
@@ -186,59 +196,59 @@ export default async function OverviewPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Link href="/invoices" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="acct-kicker">Invoices</p>
+            <p className="acct-kicker">{copy.overview.invoices}</p>
             <Receipt size={18} className="text-[var(--acct-orange)]" />
           </div>
           <p className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">{data.recentInvoices.length}</p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            {data.pendingInvoiceCount > 0 ? `${data.pendingInvoiceCount} pending` : "All settled"}
+            {data.pendingInvoiceCount > 0 ? `${data.pendingInvoiceCount} ${copy.overview.pending}` : copy.overview.allSettled}
           </p>
         </Link>
 
         <Link href="/support" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="acct-kicker">Support</p>
+            <p className="acct-kicker">{copy.overview.support}</p>
             <MessageSquare size={18} className="text-[var(--acct-blue)]" />
           </div>
           <p className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">{data.openSupportCount}</p>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
             {data.unreadSupportCount > 0
-              ? `${data.unreadSupportCount} with new replies`
+              ? `${data.unreadSupportCount} ${copy.overview.newReplies}`
               : data.openSupportCount > 0
-                ? "Open requests"
-                : "No open requests"}
+                ? copy.overview.openRequests
+                : copy.overview.noOpenRequests}
           </p>
         </Link>
 
         <Link href="/referrals" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="acct-kicker">Referrals</p>
+            <p className="acct-kicker">{copy.overview.referrals}</p>
             <Gift size={18} className="text-[var(--acct-green)]" />
           </div>
-          <p className="mt-2 text-lg font-bold text-[var(--acct-ink)]">Invite & earn</p>
-          <p className="mt-1 text-xs text-[var(--acct-muted)]">Share HenryCo with others</p>
+          <p className="mt-2 text-lg font-bold text-[var(--acct-ink)]">{copy.overview.inviteAndEarn}</p>
+          <p className="mt-1 text-xs text-[var(--acct-muted)]">{copy.overview.shareHenryCo}</p>
         </Link>
 
         <Link href="/wallet" className="acct-metric group transition-shadow hover:shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="acct-kicker">Transactions</p>
+            <p className="acct-kicker">{copy.overview.transactions}</p>
             <Wallet size={18} className="text-[var(--acct-green)]" />
           </div>
-          <p className="mt-2 text-lg font-bold text-[var(--acct-ink)]">View history</p>
-          <p className="mt-1 text-xs text-[var(--acct-muted)]">Wallet activity & payments</p>
+          <p className="mt-2 text-lg font-bold text-[var(--acct-ink)]">{copy.overview.viewHistory}</p>
+          <p className="mt-1 text-xs text-[var(--acct-muted)]">{copy.overview.walletActivity}</p>
         </Link>
       </div>
 
       <section className="acct-card p-5">
         <div className="flex flex-wrap items-center gap-3">
           <span className="acct-chip acct-chip-blue text-[0.65rem]">
-            {blockingTasks.length} blocking
+            {blockingTasks.length} {copy.overview.blockingLabel}
           </span>
           <span className="acct-chip acct-chip-gold text-[0.65rem]">
-            {highPriorityTasks.length} high-priority next step{highPriorityTasks.length === 1 ? "" : "s"}
+            {highPriorityTasks.length} {copy.overview.highPriorityLabel}
           </span>
           <span className="text-xs text-[var(--acct-muted)]">
-            Your Action Center is prioritized from live trust, wallet, support, and notification signals.
+            {copy.overview.actionCenterHint}
           </span>
         </div>
       </section>
@@ -247,9 +257,9 @@ export default async function OverviewPage() {
         <section className="acct-card p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <p className="acct-kicker">What Needs Your Attention</p>
+              <p className="acct-kicker">{copy.overview.attentionKicker}</p>
               <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-                In progress, waiting on you, or still unresolved
+                {copy.overview.attentionTitle}
               </h2>
             </div>
           </div>
@@ -280,7 +290,7 @@ export default async function OverviewPage() {
 
       {/* Quick actions */}
       <section className="acct-card p-5">
-        <p className="acct-kicker mb-3">Quick Actions</p>
+        <p className="acct-kicker mb-3">{copy.overview.quickActions}</p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {quickActions.map((action) => (
             <Link
@@ -303,15 +313,15 @@ export default async function OverviewPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="acct-card p-5">
           <div className="mb-3">
-            <p className="acct-kicker">Action Center</p>
+            <p className="acct-kicker">{copy.overview.actionCenter}</p>
             <p className="mt-1 text-xs text-[var(--acct-muted)]">
-              Start with blocking items first, then clear high-priority steps to keep your account fully operational.
+              {copy.overview.actionCenterDescription}
             </p>
           </div>
           <div className="space-y-3">
             {tasks.length === 0 ? (
               <p className="text-sm text-[var(--acct-muted)]">
-                No urgent account tasks right now. You are in a healthy operating state.
+                {copy.overview.noUrgentTasks}
               </p>
             ) : (
               tasks.slice(0, 5).map((task) => (
@@ -323,16 +333,16 @@ export default async function OverviewPage() {
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-semibold text-[var(--acct-ink)]">{task.title}</p>
                     {task.blocking ? (
-                      <span className="acct-chip acct-chip-red text-[0.65rem]">Blocking</span>
+                      <span className="acct-chip acct-chip-red text-[0.65rem]">{copy.tasks.blocking}</span>
                     ) : (
-                      <span className="acct-chip acct-chip-blue text-[0.65rem]">{task.priority}</span>
+                      <span className="acct-chip acct-chip-blue text-[0.65rem]">{copy.tasks.priorityLabels[task.priority]}</span>
                     )}
                   </div>
                   {task.description ? (
                     <p className="mt-1 text-xs text-[var(--acct-muted)]">{task.description}</p>
                   ) : null}
                   <p className="mt-2 text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                    Source: {task.sourceDivision}
+                    {copy.common.source}: {translateSurfaceLabel(locale, divisionLabel(task.sourceDivision))}
                   </p>
                 </Link>
               ))
@@ -343,18 +353,18 @@ export default async function OverviewPage() {
               href="/tasks"
               className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[var(--acct-gold)] hover:underline"
             >
-              View full task queue <ChevronRight size={14} />
+              {copy.overview.viewTaskQueue} <ChevronRight size={14} />
             </Link>
           ) : null}
         </section>
 
         {flags.intelligence_recommendations ? (
           <section className="acct-card p-5">
-            <p className="acct-kicker mb-3">Smart Recommendations</p>
+            <p className="acct-kicker mb-3">{copy.overview.smartRecommendations}</p>
             <div className="space-y-3">
               {recommendations.length === 0 ? (
                 <p className="text-sm text-[var(--acct-muted)]">
-                  Keep using HenryCo services and recommendations will adapt to your activity.
+                  {copy.overview.smartRecommendationsEmpty}
                 </p>
               ) : (
                 recommendations.map((item) => (
@@ -368,7 +378,9 @@ export default async function OverviewPage() {
                       <p className="mt-1 text-xs text-[var(--acct-muted)]">{item.description}</p>
                     ) : null}
                     <p className="mt-2 text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                      Suggested from your account activity and trust state ({item.confidence} confidence)
+                      {formatAccountTemplate(copy.overview.recommendationReason, {
+                        confidence: item.confidence,
+                      })}
                     </p>
                   </Link>
                 ))
@@ -383,18 +395,18 @@ export default async function OverviewPage() {
         {/* Recent Activity */}
         <section className="acct-card p-5">
           <div className="mb-4 flex items-center justify-between">
-            <p className="acct-kicker">Recent Activity</p>
+            <p className="acct-kicker">{copy.overview.recentActivity}</p>
             <Link
               href="/activity"
               className="flex items-center gap-1 text-xs font-medium text-[var(--acct-gold)] hover:underline"
             >
-              View all <ChevronRight size={14} />
+              {copy.common.viewAll} <ChevronRight size={14} />
             </Link>
           </div>
           <div className="space-y-3">
             {data.recentActivity.length === 0 ? (
               <p className="py-6 text-center text-sm text-[var(--acct-muted)]">
-                No recent activity yet
+                {copy.overview.noRecentActivity}
               </p>
             ) : (
               data.recentActivity.map((item: Record<string, string>) => (
@@ -412,7 +424,7 @@ export default async function OverviewPage() {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-[var(--acct-ink)]">{item.title}</p>
                     <p className="mt-0.5 text-xs text-[var(--acct-muted)]">
-                      {divisionLabel(item.division)} &middot; {timeAgo(item.created_at)}
+                      {translateSurfaceLabel(locale, divisionLabel(item.division))} &middot; {timeAgoLocalized(item.created_at, locale)}
                     </p>
                   </div>
                 </Link>
@@ -424,18 +436,18 @@ export default async function OverviewPage() {
         {/* Recent Notifications */}
         <section className="acct-card p-5">
           <div className="mb-4 flex items-center justify-between">
-            <p className="acct-kicker">Notifications</p>
+            <p className="acct-kicker">{copy.overview.recentNotifications}</p>
             <Link
               href="/notifications"
               className="flex items-center gap-1 text-xs font-medium text-[var(--acct-gold)] hover:underline"
             >
-              View all <ChevronRight size={14} />
+              {copy.common.viewAll} <ChevronRight size={14} />
             </Link>
           </div>
           <div className="space-y-3">
             {data.recentNotifications.length === 0 ? (
               <p className="py-6 text-center text-sm text-[var(--acct-muted)]">
-                No notifications yet
+                {copy.overview.noNotifications}
               </p>
             ) : (
               data.recentNotifications.map((n: Record<string, unknown>) => (
@@ -456,18 +468,21 @@ export default async function OverviewPage() {
                         color: (n.source as { accent?: string })?.accent || "var(--acct-gold)",
                       }}
                     >
-                      {(n.source as { label?: string })?.label || divisionLabel(String(n.category || "account"))}
+                      {translateSurfaceLabel(
+                        locale,
+                        (n.source as { label?: string })?.label || divisionLabel(String(n.category || "account"))
+                      )}
                     </span>
                     {!n.is_read ? (
                       <span className="rounded-full bg-[var(--acct-red-soft)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-red)]">
-                        Unread
+                        {copy.common.unread}
                       </span>
                     ) : null}
                   </div>
                   <p className="mt-3 text-sm font-medium text-[var(--acct-ink)]">{String(n.title || "")}</p>
                   <p className="mt-0.5 text-xs text-[var(--acct-muted)] line-clamp-2">{String(n.body || "")}</p>
                   <p className="mt-1 text-[0.65rem] text-[var(--acct-muted)]">
-                    {timeAgo(String(n.created_at || ""))}
+                    {timeAgoLocalized(String(n.created_at || ""), locale)}
                   </p>
                 </Link>
               ))
@@ -478,13 +493,13 @@ export default async function OverviewPage() {
 
       {/* Division services */}
       <section className="acct-card p-5">
-        <p className="acct-kicker mb-3">Your Services</p>
+        <p className="acct-kicker mb-3">{copy.overview.yourServices}</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { key: "care", label: "Care", desc: "Fabric care, cleaning & upkeep", icon: Sparkles, href: "/care" },
-            { key: "marketplace", label: "Marketplace", desc: "Shop products & sell online", icon: ShoppingBag, href: "/marketplace" },
-            { key: "jobs", label: "Jobs", desc: "Applications, saved roles & recruiter updates", icon: BriefcaseBusiness, href: "/jobs" },
-            { key: "studio", label: "Studio", desc: "Creative & design services", icon: Palette, href: "/studio" },
+            { key: "care", label: copy.overview.careService, desc: copy.overview.careServiceDescription, icon: Sparkles, href: "/care" },
+            { key: "marketplace", label: copy.overview.marketplaceService, desc: copy.overview.marketplaceServiceDescription, icon: ShoppingBag, href: "/marketplace" },
+            { key: "jobs", label: copy.overview.jobsService, desc: copy.overview.jobsServiceDescription, icon: BriefcaseBusiness, href: "/jobs" },
+            { key: "studio", label: copy.overview.studioService, desc: copy.overview.studioServiceDescription, icon: Palette, href: "/studio" },
           ].map((svc) => (
             <Link
               key={svc.key}

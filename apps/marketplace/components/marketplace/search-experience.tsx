@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Filter, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
-import { ProductCard } from "@/components/marketplace/shell";
+import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import type {
   MarketplaceBrand,
   MarketplaceCategory,
@@ -316,7 +316,7 @@ export function SearchExperience({
           {sortedItems.length ? (
             <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
               {sortedItems.map((product) => (
-                <ProductCard key={product.slug} product={product} />
+                <ProductCardClient key={product.slug} product={product} />
               ))}
             </div>
           ) : (

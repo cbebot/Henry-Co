@@ -2,10 +2,12 @@
 
 import { useMemo, useRef, useState } from "react";
 import { ArrowRight, Paperclip, ShieldCheck } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { emitCareToast } from "@/components/feedback/CareToaster";
 import { CareLoadingGlyph } from "@/components/ui/CareLoading";
 
 type PaymentProofFormProps = {
+  locale: AppLocale;
   trackingCode: string;
   initialPhone?: string | null;
   amountDue: number;
@@ -26,6 +28,7 @@ function todayValue() {
 }
 
 export default function PaymentProofForm({
+  locale,
   trackingCode,
   initialPhone,
   amountDue,
@@ -40,6 +43,7 @@ export default function PaymentProofForm({
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const contactFallback = useMemo(
     () => [supportEmail, supportWhatsApp].filter(Boolean).join(" • "),
@@ -67,11 +71,11 @@ export default function PaymentProofForm({
 
       if (!response.ok || !payload?.ok) {
         const message =
-          payload?.error || "The payment proof could not be submitted right now.";
+          payload?.error || t("The payment proof could not be submitted right now.");
         setError(message);
         emitCareToast({
           tone: "error",
-          title: "Receipt submission failed",
+          title: t("Receipt submission failed"),
           description: message,
         });
         return;
@@ -81,19 +85,19 @@ export default function PaymentProofForm({
       formRef.current?.reset();
       emitCareToast({
         tone: payload.duplicate ? "info" : "success",
-        title: payload.duplicate ? "Receipt already captured" : "Receipt submitted",
+        title: payload.duplicate ? t("Receipt already captured") : t("Receipt submitted"),
         description: payload.duplicate
-          ? "The team already has this receipt on file."
-          : "The HenryCo Care team will review the payment and update your booking shortly.",
+          ? t("The team already has this receipt on file.")
+          : t("The HenryCo Care team will review the payment and update your booking shortly."),
       });
 
       await onSubmitted?.();
     } catch {
-      const message = "Network error. Please try again in a moment.";
+      const message = t("Network error. Please try again in a moment.");
       setError(message);
       emitCareToast({
         tone: "error",
-        title: "Network error",
+        title: t("Network error"),
         description: message,
       });
     } finally {
@@ -107,7 +111,7 @@ export default function PaymentProofForm({
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent)]/18 bg-[color:var(--accent)]/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
             <ShieldCheck className="h-4 w-4" />
-            Payment review
+            {t("Payment review")}
           </div>
           <h3 className="mt-4 text-3xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
             {statusLabel}
@@ -119,7 +123,7 @@ export default function PaymentProofForm({
 
         <div className="rounded-[1.6rem] border border-black/10 bg-zinc-50/90 px-5 py-4 text-right dark:border-white/10 dark:bg-white/[0.05]">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-            Amount due
+            {t("Amount due")}
           </div>
           <div className="mt-2 text-2xl font-black tracking-[-0.03em] text-zinc-950 dark:text-white">
             {formatMoney(amountDue)}
@@ -140,13 +144,13 @@ export default function PaymentProofForm({
           <input
             name="phone"
             defaultValue={initialPhone || ""}
-            placeholder="Booking phone number"
+            placeholder={t("Booking phone number")}
             className="care-input care-ring rounded-2xl px-4 py-3 text-base md:text-sm"
             required
           />
           <input
             name="payer_name"
-            placeholder="Payer name"
+            placeholder={t("Payer name")}
             className="care-input care-ring rounded-2xl px-4 py-3 text-base md:text-sm"
             required
             disabled={!canSubmit || loading}
@@ -156,7 +160,7 @@ export default function PaymentProofForm({
             type="number"
             min="0"
             step="0.01"
-            placeholder="Amount paid"
+            placeholder={t("Amount paid")}
             className="care-input care-ring rounded-2xl px-4 py-3 text-base md:text-sm"
             required
             disabled={!canSubmit || loading}
@@ -174,7 +178,7 @@ export default function PaymentProofForm({
         <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
           <input
             name="payment_reference"
-            placeholder="Transfer reference or teller reference"
+            placeholder={t("Transfer reference or teller reference")}
             className="care-input care-ring rounded-2xl px-4 py-3 text-base md:text-sm"
             disabled={!canSubmit || loading}
           />
@@ -182,7 +186,7 @@ export default function PaymentProofForm({
           <label className="rounded-[1.8rem] border border-[var(--care-border)] bg-[color:var(--care-bg-soft)] px-4 py-3 text-sm font-medium text-zinc-700 dark:text-white/70">
             <span className="flex items-center gap-2 font-semibold text-zinc-950 dark:text-white">
               <Paperclip className="h-4 w-4 text-[color:var(--accent)]" />
-              Receipt image or PDF
+              {t("Receipt image or PDF")}
             </span>
             <input
               type="file"
@@ -197,15 +201,15 @@ export default function PaymentProofForm({
         <textarea
           name="note"
           rows={4}
-          placeholder="Add any note that will help the team confirm your payment quickly."
+          placeholder={t("Add any note that will help the team confirm your payment quickly.")}
           className="care-input care-ring min-h-[140px] rounded-2xl px-4 py-3 text-base md:text-sm"
           disabled={!canSubmit || loading}
         />
 
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-[1.8rem] border border-black/10 bg-zinc-50/90 px-5 py-4 text-sm leading-7 text-zinc-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/65">
           <div>
-            Upload the receipt here or reply to the same payment email with it attached.
-            {contactFallback ? ` Support fallback: ${contactFallback}.` : ""}
+            {t("Upload the receipt here or reply to the same payment email with it attached.")}
+            {contactFallback ? ` ${t("Support fallback")}: ${contactFallback}.` : ""}
           </div>
 
           <button
@@ -218,14 +222,18 @@ export default function PaymentProofForm({
             ) : (
               <ArrowRight className="h-4 w-4" />
             )}
-            {loading ? "Uploading receipt..." : canSubmit ? "Upload receipt" : "Payment already confirmed"}
+            {loading
+              ? t("Uploading receipt...")
+              : canSubmit
+                ? t("Upload receipt")
+                : t("Payment already confirmed")}
           </button>
         </div>
       </form>
 
       {done ? (
         <div className="mt-4 rounded-2xl border border-emerald-300/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-100">
-          Receipt submitted successfully. The support team will review it and update your booking.
+          {t("Receipt submitted successfully. The support team will review it and update your booking.")}
         </div>
       ) : null}
 

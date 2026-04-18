@@ -2,9 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bell, ChevronRight } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { requireAccountUser } from "@/lib/auth";
 import { getNotificationMessageBoard } from "@/lib/message-center";
 import { formatDateTime } from "@/lib/format";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import NotificationLifecycleControls from "@/components/messages/NotificationLifecycleControls";
 
@@ -18,18 +20,22 @@ export default async function NotificationMessageBoardPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const user = await requireAccountUser();
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const data = await getNotificationMessageBoard(user.id, id);
 
   if (!data) {
     notFound();
   }
 
+  const sourceLabel = t(data.source.label);
+  const actionLabel = t(data.record.relatedLabel);
+
   return (
     <div className="space-y-6 acct-fade-in">
       <PageHeader
-        title="Notification detail"
-        description="A focused inbox view for one cross-division update."
+        title={t("Notification detail")}
+        description={t("A focused inbox view for one cross-division update.")}
         icon={Bell}
         actions={
           <NotificationLifecycleControls
@@ -46,7 +52,7 @@ export default async function NotificationMessageBoardPage({
             {data.source.logoUrl ? (
               <Image
                 src={data.source.logoUrl}
-                alt={data.source.label}
+                alt={sourceLabel}
                 width={52}
                 height={52}
                 className="rounded-[1.25rem] border border-[var(--acct-line)] object-cover"
@@ -56,7 +62,7 @@ export default async function NotificationMessageBoardPage({
                 className="flex h-13 w-13 items-center justify-center rounded-[1.25rem] text-sm font-bold text-white"
                 style={{ backgroundColor: data.source.accent }}
               >
-                {data.source.label.charAt(0)}
+                {sourceLabel.charAt(0)}
               </div>
             )}
             <div>
@@ -68,17 +74,17 @@ export default async function NotificationMessageBoardPage({
                     color: data.source.accent,
                   }}
                 >
-                  {data.source.label}
+                  {sourceLabel}
                 </span>
                 <span className="rounded-full bg-[var(--acct-surface)] px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                  {data.record.isRead ? "Read" : "Unread"}
+                  {t(data.record.isRead ? "Read" : "Unread")}
                 </span>
               </div>
               <h2 className="mt-4 text-xl font-semibold text-[var(--acct-ink)]">
                 {data.record.title}
               </h2>
               <p className="mt-2 text-sm text-[var(--acct-muted)]">
-                {formatDateTime(data.record.createdAt)}
+                {formatDateTime(data.record.createdAt, { locale })}
               </p>
             </div>
           </div>
@@ -90,19 +96,19 @@ export default async function NotificationMessageBoardPage({
               rel="noreferrer"
               className="acct-button-primary rounded-xl"
             >
-              {data.record.relatedLabel} <ChevronRight size={14} />
+              {actionLabel} <ChevronRight size={14} />
             </a>
           ) : (
             <Link href={data.record.relatedUrl} className="acct-button-primary rounded-xl">
-              {data.record.relatedLabel} <ChevronRight size={14} />
+              {actionLabel} <ChevronRight size={14} />
             </Link>
           )}
         </div>
 
         <div className="mt-6 rounded-[1.5rem] bg-[var(--acct-bg)] p-5">
-          <p className="acct-kicker">Message</p>
+          <p className="acct-kicker">{t("Message")}</p>
           <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-[var(--acct-ink)]">
-            {data.record.body || "No extra message body was attached to this notification."}
+            {data.record.body || t("No extra message body was attached to this notification.")}
           </p>
         </div>
       </section>
@@ -110,16 +116,16 @@ export default async function NotificationMessageBoardPage({
       <section className="acct-card p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="acct-kicker">Related history</p>
+            <p className="acct-kicker">{t("Related history")}</p>
             <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-              Nearby updates in the same thread
+              {t("Nearby updates in the same thread")}
             </h2>
           </div>
         </div>
 
         {data.history.length === 0 ? (
           <p className="mt-4 rounded-[1.3rem] bg-[var(--acct-surface)] px-4 py-5 text-sm text-[var(--acct-muted)]">
-            No extra thread history is attached yet. New movement from this source will appear here.
+            {t("No extra thread history is attached yet. New movement from this source will appear here.")}
           </p>
         ) : (
           <div className="mt-4 space-y-3">
@@ -135,7 +141,7 @@ export default async function NotificationMessageBoardPage({
                     <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">{item.body}</p>
                   </div>
                   <span className="text-[0.72rem] text-[var(--acct-muted)]">
-                    {formatDateTime(item.createdAt)}
+                    {formatDateTime(item.createdAt, { locale })}
                   </span>
                 </div>
               </Link>

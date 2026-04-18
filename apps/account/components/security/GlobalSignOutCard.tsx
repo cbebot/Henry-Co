@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { getAccountCopy, useHenryCoLocale } from "@henryco/i18n";
 import { LogOut, ShieldCheck } from "lucide-react";
 import { ButtonPendingContent } from "@henryco/ui";
 
 export default function GlobalSignOutCard() {
+  const locale = useHenryCoLocale();
+  const copy = getAccountCopy(locale);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +29,7 @@ export default function GlobalSignOutCard() {
 
       window.location.assign("/login?signed_out=all");
     } catch {
-      setError("We couldn't end every HenryCo session right now. Try again in a moment.");
+      setError(copy.globalSignOut.unavailable);
       setPending(false);
     }
   };
@@ -39,15 +42,13 @@ export default function GlobalSignOutCard() {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-[var(--acct-ink)]">
-            End every HenryCo session
+            {copy.globalSignOut.title}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
-            This signs the current account out across HenryCo divisions and devices, then returns
-            you to the account login surface.
+            {copy.globalSignOut.description}
           </p>
           <p className="mt-2 text-xs leading-6 text-[var(--acct-muted)]">
-            Recent device and session activity stays visible below even though live per-device
-            revocation is not yet exposed as a separate control.
+            {copy.globalSignOut.note}
           </p>
           {error ? (
             <div className="mt-3 rounded-xl bg-[var(--acct-red-soft)] px-4 py-3 text-sm text-[var(--acct-red)]">
@@ -62,13 +63,13 @@ export default function GlobalSignOutCard() {
           >
             <ButtonPendingContent
               pending={pending}
-              pendingLabel="Ending all sessions..."
-              spinnerLabel="Ending all sessions"
+              pendingLabel={copy.globalSignOut.ending}
+              spinnerLabel={copy.globalSignOut.ending}
               textClassName="inline-flex items-center gap-2 font-semibold"
             >
               <>
                 <LogOut size={16} />
-                Sign out all HenryCo sessions
+                {copy.globalSignOut.endAllSessions}
               </>
             </ButtonPendingContent>
           </button>

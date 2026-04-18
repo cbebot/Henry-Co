@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 
 type PayoutMethod = {
@@ -18,11 +19,6 @@ type WithdrawalRow = {
   status: string;
   created_at: string;
 };
-
-function statusLabel(status: string) {
-  const s = status.replaceAll("_", " ");
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
 
 export default function WalletWithdrawalsClient({
   initialMethods,
@@ -43,6 +39,9 @@ export default function WalletWithdrawalsClient({
     detail: string;
   };
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const numberLocale = locale === "en" ? "en-NG" : locale;
   const router = useRouter();
   const [methods, setMethods] = useState(initialMethods);
   const [requests, setRequests] = useState(initialRequests);
@@ -64,6 +63,55 @@ export default function WalletWithdrawalsClient({
   const [payoutId, setPayoutId] = useState(methods[0]?.id ?? "");
   const [withdrawPin, setWithdrawPin] = useState("");
   const withdrawalsUnlocked = verificationGate.status === "verified";
+
+  function statusLabel(status: string) {
+    const value = status.replaceAll("_", " ");
+    const translated = t(value);
+    return translated === value ? value.charAt(0).toUpperCase() + value.slice(1) : translated;
+  }
+
+  function localizeWalletError(message: string) {
+    if (message.endsWith("Open /verification to continue.")) {
+      return t("Identity verification must be approved before withdrawals can be requested.");
+    }
+
+    switch (message) {
+      case "Unauthorized":
+        return t("Please sign in to continue.");
+      case "Enter your bank name, account name, and a valid account number.":
+        return t("Enter your bank name, account name, and a valid account number.");
+      case "That bank account is already saved for payouts.":
+        return t("That bank account is already saved for payouts.");
+      case "Use a 4–6 digit PIN and make sure both entries match.":
+        return t("Use a 4–6 digit PIN and make sure both entries match.");
+      case "Current PIN is incorrect.":
+        return t("Current PIN is incorrect.");
+      case "Minimum withdrawal is NGN 100.":
+      case "Enter at least NGN 100.":
+        return t("Enter at least NGN 100.");
+      case "Choose a verified payout account.":
+        return t("Select payout account");
+      case "Withdrawal PIN is required or incorrect.":
+        return t("Withdrawal PIN is required or incorrect.");
+      case "That payout account is not available.":
+        return t("That payout account is not available.");
+      case "Amount exceeds your available balance after pending withdrawals.":
+        return t("Amount exceeds your available balance after pending withdrawals.");
+      case "We couldn’t load your wallet. Please refresh and try again.":
+        return t("We couldn’t load your wallet. Please refresh and try again.");
+      case "We couldn’t save your changes. Please try again.":
+      case "Could not save account.":
+        return t("Could not save account.");
+      case "Could not update PIN":
+      case "Could not update PIN.":
+        return t("Could not update PIN.");
+      case "Request failed":
+      case "Could not submit.":
+        return t("Could not submit.");
+      default:
+        return t(message);
+    }
+  }
 
   async function refresh() {
     const res = await fetch("/api/wallet/payout-methods", { cache: "no-store" });
@@ -90,14 +138,14 @@ export default function WalletWithdrawalsClient({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not save");
+      if (!res.ok) throw new Error(localizeWalletError(data.error || "Could not save account."));
       setBankName("");
       setAccountName("");
       setAccountNumber("");
       await refresh();
-      setMessage({ type: "ok", text: "Payout account saved." });
+      setMessage({ type: "ok", text: t("Payout account saved.") });
     } catch (err) {
-      setMessage({ type: "err", text: err instanceof Error ? err.message : "Could not save account." });
+      setMessage({ type: "err", text: err instanceof Error ? localizeWalletError(err.message) : t("Could not save account.") });
     } finally {
       setBusy(null);
     }
@@ -118,14 +166,14 @@ export default function WalletWithdrawalsClient({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not update PIN");
+      if (!res.ok) throw new Error(localizeWalletError(data.error || "Could not update PIN."));
       setPin("");
       setConfirmPin("");
       setCurrentPin("");
       setHasPin(true);
-      setMessage({ type: "ok", text: "Withdrawal PIN updated." });
+      setMessage({ type: "ok", text: t("Withdrawal PIN updated.") });
     } catch (err) {
-      setMessage({ type: "err", text: err instanceof Error ? err.message : "Could not update PIN." });
+      setMessage({ type: "err", text: err instanceof Error ? localizeWalletError(err.message) : t("Could not update PIN.") });
     } finally {
       setBusy(null);
     }
@@ -137,7 +185,7 @@ export default function WalletWithdrawalsClient({
     setMessage(null);
     const naira = Number(amount);
     if (!Number.isFinite(naira) || naira < 100) {
-      setMessage({ type: "err", text: "Enter at least NGN 100." });
+      setMessage({ type: "err", text: t("Enter at least NGN 100.") });
       setBusy(null);
       return;
     }
@@ -152,7 +200,7 @@ export default function WalletWithdrawalsClient({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Request failed");
+      if (!res.ok) throw new Error(localizeWalletError(data.error || "Could not submit."));
       setAmount("");
       setWithdrawPin("");
       setRequests((prev) => [
@@ -166,10 +214,10 @@ export default function WalletWithdrawalsClient({
       ]);
       setAvailableKobo((prev) => Math.max(0, prev - Math.round(naira * 100)));
       setPendingHold((prev) => prev + Math.round(naira * 100));
-      setMessage({ type: "ok", text: "Withdrawal submitted for review." });
+      setMessage({ type: "ok", text: t("Withdrawal submitted for review.") });
       router.refresh();
     } catch (err) {
-      setMessage({ type: "err", text: err instanceof Error ? err.message : "Could not submit." });
+      setMessage({ type: "err", text: err instanceof Error ? localizeWalletError(err.message) : t("Could not submit.") });
     } finally {
       setBusy(null);
     }
@@ -190,35 +238,35 @@ export default function WalletWithdrawalsClient({
       ) : null}
 
       <section className="acct-card p-5">
-        <p className="acct-kicker">Verified payout account</p>
+        <p className="acct-kicker">{t("Verified payout account")}</p>
         <p className="mt-1 text-sm text-[var(--acct-muted)]">
-          Add the bank account withdrawals should be sent to after finance approval.
+          {t("Add the bank account withdrawals should be sent to after finance approval.")}
         </p>
         <form onSubmit={addPayout} className="mt-4 grid gap-3 sm:grid-cols-2">
           <input
             className="acct-input rounded-xl"
-            placeholder="Bank name"
+            placeholder={t("Bank name")}
             value={bankName}
             onChange={(e) => setBankName(e.target.value)}
             required
           />
           <input
             className="acct-input rounded-xl"
-            placeholder="Account name"
+            placeholder={t("Account name")}
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
             required
           />
           <input
             className="acct-input rounded-xl sm:col-span-2"
-            placeholder="Account number"
+            placeholder={t("Account number")}
             value={accountNumber}
             onChange={(e) => setAccountNumber(e.target.value)}
             required
           />
           <button type="submit" disabled={busy === "payout"} className="acct-button-primary rounded-xl sm:col-span-2">
-            <ButtonPendingContent pending={busy === "payout"} pendingLabel="Saving payout account..." spinnerLabel="Saving payout account">
-              Save payout account
+            <ButtonPendingContent pending={busy === "payout"} pendingLabel={t("Saving payout account...")} spinnerLabel={t("Saving payout account...")}>
+              {t("Save payout account")}
             </ButtonPendingContent>
           </button>
         </form>
@@ -228,7 +276,7 @@ export default function WalletWithdrawalsClient({
               <li key={m.id} className="rounded-xl bg-[var(--acct-surface)] px-4 py-3">
                 <span className="font-semibold">{m.bank_name}</span> · {m.account_name} · ****
                 {String(m.account_number || "").slice(-4)}
-                {m.is_default ? <span className="ml-2 text-xs text-[var(--acct-muted)]">Default</span> : null}
+                {m.is_default ? <span className="ml-2 text-xs text-[var(--acct-muted)]">{t("Default")}</span> : null}
               </li>
             ))}
           </ul>
@@ -236,9 +284,9 @@ export default function WalletWithdrawalsClient({
       </section>
 
       <section className="acct-card p-5">
-        <p className="acct-kicker">Withdrawal PIN</p>
+        <p className="acct-kicker">{t("Withdrawal PIN")}</p>
         <p className="mt-1 text-sm text-[var(--acct-muted)]">
-          {hasPin ? "Change your 4–6 digit PIN used to confirm withdrawals." : "Create a 4–6 digit PIN to protect withdrawals."}
+          {hasPin ? t("Change your 4–6 digit PIN used to confirm withdrawals.") : t("Create a 4–6 digit PIN to protect withdrawals.")}
         </p>
         <form onSubmit={savePin} className="mt-4 grid gap-3 sm:grid-cols-2">
           {hasPin ? (
@@ -246,7 +294,7 @@ export default function WalletWithdrawalsClient({
               type="password"
               inputMode="numeric"
               className="acct-input rounded-xl sm:col-span-2"
-              placeholder="Current PIN"
+              placeholder={t("Current PIN")}
               value={currentPin}
               onChange={(e) => setCurrentPin(e.target.value)}
               required
@@ -256,7 +304,7 @@ export default function WalletWithdrawalsClient({
             type="password"
             inputMode="numeric"
             className="acct-input rounded-xl"
-            placeholder="New PIN"
+            placeholder={t("New PIN")}
             value={pin}
             onChange={(e) => setPin(e.target.value)}
             required
@@ -265,30 +313,32 @@ export default function WalletWithdrawalsClient({
             type="password"
             inputMode="numeric"
             className="acct-input rounded-xl"
-            placeholder="Confirm PIN"
+            placeholder={t("Confirm PIN")}
             value={confirmPin}
             onChange={(e) => setConfirmPin(e.target.value)}
             required
           />
           <button type="submit" disabled={busy === "pin"} className="acct-button-secondary rounded-xl sm:col-span-2">
-            <ButtonPendingContent pending={busy === "pin"} pendingLabel={hasPin ? "Updating PIN..." : "Setting PIN..."} spinnerLabel="Saving withdrawal PIN">
-              {hasPin ? "Update PIN" : "Set PIN"}
+            <ButtonPendingContent pending={busy === "pin"} pendingLabel={hasPin ? t("Updating PIN...") : t("Setting PIN...")} spinnerLabel={t("Withdrawal PIN")}>
+              {hasPin ? t("Update PIN") : t("Set PIN")}
             </ButtonPendingContent>
           </button>
         </form>
       </section>
 
       <section className="acct-card p-5">
-        <p className="acct-kicker">Request withdrawal</p>
+        <p className="acct-kicker">{t("Request withdrawal")}</p>
         <p className="mt-1 text-sm text-[var(--acct-muted)]">
-          Available balance:{" "}
+          {t("Available balance")}:{" "}
           <span className="font-semibold text-[var(--acct-ink)]">
-            ₦{(availableKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+            ₦{(availableKobo / 100).toLocaleString(numberLocale, { minimumFractionDigits: 2 })}
           </span>
         </p>
         {pendingHold > 0 ? (
           <p className="mt-2 text-xs leading-6 text-[var(--acct-muted)]">
-            ₦{(pendingHold / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })} is already held in pending withdrawal review.
+            {formatSurfaceTemplate(t("{amount} is already held in pending withdrawal review."), {
+              amount: `₦${(pendingHold / 100).toLocaleString(numberLocale, { minimumFractionDigits: 2 })}`,
+            })}
           </p>
         ) : null}
         {!withdrawalsUnlocked ? (
@@ -299,7 +349,7 @@ export default function WalletWithdrawalsClient({
               href="/verification"
               className="mt-3 inline-flex rounded-full bg-[var(--acct-gold)] px-4 py-2 text-xs font-semibold text-white"
             >
-              Open verification
+              {t("Open verification")}
             </a>
           </div>
         ) : null}
@@ -309,7 +359,7 @@ export default function WalletWithdrawalsClient({
             type="number"
             min={100}
             step={1}
-            placeholder="Amount (NGN)"
+            placeholder={t("Amount (NGN)")}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
@@ -320,7 +370,7 @@ export default function WalletWithdrawalsClient({
             onChange={(e) => setPayoutId(e.target.value)}
             required
           >
-            <option value="">Select payout account</option>
+            <option value="">{t("Select payout account")}</option>
             {methods.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.bank_name} · {m.account_name}
@@ -331,7 +381,7 @@ export default function WalletWithdrawalsClient({
             type="password"
             inputMode="numeric"
             className="acct-input rounded-xl"
-            placeholder="Withdrawal PIN"
+            placeholder={t("Withdrawal PIN")}
             value={withdrawPin}
             onChange={(e) => setWithdrawPin(e.target.value)}
             required
@@ -341,24 +391,24 @@ export default function WalletWithdrawalsClient({
             disabled={busy === "withdraw" || !hasPin || methods.length === 0 || !withdrawalsUnlocked}
             className="acct-button-primary rounded-xl disabled:opacity-50"
           >
-            <ButtonPendingContent pending={busy === "withdraw"} pendingLabel="Submitting withdrawal..." spinnerLabel="Submitting withdrawal">
-              Submit withdrawal
+            <ButtonPendingContent pending={busy === "withdraw"} pendingLabel={t("Submitting withdrawal...")} spinnerLabel={t("Submitting withdrawal...")}>
+              {t("Submit withdrawal")}
             </ButtonPendingContent>
           </button>
           {!hasPin || methods.length === 0 || !withdrawalsUnlocked ? (
             <p className="text-xs text-[var(--acct-muted)]">
               {!withdrawalsUnlocked
-                ? "Identity verification must be approved before withdrawals can be requested."
-                : "Set a PIN and save a payout account first."}
+                ? t("Identity verification must be approved before withdrawals can be requested.")
+                : t("Set a PIN and save a payout account first.")}
             </p>
           ) : null}
         </form>
       </section>
 
       <section className="acct-card p-5">
-        <p className="acct-kicker">Withdrawal history</p>
+        <p className="acct-kicker">{t("Withdrawal history")}</p>
         {requests.length === 0 ? (
-          <p className="mt-3 text-sm text-[var(--acct-muted)]">No withdrawal requests yet.</p>
+          <p className="mt-3 text-sm text-[var(--acct-muted)]">{t("No withdrawal requests yet.")}</p>
         ) : (
           <ul className="mt-4 space-y-2">
             {requests.map((r) => (
@@ -367,11 +417,11 @@ export default function WalletWithdrawalsClient({
                 className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[var(--acct-surface)] px-4 py-3 text-sm"
               >
                 <span className="font-semibold text-[var(--acct-ink)]">
-                  ₦{(r.amount_kobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+                  ₦{(r.amount_kobo / 100).toLocaleString(numberLocale, { minimumFractionDigits: 2 })}
                 </span>
                 <span className="text-[var(--acct-muted)]">{statusLabel(r.status)}</span>
                 <span className="text-xs text-[var(--acct-muted)]">
-                  {new Date(r.created_at).toLocaleString()}
+                  {new Date(r.created_at).toLocaleString(numberLocale)}
                 </span>
               </li>
             ))}

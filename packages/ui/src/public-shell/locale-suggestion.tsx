@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { X, Globe } from "lucide-react";
-import { LOCALE_LABELS, type AppLocale } from "@henryco/i18n";
+import {
+  getLocaleDisplayLabel,
+  isPublicSelectorLocale,
+  LOCALE_LABELS,
+  type AppLocale,
+} from "@henryco/i18n";
 
 const DISMISSED_KEY = "hc-locale-suggestion-dismissed";
 
@@ -34,6 +39,7 @@ export function LocaleSuggestion({
 
   useEffect(() => {
     if (!suggestedLocale || suggestedLocale === currentLocale) return;
+    if (!isPublicSelectorLocale(suggestedLocale)) return;
 
     try {
       if (window.localStorage.getItem(DISMISSED_KEY)) return;
@@ -66,11 +72,11 @@ export function LocaleSuggestion({
     window.location.reload();
   }
 
-  if (!visible || !suggestedLocale) return null;
+  if (!visible || !suggestedLocale || !isPublicSelectorLocale(suggestedLocale)) return null;
 
-  const nativeLabel = LOCALE_LABELS[suggestedLocale]?.native ?? suggestedLocale.toUpperCase();
+  const nativeLabel = getLocaleDisplayLabel(suggestedLocale);
   const enLabel = LOCALE_LABELS[suggestedLocale]?.en ?? suggestedLocale;
-  const currentNative = LOCALE_LABELS[currentLocale]?.native ?? "English";
+  const currentNative = getLocaleDisplayLabel(currentLocale);
 
   return (
     <div

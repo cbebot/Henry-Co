@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { getSharedCookieDomain } from "@henryco/config";
 import {
-  ALL_LOCALES,
-  LOCALE_LABELS,
+  PUBLIC_SELECTOR_LOCALES,
+  getLocaleDisplayLabel,
+  isPublicSelectorLocale,
   normalizeLocale,
   isRtlLocale,
   type AppLocale,
@@ -156,7 +157,7 @@ export function EcosystemPreferences({
     if (Number.isNaN(date.getTime())) return consent.updatedAt;
     const localeTag: Record<string, string> = {
       en: "en-NG", fr: "fr-FR", ig: "en-NG", yo: "en-NG", ha: "en-NG",
-      ar: "ar-EG", es: "es-ES", pt: "pt-BR",
+      ar: "ar-EG", es: "es-ES", pt: "pt-BR", de: "de-DE", it: "it-IT", zh: "zh-CN", hi: "hi-IN",
     };
     return `${copy.panel.lastUpdated}: ${date.toLocaleDateString(localeTag[initialLocale] || "en-NG", {
       year: "numeric",
@@ -164,6 +165,16 @@ export function EcosystemPreferences({
       day: "numeric",
     })}`;
   }, [consent.updatedAt, copy.panel.lastUpdated, copy.panel.lastUpdatedNever, initialLocale]);
+
+  const localeOptions = useMemo(() => {
+    if (isPublicSelectorLocale(localeChoice)) return PUBLIC_SELECTOR_LOCALES;
+    return [localeChoice, ...PUBLIC_SELECTOR_LOCALES.filter((code) => code !== localeChoice)];
+  }, [localeChoice]);
+
+  function getLocaleOptionLabel(locale: AppLocale) {
+    const base = getLocaleDisplayLabel(locale);
+    return isPublicSelectorLocale(locale) ? base : `${base} - Scaffold`;
+  }
 
   async function persistLocale(locale: AppLocale) {
     try {
@@ -216,11 +227,12 @@ export function EcosystemPreferences({
                 <select
                   value={localeChoice}
                   onChange={(e) => setLocaleChoice(normalizeLocale(e.target.value) as AppLocale)}
+                  dir="auto"
                   className="h-11 rounded-xl border border-white/12 bg-black/30 px-3 text-sm text-white outline-none"
                 >
-                  {ALL_LOCALES.map((code) => (
-                    <option key={code} value={code} className="bg-[#0B1020] text-white">
-                      {LOCALE_LABELS[code].native}
+                  {localeOptions.map((code) => (
+                    <option key={code} value={code} dir="auto" className="bg-[#0B1020] text-white">
+                      {getLocaleOptionLabel(code)}
                     </option>
                   ))}
                 </select>
@@ -310,13 +322,14 @@ export function EcosystemPreferences({
               <select
                 value={localeChoice}
                 onChange={(e) => setLocaleChoice(normalizeLocale(e.target.value) as AppLocale)}
+                dir="auto"
                 className="h-11 rounded-xl border border-white/12 bg-black/30 px-3 text-sm text-white outline-none"
               >
-                {ALL_LOCALES.map((code) => (
-                  <option key={code} value={code} className="bg-[#0B1020] text-white">
-                    {LOCALE_LABELS[code].native}
-                  </option>
-                ))}
+                  {localeOptions.map((code) => (
+                    <option key={code} value={code} dir="auto" className="bg-[#0B1020] text-white">
+                      {getLocaleOptionLabel(code)}
+                    </option>
+                  ))}
               </select>
             </div>
 

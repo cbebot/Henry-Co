@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { Bell, ChevronRight, Loader2 } from "lucide-react";
+import { timeAgoLocalized } from "@/lib/format";
 
 type BellNotification = {
   id: string;
@@ -27,27 +29,18 @@ type BellPayload = {
   items: BellNotification[];
 };
 
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "Just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Intl.DateTimeFormat("en-NG", {
-    day: "numeric",
-    month: "short",
-  }).format(new Date(dateStr));
-}
-
-function SourceMark({ notification }: { notification: BellNotification }) {
+function SourceMark({
+  notification,
+  sourceLabel,
+}: {
+  notification: BellNotification;
+  sourceLabel: string;
+}) {
   if (notification.source.logoUrl) {
     return (
       <Image
         src={notification.source.logoUrl}
-        alt={notification.source.label}
+        alt={sourceLabel}
         width={32}
         height={32}
         className="rounded-xl border border-[var(--acct-line)] object-cover"
@@ -60,7 +53,7 @@ function SourceMark({ notification }: { notification: BellNotification }) {
       className="flex h-8 w-8 items-center justify-center rounded-xl text-[0.7rem] font-bold text-white"
       style={{ backgroundColor: notification.source.accent }}
     >
-      {notification.source.label.charAt(0)}
+      {sourceLabel.charAt(0)}
     </div>
   );
 }
@@ -79,6 +72,8 @@ export default function NotificationBell({
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const loadFeed = useEffectEvent(async () => {
     setLoading(true);
@@ -92,12 +87,15 @@ export default function NotificationBell({
       const data = (await res.json()) as BellPayload & { error?: string };
 
       if (!res.ok) {
-        throw new Error(data.error || "Unable to load notifications.");
+        throw new Error("Unable to load notifications.");
       }
 
       setPayload(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to load notifications.");
+      const fallback = "Unable to load notifications.";
+      const message = err instanceof Error && err.message ? err.message : fallback;
+      const translated = t(message);
+      setError(translated !== message ? translated : t(fallback));
     } finally {
       setLoading(false);
     }
@@ -149,13 +147,25 @@ export default function NotificationBell({
     router.push(item.message_href || "/notifications");
   };
 
+  const unreadSummary =
+    payload.unreadCount > 0
+      ? formatSurfaceTemplate(
+          t(
+            payload.unreadCount === 1
+              ? "{count} item needs your attention"
+              : "{count} items need your attention"
+          ),
+          { count: payload.unreadCount }
+        )
+      : t("You are caught up for now");
+
   return (
     <div className="relative" ref={containerRef}>
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         className={`relative rounded-xl p-2 text-[var(--acct-muted)] transition hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] ${buttonClassName}`}
-        aria-label="Open notifications"
+        aria-label={t("Open notifications")}
         aria-expanded={open}
       >
         <Bell size={18} />
@@ -175,15 +185,11 @@ export default function NotificationBell({
           <div className="border-b border-[var(--acct-line)] bg-[linear-gradient(135deg,rgba(201,162,39,0.12),rgba(255,255,255,0.92))] px-4 py-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="acct-kicker">Notifications</p>
-                <p className="mt-1 text-sm font-semibold text-[var(--acct-ink)]">
-                  {payload.unreadCount > 0
-                    ? `${payload.unreadCount} item${payload.unreadCount === 1 ? "" : "s"} need your attention`
-                    : "You are caught up for now"}
-                </p>
+                <p className="acct-kicker">{t("Notifications")}</p>
+                <p className="mt-1 text-sm font-semibold text-[var(--acct-ink)]">{unreadSummary}</p>
               </div>
               <Link href="/notifications" onClick={() => setOpen(false)} className="acct-button-ghost text-xs">
-                View all <ChevronRight size={14} />
+                {t("View all")} <ChevronRight size={14} />
               </Link>
             </div>
           </div>
@@ -207,47 +213,51 @@ export default function NotificationBell({
               </div>
             ) : payload.items.length === 0 ? (
               <div className="m-2 rounded-2xl border border-dashed border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-8 text-center">
-                <p className="text-sm font-medium text-[var(--acct-ink)]">No recent alerts</p>
+                <p className="text-sm font-medium text-[var(--acct-ink)]">{t("No recent alerts")}</p>
                 <p className="mt-1 text-xs leading-6 text-[var(--acct-muted)]">
-                  Order updates, project activity, and account alerts will collect here.
+                  {t("Order updates, project activity, and account alerts will collect here.")}
                 </p>
               </div>
             ) : (
-              payload.items.map((notification) => (
-                <button
-                  key={notification.id}
-                  type="button"
-                  onClick={() => void handleItemClick(notification)}
-                  className={`flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition ${
-                    notification.is_read
-                      ? "hover:bg-[var(--acct-surface)]"
-                      : "border border-[var(--acct-gold)]/15 bg-[var(--acct-gold-soft)]/70 hover:bg-[var(--acct-gold-soft)]"
-                  }`}
-                >
-                  <SourceMark notification={notification} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">
-                          {notification.title}
-                        </p>
-                        <p className="mt-1 text-xs font-medium" style={{ color: notification.source.accent }}>
-                          {notification.source.label}
-                        </p>
+              payload.items.map((notification) => {
+                const sourceLabel = translateSurfaceLabel(locale, notification.source.label);
+
+                return (
+                  <button
+                    key={notification.id}
+                    type="button"
+                    onClick={() => void handleItemClick(notification)}
+                    className={`flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition ${
+                      notification.is_read
+                        ? "hover:bg-[var(--acct-surface)]"
+                        : "border border-[var(--acct-gold)]/15 bg-[var(--acct-gold-soft)]/70 hover:bg-[var(--acct-gold-soft)]"
+                    }`}
+                  >
+                    <SourceMark notification={notification} sourceLabel={sourceLabel} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">
+                            {notification.title}
+                          </p>
+                          <p className="mt-1 text-xs font-medium" style={{ color: notification.source.accent }}>
+                            {sourceLabel}
+                          </p>
+                        </div>
+                        {!notification.is_read ? (
+                          <span className="mt-1 h-2.5 w-2.5 rounded-full bg-[var(--acct-gold)]" />
+                        ) : null}
                       </div>
-                      {!notification.is_read ? (
-                        <span className="mt-1 h-2.5 w-2.5 rounded-full bg-[var(--acct-gold)]" />
-                      ) : null}
+                      <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--acct-muted)]">
+                        {notification.body}
+                      </p>
+                      <p className="mt-2 text-[0.7rem] font-medium text-[var(--acct-muted)]">
+                        {timeAgoLocalized(notification.created_at, locale)}
+                      </p>
                     </div>
-                    <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--acct-muted)]">
-                      {notification.body}
-                    </p>
-                    <p className="mt-2 text-[0.7rem] font-medium text-[var(--acct-muted)]">
-                      {timeAgo(notification.created_at)}
-                    </p>
-                  </div>
-                </button>
-              ))
+                  </button>
+                );
+              })
             )}
           </div>
 
@@ -259,7 +269,7 @@ export default function NotificationBell({
                 className="flex items-center justify-center gap-2 rounded-2xl bg-[var(--acct-surface)] px-4 py-3 text-sm font-semibold text-[var(--acct-ink)] transition hover:bg-[var(--acct-bg)]"
               >
                 <Loader2 size={0} className="hidden" />
-                View all notifications <ChevronRight size={14} />
+                {t("View all notifications")} <ChevronRight size={14} />
               </Link>
             </div>
           ) : null}

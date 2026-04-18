@@ -2,25 +2,44 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 
-const categories = [
-  { value: "general", label: "General" },
-  { value: "billing", label: "Billing & Payments" },
-  { value: "care", label: "Care Service" },
-  { value: "marketplace", label: "Marketplace" },
-  { value: "wallet", label: "Wallet" },
-  { value: "account", label: "Account & Security" },
-  { value: "other", label: "Other" },
-];
-
 export default function NewSupportForm() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const categories = [
+    { value: "general", label: t("General") },
+    { value: "billing", label: t("Billing & Payments") },
+    { value: "care", label: t("Care Service") },
+    { value: "marketplace", label: t("Marketplace") },
+    { value: "wallet", label: t("Wallet") },
+    { value: "account", label: t("Account & Security") },
+    { value: "other", label: t("Other") },
+  ];
   const [subject, setSubject] = useState("");
   const [category, setCategory] = useState("general");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  function localizeSupportError(message: string) {
+    switch (message) {
+      case "Unauthorized":
+        return t("Please sign in to continue.");
+      case "Subject and message required":
+        return t("Subject and message required.");
+      case "Failed to create thread":
+      case "Failed to create support message":
+      case "Failed to create request":
+        return t("Failed to create request");
+      case "Internal error":
+        return t("Something went wrong");
+      default:
+        return t(message);
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +54,12 @@ export default function NewSupportForm() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create request");
+      if (!res.ok) throw new Error(localizeSupportError(data.error || "Failed to create request"));
 
       router.push("/support");
       router.refresh();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? localizeSupportError(err.message) : t("Something went wrong"));
     } finally {
       setLoading(false);
     }
@@ -56,7 +75,7 @@ export default function NewSupportForm() {
 
       <div className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Category</label>
+          <label className="mb-1.5 block text-sm font-medium">{t("Category")}</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -71,24 +90,24 @@ export default function NewSupportForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Subject</label>
+          <label className="mb-1.5 block text-sm font-medium">{t("Subject")}</label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             className="acct-input"
-            placeholder="Brief description of your issue"
+            placeholder={t("Brief description of your issue")}
             required
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Message</label>
+          <label className="mb-1.5 block text-sm font-medium">{t("Message")}</label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             className="acct-textarea"
-            placeholder="Describe your issue in detail..."
+            placeholder={t("Describe your issue in detail...")}
             rows={5}
             required
           />
@@ -100,8 +119,8 @@ export default function NewSupportForm() {
         disabled={loading}
         className="acct-button-primary mt-6 w-full rounded-xl py-3"
       >
-        <ButtonPendingContent pending={loading} pendingLabel="Submitting request..." spinnerLabel="Submitting request">
-          Submit request
+        <ButtonPendingContent pending={loading} pendingLabel={t("Submitting request...")} spinnerLabel={t("Submitting request...")}>
+          {t("Submit request")}
         </ButtonPendingContent>
       </button>
     </form>

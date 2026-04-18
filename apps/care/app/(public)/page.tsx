@@ -23,17 +23,25 @@ import {
   getCareSettings,
 } from "@/lib/care-data";
 import { getCarePublicChipUser } from "@/lib/care-public-viewer";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 
 export const revalidate = 60;
 
 const care = getDivisionConfig("care");
 
-export const metadata: Metadata = {
-  title: care.name,
-  description:
-    "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from HenryCo Care.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getCarePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  return {
+    title: care.name,
+    description: t(
+      "Premium garment care, home cleaning, office cleaning, pickup, delivery, and recurring service from HenryCo Care."
+    ),
+  };
+}
 
 const nairaFormatter = new Intl.NumberFormat("en-NG", {
   style: "currency",
@@ -50,13 +58,15 @@ function stars(count: number) {
 }
 
 export default async function CareHomePage() {
-  const [settings, pricing, reviews, catalog, chipUser] = await Promise.all([
+  const [locale, settings, pricing, reviews, catalog, chipUser] = await Promise.all([
+    getCarePublicLocale(),
     getCareSettings(),
     getCarePricing(),
     getApprovedReviews(6),
     getCareBookingCatalog(),
     getCarePublicChipUser(),
   ]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const careHeroFirstName = chipUser
     ? chipUser.displayName.trim().split(/\s+/)[0] || null
@@ -74,38 +84,50 @@ export default async function CareHomePage() {
   const clientProfiles = [
     {
       icon: CheckCircle2,
-      title: "Private households",
-      body: "Recurring home care, one-off intensive cleans, and wardrobe support from one calmer account experience.",
+      title: t("Private households"),
+      body: t(
+        "Recurring home care, one-off intensive cleans, and wardrobe support from one calmer account experience.",
+      ),
     },
     {
       icon: Repeat,
-      title: "Managed estates",
-      body: "Saved schedules, property notes, and steady follow-through for estates, apartments, and multi-unit residences.",
+      title: t("Managed estates"),
+      body: t(
+        "Saved schedules, property notes, and steady follow-through for estates, apartments, and multi-unit residences.",
+      ),
     },
     {
       icon: Building2,
-      title: "Commercial operators",
-      body: "Routine office cleaning with dependable scheduling, clear communication, and accountability from visit to sign-off.",
+      title: t("Commercial operators"),
+      body: t(
+        "Routine office cleaning with dependable scheduling, clear communication, and accountability from visit to sign-off.",
+      ),
     },
   ] as const;
 
   const serviceJourneys = [
     {
-      title: "Garments end in delivery",
-      body: "Garment care moves through pickup, treatment, finishing, packing, and return delivery back to you.",
+      title: t("Garments end in delivery"),
+      body: t(
+        "Garment care moves through pickup, treatment, finishing, packing, and return delivery back to you.",
+      ),
     },
     {
-      title: "Homes end in completion quality",
-      body: "Home cleaning is centred on arrival timing, on-site work, final checks, and a result you can walk back into confidently.",
+      title: t("Homes end in completion quality"),
+      body: t(
+        "Home cleaning is centred on arrival timing, on-site work, final checks, and a result you can walk back into confidently.",
+      ),
     },
     {
-      title: "Offices end in sign-off",
-      body: "Office cleaning is built around schedule readiness, site access, completed tasks, and a confident final handover.",
+      title: t("Offices end in sign-off"),
+      body: t(
+        "Office cleaning is built around schedule readiness, site access, completed tasks, and a confident final handover.",
+      ),
     },
   ] as const;
 
   const heroTitle =
-    settings.hero_title || "Care for garments, homes, and workplaces with one trusted service team.";
+    settings.hero_title || t("Care for garments, homes, and workplaces with one trusted service team.");
 
   return (
     <main
@@ -133,12 +155,13 @@ export default async function CareHomePage() {
             <div>
               <div className="care-chip inline-flex rounded-full px-5 py-3 text-sm font-semibold text-white/76">
                 <ShieldCheck className="h-5 w-5 text-[color:var(--accent)]" />
-                {settings.hero_badge || "Garment care, home cleaning, and office cleaning"}
+                {settings.hero_badge || t("Garment care, home cleaning, and office cleaning")}
               </div>
 
               {chipUser ? (
                 <p className="mt-6 text-sm font-semibold tracking-tight text-white/72">
-                  Welcome back{careHeroFirstName ? `, ${careHeroFirstName}` : ""}.
+                  {t("Welcome back")}
+                  {careHeroFirstName ? `, ${careHeroFirstName}` : ""}.
                 </p>
               ) : null}
 
@@ -150,7 +173,9 @@ export default async function CareHomePage() {
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68 sm:text-xl">
                 {settings.hero_subtitle ||
-                  "Book garment pickup and return delivery, recurring home cleaning, or office cleaning through one calmer service flow with clear timing, payment follow-up, and live updates."}
+                  t(
+                    "Book garment pickup and return delivery, recurring home cleaning, or office cleaning through one calmer service flow with clear timing, payment follow-up, and live updates.",
+                  )}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
@@ -158,22 +183,22 @@ export default async function CareHomePage() {
                   href="/book"
                   className="care-button-primary inline-flex items-center gap-3 rounded-full px-6 py-4 text-sm font-semibold"
                 >
-                  Plan service
+                  {t("Plan service")}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/services"
                   className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.05] px-6 py-4 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
                 >
-                  Explore services
+                  {t("Explore services")}
                 </Link>
               </div>
 
               <div className="mt-8 flex flex-wrap gap-3">
                 {[
-                  "Garments return in delivery",
-                  "Homes and offices finish on-site",
-                  "Clear tracking and payment follow-up",
+                  t("Garments return in delivery"),
+                  t("Homes and offices finish on-site"),
+                  t("Clear tracking and payment follow-up"),
                 ].map((item) => (
                   <span
                     key={item}
@@ -197,14 +222,15 @@ export default async function CareHomePage() {
                   <div className="relative flex min-h-[18rem] flex-col justify-end rounded-[1.6rem] border border-white/10 bg-black/10 p-5 backdrop-blur-[2px]">
                     <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/74">
                       <Sparkles className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                      Signature service image
+                      {t("Signature service image")}
                     </div>
                     <div className="mt-4 text-2xl font-black tracking-[-0.04em] text-white">
-                      The latest Care imagery is reflected here automatically.
+                      {t("The latest Care imagery is reflected here automatically.")}
                     </div>
                     <p className="mt-2 max-w-xl text-sm leading-7 text-white/68">
-                      Every update keeps the public experience aligned with the current HenryCo Care
-                      brand, so the service always feels polished and up to date.
+                      {t(
+                        "Every update keeps the public experience aligned with the current HenryCo Care brand, so the service always feels polished and up to date.",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -213,13 +239,13 @@ export default async function CareHomePage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <InfoPanel
                   icon={Clock3}
-                  label="Service hours"
+                  label={t("Service hours")}
                   value={settings.pickup_hours || "Mon - Sat • 8:00 AM to 7:00 PM"}
-                  note="Pickup windows, visit timing, and support handoff held under one service desk"
+                  note={t("Pickup windows, visit timing, and support handoff held under one service desk")}
                 />
                 <InfoPanel
                   icon={PhoneCall}
-                  label="Support"
+                  label={t("Support")}
                   value={supportPhone || "Support line on request"}
                   note={supportEmail || "care@henrycogroup.com"}
                 />
@@ -227,25 +253,25 @@ export default async function CareHomePage() {
 
               <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.04] p-5">
                 <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                  Service clarity
+                  {t("Service clarity")}
                 </div>
                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
                   <div>
-                    <p className="text-sm font-semibold text-white">Garments</p>
+                    <p className="text-sm font-semibold text-white">{t("Garments")}</p>
                     <p className="mt-1 text-sm leading-6 text-white/64">
-                      Pickup, treatment, finishing, and return delivery.
+                      {t("Pickup, treatment, finishing, and return delivery.")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">Homes</p>
+                    <p className="text-sm font-semibold text-white">{t("Homes")}</p>
                     <p className="mt-1 text-sm leading-6 text-white/64">
-                      Scheduled arrival, on-site work, and completion checks.
+                      {t("Scheduled arrival, on-site work, and completion checks.")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">Offices</p>
+                    <p className="text-sm font-semibold text-white">{t("Offices")}</p>
                     <p className="mt-1 text-sm leading-6 text-white/64">
-                      Site access, service delivery, and final sign-off.
+                      {t("Site access, service delivery, and final sign-off.")}
                     </p>
                   </div>
                 </div>
@@ -262,13 +288,14 @@ export default async function CareHomePage() {
       <section className="mx-auto mt-16 max-w-[88rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[0.94fr_1.06fr]">
           <div className="care-card rounded-[2.2rem] p-8">
-            <div className="care-kicker">Service journeys</div>
+            <div className="care-kicker">{t("Service journeys")}</div>
             <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
-              Service timelines that match the work being done.
+              {t("Service timelines that match the work being done.")}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-              A garment order should feel different from a home clean or an office visit. HenryCo
-              Care keeps each service clear so customers always understand what stage comes next.
+              {t(
+                "A garment order should feel different from a home clean or an office visit. HenryCo Care keeps each service clear so customers always understand what stage comes next.",
+              )}
             </p>
 
             <div className="mt-6 grid gap-4">
@@ -313,13 +340,14 @@ export default async function CareHomePage() {
       <section id="pickup" className="mx-auto mt-16 max-w-[88rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
           <div className="care-card rounded-[2.3rem] p-8">
-            <div className="care-kicker">Residential care</div>
+            <div className="care-kicker">{t("Residential care")}</div>
             <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
-              Home care planned around your property and your schedule.
+              {t("Home care planned around your property and your schedule.")}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-              Move from a one-time clean into recurring home care without losing clarity around
-              scope, timing, staffing, or access notes.
+              {t(
+                "Move from a one-time clean into recurring home care without losing clarity around scope, timing, staffing, or access notes.",
+              )}
             </p>
 
             <div className="mt-6 grid gap-4">
@@ -336,13 +364,14 @@ export default async function CareHomePage() {
           </div>
 
           <div className="care-card rounded-[2.3rem] p-8">
-            <div className="care-kicker">Commercial coverage</div>
+            <div className="care-kicker">{t("Commercial coverage")}</div>
             <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
-              Office cleaning built for reliable business continuity.
+              {t("Office cleaning built for reliable business continuity.")}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-              After-hours cleaning, site access coordination, and recurring workplace care are
-              handled with the same reliability clients expect from any serious service partner.
+              {t(
+                "After-hours cleaning, site access coordination, and recurring workplace care are handled with the same reliability clients expect from any serious service partner.",
+              )}
             </p>
 
             <div className="mt-6 grid gap-4">
@@ -363,13 +392,14 @@ export default async function CareHomePage() {
       <section id="pricing" className="mx-auto mt-16 max-w-[88rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
           <div className="care-card rounded-[2.3rem] p-8">
-            <div className="care-kicker">Current garment pricing</div>
+            <div className="care-kicker">{t("Current garment pricing")}</div>
             <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
-              Garment pricing stays transparent and current.
+              {t("Garment pricing stays transparent and current.")}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-              Dry cleaning, laundry, pressing, and treatment prices stay clear before you book, so
-              the estimate you review feels grounded and believable.
+              {t(
+                "Dry cleaning, laundry, pressing, and treatment prices stay clear before you book, so the estimate you review feels grounded and believable.",
+              )}
             </p>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -398,11 +428,13 @@ export default async function CareHomePage() {
           </div>
 
           <div className="care-card rounded-[2.3rem] p-8">
-            <div className="care-kicker">{hasReviews ? "Client reviews" : "Service trust"}</div>
+            <div className="care-kicker">
+              {hasReviews ? t("Client reviews") : t("Service trust")}
+            </div>
             <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
               {hasReviews
-                ? "Real feedback from clients who have experienced the service."
-                : "Trust signals that make the service feel credible before the first booking."}
+                ? t("Real feedback from clients who have experienced the service.")
+                : t("Trust signals that make the service feel credible before the first booking.")}
             </h2>
 
             <div className="mt-6 grid gap-4">
@@ -438,15 +470,16 @@ export default async function CareHomePage() {
                   </div>
                 ))
               ) : (
-                <div className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-8 text-center dark:border-white/10 dark:bg-white/[0.04]">
-                  <div className="text-xl font-semibold text-zinc-950 dark:text-white">
-                    Clear pricing, tracked handoffs, and direct support stay visible from the start.
+                  <div className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-8 text-center dark:border-white/10 dark:bg-white/[0.04]">
+                    <div className="text-xl font-semibold text-zinc-950 dark:text-white">
+                      {t("Clear pricing, tracked handoffs, and direct support stay visible from the start.")}
+                    </div>
+                    <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                      {t(
+                        "HenryCo Care shows the service path, pickup logic, and support channels up front so customers do not have to guess what happens after they book.",
+                      )}
+                    </p>
                   </div>
-                  <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
-                    HenryCo Care shows the service path, pickup logic, and support channels up front so
-                    customers do not have to guess what happens after they book.
-                  </p>
-                </div>
               )}
             </div>
           </div>
@@ -463,13 +496,14 @@ export default async function CareHomePage() {
             }}
           />
           <div className="relative max-w-2xl">
-            <div className="care-kicker">Ready when you are</div>
+            <div className="care-kicker">{t("Ready when you are")}</div>
             <h2 className="mt-3 care-section-title text-white">
-              Book with clarity, then follow the service with confidence.
+              {t("Book with clarity, then follow the service with confidence.")}
             </h2>
             <p className="mt-4 text-sm leading-7 text-white/66">
-              From pickup windows to on-site visits and return delivery, HenryCo Care keeps every
-              service update visible enough that you are not left guessing.
+              {t(
+                "From pickup windows to on-site visits and return delivery, HenryCo Care keeps every service update visible enough that you are not left guessing.",
+              )}
             </p>
           </div>
 
@@ -478,14 +512,14 @@ export default async function CareHomePage() {
               href="/book"
               className="care-button-primary inline-flex items-center gap-2 rounded-full px-6 py-4 text-sm font-semibold"
             >
-              Plan service
+              {t("Plan service")}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/services"
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-6 py-4 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
             >
-              Explore service families
+              {t("Explore service families")}
             </Link>
           </div>
         </div>

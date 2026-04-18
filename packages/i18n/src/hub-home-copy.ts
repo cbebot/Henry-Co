@@ -1494,6 +1494,218 @@ const HUB_HOME_COPY_HA: Partial<HubHomeCopy> = {
   ],
 };
 
+const HUB_HOME_COPY_IT: Partial<HubHomeCopy> = {
+  "nav": {
+    "featured": "In primo piano",
+    "directory": "Directory",
+    "company": "Azienda",
+    "faq": "Domande frequenti",
+    "about": "Chi siamo",
+    "contact": "Contatto"
+  },
+  "companyPages": {
+    "about": "Informazioni su Henry & Co.",
+    "contact": "Contatta l'azienda",
+    "privacy": "Informativa sulla privacy",
+    "terms": "Termini e condizioni"
+  },
+  "status": {
+    "active": "Attivo",
+    "comingSoon": "Prossimamente",
+    "paused": "In pausa"
+  },
+  "hero": {
+    "badgeBefore": "Rete aziendale premium • premi",
+    "badgeAfter": " per cercare",
+    "titleBefore": "Esplora le attività, i servizi e le divisioni operative di",
+    "titleAfter": ".",
+    "ctaExplore": "Esplora tutte le divisioni",
+    "ctaFeatured": "Visualizza le divisioni in primo piano"
+  },
+  "introDefault": "Henry & Co. riunisce aziende mirate sotto un'identità di gruppo rispettata. Questo hub aiuta clienti, partner e stakeholder a comprendere l'azienda, individuare la divisione giusta e andare avanti con sicurezza.",
+  "brandPanel": {
+    "eyebrow": "Sistema di marchi aziendali",
+    "baseDomain": "Dominio di base",
+    "accent": "Accento",
+    "logoStatus": "Stato del logo",
+    "logoConfigured": "Configurato",
+    "logoFallback": "Marchio di riserva"
+  },
+  "stats": {
+    "divisions": "Divisioni",
+    "activeNow": "Attivo adesso",
+    "comingSoon": "Prossimamente",
+    "sectors": "Settori dei servizi"
+  },
+  "standardCard": {
+    "eyebrow": "Norma del gruppo",
+    "title": "Uno standard unificato in ogni divisione.",
+    "bullets": [
+      "Ciascuna divisione opera con il proprio focus sul mercato riflettendo al tempo stesso gli standard del gruppo Henry & Co. più ampio.",
+      "L'hub aziendale aiuta i visitatori a capire dove andare, chi coinvolgere e come è organizzato il gruppo.",
+      "Man mano che l'azienda si espande, nuove divisioni possono essere introdotte all'interno di un'unica struttura chiara e credibile.",
+      "Il risultato è una presenza pubblica più forte, una migliore navigazione e un'esperienza più professionale in ogni punto di contatto."
+    ],
+    "latestUpdate": "Ultimo aggiornamento aziendale",
+    "operatingStandard": "Norma operativa",
+    "operatingStandardValue": "Coerente e mantenuto",
+    "spotlightEyebrow": "Riflettori attuali",
+    "spotlightFallback": "Una divisione Henry & Co. in primo piano che rappresenta il gruppo con chiarezza e concentrazione.",
+    "featured": "In primo piano",
+    "viewDetails": "Visualizza i dettagli",
+    "visitDivision": "Divisione visite",
+    "serverError": "Alcune informazioni sono attualmente in fase di aggiornamento."
+  },
+  "premiumRow": {
+    "discovery": {
+      "eyebrow": "Scoperta",
+      "title": "Indirizza le persone al business giusto",
+      "text": "L'hub rimuove le ambiguità, rafforza la fiducia e aiuta ogni visitatore a raggiungere la divisione Henry & Co. più pertinente senza confusione."
+    },
+    "corporate": {
+      "eyebrow": "Presenza aziendale",
+      "title": "Presentare il gruppo con maturità",
+      "text": "Questo livello pubblico supporta la reputazione dell’azienda, una comunicazione più chiara e un’identità più forte a livello di gruppo in ogni punto di contatto affacciato sul mercato."
+    },
+    "scale": {
+      "eyebrow": "Scalabilità",
+      "title": "Costruito per la crescita e la continuità",
+      "text": "Man mano che il gruppo cresce, nuove attività e pagine aziendali possono essere introdotte all'interno dello stesso quadro premium senza indebolire la coerenza."
+    }
+  },
+  "featuredSection": {
+    "eyebrow": "Divisioni in primo piano",
+    "title": "Divisioni selezionate che attualmente rappresentano il gruppo",
+    "body": "Queste attività fungono attualmente da principali punti di accesso pubblico al gruppo Henry & Co.",
+    "viewDirectory": "Visualizza l'elenco completo"
+  },
+  "directory": {
+    "eyebrow": "Directory",
+    "title": "Individua l'attività Henry & Co. giusta",
+    "body": "Cerca per nome della divisione, categoria, enfasi sul servizio o focus aziendale. Questa directory esiste per aiutare le persone a spostarsi rapidamente e con sicurezza nella parte giusta dell'azienda.",
+    "searchPlaceholder": "Cerca divisioni, servizi, categorie, sottodomini...",
+    "clearSearchAria": "Cancella ricerca",
+    "popularSectors": "Settori popolari",
+    "featuredOn": "Mostra solo in primo piano",
+    "featuredOff": "Limita a in primo piano",
+    "allCategories": "Tutte le categorie",
+    "filterAll": "Tutto",
+    "filterActive": "Attivo",
+    "filterSoon": "Prossimamente",
+    "filterPaused": "In pausa",
+    "showing": "Mostrare",
+    "total": "Totale",
+    "featured": "In primo piano",
+    "overviewEyebrow": "Panoramica della directory",
+    "clearAll": "Cancella tutto",
+    "ready": "Pronto",
+    "activeRefinements": "Raffinamenti attivi",
+    "lastUpdated": "Ultimo aggiornamento",
+    "companyPagesEyebrow": "Pagine a livello aziendale",
+    "empty": "Non è stata trovata alcuna divisione corrispondente. Cancella i filtri o amplia i criteri di ricerca."
+  },
+  "ecosystem": {
+    "eyebrow": "Perché questo è importante",
+    "title": "Una presenza aziendale più chiara crea fiducia già prima della prima conversazione",
+    "body": "Un hub aziendale ben strutturato aiuta il pubblico a comprendere la portata dell'azienda, la relazione tra le sue divisioni e il livello di professionalità dietro ogni servizio.",
+    "bullets": [
+      "Maggiore fiducia nel marchio in tutti i punti di contatto pubblici.",
+      "Routing più efficiente per clienti, partner e stakeholder.",
+      "Una base migliore per attività, campagne e annunci futuri.",
+      "Una base credibile per la comunicazione rivolta all'azienda, ai media e agli investitori."
+    ],
+    "big": [
+      "Unità aziendali indipendenti",
+      "Presentazione di livello aziendale",
+      "Preparati per una crescita a lungo termine"
+    ],
+    "bigText": [
+      "Ogni divisione può crescere attraverso i propri flussi di lavoro, pagine pubbliche e direzione commerciale pur rimanendo allineata con la società madre.",
+      "Il gruppo può comunicare con maggiore maturità, segnali di fiducia più forti e un posizionamento più chiaro nei mercati e nel pubblico.",
+      "Con l’introduzione di nuove divisioni e iniziative pubbliche, l’azienda può continuare ad espandersi senza compromettere la coerenza."
+    ]
+  },
+  "access": {
+    "eyebrow": "Accesso aziendale",
+    "title": "Tutto inizia con una prima impressione più chiara",
+    "body": "Che qualcuno scopra l'azienda per la prima volta o ritorni a lavorare con una divisione specifica, l'hub fornisce un percorso chiaro e raffinato verso il gruppo Henry & Co. più ampio.",
+    "ctaPages": "Esplora le pagine aziendali",
+    "ctaDirectory": "Visualizza l'elenco",
+    "cards": [
+      "Standard aziendale",
+      "Navigazione del cliente",
+      "Fiducia nel marchio"
+    ],
+    "cardValues": [
+      "Coerente e professionale",
+      "Chiaro e guidato",
+      "Presenza pubblica premium"
+    ]
+  },
+  "faq": {
+    "eyebrow": "Chiesto frequentemente",
+    "title": "Domande frequenti",
+    "subtitle": "Queste risposte aiutano i clienti, i partner e le parti interessate a comprendere come funziona l'azienda prima che abbiano bisogno di contattarli."
+  },
+  "topBar": {
+    "search": "Centro di ricerca",
+    "explore": "Esplora"
+  },
+  "footer": {
+    "exploreDivisions": "Esplora le divisioni",
+    "companyPages": "Pagine aziendali",
+    "colHub": "Polo aziendale",
+    "colGlobal": "Pagine globali"
+  },
+  "cards": {
+    "divisionFallbackLong": "Una divisione Henry & Co. rivolta al pubblico, creata per servire un mercato mirato con chiarezza e presentazione premium.",
+    "divisionFallbackShort": "Una divisione Henry & Co. focalizzata presentata come un marchio operativo indipendente all'interno del più ampio ecosistema aziendale.",
+    "destination": "Destinazione",
+    "notConfigured": "Non ancora configurato",
+    "openDivision": "Divisione aperta",
+    "divisionDestination": "Destinazione della Divisione",
+    "lead": "Piombo",
+    "details": "Dettagli",
+    "open": "Aperto",
+    "featured": "In primo piano"
+  },
+  "modal": {
+    "closeAria": "Chiudi",
+    "enterDivision": "Inserisci la divisione",
+    "kpiStatus": "Stato",
+    "kpiSubdomain": "Sottodominio",
+    "kpiFeatured": "In primo piano",
+    "kpiUpdated": "Aggiornato",
+    "kpiYes": "Sì",
+    "kpiNo": "No",
+    "who": "A chi serve",
+    "how": "Come funziona",
+    "trust": "Perché i clienti lo scelgono",
+    "highlights": "Punti salienti",
+    "leadEyebrow": "Guida della divisione",
+    "leadFallbackTitle": "Profilo dirigenziale",
+    "links": "Collegamenti"
+  },
+  "faqFallback": [
+    {
+      "q": "Posso andare direttamente ad una divisione senza partire da questa pagina?",
+      "a": "Sì. Ad ogni divisione è comunque possibile accedere direttamente attraverso la propria destinazione. Questo hub esiste per rendere più semplice la comprensione dell'azienda nel suo insieme e per aiutare i visitatori a raggiungere più rapidamente l'azienda giusta."
+    },
+    {
+      "q": "Verranno visualizzate ulteriori divisioni man mano che l'azienda cresce?",
+      "a": "Sì. Man mano che Henry & Co. si espande, nuove divisioni possono essere introdotte attraverso la stessa struttura aziendale in modo che l'esperienza pubblica rimanga chiara, coerente e ben organizzata."
+    },
+    {
+      "q": "Per chi è progettato questo sito web?",
+      "a": "L'hub è al servizio di clienti, partner, fornitori, media, talenti e parti interessate che necessitano di una visione più chiara del gruppo Henry & Co. e delle sue attività operative."
+    },
+    {
+      "q": "Quali pagine aziendali dovrei rivedere per prime?",
+      "a": "I migliori punti di partenza sono le pagine Informazioni, Contatti, Informativa sulla privacy e Termini e condizioni. Insieme, forniscono una visione più chiara dell’azienda, dei suoi standard e delle sue politiche pubbliche."
+    }
+  ]
+};
+
 const HUB_HOME_LOCALE_MAP: Partial<Record<AppLocale, Partial<HubHomeCopy>>> = {
   fr: HUB_HOME_COPY_FR,
   es: HUB_HOME_COPY_ES,
@@ -1503,6 +1715,7 @@ const HUB_HOME_LOCALE_MAP: Partial<Record<AppLocale, Partial<HubHomeCopy>>> = {
   yo: HUB_HOME_COPY_YO,
   ha: HUB_HOME_COPY_HA,
   de: HUB_HOME_COPY_DE,
+  it: HUB_HOME_COPY_IT,
   zh: HUB_HOME_COPY_ZH,
   hi: HUB_HOME_COPY_HI,
 };

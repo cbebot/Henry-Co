@@ -1,17 +1,21 @@
 import Link from "next/link";
 import { ListTodo } from "lucide-react";
+import { getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
 import { buildAccountTasks } from "@/lib/intelligence-rollout";
 import { getAccountTrustProfile } from "@/lib/trust";
+import { getLocalizedTrustRequirements, localizeAccountTask } from "@/lib/account-localization";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
 
 export const dynamic = "force-dynamic";
 
 export default async function TasksPage() {
-  const user = await requireAccountUser();
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const copy = getAccountCopy(locale);
   const [data, funding, trust, supportThreads] = await Promise.all([
     getDashboardSummary(user.id),
     getWalletFundingContext(user.id),
@@ -22,6 +26,7 @@ export default async function TasksPage() {
     const status = String(thread.status || "");
     return status !== "resolved" && status !== "closed";
   }).length;
+  const trustRequirements = getLocalizedTrustRequirements(copy, trust);
 
   const tasks = buildAccountTasks({
     userId: user.id,
@@ -29,28 +34,27 @@ export default async function TasksPage() {
     pendingFundingKobo: funding.pending_kobo,
     openSupportCount,
     trust,
-  });
+  }).map((task) => localizeAccountTask(copy, task, trustRequirements));
 
   return (
     <div className="space-y-6 acct-fade-in">
       <RouteLiveRefresh intervalMs={12000} />
       <PageHeader
-        title="Tasks"
-        description="Prioritized actions across account, trust, wallet, and support."
+        title={copy.tasks.title}
+        description={copy.tasks.description}
         icon={ListTodo}
       />
       <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
-        <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">How this queue works</p>
+        <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">{copy.tasks.queueTitle}</p>
         <p className="mt-2 text-sm text-[var(--acct-muted)]">
-          Blocking tasks can prevent access to important workflows. High-priority items are next-best actions to
-          keep your account healthy and avoid delays.
+          {copy.tasks.queueBody}
         </p>
       </div>
       {tasks.length === 0 ? (
         <EmptyState
           icon={ListTodo}
-          title="No active tasks"
-          description="You’re currently clear. Tasks will appear here when action is needed."
+          title={copy.tasks.emptyTitle}
+          description={copy.tasks.emptyDescription}
         />
       ) : (
         <div className="acct-card divide-y divide-[var(--acct-line)]">
@@ -63,14 +67,14 @@ export default async function TasksPage() {
               <div className="flex items-center justify-between gap-2">
                 <p className="text-sm font-semibold text-[var(--acct-ink)]">{task.title}</p>
                 <span className="acct-chip acct-chip-blue text-[0.65rem]">
-                  {task.blocking ? "blocking" : task.priority}
+                  {task.blocking ? copy.tasks.blocking : copy.tasks.priorityLabels[task.priority]}
                 </span>
               </div>
               {task.description ? (
                 <p className="mt-1 text-sm text-[var(--acct-muted)]">{task.description}</p>
               ) : null}
               <p className="mt-1 text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                Source: {task.sourceDivision}
+                {copy.common.source}: {translateSurfaceLabel(locale, task.sourceDivision)}
               </p>
             </Link>
           ))}

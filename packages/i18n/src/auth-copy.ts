@@ -485,12 +485,53 @@ const HA: Partial<AuthCopy> = {
   },
 };
 
+const IT: Partial<AuthCopy> = {
+  "login": {
+    "heading": "Bentornato",
+    "subheading": "Accedi per continuare con il tuo account Henry & Co.",
+    "emailLabel": "Indirizzo e-mail",
+    "passwordLabel": "Password",
+    "rememberMe": "Ricordami",
+    "forgotPassword": "Password dimenticata?",
+    "submitButton": "Accedi",
+    "signupPrompt": "Non hai ancora un account?",
+    "signupCta": "Crea un account"
+  },
+  "signup": {
+    "heading": "Crea il tuo account",
+    "subheading": "Configura un unico account per tutte le divisioni Henry & Co.",
+    "fullNameLabel": "Nome completo",
+    "emailLabel": "Indirizzo e-mail",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Conferma la password",
+    "consentLine": "Continuando, accetti i nostri Termini e l'Informativa sulla privacy.",
+    "submitButton": "Crea un account",
+    "loginPrompt": "Hai già un account?",
+    "loginCta": "Accedi"
+  },
+  "reset": {
+    "heading": "Reimposta la tua password",
+    "subheading": "Ti invieremo via e-mail un link sicuro per reimpostare la password.",
+    "emailLabel": "Indirizzo e-mail",
+    "submitButton": "Invia il link di reset",
+    "success": "Link di reset inviato. Controlla la tua e-mail."
+  },
+  "errors": {
+    "invalidCredentials": "L'e-mail o la password non sono corrette.",
+    "invalidEmail": "Inserisci un indirizzo e-mail valido.",
+    "passwordTooShort": "La password deve contenere almeno 8 caratteri.",
+    "sessionExpired": "La sessione è scaduta. Accedi di nuovo.",
+    "generic": "Qualcosa è andato storto. Riprova."
+  }
+};
+
 const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<AuthCopy>>> = {
   fr: FR,
   es: ES,
   pt: PT,
   ar: AR,
   de: DE,
+  it: IT,
   zh: ZH,
   hi: HI,
   ig: IG,

@@ -14,6 +14,11 @@ import {
   Plus,
   Sparkles,
 } from "lucide-react";
+import {
+  formatSurfaceTemplate,
+  translateSurfaceLabel,
+  type AppLocale,
+} from "@henryco/i18n";
 import CopyButton from "@/components/ui/CopyButton";
 import PendingSubmitButton from "@/components/forms/PendingSubmitButton";
 import type {
@@ -146,6 +151,7 @@ function stepCountInput(value: string, delta: number) {
 }
 
 export default function BookPickupForm({
+  locale,
   pricingItems,
   catalog,
   paymentSettings,
@@ -153,6 +159,7 @@ export default function BookPickupForm({
   defaultContact,
   action,
 }: {
+  locale: AppLocale;
   pricingItems: PricingItem[];
   catalog: CareBookingCatalog;
   paymentSettings: {
@@ -201,7 +208,10 @@ export default function BookPickupForm({
   const [returnAddress, setReturnAddress] = useState("");
   const [returnSameAsPickup, setReturnSameAsPickup] = useState(mode === "service");
   const deferredSearch = useDeferredValue(search);
-  const addressBook = savedAddresses ?? [];
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const tf = (template: string, values: Record<string, string | number>) =>
+    formatSurfaceTemplate(template, values);
+  const addressBook = useMemo(() => savedAddresses ?? [], [savedAddresses]);
   const hasAddressBook = addressBook.length > 0;
 
   useEffect(() => {
@@ -523,12 +533,12 @@ export default function BookPickupForm({
 
   function quoteLabel(type: CareServiceType | null) {
     if (!type) {
-      return "Submit service request";
+      return t("Submit service request");
     }
 
     return type.is_recurring_eligible && frequencyKey !== "one_time"
-      ? "Start recurring plan"
-      : "Submit service request";
+      ? t("Start recurring plan")
+      : t("Submit service request");
   }
 
   return (
@@ -551,16 +561,17 @@ export default function BookPickupForm({
             {mode === "garment" ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
                 <Check className="h-3.5 w-3.5" />
-                Active
+                {t("Active")}
               </span>
             ) : null}
           </div>
           <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
-            Wardrobe care and return delivery
+            {t("Wardrobe care and return delivery")}
           </div>
           <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-            Dry cleaning, laundry, pressing, stain treatment, and mixed garment intake under one
-            cleaner customer record that ends in return delivery.
+            {t(
+              "Dry cleaning, laundry, pressing, stain treatment, and mixed garment intake under one cleaner customer record that ends in return delivery.",
+            )}
           </p>
         </button>
 
@@ -581,38 +592,41 @@ export default function BookPickupForm({
             {mode === "service" ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
                 <Check className="h-3.5 w-3.5" />
-                Active
+                {t("Active")}
               </span>
             ) : null}
           </div>
           <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
-            Residential or workplace execution
+            {t("Residential or workplace execution")}
           </div>
           <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-            One-time or recurring cleaning, site notes, workplace upkeep, and a cleaner quoting flow that ends in completed work, not delivery movement.
+            {t(
+              "One-time or recurring cleaning, site notes, workplace upkeep, and a cleaner quoting flow that ends in completed work, not delivery movement.",
+            )}
           </p>
         </button>
       </div>
 
       <div className="care-sheen rounded-[28px] border border-black/10 bg-white/72 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-          Service path
+          {t("Service path")}
         </div>
         <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/66">
-          Wardrobe requests are built around pickup, treatment, and return delivery. Home and office
-          requests are built around team arrival, execution, inspection, and confirmed completion.
+          {t(
+            "Wardrobe requests are built around pickup, treatment, and return delivery. Home and office requests are built around team arrival, execution, inspection, and confirmed completion.",
+          )}
         </p>
       </div>
 
       <section className="rounded-[30px] border border-black/10 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
         <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           <CalendarDays className="h-4 w-4" />
-          Booking details
+          {t("Booking details")}
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           <input
             name="customer_name"
-            placeholder="Customer or contact name"
+            placeholder={t("Customer or contact name")}
             autoComplete="name"
             defaultValue={defaultContact?.fullName ?? ""}
             className={inputCls}
@@ -623,7 +637,7 @@ export default function BookPickupForm({
             type="tel"
             inputMode="tel"
             autoComplete="tel"
-            placeholder="Primary contact number"
+            placeholder={t("Primary contact number")}
             defaultValue={defaultContact?.phone ?? ""}
             className={inputCls}
             required
@@ -631,13 +645,13 @@ export default function BookPickupForm({
           <input
             name="email"
             type="email"
-            placeholder="Email for updates and receipts"
+            placeholder={t("Email for updates and receipts")}
             defaultValue={defaultContact?.email ?? ""}
             className={inputCls}
           />
           <div className="md:col-span-2 grid gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-              Pickup address
+              {t("Pickup address")}
             </p>
             {hasAddressBook ? (
               <select
@@ -665,8 +679,8 @@ export default function BookPickupForm({
               autoComplete="street-address"
               placeholder={
                 mode === "garment"
-                  ? "Where we collect your items"
-                  : "Property, residence, or site address"
+                  ? t("Where we collect your items")
+                  : t("Property, residence, or site address")
               }
               className={inputCls}
               value={pickupAddress}
@@ -677,13 +691,13 @@ export default function BookPickupForm({
               required
             />
             <p className="text-xs text-zinc-500 dark:text-white/50">
-              Pickup is where our team arrives first.
+              {t("Pickup is where our team arrives first.")}
             </p>
           </div>
           {mode === "garment" ? (
             <div className="md:col-span-2 grid gap-3">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                Return / delivery address
+                {t("Return / delivery address")}
               </p>
               <label className="inline-flex items-center gap-2 text-xs font-medium text-zinc-600 dark:text-white/65">
                 <input
@@ -695,7 +709,7 @@ export default function BookPickupForm({
                     if (next) setReturnAddress(pickupAddress);
                   }}
                 />
-                Same as pickup address
+                {t("Same as pickup address")}
               </label>
               {!returnSameAsPickup && hasAddressBook ? (
                 <select
@@ -710,7 +724,7 @@ export default function BookPickupForm({
                   }}
                   className={inputCls}
                 >
-                  <option value="">Use a custom return address</option>
+                  <option value="">{t("Use a custom return address")}</option>
                   {addressBook.map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.label}
@@ -721,7 +735,7 @@ export default function BookPickupForm({
               <input
                 name="return_address"
                 autoComplete="street-address"
-                placeholder="Where we return cleaned items"
+                placeholder={t("Where we return cleaned items")}
                 className={cn(
                   inputCls,
                   returnSameAsPickup ? "cursor-not-allowed opacity-80" : undefined
@@ -733,7 +747,7 @@ export default function BookPickupForm({
                 aria-disabled={returnSameAsPickup}
               />
               <p className="text-xs text-zinc-500 dark:text-white/50">
-                Return address is where completed items are delivered after treatment.
+                {t("Return address is where completed items are delivered after treatment.")}
               </p>
             </div>
           ) : null}
@@ -766,8 +780,12 @@ export default function BookPickupForm({
             rows={4}
             placeholder={
               mode === "garment"
-                ? "Fabric notes, fragile trims, stain concerns, gate instructions, or rider guidance."
-                : "Access instructions, parking guidance, focus areas, entry notes, supervisor details, or support context."
+                ? t(
+                    "Fabric notes, fragile trims, stain concerns, gate instructions, or rider guidance.",
+                  )
+                : t(
+                    "Access instructions, parking guidance, focus areas, entry notes, supervisor details, or support context.",
+                  )
             }
             className={textareaCls}
           />
@@ -780,21 +798,22 @@ export default function BookPickupForm({
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                  Current garment pricing
+                  {t("Current garment pricing")}
                 </div>
                 <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
-                  Compose the garment manifest
+                  {t("Compose the garment manifest")}
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                  Add each garment line cleanly. Quantity, urgency, and treatment stay attached to
-                  the same tracking record all the way to return delivery.
+                  {t(
+                    "Add each garment line cleanly. Quantity, urgency, and treatment stay attached to the same tracking record all the way to return delivery.",
+                  )}
                 </p>
               </div>
 
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search garments, categories, or care notes"
+                placeholder={t("Search garments, categories, or care notes")}
                 className={cn(inputCls, "lg:max-w-sm")}
               />
             </div>
@@ -826,7 +845,7 @@ export default function BookPickupForm({
                         </div>
                         {item.is_featured ? (
                           <span className="rounded-full bg-[color:var(--accent)]/12 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
-                            Featured
+                            {t("Featured")}
                           </span>
                         ) : null}
                       </div>
@@ -841,7 +860,7 @@ export default function BookPickupForm({
                         <div className="flex items-end justify-between gap-4">
                           <div>
                             <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                              Starting rate
+                              {t("Starting rate")}
                             </div>
                             <div className="mt-2 text-3xl font-black tracking-tight text-[color:var(--accent)]">
                               {formatMoney(item.price)}
@@ -853,7 +872,7 @@ export default function BookPickupForm({
 
                           {selected ? (
                             <span className="rounded-full border border-emerald-300/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
-                              In manifest
+                              {t("In manifest")}
                             </span>
                           ) : null}
                         </div>
@@ -861,7 +880,7 @@ export default function BookPickupForm({
                         <div className={quantityDockCls}>
                           <div className="min-w-0">
                             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                              Quantity
+                              {t("Quantity")}
                             </div>
                             <div className="mt-1 text-lg font-semibold text-zinc-950 dark:text-white">
                               {selected?.quantity ?? 0}
@@ -897,7 +916,7 @@ export default function BookPickupForm({
                 })
               ) : (
                 <div className="rounded-[28px] border border-black/10 bg-black/[0.02] p-8 text-center text-sm text-zinc-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/55 md:col-span-2 xl:col-span-3">
-                  No garment pricing matched this search.
+                  {t("No garment pricing matched this search.")}
                 </div>
               )}
             </div>
@@ -907,35 +926,35 @@ export default function BookPickupForm({
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                  Estimated garment quote
+                  {t("Estimated garment quote")}
                 </div>
                 <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
-                  Selected garment lines
+                  {t("Selected garment lines")}
                 </div>
               </div>
 
               <div className="grid gap-2 rounded-[24px] border border-black/10 bg-black/[0.02] p-4 text-sm dark:border-white/10 dark:bg-white/[0.03]">
                 <div className="flex items-center justify-between gap-6">
-                  <span className="text-zinc-500 dark:text-white/55">Subtotal</span>
+                  <span className="text-zinc-500 dark:text-white/55">{t("Subtotal")}</span>
                   <span className="font-semibold text-zinc-950 dark:text-white">
                     {formatMoney(garmentEstimate.subtotal)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-6">
-                  <span className="text-zinc-500 dark:text-white/55">Urgent handling</span>
+                  <span className="text-zinc-500 dark:text-white/55">{t("Urgent handling")}</span>
                   <span className="font-semibold text-zinc-950 dark:text-white">
                     {formatMoney(garmentEstimate.urgent)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-6">
-                  <span className="text-zinc-500 dark:text-white/55">Treatment uplift</span>
+                  <span className="text-zinc-500 dark:text-white/55">{t("Treatment uplift")}</span>
                   <span className="font-semibold text-zinc-950 dark:text-white">
                     {formatMoney(garmentEstimate.treatment)}
                   </span>
                 </div>
                 <div className="h-px bg-black/10 dark:bg-white/10" />
                 <div className="flex items-center justify-between gap-6">
-                  <span className="font-semibold text-zinc-900 dark:text-white">Estimated total</span>
+                  <span className="font-semibold text-zinc-900 dark:text-white">{t("Estimated total")}</span>
                   <span className="text-lg font-black text-[color:var(--accent)]">
                     {formatMoney(garmentEstimate.total)}
                   </span>
@@ -968,12 +987,15 @@ export default function BookPickupForm({
                             {pricing.item_name}
                           </div>
                           <div className="mt-1 text-sm text-zinc-600 dark:text-white/65">
-                            Base rate {formatMoney(pricing.price)} / {pricing.unit}
+                            {tf("Base rate {price} / {unit}", {
+                              price: formatMoney(pricing.price),
+                              unit: pricing.unit,
+                            })}
                           </div>
                         </div>
 
                         <div className="text-right">
-                          <div className="text-sm text-zinc-500 dark:text-white/55">Line total</div>
+                          <div className="text-sm text-zinc-500 dark:text-white/55">{t("Line total")}</div>
                           <div className="text-2xl font-black tracking-tight text-[color:var(--accent)]">
                             {formatMoney(lineTotal)}
                           </div>
@@ -983,7 +1005,7 @@ export default function BookPickupForm({
                       <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.88fr)]">
                         <label className="grid gap-2">
                           <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                            Quantity
+                            {t("Quantity")}
                           </span>
                           <div className={quantityDockCls}>
                             <button
@@ -1013,7 +1035,7 @@ export default function BookPickupForm({
 
                         <label className="grid gap-2">
                           <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                            Treatment
+                            {t("Treatment")}
                           </span>
                           <select
                             value={item.treatment}
@@ -1024,16 +1046,16 @@ export default function BookPickupForm({
                             }
                             className={inputCls}
                           >
-                            <option value="standard">Standard</option>
-                            <option value="stain">Stain treatment</option>
-                            <option value="deep_stain">Deep stain rescue</option>
-                            <option value="delicate">Delicate handling</option>
+                            <option value="standard">{t("Standard")}</option>
+                            <option value="stain">{t("Stain treatment")}</option>
+                            <option value="deep_stain">{t("Deep stain rescue")}</option>
+                            <option value="delicate">{t("Delicate handling")}</option>
                           </select>
                         </label>
 
                         <label className="grid gap-2">
                           <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                            Urgency
+                            {t("Urgency")}
                           </span>
                           <button
                             type="button"
@@ -1047,7 +1069,9 @@ export default function BookPickupForm({
                                 : "border-black/10 bg-white/80 text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
                             )}
                           >
-                            {item.urgent ? "Express handling applied" : "Standard turnaround"}
+                            {item.urgent
+                              ? t("Express handling applied")
+                              : t("Standard turnaround")}
                           </button>
                         </label>
                       </div>
@@ -1056,7 +1080,7 @@ export default function BookPickupForm({
                 })
               ) : (
                 <div className="rounded-[28px] border border-black/10 bg-black/[0.02] p-8 text-center text-sm text-zinc-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/55">
-                  No garment lines selected yet. Add items above to build the manifest.
+                  {t("No garment lines selected yet. Add items above to build the manifest.")}
                 </div>
               )}
             </div>
@@ -1066,10 +1090,10 @@ export default function BookPickupForm({
         <section className="space-y-6">
           <div className="rounded-[30px] border border-black/10 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                Service lane
+                {t("Service lane")}
               </div>
               <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
-                Choose the service structure
+                {t("Choose the service structure")}
               </div>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -1107,6 +1131,7 @@ export default function BookPickupForm({
               {serviceTypes.map((item) => (
                 <ServiceTypeCard
                   key={item.id}
+                  locale={locale}
                   item={item}
                   active={item.key === serviceTypeKey}
                   onClick={() => setServiceTypeKey(item.key)}
@@ -1119,14 +1144,14 @@ export default function BookPickupForm({
             <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
               <div>
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                Packages
+                {t("Packages")}
               </div>
               <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
-                  Choose a recommended baseline
+                  {t("Choose a recommended baseline")}
                 </div>
               </div>
               <div className="text-sm text-zinc-500 dark:text-white/55">
-                Optional, but useful for a steadier quote, staffing plan, and recurring baseline.
+                {t("Optional, but useful for a steadier quote, staffing plan, and recurring baseline.")}
               </div>
             </div>
 
@@ -1168,7 +1193,8 @@ export default function BookPickupForm({
                           {formatMoney(item.base_price)}
                         </div>
                         <div className="text-right text-xs uppercase tracking-[0.14em] text-zinc-400 dark:text-white/45">
-                          {formatFrequencyLabel(item.default_frequency)} • {item.staff_count} staff
+                          {t(formatFrequencyLabel(item.default_frequency))} •{" "}
+                          {tf("{count} staff", { count: item.staff_count })}
                         </div>
                       </div>
                     </button>
@@ -1176,7 +1202,7 @@ export default function BookPickupForm({
                 })
               ) : (
                 <div className="rounded-[28px] border border-black/10 bg-black/[0.02] p-8 text-center text-sm text-zinc-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/55 xl:col-span-3">
-                  No preset matches this service yet. The quote will fall back to the base service logic.
+                  {t("No preset matches this service yet. The quote will fall back to the base service logic.")}
                 </div>
               )}
             </div>
@@ -1185,16 +1211,16 @@ export default function BookPickupForm({
           <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
             <div className="rounded-[30px] border border-black/10 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                Service details
+                {t("Service details")}
               </div>
               <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
-                Define the visit clearly
+                {t("Define the visit clearly")}
               </div>
 
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <ServiceDetailField
-                  label="Service zone"
-                  hint="Choose the area the team is travelling to. Any travel uplift comes from this zone."
+                  label={t("Service zone")}
+                  hint={t("Choose the area the team is travelling to. Any travel uplift comes from this zone.")}
                 >
                   <select
                     value={zoneKey}
@@ -1204,18 +1230,20 @@ export default function BookPickupForm({
                     {zoneOptions.map((item) => (
                       <option key={item.id} value={item.key}>
                         {item.name}{" "}
-                        {item.travel_fee ? `(+${formatMoney(item.travel_fee)})` : "(included)"}
+                        {item.travel_fee
+                          ? `(+${formatMoney(item.travel_fee)})`
+                          : t("(included)")}
                       </option>
                     ))}
                   </select>
                 </ServiceDetailField>
 
                 <ServiceDetailField
-                  label="Property type"
+                  label={t("Property type")}
                   hint={
                     serviceCategory === "office"
-                      ? "Pick the office setting so the crew arrives with the right plan."
-                      : "Pick the kind of home so the cleaning scope matches the property."
+                      ? t("Pick the office setting so the crew arrives with the right plan.")
+                      : t("Pick the kind of home so the cleaning scope matches the property.")
                   }
                 >
                   <select
@@ -1227,7 +1255,7 @@ export default function BookPickupForm({
                   >
                     {propertyOptions.map((item) => (
                       <option key={item} value={item}>
-                        {formatPropertyLabel(item)}
+                        {t(formatPropertyLabel(item))}
                       </option>
                     ))}
                   </select>
@@ -1236,35 +1264,35 @@ export default function BookPickupForm({
                 {serviceCategory === "home" ? (
                   <>
                     <ServiceDetailField
-                      label="Bedrooms"
-                      helper="Bedrooms to prepare"
-                      hint="Enter how many bedrooms the team should cover during this home-cleaning visit."
+                      label={t("Bedrooms")}
+                      helper={t("Bedrooms to prepare")}
+                      hint={t("Enter how many bedrooms the team should cover during this home-cleaning visit.")}
                     >
                       <ServiceCountField
                         value={bedroomCountInput}
                         onChange={setBedroomCountInput}
                         placeholder="2"
-                        ariaLabel="Bedroom count"
+                        ariaLabel={t("Bedroom count")}
                       />
                     </ServiceDetailField>
                     <ServiceDetailField
-                      label="Bathrooms"
-                      helper="Bathrooms in scope"
-                      hint="Enter how many bathrooms should be included in the cleaning scope."
+                      label={t("Bathrooms")}
+                      helper={t("Bathrooms in scope")}
+                      hint={t("Enter how many bathrooms should be included in the cleaning scope.")}
                     >
                       <ServiceCountField
                         value={bathroomCountInput}
                         onChange={setBathroomCountInput}
                         placeholder="1"
-                        ariaLabel="Bathroom count"
+                        ariaLabel={t("Bathroom count")}
                       />
                     </ServiceDetailField>
                   </>
                 ) : (
                   <>
                     <ServiceDetailField
-                      label="Office size band"
-                      hint="Use the size band that best matches the office footprint."
+                      label={t("Office size band")}
+                      hint={t("Use the size band that best matches the office footprint.")}
                     >
                       <select
                         value={sizeBand}
@@ -1275,59 +1303,58 @@ export default function BookPickupForm({
                       >
                         {SIZE_BANDS.map((item) => (
                           <option key={item} value={item}>
-                            {item.charAt(0).toUpperCase()}
-                            {item.slice(1)} office
+                            {t(`${item.charAt(0).toUpperCase()}${item.slice(1)} office`)}
                           </option>
                         ))}
                       </select>
                     </ServiceDetailField>
                     <ServiceDetailField
-                      label="On-site contact"
-                      hint="Add the person the crew should meet or call when they arrive."
+                      label={t("On-site contact")}
+                      hint={t("Add the person the crew should meet or call when they arrive.")}
                     >
                       <input
                         value={siteContactName}
                         onChange={(event) => setSiteContactName(event.target.value)}
                         className={inputCls}
-                        placeholder="Site manager or front desk contact"
+                        placeholder={t("Site manager or front desk contact")}
                       />
                     </ServiceDetailField>
                   </>
                 )}
 
                 <ServiceDetailField
-                  label="Floors involved"
-                  helper="Levels to cover"
-                  hint="Enter how many floors or levels the crew needs to work across."
+                  label={t("Floors involved")}
+                  helper={t("Levels to cover")}
+                  hint={t("Enter how many floors or levels the crew needs to work across.")}
                 >
                   <ServiceCountField
                     value={floorCountInput}
                     onChange={setFloorCountInput}
                     placeholder="1"
-                    ariaLabel="Floors involved"
+                    ariaLabel={t("Floors involved")}
                   />
                 </ServiceDetailField>
                 <ServiceDetailField
-                  label="Preferred team size"
-                  helper="Cleaners requested"
-                  hint="Set the number of cleaners you want assigned if you need a bigger crew than the baseline."
+                  label={t("Preferred team size")}
+                  helper={t("Cleaners requested")}
+                  hint={t("Set the number of cleaners you want assigned if you need a bigger crew than the baseline.")}
                 >
                   <ServiceCountField
                     value={staffCountInput}
                     onChange={setStaffCountInput}
                     placeholder="2"
-                    ariaLabel="Preferred team size"
+                    ariaLabel={t("Preferred team size")}
                   />
                 </ServiceDetailField>
               </div>
 
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <ServiceDetailField
-                  label={serviceCategory === "office" ? "Property or office label" : "Property nickname"}
+                  label={serviceCategory === "office" ? t("Property or office label") : t("Property nickname")}
                   hint={
                     serviceCategory === "office"
-                      ? "Use the branch name, office label, or building reference the team should recognize."
-                      : "Use any house label or nickname that helps the team confirm the right property quickly."
+                      ? t("Use the branch name, office label, or building reference the team should recognize.")
+                      : t("Use any house label or nickname that helps the team confirm the right property quickly.")
                   }
                 >
                   <input
@@ -1336,15 +1363,15 @@ export default function BookPickupForm({
                     className={inputCls}
                     placeholder={
                       serviceCategory === "office"
-                        ? "Head office, Annex, or branch name"
-                        : "Blue gate house, flat 4B, or family home"
+                        ? t("Head office, Annex, or branch name")
+                        : t("Blue gate house, flat 4B, or family home")
                     }
                   />
                 </ServiceDetailField>
 
                 <ServiceDetailField
-                  label="Supplies mode"
-                  hint="Tell us whether the team should arrive with supplies or work with materials already on site."
+                  label={t("Supplies mode")}
+                  hint={t("Tell us whether the team should arrive with supplies or work with materials already on site.")}
                 >
                   <select
                     value={suppliesMode}
@@ -1356,8 +1383,8 @@ export default function BookPickupForm({
                     {SUPPLIES_OPTIONS.map((item) => (
                       <option key={item} value={item}>
                         {item === "included"
-                          ? "HenryCo supplies the visit"
-                          : "Supplies already on site"}
+                          ? t("HenryCo supplies the visit")
+                          : t("Supplies already on site")}
                       </option>
                     ))}
                   </select>
@@ -1367,7 +1394,7 @@ export default function BookPickupForm({
               <div className="mt-6 grid gap-4">
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                    Frequency
+                    {t("Frequency")}
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {allowedFrequencies.map((item) => (
@@ -1381,17 +1408,17 @@ export default function BookPickupForm({
                             ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10 text-zinc-950 dark:text-white"
                             : "border-black/10 bg-white/80 text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
                         )}
-                      >
-                        {formatFrequencyLabel(item)}
-                      </button>
-                    ))}
+                        >
+                          {t(formatFrequencyLabel(item))}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
                 {frequencyKey !== "one_time" ? (
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                      Preferred days
+                      {t("Preferred days")}
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {DAYS.map((day) => (
@@ -1406,7 +1433,7 @@ export default function BookPickupForm({
                               : "border-black/10 bg-white/80 text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
                           )}
                         >
-                          {day}
+                          {t(day)}
                         </button>
                       ))}
                     </div>
@@ -1415,7 +1442,7 @@ export default function BookPickupForm({
 
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                    Timing preference
+                    {t("Timing preference")}
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {URGENCY_OPTIONS.map((item) => {
@@ -1437,8 +1464,8 @@ export default function BookPickupForm({
                           )}
                         >
                           {item === "same_day"
-                            ? "Same-day"
-                            : item.charAt(0).toUpperCase() + item.slice(1)}
+                            ? t("Same-day")
+                            : t(item.charAt(0).toUpperCase() + item.slice(1))}
                         </button>
                       );
                     })}
@@ -1448,7 +1475,7 @@ export default function BookPickupForm({
 
               <div className="mt-6">
                 <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                  Add-ons
+                  {t("Add-ons")}
                 </div>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
                   {addOns.map((item) => {
@@ -1488,30 +1515,36 @@ export default function BookPickupForm({
 
             <div className="rounded-[30px] border border-black/10 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                Current estimate
+                {t("Current estimate")}
               </div>
               <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
-                Service estimate
+                {t("Service estimate")}
               </div>
 
               {serviceQuote ? (
                 <div className="mt-5 space-y-5">
                   <div className="rounded-[26px] border border-black/10 bg-black/[0.02] p-5 dark:border-white/10 dark:bg-white/[0.03]">
                     <div className="text-sm text-zinc-500 dark:text-white/55">
-                      {selectedPackage?.name ?? selectedServiceType?.name ?? "Custom service"}
+                      {selectedPackage?.name ?? selectedServiceType?.name ?? t("Custom service")}
                     </div>
                     <div className="mt-2 text-4xl font-black tracking-tight text-[color:var(--accent)]">
                       {formatMoney(serviceQuote.total)}
                     </div>
                     <div className="mt-2 text-sm text-zinc-600 dark:text-white/65">
-                      {selectedZone?.name ?? "Core service zone"} • {serviceQuote.recommendedStaffCount} recommended staff •{" "}
-                      {Math.max(1, Math.round(serviceQuote.estimatedDurationMin / 60))} hour service window
+                      {selectedZone?.name ?? t("Core service zone")} •{" "}
+                      {tf("{count} recommended staff", {
+                        count: serviceQuote.recommendedStaffCount,
+                      })}{" "}
+                      •{" "}
+                      {tf("{hours} hour service window", {
+                        hours: Math.max(1, Math.round(serviceQuote.estimatedDurationMin / 60)),
+                      })}
                     </div>
                   </div>
 
                   <div className="grid gap-3 rounded-[26px] border border-black/10 bg-black/[0.02] p-5 text-sm dark:border-white/10 dark:bg-white/[0.03]">
                     <div className="flex items-center justify-between gap-6">
-                      <span className="text-zinc-500 dark:text-white/55">Base service</span>
+                      <span className="text-zinc-500 dark:text-white/55">{t("Base service")}</span>
                       <span className="font-semibold text-zinc-950 dark:text-white">
                         {formatMoney(serviceQuote.basePrice)}
                       </span>
@@ -1533,7 +1566,7 @@ export default function BookPickupForm({
 
                   <div className="rounded-[26px] border border-black/10 bg-black/[0.02] p-5 dark:border-white/10 dark:bg-white/[0.03]">
                     <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                      Quote summary
+                      {t("Quote summary")}
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {serviceQuote.summary.map((item) => (
@@ -1549,7 +1582,7 @@ export default function BookPickupForm({
                 </div>
               ) : (
                 <div className="mt-5 rounded-[26px] border border-black/10 bg-black/[0.02] p-6 text-sm text-zinc-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/55">
-                  Choose a service type to view the current estimate.
+                  {t("Choose a service type to view the current estimate.")}
                 </div>
               )}
             </div>
@@ -1566,16 +1599,17 @@ export default function BookPickupForm({
         <div className="grid gap-5">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-              Before you submit
+              {t("Before you submit")}
             </div>
             <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
               {mode === "garment"
-                ? "Send the garment request and receive one tracking code."
-                : "Send the service request with the current quote context attached."}
+                ? t("Send the garment request and receive one tracking code.")
+                : t("Send the service request with the current quote context attached.")}
             </div>
             <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-              The team reviews the request after submission. The amount shown here reflects the
-              current estimate based on the details you selected above.
+              {t(
+                "The team reviews the request after submission. The amount shown here reflects the current estimate based on the details you selected above.",
+              )}
             </p>
           </div>
 
@@ -1592,14 +1626,15 @@ export default function BookPickupForm({
             >
               <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70">
                 <Sparkles className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                Book first
+                {t("Book first")}
               </div>
               <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
-                Send the request now and complete payment after the team confirms the next step.
+                {t("Send the request now and complete payment after the team confirms the next step.")}
               </div>
               <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-                Best when you want the team to review the request first. The booking and tracking
-                flow still opens immediately, and payment instructions remain available afterward.
+                {t(
+                  "Best when you want the team to review the request first. The booking and tracking flow still opens immediately, and payment instructions remain available afterward.",
+                )}
               </p>
             </button>
 
@@ -1615,14 +1650,15 @@ export default function BookPickupForm({
             >
               <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70">
                 <CreditCard className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                Pay now
+                {t("Pay now")}
               </div>
               <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
-                Submit the booking and receive payment details right away.
+                {t("Submit the booking and receive payment details right away.")}
               </div>
               <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-                Best when you already know you want the slot locked in fast and want instant payment
-                guidance by email, with support visibility from the start.
+                {t(
+                  "Best when you already know you want the slot locked in fast and want instant payment guidance by email, with support visibility from the start.",
+                )}
               </p>
             </button>
           </div>
@@ -1631,29 +1667,30 @@ export default function BookPickupForm({
             <div className="grid gap-4 rounded-[1.8rem] border border-[color:var(--accent)]/22 bg-[color:var(--accent)]/7 p-5 xl:grid-cols-[0.96fr_1.04fr]">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                  Payment guidance
+                  {t("Payment guidance")}
                 </div>
                 <div className="mt-3 text-lg font-semibold text-zinc-950 dark:text-white">
-                  The same payment instructions will be sent as soon as the booking is submitted.
+                  {t("The same payment instructions will be sent as soon as the booking is submitted.")}
                 </div>
                 <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-                  This does not skip booking review. It simply opens the payment path immediately so
-                  the team can confirm your payment faster.
+                  {t(
+                    "This does not skip booking review. It simply opens the payment path immediately so the team can confirm your payment faster.",
+                  )}
                 </p>
               </div>
 
               <div className="grid gap-3 rounded-[1.4rem] border border-black/10 bg-white/82 p-4 dark:border-white/10 dark:bg-white/[0.05]">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <DetailPill label="Account name" copyValue={paymentSettings.accountName || "HenryCo Care"}>
+                  <DetailPill label={t("Account name")} copyValue={paymentSettings.accountName || "HenryCo Care"}>
                     {paymentSettings.accountName || "HenryCo Care"}
                   </DetailPill>
-                  <DetailPill label="Bank name" copyValue={paymentSettings.bankName || undefined}>
-                    {paymentSettings.bankName || "Configured after save"}
+                  <DetailPill label={t("Bank name")} copyValue={paymentSettings.bankName || undefined}>
+                    {paymentSettings.bankName || t("Configured after save")}
                   </DetailPill>
-                  <DetailPill label="Account number" copyValue={paymentSettings.accountNumber || undefined}>
-                    {paymentSettings.accountNumber || "Configured after save"}
+                  <DetailPill label={t("Account number")} copyValue={paymentSettings.accountNumber || undefined}>
+                    {paymentSettings.accountNumber || t("Configured after save")}
                   </DetailPill>
-                  <DetailPill label="Currency">
+                  <DetailPill label={t("Currency")}>
                     {paymentSettings.currency || "NGN"}
                   </DetailPill>
                 </div>
@@ -1661,7 +1698,9 @@ export default function BookPickupForm({
                 <div className="grid gap-2 rounded-[1.2rem] border border-black/10 bg-black/[0.03] px-4 py-4 text-sm leading-7 text-zinc-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/65">
                   <div className="font-semibold text-zinc-950 dark:text-white">
                     {paymentSettings.instructions ||
-                      "Use the tracking code as your transfer reference, then upload the receipt so the Care team can confirm payment and continue the booking."}
+                      t(
+                        "Use the tracking code as your transfer reference, then upload the receipt so the Care team can confirm payment and continue the booking.",
+                      )}
                   </div>
                   {(paymentSettings.supportEmail || paymentSettings.supportWhatsApp) ? (
                     <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
@@ -1672,10 +1711,10 @@ export default function BookPickupForm({
                           .join(" • ")}
                       </span>
                       {paymentSettings.supportEmail ? (
-                        <CopyButton value={paymentSettings.supportEmail} label="Copy email" />
+                        <CopyButton value={paymentSettings.supportEmail} label={t("Copy email")} />
                       ) : null}
                       {paymentSettings.supportWhatsApp ? (
-                        <CopyButton value={paymentSettings.supportWhatsApp} label="Copy WhatsApp" />
+                        <CopyButton value={paymentSettings.supportWhatsApp} label={t("Copy WhatsApp")} />
                       ) : null}
                     </div>
                   ) : null}
@@ -1687,20 +1726,20 @@ export default function BookPickupForm({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="text-sm leading-7 text-zinc-600 dark:text-white/65">
               {paymentPlan === "pay_now"
-                ? "The request, tracking code, and payment guidance will move together as one faster handoff."
-                : "The booking request goes first, and the payment path stays available without adding friction to submission."}
+                ? t("The request, tracking code, and payment guidance will move together as one faster handoff.")
+                : t("The booking request goes first, and the payment path stays available without adding friction to submission.")}
             </div>
 
             <PendingSubmitButton
               disabled={mode === "garment" ? selectedItems.length === 0 : !serviceQuote}
               label={
                 paymentPlan === "pay_now"
-                  ? "Submit booking and unlock payment path"
+                  ? t("Submit booking and unlock payment path")
                   : mode === "garment"
-                    ? "Submit garment request"
+                    ? t("Submit garment request")
                     : quoteLabel(selectedServiceType)
               }
-              pendingLabel="Submitting request..."
+              pendingLabel={t("Submitting request...")}
             />
           </div>
         </div>
@@ -1710,14 +1749,20 @@ export default function BookPickupForm({
 }
 
 function ServiceTypeCard({
+  locale,
   item,
   active,
   onClick,
 }: {
+  locale: AppLocale;
   item: CareServiceType;
   active: boolean;
   onClick: () => void;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const tf = (template: string, values: Record<string, string | number>) =>
+    formatSurfaceTemplate(template, values);
+
   return (
     <button
       type="button"
@@ -1730,7 +1775,7 @@ function ServiceTypeCard({
       )}
     >
       <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/50">
-        {item.pricing_model === "commercial" ? "Commercial" : "Property based"}
+        {item.pricing_model === "commercial" ? t("Commercial") : t("Property based")}
       </div>
       <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
         {item.name}
@@ -1743,7 +1788,8 @@ function ServiceTypeCard({
           {formatMoney(item.base_price)}
         </div>
         <div className="text-right text-xs uppercase tracking-[0.14em] text-zinc-400 dark:text-white/45">
-          {item.default_staff_count} staff • {Math.round(item.default_duration_min / 60)}h
+          {tf("{count} staff", { count: item.default_staff_count })} •{" "}
+          {tf("{hours}h", { hours: Math.round(item.default_duration_min / 60) })}
         </div>
       </div>
     </button>
@@ -1812,13 +1858,16 @@ function ServiceCountField({
   placeholder: string;
   ariaLabel: string;
 }) {
+  const tf = (template: string, values: Record<string, string | number>) =>
+    formatSurfaceTemplate(template, values);
+
   return (
     <div className={quantityDockCls}>
       <button
         type="button"
         onClick={() => onChange(stepCountInput(value, -1))}
         className={quantityButtonCls}
-        aria-label={`Reduce ${ariaLabel.toLowerCase()}`}
+        aria-label={tf("Reduce {label}", { label: ariaLabel.toLowerCase() })}
       >
         <Minus className="h-4 w-4" />
       </button>
@@ -1838,7 +1887,7 @@ function ServiceCountField({
         type="button"
         onClick={() => onChange(stepCountInput(value, 1))}
         className={quantityButtonCls}
-        aria-label={`Increase ${ariaLabel.toLowerCase()}`}
+        aria-label={tf("Increase {label}", { label: ariaLabel.toLowerCase() })}
       >
         <Plus className="h-4 w-4" />
       </button>

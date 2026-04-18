@@ -2,10 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 import { Paperclip, Send, X } from "lucide-react";
 
 export default function SupportReplyForm({ threadId }: { threadId: string }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
@@ -13,6 +16,27 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const draftKey = useMemo(() => `henryco-support-draft:${threadId}`, [threadId]);
+
+  function localizeSupportReplyError(messageText: string) {
+    switch (messageText) {
+      case "Unauthorized":
+        return t("Please sign in to continue.");
+      case "Thread ID and body required":
+        return t("Thread and reply body are required.");
+      case "Thread not found":
+      case "Thread not found.":
+        return t("Thread not found.");
+      case "Upload JPG, PNG, WebP, PDF, or TXT attachments only.":
+        return t("Upload JPG, PNG, WebP, PDF, or TXT attachments only.");
+      case "Failed to add support reply":
+      case "Failed to update support thread":
+      case "Internal error":
+      case "Unable to send your reply.":
+        return t("Unable to send your reply.");
+      default:
+        return t(messageText);
+    }
+  }
 
   useEffect(() => {
     const stored = window.localStorage.getItem(draftKey);
@@ -50,18 +74,18 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
 
       const data = (await response.json()) as { error?: string };
       if (!response.ok) {
-        throw new Error(data.error || "Unable to send your reply.");
+        throw new Error(localizeSupportReplyError(data.error || "Unable to send your reply."));
       }
 
       setMessage("");
       setAttachments([]);
       window.localStorage.removeItem(draftKey);
-      setFeedback({ type: "success", text: "Reply sent." });
+      setFeedback({ type: "success", text: t("Reply sent.") });
       router.refresh();
     } catch (error) {
       setFeedback({
         type: "error",
-        text: error instanceof Error ? error.message : "Unable to send your reply.",
+        text: error instanceof Error ? localizeSupportReplyError(error.message) : t("Unable to send your reply."),
       });
     } finally {
       setLoading(false);
@@ -87,7 +111,7 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           className="min-h-[76px] w-full resize-none border-0 bg-transparent px-2 py-2 text-sm leading-7 text-[var(--acct-ink)] outline-none"
-          placeholder="Reply with context, screenshots, or next steps. Drafts stay here while you type."
+          placeholder={t("Reply with context, screenshots, or next steps. Drafts stay here while you type.")}
           required
         />
 
@@ -103,7 +127,7 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
                   type="button"
                   onClick={() => setAttachments((current) => current.filter((_, itemIndex) => itemIndex !== index))}
                   className="rounded-full p-0.5 text-[var(--acct-muted)] transition hover:bg-[var(--acct-bg)] hover:text-[var(--acct-ink)]"
-                  aria-label={`Remove ${attachment.name}`}
+                  aria-label={formatSurfaceTemplate(t("Remove {name}"), { name: attachment.name })}
                 >
                   <X size={12} />
                 </button>
@@ -132,10 +156,10 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
               className="acct-button-ghost rounded-xl"
             >
               <Paperclip size={15} />
-              Attach
+              {t("Attach")}
             </button>
             <p className="text-xs text-[var(--acct-muted)]">
-              Mobile-safe composer with draft memory and attachments.
+              {t("Mobile-safe composer with draft memory and attachments.")}
             </p>
           </div>
           <button
@@ -143,10 +167,14 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
             disabled={loading || !message.trim()}
             className="acct-button-primary rounded-xl px-4"
           >
-            <ButtonPendingContent pending={loading} pendingLabel="Sending reply..." spinnerLabel="Sending reply">
+            <ButtonPendingContent
+              pending={loading}
+              pendingLabel={t("Sending reply...")}
+              spinnerLabel={t("Sending reply...")}
+            >
               <>
                 <Send size={16} />
-                Send reply
+                {t("Send reply")}
               </>
             </ButtonPendingContent>
           </button>

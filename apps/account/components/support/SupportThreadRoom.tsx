@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { Bot, Headphones, User } from "lucide-react";
 import { formatDateTime } from "@/lib/format";
 import SupportReplyForm from "@/components/support/SupportReplyForm";
@@ -37,6 +38,22 @@ function messageTone(senderType: string) {
   };
 }
 
+function localizeSupportStatus(
+  t: (text: string) => string,
+  status: string,
+) {
+  const raw = status.replaceAll("_", " ");
+  const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1);
+  const capitalizedTranslation = t(capitalized);
+
+  if (capitalizedTranslation !== capitalized) {
+    return capitalizedTranslation;
+  }
+
+  const rawTranslation = t(raw);
+  return rawTranslation !== raw ? rawTranslation : capitalized;
+}
+
 export default function SupportThreadRoom({
   threadId,
   messages,
@@ -46,9 +63,13 @@ export default function SupportThreadRoom({
   messages: SupportMessage[];
   threadStatus: string;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const numberLocale = locale === "en" ? "en-NG" : locale;
   const scrollRef = useRef<HTMLDivElement>(null);
   const [roomHeight, setRoomHeight] = useState<number | null>(null);
   const viewportRaf = useRef<number | null>(null);
+  const statusLabel = localizeSupportStatus(t, threadStatus);
 
   const scrollToLatest = (behavior: ScrollBehavior) => {
     if (!scrollRef.current) return;
@@ -101,14 +122,16 @@ export default function SupportThreadRoom({
       <div className="border-b border-[var(--acct-line)] bg-[linear-gradient(135deg,rgba(201,162,39,0.14),rgba(255,255,255,0.9))] px-5 py-4 sm:px-6">
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full bg-[var(--acct-blue-soft)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-blue)]">
-            Support room
+            {t("Support room")}
           </span>
           <span className="rounded-full bg-[var(--acct-surface)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-            {threadStatus.replaceAll("_", " ")}
+            {statusLabel}
           </span>
         </div>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--acct-muted)]">
-          This room keeps your support conversation attached to the correct account, service context, and attachment history across devices.
+          {t(
+            "This room keeps your support conversation attached to the correct account, service context, and attachment history across devices."
+          )}
         </p>
       </div>
 
@@ -150,14 +173,19 @@ export default function SupportThreadRoom({
                                 : "bg-[var(--acct-bg)] text-[var(--acct-ink)]"
                             }`}
                           >
-                            {String(attachment.name || `Attachment ${index + 1}`)}
+                            {String(
+                              attachment.name ||
+                                formatSurfaceTemplate(t("Attachment {number}"), {
+                                  number: new Intl.NumberFormat(numberLocale).format(index + 1),
+                                })
+                            )}
                           </a>
                         ))}
                       </div>
                     ) : null}
                   </div>
                   <p className={`mt-2 px-1 text-[0.7rem] font-medium ${tone.meta}`}>
-                    {formatDateTime(String(msg.created_at || ""))}
+                    {formatDateTime(String(msg.created_at || ""), numberLocale)}
                   </p>
                 </div>
                 {isCustomer ? (

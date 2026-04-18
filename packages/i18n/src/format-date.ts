@@ -9,6 +9,7 @@ const LOCALE_MAP: Record<AppLocale, string> = {
   pt: "pt-BR",
   // Tier B
   de: "de-DE",
+  it: "it-IT",
   zh: "zh-CN",
   hi: "hi-IN",
   // Nigerian regional

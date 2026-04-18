@@ -1,5 +1,18 @@
 import type { AppLocale } from "./locales";
 import { deepMergeMessages } from "./merge-messages";
+import {
+  EXTRA_SURFACE_LABELS_AR,
+  EXTRA_SURFACE_LABELS_DE,
+  EXTRA_SURFACE_LABELS_ES,
+  EXTRA_SURFACE_LABELS_FR,
+  EXTRA_SURFACE_LABELS_HA,
+  EXTRA_SURFACE_LABELS_HI,
+  EXTRA_SURFACE_LABELS_IT,
+  EXTRA_SURFACE_LABELS_IG,
+  EXTRA_SURFACE_LABELS_PT,
+  EXTRA_SURFACE_LABELS_YO,
+  EXTRA_SURFACE_LABELS_ZH,
+} from "./surface-extra-labels";
 
 export type SurfaceCopy = {
   labels: Record<string, string>;
@@ -294,6 +307,7 @@ const EN: SurfaceCopy = {
 
 const FR: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_FR,
     About: "À propos",
     Account: "Compte",
     Applications: "Candidatures",
@@ -475,6 +489,7 @@ const FR: Partial<SurfaceCopy> = {
 
 const ES: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_ES,
     About: "Acerca de",
     Account: "Cuenta",
     Applications: "Solicitudes",
@@ -656,6 +671,7 @@ const ES: Partial<SurfaceCopy> = {
 
 const PT: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_PT,
     About: "Sobre",
     Account: "Conta",
     Applications: "Candidaturas",
@@ -837,6 +853,7 @@ const PT: Partial<SurfaceCopy> = {
 
 const AR: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_AR,
     About: "حول",
     Account: "الحساب",
     Applications: "الطلبات",
@@ -1017,6 +1034,7 @@ const AR: Partial<SurfaceCopy> = {
 
 const DE: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_DE,
     About: "Über uns",
     Account: "Konto",
     Applications: "Bewerbungen",
@@ -1109,6 +1127,83 @@ const DE: Partial<SurfaceCopy> = {
     fallbackGeneral:
       "Ich bin mir bei dieser konkreten Frage nicht sicher. Bitte wenden Sie sich für genauere Hilfe an unser Support-Team.",
   },
+  privacyControls: {
+    kicker: "Datenschutz- und Datenkontrollen",
+    title: "Optionale Nachverfolgung bleibt aus, bis Sie sie aktivieren",
+    description:
+      "Essenzielle Speicherung hält Anmeldung, Checkout, Navigation und sicherheitskritische Abläufe stabil. Diese Einstellungen betreffen nur optionale standortübergreifende Präferenzen, Analysen, Personalisierung und Marketing-Laufzeiten.",
+    lastSaved: "Zuletzt gespeichert: {date}",
+    notYetSaved: "Noch nicht gespeichert",
+    essentialLabel: "Essenziell",
+    essentialDescription:
+      "Erforderlich für die Sitzungsintegrität, die Kontinuität der Anmeldung und die zentralen HenryCo-Produktabläufe.",
+    preferencesLabel: "Präferenzen",
+    preferencesDescription: "Merkt sich optionale Oberflächeneinstellungen über HenryCo-Websites hinweg.",
+    personalizedExperienceLabel: "Personalisierte Erfahrung",
+    personalizedExperienceDescription:
+      "Erlaubt nicht essenzielle Empfehlungen und kontextbezogene Hinweise basierend auf Ihrer Nutzung von HenryCo.",
+    analyticsLabel: "Analysen",
+    analyticsDescription:
+      "Erlaubt optionale Mess- und Geräteintelligenz-Laufzeiten, wenn sie konfiguriert sind.",
+    marketingLabel: "Marketing",
+    marketingDescription:
+      "Erlaubt optionale Remarketing- und marketingorientierte Interaktions-Laufzeiten, wenn Programme aktiv sind.",
+    save: "Datenschutzeinstellungen speichern",
+    saved: "Gespeichert",
+    essentialOnly: "Nur Essenzielles beibehalten",
+    manualRequestsTitle: "Manuelle Datenanfragen",
+    manualRequestsBody:
+      "Self-Service-Tools decken derzeit Profiländerungen, Benachrichtigungseinstellungen, Gebietsschema und diese Einwilligungseinstellungen ab. Datenexport-, Kontoschließungs- oder Löschanfragen werden manuell geprüft, damit Finanz-, Vertrauens-, Betrugspräventions-, Support- und Auditdaten nicht fälschlich entfernt werden.",
+    requestDataExport: "Datenexport anfordern",
+    requestDeletionReview: "Schließung oder Löschprüfung anfordern",
+    exportSubject: "Anfrage zum Datenexport",
+    exportMessage:
+      "Ich möchte eine Kopie der personenbezogenen Daten, die derzeit über mein HenryCo-Konto verfügbar sind. Bitte bestätigen Sie, was direkt exportiert werden kann und welche Datensätze aus betrieblichen, finanziellen, Vertrauens-, Betrugspräventions- oder Auditgründen aufbewahrt werden müssen.",
+    deletionSubject: "Prüfung von Kontoschließung oder Löschung",
+    deletionMessage:
+      "Ich möchte mein HenryCo-Konto schließen oder löschen. Bitte prüfen Sie, was jetzt entfernt werden kann, was aufbewahrt werden muss und welche weiteren Schritte für Finanz-, Vertrauens-, Wallet-, Support- oder Auditdaten erforderlich sind.",
+  },
+  accountForms: {
+    emailPlaceholder: "you@example.com",
+    passwordPlaceholder: "Ihr Passwort",
+    fullNamePlaceholder: "Ihr vollständiger Name",
+    minPasswordPlaceholder: "Mind. 8 Zeichen",
+    confirmPasswordPlaceholder: "Passwort erneut eingeben",
+    phonePlaceholder: "8012345678",
+    signInBusy: "Anmeldung läuft...",
+    createAccountBusy: "Konto wird erstellt...",
+    resetBusy: "Link zum Zurücksetzen wird gesendet...",
+    signInUnavailable: "Wir konnten Sie gerade nicht anmelden. Bitte versuchen Sie es erneut.",
+    createAccountUnavailable:
+      "Wir konnten Ihr Konto gerade nicht erstellen. Bitte versuchen Sie es erneut.",
+    resetUnavailable:
+      "Wir konnten den Link zum Zurücksetzen gerade nicht senden. Bitte versuchen Sie es erneut.",
+    checkEmailTitle: "Prüfen Sie Ihre E-Mails",
+    verificationSent:
+      "Wir haben einen Bestätigungslink an {email} gesendet. Klicken Sie darauf, um Ihr Konto zu aktivieren.",
+    resetSent: "Wir haben einen Link zum Zurücksetzen des Passworts an {email} gesendet.",
+    backToSignIn: "Zurück zur Anmeldung",
+    countryLabel: "Land",
+    phoneLabel: "Telefonnummer",
+    preferredContactLabel: "Bevorzugte Kontaktmethode",
+    contactEmail: "E-Mail",
+    contactWhatsapp: "WhatsApp",
+    contactPhone: "Anruf",
+    contactInApp: "Nur in der App",
+    regionalDefaultsLocal: "Ihre regionalen Voreinstellungen folgen dieser Länderauswahl.",
+    regionalDefaultsNgnOnly:
+      "Ihre Anzeigevorgaben können {currency} folgen, aber die Wallet-Abwicklung bleibt derzeit NGN-exklusiv, bis lokale Zahlungsrails live sind.",
+    fullNameRequired: "Vollständiger Name ist erforderlich.",
+    emailRequired: "E-Mail ist erforderlich.",
+    passwordsDoNotMatch: "Die Passwörter stimmen nicht überein. Prüfen Sie das Bestätigungsfeld.",
+    acceptTermsRequired: "Bitte akzeptieren Sie die Nutzungsbedingungen und die Datenschutzerklärung.",
+    showPasswords: "Passwörter anzeigen",
+    hidePasswords: "Passwörter ausblenden",
+    termsAgreementStart: "Ich stimme den HenryCo",
+    termsLink: "Nutzungsbedingungen",
+    termsAgreementMiddle: "und der",
+    privacyLink: "Datenschutzerklärung zu",
+  },
   marketplaceHeader: {
     guestLabel: "Mitmachen",
     brandSubtitle: "Veredelter Handel mit einem verbundenen HenryCo-Konto",
@@ -1124,6 +1219,7 @@ const DE: Partial<SurfaceCopy> = {
 
 const ZH: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_ZH,
     About: "关于",
     Account: "账户",
     Applications: "申请",
@@ -1226,6 +1322,7 @@ const ZH: Partial<SurfaceCopy> = {
 
 const HI: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_HI,
     About: "परिचय",
     Account: "खाता",
     Applications: "आवेदन",
@@ -1333,6 +1430,7 @@ const HI: Partial<SurfaceCopy> = {
 
 const IG: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_IG,
     About: "Banyere",
     Account: "Akauntu",
     Applications: "Ngwa",
@@ -1440,6 +1538,7 @@ const IG: Partial<SurfaceCopy> = {
 
 const YO: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_YO,
     About: "Nípa",
     Account: "Akọọlẹ",
     Applications: "Àwọn ìbéèrè",
@@ -1547,6 +1646,7 @@ const YO: Partial<SurfaceCopy> = {
 
 const HA: Partial<SurfaceCopy> = {
   labels: {
+    ...EXTRA_SURFACE_LABELS_HA,
     About: "Game da mu",
     Account: "Asusu",
     Applications: "Aikace-aikace",
@@ -1652,6 +1752,174 @@ const HA: Partial<SurfaceCopy> = {
   },
 };
 
+const IT: Partial<SurfaceCopy> = {
+  "labels": {
+    ...EXTRA_SURFACE_LABELS_IT,
+    "About": "Chi siamo",
+    "Account": "Account",
+    "Applications": "Candidature",
+    "Browse jobs": "Sfoglia le offerte",
+    "Browse open jobs": "Sfoglia le offerte aperte",
+    "Book": "Prenota",
+    "Candidates": "Candidati",
+    "Careers": "Carriere",
+    "Cart": "Carrello",
+    "Contact": "Contatti",
+    "Close navigation": "Chiudi la navigazione",
+    "Candidate home": "Area candidati",
+    "Create account": "Crea un account",
+    "Discover": "Scopri",
+    "FAQ": "Domande frequenti",
+    "For teams": "Per i team",
+    "Get started": "Inizia",
+    "Group Hub": "Hub di gruppo",
+    "Help": "Aiuto",
+    "HenryCo account": "Account HenryCo",
+    "Hire with HenryCo": "Assumi con HenryCo",
+    "Home": "Home",
+    "Internal Careers": "Carriere interne",
+    "Join": "Partecipa",
+    "Jobs": "Lavoro",
+    "Language & preferences": "Lingua e preferenze",
+    "Logistics in My Account": "Logistica nel mio account",
+    "Managed property": "Proprietà gestita",
+    "My HenryCo account": "Il mio account HenryCo",
+    "My courses": "I miei corsi",
+    "My hiring hub": "Il mio hub per le assunzioni",
+    "Open navigation": "Apri la navigazione",
+    "Orders": "Ordini",
+    "Post a job": "Pubblica un lavoro",
+    "Pricing": "Prezzi",
+    "Process": "Processo",
+    "Profile & account": "Profilo e account",
+    "Recruiters": "Reclutatori",
+    "Request": "Richiesta",
+    "Review": "Recensione",
+    "Browse catalog": "Sfoglia il catalogo",
+    "Saved items": "Elementi salvati",
+    "Saved jobs": "Lavori salvati",
+    "Search": "Cerca",
+    "Services": "Servizi",
+    "Settings": "Impostazioni",
+    "Sign in": "Accedi",
+    "Sign out": "Esci",
+    "Studio": "Studio",
+    "Support": "Supporto",
+    "Talent": "Talenti",
+    "Teach with HenryCo": "Insegna con HenryCo",
+    "Teams": "Team",
+    "Track": "Tracciamento",
+    "Trust": "Fiducia",
+    "Vendor": "Venditore",
+    "Work": "Lavoro"
+  },
+  "publicHeader": {
+    "menu": "Menu",
+    "actions": "Azioni",
+    "openMenu": "Apri il menu",
+    "closeMenu": "Chiudi il menu"
+  },
+  "publicAccount": {
+    "signInAria": "Accedi al tuo account HenryCo",
+    "signInTitle": "Accedi per salvare i progressi e accedere al tuo account",
+    "signUpAria": "Crea un account HenryCo",
+    "accountMenu": "Menu account",
+    "accountMenuFor": "Menu account per {name}",
+    "signOut": "Esci",
+    "signingOut": "Disconnessione in corso...",
+    "openAccountFor": "Apri l'account di {name}"
+  },
+  "footer": {
+    "allRightsReserved": "Tutti i diritti riservati."
+  },
+  "floatingSupport": {
+    "openHelp": "Ottieni aiuto",
+    "closeHelp": "Chiudi assistenza",
+    "askAnything": "Chiedici qualsiasi cosa",
+    "greeting": "Come possiamo aiutare?",
+    "greetingBody": "Chiedi informazioni su servizi, ordini, prenotazioni o flussi di account.",
+    "placeholder": "Digita un messaggio...",
+    "contactSupportDirectly": "Hai bisogno di ulteriore aiuto? Contatta direttamente l'assistenza",
+    "fallbackWithUrl": "Non sono sicuro di quella domanda specifica. Puoi contattare il nostro team di supporto qui: {url}",
+    "fallbackWithEmail": "Non ne sono sicuro. Invia un'e-mail a {email} e il nostro team ti aiuterà direttamente.",
+    "fallbackGeneral": "Non sono sicuro di quella domanda specifica. Rivolgiti al nostro team di supporto per un aiuto più dettagliato."
+  },
+  "privacyControls": {
+    "kicker": "Privacy e controlli sui dati",
+    "title": "Il monitoraggio opzionale rimane disattivato finché non lo abiliti",
+    "description": "Lo spazio di archiviazione essenziale mantiene stabili i flussi di accesso, pagamento, navigazione e critici per la sicurezza. Questi controlli influiscono solo sulle preferenze intersito opzionali, sull'analisi, sulla personalizzazione e sui tempi di marketing.",
+    "lastSaved": "Ultimo salvataggio: {date}",
+    "notYetSaved": "Non ancora salvato",
+    "essentialLabel": "Essenziale",
+    "essentialDescription": "Necessario per l'integrità della sessione, la continuità dell'accesso e i flussi di prodotto HenryCo principali.",
+    "preferencesLabel": "Preferenze",
+    "preferencesDescription": "Ricorda le scelte di interfaccia opzionali nei siti HenryCo.",
+    "personalizedExperienceLabel": "Esperienza personalizzata",
+    "personalizedExperienceDescription": "Consente consigli non essenziali e suggerimenti contestuali in base al modo in cui utilizzi HenryCo.",
+    "analyticsLabel": "Analitica",
+    "analyticsDescription": "Consente runtime di misurazione e intelligence del dispositivo opzionali quando sono configurati.",
+    "marketingLabel": "Marketing",
+    "marketingDescription": "Consente tempi di remarketing facoltativi e di coinvolgimento orientato al marketing quando i programmi sono attivi.",
+    "save": "Salva i controlli sulla privacy",
+    "saved": "Salvato",
+    "essentialOnly": "Mantieni solo l'essenziale",
+    "manualRequestsTitle": "Richieste manuali di dati",
+    "manualRequestsBody": "Gli strumenti self-service attualmente coprono le modifiche del profilo, le preferenze di notifica, le impostazioni locali e queste impostazioni di consenso. Le richieste di esportazione di dati, chiusura di account o eliminazione vengono esaminate manualmente in modo che i record finanziari, fiduciari, di prevenzione delle frodi, di supporto e di controllo non vengano rimossi in modo errato.",
+    "requestDataExport": "Richiedi l'esportazione dei dati",
+    "requestDeletionReview": "Richiedi la revisione per chiusura o cancellazione",
+    "exportSubject": "Richiesta di esportazione dei dati",
+    "exportMessage": "Voglio una copia dei dati personali attualmente disponibili tramite il mio account HenryCo. Si prega di confermare cosa può essere esportato direttamente e quali documenti devono essere conservati per motivi operativi, finanziari, fiduciari, di prevenzione delle frodi o di controllo.",
+    "deletionSubject": "Verifica della chiusura o dell'eliminazione dell'account",
+    "deletionMessage": "Voglio chiudere o eliminare il mio account HenryCo. Ti invitiamo a verificare cosa può essere rimosso adesso, cosa deve essere conservato e tutti i passaggi successivi necessari per i registri finanziari, fiduciari, di portafoglio, di supporto o di controllo."
+  },
+  "accountForms": {
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "La tua password",
+    "fullNamePlaceholder": "Il tuo nome completo",
+    "minPasswordPlaceholder": "minimo 8 caratteri",
+    "confirmPasswordPlaceholder": "Reinserisci la tua password",
+    "phonePlaceholder": "8012345678",
+    "signInBusy": "Accesso...",
+    "createAccountBusy": "Creazione dell'account...",
+    "resetBusy": "Invio del link di reimpostazione...",
+    "signInUnavailable": "Non è stato possibile effettuare l'accesso in questo momento. Riprova.",
+    "createAccountUnavailable": "Non è stato possibile creare il tuo account in questo momento. Per favore riprova.",
+    "resetUnavailable": "Impossibile inviare il collegamento di reimpostazione in questo momento. Per favore riprova.",
+    "checkEmailTitle": "Controlla la tua email",
+    "verificationSent": "Abbiamo inviato un link di verifica a {email}. Cliccalo per attivare il tuo account.",
+    "resetSent": "Abbiamo inviato un collegamento per la reimpostazione della password a {email}.",
+    "backToSignIn": "Torna al login",
+    "countryLabel": "Paese",
+    "phoneLabel": "Numero di telefono",
+    "preferredContactLabel": "Metodo di contatto preferito",
+    "contactEmail": "E-mail",
+    "contactWhatsapp": "WhatsApp",
+    "contactPhone": "Telefonata",
+    "contactInApp": "Solo in-app",
+    "regionalDefaultsLocal": "Le impostazioni predefinite regionali seguiranno la selezione del Paese.",
+    "regionalDefaultsNgnOnly": "Le impostazioni predefinite di visualizzazione possono seguire {currency}, ma la liquidazione del portafoglio attualmente rimane solo NGN fino a quando i canali di pagamento locali non saranno attivi.",
+    "fullNameRequired": "È richiesto il nome completo.",
+    "emailRequired": "L'e-mail è obbligatoria.",
+    "passwordsDoNotMatch": "Le password non corrispondono. Controlla il campo di conferma.",
+    "acceptTermsRequired": "Si prega di accettare i termini e l'informativa sulla privacy.",
+    "showPasswords": "Mostra password",
+    "hidePasswords": "Nascondi le password",
+    "termsAgreementStart": "Accetto i",
+    "termsLink": "Termini di servizio",
+    "termsAgreementMiddle": "e",
+    "privacyLink": "Informativa sulla privacy"
+  },
+  "marketplaceHeader": {
+    "guestLabel": "Unisciti a noi",
+    "brandSubtitle": "Commercio raffinato con un account HenryCo collegato",
+    "liveCatalog": "Catalogo live",
+    "longSearchPlaceholder": "Cerca illuminazione, ufficio, arredamento, negozi verificati, modifiche pronte per il fondatore...",
+    "shortSearchPlaceholder": "Cerca prodotti premium",
+    "searchSummary": "Navigazione basata sulla ricerca, venditori verificati, monitoraggio chiaro degli ordini e il tuo account HenryCo.",
+    "signOutError": "Non è stato possibile disconnetterti. Riprova."
+  }
+};
+
 const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<SurfaceCopy>>> = {
   fr: FR,
   es: ES,
@@ -1661,6 +1929,7 @@ const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<SurfaceCopy>>> = {
   yo: YO,
   ha: HA,
   de: DE,
+  it: IT,
   zh: ZH,
   hi: HI,
 };

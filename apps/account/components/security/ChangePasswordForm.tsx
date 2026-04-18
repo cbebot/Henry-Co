@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { getAccountCopy, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 import { Eye, EyeOff } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
 
 export default function ChangePasswordForm() {
+  const locale = useHenryCoLocale();
+  const copy = getAccountCopy(locale);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -16,11 +19,11 @@ export default function ChangePasswordForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setMessage({ type: "error", text: "Passwords do not match" });
+      setMessage({ type: "error", text: copy.changePassword.passwordsDoNotMatch });
       return;
     }
     if (password.length < 8) {
-      setMessage({ type: "error", text: "Password must be at least 8 characters" });
+      setMessage({ type: "error", text: copy.changePassword.passwordTooShort });
       return;
     }
 
@@ -34,12 +37,12 @@ export default function ChangePasswordForm() {
       if (error) {
         setMessage({ type: "error", text: mapAccountAuthMessage(error.message, "change_password") });
       } else {
-        setMessage({ type: "success", text: "Your password has been updated." });
+        setMessage({ type: "success", text: copy.changePassword.success });
         setPassword("");
         setConfirmPassword("");
       }
     } catch {
-      setMessage({ type: "error", text: "We couldn't update your password right now. Please try again." });
+      setMessage({ type: "error", text: copy.changePassword.unavailable });
     } finally {
       setLoading(false);
     }
@@ -60,14 +63,14 @@ export default function ChangePasswordForm() {
       )}
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium">New password</label>
+        <label className="mb-1.5 block text-sm font-medium">{copy.changePassword.newPassword}</label>
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="acct-input pr-10"
-            placeholder="Min. 8 characters"
+            placeholder={copy.changePassword.minPlaceholder}
             required
             minLength={8}
           />
@@ -82,13 +85,13 @@ export default function ChangePasswordForm() {
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium">Confirm new password</label>
+        <label className="mb-1.5 block text-sm font-medium">{copy.changePassword.confirmNewPassword}</label>
         <input
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           className="acct-input"
-          placeholder="Repeat new password"
+          placeholder={copy.changePassword.repeatPlaceholder}
           required
         />
       </div>
@@ -98,8 +101,12 @@ export default function ChangePasswordForm() {
         disabled={loading}
         className="acct-button-primary rounded-xl"
       >
-        <ButtonPendingContent pending={loading} pendingLabel="Updating password..." spinnerLabel="Updating password">
-          Update password
+        <ButtonPendingContent
+          pending={loading}
+          pendingLabel={copy.changePassword.updating}
+          spinnerLabel={copy.changePassword.updating}
+        >
+          {copy.changePassword.updatePassword}
         </ButtonPendingContent>
       </button>
     </form>

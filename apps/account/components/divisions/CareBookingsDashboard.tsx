@@ -12,7 +12,12 @@ import {
   Truck,
 } from "lucide-react";
 import type { LinkedCareBooking } from "@/lib/care-sync";
-import { divisionColor, formatCurrencyAmount, formatDate, timeAgo } from "@/lib/format";
+import {
+  divisionColor,
+  formatCurrencyAmount,
+  formatDate,
+  timeAgoLocalized,
+} from "@/lib/format";
 
 function toneChipClasses(tone: LinkedCareBooking["nextAction"]["tone"]) {
   if (tone === "success") {
@@ -38,23 +43,17 @@ function statusChipClasses(status?: string | null) {
   return "border border-[var(--acct-line)] bg-[var(--acct-blue-soft)] text-[var(--acct-blue)]";
 }
 
-function humanize(value?: string | null, fallback = "Booked") {
-  const normalized = String(value || "").trim().replace(/[_-]+/g, " ");
-  if (!normalized) return fallback;
-  return normalized.replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
 function summaryMetric(label: string, value: string, hint: string, tone?: string) {
   return { label, value, hint, tone };
 }
 
 const FILTER_OPTIONS = [
-  { id: "all", label: "All" },
-  { id: "unpaid", label: "Balance due" },
-  { id: "receipt", label: "Receipt / review" },
-  { id: "active", label: "In progress" },
-  { id: "completed", label: "Completed" },
-  { id: "issue", label: "Issues" },
+  { id: "all" },
+  { id: "unpaid" },
+  { id: "receipt" },
+  { id: "active" },
+  { id: "completed" },
+  { id: "issue" },
 ] as const;
 
 export type CareBookingFilterId = (typeof FILTER_OPTIONS)[number]["id"];
@@ -92,7 +91,45 @@ function matchesCareFilter(booking: LinkedCareBooking, filter: CareBookingFilter
 
 export { matchesCareFilter, FILTER_OPTIONS as CARE_BOOKING_FILTER_OPTIONS };
 
+function getStatusLabel(locale: string, value?: string | null, fallback = "Booked") {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!normalized) return fallback;
+
+  const english: Record<string, string> = {
+    booked: "Booked",
+    awaiting_payment: "Awaiting payment",
+    receipt_submitted: "Receipt submitted",
+    under_review: "Under review",
+    delivered: "Delivered",
+    customer_confirmed: "Customer confirmed",
+    inspection_completed: "Inspection completed",
+    service_completed: "Service completed",
+    cancelled: "Cancelled",
+    issue: "Issue",
+    exception: "Exception",
+    rejected: "Rejected",
+  };
+
+  const french: Record<string, string> = {
+    booked: "Réservé",
+    awaiting_payment: "Paiement attendu",
+    receipt_submitted: "Reçu envoyé",
+    under_review: "En revue",
+    delivered: "Livré",
+    customer_confirmed: "Confirmé par le client",
+    inspection_completed: "Inspection terminée",
+    service_completed: "Service terminé",
+    cancelled: "Annulé",
+    issue: "Incident",
+    exception: "Exception",
+    rejected: "Rejeté",
+  };
+
+  return (locale === "fr" ? french : english)[normalized] || normalized.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 export default function CareBookingsDashboard({
+  locale,
   bookings,
   listBookings,
   selectedBookingId,
@@ -102,8 +139,8 @@ export default function CareBookingsDashboard({
   pageSize,
   totalFiltered,
 }: {
+  locale: string;
   bookings: LinkedCareBooking[];
-  /** Paginated subset for the left-hand list (metrics use full `bookings`). */
   listBookings: LinkedCareBooking[];
   selectedBookingId?: string | null;
   activeFilter: CareBookingFilterId;
@@ -112,7 +149,139 @@ export default function CareBookingsDashboard({
   pageSize: number;
   totalFiltered: number;
 }) {
+  const copy =
+    locale === "fr"
+      ? {
+          filters: {
+            all: "Tout",
+            unpaid: "Solde dû",
+            receipt: "Reçu / revue",
+            active: "En cours",
+            completed: "Terminées",
+            issue: "Incidents",
+          },
+          filtered: "filtré",
+          bookingSingular: "réservation",
+          bookingPlural: "réservations",
+          metrics: {
+            visible: "Réservations visibles",
+            visibleHint: "Vraies réservations Care liées à ce compte.",
+            balance: "Solde restant",
+            balanceHintSome: "{count} réservation(s) demandent encore un suivi de paiement.",
+            balanceHintNone: "Aucun solde Care impayé n’est ouvert pour le moment.",
+            receiptQueue: "File des reçus",
+            receiptQueueHintSome: "Des réservations avec reçu envoyé attendent encore une vérification.",
+            receiptQueueHintNone: "Aucun retard de vérification de reçu n’est lié à ce compte.",
+            completed: "Terminées",
+            completedHintSome: "Des réservations terminées peuvent maintenant passer au suivi d’avis.",
+            completedHintNone: "Les réservations Care terminées apparaîtront ici à la fin du service.",
+          },
+          linkedBookings: "Réservations Care liées",
+          linkedBookingsDescription: "Vos réservations Care, leur statut de paiement et les prochaines actions.",
+          onThisPage: "sur cette page",
+          selectedBooking: "Réservation sélectionnée",
+          paymentSnapshot: "Aperçu du paiement",
+          receiptVisibility: "Visibilité du reçu",
+          nextBestAction: "Meilleure action suivante",
+          serviceSummary: "Résumé du service",
+          serviceFallback: "Service Care",
+          addressPending: "Adresse en attente",
+          updated: "Mis à jour",
+          balanceDue: "Solde dû",
+          nextMove: "Prochaine action",
+          paginationLabel: "Pagination des réservations Care",
+          pageLabel: "Page",
+          of: "sur",
+          perPage: "par page",
+          previous: "Précédent",
+          next: "Suivant",
+          customerFallback: "Client",
+          scheduledDate: "Date prévue",
+          notScheduled: "Pas encore planifié",
+          timeWindow: "Créneau horaire",
+          windowPending: "Créneau en attente",
+          pickupAddress: "Adresse de collecte",
+          returnAddress: "Adresse de retour / livraison",
+          returnAddressFallback: "Utilise l’adresse de collecte sauf modification pendant la réservation",
+          trackingCode: "Code de suivi",
+          quotedTotal: "Total estimé",
+          amountRecorded: "Montant enregistré",
+          receiptState: "État du reçu",
+          receiptsSubmitted: "Reçus envoyés",
+          lastSubmission: "Dernier envoi",
+          noReceiptYet: "Aucun reçu pour le moment",
+          openLiveBooking: "Ouvrir la réservation en direct",
+          leaveReview: "Laisser un avis",
+        }
+      : {
+          filters: {
+            all: "All",
+            unpaid: "Balance due",
+            receipt: "Receipt / review",
+            active: "In progress",
+            completed: "Completed",
+            issue: "Issues",
+          },
+          filtered: "filtered",
+          bookingSingular: "booking",
+          bookingPlural: "bookings",
+          metrics: {
+            visible: "Visible bookings",
+            visibleHint: "Real Care bookings linked to this account.",
+            balance: "Outstanding balance",
+            balanceHintSome: "{count} booking(s) still need payment follow-up.",
+            balanceHintNone: "No unpaid Care balance is currently open.",
+            receiptQueue: "Receipt queue",
+            receiptQueueHintSome: "Bookings with submitted receipts still waiting for verification.",
+            receiptQueueHintNone: "No receipt-verification backlog is linked to this account.",
+            completed: "Completed",
+            completedHintSome: "Completed bookings that can move into review follow-up.",
+            completedHintNone: "Completed Care bookings will appear here once service closes.",
+          },
+          linkedBookings: "Linked Care bookings",
+          linkedBookingsDescription: "Your Care bookings, payment status, and upcoming actions.",
+          onThisPage: "on this page",
+          selectedBooking: "Selected booking",
+          paymentSnapshot: "Payment snapshot",
+          receiptVisibility: "Receipt visibility",
+          nextBestAction: "Next best action",
+          serviceSummary: "Service summary",
+          serviceFallback: "Care service",
+          addressPending: "Address pending",
+          updated: "Updated",
+          balanceDue: "Balance due",
+          nextMove: "Next move",
+          paginationLabel: "Care bookings pagination",
+          pageLabel: "Page",
+          of: "of",
+          perPage: "per page",
+          previous: "Previous",
+          next: "Next",
+          customerFallback: "Customer",
+          scheduledDate: "Scheduled date",
+          notScheduled: "Not scheduled yet",
+          timeWindow: "Time window",
+          windowPending: "Window pending",
+          pickupAddress: "Pickup address",
+          returnAddress: "Return / delivery address",
+          returnAddressFallback: "Uses pickup address unless changed during booking",
+          trackingCode: "Tracking code",
+          quotedTotal: "Quoted total",
+          amountRecorded: "Amount recorded",
+          receiptState: "Receipt state",
+          receiptsSubmitted: "Receipts submitted",
+          lastSubmission: "Last submission",
+          noReceiptYet: "No receipt yet",
+          openLiveBooking: "Open live booking",
+          leaveReview: "Leave review",
+        };
+
   const accent = divisionColor("care");
+  const moneyLocale = locale === "fr" ? "fr-FR" : "en-NG";
+  const filterOptions = FILTER_OPTIONS.map((option) => ({
+    ...option,
+    label: copy.filters[option.id],
+  }));
   const selectedBooking =
     bookings.find((booking) => booking.id === selectedBookingId) ??
     listBookings[0] ??
@@ -131,28 +300,28 @@ export default function CareBookingsDashboard({
   );
 
   const metrics = [
-    summaryMetric("Visible bookings", String(bookings.length), "Real Care bookings linked to this account."),
+    summaryMetric(copy.metrics.visible, String(bookings.length), copy.metrics.visibleHint),
     summaryMetric(
-      "Outstanding balance",
-      formatCurrencyAmount(outstandingBalance, "NGN", { unit: "naira" }),
+      copy.metrics.balance,
+      formatCurrencyAmount(outstandingBalance, "NGN", { unit: "naira", locale: moneyLocale }),
       unpaidBookings.length > 0
-        ? `${unpaidBookings.length} booking${unpaidBookings.length === 1 ? "" : "s"} still need payment follow-up.`
-        : "No unpaid Care balance is currently open.",
+        ? copy.metrics.balanceHintSome.replace("{count}", String(unpaidBookings.length))
+        : copy.metrics.balanceHintNone,
       unpaidBookings.length > 0 ? "warning" : "success"
     ),
     summaryMetric(
-      "Receipt queue",
+      copy.metrics.receiptQueue,
       String(reviewQueue.length),
       reviewQueue.length > 0
-        ? "Bookings with submitted receipts still waiting for verification."
-        : "No receipt-verification backlog is linked to this account."
+        ? copy.metrics.receiptQueueHintSome
+        : copy.metrics.receiptQueueHintNone
     ),
     summaryMetric(
-      "Completed",
+      copy.metrics.completed,
       String(completedBookings.length),
       completedBookings.length > 0
-        ? "Completed bookings that can move into review follow-up."
-        : "Completed Care bookings will appear here once service closes."
+        ? copy.metrics.completedHintSome
+        : copy.metrics.completedHintNone
     ),
   ];
 
@@ -163,12 +332,12 @@ export default function CareBookingsDashboard({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        {FILTER_OPTIONS.map((opt) => {
-          const active = activeFilter === opt.id;
+        {filterOptions.map((option) => {
+          const active = activeFilter === option.id;
           return (
             <Link
-              key={opt.id}
-              href={opt.id === "all" ? "/care" : `/care?filter=${opt.id}`}
+              key={option.id}
+              href={option.id === "all" ? "/care" : `/care?filter=${option.id}`}
               scroll={false}
               className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] transition ${
                 active
@@ -176,13 +345,13 @@ export default function CareBookingsDashboard({
                   : "border-[var(--acct-line)] bg-[var(--acct-bg-soft)] text-[var(--acct-muted)] hover:border-[var(--acct-gold)]/40"
               }`}
             >
-              {opt.label}
+              {option.label}
             </Link>
           );
         })}
         <span className="ml-auto text-xs text-[var(--acct-muted)]">
-          {totalFiltered} booking{totalFiltered === 1 ? "" : "s"}
-          {activeFilter !== "all" ? ` · filtered` : ""}
+          {totalFiltered} {totalFiltered === 1 ? copy.bookingSingular : copy.bookingPlural}
+          {activeFilter !== "all" ? ` · ${copy.filtered}` : ""}
         </span>
       </div>
 
@@ -210,16 +379,16 @@ export default function CareBookingsDashboard({
         <section className="acct-card p-5">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <p className="acct-kicker">Linked Care bookings</p>
+              <p className="acct-kicker">{copy.linkedBookings}</p>
               <p className="mt-1 text-sm text-[var(--acct-muted)]">
-                Your Care bookings, payment status, and upcoming actions.
+                {copy.linkedBookingsDescription}
               </p>
             </div>
             <span
               className="rounded-full px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em]"
               style={{ backgroundColor: `${accent}14`, color: accent }}
             >
-              {listBookings.length} on this page
+              {listBookings.length} {copy.onThisPage}
             </span>
           </div>
 
@@ -245,7 +414,7 @@ export default function CareBookingsDashboard({
                       {booking.tracking_code}
                     </span>
                     <span className={`rounded-full border px-2.5 py-1 text-[0.65rem] font-semibold ${statusChipClasses(booking.status)}`}>
-                      {humanize(booking.status)}
+                      {getStatusLabel(locale, booking.status)}
                     </span>
                     <span className={`rounded-full border px-2.5 py-1 text-[0.65rem] font-semibold ${toneChipClasses(booking.nextAction.tone)}`}>
                       {booking.payment.verificationLabel}
@@ -253,17 +422,20 @@ export default function CareBookingsDashboard({
                   </div>
 
                   <p className="mt-3 text-base font-semibold text-[var(--acct-ink)]">
-                    {booking.service_type || "Care service"}
+                    {booking.service_type || copy.serviceFallback}
                   </p>
                   <p className="mt-1 text-xs leading-5 text-[var(--acct-muted)]">
-                    {booking.pickup_address || "Address pending"} • Updated {timeAgo(booking.updated_at || booking.created_at || new Date().toISOString())}
+                    {booking.pickup_address || copy.addressPending} • {copy.updated} {timeAgoLocalized(booking.updated_at || booking.created_at || new Date().toISOString(), locale)}
                   </p>
 
                   <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                    <MetricMini label="Balance due">
-                      {formatCurrencyAmount(booking.payment.balanceDue, "NGN", { unit: "naira" })}
+                    <MetricMini label={copy.balanceDue}>
+                      {formatCurrencyAmount(booking.payment.balanceDue, "NGN", {
+                        unit: "naira",
+                        locale: moneyLocale,
+                      })}
                     </MetricMini>
-                    <MetricMini label="Next move">{booking.nextAction.label}</MetricMini>
+                    <MetricMini label={copy.nextMove}>{booking.nextAction.label}</MetricMini>
                   </div>
                 </Link>
               );
@@ -273,10 +445,10 @@ export default function CareBookingsDashboard({
           {totalPages > 1 ? (
             <nav
               className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--acct-line)] pt-4"
-              aria-label="Care bookings pagination"
+              aria-label={copy.paginationLabel}
             >
               <p className="text-xs text-[var(--acct-muted)]">
-                Page {page} of {totalPages} · {pageSize} per page
+                {copy.pageLabel} {page} {copy.of} {totalPages} · {pageSize} {copy.perPage}
               </p>
               <div className="flex flex-wrap gap-2">
                 {page > 1 ? (
@@ -284,7 +456,7 @@ export default function CareBookingsDashboard({
                     href={`/care?page=${page - 1}${activeFilter === "all" ? "" : `&filter=${activeFilter}`}`}
                     className="rounded-full border border-[var(--acct-line)] px-3 py-1.5 text-xs font-semibold text-[var(--acct-ink)] hover:bg-[var(--acct-surface)]"
                   >
-                    Previous
+                    {copy.previous}
                   </Link>
                 ) : null}
                 {page < totalPages ? (
@@ -292,7 +464,7 @@ export default function CareBookingsDashboard({
                     href={`/care?page=${page + 1}${activeFilter === "all" ? "" : `&filter=${activeFilter}`}`}
                     className="rounded-full border border-[var(--acct-line)] px-3 py-1.5 text-xs font-semibold text-[var(--acct-ink)] hover:bg-[var(--acct-surface)]"
                   >
-                    Next
+                    {copy.next}
                   </Link>
                 ) : null}
               </div>
@@ -304,17 +476,17 @@ export default function CareBookingsDashboard({
           <div className="border-b border-[var(--acct-line)] px-6 py-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="acct-kicker">Selected booking</p>
+                <p className="acct-kicker">{copy.selectedBooking}</p>
                 <h2 className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">
-                  {selectedBooking.service_type || "Care service"}
+                  {selectedBooking.service_type || copy.serviceFallback}
                 </h2>
                 <p className="mt-1 text-sm text-[var(--acct-muted)]">
-                  {selectedBooking.customer_name || "Customer"} • {selectedBooking.tracking_code}
+                  {selectedBooking.customer_name || copy.customerFallback} • {selectedBooking.tracking_code}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${statusChipClasses(selectedBooking.status)}`}>
-                  {humanize(selectedBooking.status)}
+                  {getStatusLabel(locale, selectedBooking.status)}
                 </span>
                 <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${toneChipClasses(selectedBooking.nextAction.tone)}`}>
                   {selectedBooking.payment.verificationLabel}
@@ -325,19 +497,19 @@ export default function CareBookingsDashboard({
 
           <div className="space-y-6 px-6 py-6">
             <div className="grid gap-4 md:grid-cols-2">
-              <DetailCard icon={Calendar} label="Scheduled date">
-                {selectedBooking.pickup_date ? formatDate(selectedBooking.pickup_date) : "Not scheduled yet"}
+              <DetailCard icon={Calendar} label={copy.scheduledDate}>
+                {selectedBooking.pickup_date ? formatDate(selectedBooking.pickup_date, { locale: moneyLocale }) : copy.notScheduled}
               </DetailCard>
-              <DetailCard icon={Clock3} label="Time window">
-                {selectedBooking.pickup_slot || "Window pending"}
+              <DetailCard icon={Clock3} label={copy.timeWindow}>
+                {selectedBooking.pickup_slot || copy.windowPending}
               </DetailCard>
-              <DetailCard icon={MapPin} label="Pickup address">
-                {selectedBooking.pickup_address || "Address pending"}
+              <DetailCard icon={MapPin} label={copy.pickupAddress}>
+                {selectedBooking.pickup_address || copy.addressPending}
               </DetailCard>
-              <DetailCard icon={MapPin} label="Return / delivery address">
-                {selectedBooking.return_address || "Uses pickup address unless changed during booking"}
+              <DetailCard icon={MapPin} label={copy.returnAddress}>
+                {selectedBooking.return_address || copy.returnAddressFallback}
               </DetailCard>
-              <DetailCard icon={Truck} label="Tracking code">
+              <DetailCard icon={Truck} label={copy.trackingCode}>
                 {selectedBooking.tracking_code || selectedBooking.id}
               </DetailCard>
             </div>
@@ -346,25 +518,28 @@ export default function CareBookingsDashboard({
               <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-surface)] p-5">
                 <div className="flex items-center gap-2">
                   <CreditCard size={16} className="text-[var(--acct-muted)]" />
-                  <p className="acct-kicker">Payment snapshot</p>
+                  <p className="acct-kicker">{copy.paymentSnapshot}</p>
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <MetricMini label="Quoted total">
+                  <MetricMini label={copy.quotedTotal}>
                     {formatCurrencyAmount(Number(selectedBooking.quoted_total || 0), "NGN", {
                       unit: "naira",
+                      locale: moneyLocale,
                     })}
                   </MetricMini>
-                  <MetricMini label="Amount recorded">
+                  <MetricMini label={copy.amountRecorded}>
                     {formatCurrencyAmount(selectedBooking.payment.amountPaidRecorded, "NGN", {
                       unit: "naira",
+                      locale: moneyLocale,
                     })}
                   </MetricMini>
-                  <MetricMini label="Balance due">
+                  <MetricMini label={copy.balanceDue}>
                     {formatCurrencyAmount(selectedBooking.payment.balanceDue, "NGN", {
                       unit: "naira",
+                      locale: moneyLocale,
                     })}
                   </MetricMini>
-                  <MetricMini label="Receipt state">
+                  <MetricMini label={copy.receiptState}>
                     {selectedBooking.payment.verificationLabel}
                   </MetricMini>
                 </div>
@@ -373,19 +548,19 @@ export default function CareBookingsDashboard({
               <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-surface)] p-5">
                 <div className="flex items-center gap-2">
                   <Receipt size={16} className="text-[var(--acct-muted)]" />
-                  <p className="acct-kicker">Receipt visibility</p>
+                  <p className="acct-kicker">{copy.receiptVisibility}</p>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-[var(--acct-ink)]">
                   {selectedBooking.payment.verificationMessage}
                 </p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <MetricMini label="Receipts submitted">
+                  <MetricMini label={copy.receiptsSubmitted}>
                     {String(selectedBooking.payment.receiptCount)}
                   </MetricMini>
-                  <MetricMini label="Last submission">
+                  <MetricMini label={copy.lastSubmission}>
                     {selectedBooking.payment.lastSubmittedAt
-                      ? timeAgo(selectedBooking.payment.lastSubmittedAt)
-                      : "No receipt yet"}
+                      ? timeAgoLocalized(selectedBooking.payment.lastSubmittedAt, locale)
+                      : copy.noReceiptYet}
                   </MetricMini>
                 </div>
               </div>
@@ -394,7 +569,7 @@ export default function CareBookingsDashboard({
             <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={16} className="text-[var(--acct-muted)]" />
-                <p className="acct-kicker">Next best action</p>
+                <p className="acct-kicker">{copy.nextBestAction}</p>
               </div>
               <p className="mt-3 text-lg font-semibold text-[var(--acct-ink)]">
                 {selectedBooking.nextAction.label}
@@ -411,7 +586,7 @@ export default function CareBookingsDashboard({
                   className="acct-button-primary rounded-xl"
                   style={{ backgroundColor: accent }}
                 >
-                  Open live booking <ArrowUpRight size={14} />
+                  {copy.openLiveBooking} <ArrowUpRight size={14} />
                 </a>
                 {selectedBooking.reviewUrl ? (
                   <a
@@ -420,7 +595,7 @@ export default function CareBookingsDashboard({
                     rel="noopener noreferrer"
                     className="acct-button-secondary rounded-xl"
                   >
-                    Leave review <ChevronRight size={14} />
+                    {copy.leaveReview} <ChevronRight size={14} />
                   </a>
                 ) : null}
               </div>
@@ -430,7 +605,7 @@ export default function CareBookingsDashboard({
               <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-surface)] p-5">
                 <div className="flex items-center gap-2">
                   <Sparkles size={16} className="text-[var(--acct-muted)]" />
-                  <p className="acct-kicker">Service summary</p>
+                  <p className="acct-kicker">{copy.serviceSummary}</p>
                 </div>
                 <p className="mt-3 text-sm leading-7 text-[var(--acct-ink)]">
                   {selectedBooking.item_summary}

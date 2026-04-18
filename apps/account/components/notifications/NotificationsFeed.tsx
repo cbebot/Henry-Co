@@ -3,34 +3,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { translateSurfaceLabel, useHenryCoLocale, type AppLocale } from "@henryco/i18n";
 import type { EnrichedNotification } from "@/lib/account-data";
 import EmptyState from "@/components/layout/EmptyState";
 import { Bell } from "lucide-react";
 import NotificationLifecycleControls from "@/components/messages/NotificationLifecycleControls";
+import { timeAgoLocalized } from "@/lib/format";
 
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "Just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Intl.DateTimeFormat("en-NG", {
-    day: "numeric",
-    month: "short",
-  }).format(new Date(dateStr));
-}
-
-function SourceMark({ notification }: { notification: EnrichedNotification }) {
+function SourceMark({ notification, sourceLabel }: { notification: EnrichedNotification; sourceLabel: string }) {
   const source = notification.source;
 
   if (source.logoUrl) {
     return (
       <Image
         src={source.logoUrl}
-        alt={source.label}
+        alt={sourceLabel}
         width={40}
         height={40}
         className="rounded-2xl border border-[var(--acct-line)] object-cover"
@@ -43,12 +30,24 @@ function SourceMark({ notification }: { notification: EnrichedNotification }) {
       className="flex h-10 w-10 items-center justify-center rounded-2xl text-xs font-bold text-white"
       style={{ backgroundColor: source.accent }}
     >
-      {source.label.charAt(0)}
+      {sourceLabel.charAt(0)}
     </div>
   );
 }
 
-function NotificationCard({ notification }: { notification: EnrichedNotification }) {
+function NotificationCard({
+  notification,
+  locale,
+  unreadLabel,
+  openMessageBoardLabel,
+}: {
+  notification: EnrichedNotification;
+  locale: AppLocale;
+  unreadLabel: string;
+  openMessageBoardLabel: string;
+}) {
+  const sourceLabel = translateSurfaceLabel(locale, notification.source.label);
+
   return (
     <div
       className={`rounded-[1.55rem] border px-4 py-4 transition hover:border-[var(--acct-gold)]/30 hover:shadow-md ${
@@ -58,7 +57,7 @@ function NotificationCard({ notification }: { notification: EnrichedNotification
       }`}
     >
       <div className="flex items-start gap-4">
-        <SourceMark notification={notification} />
+        <SourceMark notification={notification} sourceLabel={sourceLabel} />
         <div className="min-w-0 flex-1">
           <Link href={String(notification.message_href || "/notifications")} className="block">
             <div className="flex items-start justify-between gap-3">
@@ -71,11 +70,11 @@ function NotificationCard({ notification }: { notification: EnrichedNotification
                       color: notification.source.accent,
                     }}
                   >
-                    {notification.source.label}
+                    {sourceLabel}
                   </span>
                   {!notification.is_read ? (
                     <span className="rounded-full bg-[var(--acct-red-soft)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-red)]">
-                      Unread
+                      {unreadLabel}
                     </span>
                   ) : null}
                 </div>
@@ -84,7 +83,7 @@ function NotificationCard({ notification }: { notification: EnrichedNotification
                 </p>
               </div>
               <p className="shrink-0 text-[0.72rem] font-medium text-[var(--acct-muted)]">
-                {timeAgo(String(notification.created_at || ""))}
+                {timeAgoLocalized(String(notification.created_at || ""), locale)}
               </p>
             </div>
             <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">
@@ -96,7 +95,7 @@ function NotificationCard({ notification }: { notification: EnrichedNotification
               href={String(notification.message_href || "/notifications")}
               className="text-xs font-semibold text-[var(--acct-gold)] hover:underline"
             >
-              Open message board
+              {openMessageBoardLabel}
             </Link>
             <NotificationLifecycleControls
               notificationId={String(notification.id)}
@@ -115,16 +114,21 @@ export default function NotificationsFeed({
 }: {
   notifications: EnrichedNotification[];
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [selectedSource, setSelectedSource] = useState("all");
   const [mode, setMode] = useState<"all" | "unread">("all");
 
   const sourceOptions = useMemo(() => {
     const seen = new Map<string, string>();
     for (const notification of notifications) {
-      seen.set(notification.source.key, notification.source.label);
+      seen.set(
+        notification.source.key,
+        translateSurfaceLabel(locale, notification.source.label)
+      );
     }
     return Array.from(seen.entries()).map(([key, label]) => ({ key, label }));
-  }, [notifications]);
+  }, [locale, notifications]);
 
   const filtered = notifications.filter((notification) => {
     const sourceMatch = selectedSource === "all" || notification.source.key === selectedSource;
@@ -148,7 +152,7 @@ export default function NotificationsFeed({
                 : "bg-[var(--acct-surface)] text-[var(--acct-muted)]"
             }`}
           >
-            All
+            {t("All")}
           </button>
           <button
             type="button"
@@ -159,7 +163,7 @@ export default function NotificationsFeed({
                 : "bg-[var(--acct-surface)] text-[var(--acct-muted)]"
             }`}
           >
-            Unread
+            {t("Unread")}
           </button>
         </div>
 
@@ -173,7 +177,7 @@ export default function NotificationsFeed({
                 : "bg-[var(--acct-surface)] text-[var(--acct-muted)]"
             }`}
           >
-            All sources
+            {t("All sources")}
           </button>
           {sourceOptions.map((option) => (
             <button
@@ -195,22 +199,28 @@ export default function NotificationsFeed({
       {filtered.length === 0 ? (
         <EmptyState
           icon={Bell}
-          title="No notifications match this view"
-          description="Try switching the source or state filters to bring recent notifications back into focus."
+          title={t("No notifications match this view")}
+          description={t("Try switching the source or state filters to bring recent notifications back into focus.")}
         />
       ) : (
         <div className="space-y-6">
           {unread.length > 0 ? (
             <section className="space-y-3">
               <div>
-                <p className="acct-kicker">Unread</p>
+                <p className="acct-kicker">{t("Unread")}</p>
                 <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-                  Needs your attention
+                  {t("Needs your attention")}
                 </h2>
               </div>
               <div className="space-y-3">
                 {unread.map((notification) => (
-                  <NotificationCard key={String(notification.id)} notification={notification} />
+                  <NotificationCard
+                    key={String(notification.id)}
+                    notification={notification}
+                    locale={locale}
+                    unreadLabel={t("Unread")}
+                    openMessageBoardLabel={t("Open message board")}
+                  />
                 ))}
               </div>
             </section>
@@ -219,14 +229,20 @@ export default function NotificationsFeed({
           {recent.length > 0 ? (
             <section className="space-y-3">
               <div>
-                <p className="acct-kicker">Recent</p>
+                <p className="acct-kicker">{t("Recent")}</p>
                 <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-                  Cleared or reviewed activity
+                  {t("Cleared or reviewed activity")}
                 </h2>
               </div>
               <div className="space-y-3">
                 {recent.map((notification) => (
-                  <NotificationCard key={String(notification.id)} notification={notification} />
+                  <NotificationCard
+                    key={String(notification.id)}
+                    notification={notification}
+                    locale={locale}
+                    unreadLabel={t("Unread")}
+                    openMessageBoardLabel={t("Open message board")}
+                  />
                 ))}
               </div>
             </section>

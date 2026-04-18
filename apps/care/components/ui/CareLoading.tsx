@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -31,12 +32,16 @@ export function CareLoadingGlyph({
 }
 
 export function CareLoadingPill({
+  locale = "en",
   label,
   className,
 }: {
+  locale?: AppLocale;
   label: string;
   className?: string;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
   return (
     <div
       role="status"
@@ -47,7 +52,7 @@ export function CareLoadingPill({
       )}
     >
       <CareLoadingGlyph size="sm" className="text-[color:var(--accent)]" />
-      <span>{label}</span>
+      <span>{t(label)}</span>
       <span className="flex items-center gap-1.5 text-[color:var(--accent)]/78">
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current [animation-delay:120ms]" />
@@ -58,14 +63,16 @@ export function CareLoadingPill({
 }
 
 export function CareLoadingStage({
-  eyebrow = "Henry & Co. Care",
-  title = "Preparing your Care experience",
-  description = "Pulling the latest booking, pricing, and support context so the next screen opens cleanly.",
+  locale = "en",
+  eyebrow,
+  title,
+  description,
   bullets,
   variant = "route",
   footer,
   className,
 }: {
+  locale?: AppLocale;
   eyebrow?: string;
   title?: string;
   description?: string;
@@ -74,6 +81,13 @@ export function CareLoadingStage({
   footer?: ReactNode;
   className?: string;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const resolvedEyebrow = t(eyebrow || "Henry & Co. Care");
+  const resolvedTitle = t(title || "Preparing your Care experience");
+  const resolvedDescription = t(
+    description ||
+      "Pulling the latest booking, pricing, and support context so the next screen opens cleanly.",
+  );
   const shellClass =
     variant === "panel"
       ? "rounded-[2rem] border border-white/10 bg-[#07111F]/88 px-6 py-7 shadow-[0_24px_80px_rgba(3,8,17,0.34)]"
@@ -95,7 +109,7 @@ export function CareLoadingStage({
           <span className="rounded-full bg-[color:var(--accent)]/12 px-2 py-1 text-[color:var(--accent)]">
             H&C
           </span>
-          <span>{eyebrow}</span>
+          <span>{resolvedEyebrow}</span>
         </div>
 
         <div className="max-w-3xl">
@@ -107,17 +121,21 @@ export function CareLoadingStage({
           </div>
 
           <h2 className="mt-6 text-balance text-3xl font-black tracking-[-0.05em] text-white sm:text-5xl">
-            {title}
+            {resolvedTitle}
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-white/62 sm:text-base">
-            {description}
+            {resolvedDescription}
           </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
           {(bullets && bullets.length > 0
             ? bullets
-            : ["Loading your bookings", "Checking delivery status", "Preparing your dashboard"]
+            : [
+                t("Loading your bookings"),
+                t("Checking delivery status"),
+                t("Preparing your dashboard"),
+              ]
           ).map((item, index) => (
             <div
               key={`${item}-${index}`}
@@ -140,8 +158,8 @@ export function CareLoadingStage({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 text-xs uppercase tracking-[0.18em] text-white/42">
-          <span>Premium live workspace</span>
-          {footer ? footer : <CareLoadingPill label="Finishing the handoff" className="text-[10px]" />}
+          <span>{t("Premium live workspace")}</span>
+          {footer ? footer : <CareLoadingPill locale={locale} label="Finishing the handoff" className="text-[10px]" />}
         </div>
       </div>
     </div>

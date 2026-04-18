@@ -7,6 +7,7 @@ export { getStateCopy, type StateCopy } from "./state-copy";
 export { getMarketplaceCopy, type MarketplaceCopy } from "./marketplace-copy";
 export { getJobsCopy, type JobsCopy } from "./jobs-copy";
 export { getCareCopy, type CareCopy } from "./care-copy";
+export { getAccountCopy, formatAccountTemplate, type AccountCopy } from "./account-copy";
 export {
   getSurfaceCopy,
   translateSurfaceLabel,
@@ -34,12 +35,18 @@ export {
   DEFAULT_LOCALE,
   ALL_LOCALES,
   PRIMARY_LOCALES,
+  PUBLIC_SELECTOR_LOCALES,
+  INTERNAL_SCAFFOLD_LOCALES,
   RTL_LOCALES,
   normalizeLocale,
   isAppLocale,
+  isPublicSelectorLocale,
   isRtlLocale,
+  getLocaleDisplayLabel,
   localeFromAcceptLanguage,
   LOCALE_COOKIE,
   LOCALE_LABELS,
+  LOCALE_TIERS,
+  type LocaleTier,
   type AppLocale,
 } from "./locales";

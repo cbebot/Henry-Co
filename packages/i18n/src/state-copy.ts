@@ -353,12 +353,42 @@ const HA: Partial<StateCopy> = {
   },
 };
 
+const IT: Partial<StateCopy> = {
+  "loading": {
+    "default": "Caricamento…",
+    "data": "Caricamento dati...",
+    "content": "Caricamento contenuto..."
+  },
+  "empty": {
+    "default": "Niente qui ancora.",
+    "noResults": "Nessun risultato trovato",
+    "noItems": "Nessun articolo disponibile"
+  },
+  "error": {
+    "default": "Qualcosa è andato storto.",
+    "notFound": "La pagina richiesta non è stata trovata.",
+    "unauthorized": "È necessario effettuare l'accesso per continuare.",
+    "forbidden": "Non hai l'autorizzazione per questa azione.",
+    "network": "Errore di rete. Controlla la connessione e riprova.",
+    "server": "Errore del server. Per favore riprova a breve.",
+    "tryAgain": "Riprova",
+    "contactSupport": "Contatta l'assistenza"
+  },
+  "confirm": {
+    "title": "Sei sicuro?",
+    "warning": "Questa azione non può essere annullata.",
+    "cancel": "Annulla",
+    "proceed": "Continua"
+  }
+};
+
 const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<StateCopy>>> = {
   fr: FR,
   es: ES,
   pt: PT,
   ar: AR,
   de: DE,
+  it: IT,
   zh: ZH,
   hi: HI,
   ig: IG,

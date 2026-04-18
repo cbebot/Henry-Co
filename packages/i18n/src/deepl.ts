@@ -8,7 +8,7 @@
  *   text unchanged so callers can gracefully fall back to English.
  *
  * DeepL language codes used by the HenryCo ecosystem:
- *   en → EN-US  fr → FR  es → ES  pt → PT-BR  ar → AR  de → DE  zh → ZH  hi — not supported by DeepL Free/Pro v2
+ *   en → EN-US  fr → FR  es → ES  pt → PT-BR  ar → AR  de → DE  it → IT  zh → ZH  hi — not supported by DeepL Free/Pro v2
  */
 
 import type { AppLocale } from "./locales";
@@ -23,6 +23,7 @@ const DEEPL_LOCALE_MAP: Partial<Record<AppLocale, string>> = {
   pt: "PT-BR",
   ar: "AR",
   de: "DE",
+  it: "IT",
   zh: "ZH",
   // ig, yo, ha, hi: not supported by DeepL — callers should skip or use EN fallback
 };

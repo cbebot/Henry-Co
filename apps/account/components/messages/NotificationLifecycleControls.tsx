@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 import { Archive, CheckCheck, MailOpen, Trash2 } from "lucide-react";
 
@@ -58,9 +59,20 @@ export default function NotificationLifecycleControls({
   redirectOnDelete,
   compact,
 }: NotificationLifecycleControlsProps) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const router = useRouter();
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const localizeError = (message?: string | null) => {
+    const fallback = t("Notification update failed.");
+    const candidate = String(message || "").trim();
+    if (!candidate) return fallback;
+
+    const translated = t(candidate);
+    return translated !== candidate ? translated : fallback;
+  };
 
   const runAction = async (method: "POST" | "DELETE", path: string, action: string) => {
     setPendingAction(action);
@@ -69,7 +81,7 @@ export default function NotificationLifecycleControls({
       const response = await fetch(path, { method });
       if (!response.ok) {
         const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(payload?.error || "Request failed");
+        throw new Error(localizeError(payload?.error));
       }
 
       if (action === "delete" && redirectOnDelete) {
@@ -79,11 +91,7 @@ export default function NotificationLifecycleControls({
 
       router.refresh();
     } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Notification update failed."
-      );
+      setError(localizeError(requestError instanceof Error ? requestError.message : null));
     } finally {
       setPendingAction(null);
     }
@@ -99,7 +107,7 @@ export default function NotificationLifecycleControls({
         </span>
       ) : null}
       <ActionButton
-        label={isRead ? "Mark unread" : "Mark read"}
+        label={isRead ? t("Mark unread") : t("Mark read")}
         icon={isRead ? MailOpen : CheckCheck}
         onClick={() =>
           void runAction(
@@ -111,10 +119,10 @@ export default function NotificationLifecycleControls({
         disabled={busy}
         compact={compact}
         pending={pendingAction === (isRead ? "unread" : "read")}
-        pendingLabel={isRead ? "Marking unread..." : "Marking read..."}
+        pendingLabel={isRead ? t("Marking unread...") : t("Marking read...")}
       />
       <ActionButton
-        label="Archive"
+        label={t("Archive")}
         icon={Archive}
         onClick={() =>
           void runAction("POST", `/api/notifications/${notificationId}/archive`, "archive")
@@ -122,16 +130,16 @@ export default function NotificationLifecycleControls({
         disabled={busy}
         compact={compact}
         pending={pendingAction === "archive"}
-        pendingLabel="Archiving..."
+        pendingLabel={t("Archiving...")}
       />
       <ActionButton
-        label="Delete"
+        label={t("Delete")}
         icon={Trash2}
         onClick={() => void runAction("DELETE", `/api/notifications/${notificationId}`, "delete")}
         disabled={busy}
         compact={compact}
         pending={pendingAction === "delete"}
-        pendingLabel="Deleting..."
+        pendingLabel={t("Deleting...")}
       />
     </div>
   );

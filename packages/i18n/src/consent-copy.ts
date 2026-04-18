@@ -393,6 +393,53 @@ const HI: Partial<EcosystemConsentCopy> = {
   language: { label: "भाषा", hint: "Henry & Co. साइटों पर लागू होता है जो आपके चयन का समर्थन करती हैं।" },
 };
 
+const IT: Partial<EcosystemConsentCopy> = {
+  "banner": {
+    "eyebrow": "Preferenze dell'esperienza",
+    "title": "Scegli come Henry & Co. memorizza le impostazioni su questo dispositivo.",
+    "body": "Lo storage essenziale mantiene affidabili la sicurezza, la navigazione e i flussi principali. Le categorie facoltative aiutano a ricordare le scelte di lingua e interfaccia, misurano la qualità e supportano un raggio d'azione attentamente mirato quando i programmi sono abilitati.",
+    "essentialOnly": "Solo essenziale",
+    "customize": "Personalizza",
+    "acceptAll": "Accetta tutto"
+  },
+  "fab": "Privacy",
+  "panel": {
+    "eyebrow": "Controlli sulla privacy",
+    "title": "Controlla la privacy e la personalizzazione",
+    "lastUpdated": "Ultimo aggiornamento",
+    "lastUpdatedNever": "Non ancora salvato",
+    "close": "Chiudi",
+    "essential": {
+      "title": "Essenziale",
+      "description": "Necessario per la sicurezza, l'integrità della sessione, i flussi di pagamento e la navigazione principale."
+    },
+    "preferences": {
+      "title": "Preferenze",
+      "description": "Ricorda le scelte di lingua, tema e layout in modo che l'esperienza rimanga coerente."
+    },
+    "personalized": {
+      "title": "Esperienza personalizzata",
+      "description": "Consente consigli personalizzati e suggerimenti contestuali in base al modo in cui utilizzi le proprietà Henry & Co."
+    },
+    "analytics": {
+      "title": "Analitica",
+      "description": "Aiuta a misurare la domanda, la qualità della pagina e l'attrito in modo che i team possano migliorare i prodotti in modo responsabile."
+    },
+    "marketing": {
+      "title": "Marketing",
+      "description": "Consente un remarketing o un'attività di sensibilizzazione attentamente mirati quando tali programmi sono attivi."
+    },
+    "keepEssential": "Mantieni solo l'essenziale",
+    "save": "Salva le preferenze",
+    "theme": "Tema",
+    "savedConfirmation": "Salvato"
+  },
+  "language": {
+    "label": "Lingua",
+    "hint": "Si applica a tutti i siti Henry & Co. che supportano la tua selezione."
+  }
+};
+
 const LOCALE_COPY: Partial<Record<AppLocale, Partial<EcosystemConsentCopy>>> = {
   fr: FR,
   ig: IG,
@@ -402,6 +449,7 @@ const LOCALE_COPY: Partial<Record<AppLocale, Partial<EcosystemConsentCopy>>> = {
   es: ES,
   pt: PT,
   de: DE,
+  it: IT,
   zh: ZH,
   hi: HI,
 };

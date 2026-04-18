@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 import { FileUp } from "lucide-react";
 
@@ -12,15 +13,35 @@ export default function FundingProofUpload({
   requestId: string;
   currentProofUrl: string | null;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const router = useRouter();
 
+  function localizeProofError(message: string) {
+    switch (message) {
+      case "Unauthorized":
+        return t("Please sign in to continue.");
+      case "Funding request not found.":
+        return t("Funding request not found.");
+      case "Payment proof is required.":
+        return t("Payment proof is required.");
+      case "Upload a JPG, PNG, WebP, or PDF proof file.":
+        return t("Upload a JPG, PNG, WebP, or PDF proof file.");
+      case "Unable to save proof. Please try again.":
+      case "Unable to upload proof.":
+        return t("Unable to upload proof.");
+      default:
+        return t(message);
+    }
+  }
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!file) {
-      setMessage({ type: "error", text: "Select a proof file first." });
+      setMessage({ type: "error", text: t("Select a proof file first.") });
       return;
     }
 
@@ -38,16 +59,16 @@ export default function FundingProofUpload({
 
       const data = (await response.json()) as { error?: string };
       if (!response.ok) {
-        throw new Error(data.error || "Unable to upload proof.");
+        throw new Error(localizeProofError(data.error || "Unable to upload proof."));
       }
 
       setFile(null);
-      setMessage({ type: "success", text: "Proof uploaded. The HenryCo team can now review the request." });
+      setMessage({ type: "success", text: t("Proof uploaded. The HenryCo team can now review the request.") });
       router.refresh();
     } catch (error) {
       setMessage({
         type: "error",
-        text: error instanceof Error ? error.message : "Unable to upload proof.",
+        text: error instanceof Error ? localizeProofError(error.message) : t("Unable to upload proof."),
       });
     } finally {
       setLoading(false);
@@ -65,9 +86,9 @@ export default function FundingProofUpload({
           <FileUp size={18} />
         </div>
         <div>
-          <p className="text-sm font-semibold text-[var(--acct-ink)]">Upload transfer proof</p>
+          <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("Upload transfer proof")}</p>
           <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">
-            JPG, PNG, WebP, or PDF. Upload the bank receipt or transfer confirmation linked to this request.
+            {t("JPG, PNG, WebP, or PDF. Upload the bank receipt or transfer confirmation linked to this request.")}
           </p>
         </div>
       </div>
@@ -79,7 +100,7 @@ export default function FundingProofUpload({
           rel="noreferrer"
           className="mt-4 inline-flex rounded-full bg-[var(--acct-green-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--acct-green)]"
         >
-          Existing proof uploaded
+          {t("Existing proof uploaded")}
         </a>
       ) : null}
 
@@ -112,8 +133,8 @@ export default function FundingProofUpload({
           disabled={loading || !file}
           className="acct-button-primary rounded-2xl px-5 py-3"
         >
-          <ButtonPendingContent pending={loading} pendingLabel="Uploading proof..." spinnerLabel="Uploading proof">
-            Upload proof
+          <ButtonPendingContent pending={loading} pendingLabel={t("Uploading proof...")} spinnerLabel={t("Uploading proof...")}>
+            {t("Upload proof")}
           </ButtonPendingContent>
         </button>
       </div>

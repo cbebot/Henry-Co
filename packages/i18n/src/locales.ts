@@ -1,22 +1,55 @@
 export const DEFAULT_LOCALE = "en";
 
-/** Locales with professionally reviewed full UI catalogs for the hub + consent surfaces. */
+export type LocaleTier =
+  | "production-ready"
+  | "native-ui-ready"
+  | "scaffold";
+
+/** Locales with professionally reviewed broad UI coverage across the core public surfaces. */
 export const PRIMARY_LOCALES = ["en", "fr"] as const;
 
 /**
- * Extended locales aligned with account profile `language` options.
- * Tier A (production-ready copy): en, fr, es, ar, pt
- * Tier B (architecture-ready scaffold): de, zh, hi — registered, detected, copy falls back to EN
- * Nigerian regional: ig, yo, ha
+ * Extended locale registry aligned with persisted language preferences.
+ *
+ * `ALL_LOCALES` is the full architecture/registry list.
+ * User-facing selectors must stay narrower until copy coverage survives
+ * shared-cookie persistence across public surfaces and account surfaces.
  */
-export const ALL_LOCALES = ["en", "fr", "ig", "yo", "ha", "ar", "es", "pt", "de", "zh", "hi"] as const;
+export const ALL_LOCALES = ["en", "fr", "ig", "yo", "ha", "ar", "es", "pt", "de", "it", "zh", "hi"] as const;
 
 export type AppLocale = (typeof ALL_LOCALES)[number];
+
+export const LOCALE_TIERS: Record<AppLocale, LocaleTier> = {
+  en: "production-ready",
+  fr: "production-ready",
+  es: "native-ui-ready",
+  pt: "native-ui-ready",
+  ar: "native-ui-ready",
+  de: "native-ui-ready",
+  it: "native-ui-ready",
+  ig: "scaffold",
+  yo: "scaffold",
+  ha: "scaffold",
+  zh: "scaffold",
+  hi: "scaffold",
+};
+
+/** Fully user-visible selector locales. */
+export const PUBLIC_SELECTOR_LOCALES: readonly AppLocale[] = ["en", "fr", "es", "pt", "ar", "de", "it"];
+
+/** Internal registry locales that remain detectable/persistable but are not yet public selector options. */
+export const INTERNAL_SCAFFOLD_LOCALES: readonly AppLocale[] = ALL_LOCALES.filter(
+  (locale) => !PUBLIC_SELECTOR_LOCALES.includes(locale),
+);
 
 export const RTL_LOCALES: readonly AppLocale[] = ["ar"];
 
 export function isAppLocale(value: string | null | undefined): value is AppLocale {
   return Boolean(value && (ALL_LOCALES as readonly string[]).includes(value));
+}
+
+export function isPublicSelectorLocale(locale: AppLocale): boolean {
+  return PUBLIC_SELECTOR_LOCALES.includes(locale);
 }
 
 export function normalizeLocale(value: string | null | undefined): AppLocale {
@@ -30,17 +63,18 @@ export const LOCALE_LABELS: Record<
   AppLocale,
   { en: string; native: string }
 > = {
-  // Tier A — production-ready
+  // Production-ready
   en: { en: "English", native: "English" },
   fr: { en: "French", native: "Français" },
+  // Native UI ready
+  de: { en: "German", native: "Deutsch" },
+  it: { en: "Italian", native: "Italiano" },
+  // Scaffold / internal
   es: { en: "Spanish", native: "Español" },
   ar: { en: "Arabic", native: "العربية" },
   pt: { en: "Portuguese", native: "Português" },
-  // Tier B — architecture-ready scaffold
-  de: { en: "German", native: "Deutsch" },
   zh: { en: "Chinese", native: "中文" },
   hi: { en: "Hindi", native: "हिन्दी" },
-  // Nigerian regional
   ig: { en: "Igbo", native: "Igbo" },
   yo: { en: "Yoruba", native: "Yorùbá" },
   ha: { en: "Hausa", native: "Hausa" },
@@ -48,6 +82,11 @@ export const LOCALE_LABELS: Record<
 
 export function isRtlLocale(locale: AppLocale): boolean {
   return RTL_LOCALES.includes(locale);
+}
+
+export function getLocaleDisplayLabel(locale: AppLocale): string {
+  const labels = LOCALE_LABELS[locale];
+  return `${labels.native} (${labels.en})`;
 }
 
 export const LOCALE_COOKIE = "henryco_locale";

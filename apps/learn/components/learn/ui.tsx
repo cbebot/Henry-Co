@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Bookmark, BookOpen, ChevronRight, Clock3, GraduationCap, Layers3, ShieldCheck, Sparkles, Star } from "lucide-react";
+import type { AppLocale } from "@henryco/i18n";
+import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/env";
 import type { LearnCourse, LearnPath } from "@/lib/learn/types";
@@ -112,25 +114,28 @@ export function CourseCard({
   course,
   href,
   saved,
+  locale = "en",
 }: {
   course: LearnCourse;
   href: string;
   saved?: boolean;
+  locale?: AppLocale;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const visibilityLabel =
     course.visibility === "public"
-      ? "Public access"
+      ? t("Public access")
       : course.visibility === "internal"
-        ? "Assigned access"
-        : "Private access";
+        ? t("Assigned access")
+        : t("Private access");
 
   return (
     <Link href={href} className="group block">
       <article className="learn-panel learn-mesh flex h-full flex-col rounded-[2rem] p-6 transition duration-300 group-hover:-translate-y-1.5 group-hover:border-[var(--learn-line-strong)]">
         <div className="flex flex-wrap items-center gap-2">
           <LearnStatusBadge label={visibilityLabel} tone={course.visibility === "public" ? "signal" : "warning"} />
-          <LearnStatusBadge label={course.accessModel === "free" ? "Free" : course.accessModel === "paid" ? "Paid" : "Sponsored"} tone={course.accessModel === "free" ? "success" : "neutral"} />
-          {course.certification ? <LearnStatusBadge label="Certificate" tone="signal" /> : null}
+          <LearnStatusBadge label={course.accessModel === "free" ? t("Free") : course.accessModel === "paid" ? t("Paid") : t("Sponsored")} tone={course.accessModel === "free" ? "success" : "neutral"} />
+          {course.certification ? <LearnStatusBadge label={t("Certificate")} tone="signal" /> : null}
         </div>
 
         <div className="mt-5 flex items-start justify-between gap-4">
@@ -145,17 +150,17 @@ export function CourseCard({
 
         <div className="mt-6 grid gap-3 text-sm text-[var(--learn-ink-soft)] sm:grid-cols-2">
           <div className="flex items-center gap-2"><Clock3 className="h-4 w-4" /> {course.durationText}</div>
-          <div className="flex items-center gap-2"><Layers3 className="h-4 w-4" /> {humanizeLabel(course.difficulty)}</div>
-          <div className="flex items-center gap-2"><GraduationCap className="h-4 w-4" /> Pass {course.passingScore}%</div>
-          <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> {course.visibility === "public" ? "Open to learners" : "Limited by role or assignment"}</div>
+          <div className="flex items-center gap-2"><Layers3 className="h-4 w-4" /> {t(humanizeLabel(course.difficulty))}</div>
+          <div className="flex items-center gap-2"><GraduationCap className="h-4 w-4" /> {formatSurfaceTemplate(t("Pass {score}%"), { score: course.passingScore })}</div>
+          <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> {course.visibility === "public" ? t("Open to learners") : t("Limited by role or assignment")}</div>
         </div>
 
         <div className="mt-6 flex items-center justify-between border-t border-[var(--learn-line)] pt-5">
           <div className="text-sm font-semibold text-[var(--learn-ink)]">
-            {course.accessModel === "free" || course.price === 0 ? "Included" : formatCurrency(course.price || 0, course.currency)}
+            {course.accessModel === "free" || course.price === 0 ? t("Included") : formatCurrency(course.price || 0, course.currency)}
           </div>
           <div className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--learn-mint-soft)]">
-            View course <ArrowRight className="h-4 w-4" />
+            {t("View course")} <ArrowRight className="h-4 w-4" />
           </div>
         </div>
       </article>
@@ -167,12 +172,15 @@ export function PathCard({
   path,
   courseCount,
   href,
+  locale = "en",
 }: {
   path: LearnPath;
   courseCount: number;
   href: string;
+  locale?: AppLocale;
 }) {
-  const visibilityLabel = path.visibility === "public" ? "Public path" : "Assigned path";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const visibilityLabel = path.visibility === "public" ? t("Public path") : t("Assigned path");
 
   return (
     <Link href={href} className="group block">
@@ -184,8 +192,8 @@ export function PathCard({
         <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{path.title}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">{path.summary}</p>
         <div className="mt-5 flex items-center justify-between text-sm text-[var(--learn-ink-soft)]">
-          <span>{courseCount} courses in this path</span>
-          <span className="inline-flex items-center gap-1 font-semibold text-[var(--learn-mint-soft)]">Open path <ChevronRight className="h-4 w-4" /></span>
+          <span>{formatSurfaceTemplate(t("{count} courses in this path"), { count: courseCount })}</span>
+          <span className="inline-flex items-center gap-1 font-semibold text-[var(--learn-mint-soft)]">{t("Open path")} <ChevronRight className="h-4 w-4" /></span>
         </div>
       </article>
     </Link>

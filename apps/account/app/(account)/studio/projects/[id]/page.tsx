@@ -9,9 +9,11 @@ import {
   ReceiptText,
   Sparkles,
 } from "lucide-react";
+import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
 import { requireAccountUser } from "@/lib/auth";
 import { formatCurrencyAmount, formatDate, formatDateTime, timeAgo } from "@/lib/format";
 import { getStudioProjectRoom } from "@/lib/studio-module";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +30,10 @@ export default async function StudioProjectRoomPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const tf = (template: string, values: Record<string, string | number>) =>
+    formatSurfaceTemplate(template, values);
   const user = await requireAccountUser();
   const { id } = await params;
   const room = await getStudioProjectRoom(user.id, user.email, id);
@@ -40,16 +46,16 @@ export default async function StudioProjectRoomPage({
     <div className="space-y-6 acct-fade-in">
       <PageHeader
         title={room.project.title}
-        description="A synced Studio room with milestones, updates, deliverables, revisions, proof state, and the cleanest next move."
+        description={t("A synced Studio room with milestones, updates, deliverables, revisions, proof state, and the cleanest next move.")}
         icon={Sparkles}
         actions={
           <div className="flex flex-wrap gap-3">
             <Link href="/studio" className="acct-button-secondary rounded-xl">
-              <ArrowLeft size={14} /> Back to Studio
+              <ArrowLeft size={14} /> {t("Back to Studio")}
             </Link>
             {room.supportThread ? (
               <Link href={`/support/${room.supportThread.id}`} className="acct-button-primary rounded-xl">
-                Open support room
+                {t("Open support room")}
               </Link>
             ) : null}
           </div>
@@ -62,10 +68,10 @@ export default async function StudioProjectRoomPage({
             <div className="max-w-3xl">
               <div className="flex flex-wrap gap-2">
                 <span className="rounded-full bg-white/12 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/84">
-                  {room.project.status.replaceAll("_", " ")}
+                  {t(room.project.status.replaceAll("_", " "))}
                 </span>
                 <span className="rounded-full bg-white/12 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/84">
-                  {room.project.milestoneProgress}% complete
+                  {tf("{percent}% complete", { percent: room.project.milestoneProgress })}
                 </span>
               </div>
               <h2 className="mt-4 acct-display text-3xl leading-tight sm:text-4xl">
@@ -73,25 +79,25 @@ export default async function StudioProjectRoomPage({
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/78">{room.project.summary}</p>
               <p className="mt-3 text-xs uppercase tracking-[0.16em] text-white/65">
-                Updated {timeAgo(room.project.updatedAt)}
+                {tf("Updated {value}", { value: timeAgo(room.project.updatedAt) })}
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
               {[
                 {
-                  label: "Milestones",
+                  label: t("Milestones"),
                   value: `${room.project.approvedMilestones}/${room.project.totalMilestones || 0}`,
-                  detail: `${room.project.readyMilestones} ready for review`,
+                  detail: tf("{count} ready for review", { count: room.project.readyMilestones }),
                 },
                 {
-                  label: "Open payments",
+                  label: t("Open payments"),
                   value: String(room.project.openPayments),
-                  detail: `${room.payments.filter((payment) => Boolean(payment.proofUrl)).length} proof upload(s) found`,
+                  detail: tf("{count} proof upload(s) found", { count: room.payments.filter((payment) => Boolean(payment.proofUrl)).length }),
                 },
                 {
-                  label: "Team updates",
+                  label: t("Team updates"),
                   value: String(room.updates.length + room.messages.length),
-                  detail: `${room.deliverables.length} deliverable lane(s) visible`,
+                  detail: tf("{count} deliverable lane(s) visible", { count: room.deliverables.length }),
                 },
               ].map((item) => (
                 <div key={item.label} className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
@@ -109,8 +115,8 @@ export default async function StudioProjectRoomPage({
         <section className="acct-card p-5 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
-              <p className="acct-kicker">Milestone rail</p>
-              <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Where the project is right now</h3>
+              <p className="acct-kicker">{t("Milestone rail")}</p>
+              <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Where the project is right now")}</h3>
             </div>
           </div>
           <div className="space-y-4">
@@ -124,7 +130,7 @@ export default async function StudioProjectRoomPage({
                 </div>
                 <div className="flex-1 rounded-[1.45rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className={statusChip(milestone.status)}>{milestone.status.replaceAll("_", " ")}</span>
+                    <span className={statusChip(milestone.status)}>{t(milestone.status.replaceAll("_", " "))}</span>
                     <span className="acct-chip acct-chip-gold">{formatCurrencyAmount(milestone.amount)}</span>
                   </div>
                   <p className="mt-3 text-sm font-semibold text-[var(--acct-ink)]">{milestone.name}</p>
@@ -141,8 +147,8 @@ export default async function StudioProjectRoomPage({
             <div className="mb-5 flex items-center gap-2">
               <ReceiptText size={15} className="text-[var(--acct-gold)]" />
               <div>
-                <p className="acct-kicker">Payment visibility</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Commercial checkpoints tied to this room</h3>
+                <p className="acct-kicker">{t("Payment visibility")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Commercial checkpoints tied to this room")}</h3>
               </div>
             </div>
             <div className="space-y-3">
@@ -153,9 +159,9 @@ export default async function StudioProjectRoomPage({
                   className="block rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] px-4 py-4 transition hover:border-[var(--acct-gold)]/30"
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className={statusChip(payment.status)}>{payment.status.replaceAll("_", " ")}</span>
-                    <span className="acct-chip acct-chip-blue">{payment.method.replaceAll("_", " ")}</span>
-                    {payment.proofUrl ? <span className="acct-chip acct-chip-gold">Proof uploaded</span> : null}
+                    <span className={statusChip(payment.status)}>{t(payment.status.replaceAll("_", " "))}</span>
+                    <span className="acct-chip acct-chip-blue">{t(payment.method.replaceAll("_", " "))}</span>
+                    {payment.proofUrl ? <span className="acct-chip acct-chip-gold">{t("Proof uploaded")}</span> : null}
                   </div>
                   <div className="mt-3 flex items-start justify-between gap-4">
                     <div>
@@ -165,7 +171,7 @@ export default async function StudioProjectRoomPage({
                       </p>
                     </div>
                     <div className="text-right text-xs text-[var(--acct-muted)]">
-                      {payment.dueDate ? `Due ${formatDate(payment.dueDate)}` : formatDateTime(payment.updatedAt)}
+                      {payment.dueDate ? tf("Due {date}", { date: formatDate(payment.dueDate) }) : formatDateTime(payment.updatedAt)}
                     </div>
                   </div>
                 </Link>
@@ -175,15 +181,16 @@ export default async function StudioProjectRoomPage({
 
           {room.proposal ? (
             <div className="acct-card p-5 sm:p-6">
-              <p className="acct-kicker">Commercial brief</p>
+              <p className="acct-kicker">{t("Commercial brief")}</p>
+              
               <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{room.proposal.title}</h3>
               <div className="mt-4 flex flex-wrap gap-2">
-                <span className={statusChip(room.proposal.status)}>{room.proposal.status.replaceAll("_", " ")}</span>
+                <span className={statusChip(room.proposal.status)}>{t(room.proposal.status.replaceAll("_", " "))}</span>
                 <span className="acct-chip acct-chip-gold">
-                  Total {formatCurrencyAmount(room.proposal.investment, room.proposal.currency)}
+                  {tf("Total {amount}", { amount: formatCurrencyAmount(room.proposal.investment, room.proposal.currency) })}
                 </span>
                 <span className="acct-chip acct-chip-blue">
-                  Deposit {formatCurrencyAmount(room.proposal.depositAmount, room.proposal.currency)}
+                  {tf("Deposit {amount}", { amount: formatCurrencyAmount(room.proposal.depositAmount, room.proposal.currency) })}
                 </span>
               </div>
               {room.proposal.scopeBullets.length > 0 ? (
@@ -202,15 +209,15 @@ export default async function StudioProjectRoomPage({
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <section className="acct-card p-5 sm:p-6">
-          <div className="mb-5 flex items-center gap-2">
-            <CheckCircle2 size={15} className="text-[var(--acct-gold)]" />
-            <div>
-              <p className="acct-kicker">Project updates</p>
-              <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Studio-side movement and decisions</h3>
+            <div className="mb-5 flex items-center gap-2">
+              <CheckCircle2 size={15} className="text-[var(--acct-gold)]" />
+              <div>
+                <p className="acct-kicker">{t("Project updates")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Studio-side movement and decisions")}</h3>
+              </div>
             </div>
-          </div>
           {room.updates.length === 0 ? (
-            <p className="text-sm leading-7 text-[var(--acct-muted)]">Studio has not logged a visible update yet.</p>
+            <p className="text-sm leading-7 text-[var(--acct-muted)]">{t("Studio has not logged a visible update yet.")}</p>
           ) : (
             <div className="space-y-3">
               {room.updates.map((update) => (
@@ -228,17 +235,17 @@ export default async function StudioProjectRoomPage({
         </section>
 
         <section className="acct-card p-5 sm:p-6">
-          <div className="mb-5 flex items-center gap-2">
-            <MessageSquare size={15} className="text-[var(--acct-blue)]" />
-            <div>
-              <p className="acct-kicker">Communication lane</p>
-              <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Project-room conversation and support continuity</h3>
+            <div className="mb-5 flex items-center gap-2">
+              <MessageSquare size={15} className="text-[var(--acct-blue)]" />
+              <div>
+                <p className="acct-kicker">{t("Communication lane")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Project-room conversation and support continuity")}</h3>
+              </div>
             </div>
-          </div>
           {room.messages.length === 0 ? (
             <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4">
               <p className="text-sm leading-7 text-[var(--acct-muted)]">
-                No direct project messages are visible yet. The room will still track project updates, payment checkpoints, and deliverables as they land.
+                {t("No direct project messages are visible yet. The room will still track project updates, payment checkpoints, and deliverables as they land.")}
               </p>
             </div>
           ) : (
@@ -267,7 +274,7 @@ export default async function StudioProjectRoomPage({
                 <LifeBuoy size={18} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-[var(--acct-ink)]">Continue in the support room</p>
+                <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("Continue in the support room")}</p>
                 <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">{room.supportThread.subject}</p>
                 <p className="mt-2 text-xs text-[var(--acct-muted)]">
                   {room.supportThread.status.replaceAll("_", " ")} • {timeAgo(room.supportThread.updatedAt)}
@@ -280,15 +287,15 @@ export default async function StudioProjectRoomPage({
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <section className="acct-card p-5 sm:p-6">
-          <div className="mb-5 flex items-center gap-2">
-            <FolderOpen size={15} className="text-[var(--acct-gold)]" />
-            <div>
-              <p className="acct-kicker">Deliverables and files</p>
-              <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Shared outputs and asset handoff</h3>
+            <div className="mb-5 flex items-center gap-2">
+              <FolderOpen size={15} className="text-[var(--acct-gold)]" />
+              <div>
+                <p className="acct-kicker">{t("Deliverables and files")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Shared outputs and asset handoff")}</h3>
+              </div>
             </div>
-          </div>
           {room.deliverables.length === 0 && room.files.length === 0 ? (
-            <p className="text-sm leading-7 text-[var(--acct-muted)]">No deliverables or files have been shared yet.</p>
+            <p className="text-sm leading-7 text-[var(--acct-muted)]">{t("No deliverables or files have been shared yet.")}</p>
           ) : (
             <div className="space-y-4">
               {room.deliverables.map((deliverable) => (
@@ -321,7 +328,7 @@ export default async function StudioProjectRoomPage({
 
               {room.files.length > 0 ? (
                 <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
-                  <p className="text-sm font-semibold text-[var(--acct-ink)]">Project files</p>
+                  <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("Project files")}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {room.files.map((file) =>
                       file.url ? (
@@ -344,26 +351,26 @@ export default async function StudioProjectRoomPage({
         </section>
 
         <section className="acct-card p-5 sm:p-6">
-          <div className="mb-5 flex items-center gap-2">
-            <ReceiptText size={15} className="text-[var(--acct-blue)]" />
-            <div>
-              <p className="acct-kicker">Revision lane</p>
-              <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Requested changes and review pressure</h3>
+            <div className="mb-5 flex items-center gap-2">
+              <ReceiptText size={15} className="text-[var(--acct-blue)]" />
+              <div>
+                <p className="acct-kicker">{t("Revision lane")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Requested changes and review pressure")}</h3>
+              </div>
             </div>
-          </div>
           {room.revisions.length === 0 ? (
-            <p className="text-sm leading-7 text-[var(--acct-muted)]">No revisions are open right now.</p>
+            <p className="text-sm leading-7 text-[var(--acct-muted)]">{t("No revisions are open right now.")}</p>
           ) : (
             <div className="space-y-3">
               {room.revisions.map((revision) => (
                 <div key={revision.id} className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-surface)] px-4 py-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className={statusChip(revision.status)}>{revision.status.replaceAll("_", " ")}</span>
+                    <span className={statusChip(revision.status)}>{t(revision.status.replaceAll("_", " "))}</span>
                     <span className="acct-chip acct-chip-gold">{revision.requestedBy}</span>
                   </div>
                   <p className="mt-3 text-sm leading-7 text-[var(--acct-muted)]">{revision.summary}</p>
                   <p className="mt-2 text-xs text-[var(--acct-muted)]">
-                    Opened {formatDateTime(revision.createdAt)} • Updated {timeAgo(revision.updatedAt)}
+                    {tf("Opened {date}", { date: formatDateTime(revision.createdAt) })} • {tf("Updated {value}", { value: timeAgo(revision.updatedAt) })}
                   </p>
                 </div>
               ))}

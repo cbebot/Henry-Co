@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Banknote } from "lucide-react";
 import { getVerificationGateCopy } from "@henryco/trust";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import {
@@ -11,12 +12,15 @@ import {
   getWalletSummary,
 } from "@/lib/account-data";
 import { getVerificationState } from "@/lib/verification";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import WalletWithdrawalsClient from "@/components/wallet/WalletWithdrawalsClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function WalletWithdrawalsPage() {
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const user = await requireAccountUser();
   const [wallet, methods, requests, pinConfigured, verification] = await Promise.all([
     getWalletSummary(user.id),
@@ -35,12 +39,12 @@ export default async function WalletWithdrawalsPage() {
     <div className="space-y-6 acct-fade-in">
       <RouteLiveRefresh />
       <PageHeader
-        title="Withdrawals"
-        description="Request a bank transfer from your available balance. Finance reviews every withdrawal before payout."
+        title={t("Withdrawals")}
+        description={t("Request a bank transfer from your available balance. Finance reviews every withdrawal before payout.")}
         icon={Banknote}
         actions={
           <Link href="/wallet" className="acct-button-secondary inline-flex items-center gap-2 rounded-xl">
-            <ArrowLeft size={16} /> Back to wallet
+            <ArrowLeft size={16} /> {t("Back to wallet")}
           </Link>
         }
       />
@@ -53,8 +57,8 @@ export default async function WalletWithdrawalsPage() {
         pendingHoldKobo={pendingHoldKobo}
         verificationGate={{
           status: verification.status,
-          headline: verificationGate.headline,
-          detail: verificationGate.detail,
+          headline: t(verificationGate.headline),
+          detail: t(verificationGate.detail),
         }}
       />
     </div>

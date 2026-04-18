@@ -14,8 +14,10 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
 import { requireAccountUser } from "@/lib/auth";
 import { getJobsModuleData } from "@/lib/jobs-module";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
 
@@ -61,25 +63,29 @@ function formatDateTime(value: string) {
 }
 
 export default async function JobsPage() {
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const tf = (template: string, values: Record<string, string | number>) =>
+    formatSurfaceTemplate(template, values);
   const user = await requireAccountUser();
   const data = await getJobsModuleData(user.id);
 
   return (
     <div className="space-y-6 acct-fade-in">
       <PageHeader
-        title="Jobs"
-        description="Your applications, saved roles, recruiter updates, and profile strength — all in one place."
+        title={t("Jobs")}
+        description={t("Your applications, saved roles, recruiter updates, and profile strength — all in one place.")}
         icon={BriefcaseBusiness}
         actions={
           <>
             <a href={data.candidateUrl} className="acct-button-secondary rounded-xl">
-              Candidate module <ArrowUpRight size={14} />
+              {t("Candidate module")} <ArrowUpRight size={14} />
             </a>
             <Link href="/jobs/interviews" className="acct-button-secondary rounded-xl">
-              Interview rooms <ArrowUpRight size={14} />
+              {t("Interview rooms")} <ArrowUpRight size={14} />
             </Link>
             <a href={data.browseJobsUrl} className="acct-button-primary rounded-xl">
-              Browse live roles <ArrowUpRight size={14} />
+              {t("Browse live roles")} <ArrowUpRight size={14} />
             </a>
           </>
         }
@@ -89,20 +95,20 @@ export default async function JobsPage() {
         <div className="bg-[linear-gradient(135deg,#0F172A_0%,#0E7490_54%,#D4AF37_100%)] px-6 py-7 text-white sm:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-white/70">Your account</p>
+              <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-white/70">{t("Your account")}</p>
               <h2 className="mt-3 acct-display text-3xl leading-tight sm:text-4xl">
-                Your jobs activity, all in one place.
+                {t("Your jobs activity, all in one place.")}
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-white/78">
-                Applications, saved roles, recruiter updates, and profile readiness are linked to your HenryCo account.
+                {t("Applications, saved roles, recruiter updates, and profile readiness are linked to your HenryCo account.")}
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {data.stats.map((stat) => (
                 <div key={stat.id} className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-                  <div className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-white/70">{stat.label}</div>
+                  <div className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-white/70">{t(stat.label)}</div>
                   <div className="mt-3 text-3xl font-semibold">{stat.value}</div>
-                  <p className="mt-2 text-sm leading-6 text-white/72">{stat.detail}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/72">{t(stat.detail)}</p>
                 </div>
               ))}
             </div>
@@ -115,11 +121,11 @@ export default async function JobsPage() {
           <section className="acct-card p-5 sm:p-6">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
-                <p className="acct-kicker">Next Actions</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">What deserves your attention now</h3>
+                <p className="acct-kicker">{t("Next Actions")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("What deserves your attention now")}</h3>
               </div>
               <a href={data.applicationsUrl} className="acct-button-ghost">
-                Open timeline <ChevronRight size={14} />
+                {t("Open timeline")} <ChevronRight size={14} />
               </a>
             </div>
             <div className="grid gap-3 md:grid-cols-2">
@@ -129,23 +135,23 @@ export default async function JobsPage() {
                   href={action.href}
                   className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-surface)] p-4 transition hover:border-[var(--acct-gold)]/30 hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-[var(--acct-ink)]">{action.label}</p>
-                      <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{action.detail}</p>
-                    </div>
-                    <span className={toneChip(action.tone)}>{action.tone}</span>
-                  </div>
-                </a>
-              ))}
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-[var(--acct-ink)]">{t(action.label)}</p>
+                          <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{t(action.detail)}</p>
+                        </div>
+                        <span className={toneChip(action.tone)}>{t(action.tone)}</span>
+                      </div>
+                    </a>
+                  ))}
             </div>
           </section>
 
           <section className="acct-card p-5 sm:p-6">
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
-                <p className="acct-kicker">Applications</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Live hiring movement</h3>
+                <p className="acct-kicker">{t("Applications")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Live hiring movement")}</h3>
               </div>
               {data.stageSummary.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
@@ -159,16 +165,16 @@ export default async function JobsPage() {
             </div>
 
             {data.applications.length === 0 ? (
-              <EmptyState
-                icon={Rocket}
-                title="No applications are live yet"
-                description="Saved roles, recruiter updates, and timelines will appear here as soon as you move from browsing into a live application."
-                action={
-                  <a href={data.browseJobsUrl} className="acct-button-primary rounded-xl">
-                    Explore jobs
-                  </a>
-                }
-              />
+                <EmptyState
+                  icon={Rocket}
+                  title={t("No applications are live yet")}
+                  description={t("Saved roles, recruiter updates, and timelines will appear here as soon as you move from browsing into a live application.")}
+                  action={
+                    <a href={data.browseJobsUrl} className="acct-button-primary rounded-xl">
+                      {t("Explore jobs")}
+                    </a>
+                  }
+                />
             ) : (
               <div className="space-y-4">
                 {data.applications.map((application) => (
@@ -176,24 +182,24 @@ export default async function JobsPage() {
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className={toneChip(application.tone)}>{application.stageLabel}</span>
-                          <span className="acct-chip acct-chip-gold">{application.progressPercent}% complete</span>
+                          <span className={toneChip(application.tone)}>{t(application.stageLabel)}</span>
+                          <span className="acct-chip acct-chip-gold">{tf("{percent}% complete", { percent: application.progressPercent })}</span>
                         </div>
                         <h4 className="mt-3 text-lg font-semibold text-[var(--acct-ink)]">{application.jobTitle}</h4>
                         <p className="mt-1 text-sm text-[var(--acct-muted)]">
-                          {application.employerName} · Applied {formatDate(application.appliedAt)}
+                          {application.employerName} · {tf("Applied {date}", { date: formatDate(application.appliedAt) })}
                         </p>
                       </div>
                       <div className="grid gap-2 sm:grid-cols-2 lg:min-w-[240px]">
                         <div className="rounded-2xl bg-[var(--acct-surface)] p-3">
                           <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                            Candidate readiness
+                            {t("Candidate readiness")}
                           </div>
                           <div className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">{application.candidateReadiness}%</div>
                         </div>
                         <div className="rounded-2xl bg-[var(--acct-surface)] p-3">
                           <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                            Recruiter confidence
+                            {t("Recruiter confidence")}
                           </div>
                           <div className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">{application.recruiterConfidence}%</div>
                         </div>
@@ -213,7 +219,7 @@ export default async function JobsPage() {
                           key={`${application.id}-${step.key}`}
                           className={`rounded-full border px-3 py-1 text-xs font-semibold ${stageStepClass(step.status)}`}
                         >
-                          {step.label}
+                          {t(step.label)}
                         </span>
                       ))}
                     </div>
@@ -222,32 +228,32 @@ export default async function JobsPage() {
                       <div className="rounded-2xl bg-[var(--acct-surface)] p-4">
                         <div className="flex items-center gap-2 text-sm font-semibold text-[var(--acct-ink)]">
                           <Bell size={15} className="text-[var(--acct-gold)]" />
-                          Latest recruiter movement
+                          {t("Latest recruiter movement")}
                         </div>
-                        <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{application.latestUpdateBody}</p>
+                        <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{t(application.latestUpdateBody)}</p>
                         <p className="mt-2 text-xs text-[var(--acct-muted)]">{formatDateTime(application.latestUpdateAt)}</p>
                       </div>
                       <div className="rounded-2xl bg-[var(--acct-surface)] p-4">
                         <div className="flex items-center gap-2 text-sm font-semibold text-[var(--acct-ink)]">
                           <ListChecks size={15} className="text-[var(--acct-blue)]" />
-                          Next best move
+                          {t("Next best move")}
                         </div>
-                        <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">{application.nextStepLabel}</p>
-                        <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{application.nextStepBody}</p>
+                        <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">{t(application.nextStepLabel)}</p>
+                        <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{t(application.nextStepBody)}</p>
                       </div>
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-3">
                       <a href={application.timelineHref} className="acct-button-primary rounded-xl">
-                        Open timeline <ArrowUpRight size={14} />
+                        {t("Open timeline")} <ArrowUpRight size={14} />
                       </a>
                       {["shortlisted", "interview", "offer", "hired"].includes(application.stage) ? (
                         <Link href={application.interviewHref} className="acct-button-secondary rounded-xl">
-                          Interview room <ArrowUpRight size={14} />
+                          {t("Interview room")} <ArrowUpRight size={14} />
                         </Link>
                       ) : null}
                       <a href={application.jobHref} className="acct-button-secondary rounded-xl">
-                        View role <ArrowUpRight size={14} />
+                        {t("View role")} <ArrowUpRight size={14} />
                       </a>
                     </div>
                   </article>
@@ -260,18 +266,18 @@ export default async function JobsPage() {
             <section className="acct-card p-5 sm:p-6">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
-                  <p className="acct-kicker">Saved Jobs</p>
-                  <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Shortlist with better context</h3>
+                  <p className="acct-kicker">{t("Saved Jobs")}</p>
+                  <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Shortlist with better context")}</h3>
                 </div>
                 <a href={data.savedJobsUrl} className="acct-button-ghost">
-                  Open saved roles <ChevronRight size={14} />
+                  {t("Open saved roles")} <ChevronRight size={14} />
                 </a>
               </div>
               {data.savedJobs.length === 0 ? (
                 <EmptyState
                   icon={Bookmark}
-                  title="No saved roles yet"
-                  description="Save promising roles to keep them on your shortlist across Jobs and your account."
+                  title={t("No saved roles yet")}
+                  description={t("Save promising roles to keep them on your shortlist across Jobs and your account.")}
                 />
               ) : (
                 <div className="space-y-3">
@@ -289,11 +295,11 @@ export default async function JobsPage() {
                           </p>
                         </div>
                         <span className={toneChip(savedJob.role.employerVerification === "verified" ? "green" : "blue")}>
-                          trust {savedJob.role.employerTrustScore}
+                          {tf("Trust {score}", { score: savedJob.role.employerTrustScore })}
                         </span>
                       </div>
                       <p className="mt-3 text-sm leading-6 text-[var(--acct-muted)]">
-                        Saved {formatDate(savedJob.savedAt)} · {savedJob.role.workMode} · {savedJob.role.employmentType}
+                        {tf("Saved {date}", { date: formatDate(savedJob.savedAt) })} · {t(savedJob.role.workMode)} · {t(savedJob.role.employmentType)}
                       </p>
                     </a>
                   ))}
@@ -304,18 +310,18 @@ export default async function JobsPage() {
             <section className="acct-card p-5 sm:p-6">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
-                  <p className="acct-kicker">Recommended Roles</p>
-                  <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">What fits your current signal</h3>
+                  <p className="acct-kicker">{t("Recommended Roles")}</p>
+                  <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("What fits your current signal")}</h3>
                 </div>
                 <a href={data.browseJobsUrl} className="acct-button-ghost">
-                  Browse catalog <ChevronRight size={14} />
+                  {t("Browse catalog")} <ChevronRight size={14} />
                 </a>
               </div>
               {data.recommendedRoles.length === 0 ? (
                 <EmptyState
                   icon={Sparkles}
-                  title="Recommendations will sharpen as you use Jobs"
-                  description="Once your profile, shortlist, and applications deepen, the role suggestions here will get more targeted."
+                  title={t("Recommendations will sharpen as you use Jobs")}
+                  description={t("Once your profile, shortlist, and applications deepen, the role suggestions here will get more targeted.")}
                 />
               ) : (
                 <div className="space-y-3">
@@ -338,9 +344,9 @@ export default async function JobsPage() {
                       </div>
                       <p className="mt-3 text-sm leading-6 text-[var(--acct-muted)]">{role.reason}</p>
                       <div className="mt-3 flex flex-wrap gap-2 text-xs text-[var(--acct-muted)]">
-                        <span>{role.workMode}</span>
-                        <span>{role.employmentType}</span>
-                        <span>{role.salaryLabel || "Comp discussed in process"}</span>
+                        <span>{t(role.workMode)}</span>
+                        <span>{t(role.employmentType)}</span>
+                        <span>{role.salaryLabel ? t(role.salaryLabel) : t("Comp discussed in process")}</span>
                       </div>
                     </a>
                   ))}
@@ -352,21 +358,21 @@ export default async function JobsPage() {
           <section className="acct-card p-5 sm:p-6">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
-                <p className="acct-kicker">Recruiter Feed</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Messages, stage moves, and alerts</h3>
+                <p className="acct-kicker">{t("Recruiter Feed")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Messages, stage moves, and alerts")}</h3>
               </div>
               <a href={data.applicationsUrl} className="acct-button-ghost">
-                Candidate inbox <ChevronRight size={14} />
+                {t("Candidate inbox")} <ChevronRight size={14} />
               </a>
             </div>
 
             {data.recruiterFeed.length === 0 ? (
-              <EmptyState
-                icon={Bell}
-                title="No recruiter movement yet"
-                description="Application stage changes, shared recruiter notes, and in-app jobs notifications will collect here."
-              />
-            ) : (
+                <EmptyState
+                  icon={Bell}
+                  title={t("No recruiter movement yet")}
+                  description={t("Application stage changes, shared recruiter notes, and in-app jobs notifications will collect here.")}
+                />
+              ) : (
               <div className="space-y-3">
                 {data.recruiterFeed.map((item) => (
                   <a
@@ -396,8 +402,8 @@ export default async function JobsPage() {
           <section className="acct-card p-5 sm:p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="acct-kicker">Profile Strength</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Candidate readiness and CV quality</h3>
+                <p className="acct-kicker">{t("Profile Strength")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Candidate readiness and CV quality")}</h3>
               </div>
               <span className={toneChip(data.profile.trustScore >= 70 ? "green" : "orange")}>
                 {data.profile.trustScore}%
@@ -407,8 +413,8 @@ export default async function JobsPage() {
             <div className="mt-4 rounded-2xl bg-[var(--acct-surface)] p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--acct-ink)]">{data.profile.readinessLabel}</p>
-                  <p className="mt-1 text-sm text-[var(--acct-muted)]">{data.profile.resumeQualityLabel}</p>
+                  <p className="text-sm font-semibold text-[var(--acct-ink)]">{t(data.profile.readinessLabel)}</p>
+                  <p className="mt-1 text-sm text-[var(--acct-muted)]">{t(data.profile.resumeQualityLabel)}</p>
                 </div>
                 <FileCheck2 className="h-5 w-5 text-[var(--acct-gold)]" />
               </div>
@@ -420,15 +426,15 @@ export default async function JobsPage() {
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl bg-[var(--acct-bg-elevated)] p-3">
-                  <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Readiness</div>
+                  <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Readiness")}</div>
                   <div className="mt-2 text-xl font-semibold text-[var(--acct-ink)]">{data.profile.readinessScore}%</div>
                 </div>
                 <div className="rounded-2xl bg-[var(--acct-bg-elevated)] p-3">
-                  <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Skills mapped</div>
+                  <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Skills mapped")}</div>
                   <div className="mt-2 text-xl font-semibold text-[var(--acct-ink)]">{data.profile.skillsCount}</div>
                 </div>
                 <div className="rounded-2xl bg-[var(--acct-bg-elevated)] p-3">
-                  <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">Files</div>
+                  <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Files")}</div>
                   <div className="mt-2 text-xl font-semibold text-[var(--acct-ink)]">{data.profile.documentsCount}</div>
                 </div>
               </div>
@@ -449,8 +455,8 @@ export default async function JobsPage() {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{item.label}</p>
-                    <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">{item.detail}</p>
+                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{t(item.label)}</p>
+                    <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">{t(item.detail)}</p>
                   </div>
                 </a>
               ))}
@@ -458,10 +464,10 @@ export default async function JobsPage() {
 
             <div className="mt-4 flex flex-wrap gap-3">
               <a href={data.profileUrl} className="acct-button-primary rounded-xl">
-                Improve profile <ArrowUpRight size={14} />
+                {t("Improve profile")} <ArrowUpRight size={14} />
               </a>
               <a href={data.candidateUrl} className="acct-button-secondary rounded-xl">
-                Open candidate module <ArrowUpRight size={14} />
+                {t("Open candidate module")} <ArrowUpRight size={14} />
               </a>
             </div>
           </section>
@@ -469,18 +475,18 @@ export default async function JobsPage() {
           <section className="acct-card p-5 sm:p-6">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
-                <p className="acct-kicker">Shared Inbox</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Jobs notifications linked to your account</h3>
+                <p className="acct-kicker">{t("Shared Inbox")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Jobs notifications linked to your account")}</h3>
               </div>
               <ShieldCheck className="h-5 w-5 text-[var(--acct-gold)]" />
             </div>
             {data.notifications.length === 0 ? (
-              <EmptyState
-                icon={Bell}
-                title="No jobs notifications yet"
-                description="Future shortlist moves, employer updates, and application changes will land here and inside the Jobs module."
-              />
-            ) : (
+                <EmptyState
+                  icon={Bell}
+                  title={t("No jobs notifications yet")}
+                  description={t("Future shortlist moves, employer updates, and application changes will land here and inside the Jobs module.")}
+                />
+              ) : (
               <div className="space-y-3">
                 {data.notifications.map((notification) => (
                   <a
@@ -504,22 +510,22 @@ export default async function JobsPage() {
           <section className="acct-card p-5 sm:p-6">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
-                <p className="acct-kicker">Alerts</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Saved search intent</h3>
+                <p className="acct-kicker">{t("Alerts")}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Saved search intent")}</h3>
               </div>
               <Clock3 className="h-5 w-5 text-[var(--acct-blue)]" />
             </div>
             {data.alerts.length === 0 ? (
-              <EmptyState
-                icon={Clock3}
-                title="No jobs alerts are active"
-                description="Create an alert so new roles matching your criteria appear in your Jobs feed."
-                action={
-                  <a href={data.browseJobsUrl} className="acct-button-primary rounded-xl">
-                    Browse roles
-                  </a>
-                }
-              />
+                <EmptyState
+                  icon={Clock3}
+                  title={t("No jobs alerts are active")}
+                  description={t("Create an alert so new roles matching your criteria appear in your Jobs feed.")}
+                  action={
+                    <a href={data.browseJobsUrl} className="acct-button-primary rounded-xl">
+                      {t("Browse roles")}
+                    </a>
+                  }
+                />
             ) : (
               <div className="space-y-3">
                 {data.alerts.map((alert) => (
@@ -533,7 +539,7 @@ export default async function JobsPage() {
                         <p className="text-sm font-semibold text-[var(--acct-ink)]">{alert.label}</p>
                         <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{alert.detail}</p>
                       </div>
-                      <span className={toneChip(alert.status === "active" ? "green" : "blue")}>{alert.status}</span>
+                      <span className={toneChip(alert.status === "active" ? "green" : "blue")}>{t(alert.status)}</span>
                     </div>
                   </a>
                 ))}

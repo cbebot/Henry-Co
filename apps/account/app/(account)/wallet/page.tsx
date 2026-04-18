@@ -9,6 +9,7 @@ import {
   Clock,
   ShieldCheck,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import {
@@ -20,6 +21,7 @@ import {
 } from "@/lib/account-data";
 import { formatNaira, formatDateTime, divisionLabel } from "@/lib/format";
 import { resolveAccountRegionalContext } from "@/lib/regional-context";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
 import {
@@ -48,6 +50,8 @@ const typeColors: Record<string, string> = {
 };
 
 export default async function WalletPage() {
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const user = await requireAccountUser();
   const [{ wallet, pending_kobo, requests }, withdrawalRequests, profile] = await Promise.all([
     getWalletFundingContext(user.id),
@@ -79,16 +83,16 @@ export default async function WalletPage() {
     <div className="space-y-6 acct-fade-in">
       <RouteLiveRefresh />
       <PageHeader
-        title="Wallet"
-        description="Your HenryCo wallet for payments across Care, Marketplace, Studio, and more."
+        title={t("Wallet")}
+        description={t("Your HenryCo wallet for payments across Care, Marketplace, Studio, and more.")}
         icon={Wallet}
         actions={
           <div className="flex flex-wrap gap-2">
             <Link href="/wallet/funding" className="acct-button-primary rounded-xl">
-              <Plus size={16} /> Fund wallet
+              <Plus size={16} /> {t("Fund wallet")}
             </Link>
             <Link href="/wallet/withdrawals" className="acct-button-secondary rounded-xl">
-              <ArrowUpRight size={16} /> Withdraw
+              <ArrowUpRight size={16} /> {t("Withdraw")}
             </Link>
           </div>
         }
@@ -97,17 +101,17 @@ export default async function WalletPage() {
       {/* Balance card */}
       <div className="acct-card overflow-hidden">
         <div className="bg-gradient-to-br from-[var(--acct-gold)] to-[#A08520] px-6 py-8 text-white">
-          <p className="text-sm font-medium text-white/70">Available balance</p>
+          <p className="text-sm font-medium text-white/70">{t("Available balance")}</p>
           <p className="mt-1 text-4xl font-bold">{formatNaira(availableBalanceKobo)}</p>
           <p className="mt-2 text-sm text-white/60">
-            HenryCo Wallet &middot; {wallet.currency} &middot; Available across HenryCo services
+            {t("HenryCo Wallet")} &middot; {wallet.currency} &middot; {t("Available across HenryCo services")}
           </p>
           <p className="mt-2 text-xs text-white/72">
             {region.settlementNote}
           </p>
           {pendingWithdrawalKobo > 0 ? (
             <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/72">
-              {formatNaira(pendingWithdrawalKobo)} held in pending withdrawal review
+              {formatNaira(pendingWithdrawalKobo)} {t("held in pending withdrawal review")}
             </p>
           ) : null}
         </div>
@@ -117,28 +121,28 @@ export default async function WalletPage() {
             className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
           >
             <Plus size={18} className="text-[var(--acct-green)]" />
-            <span className="text-xs font-medium">Fund wallet</span>
+            <span className="text-xs font-medium">{t("Fund wallet")}</span>
           </Link>
           <Link
             href="/wallet/withdrawals"
             className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
           >
             <ArrowDownLeft size={18} className="text-[var(--acct-orange)]" />
-            <span className="text-xs font-medium">Withdraw</span>
+            <span className="text-xs font-medium">{t("Withdraw")}</span>
           </Link>
           <Link
             href="/payments"
             className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
           >
             <ArrowUpRight size={18} className="text-[var(--acct-blue)]" />
-            <span className="text-xs font-medium">Payments</span>
+            <span className="text-xs font-medium">{t("Payments")}</span>
           </Link>
           <Link
             href="/wallet"
             className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
           >
             <Clock size={18} className="text-[var(--acct-muted)]" />
-            <span className="text-xs font-medium">History</span>
+            <span className="text-xs font-medium">{t("History")}</span>
           </Link>
         </div>
       </div>
@@ -146,14 +150,14 @@ export default async function WalletPage() {
       {/* Trust cues */}
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          { label: "Pending review stays separate", desc: "Funding only moves into available balance after confirmation." },
-          { label: "Works across HenryCo", desc: "Use the same wallet for Care, Marketplace, Studio, and more." },
+          { label: t("Pending review stays separate"), desc: t("Funding only moves into available balance after confirmation.") },
+          { label: t("Works across HenryCo"), desc: t("Use the same wallet for Care, Marketplace, Studio, and more.") },
           {
-            label: "Settlement truth",
+            label: t("Settlement truth"),
             desc:
               region.currencyCode === "NGN"
-                ? "Your wallet display and settlement currency are aligned."
-                : `Your profile can display ${region.currencyCode}, but wallet settlement still runs in NGN today.`,
+                ? t("Your wallet display and settlement currency are aligned.")
+                : `${t("Your profile can display")} ${region.currencyCode}, ${t("but wallet settlement still runs in NGN today.")}`,
           },
         ].map((cue) => (
           <div key={cue.label} className="rounded-xl bg-[var(--acct-surface)] p-4">
@@ -167,38 +171,38 @@ export default async function WalletPage() {
         <div className="acct-card p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="acct-kicker">Pending funding</p>
+              <p className="acct-kicker">{t("Pending funding")}</p>
               <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
                 {formatNaira(pending_kobo)}
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">
-                Money stays here until transfer proof is uploaded and the HenryCo team confirms the payment.
+                {t("Money stays here until transfer proof is uploaded and the HenryCo team confirms the payment.")}
               </p>
             </div>
             <ShieldCheck className="h-5 w-5 text-[var(--acct-blue)]" />
           </div>
           <Link href="/wallet/funding" className="acct-button-secondary mt-5 rounded-xl">
-            Open funding lane
+            {t("Open funding lane")}
           </Link>
         </div>
 
         <div className="acct-card p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="acct-kicker">Pending withdrawals</p>
+              <p className="acct-kicker">{t("Pending withdrawals")}</p>
               <p className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
                 {pendingWithdrawalKobo > 0
-                  ? `${formatNaira(pendingWithdrawalKobo)} awaiting finance review`
-                  : "No pending withdrawals"}
+                  ? `${formatNaira(pendingWithdrawalKobo)} ${t("awaiting finance review")}`
+                  : t("No pending withdrawals")}
               </p>
             </div>
             <ArrowUpRight className="h-5 w-5 text-[var(--acct-orange)]" />
           </div>
           <p className="mt-4 text-sm leading-6 text-[var(--acct-muted)]">
-            Requests under review stay off your withdrawable balance so the wallet never promises cash twice.
+            {t("Requests under review stay off your withdrawable balance so the wallet never promises cash twice.")}
           </p>
           <Link href="/wallet/withdrawals" className="acct-button-secondary mt-5 rounded-xl">
-            Open withdrawal lane
+            {t("Open withdrawal lane")}
           </Link>
         </div>
       </section>
@@ -206,8 +210,8 @@ export default async function WalletPage() {
       <section className="acct-card p-5 sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
-            <p className="acct-kicker">Recent funding requests</p>
-            <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">Recent requests</h2>
+            <p className="acct-kicker">{t("Recent funding requests")}</p>
+            <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Recent requests")}</h2>
           </div>
         </div>
 
@@ -222,14 +226,14 @@ export default async function WalletPage() {
                 {formatNaira(request.amount_kobo)} · {request.reference || request.id}
               </p>
               <p className="mt-1 text-xs text-[var(--acct-muted)]">
-                {request.status.replaceAll("_", " ")}
-                {request.proof_url ? " · proof uploaded" : " · awaiting proof"}
+                {t(request.status.replaceAll("_", " "))}
+                {request.proof_url ? ` · ${t("Proof uploaded").toLowerCase()}` : ` · ${t("Awaiting proof").toLowerCase()}`}
               </p>
             </Link>
           ))}
           {requests.length === 0 ? (
             <p className="text-sm leading-6 text-[var(--acct-muted)]">
-              Create your first funding request to unlock the bank-transfer flow.
+              {t("Create your first funding request to unlock the bank-transfer flow.")}
             </p>
           ) : null}
         </div>
@@ -237,12 +241,12 @@ export default async function WalletPage() {
 
       {/* Transactions */}
       <section className="acct-card p-5">
-        <p className="acct-kicker mb-4">Transaction history</p>
+        <p className="acct-kicker mb-4">{t("Transaction history")}</p>
         {transactions.length === 0 ? (
           <EmptyState
             icon={Wallet}
-            title="No transactions yet"
-            description="Your wallet transaction history will appear here once you start using your wallet."
+            title={t("No transactions yet")}
+            description={t("Your wallet transaction history will appear here once you start using your wallet.")}
           />
         ) : (
           <div className="space-y-2">

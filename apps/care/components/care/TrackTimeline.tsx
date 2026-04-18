@@ -12,6 +12,7 @@ import {
   Truck,
   TriangleAlert,
 } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import {
   getTrackingCurrentIndex,
   getTrackingHeadline,
@@ -55,30 +56,33 @@ function toneClasses(tone: ReturnType<typeof getTrackingTone>) {
 }
 
 export default function TrackTimeline({
+  locale,
   family,
   status,
 }: {
+  locale: AppLocale;
   family: CareServiceFamily;
   status: string;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const normalizedTone = getTrackingTone(status, family);
   const steps = getTrackingSteps(family);
   const current = getTrackingCurrentIndex(status, family);
-  const currentLabel = getTrackingStatusLabel(status, family);
+  const currentLabel = t(getTrackingStatusLabel(status, family));
 
   if (String(status || "").toLowerCase() === "cancelled") {
     const cancelledCopy =
       family === "garment"
-        ? "This garment order was cancelled before pickup, finishing, or delivery completed."
+        ? t("This garment order was cancelled before pickup, finishing, or delivery completed.")
         : family === "home"
-        ? "This home-cleaning visit was cancelled before the service run reached completion."
-        : "This office-cleaning visit was cancelled before the on-site service run was completed.";
+        ? t("This home-cleaning visit was cancelled before the service run reached completion.")
+        : t("This office-cleaning visit was cancelled before the on-site service run was completed.");
 
     return (
       <div className="rounded-3xl border border-red-400/20 bg-red-500/10 p-6">
         <div className="flex items-center gap-3 text-red-100">
           <TriangleAlert className="h-5 w-5" />
-          <div className="text-sm font-semibold uppercase tracking-[0.16em]">Booking cancelled</div>
+          <div className="text-sm font-semibold uppercase tracking-[0.16em]">{t("Booking cancelled")}</div>
         </div>
         <div className="mt-3 text-sm text-red-100/85">
           {cancelledCopy}
@@ -92,18 +96,18 @@ export default function TrackTimeline({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-            {getTrackingHeadline(family)}
+            {t(getTrackingHeadline(family))}
           </div>
           <div className="mt-2 text-3xl font-bold text-zinc-950 dark:text-white">
             {currentLabel}
           </div>
           <div className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-            {getTrackingSupportCopy(family)}
+            {t(getTrackingSupportCopy(family))}
           </div>
         </div>
 
         <div className={`rounded-3xl border px-5 py-4 text-sm font-semibold ${toneClasses(normalizedTone)}`}>
-          Current status: {currentLabel}
+          {t("Current status")}: {currentLabel}
         </div>
       </div>
 
@@ -138,20 +142,20 @@ export default function TrackTimeline({
                 </div>
                 <div className="min-w-0">
                   <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                    Step {index + 1}
+                    {t("Step")} {index + 1}
                   </div>
                   <div className="mt-1 text-lg font-semibold text-zinc-950 dark:text-white">
-                    {step.label}
+                    {t(step.label)}
                   </div>
                 </div>
               </div>
 
               <div className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                {step.description}
+                {t(step.description)}
               </div>
 
               <div className="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                {active ? "Current stage" : done ? "Completed" : "Pending"}
+                {active ? t("Current stage") : done ? t("Completed") : t("Pending")}
               </div>
             </article>
           );

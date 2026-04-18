@@ -1,12 +1,19 @@
 import { CheckCircle2, FileStack, Sparkles, UsersRound } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitTeacherApplicationAction } from "@/lib/learn/actions";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getTeacherApplicationForViewer } from "@/lib/learn/data";
 import { getSharedAuthUrl } from "@/lib/learn/links";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnPanel, LearnSectionIntro, LearnStatusBadge } from "@/components/learn/ui";
 
-export const metadata = { title: "Teach with HenryCo - HenryCo Learn" };
+export async function generateMetadata() {
+  const locale = await getLearnPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  return { title: t("Teach with HenryCo") };
+}
 
 const COUNTRY_OPTIONS = [
   "Nigeria",
@@ -25,6 +32,8 @@ export default async function TeachPage({
   searchParams: Promise<{ submitted?: string }>;
 }) {
   const params = await searchParams;
+  const locale = await getLearnPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const viewer = await getLearnViewer();
   const application = viewer.user ? await getTeacherApplicationForViewer(viewer) : null;
   const canEdit =
@@ -36,42 +45,42 @@ export default async function TeachPage({
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <section className="learn-panel learn-hero learn-mesh rounded-[2.8rem] p-8 sm:p-10 xl:p-12">
         <div className="flex flex-wrap gap-2">
-          <LearnStatusBadge label="Instructor applications" tone="signal" />
-          <LearnStatusBadge label="Manual review" />
-          <LearnStatusBadge label="Approval not automatic" tone="warning" />
+          <LearnStatusBadge label={t("Instructor applications")} tone="signal" />
+          <LearnStatusBadge label={t("Manual review")} />
+          <LearnStatusBadge label={t("Approval not automatic")} tone="warning" />
         </div>
         <h1 className="learn-heading mt-6 text-[3rem] text-[var(--learn-ink)] sm:text-[4.4rem]">
-          Teach on a platform that protects learners—and your reputation.
+          {t("Teach on a platform that protects learners—and your reputation.")}
         </h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--learn-ink-soft)]">
-          HenryCo Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one HenryCo account so review, onboarding, and any future commercial relationship stay coherent.
+          {t("HenryCo Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one HenryCo account so review, onboarding, and any future commercial relationship stay coherent.")}
         </p>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <LearnPanel className="rounded-[1.8rem] p-5">
             <Sparkles className="h-5 w-5 text-[var(--learn-copper)]" />
             <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-              Quality expectations
+              {t("Quality expectations")}
             </h2>
             <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              Outlines, outcomes, and respect for learners’ time matter as much as charisma. We decline proposals that look generic, thin, or misaligned with HenryCo audiences.
+              {t("Outlines, outcomes, and respect for learners’ time matter as much as charisma. We decline proposals that look generic, thin, or misaligned with HenryCo audiences.")}
             </p>
           </LearnPanel>
           <LearnPanel className="rounded-[1.8rem] p-5">
             <UsersRound className="h-5 w-5 text-[var(--learn-copper)]" />
             <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-              Who sees your work
+              {t("Who sees your work")}
             </h2>
             <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              Programs may serve the public, internal teams, or partners. We match instructors to the audiences where their expertise is strongest and the business need is clearest.
+              {t("Programs may serve the public, internal teams, or partners. We match instructors to the audiences where their expertise is strongest and the business need is clearest.")}
             </p>
           </LearnPanel>
           <LearnPanel className="rounded-[1.8rem] p-5">
             <FileStack className="h-5 w-5 text-[var(--learn-copper)]" />
             <h2 className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-              After you apply
+              {t("After you apply")}
             </h2>
             <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              Submissions are read by academy operations. We may approve, request specific revisions, or decline. Nothing is published until onboarding and content checks are complete.
+              {t("Submissions are read by academy operations. We may approve, request specific revisions, or decline. Nothing is published until onboarding and content checks are complete.")}
             </p>
           </LearnPanel>
         </div>
@@ -80,29 +89,27 @@ export default async function TeachPage({
       <section className="mt-10 grid gap-6 xl:grid-cols-[0.88fr,1.12fr]">
         <LearnPanel className="rounded-[2rem]">
           <LearnSectionIntro
-            kicker="Who should apply"
-            title="Experienced people who can teach—not just talk."
-            body="We welcome operators, trainers, and subject-matter experts who already help others succeed: marketplace leads, CX and care specialists, logistics and field managers, digital-skills coaches, and similar roles. You should be comfortable committing to a syllabus, deadlines, and learner support standards."
+            kicker={t("Who should apply")}
+            title={t("Experienced people who can teach—not just talk.")}
+            body={t("We welcome operators, trainers, and subject-matter experts who already help others succeed: marketplace leads, CX and care specialists, logistics and field managers, digital-skills coaches, and similar roles. You should be comfortable committing to a syllabus, deadlines, and learner support standards.")}
           />
           <div className="mt-6 space-y-4 text-sm leading-7 text-[var(--learn-ink-soft)]">
             <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
-              <p className="font-semibold text-[var(--learn-ink)]">Great fit</p>
+              <p className="font-semibold text-[var(--learn-ink)]">{t("Great fit")}</p>
               <p className="mt-2">
-                Marketplace operators, internal training leads, care/logistics specialists,
-                customer-experience experts, business operators, and practical digital-skills
-                teachers.
+                {t("Marketplace operators, internal training leads, care/logistics specialists, customer-experience experts, business operators, and practical digital-skills teachers.")}
               </p>
             </div>
             <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
-              <p className="font-semibold text-[var(--learn-ink)]">Verification & review</p>
+              <p className="font-semibold text-[var(--learn-ink)]">{t("Verification & review")}</p>
               <p className="mt-2">
-                We validate your identity against your HenryCo profile, read your credentials and samples, and assess whether your proposed course fits our learners and quality bar. Most applications receive a decision or a request for more detail—not instant approval.
+                {t("We validate your identity against your HenryCo profile, read your credentials and samples, and assess whether your proposed course fits our learners and quality bar. Most applications receive a decision or a request for more detail—not instant approval.")}
               </p>
             </div>
             <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
-              <p className="font-semibold text-[var(--learn-ink)]">Revenue & contracts</p>
+              <p className="font-semibold text-[var(--learn-ink)]">{t("Revenue & contracts")}</p>
               <p className="mt-2">
-                Where a program is paid, HenryCo may offer revenue share or other instructor compensation. Terms are agreed in writing after approval—they are not promised on this page and vary by program. We never ask for payment to review your application.
+                {t("Where a program is paid, HenryCo may offer revenue share or other instructor compensation. Terms are agreed in writing after approval—they are not promised on this page and vary by program. We never ask for payment to review your application.")}
               </p>
             </div>
           </div>
@@ -114,7 +121,7 @@ export default async function TeachPage({
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-[var(--learn-mint)]" />
                 <p className="text-sm font-semibold text-[var(--learn-mint-soft)]">
-                  Thank you—your application is in queue for human review. Watch this page and your email for updates.
+                  {t("Thank you—your application is in queue for human review. Watch this page and your email for updates.")}
                 </p>
               </div>
             </LearnPanel>
@@ -128,16 +135,16 @@ export default async function TeachPage({
                 <LearnStatusBadge label={`Payout: ${application.payoutModel.replace(/_/g, " ")}`} />
               </div>
               <h2 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-                Existing application
+                {t("Existing application")}
               </h2>
               <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                We keep your teaching application attached to the same HenryCo identity used across
-                courses, certificates, and future academy operations.
+                {t("We keep your teaching application attached to the same HenryCo identity used across courses, certificates, and future academy operations.")}
               </p>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     Topics
+                    {t("Topics")}
                   </p>
                   <p className="mt-2 text-sm text-[var(--learn-ink)]">
                     {application.teachingTopics.join(", ") || "No topics supplied yet"}
@@ -146,6 +153,7 @@ export default async function TeachPage({
                 <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     Updated
+                    {t("Updated")}
                   </p>
                   <p className="mt-2 text-sm text-[var(--learn-ink)]">
                     {new Date(application.updatedAt).toLocaleDateString("en-NG", {
@@ -160,6 +168,7 @@ export default async function TeachPage({
                 <div className="mt-5 rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     Academy notes
+                    {t("Academy notes")}
                   </p>
                   <p className="mt-2 text-sm leading-7 text-[var(--learn-ink)]">{application.reviewNotes}</p>
                 </div>
@@ -168,6 +177,7 @@ export default async function TeachPage({
                 <div className="mt-5 space-y-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     Supporting files
+                    {t("Supporting files")}
                   </p>
                   {application.supportingFiles.map((file) => (
                     <a
@@ -178,7 +188,7 @@ export default async function TeachPage({
                       className="flex items-center justify-between rounded-[1.35rem] border border-[var(--learn-line)] bg-white/5 px-4 py-3 text-sm text-[var(--learn-ink)] transition hover:border-[var(--learn-line-strong)]"
                     >
                       <span>{file.name}</span>
-                      <span className="text-[var(--learn-ink-soft)]">Open</span>
+                      <span className="text-[var(--learn-ink-soft)]">{t("Open")}</span>
                     </a>
                   ))}
                 </div>
@@ -188,27 +198,27 @@ export default async function TeachPage({
 
           <LearnPanel className="rounded-[2rem]">
             <LearnSectionIntro
-              kicker="Review stages"
-              title="What happens after you click submit."
-              body="There is no automatic “you’re in.” Each stage exists so learners can trust who teaches them—and so you understand what we expect before you invest more time."
+              kicker={t("Review stages")}
+              title={t("What happens after you click submit.")}
+              body={t("There is no automatic “you’re in.” Each stage exists so learners can trust who teaches them—and so you understand what we expect before you invest more time.")}
             />
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {[
                 {
-                  label: "1. Submitted",
-                  body: "We store your answers, files, and proposal against your HenryCo identity so nothing is lost between systems.",
+                  label: t("1. Submitted"),
+                  body: t("We store your answers, files, and proposal against your HenryCo identity so nothing is lost between systems."),
                 },
                 {
-                  label: "2. Under review",
-                  body: "Academy staff assess expertise, topic fit, and whether your outline meets our learner experience standards.",
+                  label: t("2. Under review"),
+                  body: t("Academy staff assess expertise, topic fit, and whether your outline meets our learner experience standards."),
                 },
                 {
-                  label: "3. Decision",
-                  body: "We approve, ask for targeted changes with written notes, or decline. Silence is not a strategy—we aim to respond clearly.",
+                  label: t("3. Decision"),
+                  body: t("We approve, ask for targeted changes with written notes, or decline. Silence is not a strategy—we aim to respond clearly."),
                 },
                 {
-                  label: "4. Onboarding",
-                  body: "Approved instructors complete setup steps (access, guidelines, and where relevant commercial paperwork) before teaching publicly.",
+                  label: t("4. Onboarding"),
+                  body: t("Approved instructors complete setup steps (access, guidelines, and where relevant commercial paperwork) before teaching publicly."),
                 },
               ].map((step) => (
                 <div
@@ -225,27 +235,27 @@ export default async function TeachPage({
           {!viewer.user ? (
             <LearnPanel className="rounded-[2rem]">
               <LearnSectionIntro
-                kicker="Apply"
-                title="Sign in with your HenryCo account first."
-                body="We only accept teaching applications from verified account holders. That protects applicants, learners, and HenryCo from impersonation—and keeps your status visible in one dashboard."
+                kicker={t("Apply")}
+                title={t("Sign in with your HenryCo account first.")}
+                body={t("We only accept teaching applications from verified account holders. That protects applicants, learners, and HenryCo from impersonation—and keeps your status visible in one dashboard.")}
               />
               <a
                 href={getSharedAuthUrl("login", "/teach")}
                 className="learn-button-primary mt-6 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Sign in and apply
+                {t("Sign in and apply")}
               </a>
             </LearnPanel>
           ) : canEdit ? (
             <LearnPanel className="rounded-[2rem]">
               <LearnSectionIntro
-                kicker="Application form"
-                title={application ? "Update your teaching application" : "Apply to teach with HenryCo"}
-                body="Be specific. We read every field. Vague pitches or missing proof slow the process down. Honesty about your availability and experience speeds it up."
+                kicker={t("Application form")}
+                title={application ? t("Update your teaching application") : t("Apply to teach with HenryCo")}
+                body={t("Be specific. We read every field. Vague pitches or missing proof slow the process down. Honesty about your availability and experience speeds it up.")}
               />
               <form action={submitTeacherApplicationAction} encType="multipart/form-data" className="mt-6 grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Full name</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Full name")}</label>
                   <input
                     name="fullName"
                     required
@@ -254,7 +264,7 @@ export default async function TeachPage({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Email</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Email")}</label>
                   <input
                     value={viewer.user?.email || ""}
                     readOnly
@@ -262,7 +272,7 @@ export default async function TeachPage({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Phone</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Phone")}</label>
                   <input
                     name="phone"
                     defaultValue={application?.phone || ""}
@@ -271,7 +281,7 @@ export default async function TeachPage({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Country</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Country")}</label>
                   <select
                     name="country"
                     defaultValue={application?.country || "Nigeria"}
@@ -279,66 +289,66 @@ export default async function TeachPage({
                   >
                     {COUNTRY_OPTIONS.map((country) => (
                       <option key={country} value={country}>
-                        {country}
+                        {t(country)}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Expertise area</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Expertise area")}</label>
                   <input
                     name="expertiseArea"
                     required
                     defaultValue={application?.expertiseArea || ""}
                     className="learn-input mt-2 rounded-2xl px-4 py-3"
-                    placeholder="Marketplace operations, internal training, customer experience..."
+                    placeholder={t("Marketplace operations, internal training, customer experience...")}
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Teaching topics</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Teaching topics")}</label>
                   <textarea
                     name="teachingTopics"
                     required
                     defaultValue={application?.teachingTopics.join(", ") || ""}
                     rows={3}
                     className="learn-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder="Add the topics you can teach well, separated by commas or new lines."
+                    placeholder={t("Add the topics you can teach well, separated by commas or new lines.")}
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Credentials and experience</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Credentials and experience")}</label>
                   <textarea
                     name="credentials"
                     required
                     defaultValue={application?.credentials || ""}
                     rows={5}
                     className="learn-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder="Summarize your track record, experience, training history, certifications, and delivery credibility."
+                    placeholder={t("Summarize your track record, experience, training history, certifications, and delivery credibility.")}
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Portfolio or profile links</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Portfolio or profile links")}</label>
                   <textarea
                     name="portfolioLinks"
                     defaultValue={application?.portfolioLinks.join("\n") || ""}
                     rows={3}
                     className="learn-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder="Add website, LinkedIn, sample classes, profile links, or hosted supporting material."
+                    placeholder={t("Add website, LinkedIn, sample classes, profile links, or hosted supporting material.")}
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Sample course or topic proposal</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Sample course or topic proposal")}</label>
                   <textarea
                     name="courseProposal"
                     required
                     defaultValue={application?.courseProposal || ""}
                     rows={6}
                     className="learn-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder="Describe the course or topic you would teach, who it is for, what transformation it creates, and why HenryCo should trust you to lead it."
+                    placeholder={t("Describe the course or topic you would teach, who it is for, what transformation it creates, and why HenryCo should trust you to lead it.")}
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-[var(--learn-ink)]">Supporting files</label>
+                  <label className="block text-sm font-medium text-[var(--learn-ink)]">{t("Supporting files")}</label>
                   <input
                     type="file"
                     name="supportingFiles"
@@ -347,22 +357,20 @@ export default async function TeachPage({
                     className="learn-input mt-2 rounded-2xl px-4 py-3 file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--learn-ink)]"
                   />
                   <p className="mt-2 text-xs leading-6 text-[var(--learn-ink-soft)]">
-                    Upload up to four files. Hosted links can still be added in the portfolio field.
+                    {t("Upload up to four files. Hosted links can still be added in the portfolio field.")}
                   </p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="flex items-start gap-3 rounded-[1.4rem] border border-[var(--learn-line)] px-4 py-4 text-sm text-[var(--learn-ink)]">
                     <input type="checkbox" name="agreementAccepted" required className="mt-1 h-4 w-4" />
                     <span className="leading-7 text-[var(--learn-ink-soft)]">
-                      I confirm that the information is accurate, that I can deliver the subject
-                      matter professionally, and that HenryCo may review the application for
-                      instructor onboarding, internal enablement, or future academy partnerships.
+                      {t("I confirm that the information is accurate, that I can deliver the subject matter professionally, and that HenryCo may review the application for instructor onboarding, internal enablement, or future academy partnerships.")}
                     </span>
                   </label>
                 </div>
                 <div className="md:col-span-2">
-                  <PendingSubmitButton pendingLabel="Submitting your teaching application...">
-                    {application ? "Update application" : "Submit application"}
+                  <PendingSubmitButton pendingLabel={t("Submitting your teaching application...")}>
+                    {application ? t("Update application") : t("Submit application")}
                   </PendingSubmitButton>
                 </div>
               </form>
@@ -370,9 +378,9 @@ export default async function TeachPage({
           ) : (
             <LearnPanel className="rounded-[2rem]">
               <LearnSectionIntro
-                kicker="Application in progress"
-                title="We’re already reviewing this submission."
-                body="You’ll hear from us—or see notes on this page—if we need anything else. While a decision is pending, the form stays closed so reviewers always work from one consistent version."
+                kicker={t("Application in progress")}
+                title={t("We’re already reviewing this submission.")}
+                body={t("You’ll hear from us—or see notes on this page—if we need anything else. While a decision is pending, the form stays closed so reviewers always work from one consistent version.")}
               />
             </LearnPanel>
           )}

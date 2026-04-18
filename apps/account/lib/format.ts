@@ -1,7 +1,36 @@
+import {
+  formatSurfaceTemplate,
+  normalizeLocale,
+  translateSurfaceLabel,
+  type AppLocale,
+} from "@henryco/i18n";
+
+const INTL_LOCALE_MAP: Record<AppLocale, string> = {
+  en: "en-NG",
+  fr: "fr-FR",
+  es: "es-ES",
+  pt: "pt-BR",
+  ar: "ar-EG",
+  ig: "en-NG",
+  yo: "en-NG",
+  ha: "en-NG",
+  de: "de-DE",
+  it: "it-IT",
+  zh: "zh-CN",
+  hi: "hi-IN",
+};
+
 function resolveLocale(
   options?: string | { locale?: string; timezone?: string }
 ) {
-  return typeof options === "string" ? options : options?.locale || "en-NG";
+  const raw = typeof options === "string" ? options : options?.locale || "en";
+  return INTL_LOCALE_MAP[normalizeLocale(raw)];
+}
+
+function resolveAppLocale(
+  options?: string | { locale?: string; timezone?: string }
+): AppLocale {
+  return normalizeLocale(typeof options === "string" ? options : options?.locale);
 }
 
 function resolveTimezone(
@@ -138,6 +167,7 @@ export function timeAgo(dateStr: string): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diff = now - then;
+  const locale = "en-NG";
 
   const minutes = Math.floor(diff / 60000);
   if (minutes < 1) return "Just now";
@@ -149,7 +179,43 @@ export function timeAgo(dateStr: string): string {
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}d ago`;
 
-  return formatDate(dateStr);
+  return formatDate(dateStr, locale);
+}
+
+export function timeAgoLocalized(
+  dateStr: string,
+  options?: string | { locale?: string; timezone?: string }
+): string {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diff = now - then;
+  const locale = resolveAppLocale(options);
+
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) {
+    return translateSurfaceLabel(locale, "Just now");
+  }
+  if (minutes < 60) {
+    return formatSurfaceTemplate(translateSurfaceLabel(locale, "{count}m ago"), {
+      count: minutes,
+    });
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return formatSurfaceTemplate(translateSurfaceLabel(locale, "{count}h ago"), {
+      count: hours,
+    });
+  }
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) {
+    return formatSurfaceTemplate(translateSurfaceLabel(locale, "{count}d ago"), {
+      count: days,
+    });
+  }
+
+  return formatDate(dateStr, options);
 }
 
 export function initials(name: string | null): string {

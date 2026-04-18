@@ -1,20 +1,37 @@
 import { MapPin } from "lucide-react";
+import { getAccountCopy } from "@henryco/i18n/server";
 import { requireAccountUser } from "@/lib/auth";
 import { getAddresses } from "@/lib/account-data";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import AddAddressForm from "@/components/addresses/AddAddressForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function AddressesPage() {
-  const user = await requireAccountUser();
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const accountCopy = getAccountCopy(locale);
   const addresses = await getAddresses(user.id);
+  const copy =
+    locale === "fr"
+      ? {
+          title: "Adresses",
+          description: "Gérez vos adresses de livraison et de facturation enregistrées.",
+          addFirst: "Ajoutez votre première adresse",
+          addNew: "Ajouter une nouvelle adresse",
+        }
+      : {
+          title: "Addresses",
+          description: "Manage your saved delivery and billing addresses.",
+          addFirst: "Add your first address",
+          addNew: "Add new address",
+        };
 
   return (
     <div className="space-y-6 acct-fade-in">
       <PageHeader
-        title="Addresses"
-        description="Manage your saved delivery and billing addresses."
+        title={copy.title}
+        description={copy.description}
         icon={MapPin}
       />
 
@@ -29,7 +46,7 @@ export default async function AddressesPage() {
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold text-[var(--acct-ink)]">{addr.label}</p>
                   {addr.is_default && (
-                    <span className="acct-chip acct-chip-green text-[0.6rem]">Default</span>
+                    <span className="acct-chip acct-chip-green text-[0.6rem]">{accountCopy.common.defaultBadge}</span>
                   )}
                 </div>
                 {addr.full_name && (
@@ -54,7 +71,7 @@ export default async function AddressesPage() {
       {/* Add new */}
       <section className="acct-card p-5">
         <p className="acct-kicker mb-4">
-          {addresses.length === 0 ? "Add your first address" : "Add new address"}
+          {addresses.length === 0 ? copy.addFirst : copy.addNew}
         </p>
         <AddAddressForm />
       </section>

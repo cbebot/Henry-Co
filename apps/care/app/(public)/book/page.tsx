@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { getDivisionConfig } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import {
   ArrowRight,
   CalendarCheck2,
@@ -16,6 +17,7 @@ import {
 import BookingSuccessNotice from "@/components/care/BookingSuccessNotice";
 import BookPickupForm from "@/components/care/BookPickupForm";
 import { getCareBookingCatalog, getCarePricing, getCareSettings } from "@/lib/care-data";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -26,42 +28,17 @@ export const revalidate = 60;
 const care = getDivisionConfig("care");
 const ACCENT = CARE_ACCENT;
 
-export const metadata: Metadata = {
-  title: `Book Service | ${care.name}`,
-  description:
-    "Book garment care, home cleaning, or office cleaning with HenryCo Care. Clear estimates, premium support, and straightforward tracking from the first request.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getCarePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
-const FEATURES = [
-  {
-    icon: ClipboardList,
-    title: "Clear request detail",
-    text: "The form keeps service type, address notes, timing, and delivery-vs-on-site context readable before you submit.",
-  },
-  {
-    icon: Wallet,
-    title: "Estimate before submit",
-    text: "Review the current estimate and payment guidance before the request is sent.",
-  },
-] as const;
-
-const STEPS = [
-  {
-    step: "01",
-    title: "Choose your service type",
-    text: "Start with garment pickup, home cleaning, or office cleaning, then choose the service options that match the request.",
-  },
-  {
-    step: "02",
-    title: "Add the important details",
-    text: "Add contact details, schedule windows, access notes, and anything that affects delivery or on-site completion.",
-  },
-  {
-    step: "03",
-    title: "Receive one tracking code",
-    text: "You get one tracking code, then follow the correct timeline for return delivery or on-site completion.",
-  },
-] as const;
+  return {
+    title: `${t("Book Service")} | ${care.name}`,
+    description: t(
+      "Book garment care, home cleaning, or office cleaning with HenryCo Care. Clear estimates, premium support, and straightforward tracking from the first request."
+    ),
+  };
+}
 
 function MessageCard({
   kind,
@@ -106,6 +83,45 @@ export default async function BookPage({
     getCareSettings(),
     getBookingIdentity(),
   ]);
+  const locale = await getCarePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const features = [
+    {
+      icon: ClipboardList,
+      title: t("Clear request detail"),
+      text: t(
+        "The form keeps service type, address notes, timing, and delivery-vs-on-site context readable before you submit.",
+      ),
+    },
+    {
+      icon: Wallet,
+      title: t("Estimate before submit"),
+      text: t("Review the current estimate and payment guidance before the request is sent."),
+    },
+  ] as const;
+  const steps = [
+    {
+      step: "01",
+      title: t("Choose your service type"),
+      text: t(
+        "Start with garment pickup, home cleaning, or office cleaning, then choose the service options that match the request.",
+      ),
+    },
+    {
+      step: "02",
+      title: t("Add the important details"),
+      text: t(
+        "Add contact details, schedule windows, access notes, and anything that affects delivery or on-site completion.",
+      ),
+    },
+    {
+      step: "03",
+      title: t("Receive one tracking code"),
+      text: t(
+        "You get one tracking code, then follow the correct timeline for return delivery or on-site completion.",
+      ),
+    },
+  ] as const;
 
   return (
     <main
@@ -121,21 +137,23 @@ export default async function BookPage({
         <section className="space-y-8">
           <div className="inline-flex items-center gap-3 rounded-3xl border border-black/8 bg-white/82 px-5 py-3 text-sm font-semibold text-zinc-700 shadow-[0_16px_50px_rgba(16,19,31,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-white/75">
             <CalendarCheck2 className="h-5 w-5 text-[color:var(--accent)]" />
-            Service booking
+            {t("Service booking")}
           </div>
 
           <div>
             <h1 className="max-w-4xl text-balance care-display text-zinc-950 dark:text-white">
-              Book garment pickup, home cleaning, or office service with one calmer form.
+              {t("Book garment pickup, home cleaning, or office service with one calmer form.")}
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-white/68 sm:text-lg xl:text-xl">
-              Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form now makes that difference explicit before you submit.
+              {t(
+                "Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form now makes that difference explicit before you submit.",
+              )}
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {FEATURES.map((item) => {
+            {features.map((item) => {
               const Icon = item.icon;
 
               return (
@@ -156,14 +174,14 @@ export default async function BookPage({
             })}
           </div>
 
-          <div className="care-sheen rounded-[32px] border border-black/10 bg-white/75 p-6 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
-              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
+              <div className="care-sheen rounded-[32px] border border-black/10 bg-white/75 p-6 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
+            <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
                 <CheckCircle2 className="h-4 w-4" />
-              What the request captures
+                {t("What the request captures")}
               </div>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              {STEPS.map((item) => (
+              {steps.map((item) => (
                 <div
                   key={item.step}
                   className="care-sheen rounded-3xl border border-black/10 bg-white/80 p-5 dark:border-white/10 dark:bg-white/[0.05]"
@@ -184,35 +202,41 @@ export default async function BookPage({
 
           <div className="rounded-3xl border border-black/10 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
             <div className="text-sm font-semibold text-zinc-900 dark:text-white">
-              What happens after submission
+              {t("What happens after submission")}
             </div>
             <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-              The request records scope, estimate, schedule context, and access notes. Garment jobs continue into pickup and return delivery. Home and office jobs continue into scheduled on-site work and final completion checks.
+              {t(
+                "The request records scope, estimate, schedule context, and access notes. Garment jobs continue into pickup and return delivery. Home and office jobs continue into scheduled on-site work and final completion checks.",
+              )}
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="care-card care-sheen rounded-[2rem] p-5">
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                Wardrobe service
+                {t("Wardrobe service")}
               </div>
               <div className="mt-3 text-lg font-semibold text-zinc-950 dark:text-white">
-                Garments end in return delivery.
+                {t("Garments end in return delivery.")}
               </div>
               <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/66">
-                Pickup, treatment, finishing, packing, and return delivery remain visible in their own tracking timeline.
+                {t(
+                  "Pickup, treatment, finishing, packing, and return delivery remain visible in their own tracking timeline.",
+                )}
               </p>
             </div>
 
             <div className="care-card care-sheen rounded-[2rem] p-5">
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                On-site service
+                {t("On-site service")}
               </div>
               <div className="mt-3 text-lg font-semibold text-zinc-950 dark:text-white">
-                Homes and offices end in completed work.
+                {t("Homes and offices end in completed work.")}
               </div>
               <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/66">
-                Home and office services focus on scheduling, arrival, service completion, and final sign-off rather than delivery movement.
+                {t(
+                  "Home and office services focus on scheduling, arrival, service completion, and final sign-off rather than delivery movement.",
+                )}
               </p>
             </div>
           </div>
@@ -223,7 +247,7 @@ export default async function BookPage({
               className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-[color:var(--accent)]/40 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
             >
               <Search className="h-4 w-4 text-[color:var(--accent)]" />
-              Track an existing request
+              {t("Track an existing request")}
               <ArrowRight className="h-4 w-4" />
             </Link>
 
@@ -232,7 +256,7 @@ export default async function BookPage({
               className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-[color:var(--accent)]/40 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
             >
               <Wallet className="h-4 w-4 text-[color:var(--accent)]" />
-              Review pricing
+              {t("Review pricing")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -240,10 +264,12 @@ export default async function BookPage({
           <div className="rounded-3xl border border-black/10 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
             <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
               <ShieldCheck className="h-4 w-4 text-[color:var(--accent)]" />
-              Booking truth
+              {t("Booking truth")}
             </div>
             <div className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-              One garment order or one cleaning request stays under one readable tracking code, with payment guidance and follow-up attached to the same record.
+              {t(
+                "One garment order or one cleaning request stays under one readable tracking code, with payment guidance and follow-up attached to the same record.",
+              )}
             </div>
           </div>
         </section>
@@ -255,16 +281,17 @@ export default async function BookPage({
             <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)] dark:border-white/10 dark:bg-white/[0.05]">
               <Sparkles className="h-4 w-4" />
-              Booking form
+              {t("Booking form")}
             </div>
 
               <h2 className="mt-4 font-[family-name:var(--font-display)] text-4xl font-semibold tracking-[-0.03em]">
-                Share the details with confidence.
+                {t("Share the details with confidence.")}
               </h2>
 
               <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-                Choose the service, add the right details, review the current estimate, and send a
-                clear request in one polished step.
+                {t(
+                  "Choose the service, add the right details, review the current estimate, and send a clear request in one polished step.",
+                )}
               </p>
 
               <div className="mt-5 grid gap-4">
@@ -272,10 +299,11 @@ export default async function BookPage({
                 {error ? <MessageCard kind="error" text={error} /> : null}
               </div>
 
-              {tracking ? <BookingSuccessNotice tracking={tracking} /> : null}
+              {tracking ? <BookingSuccessNotice locale={locale} tracking={tracking} /> : null}
 
               <div className="mt-6">
             <BookPickupForm
+              locale={locale}
               pricingItems={pricingItems}
               catalog={catalog}
               savedAddresses={bookingIdentity.addresses}
