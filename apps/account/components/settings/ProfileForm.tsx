@@ -48,7 +48,9 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
   const [phone, setPhone] = useState(profile?.phone || "");
   const [country, setCountry] = useState(profile?.country || "NG");
   const [contactPref, setContactPref] = useState(profile?.contact_preference || "email");
-  const [language, setLanguage] = useState(profileLanguage || currentLanguage);
+  // Initialize from the server-resolved effective locale (cookie > profile > accept-language > default).
+  // profileLanguage is only consulted for selector options, not the initial selection.
+  const [language, setLanguage] = useState(currentLanguage);
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -69,7 +71,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
     setPhone(profile?.phone || "");
     setCountry(profile?.country || "NG");
     setContactPref(profile?.contact_preference || "email");
-    setLanguage(profileLanguage || currentLanguage);
+    setLanguage(currentLanguage);
     setAvatarUrl(profile?.avatar_url || "");
   }, [
     currentLanguage,

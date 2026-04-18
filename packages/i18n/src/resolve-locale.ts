@@ -3,7 +3,6 @@ import {
   type AppLocale,
   isAppLocale,
   localeFromAcceptLanguage,
-  normalizeLocale,
 } from "./locales";
 
 function localeFromCountry(country: string | null | undefined): AppLocale | null {
@@ -50,14 +49,17 @@ export function resolveLocaleOrder(input: {
   acceptLanguage?: string | null;
   country?: string | null;
 }): AppLocale {
-  const cookie = input.cookieLocale?.trim();
-  if (cookie && isAppLocale(normalizeLocale(cookie))) {
-    return normalizeLocale(cookie);
+  // Use the raw base tag for validity — normalizeLocale always returns "en" for garbage
+  // strings (the DEFAULT_LOCALE fallback), so isAppLocale(normalizeLocale(x)) is always
+  // true for any non-empty string and cannot guard against invalid cookie/profile values.
+  const cookieBase = (input.cookieLocale || "").trim().toLowerCase().split("-")[0];
+  if (cookieBase && isAppLocale(cookieBase)) {
+    return cookieBase;
   }
 
-  const saved = input.savedLanguage?.trim();
-  if (saved && isAppLocale(normalizeLocale(saved))) {
-    return normalizeLocale(saved);
+  const savedBase = (input.savedLanguage || "").trim().toLowerCase().split("-")[0];
+  if (savedBase && isAppLocale(savedBase)) {
+    return savedBase;
   }
 
   const fromAL = localeFromAcceptLanguage(input.acceptLanguage || null);

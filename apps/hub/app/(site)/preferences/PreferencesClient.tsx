@@ -129,7 +129,7 @@ export default function PreferencesClient({
     }
   }, []);
 
-  function save() {
+  async function save() {
     const payload: ConsentState = {
       ...consent,
       essential: true,
@@ -139,7 +139,13 @@ export default function PreferencesClient({
     if (typeof window !== "undefined") {
       persistConsent(payload, window.location.hostname);
     }
-    void persistLocale(localeChoice);
+    // Await both cookie and DB writes before showing success so that navigating
+    // away immediately after Save doesn't leave a stale profile language behind.
+    try {
+      await persistLocale(localeChoice);
+    } catch {
+      // non-fatal: cookie was set by /api/locale first; DB may be briefly stale
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   }
@@ -285,7 +291,7 @@ export default function PreferencesClient({
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={save}
+          onClick={() => { void save(); }}
           className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent,#C9A227)] px-6 py-3 text-sm font-semibold text-black transition-opacity hover:opacity-90"
         >
           {saved ? <Check className="h-4 w-4" /> : null}
