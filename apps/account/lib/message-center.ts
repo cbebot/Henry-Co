@@ -36,6 +36,32 @@ function resolveNotificationKey(row: Record<string, unknown>) {
   );
 }
 
+function resolveRelatedLabel(row: Record<string, unknown>): string {
+  const division = asText(row.division).toLowerCase();
+  const refType = asText(row.reference_type).toLowerCase();
+  const category = asText(row.category).toLowerCase();
+
+  if (refType === "care_booking") return "Open booking";
+  if (refType === "support_thread" || category === "support") return "Open support thread";
+  if (refType === "customer_invoice" || refType.includes("invoice")) return "View invoice";
+  if (refType === "wallet_funding_request" || refType.includes("funding")) return "View funding request";
+  if (refType === "wallet_withdrawal" || refType.includes("withdrawal")) return "View withdrawal";
+  if (division === "wallet" || category === "wallet") return "Open wallet";
+  if (division === "logistics" || refType.includes("shipment")) return "Track shipment";
+  if (division === "marketplace" && refType === "order") return "View order";
+  if (division === "marketplace" && refType === "dispute") return "View dispute";
+  if (division === "marketplace" && refType === "payout_request") return "View payout";
+  if (division === "marketplace") return "Open Marketplace";
+  if (division === "jobs") return "View application";
+  if (division === "property" && refType.includes("viewing")) return "View appointment";
+  if (division === "property" && refType.includes("listing")) return "View listing";
+  if (division === "property") return "Open Property";
+  if (division === "studio") return "View project";
+  if (division === "learn") return "Open course";
+  if (division === "care") return "Open booking";
+  return "Open dashboard";
+}
+
 function buildTone(status?: string | null): MessageHistoryItem["tone"] {
   const value = asText(status).toLowerCase();
   if (value === "completed" || value === "verified" || value === "paid") return "good";
@@ -174,7 +200,7 @@ export async function getNotificationMessageBoard(
       isRead: Boolean(row.is_read),
       priority: asText(row.priority, "normal"),
       relatedUrl: await resolveSafeActionUrl(row.action_url, source.key, source.primaryUrl),
-      relatedLabel: "Go to related module",
+      relatedLabel: resolveRelatedLabel(row),
     },
     history,
   };
@@ -211,7 +237,7 @@ export async function getActivityMessageBoard(
       status: asNullableText(row.status),
       amountKobo: Number(row.amount_kobo) || 0,
       relatedUrl: await resolveSafeActionUrl(row.action_url, source.key, source.primaryUrl),
-      relatedLabel: "Go to related module",
+      relatedLabel: resolveRelatedLabel(row),
       metadata: asObject(row.metadata),
     },
     history,

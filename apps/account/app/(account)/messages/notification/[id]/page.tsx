@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import { Bell, ChevronRight } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { requireAccountUser } from "@/lib/auth";
 import { getNotificationMessageBoard } from "@/lib/message-center";
+import { updateNotificationLifecycle } from "@/lib/notification-center";
 import { formatDateTime } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
@@ -26,6 +28,12 @@ export default async function NotificationMessageBoardPage({
 
   if (!data) {
     notFound();
+  }
+
+  if (!data.record.isRead) {
+    after(() => {
+      void updateNotificationLifecycle({ notificationId: id, userId: user.id, action: "read" });
+    });
   }
 
   const sourceLabel = t(data.source.label);

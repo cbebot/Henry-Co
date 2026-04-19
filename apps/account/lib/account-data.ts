@@ -213,8 +213,15 @@ export async function getNotificationBellFeed(userId: string, limit = 8, locale?
 }
 
 export async function getUnreadNotificationCount(userId: string) {
-  const notifications = await getNotifications(userId, 200);
-  return notifications.filter((item) => !item.is_read).length;
+  const { count } = await admin()
+    .from("customer_notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("is_read", false)
+    .is("archived_at", null)
+    .is("deleted_at", null);
+
+  return count ?? 0;
 }
 
 export async function markNotificationsRead(userId: string, notificationIds?: string[]) {
