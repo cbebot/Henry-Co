@@ -160,25 +160,56 @@ export async function POST(request: Request) {
 
     const admin = createAdminSupabase();
 
-    // Get user profile for email
-    const { data: profile } = await admin
-      .from("customer_profiles")
-      .select("full_name, email, language")
-      .eq("id", userId)
-      .maybeSingle();
+    // Get user profile + preferences in parallel
+    const [{ data: profile }, { data: prefs }] = await Promise.all([
+      admin
+        .from("customer_profiles")
+        .select("full_name, email, language")
+        .eq("id", userId)
+        .maybeSingle(),
+      admin
+        .from("customer_preferences")
+        .select("email_transactional, email_marketing, push_enabled, whatsapp_enabled")
+        .eq("user_id", userId)
+        .maybeSingle(),
+    ]);
 
     const email = profile?.email;
     const name = profile?.full_name || "";
     const preferredLocale = normalizeLocale(clean(payload.locale) || profile?.language || "en");
+    const emailTransactional = prefs?.email_transactional !== false;
+    const emailProvider = clean(process.env.EMAIL_PROVIDER) || "resend";
+
+    async function logEmailDelivery(templateKey: string, sent: boolean, category: string) {
+      try {
+        await admin.from("notification_delivery_log" as never).insert({
+          user_id: userId,
+          channel: "email",
+          provider: emailProvider,
+          status: sent ? "sent" : "failed",
+          division: "account",
+          category,
+          event_name: eventName,
+          metadata: { templateKey, eventId },
+        } as never);
+      } catch {
+        // delivery log is non-critical — never fail the webhook for a log error
+      }
+    }
 
     switch (eventName) {
       case "account.welcome": {
-        if (email) await sendAccountEmail(email, welcomeEmail(name, preferredLocale));
+        // Welcome email is transactional — respect email_transactional preference
+        if (email && emailTransactional) {
+          const sent = await sendAccountEmail(email, welcomeEmail(name, preferredLocale));
+          await logEmailDelivery("welcome", sent, "account");
+        }
         break;
       }
       case "security.alert": {
+        // Security alerts are mandatory — bypass preference gate
         if (email) {
-          await sendAccountEmail(
+          const sent = await sendAccountEmail(
             email,
             securityAlertEmail(
               clean(payload.event_name) || "Security event",
@@ -186,6 +217,7 @@ export async function POST(request: Request) {
               preferredLocale,
             )
           );
+          await logEmailDelivery("security_alert", sent, "security");
         }
         await logSecurityEvent({
           userId,
@@ -204,8 +236,9 @@ export async function POST(request: Request) {
         break;
       }
       case "wallet.funded": {
-        if (email) {
-          await sendAccountEmail(
+        // Wallet emails are transactional — respect preference
+        if (email && emailTransactional) {
+          const sent = await sendAccountEmail(
             email,
             walletFundedEmail(
               name,
@@ -214,6 +247,7 @@ export async function POST(request: Request) {
               preferredLocale,
             )
           );
+          await logEmailDelivery("wallet_funded", sent, "wallet");
         }
         break;
       }

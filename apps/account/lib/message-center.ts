@@ -169,6 +169,31 @@ async function buildRelatedHistory(
     .slice(0, 6);
 }
 
+export type HiddenNotificationReason = "archived" | "deleted";
+
+export async function getHiddenNotificationReason(
+  userId: string,
+  notificationId: string,
+): Promise<HiddenNotificationReason | null> {
+  const admin = createAdminSupabase();
+  const { data } = await admin
+    .from("customer_notifications")
+    .select("archived_at, deleted_at, priority")
+    .eq("id", notificationId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (!data) return null;
+
+  const row = data as Record<string, unknown>;
+  const priority = asText(row.priority).toLowerCase();
+
+  if (asNullableText(row.deleted_at) || priority === "deleted") return "deleted";
+  if (asNullableText(row.archived_at) || priority === "archived") return "archived";
+
+  return null;
+}
+
 export async function getNotificationMessageBoard(
   userId: string,
   notificationId: string,

@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
-import { Bell, ChevronRight } from "lucide-react";
+import { Archive, Bell, ChevronRight, Trash2 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { requireAccountUser } from "@/lib/auth";
-import { getNotificationMessageBoard } from "@/lib/message-center";
+import { getNotificationMessageBoard, getHiddenNotificationReason } from "@/lib/message-center";
 import { updateNotificationLifecycle } from "@/lib/notification-center";
 import { formatDateTime } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -27,6 +27,52 @@ export default async function NotificationMessageBoardPage({
   const data = await getNotificationMessageBoard(user.id, id, locale);
 
   if (!data) {
+    const hiddenReason = await getHiddenNotificationReason(user.id, id);
+
+    if (hiddenReason === "deleted") {
+      return (
+        <div className="space-y-6 acct-fade-in">
+          <PageHeader
+            title={t("Notification")}
+            description={t("This notification is no longer available.")}
+            icon={Trash2}
+          />
+          <div className="rounded-[2rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-8 text-center shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+            <Trash2 size={36} className="mx-auto mb-4 text-[var(--acct-muted)]" />
+            <p className="text-base font-semibold text-[var(--acct-ink)]">{t("Notification removed")}</p>
+            <p className="mt-2 text-sm text-[var(--acct-muted)]">
+              {t("This notification was deleted and is no longer available.")}
+            </p>
+            <Link href="/notifications" className="acct-button-secondary mt-6 inline-flex rounded-xl">
+              {t("Back to notifications")}
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
+    if (hiddenReason === "archived") {
+      return (
+        <div className="space-y-6 acct-fade-in">
+          <PageHeader
+            title={t("Archived notification")}
+            description={t("This notification has been archived.")}
+            icon={Archive}
+          />
+          <div className="rounded-[2rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-8 text-center shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+            <Archive size={36} className="mx-auto mb-4 text-[var(--acct-muted)]" />
+            <p className="text-base font-semibold text-[var(--acct-ink)]">{t("Notification archived")}</p>
+            <p className="mt-2 text-sm text-[var(--acct-muted)]">
+              {t("This notification was archived and is no longer shown in your active feed.")}
+            </p>
+            <Link href="/notifications" className="acct-button-secondary mt-6 inline-flex rounded-xl">
+              {t("Back to notifications")}
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
     notFound();
   }
 

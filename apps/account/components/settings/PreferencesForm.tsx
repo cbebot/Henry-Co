@@ -132,8 +132,8 @@ export default function PreferencesForm({ preferences }: Props) {
             onChange={(v) => update("email_digest", v)}
           />
           <Toggle
-            label={t("In-app notifications")}
-            description={t("Notification center and bell activity inside your dashboard")}
+            label={t("Push notifications")}
+            description={t("Device push alerts — active on mobile when the HenryCo app is available")}
             checked={prefs.push_enabled as boolean}
             onChange={(v) => update("push_enabled", v)}
           />
