@@ -27,7 +27,10 @@ let _cache: RateCache | null = null;
 
 function getAppId(): string | undefined {
   return (
-    (typeof process !== 'undefined' && process.env?.OPEN_EXCHANGE_RATES_APP_ID) || undefined
+    (typeof process !== 'undefined' &&
+      // Vercel projects use OPENRATE_APP_ID; OPEN_EXCHANGE_RATES_APP_ID is the fallback alias
+      (process.env?.OPENRATE_APP_ID || process.env?.OPEN_EXCHANGE_RATES_APP_ID)) ||
+    undefined
   );
 }
 
