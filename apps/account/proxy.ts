@@ -66,6 +66,7 @@ export async function proxy(request: NextRequest) {
     PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/webhooks/account") ||
     pathname.includes(".")
   ) {
     const publicResponse = NextResponse.next();
