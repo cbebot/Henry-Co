@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { isRecoverableSupabaseAuthError } from "@henryco/config";
 import { getAuthCopy } from "@henryco/i18n";
 import LoginForm from "@/components/auth/LoginForm";
 import LoginLanguageAccess from "@/components/auth/LoginLanguageAccess";
@@ -22,9 +23,16 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
+
+  try {
+    const auth = await supabase.auth.getUser();
+    user = auth.data.user;
+  } catch (error) {
+    if (!isRecoverableSupabaseAuthError(error)) {
+      throw error;
+    }
+  }
 
   if (user) {
     const headerStore = await headers();

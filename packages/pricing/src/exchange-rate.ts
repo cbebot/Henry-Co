@@ -37,7 +37,9 @@ function getAppId(): string | undefined {
 async function fetchRates(base = 'USD'): Promise<RateCache> {
   const appId = getAppId();
   if (!appId) {
-    throw new Error('[exchange-rate] OPEN_EXCHANGE_RATES_APP_ID env var is not set.');
+    throw new Error(
+      '[exchange-rate] Open Exchange Rates app ID env var is not set. Set OPENRATE_APP_ID or OPEN_EXCHANGE_RATES_APP_ID.',
+    );
   }
 
   const url = `${OER_BASE_URL}/latest.json?app_id=${appId}&base=${base}`;
