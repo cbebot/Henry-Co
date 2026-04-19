@@ -8,7 +8,7 @@ import {
   isSupabaseAuthTokenCookie,
 } from "@henryco/config";
 
-const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password", "/reset-password", "/auth/callback"];
+const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password", "/reset-password", "/auth/callback", "/auth/resolve"];
 const REFERRAL_COOKIE_NAME = "hc_ref";
 const REFERRAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
