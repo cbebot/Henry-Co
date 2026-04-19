@@ -64,7 +64,6 @@ export default function PreferencesForm({ preferences }: Props) {
     notification_property: preferences?.notification_property ?? true,
     notification_logistics: preferences?.notification_logistics ?? true,
     notification_wallet: preferences?.notification_wallet ?? true,
-    notification_security: preferences?.notification_security ?? true,
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -204,12 +203,15 @@ export default function PreferencesForm({ preferences }: Props) {
             checked={prefs.notification_wallet as boolean}
             onChange={(v) => update("notification_wallet", v)}
           />
-          <Toggle
-            label={t("Security alerts")}
-            description={t("Login attempts and sensitive account changes")}
-            checked={prefs.notification_security as boolean}
-            onChange={(v) => update("notification_security", v)}
-          />
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-[var(--acct-surface)] px-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-[var(--acct-ink)]">{t("Security alerts")}</p>
+              <p className="text-xs text-[var(--acct-muted)]">{t("Login attempts and sensitive account changes")}</p>
+            </div>
+            <span className="shrink-0 rounded-full bg-[var(--acct-green-soft)] px-2.5 py-0.5 text-[0.7rem] font-semibold uppercase tracking-wide text-[var(--acct-green)]">
+              {t("Always on")}
+            </span>
+          </div>
         </div>
       </div>
 

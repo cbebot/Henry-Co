@@ -236,6 +236,38 @@ export async function POST(request: Request) {
         await qualifyReferralsByReferee(userId, { reason });
         break;
       }
+      case "support.staff_reply": {
+        // Emitted by staff/hub when a staff member replies to a customer support thread.
+        // Creates a customer notification with the support.reply.received localization key.
+        const threadId = clean(payload.thread_id);
+        const subject = clean(payload.subject) || "your request";
+        const division = clean(payload.division) || "support";
+        if (!threadId) break;
+
+        const renderedTitle = "Support reply received";
+        const renderedBody = `A reply has been added to your request "${subject}".`;
+        await admin.from("customer_notifications").insert({
+          user_id: userId,
+          division,
+          category: "support",
+          title: renderedTitle,
+          body: renderedBody,
+          priority: "normal",
+          action_url: `/support/${threadId}`,
+          reference_type: "support_thread",
+          reference_id: threadId,
+          detail_payload: {
+            localization: buildNotificationLocalization({
+              key: "support.reply.received",
+              locale: preferredLocale,
+              params: { subject },
+              renderedTitle,
+              renderedBody,
+            }),
+          },
+        });
+        break;
+      }
       default:
         return NextResponse.json({ error: `Unknown event: ${eventName}` }, { status: 400 });
     }
