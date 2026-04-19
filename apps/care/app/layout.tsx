@@ -8,6 +8,7 @@ import {
 import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { AssistDock } from "@henryco/ui/support";
 import { getCareSettings } from "@/lib/care-data";
 import { getCarePublicLocale } from "@/lib/locale-server";
 
@@ -56,6 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <CareToaster locale={lang} />
           </Suspense>
           {children}
+          <AssistDock division="care" accent="#C9A227" />
         </PublicThemeGuard>
       </body>
     </html>

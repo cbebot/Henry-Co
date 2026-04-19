@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { AssistDock } from "@henryco/ui/support";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
 import { getDivisionConfig } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
@@ -47,6 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <LocaleProvider locale={lang}>
             {children}
             <StudioToastRoot />
+            <AssistDock division="studio" accent="#49C0C5" />
           </LocaleProvider>
         </PublicThemeGuard>
       </body>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { AssistDock } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
@@ -32,7 +33,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen bg-[var(--learn-bg)] text-[var(--learn-ink)] antialiased">
         <PublicThemeGuard>
-          <LocaleProvider locale={lang}>{children}</LocaleProvider>
+          <LocaleProvider locale={lang}>
+            {children}
+            <AssistDock division="learn" />
+          </LocaleProvider>
         </PublicThemeGuard>
       </body>
     </html>

@@ -3,6 +3,7 @@ import { Manrope, Newsreader } from "next/font/google";
 import { getDivisionConfig } from "@henryco/config";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { AssistDock } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
@@ -50,7 +51,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className={`${display.variable} ${sans.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
       >
         <PublicThemeGuard>
-          <LocaleProvider locale={lang}>{children}</LocaleProvider>
+          <LocaleProvider locale={lang}>
+            {children}
+            <AssistDock division="jobs" />
+          </LocaleProvider>
         </PublicThemeGuard>
       </body>
     </html>

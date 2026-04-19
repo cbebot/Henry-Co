@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { getDivisionConfig } from "@henryco/config";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { AssistDock } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
@@ -64,7 +65,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
         <PublicThemeGuard>
-          <LocaleProvider locale={lang}>{children}</LocaleProvider>
+          <LocaleProvider locale={lang}>
+            {children}
+            <AssistDock division="property" />
+          </LocaleProvider>
         </PublicThemeGuard>
       </body>
     </html>

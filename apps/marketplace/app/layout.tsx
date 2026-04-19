@@ -4,7 +4,7 @@ import "./globals.css";
 import { MarketplaceRuntimeProvider } from "@/components/marketplace/runtime-provider";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { FloatingSupport } from "@henryco/ui/support";
+import { AssistDock } from "@henryco/ui/support";
 import { getMarketplaceShellState } from "@/lib/marketplace/data";
 import { getDivisionConfig } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
@@ -59,12 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <LocaleProvider locale={lang}>
             <MarketplaceRuntimeProvider initialShell={shell}>
               {children}
-              <FloatingSupport
-                divisionName="HenryCo Marketplace"
-                accent="#B2863B"
-                supportEmail="marketplace@henrycogroup.com"
-                supportUrl="/support"
-              />
+              <AssistDock division="marketplace" accent="#B2863B" />
             </MarketplaceRuntimeProvider>
           </LocaleProvider>
         </PublicThemeGuard>

@@ -8,6 +8,7 @@ import {
   PublicThemeGuard,
   ThirdPartyRuntimeProviders,
 } from "@henryco/ui/public-shell";
+import { AssistDock } from "@henryco/ui/support";
 import { COMPANY } from "@henryco/config";
 import { getHubPublicLocale, getHubLocaleSuggestion } from "@/lib/locale-server";
 
@@ -43,6 +44,7 @@ export default async function RootLayout({
       <body className="min-h-screen antialiased">
         <PublicThemeGuard>
           <ThirdPartyRuntimeProviders>{children}</ThirdPartyRuntimeProviders>
+          <AssistDock division="hub" />
           <ConsentNotice preferencesHref="/preferences" locale={lang} />
           <LocaleSuggestion suggestedLocale={suggestedLocale} currentLocale={lang} />
         </PublicThemeGuard>

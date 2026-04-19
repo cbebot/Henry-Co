@@ -3,6 +3,7 @@ import "./globals.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
+import { AssistDock } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
@@ -29,6 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ThirdPartyRuntimeProviders>
             <LocaleProvider locale={locale}>{children}</LocaleProvider>
           </ThirdPartyRuntimeProviders>
+          <AssistDock division="account" />
           <ConsentNotice preferencesHref="/settings#privacy-controls" locale={locale} />
         </ThemeProvider>
       </body>
