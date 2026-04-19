@@ -91,7 +91,7 @@ export async function POST(request: Request) {
 
     const { error: threadErr } = await admin
       .from("support_threads")
-      .update({ status: "awaiting_customer", updated_at: new Date().toISOString() })
+      .update({ status: "in_progress", updated_at: new Date().toISOString() })
       .eq("id", thread_id);
     if (threadErr) {
       return NextResponse.json({ error: "Failed to update support thread" }, { status: 500 });
