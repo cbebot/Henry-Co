@@ -1,4 +1,5 @@
 import { getSharedCookieDomain } from "./company";
+import { isSupabaseAuthTokenCookie } from "./identity";
 
 export type SupabaseCookieTuple = {
   name: string;
@@ -17,6 +18,166 @@ export type SupabaseCookieHandlers = {
 };
 
 type WritableCookieOptions = Record<string, unknown>;
+type CookieNameValue = { name: string; value: string };
+
+const SUPABASE_SESSION_COOKIE_SUFFIX = "-auth-token";
+const SUPABASE_BASE64_PREFIX = "base64-";
+const SUPABASE_SESSION_CHUNK_REGEX = /^(.*-auth-token)(?:\.(\d+))?$/i;
+
+function getSupabaseSessionCookieChunk(
+  name?: string | null,
+): { baseName: string; chunkIndex: number | null } | null {
+  const cookieName = String(name || "").trim();
+
+  if (!isSupabaseAuthTokenCookie(cookieName)) {
+    return null;
+  }
+
+  const match = cookieName.match(SUPABASE_SESSION_CHUNK_REGEX);
+  if (!match) {
+    return null;
+  }
+
+  const baseName = match[1];
+  if (!baseName.toLowerCase().endsWith(SUPABASE_SESSION_COOKIE_SUFFIX)) {
+    return null;
+  }
+
+  return {
+    baseName,
+    chunkIndex: match[2] == null ? null : Number(match[2]),
+  };
+}
+
+function decodeBase64Url(value: string) {
+  const normalized = value
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .padEnd(Math.ceil(value.length / 4) * 4, "=");
+
+  try {
+    const bufferCtor = (
+      globalThis as {
+        Buffer?: {
+          from: (input: string, encoding: string) => { toString: (encoding: string) => string };
+        };
+      }
+    ).Buffer;
+
+    if (bufferCtor) {
+      return bufferCtor.from(normalized, "base64").toString("utf8");
+    }
+
+    if (typeof atob === "function") {
+      const binary = atob(normalized);
+      const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function isWellFormedSupabaseSessionCookieValue(value: string) {
+  if (!value) {
+    return false;
+  }
+
+  let decoded = value;
+  if (decoded.startsWith(SUPABASE_BASE64_PREFIX)) {
+    decoded = decodeBase64Url(decoded.slice(SUPABASE_BASE64_PREFIX.length)) || "";
+  }
+
+  if (!decoded) {
+    return false;
+  }
+
+  try {
+    const parsed = JSON.parse(decoded) as unknown;
+    return Boolean(parsed && typeof parsed === "object");
+  } catch {
+    return false;
+  }
+}
+
+export function findMalformedSupabaseSessionCookieNames(cookies: CookieNameValue[]) {
+  const grouped = new Map<
+    string,
+    Array<{ name: string; value: string; chunkIndex: number | null }>
+  >();
+
+  for (const cookie of cookies) {
+    const chunk = getSupabaseSessionCookieChunk(cookie.name);
+    if (!chunk) {
+      continue;
+    }
+
+    const list = grouped.get(chunk.baseName) || [];
+    list.push({
+      name: cookie.name,
+      value: cookie.value,
+      chunkIndex: chunk.chunkIndex,
+    });
+    grouped.set(chunk.baseName, list);
+  }
+
+  const malformedNames = new Set<string>();
+
+  for (const parts of grouped.values()) {
+    const rootCookie = parts.find((part) => part.chunkIndex == null) || null;
+    let serialized = rootCookie?.value || null;
+
+    if (!serialized) {
+      const chunkedParts = parts
+        .filter(
+          (part): part is { name: string; value: string; chunkIndex: number } =>
+            part.chunkIndex != null,
+        )
+        .sort((left, right) => left.chunkIndex - right.chunkIndex);
+
+      if (chunkedParts.length === 0 || chunkedParts[0].chunkIndex !== 0) {
+        parts.forEach((part) => malformedNames.add(part.name));
+        continue;
+      }
+
+      const combinedChunks: string[] = [];
+      let expectedChunkIndex = 0;
+
+      for (const part of chunkedParts) {
+        if (part.chunkIndex !== expectedChunkIndex) {
+          parts.forEach((cookie) => malformedNames.add(cookie.name));
+          serialized = null;
+          break;
+        }
+
+        combinedChunks.push(part.value);
+        expectedChunkIndex += 1;
+      }
+
+      if (!serialized) {
+        serialized = combinedChunks.join("");
+      }
+    }
+
+    if (!serialized || !isWellFormedSupabaseSessionCookieValue(serialized)) {
+      parts.forEach((part) => malformedNames.add(part.name));
+    }
+  }
+
+  return [...malformedNames];
+}
+
+export function filterValidSupabaseSessionCookies(cookies: CookieNameValue[]) {
+  const malformedNames = new Set(findMalformedSupabaseSessionCookieNames(cookies));
+
+  if (malformedNames.size === 0) {
+    return cookies;
+  }
+
+  return cookies.filter((cookie) => !malformedNames.has(cookie.name));
+}
 
 export function buildSharedCookieWriteOptions(
   options: WritableCookieOptions | undefined,
@@ -66,7 +227,7 @@ export function buildSharedCookieHandlers(
 ): SupabaseCookieHandlers {
   return {
     getAll() {
-      return cookieStore.getAll();
+      return filterValidSupabaseSessionCookies(cookieStore.getAll());
     },
     setAll(cookiesToSet) {
       try {

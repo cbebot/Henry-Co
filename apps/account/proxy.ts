@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import {
   buildSharedCookieWriteOptions,
+  filterValidSupabaseSessionCookies,
+  findMalformedSupabaseSessionCookieNames,
   getHqUrl,
   getSharedCookieDomain,
   isRecoverableSupabaseAuthError,
@@ -12,10 +14,18 @@ const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password", "/reset-password
 const REFERRAL_COOKIE_NAME = "hc_ref";
 const REFERRAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
-function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse) {
+function clearSupabaseAuthCookies(
+  request: NextRequest,
+  response: NextResponse,
+  cookieNames?: Set<string>,
+) {
   const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
   for (const cookie of request.cookies.getAll()) {
     if (!isSupabaseAuthTokenCookie(cookie.name)) {
+      continue;
+    }
+
+    if (cookieNames && !cookieNames.has(cookie.name)) {
       continue;
     }
 
@@ -46,6 +56,7 @@ function captureReferralCode(request: NextRequest, response: NextResponse) {
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+  const malformedCookieNames = new Set(findMalformedSupabaseSessionCookieNames(request.cookies.getAll()));
 
   if (pathname.startsWith("/owner")) {
     return NextResponse.redirect(`${getHqUrl(pathname)}${search}`, 307);
@@ -58,8 +69,20 @@ export async function proxy(request: NextRequest) {
     pathname.includes(".")
   ) {
     const publicResponse = NextResponse.next();
+    if (malformedCookieNames.size > 0) {
+      clearSupabaseAuthCookies(request, publicResponse, malformedCookieNames);
+    }
     captureReferralCode(request, publicResponse);
     return publicResponse;
+  }
+
+  if (malformedCookieNames.size > 0) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("next", `${pathname}${search}`);
+    const redirectResponse = NextResponse.redirect(loginUrl, 307);
+    clearSupabaseAuthCookies(request, redirectResponse, malformedCookieNames);
+    captureReferralCode(request, redirectResponse);
+    return redirectResponse;
   }
 
   const response = NextResponse.next({ request });
@@ -79,7 +102,7 @@ export async function proxy(request: NextRequest) {
         : undefined,
       cookies: {
         getAll() {
-          return request.cookies.getAll();
+          return filterValidSupabaseSessionCookies(request.cookies.getAll());
         },
         setAll(tokens) {
           for (const { name, value, options } of tokens) {
