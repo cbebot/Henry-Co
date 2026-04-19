@@ -1,4 +1,5 @@
 import { getDivisionUrl, getHqUrl } from "@henryco/config";
+import { formatMoney } from "@henryco/i18n";
 import { BanknoteArrowDown, DollarSign, Landmark, ReceiptText, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { requireStaff } from "@/lib/staff-auth";
 import { viewerHasPermission } from "@/lib/roles";
@@ -15,12 +16,7 @@ import { getFinanceSummary } from "@/lib/finance-data";
 export const dynamic = "force-dynamic";
 
 function formatNaira(kobo: number) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(kobo / 100);
+  return formatMoney(kobo, "NGN");
 }
 
 function formatDate(iso: string) {

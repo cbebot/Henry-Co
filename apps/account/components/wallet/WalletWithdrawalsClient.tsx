@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
+import { formatMoney, formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
 
 type PayoutMethod = {
@@ -331,13 +331,13 @@ export default function WalletWithdrawalsClient({
         <p className="mt-1 text-sm text-[var(--acct-muted)]">
           {t("Available balance")}:{" "}
           <span className="font-semibold text-[var(--acct-ink)]">
-            ₦{(availableKobo / 100).toLocaleString(numberLocale, { minimumFractionDigits: 2 })}
+            {formatMoney(availableKobo, "NGN")}
           </span>
         </p>
         {pendingHold > 0 ? (
           <p className="mt-2 text-xs leading-6 text-[var(--acct-muted)]">
             {formatSurfaceTemplate(t("{amount} is already held in pending withdrawal review."), {
-              amount: `₦${(pendingHold / 100).toLocaleString(numberLocale, { minimumFractionDigits: 2 })}`,
+              amount: formatMoney(pendingHold, "NGN"),
             })}
           </p>
         ) : null}
@@ -417,7 +417,7 @@ export default function WalletWithdrawalsClient({
                 className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[var(--acct-surface)] px-4 py-3 text-sm"
               >
                 <span className="font-semibold text-[var(--acct-ink)]">
-                  ₦{(r.amount_kobo / 100).toLocaleString(numberLocale, { minimumFractionDigits: 2 })}
+                  {formatMoney(r.amount_kobo, "NGN")}
                 </span>
                 <span className="text-[var(--acct-muted)]">{statusLabel(r.status)}</span>
                 <span className="text-xs text-[var(--acct-muted)]">

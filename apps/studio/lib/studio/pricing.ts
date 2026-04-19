@@ -23,6 +23,9 @@ export type StudioPriceLine = {
 };
 
 export type StudioPricingSummary = {
+  /** ISO 4217 currency code. Amounts are in minor units of this currency. */
+  currency: string;
+  /** Total project investment in minor units. */
   total: number;
   depositAmount: number;
   depositRate: number;
@@ -177,6 +180,7 @@ export function estimateStudioPricing(
   const depositAmount = roundAmount(total * depositRate);
 
   return {
+    currency: "NGN",
     total,
     depositAmount,
     depositRate,

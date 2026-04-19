@@ -9,7 +9,14 @@ export * from "./src/index";
 
 export {
   formatMoney,
+  formatMoneyRange,
   parseCurrencyConfig,
+  getCurrencyMinorUnit,
+  isSupportedCurrency,
+  toMinorUnits,
+  toMajorUnits,
+  SYSTEM_BASE_CURRENCY,
+  SUPPORTED_CURRENCY_CODES,
   type CurrencyConfig,
 } from "./currency";
 

@@ -4,6 +4,20 @@ export type Money = {
   amount: number;
 };
 
+export {
+  SYSTEM_BASE_CURRENCY,
+  resolveDisplayCurrencyForCountry,
+  resolveSettlementCurrencyForDivision,
+  describeSettlementTruth,
+  buildCurrencySnapshot,
+  buildExchangeRateSnapshot,
+  buildFallbackExchangeRateSnapshot,
+  assertNoAmbiguousCurrency,
+  type CurrencyLayerSnapshot,
+  type ExchangeRateSnapshot,
+  type SettlementAvailabilityStatus,
+} from './currency-model';
+
 export type PricingBreakdownLine = {
   code:
     | "items_subtotal"
