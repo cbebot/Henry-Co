@@ -39,6 +39,19 @@ function asObject(value: unknown) {
     : {};
 }
 
+function isMissingNotificationColumn(
+  error: { message?: string | null; code?: string | null } | null | undefined,
+  column: string
+) {
+  const message = asText(error?.message).toLowerCase();
+  const code = asText(error?.code);
+  return (
+    message.includes(`customer_notifications.${column.toLowerCase()}`) ||
+    message.includes(`${column.toLowerCase()} does not exist`) ||
+    code === "42703"
+  );
+}
+
 function resolveNotificationKey(row: Record<string, unknown>) {
   return (
     asNullableText(row.division) ||
@@ -213,7 +226,7 @@ export async function getNotificationBellFeed(userId: string, limit = 8, locale?
 }
 
 export async function getUnreadNotificationCount(userId: string) {
-  const { count } = await admin()
+  const modern = await admin()
     .from("customer_notifications")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
@@ -221,7 +234,31 @@ export async function getUnreadNotificationCount(userId: string) {
     .is("archived_at", null)
     .is("deleted_at", null);
 
-  return count ?? 0;
+  if (!modern.error) {
+    return modern.count ?? 0;
+  }
+
+  if (
+    !isMissingNotificationColumn(modern.error, "archived_at") &&
+    !isMissingNotificationColumn(modern.error, "deleted_at")
+  ) {
+    console.warn("[notifications] unread count query failed:", modern.error.message);
+    return 0;
+  }
+
+  const legacy = await admin()
+    .from("customer_notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("is_read", false)
+    .not("priority", "in", '("archived","deleted")');
+
+  if (legacy.error) {
+    console.warn("[notifications] legacy unread count query failed:", legacy.error.message);
+    return 0;
+  }
+
+  return legacy.count ?? 0;
 }
 
 export async function markNotificationsRead(userId: string, notificationIds?: string[]) {

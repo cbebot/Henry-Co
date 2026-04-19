@@ -6,7 +6,10 @@ import { LOCALE_COOKIE, normalizeLocale } from "@henryco/i18n/server";
 import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
-import { buildNotificationLocalization } from "@/lib/notification-localization";
+import {
+  buildNotificationLocalization,
+  resolveNotificationPresentation,
+} from "@/lib/notification-localization";
 import { mirrorCareSupportThreadOpened } from "@/lib/support-sync";
 import { cookies } from "next/headers";
 import { AccountIntelEvents, emitIntelligenceEvent, triageSupportInput } from "@/lib/intelligence-rollout";
@@ -14,6 +17,19 @@ import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempot
 
 function cleanText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function isMissingNotificationColumn(
+  error: { message?: string | null; code?: string | null } | null | undefined,
+  column: string
+) {
+  const message = cleanText(error?.message).toLowerCase();
+  const code = cleanText(error?.code);
+  return (
+    message.includes(`customer_notifications.${column.toLowerCase()}`) ||
+    message.includes(`${column.toLowerCase()} does not exist`) ||
+    code === "42703"
+  );
 }
 
 export async function POST(request: Request) {
@@ -142,11 +158,29 @@ export async function POST(request: Request) {
     if (activityErr) sideEffectFailures.push("activity");
 
     // Notification
-    const { error: notificationErr } = await admin.from("customer_notifications").insert({
+    const notificationLocalization = buildNotificationLocalization({
+      key: "support.request.created",
+      locale: notificationLocale,
+      params: { subject: cleanText(subject) },
+      renderedTitle: "Support request created",
+      renderedBody: `Your request "${subject}" has been submitted. We'll get back to you soon.`,
+    });
+    const localizedNotification = resolveNotificationPresentation({
+      row: {
+        title: "Support request created",
+        body: `Your request "${subject}" has been submitted. We'll get back to you soon.`,
+        detail_payload: {
+          localization: notificationLocalization,
+        },
+      },
+      locale: notificationLocale,
+    });
+
+    const notificationRow = {
       user_id: user.id,
       division,
-      title: "Support request created",
-      body: `Your request "${subject}" has been submitted. We'll get back to you soon.`,
+      title: localizedNotification.title,
+      body: localizedNotification.body,
       category: "support",
       priority: triage.shouldEscalate ? "high" : "normal",
       action_url: `/support/${thread.id}`,
@@ -155,15 +189,19 @@ export async function POST(request: Request) {
       detail_payload: {
         triage_intent: triage.intent,
         triage_confidence: triage.confidence,
-        localization: buildNotificationLocalization({
-          key: "support.request.created",
-          locale: notificationLocale,
-          params: { subject: cleanText(subject) },
-          renderedTitle: "Support request created",
-          renderedBody: `Your request "${subject}" has been submitted. We'll get back to you soon.`,
-        }),
+        localization: notificationLocalization,
       },
-    });
+    };
+
+    let { error: notificationErr } = await admin.from("customer_notifications").insert(
+      notificationRow
+    );
+    if (notificationErr && isMissingNotificationColumn(notificationErr, "detail_payload")) {
+      ({ error: notificationErr } = await admin.from("customer_notifications").insert({
+        ...notificationRow,
+        detail_payload: undefined,
+      }));
+    }
     if (notificationErr) sideEffectFailures.push("notification");
 
     try {

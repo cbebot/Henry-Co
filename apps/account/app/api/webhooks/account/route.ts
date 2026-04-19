@@ -4,7 +4,10 @@ import { normalizeLocale } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendAccountEmail } from "@/lib/email/send";
 import { welcomeEmail, securityAlertEmail, walletFundedEmail } from "@/lib/email/templates";
-import { buildNotificationLocalization } from "@/lib/notification-localization";
+import {
+  buildNotificationLocalization,
+  resolveNotificationPresentation,
+} from "@/lib/notification-localization";
 import { logSecurityEvent } from "@/lib/security-events";
 import { qualifyReferralsByReferee } from "@/lib/referral-data";
 
@@ -51,6 +54,38 @@ function isFreshTimestamp(value: string) {
   if (!Number.isFinite(ts)) return false;
   const now = Math.floor(Date.now() / 1000);
   return Math.abs(now - ts) <= WEBHOOK_TTL_SECONDS;
+}
+
+function isMissingNotificationColumn(
+  error: { message?: string | null; code?: string | null } | null | undefined,
+  column: string
+) {
+  const message = clean(error?.message).toLowerCase();
+  const code = clean(error?.code);
+  return (
+    message.includes(`customer_notifications.${column.toLowerCase()}`) ||
+    message.includes(`${column.toLowerCase()} does not exist`) ||
+    code === "42703"
+  );
+}
+
+async function insertCustomerNotification(
+  admin: ReturnType<typeof createAdminSupabase>,
+  row: Record<string, unknown>
+) {
+  let { error } = await admin.from("customer_notifications").insert(row as never);
+  if (!error) {
+    return null;
+  }
+
+  if (!isMissingNotificationColumn(error, "detail_payload") || !("detail_payload" in row)) {
+    return error;
+  }
+
+  const legacyRow = { ...row };
+  delete legacyRow.detail_payload;
+  ({ error } = await admin.from("customer_notifications").insert(legacyRow as never));
+  return error ?? null;
 }
 
 async function alreadyProcessedEvent(eventId: string) {
@@ -202,29 +237,45 @@ export async function POST(request: Request) {
         const fallbackBody = clean(payload.body) || "";
         const messageKey = clean(payload.message_key);
         const detailPayload = asObject(payload.detail_payload);
-        await admin.from("customer_notifications").insert({
+        const localization = messageKey
+          ? buildNotificationLocalization({
+              key: messageKey,
+              locale: preferredLocale,
+              params: asObject(payload.message_params),
+              renderedTitle: fallbackTitle,
+              renderedBody: fallbackBody,
+            })
+          : null;
+        const localizedNotification = localization
+          ? resolveNotificationPresentation({
+              row: {
+                title: fallbackTitle,
+                body: fallbackBody,
+                detail_payload: { localization },
+              },
+              locale: preferredLocale,
+            })
+          : { title: fallbackTitle, body: fallbackBody };
+        const insertError = await insertCustomerNotification(admin, {
           user_id: userId,
-          title: fallbackTitle,
-          body: fallbackBody,
+          title: localizedNotification.title,
+          body: localizedNotification.body,
           category: clean(payload.category) || "general",
           priority: clean(payload.priority) || "normal",
           action_url: clean(payload.action_url) || null,
           division: clean(payload.division) || null,
           detail_payload: {
             ...detailPayload,
-            ...(messageKey
+            ...(localization
               ? {
-                  localization: buildNotificationLocalization({
-                    key: messageKey,
-                    locale: preferredLocale,
-                    params: asObject(payload.message_params),
-                    renderedTitle: fallbackTitle,
-                    renderedBody: fallbackBody,
-                  }),
+                  localization,
                 }
               : {}),
           },
         });
+        if (insertError) {
+          return NextResponse.json({ error: insertError.message }, { status: 500 });
+        }
         break;
       }
       case "referral.qualify": {
@@ -244,28 +295,38 @@ export async function POST(request: Request) {
         const division = clean(payload.division) || "support";
         if (!threadId) break;
 
-        const renderedTitle = "Support reply received";
-        const renderedBody = `A reply has been added to your request "${subject}".`;
-        await admin.from("customer_notifications").insert({
+        const localization = buildNotificationLocalization({
+          key: "support.reply.received",
+          locale: preferredLocale,
+          params: { subject },
+          renderedTitle: "Support reply received",
+          renderedBody: `A reply has been added to your request "${subject}".`,
+        });
+        const localizedNotification = resolveNotificationPresentation({
+          row: {
+            title: "Support reply received",
+            body: `A reply has been added to your request "${subject}".`,
+            detail_payload: { localization },
+          },
+          locale: preferredLocale,
+        });
+        const insertError = await insertCustomerNotification(admin, {
           user_id: userId,
           division,
           category: "support",
-          title: renderedTitle,
-          body: renderedBody,
+          title: localizedNotification.title,
+          body: localizedNotification.body,
           priority: "normal",
           action_url: `/support/${threadId}`,
           reference_type: "support_thread",
           reference_id: threadId,
           detail_payload: {
-            localization: buildNotificationLocalization({
-              key: "support.reply.received",
-              locale: preferredLocale,
-              params: { subject },
-              renderedTitle,
-              renderedBody,
-            }),
+            localization,
           },
         });
+        if (insertError) {
+          return NextResponse.json({ error: insertError.message }, { status: 500 });
+        }
         break;
       }
       default:
