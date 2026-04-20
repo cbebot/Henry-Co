@@ -2,32 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { Bell, ChevronRight, Loader2 } from "lucide-react";
 import { timeAgoLocalized } from "@/lib/format";
+import { useNotificationSignalContext, type SignalNotification } from "@/lib/notification-signal";
 
-type BellNotification = {
-  id: string;
-  title: string;
-  body: string;
-  created_at: string;
-  is_read: boolean;
-  message_href: string;
-  related_url: string | null;
-  source: {
-    key: string;
-    label: string;
-    accent: string;
-    logoUrl: string | null;
-  };
-};
-
-type BellPayload = {
-  unreadCount: number;
-  items: BellNotification[];
-};
+type BellNotification = SignalNotification;
 
 function SourceMark({
   notification,
@@ -65,45 +47,22 @@ export default function NotificationBell({
   align?: "left" | "right";
   buttonClassName?: string;
 }) {
+  const notificationSignal = useNotificationSignalContext();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [payload, setPayload] = useState<BellPayload>({ unreadCount: 0, items: [] });
-  const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
   const router = useRouter();
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  const loadFeed = useEffectEvent(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/notifications/recent?limit=8", {
-        method: "GET",
-        cache: "no-store",
-      });
-      const data = (await res.json()) as BellPayload & { error?: string };
-
-      if (!res.ok) {
-        throw new Error("Unable to load notifications.");
-      }
-
-      setPayload(data);
-    } catch (err) {
-      const fallback = "Unable to load notifications.";
-      const message = err instanceof Error && err.message ? err.message : fallback;
-      const translated = t(message);
-      setError(translated !== message ? translated : t(fallback));
-    } finally {
-      setLoading(false);
-    }
-  });
+  const unreadCount = notificationSignal?.unreadCount ?? 0;
+  const items = notificationSignal?.recentNotifications ?? [];
+  const loading = notificationSignal?.loading ?? false;
+  const error = notificationSignal?.error;
 
   useEffect(() => {
-    loadFeed();
-  }, [pathname]);
+    if (!open) return;
+    void notificationSignal?.refreshFeed();
+  }, [notificationSignal, open]);
 
   useEffect(() => {
     if (!open) return;
@@ -133,29 +92,30 @@ export default function NotificationBell({
 
   const handleItemClick = async (item: BellNotification) => {
     if (!item.is_read) {
-      setPayload((current) => ({
-        unreadCount: Math.max(0, current.unreadCount - 1),
-        items: current.items.map((entry) =>
-          entry.id === item.id ? { ...entry, is_read: true } : entry
-        ),
-      }));
-
+      notificationSignal?.markNotificationReadLocally(item.id);
       fetch(`/api/notifications/${item.id}/read`, { method: "POST" }).catch(() => undefined);
     }
 
     setOpen(false);
-    router.push(item.message_href || "/notifications");
+
+    const destination = item.related_url || item.message_href || "/notifications";
+    if (/^https?:\/\//i.test(destination)) {
+      window.location.assign(destination);
+      return;
+    }
+
+    router.push(destination);
   };
 
   const unreadSummary =
-    payload.unreadCount > 0
+    unreadCount > 0
       ? formatSurfaceTemplate(
           t(
-            payload.unreadCount === 1
+            unreadCount === 1
               ? "{count} item needs your attention"
               : "{count} items need your attention"
           ),
-          { count: payload.unreadCount }
+          { count: unreadCount },
         )
       : t("You are caught up for now");
 
@@ -169,9 +129,9 @@ export default function NotificationBell({
         aria-expanded={open}
       >
         <Bell size={18} />
-        {payload.unreadCount > 0 ? (
+        {unreadCount > 0 ? (
           <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--acct-red)] px-1 text-[0.55rem] font-bold text-white">
-            {payload.unreadCount > 9 ? "9+" : payload.unreadCount}
+            {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         ) : null}
       </button>
@@ -209,9 +169,9 @@ export default function NotificationBell({
               </div>
             ) : error ? (
               <div className="m-2 rounded-2xl bg-[var(--acct-red-soft)] px-4 py-4 text-sm text-[var(--acct-red)]">
-                {error}
+                {t(error)}
               </div>
-            ) : payload.items.length === 0 ? (
+            ) : items.length === 0 ? (
               <div className="m-2 rounded-2xl border border-dashed border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-8 text-center">
                 <p className="text-sm font-medium text-[var(--acct-ink)]">{t("No recent alerts")}</p>
                 <p className="mt-1 text-xs leading-6 text-[var(--acct-muted)]">
@@ -219,7 +179,7 @@ export default function NotificationBell({
                 </p>
               </div>
             ) : (
-              payload.items.map((notification) => {
+              items.map((notification) => {
                 const sourceLabel = translateSurfaceLabel(locale, notification.source.label);
 
                 return (
@@ -261,16 +221,25 @@ export default function NotificationBell({
             )}
           </div>
 
-          {!loading && payload.items.length > 0 ? (
+          {!loading ? (
             <div className="border-t border-[var(--acct-line)] px-3 py-3">
-              <Link
-                href="/notifications"
-                onClick={() => setOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-2xl bg-[var(--acct-surface)] px-4 py-3 text-sm font-semibold text-[var(--acct-ink)] transition hover:bg-[var(--acct-bg)]"
-              >
-                <Loader2 size={0} className="hidden" />
-                {t("View all notifications")} <ChevronRight size={14} />
-              </Link>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <Link
+                  href="/notifications"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-2xl bg-[var(--acct-surface)] px-4 py-3 text-sm font-semibold text-[var(--acct-ink)] transition hover:bg-[var(--acct-bg)]"
+                >
+                  <Loader2 size={0} className="hidden" />
+                  {t("View all notifications")} <ChevronRight size={14} />
+                </Link>
+                <Link
+                  href="/settings#notification-signal-preferences"
+                  onClick={() => setOpen(false)}
+                  className="text-xs font-semibold text-[var(--acct-muted)] transition hover:text-[var(--acct-ink)] hover:underline"
+                >
+                  {t("Manage notification preferences")}
+                </Link>
+              </div>
             </div>
           ) : null}
         </div>
