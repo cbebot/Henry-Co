@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -40,6 +40,31 @@ function acct(path: string) {
   return `https://account.${BASE_DOMAIN}${path}`;
 }
 
+function hub(path: string) {
+  return `https://${BASE_DOMAIN}${path}`;
+}
+
+function divisionUrl(division: Exclude<AssistDivision, "account" | "hub">, path: string) {
+  return `https://${division}.${BASE_DOMAIN}${path}`;
+}
+
+function accountSupportHref({
+  division,
+  subject,
+  context,
+}: {
+  division: Exclude<AssistDivision, "account" | "hub">;
+  subject: string;
+  context: string;
+}) {
+  const params = new URLSearchParams();
+  params.set("category", division);
+  params.set("division", division);
+  params.set("subject", subject);
+  params.set("context", context);
+  return acct(`/support/new?${params.toString()}`);
+}
+
 // ─── Action definitions ─────────────────────────────────────────────────────
 
 type ActionsByLocale = (locale: string) => DockAction[];
@@ -49,32 +74,44 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     {
       label: "Track your order",
       description: "Check order status and delivery updates",
-      href: acct("/activity"),
-      external: true,
+      href: divisionUrl("marketplace", "/account/orders"),
+      external: false,
     },
     {
-      label: "Contact seller through HenryCo",
-      description: "Platform-mediated seller communication",
-      href: acct("/support/new"),
-      external: true,
+      label: "Order support",
+      description: "Get help with seller communication, delivery, or fulfillment issues",
+      href: accountSupportHref({
+        division: "marketplace",
+        subject: "Marketplace order support",
+        context: "order-support",
+      }),
+      external: false,
     },
     {
       label: "Buyer protection",
       description: "Dispute resolution and purchase safety",
-      href: acct("/support/new"),
-      external: true,
+      href: accountSupportHref({
+        division: "marketplace",
+        subject: "Marketplace buyer protection issue",
+        context: "buyer-protection",
+      }),
+      external: false,
     },
     {
       label: "Open support ticket",
       description: "Get help from the HenryCo team",
-      href: acct("/support/new"),
-      external: true,
+      href: accountSupportHref({
+        division: "marketplace",
+        subject: "Marketplace support request",
+        context: "general-support",
+      }),
+      external: false,
     },
     {
       label: "Your notifications",
       description: "Inbox, updates, and alerts",
       href: acct("/notifications"),
-      external: true,
+      external: false,
     },
   ],
   care: () => [
@@ -85,146 +122,184 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       external: false,
     },
     {
-      label: "Upload payment proof",
-      description: "Submit payment confirmation for your booking",
-      href: acct("/activity"),
-      external: true,
+      label: "Open care bookings",
+      description: "View linked bookings, receipts, and booking follow-up",
+      href: acct("/care"),
+      external: false,
     },
     {
-      label: "Report an issue",
-      description: "Flag a problem with your care service",
-      href: acct("/support/new"),
-      external: true,
+      label: "Payment and receipt help",
+      description: "Get help with payment proof, receipts, or booking billing",
+      href: accountSupportHref({
+        division: "care",
+        subject: "Care payment or receipt issue",
+        context: "payment-receipt",
+      }),
+      external: false,
     },
     {
       label: "Care support",
       description: "Speak to the HenryCo Care team",
-      href: acct("/support"),
-      external: true,
+      href: accountSupportHref({
+        division: "care",
+        subject: "Care booking support",
+        context: "booking-support",
+      }),
+      external: false,
     },
   ],
   jobs: () => [
     {
       label: "Your applications",
       description: "Track applications and recruiter updates",
-      href: acct("/activity"),
-      external: true,
+      href: divisionUrl("jobs", "/candidate/applications"),
+      external: false,
     },
     {
       label: "Interview status",
       description: "View scheduled interviews and details",
-      href: acct("/activity"),
-      external: true,
+      href: divisionUrl("jobs", "/candidate/interviews"),
+      external: false,
     },
     {
       label: "Report suspicious employer",
       description: "Flag an employer for review",
-      href: acct("/support/new"),
-      external: true,
+      href: accountSupportHref({
+        division: "jobs",
+        subject: "Report suspicious employer",
+        context: "employer-report",
+      }),
+      external: false,
     },
     {
-      label: "Jobs support",
+      label: "Jobs help",
       description: "Get help from the HenryCo Jobs team",
-      href: acct("/support"),
-      external: true,
+      href: divisionUrl("jobs", "/help"),
+      external: false,
     },
   ],
   learn: () => [
     {
       label: "Continue learning",
       description: "Pick up where you left off",
-      href: acct("/activity"),
-      external: true,
+      href: acct("/learn?panel=active"),
+      external: false,
     },
     {
-      label: "Certificate help",
-      description: "Issues with certificates or completions",
-      href: acct("/support/new"),
-      external: true,
+      label: "Open certificates",
+      description: "See issued certificates and completion records in your account",
+      href: acct("/learn?panel=certificates"),
+      external: false,
     },
     {
       label: "Report a course issue",
       description: "Flag content, access, or billing problems",
-      href: acct("/support/new"),
-      external: true,
+      href: accountSupportHref({
+        division: "learn",
+        subject: "Learn course issue",
+        context: "course-issue",
+      }),
+      external: false,
     },
     {
-      label: "Learning support",
+      label: "Learning help",
       description: "Get help from the HenryCo Learn team",
-      href: acct("/support"),
-      external: true,
+      href: divisionUrl("learn", "/help"),
+      external: false,
     },
   ],
   logistics: () => [
     {
       label: "Track your shipment",
       description: "Real-time location and delivery ETA",
-      href: acct("/activity"),
-      external: true,
+      href: "/track",
+      external: false,
+    },
+    {
+      label: "Open logistics hub",
+      description: "View logistics activity, pricing, and shared account history",
+      href: acct("/logistics"),
+      external: false,
     },
     {
       label: "Report delivery issue",
       description: "Missing, damaged, or late shipment",
-      href: acct("/support/new"),
-      external: true,
+      href: accountSupportHref({
+        division: "logistics",
+        subject: "Logistics delivery issue",
+        context: "delivery-issue",
+      }),
+      external: false,
     },
     {
       label: "Logistics support",
       description: "Get help from the HenryCo Logistics team",
-      href: acct("/support"),
-      external: true,
+      href: "/support",
+      external: false,
     },
   ],
   property: () => [
     {
       label: "Track listing review",
       description: "Check your listing status and feedback",
-      href: acct("/activity"),
-      external: true,
+      href: acct("/property?panel=listings"),
+      external: false,
     },
     {
-      label: "Book a viewing",
-      description: "Schedule a property viewing appointment",
-      href: "/listings",
+      label: "Find properties to view",
+      description: "Browse live listings and shortlist places for a viewing",
+      href: "/search",
       external: false,
     },
     {
       label: "Report a listing",
       description: "Flag inaccurate or suspicious listing",
-      href: acct("/support/new"),
-      external: true,
+      href: accountSupportHref({
+        division: "property",
+        subject: "Report property listing",
+        context: "listing-report",
+      }),
+      external: false,
     },
     {
       label: "Property support",
       description: "Get help from the HenryCo Property team",
-      href: acct("/support"),
-      external: true,
+      href: accountSupportHref({
+        division: "property",
+        subject: "Property support request",
+        context: "general-support",
+      }),
+      external: false,
     },
   ],
   studio: () => [
     {
-      label: "View your project",
-      description: "Open your active Studio workspace",
-      href: acct("/activity"),
-      external: true,
+      label: "View your projects",
+      description: "Open your active Studio project workspace",
+      href: divisionUrl("studio", "/client/projects"),
+      external: false,
     },
     {
-      label: "Request a revision",
-      description: "Submit a formal revision request",
-      href: acct("/support/new"),
-      external: true,
+      label: "Start a project request",
+      description: "Open the real Studio request flow for a new brief",
+      href: "/request",
+      external: false,
     },
     {
       label: "Payment and invoice help",
       description: "Questions about studio payments",
-      href: acct("/support/new"),
-      external: true,
+      href: accountSupportHref({
+        division: "studio",
+        subject: "Studio payment or invoice help",
+        context: "invoice-help",
+      }),
+      external: false,
     },
     {
-      label: "Studio support",
-      description: "Get help from the HenryCo Studio team",
-      href: acct("/support"),
-      external: true,
+      label: "Contact Studio",
+      description: "Reach the Studio team through the real contact route",
+      href: "/contact",
+      external: false,
     },
   ],
   account: () => [
@@ -255,27 +330,27 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
   ],
   hub: () => [
     {
-      label: "Explore HenryCo",
-      description: "All divisions and services",
-      href: "/divisions",
+      label: "Explore divisions",
+      description: "Jump to the live divisions directory on the hub homepage",
+      href: "/#divisions",
       external: false,
     },
     {
       label: "Open your account",
       description: "Wallet, inbox, and cross-division dashboard",
       href: acct("/"),
-      external: true,
+      external: false,
     },
     {
       label: "Contact HenryCo",
       description: "General support and enquiries",
-      href: acct("/support/new"),
-      external: true,
+      href: hub("/contact"),
+      external: false,
     },
     {
-      label: "View all services",
-      description: "Care, Marketplace, Studio, and more",
-      href: "/divisions",
+      label: "View ecosystem map",
+      description: "See how the HenryCo divisions connect across the platform",
+      href: "/#ecosystem",
       external: false,
     },
   ],
@@ -344,20 +419,18 @@ export function AssistDock({ division, accent = "#C9A227" }: AssistDockProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const close = useCallback(() => setOpen(false), []);
-
   // Escape to close
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        close();
+        setOpen(false);
         triggerRef.current?.focus();
       }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [open, close]);
+  }, [open]);
 
   // Click-outside to close
   useEffect(() => {
@@ -369,12 +442,12 @@ export function AssistDock({ division, accent = "#C9A227" }: AssistDockProps) {
         triggerRef.current &&
         !triggerRef.current.contains(e.target as Node)
       ) {
-        close();
+        setOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [open, close]);
+  }, [open]);
 
   // Focus first action when panel opens
   useEffect(() => {
@@ -411,7 +484,7 @@ export function AssistDock({ division, accent = "#C9A227" }: AssistDockProps) {
               <p className="text-[0.7rem] text-white/75">{copy.subtitle}</p>
             </div>
             <button
-              onClick={close}
+              onClick={() => setOpen(false)}
               aria-label={copy.close}
               className="flex h-7 w-7 items-center justify-center rounded-lg text-white/80 transition hover:bg-white/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
             >
@@ -428,7 +501,7 @@ export function AssistDock({ division, accent = "#C9A227" }: AssistDockProps) {
                 target={action.external ? "_blank" : undefined}
                 rel={action.external ? "noreferrer" : undefined}
                 className="group flex items-center gap-3 px-4 py-3 text-start transition hover:bg-zinc-50 focus-visible:bg-zinc-50 focus-visible:outline-none dark:hover:bg-zinc-800/60 dark:focus-visible:bg-zinc-800/60"
-                onClick={close}
+                onClick={() => setOpen(false)}
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-[0.82rem] font-semibold text-zinc-800 dark:text-zinc-100 group-hover:text-zinc-900 dark:group-hover:text-white">

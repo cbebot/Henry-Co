@@ -1,28 +1,117 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
+
+const SUPPORT_CATEGORIES = [
+  "general",
+  "care",
+  "marketplace",
+  "jobs",
+  "learn",
+  "logistics",
+  "property",
+  "studio",
+  "billing",
+  "wallet",
+  "account",
+  "other",
+] as const;
+
+type SupportCategory = (typeof SUPPORT_CATEGORIES)[number];
+
+type SearchParamsReader = {
+  get(name: string): string | null;
+};
+
+function cleanSupportParam(value: string | null) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function isSupportCategory(value: string): value is SupportCategory {
+  return SUPPORT_CATEGORIES.includes(value as SupportCategory);
+}
+
+function normalizeSupportCategory(category: string, division: string): SupportCategory {
+  const candidate = (category || division).toLowerCase();
+  return isSupportCategory(candidate) ? candidate : "general";
+}
+
+function formatSupportContext(value: string) {
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function buildSupportPrefill(searchParams: SearchParamsReader) {
+  const division = cleanSupportParam(searchParams.get("division"));
+  const category = cleanSupportParam(searchParams.get("category"));
+  const context = cleanSupportParam(searchParams.get("context"));
+  const subject = cleanSupportParam(searchParams.get("subject"));
+  const message = cleanSupportParam(searchParams.get("message"));
+
+  if (message) {
+    return {
+      category: normalizeSupportCategory(category, division),
+      subject,
+      message,
+    };
+  }
+
+  const messageLines: string[] = [];
+  if (division) {
+    messageLines.push(`Division: ${formatSupportContext(division)}`);
+  }
+  if (context) {
+    messageLines.push(`Context: ${formatSupportContext(context)}`);
+  }
+  if (messageLines.length) {
+    messageLines.push("");
+    messageLines.push("Please describe what happened, when it started, and what you expected instead.");
+  }
+
+  return {
+    category: normalizeSupportCategory(category, division),
+    subject,
+    message: messageLines.join("\n"),
+  };
+}
 
 export default function NewSupportForm() {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const searchParams = useSearchParams();
   const categories = [
     { value: "general", label: t("General") },
-    { value: "billing", label: t("Billing & Payments") },
     { value: "care", label: t("Care Service") },
     { value: "marketplace", label: t("Marketplace") },
+    { value: "jobs", label: t("Jobs") },
+    { value: "learn", label: t("Learn") },
+    { value: "logistics", label: t("Logistics") },
+    { value: "property", label: t("Property") },
+    { value: "studio", label: t("Studio") },
+    { value: "billing", label: t("Billing & Payments") },
     { value: "wallet", label: t("Wallet") },
     { value: "account", label: t("Account & Security") },
     { value: "other", label: t("Other") },
   ];
-  const [subject, setSubject] = useState("");
-  const [category, setCategory] = useState("general");
-  const [message, setMessage] = useState("");
+  const prefill = buildSupportPrefill(searchParams);
+  const [subject, setSubject] = useState(prefill.subject);
+  const [category, setCategory] = useState<SupportCategory>(prefill.category);
+  const [message, setMessage] = useState(prefill.message);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setSubject(prefill.subject);
+    setCategory(prefill.category);
+    setMessage(prefill.message);
+  }, [prefill.category, prefill.message, prefill.subject]);
 
   function localizeSupportError(message: string) {
     switch (message) {
@@ -78,7 +167,7 @@ export default function NewSupportForm() {
           <label className="mb-1.5 block text-sm font-medium">{t("Category")}</label>
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => setCategory(e.target.value as SupportCategory)}
             className="acct-select"
           >
             {categories.map((c) => (

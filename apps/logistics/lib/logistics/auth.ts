@@ -3,6 +3,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { isRecoverableSupabaseAuthError } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
+import { getLogisticsSharedLoginUrl } from "@/lib/logistics-public-links";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { LogisticsRole, LogisticsViewer } from "@/lib/logistics/types";
@@ -123,8 +124,7 @@ export async function requireLogisticsUser(next?: string) {
   const viewer = await getLogisticsViewer();
 
   if (!viewer.user) {
-    const suffix = next ? `?next=${encodeURIComponent(next)}` : "";
-    redirect(`/login${suffix}`);
+    redirect(getLogisticsSharedLoginUrl(next || "/customer"));
   }
 
   return viewer;

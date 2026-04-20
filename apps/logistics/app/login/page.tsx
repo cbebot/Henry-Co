@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
-import { getAccountUrl, getDivisionUrl } from "@henryco/config";
+import { getLogisticsSharedLoginUrl } from "@/lib/logistics-public-links";
 
-export default function LogisticsLoginPage() {
-  const next = `${getDivisionUrl("logistics")}/track`;
-  redirect(getAccountUrl(`/login?next=${encodeURIComponent(next)}`));
+export default async function LogisticsLoginPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ next?: string }>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const next = typeof params.next === "string" && params.next.trim() ? params.next : "/track";
+  redirect(getLogisticsSharedLoginUrl(next));
 }
