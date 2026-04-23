@@ -1,7 +1,7 @@
 import { getHqUrl } from "@henryco/config";
 import { BellRing, LockKeyhole, Radio, Settings } from "lucide-react";
 import { requireStaff } from "@/lib/staff-auth";
-import { viewerHasPermission } from "@/lib/roles";
+import { viewerCanAccessSystemSettings } from "@/lib/roles";
 import { StaffPageHeader, StaffEmptyState } from "@/components/StaffPrimitives";
 import { StaffWorkspaceLaunchpad } from "@/components/StaffWorkspaceLaunchpad";
 
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
   const viewer = await requireStaff();
-  const hasSettings = viewerHasPermission(viewer, "settings.view");
+  const hasSettings = viewerCanAccessSystemSettings(viewer);
 
   if (!hasSettings) {
     return (

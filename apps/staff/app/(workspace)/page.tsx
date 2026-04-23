@@ -7,6 +7,7 @@ import {
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireStaff } from "@/lib/staff-auth";
 import { getFilteredNavItems } from "@/lib/navigation";
+import { viewerCanAccessOperations } from "@/lib/roles";
 import {
   StaffPageHeader,
   StaffMetricCard,
@@ -20,13 +21,18 @@ export const dynamic = "force-dynamic";
 
 export default async function StaffDashboard() {
   const viewer = await requireStaff();
+  const canSeeRiskSignals = viewerCanAccessOperations(viewer);
   const intelligence = await getStaffIntelligenceSnapshot(
-    viewer.divisions.map((item) => item.division)
+    viewer.divisions.map((item) => item.division),
+    { includeSecuritySignals: canSeeRiskSignals }
   );
   const navItems = getFilteredNavItems(viewer);
   const workspaceLinks = navItems.filter(
     (item) => item.section === "Workspaces" || item.section === "Operations"
   );
+  const supportHref = navItems.find((item) => item.href === "/support")?.href;
+  const operationsHref = navItems.find((item) => item.href === "/operations")?.href;
+  const primaryQueueHref = supportHref ?? operationsHref ?? workspaceLinks[0]?.href ?? "/";
   const staleCount = intelligence.tasks.filter((task) => task.status === "stale").length;
   const riskCount = intelligence.tasks.filter((task) => task.status === "at_risk").length;
 
@@ -47,24 +53,28 @@ export default async function StaffDashboard() {
           value={String(intelligence.tasks.length)}
           subtitle="Across your divisions"
           icon={ListTodo}
+          href={primaryQueueHref}
         />
         <StaffMetricCard
           label="Open Queues"
           value={String(intelligence.metrics.openSupport)}
           subtitle="Pending assignment"
           icon={Layers}
+          href={supportHref ?? operationsHref ?? primaryQueueHref}
         />
         <StaffMetricCard
-          label="Pending Approvals"
+          label={canSeeRiskSignals ? "Risk Signals" : "Pending Reviews"}
           value={String(intelligence.metrics.elevatedRisk)}
-          subtitle="Awaiting review"
+          subtitle={canSeeRiskSignals ? "Medium/high security signals" : "Restricted by role"}
           icon={ClipboardCheck}
+          href={canSeeRiskSignals ? operationsHref ?? "/operations" : primaryQueueHref}
         />
         <StaffMetricCard
           label="Notifications"
           value={String(intelligence.metrics.unreadNotifications)}
           subtitle="Unread items"
           icon={Bell}
+          href={supportHref ?? primaryQueueHref}
         />
       </div>
 

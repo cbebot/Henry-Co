@@ -1,18 +1,62 @@
+import { Headphones } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireStaff } from "@/lib/staff-auth";
-import { StaffPageHeader, StaffPanel, StaffStatusBadge } from "@/components/StaffPrimitives";
+import { viewerCanAccessSupport } from "@/lib/roles";
+import {
+  StaffEmptyState,
+  StaffPageHeader,
+  StaffPanel,
+  StaffStatusBadge,
+} from "@/components/StaffPrimitives";
 import { getStaffIntelligenceSnapshot } from "@/lib/intelligence-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function SupportPage() {
+type SupportSearchParams = {
+  division?: string;
+  queue?: string;
+  thread?: string;
+};
+
+export default async function SupportPage({
+  searchParams,
+}: {
+  searchParams: Promise<SupportSearchParams>;
+}) {
   const viewer = await requireStaff();
+  const params = await searchParams;
+
+  if (!viewerCanAccessSupport(viewer)) {
+    return (
+      <div className="staff-fade-in">
+        <StaffPageHeader eyebrow="Workspace" title="Support Desk" />
+        <StaffEmptyState
+          icon={Headphones}
+          title="Access restricted"
+          description="Your staff role does not include support queue access. Use your assigned division workspace instead."
+        />
+      </div>
+    );
+  }
+
   const intelligence = await getStaffIntelligenceSnapshot(
     viewer.divisions.map((item) => item.division)
   );
-  const supportTasks = intelligence.tasks.filter((task) => task.queue.startsWith("support-"));
+  const requestedDivision = String(params.division || "").trim().toLowerCase();
+  const requestedQueue = String(params.queue || "").trim().toLowerCase();
+  const requestedThread = String(params.thread || "").trim();
+  const supportTasks = intelligence.tasks
+    .filter((task) => task.queue.startsWith("support-"))
+    .filter((task) => (requestedDivision ? task.division === requestedDivision : true))
+    .filter((task) => (requestedQueue ? task.queue === requestedQueue : true))
+    .filter((task) => (requestedThread ? task.id === `support:${requestedThread}` : true));
   const staleTasks = supportTasks.filter((task) => task.status === "stale").length;
   const atRiskTasks = supportTasks.filter((task) => task.status === "at_risk").length;
+  const filterSummary = [
+    requestedDivision ? `division ${requestedDivision}` : null,
+    requestedQueue ? `queue ${requestedQueue.replace("support-", "")}` : null,
+    requestedThread ? `thread ${requestedThread}` : null,
+  ].filter(Boolean);
 
   return (
     <div className="staff-fade-in">
@@ -28,6 +72,11 @@ export default async function SupportPage() {
           Handle stale and at-risk items first, then clear normal queue items. Finance and trust-tagged threads should
           be escalated through their specialist lanes.
         </p>
+        {filterSummary.length > 0 ? (
+          <p className="mt-2 text-xs font-semibold text-[var(--staff-accent)]">
+            Filtered to {filterSummary.join(" · ")}.
+          </p>
+        ) : null}
       </div>
       <StaffPanel title="Prioritized support queue">
         <div className="mb-3 flex flex-wrap items-center gap-2">

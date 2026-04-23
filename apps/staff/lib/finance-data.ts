@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getAccountUrl } from "@henryco/config";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
 
 function toText(value: unknown) {
@@ -20,6 +21,7 @@ export type FundingRequest = {
   status: string;
   createdAt: string;
   proofUrl: string | null;
+  href: string;
 };
 
 export type WithdrawalRequest = {
@@ -31,6 +33,7 @@ export type WithdrawalRequest = {
   status: string;
   payoutMethodLabel: string;
   createdAt: string;
+  href: string;
 };
 
 export type FinanceSummary = {
@@ -114,6 +117,7 @@ export async function getFinanceSummary(): Promise<FinanceSummary> {
         status: toText(r.status),
         createdAt: toText(r.created_at),
         proofUrl: toText(metadata.proof_url) || null,
+        href: getAccountUrl(`/wallet/funding/${toText(r.id)}`),
       };
     }),
     recentWithdrawals: withdrawals.slice(0, 20).map((r) => {
@@ -129,6 +133,7 @@ export async function getFinanceSummary(): Promise<FinanceSummary> {
         status: toText(r.status),
         payoutMethodLabel: toText(metadata.payout_label) || "Bank transfer",
         createdAt: toText(r.created_at),
+        href: getAccountUrl(`/wallet/withdrawals?request=${encodeURIComponent(toText(r.id))}`),
       };
     }),
   };

@@ -30,7 +30,6 @@ export const PERMISSIONS_BY_FAMILY: Record<PlatformRoleFamily, WorkspacePermissi
     "inbox.view",
     "queues.view",
     "archive.view",
-    "settings.view",
     "division.read",
   ],
   support_staff: [
@@ -40,7 +39,6 @@ export const PERMISSIONS_BY_FAMILY: Record<PlatformRoleFamily, WorkspacePermissi
     "inbox.view",
     "queues.view",
     "archive.view",
-    "settings.view",
     "division.read",
   ],
   finance_staff: [
@@ -52,7 +50,6 @@ export const PERMISSIONS_BY_FAMILY: Record<PlatformRoleFamily, WorkspacePermissi
     "queues.view",
     "archive.view",
     "reports.view",
-    "settings.view",
     "division.read",
     "division.finance",
   ],
@@ -64,7 +61,6 @@ export const PERMISSIONS_BY_FAMILY: Record<PlatformRoleFamily, WorkspacePermissi
     "approvals.view",
     "queues.view",
     "archive.view",
-    "settings.view",
     "division.read",
     "division.moderate",
   ],
@@ -75,7 +71,6 @@ export const PERMISSIONS_BY_FAMILY: Record<PlatformRoleFamily, WorkspacePermissi
     "inbox.view",
     "queues.view",
     "archive.view",
-    "settings.view",
     "division.read",
     "division.write",
   ],
@@ -114,7 +109,6 @@ export const PERMISSIONS_BY_FAMILY: Record<PlatformRoleFamily, WorkspacePermissi
     "queues.view",
     "archive.view",
     "reports.view",
-    "settings.view",
     "division.read",
     "division.approve",
   ],
@@ -407,4 +401,52 @@ export function viewerHasPermission(
   permission: WorkspacePermission
 ) {
   return viewer.permissions.includes(permission);
+}
+
+export function viewerHasAnyFamily(
+  viewer: Pick<WorkspaceViewer, "families">,
+  families: PlatformRoleFamily[]
+) {
+  return families.some((family) => viewer.families.includes(family));
+}
+
+export function viewerHasDivision(viewer: Pick<WorkspaceViewer, "divisions">, division: WorkspaceDivision) {
+  return viewer.divisions.some((membership) => membership.division === division);
+}
+
+export function viewerHasDivisionRole(
+  viewer: Pick<WorkspaceViewer, "divisions">,
+  division: WorkspaceDivision,
+  roles: DivisionRole[]
+) {
+  const membership = viewer.divisions.find((item) => item.division === division);
+  if (!membership) return false;
+  return roles.some((role) => membership.roles.includes(role));
+}
+
+export function viewerCanAccessSupport(viewer: Pick<WorkspaceViewer, "families" | "permissions">) {
+  return (
+    viewerHasAnyFamily(viewer, [
+      "support_staff",
+      "supervisor",
+      "division_manager",
+      "system_admin",
+    ]) && viewerHasPermission(viewer, "inbox.view")
+  );
+}
+
+export function viewerCanAccessOperations(viewer: Pick<WorkspaceViewer, "families" | "permissions">) {
+  return (
+    viewerHasAnyFamily(viewer, [
+      "operations_staff",
+      "supervisor",
+      "division_manager",
+      "moderation_staff",
+      "system_admin",
+    ]) && viewerHasPermission(viewer, "queues.view")
+  );
+}
+
+export function viewerCanAccessSystemSettings(viewer: Pick<WorkspaceViewer, "families" | "permissions">) {
+  return viewerHasAnyFamily(viewer, ["system_admin"]) && viewerHasPermission(viewer, "settings.view");
 }

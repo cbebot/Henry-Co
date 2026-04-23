@@ -1,4 +1,9 @@
 import type { WorkspaceViewer, WorkspaceNavItem, WorkspacePermission, WorkspaceDivision } from "@/lib/types";
+import {
+  viewerCanAccessOperations,
+  viewerCanAccessSupport,
+  viewerCanAccessSystemSettings,
+} from "@/lib/roles";
 
 export const staffNavItems: WorkspaceNavItem[] = [
   {
@@ -108,9 +113,13 @@ export function getFilteredNavItems(viewer: WorkspaceViewer): WorkspaceNavItem[]
   const viewerDivisions = new Set(viewer.divisions.map((d) => d.division));
 
   return staffNavItems.filter((item) => {
-    if (item.href === "/" || item.href === "/support" || item.href === "/operations") {
+    if (item.href === "/") {
       return true;
     }
+
+    if (item.href === "/support") return viewerCanAccessSupport(viewer);
+    if (item.href === "/operations") return viewerCanAccessOperations(viewer);
+    if (item.href === "/settings") return viewerCanAccessSystemSettings(viewer);
 
     const requiredDivision = DIVISION_NAV_MAP[item.href];
     if (requiredDivision) {

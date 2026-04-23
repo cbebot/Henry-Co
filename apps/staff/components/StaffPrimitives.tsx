@@ -71,13 +71,15 @@ export function StaffPanel({
   title,
   children,
   className = "",
+  id,
 }: {
   title?: string;
   children: ReactNode;
   className?: string;
+  id?: string;
 }) {
   return (
-    <div className={`staff-card p-5 sm:p-6 ${className}`}>
+    <div id={id} className={`staff-card p-5 sm:p-6 ${className}`}>
       {title && (
         <h2 className="mb-4 text-sm font-semibold tracking-tight text-[var(--staff-ink)]">
           {title}
@@ -115,14 +117,16 @@ export function StaffMetricCard({
   value,
   subtitle,
   icon: Icon,
+  href,
 }: {
   label: string;
   value: string;
   subtitle?: string;
   icon: LucideIcon;
+  href?: string;
 }) {
-  return (
-    <div className="staff-card flex items-start gap-4 p-5">
+  const content = (
+    <>
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--staff-gold-soft)]">
         <Icon className="h-5 w-5 text-[var(--staff-gold)]" />
       </div>
@@ -135,6 +139,23 @@ export function StaffMetricCard({
           <p className="mt-0.5 text-xs text-[var(--staff-muted)]">{subtitle}</p>
         )}
       </div>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className="staff-card flex items-start gap-4 p-5 transition-all hover:border-[var(--staff-gold)]/35 hover:bg-[var(--staff-gold-soft)]"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div className="staff-card flex items-start gap-4 p-5">
+      {content}
     </div>
   );
 }

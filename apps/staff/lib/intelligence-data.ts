@@ -1,9 +1,14 @@
 import "server-only";
 
 import { parseHenryFeatureFlags, type SupportQueue } from "@henryco/intelligence";
+import { getDivisionUrl } from "@henryco/config";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
 import type { WorkspaceDivision } from "@/lib/types";
 import type { WorkspaceTask } from "@/lib/types";
+
+type IntelligenceOptions = {
+  includeSecuritySignals?: boolean;
+};
 
 function toText(value: unknown) {
   return String(value ?? "").trim();
@@ -44,18 +49,40 @@ function queueFromThread(thread: Record<string, unknown>): SupportQueue {
   return "general";
 }
 
-function supportHrefForThread(thread: Record<string, unknown>) {
+function withParams(base: string, params: Record<string, string>) {
+  const query = new URLSearchParams(params).toString();
+  return `${base}${base.includes("?") ? "&" : "?"}${query}`;
+}
+
+function supportHrefForThread(thread: Record<string, unknown>, queue: SupportQueue) {
   const division = toText(thread.division).toLowerCase();
+  const threadId = toText(thread.id);
+  const staffFallback = withParams("/support", {
+    division: division || "account",
+    queue: `support-${queue}`,
+    thread: threadId,
+  });
 
-  if (division === "care") return "/care";
-  if (division === "marketplace") return "/marketplace";
-  if (division === "studio") return "/studio";
-  if (division === "jobs") return "/jobs";
-  if (division === "learn") return "/learn";
-  if (division === "property") return "/property";
-  if (division === "logistics") return "/logistics";
+  if (!threadId) return staffFallback;
 
-  return "/support";
+  if (division === "care") {
+    return withParams(`${getDivisionUrl("care")}/support/inbox`, { thread: threadId });
+  }
+  if (division === "marketplace") {
+    return `${getDivisionUrl("marketplace")}/support/${encodeURIComponent(threadId)}`;
+  }
+  if (division === "studio") return `${getDivisionUrl("studio")}/support/${encodeURIComponent(threadId)}`;
+  if (division === "property") {
+    return withParams(`${getDivisionUrl("property")}/support`, { thread: threadId });
+  }
+  if (division === "learn") {
+    return withParams(`${getDivisionUrl("learn")}/support`, { thread: threadId });
+  }
+  if (division === "logistics") {
+    return withParams(`${getDivisionUrl("logistics")}/support`, { thread: threadId });
+  }
+
+  return staffFallback;
 }
 
 function normalizeTaskDivision(value: unknown): WorkspaceTask["division"] {
@@ -72,11 +99,15 @@ function normalizeTaskDivision(value: unknown): WorkspaceTask["division"] {
   return "care";
 }
 
-export async function getStaffIntelligenceSnapshot(allowedDivisions?: WorkspaceDivision[]) {
+export async function getStaffIntelligenceSnapshot(
+  allowedDivisions?: WorkspaceDivision[],
+  options: IntelligenceOptions = {}
+) {
   const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
   const admin = createStaffAdminSupabase();
   const divisionFilter = (allowedDivisions ?? []).filter(Boolean);
   const hasDivisionFilter = divisionFilter.length > 0;
+  const includeSecuritySignals = options.includeSecuritySignals === true;
 
   const supportQuery = admin
     .from("support_threads")
@@ -98,11 +129,13 @@ export async function getStaffIntelligenceSnapshot(allowedDivisions?: WorkspaceD
   const [supportRes, notificationsRes, securityRes] = await Promise.all([
     supportQuery,
     notificationQuery,
-    admin
-      .from("customer_security_log")
-      .select("id, user_id, event_type, risk_level, created_at")
-      .order("created_at", { ascending: false })
-      .limit(120),
+    includeSecuritySignals
+      ? admin
+          .from("customer_security_log")
+          .select("id, user_id, event_type, risk_level, created_at")
+          .order("created_at", { ascending: false })
+          .limit(120)
+      : Promise.resolve({ data: [] }),
   ]);
 
   const support = (supportRes.data ?? []) as Array<Record<string, unknown>>;
@@ -121,7 +154,7 @@ export async function getStaffIntelligenceSnapshot(allowedDivisions?: WorkspaceD
       title,
       summary: `${toText(thread.category) || "general"} · ${toText(thread.status) || "open"}`,
       queue: `support-${queue}`,
-      href: supportHrefForThread(thread),
+      href: supportHrefForThread(thread, queue),
       status,
       priority: stale ? 95 : priority === "high" || priority === "urgent" ? 85 : 65,
       suggestedAction:

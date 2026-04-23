@@ -62,29 +62,33 @@ export default async function FinancePage() {
           value={formatNaira(summary.pendingFunding)}
           subtitle={`${summary.pendingFundingCount} request${summary.pendingFundingCount === 1 ? "" : "s"}`}
           icon={ArrowDownRight}
+          href="#funding-queue"
         />
         <StaffMetricCard
           label="Pending withdrawals"
           value={formatNaira(summary.pendingWithdrawals)}
           subtitle={`${summary.pendingWithdrawalCount} request${summary.pendingWithdrawalCount === 1 ? "" : "s"}`}
           icon={ArrowUpRight}
+          href="#withdrawal-queue"
         />
         <StaffMetricCard
           label="Funding queue"
           value={String(summary.pendingFundingCount)}
           subtitle="Awaiting proof verification"
           icon={Wallet}
+          href="#funding-queue"
         />
         <StaffMetricCard
           label="Withdrawal queue"
           value={String(summary.pendingWithdrawalCount)}
           subtitle="Ready for processing"
           icon={DollarSign}
+          href="#withdrawal-queue"
         />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <StaffPanel title="Funding requests awaiting verification">
+        <StaffPanel title="Funding requests awaiting verification" className="scroll-mt-24" id="funding-queue">
           {summary.recentFunding.length === 0 ? (
             <p className="text-sm text-[var(--staff-muted)]">
               No pending funding requests. All wallet top-ups have been processed.
@@ -112,20 +116,30 @@ export default async function FinancePage() {
                       <StaffStatusBadge label={req.status} tone="warning" />
                     </div>
                   </div>
-                  <div className="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--staff-muted)]">
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--staff-muted)]">
                     <span>{formatDate(req.createdAt)}</span>
-                    {req.proofUrl ? (
+                    <span className="flex items-center gap-3">
                       <a
-                        href={req.proofUrl}
+                        href={req.href}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-semibold text-[var(--staff-accent)] hover:underline"
                       >
-                        View proof
+                        Open request
                       </a>
-                    ) : (
-                      <span className="text-[var(--staff-warning)]">No proof uploaded</span>
-                    )}
+                      {req.proofUrl ? (
+                        <a
+                          href={req.proofUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold text-[var(--staff-accent)] hover:underline"
+                        >
+                          View proof
+                        </a>
+                      ) : (
+                        <span className="text-[var(--staff-warning)]">No proof uploaded</span>
+                      )}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -133,7 +147,7 @@ export default async function FinancePage() {
           )}
         </StaffPanel>
 
-        <StaffPanel title="Withdrawal requests">
+        <StaffPanel title="Withdrawal requests" className="scroll-mt-24" id="withdrawal-queue">
           {summary.recentWithdrawals.length === 0 ? (
             <p className="text-sm text-[var(--staff-muted)]">
               No pending withdrawal requests. All payout requests have been processed.
@@ -161,9 +175,19 @@ export default async function FinancePage() {
                       <StaffStatusBadge label={req.status} tone="info" />
                     </div>
                   </div>
-                  <p className="mt-2 text-xs text-[var(--staff-muted)]">
-                    {formatDate(req.createdAt)} · {req.userEmail}
-                  </p>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--staff-muted)]">
+                    <span>
+                      {formatDate(req.createdAt)} · {req.userEmail}
+                    </span>
+                    <a
+                      href={req.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-[var(--staff-accent)] hover:underline"
+                    >
+                      Open request
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>

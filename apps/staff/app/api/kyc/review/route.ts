@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createStaffSupabaseServer } from "@/lib/supabase/server";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
+import { getStaffViewer } from "@/lib/staff-auth";
+import { viewerHasPermission } from "@/lib/roles";
 
 function wantsJson(request: Request) {
   return (
@@ -41,6 +43,16 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Authentication required." }, { status: 401 });
       }
       return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    const viewer = await getStaffViewer();
+    if (!viewer || !viewerHasPermission(viewer, "division.moderate")) {
+      return respond(request, {
+        ok: false,
+        error: "You do not have permission to review identity submissions.",
+        status: 403,
+        code: "forbidden",
+      });
     }
 
     let submissionId = "";
@@ -95,6 +107,29 @@ export async function POST(request: Request) {
         error: "That verification submission could not be found.",
         status: 404,
         code: "not_found",
+      });
+    }
+
+    const { error: auditError } = await admin.from("staff_audit_logs").insert({
+      actor_id: user.id,
+      actor_role: viewer.families[0] || viewer.user?.profileRole || "staff",
+      action: `kyc.${decision}`,
+      entity: "customer_verification_submission",
+      entity_id: submissionId,
+      meta: {
+        target_user_id: String(submission.user_id),
+        document_type: String(submission.document_type || ""),
+        review_status: decision,
+        reviewer_note_present: Boolean(note),
+      },
+    } as never);
+    if (auditError) {
+      console.error("[kyc/review] staff audit insert failed", auditError.message);
+      return respond(request, {
+        ok: false,
+        error: "Audit logging failed; verification review was not changed.",
+        status: 500,
+        code: "audit_failed",
       });
     }
 
