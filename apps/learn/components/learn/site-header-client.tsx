@@ -1,6 +1,8 @@
 "use client";
 
+import { getHubUrl } from "@henryco/config";
 import {
+  HenryCoSearchBreadcrumb,
   HenryCoPublicAccountPresets,
   PublicAccountChip,
   PublicHeader,
@@ -45,6 +47,12 @@ export function LearnSiteHeaderClient({
       }}
       items={learnNav.primaryNav}
       primaryCta={learnNav.defaultCtas?.primary}
+      actions={
+        <HenryCoSearchBreadcrumb
+          href={getHubUrl("/search")}
+          className="hidden xl:inline-flex"
+        />
+      }
       accountMenu={
         <PublicAccountChip
           {...HenryCoPublicAccountPresets.standard}

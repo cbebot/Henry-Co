@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, getHubUrl } from "@henryco/config";
 import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
@@ -253,6 +253,13 @@ export function PublicHeaderClient() {
             {surfaceCopy.marketplaceHeader.liveCatalog}
           </div>
 
+          <Link
+            href={getHubUrl("/search")}
+            className="hidden items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)] xl:inline-flex"
+          >
+            Search HenryCo
+          </Link>
+
           <form
             action="/search"
             method="GET"
@@ -455,6 +462,13 @@ export function PublicHeaderClient() {
                   {item.label}
                 </Link>
               ))}
+              <Link
+                href={getHubUrl("/search")}
+                onClick={() => setMobileOpenPath(null)}
+                className="rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm font-semibold text-[var(--market-paper-white)]"
+              >
+                Search HenryCo
+              </Link>
               {runtime.shell.viewer.signedIn ? (
                 <>
                   <Link

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { createContext, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import { getAccountUrl } from "@henryco/config";
@@ -569,7 +570,6 @@ export default function HubHomeClient({
         brandSub={brandSubSafe}
         brandAccent={brandAccentSafe}
         brandLogoUrl={brandLogoUrlSafe}
-        searchRef={searchRef}
         links={companyLinks}
         accountChip={accountChip}
       />
@@ -967,6 +967,14 @@ export default function HubHomeClient({
                   <div className="text-xs text-white/55">Searching...</div>
                 ) : null}
 
+                <Link
+                  href="/search"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
+                >
+                  Search HenryCo workflows and help
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+
                 {categoryHighlights.length ? (
                   <div>
                     <div className="mb-2 text-[11px] uppercase tracking-[0.16em] text-white/45">
@@ -1283,7 +1291,6 @@ function TopBar({
   brandSub,
   brandAccent,
   brandLogoUrl,
-  searchRef,
   links,
   accountChip,
 }: {
@@ -1291,7 +1298,6 @@ function TopBar({
   brandSub: string;
   brandAccent: string;
   brandLogoUrl?: string | null;
-  searchRef: React.RefObject<HTMLInputElement | null>;
   links: { label: string; href: string }[];
   accountChip?: {
     user: PublicAccountUser | null;
@@ -1352,13 +1358,12 @@ function TopBar({
               />
             ) : null}
             <div className="hidden items-center gap-3 sm:flex">
-              <button
-                type="button"
-                onClick={() => searchRef.current?.focus()}
+              <Link
+                href="/search"
                 className="rounded-xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/88 transition hover:bg-white/10"
               >
                 {copy.topBar.search}
-              </button>
+              </Link>
               <a
                 href="#divisions"
                 className="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"

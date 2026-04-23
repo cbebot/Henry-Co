@@ -53,4 +53,8 @@ export {
   PublicLocaleProvider,
   PublicPreferencesProvider,
 } from "./public-shell/public-providers";
+export {
+  CrossDivisionSearchExperience,
+  HenryCoSearchBreadcrumb,
+} from "./search/CrossDivisionSearchExperience";
 export type { PublicMobileMenu } from "./public-shell";

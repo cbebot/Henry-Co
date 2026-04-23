@@ -51,6 +51,10 @@ export {
 export type { PublicMenuItem, PublicMenuSection } from "./public-standard";
 
 export { PublicThemeProvider, PublicLocaleProvider, PublicPreferencesProvider } from "./public-providers";
+export {
+  CrossDivisionSearchExperience,
+  HenryCoSearchBreadcrumb,
+} from "../search/CrossDivisionSearchExperience";
 
 /** Mobile navigation drawer lives inside `PublicHeader`; this type marks the contract as centralized. */
 export type PublicMobileMenu = { readonly embeddedIn: "PublicHeader" };

@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { getDivisionConfig } from "@henryco/config";
-import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
+import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import {
+  HenryCoSearchBreadcrumb,
+  PublicHeader,
+  getSiteNavigationConfig,
+} from "@henryco/ui/public-shell";
 import type { PublicNavItem } from "@henryco/ui/public-shell";
 
 const property = getDivisionConfig("property");
@@ -58,6 +62,12 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
         ),
       }}
       items={items}
+      actions={
+        <HenryCoSearchBreadcrumb
+          href={getHubUrl("/search")}
+          className="hidden xl:inline-flex border-[var(--property-line)] bg-[rgba(255,255,255,0.03)] text-[var(--property-ink)] hover:bg-[rgba(255,255,255,0.07)] dark:border-[var(--property-line)] dark:bg-[rgba(255,255,255,0.03)]"
+        />
+      }
       accountMenu={<div className="hidden sm:block">{accountSlot}</div>}
       themeToggleBeforeAccount
       themeToggleClassName="hidden h-11 min-w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[rgba(255,255,255,0.03)] px-0 py-0 sm:inline-flex"

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getHqUrl } from "@henryco/config";
 import { ButtonPendingContent } from "@henryco/ui";
-import { Menu, X, LogOut, ExternalLink } from "lucide-react";
+import { Menu, X, LogOut, ExternalLink, Search } from "lucide-react";
 import { resolveIcon } from "@/components/StaffPrimitives";
 import { initials } from "@/lib/format";
 import type { WorkspaceNavItem } from "@/lib/types";
@@ -66,12 +66,21 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
             </span>
           </div>
         </div>
-        <button
-          onClick={() => setOpen(!open)}
-          className="rounded-lg p-2 text-[var(--staff-muted)] hover:text-[var(--staff-ink)]"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="flex items-center gap-1">
+          <Link
+            href="/search"
+            className="rounded-lg p-2 text-[var(--staff-muted)] hover:text-[var(--staff-ink)]"
+            aria-label="Search Staff HQ"
+          >
+            <Search size={18} />
+          </Link>
+          <button
+            onClick={() => setOpen(!open)}
+            className="rounded-lg p-2 text-[var(--staff-muted)] hover:text-[var(--staff-ink)]"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </header>
 
       {open && (

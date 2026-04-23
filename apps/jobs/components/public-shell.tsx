@@ -1,9 +1,14 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig, getHubUrl } from "@henryco/config";
 import { getJobsPublicCopy } from "@/lib/public-copy";
 import { getJobsPublicLocale } from "@/lib/locale-server";
-import { HenryCoPublicAccountPresets, PublicAccountChip, PublicFooter } from "@henryco/ui";
+import {
+  HenryCoPublicAccountPresets,
+  HenryCoSearchBreadcrumb,
+  PublicAccountChip,
+  PublicFooter,
+} from "@henryco/ui";
 import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import {
   getSharedAccountJobsUrl,
@@ -57,6 +62,12 @@ export async function PublicShell({
         items={[...getSiteNavigationConfig("jobs").primaryNav]}
         primaryCta={resolvedPrimary}
         secondaryCta={resolvedSecondary}
+        actions={
+          <HenryCoSearchBreadcrumb
+            href={getHubUrl("/search")}
+            className="hidden xl:inline-flex"
+          />
+        }
         headerClassName="jobs-public-header"
         auxLink={{ label: copy.shell.account, href: accountJobsUrl, external: true }}
         accountMenu={

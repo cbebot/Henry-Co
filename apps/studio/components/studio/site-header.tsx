@@ -2,8 +2,13 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { getDivisionConfig } from "@henryco/config";
-import { PublicHeader, type PublicNavItem, getSiteNavigationConfig } from "@henryco/ui/public-shell";
+import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import {
+  HenryCoSearchBreadcrumb,
+  PublicHeader,
+  type PublicNavItem,
+  getSiteNavigationConfig,
+} from "@henryco/ui/public-shell";
 import { StudioThemeToggle } from "@/components/studio/theme-toggle";
 
 const studio = getDivisionConfig("studio");
@@ -85,6 +90,12 @@ export function StudioSiteHeader({
         </div>
       }
       items={studioNav.primaryNav}
+      actions={
+        <HenryCoSearchBreadcrumb
+          href={getHubUrl("/search")}
+          className="hidden xl:inline-flex border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink)] hover:bg-black/20 dark:border-[var(--studio-line)] dark:bg-black/10"
+        />
+      }
       getNavItemClassName={getNavItemClassName}
       navClassName="hidden shrink-0 items-center gap-1 lg:flex"
       auxLink={studioNav.defaultCtas?.aux}

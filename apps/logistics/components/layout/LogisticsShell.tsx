@@ -1,7 +1,11 @@
 "use client";
 
-import { getDivisionConfig } from "@henryco/config";
-import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
+import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import {
+  HenryCoSearchBreadcrumb,
+  PublicHeader,
+  getSiteNavigationConfig,
+} from "@henryco/ui/public-shell";
 import type { ReactNode } from "react";
 
 export default function LogisticsShell({
@@ -33,6 +37,12 @@ export default function LogisticsShell({
           ),
         }}
         items={navCfg.primaryNav}
+        actions={
+          <HenryCoSearchBreadcrumb
+            href={getHubUrl("/search")}
+            className="hidden xl:inline-flex border-[var(--logistics-line)] bg-white/[0.04] text-white hover:bg-white/[0.08] dark:border-[var(--logistics-line)] dark:bg-white/[0.04]"
+          />
+        }
         accountMenu={accountSlot}
         showThemeToggle={false}
         headerClassName="z-40 border-b border-[var(--logistics-line)] bg-[#09060a]/85 text-white backdrop-blur-xl"

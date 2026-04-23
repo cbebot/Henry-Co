@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { LogOut } from "lucide-react";
+import { LogOut, Search } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { getNavSections, type NavItem } from "@/lib/navigation";
 import Logo from "@/components/brand/Logo";
@@ -67,6 +67,14 @@ export default function Sidebar({ user }: SidebarProps) {
           <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">Henry & Co.</p>
           <p className="text-[0.65rem] text-[var(--acct-muted)]">My Account</p>
         </div>
+        <Link
+          href="/search"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
+          aria-label="Search account and HenryCo routes"
+          title="Search account and HenryCo routes"
+        >
+          <Search size={17} />
+        </Link>
         <NotificationBell />
       </div>
 

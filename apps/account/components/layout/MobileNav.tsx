@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, Search } from "lucide-react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { getNavSections } from "@/lib/navigation";
 import Logo from "@/components/brand/Logo";
@@ -50,6 +50,13 @@ export default function MobileNav({ user }: MobileNavProps) {
           <span className="text-sm font-semibold">My Account</span>
         </div>
         <div className="flex items-center gap-1">
+          <Link
+            href="/search"
+            className="rounded-lg p-2 text-[var(--acct-muted)] hover:text-[var(--acct-ink)]"
+            aria-label="Search account and HenryCo routes"
+          >
+            <Search size={18} />
+          </Link>
           <NotificationBell buttonClassName="text-[var(--acct-muted)] hover:text-[var(--acct-ink)]" />
           <button
             onClick={() => setOpen(!open)}

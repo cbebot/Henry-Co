@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 import { getHqUrl } from "@henryco/config";
-import { LogOut, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
+import { LogOut, ChevronDown, ChevronRight, ExternalLink, Search } from "lucide-react";
 import { createElement, useState } from "react";
 import { resolveIcon } from "@/components/StaffPrimitives";
 import { initials } from "@/lib/format";
@@ -147,6 +147,14 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
             Staff HQ
           </p>
         </div>
+        <Link
+          href="/search"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-[var(--staff-muted)] transition-colors hover:bg-[var(--staff-surface)] hover:text-[var(--staff-ink)]"
+          aria-label="Search Staff HQ"
+          title="Search Staff HQ"
+        >
+          <Search size={17} />
+        </Link>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-3 staff-scrollbar">

@@ -8,6 +8,7 @@ import { Layers3, Mail, Phone } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
 import {
   type PublicAccountUser,
+  HenryCoSearchBreadcrumb,
   HenryCoPublicAccountPresets,
   PublicAccountChip,
   PublicHeader,
@@ -127,6 +128,12 @@ export default function PublicSiteShell({
         items={hubNav.primaryNav}
         auxLink={hubNav.defaultCtas?.aux}
         primaryCta={hubNav.defaultCtas?.primary}
+        actions={
+          <HenryCoSearchBreadcrumb
+            href="/search"
+            className="hidden lg:inline-flex border-white/12 bg-white/5 text-[var(--site-text-soft,rgba(255,255,255,0.92))] hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
+          />
+        }
         accountMenu={
           accountChip ? (
             <PublicAccountChip
