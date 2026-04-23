@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { getAccountUrl, getDivisionUrl, getHubUrl } from "@henryco/config";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -28,24 +29,17 @@ export type AssistDockProps = {
   accent?: string;
 };
 
-// ─── Account URL helper ─────────────────────────────────────────────────────
-// NEXT_PUBLIC_BASE_DOMAIN is inlined at build time by Next.js for client components.
-
-const BASE_DOMAIN =
-  typeof process !== "undefined"
-    ? process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "henrycogroup.com"
-    : "henrycogroup.com";
-
 function acct(path: string) {
-  return `https://account.${BASE_DOMAIN}${path}`;
+  return getAccountUrl(path);
 }
 
 function hub(path: string) {
-  return `https://${BASE_DOMAIN}${path}`;
+  return getHubUrl(path);
 }
 
 function divisionUrl(division: Exclude<AssistDivision, "account" | "hub">, path: string) {
-  return `https://${division}.${BASE_DOMAIN}${path}`;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return new URL(normalizedPath, `${getDivisionUrl(division)}/`).toString();
 }
 
 function accountSupportHref({

@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     const { error: msgErr } = await admin.from("support_messages").insert({
       thread_id,
       sender_id: user.id,
-      sender_type: "staff",
+      sender_type: "agent",
       body: message,
       attachments: [],
     });
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
 
     const { error: threadErr } = await admin
       .from("support_threads")
-      .update({ status: "awaiting_customer", updated_at: new Date().toISOString() })
+      .update({ status: "in_progress", updated_at: new Date().toISOString() })
       .eq("id", thread_id);
     if (threadErr) {
       return NextResponse.json({ error: "Failed to update support thread" }, { status: 500 });
@@ -99,12 +99,13 @@ export async function POST(request: Request) {
 
     const { data: profile } = await admin
       .from("customer_profiles")
-      .select("language")
+      .select("language, full_name")
       .eq("id", String(thread.user_id))
       .maybeSingle();
 
     const locale = clean(profile?.language) || "en";
     const subject = clean(thread.subject) || "your request";
+    const customerName = clean(profile?.full_name) || "Customer";
     const rendered = renderSupportReplyNotification(locale, subject);
 
     const sideEffectFailures: string[] = [];
@@ -123,7 +124,12 @@ export async function POST(request: Request) {
         localization: {
           key: "support.reply.received",
           locale,
-          params: { subject },
+          params: {
+            subject,
+            threadId: thread_id,
+            customerName,
+            customerUserId: clean(thread.user_id),
+          },
           rendered,
         },
       },
