@@ -1,205 +1,111 @@
 # HenryCo Data Retention and Delete Readiness
 
-**Classification:** Internal — Compliance Reference  
-**Scope:** Retention schedules, deletion procedures, export readiness, honest limitations
+**Classification:** Internal - Compliance reference
+**Scope:** Retention schedules, deletion procedures, export readiness, and honest limitations
+**Updated:** 2026-04-23
 
----
+This document is the user-data retention companion to [data-governance-backup-recovery-v2.md](./data-governance-backup-recovery-v2.md). It intentionally avoids claiming automated cleanup jobs or short audit-log deletion windows that are not deployed.
 
-## Retention Schedule
+## Current Retention Posture
 
-### Database tables
-
-| Table | Retention | Cleanup method | Owner |
-|---|---|---|---|
-| `audit_logs` | 90 days | Partitioned `DELETE` | Platform |
-| `staff_audit_logs` | 90 days | Partitioned `DELETE` | Platform |
-| `customer_activity` | 1 year | Archive then `DELETE` | Platform |
-| `customer_notifications` | 1 year | Archive then `DELETE` | Platform |
-| `support_messages` | 7 years | Archive to cold storage | Legal / Compliance |
-| `support_threads` | 7 years | Archive to cold storage | Legal / Compliance |
-| `marketplace_orders` | 7 years | Archive + soft delete | Marketplace |
-| `care_bookings` | 7 years | Archive to cold storage | Care |
-| `jobs_applications` | 3 years | Archive then `DELETE` | Jobs |
-| `jobs_posts` | 2 years post-close | Archive then `DELETE` | Jobs |
-| `logistics_shipments` | 2 years | Archive then `DELETE` | Logistics |
-| `profiles` | Until deletion request | Soft delete only | Platform |
-| `marketplace_products` | Until deactivation | Soft delete | Marketplace |
-| `studio_projects` | Until deletion request | Soft delete | Studio |
-| Auth sessions (inactive) | 30 days | Supabase managed | Supabase |
-| Password / magic-link tokens | 1 hour | Supabase managed | Supabase |
-| Idempotency keys | 24 hours | App cleanup | Platform |
-
-### File storage (Supabase Storage)
-
-| Bucket | Retention | Cleanup trigger |
+| Record family | Retention rule | Current enforcement truth |
 |---|---|---|
-| `avatars` | Until account deletion | Deletion request |
-| `product-images` | Until product deactivation | Vendor action |
-| `support-attachments` | 7 years | Legal / Compliance |
-| `project-assets` | Until project deletion | Studio admin |
-| `temp-uploads` | 24 hours | Daily cron (pending automation) |
-| `invoices` | 7 years | Finance / Legal |
-| `payout-receipts` | 7 years | Finance / Legal |
+| Profiles / customer profiles | Retain until approved account closure/deletion review | Manual review; lifecycle columns are added by the V2 governance migration where tables exist |
+| Customer preferences | Retain until reset, account closure, or approved deletion review | Manual review |
+| Security logs / trust / KYC | Retain while security, fraud, trust, or legal review remains relevant | Manual review; no destructive pruning in V2 |
+| Customer notifications | Archive or soft-delete from the user inbox when no longer useful | `read_at`, `archived_at`, and `deleted_at` exist from account hardening |
+| Support threads/messages | Long-retention legal/support evidence | Manual archive/soft-delete; no destructive pruning in V2 |
+| Finance records, wallet, orders, payouts, invoices/payment evidence | Long-retention accounting, tax, reconciliation, and dispute evidence | Manual archive/legal-hold only; no destructive pruning in V2 |
+| Care/jobs/learn/logistics/property/studio operational records | Retain while service, hiring, certification, shipment, listing, viewing, inspection, project, payment, or support obligations exist | Manual archive/soft-delete where applicable |
+| Staff/audit logs | Retain for security, compliance, incident review, and staff accountability | Manual archive/legal-hold only; no automatic 90-day deletion claim |
+| Idempotency/webhook receipts | Retain through retry/replay and incident window | Future cleanup may be allowed only after scheduler and incident exceptions exist |
+| Storage objects and Cloudinary assets | Retain with owning record and legal hold | Requires separate object/provider backup; DB backups do not restore deleted object bytes |
 
----
+## Automation Status
 
-## Retention Automation Status
-
-| Task | Status | Notes |
+| Task | Status | Truth |
 |---|---|---|
-| Audit log 90-day cleanup | **Documented, not automated** | SQL provided in `docs/storage-retention-and-cleanup.md`; requires Supabase pg_cron or Vercel cron setup |
-| `customer_activity` 1-year cleanup | **Documented, not automated** | Same — cron setup pending |
-| Temp upload 24-hour cleanup | **Documented, not automated** | Script at `scripts/cleanup-temp-uploads.mjs`; not yet scheduled |
-| Session cleanup | **Automated** | Handled by Supabase Auth |
-| Token cleanup | **Automated** | Handled by Supabase Auth |
-
-**Honest status:** Retention rules are defined and documented. No automated cleanup jobs have been deployed. Manual execution via the SQL procedures in `docs/storage-retention-and-cleanup.md` is the current approach. Cron scheduling is the next required operational step.
-
----
+| Destructive audit-log cleanup | Not deployed | Do not run automatic audit deletion in V2 |
+| Customer notification archive cleanup | Not deployed | Manual archive/soft-delete only |
+| Temporary upload cleanup | Not deployed as a repo-owned production job | Future scheduler must prove bucket scope and legal-hold exclusions |
+| Cross-division deletion sweep | Not deployed | Manual staff review only |
+| Recovery/governance metadata | Source-controlled | Added in `20260423143000_data_governance_foundation.sql`; requires normal Supabase migration application |
 
 ## Account Deletion and Anonymization
 
-### Current readiness: Manual review process
+Self-serve automated deletion is not implemented. Account closure and deletion requests are handled through support review because finance, trust, fraud-prevention, support, and audit records must not be removed incorrectly.
 
-Self-serve automated deletion is **not implemented**. Account closure and deletion requests are handled through a support ticket workflow intentionally because:
+When a deletion request is approved, staff should:
 
-1. Financial records, invoices, and payout history must be retained for regulatory purposes (7 years).
-2. Support thread history may be legally required to be retained.
-3. Fraud-prevention and trust records cannot be deleted immediately without risk.
-4. Wallet balances and pending orders must be resolved before account closure.
+1. Confirm there are no active wallet balances, orders, bookings, projects, shipments, applications, disputes, certificates, or legal holds.
+2. Soft-delete/anonymize eligible profile fields.
+3. Preserve finance, trust, support, audit, KYC, and operational records that must be retained.
+4. Remove or archive eligible user-facing content only after confirming retention exclusions.
+5. Log the decision and actor in the appropriate audit/action log.
 
-### User-facing path
-
-From the Account app at `/settings#privacy-controls`:
-
-- "Request data export" — prefills a support ticket requesting a copy of exportable personal data.
-- "Request closure or deletion review" — prefills a support ticket explaining the review process.
-
-The copy in `PrivacyDataControls.tsx` is honest about what is retained:  
-_"finance, trust, fraud-prevention, support, and audit records are not removed incorrectly"_
-
-### Manual deletion procedure (staff)
-
-When a deletion request is received and approved:
+Example profile anonymization shape:
 
 ```sql
-BEGIN;
+begin;
 
--- 1. Soft-delete profile
-UPDATE profiles
-SET is_active = false,
-    deleted_at = NOW(),
-    deleted_reason = 'User requested deletion'
-WHERE id = '<user_id>';
+update profiles
+set is_active = false,
+    deleted_at = timezone('utc', now()),
+    deleted_reason = 'approved account deletion review',
+    full_name = '[deleted]',
+    phone = null
+where id = '<user_id>';
 
--- 2. Anonymize PII fields
-UPDATE profiles
-SET full_name = '[deleted]',
-    phone     = NULL
-WHERE id = '<user_id>';
-
--- Note: email anonymization requires Supabase Auth Admin API, not SQL.
--- Use: supabase.auth.admin.deleteUser(userId) to remove auth record.
--- The auth deletion will cascade where FK constraints are configured.
-
-COMMIT;
+commit;
 ```
 
-File storage cleanup:
-```js
-await supabase.storage.from('avatars').remove([`${userId}/*`]);
-```
+Email/auth deletion or anonymization must use the Supabase Auth Admin API or Supabase dashboard workflow. Do not assume deleting `profiles` removes the provider-managed auth user.
 
-Document the deletion in a compliance log entry. Notify the user within 30 days of the request.
+## Records That Must Not Be Destroyed In V2
 
-**Records that MUST NOT be deleted regardless of user request:**
+| Record type | Reason |
+|---|---|
+| Financial transactions, invoices, payments, wallet funding/withdrawal proof, marketplace payouts | Accounting, tax, reconciliation, dispute evidence |
+| Marketplace orders, disputes, returns, reviews tied to disputes | Order/support/legal continuity |
+| Support thread/message history | Support/legal evidence |
+| Care booking/service records | Customer service, refund, and legal continuity |
+| KYC/trust/security decisions and customer documents under review/hold | Fraud prevention and compliance |
+| Staff audit/action/navigation logs | Accountability and incident response |
+| Certifications/enrollment verification records | Credential verification |
 
-| Record type | Reason | Retention |
-|---|---|---|
-| Financial transactions, invoices, payouts | Regulatory / tax | 7 years |
-| Support thread history | Legal / audit | 7 years |
-| Care booking records | Legal / audit | 7 years |
-| Marketplace order history | Legal / regulatory | 7 years |
-| Audit logs involving this user | Fraud / compliance | 90 days (then auto-deleted) |
-| Trust/KYC decisions | Fraud prevention | Platform discretion |
+## Manual Data Export Readiness
 
----
+No self-serve data export endpoint exists. Export requests are fulfilled manually by staff with service-role access and must avoid exporting secrets, provider tokens, private staff notes not relevant to the request, or unrelated third-party data.
 
-## Data Export Readiness
+Minimum export scope by category:
 
-### Current readiness: Manual staff export
+| Category | Candidate source |
+|---|---|
+| Profile | `profiles`, `customer_profiles`, `customer_preferences` |
+| Account activity | `customer_activity`, `customer_security_log` |
+| Support | `support_threads`, `support_messages` |
+| Notifications | `customer_notifications` |
+| Finance | Wallet/order/payment rows that are exportable without violating legal retention duties |
+| Jobs | `jobs_applications` and eligible candidate documents |
+| Marketplace | Orders, reviews, support, disputes, seller application data where owned by the requester |
+| Care/logistics/property/studio/learn | Division records tied to the requester and cleared by support/compliance review |
 
-No self-serve data export endpoint exists. Export requests are fulfilled by staff.
-
-### Export scope (what can be provided)
-
-Personal data that can be meaningfully exported for a user:
-
-| Category | Table(s) | Format |
-|---|---|---|
-| Profile information | `profiles`, `customer_profiles` | JSON |
-| Account activity | `customer_activity` WHERE user_id = X | JSON |
-| Support threads | `support_threads`, `support_messages` | JSON |
-| Notifications | `customer_notifications` | JSON |
-| Jobs applications | `jobs_applications` (if table exists) | JSON |
-| Marketplace orders | `marketplace_orders`, `marketplace_order_groups` | JSON |
-| Wallet history | `customer_wallet_transactions` (if exists) | JSON |
-| Bookings | `care_bookings` | JSON |
-
-### Staff export query template
-
-```sql
--- Export user data as JSON — run with service role
-SELECT json_build_object(
-  'profile',     (SELECT row_to_json(p) FROM profiles p WHERE p.id = '<user_id>'),
-  'activity',    (SELECT json_agg(row_to_json(a)) FROM customer_activity a WHERE a.user_id = '<user_id>' LIMIT 1000),
-  'notifications',(SELECT json_agg(row_to_json(n)) FROM customer_notifications n WHERE n.user_id = '<user_id>' LIMIT 500)
-) AS user_data_export;
-```
-
-Expand this template with division-specific tables as needed.
-
-### Self-serve export: future work
-
-A self-serve `/api/account/export` endpoint is the preferred long-term solution. It would:
-1. Require authentication (user can only export their own data)
-2. Rate-limit requests (e.g. one export per 24 hours)
-3. Exclude records that must be retained (financial, audit)
-4. Return a JSON bundle with a short-lived signed URL
-5. Log the export request in `audit_logs`
-
-This is deferred until the data model across all divisions is stable enough to produce a reliable export without surprising omissions.
-
----
-
-## Right to Restriction
-
-Users may request that data processing be restricted without full deletion (e.g. during a dispute). Current approach: support ticket review. No automated restriction mechanism exists.
-
----
-
-## Children's Data
-
-HenryCo's platforms are not directed at users under 16. Account creation requires explicit acceptance of terms. No special procedures for children's data requests are currently defined beyond standard account deletion.
-
----
+Use JSON export bundles and record the export request in audit/support history. If the export includes signed URLs, use short-lived URLs and never expose service-role credentials.
 
 ## Honest Limitations
 
-| Limitation | Severity | Mitigation |
+| Limitation | Severity | Required next action |
 |---|---|---|
-| No automated retention cleanup | Medium | Manual SQL provided; cron setup is the next operational step |
-| No self-serve export | Medium | Support ticket workflow is honest and functional |
-| No automated deletion | Medium | Manual staff procedure is defined; automated endpoint is deferred |
-| No cross-division deletion sweep | Medium | Deletion procedure must be run per division table set |
-| No restriction flag on profiles | Low | Deletion is the only current tool for compliance requests |
-
----
+| No automated retention cleanup | Medium | Add scheduler only after legal-hold, object-backup, and incident-exception rules exist |
+| No self-serve export | Medium | Build an authenticated, rate-limited export endpoint after table coverage is stable |
+| No automated deletion workflow | Medium | Add deletion review workflow with finance/trust/support blocking checks |
+| No storage object backup job | High | Add Supabase Storage and Cloudinary export manifests before destructive cleanup |
+| No PITR proof in repo | High | Verify Supabase project plan/PITR via dashboard or Management API |
 
 ## Related Documents
 
-- [privacy-control-model.md](./privacy-control-model.md) — consent categories
-- [consent-and-tracking-boundaries.md](./consent-and-tracking-boundaries.md) — tracking architecture
-- [internal-data-access-governance.md](./internal-data-access-governance.md) — staff access
-- [storage-retention-and-cleanup.md](./storage-retention-and-cleanup.md) — SQL cleanup procedures
-- [recovery-playbook.md](./recovery-playbook.md) — incident response
+- [data-governance-backup-recovery-v2.md](./data-governance-backup-recovery-v2.md) - critical data classification and backup truth
+- [data-recovery-playbook-v2.md](./data-recovery-playbook-v2.md) - recovery and post-restore checklist
+- [privacy-control-model.md](./privacy-control-model.md) - consent categories
+- [consent-and-tracking-boundaries.md](./consent-and-tracking-boundaries.md) - tracking architecture
+- [internal-data-access-governance.md](./internal-data-access-governance.md) - staff access governance

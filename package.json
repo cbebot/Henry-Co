@@ -12,6 +12,7 @@
     "typecheck:all": "pnpm -r --filter \"./apps/*\" run typecheck",
     "test:workspace": "pnpm --filter @henryco/super-app run test:ci",
     "ci:validate": "pnpm run lint:all && pnpm run typecheck:all && pnpm run test:workspace && pnpm run build:all",
+    "data-governance:sanity": "node scripts/data-governance-sanity.mjs",
     "build:logistics": "pnpm --filter @henryco/logistics build",
     "lint:logistics": "pnpm --filter @henryco/logistics lint",
     "typecheck:logistics": "pnpm --filter @henryco/logistics typecheck",
