@@ -16,6 +16,7 @@
     "@henryco/config": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/intelligence": "workspace:^",
+    "@henryco/newsletter": "workspace:^",
     "@henryco/ui": "workspace:^",
     "@hookform/resolvers": "^5.2.2",
     "@react-three/drei": "^10.7.7",
