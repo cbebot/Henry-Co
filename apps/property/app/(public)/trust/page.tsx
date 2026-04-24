@@ -114,8 +114,8 @@ export default async function TrustPage() {
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker="Trust"
-        title="HenryCo Property is governed before it is public."
-        description="The trust layer is meant to feel calm and understandable, but it is still serious. Documents are path-specific, inspections are real workflows, and managed versus non-managed publication is not blurred together."
+        title="Governed before it is public."
+        description="Documents are path-specific, inspections are real workflows, and managed vs non-managed publication is not blurred together. Calm, but serious."
       />
 
       <div className="mt-8">

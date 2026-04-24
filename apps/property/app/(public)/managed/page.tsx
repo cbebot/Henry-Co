@@ -14,8 +14,8 @@ export default async function ManagedPropertyPage() {
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker="Managed property"
-        title="Operations-grade management for owners who want calmer execution after the listing goes live."
-        description="HenryCo Property can support tenant communication, inspections, reporting, maintenance coordination, short-let operations, and owner trust workflows after inquiry and occupancy."
+        title="Operations-grade management after the listing goes live."
+        description="Tenant communication, inspections, reporting, maintenance coordination, short-let operations, and owner trust workflows &mdash; held on one operating rail rather than scattered across apps and chat threads."
         actions={
           <Link
             href="/submit"
@@ -66,8 +66,8 @@ export default async function ManagedPropertyPage() {
       <section className="mt-10">
         <PropertySectionIntro
           kicker="Managed listings"
-          title="Homes and stays already operating on HenryCo property rails."
-          description="These listings carry stronger readiness, reporting, and coordination than passive pass-through inventory."
+          title="Homes and stays already on managed rails."
+          description="Stronger readiness, reporting, and coordination than passive pass-through inventory."
         />
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {managedListings.map((listing) => (

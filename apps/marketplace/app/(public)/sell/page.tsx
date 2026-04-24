@@ -11,8 +11,8 @@ export default function SellPage() {
     <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
       <PageIntro
         kicker="Sell on HenryCo"
-        title="A selective marketplace for sellers who want trust, cleaner operations, and better conversion quality."
-        description="HenryCo Marketplace is built for sellers who care about trust, presentation, and reliable fulfillment. This page explains the standards, while the seller application continues inside your HenryCo account."
+        title="Selective by design. Built for sellers who lead on trust."
+        description="HenryCo Marketplace favours sellers who care about presentation, reliable fulfillment, and honest buyer protection. The bar is explicit on this page; the seller application continues inside your HenryCo account."
         actions={
           <>
             <Link

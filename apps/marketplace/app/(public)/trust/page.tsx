@@ -8,9 +8,9 @@ export default function TrustPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <PageIntro
-        kicker="Trust & Safety"
-        title="Trust changes permissions, money flow, and moderation posture across the marketplace."
-        description="HenryCo Marketplace is designed to make trust visible before checkout and operationally enforceable after checkout. Seller tiers, buyer risk, listing scoring, escrow holds, disputes, and payout release all leave a server-side paper trail."
+        kicker="Trust &amp; Safety"
+        title="Visible before checkout. Enforced after it."
+        description="Trust governs what a seller can do, how money moves, and how moderation responds. Seller tiers, buyer risk, listing scoring, escrow holds, disputes, and payout release all leave a server-side paper trail."
       />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {[

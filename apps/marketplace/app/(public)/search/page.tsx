@@ -19,8 +19,8 @@ export default async function SearchPage({
     <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
       <PageIntro
         kicker="Search"
-        title="Reactive discovery with premium filters and calmer hierarchy."
-        description="Search by intent, then refine by verified seller, brand, category, and COD readiness without drowning the buyer in clutter. Results update quickly, filters stay mobile-friendly, and empty states stay useful."
+        title="Find it fast. Trust what you see."
+        description="Refine by verified seller, brand, category, and COD readiness. Results update as you filter, stay readable on mobile, and surface the trust signals you care about before you click through."
       />
 
       <SearchExperience

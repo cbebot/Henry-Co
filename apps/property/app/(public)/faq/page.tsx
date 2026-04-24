@@ -10,8 +10,8 @@ export default async function PropertyFaqPage() {
     <main className="mx-auto max-w-[80rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker="FAQ"
-        title="Answers for renters, buyers, owners, and managed-property clients."
-        description="The platform is designed to make the next step clearer before someone commits time to a viewing or a submission."
+        title="Before you reach out."
+        description="The essentials renters, buyers, owners, and managed-property clients usually check before a viewing or submission."
       />
 
       <div className="mt-8 space-y-4">

@@ -25,8 +25,8 @@ export default async function CategoryPage({
       <section className="grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
         <article className="market-panel rounded-[2.5rem] p-8 sm:p-10">
           <p className="market-kicker">Category edit</p>
-          <h1 className="market-display mt-5 max-w-4xl">{category.name}</h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--market-muted)]">{category.hero}</p>
+          <h1 className="market-display mt-5 max-w-3xl text-balance">{category.name}</h1>
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--market-muted)]">{category.hero}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href={`/search?category=${category.slug}`} className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
               Search this category
