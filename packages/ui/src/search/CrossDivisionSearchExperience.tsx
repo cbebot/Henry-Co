@@ -242,6 +242,7 @@ export function CrossDivisionSearchExperience({
   );
 
   const visibleResults = rankedVisible.map((entry) => entry.result);
+  const protectedPreviewResults = rankedLocked.map((entry) => entry.result).slice(0, 3);
   const groupedResults = groupSearchResultsByDivision(visibleResults);
   const queryMode = Boolean(deferredQuery.trim());
   const fallbackResults = useMemo(
@@ -360,6 +361,18 @@ export function CrossDivisionSearchExperience({
                   <p className="mt-1 text-sm text-zinc-600 dark:text-white/66">
                     {protectedHintDescription}
                   </p>
+                  {protectedPreviewResults.length > 0 ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {protectedPreviewResults.map((result) => (
+                        <span
+                          key={`protected-preview:${result.id}`}
+                          className="rounded-full border border-amber-500/20 bg-white/70 px-3 py-1 text-xs font-semibold text-zinc-700 dark:border-amber-400/25 dark:bg-black/20 dark:text-white/75"
+                        >
+                          {result.title}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
                 <a
                   href={signInHref}
