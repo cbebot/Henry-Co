@@ -9,8 +9,8 @@ export default function SellerPricingPage() {
     <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
       <PageIntro
         kicker="Seller pricing"
-        title="Transparent seller economics, reserve windows, and featured-placement rules."
-        description="HenryCo charges cleanly and visibly: plan fees, posting fees, featured-slot fees, transaction commission, and payout processing fees are explained before sellers publish inventory."
+        title="Clear economics. No hidden fees."
+        description="Plan fees, listing fees, featured-slot fees, transaction commission, and payout processing are all stated up front &mdash; before you publish inventory, not after."
         actions={
           <Link href="/account/seller-application" className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
             Apply as seller

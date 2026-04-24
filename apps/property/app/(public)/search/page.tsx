@@ -53,8 +53,8 @@ export default async function PropertySearchPage({
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker="Search"
-        title="Search serious listings without losing your filters or your pace."
-        description="The filter state stays shareable in the URL, the results update without a blunt refresh, and every listing carries clearer trust context before you commit attention."
+        title="Find the right place. Keep your filters."
+        description="Filter state stays shareable in the URL, results update without a blunt refresh, and every listing carries trust context before you invest time in it."
       />
 
       <div className="mt-8">

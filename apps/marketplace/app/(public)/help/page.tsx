@@ -7,8 +7,8 @@ export default function HelpPage() {
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <PageIntro
         kicker="Help"
-        title="Support flows designed to resolve edge cases, not create new ones."
-        description="Buyers can track split shipments, vendors can see issue context clearly, and support teams can work through disputes, returns, delivery delays, and finance escalations without losing the history."
+        title="Support that resolves, not deflects."
+        description="Buyers can track split shipments, sellers see issue context clearly, and the support team works through disputes, returns, delivery delays, and finance escalations with the full history intact."
       />
       <div className="grid gap-5 lg:grid-cols-3">
         {[

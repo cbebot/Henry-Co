@@ -29,8 +29,8 @@ export default async function SubmitListingPage({
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker="Submit"
-        title="Submit a property through the right trust path before HenryCo ever considers publication."
-        description="HenryCo Property routes each submission by service type, authority reality, inspection sensitivity, and account trust. The form adapts to the path, documents upload directly, and every listing stays private until governance clears it."
+        title="Submit through the right trust path."
+        description="Each submission is routed by service type, authority reality, inspection sensitivity, and account trust. The form adapts to the path; documents upload directly; the listing stays private until governance clears it."
       />
 
       {params.submitted === "1" ? (
