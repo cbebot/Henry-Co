@@ -26,15 +26,13 @@ export default async function HirePage() {
     >
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 lg:px-8">
         <section className="jobs-grid border-b border-black/5 pb-14">
-          <div className="mx-auto max-w-4xl text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <p className="jobs-kicker">For employers</p>
             <h1 className="mt-4 jobs-display text-balance">
-              Hire through HenryCo with clarity, not chaos.
+              Hire with clarity, not chaos.
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[var(--jobs-muted)]">
-              Post real roles, read applications in one place, and move people through shortlist and interviews with
-              visible stages—so candidates are never left guessing. We review employers and posts to protect quality on
-              both sides.
+            <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
+              Post real roles, read applications in one place, move people through shortlist and interviews on visible stages. Employers and posts are reviewed to protect quality on both sides.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-3">
               <HeroLink href={startUrl} label={viewer.user ? "Go to company setup" : "Start hiring — sign up free"} />

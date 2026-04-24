@@ -106,9 +106,9 @@ const EN: JobsPublicCopy = {
   },
   home: {
     kicker: "HenryCo Jobs",
-    title: "Hiring, verified talent, without the usual noise.",
+    title: "Verified hiring. No noise.",
     subtitle:
-      "Whether you are hiring or looking, you get plain language, obvious next steps, and a team that checks employers and posts where it matters-so fewer fake listings and fewer dead-end applications.",
+      "Plain language, clear next steps, and employers checked where it matters &mdash; so fewer fake listings for candidates, fewer dead-end applications for teams.",
     searchPlaceholder: "Role, skill, or company",
     searchButton: "Search jobs",
     tryLabel: "Try:",

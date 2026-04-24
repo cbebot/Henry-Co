@@ -30,8 +30,8 @@ export default async function CoursesPage({
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
         kicker={t("Course catalog")}
-        title={t("Find a program that fits your next step.")}
-        body={t("Filter by topic or level, open any course for full details, then sign in with your HenryCo account to enroll. Your progress syncs automatically—you can always pick up where you left off.")}
+        title={t("A program for your next step.")}
+        body={t("Filter by topic or level, open any course for full details, then sign in to enroll. Your progress syncs automatically in your HenryCo account.")}
       />
 
       <div className="learn-panel mt-8 rounded-[2rem] p-5 sm:p-6">
