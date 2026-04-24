@@ -190,19 +190,19 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
   const base: CompanyPageRecord = {
     slug: pageSlug,
     title: "Henry & Co.",
-    subtitle: "Corporate Information",
-    hero_badge: "Company Page",
+    subtitle: "Corporate platform",
+    hero_badge: "Company page",
     intro:
-      "Henry & Co. maintains a disciplined, premium company standard across its public-facing properties and operating divisions.",
+      "One operating standard across every division, held consistent across every public surface of the group.",
     hero_image_url: null,
     primary_cta_label: "Contact the company",
     primary_cta_href: "/contact",
-    secondary_cta_label: "Explore divisions",
+    secondary_cta_label: "Browse divisions",
     secondary_cta_href: "/#divisions",
     stats: [
-      { id: "stat-1", label: "Standard", value: "Premium" },
-      { id: "stat-2", label: "Model", value: "Multi-division" },
-      { id: "stat-3", label: "Focus", value: "Long-term growth" },
+      { id: "stat-1", label: "Operating standard", value: "Consistent" },
+      { id: "stat-2", label: "Structure", value: "Multi-division" },
+      { id: "stat-3", label: "Horizon", value: "Long-term" },
     ],
     sections: [],
     seo_title: null,
@@ -218,46 +218,46 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
       return {
         ...base,
         title: "About Henry & Co.",
-        subtitle: "Corporate Profile",
-        hero_badge: "Company Overview",
+        subtitle: "Who we are",
+        hero_badge: "Company overview",
         intro:
-          "Henry & Co. is a multi-division business platform built to deliver specialized services through focused operating units under one premium standard of execution, presentation, and trust.",
+          "Henry & Co. is a multi-division operating group. Each division runs its own market, under one shared standard of execution, presentation, and trust.",
         sections: [
           {
             id: "about-profile",
-            eyebrow: "Profile",
-            title: "What the company represents",
+            eyebrow: "What this is",
+            title: "Focused businesses, one operating standard",
             body:
-              "The company is structured to combine specialized business capability with a disciplined corporate identity. Each division can grow independently while contributing to a stronger and more credible group presence.",
+              "Specialised business capability combined with disciplined corporate identity. Divisions grow on their own terms while contributing to a stronger, more credible group presence.",
             layout: "cards",
             items: [
               {
                 id: "about-profile-1",
                 title: "Focused divisions",
-                body: "Each division is designed to serve a defined market, service line, or operating need.",
+                body: "Each division serves a defined market, service line, or operating need \u2014 not a bundle of everything.",
               },
               {
                 id: "about-profile-2",
                 title: "Shared quality standard",
-                body: "The parent company establishes a unified standard for presentation, trust, and professionalism.",
+                body: "One standard for presentation, trust signals, and professionalism holds across every public surface.",
               },
               {
                 id: "about-profile-3",
-                title: "Expansion-ready structure",
-                body: "The model supports future units, company pages, and public growth without weakening the brand.",
+                title: "Expansion-ready",
+                body: "New divisions, new company pages, new markets \u2014 introduced inside the same premium framework.",
               },
             ],
           },
           {
             id: "about-leadership",
-            eyebrow: "Leadership",
-            title: "Leadership and direction",
+            eyebrow: "Direction",
+            title: "How the group is led",
             body:
-              "This page should communicate ownership, leadership philosophy, strategic direction, and the long-term business quality of the Henry & Co. group.",
+              "Ownership, leadership philosophy, and long-term direction are held explicit so the group behaves predictably for customers, partners, investors, and talent.",
             layout: "default",
             items: [
-              { id: "about-leadership-1", label: "Vision", value: "Build a respected premium business ecosystem." },
-              { id: "about-leadership-2", label: "Direction", value: "Expand with discipline and preserve quality." },
+              { id: "about-leadership-1", label: "Vision", value: "A respected, premium operating group." },
+              { id: "about-leadership-2", label: "Direction", value: "Expand with discipline. Preserve quality." },
               { id: "about-leadership-3", label: "Commitment", value: "Operate with clarity, seriousness, and trust." },
             ],
           },
@@ -268,33 +268,33 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
       return {
         ...base,
         title: "Contact Henry & Co.",
-        subtitle: "Corporate Contact",
-        hero_badge: "Business Enquiries",
+        subtitle: "Reach the company",
+        hero_badge: "Business enquiries",
         intro:
-          "Use this page for company-level communication, strategic partnerships, media enquiries, supplier introductions, and other matters that should be directed to the parent company.",
+          "Company-level communication, strategic partnerships, media enquiries, supplier introductions, and anything else that belongs to the parent group rather than a single division.",
         sections: [
           {
             id: "contact-usage",
-            eyebrow: "Communication",
-            title: "When to use this page",
+            eyebrow: "When to use this page",
+            title: "Group-level conversations only",
             body:
-              "This route is intended for broader business enquiries that concern the company as a whole rather than a single division.",
+              "For anything specific to a division, go directly to that division \u2014 you will get a faster and more accurate answer.",
             layout: "cards",
             items: [
               {
                 id: "contact-usage-1",
                 title: "General company enquiries",
-                body: "For group-level questions, introductions, and broader brand communication.",
+                body: "Group-level questions, introductions, and broader brand communication.",
               },
               {
                 id: "contact-usage-2",
                 title: "Partnership and vendor discussions",
-                body: "For collaboration, procurement, and business development matters.",
+                body: "Collaboration, procurement, and business development across the group.",
               },
               {
                 id: "contact-usage-3",
-                title: "Media and public relations",
-                body: "For interview requests, profile enquiries, and public-facing business information.",
+                title: "Media and investor relations",
+                body: "Interview requests, profile enquiries, and investor-facing information.",
               },
             ],
           },
@@ -305,10 +305,10 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
       return {
         ...base,
         title: "Privacy Policy",
-        subtitle: "Privacy and Data Handling",
-        hero_badge: "Privacy Commitment",
+        subtitle: "How we handle information",
+        hero_badge: "Privacy commitment",
         intro:
-          "Henry & Co. is committed to handling information responsibly, limiting unnecessary data use, and maintaining a professional privacy posture across its public-facing properties.",
+          "Information is handled responsibly, unnecessary data use is avoided, and a professional privacy posture is maintained across every Henry & Co. public surface.",
         primary_cta_label: "Contact the company",
         primary_cta_href: "/contact",
         secondary_cta_label: "Terms & Conditions",
@@ -359,10 +359,10 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
       return {
         ...base,
         title: "Terms & Conditions",
-        subtitle: "Website Terms of Use",
-        hero_badge: "Legal Terms",
+        subtitle: "Terms of use",
+        hero_badge: "Legal terms",
         intro:
-          "These Terms & Conditions govern access to and use of Henry & Co. public-facing pages, content, and related digital properties.",
+          "These terms govern access to and use of Henry & Co. public-facing pages, content, and related digital properties.",
         primary_cta_label: "Privacy Policy",
         primary_cta_href: "/privacy",
         secondary_cta_label: "Contact the company",

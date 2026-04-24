@@ -684,19 +684,12 @@ export default function HubHomeClient({
                   </div>
                 </div>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="mt-4">
                   <DirectoryMiniStat
                     label={copy.brandPanel.baseDomain}
                     value={normalizeText(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com")
                       .replace(/^https?:\/\//i, "")
                       .replace(/\/+$/, "")}
-                  />
-                  <DirectoryMiniStat label={copy.brandPanel.accent} value={brandAccentSafe} />
-                  <DirectoryMiniStat
-                    label={copy.brandPanel.logoStatus}
-                    value={
-                      brandLogoUrlSafe ? copy.brandPanel.logoConfigured : copy.brandPanel.logoFallback
-                    }
                   />
                 </div>
               </motion.div>
