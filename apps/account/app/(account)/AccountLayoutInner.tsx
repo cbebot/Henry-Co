@@ -2,6 +2,7 @@ import { requireAccountUser } from "@/lib/auth";
 import Sidebar from "@/components/layout/Sidebar";
 import MobileNav from "@/components/layout/MobileNav";
 import { AccountStudioToastRoot } from "@/components/studio/AccountStudioToastRoot";
+import NotificationSignalProvider from "@/components/notifications/NotificationSignalProvider";
 
 export default async function AccountLayoutInner({ children }: { children: React.ReactNode }) {
   const user = await requireAccountUser();
@@ -15,6 +16,7 @@ export default async function AccountLayoutInner({ children }: { children: React
   return (
     <div className="min-h-screen">
       <AccountStudioToastRoot />
+      <NotificationSignalProvider />
       <Sidebar user={userInfo} />
       <MobileNav user={userInfo} />
       <main className="lg:pl-[var(--acct-sidebar-width)]">

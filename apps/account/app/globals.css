@@ -384,6 +384,33 @@ select.acct-input {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ─── Notification signal toast ───
+   Subtle slide-up + fade. No bounce, no overshoot. Respects reduced-motion.
+*/
+.acct-signal-card {
+  animation: acctSignalIn 220ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+@keyframes acctSignalIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.acct-signal-overflow {
+  animation: acctSignalOverflowIn 200ms ease both;
+}
+@keyframes acctSignalOverflowIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .acct-signal-card,
+  .acct-signal-overflow {
+    animation: none;
+  }
+}
+[dir="rtl"] .acct-signal-activate {
+  text-align: right;
+}
+
 @media (pointer: coarse) {
   .acct-input,
   .acct-textarea,

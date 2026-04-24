@@ -5,6 +5,7 @@ import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import ProfileForm from "@/components/settings/ProfileForm";
 import PreferencesForm from "@/components/settings/PreferencesForm";
+import NotificationSignalSettingsCard from "@/components/settings/NotificationSignalSettingsCard";
 import PrivacyDataControls from "@/components/settings/PrivacyDataControls";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +31,10 @@ export default async function SettingsPage() {
       {/* Notification Preferences */}
       <section className="acct-card p-5">
         <p className="acct-kicker mb-4">Notification Preferences</p>
-        <PreferencesForm preferences={preferences} />
+        <div className="space-y-4">
+          <NotificationSignalSettingsCard />
+          <PreferencesForm preferences={preferences} />
+        </div>
       </section>
 
       <PrivacyDataControls />
