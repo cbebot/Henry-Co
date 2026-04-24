@@ -86,19 +86,38 @@ function renderEmail(layout: EmailLayout) {
   return `
     <!doctype html>
     <html lang="en">
-      <body style="margin:0; padding:0; background:#eef7f3; font-family:Manrope,Segoe UI,Arial,sans-serif;">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="supported-color-schemes" content="light dark" />
+        <title>${escapeHtml(layout.title)}</title>
+        <style>
+          :root { color-scheme: light dark; }
+          @media (prefers-color-scheme: dark) {
+            body { background:#04100e !important; }
+            .learn-shell { background:#0a1a17 !important; box-shadow:0 30px 90px rgba(0,0,0,0.62) !important; }
+            .learn-body { background:#0a1a17 !important; color:#d7e8e3 !important; }
+            .learn-footer { background:#04100e !important; border-color:rgba(216,244,235,0.12) !important; }
+            .learn-footer-brand { color:#8fd3c0 !important; }
+            .learn-footer-body { color:#80958e !important; }
+            .learn-attribution { color:#6d8178 !important; }
+          }
+        </style>
+      </head>
+      <body style="margin:0; padding:0; background:#eef7f3; font-family:Manrope,'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:28px 12px;">
           <tr>
             <td align="center">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px; border-radius:28px; overflow:hidden; background:#ffffff; box-shadow:0 24px 80px rgba(8,18,25,0.12);">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="learn-shell" style="max-width:640px; border-radius:28px; overflow:hidden; background:#ffffff; box-shadow:0 24px 80px rgba(8,18,25,0.12);">
                 <tr>
                   <td style="padding:32px; background:linear-gradient(145deg, #071514 0%, #0f2b28 56%, #2d7f71 100%); color:#ffffff;">
                     <div style="font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:#c8f3e6; font-weight:700;">${escapeHtml(layout.eyebrow)}</div>
-                    <div style="margin-top:14px; font-size:34px; line-height:1.06; font-weight:800; letter-spacing:-0.04em;">${escapeHtml(layout.title)}</div>
+                    <div style="margin-top:14px; font-size:32px; line-height:1.08; font-weight:800; letter-spacing:-0.035em;">${escapeHtml(layout.title)}</div>
                     <div style="margin-top:14px; max-width:520px; font-size:15px; line-height:1.8; color:rgba(255,255,255,0.78);">${escapeHtml(layout.intro)}</div>
                     ${
                       layout.highlightLabel && layout.highlightValue
-                        ? `<div style="margin-top:20px; display:inline-block; border-radius:22px; border:1px solid rgba(216,244,235,0.18); background:rgba(255,255,255,0.06); padding:14px 18px;">
+                        ? `<div style="margin-top:20px; display:inline-block; border-radius:22px; border:1px solid rgba(216,244,235,0.22); background:rgba(255,255,255,0.06); padding:14px 18px;">
                             <div style="font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#d8f4eb; font-weight:700;">${escapeHtml(layout.highlightLabel)}</div>
                             <div style="margin-top:6px; font-size:22px; line-height:1.2; font-weight:800; color:#ffffff;">${escapeHtml(layout.highlightValue)}</div>
                           </div>`
@@ -107,10 +126,21 @@ function renderEmail(layout: EmailLayout) {
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding:28px 32px 32px;">
+                  <td class="learn-body" style="padding:28px 32px 32px;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${sections}</table>
                     ${bullets ? `<ul style="padding-left:18px; margin:20px 0 0 0;">${bullets}</ul>` : ""}
                     ${action}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="learn-footer" style="padding:18px 32px 24px; border-top:1px solid rgba(15,43,40,0.08); background:#f2faf6;">
+                    <div class="learn-footer-brand" style="font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:#2d7f71; font-weight:700;">HenryCo Learn</div>
+                    <div class="learn-footer-body" style="margin-top:8px; font-size:13px; line-height:1.7; color:#55706a;">
+                      Structured learning, practical assessments, verifiable certificates.
+                    </div>
+                    <div class="learn-attribution" style="margin-top:14px; display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#55706a;">
+                      <span style="display:inline-block; width:5px; height:5px; border-radius:50%; background:#2d7f71; margin-right:6px; vertical-align:middle;"></span>Designed by HenryCo Studio
+                    </div>
                   </td>
                 </tr>
               </table>
