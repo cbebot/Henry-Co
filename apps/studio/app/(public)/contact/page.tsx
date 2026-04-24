@@ -10,10 +10,9 @@ export default async function ContactPage() {
     <main className="mx-auto max-w-[64rem] px-5 py-10 sm:px-8">
       <div className="studio-panel studio-mesh rounded-[2rem] p-6 sm:p-8">
         <div className="studio-kicker">Contact</div>
-        <h1 className="studio-heading mt-4">Need a direct conversation before you open the full brief?</h1>
-        <p className="mt-4 text-lg leading-8 text-[var(--studio-ink-soft)]">
-          Reach the Studio desk for premium web, app, design, branding, and systems delivery, or go
-          straight into the structured request builder if you already know what needs to be built.
+        <h1 className="studio-heading mt-4 text-balance">Talk to Studio.</h1>
+        <p className="mt-4 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
+          Direct line to the Studio desk for premium web, apps, product UX, branding, and custom software. Already know what to build? Skip to the structured brief.
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">

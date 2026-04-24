@@ -17,14 +17,16 @@ export default async function ServiceDetailPage({
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-10 sm:px-8 lg:px-10">
       <section className="studio-panel studio-mesh rounded-[2.4rem] px-7 py-10 sm:px-10 lg:px-14">
-        <div className="studio-kicker">{service.name}</div>
-        <h1 className="studio-heading mt-4">{service.headline}</h1>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--studio-ink-soft)]">{service.summary}</p>
+        <div className="max-w-3xl">
+          <div className="studio-kicker">{service.name}</div>
+          <h1 className="studio-heading mt-4 text-balance">{service.headline}</h1>
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">{service.summary}</p>
+        </div>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/request" className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold">
+          <Link href="/request" className="studio-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold">
             Start a {service.name.toLowerCase()} brief
           </Link>
-          <Link href="/teams" className="studio-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
+          <Link href="/teams" className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold">
             Choose a team
           </Link>
         </div>

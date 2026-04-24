@@ -10,12 +10,11 @@ export default async function ServicesPage() {
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <section className="studio-panel rounded-[2.8rem] px-7 py-8 sm:px-10 lg:px-14 lg:py-12">
         <div className="studio-kicker">Services</div>
-        <h1 className="studio-heading mt-4 max-w-4xl">
-          Services built around the outcomes your business actually needs.
+        <h1 className="studio-heading mt-4 max-w-3xl text-balance">
+          Specialised capability, priced against outcomes.
         </h1>
-        <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-          From executive websites to internal systems and custom software — each service area
-          is structured to deliver a clear result with honest scope and timeline.
+        <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
+          Executive websites, internal systems, commerce, product UX, and custom software. Each area has a defined scope, a starting price, and a delivery window stated up front.
         </p>
       </section>
 

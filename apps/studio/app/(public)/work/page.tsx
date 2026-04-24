@@ -8,14 +8,13 @@ export default async function WorkPage() {
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-10 sm:px-8 lg:px-10">
       <section className="studio-panel studio-mesh rounded-[2.4rem] px-7 py-10 sm:px-10 lg:px-14">
-        <div className="max-w-4xl">
+        <div className="max-w-3xl">
           <div className="studio-kicker">Selected work</div>
-          <h1 className="studio-heading mt-4">
-            Real projects, real results — see the work before you commit.
+          <h1 className="studio-heading mt-4 text-balance">
+            The work before the conversation.
           </h1>
-          <p className="mt-5 text-lg leading-8 text-[var(--studio-ink-soft)]">
-            Each case study covers the business challenge, our approach, and the measurable impact.
-            No vague summaries — just honest proof of what we deliver.
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
+            Each case study covers the business challenge, the approach, and the measurable impact. No vague summaries &mdash; proof you can verify before you commit.
           </p>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
