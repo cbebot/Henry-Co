@@ -243,6 +243,7 @@ export function CrossDivisionSearchExperience({
 
   const visibleResults = rankedVisible.map((entry) => entry.result);
   const groupedResults = groupSearchResultsByDivision(visibleResults);
+  const queryMode = Boolean(deferredQuery.trim());
   const fallbackResults = useMemo(
     () =>
       results
@@ -384,16 +385,16 @@ export function CrossDivisionSearchExperience({
 
         {resultCount > 0 ? (
           <div className="mt-6 space-y-6">
-            {[...groupedResults.entries()].map(([division, divisionResults]) => (
-              <section key={division}>
+            {queryMode ? (
+              <section>
                 <div className="mb-3 flex items-center gap-3">
                   <span className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/40">
-                    {DIVISION_LABELS[division] || division}
+                    Top matches
                   </span>
                   <span className="h-px flex-1 bg-black/8 dark:bg-white/10" />
                 </div>
                 <div className="grid gap-3 lg:grid-cols-2">
-                  {divisionResults.map((result) => (
+                  {visibleResults.map((result) => (
                     <ResultCard
                       key={result.id}
                       result={result}
@@ -405,7 +406,30 @@ export function CrossDivisionSearchExperience({
                   ))}
                 </div>
               </section>
-            ))}
+            ) : (
+              [...groupedResults.entries()].map(([division, divisionResults]) => (
+                <section key={division}>
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/40">
+                      {DIVISION_LABELS[division] || division}
+                    </span>
+                    <span className="h-px flex-1 bg-black/8 dark:bg-white/10" />
+                  </div>
+                  <div className="grid gap-3 lg:grid-cols-2">
+                    {divisionResults.map((result) => (
+                      <ResultCard
+                        key={result.id}
+                        result={result}
+                        query={deferredQuery}
+                        resultCount={resultCount}
+                        context={context}
+                        onSignal={onSignal}
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))
+            )}
           </div>
         ) : (
           <div className="mt-6 rounded-[2rem] border border-black/8 bg-white/88 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-white/[0.04]">

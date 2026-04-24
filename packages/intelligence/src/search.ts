@@ -892,6 +892,22 @@ const authenticatedCatalog: CrossDivisionSearchResult[] = [
     tags: ["jobs", "applications", "candidate", "roles", "applied jobs"],
   }),
   defineResult({
+    id: "jobs-interviews",
+    division: "jobs",
+    type: "job_application",
+    title: "Jobs interviews",
+    subtitle: "Upcoming and completed interviews",
+    description: "Open interview schedules, sessions, and outcomes for your applications.",
+    href: getAccountUrl("/jobs/interviews"),
+    authRequirement: "account",
+    visibility: "authenticated",
+    badge: "Interviews",
+    icon: "briefcase",
+    priority: 95,
+    source: "shared_catalog",
+    tags: ["jobs", "interviews", "interview schedule", "candidate", "applications"],
+  }),
+  defineResult({
     id: "jobs-saved",
     division: "jobs",
     type: "job_application",
@@ -1070,118 +1086,6 @@ const accountCatalog: CrossDivisionSearchResult[] = [
     source: "account_catalog",
     tags: ["verification", "kyc", "identity", "trust", "documents"],
   }),
-  defineResult({
-    id: "account-marketplace-module",
-    division: "marketplace",
-    type: "account_workflow",
-    title: "Account marketplace workspace",
-    subtitle: "Marketplace account module",
-    description: "Open the marketplace section inside HenryCo account.",
-    href: getAccountUrl("/marketplace"),
-    authRequirement: "account",
-    visibility: "authenticated",
-    badge: "Account",
-    icon: "shopping-bag",
-    priority: 78,
-    source: "account_catalog",
-    tags: ["marketplace", "account marketplace", "orders", "marketplace module"],
-  }),
-  defineResult({
-    id: "account-jobs-module",
-    division: "jobs",
-    type: "account_workflow",
-    title: "Account jobs workspace",
-    subtitle: "Jobs account module",
-    description: "Open the jobs section inside HenryCo account.",
-    href: getAccountUrl("/jobs"),
-    authRequirement: "account",
-    visibility: "authenticated",
-    badge: "Account",
-    icon: "briefcase",
-    priority: 78,
-    source: "account_catalog",
-    tags: ["jobs", "account jobs", "applications", "jobs module"],
-  }),
-  defineResult({
-    id: "account-learn-module",
-    division: "learn",
-    type: "account_workflow",
-    title: "Account learn workspace",
-    subtitle: "Learn account module",
-    description: "Open the learn section inside HenryCo account.",
-    href: getAccountUrl("/learn"),
-    authRequirement: "account",
-    visibility: "authenticated",
-    badge: "Account",
-    icon: "graduation-cap",
-    priority: 78,
-    source: "account_catalog",
-    tags: ["learn", "account learn", "courses", "academy module"],
-  }),
-  defineResult({
-    id: "account-logistics-module",
-    division: "logistics",
-    type: "account_workflow",
-    title: "Account logistics workspace",
-    subtitle: "Logistics account module",
-    description: "Open the logistics section inside HenryCo account.",
-    href: getAccountUrl("/logistics"),
-    authRequirement: "account",
-    visibility: "authenticated",
-    badge: "Account",
-    icon: "truck",
-    priority: 76,
-    source: "account_catalog",
-    tags: ["logistics", "account logistics", "tracking", "logistics module"],
-  }),
-  defineResult({
-    id: "account-property-module",
-    division: "property",
-    type: "account_workflow",
-    title: "Account property workspace",
-    subtitle: "Property account module",
-    description: "Open the property section inside HenryCo account.",
-    href: getAccountUrl("/property"),
-    authRequirement: "account",
-    visibility: "authenticated",
-    badge: "Account",
-    icon: "building",
-    priority: 76,
-    source: "account_catalog",
-    tags: ["property", "account property", "viewings", "property module"],
-  }),
-  defineResult({
-    id: "account-studio-module",
-    division: "studio",
-    type: "account_workflow",
-    title: "Account studio workspace",
-    subtitle: "Studio account module",
-    description: "Open the studio section inside HenryCo account.",
-    href: getAccountUrl("/studio"),
-    authRequirement: "account",
-    visibility: "authenticated",
-    badge: "Account",
-    icon: "palette",
-    priority: 76,
-    source: "account_catalog",
-    tags: ["studio", "account studio", "projects", "studio module"],
-  }),
-  defineResult({
-    id: "account-care-module",
-    division: "care",
-    type: "account_workflow",
-    title: "Account care workspace",
-    subtitle: "Care account module",
-    description: "Open the care section inside HenryCo account.",
-    href: getAccountUrl("/care"),
-    authRequirement: "account",
-    visibility: "authenticated",
-    badge: "Account",
-    icon: "sparkles",
-    priority: 74,
-    source: "account_catalog",
-    tags: ["care", "account care", "bookings", "care module"],
-  }),
 ];
 
 export function getPublicSearchCatalog() {
@@ -1256,6 +1160,32 @@ function scoreIntent(result: CrossDivisionSearchResult, tokens: string[]) {
   return score;
 }
 
+function scoreRouteUtility(result: CrossDivisionSearchResult, tokens: string[]) {
+  let score = 0;
+  const hasQuery = tokens.length > 0;
+  if (!hasQuery) return score;
+
+  if (result.type === "workflow" || result.type.includes("help")) score += 90;
+  if (result.type.includes("order") || result.type.includes("application")) score += 70;
+  if (result.type === "division") score -= 80;
+  if (result.type === "page") score -= 35;
+
+  const path = (() => {
+    try {
+      return new URL(result.url).pathname;
+    } catch {
+      return "";
+    }
+  })();
+
+  if (path.includes("/support") || path.includes("/help")) score += 65;
+  if (path.includes("/search") || path.includes("/track")) score += 58;
+  if (path.includes("/wallet") || path.includes("/invoices") || path.includes("/subscriptions")) score += 60;
+  if (path.includes("/jobs/interviews")) score += 75;
+
+  return score;
+}
+
 export function scoreSearchResult(result: CrossDivisionSearchResult, query: string) {
   const normalizedQuery = normalizeSearchText(query);
   const tokens = tokenizeSearchQuery(query);
@@ -1302,6 +1232,7 @@ export function scoreSearchResult(result: CrossDivisionSearchResult, query: stri
   if (matchedTokens === 0 && !corpus.includes(normalizedQuery)) return -1;
 
   score += scoreIntent(result, tokens);
+  score += scoreRouteUtility(result, tokens);
   return score;
 }
 
@@ -1310,10 +1241,20 @@ export function searchCrossDivisionResults(
   query: string,
   options?: { limit?: number }
 ) {
-  const ranked = results
+  const deduplicated = new Map<string, { result: CrossDivisionSearchResult; score: number }>();
+  for (const entry of results
     .map((result) => ({ result, score: scoreSearchResult(result, query) }))
-    .filter((entry) => entry.score >= 0)
-    .sort((left, right) => right.score - left.score || right.result.priority - left.result.priority);
+    .filter((entry) => entry.score >= 0)) {
+    const dedupeKey = `${entry.result.url}::${entry.result.authRequirement}`;
+    const current = deduplicated.get(dedupeKey);
+    if (!current || entry.score > current.score) {
+      deduplicated.set(dedupeKey, entry);
+    }
+  }
+
+  const ranked = [...deduplicated.values()].sort(
+    (left, right) => right.score - left.score || right.result.priority - left.result.priority
+  );
 
   if (options?.limit) {
     return ranked.slice(0, options.limit);
