@@ -59,10 +59,10 @@ export default async function MarketplaceHomePage() {
               {copy.home.heroKicker}
             </div>
             <div className="space-y-4">
-              <h1 className="market-display max-w-5xl text-[var(--market-paper-white)]">
+              <h1 className="market-display max-w-4xl text-balance text-[var(--market-paper-white)]">
                 {copy.home.heroTitle}
               </h1>
-              <p className="max-w-2xl text-base leading-8 text-[var(--market-muted)]">
+              <p className="max-w-2xl text-pretty text-base leading-8 text-[var(--market-muted)]">
                 {copy.home.heroBody}
               </p>
             </div>

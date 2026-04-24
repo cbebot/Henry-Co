@@ -45,12 +45,11 @@ export function PropertySiteFooter() {
           <div className="grid gap-10 xl:grid-cols-[1.1fr_0.9fr]">
             <div>
               <div className="property-kicker">{property.name}</div>
-              <h2 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-0.05em] text-[var(--property-ink)]">
-                Premium property discovery with tighter moderation, calmer inquiry handling, and managed operations that continue after the listing goes live.
+              <h2 className="mt-5 max-w-3xl text-balance text-[2rem] font-semibold tracking-[-0.035em] text-[var(--property-ink)] sm:text-[2.25rem] leading-[1.15]">
+                Property discovery with tighter moderation and calmer inquiry handling.
               </h2>
               <p className="mt-5 max-w-2xl text-sm leading-8 text-[var(--property-ink-soft)]">
-                HenryCo Property is built for serious renters, buyers, owners, and operators who
-                want trust signals, clearer communication, and fewer low-information decisions.
+                Built for serious renters, buyers, owners, and operators who want trust signals and clearer communication from first click to signed agreement.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
@@ -90,7 +89,7 @@ export function PropertySiteFooter() {
 
           <div className="mt-10 grid gap-4 border-t border-[var(--property-line)] pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <div className="text-sm leading-7 text-[var(--property-ink-soft)]">
-              {property.supportEmail} · {property.supportPhone} · property.henrycogroup.com
+              {property.supportEmail} &middot; {property.supportPhone} &middot; property.henrycogroup.com
             </div>
             <Link
               href={getSharedAccountPropertyUrl()}
@@ -100,6 +99,16 @@ export function PropertySiteFooter() {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+        </div>
+
+        <div className="mx-auto mt-6 flex max-w-[92rem] flex-col items-start gap-3 px-1 text-xs text-[var(--property-ink-soft)]/80 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            &copy; {new Date().getFullYear()} {property.name}. All rights reserved.
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
+            <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--property-accent-strong)]" />
+            Designed by HenryCo Studio
+          </span>
         </div>
       </div>
     </footer>

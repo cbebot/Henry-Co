@@ -35,11 +35,17 @@ export default async function PropertyHomePage() {
       <section className="mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
           <div className="property-panel rounded-[3rem] px-7 py-8 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
-            <div className="property-kicker">{copy.home.heroKicker}</div>
-            <h1 className="property-display mt-6 max-w-5xl text-[var(--property-ink)]">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="property-kicker">{copy.home.heroKicker}</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                <ShieldCheck className="h-3 w-3 text-[var(--property-accent-strong)]" />
+                Vetted listings, verified owners
+              </span>
+            </div>
+            <h1 className="property-display mt-6 max-w-4xl text-balance text-[var(--property-ink)]">
               {copy.home.heroTitle}
             </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--property-ink-soft)] sm:text-lg">
+            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--property-ink-soft)] sm:text-lg">
               {copy.home.heroBody}
             </p>
 

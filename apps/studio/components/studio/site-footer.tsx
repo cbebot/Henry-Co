@@ -60,19 +60,17 @@ export function StudioSiteFooter({
           <div className="grid gap-10 xl:grid-cols-[1.1fr_0.9fr]">
             <div>
               <div className="studio-kicker">HenryCo Studio</div>
-              <h2 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
-                Premium websites, software platforms, and digital products built with sharper process and stronger delivery confidence.
+              <h2 className="mt-5 max-w-3xl text-balance text-[2rem] font-semibold tracking-[-0.035em] text-[var(--studio-ink)] sm:text-[2.25rem] leading-[1.15]">
+                Serious software, delivered with sharper process and cleaner handoff.
               </h2>
               <p className="mt-5 max-w-2xl text-sm leading-8 text-[var(--studio-ink-soft)]">
-                HenryCo Studio is built for businesses that need more than a pretty homepage. Studio
-                is designed to qualify serious projects, route them to the right team, structure
-                milestone pricing, and keep project visibility clean from first brief to final delivery.
+                Studio qualifies your project, routes it to the right team, structures milestone pricing, and keeps delivery visible from first brief to final launch.
               </p>
               <div className="mt-7 grid gap-3 sm:grid-cols-3">
                 {[
-                  "Package path and custom project path both stay premium.",
-                  "Proposals, payments, files, revisions, and updates can stay on one record.",
-                  "Project history stays ready inside your HenryCo account.",
+                  "Package path and custom path, both premium.",
+                  "Proposals, payments, files, and revisions on one record.",
+                  "Project history lives inside your HenryCo account.",
                 ].map((item) => (
                   <div key={item} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
                     {item}
@@ -117,7 +115,7 @@ export function StudioSiteFooter({
 
           <div className="mt-10 grid gap-4 border-t border-[var(--studio-line)] pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <div className="text-sm leading-7 text-[var(--studio-ink-soft)]">
-              {supportEmail || studio.supportEmail} · {supportPhone || studio.supportPhone} · studio.henrycogroup.com
+              {supportEmail || studio.supportEmail} &middot; {supportPhone || studio.supportPhone} &middot; studio.henrycogroup.com
             </div>
             <Link
               href={accountHref}
@@ -127,6 +125,16 @@ export function StudioSiteFooter({
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+        </div>
+
+        <div className="mx-auto mt-6 flex max-w-[92rem] flex-col items-start gap-3 px-1 text-xs text-[var(--studio-ink-soft)]/80 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            &copy; {new Date().getFullYear()} HenryCo Studio. All rights reserved.
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
+            <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--studio-signal)]" />
+            Designed by HenryCo Studio
+          </span>
         </div>
       </div>
     </footer>

@@ -616,7 +616,7 @@ export default function HubHomeClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.04 }}
-                className="mt-6 max-w-5xl text-4xl font-semibold leading-[0.96] tracking-tight text-white sm:text-6xl xl:text-7xl"
+                className="mt-6 max-w-4xl text-balance text-4xl font-semibold leading-[0.96] tracking-tight text-white sm:text-6xl xl:text-7xl"
               >
                 {copy.hero.titleBefore}
                 <span className="bg-gradient-to-r from-[color:var(--accent)] via-white to-white/70 bg-clip-text text-transparent">
@@ -629,7 +629,7 @@ export default function HubHomeClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.08 }}
-                className="mt-6 max-w-3xl text-base leading-8 text-white/68 sm:text-lg"
+                className="mt-6 max-w-2xl text-pretty text-base leading-8 text-white/68 sm:text-lg"
               >
                 {introText}
               </motion.p>
