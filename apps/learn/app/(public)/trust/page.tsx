@@ -6,9 +6,9 @@ export default function TrustPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
-        kicker="Trust & safety"
-        title="Learning records you can rely on—whether you’re a learner or an employer."
-        body="HenryCo Learn is designed so enrollments, progress, quizzes, and certificates are handled on the server, not hidden in someone’s browser. Internal-only courses stay restricted to the right people. Certificates link to a verification page anyone can use to confirm authenticity."
+        kicker="Trust &amp; safety"
+        title="Learning records you can rely on."
+        body="Enrollments, progress, quizzes, and certificates are handled on the server &mdash; not hidden in a browser. Internal courses stay restricted to the right people; certificates carry a verification code anyone can check."
       />
 
       <div className="mt-10 grid gap-5 lg:grid-cols-3">

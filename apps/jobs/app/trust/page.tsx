@@ -11,12 +11,10 @@ export default async function TrustPage() {
     <PublicShell primaryCta={{ label: "Browse verified employers", href: "/jobs?verified=1" }} secondaryCta={{ label: "For employers", href: "/hire" }}>
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:px-6 lg:px-8">
         <div className="jobs-panel rounded-[2.2rem] p-8 sm:p-10">
-          <p className="jobs-kicker">Trust & safety</p>
-          <h1 className="mt-3 jobs-heading max-w-4xl text-balance">We slow down the bad listings so the good ones shine.</h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--jobs-muted)]">
-            HenryCo Jobs is meant to feel human: real companies, real candidates, and a hiring process you can follow.
-            Verification, moderation, and clear stages are how we keep the marketplace from turning into another
-            anonymous job dump.
+          <p className="jobs-kicker">Trust &amp; safety</p>
+          <h1 className="mt-3 jobs-heading max-w-3xl text-balance">Slow the bad listings. Let the good ones shine.</h1>
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
+            Real companies, real candidates, and a hiring process you can follow. Verification, moderation, and visible stages keep this from turning into an anonymous job dump.
           </p>
           <div className="mt-8 flex flex-wrap gap-3 text-sm">
             <Link href="/jobs" className="font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline">

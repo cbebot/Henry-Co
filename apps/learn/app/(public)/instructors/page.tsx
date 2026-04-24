@@ -11,8 +11,8 @@ export default async function InstructorsPage() {
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
         kicker="Instructors"
-        title="People behind the academy trust layer."
-        body="Instructors are positioned as operational guides with real domain focus, not filler avatars."
+        title="Operators teaching what they run."
+        body="Each instructor is a working domain specialist. No filler avatars, no bought bios &mdash; just the people behind the trust layer."
       />
       <div className="mt-8 grid gap-5 lg:grid-cols-3">
         {academy.instructors.map((instructor) => (

@@ -13,8 +13,8 @@ export default async function CertificationsPage() {
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
         kicker="Verified certificates"
-        title="Earn credentials you can show—and others can confirm."
-        body="Not every course issues a certificate. When you see the certificate badge on a program, it means: finish the required lessons, meet any quiz rules, and we record completion in HenryCo Learn. You’ll get a PDF you can download plus a verification code for employers, clients, or partners."
+        title="Credentials you can show. Anyone can verify."
+        body="Certificate-eligible courses carry a badge. Finish the required lessons, pass any assessments, and HenryCo Learn records the completion. You get a downloadable PDF plus a public verification code for employers, clients, and partners."
       />
 
       <div className="mt-10 grid gap-5 lg:grid-cols-3">

@@ -20,8 +20,8 @@ export default async function AcademyPage() {
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
         kicker={t("How HenryCo Learn works")}
-        title={t("From “interested” to “I finished”—in plain steps.")}
-        body={t("You don’t need to be technical. Choose a program, sign in with your HenryCo account, learn in order, and—when the course includes it—pass a short assessment to unlock your certificate. Managers can also assign training; you’ll see both in one place.")}
+        title={t("From interested to finished, in plain steps.")}
+        body={t("Choose a program, sign in, learn in order, and (where the course includes it) pass a short assessment to unlock your certificate. Assigned training from managers appears in the same place.")}
       />
 
       <div className="mt-10 grid gap-5 lg:grid-cols-3">

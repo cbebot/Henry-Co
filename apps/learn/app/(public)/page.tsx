@@ -44,12 +44,12 @@ export default async function HomePage() {
                 {heroFirstName ? `, ${heroFirstName}` : ""}.
               </p>
             ) : null}
-            <h1 className={`learn-display max-w-5xl text-[var(--learn-ink)] ${viewer.user ? "mt-5" : "mt-6"}`}>
-              {t("Learn skills that stick—with structure, support, and proof you finished.")}
+            <h1 className={`learn-display max-w-3xl text-balance text-[var(--learn-ink)] ${viewer.user ? "mt-5" : "mt-6"}`}>
+              {t("Skills that stick. Proof that travels.")}
             </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--learn-ink-soft)]">
+            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--learn-ink-soft)] sm:text-lg">
               {t(
-                "Pick a course, move through lessons in order, check your progress anytime in your HenryCo account, and—when your program includes it—earn a certificate others can verify online. Built for busy adults who want clarity, not jargon.",
+                "Pick a course, move through lessons in order, track progress in your HenryCo account, and earn a certificate others can verify online. Built for busy adults who want clarity, not jargon.",
               )}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">

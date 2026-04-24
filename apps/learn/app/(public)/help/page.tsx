@@ -25,8 +25,8 @@ export default async function HelpPage({
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
         kicker={t("Help")}
-        title={t("We’re here when something blocks your learning.")}
-        body={t("Send a note about certificates, enrollment, assignments, or billing. The same HenryCo team that runs the academy receives it—include your course name and account email so we can help faster.")}
+        title={t("Stuck? We unblock fast.")}
+        body={t("Send a note about certificates, enrollment, assignments, or billing. Include your course name and account email so the academy team can help without back-and-forth.")}
       />
 
       {params.sent ? (
