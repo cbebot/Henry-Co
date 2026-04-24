@@ -1,16 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Building2, CalendarRange, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Building2, CalendarRange, ShieldCheck } from "lucide-react";
+import { PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
 import {
   PropertyAgentCard,
   PropertyAreaCard,
   PropertyCampaignPanel,
-  PropertyDifferentiatorCard,
   PropertyListingCard,
-  PropertyMetricGrid,
   PropertyPortfolioStats,
   PropertySearchBar,
   PropertySectionIntro,
-  PropertyTrustPill,
 } from "@/components/property/ui";
 import { PropertyRecommendedForYou } from "@/components/property/property-recommended-for-you";
 import { getPropertyHomeData } from "@/lib/property/data";
@@ -71,24 +69,32 @@ export default async function PropertyHomePage() {
           </div>
 
           <div className="grid gap-6">
-            <div className="property-panel rounded-[2.5rem] p-6 sm:p-8">
+            <div>
               <div className="property-kicker">{copy.home.whyKicker}</div>
-              <div className="mt-5 grid gap-4">
+              <ul className="mt-5 space-y-5 border-y border-[var(--property-line)] py-5">
                 {copy.home.whyCards.map((item, index) => {
                   const icons = [ShieldCheck, CalendarRange, Building2];
                   const Icon = icons[index] ?? ShieldCheck;
                   return (
-                  <div key={item.title} className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
-                    <Icon className="h-5 w-5 text-[var(--property-accent-strong)]" />
-                    <div className="mt-4 text-xl font-semibold text-[var(--property-ink)]">{item.title}</div>
-                    <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">{item.body}</p>
-                  </div>
+                    <li key={item.title} className="flex gap-4">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-black/15 text-[var(--property-accent-strong)]">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div>
+                        <div className="text-base font-semibold tracking-tight text-[var(--property-ink)]">{item.title}</div>
+                        <p className="mt-1 text-sm leading-relaxed text-[var(--property-ink-soft)]">{item.body}</p>
+                      </div>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             </div>
 
-            <PropertyMetricGrid items={metrics} />
+            <PublicProofRail
+              density="default"
+              variant="rail"
+              items={metrics.map((m) => ({ label: m.label, value: m.value, hint: m.hint }))}
+            />
           </div>
         </div>
       </section>
@@ -140,34 +146,51 @@ export default async function PropertyHomePage() {
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10 space-y-8">
+        <PublicSpotlight
+          tone="contrast"
+          eyebrow={copy.home.differentiatorsKicker}
+          title={copy.home.differentiatorsTitle}
+          body={copy.home.differentiatorsDescription}
+          aside={
+            <ul className="space-y-4">
+              {snapshot.differentiators.slice(0, 4).map((item) => (
+                <li key={item.id} className="border-l border-white/15 pl-4">
+                  <p className="text-sm font-semibold text-white">{item.name}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-white/75">{item.description}</p>
+                </li>
+              ))}
+            </ul>
+          }
+        />
+
         <div className="grid gap-6 xl:grid-cols-[0.94fr_1.06fr]">
           <div className="property-panel rounded-[2.5rem] p-6 sm:p-8">
             <div className="property-kicker">{copy.home.managedKicker}</div>
-            <h2 className="property-heading mt-4">
-              {copy.home.managedTitle}
-            </h2>
+            <h2 className="property-heading mt-4">{copy.home.managedTitle}</h2>
             <p className="mt-5 text-base leading-8 text-[var(--property-ink-soft)]">
               {copy.home.managedBody}
             </p>
-            <div className="mt-6 space-y-4">
+            <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
               {snapshot.services.map((service) => (
-                <div key={service.id} className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5">
-                  <div className="text-lg font-semibold text-[var(--property-ink)]">{service.title}</div>
-                  <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">{service.summary}</p>
-                  <div className="mt-4 flex flex-wrap gap-2">
+                <li key={service.id} className="py-4">
+                  <div className="flex flex-wrap items-baseline justify-between gap-3">
+                    <div className="text-base font-semibold tracking-tight text-[var(--property-ink)]">{service.title}</div>
+                  </div>
+                  <p className="mt-1 text-sm leading-relaxed text-[var(--property-ink-soft)]">{service.summary}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
                     {service.bullets.map((bullet) => (
                       <span
                         key={bullet}
-                        className="rounded-full border border-[var(--property-line)] px-3 py-1 text-xs text-[var(--property-ink-soft)]"
+                        className="rounded-full border border-[var(--property-line)] bg-black/10 px-2.5 py-1 text-[11px] font-medium text-[var(--property-ink-soft)]"
                       >
                         {bullet}
                       </span>
                     ))}
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
           <div className="space-y-6">
@@ -176,42 +199,18 @@ export default async function PropertyHomePage() {
               managedRecords={snapshot.managedRecords}
               copy={copy}
             />
-            <div className="grid gap-4 md:grid-cols-2">
-              <PropertyTrustPill
-                icon={<Sparkles className="h-5 w-5" />}
-                title={copy.home.trustPills[0].title}
-                body={copy.home.trustPills[0].body}
-              />
-              <PropertyTrustPill
-                icon={<ShieldCheck className="h-5 w-5" />}
-                title={copy.home.trustPills[1].title}
-                body={copy.home.trustPills[1].body}
-              />
-              <PropertyTrustPill
-                icon={<CalendarRange className="h-5 w-5" />}
-                title={copy.home.trustPills[2].title}
-                body={copy.home.trustPills[2].body}
-              />
-              <PropertyTrustPill
-                icon={<Building2 className="h-5 w-5" />}
-                title={copy.home.trustPills[3].title}
-                body={copy.home.trustPills[3].body}
-              />
-            </div>
+            <PublicProofRail
+              eyebrow="What you can rely on"
+              density="tight"
+              variant="rail"
+              items={[
+                { label: copy.home.trustPills[0].title, value: "Vetted", hint: copy.home.trustPills[0].body },
+                { label: copy.home.trustPills[1].title, value: "Verified", hint: copy.home.trustPills[1].body },
+                { label: copy.home.trustPills[2].title, value: "On time", hint: copy.home.trustPills[2].body },
+                { label: copy.home.trustPills[3].title, value: "Tracked", hint: copy.home.trustPills[3].body },
+              ]}
+            />
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <PropertySectionIntro
-          kicker={copy.home.differentiatorsKicker}
-          title={copy.home.differentiatorsTitle}
-          description={copy.home.differentiatorsDescription}
-        />
-        <div className="mt-8 grid gap-5 xl:grid-cols-2">
-          {snapshot.differentiators.slice(0, 4).map((item) => (
-            <PropertyDifferentiatorCard key={item.id} item={item} />
-          ))}
         </div>
       </section>
 
@@ -230,3 +229,4 @@ export default async function PropertyHomePage() {
     </main>
   );
 }
+
