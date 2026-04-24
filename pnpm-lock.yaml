@@ -30,6 +30,9 @@ importers:
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../../packages/intelligence
+      '@henryco/lifecycle':
+        specifier: workspace:^
+        version: link:../../packages/lifecycle
       '@henryco/trust':
         specifier: workspace:^
         version: link:../../packages/trust
@@ -777,6 +780,9 @@ importers:
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../../packages/intelligence
+      '@henryco/lifecycle':
+        specifier: workspace:^
+        version: link:../../packages/lifecycle
       '@henryco/trust':
         specifier: workspace:^
         version: link:../../packages/trust
@@ -1073,6 +1079,8 @@ importers:
       zod:
         specifier: ^4.3.6
         version: 4.3.6
+
+  packages/lifecycle: {}
 
   packages/pricing: {}
 

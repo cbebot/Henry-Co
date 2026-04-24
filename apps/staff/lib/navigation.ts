@@ -67,6 +67,12 @@ export const staffNavItems: WorkspaceNavItem[] = [
     section: "Operations",
   },
   {
+    href: "/operations/lifecycle",
+    label: "Lifecycle",
+    icon: "Activity",
+    section: "Operations",
+  },
+  {
     href: "/finance",
     label: "Finance",
     icon: "DollarSign",
@@ -119,6 +125,9 @@ export function getFilteredNavItems(viewer: WorkspaceViewer): WorkspaceNavItem[]
 
     if (item.href === "/support") return viewerCanAccessSupport(viewer);
     if (item.href === "/operations") return viewerCanAccessOperations(viewer);
+    if (item.href === "/operations/lifecycle") {
+      return viewerCanAccessOperations(viewer) || viewerCanAccessSupport(viewer);
+    }
     if (item.href === "/settings") return viewerCanAccessSystemSettings(viewer);
 
     const requiredDivision = DIVISION_NAV_MAP[item.href];

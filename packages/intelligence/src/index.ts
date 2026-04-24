@@ -67,6 +67,12 @@ export const HenryEventNames = {
   MARKETPLACE_REVIEW_FLAGGED: "henry.marketplace.review.flagged",
   MARKETPLACE_REVIEW_BLOCKED: "henry.marketplace.review.blocked",
   MARKETPLACE_DISPUTE_TRUST_IMPACT: "henry.marketplace.dispute.trust_impact",
+  // Lifecycle / CRM events
+  LIFECYCLE_STAGE_CHANGED: "henry.lifecycle.stage.changed",
+  LIFECYCLE_RECOMMENDATION_CLICKED: "henry.lifecycle.recommendation.clicked",
+  LIFECYCLE_DORMANT_DETECTED: "henry.lifecycle.dormant.detected",
+  LIFECYCLE_REENTRY_COMPLETED: "henry.lifecycle.reentry.completed",
+  LIFECYCLE_BLOCKER_DETECTED: "henry.lifecycle.blocker.detected",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };

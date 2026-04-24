@@ -14,6 +14,7 @@ import {
   Users,
   Settings,
   ShieldCheck,
+  Activity,
   type LucideIcon,
 } from "lucide-react";
 
@@ -32,6 +33,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   Users,
   Settings,
   ShieldCheck,
+  Activity,
 };
 
 export function resolveIcon(name: string): LucideIcon {

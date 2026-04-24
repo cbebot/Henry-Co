@@ -31,6 +31,8 @@ import {
   localizeAccountTask,
 } from "@/lib/account-localization";
 import { getAccountAppLocale } from "@/lib/locale-server";
+import { collectAndPersistLifecycleSnapshot } from "@/lib/lifecycle/collector";
+import LifecycleContinuePanel from "@/components/lifecycle/LifecycleContinuePanel";
 import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
@@ -39,11 +41,12 @@ export default async function OverviewPage() {
   const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const copy = getAccountCopy(locale);
-  const [data, funding, trust, supportThreads] = await Promise.all([
+  const [data, funding, trust, supportThreads, lifecycleSnapshot] = await Promise.all([
     getDashboardSummary(user.id, locale),
     getWalletFundingContext(user.id),
     getAccountTrustProfile(user.id),
     getSupportThreads(user.id),
+    collectAndPersistLifecycleSnapshot(user.id).catch(() => null),
   ]);
   const openSupportCount = supportThreads.filter((thread: Record<string, unknown>) => {
     const status = String(thread.status || "");
@@ -252,6 +255,8 @@ export default async function OverviewPage() {
           </span>
         </div>
       </section>
+
+      {lifecycleSnapshot ? <LifecycleContinuePanel snapshot={lifecycleSnapshot} /> : null}
 
       {attention.length > 0 ? (
         <section className="acct-card p-5">
