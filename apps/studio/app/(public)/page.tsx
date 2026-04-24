@@ -16,20 +16,18 @@ export default async function StudioHomePage() {
       <section className="mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="studio-panel studio-hero studio-mesh rounded-[3rem] px-7 py-8 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
-            <div className="studio-kicker">HenryCo Studio</div>
-            <h1 className="studio-display mt-6 max-w-5xl text-[var(--studio-ink)]">
-              Websites, web apps, and real software—guided from raw idea to polished launch.
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="studio-kicker">HenryCo Studio</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--studio-signal)]" />
+                Software, built with sharper process
+              </span>
+            </div>
+            <h1 className="studio-display mt-6 max-w-4xl text-balance text-[var(--studio-ink)]">
+              Websites, web apps, and real software &mdash; guided from raw idea to polished launch.
             </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-              We design and build for schools, churches, founders, logistics teams, marketplaces, creators, and established
-              businesses. You choose a ready-made project path when it fits, or describe something fully custom when it
-              does not. Either way you get plain-English scope, honest milestones, and one premium workspace tied to your
-              HenryCo account.
-            </p>
-            <p className="mt-4 max-w-3xl rounded-2xl border border-[var(--studio-line)] bg-black/15 px-4 py-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-              <span className="font-semibold text-[var(--studio-ink)]">Your next step is always obvious:</span>{" "}
-              browse curated project types, open a structured brief, or talk to Studio on the contact page. Deposits and
-              proof are explained before you pay—never hidden behind jargon.
+            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
+              We design and build serious software for teams that need a calmer path from brief to launch. Pick a ready-made project path when it fits, or describe something fully custom when it doesn&rsquo;t.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -41,14 +39,8 @@ export default async function StudioHomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/request"
-                className="studio-button-secondary inline-flex rounded-full px-6 py-4 text-sm font-semibold"
-              >
-                I already know what I need
-              </Link>
-              <Link
                 href="/pricing"
-                className="inline-flex items-center rounded-full border border-[var(--studio-line)] px-6 py-4 text-sm font-semibold text-[var(--studio-ink-soft)] transition hover:border-[rgba(151,244,243,0.28)] hover:text-[var(--studio-ink)]"
+                className="studio-button-secondary inline-flex rounded-full px-6 py-4 text-sm font-semibold"
               >
                 View packages
               </Link>

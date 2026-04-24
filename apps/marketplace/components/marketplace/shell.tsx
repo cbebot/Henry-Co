@@ -117,6 +117,16 @@ export async function PublicFooter() {
             </div>
           </div>
         </div>
+
+        <div className="mx-auto mt-6 flex max-w-[1480px] flex-col items-start gap-3 px-1 text-xs text-[var(--market-muted)]/90 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            &copy; {new Date().getFullYear()} HenryCo Marketplace. All rights reserved.
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
+            <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
+            Designed by HenryCo Studio
+          </span>
+        </div>
       </div>
     </footer>
   );
