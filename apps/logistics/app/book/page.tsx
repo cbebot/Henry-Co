@@ -20,10 +20,9 @@ export default async function BookPage() {
   return (
     <main className="px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Book a delivery</h1>
-        <p className="mt-3 text-sm leading-relaxed text-[var(--logistics-muted)] sm:text-base">
-          Tell us who is sending, who is receiving, and where we should meet both sides. You will receive a tracking
-          code immediately and can follow milestones as dispatch progresses.
+        <h1 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">Book a delivery.</h1>
+        <p className="mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-[var(--logistics-muted)] sm:text-base">
+          Sender, recipient, and where to meet both sides. Tracking code is issued immediately; milestones update as dispatch progresses.
         </p>
         <div className="mt-8">
           <BookRequestForm zones={zones} defaultMode="book" savedAddresses={savedAddresses} />

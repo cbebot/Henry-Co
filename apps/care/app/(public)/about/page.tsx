@@ -36,10 +36,10 @@ export default async function AboutPage() {
   const pickupHours = settings.pickup_hours || "Mon - Sat • 8:00 AM to 7:00 PM";
   const heroTitle =
     settings.about_title ||
-    "A premium care company built around trust, timing, and service quality.";
+    "Trust. Timing. Service quality.";
   const heroBody =
     settings.about_body ||
-    "HenryCo Care provides garment care, pickup and delivery, home cleaning, office cleaning, and recurring service plans through one polished customer experience. The focus is dependable execution, respectful handling, and a finish clients are happy to invite back.";
+    "HenryCo Care provides garment care, pickup and delivery, home cleaning, office cleaning, and recurring service plans through one polished customer experience \u2014 dependable execution, respectful handling, a finish clients are happy to invite back.";
 
   return (
     <main
@@ -68,9 +68,9 @@ export default async function AboutPage() {
                 About HenryCo Care
               </div>
 
-              <h1 className="mt-7 care-display max-w-4xl text-white">{heroTitle}</h1>
+              <h1 className="mt-7 care-display max-w-3xl text-balance text-white">{heroTitle}</h1>
 
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68">{heroBody}</p>
+              <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-white/68 sm:text-lg">{heroBody}</p>
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link

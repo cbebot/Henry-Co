@@ -17,14 +17,13 @@ export default async function LogisticsHomePage() {
           <div className="grid gap-10 px-6 py-10 sm:px-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-center">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                Pickup · dispatch · proof
+                Pickup &middot; dispatch &middot; proof
               </p>
-              <h1 className="mt-4 text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
-                Premium last-mile logistics you can track with confidence.
+              <h1 className="mt-4 max-w-3xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
+                Calm last-mile, visible end to end.
               </h1>
-              <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--logistics-muted)]">
-                HenryCo Logistics is built for people and businesses that need calm handoffs, honest ETAs, and a
-                customer experience that still feels premium when operations get noisy.
+              <p className="mt-5 max-w-xl text-pretty text-base leading-8 text-[var(--logistics-muted)] sm:text-lg">
+                Built for people and businesses that need honest ETAs, clean handoffs, and a customer experience that stays premium when operations get noisy.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
@@ -63,7 +62,7 @@ export default async function LogisticsHomePage() {
             {
               icon: MapPin,
               title: "Who it is for",
-              body: "Retail replenishment, founder-led brands, professional services, and HenryCo divisions that need predictable pickup and delivery without losing the plot.",
+              body: "Retail replenishment, founder-led brands, professional services, and HenryCo divisions that need predictable pickup and delivery at scale.",
             },
             {
               icon: Radio,
@@ -73,7 +72,7 @@ export default async function LogisticsHomePage() {
             {
               icon: Shield,
               title: "Proof and accountability",
-              body: "Milestones are written to an immutable-style event log. Proof-of-delivery is part of the product—not an afterthought.",
+              body: "Milestones write to an immutable event log. Proof-of-delivery is part of the product, not an afterthought.",
             },
           ].map((item) => (
             <article key={item.title} className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-6">

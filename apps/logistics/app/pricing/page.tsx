@@ -19,10 +19,9 @@ export default async function PricingPage() {
     <main className="px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl space-y-10">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Pricing that stays honest</h1>
-          <p className="mt-3 max-w-2xl text-[var(--logistics-muted)]">
-            Base fees combine your zone with a service rate card, then weight, size, urgency, and fragile handling layer
-            in predictably. Final quotes may still be confirmed by dispatch for edge cases.
+          <h1 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">Pricing, honest from base to final.</h1>
+          <p className="mt-3 max-w-2xl text-pretty text-[var(--logistics-muted)]">
+            Base fee combines your zone with a service rate card; weight, size, urgency, and fragile handling layer on predictably. Dispatch may confirm final numbers only on genuine edge cases.
           </p>
         </div>
 

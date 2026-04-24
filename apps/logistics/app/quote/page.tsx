@@ -20,10 +20,9 @@ export default async function QuotePage() {
   return (
     <main className="px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Request a quote</h1>
-        <p className="mt-3 text-sm leading-relaxed text-[var(--logistics-muted)] sm:text-base">
-          We price from your lane, service type, and parcel profile. Quotes are saved with a tracking reference so you
-          can upgrade to a full booking without retyping everything.
+        <h1 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">See the price before you book.</h1>
+        <p className="mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-[var(--logistics-muted)] sm:text-base">
+          Priced from your lane, service type, and parcel profile. Quotes save with a tracking reference so a booking is one click later &mdash; no retyping.
         </p>
         <div className="mt-8">
           <BookRequestForm zones={zones} defaultMode="quote" savedAddresses={savedAddresses} />

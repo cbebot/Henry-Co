@@ -11,11 +11,9 @@ export default function BusinessPage() {
   return (
     <main className="px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl space-y-8">
-        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Built for operators, not one-off chaos</h1>
-        <p className="text-[var(--logistics-muted)]">
-          HenryCo Logistics pairs public booking and tracking with the same shipment model we use internally. Business
-          teams get predictable pricing, milestone visibility, proof-of-delivery discipline, and a path into the shared
-          HenryCo account for receipts, notifications, and support threads.
+        <h1 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">Built for operators.</h1>
+        <p className="max-w-2xl text-pretty text-[var(--logistics-muted)]">
+          Public booking and tracking run on the same shipment model we use internally. Business shippers get predictable pricing, milestone visibility, proof-of-delivery discipline, and the shared HenryCo account for receipts, notifications, and support history.
         </p>
         <ul className="space-y-3 text-sm text-[var(--logistics-muted)]">
           <li className="flex gap-2">
