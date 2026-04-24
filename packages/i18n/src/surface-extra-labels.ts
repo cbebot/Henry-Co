@@ -880,7 +880,41 @@ export const EXTRA_SURFACE_LABELS_FR = {
   Cancelled: "Annulé",
   Expired: "Expiré",
   Paused: "En pause",
-  Paid: "Payé"
+  Paid: "Payé",
+  // Notification signal (in-app alerts)
+  "On-device alerts": "Alertes sur l'appareil",
+  "Controls how new notifications signal you on this device. They do not change which notifications you receive.":
+    "Contrôle la façon dont les nouvelles notifications vous sont signalées sur cet appareil. Cela ne modifie pas les notifications que vous recevez.",
+  "In-app preview popups": "Aperçus dans l'application",
+  "Show a small toast in the corner when a new notification arrives.":
+    "Afficher un petit aperçu dans le coin lors de l'arrivée d'une nouvelle notification.",
+  "Notification sound": "Son de notification",
+  "A short, soft chime when a new notification arrives.":
+    "Un carillon court et discret à chaque nouvelle notification.",
+  "Sound is not supported on this browser.":
+    "Le son n'est pas pris en charge par ce navigateur.",
+  "Test sound": "Tester le son",
+  "Played": "Joué",
+  "Tap or click anywhere on the page first to allow sound, then try again.":
+    "Cliquez ou touchez d'abord la page pour autoriser le son, puis réessayez.",
+  "Vibration": "Vibration",
+  "A brief haptic pulse on supported devices when a new notification arrives.":
+    "Une brève vibration sur les appareils compatibles lors de l'arrivée d'une nouvelle notification.",
+  "Vibration is not supported on this device.":
+    "La vibration n'est pas prise en charge sur cet appareil.",
+  "Test vibration": "Tester la vibration",
+  "High-priority only": "Priorité élevée uniquement",
+  "Only signal urgent alerts (security and time-sensitive updates). Other notifications still appear in your feed.":
+    "Ne signaler que les alertes urgentes (sécurité et mises à jour critiques). Les autres notifications restent dans votre fil.",
+  "Quiet hours": "Heures calmes",
+  "Mute sound and vibration during a daily window. Toasts still appear visually.":
+    "Désactiver le son et la vibration pendant une plage quotidienne. Les aperçus restent affichés.",
+  "Start": "Début",
+  "End": "Fin",
+  "View notifications": "Voir les notifications",
+  "Open notification": "Ouvrir la notification",
+  "Priority": "Prioritaire",
+  "Dismiss notification": "Ignorer la notification"
 } as const;
 
 export const EXTRA_SURFACE_LABELS_ES = {
@@ -1761,7 +1795,31 @@ export const EXTRA_SURFACE_LABELS_ES = {
   Cancelled: "Cancelada",
   Expired: "Expirada",
   Paused: "En pausa",
-  Paid: "Pagada"
+  Paid: "Pagada",
+  "On-device alerts": "Alertas en este dispositivo",
+  "Controls how new notifications signal you on this device. They do not change which notifications you receive.": "Controla cómo te avisan las nuevas notificaciones en este dispositivo. No cambian qué notificaciones recibes.",
+  "In-app preview popups": "Vistas previas dentro de la app",
+  "Show a small toast in the corner when a new notification arrives.": "Muestra un pequeño aviso en una esquina cuando llega una nueva notificación.",
+  "Notification sound": "Sonido de notificación",
+  "A short, soft chime when a new notification arrives.": "Un breve y suave repique cuando llega una nueva notificación.",
+  "Sound is not supported on this browser.": "El sonido no es compatible con este navegador.",
+  "Test sound": "Probar sonido",
+  Played: "Reproducido",
+  "Tap or click anywhere on the page first to allow sound, then try again.": "Toca o haz clic en cualquier parte de la página para permitir el sonido y vuelve a intentarlo.",
+  Vibration: "Vibración",
+  "A brief haptic pulse on supported devices when a new notification arrives.": "Un breve pulso háptico en dispositivos compatibles cuando llega una nueva notificación.",
+  "Vibration is not supported on this device.": "La vibración no es compatible con este dispositivo.",
+  "Test vibration": "Probar vibración",
+  "High-priority only": "Solo prioridad alta",
+  "Only signal urgent alerts (security and time-sensitive updates). Other notifications still appear in your feed.": "Solo avisar de alertas urgentes (seguridad y actualizaciones sensibles al tiempo). Las demás notificaciones siguen apareciendo en tu lista.",
+  "Quiet hours": "Horas silenciosas",
+  "Mute sound and vibration during a daily window. Toasts still appear visually.": "Silencia el sonido y la vibración durante una franja diaria. Los avisos visuales siguen apareciéndose.",
+  Start: "Inicio",
+  End: "Fin",
+  "View notifications": "Ver notificaciones",
+  Priority: "Prioridad",
+  "Dismiss notification": "Descartar notificación",
+  "Open notification": "Abrir notificación"
 } as const;
 
 export const EXTRA_SURFACE_LABELS_PT = {
@@ -2642,7 +2700,31 @@ export const EXTRA_SURFACE_LABELS_PT = {
   Cancelled: "Cancelada",
   Expired: "Expirada",
   Paused: "Pausada",
-  Paid: "Paga"
+  Paid: "Paga",
+  "On-device alerts": "Alertas neste dispositivo",
+  "Controls how new notifications signal you on this device. They do not change which notifications you receive.": "Controla como as novas notificações o avisam neste dispositivo. Não alteram quais notificações você recebe.",
+  "In-app preview popups": "Pré-visualizações dentro do app",
+  "Show a small toast in the corner when a new notification arrives.": "Mostra um pequeno aviso no canto quando chega uma nova notificação.",
+  "Notification sound": "Som de notificação",
+  "A short, soft chime when a new notification arrives.": "Um toque curto e suave quando chega uma nova notificação.",
+  "Sound is not supported on this browser.": "O som não é compatível com este navegador.",
+  "Test sound": "Testar som",
+  Played: "Reproduzido",
+  "Tap or click anywhere on the page first to allow sound, then try again.": "Toque ou clique em qualquer parte da página para permitir o som e tente novamente.",
+  Vibration: "Vibração",
+  "A brief haptic pulse on supported devices when a new notification arrives.": "Um breve pulso háptico em dispositivos compatíveis quando chega uma nova notificação.",
+  "Vibration is not supported on this device.": "A vibração não é compatível com este dispositivo.",
+  "Test vibration": "Testar vibração",
+  "High-priority only": "Apenas prioridade alta",
+  "Only signal urgent alerts (security and time-sensitive updates). Other notifications still appear in your feed.": "Avisar somente sobre alertas urgentes (segurança e atualizações sensíveis ao tempo). As demais notificações continuam aparecendo na sua lista.",
+  "Quiet hours": "Horário silencioso",
+  "Mute sound and vibration during a daily window. Toasts still appear visually.": "Silencia o som e a vibração durante uma faixa diária. Os avisos visuais continuam aparecendo.",
+  Start: "Início",
+  End: "Fim",
+  "View notifications": "Ver notificações",
+  Priority: "Prioridade",
+  "Dismiss notification": "Dispensar notificação",
+  "Open notification": "Abrir notificação"
 } as const;
 
 export const EXTRA_SURFACE_LABELS_AR = {
@@ -3523,7 +3605,31 @@ export const EXTRA_SURFACE_LABELS_AR = {
   Cancelled: "ملغى",
   Expired: "منتهي",
   Paused: "متوقف مؤقتًا",
-  Paid: "مدفوع"
+  Paid: "مدفوع",
+  "On-device alerts": "تنبيهات على هذا الجهاز",
+  "Controls how new notifications signal you on this device. They do not change which notifications you receive.": "يتحكم في كيفية تنبيهك بالإشعارات الجديدة على هذا الجهاز. لا يغيّر الإشعارات التي تتلقاها.",
+  "In-app preview popups": "معاينات داخل التطبيق",
+  "Show a small toast in the corner when a new notification arrives.": "إظهار إشعار صغير في الزاوية عند وصول إشعار جديد.",
+  "Notification sound": "صوت الإشعار",
+  "A short, soft chime when a new notification arrives.": "نغمة قصيرة وهادئة عند وصول إشعار جديد.",
+  "Sound is not supported on this browser.": "الصوت غير مدعوم في هذا المتصفح.",
+  "Test sound": "اختبار الصوت",
+  Played: "تم التشغيل",
+  "Tap or click anywhere on the page first to allow sound, then try again.": "انقر أو اضغط في أي مكان على الصفحة للسماح بالصوت ثم حاول مرة أخرى.",
+  Vibration: "اهتزاز",
+  "A brief haptic pulse on supported devices when a new notification arrives.": "نبضة لمسية قصيرة على الأجهزة المدعومة عند وصول إشعار جديد.",
+  "Vibration is not supported on this device.": "الاهتزاز غير مدعوم على هذا الجهاز.",
+  "Test vibration": "اختبار الاهتزاز",
+  "High-priority only": "الأولوية العالية فقط",
+  "Only signal urgent alerts (security and time-sensitive updates). Other notifications still appear in your feed.": "إرسال التنبيهات العاجلة فقط (الأمان والتحديثات الحساسة للوقت). تظهر الإشعارات الأخرى في قائمتك كالمعتاد.",
+  "Quiet hours": "ساعات الهدوء",
+  "Mute sound and vibration during a daily window. Toasts still appear visually.": "كتم الصوت والاهتزاز خلال نافذة يومية. تظل الإشعارات المرئية تظهر.",
+  Start: "البداية",
+  End: "النهاية",
+  "View notifications": "عرض الإشعارات",
+  Priority: "أولوية",
+  "Dismiss notification": "تجاهل الإشعار",
+  "Open notification": "فتح الإشعار"
 } as const;
 
 export const EXTRA_SURFACE_LABELS_IG = {
@@ -6451,7 +6557,31 @@ export const EXTRA_SURFACE_LABELS_DE = {
   Cancelled: "Gekündigt",
   Expired: "Abgelaufen",
   Paused: "Pausiert",
-  Paid: "Bezahlt"
+  Paid: "Bezahlt",
+  "On-device alerts": "Hinweise auf diesem Gerät",
+  "Controls how new notifications signal you on this device. They do not change which notifications you receive.": "Legt fest, wie neue Benachrichtigungen dich auf diesem Gerät signalisieren. Welche Benachrichtigungen du erhältst, ändert sich dadurch nicht.",
+  "In-app preview popups": "Vorschau-Pop-ups in der App",
+  "Show a small toast in the corner when a new notification arrives.": "Zeige einen kleinen Hinweis in der Ecke, wenn eine neue Benachrichtigung eintrifft.",
+  "Notification sound": "Benachrichtigungston",
+  "A short, soft chime when a new notification arrives.": "Ein kurzer, leiser Ton, wenn eine neue Benachrichtigung eintrifft.",
+  "Sound is not supported on this browser.": "Ton wird in diesem Browser nicht unterstützt.",
+  "Test sound": "Ton testen",
+  Played: "Abgespielt",
+  "Tap or click anywhere on the page first to allow sound, then try again.": "Tippe oder klicke zuerst irgendwo auf die Seite, um Ton zuzulassen, und versuche es dann erneut.",
+  Vibration: "Vibration",
+  "A brief haptic pulse on supported devices when a new notification arrives.": "Ein kurzer haptischer Impuls auf unterstützten Geräten, wenn eine neue Benachrichtigung eintrifft.",
+  "Vibration is not supported on this device.": "Vibration wird auf diesem Gerät nicht unterstützt.",
+  "Test vibration": "Vibration testen",
+  "High-priority only": "Nur hohe Priorität",
+  "Only signal urgent alerts (security and time-sensitive updates). Other notifications still appear in your feed.": "Nur dringende Hinweise signalisieren (Sicherheit und zeitkritische Aktualisierungen). Andere Benachrichtigungen erscheinen weiterhin in deiner Liste.",
+  "Quiet hours": "Ruhezeiten",
+  "Mute sound and vibration during a daily window. Toasts still appear visually.": "Ton und Vibration während eines täglichen Zeitfensters stummschalten. Visuelle Hinweise erscheinen weiterhin.",
+  Start: "Start",
+  End: "Ende",
+  "View notifications": "Benachrichtigungen anzeigen",
+  Priority: "Priorität",
+  "Dismiss notification": "Benachrichtigung schließen",
+  "Open notification": "Benachrichtigung öffnen"
 } as const;
 
 export const EXTRA_SURFACE_LABELS_ZH = {
@@ -8647,7 +8777,31 @@ export const EXTRA_SURFACE_LABELS_IT = {
   "Cancelled": "Annullato",
   "Expired": "Scaduto",
   "Paused": "In pausa",
-  "Paid": "Pagato"
+  "Paid": "Pagato",
+  "On-device alerts": "Avvisi su questo dispositivo",
+  "Controls how new notifications signal you on this device. They do not change which notifications you receive.": "Controlla come le nuove notifiche ti avvisano su questo dispositivo. Non modificano quali notifiche ricevi.",
+  "In-app preview popups": "Anteprime nell'app",
+  "Show a small toast in the corner when a new notification arrives.": "Mostra un piccolo avviso in un angolo quando arriva una nuova notifica.",
+  "Notification sound": "Suono di notifica",
+  "A short, soft chime when a new notification arrives.": "Un breve e delicato segnale acustico all'arrivo di una nuova notifica.",
+  "Sound is not supported on this browser.": "Il suono non è supportato in questo browser.",
+  "Test sound": "Prova suono",
+  "Played": "Riprodotto",
+  "Tap or click anywhere on the page first to allow sound, then try again.": "Tocca o fai clic in un punto qualsiasi della pagina per consentire l'audio, poi riprova.",
+  "Vibration": "Vibrazione",
+  "A brief haptic pulse on supported devices when a new notification arrives.": "Un breve impulso aptico sui dispositivi supportati all'arrivo di una nuova notifica.",
+  "Vibration is not supported on this device.": "La vibrazione non è supportata su questo dispositivo.",
+  "Test vibration": "Prova vibrazione",
+  "High-priority only": "Solo priorità alta",
+  "Only signal urgent alerts (security and time-sensitive updates). Other notifications still appear in your feed.": "Avvisa solo per allerte urgenti (sicurezza e aggiornamenti sensibili al tempo). Le altre notifiche restano nella tua lista.",
+  "Quiet hours": "Ore silenziose",
+  "Mute sound and vibration during a daily window. Toasts still appear visually.": "Disattiva suono e vibrazione in una fascia oraria giornaliera. Gli avvisi visivi continuano ad apparire.",
+  "Start": "Inizio",
+  "End": "Fine",
+  "View notifications": "Visualizza notifiche",
+  "Priority": "Priorità",
+  "Dismiss notification": "Chiudi notifica",
+  "Open notification": "Apri notifica"
 } as const;
 
 export const EXTRA_SURFACE_LABELS: SurfaceExtraLabels = {
