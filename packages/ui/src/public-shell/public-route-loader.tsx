@@ -1,19 +1,22 @@
 import type { ReactNode } from "react";
-import { HenryCoActivityIndicator } from "../loading/HenryCoActivityIndicator";
+import { HenryCoBrandedSpinner } from "../loading/HenryCoBrandedSpinner";
 import { cn } from "../lib/cn";
 
 /**
  * Unified public route-level loading indicator.
- * Re-exports the proven HenryCoPublicRouteLoading pattern under the
- * standardized public-shell API name.
+ *
+ * Calm, branded, screen-reader friendly. Appears across every public division's
+ * `/loading.tsx` by convention so the ecosystem feels one-and-the-same during
+ * navigation.
  */
 export function PublicRouteLoader({
   eyebrow,
-  title = "Loading",
-  subtitle = "Preparing this view.",
+  title = "One moment",
+  subtitle = "Bringing this page together.",
   className,
   spinnerClassName,
   tone = "default",
+  size = "lg",
   children,
 }: {
   eyebrow?: string;
@@ -22,6 +25,7 @@ export function PublicRouteLoader({
   className?: string;
   spinnerClassName?: string;
   tone?: "default" | "onDark";
+  size?: "md" | "lg" | "xl";
   children?: ReactNode;
 }) {
   const onDark = tone === "onDark";
@@ -32,20 +36,19 @@ export function PublicRouteLoader({
       aria-live="polite"
       aria-busy="true"
     >
-      <div className="flex min-h-[min(50vh,28rem)] flex-col items-center justify-center gap-4">
-        <HenryCoActivityIndicator
-          className={cn(
-            onDark ? "text-white/85" : "text-zinc-700 dark:text-white/80",
-            spinnerClassName
-          )}
+      <div className="flex min-h-[min(50vh,28rem)] flex-col items-center justify-center gap-5">
+        <HenryCoBrandedSpinner
+          size={size}
+          tone={tone}
+          className={cn(spinnerClassName)}
           label={title}
         />
         <div className="max-w-md text-center">
           {eyebrow ? (
             <p
               className={cn(
-                "text-[11px] font-semibold uppercase tracking-[0.2em]",
-                onDark ? "text-white/48" : "text-zinc-500 dark:text-white/45"
+                "text-[11px] font-semibold uppercase tracking-[0.22em]",
+                onDark ? "text-white/50" : "text-zinc-500 dark:text-white/45"
               )}
             >
               {eyebrow}
@@ -53,7 +56,7 @@ export function PublicRouteLoader({
           ) : null}
           <p
             className={cn(
-              "text-sm font-semibold",
+              "text-[0.95rem] font-semibold tracking-[-0.01em]",
               onDark ? "text-white" : "text-zinc-900 dark:text-white",
               eyebrow && "mt-2"
             )}
@@ -62,8 +65,8 @@ export function PublicRouteLoader({
           </p>
           <p
             className={cn(
-              "mt-1 text-sm leading-relaxed",
-              onDark ? "text-white/62" : "text-zinc-600 dark:text-white/60"
+              "mt-1.5 text-sm leading-relaxed",
+              onDark ? "text-white/65" : "text-zinc-600 dark:text-white/60"
             )}
           >
             {subtitle}

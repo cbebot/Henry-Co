@@ -11,6 +11,7 @@ export * from "./public/public-button";
 export * from "./public/public-cta";
 export * from "./public/public-section";
 export * from "./loading/HenryCoActivityIndicator";
+export * from "./loading/HenryCoBrandedSpinner";
 export * from "./loading/ButtonPendingContent";
 export * from "./loading/FormPendingButton";
 export * from "./live/RouteLiveRefresh";
@@ -22,6 +23,7 @@ export { PublicRouteLoader } from "./public-shell/public-route-loader";
 export { PublicPageSkeleton } from "./public-shell/public-page-skeleton";
 export { PublicShellLayout } from "./public-shell/public-shell-layout";
 export { PublicThemeGuard } from "./public-shell/public-theme-guard";
+export { PublicBrandLoader } from "./public-shell/public-brand-loader";
 export { AvatarFallback, getInitials } from "./public-shell/avatar-fallback";
 export { AccountDropdown } from "./public-shell/account-dropdown";
 export { PublicEmptyState, PublicErrorState } from "./public-shell/public-empty-state";
@@ -49,8 +51,43 @@ export {
   type PublicMenuSection,
 } from "./public-shell/public-standard";
 export {
+  PublicDesignTokens,
+  PublicBrandTokens,
+  PublicTypographyTokens,
+  PublicRadiusTokens,
+  PublicElevationTokens,
+  PublicFocusTokens,
+  PublicSafeAreaTokens,
+  PublicSurfaceStyles,
+  type PublicDesignTokensNamespace,
+} from "./public-shell/public-tokens";
+export { PublicCard, PublicCardGrid, PublicCardHeader } from "./public-shell/public-card";
+export { PublicBadge, PublicStatusDot } from "./public-shell/public-badge";
+export {
+  PublicField,
+  PublicLabel,
+  PublicInput,
+  PublicTextarea,
+  PublicSelect,
+  PublicFormStack,
+  PublicFormActions,
+} from "./public-shell/public-form";
+export { PublicHero, PublicHeroActions } from "./public-shell/public-hero";
+export {
+  PublicToastProvider,
+  usePublicToast,
+  makePublicToastApi,
+  type PublicToastInput,
+  type PublicToastTone,
+} from "./public-shell/public-toast";
+export { PublicEyebrow, PublicDivider, PublicBrandMark, PublicTrustStrip } from "./public-shell/public-micro";
+export {
   PublicThemeProvider,
   PublicLocaleProvider,
   PublicPreferencesProvider,
 } from "./public-shell/public-providers";
+export {
+  CrossDivisionSearchExperience,
+  HenryCoSearchBreadcrumb,
+} from "./search/CrossDivisionSearchExperience";
 export type { PublicMobileMenu } from "./public-shell";

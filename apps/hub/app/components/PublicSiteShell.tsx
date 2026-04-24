@@ -8,6 +8,7 @@ import { Layers3, Mail, Phone } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
 import {
   type PublicAccountUser,
+  HenryCoSearchBreadcrumb,
   HenryCoPublicAccountPresets,
   PublicAccountChip,
   PublicHeader,
@@ -127,6 +128,12 @@ export default function PublicSiteShell({
         items={hubNav.primaryNav}
         auxLink={hubNav.defaultCtas?.aux}
         primaryCta={hubNav.defaultCtas?.primary}
+        actions={
+          <HenryCoSearchBreadcrumb
+            href="/search"
+            className="hidden lg:inline-flex border-white/12 bg-white/5 text-[var(--site-text-soft,rgba(255,255,255,0.92))] hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
+          />
+        }
         accountMenu={
           accountChip ? (
             <PublicAccountChip
@@ -275,8 +282,19 @@ export default function PublicSiteShell({
           </div>
         </div>
 
-        <div className="border-t border-white/8 px-4 py-4 text-center text-xs text-[var(--site-text-muted,rgba(255,255,255,0.55))] sm:px-6 lg:px-8">
-          © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}
+        <div className="border-t border-white/8 px-4 py-4 text-xs text-[var(--site-text-muted,rgba(255,255,255,0.55))] sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}
+            </div>
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
+              <span
+                aria-hidden
+                className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent,#C9A227)]/85"
+              />
+              Designed by HenryCo Studio
+            </span>
+          </div>
         </div>
       </footer>
         </>
