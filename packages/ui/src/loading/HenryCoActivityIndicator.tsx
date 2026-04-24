@@ -1,8 +1,12 @@
 import type { HTMLAttributes } from "react";
+import { HenryCoBrandedSpinner } from "./HenryCoBrandedSpinner";
 
 /**
- * Lightweight branded activity indicator — no minimum duration, no blocking timers.
- * Use inside buttons (small) or inline rows.
+ * Lightweight branded activity indicator.
+ *
+ * Now delegates to `HenryCoBrandedSpinner` so every public consumer (buttons,
+ * inline rows, route loaders) shares the same premium amber loading language.
+ * API is preserved so existing callers keep working.
  */
 export function HenryCoActivityIndicator({
   size = "md",
@@ -14,18 +18,12 @@ export function HenryCoActivityIndicator({
   /** Visually hidden label for accessibility */
   label?: string;
 }) {
-  const dim = size === "sm" ? "h-4 w-4 border-2" : "h-5 w-5 border-2";
   return (
-    <span
-      role="status"
-      className={`inline-flex items-center justify-center ${className}`}
+    <HenryCoBrandedSpinner
+      size={size}
+      label={label}
+      className={className}
       {...rest}
-    >
-      <span
-        className={`${dim} rounded-full border-current border-t-transparent animate-spin opacity-90`}
-        aria-hidden
-      />
-      {label ? <span className="sr-only">{label}</span> : null}
-    </span>
+    />
   );
 }
