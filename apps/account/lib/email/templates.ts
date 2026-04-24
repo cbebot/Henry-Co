@@ -237,29 +237,57 @@ function layout(content: string, locale: AppLocale = "en") {
   const dir = locale === "ar" ? "rtl" : "ltr";
   return `<!DOCTYPE html>
 <html lang="${locale}" dir="${dir}">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>HenryCo</title>
 <style>
-  body { margin: 0; padding: 0; background: ${BG_COLOR}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: ${DARK_TEXT}; }
-  .wrapper { max-width: 560px; margin: 0 auto; padding: 40px 20px; }
-  .card { background: #FFFFFF; border: 1px solid #E8E4DD; border-radius: 20px; padding: 32px; }
-  .brand { text-align: center; margin-bottom: 24px; }
-  .brand-logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: ${BRAND_COLOR}; color: white; font-weight: bold; font-size: 18px; border-radius: 12px; }
-  h1 { font-size: 22px; font-weight: 700; margin: 0 0 8px; }
-  p { font-size: 15px; line-height: 1.6; color: ${MUTED_TEXT}; margin: 0 0 16px; }
-  .btn { display: inline-block; padding: 12px 28px; background: ${BRAND_COLOR}; color: white !important; text-decoration: none; font-weight: 600; font-size: 14px; border-radius: 12px; }
-  .footer { text-align: center; margin-top: 24px; font-size: 12px; color: ${MUTED_TEXT}; }
-  .metric { background: #F5F3EF; border-radius: 12px; padding: 16px; margin: 12px 0; }
-  .metric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: ${MUTED_TEXT}; }
-  .metric-value { font-size: 24px; font-weight: 700; color: ${DARK_TEXT}; margin-top: 4px; }
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 0; background: ${BG_COLOR}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif; color: ${DARK_TEXT}; -webkit-font-smoothing: antialiased; }
+  .wrapper { max-width: 560px; margin: 0 auto; padding: 48px 20px; }
+  .card { background: #FFFFFF; border: 1px solid #ECE8DF; border-radius: 24px; padding: 36px 32px; box-shadow: 0 20px 60px -30px rgba(26,24,20,0.18); }
+  .brand { text-align: center; margin-bottom: 28px; }
+  .brand-logo { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; background: ${BRAND_COLOR}; color: #1A1814; font-weight: 800; font-size: 15px; letter-spacing: 0.02em; border-radius: 14px; box-shadow: 0 10px 32px -10px rgba(201,162,39,0.55); }
+  .brand-name { display: block; margin-top: 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: ${MUTED_TEXT}; }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 10px; color: ${DARK_TEXT}; }
+  p { font-size: 15px; line-height: 1.7; color: #4B4540; margin: 0 0 16px; }
+  .btn { display: inline-block; padding: 13px 28px; background: ${BRAND_COLOR}; color: #1A1814 !important; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.01em; border-radius: 999px; box-shadow: 0 12px 30px -10px rgba(201,162,39,0.45); }
+  .footer { text-align: center; margin-top: 28px; font-size: 12px; line-height: 1.7; color: ${MUTED_TEXT}; }
+  .footer a { color: ${BRAND_COLOR}; text-decoration: none; font-weight: 600; }
+  .attribution { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: ${MUTED_TEXT}; }
+  .attribution::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 999px; background: ${BRAND_COLOR}; }
+  .metric { background: #F5F3EF; border: 1px solid #ECE8DF; border-radius: 14px; padding: 16px 18px; margin: 14px 0; }
+  .metric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: ${MUTED_TEXT}; }
+  .metric-value { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; color: ${DARK_TEXT}; margin-top: 6px; }
+  ul { color: #4B4540; font-size: 15px; line-height: 1.85; padding-left: 22px; margin: 14px 0; }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #0B0A08 !important; color: #F2EEE4 !important; }
+    .card { background: #141210 !important; border-color: #2A2722 !important; box-shadow: 0 30px 90px rgba(0,0,0,0.6) !important; }
+    h1 { color: #F6F1E5 !important; }
+    p, ul { color: #BDB4A5 !important; }
+    .metric { background: #1C1915 !important; border-color: #2A2722 !important; }
+    .metric-label { color: #9B9280 !important; }
+    .metric-value { color: #F6F1E5 !important; }
+    .footer, .attribution { color: #9B9280 !important; }
+    .brand-name { color: #9B9280 !important; }
+    .brand-logo { box-shadow: 0 14px 40px -10px rgba(201,162,39,0.35) !important; }
+  }
 </style>
 </head>
 <body>
 <div class="wrapper">
-  <div class="brand"><div class="brand-logo">H</div></div>
+  <div class="brand">
+    <div class="brand-logo">H&amp;Co</div>
+    <span class="brand-name">Henry &amp; Co.</span>
+  </div>
   <div class="card">${content}</div>
   <div class="footer">
-    <p>Henry & Co. Group &middot; <a href="https://account.henrycogroup.com" style="color:${BRAND_COLOR}">${copy.footerManage}</a></p>
+    <p>Henry &amp; Co. Group &middot; <a href="https://account.henrycogroup.com">${copy.footerManage}</a></p>
     <p>${copy.footerReason}</p>
+    <div class="attribution">Designed by HenryCo Studio</div>
   </div>
 </div>
 </body>

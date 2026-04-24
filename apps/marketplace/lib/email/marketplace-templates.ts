@@ -77,48 +77,76 @@ export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput) 
         .join("")}</ul>`
     : "";
 
-  const html = `
-  <body style="margin:0;padding:0;background:#f6f1e7;font-family:Manrope,Aptos,Segoe UI,sans-serif;color:#1d1811;">
-    <div style="max-width:640px;margin:0 auto;padding:32px 20px 48px;">
-      <div style="border:1px solid rgba(63,44,18,0.12);background:rgba(255,251,245,0.94);border-radius:28px;overflow:hidden;box-shadow:0 24px 80px rgba(45,28,9,0.12);">
-        <div style="padding:28px 28px 12px;background:linear-gradient(135deg,#fffaf2 0%,#f3e3c5 100%);">
-          <div style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;font-weight:800;color:#b2863b;">
-            ${escapeHtml(input.eyebrow)}
-          </div>
-          <h1 style="margin:18px 0 0;font-family:Fraunces,Georgia,serif;font-size:36px;line-height:1.02;letter-spacing:-0.03em;">
-            ${escapeHtml(input.headline)}
-          </h1>
-          <p style="margin:18px 0 0;font-size:15px;line-height:1.8;color:#6e6557;">
-            ${escapeHtml(input.summary)}
-          </p>
-        </div>
-        <div style="padding:0 28px 28px;">
-          ${bulletMarkup}
-          ${
-            input.secondaryLine
-              ? `<p style="margin:0 0 24px;font-size:14px;line-height:1.8;color:#6e6557;">${escapeHtml(
-                  input.secondaryLine
-                )}</p>`
-              : ""
-          }
-          ${
-            input.ctaLabel
-              ? `<a href="${escapeHtml(ctaHref)}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:linear-gradient(135deg,#7e5f2d 0%,#b2863b 58%,#dec48a 100%);color:#fffaf2;font-size:14px;font-weight:700;text-decoration:none;">${escapeHtml(
-                  input.ctaLabel
-                )}</a>`
-              : ""
-          }
-          <div style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(63,44,18,0.12);font-size:13px;line-height:1.8;color:#6e6557;">
-            <div style="font-weight:700;color:#1d1811;">${escapeHtml(marketplace.name)}</div>
-            <div>${escapeHtml(marketplace.tagline)}</div>
-            <div style="margin-top:10px;">Support: ${escapeHtml(marketplace.supportEmail)} · ${escapeHtml(
-              marketplace.supportPhone
-            )}</div>
-          </div>
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>${escapeHtml(input.headline)}</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin:0; padding:0; background:#f6f1e7; font-family:Manrope,Aptos,'Segoe UI',sans-serif; color:#1d1811; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:640px; margin:0 auto; padding:32px 20px 48px; }
+  .card { border:1px solid rgba(63,44,18,0.12); background:rgba(255,251,245,0.96); border-radius:28px; overflow:hidden; box-shadow:0 24px 80px rgba(45,28,9,0.12); }
+  .hero { padding:28px 28px 12px; background:linear-gradient(135deg,#fffaf2 0%,#f3e3c5 100%); }
+  .eyebrow { font-size:11px; letter-spacing:0.28em; text-transform:uppercase; font-weight:800; color:#b2863b; }
+  h1 { margin:18px 0 0; font-family:Fraunces,Georgia,serif; font-size:34px; line-height:1.05; letter-spacing:-0.03em; color:#1d1811; }
+  .lede { margin:18px 0 0; font-size:15px; line-height:1.8; color:#6e6557; }
+  .body { padding:0 28px 28px; }
+  ul { margin:20px 0; padding-left:20px; color:#6e6557; line-height:1.8; }
+  .secondary { margin:0 0 24px; font-size:14px; line-height:1.8; color:#6e6557; }
+  .cta { display:inline-block; padding:14px 24px; border-radius:999px; background:linear-gradient(135deg,#7e5f2d 0%,#b2863b 58%,#dec48a 100%); color:#fffaf2 !important; font-size:14px; font-weight:700; text-decoration:none; }
+  .sig { margin-top:28px; padding-top:24px; border-top:1px solid rgba(63,44,18,0.12); font-size:13px; line-height:1.8; color:#6e6557; }
+  .sig-brand { font-weight:800; color:#1d1811; letter-spacing:-0.005em; }
+  .attribution { display:inline-flex; align-items:center; gap:6px; margin-top:14px; font-size:10px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#6e6557; }
+  .attribution::before { content:''; display:inline-block; width:5px; height:5px; border-radius:999px; background:#b2863b; }
+
+  @media (prefers-color-scheme: dark) {
+    body { background:#0c0906 !important; color:#f1e7d2 !important; }
+    .card { background:#17120a !important; border-color:#2d2319 !important; box-shadow:0 32px 90px rgba(0,0,0,0.62) !important; }
+    .hero { background:linear-gradient(135deg,#17120a 0%,#3a2d18 100%) !important; }
+    .eyebrow { color:#e1b870 !important; }
+    h1 { color:#f6e8c8 !important; }
+    .lede, ul, .secondary, .sig { color:#b4a286 !important; }
+    .sig-brand { color:#f6e8c8 !important; }
+    .attribution { color:#9b8969 !important; }
+    .cta { color:#17120a !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div class="eyebrow">${escapeHtml(input.eyebrow)}</div>
+        <h1>${escapeHtml(input.headline)}</h1>
+        <p class="lede">${escapeHtml(input.summary)}</p>
+      </div>
+      <div class="body">
+        ${bulletMarkup}
+        ${
+          input.secondaryLine
+            ? `<p class="secondary">${escapeHtml(input.secondaryLine)}</p>`
+            : ""
+        }
+        ${
+          input.ctaLabel
+            ? `<a href="${escapeHtml(ctaHref)}" class="cta">${escapeHtml(input.ctaLabel)}</a>`
+            : ""
+        }
+        <div class="sig">
+          <div class="sig-brand">${escapeHtml(marketplace.name)}</div>
+          <div>${escapeHtml(marketplace.tagline)}</div>
+          <div style="margin-top:10px;">Support: ${escapeHtml(marketplace.supportEmail)} &middot; ${escapeHtml(marketplace.supportPhone)}</div>
+          <div class="attribution">Designed by HenryCo Studio</div>
         </div>
       </div>
     </div>
-  </body>`;
+  </div>
+</body>
+</html>`;
 
   const text = [
     input.eyebrow.toUpperCase(),
