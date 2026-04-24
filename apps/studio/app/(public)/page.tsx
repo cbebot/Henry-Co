@@ -14,23 +14,23 @@ export default async function StudioHomePage() {
   return (
     <main className="pb-24">
       <section className="mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 lg:px-10">
-        <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-          <div className="studio-panel studio-hero studio-mesh rounded-[3rem] px-7 py-8 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+          <div className="studio-panel studio-hero studio-mesh rounded-[3rem] px-7 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
             <div className="flex flex-wrap items-center gap-2">
               <span className="studio-kicker">HenryCo Studio</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--studio-signal)]" />
-                Software, built with sharper process
+                Software built with sharper process
               </span>
             </div>
-            <h1 className="studio-display mt-6 max-w-4xl text-balance text-[var(--studio-ink)]">
-              Websites, web apps, and real software &mdash; guided from raw idea to polished launch.
+            <h1 className="studio-display mt-7 max-w-3xl text-balance text-[var(--studio-ink)]">
+              Serious software, delivered with discipline.
             </h1>
             <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-              We design and build serious software for teams that need a calmer path from brief to launch. Pick a ready-made project path when it fits, or describe something fully custom when it doesn&rsquo;t.
+              We design and build websites, web apps, and internal platforms for companies that expect a calmer path from brief to launch &mdash; scoped in plain English, priced on milestones, delivered in one structured workspace.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-9 flex flex-wrap gap-3">
               <Link
                 href="/pick"
                 className="studio-button-primary inline-flex items-center gap-3 rounded-full px-6 py-4 text-sm font-semibold"
@@ -39,61 +39,31 @@ export default async function StudioHomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/pricing"
+                href="/request"
                 className="studio-button-secondary inline-flex rounded-full px-6 py-4 text-sm font-semibold"
               >
-                View packages
+                Start a brief
               </Link>
-            </div>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              {[
-                ["Fixed packages", "When the scope is similar each time—clear price bands and what is included."],
-                ["Fully custom build", "When you need something unique: software, portals, or a product only you have."],
-                ["Same account, full history", "Proposals, payments, messages, and delivery notes stay in your HenryCo account."],
-              ].map(([title, body]) => (
-                <div key={title} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                  <div className="text-base font-semibold text-[var(--studio-ink)]">{title}</div>
-                  <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{body}</p>
-                </div>
-              ))}
             </div>
           </div>
 
           <div className="grid gap-6">
             <div className="studio-panel rounded-[2.5rem] p-6 sm:p-8">
-              <div className="studio-kicker">Studio snapshot</div>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className="studio-kicker">At a glance</div>
+              <div className="mt-5 grid gap-3 grid-cols-2">
                 {[
-                  {
-                    label: "Services",
-                    value: String(catalog.services.length),
-                    body: "Specialised areas of expertise — from web development to product design.",
-                  },
-                  {
-                    label: "Packages",
-                    value: String(catalog.packages.length),
-                    body: "Ready-to-start project types with clear scope and pricing.",
-                  },
-                  {
-                    label: "Teams",
-                    value: String(catalog.teams.length),
-                    body: "Choose a team directly or let us recommend the best fit for your project.",
-                  },
-                  {
-                    label: "Case studies",
-                    value: String(catalog.caseStudies.length),
-                    body: "Real projects we've delivered — see the work before you commit.",
-                  },
+                  { label: "Services", value: String(catalog.services.length) },
+                  { label: "Packages", value: String(catalog.packages.length) },
+                  { label: "Teams", value: String(catalog.teams.length) },
+                  { label: "Case studies", value: String(catalog.caseStudies.length) },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                    <div className="text-xs uppercase tracking-[0.18em] text-[var(--studio-signal)]">
+                  <div key={item.label} className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 px-5 py-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">
                       {item.label}
                     </div>
-                    <div className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
+                    <div className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)] sm:text-4xl">
                       {item.value}
                     </div>
-                    <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.body}</p>
                   </div>
                 ))}
               </div>
@@ -104,7 +74,7 @@ export default async function StudioHomePage() {
                 {
                   icon: Layers3,
                   title: "Package path",
-                  body: "Premium websites, commerce builds, dashboards, and tighter repeatable scopes.",
+                  body: "Premium websites, commerce, dashboards \u2014 repeatable scopes with clear price bands.",
                   href: "/pricing",
                   cta: "Compare packages",
                 },
@@ -113,16 +83,16 @@ export default async function StudioHomePage() {
                   title: "Custom project path",
                   body: "Bespoke software, portals, multi-role products, and specific feature architecture.",
                   href: "/request",
-                  cta: "Build a custom brief",
+                  cta: "Build a brief",
                 },
               ].map((item) => (
                 <Link
                   key={item.title}
                   href={item.href}
-                  className="rounded-[1.9rem] border border-[var(--studio-line)] bg-black/10 p-5 transition hover:border-[rgba(151,244,243,0.28)]"
+                  className="rounded-[1.9rem] border border-[var(--studio-line)] bg-black/10 p-5 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.28)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 >
                   <item.icon className="h-5 w-5 text-[var(--studio-signal)]" />
-                  <div className="mt-4 text-xl font-semibold text-[var(--studio-ink)]">{item.title}</div>
+                  <div className="mt-4 text-xl font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">{item.title}</div>
                   <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.body}</p>
                   <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[var(--studio-ink)]">
                     {item.cta}
@@ -136,50 +106,27 @@ export default async function StudioHomePage() {
       </section>
 
       <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
-          <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">How it works</div>
-            <h2 className="studio-heading mt-4">A clear path from idea to delivery — no guesswork required.</h2>
-            <div className="mt-6 space-y-4">
-              {[
-                {
-                  title: "Packages for common projects",
-                  body: "When you need a website, commerce store, or dashboard with a clear scope — pick a package and start.",
-                },
-                {
-                  title: "Custom builds for unique needs",
-                  body: "When your project needs specific features, user roles, or integrations that don't fit a standard package.",
-                },
-                {
-                  title: "Everything in one workspace",
-                  body: "Your proposal, payments, milestones, updates, and deliverables live in one organised project workspace.",
-                },
-              ].map((item) => (
-                <div key={item.title} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                  <div className="text-lg font-semibold text-[var(--studio-ink)]">{item.title}</div>
-                  <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.body}</p>
-                </div>
-              ))}
+        <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="max-w-2xl">
+              <div className="studio-kicker">Why Studio</div>
+              <h2 className="studio-heading mt-4">The difference clients actually notice.</h2>
             </div>
           </div>
-
-          <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Why HenryCo Studio</div>
-            <div className="mt-6 space-y-4">
-              {catalog.valueComparisons.map((item) => (
-                <div key={item.title} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                  <div className="text-lg font-semibold text-[var(--studio-ink)]">{item.title}</div>
-                  <div className="mt-4 space-y-2">
-                    {item.points.map((point) => (
-                      <div key={point} className="flex gap-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                        <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-[var(--studio-signal)]" />
-                        <span>{point}</span>
-                      </div>
-                    ))}
-                  </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            {catalog.valueComparisons.map((item) => (
+              <div key={item.title} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
+                <div className="text-lg font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">{item.title}</div>
+                <div className="mt-4 space-y-2.5">
+                  {item.points.map((point) => (
+                    <div key={point} className="flex gap-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-[var(--studio-signal)]" />
+                      <span>{point}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -113,19 +113,11 @@ export default function StudioPickPage() {
     <main className="mx-auto max-w-[92rem] px-5 pb-24 pt-8 sm:px-8 lg:px-10">
       <section className="studio-panel studio-hero studio-mesh rounded-[2.8rem] px-7 py-10 sm:px-12 sm:py-12">
         <div className="studio-kicker">Ready-to-start paths</div>
-        <h1 className="studio-display mt-5 max-w-4xl text-[var(--studio-ink)]">
-          Pick the project that sounds closest. We tune the brief so you move faster with confidence.
+        <h1 className="studio-display mt-5 max-w-3xl text-balance text-[var(--studio-ink)]">
+          Pick the project closest to yours. We tune the brief from there.
         </h1>
-        <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-          HenryCo builds many kinds of websites and software—not only for one industry and not only for “business
-          owners.” Students, schools, churches, founders, and teams hire us when they want a calm, premium process. Each
-          card pre-fills your brief; you can change every answer.
-        </p>
-        <p className="mt-4 inline-flex max-w-3xl rounded-2xl border border-[var(--studio-line)] bg-black/15 px-4 py-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-          <span className="font-semibold text-[var(--studio-ink)]">Nothing here is final.</span>
-          <span className="ml-2">
-            Cards save you typing. We still confirm scope, timeline, and pricing before any work begins.
-          </span>
+        <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
+          Business sites, commerce, booking, portals, custom software, mobile &mdash; each path pre-fills the brief. Every answer stays editable; nothing is final until you confirm scope and price.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
@@ -194,11 +186,9 @@ export default function StudioPickPage() {
               <Sparkles className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-[var(--studio-ink)]">Nothing here fits? That is completely fine.</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">Nothing here fits? That is completely fine.</h2>
               <p className="mt-2 max-w-xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-                Describe the product in your own words—links, sketches, bullet “must haves,” or a rough idea you have not
-                named yet. HenryCo turns fuzzy ideas into a clear plan: what it might cost, how long it could take, how
-                deposit and proof work, and what we need from you next. No pressure to commit on day one.
+                Describe it in your own words &mdash; links, sketches, a list of must-haves, or a rough idea. Studio turns the fuzzy version into a scoped plan: indicative cost, timeline, how deposit and proof work, and what we need from you next. No pressure to commit on day one.
               </p>
             </div>
           </div>

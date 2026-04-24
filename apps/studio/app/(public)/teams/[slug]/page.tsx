@@ -15,15 +15,15 @@ export default async function TeamDetailPage({
     <main className="mx-auto max-w-[88rem] px-5 py-10 sm:px-8 lg:px-10">
       <section className="studio-panel rounded-[2.4rem] px-7 py-10 sm:px-10 lg:px-14">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+          <div className="max-w-3xl">
             <div className="studio-kicker">{team.label}</div>
-            <h1 className="studio-heading mt-4">{team.name}</h1>
+            <h1 className="studio-heading mt-4 text-balance">{team.name}</h1>
           </div>
-          <div className="rounded-full border border-[var(--studio-line)] px-4 py-2 text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+          <div className="rounded-full border border-[var(--studio-line)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">
             {team.availability}
           </div>
         </div>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--studio-ink-soft)]">{team.summary}</p>
+        <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">{team.summary}</p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href={`/request?team=${team.id}`} className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold">
             Select this team

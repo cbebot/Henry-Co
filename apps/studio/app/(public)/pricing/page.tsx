@@ -12,12 +12,11 @@ export default async function PricingPage() {
         <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr] xl:items-end">
           <div>
             <div className="studio-kicker">Packages and pricing</div>
-            <h1 className="studio-heading mt-4 max-w-4xl">
+            <h1 className="studio-heading mt-4 max-w-3xl text-balance">
               Clear packages for common projects. Custom scoping for everything else.
             </h1>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-              Choose a package when the scope is clear, or use the custom brief when your project needs
-              something more specific. Either way, pricing is transparent and you know exactly what you&apos;re investing in.
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
+              Transparent bands when the scope is repeatable, a milestone-priced brief when it isn&rsquo;t. You see the number before the first conversation.
             </p>
           </div>
 
@@ -98,9 +97,9 @@ export default async function PricingPage() {
         </div>
 
         <div className="studio-panel rounded-[2.4rem] p-6 sm:p-8">
-          <div className="studio-kicker">Ready to start?</div>
-          <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
-            Pick a package that fits, or tell us exactly what you need.
+          <div className="studio-kicker">Move forward</div>
+          <h2 className="mt-4 text-balance text-[1.75rem] font-semibold tracking-[-0.04em] text-[var(--studio-ink)] sm:text-3xl leading-[1.15]">
+            Pick a package that fits, or send us the exact brief.
           </h2>
           <div className="mt-5 space-y-4">
             {catalog.valueComparisons.slice(0, 2).map((item) => (
@@ -131,18 +130,18 @@ export default async function PricingPage() {
 
       <section className="mt-10 studio-panel rounded-[2.4rem] p-6 sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-3xl">
+          <div className="max-w-2xl">
             <div className="studio-kicker">Enterprise or non-standard scope</div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
-              If the project is larger, more sensitive, or more integrated, Studio will scope it as a custom program.
+            <h2 className="mt-4 text-balance text-[1.75rem] font-semibold tracking-[-0.04em] text-[var(--studio-ink)] sm:text-3xl leading-[1.15]">
+              Larger, more sensitive, or deeply integrated builds are scoped as a custom program.
             </h2>
-            <p className="mt-4 text-sm leading-8 text-[var(--studio-ink-soft)]">
-              Enterprise platforms, large-scale rebuilds, and complex integrations benefit from a custom scoping process tailored to your exact requirements.
+            <p className="mt-4 max-w-xl text-pretty text-sm leading-8 text-[var(--studio-ink-soft)]">
+              Enterprise platforms, large rebuilds, and complex integrations are priced and scoped against the exact requirements &mdash; not a template.
             </p>
           </div>
           <Link
             href="/request"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-5 py-3 text-sm font-semibold text-[var(--studio-ink)]"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] px-5 py-3 text-sm font-semibold text-[var(--studio-ink)] transition hover:border-[rgba(151,244,243,0.28)]"
           >
             <Sparkles className="h-4 w-4 text-[var(--studio-signal)]" />
             Start a custom project
