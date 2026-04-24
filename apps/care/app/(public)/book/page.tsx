@@ -141,13 +141,13 @@ export default async function BookPage({
           </div>
 
           <div>
-            <h1 className="max-w-4xl text-balance care-display text-zinc-950 dark:text-white">
-              {t("Book garment pickup, home cleaning, or office service with one calmer form.")}
+            <h1 className="max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
+              {t("Book a service. One calm form.")}
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-white/68 sm:text-lg xl:text-xl">
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-zinc-600 dark:text-white/68 sm:text-lg xl:text-xl">
               {t(
-                "Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form now makes that difference explicit before you submit.",
+                "Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form makes the difference clear before you submit.",
               )}
             </p>
           </div>

@@ -17,10 +17,9 @@ export default async function SupportPage() {
   return (
     <main className="px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl space-y-8">
-        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Support</h1>
-        <p className="text-[var(--logistics-muted)]">
-          For shipment exceptions, billing questions, or routing changes, reach the logistics desk directly. If you use
-          the HenryCo account, open a logistics-tagged thread so your history stays in one place.
+        <h1 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">Support</h1>
+        <p className="max-w-2xl text-pretty text-[var(--logistics-muted)]">
+          Shipment exceptions, billing questions, routing changes &mdash; reach the logistics desk directly. HenryCo account users should open a logistics-tagged thread so history stays in one place.
         </p>
         <div className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-6 space-y-4">
           <a href={`mailto:${logistics.supportEmail}`} className="block text-lg font-semibold text-[var(--logistics-accent-soft)]">

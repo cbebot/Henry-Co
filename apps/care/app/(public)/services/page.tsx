@@ -37,17 +37,16 @@ export default async function ServicesPage() {
     >
       <section className="mx-auto max-w-[88rem] px-5 sm:px-8 lg:px-10">
         <div className="care-dash-card rounded-[2.6rem] px-8 py-12 sm:px-10 lg:px-14 lg:py-16">
-          <div className="max-w-4xl">
+          <div className="max-w-3xl">
             <div className="care-chip inline-flex rounded-full px-5 py-3 text-sm font-semibold text-white/76">
               <Sparkles className="h-5 w-5 text-[color:var(--accent)]" />
               Service collection
             </div>
-            <h1 className="mt-7 care-display max-w-4xl text-white">
-              Premium service for wardrobes, homes, and workplaces.
+            <h1 className="mt-7 care-display max-w-3xl text-balance text-white">
+              Wardrobes, homes, workplaces &mdash; one operating standard.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68">
-              HenryCo Care brings garment care, home cleaning, and office cleaning together under
-              one clear standard of timing, communication, and quality.
+            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-white/68 sm:text-lg">
+              Garment care, home cleaning, and office cleaning held on one standard of timing, communication, and quality.
             </p>
           </div>
         </div>

@@ -16,10 +16,9 @@ export default async function ServicesPage() {
     <main className="px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl space-y-8">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">What we move</h1>
-          <p className="mt-3 text-[var(--logistics-muted)]">
-            Parcels, documents, retail replenishment, and operational freight that needs disciplined pickup, milestone
-            tracking, and proof-backed delivery. {settings.pickupHours}
+          <h1 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">What we move.</h1>
+          <p className="mt-3 max-w-2xl text-pretty text-[var(--logistics-muted)]">
+            Parcels, documents, retail replenishment, operational freight &mdash; disciplined pickup, milestone tracking, proof-backed delivery. {settings.pickupHours}
           </p>
         </div>
         <div className="grid gap-5">

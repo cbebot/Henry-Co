@@ -36,10 +36,9 @@ export default async function TrackPage({ searchParams }: Props) {
     <main className="px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl space-y-10">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Track a shipment</h1>
-          <p className="mt-3 max-w-2xl text-sm text-[var(--logistics-muted)] sm:text-base">
-            {snapshot.settings.trackingLookupHelp} Signed-in customers also see logistics activity inside the shared
-            HenryCo account.
+          <h1 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">Track a shipment.</h1>
+          <p className="mt-3 max-w-2xl text-pretty text-sm text-[var(--logistics-muted)] sm:text-base">
+            {snapshot.settings.trackingLookupHelp} Signed-in customers also see logistics activity inside their shared HenryCo account.
           </p>
         </div>
 

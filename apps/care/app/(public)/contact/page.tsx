@@ -46,18 +46,16 @@ export default async function ContactPage() {
             }}
           />
 
-          <div className="relative max-w-4xl">
+          <div className="relative max-w-3xl">
             <div className="care-chip inline-flex rounded-full px-5 py-3 text-sm font-semibold text-white/76">
               <ShieldCheck className="h-5 w-5 text-[color:var(--accent)]" />
               Contact and support
             </div>
-            <h1 className="mt-7 care-display max-w-4xl text-white">
-              Reach one premium Care desk for service questions, changes, and follow-up.
+            <h1 className="mt-7 care-display max-w-3xl text-balance text-white">
+              One desk. Clear answers.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68">
-              Reach out when you need booking guidance, schedule changes, billing clarity, or
-              follow-up on an existing service. HenryCo Care keeps every conversation clear,
-              professional, and easy to follow from first message to final resolution.
+            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-white/68 sm:text-lg">
+              Booking guidance, schedule changes, billing clarity, or follow-up on an existing service &mdash; handled with one consistent thread from first message to final resolution.
             </p>
           </div>
         </div>

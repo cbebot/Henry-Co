@@ -48,17 +48,16 @@ export default async function PricingPage() {
     >
       <section className="mx-auto max-w-[88rem] px-5 sm:px-8 lg:px-10">
         <div className="care-dash-card rounded-[2.6rem] px-8 py-12 sm:px-10 lg:px-14 lg:py-16">
-          <div className="max-w-4xl">
+          <div className="max-w-3xl">
             <div className="care-chip inline-flex rounded-full px-5 py-3 text-sm font-semibold text-white/76">
               <Sparkles className="h-5 w-5 text-[color:var(--accent)]" />
               Pricing clarity
             </div>
-            <h1 className="mt-7 care-display max-w-4xl text-white">
-              Clear pricing before you commit to service.
+            <h1 className="mt-7 care-display max-w-3xl text-balance text-white">
+              You see the price before you book.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68">
-              Review garment pricing, home and office packages, and the most common service
-              add-ons before you place a request.
+            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-white/68 sm:text-lg">
+              Garment pricing, home and office packages, and service add-ons &mdash; stated before the request is placed, not after.
             </p>
 
             {settings.pricing_note ? (
