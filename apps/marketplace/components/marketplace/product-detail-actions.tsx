@@ -103,9 +103,9 @@ export function ProductDetailActions({
             Compare more
           </Link>
         </div>
-        <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]">
+        <p className="border-l-2 border-[var(--market-brass)]/55 pl-4 text-sm leading-7 text-[var(--market-muted)]">
           Quick-add updates the mini-cart instantly. Saved items, follows, notifications, and future payment events stay attached to the same HenryCo account identity.
-        </div>
+        </p>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--market-line)] bg-[rgba(5,7,13,0.92)] p-3 backdrop-blur-xl lg:hidden">

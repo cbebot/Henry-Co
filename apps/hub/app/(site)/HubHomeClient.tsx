@@ -1567,46 +1567,47 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
 
   return (
     <article
-      className="relative overflow-hidden rounded-[30px] border border-white/10 bg-black/25"
+      className="group relative flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-white/10 bg-[rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:border-white/22"
       style={{ "--cardAccent": accent } as React.CSSProperties}
     >
       {extra.cover_url ? (
-        <div className="h-40 overflow-hidden border-b border-white/10">
+        <div className="relative h-44 overflow-hidden">
           <img
             src={extra.cover_url}
             alt={division.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
             loading="lazy"
             decoding="async"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,8,22,0.78)] via-[rgba(5,8,22,0.16)] to-transparent" />
         </div>
       ) : (
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-70"
+          className="pointer-events-none absolute inset-x-0 top-0 h-32 opacity-70"
           style={{
-            background: `radial-gradient(650px 140px at 50% 0%, ${accent}35, transparent 70%)`,
+            background: `radial-gradient(650px 160px at 50% 0%, ${accent}38, transparent 72%)`,
           }}
         />
       )}
 
-      <div className="relative p-6">
+      <div className="relative flex flex-1 flex-col p-6">
         <div className="flex items-start justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <span
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium",
-                getStatusTone(division.status)
+                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]",
+                getStatusTone(division.status),
               )}
             >
-              <Star className="h-3.5 w-3.5" />
+              <Star className="h-3 w-3" />
               {getStatusLabel(division.status, copy.status)}
             </span>
 
-            <h3 className="mt-3 text-xl font-semibold tracking-tight text-white">
+            <h3 className="mt-4 text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-white sm:text-[1.55rem]">
               {division.name}
             </h3>
 
-            <p className="mt-2 text-sm leading-7 text-white/64">
+            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-white/68">
               {division.description ||
                 division.tagline ||
                 copy.cards.divisionFallbackLong}
@@ -1617,47 +1618,46 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
             src={extra.logo_url}
             alt={`${division.name} logo`}
             accent={accent}
-            wrapperClassName="h-12 w-12 rounded-2xl border-0"
+            wrapperClassName="h-12 w-12 shrink-0 rounded-2xl border-0"
             imageClassName="rounded-2xl object-contain p-2"
           />
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          {(division.categories ?? []).slice(0, 3).map((item) => (
-            <span
-              key={item}
-              className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/72"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
+        {(division.categories ?? []).length ? (
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            {(division.categories ?? []).slice(0, 3).map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-white/15 px-2.5 py-1 text-[10.5px] font-medium text-white/72"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        ) : null}
 
-        <div className="mt-6 grid gap-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
-            <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
+        <div className="mt-6 flex items-end justify-between gap-3 border-t border-white/10 pt-4">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
               {copy.cards.destination}
-            </div>
-            <div className="mt-1 text-sm font-medium text-white/88">
+            </p>
+            <p className="mt-1 truncate font-mono text-[12px] tracking-tight text-white/82">
               {host ?? copy.cards.notConfigured}
-            </div>
+            </p>
           </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => safeOpen(division.primary_url)}
-              disabled={!division.primary_url}
-              className={cn(
-                "inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition",
-                division.primary_url
-                  ? "bg-[color:var(--cardAccent)] text-black hover:opacity-90"
-                  : "cursor-not-allowed border border-white/10 bg-white/[0.06] text-white/40"
-              )}
-            >
-              {copy.cards.openDivision}
-              <ExternalLink className="h-4 w-4" />
-            </button>
-          </div>
+          <button
+            onClick={() => safeOpen(division.primary_url)}
+            disabled={!division.primary_url}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition",
+              division.primary_url
+                ? "bg-[color:var(--cardAccent)] text-black hover:-translate-y-0.5 hover:opacity-95"
+                : "cursor-not-allowed border border-white/10 text-white/35",
+            )}
+          >
+            {copy.cards.openDivision}
+            <ExternalLink className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
     </article>
@@ -1678,131 +1678,132 @@ function DivisionCard({
 
   return (
     <article
-      className="group relative overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.06] shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_110px_rgba(0,0,0,0.25)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-white/10 bg-[rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:border-white/22"
       style={{ "--cardAccent": accent } as React.CSSProperties}
     >
       {extra.cover_url ? (
-        <div className="h-40 overflow-hidden border-b border-white/10">
+        <div className="relative h-40 overflow-hidden">
           <img
             src={extra.cover_url}
             alt={d.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
             loading="lazy"
             decoding="async"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,8,22,0.72)] via-[rgba(5,8,22,0.14)] to-transparent" />
         </div>
       ) : (
-        <>
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-70"
-            style={{
-              background: `radial-gradient(650px 150px at 50% 0%, ${accent}30, transparent 70%)`,
-            }}
-          />
-          <div className="pointer-events-none absolute -top-16 left-1/2 h-40 w-[460px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl opacity-0 transition duration-500 group-hover:opacity-100" />
-        </>
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-70"
+          style={{
+            background: `radial-gradient(650px 150px at 50% 0%, ${accent}32, transparent 72%)`,
+          }}
+        />
       )}
 
-      <div className="relative p-6">
-        <div className="flex items-start justify-between gap-4">
+      <div className="relative flex flex-1 flex-col p-6">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
             <DivisionMark
               src={extra.logo_url}
               alt={`${d.name} logo`}
               accent={accent}
-              wrapperClassName="h-12 w-12 shrink-0"
+              wrapperClassName="h-11 w-11 shrink-0"
               imageClassName="rounded-xl object-contain p-1.5"
             />
-
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="truncate text-lg font-semibold tracking-tight text-white">
-                  {d.name}
-                </h3>
-
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
-                    getStatusTone(d.status)
-                  )}
-                >
-                  <Zap className="h-3.5 w-3.5" />
-                  {getStatusLabel(d.status, copy.status)}
-                </span>
-              </div>
-
-              <div className="mt-1 truncate text-xs uppercase tracking-[0.16em] text-white/42">
-                {(d.categories ?? []).join(" • ") || d.key}
-              </div>
+              <h3 className="truncate text-[1.1rem] font-semibold tracking-tight text-white">
+                {d.name}
+              </h3>
+              <p className="mt-0.5 truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                {(d.categories ?? []).join(" · ") || d.key}
+              </p>
             </div>
           </div>
 
-          {d.is_featured ? (
+          <div className="flex flex-col items-end gap-1.5">
             <span
-              className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-black"
-              style={{ background: accent }}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]",
+                getStatusTone(d.status),
+              )}
             >
-              {copy.cards.featured}
+              <Zap className="h-3 w-3" />
+              {getStatusLabel(d.status, copy.status)}
             </span>
-          ) : null}
+            {d.is_featured ? (
+              <span
+                className="rounded-full px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.22em] text-black"
+                style={{ background: accent }}
+              >
+                {copy.cards.featured}
+              </span>
+            ) : null}
+          </div>
         </div>
 
-        <p className="mt-4 line-clamp-3 text-sm leading-7 text-white/66">
-          {d.description ||
-            d.tagline ||
-            copy.cards.divisionFallbackShort}
+        <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-white/72">
+          {d.description || d.tagline || copy.cards.divisionFallbackShort}
         </p>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {(d.highlights ?? []).slice(0, 3).map((item) => (
-            <span
-              key={item}
-              className="rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] text-white/72"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
+        {(d.highlights ?? []).length ? (
+          <ul className="mt-4 flex flex-wrap gap-1.5">
+            {(d.highlights ?? []).slice(0, 3).map((item) => (
+              <li
+                key={item}
+                className="rounded-full border border-white/15 px-2.5 py-1 text-[10.5px] font-medium text-white/72"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
-        <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-            {copy.cards.divisionDestination}
+        <dl className="mt-5 divide-y divide-white/10 border-y border-white/10">
+          <div className="flex items-baseline gap-3 py-3">
+            <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+              {copy.cards.divisionDestination}
+            </dt>
+            <dd className="ml-auto truncate text-right font-mono text-[12px] tracking-tight text-white/82">
+              {host ?? copy.cards.notConfigured}
+            </dd>
           </div>
-
-          <div className="mt-1 text-sm font-medium text-white/88">
-            {host ?? copy.cards.notConfigured}
-          </div>
-
           {extra.lead?.name ? (
-            <div className="mt-3 text-xs text-white/55">
-              {copy.cards.lead}: {extra.lead.name}
-              {extra.lead.title ? ` • ${extra.lead.title}` : ""}
+            <div className="flex items-baseline gap-3 py-3">
+              <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+                {copy.cards.lead}
+              </dt>
+              <dd className="ml-auto truncate text-right text-sm font-semibold tracking-tight text-white">
+                {extra.lead.name}
+                {extra.lead.title ? (
+                  <span className="ml-1 font-normal text-white/55">· {extra.lead.title}</span>
+                ) : null}
+              </dd>
             </div>
           ) : null}
-        </div>
+        </dl>
 
-        <div className="mt-5 flex items-center justify-between gap-3">
+        <div className="mt-auto flex items-center justify-between gap-3 pt-5">
           <button
             onClick={onOpen}
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white/88 transition hover:bg-white/10"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-transparent px-4 py-2 text-sm font-semibold text-white/85 transition hover:border-white/30 hover:bg-white/[0.04]"
           >
             {copy.cards.details}
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
-
           <button
             onClick={() => safeOpen(d.primary_url)}
             disabled={!d.primary_url}
             className={cn(
-              "inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition",
+              "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition",
               d.primary_url
-                ? "text-black hover:opacity-90"
-                : "cursor-not-allowed border border-white/10 bg-white/[0.06] text-white/40"
+                ? "text-black hover:-translate-y-0.5 hover:opacity-95"
+                : "cursor-not-allowed border border-white/10 text-white/35",
             )}
             style={d.primary_url ? { background: accent } : undefined}
           >
             {copy.cards.open}
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
@@ -1958,47 +1959,54 @@ function DetailsModal({
 
           {division.highlights?.length ? (
             <div>
-              <div className="text-sm font-semibold">{copy.modal.highlights}</div>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                {copy.modal.highlights}
+              </p>
+              <ul className="mt-3 flex flex-wrap gap-1.5">
                 {division.highlights.slice(0, 10).map((item) => (
-                  <span
+                  <li
                     key={item}
-                    className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/74"
+                    className="rounded-full border border-white/15 px-2.5 py-1 text-[10.5px] font-medium text-white/74"
                   >
                     {item}
-                  </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ) : null}
 
           {extra.lead?.name ? (
-            <div className="rounded-[28px] border border-white/10 bg-white/[0.06] p-5">
-              <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
+            <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
                 {copy.modal.leadEyebrow}
-              </div>
-              <div className="mt-2 text-lg font-semibold text-white">{extra.lead.name}</div>
-              <div className="mt-1 text-sm text-white/64">
+              </p>
+              <p className="mt-3 text-[1.05rem] font-semibold tracking-tight text-white">
+                {extra.lead.name}
+              </p>
+              <p className="mt-1 text-sm text-white/68">
                 {extra.lead.title ?? copy.modal.leadFallbackTitle}
-              </div>
+              </p>
             </div>
           ) : null}
 
           {links.length ? (
             <div>
-              <div className="text-sm font-semibold">{copy.modal.links}</div>
-              <div className="mt-3 space-y-2">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                {copy.modal.links}
+              </p>
+              <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
                 {links.slice(0, 8).map((link, index) => (
-                  <button
-                    key={`${link.url}-${index}`}
-                    onClick={() => safeOpen(link.url)}
-                    className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-left text-sm hover:bg-white/10"
-                  >
-                    <span className="font-semibold">{link.label}</span>
-                    <ExternalLink className="h-4 w-4 opacity-70" />
-                  </button>
+                  <li key={`${link.url}-${index}`}>
+                    <button
+                      onClick={() => safeOpen(link.url)}
+                      className="group flex w-full items-center justify-between gap-3 py-3 text-left transition hover:bg-white/[0.02]"
+                    >
+                      <span className="text-sm font-semibold text-white">{link.label}</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-white/45 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
+                    </button>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ) : null}
         </div>
@@ -2015,18 +2023,17 @@ function InsightList({
   items: string[];
 }) {
   return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.06] p-5">
-      <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">{title}</div>
-      <div className="mt-4 space-y-2">
+    <div>
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+        {title}
+      </p>
+      <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
         {items.map((item) => (
-          <div
-            key={item}
-            className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/72"
-          >
+          <li key={item} className="py-2.5 text-sm leading-relaxed text-white/75">
             {item}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
