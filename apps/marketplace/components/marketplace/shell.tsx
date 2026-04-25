@@ -172,13 +172,16 @@ export function PageIntro({
   actions?: React.ReactNode;
 }) {
   return (
-    <section className="market-panel relative overflow-hidden rounded-[2.35rem] p-6 sm:p-8 lg:p-10">
-      <div className="absolute inset-y-0 right-0 hidden w-[32%] bg-[radial-gradient(circle_at_center,rgba(154,174,164,0.15),transparent_68%)] lg:block" />
-      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-4xl space-y-4">
+    <section>
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-4xl">
           <p className="market-kicker">{kicker}</p>
-          <h1 className="market-heading max-w-4xl text-[var(--market-paper-white)]">{title}</h1>
-          <p className="max-w-3xl text-base leading-8 text-[var(--market-muted)]">{description}</p>
+          <h1 className="market-heading mt-4 max-w-3xl text-balance text-[var(--market-paper-white)]">
+            {title}
+          </h1>
+          <p className="mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)] sm:text-lg">
+            {description}
+          </p>
         </div>
         {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
       </div>
@@ -188,19 +191,21 @@ export function PageIntro({
 
 export function KpiGrid({ items }: { items: MarketplaceKpi[] }) {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <dl className="grid grid-cols-2 gap-x-6 gap-y-6 border-y border-[var(--market-line)] py-6 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-12 md:grid-cols-3">
       {items.map((item) => (
-        <article key={item.label} className="market-soft rounded-[1.7rem] p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--market-muted)]">
+        <div key={item.label} className="flex flex-col gap-1.5">
+          <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
             {item.label}
-          </p>
-          <p className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
+          </dt>
+          <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[2rem]">
             {item.value}
+          </dd>
+          <p className="max-w-sm text-[12.5px] leading-relaxed text-[var(--market-muted)]">
+            {item.hint}
           </p>
-          <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{item.hint}</p>
-        </article>
+        </div>
       ))}
-    </div>
+    </dl>
   );
 }
 
@@ -221,58 +226,70 @@ export function VendorCard({
     "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80";
 
   return (
-    <article className="market-paper overflow-hidden rounded-[1.95rem]">
-      <div className="relative h-52 overflow-hidden">
-        <Image
-          src={imageSrc}
-          alt={vendor.name}
-          fill
-          sizes="(max-width: 1024px) 100vw, 33vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.84)] via-[rgba(4,7,13,0.26)] to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 p-5">
-          <div className="flex flex-wrap gap-2">
+    <Link href={`/store/${vendor.slug}`} className="group block">
+      <article className="overflow-hidden rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
+        <div className="relative h-44 overflow-hidden">
+          <Image
+            src={imageSrc}
+            alt={vendor.name}
+            fill
+            sizes="(max-width: 1024px) 100vw, 33vw"
+            className="object-cover transition duration-500 group-hover:scale-[1.04]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.85)] via-[rgba(4,7,13,0.18)] to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 flex flex-wrap gap-1.5 p-5">
             {vendor.badges.slice(0, 3).map((badge) => (
               <span
                 key={badge}
-                className="rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.08)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]"
+                className="rounded-full border border-white/15 bg-[rgba(4,7,13,0.55)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)] backdrop-blur-md"
               >
                 {badge}
               </span>
             ))}
           </div>
         </div>
-      </div>
-      <div className="space-y-5 p-5">
-        <div className="space-y-2">
-          <h3 className="text-2xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-            {vendor.name}
-          </h3>
-          <p className="text-sm leading-7 text-[var(--market-muted)]">{vendor.description}</p>
+        <div className="flex flex-col gap-5 p-6">
+          <div>
+            <h3 className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.55rem]">
+              {vendor.name}
+            </h3>
+            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-[var(--market-muted)]">
+              {vendor.description}
+            </p>
+          </div>
+          <dl className="grid grid-cols-3 gap-3 border-y border-[var(--market-line)] py-4">
+            <div>
+              <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
+                {localeCopy.trustPassport.verification}
+              </dt>
+              <dd className="mt-1.5 text-[1.05rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)]">
+                {vendor.trustScore}%
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
+                {localeCopy.trustPassport.responseSla}
+              </dt>
+              <dd className="mt-1.5 text-[1.05rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)]">
+                {vendor.responseSlaHours}h
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
+                Rating
+              </dt>
+              <dd className="mt-1.5 text-[1.05rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)]">
+                {vendor.reviewScore.toFixed(1)}
+              </dd>
+            </div>
+          </dl>
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--market-brass)] underline-offset-4 group-hover:underline">
+            {localeCopy.trustPassport.visitStore}
+            <ArrowUpRight className="h-3.5 w-3.5 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </span>
         </div>
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <TrustStat label={localeCopy.trustPassport.verification} value={`${vendor.trustScore}%`} />
-          <TrustStat label={localeCopy.trustPassport.responseSla} value={`${vendor.responseSlaHours}h`} />
-          <TrustStat label={localeCopy.trustPassport.title} value={vendor.reviewScore.toFixed(1)} />
-        </div>
-        <Link
-          href={`/store/${vendor.slug}`}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
-        >
-          {localeCopy.trustPassport.visitStore} <ChevronRight className="h-4 w-4" />
-        </Link>
-      </div>
-    </article>
-  );
-}
-
-function TrustStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[1.3rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-3 py-3">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-[var(--market-paper-white)]">{value}</p>
-    </div>
+      </article>
+    </Link>
   );
 }
 
@@ -285,43 +302,51 @@ export function CollectionCard({
 }) {
   const localeCopy = copy ?? getMarketplacePublicCopy("en");
   return (
-    <article className="market-panel rounded-[1.95rem] p-6">
-      <p className="market-kicker">{collection.kicker}</p>
-      <h3 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">
-        {collection.title}
-      </h3>
-      <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{collection.description}</p>
-      <p className="mt-5 text-sm font-medium text-[var(--market-paper-white)]">{collection.highlight}</p>
-      <Link
-        href={`/collections/${collection.slug}`}
-        className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
-      >
-        {localeCopy.home.categoryLink} <ArrowRight className="h-4 w-4" />
-      </Link>
-    </article>
+    <Link href={`/collections/${collection.slug}`} className="group block">
+      <article className="rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] p-6 transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
+        <p className="market-kicker">{collection.kicker}</p>
+        <h3 className="mt-4 text-[1.5rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.7rem]">
+          {collection.title}
+        </h3>
+        <p className="mt-3 text-sm leading-relaxed text-[var(--market-muted)]">
+          {collection.description}
+        </p>
+        {collection.highlight ? (
+          <p className="mt-5 border-l-2 border-[var(--market-brass)]/55 pl-4 text-sm font-semibold leading-relaxed text-[var(--market-paper-white)]">
+            {collection.highlight}
+          </p>
+        ) : null}
+        <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--market-brass)] underline-offset-4 group-hover:underline">
+          {localeCopy.home.categoryLink}
+          <ArrowUpRight className="h-3.5 w-3.5 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </span>
+      </article>
+    </Link>
   );
 }
 
 export function CampaignBanner({ campaign }: { campaign: MarketplaceCampaign }) {
   return (
-    <article className="market-panel relative overflow-hidden rounded-[2.15rem] p-6 sm:p-8">
-      <div className="absolute inset-y-0 right-0 w-[36%] bg-[radial-gradient(circle_at_center,rgba(221,182,120,0.18),transparent_68%)]" />
-      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-3xl space-y-4">
+    <article className="border-y border-[var(--market-line)] py-10">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl">
           <p className="market-kicker">{campaign.surface}</p>
-          <h2 className="text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
+          <h2 className="mt-4 max-w-2xl text-balance text-[1.85rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[var(--market-paper-white)] sm:text-[2.2rem] md:text-[2.6rem]">
             {campaign.title}
           </h2>
-          <p className="max-w-2xl text-base leading-8 text-[var(--market-muted)]">
+          <p className="mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
             {campaign.description}
           </p>
           {campaign.countdown ? (
-            <p className="text-sm font-semibold text-[var(--market-alert)]">{campaign.countdown}</p>
+            <p className="mt-4 inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-alert)]">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--market-alert)]" />
+              {campaign.countdown}
+            </p>
           ) : null}
         </div>
         <Link
           href={campaign.ctaHref}
-          className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+          className="market-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold"
         >
           {campaign.ctaLabel} <ArrowRight className="h-4 w-4" />
         </Link>
@@ -339,40 +364,41 @@ export function TrustPassport({
 }) {
   const localeCopy = copy ?? getMarketplacePublicCopy("en");
   return (
-    <section className="market-paper rounded-[2rem] p-6 sm:p-8">
+    <section>
       <div className="flex items-center gap-3">
-        <ShieldCheck className="h-5 w-5 text-[var(--market-brass)]" />
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+        <ShieldCheck className="h-4 w-4 text-[var(--market-brass)]" />
+        <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--market-brass)]">
           {localeCopy.trustPassport.title}
         </p>
+        <span className="h-px flex-1 bg-[var(--market-line)]" />
       </div>
-      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <TrustPassportCard
-          icon={<CheckCircle2 className="h-5 w-5" />}
+      <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-6 border-y border-[var(--market-line)] py-6 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-12 md:grid-cols-4">
+        <TrustPassportRow
+          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
           label={localeCopy.trustPassport.verification}
           value={vendor.verificationLevel}
         />
-        <TrustPassportCard
-          icon={<Truck className="h-5 w-5" />}
+        <TrustPassportRow
+          icon={<Truck className="h-3.5 w-3.5" />}
           label={localeCopy.trustPassport.fulfillment}
           value={`${vendor.fulfillmentRate}%`}
         />
-        <TrustPassportCard
-          icon={<Store className="h-5 w-5" />}
+        <TrustPassportRow
+          icon={<Store className="h-3.5 w-3.5" />}
           label={localeCopy.trustPassport.disputeRate}
           value={`${vendor.disputeRate}%`}
         />
-        <TrustPassportCard
-          icon={<ShieldCheck className="h-5 w-5" />}
+        <TrustPassportRow
+          icon={<ShieldCheck className="h-3.5 w-3.5" />}
           label={localeCopy.trustPassport.responseSla}
           value={`${vendor.responseSlaHours}h`}
         />
-      </div>
+      </dl>
     </section>
   );
 }
 
-function TrustPassportCard({
+function TrustPassportRow({
   icon,
   label,
   value,
@@ -382,10 +408,16 @@ function TrustPassportCard({
   value: string;
 }) {
   return (
-    <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4">
-      <div className="flex items-center gap-3 text-[var(--market-brass)]">{icon}</div>
-      <p className="mt-4 text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">{label}</p>
-      <p className="mt-2 text-2xl font-semibold capitalize text-[var(--market-paper-white)]">{value}</p>
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2 text-[var(--market-brass)]">
+        {icon}
+        <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
+          {label}
+        </dt>
+      </div>
+      <dd className="text-[1.5rem] font-semibold capitalize leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[1.75rem]">
+        {value}
+      </dd>
     </div>
   );
 }
@@ -461,12 +493,14 @@ export function MetricCard({
   hint: string;
 }) {
   return (
-    <article className="market-paper rounded-[1.6rem] p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+    <article className="border-t border-[var(--market-line)] pt-5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
         {label}
       </p>
-      <p className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">{value}</p>
-      <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{hint}</p>
+      <p className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[2.3rem]">
+        {value}
+      </p>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-[var(--market-muted)]">{hint}</p>
     </article>
   );
 }
@@ -483,15 +517,18 @@ export function EmptyState({
   ctaLabel?: string;
 }) {
   return (
-    <section className="market-soft rounded-[1.85rem] p-8 text-center">
-      <p className="text-2xl font-semibold tracking-tight text-[var(--market-paper-white)]">{title}</p>
-      <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">{body}</p>
+    <section className="border-l-2 border-[var(--market-brass)]/55 px-5 py-4">
+      <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
+        {title}
+      </p>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--market-muted)]">{body}</p>
       {ctaHref && ctaLabel ? (
         <Link
           href={ctaHref}
           className="market-button-primary mt-5 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
         >
           {ctaLabel}
+          <ArrowRight className="h-4 w-4" />
         </Link>
       ) : null}
     </section>
