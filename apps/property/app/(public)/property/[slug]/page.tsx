@@ -6,7 +6,6 @@ import {
   FileCheck2,
   Heart,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { PropertyPendingButton } from "@/components/property/form-status";
 import {
@@ -36,7 +35,9 @@ type SearchParams = {
   removed?: string;
 };
 
-function getTrustCopy(listing: NonNullable<Awaited<ReturnType<typeof getPropertyBySlug>>>["listing"]) {
+function getTrustCopy(
+  listing: NonNullable<Awaited<ReturnType<typeof getPropertyBySlug>>>["listing"],
+) {
   if (listing.managedByHenryCo) {
     return {
       title: "Managed by HenryCo",
@@ -78,16 +79,16 @@ function getTrustCopy(listing: NonNullable<Awaited<ReturnType<typeof getProperty
 function getViewingFlow(listingTitle: string) {
   return [
     {
-      title: "1. Request is logged",
+      title: "Request is logged",
       body: `Your request for ${listingTitle} is written into HenryCo Property's viewing queue instead of being left in a chat thread.`,
     },
     {
-      title: "2. Access and location are confirmed",
+      title: "Access and location are confirmed",
       body:
         "A HenryCo agent may confirm the property location, access conditions, or calendar before your appointment is finalised.",
     },
     {
-      title: "3. Post-viewing checks stay clear",
+      title: "Post-viewing checks stay clear",
       body:
         "If you want to move forward, HenryCo may request identity, affordability, or company documents before the next approval step.",
     },
@@ -120,7 +121,7 @@ export default async function PropertyDetailPage({
       .filter((item) => item.listingId === data.listing.id)
       .sort((left, right) => (left.updatedAt < right.updatedAt ? 1 : -1))[0] || null;
   const isSaved = Boolean(
-    accountData?.savedListings.some((item) => item.id === data.listing.id)
+    accountData?.savedListings.some((item) => item.id === data.listing.id),
   );
   const propertyOrigin = getPropertyOrigin();
   const returnPath = `/property/${data.listing.slug}`;
@@ -130,35 +131,39 @@ export default async function PropertyDetailPage({
   const viewingFlow = getViewingFlow(data.listing.title);
 
   return (
-    <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
+    <main className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker={data.listing.locationLabel}
         title={data.listing.title}
         description={data.listing.description}
       />
 
+      {/* Notification rail — editorial left-rule ribbons, no panels */}
       <div className="mt-6 space-y-3">
         {messages.inquiry === "sent" ? (
-          <div className="rounded-[1.5rem] border border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] px-4 py-3 text-sm text-[var(--property-sage-soft)]">
-            Inquiry submitted. HenryCo Property has placed it in the follow-up queue and the next response will stay tied to your account.
-          </div>
+          <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
+            Inquiry submitted. HenryCo Property has placed it in the follow-up queue and the next
+            response will stay tied to your account.
+          </p>
         ) : null}
         {messages.viewing === "requested" ? (
-          <div className="rounded-[1.5rem] border border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] px-4 py-3 text-sm text-[var(--property-sage-soft)]">
-            Viewing request submitted. Scheduling, reminders, and any verification follow-up are now attached to a recorded workflow.
-          </div>
+          <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
+            Viewing request submitted. Scheduling, reminders, and any verification follow-up are
+            now attached to a recorded workflow.
+          </p>
         ) : null}
         {messages.saved === "1" || messages.removed === "1" ? (
-          <div className="rounded-[1.5rem] border border-[var(--property-line)] bg-black/10 px-4 py-3 text-sm text-[var(--property-ink-soft)]">
+          <p className="border-l-2 border-[var(--property-line)] pl-4 text-sm leading-7 text-[var(--property-ink-soft)]">
             {messages.saved === "1"
               ? "Property saved to your HenryCo account history."
               : "Property removed from saved listings."}
-          </div>
+          </p>
         ) : null}
       </div>
 
-      <section className="mt-8 grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
-        <div className="space-y-6">
+      <section className="mt-10 grid gap-12 xl:grid-cols-[1.04fr_0.96fr]">
+        <div className="space-y-12">
+          {/* Gallery — kept, real product surface */}
           <div className="property-paper overflow-hidden rounded-[2.2rem]">
             <div className="relative aspect-[16/10]">
               <Image
@@ -172,7 +177,10 @@ export default async function PropertyDetailPage({
             {data.listing.gallery.length > 1 ? (
               <div className="grid gap-3 p-4 md:grid-cols-3">
                 {data.listing.gallery.slice(1, 4).map((image) => (
-                  <div key={image} className="relative aspect-[4/3] overflow-hidden rounded-[1.4rem]">
+                  <div
+                    key={image}
+                    className="relative aspect-[4/3] overflow-hidden rounded-[1.4rem]"
+                  >
                     <Image
                       src={image}
                       alt={data.listing.title}
@@ -188,99 +196,136 @@ export default async function PropertyDetailPage({
 
           <PropertyQuickFacts listing={data.listing} />
 
-          <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-            <div className="flex flex-wrap items-center gap-3">
+          {/* Highlights + Verification + Amenities — editorial 2-col, no panel */}
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
               <PropertyStatusBadge status={data.listing.status} />
               {data.listing.trustBadges.map((badge) => (
                 <span
                   key={badge}
-                  className="rounded-full border border-[var(--property-line)] px-3 py-1 text-xs text-[var(--property-ink-soft)]"
+                  className="rounded-full border border-[var(--property-line)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]"
                 >
                   {badge}
                 </span>
               ))}
             </div>
 
-            <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <div className="mt-7 grid gap-10 md:grid-cols-2">
               <div>
-                <div className="property-kicker">Highlights</div>
-                <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+                <p className="property-kicker">Highlights</p>
+                <ul className="mt-4 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
                   {data.listing.headlineMetrics.map((item) => (
-                    <div key={item}>• {item}</div>
+                    <li
+                      key={item}
+                      className="py-2.5 text-sm leading-7 text-[var(--property-ink-soft)]"
+                    >
+                      {item}
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
               <div>
-                <div className="property-kicker">Verification notes</div>
-                <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+                <p className="property-kicker">Verification notes</p>
+                <ul className="mt-4 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
                   {data.listing.verificationNotes.map((item) => (
-                    <div key={item}>• {item}</div>
+                    <li
+                      key={item}
+                      className="py-2.5 text-sm leading-7 text-[var(--property-ink-soft)]"
+                    >
+                      {item}
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </div>
 
-            <div className="mt-8">
-              <div className="property-kicker">Amenities</div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {data.listing.amenities.map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-[var(--property-line)] px-3 py-1 text-xs text-[var(--property-ink-soft)]"
-                  >
-                    {item}
-                  </span>
-                ))}
+            {data.listing.amenities.length > 0 ? (
+              <div className="mt-10">
+                <p className="property-kicker">Amenities</p>
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {data.listing.amenities.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-[var(--property-line)] px-2.5 py-1 text-[11px] font-medium text-[var(--property-ink-soft)]"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
 
-          <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-            <div className="property-kicker">Listing trust</div>
-            <div className="mt-4 flex items-start gap-3">
-              <div className="rounded-full bg-[rgba(191,122,71,0.12)] p-3 text-[var(--property-accent-strong)]">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
+          {/* Listing trust — editorial split with left-rule */}
+          <section>
+            <div className="flex items-baseline gap-4">
+              <p className="property-kicker">Listing trust</p>
+              <span className="h-px flex-1 bg-[var(--property-line)]" />
+            </div>
+            <div className="mt-6 grid gap-8 md:grid-cols-[0.85fr,1.15fr]">
+              <div className="flex items-start gap-4">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[rgba(191,122,71,0.1)] text-[var(--property-accent-strong)]">
+                  <ShieldCheck className="h-5 w-5" />
+                </span>
+                <h2 className="text-[1.45rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.7rem]">
                   {trustCopy.title}
                 </h2>
-                <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+              </div>
+              <div>
+                <p className="text-sm leading-7 text-[var(--property-ink-soft)]">
                   {trustCopy.body}
                 </p>
+                <ul className="mt-4 space-y-2.5">
+                  {trustCopy.bullets.map((bullet) => (
+                    <li
+                      key={bullet}
+                      className="flex gap-2.5 text-sm leading-7 text-[var(--property-ink-soft)]"
+                    >
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--property-accent-strong)]" />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
-
-            <div className="mt-6 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-              {trustCopy.bullets.map((bullet) => (
-                <p key={bullet}>• {bullet}</p>
-              ))}
             </div>
           </section>
 
           {data.agent ? <PropertyAgentCard agent={data.agent} /> : null}
         </div>
 
-        <div className="space-y-6">
-          <aside className="property-panel rounded-[2rem] p-6 sm:p-8">
-            <div className="property-kicker">Summary</div>
-            <div className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--property-ink)]">
+        <div className="space-y-12">
+          {/* Pricing aside — editorial, no panel */}
+          <aside className="lg:pt-2">
+            <p className="property-kicker">Summary</p>
+            <p className="mt-4 text-[2.4rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--property-ink)] sm:text-[2.7rem]">
               {formatCurrency(data.listing.price, data.listing.currency)}
-            </div>
-            <div className="mt-2 text-sm text-[var(--property-ink-soft)]">{data.listing.priceInterval}</div>
+            </p>
+            <p className="mt-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+              {data.listing.priceInterval}
+            </p>
 
-            <div className="mt-6 space-y-3 text-sm text-[var(--property-ink-soft)]">
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="h-4 w-4 text-[var(--property-accent-strong)]" />
-                {data.listing.locationLabel}
+            <dl className="mt-7 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
+              <div className="flex items-baseline gap-3 py-3">
+                <ShieldCheck className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                  Location
+                </dt>
+                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--property-ink)]">
+                  {data.listing.locationLabel}
+                </dd>
               </div>
-              <div className="flex items-center gap-3">
-                <CalendarRange className="h-4 w-4 text-[var(--property-accent-strong)]" />
-                {data.listing.availableNow
-                  ? "Available now"
-                  : `Available from ${formatDate(data.listing.availableFrom)}`}
+              <div className="flex items-baseline gap-3 py-3">
+                <CalendarRange className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                  Availability
+                </dt>
+                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--property-ink)]">
+                  {data.listing.availableNow
+                    ? "Available now"
+                    : `From ${formatDate(data.listing.availableFrom)}`}
+                </dd>
               </div>
-            </div>
+            </dl>
 
             <div className="mt-6">
               {viewer.user ? (
@@ -311,76 +356,79 @@ export default async function PropertyDetailPage({
             </div>
           </aside>
 
+          {/* Your progress — editorial, divided rows */}
           {viewer.user && (myInquiry || myViewing) ? (
-            <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-              <div className="property-kicker">Your progress on this property</div>
-              <div className="mt-5 space-y-4">
+            <section>
+              <p className="property-kicker">Your progress on this property</p>
+              <ul className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
                 {myInquiry ? (
-                  <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <div className="text-lg font-semibold text-[var(--property-ink)]">
-                          Inquiry status
-                        </div>
-                        <p className="mt-1 text-sm text-[var(--property-ink-soft)]">
-                          Your last inquiry is being tracked in the HenryCo account timeline.
-                        </p>
-                      </div>
-                      <PropertyStatusBadge status={myInquiry.status} />
+                  <li className="flex items-start justify-between gap-4 py-4">
+                    <div>
+                      <h3 className="text-[1rem] font-semibold tracking-tight text-[var(--property-ink)]">
+                        Inquiry status
+                      </h3>
+                      <p className="mt-1 text-sm leading-7 text-[var(--property-ink-soft)]">
+                        Tracked in the HenryCo account timeline.
+                      </p>
                     </div>
-                  </div>
+                    <PropertyStatusBadge status={myInquiry.status} />
+                  </li>
                 ) : null}
                 {myViewing ? (
-                  <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <div className="text-lg font-semibold text-[var(--property-ink)]">
-                          Viewing status
-                        </div>
-                        <p className="mt-1 text-sm text-[var(--property-ink-soft)]">
-                          Preferred: {formatDate(myViewing.preferredDate)}
-                          {myViewing.scheduledFor ? ` · Scheduled: ${formatDate(myViewing.scheduledFor)}` : ""}
-                        </p>
-                      </div>
-                      <PropertyStatusBadge status={myViewing.status} />
+                  <li className="flex items-start justify-between gap-4 py-4">
+                    <div>
+                      <h3 className="text-[1rem] font-semibold tracking-tight text-[var(--property-ink)]">
+                        Viewing status
+                      </h3>
+                      <p className="mt-1 text-sm leading-7 text-[var(--property-ink-soft)]">
+                        Preferred: {formatDate(myViewing.preferredDate)}
+                        {myViewing.scheduledFor
+                          ? ` · Scheduled: ${formatDate(myViewing.scheduledFor)}`
+                          : ""}
+                      </p>
                     </div>
-                  </div>
+                    <PropertyStatusBadge status={myViewing.status} />
+                  </li>
                 ) : null}
-                <Link
-                  href={getSharedAccountPropertyUrl(myViewing ? "viewings" : "inquiries")}
-                  className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
-                >
-                  Open full account timeline
-                </Link>
-              </div>
+              </ul>
+              <Link
+                href={getSharedAccountPropertyUrl(myViewing ? "viewings" : "inquiries")}
+                className="property-button-secondary mt-5 inline-flex rounded-full px-5 py-3 text-sm font-semibold"
+              >
+                Open full account timeline
+              </Link>
             </section>
           ) : null}
 
-          <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-            <div className="property-kicker">What happens after you request a viewing</div>
-            <div className="mt-5 grid gap-4">
-              {viewingFlow.map((step) => (
-                <div
+          {/* Viewing flow — horizontal numbered timeline */}
+          <section>
+            <p className="property-kicker">What happens after you request a viewing</p>
+            <ol className="mt-5 grid gap-6 md:grid-cols-3">
+              {viewingFlow.map((step, i) => (
+                <li
                   key={step.title}
-                  className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4"
+                  className={`border-t border-[var(--property-line)] pt-5 ${
+                    i > 0 ? "md:border-l md:border-t-0 md:pl-5 md:pt-0" : ""
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-[rgba(152,179,154,0.12)] p-2 text-[var(--property-sage-soft)]">
-                      <Sparkles className="h-4 w-4" />
-                    </div>
-                    <h2 className="text-lg font-semibold text-[var(--property-ink)]">{step.title}</h2>
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+                  <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
+                    Step {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="mt-3 text-[1rem] font-semibold leading-snug tracking-tight text-[var(--property-ink)]">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
                     {step.body}
                   </p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           </section>
 
-          <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-            <div className="property-kicker">Inquiry</div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
+          {/* Inquiry form — editorial, no panel */}
+          <section>
+            <p className="property-kicker">Inquiry</p>
+            <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
               Ask about this property
             </h2>
             {viewer.user ? (
@@ -390,7 +438,9 @@ export default async function PropertyDetailPage({
                 <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
 
                 <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Name</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                    Name
+                  </span>
                   <input
                     name="name"
                     required
@@ -399,7 +449,9 @@ export default async function PropertyDetailPage({
                   />
                 </label>
                 <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Email</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                    Email
+                  </span>
                   <input
                     name="email"
                     type="email"
@@ -409,7 +461,9 @@ export default async function PropertyDetailPage({
                   />
                 </label>
                 <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Phone</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                    Phone
+                  </span>
                   <input
                     name="phone"
                     className="property-input mt-2 rounded-2xl px-4 py-3"
@@ -417,7 +471,9 @@ export default async function PropertyDetailPage({
                   />
                 </label>
                 <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Message</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                    Message
+                  </span>
                   <textarea
                     name="message"
                     required
@@ -428,7 +484,8 @@ export default async function PropertyDetailPage({
                 </label>
 
                 <p className="text-xs leading-6 text-[var(--property-ink-muted)]">
-                  HenryCo uses your account so replies, clarifications, and the next trust checks stay in one place.
+                  HenryCo uses your account so replies, clarifications, and the next trust checks
+                  stay in one place.
                 </p>
 
                 <PropertyPendingButton
@@ -448,9 +505,10 @@ export default async function PropertyDetailPage({
             )}
           </section>
 
-          <section className="property-panel rounded-[2rem] p-6 sm:p-8">
-            <div className="property-kicker">Viewing request</div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
+          {/* Viewing request form — editorial, no panel */}
+          <section>
+            <p className="property-kicker">Viewing request</p>
+            <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
               Request a viewing
             </h2>
             {viewer.user ? (
@@ -460,7 +518,9 @@ export default async function PropertyDetailPage({
                 <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
 
                 <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Attendee name</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                    Attendee name
+                  </span>
                   <input
                     name="attendee_name"
                     required
@@ -470,7 +530,9 @@ export default async function PropertyDetailPage({
                 </label>
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="block">
-                    <span className="text-sm font-medium text-[var(--property-ink)]">Email</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                      Email
+                    </span>
                     <input
                       name="attendee_email"
                       type="email"
@@ -480,13 +542,20 @@ export default async function PropertyDetailPage({
                     />
                   </label>
                   <label className="block">
-                    <span className="text-sm font-medium text-[var(--property-ink)]">Phone</span>
-                    <input name="attendee_phone" className="property-input mt-2 rounded-2xl px-4 py-3" />
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                      Phone
+                    </span>
+                    <input
+                      name="attendee_phone"
+                      className="property-input mt-2 rounded-2xl px-4 py-3"
+                    />
                   </label>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="block">
-                    <span className="text-sm font-medium text-[var(--property-ink)]">Preferred time</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                      Preferred time
+                    </span>
                     <input
                       name="preferred_date"
                       type="datetime-local"
@@ -495,7 +564,9 @@ export default async function PropertyDetailPage({
                     />
                   </label>
                   <label className="block">
-                    <span className="text-sm font-medium text-[var(--property-ink)]">Backup time</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                      Backup time
+                    </span>
                     <input
                       name="backup_date"
                       type="datetime-local"
@@ -504,7 +575,9 @@ export default async function PropertyDetailPage({
                   </label>
                 </div>
                 <label className="block">
-                  <span className="text-sm font-medium text-[var(--property-ink)]">Notes</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                    Notes
+                  </span>
                   <textarea
                     name="notes"
                     rows={3}
@@ -513,13 +586,17 @@ export default async function PropertyDetailPage({
                   />
                 </label>
 
-                <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4 text-xs leading-6 text-[var(--property-ink-muted)]">
-                  <div className="flex items-center gap-2 text-[var(--property-ink)]">
-                    <FileCheck2 className="h-4 w-4 text-[var(--property-accent-strong)]" />
-                    What to expect
+                <div className="border-l-2 border-[var(--property-accent-strong)]/55 pl-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <FileCheck2 className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
+                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink)]">
+                      What to expect
+                    </span>
                   </div>
-                  <p className="mt-2">
-                    HenryCo may confirm access, location, or listing readiness before the appointment is fixed. If you want to move forward after the viewing, extra documents can still be requested depending on the property and next step.
+                  <p className="mt-2 text-xs leading-6 text-[var(--property-ink-muted)]">
+                    HenryCo may confirm access, location, or listing readiness before the
+                    appointment is fixed. If you want to move forward after the viewing, extra
+                    documents can still be requested depending on the property and next step.
                   </p>
                 </div>
 
@@ -543,7 +620,7 @@ export default async function PropertyDetailPage({
       </section>
 
       {data.related.length ? (
-        <section className="mt-12">
+        <section className="mt-16">
           <PropertySectionIntro
             kicker="Related listings"
             title="Other homes and spaces worth shortlisting."
