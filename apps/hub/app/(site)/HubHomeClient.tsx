@@ -657,211 +657,171 @@ export default function HubHomeClient({
                 </a>
               </motion.div>
 
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.14 }}
-                className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.08] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl"
-              >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <BrandMark
-                    src={brandLogoUrlSafe}
-                    alt={`${brandTitleSafe} logo`}
-                    accent={brandAccentSafe}
-                    wrapperClassName="h-16 w-16 rounded-[22px] border-white/12 bg-black/20"
-                    imageClassName="object-contain p-2.5"
-                    iconClassName="h-7 w-7"
-                  />
-
-                  <div className="min-w-0">
-                    <div className="text-[11px] uppercase tracking-[0.24em] text-white/45">
-                      {copy.brandPanel.eyebrow}
-                    </div>
-                    <div className="mt-2 text-xl font-semibold tracking-tight text-white">
-                      {brandTitleSafe}
-                    </div>
-                    <div className="mt-1 text-sm text-white/62">{brandSubSafe}</div>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <DirectoryMiniStat
-                    label={copy.brandPanel.baseDomain}
-                    value={normalizeText(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com")
-                      .replace(/^https?:\/\//i, "")
-                      .replace(/\/+$/, "")}
-                  />
-                </div>
-              </motion.div>
-
-              <motion.div
+              <motion.dl
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.16 }}
-                className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+                className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
               >
                 <StatCard
-                  icon={<Building2 className="h-5 w-5" />}
+                  icon={<Building2 className="h-4 w-4" />}
                   label={copy.stats.divisions}
                   value={`${stats.total}`}
                 />
                 <StatCard
-                  icon={<Zap className="h-5 w-5" />}
+                  icon={<Zap className="h-4 w-4" />}
                   label={copy.stats.activeNow}
                   value={`${stats.active}`}
                 />
                 <StatCard
-                  icon={<Star className="h-5 w-5" />}
+                  icon={<Star className="h-4 w-4" />}
                   label={copy.stats.comingSoon}
                   value={`${stats.soon}`}
                 />
                 <StatCard
-                  icon={<Globe2 className="h-5 w-5" />}
+                  icon={<Globe2 className="h-4 w-4" />}
                   label={copy.stats.sectors}
                   value={`${stats.sectors}`}
                 />
-              </motion.div>
+              </motion.dl>
             </div>
 
-            <motion.div
+            <motion.aside
               initial={reduceMotion ? false : { opacity: 0, y: 20 }}
               animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.14 }}
-              className="relative overflow-hidden rounded-[34px] border border-white/12 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.2)] backdrop-blur-0 md:shadow-[0_30px_120px_rgba(0,0,0,0.32)] md:backdrop-blur-xl"
+              className="relative lg:pt-2"
             >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.14),transparent_35%),radial-gradient(circle_at_85%_18%,rgba(255,255,255,0.08),transparent_28%)]" />
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
+                    {copy.standardCard.eyebrow}
+                  </p>
+                  <h2 className="mt-3 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
+                    {copy.standardCard.title}
+                  </h2>
+                </div>
 
-              <div className="relative">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
-                      {copy.standardCard.eyebrow}
+                <BrandMark
+                  src={brandLogoUrlSafe}
+                  alt={`${brandTitleSafe} logo`}
+                  accent={brandAccentSafe}
+                  wrapperClassName="h-11 w-11 shrink-0"
+                  imageClassName="object-contain p-2"
+                  iconClassName="h-5 w-5"
+                />
+              </div>
+
+              <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
+                {copy.standardCard.bullets.map((line) => (
+                  <li key={line} className="flex gap-3 py-3 text-sm leading-7 text-white/75">
+                    <BadgeCheck className="mt-1 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <dl className="mt-6 divide-y divide-white/10 border-y border-white/10">
+                <GlassMiniCard
+                  icon={<TrendingUp className="h-4 w-4" />}
+                  label={copy.standardCard.latestUpdate}
+                  value={latestUpdate}
+                />
+                <GlassMiniCard
+                  icon={<Workflow className="h-4 w-4" />}
+                  label={copy.standardCard.operatingStandard}
+                  value={copy.standardCard.operatingStandardValue}
+                />
+              </dl>
+
+              {spotlightDivision ? (
+                <div className="mt-7 border-l-2 border-[color:var(--accent)]/55 pl-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                        {copy.standardCard.spotlightEyebrow}
+                      </p>
+                      <p className="mt-2 text-[1.05rem] font-semibold tracking-tight text-white">
+                        {spotlightDivision.name}
+                      </p>
+                      <p className="mt-2 max-w-md text-sm leading-7 text-white/68">
+                        {spotlightDivision.tagline ||
+                          spotlightDivision.description ||
+                          copy.standardCard.spotlightFallback}
+                      </p>
                     </div>
-                    <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                      {copy.standardCard.title}
-                    </h2>
+
+                    <span
+                      className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-black"
+                      style={{
+                        background: getAccent(
+                          spotlightDivision.accent,
+                          brandAccentSafe,
+                        ),
+                      }}
+                    >
+                      {copy.standardCard.featured}
+                    </span>
                   </div>
 
-                  <BrandMark
-                    src={brandLogoUrlSafe}
-                    alt={`${brandTitleSafe} logo`}
-                    accent={brandAccentSafe}
-                    wrapperClassName="h-12 w-12"
-                    imageClassName="object-contain p-2"
-                    iconClassName="h-5 w-5"
-                  />
-                </div>
-
-                <div className="mt-6 grid gap-3">
-                  {copy.standardCard.bullets.map((line) => (
-                    <div
-                      key={line}
-                      className="flex gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/72"
-                    >
-                      <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
-                      <span>{line}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  <GlassMiniCard
-                    icon={<TrendingUp className="h-4 w-4" />}
-                    label={copy.standardCard.latestUpdate}
-                    value={latestUpdate}
-                  />
-                  <GlassMiniCard
-                    icon={<Workflow className="h-4 w-4" />}
-                    label={copy.standardCard.operatingStandard}
-                    value={copy.standardCard.operatingStandardValue}
-                  />
-                </div>
-
-                {spotlightDivision ? (
-                  <div className="mt-6 rounded-[28px] border border-white/10 bg-black/25 p-5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-                          {copy.standardCard.spotlightEyebrow}
-                        </div>
-                        <div className="mt-2 text-lg font-semibold text-white">
-                          {spotlightDivision.name}
-                        </div>
-                        <p className="mt-2 text-sm leading-7 text-white/64">
-                          {spotlightDivision.tagline ||
-                            spotlightDivision.description ||
-                            copy.standardCard.spotlightFallback}
-                        </p>
-                      </div>
-
-                      <span
-                        className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-black"
-                        style={{
-                          background: getAccent(
-                            spotlightDivision.accent,
-                            brandAccentSafe
-                          ),
-                        }}
-                      >
-                        {copy.standardCard.featured}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
+                  {(spotlightDivision.categories ?? []).length ? (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
                       {(spotlightDivision.categories ?? []).slice(0, 3).map((item) => (
                         <span
                           key={item}
-                          className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/74"
+                          className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] font-medium text-white/72"
                         >
                           {item}
                         </span>
                       ))}
                     </div>
+                  ) : null}
 
-                    <div className="mt-5 flex flex-wrap gap-3">
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <button
+                      onClick={() => setSelected(spotlightDivision)}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
+                    >
+                      {copy.standardCard.viewDetails}
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+
+                    {spotlightDivision.primary_url ? (
                       <button
-                        onClick={() => setSelected(spotlightDivision)}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white/88 transition hover:bg-white/10"
+                        onClick={() => safeOpen(spotlightDivision.primary_url)}
+                        className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+                        style={{
+                          background: getAccent(
+                            spotlightDivision.accent,
+                            brandAccentSafe,
+                          ),
+                        }}
                       >
-                        {copy.standardCard.viewDetails}
-                        <ChevronRight className="h-4 w-4" />
+                        {copy.standardCard.visitDivision}
+                        <ExternalLink className="h-4 w-4" />
                       </button>
-
-                      {spotlightDivision.primary_url ? (
-                        <button
-                          onClick={() => safeOpen(spotlightDivision.primary_url)}
-                          className="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-                          style={{
-                            background: getAccent(
-                              spotlightDivision.accent,
-                              brandAccentSafe
-                            ),
-                          }}
-                        >
-                          {copy.standardCard.visitDivision}
-                          <ExternalLink className="h-4 w-4" />
-                        </button>
-                      ) : null}
-                    </div>
-
-                    {spotlightHost ? (
-                      <div className="mt-4 text-xs text-white/48">{spotlightHost}</div>
                     ) : null}
                   </div>
-                ) : null}
 
-                {hasServerError ? (
-                  <div className="mt-5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-                    {copy.standardCard.serverError}
-                  </div>
-                ) : null}
-              </div>
-            </motion.div>
+                  {spotlightHost ? (
+                    <p className="mt-4 font-mono text-[11px] tracking-tight text-white/45">
+                      {spotlightHost}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {hasServerError ? (
+                <p className="mt-5 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
+                  {copy.standardCard.serverError}
+                </p>
+              ) : null}
+            </motion.aside>
           </div>
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-3 md:gap-0">
             <PremiumFeature
               icon={<Sparkles className="h-5 w-5" />}
               eyebrow={copy.premiumRow.discovery.eyebrow}
@@ -885,58 +845,56 @@ export default function HubHomeClient({
 
         {featured.length ? (
           <section id="featured" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-            <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/58">
-                    <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                    {copy.featuredSection.eyebrow}
-                  </div>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                  <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  {copy.featuredSection.eyebrow}
+                </p>
 
-                  <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-                    {copy.featuredSection.title}
-                  </h2>
+                <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                  {copy.featuredSection.title}
+                </h2>
 
-                  <p className="mt-2 max-w-2xl text-sm leading-7 text-white/64">
-                    {copy.featuredSection.body}
-                  </p>
-                </div>
-
-                <a
-                  href="#divisions"
-                  className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
-                >
-                  {copy.featuredSection.viewDirectory}
-                  <ChevronRight className="h-4 w-4" />
-                </a>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">
+                  {copy.featuredSection.body}
+                </p>
               </div>
 
-              <div className="mt-6 grid gap-5 xl:grid-cols-3">
-                {featured.map((division) => (
-                  <FeaturedDivisionCard key={division.id} division={division} />
-                ))}
-              </div>
+              <a
+                href="#divisions"
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
+              >
+                {copy.featuredSection.viewDirectory}
+                <ChevronRight className="h-4 w-4" />
+              </a>
+            </div>
+
+            <div className="mt-8 grid gap-5 xl:grid-cols-3">
+              {featured.map((division) => (
+                <FeaturedDivisionCard key={division.id} division={division} />
+              ))}
             </div>
           </section>
         ) : null}
 
         <section id="divisions" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="rounded-[34px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
+          <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr]">
+            <div className="lg:sticky lg:top-24 lg:self-start">
+              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
                 <Search className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                 {copy.directory.eyebrow}
-              </div>
+              </p>
 
-              <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                 {copy.directory.title}
               </h2>
 
-              <p className="mt-3 text-sm leading-7 text-white/64">
+              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
                 {copy.directory.body}
               </p>
 
-              <div className="mt-6 space-y-4">
+              <div className="mt-7 space-y-5">
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/45" />
                   <input
@@ -1049,59 +1007,60 @@ export default function HubHomeClient({
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <div className="mt-7 grid grid-cols-3 gap-x-6 gap-y-5 border-y border-white/10 py-5">
                 <DirectoryMiniStat label={copy.directory.showing} value={String(filtered.length)} />
                 <DirectoryMiniStat label={copy.directory.total} value={String(divisions.length)} />
                 <DirectoryMiniStat label={copy.directory.featured} value={String(featured.length)} />
               </div>
 
-              <div className="mt-6 rounded-[28px] border border-white/10 bg-black/25 p-5">
+              <div className="mt-7">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                     {copy.directory.overviewEyebrow}
-                  </div>
-
+                  </p>
                   {activeFilterCount ? (
                     <button
                       onClick={clearAllFilters}
-                      className="text-xs text-white/70 transition hover:text-white"
+                      className="text-[11px] font-semibold text-white/70 underline-offset-4 transition hover:text-white hover:underline"
                     >
                       {copy.directory.clearAll}
                     </button>
                   ) : (
-                    <span className="text-xs text-emerald-300">{copy.directory.ready}</span>
+                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-emerald-300/85">
+                      {copy.directory.ready}
+                    </span>
                   )}
                 </div>
 
-                <div className="mt-4 space-y-2 text-sm text-white/72">
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    <span>{copy.directory.activeRefinements}</span>
-                    <span className="font-semibold text-white">{activeFilterCount}</span>
+                <dl className="mt-3 divide-y divide-white/10 border-y border-white/10 text-sm">
+                  <div className="flex items-baseline justify-between gap-3 py-3 text-white/72">
+                    <dt>{copy.directory.activeRefinements}</dt>
+                    <dd className="font-semibold text-white">{activeFilterCount}</dd>
                   </div>
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    <span>{copy.directory.lastUpdated}</span>
-                    <span className="font-semibold text-white">{latestUpdate}</span>
+                  <div className="flex items-baseline justify-between gap-3 py-3 text-white/72">
+                    <dt>{copy.directory.lastUpdated}</dt>
+                    <dd className="font-semibold text-white">{latestUpdate}</dd>
                   </div>
-                </div>
+                </dl>
               </div>
 
-              <div className="mt-6 rounded-[28px] border border-white/10 bg-black/25 p-5">
-                <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
+              <div className="mt-7">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   {copy.directory.companyPagesEyebrow}
-                </div>
-
-                <div className="mt-4 grid gap-2">
+                </p>
+                <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
                   {nextPages.map((page) => (
-                    <a
-                      key={page.href}
-                      href={page.href}
-                      className="inline-flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/82 transition hover:bg-white/10"
-                    >
-                      <span>{page.label}</span>
-                      <ChevronRight className="h-4 w-4" />
-                    </a>
+                    <li key={page.href}>
+                      <a
+                        href={page.href}
+                        className="group flex items-center justify-between gap-3 py-3 text-sm font-medium text-white/82 transition hover:text-white"
+                      >
+                        <span>{page.label}</span>
+                        <ChevronRight className="h-4 w-4 text-white/45 transition group-hover:translate-x-0.5 group-hover:text-white" />
+                      </a>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </div>
 
@@ -1115,7 +1074,7 @@ export default function HubHomeClient({
                   />
                 ))
               ) : (
-                <div className="rounded-[32px] border border-white/10 bg-white/[0.08] p-10 text-center text-sm text-white/68 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl sm:col-span-2">
+                <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68 sm:col-span-2">
                   {copy.directory.empty}
                 </div>
               )}
@@ -1124,47 +1083,44 @@ export default function HubHomeClient({
         </section>
 
         <section id="ecosystem" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="rounded-[34px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
+          <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+            <div>
+              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
                 <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                 {copy.ecosystem.eyebrow}
-              </div>
+              </p>
 
-              <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                 {copy.ecosystem.title}
               </h2>
 
-              <p className="mt-3 text-sm leading-7 text-white/64">
+              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
                 {copy.ecosystem.body}
               </p>
 
-              <div className="mt-6 grid gap-3">
+              <ul className="mt-7 divide-y divide-white/10 border-y border-white/10">
                 {copy.ecosystem.bullets.map((item) => (
-                  <div
-                    key={item}
-                    className="flex gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/72"
-                  >
-                    <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
+                  <li key={item} className="flex gap-3 py-3 text-sm leading-7 text-white/75">
+                    <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
                     <span>{item}</span>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
-            <div className="grid gap-4">
+            <div>
               <BigFeature
-                icon={<Building2 className="h-6 w-6" />}
+                icon={<Building2 className="h-5 w-5" />}
                 title={copy.ecosystem.big[0]}
                 text={copy.ecosystem.bigText[0]}
               />
               <BigFeature
-                icon={<Landmark className="h-6 w-6" />}
+                icon={<Landmark className="h-5 w-5" />}
                 title={copy.ecosystem.big[1]}
                 text={copy.ecosystem.bigText[1]}
               />
               <BigFeature
-                icon={<Zap className="h-6 w-6" />}
+                icon={<Zap className="h-5 w-5" />}
                 title={copy.ecosystem.big[2]}
                 text={copy.ecosystem.bigText[2]}
               />
@@ -1173,80 +1129,90 @@ export default function HubHomeClient({
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-6 sm:px-6 lg:px-8">
-          <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
-            <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
-                  <Workflow className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                  {copy.access.eyebrow}
-                </div>
+          <div className="grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <div>
+              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                <Workflow className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                {copy.access.eyebrow}
+              </p>
 
-                <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-                  {copy.access.title}
-                </h2>
+              <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                {copy.access.title}
+              </h2>
 
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-white/64">
-                  {copy.access.body}
-                </p>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">
+                {copy.access.body}
+              </p>
 
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <a
-                    href="/about"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-[color:var(--accent)] px-4 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-                  >
-                    {copy.access.ctaPages}
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href="/about"
+                  className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:opacity-90"
+                >
+                  {copy.access.ctaPages}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
 
-                  <a
-                    href="#divisions"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
-                  >
-                    {copy.access.ctaDirectory}
-                    <ChevronRight className="h-4 w-4" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="grid gap-3">
-                <GlassMiniCard
-                  icon={<Layers3 className="h-4 w-4" />}
-                  label={copy.access.cards[0]}
-                  value={copy.access.cardValues[0]}
-                />
-                <GlassMiniCard
-                  icon={<TrendingUp className="h-4 w-4" />}
-                  label={copy.access.cards[1]}
-                  value={copy.access.cardValues[1]}
-                />
-                <GlassMiniCard
-                  icon={<ShieldCheck className="h-4 w-4" />}
-                  label={copy.access.cards[2]}
-                  value={copy.access.cardValues[2]}
-                />
+                <a
+                  href="#divisions"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-5 py-3 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
+                >
+                  {copy.access.ctaDirectory}
+                  <ChevronRight className="h-4 w-4" />
+                </a>
               </div>
             </div>
+
+            <dl className="divide-y divide-white/10 border-y border-white/10">
+              <div className="flex items-baseline gap-3 py-3">
+                <Layers3 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  {copy.access.cards[0]}
+                </dt>
+                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  {copy.access.cardValues[0]}
+                </dd>
+              </div>
+              <div className="flex items-baseline gap-3 py-3">
+                <TrendingUp className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  {copy.access.cards[1]}
+                </dt>
+                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  {copy.access.cardValues[1]}
+                </dd>
+              </div>
+              <div className="flex items-baseline gap-3 py-3">
+                <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  {copy.access.cards[2]}
+                </dt>
+                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  {copy.access.cardValues[2]}
+                </dd>
+              </div>
+            </dl>
           </div>
         </section>
 
         <section id="faq" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
+          <div className="grid gap-12 lg:grid-cols-[0.85fr,1.15fr]">
+            <div>
+              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
                 <Globe2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                 {copy.faq.eyebrow}
-              </div>
+              </p>
 
-              <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="mt-4 max-w-sm text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                 {copy.faq.title}
               </h2>
 
-              <p className="mt-3 text-sm leading-7 text-white/64">
+              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
                 {copy.faq.subtitle}
               </p>
             </div>
 
-            <div className="mt-8 grid gap-3">
+            <div className="border-t border-white/10">
               {faqItems.map((item) => (
                 <Faq key={item.q} q={item.q} a={item.a} />
               ))}
@@ -1495,12 +1461,14 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-black/20 p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-white/52">
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/52">
         <span className="text-[color:var(--accent)]">{icon}</span>
         <span>{label}</span>
       </div>
-      <div className="mt-2 text-2xl font-semibold tracking-tight text-white">{value}</div>
+      <div className="text-[1.6rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.8rem]">
+        {value}
+      </div>
     </div>
   );
 }
@@ -1515,12 +1483,14 @@ function GlassMiniCard({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-white/48">
-        <span className="text-[color:var(--accent)]">{icon}</span>
-        <span>{label}</span>
-      </div>
-      <div className="mt-2 text-sm font-semibold text-white/90">{value}</div>
+    <div className="flex items-baseline gap-3 border-b border-white/10 py-3 last:border-b-0">
+      <span className="text-[color:var(--accent)]">{icon}</span>
+      <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+        {label}
+      </span>
+      <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+        {value}
+      </span>
     </div>
   );
 }
@@ -1533,9 +1503,13 @@ function DirectoryMiniStat({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
-      <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-white">{value}</div>
+    <div className="flex flex-col gap-1">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+        {label}
+      </div>
+      <div className="text-[1.25rem] font-semibold leading-tight tracking-tight text-white">
+        {value}
+      </div>
     </div>
   );
 }
@@ -1552,13 +1526,13 @@ function PremiumFeature({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[30px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_18px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
-      <div className="grid h-12 w-12 place-items-center rounded-2xl border border-white/12 bg-white/[0.06] text-[color:var(--accent)]">
-        {icon}
+    <div className="border-t border-white/10 pt-6 md:border-l md:border-t-0 md:pl-6 md:pt-0 md:first:border-l-0 md:first:pl-0">
+      <span className="text-[color:var(--accent)]">{icon}</span>
+      <div className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-white/55">
+        {eyebrow}
       </div>
-      <div className="mt-4 text-xs uppercase tracking-[0.18em] text-white/45">{eyebrow}</div>
-      <div className="mt-3 text-lg font-semibold text-white">{title}</div>
-      <p className="mt-2 text-sm leading-7 text-white/64">{text}</p>
+      <h3 className="mt-2 text-base font-semibold tracking-tight text-white">{title}</h3>
+      <p className="mt-2 text-sm leading-7 text-white/68">{text}</p>
     </div>
   );
 }
@@ -1573,12 +1547,14 @@ function BigFeature({
   text: string;
 }) {
   return (
-    <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
-      <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent)] text-black">
+    <div className="flex gap-5 border-b border-white/10 py-6 last:border-b-0">
+      <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 text-[color:var(--accent)]">
         {icon}
+      </span>
+      <div>
+        <h3 className="text-base font-semibold tracking-tight text-white">{title}</h3>
+        <p className="mt-1.5 text-sm leading-7 text-white/68">{text}</p>
       </div>
-      <div className="mt-4 text-lg font-semibold text-white">{title}</div>
-      <div className="mt-2 text-sm leading-7 text-white/64">{text}</div>
     </div>
   );
 }
@@ -2057,23 +2033,27 @@ function InsightList({
 
 function MiniKPI({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3">
-      <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-white">{value}</div>
+    <div className="flex flex-col gap-1">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+        {label}
+      </div>
+      <div className="text-sm font-semibold tracking-tight text-white">{value}</div>
     </div>
   );
 }
 
 function Faq({ q, a }: { q: string; a: string }) {
   return (
-    <details className="group rounded-[26px] border border-white/10 bg-black/20 p-5 open:bg-white/[0.06]">
+    <details className="group border-b border-white/10 py-5 last:border-b-0">
       <summary className="cursor-pointer list-none">
-        <div className="flex items-center justify-between gap-3">
-          <div className="text-sm font-semibold text-white">{q}</div>
-          <ChevronRight className="h-4 w-4 shrink-0 text-white/60 transition duration-200 group-open:rotate-90" />
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-white">
+            {q}
+          </h3>
+          <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-white/55 transition duration-200 group-open:rotate-90 group-open:text-white" />
         </div>
       </summary>
-      <div className="mt-3 text-sm leading-7 text-white/64">{a}</div>
+      <p className="mt-3 max-w-3xl text-sm leading-7 text-white/68">{a}</p>
     </details>
   );
 }
