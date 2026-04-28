@@ -229,4 +229,3 @@ export default async function PropertyHomePage() {
     </main>
   );
 }
-
