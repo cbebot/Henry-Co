@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionConfig, getDivisionUrl } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/email";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type DispatchStatus = "sent" | "queued" | "skipped" | "failed";
@@ -199,48 +200,40 @@ export async function sendJobsEmail(
     };
   }
 
-  const resendKey = cleanText(process.env.RESEND_API_KEY);
-  const from = cleanText(process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM) || `HenryCo Jobs <${jobs.supportEmail}>`;
   const rendered = renderEmailTemplate({
     ...template,
     ctaHref: toAbsoluteJobsUrl(template.ctaHref),
   });
 
-  if (!resendKey) {
+  const dispatch = await sendTransactionalEmail({
+    to: recipient,
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+    fromName: "HenryCo Jobs",
+    replyTo: jobs.supportEmail,
+  });
+
+  if (dispatch.status === "skipped") {
     await logNotificationAudit({
       actorId: options?.actorId,
       actorRole: options?.actorRole,
       action: "jobs_email_queued",
       entityType: options?.entityType,
       entityId: options?.entityId,
-      reason: "RESEND_API_KEY is not configured.",
+      reason: dispatch.skippedReason || "Email provider not configured.",
       payload: { to: recipient, template: template.key, subject: rendered.subject },
     });
     return {
       ok: false,
       status: "queued",
-      reason: "RESEND_API_KEY is not configured.",
+      reason: dispatch.skippedReason || "Email provider not configured.",
       messageId: null,
     };
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [recipient],
-      subject: rendered.subject,
-      html: rendered.html,
-      text: rendered.text,
-    }),
-  });
-
-  const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-  const ok = response.ok && Boolean(payload?.id);
+  const ok = dispatch.status === "sent";
+  const reason = ok ? null : dispatch.safeError || "Email dispatch failed.";
 
   await logNotificationAudit({
     actorId: options?.actorId,
@@ -248,15 +241,15 @@ export async function sendJobsEmail(
     action: ok ? "jobs_email_sent" : "jobs_email_failed",
     entityType: options?.entityType,
     entityId: options?.entityId,
-    reason: ok ? null : payload?.message || `Resend rejected the email with status ${response.status}.`,
-    payload: { to: recipient, template: template.key, subject: rendered.subject, resendId: payload?.id ?? null },
+    reason,
+    payload: { to: recipient, template: template.key, subject: rendered.subject, messageId: dispatch.messageId ?? null },
   });
 
   return {
     ok,
     status: ok ? "sent" : "failed",
-    reason: ok ? null : payload?.message || `Resend rejected the email with status ${response.status}.`,
-    messageId: payload?.id ?? null,
+    reason,
+    messageId: dispatch.messageId ?? null,
   };
 }
 

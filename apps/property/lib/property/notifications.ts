@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionConfig } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/email";
 import "@/lib/server-env";
 import { normalizeEmail, normalizePhone } from "@/lib/env";
 import {
@@ -228,49 +229,36 @@ async function sendEmail(
     return { ok: false, status: "skipped", reason: "Recipient email is missing.", messageId: null };
   }
 
-  const resendKey = cleanText(process.env.RESEND_API_KEY);
   const property = getDivisionConfig("property");
   const rendered = renderPropertyEmailTemplate(notification.email);
 
-  if (!resendKey) {
-    return { ok: false, status: "queued", reason: "RESEND_API_KEY is not configured.", messageId: null };
-  }
+  const dispatch = await sendTransactionalEmail({
+    to: recipient,
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+    fromName: property.name,
+  });
 
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: `${property.name} <${process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev"}>`,
-        to: [recipient],
-        subject: rendered.subject,
-        html: rendered.html,
-        text: rendered.text,
-      }),
-    });
-
-    const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-    if (!response.ok) {
-      return {
-        ok: false,
-        status: "failed",
-        reason: payload?.message || `Resend rejected the email with status ${response.status}.`,
-        messageId: null,
-      };
-    }
-
-    return { ok: true, status: "sent", reason: null, messageId: payload?.id ?? null };
-  } catch (error) {
+  if (dispatch.status === "skipped") {
     return {
       ok: false,
-      status: "failed",
-      reason: error instanceof Error ? error.message : "Email delivery failed.",
+      status: "queued",
+      reason: dispatch.skippedReason || "Email provider not configured.",
       messageId: null,
     };
   }
+
+  if (dispatch.status === "error") {
+    return {
+      ok: false,
+      status: "failed",
+      reason: dispatch.safeError || "Email delivery failed.",
+      messageId: null,
+    };
+  }
+
+  return { ok: true, status: "sent", reason: null, messageId: dispatch.messageId ?? null };
 }
 
 async function sendViaTwilio(phone: string, body: string): Promise<DeliveryResult> {

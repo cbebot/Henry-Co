@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionConfig } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/email";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getCareSettings } from "@/lib/care-data";
 import { buildCarePublicUrl } from "@/lib/care-links";
@@ -160,17 +161,17 @@ function buildFromAddress(settings: Awaited<ReturnType<typeof getCareSettings>>)
     settings.notification_reply_to_email ||
     settings.support_email ||
     "";
-  const fallbackEmail = "onboarding@resend.dev";
+  const fallbackEmail = "noreply@henrycogroup.com";
   const fromEmail = extractEmailAddress(rawFrom) || fallbackEmail;
   const preformatted = sanitizeHeaderValue(rawFrom);
   const displayName = sanitizeHeaderValue(settings.notification_sender_name || care.name) || care.name;
 
   if (preformatted.includes("<") && preformatted.includes(">")) {
     const namePart = preformatted.replace(/<[^<>]+>.*/, "").replace(/^["']|["']$/g, "").trim();
-    return namePart ? `${namePart} <${fromEmail}>` : `${displayName} <${fromEmail}>`;
+    return { email: fromEmail, name: namePart || displayName };
   }
 
-  return `${displayName} <${fromEmail}>`;
+  return { email: fromEmail, name: displayName };
 }
 
 async function logEmailDispatch(input: {
@@ -270,12 +271,29 @@ export async function sendCareEmail(input: SendCareEmailInput): Promise<EmailDis
       });
     }
 
-    const resendKey = String(process.env.RESEND_API_KEY || "").trim();
+    const sender = buildFromAddress(settings);
+    const replyTo = cleanEmail(
+      input.replyTo ??
+        getResendSupportInbox() ??
+        settings.notification_reply_to_email ??
+        settings.payment_support_email ??
+        settings.support_email,
+    );
 
-    if (!resendKey) {
+    const dispatch = await sendTransactionalEmail({
+      to: recipient,
+      from: sender.email,
+      fromName: sender.name,
+      replyTo: replyTo ?? undefined,
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+    });
+
+    if (dispatch.status === "skipped") {
       await updateNotificationRecord(notificationId, "queued", {
         ...basePayload,
-        transport_reason: "RESEND_API_KEY is not configured for this deployment.",
+        transport_reason: dispatch.skippedReason || "Email provider not configured for this deployment.",
       });
       await logEmailDispatch({
         event_type: "email_dispatch_queued_no_transport",
@@ -286,13 +304,13 @@ export async function sendCareEmail(input: SendCareEmailInput): Promise<EmailDis
         bookingId: input.bookingId,
         paymentRequestId: input.paymentRequestId,
         notificationId,
-        reason: "RESEND_API_KEY is not configured for this deployment.",
+        reason: dispatch.skippedReason || "Email provider not configured for this deployment.",
       });
 
       return {
         ok: false,
         status: "queued",
-        reason: "RESEND_API_KEY is not configured for this deployment.",
+        reason: dispatch.skippedReason || "Email provider not configured for this deployment.",
         messageId: null,
         notificationId,
         subject: rendered.subject,
@@ -300,34 +318,10 @@ export async function sendCareEmail(input: SendCareEmailInput): Promise<EmailDis
       };
     }
 
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: buildFromAddress(settings),
-        to: recipients,
-        reply_to: cleanEmail(
-          input.replyTo ??
-            getResendSupportInbox() ??
-            settings.notification_reply_to_email ??
-            settings.payment_support_email ??
-            settings.support_email
-        ),
-        subject: rendered.subject,
-        html: rendered.html,
-        text: rendered.text,
-      }),
-    });
-
-    const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-
-    if (!response.ok) {
+    if (dispatch.status === "error") {
       await updateNotificationRecord(notificationId, "failed", {
         ...basePayload,
-        transport_reason: payload?.message || `Resend rejected the email with status ${response.status}.`,
+        transport_reason: dispatch.safeError || "Email dispatch failed.",
       });
       await logEmailDispatch({
         event_type: "email_dispatch_failed",
@@ -338,13 +332,13 @@ export async function sendCareEmail(input: SendCareEmailInput): Promise<EmailDis
         bookingId: input.bookingId,
         paymentRequestId: input.paymentRequestId,
         notificationId,
-        reason: payload?.message || `Resend rejected the email with status ${response.status}.`,
+        reason: dispatch.safeError || "Email dispatch failed.",
       });
 
       return {
         ok: false,
         status: "failed",
-        reason: payload?.message || `Resend rejected the email with status ${response.status}.`,
+        reason: dispatch.safeError || "Email dispatch failed.",
         messageId: null,
         notificationId,
         subject: rendered.subject,
@@ -354,8 +348,8 @@ export async function sendCareEmail(input: SendCareEmailInput): Promise<EmailDis
 
     await updateNotificationRecord(notificationId, "sent", {
       ...basePayload,
-      provider: "resend",
-      resend_id: payload?.id ?? null,
+      provider: dispatch.provider,
+      message_id: dispatch.messageId ?? null,
     });
     await logEmailDispatch({
       event_type: "email_dispatch_sent",
@@ -366,14 +360,14 @@ export async function sendCareEmail(input: SendCareEmailInput): Promise<EmailDis
       bookingId: input.bookingId,
       paymentRequestId: input.paymentRequestId,
       notificationId,
-      reason: payload?.id ?? null,
+      reason: dispatch.messageId ?? null,
     });
 
     return {
       ok: true,
       status: "sent",
       reason: null,
-      messageId: payload?.id ?? null,
+      messageId: dispatch.messageId ?? null,
       notificationId,
       subject: rendered.subject,
       templateKey: rendered.templateKey,

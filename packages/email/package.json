@@ -1,0 +1,11 @@
+{
+  "name": "@henryco/email",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./providers/brevo": "./providers/brevo.ts",
+    "./providers/resend": "./providers/resend.ts"
+  }
+}

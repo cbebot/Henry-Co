@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getHqUrl } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/email";
 import { getFinanceCenterData, getMessagingCenterData, getOperationsCenterData, getOwnerOverviewData } from "@/lib/owner-data";
 import { divisionLabel, formatCurrencyAmount } from "@/lib/format";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -241,67 +242,35 @@ async function sendOwnerReportEmail(input: {
   html: string;
   text: string;
 }) {
-  const resendKey = cleanText(process.env.RESEND_API_KEY);
-  if (!resendKey) {
-    return {
-      status: "failed" as const,
-      reason: "RESEND_API_KEY is not configured for HenryCo HQ.",
-      messageId: null,
-    };
-  }
+  const dispatch = await sendTransactionalEmail({
+    to: input.to,
+    subject: input.subject,
+    html: input.html,
+    text: input.text,
+    fromName: "HenryCo HQ",
+  });
 
-  const rawFrom =
-    cleanText(process.env.RESEND_FROM_EMAIL) ||
-    cleanText(process.env.RESEND_FROM) ||
-    "HenryCo HQ <noreply@henrycogroup.com>";
-  const fromEmail = extractEmail(rawFrom);
-  const fromName = cleanText(rawFrom.replace(/<[^>]+>/g, ""));
-  const from = fromEmail
-    ? fromName
-      ? `${fromName.replace(fromEmail, "").trim() || "HenryCo HQ"} <${fromEmail}>`
-      : fromEmail
-    : "HenryCo HQ <noreply@henrycogroup.com>";
-
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        from,
-        to: input.to,
-        subject: input.subject,
-        html: input.html,
-        text: input.text,
-      }),
-    });
-
-    const payload = (await response.json().catch(() => null)) as
-      | { id?: string; message?: string; error?: { message?: string } }
-      | null;
-
-    if (!response.ok) {
-      return {
-        status: "failed" as const,
-        reason: cleanText(payload?.error?.message || payload?.message || `Resend returned ${response.status}.`),
-        messageId: null,
-      };
-    }
-
+  if (dispatch.status === "sent") {
     return {
       status: "sent" as const,
       reason: null,
-      messageId: cleanText(payload?.id) || null,
+      messageId: cleanText(dispatch.messageId) || null,
     };
-  } catch (error) {
+  }
+
+  if (dispatch.status === "skipped") {
     return {
       status: "failed" as const,
-      reason: error instanceof Error ? error.message : "Unknown email dispatch error.",
+      reason: dispatch.skippedReason || "Email provider not configured for HenryCo HQ.",
       messageId: null,
     };
   }
+
+  return {
+    status: "failed" as const,
+    reason: dispatch.safeError || "Unknown email dispatch error.",
+    messageId: null,
+  };
 }
 
 function renderList(items: string[]) {
