@@ -1,10 +1,10 @@
 import "server-only";
 
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/email";
 import {
   extractEmailAddress,
   formatCurrency,
-  getOptionalEnv,
   sanitizeHeaderValue,
 } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -146,10 +146,9 @@ async function getOwnerRecipients() {
 
 function fromAddress() {
   const raw = sanitizeHeaderValue(
-    process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM || `${studio.name} <onboarding@resend.dev>`
+    process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM || `${studio.name} <noreply@henrycogroup.com>`
   );
-  const email = extractEmailAddress(raw) || "onboarding@resend.dev";
-  return `${studio.name} <${email}>`;
+  return extractEmailAddress(raw) || "noreply@henrycogroup.com";
 }
 
 async function sendEmail(input: {
@@ -173,8 +172,17 @@ async function sendEmail(input: {
     });
   }
 
-  const resendKey = getOptionalEnv("RESEND_API_KEY");
-  if (!resendKey) {
+  const dispatch = await sendTransactionalEmail({
+    to: recipient,
+    from: fromAddress(),
+    fromName: studio.name,
+    replyTo: studio.supportEmail,
+    subject: input.subject,
+    html: input.html,
+    text: input.text,
+  });
+
+  if (dispatch.status === "skipped") {
     return addStudioNotificationRecord({
       entityId: input.entityId ?? null,
       channel: "email",
@@ -182,27 +190,9 @@ async function sendEmail(input: {
       recipient,
       subject: input.subject,
       status: "queued",
-      reason: "RESEND_API_KEY is not configured for this deployment.",
+      reason: dispatch.skippedReason || "Email provider not configured for this deployment.",
     });
   }
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: fromAddress(),
-      to: [recipient],
-      reply_to: studio.supportEmail,
-      subject: input.subject,
-      html: input.html,
-      text: input.text,
-    }),
-  });
-
-  const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
 
   return addStudioNotificationRecord({
     entityId: input.entityId ?? null,
@@ -210,8 +200,11 @@ async function sendEmail(input: {
     templateKey: input.templateKey,
     recipient,
     subject: input.subject,
-    status: response.ok ? "sent" : "failed",
-    reason: response.ok ? payload?.id ?? null : payload?.message || `Resend rejected the email with status ${response.status}.`,
+    status: dispatch.status === "sent" ? "sent" : "failed",
+    reason:
+      dispatch.status === "sent"
+        ? dispatch.messageId ?? null
+        : dispatch.safeError || "Email dispatch failed.",
   });
 }
 

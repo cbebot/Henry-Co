@@ -24,6 +24,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -90,7 +93,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -103,6 +106,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -169,7 +175,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -279,6 +285,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -376,6 +385,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -455,6 +467,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -534,6 +549,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -613,6 +631,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -695,6 +716,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -859,6 +883,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -1054,6 +1081,8 @@ importers:
   packages/brand: {}
 
   packages/config: {}
+
+  packages/email: {}
 
   packages/i18n:
     dependencies:

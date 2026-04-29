@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getDivisionUrl } from "@henryco/config";
+import { sendTransactionalEmail } from "@henryco/email";
 import { getOptionalEnv } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendLogisticsWhatsAppText } from "@/lib/logistics/whatsapp";
@@ -80,70 +81,47 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
     "— HenryCo Logistics",
   ].join("\n");
 
-  const resendKey = cleanText(process.env.RESEND_API_KEY);
-  const from =
-    cleanText(process.env.RESEND_FROM_EMAIL) ||
-    cleanText(process.env.RESEND_FROM) ||
-    "HenryCo Logistics <onboarding@resend.dev>";
-
   const email = cleanText(input.senderEmail);
-  if (email && resendKey) {
-    try {
-      const response = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from,
-          to: [email],
-          subject,
-          text: bodyText,
-        }),
-      });
-      const payload = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-      if (response.ok && payload?.id) {
-        await logNotificationRow({
-          shipmentId: input.shipmentId,
-          channel: "email",
-          templateKey: input.mode === "quote" ? "quote_created" : "booking_created",
-          recipient: email,
-          subject,
-          status: "sent",
-        });
-      } else {
-        await logNotificationRow({
-          shipmentId: input.shipmentId,
-          channel: "email",
-          templateKey: input.mode === "quote" ? "quote_created" : "booking_created",
-          recipient: email,
-          subject,
-          status: "failed",
-          reason: payload?.message || `HTTP ${response.status}`,
-        });
-      }
-    } catch (err) {
+  const templateKey = input.mode === "quote" ? "quote_created" : "booking_created";
+
+  if (email) {
+    const dispatch = await sendTransactionalEmail({
+      to: email,
+      subject,
+      text: bodyText,
+      fromName: "HenryCo Logistics",
+    });
+
+    if (dispatch.status === "sent") {
       await logNotificationRow({
         shipmentId: input.shipmentId,
         channel: "email",
-        templateKey: input.mode === "quote" ? "quote_created" : "booking_created",
+        templateKey,
+        recipient: email,
+        subject,
+        status: "sent",
+      });
+    } else if (dispatch.status === "skipped") {
+      await logNotificationRow({
+        shipmentId: input.shipmentId,
+        channel: "email",
+        templateKey,
+        recipient: email,
+        subject,
+        status: "skipped",
+        reason: dispatch.skippedReason || "Email provider not configured.",
+      });
+    } else {
+      await logNotificationRow({
+        shipmentId: input.shipmentId,
+        channel: "email",
+        templateKey,
         recipient: email,
         subject,
         status: "failed",
-        reason: err instanceof Error ? err.message : "email_send_error",
+        reason: dispatch.safeError || "email_send_error",
       });
     }
-  } else if (email) {
-    await logNotificationRow({
-      shipmentId: input.shipmentId,
-      channel: "email",
-      templateKey: input.mode === "quote" ? "quote_created" : "booking_created",
-      recipient: email,
-      subject,
-      status: "skipped",
-      reason: "RESEND_API_KEY is not configured.",
-    });
   }
 
   const wa = await sendLogisticsWhatsAppText({

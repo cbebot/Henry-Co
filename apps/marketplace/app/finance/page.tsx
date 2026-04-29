@@ -6,6 +6,20 @@ import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+type PricingLine = {
+  label?: unknown;
+  code?: unknown;
+  amount?: unknown;
+};
+
+type PricingBreakdown = {
+  lines: PricingLine[];
+};
+
+function hasPricingLines(value: unknown): value is PricingBreakdown {
+  return typeof value === "object" && value !== null && Array.isArray((value as PricingBreakdown).lines);
+}
+
 export default async function FinancePage() {
   await requireMarketplaceRoles(["marketplace_owner", "marketplace_admin", "finance"], "/finance");
   const data = await getStaffQueueData();
@@ -20,20 +34,18 @@ export default async function FinancePage() {
         {data.orders.slice(0, 4).map((order: Record<string, unknown>) => (
           <article key={String(order.id)} className="market-paper rounded-[1.75rem] p-5">
             <p className="market-kicker">{String(order.order_no || "Order")}</p>
-            {order.pricing_breakdown && typeof order.pricing_breakdown === "object" ? (
+            {hasPricingLines(order.pricing_breakdown) ? (
               <div className="mt-3 grid gap-2 text-sm text-[var(--market-muted)]">
-                {Array.isArray((order.pricing_breakdown as any).lines)
-                  ? ((order.pricing_breakdown as any).lines as any[])
-                      .slice(0, 6)
-                      .map((line, idx) => (
-                        <div key={idx} className="flex items-center justify-between gap-3">
-                          <span>{String(line?.label || line?.code || "Fee")}</span>
-                          <span className="font-semibold text-[var(--market-ink)]">
-                            {formatCurrency(Number(line?.amount?.amount ?? line?.amount ?? 0))}
-                          </span>
-                        </div>
-                      ))
-                  : null}
+                {order.pricing_breakdown.lines.slice(0, 6).map((line, idx) => {
+                  const amount = typeof line.amount === "object" && line.amount !== null && "amount" in line.amount ? line.amount.amount : line.amount;
+
+                  return (
+                    <div key={idx} className="flex items-center justify-between gap-3">
+                      <span>{String(line.label || line.code || "Fee")}</span>
+                      <span className="font-semibold text-[var(--market-ink)]">{formatCurrency(Number(amount ?? 0))}</span>
+                    </div>
+                  );
+                })}
               </div>
             ) : null}
             <form action="/api/marketplace" method="POST" className="mt-4 flex flex-wrap gap-3">

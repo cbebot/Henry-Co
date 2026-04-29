@@ -15,6 +15,7 @@
   "dependencies": {
     "@henryco/brand": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/email": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/lifecycle": "workspace:^",

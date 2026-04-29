@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@henryco/config": "workspace:^",
+    "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/trust": "workspace:^",
     "@henryco/ui": "workspace:^",
