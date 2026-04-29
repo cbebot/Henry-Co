@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { getSharedCookieDomain } from "@henryco/config";
 import {
   getLocaleDisplayLabel,
@@ -11,7 +11,7 @@ import {
   type AppLocale,
   type EcosystemConsentCopy,
 } from "@henryco/i18n";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, X } from "lucide-react";
 
 const LEGACY_LS = "henryco-care-cookie-consent";
 const LEGACY_COOKIE = "henryco_care_cookie_consent";
@@ -200,32 +200,51 @@ export function EcosystemPreferences({
     void persistLocale(localeChoice);
   }
 
+  const closePanel = useCallback(() => {
+    setShowPanel(false);
+    if (!consent.updatedAt) setShowBanner(true);
+  }, [consent.updatedAt]);
+
+  useEffect(() => {
+    if (!showPanel) return undefined;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        closePanel();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [closePanel, showPanel]);
+
   if (!ready) return null;
 
-  const accentStyle = { ["--accent" as string]: "#C9A227" } as React.CSSProperties;
+  const accentStyle = { ["--accent" as string]: "#C9A227" } as CSSProperties;
   const rtlDir = isRtlLocale(localeChoice) ? "rtl" : "ltr";
 
   return (
     <div style={accentStyle} dir={rtlDir}>
       {showBanner ? (
-        <div className="fixed inset-x-0 bottom-4 z-[70] mx-auto w-[min(100%-1.5rem,960px)] rounded-[2rem] border border-white/10 bg-[#050816]/94 p-5 text-white shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-2xl">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] px-3 pb-[max(env(safe-area-inset-bottom,0px),0.875rem)] sm:px-5">
+          <div className="pointer-events-auto mx-auto w-full max-w-4xl rounded-2xl border border-zinc-200/90 bg-white/95 p-3.5 text-zinc-950 shadow-[0_22px_70px_-36px_rgba(0,0,0,0.58)] backdrop-blur-2xl dark:border-white/12 dark:bg-[#0b1018]/95 dark:text-white sm:p-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-[color:var(--accent)]">
                 <ShieldCheck className="h-4 w-4" />
                 {copy.banner.eyebrow}
               </div>
-              <div className="mt-3 text-lg font-semibold text-white">{copy.banner.title}</div>
-              <div className="mt-2 text-sm leading-7 text-white/66">{copy.banner.body}</div>
-              <div className="mt-4 grid gap-2 sm:max-w-xs">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+                <div className="mt-2 text-base font-semibold text-zinc-950 dark:text-white">{copy.banner.title}</div>
+                <div className="mt-1.5 text-sm leading-6 text-zinc-600 dark:text-white/66">{copy.banner.body}</div>
+                <div className="mt-3 grid gap-2 sm:max-w-xs">
+                  <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
                   {copy.language.label}
                 </label>
                 <select
                   value={localeChoice}
                   onChange={(e) => setLocaleChoice(normalizeLocale(e.target.value) as AppLocale)}
                   dir="auto"
-                  className="h-11 rounded-xl border border-white/12 bg-black/30 px-3 text-sm text-white outline-none"
+                    className="h-10 rounded-xl border border-zinc-200/90 bg-white px-3 text-sm text-zinc-950 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15 dark:border-white/12 dark:bg-black/25 dark:text-white"
                 >
                   {localeOptions.map((code) => (
                     <option key={code} value={code} dir="auto" className="bg-[#0B1020] text-white">
@@ -233,11 +252,11 @@ export function EcosystemPreferences({
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-white/48">{copy.language.hint}</p>
+                  <p className="text-xs text-zinc-500 dark:text-white/48">{copy.language.hint}</p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() =>
@@ -249,14 +268,14 @@ export function EcosystemPreferences({
                     personalizedExperience: false,
                   })
                 }
-                className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-white"
+                  className="rounded-full border border-zinc-200/90 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-50 dark:border-white/12 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08]"
               >
                 {copy.banner.essentialOnly}
               </button>
               <button
                 type="button"
                 onClick={() => setShowPanel(true)}
-                className="rounded-full border border-[color:var(--accent)]/20 bg-[color:var(--accent)]/10 px-4 py-3 text-sm font-semibold text-[color:var(--accent)]"
+                  className="rounded-full border border-amber-500/25 bg-amber-500/10 px-4 py-2.5 text-sm font-semibold text-amber-800 transition hover:bg-amber-500/15 dark:border-[color:var(--accent)]/25 dark:text-[color:var(--accent)]"
               >
                 {copy.banner.customize}
               </button>
@@ -271,56 +290,58 @@ export function EcosystemPreferences({
                     personalizedExperience: true,
                   })
                 }
-                className="rounded-full bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black"
+                  className="rounded-full bg-[color:var(--accent)] px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105"
               >
                 {copy.banner.acceptAll}
               </button>
+              </div>
             </div>
           </div>
         </div>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => setShowPanel(true)}
-        className="fixed bottom-5 left-5 z-[65] rounded-full border border-white/10 bg-[#050816]/88 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/78 shadow-[0_16px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl"
-      >
-        {copy.fab}
-      </button>
-
       {showPanel ? (
-        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/58 p-4 sm:items-center">
-          <div className="w-full max-w-2xl rounded-[2rem] border border-white/10 bg-[#050816] p-6 text-white shadow-[0_36px_120px_rgba(0,0,0,0.34)]">
-            <div className="flex items-start justify-between gap-4">
+        <div
+          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/35 px-3 pb-[max(env(safe-area-inset-bottom,0px),0.75rem)] pt-6 backdrop-blur-[2px] sm:items-end sm:justify-start sm:p-5"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="henryco-privacy-panel-title"
+          onClick={closePanel}
+        >
+          <div
+            className="max-h-[min(82vh,42rem)] w-full overflow-y-auto rounded-2xl border border-zinc-200/90 bg-white p-4 text-zinc-950 shadow-[0_30px_90px_-42px_rgba(0,0,0,0.65)] outline-none dark:border-white/12 dark:bg-[#0b1018] dark:text-white sm:max-w-[27rem] sm:p-5"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-[color:var(--accent)]">
                   {copy.panel.eyebrow}
                 </div>
-                <div className="mt-2 text-2xl font-bold tracking-[-0.04em] text-white">{copy.panel.title}</div>
-                <div className="mt-2 text-sm leading-7 text-white/62">{lastUpdated}</div>
+                <div id="henryco-privacy-panel-title" className="mt-1.5 text-lg font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  {copy.panel.title}
+                </div>
+                <div className="mt-1 text-xs leading-5 text-zinc-500 dark:text-white/55">{lastUpdated}</div>
               </div>
 
               <button
                 type="button"
-                onClick={() => {
-                  setShowPanel(false);
-                  if (!consent.updatedAt) setShowBanner(true);
-                }}
-                className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white"
+                onClick={closePanel}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-200/90 bg-zinc-50 text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-950 focus:outline-none focus:ring-2 focus:ring-amber-500/30 dark:border-white/12 dark:bg-white/[0.04] dark:text-white/70 dark:hover:bg-white/[0.08] dark:hover:text-white"
+                aria-label={copy.panel.close}
               >
-                {copy.panel.close}
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="mt-4 grid gap-2 sm:max-w-xs">
-              <label className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+            <div className="mt-4 grid gap-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
                 {copy.language.label}
               </label>
               <select
                 value={localeChoice}
                 onChange={(e) => setLocaleChoice(normalizeLocale(e.target.value) as AppLocale)}
                 dir="auto"
-                className="h-11 rounded-xl border border-white/12 bg-black/30 px-3 text-sm text-white outline-none"
+                className="h-10 rounded-xl border border-zinc-200/90 bg-white px-3 text-sm text-zinc-950 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15 dark:border-white/12 dark:bg-black/25 dark:text-white"
               >
                   {localeOptions.map((code) => (
                     <option key={code} value={code} dir="auto" className="bg-[#0B1020] text-white">
@@ -330,7 +351,7 @@ export function EcosystemPreferences({
               </select>
             </div>
 
-            <div className="mt-6 grid gap-4">
+            <div className="mt-4 grid gap-2.5">
               <PreferenceRow
                 title={copy.panel.essential.title}
                 description={copy.panel.essential.description}
@@ -366,7 +387,7 @@ export function EcosystemPreferences({
               />
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() =>
@@ -378,7 +399,7 @@ export function EcosystemPreferences({
                     personalizedExperience: false,
                   })
                 }
-                className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white"
+                className="rounded-full border border-zinc-200/90 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-50 dark:border-white/12 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08]"
               >
                 {copy.panel.keepEssential}
               </button>
@@ -393,7 +414,7 @@ export function EcosystemPreferences({
                     personalizedExperience: consent.personalizedExperience,
                   })
                 }
-                className="rounded-full bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black"
+                className="rounded-full bg-[color:var(--accent)] px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105"
               >
                 {copy.panel.save}
               </button>
@@ -419,10 +440,17 @@ function PreferenceRow({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="flex items-start justify-between gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5">
-      <div>
-        <div className="text-lg font-semibold text-white">{title}</div>
-        <div className="mt-2 text-sm leading-7 text-white/66">{description}</div>
+    <label
+      className={[
+        "flex items-start justify-between gap-3 rounded-xl border p-3.5 transition",
+        disabled
+          ? "cursor-default border-zinc-200/80 bg-zinc-50/80 dark:border-white/8 dark:bg-white/[0.025]"
+          : "cursor-pointer border-zinc-200/90 bg-white hover:border-zinc-300 hover:bg-zinc-50 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/16 dark:hover:bg-white/[0.07]",
+      ].join(" ")}
+    >
+      <div className="min-w-0">
+        <div className="text-sm font-semibold text-zinc-950 dark:text-white">{title}</div>
+        <div className="mt-1 text-xs leading-5 text-zinc-600 dark:text-white/60">{description}</div>
       </div>
 
       <input
@@ -430,7 +458,7 @@ function PreferenceRow({
         checked={checked}
         disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
-        className="mt-1 h-5 w-5 rounded border-white/20 accent-[color:var(--accent)]"
+        className="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 accent-[color:var(--accent)] focus:ring-2 focus:ring-amber-500/20 dark:border-white/20"
       />
     </label>
   );
