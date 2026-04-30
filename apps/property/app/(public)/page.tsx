@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, Building2, CalendarRange, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  CalendarRange,
+  Compass,
+  KeyRound,
+  Search,
+  ShieldCheck,
+} from "lucide-react";
 import { PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
 import {
   PropertyAgentCard,
@@ -14,6 +22,8 @@ import { PropertyRecommendedForYou } from "@/components/property/property-recomm
 import { getPropertyHomeData } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getPropertyPublicCopy } from "@/lib/public-copy";
+import { getPropertyViewer } from "@/lib/property/auth";
+import { getSharedAccountPropertyUrl } from "@/lib/property/links";
 
 export const dynamic = "force-dynamic";
 
@@ -21,75 +31,173 @@ export default async function PropertyHomePage() {
   const locale = await getPropertyPublicLocale();
   const copy = getPropertyPublicCopy(locale);
   const snapshot = await getPropertyHomeData();
+  const viewer = await getPropertyViewer();
   const heroCampaign = snapshot.campaigns[0] ?? null;
   const metrics = snapshot.metrics.map((item, index) => ({
     ...item,
     label: copy.home.metrics[index]?.label ?? item.label,
     hint: copy.home.metrics[index]?.hint ?? item.hint,
   }));
+  const approvedListings = snapshot.listings.filter((listing) => listing.status === "approved");
+  const liveListingCount = approvedListings.length;
+  const viewerFirstName = viewer.user?.fullName?.split(/\s+/)[0]?.trim() || null;
 
   return (
     <main className="pb-20">
-      <section className="mx-auto max-w-[92rem] px-5 pt-6 sm:px-8 sm:pt-8 lg:px-10">
-        <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-          <div className="property-panel rounded-[2rem] px-5 py-6 sm:rounded-[2.4rem] sm:px-8 sm:py-10 lg:rounded-[3rem] lg:px-14 lg:py-14">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="property-kicker">{copy.home.heroKicker}</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                <ShieldCheck className="h-3 w-3 text-[var(--property-accent-strong)]" />
-                Vetted listings, verified owners
+      {/* Premium focused hero — search front-and-center, two clear persona paths,
+          tight trust strip. Repeat visitors see a continue affordance. */}
+      <section className="mx-auto max-w-[92rem] px-5 pt-6 sm:px-8 sm:pt-10 lg:px-10">
+        <div className="flex flex-wrap items-center gap-2 text-[var(--property-ink-soft)]">
+          <span className="property-kicker">{copy.home.heroKicker}</span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] bg-black/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]">
+            <ShieldCheck className="h-3 w-3 text-[var(--property-accent-strong)]" />
+            Vetted listings, verified owners
+          </span>
+          {liveListingCount > 0 ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] bg-black/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]">
+              <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/85" />
+              {liveListingCount} live listings now
+            </span>
+          ) : null}
+        </div>
+
+        <h1 className="property-display mt-5 max-w-4xl text-balance text-[var(--property-ink)]">
+          {copy.home.heroTitle}
+        </h1>
+        <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--property-ink-soft)] sm:text-base sm:leading-8 lg:text-lg">
+          {copy.home.heroBody}
+        </p>
+
+        {/* Search bar IS the primary action — full-width, in front of any panel. */}
+        <div className="mt-7 sm:mt-8">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+            <Search className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
+            Start here
+          </div>
+          <div className="mt-3">
+            <PropertySearchBar
+              areas={snapshot.areas}
+              submitLabel={copy.home.searchSubmit}
+              copy={copy}
+            />
+          </div>
+        </div>
+
+        {/* Two persona paths — clear next step for renters/buyers vs owners/agents.
+            Returning users see a "continue where you left off" surface. */}
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:gap-5">
+          <Link
+            href="/search"
+            className="group flex flex-col justify-between rounded-[1.6rem] border border-[var(--property-line)] bg-black/15 p-5 transition outline-none hover:border-[var(--property-accent-strong)]/55 hover:bg-black/25 focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] sm:p-6"
+          >
+            <div>
+              <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-accent-strong)]">
+                <Compass className="h-3.5 w-3.5" />
+                Looking for a place
+              </div>
+              <h2 className="mt-3 text-[1.25rem] font-semibold leading-snug tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.4rem]">
+                Browse vetted homes, apartments, and managed properties.
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--property-ink-soft)]">
+                Filter by area, price, and managed status. Save listings, request viewings,
+                and message owners — all from your HenryCo account.
+              </p>
+            </div>
+            <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--property-ink)]">
+              {copy.home.primaryCta}
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </div>
+          </Link>
+
+          <Link
+            href="/submit"
+            className="group flex flex-col justify-between rounded-[1.6rem] border border-[var(--property-line)] bg-black/15 p-5 transition outline-none hover:border-[var(--property-accent-strong)]/55 hover:bg-black/25 focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] sm:p-6"
+          >
+            <div>
+              <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-accent-strong)]">
+                <KeyRound className="h-3.5 w-3.5" />
+                Listing a place
+              </div>
+              <h2 className="mt-3 text-[1.25rem] font-semibold leading-snug tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.4rem]">
+                Submit a property and reach serious renters and buyers.
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--property-ink-soft)]">
+                Built for owners and agents. Inquiries land in your HenryCo inbox; managed
+                support is available if you want HenryCo to handle viewings and screening.
+              </p>
+            </div>
+            <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--property-ink)]">
+              {copy.home.secondaryCta}
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </div>
+          </Link>
+        </div>
+
+        {/* Returning user shortcut — small, never in the way of new visitors. */}
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[var(--property-ink-soft)]">
+          {viewer.user ? (
+            <>
+              <span className="text-[var(--property-ink)]">
+                Welcome back{viewerFirstName ? `, ${viewerFirstName}` : ""}.
               </span>
-            </div>
-            <h1 className="property-display mt-5 max-w-4xl text-balance text-[var(--property-ink)] sm:mt-6">
-              {copy.home.heroTitle}
-            </h1>
-            <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--property-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg">
-              {copy.home.heroBody}
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
               <Link
-                href="/search"
-                className="property-button-primary inline-flex items-center gap-3 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] sm:px-6 sm:py-4"
+                href={getSharedAccountPropertyUrl()}
+                className="font-semibold text-[var(--property-accent-strong)] underline-offset-4 transition hover:underline"
               >
-                {copy.home.primaryCta}
-                <ArrowRight className="h-4 w-4" />
+                Continue in your property activity
               </Link>
+              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[var(--property-line)] sm:inline-block" />
               <Link
-                href="/submit"
-                className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] sm:px-6 sm:py-4"
+                href={getSharedAccountPropertyUrl("viewings")}
+                className="font-semibold transition hover:text-[var(--property-ink)]"
               >
-                {copy.home.secondaryCta}
+                Track a viewing
               </Link>
-            </div>
+            </>
+          ) : (
+            <>
+              <span>Returning?</span>
+              <Link
+                href={getSharedAccountPropertyUrl()}
+                className="font-semibold text-[var(--property-accent-strong)] underline-offset-4 transition hover:underline"
+              >
+                Open your property activity
+              </Link>
+              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[var(--property-line)] sm:inline-block" />
+              <Link
+                href={getSharedAccountPropertyUrl("viewings")}
+                className="font-semibold transition hover:text-[var(--property-ink)]"
+              >
+                Track a viewing
+              </Link>
+            </>
+          )}
+        </div>
 
-            <div className="mt-8 sm:mt-10">
-              <PropertySearchBar areas={snapshot.areas} submitLabel={copy.home.searchSubmit} copy={copy} />
-            </div>
+        {/* Trust + why-it-works rail — replaces the old right-side stack but on its own row. */}
+        <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <div>
+            <div className="property-kicker">{copy.home.whyKicker}</div>
+            <ul className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
+              {copy.home.whyCards.map((item, index) => {
+                const icons = [ShieldCheck, CalendarRange, Building2];
+                const Icon = icons[index] ?? ShieldCheck;
+                return (
+                  <li key={item.title} className="flex gap-4 py-4">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-black/15 text-[var(--property-accent-strong)]">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <div className="text-base font-semibold tracking-tight text-[var(--property-ink)]">{item.title}</div>
+                      <p className="mt-1 text-sm leading-relaxed text-[var(--property-ink-soft)]">{item.body}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
-          <div className="grid gap-6">
-            <div>
-              <div className="property-kicker">{copy.home.whyKicker}</div>
-              <ul className="mt-5 space-y-5 border-y border-[var(--property-line)] py-5">
-                {copy.home.whyCards.map((item, index) => {
-                  const icons = [ShieldCheck, CalendarRange, Building2];
-                  const Icon = icons[index] ?? ShieldCheck;
-                  return (
-                    <li key={item.title} className="flex gap-4">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-black/15 text-[var(--property-accent-strong)]">
-                        <Icon className="h-4 w-4" />
-                      </span>
-                      <div>
-                        <div className="text-base font-semibold tracking-tight text-[var(--property-ink)]">{item.title}</div>
-                        <p className="mt-1 text-sm leading-relaxed text-[var(--property-ink-soft)]">{item.body}</p>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-
+          <div className="self-end">
             <PublicProofRail
               density="default"
               variant="rail"
