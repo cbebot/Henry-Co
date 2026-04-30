@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import HubHomeClient from "./HubHomeClient";
 import { getHubHomeCopy } from "@henryco/i18n/server";
@@ -13,6 +14,27 @@ import {
 import { getPublishedDivisions, type DivisionRow } from "../lib/divisions";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+
+export const metadata: Metadata = {
+  title: "HenryCo — Care, Marketplace, Property, Studio, and more",
+  description:
+    "HenryCo is a multi-division group: garment care, marketplace, property, studio, jobs, learn, and logistics — built around clear pricing, real records, and trusted delivery.",
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "HenryCo Group",
+    description:
+      "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
+    type: "website",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HenryCo Group",
+    description:
+      "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
+  },
+};
 
 type PublicFaqRecord = {
   question?: string | null;
@@ -93,7 +115,33 @@ export default async function HomePage() {
   const firstName = chipUser?.displayName?.trim().split(/\s+/).filter(Boolean)[0];
   const heroWelcome = firstName ? `Welcome back, ${firstName}` : null;
 
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: settings.brand_title ?? "HenryCo",
+    url: "https://henrycogroup.com",
+    logo: settings.logo_url ?? undefined,
+    description:
+      settings.brand_description ??
+      "HenryCo is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",
+  };
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: settings.brand_title ?? "HenryCo",
+    url: "https://henrycogroup.com",
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
     <HubHomeClient
       brandTitle={settings.brand_title ?? "Henry & Co."}
       brandSub={settings.brand_subtitle ?? "Corporate Platform"}
@@ -109,5 +157,6 @@ export default async function HomePage() {
       accountChip={accountChip}
       heroWelcome={heroWelcome}
     />
+    </>
   );
 }

@@ -2,6 +2,7 @@ import { Layers3, Sparkles } from "lucide-react";
 import {
   joinClassNames,
 } from "@/components/studio/request-builder-data";
+import { StudioListbox } from "@/components/studio/studio-listbox";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 import { filterPricedOptions } from "@/lib/studio/request-config";
 
@@ -175,110 +176,115 @@ export function StudioRequestPathStep({
           ))}
         </div>
       ) : (
-        <div className="mt-8 space-y-6">
+        <div className="mt-8 space-y-7">
           <div>
-            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Project type or category
+            <div className="flex items-baseline justify-between gap-4">
+              <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                Project type or category
+              </div>
+              <div className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
+                {projectTypeOptions.length} options
+              </div>
             </div>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {projectTypeOptions.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setSelectedProjectType(item.label)}
-                  className={joinClassNames(
-                    "rounded-[1.5rem] border p-4 text-left transition duration-200",
-                    selectedProjectType === item.label
-                      ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-                      : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.18)]"
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="text-base font-semibold text-[var(--studio-ink)]">{item.label}</div>
-                    <div className="text-xs uppercase tracking-[0.14em] text-[var(--studio-signal)]">
-                      {formatAmount(item.amount)}
-                    </div>
-                  </div>
-                  <div className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                    {item.description}
-                  </div>
-                </button>
-              ))}
+            <div className="mt-3">
+              <StudioListbox
+                name="projectType"
+                label="Project type or category"
+                value={selectedProjectType}
+                onChange={(next) => next && setSelectedProjectType(next)}
+                placeholder="Choose project type…"
+                required
+                options={projectTypeOptions.map((item) => ({
+                  value: item.label,
+                  label: `${item.label} · ${formatAmount(item.amount)}`,
+                }))}
+              />
             </div>
-            <input type="hidden" name="projectType" value={selectedProjectType} />
+            {(() => {
+              const current = projectTypeOptions.find((option) => option.label === selectedProjectType);
+              if (!current) return null;
+              return (
+                <p className="mt-3 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                  {current.description}
+                </p>
+              );
+            })()}
           </div>
 
           <div>
-            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Delivery platform
+            <div className="flex items-baseline justify-between gap-4">
+              <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                Delivery platform
+              </div>
+              <div className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
+                {platformOptions.length} options
+              </div>
             </div>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {platformOptions.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setSelectedPlatform(item.label)}
-                  className={joinClassNames(
-                    "rounded-[1.5rem] border p-4 text-left transition duration-200",
-                    selectedPlatform === item.label
-                      ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-                      : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.18)]"
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="text-base font-semibold text-[var(--studio-ink)]">{item.label}</div>
-                    <div className="text-xs uppercase tracking-[0.14em] text-[var(--studio-signal)]">
-                      {formatAmount(item.amount)}
-                    </div>
-                  </div>
-                  <div className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                    {item.description}
-                  </div>
-                </button>
-              ))}
+            <div className="mt-3">
+              <StudioListbox
+                name="platformPreference"
+                label="Delivery platform"
+                value={selectedPlatform}
+                onChange={(next) => next && setSelectedPlatform(next)}
+                placeholder="Choose platform…"
+                required
+                options={platformOptions.map((item) => ({
+                  value: item.label,
+                  label: `${item.label} · ${formatAmount(item.amount)}`,
+                }))}
+              />
             </div>
-            <input type="hidden" name="platformPreference" value={selectedPlatform} />
+            {(() => {
+              const current = platformOptions.find((option) => option.label === selectedPlatform);
+              if (!current) return null;
+              return (
+                <p className="mt-3 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                  {current.description}
+                </p>
+              );
+            })()}
           </div>
 
-          <div className="md:col-span-2 grid gap-3 md:grid-cols-2">
-            {requestConfig.designOptions.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setSelectedDesign(item)}
-                className={joinClassNames(
-                  "rounded-[1.35rem] border px-4 py-4 text-left text-sm transition duration-200",
-                  selectedDesign === item
-                    ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))] text-[var(--studio-ink)]"
-                    : "border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink-soft)]"
-                )}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-          <div>
-            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-              Preferred project/content language
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                Design direction
+              </div>
+              <div className="mt-3">
+                <StudioListbox
+                  name="designDirectionDropdown"
+                  label="Design direction"
+                  value={selectedDesign}
+                  onChange={(next) => next && setSelectedDesign(next)}
+                  placeholder="Choose design direction…"
+                  required
+                  options={requestConfig.designOptions.map((item) => ({
+                    value: item,
+                    label: item,
+                  }))}
+                />
+              </div>
             </div>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {["English", "French", "Arabic", "Portuguese"].map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setPreferredLanguage(item)}
-                  className={joinClassNames(
-                    "rounded-[1.5rem] border p-4 text-left transition duration-200",
-                    preferredLanguage === item
-                      ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-                      : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.18)]"
-                  )}
-                >
-                  <div className="text-base font-semibold text-[var(--studio-ink)]">{item}</div>
-                </button>
-              ))}
+            <div>
+              <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                Project/content language
+              </div>
+              <div className="mt-3">
+                <StudioListbox
+                  name="preferredLanguageDropdown"
+                  label="Project/content language"
+                  value={preferredLanguage}
+                  onChange={(next) => next && setPreferredLanguage(next)}
+                  placeholder="Choose language…"
+                  required
+                  options={["English", "French", "Arabic", "Portuguese"].map((item) => ({
+                    value: item,
+                    label: item,
+                  }))}
+                />
+              </div>
+              <input type="hidden" name="preferredLanguage" value={preferredLanguage} />
             </div>
-            <input type="hidden" name="preferredLanguage" value={preferredLanguage} />
           </div>
         </div>
       )}

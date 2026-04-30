@@ -182,6 +182,7 @@ export default function BookPickupForm({
 }) {
   const [mode, setMode] = useState<"garment" | "service">("garment");
   const [search, setSearch] = useState("");
+  const [garmentCategoryFilter, setGarmentCategoryFilter] = useState<string>("all");
   const [selectedItems, setSelectedItems] = useState<SelectedGarmentItem[]>([]);
   const [pickupDate, setPickupDate] = useState("");
   const [pickupSlot, setPickupSlot] = useState<string>(WINDOWS[0]);
@@ -251,16 +252,33 @@ export default function BookPickupForm({
     [catalog]
   );
 
+  const garmentCategories = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of activePricing) {
+      const key = String(item.category || "").trim();
+      if (!key) continue;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([label, count]) => ({ label, count }));
+  }, [activePricing]);
+
   const filteredGarments = useMemo(() => {
     const q = deferredSearch.trim().toLowerCase();
-    return activePricing.filter((item) =>
-      !q
-        ? true
-        : JSON.stringify([item.category, item.item_name, item.description])
-            .toLowerCase()
-            .includes(q)
-    );
-  }, [activePricing, deferredSearch]);
+    return activePricing.filter((item) => {
+      if (
+        garmentCategoryFilter !== "all" &&
+        String(item.category || "").trim() !== garmentCategoryFilter
+      ) {
+        return false;
+      }
+      if (!q) return true;
+      return JSON.stringify([item.category, item.item_name, item.description])
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [activePricing, deferredSearch, garmentCategoryFilter]);
 
   const garmentEstimate = useMemo(
     () =>
@@ -543,7 +561,11 @@ export default function BookPickupForm({
   }
 
   return (
-    <form action={action} className="space-y-6">
+    <form
+      action={action}
+      className="space-y-6"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       <div className="grid gap-4 md:grid-cols-2">
         <button
           type="button"
@@ -818,7 +840,83 @@ export default function BookPickupForm({
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={t("Search garments, categories, or care notes")}
                 className={cn(inputCls, "lg:max-w-sm")}
+                aria-label={t("Search garments, categories, or care notes")}
               />
+            </div>
+
+            {/* Premium category filter — chip row, scannable, replaces wall-of-cards weakness */}
+            {garmentCategories.length > 1 ? (
+              <div
+                className="mt-5 flex flex-wrap items-center gap-2"
+                role="group"
+                aria-label={t("Filter garments by category")}
+              >
+                <button
+                  type="button"
+                  onClick={() => setGarmentCategoryFilter("all")}
+                  aria-pressed={garmentCategoryFilter === "all"}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/40",
+                    garmentCategoryFilter === "all"
+                      ? "border-[color:var(--accent)]/40 bg-[color:var(--accent)]/12 text-[color:var(--accent)]"
+                      : "border-black/10 bg-black/[0.02] text-zinc-700 hover:border-black/20 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/70 dark:hover:border-white/20"
+                  )}
+                >
+                  <span>{t("All categories")}</span>
+                  <span className="rounded-full bg-black/10 px-1.5 py-0.5 text-[10px] tabular-nums dark:bg-white/10">
+                    {activePricing.length}
+                  </span>
+                </button>
+                {garmentCategories.map(({ label, count }) => {
+                  const isActive = garmentCategoryFilter === label;
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => setGarmentCategoryFilter(isActive ? "all" : label)}
+                      aria-pressed={isActive}
+                      className={cn(
+                        "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/40",
+                        isActive
+                          ? "border-[color:var(--accent)]/40 bg-[color:var(--accent)]/12 text-[color:var(--accent)]"
+                          : "border-black/10 bg-black/[0.02] text-zinc-700 hover:border-black/20 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/70 dark:hover:border-white/20"
+                      )}
+                    >
+                      <span>{label}</span>
+                      <span className="rounded-full bg-black/10 px-1.5 py-0.5 text-[10px] tabular-nums dark:bg-white/10">
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+
+            {/* Selection summary — scannable status above the grid */}
+            <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2 border-t border-black/5 pt-4 text-xs text-zinc-600 dark:border-white/10 dark:text-white/60">
+              <div>
+                <span className="font-semibold text-zinc-900 dark:text-white">
+                  {filteredGarments.length}
+                </span>{" "}
+                {t("of")} {activePricing.length} {t("items shown")}
+                {selectedItems.length > 0 ? (
+                  <>
+                    {" · "}
+                    <span className="font-semibold text-[color:var(--accent)]">
+                      {selectedItems.length} {t("in manifest")}
+                    </span>
+                  </>
+                ) : null}
+              </div>
+              {garmentCategoryFilter !== "all" ? (
+                <button
+                  type="button"
+                  onClick={() => setGarmentCategoryFilter("all")}
+                  className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)] hover:underline"
+                >
+                  {t("Clear filter")}
+                </button>
+              ) : null}
             </div>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">

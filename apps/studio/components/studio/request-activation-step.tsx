@@ -1,6 +1,6 @@
 import { CheckCircle2 } from "lucide-react";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
-import { joinClassNames } from "@/components/studio/request-builder-data";
+import { StudioListbox } from "@/components/studio/studio-listbox";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 
 export function StudioRequestActivationStep({
@@ -13,46 +13,54 @@ export function StudioRequestActivationStep({
     "You receive a real Studio record: proposal, workspace, and payment checkpoints—not a forgotten form submission.",
     "Deposits secure your slot; proof upload keeps finance fast; milestones and files stay in one client-grade portal.",
   ];
+  const teamOptions = [
+    { value: "", label: "Let HenryCo recommend the best-fit team" },
+    ...teams.map((team) => ({
+      value: team.id,
+      label: `${team.name} · ${team.availability}`,
+    })),
+  ];
+  const selectedTeam = teams.find((team) => team.id === selectedTeamId);
 
   return (
     <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
       <div className="studio-kicker">Review & send</div>
       <div className="mt-6 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <div className="space-y-3">
-          <button
-            type="button"
-            onClick={() => setSelectedTeamId("")}
-            className={joinClassNames(
-              "w-full rounded-[1.5rem] border p-4 text-left transition duration-200",
-              selectedTeamId === ""
-                ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-                : "border-[var(--studio-line)] bg-black/10"
-            )}
-          >
-            Let HenryCo recommend the best-fit team
-          </button>
-
-          {teams.map((team) => (
-            <button
-              key={team.id}
-              type="button"
-              onClick={() => setSelectedTeamId(team.id)}
-              className={joinClassNames(
-                "w-full rounded-[1.5rem] border p-4 text-left transition duration-200",
-                selectedTeamId === team.id
-                  ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-                  : "border-[var(--studio-line)] bg-black/10"
-              )}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="text-base font-semibold text-[var(--studio-ink)]">{team.name}</div>
-                <span className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
-                  {team.availability}
-                </span>
+        <div className="space-y-4">
+          <div>
+            <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+              Team fit
+            </div>
+            <div className="mt-3">
+              <StudioListbox
+                name="preferredTeamPick"
+                label="Preferred team"
+                value={selectedTeamId}
+                onChange={setSelectedTeamId}
+                placeholder="Let HenryCo recommend the best-fit team"
+                options={teamOptions}
+              />
+            </div>
+            {selectedTeam ? (
+              <div className="mt-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-base font-semibold text-[var(--studio-ink)]">
+                    {selectedTeam.name}
+                  </div>
+                  <span className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
+                    {selectedTeam.availability}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                  {selectedTeam.summary}
+                </p>
               </div>
-              <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{team.summary}</p>
-            </button>
-          ))}
+            ) : (
+              <p className="mt-3 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                We will match the strongest team to your brief based on scope, urgency, and your industry signals.
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="space-y-5">
