@@ -2,7 +2,7 @@ import { SellerApplicationWizard } from "@/components/marketplace/seller-applica
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +14,7 @@ export default async function SellerApplicationReviewPage() {
     <WorkspaceShell
       title="Seller review"
       description="Step 3 confirms the application before it enters moderation and owner-alert workflows."
-      nav={accountNav("/account/seller-application")}
+      {...accountWorkspaceNav("/account/seller-application")}
     >
       <SellerApplicationWizard step="review" initialApplication={data.application} />
     </WorkspaceShell>

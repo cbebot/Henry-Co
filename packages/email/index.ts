@@ -2,6 +2,7 @@ export type {
   EmailDispatchResult,
   EmailDispatchStatus,
   EmailProviderId,
+  EmailPurpose,
   ResolvedSender,
   SendTransactionalEmailInput,
 } from "./types";
@@ -14,3 +15,14 @@ export {
 
 export { sendBrevoEmail, getBrevoApiKey, getBrevoSender } from "./providers/brevo";
 export { sendResendEmail, getResendApiKey, getResendSender } from "./providers/resend";
+
+export { resolveSenderIdentity, getNoReplyIdentity } from "./sender-identity";
+
+export {
+  HENRYCO_EMAIL_TOKENS,
+  renderHenryCoEmail,
+  renderHenryCoEmailText,
+  escapeHtml,
+  type HenryCoEmailLayout,
+  type HenryCoEmailSection,
+} from "./layout";

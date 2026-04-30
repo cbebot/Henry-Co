@@ -2,7 +2,7 @@ import Link from "next/link";
 import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ export default async function SellerApplicationPage() {
     <WorkspaceShell
       title="Seller application"
       description="Seller onboarding now lives in the protected account area so drafts, verification, moderation notes, and approval state stay structured instead of spilling into public clutter."
-      nav={accountNav("/account/seller-application")}
+      {...accountWorkspaceNav("/account/seller-application")}
       actions={
         <Link
           href={

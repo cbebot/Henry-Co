@@ -2,7 +2,7 @@ import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import type { MarketplaceNotification } from "@/lib/marketplace/types";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export default async function AccountNotificationsPage() {
     <WorkspaceShell
       title="Notifications"
       description="In-app, email, and WhatsApp lifecycle updates are designed to show up here as a single readable account timeline."
-      nav={accountNav("/account/notifications")}
+      {...accountWorkspaceNav("/account/notifications")}
     >
       {data.notifications.length ? (
         <div className="space-y-4">

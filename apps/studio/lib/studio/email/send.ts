@@ -1,11 +1,15 @@
 import "server-only";
 
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
-import { sendTransactionalEmail } from "@henryco/email";
+import {
+  renderHenryCoEmail,
+  renderHenryCoEmailText,
+  sendTransactionalEmail,
+  type HenryCoEmailLayout,
+} from "@henryco/email";
 import {
   extractEmailAddress,
   formatCurrency,
-  sanitizeHeaderValue,
 } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getStudioCatalog } from "@/lib/studio/catalog";
@@ -42,6 +46,25 @@ type EmailLayout = {
   actionHref?: string | null;
 };
 
+function toSharedLayout(layout: EmailLayout): HenryCoEmailLayout {
+  return {
+    purpose: "studio",
+    subject: layout.subject,
+    eyebrow: layout.eyebrow,
+    title: layout.title,
+    intro: layout.intro,
+    highlightLabel: layout.highlightLabel,
+    highlightValue: layout.highlightValue,
+    sections: layout.sections,
+    bullets: layout.bullets,
+    actionLabel: layout.actionLabel,
+    actionHref: layout.actionHref,
+    supportLine: studio.supportEmail
+      ? `Need help? Reach Studio at ${studio.supportEmail}.`
+      : null,
+  };
+}
+
 function baseUrl() {
   const domain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
   return process.env.NODE_ENV === "production" ? `https://studio.${domain}` : "http://localhost:3000";
@@ -52,79 +75,8 @@ async function getPaymentSettings() {
   return catalog.platform;
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
 function renderEmail(layout: EmailLayout) {
-  const sections = (layout.sections ?? [])
-    .map(
-      (section) => `
-        <tr>
-          <td style="padding:0 0 10px 0;">
-            <div style="font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:#6a7a88; font-weight:700;">${escapeHtml(section.label)}</div>
-            <div style="margin-top:6px; font-size:15px; line-height:1.7; color:#11212f;">${escapeHtml(section.value)}</div>
-          </td>
-        </tr>
-      `
-    )
-    .join("");
-
-  const bullets = (layout.bullets ?? [])
-    .map((item) => `<li style="margin:0 0 10px 0; line-height:1.7; color:#1b2b38;">${escapeHtml(item)}</li>`)
-    .join("");
-
-  const action =
-    layout.actionLabel && layout.actionHref
-      ? `
-        <a href="${escapeHtml(layout.actionHref)}" style="display:inline-block; margin-top:24px; padding:14px 22px; border-radius:999px; background:#49c0c5; color:#021014; text-decoration:none; font-weight:800; font-size:14px;">
-          ${escapeHtml(layout.actionLabel)}
-        </a>
-      `
-      : "";
-
-  return `
-    <!doctype html>
-    <html lang="en">
-      <body style="margin:0; padding:0; background:#eef5f7; font-family:Inter,Segoe UI,Arial,sans-serif;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:28px 12px;">
-          <tr>
-            <td align="center">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px; border-radius:28px; overflow:hidden; background:#ffffff; box-shadow:0 24px 80px rgba(8,18,25,0.12);">
-                <tr>
-                  <td style="padding:32px; background:linear-gradient(145deg, #07131a 0%, #103040 56%, #16586f 100%); color:#ffffff;">
-                    <div style="font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:#92f1f0; font-weight:700;">${escapeHtml(layout.eyebrow)}</div>
-                    <div style="margin-top:14px; font-size:34px; line-height:1.06; font-weight:800; letter-spacing:-0.04em;">${escapeHtml(layout.title)}</div>
-                    <div style="margin-top:14px; max-width:520px; font-size:15px; line-height:1.8; color:rgba(255,255,255,0.78);">${escapeHtml(layout.intro)}</div>
-                    ${
-                      layout.highlightLabel && layout.highlightValue
-                        ? `<div style="margin-top:20px; display:inline-block; border-radius:22px; border:1px solid rgba(210,251,252,0.18); background:rgba(255,255,255,0.06); padding:14px 18px;">
-                            <div style="font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#d3fbfc; font-weight:700;">${escapeHtml(layout.highlightLabel)}</div>
-                            <div style="margin-top:6px; font-size:22px; line-height:1.2; font-weight:800; color:#ffffff;">${escapeHtml(layout.highlightValue)}</div>
-                          </div>`
-                        : ""
-                    }
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:28px 32px 32px;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${sections}</table>
-                    ${bullets ? `<ul style="padding-left:18px; margin:20px 0 0 0;">${bullets}</ul>` : ""}
-                    ${action}
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-  `;
+  return renderHenryCoEmail(toSharedLayout(layout));
 }
 
 async function getOwnerRecipients() {
@@ -142,13 +94,6 @@ async function getOwnerRecipients() {
     })
     .map((user) => extractEmailAddress(user.email))
     .filter(Boolean) as string[];
-}
-
-function fromAddress() {
-  const raw = sanitizeHeaderValue(
-    process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM || `${studio.name} <noreply@henrycogroup.com>`
-  );
-  return extractEmailAddress(raw) || "noreply@henrycogroup.com";
 }
 
 async function sendEmail(input: {
@@ -174,8 +119,7 @@ async function sendEmail(input: {
 
   const dispatch = await sendTransactionalEmail({
     to: recipient,
-    from: fromAddress(),
-    fromName: studio.name,
+    purpose: "studio",
     replyTo: studio.supportEmail,
     subject: input.subject,
     html: input.html,
@@ -232,21 +176,7 @@ async function sendWhatsApp(input: {
 }
 
 function toText(layout: EmailLayout) {
-  return [
-    layout.eyebrow,
-    layout.title,
-    "",
-    layout.intro,
-    "",
-    ...(layout.highlightLabel && layout.highlightValue
-      ? [`${layout.highlightLabel}: ${layout.highlightValue}`, ""]
-      : []),
-    ...((layout.sections ?? []).flatMap((section) => [`${section.label}: ${section.value}`])),
-    "",
-    ...((layout.bullets ?? []).map((item) => `- ${item}`)),
-    "",
-    ...(layout.actionLabel && layout.actionHref ? [`${layout.actionLabel}: ${layout.actionHref}`] : []),
-  ].join("\n");
+  return renderHenryCoEmailText(toSharedLayout(layout));
 }
 
 function renderAndSendEmail(input: {

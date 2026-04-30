@@ -45,6 +45,18 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (user) {
+        const justConfirmed =
+          typeof user.email_confirmed_at === "string" &&
+          (() => {
+            const confirmedMs = Date.parse(user.email_confirmed_at as string);
+            if (Number.isNaN(confirmedMs)) return false;
+            // If confirmation happened in the last ~10 minutes, treat this as
+            // a fresh signup confirmation and route through the premium
+            // /auth/verified landing instead of dropping the user straight
+            // into their workspace.
+            return Date.now() - confirmedMs < 10 * 60 * 1000;
+          })();
+
         await ensureAccountProfileRecords(user);
         const fullName =
           (typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : null) ||
@@ -103,6 +115,15 @@ export async function GET(request: Request) {
           } catch {
             // read-only cookie context — ignore.
           }
+        }
+
+        if (justConfirmed) {
+          const verifiedUrl = new URL("/auth/verified", origin);
+          const safeNext = normalizeTrustedRedirect(next);
+          if (safeNext !== "/") {
+            verifiedUrl.searchParams.set("next", safeNext);
+          }
+          return NextResponse.redirect(verifiedUrl);
         }
 
         const destination = await resolveAuthenticatedDestination({

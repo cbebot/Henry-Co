@@ -1,4 +1,6 @@
-export function accountNav(active: string) {
+type NavItem = { href: string; label: string; active: boolean };
+
+export function accountNav(active: string): NavItem[] {
   return [
     { href: "/account", label: "Overview", active: active === "/account" },
     { href: "/account/orders", label: "Orders", active: active === "/account/orders" },
@@ -13,6 +15,46 @@ export function accountNav(active: string) {
       href: "/account/seller-application",
       label: "Seller application",
       active: active === "/account/seller-application",
+    },
+  ];
+}
+
+/**
+ * One-call helper used by every marketplace /account/* page. Returns
+ * the flat `nav` and the mobile-friendly `groups` together so each page
+ * can do `<WorkspaceShell {...accountWorkspaceNav("/account/orders")} />`.
+ */
+export function accountWorkspaceNav(active: string) {
+  return {
+    nav: accountNav(active),
+    navGroups: accountNavGroups(active),
+  };
+}
+
+/**
+ * Same routes as `accountNav` but bucketed into mobile-friendly groups.
+ * Used by `WorkspaceShell`'s mobile drawer so the workspace doesn't render
+ * as a 10-item flat pill list on small screens.
+ */
+export function accountNavGroups(active: string) {
+  const flat = accountNav(active);
+  const byHref = (href: string) => flat.find((item) => item.href === href)!;
+  return [
+    {
+      label: "Activity",
+      items: [byHref("/account"), byHref("/account/orders"), byHref("/account/notifications")],
+    },
+    {
+      label: "Commerce",
+      items: [byHref("/account/payments"), byHref("/account/disputes"), byHref("/account/addresses")],
+    },
+    {
+      label: "Saved",
+      items: [byHref("/account/wishlist"), byHref("/account/following"), byHref("/account/reviews")],
+    },
+    {
+      label: "Selling",
+      items: [byHref("/account/seller-application")],
     },
   ];
 }

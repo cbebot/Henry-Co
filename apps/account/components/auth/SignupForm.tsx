@@ -5,10 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 import { formatSurfaceTemplate, getActiveCountries, getAuthCopy, getSurfaceCopy } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
-import { normalizeTrustedRedirect } from "@henryco/config";
+import { getAccountUrl, normalizeTrustedRedirect } from "@henryco/config";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
-import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2, Mail, ShieldCheck, Sparkles } from "lucide-react";
 
 const COUNTRIES = getActiveCountries().map((country) => ({
   code: country.code,
@@ -21,6 +21,12 @@ const COUNTRIES = getActiveCountries().map((country) => ({
 function buildLoginHref(next: string | null) {
   const safeNext = normalizeTrustedRedirect(next);
   return safeNext === "/" ? "/login" : `/login?next=${encodeURIComponent(safeNext)}`;
+}
+
+function buildEmailRedirectTo(next: string | null) {
+  const safeNext = normalizeTrustedRedirect(next);
+  const base = getAccountUrl("/auth/callback");
+  return safeNext === "/" ? base : `${base}?next=${encodeURIComponent(safeNext)}`;
 }
 
 export default function SignupForm() {
@@ -39,6 +45,8 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent" | "cooldown">("idle");
+  const [resendError, setResendError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
@@ -70,6 +78,7 @@ export default function SignupForm() {
         email: email.trim().toLowerCase(),
         password,
         options: {
+          emailRedirectTo: buildEmailRedirectTo(next),
           data: {
             full_name: fullName.trim(),
             country,
@@ -90,19 +99,111 @@ export default function SignupForm() {
     }
   };
 
+  const handleResend = async () => {
+    if (resendStatus === "sending" || resendStatus === "cooldown") return;
+    setResendError(null);
+    setResendStatus("sending");
+    try {
+      const response = await fetch("/api/auth/resend", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase(), next }),
+      });
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        setResendError(payload?.error || surfaceCopy.accountForms.createAccountUnavailable);
+        setResendStatus("idle");
+        return;
+      }
+      setResendStatus("sent");
+      // Soft cooldown so users can't spam-click; Supabase also rate-limits server-side.
+      window.setTimeout(() => setResendStatus("idle"), 30_000);
+    } catch {
+      setResendError(surfaceCopy.accountForms.createAccountUnavailable);
+      setResendStatus("idle");
+    }
+  };
+
   if (success) {
     return (
-      <div className="acct-card p-6 text-center sm:p-8 acct-fade-in">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--acct-green-soft)]">
-          <CheckCircle2 size={24} className="text-[var(--acct-green)]" />
+      <div className="acct-card p-6 sm:p-8 acct-fade-in">
+        <div className="flex items-start gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--acct-green-soft)]">
+            <Mail size={20} className="text-[var(--acct-green)]" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold leading-tight text-[var(--acct-ink)]">
+              {surfaceCopy.accountForms.checkEmailTitle}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--acct-muted)]">
+              {formatSurfaceTemplate(surfaceCopy.accountForms.verificationSent, { email })}
+            </p>
+          </div>
         </div>
-        <h2 className="text-lg font-semibold">{surfaceCopy.accountForms.checkEmailTitle}</h2>
-        <p className="mt-2 text-sm text-[var(--acct-muted)]">
-          {formatSurfaceTemplate(surfaceCopy.accountForms.verificationSent, { email })}
-        </p>
-        <button onClick={() => router.push(buildLoginHref(next))} className="acct-button-secondary mt-4">
-          {surfaceCopy.accountForms.backToSignIn}
-        </button>
+
+        <ol className="mt-6 space-y-4 border-l border-[var(--acct-line)] pl-5 text-sm leading-relaxed text-[var(--acct-ink)]">
+          <li className="flex gap-3">
+            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">1</span>
+            <span>
+              <strong className="font-semibold">Check your inbox.</strong>{" "}
+              <span className="text-[var(--acct-muted)]">
+                The email is from <span className="font-medium text-[var(--acct-ink)]">HenryCo Accounts</span>. If it&rsquo;s not in your inbox after a minute, look in spam or promotions.
+              </span>
+            </span>
+          </li>
+          <li className="flex gap-3">
+            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">2</span>
+            <span>
+              <strong className="font-semibold">Tap &ldquo;Verify my HenryCo account.&rdquo;</strong>{" "}
+              <span className="text-[var(--acct-muted)]">
+                The link is single-use and expires after a short window for your security.
+              </span>
+            </span>
+          </li>
+          <li className="flex gap-3">
+            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">3</span>
+            <span>
+              <strong className="font-semibold">Continue to your HenryCo workspace.</strong>{" "}
+              <span className="text-[var(--acct-muted)]">
+                We&rsquo;ll route you to the right place across Care, Marketplace, Studio and more.
+              </span>
+            </span>
+          </li>
+        </ol>
+
+        <div className="mt-6 flex flex-col gap-3 border-t border-[var(--acct-line)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={resendStatus === "sending" || resendStatus === "sent"}
+            className="acct-button-secondary inline-flex items-center justify-center gap-2 text-sm"
+          >
+            {resendStatus === "sent" ? (
+              <>
+                <CheckCircle2 size={14} className="text-[var(--acct-green)]" />
+                Verification email sent again
+              </>
+            ) : resendStatus === "sending" ? (
+              "Sending verification email…"
+            ) : (
+              <>
+                <Sparkles size={14} />
+                Resend verification email
+              </>
+            )}
+          </button>
+          <button onClick={() => router.push(buildLoginHref(next))} className="acct-button-primary text-sm">
+            {surfaceCopy.accountForms.backToSignIn}
+          </button>
+        </div>
+        {resendError ? (
+          <p className="mt-3 text-xs text-[var(--acct-red)]">{resendError}</p>
+        ) : null}
+
+        <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-1.5 text-[11px] font-medium text-[var(--acct-muted)]">
+          <ShieldCheck size={12} className="text-[var(--acct-gold)]" />
+          Your HenryCo account is end-to-end encrypted across the ecosystem.
+        </div>
       </div>
     );
   }

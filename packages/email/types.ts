@@ -10,6 +10,20 @@ export type EmailDispatchResult = {
   skippedReason?: string;
 };
 
+export type EmailPurpose =
+  | "auth"
+  | "support"
+  | "newsletter"
+  | "care"
+  | "studio"
+  | "marketplace"
+  | "jobs"
+  | "learn"
+  | "property"
+  | "logistics"
+  | "security"
+  | "generic";
+
 export type SendTransactionalEmailInput = {
   to: string;
   subject: string;
@@ -18,6 +32,13 @@ export type SendTransactionalEmailInput = {
   from?: string;
   fromName?: string;
   replyTo?: string;
+  /**
+   * Routing/sender purpose. When set, the resolver picks the correct
+   * per-division sender identity (and prefers Resend for support if
+   * configured). Explicit `from` / `fromName` always win over the
+   * resolved purpose identity.
+   */
+  purpose?: EmailPurpose;
 };
 
 export type ResolvedSender = {

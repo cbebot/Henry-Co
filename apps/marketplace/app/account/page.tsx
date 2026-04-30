@@ -17,7 +17,7 @@ import {
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import type {
   MarketplaceNotification,
   MarketplaceOrder,
@@ -118,7 +118,7 @@ export default async function AccountOverviewPage() {
     <WorkspaceShell
       title={`Welcome back, ${firstName}`}
       description="Your orders, saved items, store follows, and account activity in one calmer view. HenryCo unifies these signals across divisions so the trail stays attached to the same account."
-      nav={accountNav("/account")}
+      {...accountWorkspaceNav("/account")}
       actions={
         <div className="flex flex-wrap gap-2.5">
           <Link

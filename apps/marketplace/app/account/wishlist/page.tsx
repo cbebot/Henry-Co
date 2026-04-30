@@ -1,7 +1,7 @@
 import { EmptyState, ProductCard, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,7 @@ export default async function AccountWishlistPage({
     <WorkspaceShell
       title="Wishlist"
       description="Saved products stay attached to the account so future recommendations and concierge basket flows can start from intent, not guesswork."
-      nav={accountNav("/account/wishlist")}
+      {...accountWorkspaceNav("/account/wishlist")}
     >
       {toast ? (
         <div className="rounded-[1.25rem] border border-[rgba(76,201,160,0.35)] bg-[rgba(76,201,160,0.12)] px-4 py-3 text-sm font-medium text-[var(--market-success,#4CC9A0)]">

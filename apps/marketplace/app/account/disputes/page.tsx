@@ -2,7 +2,7 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import type { MarketplaceDispute } from "@/lib/marketplace/types";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export default async function AccountDisputesPage() {
     <WorkspaceShell
       title="Disputes"
       description="Open an issue with context, keep the order linked, and see support-stage updates without losing the trail."
-      nav={accountNav("/account/disputes")}
+      {...accountWorkspaceNav("/account/disputes")}
     >
       <form action="/api/marketplace" method="POST" className="market-paper rounded-[1.75rem] p-5">
         <input type="hidden" name="intent" value="dispute_create" />
