@@ -1,4 +1,4 @@
-import type { CSSProperties, ComponentType, ReactNode } from "react";
+import type { CSSProperties, ComponentType } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
