@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 import { CollectionCard, ProductCard } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
 
@@ -17,68 +18,94 @@ export default async function CategoryPage({
 
   const products = snapshot.products.filter((item) => item.categorySlug === slug);
   const relatedCollections = snapshot.collections.filter((collection) =>
-    collection.productSlugs.some((productSlug) => products.some((product) => product.slug === productSlug))
+    collection.productSlugs.some((productSlug) =>
+      products.some((product) => product.slug === productSlug),
+    ),
   );
 
   return (
-    <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
-      <section className="grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
-        <article className="market-panel rounded-[2.5rem] p-8 sm:p-10">
-          <p className="market-kicker">Category edit</p>
-          <h1 className="market-display mt-5 max-w-3xl text-balance">{category.name}</h1>
-          <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--market-muted)]">{category.hero}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href={`/search?category=${category.slug}`} className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold">
-              Search this category
-            </Link>
-            <Link href="/trust" className="market-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
-              Review trust standards
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {category.filterPresets.map((preset) => (
-              <div
-                key={preset}
-                className="market-soft rounded-[1.35rem] px-4 py-4 text-sm font-medium text-[var(--market-ink)]"
+    <main className="mx-auto max-w-[1480px] space-y-14 px-4 py-12 sm:px-6 xl:px-8">
+      <section>
+        <div className="grid gap-10 xl:grid-cols-[1.15fr,0.85fr] xl:items-end">
+          <div>
+            <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">Category edit</p>
+            <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
+              {category.name}
+            </h1>
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
+              {category.hero}
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                href={`/search?category=${category.slug}`}
+                className="market-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                {preset}
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="rounded-[2.5rem] border border-[var(--market-line-strong)] bg-[var(--market-noir)] p-8 text-[var(--market-paper-white)] shadow-[0_36px_110px_rgba(17,13,9,0.3)] sm:p-10">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[var(--market-brass)]">
-            Category confidence
-          </p>
-          <div className="mt-6 grid gap-4">
-            <div className="rounded-[1.5rem] border border-[color:rgba(255,255,255,0.12)] bg-[color:rgba(255,255,255,0.04)] px-5 py-5">
-              <p className="text-[11px] uppercase tracking-[0.2em] text-[color:rgba(255,255,255,0.56)]">Active listings</p>
-              <p className="mt-3 text-4xl font-semibold tracking-tight">{products.length}</p>
+                Search this category
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/trust"
+                className="market-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
+              >
+                Review trust standards
+              </Link>
             </div>
-            {category.trustNotes.map((note) => (
-              <div
+            {category.filterPresets.length > 0 ? (
+              <div className="mt-7">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
+                  Quick filters
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {category.filterPresets.map((preset) => (
+                    <span
+                      key={preset}
+                      className="rounded-full border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--market-ink)]"
+                    >
+                      {preset}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+          <ul className="grid gap-3 text-sm">
+            <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
+              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
+                Active listings
+              </span>
+              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+                {products.length}
+              </span>
+            </li>
+            {category.trustNotes.map((note, i) => (
+              <li
                 key={note}
-                className="rounded-[1.5rem] border border-[color:rgba(255,255,255,0.12)] bg-[color:rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[color:rgba(255,255,255,0.72)]"
+                className={
+                  i === category.trustNotes.length - 1
+                    ? "border-b-0 py-3 text-sm leading-7 text-[var(--market-muted)]"
+                    : "border-b border-[var(--market-line)] py-3 text-sm leading-7 text-[var(--market-muted)]"
+                }
               >
                 {note}
-              </div>
+              </li>
             ))}
-          </div>
-        </article>
+          </ul>
+        </div>
       </section>
 
       {relatedCollections.length ? (
-        <section className="space-y-5">
-          <div className="flex items-end justify-between gap-4">
+        <section>
+          <div className="flex items-end justify-between gap-4 border-b border-[var(--market-line)] pb-4">
             <div>
-              <p className="market-kicker">Curated rails</p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-ink)]">
+              <p className="market-kicker text-[10.5px] uppercase tracking-[0.22em]">
+                Curated rails
+              </p>
+              <h2 className="mt-2 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
                 Collections that shorten decision-making.
               </h2>
             </div>
           </div>
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="mt-6 grid gap-5 lg:grid-cols-2">
             {relatedCollections.slice(0, 2).map((collection) => (
               <CollectionCard key={collection.id} collection={collection} />
             ))}
@@ -86,24 +113,29 @@ export default async function CategoryPage({
         </section>
       ) : null}
 
-      <section className="space-y-5">
-        <div className="flex items-end justify-between gap-4">
+      <section>
+        <div className="flex items-end justify-between gap-4 border-b border-[var(--market-line)] pb-4">
           <div>
-            <p className="market-kicker">Category catalog</p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-ink)]">
+            <p className="market-kicker text-[10.5px] uppercase tracking-[0.22em]">
+              Category catalog
+            </p>
+            <h2 className="mt-2 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
               Premium products, tighter hierarchy.
             </h2>
           </div>
-          <Link href={`/search?category=${category.slug}`} className="text-sm font-semibold text-[var(--market-brass)]">
+          <Link
+            href={`/search?category=${category.slug}`}
+            className="text-sm font-semibold text-[var(--market-brass)] underline-offset-4 hover:underline"
+          >
             Open full search
           </Link>
         </div>
-        <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+        <div className="mt-6 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
           {products.map((product) => (
             <ProductCard key={product.slug} product={product} />
           ))}
         </div>
       </section>
-    </div>
+    </main>
   );
 }

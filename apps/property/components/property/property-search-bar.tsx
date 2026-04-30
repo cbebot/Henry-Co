@@ -195,7 +195,8 @@ function PropertySearchBarInner({
         <button
           type="submit"
           disabled={isPending}
-          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
+          aria-busy={isPending}
+          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] disabled:cursor-wait disabled:opacity-80 disabled:active:translate-y-0"
         >
           {isPending ? (copy?.searchBar.updatingResults ?? "Updating results") : submitLabel}
           <ArrowRight className="h-4 w-4" />
@@ -211,7 +212,7 @@ function PropertySearchBarInner({
             navigate({ q: "", kind: "", area: "", managed: false, furnished: false });
           }}
           disabled={!hasActiveFilters || isPending}
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--property-line)] px-4 py-2 text-xs font-semibold text-[var(--property-ink-soft)] transition hover:border-[var(--property-accent-strong)] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--property-line)] px-4 py-2 text-xs font-semibold text-[var(--property-ink-soft)] transition outline-none hover:border-[var(--property-accent-strong)] hover:text-[var(--property-ink)] focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:translate-y-0"
         >
           <RefreshCcw className="h-3.5 w-3.5" />
           {copy?.searchBar.resetFilters ?? "Reset filters"}

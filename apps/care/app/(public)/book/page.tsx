@@ -10,7 +10,6 @@ import {
   ClipboardList,
   Search,
   ShieldCheck,
-  Sparkles,
   Wallet,
 } from "lucide-react";
 
@@ -85,47 +84,49 @@ export default async function BookPage({
   ]);
   const locale = await getCarePublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const features = [
+
+  const captureItems = [
     {
       icon: ClipboardList,
       title: t("Clear request detail"),
-      text: t(
-        "The form keeps service type, address notes, timing, and delivery-vs-on-site context readable before you submit.",
+      body: t(
+        "Service type, address notes, timing, and delivery-vs-on-site context are readable before you submit."
       ),
     },
     {
       icon: Wallet,
       title: t("Estimate before submit"),
-      text: t("Review the current estimate and payment guidance before the request is sent."),
+      body: t("Review the current estimate and payment guidance before the request is sent."),
     },
   ] as const;
-  const steps = [
+
+  const flowSteps = [
     {
       step: "01",
       title: t("Choose your service type"),
-      text: t(
-        "Start with garment pickup, home cleaning, or office cleaning, then choose the service options that match the request.",
+      body: t(
+        "Start with garment pickup, home cleaning, or office cleaning, then choose the service options that match the request."
       ),
     },
     {
       step: "02",
       title: t("Add the important details"),
-      text: t(
-        "Add contact details, schedule windows, access notes, and anything that affects delivery or on-site completion.",
+      body: t(
+        "Add contact details, schedule windows, access notes, and anything that affects delivery or on-site completion."
       ),
     },
     {
       step: "03",
       title: t("Receive one tracking code"),
-      text: t(
-        "You get one tracking code, then follow the correct timeline for return delivery or on-site completion.",
+      body: t(
+        "You get one tracking code, then follow the correct timeline for return delivery or on-site completion."
       ),
     },
   ] as const;
 
   return (
     <main
-      className="care-page min-h-screen overflow-hidden px-4 py-8 text-zinc-950 sm:px-6 sm:py-10 dark:text-white"
+      className="care-page min-h-screen px-4 py-10 text-zinc-950 sm:px-6 sm:py-12 lg:px-10 dark:text-white"
       style={
         {
           "--accent": ACCENT,
@@ -133,194 +134,187 @@ export default async function BookPage({
         } as CSSProperties
       }
     >
-      <div className="mx-auto grid min-h-[85vh] max-w-[92rem] items-start gap-8 2xl:grid-cols-[0.78fr_1.22fr]">
-        <section className="space-y-8">
-          <div className="inline-flex items-center gap-3 rounded-3xl border border-black/8 bg-white/82 px-5 py-3 text-sm font-semibold text-zinc-700 shadow-[0_16px_50px_rgba(16,19,31,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-white/75">
-            <CalendarCheck2 className="h-5 w-5 text-[color:var(--accent)]" />
-            {t("Service booking")}
+      <div className="mx-auto grid max-w-[92rem] items-start gap-12 2xl:grid-cols-[0.85fr_1.15fr]">
+        <section className="space-y-12">
+          <div>
+            <p className="care-kicker inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--accent)]">
+              <CalendarCheck2 className="h-3.5 w-3.5" />
+              {t("Service booking")}
+            </p>
+            <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
+              {t("Book a service. One calm form.")}
+            </h1>
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
+              {t(
+                "Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form makes the difference clear before you submit."
+              )}
+            </p>
           </div>
 
           <div>
-            <h1 className="max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
-              {t("Book a service. One calm form.")}
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-zinc-600 dark:text-white/68 sm:text-lg xl:text-xl">
-              {t(
-                "Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form makes the difference clear before you submit.",
-              )}
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+              {t("What the request captures")}
             </p>
+            <ul className="mt-5 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+              {captureItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.title} className="flex gap-4 py-4">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white/60 text-[color:var(--accent)] dark:border-white/10 dark:bg-white/[0.04]">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <h2 className="text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                        {item.title}
+                      </h2>
+                      <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-white/68">
+                        {item.body}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {features.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div
-                  key={item.title}
-                  className="rounded-3xl border border-black/10 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
-                >
-                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--accent)]/10">
-                    <Icon className="h-5 w-5 text-[color:var(--accent)]" />
-                  </div>
-
-                  <div className="mt-4 text-lg font-semibold">{item.title}</div>
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                    {item.text}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-
-              <div className="care-sheen rounded-[32px] border border-black/10 bg-white/75 p-6 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
-            <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
-                <CheckCircle2 className="h-4 w-4" />
-                {t("What the request captures")}
-              </div>
-
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              {steps.map((item) => (
-                <div
+          <div>
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+              {t("How a request flows")}
+            </p>
+            <ol className="mt-5 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+              {flowSteps.map((item) => (
+                <li
                   key={item.step}
-                  className="care-sheen rounded-3xl border border-black/10 bg-white/80 p-5 dark:border-white/10 dark:bg-white/[0.05]"
+                  className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
                 >
-                  <div className="text-sm font-black tracking-[0.16em] text-[color:var(--accent)]">
-                    {item.step}
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                    {t("Step")} {item.step}
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                      {item.title}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-white/68">
+                      {item.body}
+                    </p>
                   </div>
-                  <div className="mt-3 text-lg font-semibold text-zinc-950 dark:text-white">
-                    {item.title}
-                  </div>
-                  <div className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                    {item.text}
-                  </div>
-                </div>
+                </li>
               ))}
+            </ol>
+          </div>
+
+          <div className="grid gap-10 md:grid-cols-2 md:divide-x md:divide-black/10 dark:md:divide-white/10">
+            <div>
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                {t("Wardrobe service")}
+              </p>
+              <h3 className="mt-3 text-lg font-semibold tracking-tight text-zinc-950 dark:text-white">
+                {t("Garments end in return delivery.")}
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                {t(
+                  "Pickup, treatment, finishing, packing, and return delivery remain visible in their own tracking timeline."
+                )}
+              </p>
+            </div>
+            <div className="md:pl-10">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                {t("On-site service")}
+              </p>
+              <h3 className="mt-3 text-lg font-semibold tracking-tight text-zinc-950 dark:text-white">
+                {t("Homes and offices end in completed work.")}
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                {t(
+                  "Home and office services focus on scheduling, arrival, service completion, and final sign-off rather than delivery movement."
+                )}
+              </p>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-black/10 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
-            <div className="text-sm font-semibold text-zinc-900 dark:text-white">
-              {t("What happens after submission")}
-            </div>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
+          <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+              <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+              {t("Booking truth")}
+            </p>
+            <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
               {t(
-                "The request records scope, estimate, schedule context, and access notes. Garment jobs continue into pickup and return delivery. Home and office jobs continue into scheduled on-site work and final completion checks.",
+                "One garment order or one cleaning request stays under one readable tracking code, with payment guidance and follow-up attached to the same record."
               )}
             </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="care-card care-sheen rounded-[2rem] p-5">
-              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                {t("Wardrobe service")}
-              </div>
-              <div className="mt-3 text-lg font-semibold text-zinc-950 dark:text-white">
-                {t("Garments end in return delivery.")}
-              </div>
-              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/66">
-                {t(
-                  "Pickup, treatment, finishing, packing, and return delivery remain visible in their own tracking timeline.",
-                )}
-              </p>
-            </div>
-
-            <div className="care-card care-sheen rounded-[2rem] p-5">
-              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                {t("On-site service")}
-              </div>
-              <div className="mt-3 text-lg font-semibold text-zinc-950 dark:text-white">
-                {t("Homes and offices end in completed work.")}
-              </div>
-              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/66">
-                {t(
-                  "Home and office services focus on scheduling, arrival, service completion, and final sign-off rather than delivery movement.",
-                )}
-              </p>
-            </div>
           </div>
 
           <div className="flex flex-wrap gap-3">
             <Link
               href="/track"
-              className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-[color:var(--accent)]/40 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 hover:bg-white dark:border-white/15 dark:bg-white/[0.04] dark:text-white"
             >
               <Search className="h-4 w-4 text-[color:var(--accent)]" />
               {t("Track an existing request")}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-[color:var(--accent)]/40 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 hover:bg-white dark:border-white/15 dark:bg-white/[0.04] dark:text-white"
             >
               <Wallet className="h-4 w-4 text-[color:var(--accent)]" />
               {t("Review pricing")}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-          </div>
-
-          <div className="rounded-3xl border border-black/10 bg-white/75 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
-            <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
-              <ShieldCheck className="h-4 w-4 text-[color:var(--accent)]" />
-              {t("Booking truth")}
-            </div>
-            <div className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-              {t(
-                "One garment order or one cleaning request stays under one readable tracking code, with payment guidance and follow-up attached to the same record.",
-              )}
-            </div>
           </div>
         </section>
 
-        <section className="relative">
-            <div className="overflow-hidden rounded-[38px] border border-black/10 bg-white/80 p-5 shadow-[0_25px_90px_rgba(0,0,0,0.10)] backdrop-blur-2xl sm:p-6 dark:border-white/10 dark:bg-white/[0.05]">
-            <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[color:var(--accent)]/12 blur-3xl" />
-
-            <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)] dark:border-white/10 dark:bg-white/[0.05]">
-              <Sparkles className="h-4 w-4" />
+        <section>
+          <div className="rounded-[2.4rem] border border-black/10 bg-white/85 p-6 shadow-[0_18px_60px_rgba(16,19,31,0.06)] backdrop-blur-xl sm:p-8 dark:border-white/10 dark:bg-white/[0.04]">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
               {t("Booking form")}
+            </p>
+            <h2 className="mt-3 text-balance text-[1.65rem] font-semibold leading-[1.15] tracking-[-0.02em] text-zinc-950 sm:text-[1.95rem] dark:text-white">
+              {t("Share the details with confidence.")}
+            </h2>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+              {t(
+                "Choose the service, add the right details, review the current estimate, and send a clear request in one polished step."
+              )}
+            </p>
+
+            <div className="mt-6 grid gap-4">
+              {ok ? <MessageCard kind="success" text={ok} /> : null}
+              {error ? <MessageCard kind="error" text={error} /> : null}
             </div>
 
-              <h2 className="mt-4 font-[family-name:var(--font-display)] text-4xl font-semibold tracking-[-0.03em]">
-                {t("Share the details with confidence.")}
-              </h2>
-
-              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-                {t(
-                  "Choose the service, add the right details, review the current estimate, and send a clear request in one polished step.",
-                )}
-              </p>
-
-              <div className="mt-5 grid gap-4">
-                {ok ? <MessageCard kind="success" text={ok} /> : null}
-                {error ? <MessageCard kind="error" text={error} /> : null}
-              </div>
-
-              {tracking ? <BookingSuccessNotice locale={locale} tracking={tracking} /> : null}
-
+            {tracking ? (
               <div className="mt-6">
-            <BookPickupForm
-              locale={locale}
-              pricingItems={pricingItems}
-              catalog={catalog}
-              savedAddresses={bookingIdentity.addresses}
-              defaultContact={bookingIdentity.contact}
-              paymentSettings={{
-                accountName: settings.payment_account_name || settings.company_account_name,
-                accountNumber: settings.payment_account_number || settings.company_account_number,
-                bankName: settings.payment_bank_name || settings.company_bank_name,
-                currency: settings.payment_currency || "NGN",
-                supportEmail: settings.payment_support_email || settings.support_email,
-                supportWhatsApp: settings.payment_support_whatsapp || settings.payment_whatsapp,
-                instructions: settings.payment_instructions,
-              }}
-              action={createPublicBookingAction}
-            />
+                <BookingSuccessNotice locale={locale} tracking={tracking} />
               </div>
+            ) : null}
+
+            <div className="mt-7 border-t border-black/10 pt-7 dark:border-white/10">
+              <BookPickupForm
+                locale={locale}
+                pricingItems={pricingItems}
+                catalog={catalog}
+                savedAddresses={bookingIdentity.addresses}
+                defaultContact={bookingIdentity.contact}
+                paymentSettings={{
+                  accountName: settings.payment_account_name || settings.company_account_name,
+                  accountNumber:
+                    settings.payment_account_number || settings.company_account_number,
+                  bankName: settings.payment_bank_name || settings.company_bank_name,
+                  currency: settings.payment_currency || "NGN",
+                  supportEmail: settings.payment_support_email || settings.support_email,
+                  supportWhatsApp:
+                    settings.payment_support_whatsapp || settings.payment_whatsapp,
+                  instructions: settings.payment_instructions,
+                }}
+                action={createPublicBookingAction}
+              />
             </div>
+
+            <p className="mt-7 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
+              <CheckCircle2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+              {t("One tracking code per request")}
+            </p>
           </div>
         </section>
       </div>

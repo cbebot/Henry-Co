@@ -66,20 +66,102 @@ export default function LogisticsShell({
         navClassName="hidden shrink-0 flex-wrap items-center justify-end gap-1 sm:gap-2 lg:flex"
       />
       {children}
-      <footer className="mt-12 border-t border-[var(--logistics-line)] px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="text-sm font-semibold text-white">{logistics.name}</div>
-            <p className="mt-1 max-w-md text-sm text-[var(--logistics-muted)]">{logistics.tagline}</p>
+      <footer className="mt-16 border-t border-[var(--logistics-line)]">
+        <div
+          aria-hidden
+          className="pointer-events-none mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-[var(--logistics-accent-soft)]/40 to-transparent"
+        />
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr] lg:px-8">
+          <div className="space-y-5">
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
+                {logistics.shortName}
+              </div>
+              <div className="mt-2 text-base font-semibold tracking-[-0.01em] text-white">
+                {logistics.name}
+              </div>
+            </div>
+            <p className="max-w-md text-sm leading-7 text-[var(--logistics-muted)]">
+              {logistics.tagline}
+            </p>
+            <div className="space-y-1.5 text-sm">
+              <a
+                href={`mailto:${logistics.supportEmail}`}
+                className="block font-medium text-white transition hover:text-[var(--logistics-accent-soft)]"
+              >
+                {logistics.supportEmail}
+              </a>
+              <a
+                href={`tel:${logistics.supportPhone}`}
+                className="block text-[var(--logistics-muted)] transition hover:text-white"
+              >
+                {logistics.supportPhone}
+              </a>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-4 text-sm text-[var(--logistics-muted)]">
-            <a href={`mailto:${logistics.supportEmail}`} className="hover:text-white">
-              {logistics.supportEmail}
-            </a>
-            <span className="text-white/20">|</span>
-            <a href={`tel:${logistics.supportPhone}`} className="hover:text-white">
-              {logistics.supportPhone}
-            </a>
+
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-muted)]">
+              Service
+            </div>
+            <div className="mt-4 grid gap-3 text-sm">
+              {[
+                { href: "/quote", label: "Get a quote" },
+                { href: "/track", label: "Track a job" },
+                { href: "/business", label: "For business" },
+                { href: "/coverage", label: "Coverage" },
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-white/75 transition hover:text-white"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-muted)]">
+              HenryCo
+            </div>
+            <div className="mt-4 grid gap-3 text-sm">
+              <a
+                href={getHubUrl("/")}
+                className="text-white/75 transition hover:text-white"
+              >
+                HenryCo group
+              </a>
+              <a
+                href={getHubUrl("/preferences")}
+                className="text-white/75 transition hover:text-white"
+              >
+                Preferences
+              </a>
+              <a
+                href={getHubUrl("/privacy")}
+                className="text-white/75 transition hover:text-white"
+              >
+                Privacy
+              </a>
+              <a
+                href={getHubUrl("/terms")}
+                className="text-white/75 transition hover:text-white"
+              >
+                Terms
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-[var(--logistics-line)] px-4 py-5 text-xs text-[var(--logistics-muted)] sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>© {new Date().getFullYear()} {logistics.name}. All rights reserved.</div>
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
+              <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--logistics-accent-soft)]" />
+              Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+            </span>
           </div>
         </div>
       </footer>

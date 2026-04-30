@@ -1,5 +1,6 @@
-import { randomUUID } from "crypto";
-import { createAdminSupabase } from "@/lib/supabase";
+import "server-only";
+
+import { createHash, randomUUID } from "crypto";
 
 export type LearnUploadedAsset = {
   secureUrl: string;
@@ -28,7 +29,19 @@ const ALLOWED_TYPES = new Set([
 ]);
 
 const MAX_BYTES = 12 * 1024 * 1024;
-const DEFAULT_BUCKET = "learn-teaching-files";
+
+function requireCloudinaryEnv() {
+  const cloudName = String(process.env.CLOUDINARY_CLOUD_NAME || "").trim();
+  const apiKey = String(process.env.CLOUDINARY_API_KEY || "").trim();
+  const apiSecret = String(process.env.CLOUDINARY_API_SECRET || "").trim();
+  const baseFolder = String(process.env.CLOUDINARY_FOLDER || "henryco/learn").trim();
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error("Cloudinary is not configured for this environment.");
+  }
+
+  return { cloudName, apiKey, apiSecret, baseFolder };
+}
 
 function sanitizeSegment(value: string) {
   return String(value || "")
@@ -36,20 +49,6 @@ function sanitizeSegment(value: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 48);
-}
-
-async function ensureBucket(bucket: string, config: UploadConfig) {
-  const admin = createAdminSupabase();
-  const { data: buckets } = await admin.storage.listBuckets();
-  if ((buckets ?? []).some((entry) => entry.name === bucket || entry.id === bucket)) {
-    return;
-  }
-
-  await admin.storage.createBucket(bucket, {
-    public: false,
-    fileSizeLimit: String(config.maxBytes),
-    allowedMimeTypes: [...config.allowedTypes],
-  });
 }
 
 async function uploadAssetInternal(
@@ -72,39 +71,46 @@ async function uploadAssetInternal(
     throw new Error(config.invalidTypeMessage);
   }
 
-  const bucket =
-    String(process.env.LEARN_TEACHING_FILES_BUCKET || DEFAULT_BUCKET).trim() || DEFAULT_BUCKET;
-  await ensureBucket(bucket, config);
-
-  const folder = sanitizeSegment(options.folderSuffix) || "teacher";
-  const publicPrefix = sanitizeSegment(options.publicIdPrefix) || "teach";
-  const extension = file.name.includes(".") ? file.name.split(".").pop()?.toLowerCase() : "";
-  const objectPath = [folder, `${publicPrefix}-${randomUUID()}${extension ? `.${extension}` : ""}`]
+  const { cloudName, apiKey, apiSecret, baseFolder } = requireCloudinaryEnv();
+  const folder = [baseFolder, sanitizeSegment(options.folderSuffix) || "teacher"]
     .filter(Boolean)
     .join("/");
+  const publicPrefix = sanitizeSegment(options.publicIdPrefix) || "teach";
+  const publicId = `${publicPrefix}-${randomUUID().slice(0, 12)}`;
+  const timestamp = Math.floor(Date.now() / 1000);
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const admin = createAdminSupabase();
-  const uploaded = await admin.storage.from(bucket).upload(objectPath, buffer, {
-    contentType: file.type || "application/octet-stream",
-    upsert: false,
-  });
+  const signaturePayload = `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
+  const signature = createHash("sha1").update(signaturePayload).digest("hex");
 
-  if (uploaded.error) {
-    throw new Error(uploaded.error.message || "Supporting file upload failed. Please try again.");
-  }
+  const form = new FormData();
+  form.set("file", file, file.name);
+  form.set("api_key", apiKey);
+  form.set("timestamp", String(timestamp));
+  form.set("signature", signature);
+  form.set("folder", folder);
+  form.set("public_id", publicId);
 
-  const signed = await admin.storage.from(bucket).createSignedUrl(objectPath, 60 * 60 * 24 * 30);
-  if (signed.error || !signed.data?.signedUrl) {
+  const isImage = String(file.type || "").toLowerCase().startsWith("image/");
+  const resourcePath = isImage ? "image/upload" : "raw/upload";
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/${resourcePath}`,
+    { method: "POST", body: form }
+  );
+
+  const payload = (await response.json().catch(() => null)) as
+    | { secure_url?: string; public_id?: string; error?: { message?: string } }
+    | null;
+
+  if (!response.ok || !payload?.secure_url || !payload?.public_id) {
     throw new Error(
-      signed.error?.message ||
-        "Supporting file upload succeeded but the access URL could not be created."
+      payload?.error?.message || "Supporting file upload failed. Please try again."
     );
   }
 
   return {
-    secureUrl: signed.data.signedUrl,
-    publicId: objectPath,
+    secureUrl: payload.secure_url,
+    publicId: payload.public_id,
     mimeType: file.type || null,
     size: file.size || null,
     name: file.name,

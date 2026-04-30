@@ -1,4 +1,4 @@
-import type { CSSProperties, ComponentType, ReactNode } from "react";
+import type { CSSProperties, ComponentType } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -28,7 +28,7 @@ export default async function ContactPage() {
 
   return (
     <main
-      className="overflow-hidden bg-transparent pb-24 pt-8"
+      className="px-4 pb-24 pt-10 sm:px-6 lg:px-10"
       style={
         {
           "--accent": CARE_ACCENT,
@@ -36,120 +36,165 @@ export default async function ContactPage() {
         } as CSSProperties
       }
     >
-      <section className="mx-auto max-w-[88rem] px-5 sm:px-8 lg:px-10">
-        <div className="care-dash-card relative overflow-hidden rounded-[2.7rem] px-8 py-12 sm:px-10 lg:px-14 lg:py-16">
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(circle at top, color-mix(in srgb, var(--accent) 16%, transparent), transparent 30%)",
-            }}
-          />
-
-          <div className="relative max-w-3xl">
-            <div className="care-chip inline-flex rounded-full px-5 py-3 text-sm font-semibold text-white/76">
-              <ShieldCheck className="h-5 w-5 text-[color:var(--accent)]" />
-              Contact and support
+      <div className="mx-auto max-w-[88rem] space-y-14">
+        <section>
+          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+            <div>
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
+                <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+                Contact and support
+              </p>
+              <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
+                One desk. Clear answers.
+              </h1>
+              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
+                Booking guidance, schedule changes, billing clarity, or follow-up on an existing
+                service &mdash; handled with one consistent thread from first message to final
+                resolution.
+              </p>
             </div>
-            <h1 className="mt-7 care-display max-w-3xl text-balance text-white">
-              One desk. Clear answers.
-            </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-white/68 sm:text-lg">
-              Booking guidance, schedule changes, billing clarity, or follow-up on an existing service &mdash; handled with one consistent thread from first message to final resolution.
-            </p>
+            <ul className="grid gap-3 text-sm">
+              {[
+                {
+                  icon: Clock3,
+                  label: "Service hours",
+                  value: pickupHours,
+                },
+                {
+                  icon: MapPin,
+                  label: "Coverage",
+                  value: "Garment, home, and office requests across covered zones",
+                },
+                {
+                  icon: Sparkles,
+                  label: "Follow-up",
+                  value: "Logged under one reference per request",
+                },
+              ].map(({ icon: Icon, label, value }) => (
+                <li
+                  key={label}
+                  className="flex items-baseline gap-3 border-b border-black/10 py-3 last:border-b-0 dark:border-white/10"
+                >
+                  <Icon className="h-3.5 w-3.5 text-[color:var(--accent)]" aria-hidden />
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
+                    {label}
+                  </span>
+                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                    {value}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="mx-auto mt-16 max-w-[88rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-          <ContactForm />
+        <section className="grid gap-12 xl:grid-cols-[1.08fr,0.92fr]">
+          <div>
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+              Send a message
+            </p>
+            <div className="mt-5">
+              <ContactForm />
+            </div>
+          </div>
 
-          <div className="grid gap-6">
-            <div className="care-card rounded-[2.2rem] p-8">
-              <div className="care-kicker">Direct channels</div>
-              <h2 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-zinc-950 dark:text-white">
+          <aside className="space-y-12">
+            <div>
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                Direct channels
+              </p>
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
                 Choose the route that fits the moment.
               </h2>
-
-              <div className="mt-6 grid gap-4">
-                <SupportCard
+              <ul className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+                <SupportRow
                   icon={PhoneCall}
                   title="Phone support"
                   body="Best for same-day pickup changes, access instructions, urgent service coordination, and anything timing-sensitive."
                   value={supportPhone}
                   href={`tel:${supportPhone.replace(/\s+/g, "")}`}
                 />
-                <SupportCard
+                <SupportRow
                   icon={Mail}
                   title="Email support"
                   body="Best for quotes, billing clarity, recurring-plan questions, and anything that benefits from a written record."
                   value={supportEmail}
                   href={`mailto:${supportEmail}`}
                 />
-                <SupportCard
+                <SupportRow
                   icon={MessageSquare}
                   title="WhatsApp contact"
                   body="Useful when the team only needs a quick confirmation or proof-of-payment attachment after earlier guidance."
                   value={whatsappNumber}
                   href={`https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`}
                 />
-              </div>
+              </ul>
             </div>
 
-            <div className="care-card rounded-[2.2rem] p-8">
-              <div className="care-kicker">Response standards</div>
-              <h2 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-zinc-950 dark:text-white">
-                Built to feel calm under pressure.
-              </h2>
-              <div className="mt-6 grid gap-4">
-                <MiniInfo icon={Clock3} label="Service hours">
-                  {pickupHours}
-                </MiniInfo>
-                <MiniInfo icon={MapPin} label="Coverage and logistics">
-                  The team can confirm zones, travel fees, access notes, and recurring-plan scope
-                  with the same support reference instead of starting over.
-                </MiniInfo>
-                <MiniInfo icon={Sparkles} label="One desk, cleaner follow-up">
-                  Messages are logged under one clear reference so the team can respond promptly
-                  and keep every update in one place.
-                </MiniInfo>
-              </div>
-            </div>
-
-            <div className="care-dash-card rounded-[2.2rem] p-8">
-              <div className="care-kicker">Need instant clarity?</div>
-              <h2 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-white">
+            <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
                 Already have a tracking code?
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-white/66">
+              </p>
+              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
                 Track the service first. In many cases, the latest movement, arrival stage, or
                 completion update will answer the question immediately.
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-3 flex flex-wrap gap-3 text-sm">
                 <Link
                   href="/track"
-                  className="care-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                  className="font-semibold text-[color:var(--accent)] underline-offset-4 hover:underline"
                 >
                   Track a service
-                  <ArrowRight className="h-4 w-4" />
                 </Link>
+                <span className="text-zinc-400 dark:text-white/30">·</span>
                 <Link
                   href="/book"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
+                  className="font-semibold text-zinc-700 underline-offset-4 hover:underline dark:text-white/80"
                 >
                   Start a booking
                 </Link>
               </div>
             </div>
+          </aside>
+        </section>
+
+        <section className="border-t border-black/10 pt-10 dark:border-white/10">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-xl">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                Built to feel calm under pressure
+              </p>
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
+                One desk, cleaner follow-up.
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                Messages are logged under one clear reference so the team can respond promptly and
+                keep every update in one place.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/book"
+                className="care-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
+              >
+                Start a booking
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 rounded-full border border-black/10 px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 dark:border-white/15 dark:text-white"
+              >
+                Compare services
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }
 
-function SupportCard({
+function SupportRow({
   icon: Icon,
   title,
   body,
@@ -163,47 +208,33 @@ function SupportCard({
   href?: string;
 }) {
   return (
-    <div className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/[0.04]">
-      <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--accent)]/12">
-        <Icon className="h-5 w-5 text-[color:var(--accent)]" />
+    <li className="grid gap-3 py-5 sm:grid-cols-[auto,1fr,auto] sm:items-start sm:gap-6">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/10 bg-white/60 text-[color:var(--accent)] dark:border-white/10 dark:bg-white/[0.04]">
+        <Icon className="h-4 w-4" />
+      </span>
+      <div>
+        <h3 className="text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+          {title}
+        </h3>
+        <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-white/68">{body}</p>
       </div>
-      <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">{title}</div>
-      <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">{body}</p>
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 sm:justify-end">
         {href ? (
           <a
             href={href}
             target={href.startsWith("https://") ? "_blank" : undefined}
             rel={href.startsWith("https://") ? "noreferrer" : undefined}
-            className="text-sm font-semibold text-zinc-950 transition hover:text-[color:var(--accent)] dark:text-white"
+            className="text-sm font-semibold tracking-tight text-zinc-950 transition hover:text-[color:var(--accent)] dark:text-white"
           >
             {value}
           </a>
         ) : (
-          <div className="text-sm font-semibold text-zinc-950 dark:text-white">{value}</div>
+          <span className="text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+            {value}
+          </span>
         )}
         <CopyButton value={value} label="Copy" />
       </div>
-    </div>
-  );
-}
-
-function MiniInfo({
-  icon: Icon,
-  label,
-  children,
-}: {
-  icon: ComponentType<{ className?: string }>;
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="rounded-[1.5rem] border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/[0.04]">
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
-        <Icon className="h-4 w-4" />
-        {label}
-      </div>
-      <div className="mt-3 text-sm leading-7 text-zinc-700 dark:text-white/72">{children}</div>
-    </div>
+    </li>
   );
 }

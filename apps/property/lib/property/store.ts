@@ -166,41 +166,77 @@ async function removeJsonRecord(folder: string, id: string) {
 }
 
 export async function uploadPropertyMedia(listingId: string, file: File) {
-  await ensurePropertyBuckets();
-  const admin = createAdminSupabase();
-  const filename = `${Date.now()}-${slugify(file.name || "media")}`;
-  const path = `${listingId}/${filename}`;
-  const bytes = await file.arrayBuffer();
-
-  const { error } = await admin.storage.from(PROPERTY_MEDIA_BUCKET).upload(path, bytes, {
-    contentType: file.type || "application/octet-stream",
-    upsert: true,
+  return uploadToCloudinary(file, {
+    folderSuffix: `media/${slugify(listingId) || "listing"}`,
+    publicIdPrefix: "property-media",
+    resourcePath: cloudinaryResourceForFile(file),
   });
-
-  if (error) {
-    throw error;
-  }
-
-  return admin.storage.from(PROPERTY_MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
 }
 
 export async function uploadPropertyDocument(entityId: string, file: File) {
-  await ensurePropertyBuckets();
-  const admin = createAdminSupabase();
-  const filename = `${Date.now()}-${slugify(file.name || "document")}`;
-  const path = `${entityId}/${filename}`;
-  const bytes = await file.arrayBuffer();
-
-  const { error } = await admin.storage.from(PROPERTY_DOCUMENT_BUCKET).upload(path, bytes, {
-    contentType: file.type || "application/octet-stream",
-    upsert: true,
+  return uploadToCloudinary(file, {
+    folderSuffix: `documents/${slugify(entityId) || "document"}`,
+    publicIdPrefix: "property-doc",
+    resourcePath: cloudinaryResourceForFile(file),
   });
+}
 
-  if (error) {
-    throw error;
+function cloudinaryResourceForFile(file: File): "image/upload" | "raw/upload" {
+  return String(file.type || "").toLowerCase().startsWith("image/")
+    ? "image/upload"
+    : "raw/upload";
+}
+
+async function uploadToCloudinary(
+  file: File,
+  options: {
+    folderSuffix: string;
+    publicIdPrefix: string;
+    resourcePath: "image/upload" | "raw/upload";
+  }
+): Promise<string> {
+  if (!(file instanceof File) || file.size <= 0) {
+    throw new Error("No file provided.");
   }
 
-  return `storage://${PROPERTY_DOCUMENT_BUCKET}/${path}`;
+  const cloudName = String(process.env.CLOUDINARY_CLOUD_NAME || "").trim();
+  const apiKey = String(process.env.CLOUDINARY_API_KEY || "").trim();
+  const apiSecret = String(process.env.CLOUDINARY_API_SECRET || "").trim();
+  const baseFolder = String(process.env.CLOUDINARY_FOLDER || "henryco/property").trim();
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error("Cloudinary is not configured for this environment.");
+  }
+
+  const folder = [baseFolder, options.folderSuffix].filter(Boolean).join("/");
+  const publicId = `${options.publicIdPrefix}-${Date.now()}-${slugify(file.name || "asset").slice(0, 24)}`;
+  const timestamp = Math.floor(Date.now() / 1000);
+  const signaturePayload = `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
+  const { createHash } = await import("crypto");
+  const signature = createHash("sha1").update(signaturePayload).digest("hex");
+
+  const form = new FormData();
+  form.set("file", file, file.name);
+  form.set("api_key", apiKey);
+  form.set("timestamp", String(timestamp));
+  form.set("signature", signature);
+  form.set("folder", folder);
+  form.set("public_id", publicId);
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/${options.resourcePath}`,
+    { method: "POST", body: form }
+  );
+
+  const payload = (await response.json().catch(() => null)) as
+    | { secure_url?: string; error?: { message?: string } }
+    | null;
+
+  if (!response.ok || !payload?.secure_url) {
+    throw new Error(payload?.error?.message || "Property upload failed. Please try again.");
+  }
+
+  return payload.secure_url;
 }
 
 export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {

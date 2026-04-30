@@ -35,25 +35,32 @@ export default async function ServicesPage() {
         } as CSSProperties
       }
     >
+      {/* Editorial hero */}
       <section className="mx-auto max-w-[88rem] px-5 sm:px-8 lg:px-10">
-        <div className="care-dash-card rounded-[2.6rem] px-8 py-12 sm:px-10 lg:px-14 lg:py-16">
+        <div className="care-dash-card rounded-[2.6rem] px-8 py-12 sm:px-10 lg:px-14 lg:py-14">
           <div className="max-w-3xl">
-            <div className="care-chip inline-flex rounded-full px-5 py-3 text-sm font-semibold text-white/76">
-              <Sparkles className="h-5 w-5 text-[color:var(--accent)]" />
+            <div className="care-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/76">
+              <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
               Service collection
             </div>
             <h1 className="mt-7 care-display max-w-3xl text-balance text-white">
               Wardrobes, homes, workplaces &mdash; one operating standard.
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-white/68 sm:text-lg">
-              Garment care, home cleaning, and office cleaning held on one standard of timing, communication, and quality.
+            <p className="mt-6 max-w-2xl text-pretty text-base leading-[1.7] text-white/72 sm:text-lg">
+              Garment care, home cleaning, and office cleaning held on one standard of timing,
+              communication, and quality.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-[88rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-6 lg:grid-cols-3">
+      {/* Three lanes — editorial 3-col with hairline dividers, no panels */}
+      <section className="mx-auto mt-20 max-w-[88rem] px-5 sm:px-8 lg:px-10">
+        <div className="flex items-baseline gap-4">
+          <p className="care-kicker">Three lanes</p>
+          <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
+        </div>
+        <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-black/10 dark:lg:divide-white/10">
           {[
             {
               icon: Package2,
@@ -70,68 +77,86 @@ export default async function ServicesPage() {
               title: "Office cleaning",
               body: "Office suite cleaning, common-area care, after-hours execution, and recurring commercial coverage shaped around your site.",
             },
-          ].map((item) => {
+          ].map((item, i) => {
             const Icon = item.icon;
             return (
-              <div key={item.title} className="care-card care-sheen rounded-[2rem] p-7">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent)]/12">
-                  <Icon className="h-6 w-6 text-[color:var(--accent)]" />
-                </div>
-                <div className="mt-5 text-2xl font-semibold text-zinc-950 dark:text-white">{item.title}</div>
-                <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">{item.body}</p>
-              </div>
+              <li key={item.title} className={i > 0 ? "lg:pl-10" : ""}>
+                <Icon className="h-5 w-5 text-[color:var(--accent)]" aria-hidden />
+                <h3 className="mt-4 text-[1.25rem] font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                  {item.body}
+                </p>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </section>
 
-      <section className="mx-auto mt-16 max-w-[88rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-6 xl:grid-cols-2">
+      {/* Package collections — 2 column editorial split */}
+      <section className="mx-auto mt-20 max-w-[88rem] px-5 sm:px-8 lg:px-10">
+        <div className="grid gap-12 xl:grid-cols-2">
           <PackageCollection title="Home cleaning packages" items={homePackages} />
           <PackageCollection title="Office cleaning packages" items={officePackages} />
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-[88rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-6 lg:grid-cols-3">
+      {/* Three steps — horizontal numbered timeline */}
+      <section className="mx-auto mt-20 max-w-[88rem] px-5 sm:px-8 lg:px-10">
+        <div className="flex items-baseline gap-4">
+          <p className="care-kicker">Service flow</p>
+          <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
+        </div>
+        <ol className="mt-8 grid gap-8 md:grid-cols-3">
           {[
             {
-              title: "Step 1: Scope confirmation",
+              title: "Scope confirmation",
               body: "We confirm what is being handled, where the service starts, and what completion looks like.",
             },
             {
-              title: "Step 2: Controlled execution",
+              title: "Controlled execution",
               body: "Wardrobe, home, and office lanes follow tailored execution standards instead of one generic checklist.",
             },
             {
-              title: "Step 3: Verified completion",
+              title: "Verified completion",
               body: "Each request ends with a clear completion state, support follow-up path, and a traceable service record.",
             },
-          ].map((step) => (
-            <div key={step.title} className="care-card rounded-[2rem] p-7">
-              <h3 className="text-xl font-semibold text-zinc-950 dark:text-white">{step.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">{step.body}</p>
-            </div>
+          ].map((step, i) => (
+            <li
+              key={step.title}
+              className={`border-t border-black/10 pt-6 dark:border-white/10 ${
+                i > 0 ? "md:border-l md:border-t-0 md:pl-6 md:pt-0" : ""
+              }`}
+            >
+              <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                Step {String(i + 1).padStart(2, "0")}
+              </p>
+              <h3 className="mt-3 text-[1.05rem] font-semibold leading-snug tracking-tight text-zinc-950 dark:text-white">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">{step.body}</p>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
 
-      <section className="mx-auto mt-20 max-w-[88rem] px-5 sm:px-8 lg:px-10">
+      {/* Closing band — kept as care-dash-card since it's the brand voice */}
+      <section className="mx-auto mt-24 max-w-[88rem] px-5 sm:px-8 lg:px-10">
         <div className="care-dash-card rounded-[2.5rem] px-8 py-10 sm:px-10 lg:flex lg:items-center lg:justify-between">
           <div className="max-w-2xl">
-            <div className="care-kicker">Next step</div>
-            <h2 className="mt-3 care-section-title text-white">
+            <p className="care-kicker">Next step</p>
+            <h2 className="mt-4 care-section-title text-white">
               Choose the right service, then book with confidence.
             </h2>
-            <p className="mt-4 text-sm leading-7 text-white/66">
-              Review the service model here, then use the pricing page for exact rates and fee rules
-              before you submit your booking.
+            <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
+              Review the service model here, then use the pricing page for exact rates and fee
+              rules before you submit your booking.
             </p>
           </div>
-
           <Link
             href="/pricing"
-            className="care-button-primary mt-6 inline-flex items-center gap-2 rounded-full px-6 py-4 text-sm font-semibold lg:mt-0"
+            className="care-button-primary mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold lg:mt-0"
           >
             Review pricing
             <ArrowRight className="h-4 w-4" />
@@ -157,34 +182,33 @@ function PackageCollection({
   }>;
 }) {
   return (
-    <div className="care-card care-sheen rounded-[2.2rem] p-8">
-      <div className="care-kicker">Package collection</div>
+    <div>
+      <p className="care-kicker">Package collection</p>
       <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">{title}</h2>
-      <div className="mt-6 grid gap-4">
+      <ul className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
         {items.map((item) => (
-          <div
-            key={item.id}
-            className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/[0.04]"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-lg font-semibold text-zinc-950 dark:text-white">{item.name}</div>
-                <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">{item.summary}</p>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-black tracking-[-0.04em] text-[color:var(--accent)]">
-                  {formatMoney(item.base_price)}
-                </div>
-                <div className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/48">
-                  {title.includes("Office")
-                    ? `${item.staff_count} staff`
-                    : item.default_frequency.replaceAll("_", " ")}
-                </div>
-              </div>
+          <li key={item.id} className="grid items-baseline gap-5 py-5 sm:grid-cols-[1fr,auto]">
+            <div className="min-w-0">
+              <h3 className="text-[1.1rem] font-semibold tracking-tight text-zinc-950 dark:text-white">
+                {item.name}
+              </h3>
+              <p className="mt-1.5 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-white/68">
+                {item.summary}
+              </p>
             </div>
-          </div>
+            <div className="text-right">
+              <p className="text-[1.45rem] font-semibold leading-tight tracking-tight text-[color:var(--accent)]">
+                {formatMoney(item.base_price)}
+              </p>
+              <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/48">
+                {title.includes("Office")
+                  ? `${item.staff_count} staff`
+                  : item.default_frequency.replaceAll("_", " ")}
+              </p>
+            </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

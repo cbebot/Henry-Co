@@ -25,51 +25,78 @@ export default async function AreaPage({
         description={data.area.hero}
       />
 
-      <section className="mt-8 grid gap-6 xl:grid-cols-[0.94fr_1.06fr]">
-        <div className="property-panel rounded-[2.3rem] p-6 sm:p-8">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5">
-              <div className="property-kicker">Average rent</div>
-              <div className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
-                {formatCurrency(data.area.averageRent)}
-              </div>
-            </div>
-            <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5">
-              <div className="property-kicker">Average sale</div>
-              <div className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-[var(--property-ink)]">
-                {formatCurrency(data.area.averageSale)}
-              </div>
-            </div>
+      <section className="mt-12">
+        <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
+          Market snapshot
+        </p>
+        <dl className="mt-5 grid gap-x-6 gap-y-5 border-y border-[var(--property-line)] py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+              Average rent
+            </dt>
+            <dd className="text-2xl font-semibold tracking-tight text-[var(--property-ink)] sm:text-[1.7rem]">
+              {formatCurrency(data.area.averageRent)}
+            </dd>
           </div>
-          <div className="mt-6 text-sm leading-8 text-[var(--property-ink-soft)]">{data.area.marketNote}</div>
-        </div>
+          <div className="flex flex-col gap-1">
+            <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+              Average sale
+            </dt>
+            <dd className="text-2xl font-semibold tracking-tight text-[var(--property-ink)] sm:text-[1.7rem]">
+              {formatCurrency(data.area.averageSale)}
+            </dd>
+          </div>
+          <div className="flex flex-col gap-1">
+            <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+              Live listings
+            </dt>
+            <dd className="text-2xl font-semibold tracking-tight text-[var(--property-ink)] sm:text-[1.7rem]">
+              {data.listings.length}
+            </dd>
+          </div>
+        </dl>
+        {data.area.marketNote ? (
+          <p className="mt-5 max-w-3xl text-sm leading-8 text-[var(--property-ink-soft)]">
+            {data.area.marketNote}
+          </p>
+        ) : null}
+      </section>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="property-paper rounded-[1.8rem] p-5">
-            <div className="property-kicker">Hotspots</div>
-            <div className="mt-4 space-y-3 text-sm text-[var(--property-ink-soft)]">
-              {data.area.hotspots.map((item) => (
-                <div key={item}>• {item}</div>
-              ))}
-            </div>
-          </div>
-          <div className="property-paper rounded-[1.8rem] p-5">
-            <div className="property-kicker">Trust notes</div>
-            <div className="mt-4 space-y-3 text-sm text-[var(--property-ink-soft)]">
-              {data.area.trustNotes.map((item) => (
-                <div key={item}>• {item}</div>
-              ))}
-            </div>
-          </div>
+      <section className="mt-12 grid gap-12 md:grid-cols-2 md:divide-x md:divide-[var(--property-line)]">
+        <div>
+          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">Hotspots</p>
+          <ul className="mt-5 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+            {data.area.hotspots.map((item) => (
+              <li key={item} className="flex gap-3">
+                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--property-accent-strong)]" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="md:pl-12">
+          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">Trust notes</p>
+          <ul className="mt-5 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+            {data.area.trustNotes.map((item) => (
+              <li key={item} className="flex gap-3">
+                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--property-accent-strong)]" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      <section className="mt-10">
-        <div className="mb-4 text-sm text-[var(--property-ink-soft)]">
-          {data.listings.length} live {data.listings.length === 1 ? "listing" : "listings"} in{" "}
-          {data.area.name}
+      <section className="mt-14">
+        <div className="flex items-end justify-between gap-4 border-b border-[var(--property-line)] pb-4">
+          <p className="property-kicker text-[10.5px] uppercase tracking-[0.22em]">
+            Live in {data.area.name}
+          </p>
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+            {data.listings.length} {data.listings.length === 1 ? "listing" : "listings"}
+          </span>
         </div>
-        <div className="grid gap-5 xl:grid-cols-3">
+        <div className="mt-6 grid gap-5 xl:grid-cols-3">
           {data.listings.map((listing) => (
             <PropertyListingCard key={listing.id} listing={listing} />
           ))}

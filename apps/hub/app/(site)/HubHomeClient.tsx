@@ -657,211 +657,171 @@ export default function HubHomeClient({
                 </a>
               </motion.div>
 
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.14 }}
-                className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.08] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl"
-              >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <BrandMark
-                    src={brandLogoUrlSafe}
-                    alt={`${brandTitleSafe} logo`}
-                    accent={brandAccentSafe}
-                    wrapperClassName="h-16 w-16 rounded-[22px] border-white/12 bg-black/20"
-                    imageClassName="object-contain p-2.5"
-                    iconClassName="h-7 w-7"
-                  />
-
-                  <div className="min-w-0">
-                    <div className="text-[11px] uppercase tracking-[0.24em] text-white/45">
-                      {copy.brandPanel.eyebrow}
-                    </div>
-                    <div className="mt-2 text-xl font-semibold tracking-tight text-white">
-                      {brandTitleSafe}
-                    </div>
-                    <div className="mt-1 text-sm text-white/62">{brandSubSafe}</div>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <DirectoryMiniStat
-                    label={copy.brandPanel.baseDomain}
-                    value={normalizeText(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com")
-                      .replace(/^https?:\/\//i, "")
-                      .replace(/\/+$/, "")}
-                  />
-                </div>
-              </motion.div>
-
-              <motion.div
+              <motion.dl
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.16 }}
-                className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+                className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
               >
                 <StatCard
-                  icon={<Building2 className="h-5 w-5" />}
+                  icon={<Building2 className="h-4 w-4" />}
                   label={copy.stats.divisions}
                   value={`${stats.total}`}
                 />
                 <StatCard
-                  icon={<Zap className="h-5 w-5" />}
+                  icon={<Zap className="h-4 w-4" />}
                   label={copy.stats.activeNow}
                   value={`${stats.active}`}
                 />
                 <StatCard
-                  icon={<Star className="h-5 w-5" />}
+                  icon={<Star className="h-4 w-4" />}
                   label={copy.stats.comingSoon}
                   value={`${stats.soon}`}
                 />
                 <StatCard
-                  icon={<Globe2 className="h-5 w-5" />}
+                  icon={<Globe2 className="h-4 w-4" />}
                   label={copy.stats.sectors}
                   value={`${stats.sectors}`}
                 />
-              </motion.div>
+              </motion.dl>
             </div>
 
-            <motion.div
+            <motion.aside
               initial={reduceMotion ? false : { opacity: 0, y: 20 }}
               animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.14 }}
-              className="relative overflow-hidden rounded-[34px] border border-white/12 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.2)] backdrop-blur-0 md:shadow-[0_30px_120px_rgba(0,0,0,0.32)] md:backdrop-blur-xl"
+              className="relative lg:pt-2"
             >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.14),transparent_35%),radial-gradient(circle_at_85%_18%,rgba(255,255,255,0.08),transparent_28%)]" />
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
+                    {copy.standardCard.eyebrow}
+                  </p>
+                  <h2 className="mt-3 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
+                    {copy.standardCard.title}
+                  </h2>
+                </div>
 
-              <div className="relative">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
-                      {copy.standardCard.eyebrow}
+                <BrandMark
+                  src={brandLogoUrlSafe}
+                  alt={`${brandTitleSafe} logo`}
+                  accent={brandAccentSafe}
+                  wrapperClassName="h-11 w-11 shrink-0"
+                  imageClassName="object-contain p-2"
+                  iconClassName="h-5 w-5"
+                />
+              </div>
+
+              <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
+                {copy.standardCard.bullets.map((line) => (
+                  <li key={line} className="flex gap-3 py-3 text-sm leading-7 text-white/75">
+                    <BadgeCheck className="mt-1 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <dl className="mt-6 divide-y divide-white/10 border-y border-white/10">
+                <GlassMiniCard
+                  icon={<TrendingUp className="h-4 w-4" />}
+                  label={copy.standardCard.latestUpdate}
+                  value={latestUpdate}
+                />
+                <GlassMiniCard
+                  icon={<Workflow className="h-4 w-4" />}
+                  label={copy.standardCard.operatingStandard}
+                  value={copy.standardCard.operatingStandardValue}
+                />
+              </dl>
+
+              {spotlightDivision ? (
+                <div className="mt-7 border-l-2 border-[color:var(--accent)]/55 pl-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                        {copy.standardCard.spotlightEyebrow}
+                      </p>
+                      <p className="mt-2 text-[1.05rem] font-semibold tracking-tight text-white">
+                        {spotlightDivision.name}
+                      </p>
+                      <p className="mt-2 max-w-md text-sm leading-7 text-white/68">
+                        {spotlightDivision.tagline ||
+                          spotlightDivision.description ||
+                          copy.standardCard.spotlightFallback}
+                      </p>
                     </div>
-                    <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                      {copy.standardCard.title}
-                    </h2>
+
+                    <span
+                      className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-black"
+                      style={{
+                        background: getAccent(
+                          spotlightDivision.accent,
+                          brandAccentSafe,
+                        ),
+                      }}
+                    >
+                      {copy.standardCard.featured}
+                    </span>
                   </div>
 
-                  <BrandMark
-                    src={brandLogoUrlSafe}
-                    alt={`${brandTitleSafe} logo`}
-                    accent={brandAccentSafe}
-                    wrapperClassName="h-12 w-12"
-                    imageClassName="object-contain p-2"
-                    iconClassName="h-5 w-5"
-                  />
-                </div>
-
-                <div className="mt-6 grid gap-3">
-                  {copy.standardCard.bullets.map((line) => (
-                    <div
-                      key={line}
-                      className="flex gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/72"
-                    >
-                      <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
-                      <span>{line}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  <GlassMiniCard
-                    icon={<TrendingUp className="h-4 w-4" />}
-                    label={copy.standardCard.latestUpdate}
-                    value={latestUpdate}
-                  />
-                  <GlassMiniCard
-                    icon={<Workflow className="h-4 w-4" />}
-                    label={copy.standardCard.operatingStandard}
-                    value={copy.standardCard.operatingStandardValue}
-                  />
-                </div>
-
-                {spotlightDivision ? (
-                  <div className="mt-6 rounded-[28px] border border-white/10 bg-black/25 p-5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-                          {copy.standardCard.spotlightEyebrow}
-                        </div>
-                        <div className="mt-2 text-lg font-semibold text-white">
-                          {spotlightDivision.name}
-                        </div>
-                        <p className="mt-2 text-sm leading-7 text-white/64">
-                          {spotlightDivision.tagline ||
-                            spotlightDivision.description ||
-                            copy.standardCard.spotlightFallback}
-                        </p>
-                      </div>
-
-                      <span
-                        className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-black"
-                        style={{
-                          background: getAccent(
-                            spotlightDivision.accent,
-                            brandAccentSafe
-                          ),
-                        }}
-                      >
-                        {copy.standardCard.featured}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
+                  {(spotlightDivision.categories ?? []).length ? (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
                       {(spotlightDivision.categories ?? []).slice(0, 3).map((item) => (
                         <span
                           key={item}
-                          className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/74"
+                          className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] font-medium text-white/72"
                         >
                           {item}
                         </span>
                       ))}
                     </div>
+                  ) : null}
 
-                    <div className="mt-5 flex flex-wrap gap-3">
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <button
+                      onClick={() => setSelected(spotlightDivision)}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
+                    >
+                      {copy.standardCard.viewDetails}
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+
+                    {spotlightDivision.primary_url ? (
                       <button
-                        onClick={() => setSelected(spotlightDivision)}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white/88 transition hover:bg-white/10"
+                        onClick={() => safeOpen(spotlightDivision.primary_url)}
+                        className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+                        style={{
+                          background: getAccent(
+                            spotlightDivision.accent,
+                            brandAccentSafe,
+                          ),
+                        }}
                       >
-                        {copy.standardCard.viewDetails}
-                        <ChevronRight className="h-4 w-4" />
+                        {copy.standardCard.visitDivision}
+                        <ExternalLink className="h-4 w-4" />
                       </button>
-
-                      {spotlightDivision.primary_url ? (
-                        <button
-                          onClick={() => safeOpen(spotlightDivision.primary_url)}
-                          className="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-                          style={{
-                            background: getAccent(
-                              spotlightDivision.accent,
-                              brandAccentSafe
-                            ),
-                          }}
-                        >
-                          {copy.standardCard.visitDivision}
-                          <ExternalLink className="h-4 w-4" />
-                        </button>
-                      ) : null}
-                    </div>
-
-                    {spotlightHost ? (
-                      <div className="mt-4 text-xs text-white/48">{spotlightHost}</div>
                     ) : null}
                   </div>
-                ) : null}
 
-                {hasServerError ? (
-                  <div className="mt-5 rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-                    {copy.standardCard.serverError}
-                  </div>
-                ) : null}
-              </div>
-            </motion.div>
+                  {spotlightHost ? (
+                    <p className="mt-4 font-mono text-[11px] tracking-tight text-white/45">
+                      {spotlightHost}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {hasServerError ? (
+                <p className="mt-5 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
+                  {copy.standardCard.serverError}
+                </p>
+              ) : null}
+            </motion.aside>
           </div>
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-3 md:gap-0">
             <PremiumFeature
               icon={<Sparkles className="h-5 w-5" />}
               eyebrow={copy.premiumRow.discovery.eyebrow}
@@ -885,58 +845,56 @@ export default function HubHomeClient({
 
         {featured.length ? (
           <section id="featured" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-            <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/58">
-                    <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                    {copy.featuredSection.eyebrow}
-                  </div>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                  <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  {copy.featuredSection.eyebrow}
+                </p>
 
-                  <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-                    {copy.featuredSection.title}
-                  </h2>
+                <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                  {copy.featuredSection.title}
+                </h2>
 
-                  <p className="mt-2 max-w-2xl text-sm leading-7 text-white/64">
-                    {copy.featuredSection.body}
-                  </p>
-                </div>
-
-                <a
-                  href="#divisions"
-                  className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
-                >
-                  {copy.featuredSection.viewDirectory}
-                  <ChevronRight className="h-4 w-4" />
-                </a>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">
+                  {copy.featuredSection.body}
+                </p>
               </div>
 
-              <div className="mt-6 grid gap-5 xl:grid-cols-3">
-                {featured.map((division) => (
-                  <FeaturedDivisionCard key={division.id} division={division} />
-                ))}
-              </div>
+              <a
+                href="#divisions"
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
+              >
+                {copy.featuredSection.viewDirectory}
+                <ChevronRight className="h-4 w-4" />
+              </a>
+            </div>
+
+            <div className="mt-8 grid gap-5 xl:grid-cols-3">
+              {featured.map((division) => (
+                <FeaturedDivisionCard key={division.id} division={division} />
+              ))}
             </div>
           </section>
         ) : null}
 
         <section id="divisions" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="rounded-[34px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
+          <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr]">
+            <div className="lg:sticky lg:top-24 lg:self-start">
+              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
                 <Search className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                 {copy.directory.eyebrow}
-              </div>
+              </p>
 
-              <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                 {copy.directory.title}
               </h2>
 
-              <p className="mt-3 text-sm leading-7 text-white/64">
+              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
                 {copy.directory.body}
               </p>
 
-              <div className="mt-6 space-y-4">
+              <div className="mt-7 space-y-5">
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/45" />
                   <input
@@ -1049,59 +1007,60 @@ export default function HubHomeClient({
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <div className="mt-7 grid grid-cols-3 gap-x-6 gap-y-5 border-y border-white/10 py-5">
                 <DirectoryMiniStat label={copy.directory.showing} value={String(filtered.length)} />
                 <DirectoryMiniStat label={copy.directory.total} value={String(divisions.length)} />
                 <DirectoryMiniStat label={copy.directory.featured} value={String(featured.length)} />
               </div>
 
-              <div className="mt-6 rounded-[28px] border border-white/10 bg-black/25 p-5">
+              <div className="mt-7">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                     {copy.directory.overviewEyebrow}
-                  </div>
-
+                  </p>
                   {activeFilterCount ? (
                     <button
                       onClick={clearAllFilters}
-                      className="text-xs text-white/70 transition hover:text-white"
+                      className="text-[11px] font-semibold text-white/70 underline-offset-4 transition hover:text-white hover:underline"
                     >
                       {copy.directory.clearAll}
                     </button>
                   ) : (
-                    <span className="text-xs text-emerald-300">{copy.directory.ready}</span>
+                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-emerald-300/85">
+                      {copy.directory.ready}
+                    </span>
                   )}
                 </div>
 
-                <div className="mt-4 space-y-2 text-sm text-white/72">
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    <span>{copy.directory.activeRefinements}</span>
-                    <span className="font-semibold text-white">{activeFilterCount}</span>
+                <dl className="mt-3 divide-y divide-white/10 border-y border-white/10 text-sm">
+                  <div className="flex items-baseline justify-between gap-3 py-3 text-white/72">
+                    <dt>{copy.directory.activeRefinements}</dt>
+                    <dd className="font-semibold text-white">{activeFilterCount}</dd>
                   </div>
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                    <span>{copy.directory.lastUpdated}</span>
-                    <span className="font-semibold text-white">{latestUpdate}</span>
+                  <div className="flex items-baseline justify-between gap-3 py-3 text-white/72">
+                    <dt>{copy.directory.lastUpdated}</dt>
+                    <dd className="font-semibold text-white">{latestUpdate}</dd>
                   </div>
-                </div>
+                </dl>
               </div>
 
-              <div className="mt-6 rounded-[28px] border border-white/10 bg-black/25 p-5">
-                <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
+              <div className="mt-7">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   {copy.directory.companyPagesEyebrow}
-                </div>
-
-                <div className="mt-4 grid gap-2">
+                </p>
+                <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
                   {nextPages.map((page) => (
-                    <a
-                      key={page.href}
-                      href={page.href}
-                      className="inline-flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/82 transition hover:bg-white/10"
-                    >
-                      <span>{page.label}</span>
-                      <ChevronRight className="h-4 w-4" />
-                    </a>
+                    <li key={page.href}>
+                      <a
+                        href={page.href}
+                        className="group flex items-center justify-between gap-3 py-3 text-sm font-medium text-white/82 transition hover:text-white"
+                      >
+                        <span>{page.label}</span>
+                        <ChevronRight className="h-4 w-4 text-white/45 transition group-hover:translate-x-0.5 group-hover:text-white" />
+                      </a>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </div>
 
@@ -1115,7 +1074,7 @@ export default function HubHomeClient({
                   />
                 ))
               ) : (
-                <div className="rounded-[32px] border border-white/10 bg-white/[0.08] p-10 text-center text-sm text-white/68 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl sm:col-span-2">
+                <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68 sm:col-span-2">
                   {copy.directory.empty}
                 </div>
               )}
@@ -1124,47 +1083,44 @@ export default function HubHomeClient({
         </section>
 
         <section id="ecosystem" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="rounded-[34px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-0 md:shadow-[0_20px_80px_rgba(0,0,0,0.18)] md:backdrop-blur-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
+          <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+            <div>
+              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
                 <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                 {copy.ecosystem.eyebrow}
-              </div>
+              </p>
 
-              <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                 {copy.ecosystem.title}
               </h2>
 
-              <p className="mt-3 text-sm leading-7 text-white/64">
+              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
                 {copy.ecosystem.body}
               </p>
 
-              <div className="mt-6 grid gap-3">
+              <ul className="mt-7 divide-y divide-white/10 border-y border-white/10">
                 {copy.ecosystem.bullets.map((item) => (
-                  <div
-                    key={item}
-                    className="flex gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/72"
-                  >
-                    <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
+                  <li key={item} className="flex gap-3 py-3 text-sm leading-7 text-white/75">
+                    <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
                     <span>{item}</span>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
-            <div className="grid gap-4">
+            <div>
               <BigFeature
-                icon={<Building2 className="h-6 w-6" />}
+                icon={<Building2 className="h-5 w-5" />}
                 title={copy.ecosystem.big[0]}
                 text={copy.ecosystem.bigText[0]}
               />
               <BigFeature
-                icon={<Landmark className="h-6 w-6" />}
+                icon={<Landmark className="h-5 w-5" />}
                 title={copy.ecosystem.big[1]}
                 text={copy.ecosystem.bigText[1]}
               />
               <BigFeature
-                icon={<Zap className="h-6 w-6" />}
+                icon={<Zap className="h-5 w-5" />}
                 title={copy.ecosystem.big[2]}
                 text={copy.ecosystem.bigText[2]}
               />
@@ -1173,80 +1129,90 @@ export default function HubHomeClient({
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-6 sm:px-6 lg:px-8">
-          <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
-            <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
-                  <Workflow className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                  {copy.access.eyebrow}
-                </div>
+          <div className="grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <div>
+              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                <Workflow className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                {copy.access.eyebrow}
+              </p>
 
-                <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-                  {copy.access.title}
-                </h2>
+              <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
+                {copy.access.title}
+              </h2>
 
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-white/64">
-                  {copy.access.body}
-                </p>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">
+                {copy.access.body}
+              </p>
 
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <a
-                    href="/about"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-[color:var(--accent)] px-4 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-                  >
-                    {copy.access.ctaPages}
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href="/about"
+                  className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:opacity-90"
+                >
+                  {copy.access.ctaPages}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
 
-                  <a
-                    href="#divisions"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
-                  >
-                    {copy.access.ctaDirectory}
-                    <ChevronRight className="h-4 w-4" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="grid gap-3">
-                <GlassMiniCard
-                  icon={<Layers3 className="h-4 w-4" />}
-                  label={copy.access.cards[0]}
-                  value={copy.access.cardValues[0]}
-                />
-                <GlassMiniCard
-                  icon={<TrendingUp className="h-4 w-4" />}
-                  label={copy.access.cards[1]}
-                  value={copy.access.cardValues[1]}
-                />
-                <GlassMiniCard
-                  icon={<ShieldCheck className="h-4 w-4" />}
-                  label={copy.access.cards[2]}
-                  value={copy.access.cardValues[2]}
-                />
+                <a
+                  href="#divisions"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-5 py-3 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
+                >
+                  {copy.access.ctaDirectory}
+                  <ChevronRight className="h-4 w-4" />
+                </a>
               </div>
             </div>
+
+            <dl className="divide-y divide-white/10 border-y border-white/10">
+              <div className="flex items-baseline gap-3 py-3">
+                <Layers3 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  {copy.access.cards[0]}
+                </dt>
+                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  {copy.access.cardValues[0]}
+                </dd>
+              </div>
+              <div className="flex items-baseline gap-3 py-3">
+                <TrendingUp className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  {copy.access.cards[1]}
+                </dt>
+                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  {copy.access.cardValues[1]}
+                </dd>
+              </div>
+              <div className="flex items-baseline gap-3 py-3">
+                <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                  {copy.access.cards[2]}
+                </dt>
+                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  {copy.access.cardValues[2]}
+                </dd>
+              </div>
+            </dl>
           </div>
         </section>
 
         <section id="faq" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="rounded-[36px] border border-white/10 bg-white/[0.08] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-0 md:shadow-[0_24px_100px_rgba(0,0,0,0.22)] md:backdrop-blur-xl sm:p-8">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
+          <div className="grid gap-12 lg:grid-cols-[0.85fr,1.15fr]">
+            <div>
+              <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
                 <Globe2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                 {copy.faq.eyebrow}
-              </div>
+              </p>
 
-              <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="mt-4 max-w-sm text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] sm:text-[2rem]">
                 {copy.faq.title}
               </h2>
 
-              <p className="mt-3 text-sm leading-7 text-white/64">
+              <p className="mt-3 max-w-md text-sm leading-7 text-white/68">
                 {copy.faq.subtitle}
               </p>
             </div>
 
-            <div className="mt-8 grid gap-3">
+            <div className="border-t border-white/10">
               {faqItems.map((item) => (
                 <Faq key={item.q} q={item.q} a={item.a} />
               ))}
@@ -1405,19 +1371,22 @@ function PageFooter({
 }) {
   const { copy } = useHubChrome();
   return (
-    <footer className="border-t border-white/10 bg-black/20">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
-        <div>
+    <footer className="mt-16 border-t border-white/10 bg-black/20">
+      <div
+        aria-hidden
+        className="pointer-events-none mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-amber-300/35 to-transparent"
+      />
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
+        <div className="space-y-5">
           <div className="flex items-center gap-3">
             <BrandMark
               src={brandLogoUrl}
               alt={`${brandTitle} logo`}
               accent={brandAccent}
-              wrapperClassName="h-11 w-11"
+              wrapperClassName="h-10 w-10"
               imageClassName="object-contain p-2"
               iconClassName="h-5 w-5"
             />
-
             <div>
               <div className="text-sm font-semibold tracking-[0.18em] text-white/90">
                 {brandTitle}
@@ -1428,30 +1397,40 @@ function PageFooter({
             </div>
           </div>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-white/62">{footerText}</p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href="#divisions"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/85 transition hover:bg-white/10"
-            >
-              {copy.footer.exploreDivisions}
-              <ArrowRight className="h-4 w-4" />
-            </a>
-
-            <a
-              href="/about"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/85 transition hover:bg-white/10"
-            >
-              {copy.footer.companyPages}
-              <ChevronRight className="h-4 w-4" />
-            </a>
-          </div>
+          <p className="max-w-md text-sm leading-7 text-white/62">{footerText}</p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          <FooterColumn title={copy.footer.colHub} links={companyLinks} />
-          <FooterColumn title={copy.footer.colGlobal} links={nextPages} />
+        <FooterColumn title={copy.footer.colHub} links={companyLinks} />
+        <FooterColumn title={copy.footer.colGlobal} links={nextPages} />
+      </div>
+
+      <div className="border-t border-white/10 px-4 py-5 text-xs text-white/45 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span>© {new Date().getFullYear()} {brandTitle}. All rights reserved.</span>
+            <a
+              href="/privacy"
+              className="text-white/55 transition hover:text-white"
+            >
+              Privacy
+            </a>
+            <a
+              href="/terms"
+              className="text-white/55 transition hover:text-white"
+            >
+              Terms
+            </a>
+            <a
+              href="/preferences"
+              className="text-white/55 transition hover:text-white"
+            >
+              Preferences
+            </a>
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
+            <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-amber-300/85" />
+            Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+          </span>
         </div>
       </div>
     </footer>
@@ -1495,12 +1474,14 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-black/20 p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-white/52">
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/52">
         <span className="text-[color:var(--accent)]">{icon}</span>
         <span>{label}</span>
       </div>
-      <div className="mt-2 text-2xl font-semibold tracking-tight text-white">{value}</div>
+      <div className="text-[1.6rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.8rem]">
+        {value}
+      </div>
     </div>
   );
 }
@@ -1515,12 +1496,14 @@ function GlassMiniCard({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-white/48">
-        <span className="text-[color:var(--accent)]">{icon}</span>
-        <span>{label}</span>
-      </div>
-      <div className="mt-2 text-sm font-semibold text-white/90">{value}</div>
+    <div className="flex items-baseline gap-3 border-b border-white/10 py-3 last:border-b-0">
+      <span className="text-[color:var(--accent)]">{icon}</span>
+      <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+        {label}
+      </span>
+      <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+        {value}
+      </span>
     </div>
   );
 }
@@ -1533,9 +1516,13 @@ function DirectoryMiniStat({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
-      <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-white">{value}</div>
+    <div className="flex flex-col gap-1">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+        {label}
+      </div>
+      <div className="text-[1.25rem] font-semibold leading-tight tracking-tight text-white">
+        {value}
+      </div>
     </div>
   );
 }
@@ -1552,13 +1539,13 @@ function PremiumFeature({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[30px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_18px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
-      <div className="grid h-12 w-12 place-items-center rounded-2xl border border-white/12 bg-white/[0.06] text-[color:var(--accent)]">
-        {icon}
+    <div className="border-t border-white/10 pt-6 md:border-l md:border-t-0 md:pl-6 md:pt-0 md:first:border-l-0 md:first:pl-0">
+      <span className="text-[color:var(--accent)]">{icon}</span>
+      <div className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-white/55">
+        {eyebrow}
       </div>
-      <div className="mt-4 text-xs uppercase tracking-[0.18em] text-white/45">{eyebrow}</div>
-      <div className="mt-3 text-lg font-semibold text-white">{title}</div>
-      <p className="mt-2 text-sm leading-7 text-white/64">{text}</p>
+      <h3 className="mt-2 text-base font-semibold tracking-tight text-white">{title}</h3>
+      <p className="mt-2 text-sm leading-7 text-white/68">{text}</p>
     </div>
   );
 }
@@ -1573,12 +1560,14 @@ function BigFeature({
   text: string;
 }) {
   return (
-    <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
-      <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent)] text-black">
+    <div className="flex gap-5 border-b border-white/10 py-6 last:border-b-0">
+      <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 text-[color:var(--accent)]">
         {icon}
+      </span>
+      <div>
+        <h3 className="text-base font-semibold tracking-tight text-white">{title}</h3>
+        <p className="mt-1.5 text-sm leading-7 text-white/68">{text}</p>
       </div>
-      <div className="mt-4 text-lg font-semibold text-white">{title}</div>
-      <div className="mt-2 text-sm leading-7 text-white/64">{text}</div>
     </div>
   );
 }
@@ -1591,46 +1580,47 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
 
   return (
     <article
-      className="relative overflow-hidden rounded-[30px] border border-white/10 bg-black/25"
+      className="group relative flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-white/10 bg-[rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:border-white/22"
       style={{ "--cardAccent": accent } as React.CSSProperties}
     >
       {extra.cover_url ? (
-        <div className="h-40 overflow-hidden border-b border-white/10">
+        <div className="relative h-44 overflow-hidden">
           <img
             src={extra.cover_url}
             alt={division.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
             loading="lazy"
             decoding="async"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,8,22,0.78)] via-[rgba(5,8,22,0.16)] to-transparent" />
         </div>
       ) : (
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-70"
+          className="pointer-events-none absolute inset-x-0 top-0 h-32 opacity-70"
           style={{
-            background: `radial-gradient(650px 140px at 50% 0%, ${accent}35, transparent 70%)`,
+            background: `radial-gradient(650px 160px at 50% 0%, ${accent}38, transparent 72%)`,
           }}
         />
       )}
 
-      <div className="relative p-6">
+      <div className="relative flex flex-1 flex-col p-6">
         <div className="flex items-start justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <span
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium",
-                getStatusTone(division.status)
+                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]",
+                getStatusTone(division.status),
               )}
             >
-              <Star className="h-3.5 w-3.5" />
+              <Star className="h-3 w-3" />
               {getStatusLabel(division.status, copy.status)}
             </span>
 
-            <h3 className="mt-3 text-xl font-semibold tracking-tight text-white">
+            <h3 className="mt-4 text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-white sm:text-[1.55rem]">
               {division.name}
             </h3>
 
-            <p className="mt-2 text-sm leading-7 text-white/64">
+            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-white/68">
               {division.description ||
                 division.tagline ||
                 copy.cards.divisionFallbackLong}
@@ -1641,47 +1631,46 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
             src={extra.logo_url}
             alt={`${division.name} logo`}
             accent={accent}
-            wrapperClassName="h-12 w-12 rounded-2xl border-0"
+            wrapperClassName="h-12 w-12 shrink-0 rounded-2xl border-0"
             imageClassName="rounded-2xl object-contain p-2"
           />
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          {(division.categories ?? []).slice(0, 3).map((item) => (
-            <span
-              key={item}
-              className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/72"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
+        {(division.categories ?? []).length ? (
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            {(division.categories ?? []).slice(0, 3).map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-white/15 px-2.5 py-1 text-[10.5px] font-medium text-white/72"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        ) : null}
 
-        <div className="mt-6 grid gap-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
-            <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
+        <div className="mt-6 flex items-end justify-between gap-3 border-t border-white/10 pt-4">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
               {copy.cards.destination}
-            </div>
-            <div className="mt-1 text-sm font-medium text-white/88">
+            </p>
+            <p className="mt-1 truncate font-mono text-[12px] tracking-tight text-white/82">
               {host ?? copy.cards.notConfigured}
-            </div>
+            </p>
           </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => safeOpen(division.primary_url)}
-              disabled={!division.primary_url}
-              className={cn(
-                "inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition",
-                division.primary_url
-                  ? "bg-[color:var(--cardAccent)] text-black hover:opacity-90"
-                  : "cursor-not-allowed border border-white/10 bg-white/[0.06] text-white/40"
-              )}
-            >
-              {copy.cards.openDivision}
-              <ExternalLink className="h-4 w-4" />
-            </button>
-          </div>
+          <button
+            onClick={() => safeOpen(division.primary_url)}
+            disabled={!division.primary_url}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition",
+              division.primary_url
+                ? "bg-[color:var(--cardAccent)] text-black hover:-translate-y-0.5 hover:opacity-95"
+                : "cursor-not-allowed border border-white/10 text-white/35",
+            )}
+          >
+            {copy.cards.openDivision}
+            <ExternalLink className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
     </article>
@@ -1702,131 +1691,132 @@ function DivisionCard({
 
   return (
     <article
-      className="group relative overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.06] shadow-[0_20px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_110px_rgba(0,0,0,0.25)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-white/10 bg-[rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:border-white/22"
       style={{ "--cardAccent": accent } as React.CSSProperties}
     >
       {extra.cover_url ? (
-        <div className="h-40 overflow-hidden border-b border-white/10">
+        <div className="relative h-40 overflow-hidden">
           <img
             src={extra.cover_url}
             alt={d.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
             loading="lazy"
             decoding="async"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,8,22,0.72)] via-[rgba(5,8,22,0.14)] to-transparent" />
         </div>
       ) : (
-        <>
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-70"
-            style={{
-              background: `radial-gradient(650px 150px at 50% 0%, ${accent}30, transparent 70%)`,
-            }}
-          />
-          <div className="pointer-events-none absolute -top-16 left-1/2 h-40 w-[460px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl opacity-0 transition duration-500 group-hover:opacity-100" />
-        </>
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-70"
+          style={{
+            background: `radial-gradient(650px 150px at 50% 0%, ${accent}32, transparent 72%)`,
+          }}
+        />
       )}
 
-      <div className="relative p-6">
-        <div className="flex items-start justify-between gap-4">
+      <div className="relative flex flex-1 flex-col p-6">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
             <DivisionMark
               src={extra.logo_url}
               alt={`${d.name} logo`}
               accent={accent}
-              wrapperClassName="h-12 w-12 shrink-0"
+              wrapperClassName="h-11 w-11 shrink-0"
               imageClassName="rounded-xl object-contain p-1.5"
             />
-
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="truncate text-lg font-semibold tracking-tight text-white">
-                  {d.name}
-                </h3>
-
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
-                    getStatusTone(d.status)
-                  )}
-                >
-                  <Zap className="h-3.5 w-3.5" />
-                  {getStatusLabel(d.status, copy.status)}
-                </span>
-              </div>
-
-              <div className="mt-1 truncate text-xs uppercase tracking-[0.16em] text-white/42">
-                {(d.categories ?? []).join(" • ") || d.key}
-              </div>
+              <h3 className="truncate text-[1.1rem] font-semibold tracking-tight text-white">
+                {d.name}
+              </h3>
+              <p className="mt-0.5 truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                {(d.categories ?? []).join(" · ") || d.key}
+              </p>
             </div>
           </div>
 
-          {d.is_featured ? (
+          <div className="flex flex-col items-end gap-1.5">
             <span
-              className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-black"
-              style={{ background: accent }}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]",
+                getStatusTone(d.status),
+              )}
             >
-              {copy.cards.featured}
+              <Zap className="h-3 w-3" />
+              {getStatusLabel(d.status, copy.status)}
             </span>
-          ) : null}
+            {d.is_featured ? (
+              <span
+                className="rounded-full px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.22em] text-black"
+                style={{ background: accent }}
+              >
+                {copy.cards.featured}
+              </span>
+            ) : null}
+          </div>
         </div>
 
-        <p className="mt-4 line-clamp-3 text-sm leading-7 text-white/66">
-          {d.description ||
-            d.tagline ||
-            copy.cards.divisionFallbackShort}
+        <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-white/72">
+          {d.description || d.tagline || copy.cards.divisionFallbackShort}
         </p>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {(d.highlights ?? []).slice(0, 3).map((item) => (
-            <span
-              key={item}
-              className="rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] text-white/72"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
+        {(d.highlights ?? []).length ? (
+          <ul className="mt-4 flex flex-wrap gap-1.5">
+            {(d.highlights ?? []).slice(0, 3).map((item) => (
+              <li
+                key={item}
+                className="rounded-full border border-white/15 px-2.5 py-1 text-[10.5px] font-medium text-white/72"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
-        <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
-            {copy.cards.divisionDestination}
+        <dl className="mt-5 divide-y divide-white/10 border-y border-white/10">
+          <div className="flex items-baseline gap-3 py-3">
+            <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+              {copy.cards.divisionDestination}
+            </dt>
+            <dd className="ml-auto truncate text-right font-mono text-[12px] tracking-tight text-white/82">
+              {host ?? copy.cards.notConfigured}
+            </dd>
           </div>
-
-          <div className="mt-1 text-sm font-medium text-white/88">
-            {host ?? copy.cards.notConfigured}
-          </div>
-
           {extra.lead?.name ? (
-            <div className="mt-3 text-xs text-white/55">
-              {copy.cards.lead}: {extra.lead.name}
-              {extra.lead.title ? ` • ${extra.lead.title}` : ""}
+            <div className="flex items-baseline gap-3 py-3">
+              <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+                {copy.cards.lead}
+              </dt>
+              <dd className="ml-auto truncate text-right text-sm font-semibold tracking-tight text-white">
+                {extra.lead.name}
+                {extra.lead.title ? (
+                  <span className="ml-1 font-normal text-white/55">· {extra.lead.title}</span>
+                ) : null}
+              </dd>
             </div>
           ) : null}
-        </div>
+        </dl>
 
-        <div className="mt-5 flex items-center justify-between gap-3">
+        <div className="mt-auto flex items-center justify-between gap-3 pt-5">
           <button
             onClick={onOpen}
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white/88 transition hover:bg-white/10"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-transparent px-4 py-2 text-sm font-semibold text-white/85 transition hover:border-white/30 hover:bg-white/[0.04]"
           >
             {copy.cards.details}
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
-
           <button
             onClick={() => safeOpen(d.primary_url)}
             disabled={!d.primary_url}
             className={cn(
-              "inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition",
+              "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition",
               d.primary_url
-                ? "text-black hover:opacity-90"
-                : "cursor-not-allowed border border-white/10 bg-white/[0.06] text-white/40"
+                ? "text-black hover:-translate-y-0.5 hover:opacity-95"
+                : "cursor-not-allowed border border-white/10 text-white/35",
             )}
             style={d.primary_url ? { background: accent } : undefined}
           >
             {copy.cards.open}
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
@@ -1982,47 +1972,54 @@ function DetailsModal({
 
           {division.highlights?.length ? (
             <div>
-              <div className="text-sm font-semibold">{copy.modal.highlights}</div>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                {copy.modal.highlights}
+              </p>
+              <ul className="mt-3 flex flex-wrap gap-1.5">
                 {division.highlights.slice(0, 10).map((item) => (
-                  <span
+                  <li
                     key={item}
-                    className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/74"
+                    className="rounded-full border border-white/15 px-2.5 py-1 text-[10.5px] font-medium text-white/74"
                   >
                     {item}
-                  </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ) : null}
 
           {extra.lead?.name ? (
-            <div className="rounded-[28px] border border-white/10 bg-white/[0.06] p-5">
-              <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">
+            <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
                 {copy.modal.leadEyebrow}
-              </div>
-              <div className="mt-2 text-lg font-semibold text-white">{extra.lead.name}</div>
-              <div className="mt-1 text-sm text-white/64">
+              </p>
+              <p className="mt-3 text-[1.05rem] font-semibold tracking-tight text-white">
+                {extra.lead.name}
+              </p>
+              <p className="mt-1 text-sm text-white/68">
                 {extra.lead.title ?? copy.modal.leadFallbackTitle}
-              </div>
+              </p>
             </div>
           ) : null}
 
           {links.length ? (
             <div>
-              <div className="text-sm font-semibold">{copy.modal.links}</div>
-              <div className="mt-3 space-y-2">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                {copy.modal.links}
+              </p>
+              <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
                 {links.slice(0, 8).map((link, index) => (
-                  <button
-                    key={`${link.url}-${index}`}
-                    onClick={() => safeOpen(link.url)}
-                    className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-left text-sm hover:bg-white/10"
-                  >
-                    <span className="font-semibold">{link.label}</span>
-                    <ExternalLink className="h-4 w-4 opacity-70" />
-                  </button>
+                  <li key={`${link.url}-${index}`}>
+                    <button
+                      onClick={() => safeOpen(link.url)}
+                      className="group flex w-full items-center justify-between gap-3 py-3 text-left transition hover:bg-white/[0.02]"
+                    >
+                      <span className="text-sm font-semibold text-white">{link.label}</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-white/45 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
+                    </button>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ) : null}
         </div>
@@ -2039,41 +2036,44 @@ function InsightList({
   items: string[];
 }) {
   return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.06] p-5">
-      <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">{title}</div>
-      <div className="mt-4 space-y-2">
+    <div>
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+        {title}
+      </p>
+      <ul className="mt-3 divide-y divide-white/10 border-y border-white/10">
         {items.map((item) => (
-          <div
-            key={item}
-            className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/72"
-          >
+          <li key={item} className="py-2.5 text-sm leading-relaxed text-white/75">
             {item}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
 
 function MiniKPI({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3">
-      <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-white">{value}</div>
+    <div className="flex flex-col gap-1">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+        {label}
+      </div>
+      <div className="text-sm font-semibold tracking-tight text-white">{value}</div>
     </div>
   );
 }
 
 function Faq({ q, a }: { q: string; a: string }) {
   return (
-    <details className="group rounded-[26px] border border-white/10 bg-black/20 p-5 open:bg-white/[0.06]">
+    <details className="group border-b border-white/10 py-5 last:border-b-0">
       <summary className="cursor-pointer list-none">
-        <div className="flex items-center justify-between gap-3">
-          <div className="text-sm font-semibold text-white">{q}</div>
-          <ChevronRight className="h-4 w-4 shrink-0 text-white/60 transition duration-200 group-open:rotate-90" />
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-white">
+            {q}
+          </h3>
+          <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-white/55 transition duration-200 group-open:rotate-90 group-open:text-white" />
         </div>
       </summary>
-      <div className="mt-3 text-sm leading-7 text-white/64">{a}</div>
+      <p className="mt-3 max-w-3xl text-sm leading-7 text-white/68">{a}</p>
     </details>
   );
 }

@@ -1,4 +1,5 @@
-import { ArrowRight, Layers3, Sparkles, Waypoints } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Compass, Layers3, Sparkles, Waypoints } from "lucide-react";
 import { StudioRequestBuilder } from "@/components/studio/request-builder";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { resolveStudioRequestPreset } from "@/lib/studio/request-presets";
@@ -13,23 +14,36 @@ export default async function RequestPage({
   const presetHint = resolveStudioRequestPreset(params.preset, catalog.requestConfig);
 
   return (
-    <main className="mx-auto max-w-[92rem] px-5 py-8 sm:px-8 lg:px-10">
-      <section className="studio-panel studio-hero studio-mesh rounded-[2.9rem] px-7 py-8 sm:px-10 sm:py-10">
-        <div className="studio-kicker">Project brief</div>
-        <h1 className="studio-display mt-5 max-w-5xl text-[var(--studio-ink)]">
-          Tell us what you need—we turn it into a clear plan.
-        </h1>
-        <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
-          Work through the steps at your own pace. Skip nothing you are unsure about—we will ask follow-up
-          questions if needed. You can choose a package path or a fully custom route; both end with a proper
-          summary and payment instructions, not a silent inbox.
+    <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
+      {/* Editorial brief hero — no panel chrome */}
+      <section>
+        <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--studio-signal)]">
+          Studio brief
         </p>
-        <p className="mt-4 max-w-3xl rounded-2xl border border-[var(--studio-line)] bg-black/15 px-4 py-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-          <span className="font-semibold text-[var(--studio-ink)]">Stuck on a question?</span> Write “not sure”
-          and move on. Honest answers help more than perfect ones.
+        <h1 className="mt-4 max-w-4xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
+          Tell us what you need. We turn it into a clear plan.
+        </h1>
+        <p className="mt-5 max-w-3xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
+          Work through the steps at your own pace. Skip nothing you are unsure about &mdash; we
+          will ask follow-up questions if needed. You can choose a package path or a fully custom
+          route; both end with a proper summary and payment instructions, not a silent inbox.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <Link
+            href="/pick"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
+          >
+            <Compass className="h-3.5 w-3.5" />
+            Browse ready-to-start paths instead
+          </Link>
+        </div>
+        <p className="mt-6 max-w-3xl border-l-2 border-[var(--studio-signal)]/55 pl-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
+          <span className="font-semibold text-[var(--studio-ink)]">Stuck on a question?</span>{" "}
+          Write &ldquo;not sure&rdquo; and move on. Honest answers help more than perfect ones.
         </p>
 
-        <div className="mt-8 grid gap-4 lg:grid-cols-4">
+        {/* Why this is calm — editorial 4-col with hairlines, no panels */}
+        <ul className="mt-12 grid gap-8 sm:grid-cols-2 sm:divide-x sm:divide-[var(--studio-line)] lg:grid-cols-4">
           {[
             {
               icon: Layers3,
@@ -39,51 +53,65 @@ export default async function RequestPage({
             {
               icon: Sparkles,
               title: "You stay in control",
-              body: "Change your mind as you go—the form is a guide, not a test.",
+              body: "Change your mind as you go &mdash; the form is a guide, not a test.",
             },
             {
               icon: Waypoints,
               title: "A record you can trust",
-              body: "Your brief becomes the basis for scope and pricing—nothing disappears into a black hole.",
+              body: "Your brief becomes the basis for scope and pricing. Nothing disappears into a black hole.",
             },
             {
               icon: ArrowRight,
-              title: "What happens next is spelled out",
-              body: "Deposits, references, and uploads are explained before you pay—no surprises.",
+              title: "What comes next is spelled out",
+              body: "Deposits, references, and uploads are explained before you pay. No surprises.",
             },
-          ].map((item) => (
-            <div key={item.title} className="rounded-[1.8rem] border border-[var(--studio-line)] bg-black/10 p-5">
-              <item.icon className="h-5 w-5 text-[var(--studio-signal)]" />
-              <div className="mt-4 text-lg font-semibold text-[var(--studio-ink)]">{item.title}</div>
-              <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.body}</p>
-            </div>
+          ].map((item, i) => (
+            <li key={item.title} className={i > 0 ? "sm:pl-6 lg:pl-8" : ""}>
+              <item.icon className="h-5 w-5 text-[var(--studio-signal)]" aria-hidden />
+              <h3 className="mt-4 text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--studio-ink)]">
+                {item.title}
+              </h3>
+              <p
+                className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]"
+                dangerouslySetInnerHTML={{ __html: item.body }}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* Catalog signals — editorial proof rail */}
+        <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-[var(--studio-line)] py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-12">
           {[
             ["Published services", String(catalog.services.length)],
             ["Package lanes", String(catalog.packages.length)],
             [
               "Service categories",
-              String(catalog.requestConfig.projectTypes.filter((item) => item.isActive !== false).length),
+              String(
+                catalog.requestConfig.projectTypes.filter((item) => item.isActive !== false)
+                  .length,
+              ),
             ],
             [
               "Timeline lanes",
-              String(catalog.requestConfig.timelineOptions.filter((item) => item.isActive !== false).length),
+              String(
+                catalog.requestConfig.timelineOptions.filter((item) => item.isActive !== false)
+                  .length,
+              ),
             ],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-4">
-              <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{label}</div>
-              <div className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
+            <div key={label} className="flex flex-col gap-1.5">
+              <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+                {label}
+              </dt>
+              <dd className="text-[1.5rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[1.7rem]">
                 {value}
-              </div>
+              </dd>
             </div>
           ))}
-        </div>
+        </dl>
       </section>
 
-      <section className="mt-8">
+      <section className="mt-12">
         <StudioRequestBuilder
           services={catalog.services}
           packages={catalog.packages}

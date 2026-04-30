@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, LoaderCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, LoaderCircle } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { requestSteps } from "@/components/studio/request-builder-data";
 import { StudioRequestActivationStep } from "@/components/studio/request-activation-step";
@@ -26,12 +26,6 @@ type Props = {
   preferredTeamId?: string | null;
   presetHint?: StudioRequestPresetResult | null;
 };
-
-function stepClass(active: boolean) {
-  return active
-    ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-    : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.2)]";
-}
 
 export function StudioRequestBuilder({
   services,
@@ -86,27 +80,27 @@ export function StudioRequestBuilder({
   const filteredPackages = useMemo(
     () =>
       packages.filter(
-        (pkg) => services.find((service) => service.id === pkg.serviceId)?.kind === serviceKind
+        (pkg) => services.find((service) => service.id === pkg.serviceId)?.kind === serviceKind,
       ),
-    [packages, serviceKind, services]
+    [packages, serviceKind, services],
   );
 
   const selectedService = services.find((service) => service.kind === serviceKind) ?? services[0];
   const availableProjectTypes = useMemo(
     () => filterPricedOptions(requestConfig.projectTypes, serviceKind),
-    [requestConfig.projectTypes, serviceKind]
+    [requestConfig.projectTypes, serviceKind],
   );
   const availablePlatforms = useMemo(
     () => filterPricedOptions(requestConfig.platformOptions, serviceKind),
-    [requestConfig.platformOptions, serviceKind]
+    [requestConfig.platformOptions, serviceKind],
   );
   const availableUrgencyOptions = useMemo(
     () => filterModifierOptions(requestConfig.urgencyOptions, serviceKind),
-    [requestConfig.urgencyOptions, serviceKind]
+    [requestConfig.urgencyOptions, serviceKind],
   );
   const availableTimelineOptions = useMemo(
     () => filterModifierOptions(requestConfig.timelineOptions, serviceKind),
-    [requestConfig.timelineOptions, serviceKind]
+    [requestConfig.timelineOptions, serviceKind],
   );
   const effectiveProjectType =
     availableProjectTypes.find((option) => option.label === selectedProjectType)?.label ||
@@ -138,24 +132,27 @@ export function StudioRequestBuilder({
 
   const pricingPreview = useMemo(
     () =>
-      estimateStudioPricing({
-        service: selectedService,
-        package: pathway === "package" ? selectedPackage : null,
-        brief: {
-          requiredFeatures: selectedModules,
-          urgency: effectiveUrgency,
-          timeline: effectiveTimeline,
+      estimateStudioPricing(
+        {
+          service: selectedService,
+          package: pathway === "package" ? selectedPackage : null,
+          brief: {
+            requiredFeatures: selectedModules,
+            urgency: effectiveUrgency,
+            timeline: effectiveTimeline,
+          },
+          customRequest:
+            pathway === "custom" || selectedAddOns.length > 0
+              ? {
+                  projectType: effectiveProjectType,
+                  platformPreference: effectivePlatform,
+                  pageRequirements: selectedPages,
+                  addonServices: selectedAddOns,
+                }
+              : null,
         },
-        customRequest:
-          pathway === "custom" || selectedAddOns.length > 0
-            ? {
-                projectType: effectiveProjectType,
-                platformPreference: effectivePlatform,
-                pageRequirements: selectedPages,
-                addonServices: selectedAddOns,
-              }
-            : null,
-      }, requestConfig),
+        requestConfig,
+      ),
     [
       pathway,
       requestConfig,
@@ -168,7 +165,7 @@ export function StudioRequestBuilder({
       selectedService,
       effectiveTimeline,
       effectiveUrgency,
-    ]
+    ],
   );
 
   const readinessScore = useMemo(() => {
@@ -214,7 +211,7 @@ export function StudioRequestBuilder({
     if (nextIndex === stepIndex) return;
     setIsStepTransitioning(true);
     setStepIndex(nextIndex);
-    setProgressHint("Progress saved—you can leave and return anytime while signed in.");
+    setProgressHint("Progress saved — you can leave and return any time while signed in.");
     if (typeof window !== "undefined") {
       window.setTimeout(() => setProgressHint(null), 6000);
       window.requestAnimationFrame(() => {
@@ -227,74 +224,132 @@ export function StudioRequestBuilder({
     }
   }
 
+  const totalSteps = requestSteps.length;
+  const progressPct = Math.round(((stepIndex + 1) / totalSteps) * 100);
+  const currentStep = requestSteps[stepIndex];
+
   return (
-    <form action={submitStudioBriefAction} className="space-y-6">
+    <form action={submitStudioBriefAction} className="space-y-10">
       <div ref={topRef} />
       <input type="hidden" name="preferredTeamId" value={selectedTeamId} />
       <input type="hidden" name="serviceKind" value={serviceKind} />
       <input type="hidden" name="packageIntent" value={pathway} />
-      <input type="hidden" name="packageId" value={pathway === "package" ? effectivePackageId : ""} />
+      <input
+        type="hidden"
+        name="packageId"
+        value={pathway === "package" ? effectivePackageId : ""}
+      />
       <input type="hidden" name="designDirection" value={selectedDesign} />
       <input type="hidden" name="preferredLanguage" value={preferredLanguage} />
 
-      <section className="studio-panel rounded-[2.8rem] p-6 sm:p-8">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div className="max-w-3xl">
-            <div className="studio-kicker">Project brief</div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)] sm:text-4xl">
-              Answer in plain language—we organise the details for you.
-            </h2>
-            <p className="mt-4 text-sm leading-8 text-[var(--studio-ink-soft)] sm:text-base">
-              Packages give a faster lane when the work matches something we have done before. Custom gives
-              more room when your product is unique. Either way, you can pause and come back.
-            </p>
-            {progressHint ? (
-              <div
-                role="status"
-                className="mt-4 flex items-start gap-3 rounded-[1.35rem] border border-[rgba(151,244,243,0.28)] bg-[rgba(151,244,243,0.08)] px-4 py-3 text-sm leading-7 text-[var(--studio-ink-soft)]"
-              >
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--studio-signal)]" aria-hidden />
-                <span>{progressHint}</span>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 px-5 py-4 text-sm leading-7 text-[var(--studio-ink-soft)] xl:max-w-sm">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--studio-signal)]">
-                Step {stepIndex + 1} of {requestSteps.length}
+      {/* Editorial brief header — no panel chrome, magazine progress strip */}
+      <section>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
+          <div>
+            <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--studio-signal)]">
+              Project brief
+              <span className="mx-2 opacity-40">·</span>
+              <span className="text-[var(--studio-ink-soft)]">
+                Step {String(stepIndex + 1).padStart(2, "0")} / {String(totalSteps).padStart(2, "0")}
               </span>
-              {isStepTransitioning ? (
-                <LoaderCircle className="h-4 w-4 animate-spin text-[var(--studio-signal)]" />
-              ) : null}
-            </div>
-            <div className="mt-3 font-medium text-[var(--studio-ink)]">
-              {requestSteps[stepIndex].label}
-            </div>
-            <div className="mt-2">{requestSteps[stepIndex].title}</div>
+            </p>
+            <h2 className="mt-3 max-w-3xl text-balance text-[1.7rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[2.1rem] md:text-[2.4rem]">
+              {currentStep.title}
+            </h2>
+            <p className="mt-3 max-w-2xl text-pretty text-sm leading-7 text-[var(--studio-ink-soft)] sm:text-base">
+              {currentStep.body}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 text-[10.5px] font-semibold uppercase tracking-[0.22em]">
+            {isStepTransitioning ? (
+              <span className="inline-flex items-center gap-1.5 text-[var(--studio-signal)]">
+                <LoaderCircle className="h-3 w-3 animate-spin" />
+                Loading
+              </span>
+            ) : (
+              <span className="text-[var(--studio-ink-soft)]">{progressPct}% complete</span>
+            )}
           </div>
         </div>
 
-        <div className="mt-8 grid gap-3 lg:grid-cols-4">
-          {requestSteps.map((step, index) => (
-            <button
-              key={step.key}
-              type="button"
-              onClick={() => goToStep(index)}
-              className={`rounded-[1.5rem] border px-4 py-4 text-left transition duration-200 ${stepClass(index === stepIndex)}`}
-            >
-              <div className="text-[11px] uppercase tracking-[0.2em] text-[var(--studio-signal)]">
-                0{index + 1}
-              </div>
-              <div className="mt-3 text-base font-semibold text-[var(--studio-ink)]">{step.label}</div>
-              <p className="mt-2 text-sm leading-6 text-[var(--studio-ink-soft)]">{step.body}</p>
-            </button>
-          ))}
-        </div>
+        {/* Premium step navigator — horizontal numbered rail with progress fill */}
+        <nav aria-label="Brief steps" className="mt-8">
+          <div className="relative">
+            {/* hairline track */}
+            <div className="absolute left-0 right-0 top-[18px] h-px bg-[var(--studio-line)]" />
+            {/* progress fill */}
+            <div
+              className="absolute left-0 top-[18px] h-px bg-[var(--studio-signal)] transition-all duration-500"
+              style={{ width: `${progressPct}%` }}
+              aria-hidden
+            />
+            <ol className="relative grid grid-cols-2 gap-x-3 gap-y-6 lg:grid-cols-4">
+              {requestSteps.map((step, index) => {
+                const isActive = index === stepIndex;
+                const isComplete = index < stepIndex;
+                return (
+                  <li key={step.key}>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(index)}
+                      aria-current={isActive ? "step" : undefined}
+                      className="group block w-full text-left"
+                    >
+                      <span
+                        className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-[11px] font-mono font-semibold tracking-tight transition ${
+                          isActive
+                            ? "border-[var(--studio-signal)] bg-[var(--studio-signal)] text-[#031318] shadow-[0_0_0_4px_rgba(73,192,197,0.18)]"
+                            : isComplete
+                              ? "border-[var(--studio-signal)]/55 bg-transparent text-[var(--studio-signal)]"
+                              : "border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] text-[var(--studio-ink-soft)] group-hover:border-[var(--studio-signal)]/40 group-hover:text-[var(--studio-ink)]"
+                        }`}
+                      >
+                        {isComplete ? <Check className="h-4 w-4" /> : `0${index + 1}`}
+                      </span>
+                      <p
+                        className={`mt-3 text-[10.5px] font-semibold uppercase tracking-[0.22em] transition ${
+                          isActive
+                            ? "text-[var(--studio-signal)]"
+                            : "text-[var(--studio-ink-soft)] group-hover:text-[var(--studio-ink)]"
+                        }`}
+                      >
+                        {step.label}
+                      </p>
+                      <p
+                        className={`mt-2 text-sm leading-snug transition ${
+                          isActive
+                            ? "text-[var(--studio-ink)]"
+                            : "text-[var(--studio-ink-soft)] group-hover:text-[var(--studio-ink)]"
+                        }`}
+                      >
+                        {step.body}
+                      </p>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        </nav>
+
+        {progressHint ? (
+          <p
+            role="status"
+            className="mt-6 flex items-start gap-2 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]"
+          >
+            <Check
+              className="mt-1 h-3.5 w-3.5 shrink-0 text-[var(--studio-signal)]"
+              aria-hidden
+            />
+            <span>{progressHint}</span>
+          </p>
+        ) : null}
       </section>
 
-      <div className="grid gap-6 2xl:grid-cols-[1.08fr_0.92fr]">
-        <div className="space-y-6">
+      {/* Step body + side panel */}
+      <div className="grid gap-10 2xl:grid-cols-[1.08fr_0.92fr]">
+        <div className="space-y-8">
           {stepIndex === 0 ? (
             <StudioRequestPathStep
               services={services}
@@ -360,17 +415,19 @@ export function StudioRequestBuilder({
             />
           ) : null}
 
-          <div className="flex items-center justify-between gap-3 px-2">
+          {/* Footer step controls — editorial */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--studio-line)] pt-6">
             <button
               type="button"
               onClick={() => goToStep(Math.max(stepIndex - 1, 0))}
               disabled={stepIndex === 0}
-              className={`rounded-full border px-5 py-3 text-sm font-semibold transition ${
+              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition ${
                 stepIndex === 0
-                  ? "cursor-not-allowed border-[var(--studio-line)] text-[var(--studio-ink-soft)] opacity-50"
-                  : "border-[var(--studio-line)] text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.28)]"
+                  ? "cursor-not-allowed border-[var(--studio-line)] text-[var(--studio-ink-soft)] opacity-40"
+                  : "border-[var(--studio-line)] text-[var(--studio-ink)] hover:border-[var(--studio-signal)]/40 hover:bg-[rgba(0,0,0,0.04)]"
               }`}
             >
+              <ArrowLeft className="h-3.5 w-3.5" />
               Back
             </button>
             {stepIndex < requestSteps.length - 1 ? (
@@ -378,10 +435,13 @@ export function StudioRequestBuilder({
                 type="button"
                 onClick={() => goToStep(Math.min(stepIndex + 1, requestSteps.length - 1))}
                 disabled={pathway === "package" && filteredPackages.length === 0}
-                className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                className="studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isStepTransitioning ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
-                {isStepTransitioning ? "Loading next step..." : "Continue"}
+                {isStepTransitioning ? (
+                  <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                ) : null}
+                {isStepTransitioning ? "Loading next step" : "Continue"}
+                {!isStepTransitioning ? <ArrowRight className="h-3.5 w-3.5" /> : null}
               </button>
             ) : null}
           </div>

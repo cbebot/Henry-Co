@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Award, BookOpen, BriefcaseBusiness, ChartNoAxesCombined, GraduationCap, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { ChartNoAxesCombined, Sparkles, UsersRound } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
-import { CourseCard, LearnMetricCard, LearnPanel, LearnSectionIntro, PathCard, QuickMetricStrip } from "@/components/learn/ui";
+import { PublicSpotlight } from "@henryco/ui/public-shell";
+import { CourseCard, LearnPanel, LearnSectionIntro, PathCard, QuickMetricStrip } from "@/components/learn/ui";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getPublicAcademyData } from "@/lib/learn/data";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
@@ -35,8 +36,8 @@ export default async function HomePage() {
   return (
     <main>
       <section className="learn-hero">
-        <div className="mx-auto max-w-[92rem] px-5 py-16 sm:px-8 sm:py-20 xl:px-10">
-          <div className="learn-panel learn-mesh rounded-[2.8rem] p-8 sm:p-12 xl:p-14">
+        <div className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 sm:py-16 xl:px-10 xl:py-20">
+          <div className="learn-panel learn-mesh rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-10 xl:rounded-[2.8rem] xl:p-14">
             <p className="learn-kicker">HenryCo Learn</p>
             {viewer.user ? (
               <p className="mt-4 text-sm font-semibold tracking-tight text-[var(--learn-ink-soft)]">
@@ -44,38 +45,44 @@ export default async function HomePage() {
                 {heroFirstName ? `, ${heroFirstName}` : ""}.
               </p>
             ) : null}
-            <h1 className={`learn-display max-w-3xl text-balance text-[var(--learn-ink)] ${viewer.user ? "mt-5" : "mt-6"}`}>
+            <h1 className={`learn-display max-w-3xl text-balance text-[var(--learn-ink)] ${viewer.user ? "mt-4 sm:mt-5" : "mt-5 sm:mt-6"}`}>
               {t("Skills that stick. Proof that travels.")}
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--learn-ink-soft)] sm:text-lg">
+            <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--learn-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg">
               {t(
                 "Pick a course, move through lessons in order, track progress in your HenryCo account, and earn a certificate others can verify online. Built for busy adults who want clarity, not jargon.",
               )}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/courses" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">
+            <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
+              <Link
+                href="/courses"
+                className="learn-button-primary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
+              >
                 {t("Browse courses")}
               </Link>
               {viewer.user ? (
                 <a
                   href={getAccountLearnUrl("active")}
-                  className="learn-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
+                  className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
                 >
                   {t("Continue learning")}
                 </a>
               ) : (
                 <a
                   href={getSharedAuthUrl("signup", "/courses")}
-                  className="learn-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
+                  className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
                 >
                   {t("Create free account")}
                 </a>
               )}
-              <Link href="/academy" className="learn-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
+              <Link
+                href="/academy"
+                className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
+              >
                 {t("How it works")}
               </Link>
             </div>
-            <div className="mt-10">
+            <div className="mt-8 sm:mt-10">
               <QuickMetricStrip
                 items={[
                   { label: t("Programs open now"), value: String(academy.courses.length) },
@@ -86,35 +93,6 @@ export default async function HomePage() {
               />
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 xl:px-10">
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          <LearnMetricCard
-            label={t("For you if…")}
-            value={t("You want to grow")}
-            hint={t("Operators, sellers, team leads, and curious professionals who prefer short, structured lessons over endless videos.")}
-            icon={<BookOpen className="h-5 w-5" />}
-          />
-          <LearnMetricCard
-            label={t("Your rhythm")}
-            value={t("At your pace")}
-            hint={t("Open a course when you have time; your place is saved. Resume from your HenryCo account or straight from the course page.")}
-            icon={<GraduationCap className="h-5 w-5" />}
-          />
-          <LearnMetricCard
-            label={t("When there’s a quiz")}
-            value={t("Fair & clear")}
-            hint={t("Many programs unlock a final assessment only after the lessons. Pass at the stated score, within the attempt limit, to complete the program.")}
-            icon={<Award className="h-5 w-5" />}
-          />
-          <LearnMetricCard
-            label={t("Certificates")}
-            value={t("Real verification")}
-            hint={t("Eligible courses issue a certificate with a code anyone can check—useful for employers, partners, or your own records.")}
-            icon={<ShieldCheck className="h-5 w-5" />}
-          />
         </div>
       </section>
 
@@ -140,6 +118,39 @@ export default async function HomePage() {
       </section>
 
       <section className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 xl:px-10">
+        <PublicSpotlight
+          tone="contrast"
+          eyebrow={t("How learning runs here")}
+          title={t("Structured lessons, fair assessments, real verification.")}
+          body={t(
+            "Sign in once. Enrollments, progress, certificates, billing, and teaching applications all live on the same HenryCo profile — no duplicate logins, no parallel inboxes.",
+          )}
+          aside={
+            <ul className="space-y-5">
+              <li className="border-l border-white/15 pl-4">
+                <p className="text-sm font-semibold text-white">{t("Teams & assignments")}</p>
+                <p className="mt-1 text-sm leading-relaxed text-white/75">
+                  {t("Some courses are assigned inside HenryCo. Team programs appear in your account alongside anything you chose yourself.")}
+                </p>
+              </li>
+              <li className="border-l border-white/15 pl-4">
+                <p className="text-sm font-semibold text-white">{t("What “done” means")}</p>
+                <p className="mt-1 text-sm leading-relaxed text-white/75">
+                  {t("Completion follows each course’s rules — usually all lessons, then a passing quiz where applicable. Status shows plainly in the learning room.")}
+                </p>
+              </li>
+              <li className="border-l border-white/15 pl-4">
+                <p className="text-sm font-semibold text-white">{t("Verification anyone can check")}</p>
+                <p className="mt-1 text-sm leading-relaxed text-white/75">
+                  {t("Eligible courses issue a certificate with a code anyone can verify online — useful for employers, partners, or your own records.")}
+                </p>
+              </li>
+            </ul>
+          }
+        />
+      </section>
+
+      <section className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 xl:px-10">
         <LearnSectionIntro
           kicker={t("Learning paths")}
           title={t("Follow a sequence when one course isn’t enough.")}
@@ -158,42 +169,10 @@ export default async function HomePage() {
       </section>
 
       <section className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 xl:px-10">
-        <div className="grid gap-5 lg:grid-cols-3">
-          <LearnPanel className="rounded-[2rem]">
-            <div className="rounded-2xl border border-[var(--learn-line)] bg-white/5 p-4">
-              <BriefcaseBusiness className="h-5 w-5 text-[var(--learn-copper)]" />
-            </div>
-            <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{t("Teams & assignments")}</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              {t("Some courses are assigned inside HenryCo. If you’re on a team program, you’ll see it in your account alongside anything you chose yourself.")}
-            </p>
-          </LearnPanel>
-          <LearnPanel className="rounded-[2rem]">
-            <div className="rounded-2xl border border-[var(--learn-line)] bg-white/5 p-4">
-              <GraduationCap className="h-5 w-5 text-[var(--learn-mint-soft)]" />
-            </div>
-            <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{t("What “done” means")}</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              {t("Completion follows each course’s rules—usually all lessons, then a passing quiz where applicable. We show your status plainly in the learning room and in your account.")}
-            </p>
-          </LearnPanel>
-          <LearnPanel className="rounded-[2rem]">
-            <div className="rounded-2xl border border-[var(--learn-line)] bg-white/5 p-4">
-              <ShieldCheck className="h-5 w-5 text-[var(--learn-copper)]" />
-            </div>
-            <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{t("One HenryCo account")}</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
-              {t("Sign in once. Enrollments, progress, certificates, billing, and teaching applications stay tied to the same profile—no duplicate logins to remember.")}
-            </p>
-          </LearnPanel>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 xl:px-10">
-        <div className="grid gap-5 xl:grid-cols-[1.05fr,0.95fr]">
+        <div className="grid gap-8 xl:grid-cols-[1.05fr,0.95fr] xl:items-start">
           <LearnPanel className="learn-mesh rounded-[2.4rem] p-7 sm:p-8">
             <p className="learn-kicker">{t("Teach with HenryCo")}</p>
-            <h2 className="learn-heading mt-4 text-[2.4rem] text-[var(--learn-ink)] sm:text-[3.1rem]">
+            <h2 className="learn-heading mt-4 text-[2.1rem] text-[var(--learn-ink)] sm:text-[2.6rem]">
               {t("Apply if you can teach with depth, structure, and professionalism.")}
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-8 text-[var(--learn-ink-soft)]">
@@ -209,38 +188,36 @@ export default async function HomePage() {
             </div>
           </LearnPanel>
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            <LearnPanel className="rounded-[2rem]">
-              <Sparkles className="h-5 w-5 text-[var(--learn-copper)]" />
-              <h3 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{t("Quality bar")}</h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                {t("We look for real subject expertise, respectful delivery, and outlines learners can actually finish—not hype or recycled slides.")}
-              </p>
-            </LearnPanel>
-            <LearnPanel className="rounded-[2rem]">
-              <UsersRound className="h-5 w-5 text-[var(--learn-copper)]" />
-              <h3 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{t("Aligned with HenryCo")}</h3>
-              <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
-                {t("Topics that fit our ecosystem—operations, customer experience, digital skills, and partner enablement—get the closest match with our learners’ needs.")}
-              </p>
-            </LearnPanel>
-          </div>
+          <ul className="divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
+            <li className="flex gap-4 py-5">
+              <Sparkles className="mt-1 h-5 w-5 shrink-0 text-[var(--learn-copper)]" />
+              <div>
+                <h3 className="text-base font-semibold tracking-tight text-[var(--learn-ink)]">{t("Quality bar")}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--learn-ink-soft)]">
+                  {t("We look for real subject expertise, respectful delivery, and outlines learners can actually finish — not hype or recycled slides.")}
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-4 py-5">
+              <UsersRound className="mt-1 h-5 w-5 shrink-0 text-[var(--learn-copper)]" />
+              <div>
+                <h3 className="text-base font-semibold tracking-tight text-[var(--learn-ink)]">{t("Aligned with HenryCo")}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--learn-ink-soft)]">
+                  {t("Topics that fit our ecosystem — operations, customer experience, digital skills, partner enablement — get the closest match with our learners' needs.")}
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-4 py-5">
+              <ChartNoAxesCombined className="mt-1 h-5 w-5 shrink-0 text-[var(--learn-mint-soft)]" />
+              <div>
+                <h3 className="text-base font-semibold tracking-tight text-[var(--learn-ink)]">{t("Why HenryCo Learn exists")}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--learn-ink-soft)]">
+                  {t("We invest in education so customers, partners, and staff share the same standards — and so capable people can prove what they know.")}
+                </p>
+              </div>
+            </li>
+          </ul>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-[92rem] px-5 pb-16 sm:px-8 xl:px-10">
-        <LearnPanel className="rounded-[2rem] border border-[var(--learn-line-strong)]/30">
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <div>
-              <p className="learn-kicker">{t("Inside HenryCo")}</p>
-              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">{t("Why HenryCo Learn exists")}</h3>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
-                {t("We invest in education so customers, partners, and staff share the same standards—and so capable people can prove what they know.")}
-              </p>
-            </div>
-            <ChartNoAxesCombined className="h-10 w-10 shrink-0 text-[var(--learn-mint-soft)] opacity-80" aria-hidden />
-          </div>
-        </LearnPanel>
       </section>
     </main>
   );

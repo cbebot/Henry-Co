@@ -12,6 +12,7 @@ import {
   Phone,
   Package2,
   Plus,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import {
@@ -547,11 +548,12 @@ export default function BookPickupForm({
         <button
           type="button"
           onClick={() => setMode("garment")}
+          aria-pressed={mode === "garment"}
           className={cn(
-            "rounded-[28px] border p-5 text-left transition",
+            "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
             mode === "garment"
               ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-lg shadow-[color:var(--accent)]/10"
-              : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/25 dark:border-white/10 dark:bg-white/[0.03]"
+              : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
           )}
         >
           <div className="flex items-center justify-between gap-3">
@@ -561,7 +563,7 @@ export default function BookPickupForm({
             {mode === "garment" ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
                 <Check className="h-3.5 w-3.5" />
-                {t("Active")}
+                {t("Selected")}
               </span>
             ) : null}
           </div>
@@ -578,11 +580,12 @@ export default function BookPickupForm({
         <button
           type="button"
           onClick={() => setMode("service")}
+          aria-pressed={mode === "service"}
           className={cn(
-            "rounded-[28px] border p-5 text-left transition",
+            "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
             mode === "service"
               ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-lg shadow-[color:var(--accent)]/10"
-              : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/25 dark:border-white/10 dark:bg-white/[0.03]"
+              : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
           )}
         >
           <div className="flex items-center justify-between gap-3">
@@ -592,7 +595,7 @@ export default function BookPickupForm({
             {mode === "service" ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
                 <Check className="h-3.5 w-3.5" />
-                {t("Active")}
+                {t("Selected")}
               </span>
             ) : null}
           </div>
@@ -1106,15 +1109,24 @@ export default function BookPickupForm({
                     key={category.id}
                     type="button"
                     onClick={() => setServiceCategory(category.key)}
+                    aria-pressed={active}
                     className={cn(
-                      "rounded-[28px] border p-5 text-left transition",
+                      "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                       active
-                        ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10"
-                        : "border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]"
+                        ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
+                        : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
                     )}
                   >
-                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--accent)]/12">
-                      <Icon className="h-5 w-5 text-[color:var(--accent)]" />
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--accent)]/12">
+                        <Icon className="h-5 w-5 text-[color:var(--accent)]" />
+                      </div>
+                      {active ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                          <Check className="h-3.5 w-3.5" />
+                          {t("Selected")}
+                        </span>
+                      ) : null}
                     </div>
                     <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
                       {category.name}
@@ -1165,22 +1177,31 @@ export default function BookPickupForm({
                       key={item.id}
                       type="button"
                       onClick={() => setPackageSlug(item.slug)}
+                      aria-pressed={active}
                       className={cn(
-                        "rounded-[28px] border p-5 text-left transition",
+                        "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                         active
-                          ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10"
-                          : "border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]"
+                          ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
+                          : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
                       )}
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/50">
                           {item.summary}
                         </div>
-                        {item.featured_badge ? (
-                          <span className="rounded-full bg-[color:var(--accent)]/12 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
-                            {item.featured_badge}
-                          </span>
-                        ) : null}
+                        <div className="flex items-center gap-2">
+                          {item.featured_badge ? (
+                            <span className="rounded-full bg-[color:var(--accent)]/12 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
+                              {item.featured_badge}
+                            </span>
+                          ) : null}
+                          {active ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                              <Check className="h-3 w-3" />
+                              {t("Selected")}
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                       <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
                         {item.name}
@@ -1402,11 +1423,12 @@ export default function BookPickupForm({
                         key={item}
                         type="button"
                         onClick={() => setFrequencyKey(item)}
+                        aria-pressed={frequencyKey === item}
                         className={cn(
-                          "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                          "rounded-full border px-4 py-2 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                           frequencyKey === item
-                            ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10 text-zinc-950 dark:text-white"
-                            : "border-black/10 bg-white/80 text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
+                            ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/15 text-zinc-950 shadow-sm shadow-[color:var(--accent)]/10 dark:text-white"
+                            : "border-black/10 bg-white/80 text-zinc-700 hover:border-[color:var(--accent)]/25 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
                         )}
                         >
                           {t(formatFrequencyLabel(item))}
@@ -1426,11 +1448,12 @@ export default function BookPickupForm({
                           key={day}
                           type="button"
                           onClick={() => togglePreferredDay(day)}
+                          aria-pressed={preferredDays.includes(day)}
                           className={cn(
-                            "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                            "rounded-full border px-4 py-2 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                             preferredDays.includes(day)
-                              ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10 text-zinc-950 dark:text-white"
-                              : "border-black/10 bg-white/80 text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
+                              ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/15 text-zinc-950 shadow-sm shadow-[color:var(--accent)]/10 dark:text-white"
+                              : "border-black/10 bg-white/80 text-zinc-700 hover:border-[color:var(--accent)]/25 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
                           )}
                         >
                           {t(day)}
@@ -1456,11 +1479,12 @@ export default function BookPickupForm({
                           type="button"
                           disabled={disabled}
                           onClick={() => setUrgencyKey(item)}
+                          aria-pressed={urgencyKey === item}
                           className={cn(
-                            "rounded-full border px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50",
+                            "rounded-full border px-4 py-2 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:translate-y-0",
                             urgencyKey === item
-                              ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10 text-zinc-950 dark:text-white"
-                              : "border-black/10 bg-white/80 text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
+                              ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/15 text-zinc-950 shadow-sm shadow-[color:var(--accent)]/10 dark:text-white"
+                              : "border-black/10 bg-white/80 text-zinc-700 hover:border-[color:var(--accent)]/25 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
                           )}
                         >
                           {item === "same_day"
@@ -1486,17 +1510,26 @@ export default function BookPickupForm({
                         key={item.id}
                         type="button"
                         onClick={() => toggleAddon(item.key)}
+                        aria-pressed={active}
                         className={cn(
-                          "rounded-[24px] border p-4 text-left transition",
+                          "rounded-[24px] border p-4 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                           active
-                            ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10"
-                            : "border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]"
+                            ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-sm shadow-[color:var(--accent)]/10"
+                            : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
                         )}
                       >
                         <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <div className="text-sm font-semibold text-zinc-950 dark:text-white">
-                              {item.label}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <div className="text-sm font-semibold text-zinc-950 dark:text-white">
+                                {item.label}
+                              </div>
+                              {active ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                                  <Check className="h-3 w-3" />
+                                  {t("Added")}
+                                </span>
+                              ) : null}
                             </div>
                             <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
                               {item.description}
@@ -1617,16 +1650,25 @@ export default function BookPickupForm({
             <button
               type="button"
               onClick={() => setPaymentPlan("book_first")}
+              aria-pressed={paymentPlan === "book_first"}
               className={cn(
-                "rounded-[1.8rem] border p-5 text-left transition",
+                "rounded-[1.8rem] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                 paymentPlan === "book_first"
-                  ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10"
-                  : "border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]"
+                  ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
+                  : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
               )}
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70">
-                <Sparkles className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                {t("Book first")}
+              <div className="flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70">
+                  <Sparkles className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  {t("Book first")}
+                </div>
+                {paymentPlan === "book_first" ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                    <Check className="h-3 w-3" />
+                    {t("Selected")}
+                  </span>
+                ) : null}
               </div>
               <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
                 {t("Send the request now and complete payment after the team confirms the next step.")}
@@ -1641,16 +1683,25 @@ export default function BookPickupForm({
             <button
               type="button"
               onClick={() => setPaymentPlan("pay_now")}
+              aria-pressed={paymentPlan === "pay_now"}
               className={cn(
-                "rounded-[1.8rem] border p-5 text-left transition",
+                "rounded-[1.8rem] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                 paymentPlan === "pay_now"
-                  ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10"
-                  : "border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]"
+                  ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
+                  : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
               )}
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70">
-                <CreditCard className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                {t("Pay now")}
+              <div className="flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70">
+                  <CreditCard className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+                  {t("Pay now")}
+                </div>
+                {paymentPlan === "pay_now" ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+                    <Check className="h-3 w-3" />
+                    {t("Selected")}
+                  </span>
+                ) : null}
               </div>
               <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
                 {t("Submit the booking and receive payment details right away.")}
@@ -1724,10 +1775,18 @@ export default function BookPickupForm({
           ) : null}
 
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="text-sm leading-7 text-zinc-600 dark:text-white/65">
-              {paymentPlan === "pay_now"
-                ? t("The request, tracking code, and payment guidance will move together as one faster handoff.")
-                : t("The booking request goes first, and the payment path stays available without adding friction to submission.")}
+            <div className="space-y-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
+              <div>
+                {paymentPlan === "pay_now"
+                  ? t("The request, tracking code, and payment guidance will move together as one faster handoff.")
+                  : t("The booking request goes first, and the payment path stays available without adding friction to submission.")}
+              </div>
+              <div className="flex items-start gap-2 text-[12px] leading-6 text-zinc-500 dark:text-white/55">
+                <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--accent)]" />
+                <span>
+                  {t("Your request is reviewed before confirmation, and you can track updates after booking.")}
+                </span>
+              </div>
             </div>
 
             <PendingSubmitButton
@@ -1767,15 +1826,23 @@ function ServiceTypeCard({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
-        "rounded-[28px] border p-5 text-left transition",
+        "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
         active
-          ? "border-[color:var(--accent)]/35 bg-[color:var(--accent)]/10"
-          : "border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]"
+          ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
+          : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
       )}
     >
-      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/50">
-        {item.pricing_model === "commercial" ? t("Commercial") : t("Property based")}
+      <div className="flex items-center justify-between gap-3">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/50">
+          {item.pricing_model === "commercial" ? t("Commercial") : t("Property based")}
+        </div>
+        {active ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
+            <CheckIcon /> {t("Selected")}
+          </span>
+        ) : null}
       </div>
       <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
         {item.name}
@@ -1794,6 +1861,10 @@ function ServiceTypeCard({
       </div>
     </button>
   );
+}
+
+function CheckIcon() {
+  return <Check className="h-3 w-3" />;
 }
 
 function DetailPill({

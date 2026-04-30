@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Layers3, Sparkles, Target, Waypoints } from "lucide-react";
+import { ArrowRight, CheckCircle2, Layers3, Sparkles, Target } from "lucide-react";
+import { PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { formatCurrency } from "@/lib/env";
 
@@ -13,9 +14,9 @@ export default async function StudioHomePage() {
 
   return (
     <main className="pb-24">
-      <section className="mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 lg:px-10">
+      <section className="mx-auto max-w-[92rem] px-5 pt-6 sm:px-8 sm:pt-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <div className="studio-panel studio-hero studio-mesh rounded-[3rem] px-7 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
+          <div className="studio-panel studio-hero studio-mesh rounded-[2rem] px-5 py-7 sm:rounded-[2.4rem] sm:px-9 sm:py-12 lg:rounded-[3rem] lg:px-14 lg:py-16">
             <div className="flex flex-wrap items-center gap-2">
               <span className="studio-kicker">HenryCo Studio</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
@@ -23,24 +24,24 @@ export default async function StudioHomePage() {
                 Software built with sharper process
               </span>
             </div>
-            <h1 className="studio-display mt-7 max-w-3xl text-balance text-[var(--studio-ink)]">
+            <h1 className="studio-display mt-5 max-w-3xl text-balance text-[var(--studio-ink)] sm:mt-7">
               Serious software, delivered with discipline.
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
+            <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--studio-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg">
               We design and build websites, web apps, and internal platforms for companies that expect a calmer path from brief to launch &mdash; scoped in plain English, priced on milestones, delivered in one structured workspace.
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-9 sm:gap-3">
               <Link
                 href="/pick"
-                className="studio-button-primary inline-flex items-center gap-3 rounded-full px-6 py-4 text-sm font-semibold"
+                className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px] sm:gap-3 sm:px-6 sm:py-4"
               >
                 Help me pick a project type
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/request"
-                className="studio-button-secondary inline-flex rounded-full px-6 py-4 text-sm font-semibold"
+                className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px] sm:px-6 sm:py-4"
               >
                 Start a brief
               </Link>
@@ -48,26 +49,17 @@ export default async function StudioHomePage() {
           </div>
 
           <div className="grid gap-6">
-            <div className="studio-panel rounded-[2.5rem] p-6 sm:p-8">
-              <div className="studio-kicker">At a glance</div>
-              <div className="mt-5 grid gap-3 grid-cols-2">
-                {[
-                  { label: "Services", value: String(catalog.services.length) },
-                  { label: "Packages", value: String(catalog.packages.length) },
-                  { label: "Teams", value: String(catalog.teams.length) },
-                  { label: "Case studies", value: String(catalog.caseStudies.length) },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 px-5 py-4">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">
-                      {item.label}
-                    </div>
-                    <div className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)] sm:text-4xl">
-                      {item.value}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <PublicProofRail
+              eyebrow="At a glance"
+              density="tight"
+              variant="rail"
+              items={[
+                { label: "Services", value: String(catalog.services.length) },
+                { label: "Packages", value: String(catalog.packages.length) },
+                { label: "Teams", value: String(catalog.teams.length) },
+                { label: "Case studies", value: String(catalog.caseStudies.length) },
+              ]}
+            />
 
             <div className="grid gap-4 sm:grid-cols-2">
               {[
@@ -105,33 +97,34 @@ export default async function StudioHomePage() {
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="max-w-2xl">
-              <div className="studio-kicker">Why Studio</div>
-              <h2 className="studio-heading mt-4">The difference clients actually notice.</h2>
-            </div>
+      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <div className="studio-kicker">Why Studio</div>
+            <h2 className="studio-heading mt-4">The difference clients actually notice.</h2>
           </div>
-          <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            {catalog.valueComparisons.map((item) => (
-              <div key={item.title} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                <div className="text-lg font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">{item.title}</div>
-                <div className="mt-4 space-y-2.5">
-                  {item.points.map((point) => (
-                    <div key={point} className="flex gap-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-[var(--studio-signal)]" />
-                      <span>{point}</span>
-                    </div>
-                  ))}
-                </div>
+        </div>
+        <div className="mt-10 grid gap-x-12 gap-y-10 lg:grid-cols-3 lg:divide-x lg:divide-[var(--studio-line)]">
+          {catalog.valueComparisons.map((item, idx) => (
+            <div key={item.title} className={idx === 0 ? "lg:pr-2" : "lg:px-8"}>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+                {String(idx + 1).padStart(2, "0")}
               </div>
-            ))}
-          </div>
+              <div className="mt-3 text-xl font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">{item.title}</div>
+              <ul className="mt-5 space-y-3">
+                {item.points.map((point) => (
+                  <li key={point} className="flex gap-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                    <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-[var(--studio-signal)]" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-3xl">
             <div className="studio-kicker">Packages</div>
@@ -143,152 +136,162 @@ export default async function StudioHomePage() {
         </div>
 
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
-          {featuredPackages.map((pkg) => (
-            <article key={pkg.id} className="studio-panel rounded-[2.2rem] p-6">
-              <div className="studio-kicker">{pkg.name}</div>
+          {featuredPackages.map((pkg, idx) => (
+            <article
+              key={pkg.id}
+              className={
+                idx === 1
+                  ? "studio-panel rounded-[2.2rem] p-6 ring-1 ring-[var(--studio-signal)]/40 shadow-[0_28px_80px_-30px_rgba(151,244,243,0.4)]"
+                  : "studio-panel rounded-[2.2rem] p-6"
+              }
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="studio-kicker">{pkg.name}</div>
+                {idx === 1 ? (
+                  <span className="rounded-full border border-[var(--studio-signal)]/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
+                    Most chosen
+                  </span>
+                ) : null}
+              </div>
               <div className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-[var(--studio-ink)]">
                 {formatCurrency(pkg.price)}
               </div>
               <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">{pkg.summary}</p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-[var(--studio-signal)]">Deposit</div>
-                  <div className="mt-2 text-lg font-semibold text-[var(--studio-ink)]">
-                    {Math.round(pkg.depositRate * 100)}%
-                  </div>
+              <dl className="mt-5 flex items-end justify-between gap-6 border-t border-[var(--studio-line)] pt-4">
+                <div>
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">Deposit</dt>
+                  <dd className="mt-1 text-base font-semibold text-[var(--studio-ink)]">{Math.round(pkg.depositRate * 100)}%</dd>
                 </div>
-                <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-[var(--studio-signal)]">Timeline</div>
-                  <div className="mt-2 text-lg font-semibold text-[var(--studio-ink)]">{pkg.timelineWeeks} weeks</div>
+                <div>
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">Timeline</dt>
+                  <dd className="mt-1 text-base font-semibold text-[var(--studio-ink)]">{pkg.timelineWeeks} wks</dd>
                 </div>
-              </div>
-              <div className="mt-5 text-sm text-[var(--studio-ink)]">Best for: {pkg.bestFor}</div>
+              </dl>
+              <div className="mt-5 text-sm text-[var(--studio-ink-soft)]"><span className="text-[var(--studio-ink)] font-medium">Best for:</span> {pkg.bestFor}</div>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+        <div className="grid gap-12 xl:grid-cols-[0.95fr_1.05fr]">
+          <div>
             <div className="studio-kicker">Services</div>
             <h2 className="studio-heading mt-4">Specialised services built around real business outcomes.</h2>
-            <div className="mt-6 space-y-4">
+            <ul className="mt-8 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
               {featuredServices.map((service) => (
-                <div key={service.id} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="text-lg font-semibold text-[var(--studio-ink)]">{service.name}</div>
-                    <div className="text-sm text-[var(--studio-signal)]">{formatCurrency(service.startingPrice)}</div>
+                <li key={service.id} className="flex flex-wrap items-baseline justify-between gap-3 py-4">
+                  <div>
+                    <div className="text-base font-semibold tracking-tight text-[var(--studio-ink)]">{service.name}</div>
+                    <p className="mt-1 max-w-xl text-sm leading-relaxed text-[var(--studio-ink-soft)]">{service.headline}</p>
                   </div>
-                  <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{service.headline}</p>
-                </div>
+                  <div className="text-sm font-semibold text-[var(--studio-signal)] whitespace-nowrap">
+                    from {formatCurrency(service.startingPrice)}
+                  </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
           <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
             <div className="studio-kicker">Selected work</div>
-            <div className="mt-6 space-y-4">
+            <div className="mt-6 space-y-5">
               {featuredCases.map((item) => (
-                <div key={item.id} className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
+                <article key={item.id} className="border-l-2 border-[var(--studio-signal)]/40 pl-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="text-lg font-semibold text-[var(--studio-ink)]">{item.name}</div>
-                    <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{item.type}</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">{item.type}</div>
                   </div>
-                  <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.challenge}</p>
-                  <div className="mt-4 text-sm font-medium text-[var(--studio-ink)]">{item.impact}</div>
-                </div>
+                  <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.challenge}</p>
+                  <div className="mt-3 text-sm font-medium text-[var(--studio-ink)]">{item.impact}</div>
+                </article>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-6 xl:grid-cols-[0.97fr_1.03fr]">
-          <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Our teams</div>
-            <h2 className="studio-heading mt-4">Work with a specialist team matched to your project.</h2>
-            <div className="mt-6 space-y-4">
-              {featuredTeams.map((team) => (
-                <div key={team.id} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="text-lg font-semibold text-[var(--studio-ink)]">{team.name}</div>
-                      <div className="mt-1 text-sm text-[var(--studio-signal)]">{team.label}</div>
-                    </div>
-                    <div className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
-                      {team.availability}
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{team.summary}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Our process</div>
-            <div className="mt-6 space-y-4">
-              {catalog.process.map((step, index) => (
-                <div key={step} className="flex gap-4 rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] text-sm font-semibold text-[var(--studio-ink)]">
-                    0{index + 1}
-                  </div>
-                  <p className="text-sm leading-7 text-[var(--studio-ink-soft)]">{step}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+        <div className="max-w-2xl">
+          <div className="studio-kicker">How an engagement runs</div>
+          <h2 className="studio-heading mt-4">From first call to launch, in one continuous record.</h2>
         </div>
-      </section>
-
-      <section className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="studio-panel rounded-[2.8rem] px-7 py-8 sm:px-10 lg:px-14 lg:py-12">
-          <div className="grid gap-8 xl:grid-cols-[0.94fr_1.06fr] xl:items-end">
-            <div>
-              <div className="studio-kicker">Trust & credibility</div>
-              <h2 className="studio-heading mt-4">Quality you can verify before you invest.</h2>
-              <div className="mt-6 space-y-4">
-                {featuredTestimonials.map((item) => (
-                  <div key={item.id} className="rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                    <p className="text-base leading-8 text-[var(--studio-ink)]">{item.quote}</p>
-                    <div className="mt-3 text-sm text-[var(--studio-ink-soft)]">{item.name}</div>
-                  </div>
-                ))}
+        <ol className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {catalog.process.slice(0, 4).map((step, index) => (
+            <li key={step} className="relative">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--studio-signal)]/30 text-xs font-semibold text-[var(--studio-signal)]">
+                  0{index + 1}
+                </span>
+                <div className="h-px flex-1 bg-[var(--studio-line)]" />
               </div>
-            </div>
+              <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">{step}</p>
+            </li>
+          ))}
+        </ol>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                {
-                  icon: Waypoints,
-                  title: "Full project visibility",
-                  body: "Scope, payments, reviews, and delivery milestones — visible to you at every stage.",
-                },
-                {
-                  icon: Layers3,
-                  title: "One team, one workspace",
-                  body: "Design, development, finance, and support all work from the same project record.",
-                },
-                {
-                  icon: Sparkles,
-                  title: "Custom work, premium standard",
-                  body: "Bespoke projects receive the same structured process, clear milestones, and polish as any package.",
-                },
-                {
-                  icon: Target,
-                  title: "Everything in your account",
-                  body: "Project history, invoices, and updates are always accessible from your HenryCo account.",
-                },
-              ].map((item) => (
-                <div key={item.title} className="rounded-[1.8rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                  <item.icon className="h-5 w-5 text-[var(--studio-signal)]" />
-                  <div className="mt-4 text-lg font-semibold text-[var(--studio-ink)]">{item.title}</div>
-                  <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.body}</p>
-                </div>
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--studio-line)] pt-6">
+          <div>
+            <div className="studio-kicker">Specialist teams</div>
+            <p className="mt-2 text-sm text-[var(--studio-ink-soft)]">
+              Matched to project type. Availability shown live on each team.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {featuredTeams.map((team) => (
+              <span
+                key={team.id}
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] bg-black/15 px-3.5 py-1.5 text-xs font-medium text-[var(--studio-ink)]"
+              >
+                {team.name}
+                <span className="text-[10px] uppercase tracking-[0.18em] text-[var(--studio-signal)]">{team.availability}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10 space-y-8">
+        <PublicSpotlight
+          tone="contrast"
+          eyebrow="Trust & credibility"
+          title="Quality you can verify before you invest."
+          body="Every project runs on a single record &mdash; scope, payments, reviews, milestones. Nothing about your engagement lives in a back-channel."
+          aside={
+            <div className="space-y-5">
+              {featuredTestimonials.map((item) => (
+                <figure key={item.id} className="border-l border-white/20 pl-5">
+                  <blockquote className="text-sm leading-7 text-white/90">&ldquo;{item.quote}&rdquo;</blockquote>
+                  <figcaption className="mt-2 text-xs uppercase tracking-[0.18em] text-white/60">{item.name}</figcaption>
+                </figure>
               ))}
             </div>
+          }
+        />
+
+        <PublicProofRail
+          density="tight"
+          variant="rail"
+          items={[
+            { label: "Visibility", value: "Full project", hint: "Scope, payments, reviews — visible at every stage." },
+            { label: "Workspace", value: "One team", hint: "Design, dev, finance, support — same record." },
+            { label: "Standard", value: "Premium", hint: "Custom work runs the same milestones as packages." },
+            { label: "Account", value: "Always on", hint: "History, invoices, updates from your HenryCo account." },
+          ]}
+        />
+
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border border-[var(--studio-line)] bg-black/15 px-6 py-5">
+          <div className="flex items-center gap-3 text-[var(--studio-ink-soft)]">
+            <Target className="h-5 w-5 text-[var(--studio-signal)]" />
+            <span className="text-sm">Ready to scope a project? Brief takes about 8 minutes.</span>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/request" className="studio-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold">
+              Start a brief
+            </Link>
+            <Link href="/pricing" className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold">
+              See packages
+            </Link>
           </div>
         </div>
       </section>
