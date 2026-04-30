@@ -804,7 +804,8 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         <button
           type="submit"
           disabled={submitting}
-          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80"
+          aria-busy={submitting}
+          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] disabled:cursor-wait disabled:opacity-80 disabled:active:translate-y-0"
         >
           <ButtonPendingContent
             pending={submitting}
@@ -816,7 +817,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </button>
         <Link
           href={getSharedAccountPropertyUrl("listings")}
-          className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
+          className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px]"
         >
           Open property account
         </Link>

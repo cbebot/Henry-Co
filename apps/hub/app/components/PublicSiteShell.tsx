@@ -178,18 +178,21 @@ export default function PublicSiteShell({
 
       <main>{children}</main>
 
-      <footer className="border-t border-white/10 bg-[var(--site-footer-bg,rgba(0,0,0,0.22))]">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
-          <div>
+      <footer className="mt-20 border-t border-white/10 bg-[var(--site-footer-bg,rgba(0,0,0,0.22))]">
+        <div
+          aria-hidden
+          className="pointer-events-none mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-[color:var(--accent,#C9A227)]/40 to-transparent"
+        />
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:px-8">
+          <div className="space-y-5">
             <div className="flex items-center gap-3">
               <BrandLogo
                 src={settings.logo_url}
                 alt={settings.brand_title || "Henry & Co."}
                 accent={settings.brand_accent || "#C9A227"}
-                wrapperClassName="h-11 w-11"
-                imageClassName="max-h-8 max-w-8 p-1"
+                wrapperClassName="h-10 w-10"
+                imageClassName="max-h-7 max-w-7 p-1"
               />
-
               <div>
                 <div className="text-sm font-semibold tracking-[0.18em] text-[var(--site-text,#ffffff)]">
                   {settings.brand_title}
@@ -200,99 +203,122 @@ export default function PublicSiteShell({
               </div>
             </div>
 
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--site-text-soft,rgba(255,255,255,0.72))]">
+            <p className="max-w-md text-sm leading-7 text-[var(--site-text-soft,rgba(255,255,255,0.72))]">
               {settings.footer_blurb || settings.brand_description}
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-4 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))]">
+            <div className="space-y-1.5 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))]">
               {settings.support_email ? (
                 <a
                   href={`mailto:${settings.support_email}`}
-                  className="inline-flex items-center gap-2 transition hover:text-white"
+                  className="inline-flex items-center gap-2 font-medium text-[var(--site-text,#ffffff)] transition hover:text-white"
                 >
-                  <Mail className="h-4 w-4 text-[color:var(--accent)]" />
+                  <Mail className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                   {settings.support_email}
                 </a>
               ) : null}
-
               {settings.support_phone ? (
                 <a
                   href={`tel:${settings.support_phone}`}
                   className="inline-flex items-center gap-2 transition hover:text-white"
                 >
-                  <Phone className="h-4 w-4 text-[color:var(--accent)]" />
+                  <Phone className="h-3.5 w-3.5 text-[color:var(--accent)]" />
                   {settings.support_phone}
                 </a>
               ) : null}
             </div>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-                Company
-              </div>
-              <div className="mt-4 grid gap-2">
-                <Link
-                  href="/"
-                  className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/about"
-                  className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-                >
-                  About
-                </Link>
-                <Link
-                  href="/contact"
-                  className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-                >
-                  Contact
-                </Link>
-                <Link
-                  href={getAccountUrl("/settings")}
-                  className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-                >
-                  Language & preferences
-                </Link>
-              </div>
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
+              Company
             </div>
+            <div className="mt-4 grid gap-3">
+              <Link
+                href="/"
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                Home
+              </Link>
+              <Link
+                href="/about"
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                Contact
+              </Link>
+              <Link
+                href="/search"
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                Search
+              </Link>
+            </div>
+          </div>
 
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-                Legal
-              </div>
-              <div className="mt-4 grid gap-2">
-                <Link
-                  href="/privacy"
-                  className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-                >
-                  Privacy
-                </Link>
-                <Link
-                  href="/terms"
-                  className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-                >
-                  Terms
-                </Link>
-              </div>
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
+              HenryCo
+            </div>
+            <div className="mt-4 grid gap-3">
+              <Link
+                href={getAccountUrl("/")}
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                HenryCo account
+              </Link>
+              <Link
+                href={getAccountUrl("/settings")}
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                Language &amp; preferences
+              </Link>
+              <Link
+                href="/preferences"
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                Email preferences
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
+              Legal
+            </div>
+            <div className="mt-4 grid gap-3">
+              <Link
+                href="/privacy"
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
+              >
+                Terms
+              </Link>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-white/8 px-4 py-4 text-xs text-[var(--site-text-muted,rgba(255,255,255,0.55))] sm:px-6 lg:px-8">
-          <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-t border-white/8 px-4 py-5 text-xs text-[var(--site-text-muted,rgba(255,255,255,0.55))] sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}
+              © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}. All rights reserved.
             </div>
             <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
               <span
                 aria-hidden
                 className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent,#C9A227)]/85"
               />
-              Designed by HenryCo Studio
+              Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
             </span>
           </div>
         </div>

@@ -52,79 +52,67 @@ export async function PublicFooter() {
   const copy = getMarketplacePublicCopy(locale);
   return (
     <footer className="mt-20 border-t border-[var(--market-line)] bg-[rgba(2,4,10,0.84)] text-[var(--market-paper-white)] backdrop-blur-2xl">
-      <div className="mx-auto max-w-[1480px] px-4 py-14 sm:px-6 xl:px-8">
-        <div className="market-panel relative overflow-hidden rounded-[2.4rem] px-6 py-8 sm:px-8 sm:py-10">
-          <div className="absolute inset-y-0 right-0 hidden w-[34%] bg-[radial-gradient(circle_at_center,rgba(154,174,164,0.18),transparent_64%)] lg:block" />
-          <div className="relative grid gap-10 xl:grid-cols-[1.2fr,0.8fr,0.8fr,0.8fr]">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-3 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-2">
-                <Sparkles className="h-4 w-4 text-[var(--market-brass)]" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-                  HenryCo Marketplace
-                </span>
-              </div>
-              <div className="space-y-4">
-                <p className="max-w-3xl font-[family:var(--font-marketplace-display)] text-[2.8rem] leading-[1.02] tracking-[-0.05em] text-[var(--market-paper-white)] sm:text-[3.4rem]">
-                  {copy.footer.brandSubtitle}
-                </p>
-                <p className="max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-                  {copy.footer.brandBody}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/search"
-                  className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
-                >
-                  {copy.home.primaryCta} <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href={getAccountUrl("/marketplace")}
-                  className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
-                >
-                  {copy.home.secondaryCta} <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </div>
+      <div
+        aria-hidden
+        className="pointer-events-none mx-auto h-px max-w-[1480px] bg-gradient-to-r from-transparent via-[var(--market-brass)]/35 to-transparent"
+      />
+      <div className="mx-auto max-w-[1480px] px-4 py-12 sm:px-6 xl:px-8">
+        <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
+          <div className="space-y-5">
+            <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
+              <Sparkles className="h-3.5 w-3.5" />
+              HenryCo Marketplace
             </div>
-
-            <FooterColumn
-              title={copy.footer.shopTitle}
-              links={copy.footer.shopLinks}
-            />
-
-            <FooterColumn
-              title={copy.footer.sellTitle}
-              links={[
-                ...copy.footer.sellLinks,
-                {
-                  href: getAccountUrl("/marketplace"),
-                  label: translateSurfaceLabel(locale, "HenryCo account"),
-                  external: true,
-                },
-              ]}
-            />
-
-            <div className="space-y-4 text-sm text-[var(--market-muted)]">
-              <p className="font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
-                {copy.footer.supportTitle}
-              </p>
-              <p>marketplace@henrycogroup.com</p>
+            <p className="max-w-md text-sm leading-7 text-[var(--market-muted)]">
+              {copy.footer.brandBody}
+            </p>
+            <div className="space-y-1.5 text-sm text-[var(--market-muted)]">
+              <p className="text-[var(--market-paper-white)]">marketplace@henrycogroup.com</p>
               <p>+234 913 395 7084</p>
-              <p>marketplace.henrycogroup.com</p>
-              <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7">
-                {copy.footer.supportBody}
-              </div>
             </div>
           </div>
+
+          <FooterColumn
+            title={copy.footer.shopTitle}
+            links={copy.footer.shopLinks}
+          />
+
+          <FooterColumn
+            title={copy.footer.sellTitle}
+            links={[
+              ...copy.footer.sellLinks,
+              {
+                href: getAccountUrl("/marketplace"),
+                label: translateSurfaceLabel(locale, "HenryCo account"),
+                external: true,
+              },
+            ]}
+          />
+
+          <FooterColumn
+            title={copy.footer.supportTitle}
+            links={[
+              { href: "/help", label: translateSurfaceLabel(locale, "Help and support") },
+              { href: "/contact", label: translateSurfaceLabel(locale, "Contact") },
+              { href: "/trust", label: translateSurfaceLabel(locale, "Trust") },
+              { href: "/preferences", label: translateSurfaceLabel(locale, "Preferences") },
+            ]}
+          />
         </div>
 
-        <div className="mx-auto mt-6 flex max-w-[1480px] flex-col items-start gap-3 px-1 text-xs text-[var(--market-muted)]/90 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            &copy; {new Date().getFullYear()} HenryCo Marketplace. All rights reserved.
+        <div className="mt-10 flex flex-col items-start gap-3 border-t border-[var(--market-line)] pt-5 text-xs text-[var(--market-muted)]/90 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span>&copy; {new Date().getFullYear()} HenryCo Marketplace. {translateSurfaceLabel(locale, "All rights reserved")}.</span>
+            <Link href="/privacy" className="transition hover:text-[var(--market-paper-white)]">
+              {translateSurfaceLabel(locale, "Privacy")}
+            </Link>
+            <Link href="/terms" className="transition hover:text-[var(--market-paper-white)]">
+              {translateSurfaceLabel(locale, "Terms")}
+            </Link>
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
-            Designed by HenryCo Studio
+            Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
           </span>
         </div>
       </div>

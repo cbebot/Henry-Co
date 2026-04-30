@@ -30,9 +30,9 @@ export default async function PropertyHomePage() {
 
   return (
     <main className="pb-20">
-      <section className="mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 lg:px-10">
+      <section className="mx-auto max-w-[92rem] px-5 pt-6 sm:px-8 sm:pt-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-          <div className="property-panel rounded-[3rem] px-7 py-8 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
+          <div className="property-panel rounded-[2rem] px-5 py-6 sm:rounded-[2.4rem] sm:px-8 sm:py-10 lg:rounded-[3rem] lg:px-14 lg:py-14">
             <div className="flex flex-wrap items-center gap-2">
               <span className="property-kicker">{copy.home.heroKicker}</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
@@ -40,30 +40,30 @@ export default async function PropertyHomePage() {
                 Vetted listings, verified owners
               </span>
             </div>
-            <h1 className="property-display mt-6 max-w-4xl text-balance text-[var(--property-ink)]">
+            <h1 className="property-display mt-5 max-w-4xl text-balance text-[var(--property-ink)] sm:mt-6">
               {copy.home.heroTitle}
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--property-ink-soft)] sm:text-lg">
+            <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--property-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg">
               {copy.home.heroBody}
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
               <Link
                 href="/search"
-                className="property-button-primary inline-flex items-center gap-3 rounded-full px-6 py-4 text-sm font-semibold"
+                className="property-button-primary inline-flex items-center gap-3 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] sm:px-6 sm:py-4"
               >
                 {copy.home.primaryCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/submit"
-                className="property-button-secondary inline-flex rounded-full px-6 py-4 text-sm font-semibold"
+                className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] sm:px-6 sm:py-4"
               >
                 {copy.home.secondaryCta}
               </Link>
             </div>
 
-            <div className="mt-10">
+            <div className="mt-8 sm:mt-10">
               <PropertySearchBar areas={snapshot.areas} submitLabel={copy.home.searchSubmit} copy={copy} />
             </div>
           </div>

@@ -36,8 +36,8 @@ export default async function HomePage() {
   return (
     <main>
       <section className="learn-hero">
-        <div className="mx-auto max-w-[92rem] px-5 py-16 sm:px-8 sm:py-20 xl:px-10">
-          <div className="learn-panel learn-mesh rounded-[2.8rem] p-8 sm:p-12 xl:p-14">
+        <div className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 sm:py-16 xl:px-10 xl:py-20">
+          <div className="learn-panel learn-mesh rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-10 xl:rounded-[2.8rem] xl:p-14">
             <p className="learn-kicker">HenryCo Learn</p>
             {viewer.user ? (
               <p className="mt-4 text-sm font-semibold tracking-tight text-[var(--learn-ink-soft)]">
@@ -45,38 +45,44 @@ export default async function HomePage() {
                 {heroFirstName ? `, ${heroFirstName}` : ""}.
               </p>
             ) : null}
-            <h1 className={`learn-display max-w-3xl text-balance text-[var(--learn-ink)] ${viewer.user ? "mt-5" : "mt-6"}`}>
+            <h1 className={`learn-display max-w-3xl text-balance text-[var(--learn-ink)] ${viewer.user ? "mt-4 sm:mt-5" : "mt-5 sm:mt-6"}`}>
               {t("Skills that stick. Proof that travels.")}
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--learn-ink-soft)] sm:text-lg">
+            <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--learn-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg">
               {t(
                 "Pick a course, move through lessons in order, track progress in your HenryCo account, and earn a certificate others can verify online. Built for busy adults who want clarity, not jargon.",
               )}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/courses" className="learn-button-primary rounded-full px-5 py-3 text-sm font-semibold">
+            <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
+              <Link
+                href="/courses"
+                className="learn-button-primary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
+              >
                 {t("Browse courses")}
               </Link>
               {viewer.user ? (
                 <a
                   href={getAccountLearnUrl("active")}
-                  className="learn-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
+                  className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
                 >
                   {t("Continue learning")}
                 </a>
               ) : (
                 <a
                   href={getSharedAuthUrl("signup", "/courses")}
-                  className="learn-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
+                  className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
                 >
                   {t("Create free account")}
                 </a>
               )}
-              <Link href="/academy" className="learn-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
+              <Link
+                href="/academy"
+                className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--learn-mint-soft)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1f1d] active:translate-y-[0.5px] sm:px-5 sm:py-3"
+              >
                 {t("How it works")}
               </Link>
             </div>
-            <div className="mt-10">
+            <div className="mt-8 sm:mt-10">
               <QuickMetricStrip
                 items={[
                   { label: t("Programs open now"), value: String(academy.courses.length) },

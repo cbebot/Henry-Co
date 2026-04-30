@@ -44,8 +44,9 @@ export default function PendingSubmitButton({
     <button
       type="submit"
       disabled={disabled || pending}
+      aria-busy={pending}
       className={cn(
-        "inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-70",
+        "inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#bb7542)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px] disabled:cursor-not-allowed disabled:opacity-70 disabled:active:translate-y-0",
         pending && "translate-y-[0.5px] saturate-90",
         variantClasses(variant),
         className

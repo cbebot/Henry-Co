@@ -93,12 +93,13 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
             type="button"
             disabled={saving}
             aria-busy={saving}
+            aria-pressed={wishlisted}
             onClick={() => void toggleWishlist(product.slug)}
             className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-xl transition disabled:cursor-wait",
+              "inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-xl transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px] disabled:cursor-wait disabled:active:translate-y-0",
               wishlisted
                 ? "border-[rgba(255,171,151,0.48)] bg-[rgba(255,171,151,0.16)] text-[var(--market-alert)]"
-                : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.12)] text-[var(--market-paper-white)]"
+                : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.12)] text-[var(--market-paper-white)] hover:bg-[rgba(255,255,255,0.18)]"
             )}
             aria-label={wishlisted ? copy.productCard.removeFromWishlist : copy.productCard.saveToWishlist}
           >
@@ -161,7 +162,7 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
               aria-busy={adding}
               onClick={() => void handleAddToCart()}
               className={cn(
-                "inline-flex h-11 w-11 items-center justify-center rounded-full transition disabled:cursor-wait",
+                "inline-flex h-11 w-11 items-center justify-center rounded-full transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px] disabled:cursor-wait disabled:active:translate-y-0",
                 adding
                   ? "bg-[rgba(221,182,120,0.9)] text-[var(--market-noir)]"
                   : justAdded
@@ -179,7 +180,7 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
 
             <Link
               href={`/product/${product.slug}`}
-              className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--market-line-strong)] bg-[rgba(255,255,255,0.04)] px-4 text-sm font-semibold text-[var(--market-paper-white)] transition hover:border-[rgba(117,209,255,0.42)] hover:text-[var(--market-paper-white)]"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--market-line-strong)] bg-[rgba(255,255,255,0.04)] px-4 text-sm font-semibold text-[var(--market-paper-white)] transition outline-none hover:border-[rgba(117,209,255,0.42)] hover:bg-[rgba(255,255,255,0.06)] focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
             >
               {copy.productCard.view}
             </Link>

@@ -14,9 +14,9 @@ export default async function StudioHomePage() {
 
   return (
     <main className="pb-24">
-      <section className="mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 lg:px-10">
+      <section className="mx-auto max-w-[92rem] px-5 pt-6 sm:px-8 sm:pt-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <div className="studio-panel studio-hero studio-mesh rounded-[3rem] px-7 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
+          <div className="studio-panel studio-hero studio-mesh rounded-[2rem] px-5 py-7 sm:rounded-[2.4rem] sm:px-9 sm:py-12 lg:rounded-[3rem] lg:px-14 lg:py-16">
             <div className="flex flex-wrap items-center gap-2">
               <span className="studio-kicker">HenryCo Studio</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
@@ -24,24 +24,24 @@ export default async function StudioHomePage() {
                 Software built with sharper process
               </span>
             </div>
-            <h1 className="studio-display mt-7 max-w-3xl text-balance text-[var(--studio-ink)]">
+            <h1 className="studio-display mt-5 max-w-3xl text-balance text-[var(--studio-ink)] sm:mt-7">
               Serious software, delivered with discipline.
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-[var(--studio-ink-soft)] sm:text-lg">
+            <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--studio-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg">
               We design and build websites, web apps, and internal platforms for companies that expect a calmer path from brief to launch &mdash; scoped in plain English, priced on milestones, delivered in one structured workspace.
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-9 sm:gap-3">
               <Link
                 href="/pick"
-                className="studio-button-primary inline-flex items-center gap-3 rounded-full px-6 py-4 text-sm font-semibold"
+                className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px] sm:gap-3 sm:px-6 sm:py-4"
               >
                 Help me pick a project type
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/request"
-                className="studio-button-secondary inline-flex rounded-full px-6 py-4 text-sm font-semibold"
+                className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px] sm:px-6 sm:py-4"
               >
                 Start a brief
               </Link>

@@ -22,12 +22,13 @@ export function PublicFooter({
   description,
   support,
   groups,
-  attribution = "Designed by HenryCo Studio",
+  attribution = "Designed and built in-house by HenryCo Studio for the HenryCo ecosystem",
   attributionHref,
   bottomLinks,
   afterDescription,
   afterSupport,
   socials,
+  tone = "default",
   className,
 }: {
   brand: string;
@@ -48,16 +49,22 @@ export function PublicFooter({
   afterSupport?: ReactNode;
   /** Social icon links. */
   socials?: { label: string; href: string; icon?: ReactNode }[];
+  /** `onDark` keeps the footer legible on navy / black ecosystem surfaces. */
+  tone?: "default" | "onDark";
   className?: string;
 }) {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const surfaceCopy = getSurfaceCopy(locale);
   const localize = (label: string) => translateSurfaceLabel(locale, label);
+  const onDark = tone === "onDark";
 
   return (
     <footer
       className={cn(
-        "relative mt-20 border-t border-zinc-200/80 bg-white/85 backdrop-blur-xl dark:border-white/10 dark:bg-[#050816]/60",
+        "relative mt-20 border-t backdrop-blur-xl",
+        onDark
+          ? "border-white/10 bg-[#050816]/72 text-white"
+          : "border-zinc-200/80 bg-white/85 dark:border-white/10 dark:bg-[#050816]/60",
         className
       )}
     >

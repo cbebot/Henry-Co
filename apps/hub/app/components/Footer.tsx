@@ -50,10 +50,19 @@ export default function Footer() {
       </div>
 
       <div
-        className="border-t px-4 py-5 text-center text-xs text-[var(--site-text-muted)] sm:px-6 lg:px-8"
+        className="border-t px-4 py-5 text-xs text-[var(--site-text-muted)] sm:px-6 lg:px-8"
         style={{ borderColor: "var(--site-border)" }}
       >
-        © {currentYear} {brandTitle}. All rights reserved.
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>© {currentYear} {brandTitle}. All rights reserved.</div>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
+            <span
+              aria-hidden
+              className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500/80"
+            />
+            Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+          </span>
+        </div>
       </div>
     </footer>
   );

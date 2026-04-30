@@ -32,18 +32,18 @@ export default async function HomePage() {
     >
       {/* Hero — centered editorial. Search line + quick filters + CTA row.
           No inner card tiles, no right-stack of trust panels. */}
-      <section className="jobs-grid border-b border-black/5 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <section className="jobs-grid border-b border-black/5 px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-4xl text-center">
           <p className="jobs-kicker">{copy.home.kicker}</p>
           <h1 className="mt-4 jobs-display text-balance">{copy.home.title}</h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[var(--jobs-muted)] text-pretty">
+          <p className="mx-auto mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--jobs-muted)] sm:mt-6 sm:text-base sm:leading-8">
             {copy.home.subtitle}
           </p>
 
           <form
             action="/jobs"
             method="GET"
-            className="mx-auto mt-10 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-stretch"
+            className="mx-auto mt-7 flex max-w-xl flex-col gap-3 sm:mt-10 sm:flex-row sm:items-stretch"
           >
             <label className="sr-only" htmlFor="home-q">
               {copy.home.searchButton}
@@ -57,7 +57,7 @@ export default async function HomePage() {
             />
             <button
               type="submit"
-              className="jobs-button-primary shrink-0 rounded-[1.15rem] px-8 py-3.5 text-sm font-semibold sm:rounded-full"
+              className="jobs-button-primary shrink-0 rounded-[1.15rem] px-8 py-3.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--jobs-accent)]/55 focus-visible:ring-offset-2 active:translate-y-[0.5px] sm:rounded-full"
             >
               {copy.home.searchButton}
             </button>

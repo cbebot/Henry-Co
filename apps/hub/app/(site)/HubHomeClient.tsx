@@ -1371,19 +1371,22 @@ function PageFooter({
 }) {
   const { copy } = useHubChrome();
   return (
-    <footer className="border-t border-white/10 bg-black/20">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
-        <div>
+    <footer className="mt-16 border-t border-white/10 bg-black/20">
+      <div
+        aria-hidden
+        className="pointer-events-none mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-amber-300/35 to-transparent"
+      />
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
+        <div className="space-y-5">
           <div className="flex items-center gap-3">
             <BrandMark
               src={brandLogoUrl}
               alt={`${brandTitle} logo`}
               accent={brandAccent}
-              wrapperClassName="h-11 w-11"
+              wrapperClassName="h-10 w-10"
               imageClassName="object-contain p-2"
               iconClassName="h-5 w-5"
             />
-
             <div>
               <div className="text-sm font-semibold tracking-[0.18em] text-white/90">
                 {brandTitle}
@@ -1394,30 +1397,40 @@ function PageFooter({
             </div>
           </div>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-white/62">{footerText}</p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href="#divisions"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/85 transition hover:bg-white/10"
-            >
-              {copy.footer.exploreDivisions}
-              <ArrowRight className="h-4 w-4" />
-            </a>
-
-            <a
-              href="/about"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/85 transition hover:bg-white/10"
-            >
-              {copy.footer.companyPages}
-              <ChevronRight className="h-4 w-4" />
-            </a>
-          </div>
+          <p className="max-w-md text-sm leading-7 text-white/62">{footerText}</p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          <FooterColumn title={copy.footer.colHub} links={companyLinks} />
-          <FooterColumn title={copy.footer.colGlobal} links={nextPages} />
+        <FooterColumn title={copy.footer.colHub} links={companyLinks} />
+        <FooterColumn title={copy.footer.colGlobal} links={nextPages} />
+      </div>
+
+      <div className="border-t border-white/10 px-4 py-5 text-xs text-white/45 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span>© {new Date().getFullYear()} {brandTitle}. All rights reserved.</span>
+            <a
+              href="/privacy"
+              className="text-white/55 transition hover:text-white"
+            >
+              Privacy
+            </a>
+            <a
+              href="/terms"
+              className="text-white/55 transition hover:text-white"
+            >
+              Terms
+            </a>
+            <a
+              href="/preferences"
+              className="text-white/55 transition hover:text-white"
+            >
+              Preferences
+            </a>
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
+            <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-amber-300/85" />
+            Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+          </span>
         </div>
       </div>
     </footer>

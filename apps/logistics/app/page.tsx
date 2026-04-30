@@ -40,23 +40,23 @@ export default async function LogisticsHomePage() {
                 Built for people and businesses that need honest ETAs, clean handoffs,
                 and a customer experience that stays premium when operations get noisy.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
                 <Link
                   href="/book"
-                  className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3.5 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.24)] transition hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-5 py-3 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.24)] transition outline-none hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[var(--logistics-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09060a] active:translate-y-[0.5px] motion-reduce:hover:translate-y-0 sm:px-6 sm:py-3.5"
                 >
                   Book a delivery
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/quote"
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:bg-white/[0.07]"
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white/90 transition outline-none hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-[var(--logistics-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09060a] active:translate-y-[0.5px] sm:px-6 sm:py-3.5"
                 >
                   Request a quote
                 </Link>
                 <Link
                   href="/track"
-                  className="inline-flex items-center gap-2 rounded-full px-4 py-3.5 text-sm font-semibold text-[var(--logistics-accent-soft)] underline-offset-4 hover:underline"
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[var(--logistics-accent-soft)] underline-offset-4 transition outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[var(--logistics-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09060a] sm:py-3.5"
                 >
                   Track a shipment
                 </Link>

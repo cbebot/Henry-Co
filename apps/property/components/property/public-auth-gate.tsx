@@ -37,20 +37,20 @@ export function PropertyPublicAuthGate({
       <div className="mt-5 flex flex-wrap gap-3">
         <Link
           href={loginHref}
-          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold"
+          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px]"
         >
           Sign in to continue
           <ArrowRight className="h-4 w-4" />
         </Link>
         <Link
           href={signupHref}
-          className="property-button-secondary inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold"
+          className="property-button-secondary inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px]"
         >
           Create account
         </Link>
       </div>
       <p className="mt-4 text-xs leading-relaxed text-[var(--property-ink-soft)]">
-        You'll return to this page after signing in. HenryCo uses one account across divisions
+        You&rsquo;ll return to this page after signing in. HenryCo uses one account across divisions
         so inquiries and listings stay traceable and secure.
       </p>
     </div>
