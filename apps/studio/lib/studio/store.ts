@@ -160,20 +160,52 @@ export async function uploadStudioFile(
   kind: StudioProjectFile["kind"],
   file: File
 ): Promise<StudioProjectFile | null> {
-  const filename = sanitizeFileSegment(file.name);
-  const objectPath = `${kind}/${cleanText(entityId)}/${Date.now()}-${filename}`;
+  if (!(file instanceof File) || file.size <= 0) {
+    return null;
+  }
+
+  const cloudName = String(process.env.CLOUDINARY_CLOUD_NAME || "").trim();
+  const apiKey = String(process.env.CLOUDINARY_API_KEY || "").trim();
+  const apiSecret = String(process.env.CLOUDINARY_API_SECRET || "").trim();
+  const baseFolder = String(process.env.CLOUDINARY_FOLDER || "henryco/studio").trim();
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    return null;
+  }
+
+  const filenameSlug = sanitizeFileSegment(file.name).slice(0, 32);
+  const folder = [baseFolder, kind, sanitizeFileSegment(entityId).slice(0, 48)]
+    .filter(Boolean)
+    .join("/");
+  const publicId = `studio-${kind}-${Date.now()}-${filenameSlug || "file"}`;
+  const timestamp = Math.floor(Date.now() / 1000);
+  const signaturePayload = `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
+  const signature = createHash("sha1").update(signaturePayload).digest("hex");
+
+  const isImage = String(file.type || "").toLowerCase().startsWith("image/");
+  const resourcePath = isImage ? "image/upload" : "raw/upload";
+
+  const form = new FormData();
+  form.set("file", file, file.name);
+  form.set("api_key", apiKey);
+  form.set("timestamp", String(timestamp));
+  form.set("signature", signature);
+  form.set("folder", folder);
+  form.set("public_id", publicId);
 
   try {
-    await ensureStudioBucket();
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/${resourcePath}`,
+      { method: "POST", body: form }
+    );
 
-    const admin = createAdminSupabase();
-    const bytes = await file.arrayBuffer();
-    const { error } = await admin.storage.from(STUDIO_BUCKET).upload(objectPath, bytes, {
-      contentType: file.type || "application/octet-stream",
-      upsert: false,
-    });
+    const payload = (await response.json().catch(() => null)) as
+      | { secure_url?: string; public_id?: string; error?: { message?: string } }
+      | null;
 
-    if (error) throw error;
+    if (!response.ok || !payload?.secure_url || !payload?.public_id) {
+      return null;
+    }
 
     return {
       id: createId(),
@@ -183,8 +215,8 @@ export async function uploadStudioFile(
       createdAt: new Date().toISOString(),
       kind,
       label: cleanText(file.name),
-      path: objectPath,
-      bucket: STUDIO_BUCKET,
+      path: payload.secure_url,
+      bucket: "cloudinary",
       size: file.size,
       mimeType: file.type || null,
     };
