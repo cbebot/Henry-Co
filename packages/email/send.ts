@@ -1,14 +1,16 @@
 import { getBrevoApiKey, sendBrevoEmail } from "./providers/brevo";
 import { getResendApiKey, sendResendEmail } from "./providers/resend";
+import { resolveSenderIdentity } from "./sender-identity";
 import type {
   EmailDispatchResult,
   EmailProviderId,
+  EmailPurpose,
   SendTransactionalEmailInput,
 } from "./types";
 
 export type ResolvedEmailProvider =
-  | { provider: "brevo"; reason: "explicit" | "fallback" }
-  | { provider: "resend"; reason: "default" | "explicit" | "fallback" }
+  | { provider: "brevo"; reason: "explicit" | "fallback" | "purpose" }
+  | { provider: "resend"; reason: "default" | "explicit" | "fallback" | "purpose" }
   | { provider: "none"; reason: "no_provider_configured" };
 
 function readPreference(): EmailProviderId | null {
@@ -17,19 +19,48 @@ function readPreference(): EmailProviderId | null {
   return null;
 }
 
-export function resolveEmailProvider(): ResolvedEmailProvider {
+function readFallback(): EmailProviderId | null {
+  const raw = process.env.EMAIL_FALLBACK_PROVIDER?.trim().toLowerCase();
+  if (raw === "brevo" || raw === "resend") return raw;
+  return null;
+}
+
+/**
+ * Provider routing rules:
+ *  - purpose === "support" prefers Resend if configured, then Brevo.
+ *  - purpose === "newsletter" / "auth" / transactional all prefer Brevo
+ *    if configured (Brevo is the proven sending provider for HenryCo).
+ *  - Without a purpose, the EMAIL_PROVIDER preference wins, then a
+ *    configured fallback, then any provider that has a key.
+ */
+export function resolveEmailProvider(purpose?: EmailPurpose): ResolvedEmailProvider {
   const preference = readPreference();
+  const fallback = readFallback();
   const brevoConfigured = Boolean(getBrevoApiKey());
   const resendConfigured = Boolean(getResendApiKey());
 
+  if (purpose === "support") {
+    if (resendConfigured) return { provider: "resend", reason: "purpose" };
+    if (brevoConfigured) return { provider: "brevo", reason: "fallback" };
+    return { provider: "none", reason: "no_provider_configured" };
+  }
+
+  if (purpose === "newsletter" || purpose === "auth") {
+    if (brevoConfigured) return { provider: "brevo", reason: "purpose" };
+    if (resendConfigured) return { provider: "resend", reason: "fallback" };
+    return { provider: "none", reason: "no_provider_configured" };
+  }
+
   if (preference === "brevo") {
     if (brevoConfigured) return { provider: "brevo", reason: "explicit" };
+    if (fallback === "resend" && resendConfigured) return { provider: "resend", reason: "fallback" };
     if (resendConfigured) return { provider: "resend", reason: "fallback" };
     return { provider: "none", reason: "no_provider_configured" };
   }
 
   if (preference === "resend") {
     if (resendConfigured) return { provider: "resend", reason: "explicit" };
+    if (fallback === "brevo" && brevoConfigured) return { provider: "brevo", reason: "fallback" };
     if (brevoConfigured) return { provider: "brevo", reason: "fallback" };
     return { provider: "none", reason: "no_provider_configured" };
   }
@@ -37,6 +68,18 @@ export function resolveEmailProvider(): ResolvedEmailProvider {
   if (resendConfigured) return { provider: "resend", reason: "default" };
   if (brevoConfigured) return { provider: "brevo", reason: "fallback" };
   return { provider: "none", reason: "no_provider_configured" };
+}
+
+function applySenderIdentity(input: SendTransactionalEmailInput): SendTransactionalEmailInput {
+  if (!input.purpose) return input;
+  // Explicit overrides win — never overwrite an explicit `from`/`fromName`.
+  if (input.from && input.fromName) return input;
+  const identity = resolveSenderIdentity(input.purpose);
+  return {
+    ...input,
+    from: input.from || identity.email,
+    fromName: input.fromName || identity.name,
+  };
 }
 
 export async function sendTransactionalEmail(
@@ -58,13 +101,14 @@ export async function sendTransactionalEmail(
     };
   }
 
-  const resolved = resolveEmailProvider();
+  const enriched = applySenderIdentity(input);
+  const resolved = resolveEmailProvider(enriched.purpose);
 
   if (resolved.provider === "brevo") {
-    return sendBrevoEmail(input);
+    return sendBrevoEmail(enriched);
   }
   if (resolved.provider === "resend") {
-    return sendResendEmail(input);
+    return sendResendEmail(enriched);
   }
 
   return {

@@ -8,6 +8,7 @@ export async function sendAccountEmail(
 ): Promise<boolean> {
   const result = await sendTransactionalEmail({
     to,
+    purpose: "auth",
     subject: template.subject,
     html: template.html,
   });

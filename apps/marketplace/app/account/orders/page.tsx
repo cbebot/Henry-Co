@@ -2,7 +2,7 @@ import { AccountOrderFeedClient } from "@/components/marketplace/account-order-f
 import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData, toMarketplaceOrderFeed } from "@/lib/marketplace/data";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +15,7 @@ export default async function AccountOrdersPage() {
     <WorkspaceShell
       title="Orders"
       description="Each order keeps payment state, split fulfillment, and dispute context visible in one buyer-friendly timeline."
-      nav={accountNav("/account/orders")}
+      {...accountWorkspaceNav("/account/orders")}
     >
       {feed.length ? (
         <AccountOrderFeedClient initialItems={feed} />

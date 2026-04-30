@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getOrderByNumber } from "@/lib/marketplace/data";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export default async function AccountOrderDetailPage({
     <WorkspaceShell
       title={order.orderNo}
       description="Split-order clarity stays visible with vendor-level fulfillment and payment state broken out separately."
-      nav={accountNav("/account/orders")}
+      {...accountWorkspaceNav("/account/orders")}
     >
       <section className="market-paper rounded-[1.75rem] p-6">
         <div className="grid gap-4 md:grid-cols-3">

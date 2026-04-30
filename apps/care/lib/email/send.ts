@@ -282,6 +282,7 @@ export async function sendCareEmail(input: SendCareEmailInput): Promise<EmailDis
 
     const dispatch = await sendTransactionalEmail({
       to: recipient,
+      purpose: "care",
       from: sender.email,
       fromName: sender.name,
       replyTo: replyTo ?? undefined,

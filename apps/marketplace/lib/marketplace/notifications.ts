@@ -1000,6 +1000,7 @@ async function performEmailDelivery(
 
   const dispatch = await sendTransactionalEmail({
     to: email,
+    purpose: "marketplace",
     from: getMarketplaceSenderAddress(),
     fromName: marketplace.name,
     subject: rendered.subject,

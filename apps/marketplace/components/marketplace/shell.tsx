@@ -11,6 +11,10 @@ import {
   Truck,
 } from "lucide-react";
 import { MarketplaceCartDrawer } from "@/components/marketplace/cart-drawer";
+import {
+  WorkspaceMobileNav,
+  type WorkspaceNavGroup,
+} from "@/components/marketplace/workspace-mobile-nav";
 import { getAccountUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
@@ -414,20 +418,38 @@ export async function WorkspaceShell({
   title,
   description,
   nav,
+  navGroups,
   actions,
   children,
 }: {
   title: string;
   description: string;
   nav: Array<{ href: string; label: string; active?: boolean }>;
+  /**
+   * Optional grouped representation of the same nav for mobile rendering.
+   * If omitted, the entire flat `nav` is rendered as a single "Workspace"
+   * group inside the mobile drawer.
+   */
+  navGroups?: WorkspaceNavGroup[];
   actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);
+  const groupsForMobile: WorkspaceNavGroup[] =
+    navGroups && navGroups.length > 0
+      ? navGroups
+      : [{ label: "Workspace", items: nav }];
+  const activeLabel = nav.find((item) => item.active)?.label ?? null;
   return (
-    <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[300px,1fr] xl:px-8">
-      <aside className="market-panel rounded-[2.1rem] p-4">
+    <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[300px,1fr] xl:px-8">
+      <WorkspaceMobileNav
+        title={title}
+        description={description}
+        groups={groupsForMobile}
+        currentLabel={activeLabel}
+      />
+      <aside className="market-panel hidden rounded-[2.1rem] p-4 lg:block">
         <p className="market-kicker">{copy.workspace.kicker}</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">{title}</h1>
         <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{description}</p>
@@ -436,6 +458,7 @@ export async function WorkspaceShell({
             <Link
               key={item.href}
               href={item.href}
+              aria-current={item.active ? "page" : undefined}
               className={cn(
                 "flex items-center justify-between rounded-[1.25rem] px-4 py-3 text-sm font-semibold transition",
                 item.active
@@ -454,7 +477,7 @@ export async function WorkspaceShell({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="market-kicker">{copy.workspace.operatorKicker}</p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--market-paper-white)]">
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-4xl">
                 {title}
               </h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">

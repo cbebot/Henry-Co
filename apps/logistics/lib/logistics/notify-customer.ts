@@ -87,9 +87,9 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
   if (email) {
     const dispatch = await sendTransactionalEmail({
       to: email,
+      purpose: "logistics",
       subject,
       text: bodyText,
-      fromName: "HenryCo Logistics",
     });
 
     if (dispatch.status === "sent") {

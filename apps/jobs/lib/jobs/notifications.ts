@@ -207,10 +207,10 @@ export async function sendJobsEmail(
 
   const dispatch = await sendTransactionalEmail({
     to: recipient,
+    purpose: "jobs",
     subject: rendered.subject,
     html: rendered.html,
     text: rendered.text,
-    fromName: "HenryCo Jobs",
     replyTo: jobs.supportEmail,
   });
 

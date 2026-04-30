@@ -3,7 +3,6 @@ import { sendTransactionalEmail } from "@henryco/email";
 import {
   extractEmailAddress,
   formatCurrency,
-  sanitizeHeaderValue,
 } from "@/lib/env";
 import { getAccountLearnUrl } from "@/lib/learn/links";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -170,13 +169,6 @@ function toText(layout: EmailLayout) {
   ].join("\n");
 }
 
-function fromAddress() {
-  const raw = sanitizeHeaderValue(
-    process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM || `${learn.name} <noreply@henrycogroup.com>`
-  );
-  return extractEmailAddress(raw) || "noreply@henrycogroup.com";
-}
-
 async function getOwnerRecipients() {
   const envTarget = extractEmailAddress(process.env.OWNER_ALERT_EMAIL || process.env.RESEND_SUPPORT_INBOX);
   if (envTarget) return [envTarget];
@@ -316,8 +308,7 @@ async function sendEmail(input: {
 
   const dispatch = await sendTransactionalEmail({
     to: recipient,
-    from: fromAddress(),
-    fromName: learn.name,
+    purpose: "learn",
     replyTo: learn.supportEmail,
     subject: input.layout.subject,
     html: renderEmail(input.layout),

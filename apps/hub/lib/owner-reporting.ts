@@ -244,10 +244,11 @@ async function sendOwnerReportEmail(input: {
 }) {
   const dispatch = await sendTransactionalEmail({
     to: input.to,
+    purpose: "security",
+    fromName: "HenryCo HQ",
     subject: input.subject,
     html: input.html,
     text: input.text,
-    fromName: "HenryCo HQ",
   });
 
   if (dispatch.status === "sent") {

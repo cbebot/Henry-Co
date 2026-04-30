@@ -234,6 +234,7 @@ async function sendEmail(
 
   const dispatch = await sendTransactionalEmail({
     to: recipient,
+    purpose: "property",
     subject: rendered.subject,
     html: rendered.html,
     text: rendered.text,

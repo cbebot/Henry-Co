@@ -2,7 +2,7 @@ import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import type { MarketplacePaymentRecord } from "@/lib/marketplace/types";
-import { accountNav } from "@/lib/marketplace/navigation";
+import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export default async function AccountPaymentsPage() {
     <WorkspaceShell
       title="Payments"
       description="Payment verification stays visible next to the order reference so bank-transfer review never feels opaque."
-      nav={accountNav("/account/payments")}
+      {...accountWorkspaceNav("/account/payments")}
     >
       {data.payments.length ? (
         <div className="space-y-4">
