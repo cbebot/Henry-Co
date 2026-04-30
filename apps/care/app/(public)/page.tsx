@@ -171,111 +171,231 @@ export default async function CareHomePage() {
         } as CSSProperties
       }
     >
-      {/* Editorial hero — kicker chip + display + body + CTAs.
-          Aside is a single image-or-summary card, not a 3-stack of panels. */}
-      <section className="mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 lg:px-10">
-        <div className="care-dash-card relative overflow-hidden rounded-[2.8rem] px-7 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(circle at top, color-mix(in srgb, var(--accent) 14%, transparent), transparent 32%)",
-            }}
-          />
-          <div className="pointer-events-none absolute right-[-8rem] top-[-5rem] h-80 w-80 rounded-full bg-[color:var(--accent-secondary)]/10 blur-3xl" />
+      {/* Premium editorial hero — no oversized rounded panel. Hairline brand
+          rule, tight typography, real photo (when configured) breathing in
+          the asymmetric grid. Three concierge-style service paths sit just
+          below the headline so visitors land knowing what to do. */}
+      <section className="relative mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 sm:pt-12 lg:px-10 lg:pt-16">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-px max-w-[92rem] bg-gradient-to-r from-transparent via-[color:var(--accent)]/45 to-transparent"
+        />
 
-          <div className="relative grid gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-            <div>
-              <div className="care-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/76">
-                <ShieldCheck className="h-4 w-4 text-[color:var(--accent)]" />
-                {heroBadge}
-              </div>
+        {/* Top trust strip — 3 micro signals + the always-available track link.
+            Sets the operating-company tone before the headline lands. */}
+        <div className="flex flex-wrap items-center justify-between gap-3 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/60">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span className="inline-flex items-center gap-1.5 text-[color:var(--accent)]">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {heroBadge}
+            </span>
+            <span aria-hidden className="hidden h-1 w-1 rounded-full bg-white/15 sm:inline-block" />
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/85" />
+              {settings.pickup_hours || t("Mon – Sat • 8:00 AM to 7:00 PM")}
+            </span>
+            <span aria-hidden className="hidden h-1 w-1 rounded-full bg-white/15 sm:inline-block" />
+            <span className="inline-flex items-center gap-1.5">
+              <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
+              {t("Reviewed by clients across homes, offices, and wardrobes")}
+            </span>
+          </div>
+          <Link
+            href="/track"
+            className="inline-flex items-center gap-1.5 text-white/70 transition hover:text-white"
+          >
+            {t("Track a booking")}
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
 
-              {chipUser ? (
-                <p className="mt-6 text-sm font-semibold tracking-tight text-white/72">
-                  {t("Welcome back")}
-                  {careHeroFirstName ? `, ${careHeroFirstName}` : ""}.
-                </p>
-              ) : null}
-
-              <h1
-                className={`max-w-3xl text-balance care-display text-white ${chipUser ? "mt-5" : "mt-6"}`}
-              >
-                {heroTitle}
-              </h1>
-
-              <p className="mt-6 max-w-2xl text-pretty text-base leading-[1.7] text-white/72 sm:text-lg">
-                {heroSubtitle}
+        <div className="mt-8 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+          <div>
+            {chipUser ? (
+              <p className="text-sm font-semibold tracking-tight text-white/72">
+                {t("Welcome back")}
+                {careHeroFirstName ? `, ${careHeroFirstName}` : ""}.{" "}
+                <Link
+                  href="/track"
+                  className="text-[color:var(--accent)] underline-offset-4 transition hover:underline"
+                >
+                  {t("Continue tracking your last request")}
+                </Link>
               </p>
+            ) : null}
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href="/book"
-                  className="care-button-primary inline-flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-semibold"
-                >
-                  {t("Plan service")}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="/services"
-                  className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-transparent px-6 py-3.5 text-sm font-semibold text-white transition hover:border-white/30 hover:bg-white/[0.04]"
-                >
-                  {t("Explore services")}
-                </Link>
-              </div>
+            <h1
+              className={`max-w-3xl text-balance care-display text-white ${chipUser ? "mt-5" : ""}`}
+            >
+              {heroTitle}
+            </h1>
+
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-white/72 sm:text-lg">
+              {heroSubtitle}
+            </p>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                href="/book"
+                className="care-button-primary inline-flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]"
+              >
+                {t("Book a service")}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-transparent px-6 py-3.5 text-sm font-semibold text-white transition outline-none hover:border-white/30 hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]"
+              >
+                {t("Review pricing")}
+              </Link>
             </div>
 
-            {/* Aside — single info surface: image when configured, otherwise a
-                divided pickup/support summary. No tiled stack. */}
-            <aside>
-              {heroImageUrl ? (
-                <div className="relative overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#07111f]">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${heroImageUrl})` }}
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,31,0.10),rgba(7,17,31,0.78))]" />
-                  <div className="relative flex min-h-[20rem] flex-col justify-end p-6 sm:p-8">
-                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                      {t("Signature service")}
+            {/* Three concierge service paths — clear next step for every
+                kind of visitor. Each lands directly in the booking flow with
+                the right service preselected. */}
+            <div className="mt-9 grid gap-3 sm:grid-cols-3">
+              {[
+                {
+                  href: "/book?service=garments",
+                  eyebrow: t("Garments"),
+                  title: t("Pickup, treatment, and return delivery."),
+                },
+                {
+                  href: "/book?service=home",
+                  eyebrow: t("Homes"),
+                  title: t("Move-out, deep, and recurring home care."),
+                },
+                {
+                  href: "/book?service=office",
+                  eyebrow: t("Offices"),
+                  title: t("After-hours and recurring workplace cleaning."),
+                },
+              ].map((path) => (
+                <Link
+                  key={path.href}
+                  href={path.href}
+                  className="group flex flex-col justify-between rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4 transition outline-none hover:border-[color:var(--accent)]/40 hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071020] active:translate-y-[0.5px] sm:p-5"
+                >
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                      {path.eyebrow}
                     </p>
-                    <p className="mt-3 max-w-md text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.75rem]">
-                      {t("The latest Care imagery is reflected here automatically.")}
+                    <p className="mt-2 text-[15px] font-semibold leading-snug tracking-[-0.005em] text-white">
+                      {path.title}
+                    </p>
+                  </div>
+                  <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65 transition group-hover:text-white">
+                    {t("Start booking")}
+                    <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Aside — when imagery configured, full-bleed photographic spread
+              with a single editorial caption. When not configured, a calm
+              service-desk dial: hours + line, no card-on-card chrome. */}
+          <aside>
+            {heroImageUrl ? (
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.65)]">
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${heroImageUrl})` }}
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,31,0.06)_0%,rgba(7,17,31,0.20)_55%,rgba(7,17,31,0.85)_100%)]" />
+                <div className="relative flex min-h-[22rem] flex-col justify-end p-6 sm:p-8">
+                  <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-black/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/85 backdrop-blur-sm">
+                    <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />
+                    {t("Signature service")}
+                  </div>
+                  <p className="mt-4 max-w-md text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.015em] text-white sm:text-[1.85rem]">
+                    {t("Hand off the work — see it move, finish, and come back to you.")}
+                  </p>
+                  <p className="mt-3 max-w-md text-sm leading-relaxed text-white/72">
+                    {t("Every booking gets one tracking code, one calm service flow, and a real human on the line if the day asks for it.")}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-3 self-end">
+                <div className="flex items-center gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20 text-[color:var(--accent)]">
+                    <Clock3 className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                      {t("Service hours")}
+                    </p>
+                    <p className="mt-1 truncate text-sm font-semibold text-white">
+                      {settings.pickup_hours || "Mon – Sat • 8:00 AM to 7:00 PM"}
                     </p>
                   </div>
                 </div>
-              ) : (
-                <div className="rounded-[2.2rem] border border-white/10 bg-white/[0.03] px-6 py-7 sm:px-8 sm:py-9">
-                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                    {t("Service desk")}
-                  </p>
-                  <p className="mt-4 text-[1.45rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.65rem]">
-                    {t("One desk for pickup, visits, and follow-up.")}
-                  </p>
-                  <dl className="mt-6 divide-y divide-white/10 border-y border-white/10">
-                    <div className="flex items-baseline gap-3 py-3">
-                      <Clock3 className="h-3.5 w-3.5 text-[color:var(--accent)]" aria-hidden />
-                      <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                        {t("Service hours")}
-                      </dt>
-                      <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                        {settings.pickup_hours || "Mon - Sat • 8:00 AM to 7:00 PM"}
-                      </dd>
-                    </div>
-                    <div className="flex items-baseline gap-3 py-3">
-                      <PhoneCall className="h-3.5 w-3.5 text-[color:var(--accent)]" aria-hidden />
-                      <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                        {t("Support")}
-                      </dt>
-                      <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                        {supportPhone || supportEmail || "care@henrycogroup.com"}
-                      </dd>
-                    </div>
-                  </dl>
+                <div className="flex items-center gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20 text-[color:var(--accent)]">
+                    <PhoneCall className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                      {t("Talk to the desk")}
+                    </p>
+                    <p className="mt-1 truncate text-sm font-semibold text-white">
+                      {supportPhone || supportEmail || "care@henrycogroup.com"}
+                    </p>
+                  </div>
                 </div>
-              )}
-            </aside>
-          </div>
+                <div className="flex items-center gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20 text-[color:var(--accent)]">
+                    <Repeat className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                      {t("Recurring care")}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-white">
+                      {t("Saved schedules, fewer reminders, steady follow-through.")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </aside>
+        </div>
+
+        {/* Editorial "what happens next" rail — sets expectations before the
+            visitor scrolls into product detail. Three steps, hairline only. */}
+        <div className="mt-12 grid gap-6 border-y border-white/10 py-6 sm:grid-cols-3">
+          {[
+            {
+              step: "01",
+              title: t("Tell us what you need"),
+              body: t("Pick a service, add the details, and review the current estimate."),
+            },
+            {
+              step: "02",
+              title: t("Receive one tracking code"),
+              body: t("One code per request keeps pickup, treatment, and delivery visible."),
+            },
+            {
+              step: "03",
+              title: t("Finish on the right note"),
+              body: t("Garments come back to you. Homes and offices end in completed work."),
+            },
+          ].map((item, index) => (
+            <div
+              key={item.step}
+              className={index > 0 ? "sm:border-l sm:border-white/10 sm:pl-6" : ""}
+            >
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
+                {t("Step")} {item.step}
+              </p>
+              <p className="mt-3 text-base font-semibold tracking-[-0.005em] text-white">
+                {item.title}
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-white/68">{item.body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
