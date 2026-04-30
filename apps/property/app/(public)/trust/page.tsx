@@ -9,7 +9,6 @@ import {
 import {
   PropertyMetricGrid,
   PropertySectionIntro,
-  PropertyTrustPill,
 } from "@/components/property/ui";
 import { getPropertySnapshot } from "@/lib/property/data";
 
@@ -22,16 +21,19 @@ export const metadata: Metadata = {
 
 const trustRails = [
   {
+    icon: ShieldCheck,
     title: "The public site is not an open dump",
     body:
       "A listing does not go live just because somebody filled a form. HenryCo holds every submission privately first, then decides whether the documents, authority, identity, and property reality are strong enough for public release.",
   },
   {
+    icon: FileCheck2,
     title: "Documents depend on the listing path",
     body:
       "Owner-listed, agent-led, managed, commercial, land, and inspection-sensitive submissions do not carry the same evidence burden. HenryCo asks for the documents that actually explain the path instead of hiding requirements until later.",
   },
   {
+    icon: CalendarRange,
     title: "Inspection is operational, not decorative",
     body:
       "If a listing needs an inspection, that becomes a tracked workflow. It can be requested, scheduled, completed, waived, failed, or cancelled, and publication should not pretend the check is done when it is not.",
@@ -84,16 +86,19 @@ const expectationColumns = [
 
 const policyCards = [
   {
+    icon: Building2,
     title: "Managed vs non-managed",
     body:
       "Managed listings imply HenryCo operational involvement after acceptance. Non-managed listings can still be reviewed and published, but the owner or agent remains responsible for the operating reality after first contact.",
   },
   {
+    icon: ShieldCheck,
     title: "Duplicate-contact resistance",
     body:
       "If the same email or phone appears across multiple HenryCo accounts or submissions, the listing may stay in manual review until the ownership picture is clearer.",
   },
   {
+    icon: CalendarRange,
     title: "Inspection and viewing continuity",
     body:
       "HenryCo treats inspections and viewings as tracked workflows. Requests, schedules, and follow-up should remain visible to staff and to the account history instead of vanishing into chat.",
@@ -118,100 +123,121 @@ export default async function TrustPage() {
         description="Documents are path-specific, inspections are real workflows, and managed vs non-managed publication is not blurred together. Calm, but serious."
       />
 
-      <div className="mt-8">
+      <div className="mt-10">
         <PropertyMetricGrid items={snapshot.metrics} />
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <PropertyTrustPill
-          icon={<ShieldCheck className="h-5 w-5" />}
-          title="Private before publication"
-          body="Every listing enters a private review state before HenryCo considers public release."
-        />
-        <PropertyTrustPill
-          icon={<FileCheck2 className="h-5 w-5" />}
-          title="Document-aware"
-          body="Required evidence depends on the listing path instead of one vague upload request for everyone."
-        />
-        <PropertyTrustPill
-          icon={<CalendarRange className="h-5 w-5" />}
-          title="Inspection truth"
-          body="Inspection-sensitive listings keep a visible operational status instead of a vague promise."
-        />
-        <PropertyTrustPill
-          icon={<Building2 className="h-5 w-5" />}
-          title="Managed clarity"
-          body="Managed listings are handled as a real operating commitment, not just a trust label."
-        />
-      </div>
-
-      <section className="mt-10 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Core trust rails</div>
-          <div className="mt-5 space-y-4">
-            {trustRails.map((item) => (
-              <article
+      <section className="mt-14">
+        <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">Core trust rails</p>
+        <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
+          {trustRails.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li
                 key={item.title}
-                className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5"
+                className="grid gap-3 py-6 sm:grid-cols-[auto,1fr] sm:items-start sm:gap-6"
               >
-                <div className="flex items-center gap-3">
-                  <FileCheck2 className="h-4 w-4 text-[var(--property-accent-strong)]" />
-                  <h2 className="text-lg font-semibold text-[var(--property-ink)]">{item.title}</h2>
+                <Icon
+                  className="h-5 w-5 text-[var(--property-accent-strong)]"
+                  aria-hidden
+                />
+                <div>
+                  <h3 className="text-base font-semibold tracking-tight text-[var(--property-ink)]">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--property-ink-soft)]">
+                    {item.body}
+                  </p>
                 </div>
-                <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
 
-        <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">What the listing states mean</div>
-          <div className="mt-5 space-y-4">
+      <section className="mt-14 grid gap-12 xl:grid-cols-[1.05fr_0.95fr] xl:divide-x xl:divide-[var(--property-line)]">
+        <div>
+          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
+            What the listing states mean
+          </p>
+          <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
             {statusGuide.map((item) => (
-              <article
-                key={item.title}
-                className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5"
-              >
-                <h2 className="text-lg font-semibold text-[var(--property-ink)]">{item.title}</h2>
-                <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">{item.body}</p>
-              </article>
+              <li key={item.title} className="py-5">
+                <h3 className="text-base font-semibold tracking-tight text-[var(--property-ink)]">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
+                  {item.body}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="xl:pl-12">
+          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
+            Two-sided expectations
+          </p>
+          <div className="mt-6 grid gap-10 md:grid-cols-2 md:divide-x md:divide-[var(--property-line)]">
+            {expectationColumns.map((column, i) => (
+              <div key={column.heading} className={i > 0 ? "md:pl-8" : ""}>
+                <h3 className="text-sm font-semibold tracking-tight text-[var(--property-ink)]">
+                  {column.heading}
+                </h3>
+                <ul className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+                  {column.bullets.map((bullet) => (
+                    <li key={bullet} className="flex gap-3">
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--property-accent-strong)]" />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mt-10 grid gap-6 xl:grid-cols-2">
-        {expectationColumns.map((column) => (
-          <article key={column.heading} className="property-panel rounded-[2rem] p-6 sm:p-8">
-            <div className="property-kicker">{column.heading}</div>
-            <div className="mt-5 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-              {column.bullets.map((bullet) => (
-                <p key={bullet}>• {bullet}</p>
-              ))}
-            </div>
-          </article>
-        ))}
+      <section className="mt-14">
+        <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
+          Policy clarifications
+        </p>
+        <ul className="mt-8 grid gap-10 md:grid-cols-2 xl:grid-cols-3 xl:divide-x xl:divide-[var(--property-line)]">
+          {policyCards.map((card, i) => {
+            const Icon = card.icon;
+            return (
+              <li key={card.title} className={i > 0 && i < 3 ? "xl:pl-8" : ""}>
+                <Icon
+                  className="h-5 w-5 text-[var(--property-accent-strong)]"
+                  aria-hidden
+                />
+                <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--property-ink)]">
+                  {card.title}
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
+                  {card.body}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
-      <section className="mt-10 grid gap-6 xl:grid-cols-3">
-        {policyCards.map((card) => (
-          <article key={card.title} className="property-panel rounded-[2rem] p-6 sm:p-8">
-            <div className="flex items-center gap-3 text-[var(--property-accent-strong)]">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <h2 className="mt-4 text-xl font-semibold text-[var(--property-ink)]">{card.title}</h2>
-            <p className="mt-3 text-sm leading-7 text-[var(--property-ink-soft)]">{card.body}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="mt-10 property-panel rounded-[2rem] p-6 sm:p-8">
-        <div className="property-kicker">What happens next after submission</div>
-        <div className="mt-5 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-          {nextSteps.map((item) => (
-            <p key={item}>• {item}</p>
+      <section className="mt-14 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
+        <p className="property-kicker text-[10.5px] uppercase tracking-[0.22em]">
+          <Sparkles className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+          What happens next after submission
+        </p>
+        <ol className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
+          {nextSteps.map((item, i) => (
+            <li key={item} className="flex gap-3">
+              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span>{item}</span>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
     </main>
   );
