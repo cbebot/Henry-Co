@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Mail, PenLine, ShieldAlert, UserCheck } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import type { NewsletterCampaignStatus } from "@henryco/newsletter";
@@ -91,12 +92,12 @@ export default async function StaffNewsletterIndexPage() {
         title="Editorial workspace"
         description="Draft, review, approve, and send HenryCo newsletters. Every send is gated by voice guard, consent, and suppression."
         actions={
-          <a
+          <Link
             href="/operations/newsletter/new"
             className="inline-flex items-center gap-2 rounded-lg bg-[var(--staff-gold)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90"
           >
             <PenLine className="h-4 w-4" /> New draft
-          </a>
+          </Link>
         }
       />
 

@@ -365,7 +365,7 @@ export default async function CourseDetailPage({
                 {instructor.bio}
               </p>
               <p className="mt-5 border-l-2 border-[var(--learn-copper)]/55 pl-4 text-sm italic leading-7 text-[var(--learn-ink)]">
-                "{instructor.spotlightQuote}"
+                &ldquo;{instructor.spotlightQuote}&rdquo;
               </p>
             </div>
           ) : null}
