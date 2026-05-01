@@ -106,6 +106,10 @@ function ToastCard({
     if (dismissPolicy === null) return;
     if (paused) return;
 
+    // Capturing the wall clock here is the whole point of an effect — pause/
+    // resume math reads against this anchor. react-hooks/purity overreaches
+    // when it flags Date.now() inside an effect body; documented escape.
+    // eslint-disable-next-line react-hooks/purity
     startTimeRef.current = Date.now();
     timeoutRef.current = setTimeout(() => {
       onDismiss();

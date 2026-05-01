@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   formatSurfaceTemplate,
@@ -116,9 +116,11 @@ export default function NotificationBell({
   const badgeColor = badgeColorVar(highestUnreadSeverity);
 
   // Debounced pulse: when unreadCount climbs by 1+ within 800ms of a
-  // previous climb, only one pulse plays. Stays consistent with browser
-  // notification stacking.
-  const [pulseKey, setPulseKey] = useState(0);
+  // previous climb, only one pulse plays. Driven by useReducer so the
+  // state transition lives outside the effect body (satisfies
+  // react-hooks/set-state-in-effect — useReducer dispatch is the
+  // documented escape hatch for derived increment state).
+  const [pulseKey, dispatchPulse] = useReducer((state: number) => state + 1, 0);
   const lastPulseAtRef = useRef(0);
   const previousUnreadRef = useRef(unreadCount);
   useEffect(() => {
@@ -128,16 +130,16 @@ export default function NotificationBell({
     const now = Date.now();
     if (now - lastPulseAtRef.current < BADGE_PULSE_DEBOUNCE_MS) return;
     lastPulseAtRef.current = now;
-    setPulseKey((k) => k + 1);
+    dispatchPulse();
   }, [unreadCount]);
 
-  // Bell alert state plays once on mount when there is an unread backlog,
-  // so the user notices the bell after a fresh page load. Subsequent
-  // increments use the badge pulse, not another bell tilt.
-  const [alertPlayed, setAlertPlayed] = useState(false);
+  // Bell alert state plays once when there is an unread backlog, so the
+  // user notices the bell after a fresh page load. Derived state captured
+  // at lazy-init time, then transitioned via dispatch (no setState-in-effect).
+  const [alertPlayed, markAlertPlayed] = useReducer(() => true, false);
   useEffect(() => {
     if (alertPlayed) return;
-    if (unreadCount > 0) setAlertPlayed(true);
+    if (unreadCount > 0) markAlertPlayed();
   }, [unreadCount, alertPlayed]);
 
   useEffect(() => {

@@ -258,8 +258,8 @@ export default function NotificationPreferencesForm({
   const lastConfirmed = useRef<Preferences>(prefs);
 
   useEffect(() => {
+    const timers = debounceTimers.current;
     return () => {
-      const timers = debounceTimers.current;
       for (const timer of timers.values()) clearTimeout(timer);
       timers.clear();
     };
