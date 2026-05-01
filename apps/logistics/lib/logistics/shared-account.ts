@@ -1,6 +1,20 @@
 import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
+import { publishNotification, type Severity } from "@henryco/notifications";
+
+// Map the freeform `priority` strings the existing logistics callers pass
+// ("normal" / "high" / "warning") onto the publisher's typed Severity enum.
+// Unknown values fall back to "info" — strict-typed events will not silently
+// degrade to a misleading severity.
+function severityFromPriority(priority: string | null | undefined): Severity {
+  const value = String(priority || "").trim().toLowerCase();
+  if (value === "high" || value === "urgent") return "urgent";
+  if (value === "warning") return "warning";
+  if (value === "success") return "success";
+  if (value === "security") return "security";
+  return "info";
+}
 
 type OptionalString = string | null | undefined;
 
@@ -101,20 +115,32 @@ export async function appendCustomerNotification(input: {
   const userId = await resolveUserId(input);
   if (!userId) return;
 
-  await createAdminSupabase().from("customer_notifications").insert({
-    id: createId(),
-    user_id: userId,
-    title: input.title,
-    body: input.body,
-    category: cleanText(input.category) || "logistics",
-    priority: cleanText(input.priority) || "normal",
-    action_url: cleanText(input.actionUrl) || null,
-    action_label: cleanText(input.actionLabel) || null,
+  // Reference wiring: replaces the previous direct
+  // `admin.from("customer_notifications").insert(...)` call. The shim
+  // applies validation, rate limiting, mute-preference resolution, and
+  // audit-log writing — none of which the direct insert had. The
+  // remaining 16 bridge call sites follow the same pattern in B1-followup.
+  const result = await publishNotification({
+    userId,
     division: "logistics",
-    reference_type: cleanText(input.referenceType) || null,
-    reference_id: cleanText(input.referenceId) || null,
-    is_read: false,
-  } as never);
+    eventType: "logistics.shipment.update",
+    severity: severityFromPriority(input.priority),
+    title: input.title,
+    body: cleanText(input.body) || undefined,
+    deepLink: cleanText(input.actionUrl) || "/logistics",
+    actionLabel: cleanText(input.actionLabel) || undefined,
+    relatedId: cleanText(input.referenceId) || undefined,
+    relatedType: cleanText(input.referenceType) || undefined,
+    publisher: "bridge:apps/logistics/lib/logistics/shared-account.ts",
+  });
+
+  if (!result.ok && process.env.NODE_ENV !== "production") {
+    // Surface the failure category in non-prod so misshaped logistics
+    // notifications get caught in dev/preview before they hit users.
+    // Production stays silent to avoid leaking validation field names
+    // through any log forwarder.
+    console.warn("[logistics:appendCustomerNotification] shim rejected publish", result.error, result.detail);
+  }
 }
 
 export async function upsertCustomerInvoice(input: {

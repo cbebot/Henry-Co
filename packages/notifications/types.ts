@@ -65,6 +65,12 @@ export type PublishInput = {
   title: string;
   body?: string;
   deepLink: string;
+  /**
+   * Optional CTA label rendered next to the deep_link in the popover/inbox
+   * (e.g. "Open shipment", "View order"). Bridges that previously wrote
+   * `action_label` directly to customer_notifications pass it here.
+   */
+  actionLabel?: string;
   payload?: Record<string, unknown>;
   actorUserId?: string;
   relatedId?: string;

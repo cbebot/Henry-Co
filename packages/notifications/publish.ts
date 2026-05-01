@@ -135,6 +135,7 @@ export async function publishNotification(input: PublishInput): Promise<PublishR
     title: validation.title,
     body: validation.body,
     action_url: validation.deepLink,
+    action_label: validation.actionLabel,
     detail_payload: validation.payload ?? {},
     reference_id: validation.relatedId,
     reference_type: validation.relatedType,

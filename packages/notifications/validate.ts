@@ -3,6 +3,7 @@ import { getEventTypeSpec } from "./event-types";
 
 const TITLE_MAX = 80;
 const BODY_MAX = 240;
+const ACTION_LABEL_MAX = 32;
 const DEEP_LINK_MAX = 512;
 const REQUEST_ID_MAX = 64;
 const PAYLOAD_MAX_KEYS = 20;
@@ -23,6 +24,7 @@ export type ValidatedInput = {
   title: string;
   body: string | null;
   deepLink: string;
+  actionLabel: string | null;
   payload: Record<string, unknown> | null;
   actorUserId: string | null;
   relatedId: string | null;
@@ -114,6 +116,17 @@ export function validatePublishInput(input: PublishInput): ValidationFailure | V
   const deepLink = typeof input.deepLink === "string" ? input.deepLink.trim() : "";
   if (!isSafeRelativePath(deepLink)) return { code: "validation", field: "deepLink" };
 
+  let actionLabel: string | null = null;
+  if (input.actionLabel !== undefined && input.actionLabel !== null) {
+    const trimmed = String(input.actionLabel).trim();
+    if (trimmed.length > 0) {
+      if (trimmed.length > ACTION_LABEL_MAX) return { code: "validation", field: "actionLabel" };
+      if (!isPlainText(trimmed)) return { code: "validation", field: "actionLabel" };
+      if (looksLikePii(trimmed)) return { code: "validation", field: "actionLabel" };
+      actionLabel = trimmed;
+    }
+  }
+
   let payload: Record<string, unknown> | null = null;
   if (input.payload !== undefined && input.payload !== null) {
     if (typeof input.payload !== "object" || Array.isArray(input.payload)) {
@@ -175,6 +188,7 @@ export function validatePublishInput(input: PublishInput): ValidationFailure | V
     title,
     body,
     deepLink,
+    actionLabel,
     payload,
     actorUserId,
     relatedId,

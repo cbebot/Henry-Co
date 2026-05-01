@@ -18,7 +18,21 @@ export type EventTypeId =
   | "auth.signup.welcome"
   | "auth.password.changed"
   | "auth.security.new_device"
-  | "system.welcome";
+  | "system.welcome"
+  // V2-NOT-01-B: cross-division bridge events. Each division has a generic
+  // "update" event type its bridge file uses; the title/body carry the human
+  // copy and reference_id pins the source entity. More specific event types
+  // (e.g. marketplace.order.shipped) get added as their bridges become
+  // first-class users of the shim.
+  | "logistics.shipment.update"
+  | "marketplace.order.update"
+  | "property.viewing.update"
+  | "learn.enrollment.update"
+  | "studio.project.update"
+  | "care.booking.update"
+  | "support.reply.received"
+  | "wallet.transaction.update"
+  | "kyc.review.update";
 
 export type EventTypeSpec = {
   defaultSeverity: Severity;
@@ -46,6 +60,56 @@ export const EVENT_TYPES: Record<EventTypeId, EventTypeSpec> = {
   "system.welcome": {
     defaultSeverity: "info",
     deepLinkTemplate: "/account",
+    allowedPayloadKeys: [],
+  },
+  // Cross-division bridge events: empty payload allow-lists by design — the
+  // human copy lives in title/body, the source pin lives in
+  // reference_id/reference_type. Bridges that genuinely need structured
+  // payload (e.g. care booking with scheduled_for) graduate to dedicated
+  // event types in their division's follow-on pass.
+  "logistics.shipment.update": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/logistics",
+    allowedPayloadKeys: [],
+  },
+  "marketplace.order.update": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/marketplace",
+    allowedPayloadKeys: [],
+  },
+  "property.viewing.update": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/property",
+    allowedPayloadKeys: [],
+  },
+  "learn.enrollment.update": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/learn",
+    allowedPayloadKeys: [],
+  },
+  "studio.project.update": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/studio",
+    allowedPayloadKeys: [],
+  },
+  "care.booking.update": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/care",
+    allowedPayloadKeys: [],
+  },
+  "support.reply.received": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/support",
+    allowedPayloadKeys: [],
+  },
+  "wallet.transaction.update": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/wallet",
+    allowedPayloadKeys: [],
+  },
+  "kyc.review.update": {
+    defaultSeverity: "warning",
+    deepLinkTemplate: "/account/settings/security",
     allowedPayloadKeys: [],
   },
 } as const;
