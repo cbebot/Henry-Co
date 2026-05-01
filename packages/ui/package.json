@@ -11,7 +11,8 @@
     "./public": "./src/public/index.ts",
     "./support": "./src/support/index.ts",
     "./public-shell": "./src/public-shell/index.ts",
-    "./identity": "./src/public/account-identity.ts"
+    "./identity": "./src/public/account-identity.ts",
+    "./brand": "./src/brand/index.ts"
   },
   "peerDependencies": {
     "next": "^16.1.6",
