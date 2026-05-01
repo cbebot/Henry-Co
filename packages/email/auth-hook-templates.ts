@@ -49,7 +49,12 @@ function render(layout: HenryCoEmailLayout): Rendered {
 }
 
 export function renderAuthEmail(data: AuthHookEmailData, fallbackSiteUrl: string): Rendered {
-  const siteUrl = (data.site_url && data.site_url.trim()) || fallbackSiteUrl;
+  // Supabase's `data.site_url` in the hook payload is the auth API base
+  // (https://<ref>.supabase.co/auth/v1), NOT the project Site URL — so we
+  // never use it for the confirmation link. Use the request origin (passed
+  // as `fallbackSiteUrl` by the hook handler) so the link returns to the same
+  // deployment that issued the email, keeping cookie-domain semantics intact.
+  const siteUrl = fallbackSiteUrl;
   const action = data.email_action_type;
   const cta = buildConfirmUrl(siteUrl, data.token_hash, action, data.redirect_to);
 

@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { getAccountUrl } from "@henryco/config";
 import {
   renderAuthEmail,
   sendBrevoEmail,
@@ -202,7 +201,18 @@ export async function POST(req: NextRequest) {
   const parsed = parsePayload(body);
   if (!parsed) return safe400();
 
-  const fallbackSiteUrl = getAccountUrl("");
+  // Build the email link against the deployment that's serving this hook
+  // request, NOT against the payload's site_url. Supabase's `site_url` field
+  // in the hook payload is the auth API base (e.g. https://<ref>.supabase.co/
+  // auth/v1), not the project Site URL — concatenating /auth/confirm onto it
+  // produces a Supabase-domain URL that 404s. Using the request origin ensures
+  // the confirmation link returns to the same deployment, preserving cookie
+  // domain alignment.
+  const requestUrl = new URL(req.url);
+  const forwardedHost = req.headers.get("x-forwarded-host") || req.headers.get("host");
+  const baseHost = forwardedHost || requestUrl.host;
+  const baseProto = req.headers.get("x-forwarded-proto") || requestUrl.protocol.replace(/:$/, "") || "https";
+  const fallbackSiteUrl = `${baseProto}://${baseHost}`;
   const rendered = renderAuthEmail(parsed.data, fallbackSiteUrl);
 
   const result = await dispatchWithFallback({
