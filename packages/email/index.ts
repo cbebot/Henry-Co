@@ -26,3 +26,9 @@ export {
   type HenryCoEmailLayout,
   type HenryCoEmailSection,
 } from "./layout";
+
+export {
+  renderAuthEmail,
+  type AuthHookEmailData,
+  type SupabaseEmailActionType,
+} from "./auth-hook-templates";

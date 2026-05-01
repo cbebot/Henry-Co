@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildSecurityHeaders } from "@henryco/config";
 
 const csp = [
   "default-src 'self'",
@@ -14,6 +15,8 @@ const csp = [
   "object-src 'none'",
   "upgrade-insecure-requests",
 ].join("; ");
+
+const sharedSecurityHeaders = buildSecurityHeaders();
 
 function normalizeHost(value?: string | null) {
   return String(value || "")
@@ -51,12 +54,10 @@ export function proxy(request: NextRequest) {
     request: { headers: requestHeaders },
   });
 
+  for (const { key, value } of sharedSecurityHeaders) {
+    response.headers.set(key, value);
+  }
   response.headers.set("Content-Security-Policy", csp);
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
   response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
   response.headers.set(
     "Cache-Control",

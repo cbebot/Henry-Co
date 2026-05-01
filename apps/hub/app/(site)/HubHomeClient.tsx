@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { createContext, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import { getAccountUrl } from "@henryco/config";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -1587,7 +1587,8 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
         <div className="relative h-44 overflow-hidden">
           <img
             src={extra.cover_url}
-            alt={division.name}
+            alt=""
+            aria-hidden="true"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
             loading="lazy"
             decoding="async"
@@ -1698,7 +1699,8 @@ function DivisionCard({
         <div className="relative h-40 overflow-hidden">
           <img
             src={extra.cover_url}
-            alt={d.name}
+            alt=""
+            aria-hidden="true"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
             loading="lazy"
             decoding="async"
@@ -1841,28 +1843,119 @@ function DetailsModal({
   const howItWorks = Array.isArray(extra.how_it_works) ? extra.how_it_works : [];
   const trustItems = Array.isArray(extra.trust) ? extra.trust : [];
   const accent = getAccent(division.accent);
+  const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    const focusTimer = window.setTimeout(() => {
+      closeButtonRef.current?.focus();
+    }, 30);
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const root = panelRef.current;
+      if (!root) return;
+      const focusables = root.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+      previouslyFocusedRef.current?.focus?.();
+    };
+  }, [onClose]);
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 grid place-items-center bg-black/55 p-4 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 backdrop-blur-md sm:items-center sm:p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
     >
       <motion.div
-        className="w-full max-w-4xl overflow-hidden rounded-[34px] border border-white/10 bg-[#0B1020] text-white shadow-[0_40px_140px_rgba(0,0,0,0.45)]"
-        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
+        ref={panelRef}
+        className="flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-[28px] border border-white/10 bg-[#0B1020] text-white shadow-[0_40px_140px_rgba(0,0,0,0.45)] sm:max-h-[88dvh] sm:max-w-4xl sm:rounded-[34px]"
+        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.985 }}
         animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.98 }}
+        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.985 }}
       >
+        {/* Sticky header — close button always visible */}
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-white/10 bg-[#0B1020]/95 px-4 py-3 backdrop-blur-sm sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <span
+              aria-hidden
+              className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ background: accent }}
+            />
+            <h2
+              id={titleId}
+              className="truncate text-base font-semibold tracking-tight text-white sm:text-[1.05rem]"
+            >
+              {division.name}
+            </h2>
+          </div>
+          <button
+            ref={closeButtonRef}
+            onClick={onClose}
+            type="button"
+            className="rounded-full border border-white/10 bg-white/[0.06] p-2 text-white/80 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
+            aria-label={copy.modal.closeAria}
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          style={{ WebkitOverflowScrolling: "touch" as const }}
+        >
         {extra.cover_url ? (
-          <div className="h-52 overflow-hidden border-b border-white/10">
+          <div className="h-44 overflow-hidden border-b border-white/10 sm:h-52">
             <img
               src={extra.cover_url}
-              alt={division.name}
+              alt=""
               className="h-full w-full object-cover"
               loading="lazy"
               decoding="async"
@@ -1876,14 +1969,6 @@ function DetailsModal({
             background: `radial-gradient(900px 320px at 18% 0%, ${accent}35, transparent 60%), radial-gradient(800px 220px at 82% 12%, rgba(255,255,255,0.12), transparent 60%)`,
           }}
         >
-          <button
-            onClick={onClose}
-            className="absolute right-4 top-4 rounded-full border border-white/10 bg-white/[0.06] p-2 text-white/80 hover:bg-white/10"
-            aria-label={copy.modal.closeAria}
-          >
-            <X className="h-5 w-5" />
-          </button>
-
           <div className="flex items-start gap-4">
             <DivisionMark
               src={extra.logo_url}
@@ -1921,17 +2006,6 @@ function DetailsModal({
                   </span>
                 ))}
               </div>
-
-              {division.primary_url ? (
-                <button
-                  onClick={() => safeOpen(division.primary_url)}
-                  className="mt-5 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold text-black hover:opacity-90"
-                  style={{ background: accent }}
-                >
-                  {copy.modal.enterDivision}
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              ) : null}
             </div>
           </div>
         </div>
@@ -2023,6 +2097,30 @@ function DetailsModal({
             </div>
           ) : null}
         </div>
+        </div>
+
+        {/* Sticky bottom CTA — never hidden by iOS home indicator */}
+        {division.primary_url ? (
+          <div
+            className="sticky bottom-0 z-10 border-t border-white/10 bg-[#0B1020]/95 backdrop-blur-sm"
+            style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          >
+            <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
+              <div className="min-w-0 text-xs text-white/60 sm:text-sm">
+                {host ?? division.key}
+              </div>
+              <button
+                onClick={() => safeOpen(division.primary_url)}
+                type="button"
+                className="inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/40"
+                style={{ background: accent }}
+              >
+                {copy.modal.enterDivision}
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        ) : null}
       </motion.div>
     </motion.div>
   );

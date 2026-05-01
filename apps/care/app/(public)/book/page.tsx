@@ -36,6 +36,19 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t(
       "Book garment care, home cleaning, or office cleaning with HenryCo Care. Clear estimates, premium support, and straightforward tracking from the first request."
     ),
+    alternates: { canonical: "/book" },
+    robots: { index: true, follow: true },
+    openGraph: {
+      title: `${t("Book Service")} | ${care.name}`,
+      description: t(
+        "Garment care, home cleaning, office cleaning. Clear estimates and premium support — book in one calm form."
+      ),
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: `${t("Book Service")} | ${care.name}`,
+    },
   };
 }
 

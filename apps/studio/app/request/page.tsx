@@ -1,8 +1,30 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Compass, Layers3, Sparkles, Waypoints } from "lucide-react";
 import { StudioRequestBuilder } from "@/components/studio/request-builder";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { resolveStudioRequestPreset } from "@/lib/studio/request-presets";
+
+export const metadata: Metadata = {
+  title: "Studio brief — Tell us what you need | HenryCo Studio",
+  description:
+    "Compose a HenryCo Studio brief: pick a package or custom path, choose features, and get an honest estimate before you commit. No silent inbox.",
+  alternates: { canonical: "/request" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "Studio brief | HenryCo Studio",
+    description:
+      "Tell us what you need. We turn it into a clear plan with real pricing, deposits, and a delivery record.",
+    type: "website",
+    url: "/request",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Studio brief | HenryCo Studio",
+    description:
+      "A calm form for serious projects — packages or custom, with proper pricing and payment guidance.",
+  },
+};
 
 export default async function RequestPage({
   searchParams,

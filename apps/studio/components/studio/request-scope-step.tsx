@@ -9,6 +9,50 @@ function amountLabel(amount: number) {
   return amount > 0 ? `+₦${amount.toLocaleString("en-NG")}` : "Included";
 }
 
+function ScopeSummaryHeader({
+  kicker,
+  selected,
+  total,
+}: {
+  kicker: string;
+  selected: string[];
+  total: number;
+}) {
+  const visible = selected.slice(0, 3);
+  const remaining = Math.max(0, selected.length - visible.length);
+  return (
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b border-[var(--studio-line)] pb-3">
+      <div className="flex items-baseline gap-3">
+        <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+          {kicker}
+        </div>
+        <div className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
+          {selected.length}/{total} selected
+        </div>
+      </div>
+      {visible.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {visible.map((label) => (
+            <span
+              key={label}
+              className="inline-flex items-center rounded-full border border-[rgba(151,244,243,0.32)] bg-[rgba(11,42,52,0.45)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--studio-ink)]"
+            >
+              {label}
+            </span>
+          ))}
+          {remaining > 0 ? (
+            <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">
+              +{remaining}
+            </span>
+          ) : null}
+        </div>
+      ) : (
+        <div className="text-[11px] italic text-[var(--studio-ink-soft)]">None selected yet</div>
+      )}
+    </div>
+  );
+}
+
 export function StudioRequestScopeStep({
   requestConfig,
   pathway,
@@ -56,8 +100,13 @@ export function StudioRequestScopeStep({
             </p>
           </div>
 
-          <div className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
+          <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
             <div className="space-y-3">
+              <ScopeSummaryHeader
+                kicker="Add-on services"
+                selected={selectedAddOns}
+                total={addOnOptions.length}
+              />
               {addOnOptions.map((item) => (
                 <label
                   key={item.id}
@@ -86,6 +135,11 @@ export function StudioRequestScopeStep({
             </div>
 
             <div className="grid gap-3">
+              <ScopeSummaryHeader
+                kicker="Tech stack preferences"
+                selected={selectedTech}
+                total={requestConfig.stackOptions.length}
+              />
               {requestConfig.stackOptions.map((item) => {
                 const selected = selectedTech.includes(item);
                 return (
@@ -116,6 +170,11 @@ export function StudioRequestScopeStep({
       ) : (
         <div className="mt-5 grid gap-6 xl:grid-cols-2">
           <div className="space-y-3">
+            <ScopeSummaryHeader
+              kicker="Pages or sections"
+              selected={selectedPages}
+              total={pageOptions.length}
+            />
             {pageOptions.map((item) => (
               <label
                 key={item.id}
@@ -145,6 +204,11 @@ export function StudioRequestScopeStep({
 
           <div className="space-y-6">
             <div className="space-y-3">
+              <ScopeSummaryHeader
+                kicker="Required features"
+                selected={selectedModules}
+                total={moduleOptions.length}
+              />
               {moduleOptions.map((item) => (
                 <label
                   key={item.id}

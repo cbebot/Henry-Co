@@ -59,24 +59,43 @@ export function StudioRequestSidePanel({
       </section>
 
       <section className="studio-panel rounded-[2.5rem] p-6 sm:p-7">
-        <div className="studio-kicker">Pricing preview</div>
+        <div className="flex items-baseline justify-between gap-3">
+          <div className="studio-kicker">Pricing preview</div>
+          <div className="text-[10.5px] uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+            {pricingPreview.lines.length} line{pricingPreview.lines.length === 1 ? "" : "s"}
+          </div>
+        </div>
         <div className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">{formatNaira(pricingPreview.total)}</div>
         <div className="mt-2 text-sm text-[var(--studio-ink-soft)]">
           Deposit lane {formatNaira(pricingPreview.depositAmount)} ({Math.round(pricingPreview.depositRate * 100)}%)
         </div>
-        <div className="mt-5 space-y-3">
-          {pricingPreview.lines.map((line) => (
-            <div key={`${line.label}-${line.amount}`} className="rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-sm font-semibold text-[var(--studio-ink)]">{line.label}</div>
-                  {line.detail ? <div className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">{line.detail}</div> : null}
-                </div>
-                <div className="text-sm font-semibold text-[var(--studio-signal)]">{formatNaira(line.amount)}</div>
-              </div>
-            </div>
-          ))}
-        </div>
+
+        {pricingPreview.lines.length > 0 ? (
+          <details className="group mt-5 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 [&>summary::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-[1.35rem] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)] transition hover:text-[var(--studio-ink)]">
+              <span>Line-by-line breakdown</span>
+              <span aria-hidden className="text-[var(--studio-signal)] transition group-open:rotate-180">▾</span>
+            </summary>
+            <ul className="space-y-2 px-4 pb-4 pt-1">
+              {pricingPreview.lines.map((line) => (
+                <li
+                  key={`${line.label}-${line.amount}`}
+                  className="flex items-baseline justify-between gap-4 border-t border-[var(--studio-line)]/60 pt-2 first:border-0 first:pt-0"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium text-[var(--studio-ink)]">{line.label}</div>
+                    {line.detail ? (
+                      <div className="mt-0.5 text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">{line.detail}</div>
+                    ) : null}
+                  </div>
+                  <div className="shrink-0 font-mono text-sm font-semibold text-[var(--studio-signal)] tabular-nums">
+                    {formatNaira(line.amount)}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </details>
+        ) : null}
       </section>
 
       <section className="studio-panel rounded-[2.5rem] p-6 sm:p-7">
