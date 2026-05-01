@@ -139,7 +139,7 @@ export default async function BookPage({
 
   return (
     <main
-      className="care-page min-h-screen px-4 py-10 text-zinc-950 sm:px-6 sm:py-12 lg:px-10 dark:text-white"
+      className="care-page min-h-screen px-3 py-8 text-zinc-950 sm:px-6 sm:py-12 lg:px-10 dark:text-white"
       style={
         {
           "--accent": ACCENT,
@@ -278,7 +278,7 @@ export default async function BookPage({
         </section>
 
         <section>
-          <div className="rounded-[2.4rem] border border-black/10 bg-white/85 p-6 shadow-[0_18px_60px_rgba(16,19,31,0.06)] backdrop-blur-xl sm:p-8 dark:border-white/10 dark:bg-white/[0.04]">
+          <div className="rounded-[1.6rem] border border-black/10 bg-white/85 p-5 shadow-[0_18px_60px_rgba(16,19,31,0.06)] backdrop-blur-xl sm:rounded-[2.4rem] sm:p-8 dark:border-white/10 dark:bg-white/[0.04]">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
               {t("Booking form")}
             </p>
