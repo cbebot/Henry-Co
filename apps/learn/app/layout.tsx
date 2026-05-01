@@ -5,7 +5,8 @@ import { AssistDock } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
-import { getDivisionConfig, ScrollToTopOnNavigation } from "@henryco/config";
+import { getDivisionConfig } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 
 const learn = getDivisionConfig("learn");
 

@@ -9,7 +9,7 @@ import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
-import { ScrollToTopOnNavigation } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { getCareSettings } from "@/lib/care-data";
 import { getCarePublicLocale } from "@/lib/locale-server";
 

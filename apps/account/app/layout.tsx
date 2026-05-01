@@ -4,7 +4,7 @@ import { LocaleProvider } from "@henryco/i18n/react";
 import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
-import { ScrollToTopOnNavigation } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 

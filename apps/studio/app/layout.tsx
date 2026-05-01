@@ -5,7 +5,8 @@ import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
-import { getDivisionConfig, ScrollToTopOnNavigation } from "@henryco/config";
+import { getDivisionConfig } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 

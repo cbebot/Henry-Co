@@ -2,7 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ThemeProvider } from "next-themes";
-import { getStaffHqUrl, ScrollToTopOnNavigation } from "@henryco/config";
+import { getStaffHqUrl } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 
 export const metadata: Metadata = {
   title: "Staff HQ — Henry & Co.",

@@ -7,4 +7,3 @@ export * from "./supabase-cookies";
 export * from "./countries";
 export * from "./seo";
 export * from "./security-headers";
-export { ScrollToTopOnNavigation } from "./scroll-to-top";
