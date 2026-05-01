@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { PropertyImageGallery } from "@/components/property/PropertyImageGallery";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -163,36 +163,12 @@ export default async function PropertyDetailPage({
 
       <section className="mt-10 grid gap-12 xl:grid-cols-[1.04fr_0.96fr]">
         <div className="space-y-12">
-          {/* Gallery — kept, real product surface */}
-          <div className="property-paper overflow-hidden rounded-[2.2rem]">
-            <div className="relative aspect-[16/10]">
-              <Image
-                src={data.listing.heroImage}
-                alt={data.listing.title}
-                fill
-                sizes="(max-width: 1280px) 100vw, 60vw"
-                className="object-cover"
-              />
-            </div>
-            {data.listing.gallery.length > 1 ? (
-              <div className="grid gap-3 p-4 md:grid-cols-3">
-                {data.listing.gallery.slice(1, 4).map((image) => (
-                  <div
-                    key={image}
-                    className="relative aspect-[4/3] overflow-hidden rounded-[1.4rem]"
-                  >
-                    <Image
-                      src={image}
-                      alt={data.listing.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 30vw"
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </div>
+          {/* Gallery — clickable lightbox viewer with prev/next + thumb strip */}
+          <PropertyImageGallery
+            title={data.listing.title}
+            hero={data.listing.heroImage}
+            gallery={data.listing.gallery}
+          />
 
           <PropertyQuickFacts listing={data.listing} />
 
