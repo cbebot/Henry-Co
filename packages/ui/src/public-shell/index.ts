@@ -96,3 +96,5 @@ export {
 
 /** Mobile navigation drawer lives inside `PublicHeader`; this type marks the contract as centralized. */
 export type PublicMobileMenu = { readonly embeddedIn: "PublicHeader" };
+
+export { HenryCoErrorFallback, HenryCoNotFound } from "./error-fallback";

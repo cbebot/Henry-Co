@@ -114,21 +114,45 @@ export default async function LearnerCoursePage({
     [...progressByLesson.values()].filter((item) => item.status === "completed").map((item) => item.lessonId)
   );
 
+  // Read the per-course unlock policy. Defaults to 'sequential' so any
+  // existing course (or pre-migration row) keeps the strict gate.
+  const unlockPolicyRaw = (course as { unlockPolicy?: string }).unlockPolicy;
+  const unlockPolicy: "sequential" | "open" | "module_gated" =
+    unlockPolicyRaw === "open" || unlockPolicyRaw === "module_gated"
+      ? unlockPolicyRaw
+      : "sequential";
+
   const enrichedModules = modules.map((module, moduleIndex) => {
     const previousModulesComplete = modules
       .slice(0, moduleIndex)
       .every((previousModule) => previousModule.lessons.every((lesson) => completedLessonIds.has(lesson.id)));
-    const moduleUnlocked = courseAccessActive && (moduleIndex === 0 || previousModulesComplete);
+
+    // Module gating depends on the policy:
+    //   - open: every module unlocked
+    //   - sequential / module_gated: previous module must be 100% complete
+    const moduleUnlocked =
+      courseAccessActive &&
+      (unlockPolicy === "open" || moduleIndex === 0 || previousModulesComplete);
 
     const lessons = module.lessons.map((lesson, lessonIndex) => {
       const previousLessonsComplete = module.lessons
         .slice(0, lessonIndex)
         .every((previousLesson) => completedLessonIds.has(previousLesson.id));
 
+      // Lesson gating within a module:
+      //   - open / module_gated: any order inside an unlocked module
+      //   - sequential: must finish previous lesson first
+      const lessonUnlocked =
+        moduleUnlocked &&
+        (unlockPolicy !== "sequential" ||
+          lessonIndex === 0 ||
+          previousLessonsComplete ||
+          completedLessonIds.has(lesson.id));
+
       return {
         ...lesson,
         completed: completedLessonIds.has(lesson.id),
-        unlocked: moduleUnlocked && (lessonIndex === 0 || previousLessonsComplete || completedLessonIds.has(lesson.id)),
+        unlocked: lessonUnlocked,
       };
     });
 

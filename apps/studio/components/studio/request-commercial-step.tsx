@@ -1,8 +1,57 @@
+import { useId } from "react";
 import type { RequestBuilderSelectionProps } from "@/components/studio/request-builder-types";
 import { StudioDomainLaunchSection } from "@/components/studio/studio-domain-launch";
 import { StudioListbox } from "@/components/studio/studio-listbox";
 import { StudioReferenceAttachments } from "@/components/studio/studio-reference-attachments";
 import type { StudioModifierOption } from "@/lib/studio/request-config";
+
+/** Fixed-price NGN input. Formats with thousands separators on blur and
+ * persists "₦1,500,000" into the existing `budgetBand` string field —
+ * downstream lead/proposal code already handles arbitrary strings. */
+function StudioBudgetInput({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const id = useId();
+  function format(raw: string) {
+    const digits = raw.replace(/[^\d]/g, "");
+    if (!digits) return "";
+    return "₦" + Number(digits).toLocaleString("en-NG");
+  }
+  return (
+    <div className="flex flex-col">
+      <label
+        htmlFor={id}
+        className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]"
+      >
+        Project budget · NGN
+      </label>
+      <input
+        id={id}
+        name="budgetBand"
+        type="text"
+        inputMode="numeric"
+        autoComplete="off"
+        required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={(e) => onChange(format(e.target.value))}
+        placeholder="₦1,500,000"
+        className="studio-input mt-2 rounded-[1.4rem] px-4 py-3 text-base font-semibold tracking-tight"
+        aria-describedby={`${id}-hint`}
+      />
+      <span
+        id={`${id}-hint`}
+        className="mt-2 text-[0.72rem] leading-snug text-[var(--studio-ink-soft)]"
+      >
+        Fixed price. Locked at proposal acceptance — no surprise overages.
+      </span>
+    </div>
+  );
+}
 
 function modifierLabel(option: StudioModifierOption) {
   if (!option.value) return option.label;
@@ -56,9 +105,24 @@ export function StudioRequestCommercialStep({
       <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
         <div className="studio-kicker">Commercial context</div>
         <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          These answers shape timeline and resourcing. Plain language is perfect—your delivery lead will confirm
-          details after submit.
+          Tell us the budget and the outcome. We come back inside one business day with a fixed
+          scope, a fixed delivery window, and a senior lead assigned by name — no junior hand-offs,
+          no scope drift.
         </p>
+        <ul className="mt-5 grid gap-2 text-[0.78rem] leading-snug text-[var(--studio-ink-soft)] sm:grid-cols-3">
+          <li className="rounded-2xl border border-[var(--studio-line)] px-3 py-2">
+            <span className="text-[var(--studio-ink)]">Senior team</span> — strategist, designer, and
+            engineer kick off together; never juniors-only.
+          </li>
+          <li className="rounded-2xl border border-[var(--studio-line)] px-3 py-2">
+            <span className="text-[var(--studio-ink)]">Fixed price</span> — locked at proposal
+            acceptance. Change requests priced before they start.
+          </li>
+          <li className="rounded-2xl border border-[var(--studio-line)] px-3 py-2">
+            <span className="text-[var(--studio-ink)]">Premium delivery</span> — production-ready
+            code, accessibility-checked, ready to scale on day one.
+          </li>
+        </ul>
 
         <div className="mt-6 grid gap-4 xl:grid-cols-4">
           <StudioListbox
@@ -70,15 +134,7 @@ export function StudioRequestCommercialStep({
             placeholder="Select business type"
             options={requestConfig.businessOptions.map((item) => ({ value: item, label: item }))}
           />
-          <StudioListbox
-            name="budgetBand"
-            label="Budget range"
-            required
-            value={budgetBand}
-            onChange={setBudgetBand}
-            placeholder="Select budget range"
-            options={requestConfig.budgetOptions.map((item) => ({ value: item, label: item }))}
-          />
+          <StudioBudgetInput value={budgetBand} onChange={setBudgetBand} />
           <StudioListbox
             name="urgency"
             label="Urgency"
@@ -145,7 +201,7 @@ export function StudioRequestCommercialStep({
               name="inspirationSummary"
               value={inspirationSummary}
               onChange={(event) => setInspirationSummary(event.target.value)}
-              className="studio-textarea mt-2 min-h-[280px] rounded-[1.6rem] px-4 py-4"
+              className="studio-textarea mt-2 min-h-36 rounded-[1.6rem] px-4 py-4"
               placeholder="Tone, audience, things to avoid, brand words you love, or “make it feel like X but more premium.”"
             />
           </div>

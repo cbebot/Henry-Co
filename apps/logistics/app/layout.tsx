@@ -6,6 +6,7 @@ import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import LogisticsShell from "@/components/layout/LogisticsShell";
@@ -79,6 +80,7 @@ export default async function RootLayout({
     <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <PublicThemeGuard>
+          <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             <LogisticsShell accountSlot={accountSlot}>{children}</LogisticsShell>
             <AssistDock division="logistics" accent="#D77539" />

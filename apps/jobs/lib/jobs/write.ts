@@ -25,6 +25,14 @@ import {
 } from "@/lib/jobs/data";
 import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
 import {
+  alreadyAppliedReason,
+  conflictOfInterestReason,
+  dailyCapReason,
+  detectJobPostScamSignals,
+  exceedsDailyApplicationCap,
+  isApplicantEmployerConflict,
+} from "@/lib/jobs/hiring-rules";
+import {
   createJobsInAppNotification,
   sendJobsEmail,
   sendJobsWhatsApp,
@@ -649,6 +657,20 @@ export async function submitApplication(input: {
   }
 
   const existingProfile = await getCandidateProfileByUserId(input.actor.userId);
+
+  // Conflict-of-interest gate: the same person can't apply to a role
+  // they (or a team they're on) posted.
+  if (
+    isApplicantEmployerConflict({
+      candidateUserId: input.actor.userId,
+      employerOwnerUserId: (job as { employerOwnerUserId?: string | null }).employerOwnerUserId,
+      employerTeamMemberUserIds: (job as { employerTeamMemberUserIds?: string[] })
+        .employerTeamMemberUserIds,
+    })
+  ) {
+    throw new Error(conflictOfInterestReason());
+  }
+
   const existingAppRows = await admin
     .from("customer_activity")
     .select("*")
@@ -659,7 +681,21 @@ export async function submitApplication(input: {
     .neq("status", "withdrawn");
 
   if ((existingAppRows.data ?? []).length > 0) {
-    throw new Error("You have already applied to this role.");
+    throw new Error(alreadyAppliedReason());
+  }
+
+  // Daily-cap gate: count applications submitted in the last 24h.
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const dailyCount = await admin
+    .from("customer_activity")
+    .select("id", { count: "exact", head: true })
+    .eq("division", JOBS_DIVISION)
+    .eq("activity_type", JOBS_ACTIVITY_APPLICATION)
+    .eq("user_id", input.actor.userId)
+    .gte("created_at", since);
+
+  if (exceedsDailyApplicationCap(dailyCount.count ?? 0)) {
+    throw new Error(dailyCapReason());
   }
 
   const applicationId = randomUUID();
@@ -1062,8 +1098,21 @@ export async function createJobPost(input: {
     return Date.now() - new Date(job.postedAt).getTime() <= 1000 * 60 * 60 * 24;
   });
   const cooldownTriggered = !isPrivileged && recentEmployerJobs.length >= 3;
-  const moderationStatus =
-    internal || (eligibility.autoApprovalAllowed && eligibility.verificationStatus === "verified")
+
+  // Scam-keyword scan: any signals push the post into pending_review even
+  // when the employer would otherwise auto-approve. Internal HenryCo
+  // postings keep auto-approval (we trust ourselves).
+  const scamSignals = detectJobPostScamSignals({
+    title,
+    description: asText(input.formData.get("description")),
+    responsibilities: asText(input.formData.get("responsibilities")),
+    benefits: asText(input.formData.get("benefits")),
+  });
+  const scamFlagged = !internal && scamSignals.length > 0;
+
+  const moderationStatus = scamFlagged
+    ? "flagged"
+    : internal || (eligibility.autoApprovalAllowed && eligibility.verificationStatus === "verified")
       ? "approved"
       : cooldownTriggered
         ? "draft"
@@ -1076,6 +1125,7 @@ export async function createJobPost(input: {
     duplicateJobSlug: duplicateJob?.slug || null,
     cooldownTriggered,
     postingRequirementsOpen: eligibility.requirements,
+    scamSignals,
   };
 
   await upsertReferenceActivityState({

@@ -32,3 +32,9 @@ export {
   type AuthHookEmailData,
   type SupabaseEmailActionType,
 } from "./auth-hook-templates";
+
+export {
+  localizeEmailError,
+  isOperatorOnlyEmailError,
+  type ErrorAudience,
+} from "./localize-error";

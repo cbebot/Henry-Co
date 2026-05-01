@@ -10,6 +10,7 @@ import {
 } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
 import { COMPANY } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { getHubPublicLocale, getHubLocaleSuggestion } from "@/lib/locale-server";
 
 export const metadata: Metadata = {
@@ -43,6 +44,7 @@ export default async function RootLayout({
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <PublicThemeGuard>
+          <ScrollToTopOnNavigation />
           <ThirdPartyRuntimeProviders>{children}</ThirdPartyRuntimeProviders>
           <AssistDock division="hub" />
           <ConsentNotice preferencesHref="/preferences" locale={lang} />

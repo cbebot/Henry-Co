@@ -6,6 +6,7 @@ import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
 import { StudioToastRoot } from "@/components/studio/studio-toast-root";
 import { getDivisionConfig } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 
@@ -45,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--studio-bg)] text-[var(--studio-ink)] antialiased">
         <PublicThemeGuard>
+          <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             {children}
             <StudioToastRoot />

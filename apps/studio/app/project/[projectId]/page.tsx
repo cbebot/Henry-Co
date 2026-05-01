@@ -242,14 +242,14 @@ export default async function ProjectDetailPage({
         clientCta={clientCta}
       />
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,17rem)_1fr] lg:items-start">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,17rem)_1fr] lg:items-start">
         <ProjectStatusRail
           unpaidPayments={unpaidPayments}
           payments={payments}
           projectStatus={project.status}
         />
 
-        <div className="min-w-0 space-y-10">
+        <div className="min-w-0 space-y-6 sm:space-y-8">
           {paymentPriority ? (
             <ProjectPaymentsStack
               payments={payments}
@@ -283,13 +283,17 @@ export default async function ProjectDetailPage({
             </div>
           </section>
 
-          <section className="studio-panel rounded-[1.85rem] border border-[var(--studio-line)] p-6 sm:p-8">
-            <div className="studio-kicker">Messages</div>
-            <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)]">Project conversation</h2>
-            <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">
-              Questions about scope, timing, or approvals — everything stays in one place so nothing gets lost.
-            </p>
-            <div className="mt-6 space-y-4">
+          <ProjectCollapsiblePanel
+            defaultOpen={messages.length > 0}
+            badge="Conversation"
+            title="Project messages"
+            subtitle={
+              messages.length > 0
+                ? `${messages.length} message${messages.length === 1 ? "" : "s"} in the thread.`
+                : "Send your first message to your project team."
+            }
+          >
+            <div className="space-y-4">
               {messages.length > 0 ? (
                 messages.map((message) => (
                   <div
@@ -325,7 +329,7 @@ export default async function ProjectDetailPage({
               {isStaff ? <input type="hidden" name="isInternal" value="" /> : null}
               <StudioSubmitButton label="Send message" pendingLabel="Sending…" />
             </form>
-          </section>
+          </ProjectCollapsiblePanel>
 
           {isStaff ? <ProjectTeamUpdateComposer projectId={project.id} redirectPath={redirectPath} /> : null}
 

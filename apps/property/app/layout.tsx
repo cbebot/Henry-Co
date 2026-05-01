@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { getDivisionConfig } from "@henryco/config";
+import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
@@ -65,6 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
         <PublicThemeGuard>
+          <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             {children}
             <AssistDock division="property" />
