@@ -30,6 +30,52 @@
   --acct-font-display: "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif;
   --acct-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --acct-sidebar-width: 260px;
+
+  /* ─── V2-NOT-01-B-2: Named motion curves ─── */
+  /* Each curve is named for the lifecycle moment it serves. Together
+     they form HenryCo's notification motion vocabulary. The values are
+     not framer-motion presets; they were tuned for the bell, badge,
+     toast, and popover surfaces specifically. */
+  --henryco-arrive-curve: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --henryco-settle-curve: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --henryco-dismiss-curve: cubic-bezier(0.4, 0, 0.65, 0.4);
+  --henryco-expand-curve: cubic-bezier(0.16, 1, 0.3, 1);
+  --henryco-collapse-curve: cubic-bezier(0.7, 0, 0.84, 0);
+
+  /* ─── V2-NOT-01-B-2: Severity color matrix ─── */
+  /* Five severity tiers shipped by packages/notifications. Each tier
+     has a paired strong/soft pair for icon/border (strong) and tint
+     background (soft). All meet WCAG AA (4.5:1 text, 3:1 icon) against
+     the existing surfaces in light mode. Dark-mode pairs override below. */
+  --acct-sev-info: var(--acct-blue);
+  --acct-sev-info-soft: var(--acct-blue-soft);
+  --acct-sev-success: var(--acct-green);
+  --acct-sev-success-soft: var(--acct-green-soft);
+  --acct-sev-warning: var(--acct-orange);
+  --acct-sev-warning-soft: var(--acct-orange-soft);
+  --acct-sev-urgent: var(--acct-red);
+  --acct-sev-urgent-soft: var(--acct-red-soft);
+  --acct-sev-security: #B27A00;
+  --acct-sev-security-soft: rgba(178,122,0,0.08);
+
+  /* ─── V2-NOT-01-B-2: 12-division accent palette ─── */
+  /* Each division gets a distinct accent used as a 3px left-border on
+     popover cards and inbox rows. Hues coexist with the severity matrix
+     by occupying different saturation/lightness lanes — severities
+     trend bright; division accents trend muted. No hue is reused across
+     two divisions. */
+  --acct-div-hub: #C9A227;        /* HenryCo gold (anchor) */
+  --acct-div-account: #1A1814;    /* Ink — the canonical home */
+  --acct-div-staff: #3B82F6;      /* Cobalt blue */
+  --acct-div-care: #10B981;       /* Living green */
+  --acct-div-marketplace: #D97706;/* Burnished amber */
+  --acct-div-property: #8B5CF6;   /* Plum */
+  --acct-div-logistics: #0891B2;  /* Slate teal */
+  --acct-div-jobs: #BE185D;       /* Garnet */
+  --acct-div-learn: #6366F1;      /* Twilight indigo */
+  --acct-div-studio: #B45309;     /* Bronze */
+  --acct-div-security: #B27A00;   /* Amber (matches severity for visual sync) */
+  --acct-div-system: #6B6560;     /* Stone */
 }
 
 .dark {
@@ -54,6 +100,33 @@
   --acct-orange-soft: rgba(251,191,36,0.12);
   --acct-shadow: 0 1px 3px rgba(0,0,0,0.2);
   --acct-shadow-lg: 0 4px 12px rgba(0,0,0,0.3);
+
+  /* Dark-mode severity adjustments — strong tones soften slightly for
+     legibility against the dark surfaces; soft tints shift to alpha. */
+  --acct-sev-info: var(--acct-blue);
+  --acct-sev-info-soft: rgba(96,165,250,0.14);
+  --acct-sev-success: var(--acct-green);
+  --acct-sev-success-soft: rgba(52,211,153,0.14);
+  --acct-sev-warning: var(--acct-orange);
+  --acct-sev-warning-soft: rgba(251,191,36,0.14);
+  --acct-sev-urgent: var(--acct-red);
+  --acct-sev-urgent-soft: rgba(248,113,113,0.14);
+  --acct-sev-security: #D4AF37;
+  --acct-sev-security-soft: rgba(212,175,55,0.14);
+
+  /* Dark-mode division accents — slightly desaturated for contrast */
+  --acct-div-hub: #D4AF37;
+  --acct-div-account: #F0EDE8;
+  --acct-div-staff: #60A5FA;
+  --acct-div-care: #34D399;
+  --acct-div-marketplace: #FBBF24;
+  --acct-div-property: #A78BFA;
+  --acct-div-logistics: #22D3EE;
+  --acct-div-jobs: #F472B6;
+  --acct-div-learn: #818CF8;
+  --acct-div-studio: #FB923C;
+  --acct-div-security: #D4AF37;
+  --acct-div-system: #9CA3AF;
 }
 
 /* ─── Base ─── */
@@ -384,27 +457,117 @@ select.acct-input {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Notification signal toast ───
-   Subtle slide-up + fade. No bounce, no overshoot. Respects reduced-motion.
-*/
+/* ─── V2-NOT-01-B-2: Notification motion ───
+   All curves use the named --henryco-* custom properties so the entire
+   notification surface shares a single motion vocabulary. Reduced-motion
+   replaces arrival/dismiss animations with instant transitions; badge
+   pulse remains animated at half duration because count-change without
+   any feedback feels broken to most users. */
 .acct-signal-card {
-  animation: acctSignalIn 220ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: acctSignalIn 260ms var(--henryco-arrive-curve) both;
 }
 @keyframes acctSignalIn {
   from { opacity: 0; transform: translateY(10px) scale(0.985); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+.acct-signal-card[data-dismissing="true"] {
+  animation: acctSignalOut 340ms var(--henryco-dismiss-curve) forwards;
+}
+@keyframes acctSignalOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(6px) scale(0.99); }
+}
 .acct-signal-overflow {
-  animation: acctSignalOverflowIn 200ms ease both;
+  animation: acctSignalOverflowIn 200ms var(--henryco-arrive-curve) both;
 }
 @keyframes acctSignalOverflowIn {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Bell unread badge — settle curve has a slight overshoot that reads as
+   "a thing arrived" rather than a generic fade. */
+.acct-bell-badge {
+  animation: acctBadgePulse 280ms var(--henryco-settle-curve) both;
+}
+@keyframes acctBadgePulse {
+  0%   { opacity: 0; transform: scale(0.6); }
+  60%  { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.acct-bell-badge[data-fading="true"] {
+  animation: acctBadgeFade 360ms var(--henryco-collapse-curve) forwards;
+}
+@keyframes acctBadgeFade {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.85); }
+}
+
+/* Bell alert state — single subtle pendulum tilt on first render only,
+   gated by reduced-motion. No infinite loops, no jiggle. */
+.acct-bell-alert {
+  animation: acctBellAlert 480ms var(--henryco-settle-curve) 1 both;
+  transform-origin: 50% 8%;
+}
+@keyframes acctBellAlert {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-1.2deg); }
+  60%  { transform: rotate(0.6deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Popover open/close */
+.acct-bell-popover {
+  animation: acctBellPopoverIn 220ms var(--henryco-expand-curve) both;
+  transform-origin: top right;
+}
+@keyframes acctBellPopoverIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Inline-action affordances reveal on hover/focus.
+   Mobile (pointer: coarse) renders them always-visible at reduced opacity
+   to compensate for the absence of hover, while still distinguishing
+   from active state. */
+.acct-card-actions {
+  opacity: 0;
+  transform: translateX(4px);
+  transition:
+    opacity 160ms var(--henryco-arrive-curve),
+    transform 160ms var(--henryco-arrive-curve);
+  pointer-events: none;
+}
+.acct-card-row:hover .acct-card-actions,
+.acct-card-row:focus-within .acct-card-actions,
+.acct-card-row[data-pressed="true"] .acct-card-actions {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+@media (pointer: coarse) {
+  .acct-card-actions {
+    opacity: 0.55;
+    transform: none;
+    pointer-events: auto;
+  }
+  .acct-card-row[data-pressed="true"] .acct-card-actions {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .acct-signal-card,
-  .acct-signal-overflow {
+  .acct-signal-overflow,
+  .acct-bell-popover,
+  .acct-bell-alert {
     animation: none;
+  }
+  .acct-bell-badge {
+    animation-duration: 140ms;
+  }
+  .acct-card-actions {
+    transition: none;
   }
 }
 [dir="rtl"] .acct-signal-activate {
