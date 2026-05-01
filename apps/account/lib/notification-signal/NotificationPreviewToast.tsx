@@ -4,13 +4,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BellRing, ExternalLink, X } from "lucide-react";
+import { ExternalLink, X } from "lucide-react";
 import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { useNotificationSignalContext, type PreviewToastItem } from "./NotificationSignalProvider";
-import { isHighPriorityNotification, isSecurityNotification } from "./notification-signal-rules";
+import { HenryCoBell } from "@/components/notifications/icons/HenryCoIcons";
+import {
+  autoDismissMs,
+  isSafeNotificationDeepLink,
+  resolveSeverity,
+} from "@/components/notifications/severity-style";
 
-const AUTO_DISMISS_MS = 6_000;
-const MAX_VISIBLE_TOASTS = 2;
+// V2-NOT-01-B-2: Stack policy now allows 3 visible toasts. Auto-dismiss
+// duration varies by severity (info/success/warning = 6s, urgent = 12s,
+// security = never; user must explicitly dismiss). The deepLink target
+// is validated against isSafeNotificationDeepLink before navigation —
+// even though the publisher rejects unsafe URLs at insert time, the
+// toast surface treats incoming Realtime data as untrusted.
+const MAX_VISIBLE_TOASTS = 3;
 
 function SourceMark({
   notification,
@@ -52,16 +62,25 @@ function ToastCard({
   const router = useRouter();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const sourceLabel = translateSurfaceLabel(locale, item.source.label);
-  const actionHref = item.related_url || item.message_href || "/notifications";
-  const isExternal = /^https?:\/\//i.test(actionHref);
-  const isUrgent = isSecurityNotification(item) || isHighPriorityNotification(item);
+  const rawActionHref = item.related_url || item.message_href || "/notifications";
+  // Defense-in-depth: even though the publisher rejects unsafe deepLinks
+  // at insert time, the toast treats Realtime payloads as untrusted.
+  // If the URL is not safe, route to the inbox instead of off-platform.
+  const safeActionHref = isSafeNotificationDeepLink(rawActionHref) ? rawActionHref : "/notifications";
+  const isExternal = /^https?:\/\//i.test(safeActionHref);
+
+  const severityStyle = resolveSeverity(item.priority, item.category);
+  const dismissPolicy = autoDismissMs(severityStyle.severity);
+  const isUrgentTier = severityStyle.severity === "urgent" || severityStyle.severity === "security";
+
   const [paused, setPaused] = useState(false);
-  const remainingMsRef = useRef(AUTO_DISMISS_MS);
+  const remainingMsRef = useRef(dismissPolicy ?? Number.POSITIVE_INFINITY);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
   const pauseTimer = () => {
     if (paused) return;
+    if (dismissPolicy === null) return;
 
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -82,9 +101,10 @@ function ToastCard({
   };
 
   useEffect(() => {
-    if (paused) {
-      return;
-    }
+    // Severity 'security' never auto-dismisses — the user must explicitly
+    // dismiss. Skip the timeout entirely.
+    if (dismissPolicy === null) return;
+    if (paused) return;
 
     startTimeRef.current = Date.now();
     timeoutRef.current = setTimeout(() => {
@@ -97,41 +117,59 @@ function ToastCard({
         timeoutRef.current = null;
       }
     };
-  }, [onDismiss, paused]);
+  }, [onDismiss, paused, dismissPolicy]);
 
   const handleOpen = () => {
     onDismiss();
 
     if (isExternal) {
-      window.location.assign(actionHref);
+      window.location.assign(safeActionHref);
       return;
     }
 
-    router.push(actionHref);
+    router.push(safeActionHref);
   };
 
   return (
     <div
-      role={isUrgent ? "alert" : "status"}
-      aria-live={isUrgent ? "assertive" : "polite"}
+      role={isUrgentTier ? "alert" : "status"}
+      aria-live={isUrgentTier ? "assertive" : "polite"}
       onMouseEnter={pauseTimer}
       onMouseLeave={resumeTimer}
       onFocus={pauseTimer}
       onBlur={resumeTimer}
-      className="pointer-events-auto relative overflow-hidden rounded-[1.35rem] border border-[var(--acct-line)] bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(248,245,236,0.98))] shadow-[0_18px_48px_rgba(15,23,42,0.16)] backdrop-blur-xl transition motion-reduce:transition-none dark:bg-[linear-gradient(145deg,rgba(18,24,33,0.96),rgba(24,30,41,0.98))]"
+      className="acct-signal-card pointer-events-auto relative overflow-hidden rounded-[1.35rem] border bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(248,245,236,0.98))] shadow-[0_18px_48px_rgba(15,23,42,0.16)] backdrop-blur-xl transition motion-reduce:transition-none dark:bg-[linear-gradient(145deg,rgba(18,24,33,0.96),rgba(24,30,41,0.98))]"
+      style={{
+        borderColor: isUrgentTier
+          ? `color-mix(in srgb, var(${severityStyle.colorVar}) 35%, transparent)`
+          : "var(--acct-line)",
+        borderLeft: `3px solid var(${severityStyle.colorVar})`,
+        backgroundColor: isUrgentTier
+          ? `color-mix(in srgb, var(${severityStyle.softVar}) 55%, var(--acct-bg-elevated))`
+          : undefined,
+      }}
     >
       <div className="flex items-start justify-between gap-3 border-b border-[var(--acct-line)]/60 px-3.5 py-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-gold-soft)] px-2 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-gold)]">
-              <BellRing size={10} />
-              {t("New notification")}
-            </span>
-            {item.priorityBadge ? (
-              <span className="rounded-full bg-[var(--acct-surface)] px-2 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-ink)]">
-                {item.priorityBadge}
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.14em]"
+              style={{
+                backgroundColor: `var(${severityStyle.softVar})`,
+                color: `var(${severityStyle.colorVar})`,
+              }}
+            >
+              <span className="inline-flex items-center" aria-label={t(severityStyle.label)}>
+                <severityStyle.Icon size={10} />
               </span>
-            ) : null}
+              {t(severityStyle.label)}
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--acct-gold-soft)] px-2 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-gold)]">
+              <span className="inline-flex items-center" aria-hidden>
+                <HenryCoBell size={10} />
+              </span>
+              {t("New")}
+            </span>
           </div>
           <div className="mt-2 flex items-center gap-2">
             <SourceMark notification={item} sourceLabel={sourceLabel} />
@@ -153,6 +191,9 @@ function ToastCard({
         </button>
       </div>
 
+      {/* Plain-text rendering only — never dangerouslySetInnerHTML.
+          The publisher rejects HTML/control chars at insert time, but the
+          toast treats incoming data as untrusted text. */}
       <div className="px-3.5 py-3">
         <p className="line-clamp-1 text-sm font-semibold text-[var(--acct-ink)]">
           {item.title}
