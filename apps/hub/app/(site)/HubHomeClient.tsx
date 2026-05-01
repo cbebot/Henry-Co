@@ -557,12 +557,14 @@ export default function HubHomeClient({
       style={{ "--accent": brandAccentSafe } as React.CSSProperties}
     >
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(1200px_620px_at_18%_8%,rgba(201,162,39,0.22),transparent_55%),radial-gradient(1000px_620px_at_82%_18%,rgba(59,130,246,0.15),transparent_58%),radial-gradient(900px_520px_at_50%_100%,rgba(168,85,247,0.12),transparent_55%)]" />
-        <div className="absolute inset-0 hidden opacity-55 md:block">
+        {/* Restrained, architectural backdrop: single accent wash from the top
+            corner + a soft horizon glow at the base. Multi-color rainbow has
+            been retired for a calmer, premium feel. */}
+        <div className="absolute inset-0 bg-[radial-gradient(1100px_580px_at_15%_-5%,rgba(201,162,39,0.18),transparent_60%),radial-gradient(820px_460px_at_50%_108%,rgba(255,255,255,0.05),transparent_60%)]" />
+        <div className="absolute inset-0 hidden opacity-30 md:block">
           <HubParticles />
         </div>
-        <div className="absolute inset-0 hidden bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.06)_1px,transparent_0)] [background-size:26px_26px] opacity-30 sm:block" />
-        <div className="absolute left-1/2 top-[-220px] hidden h-[680px] w-[980px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl md:block" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.04)_1px,transparent_0)] [background-size:32px_32px] opacity-50" />
       </div>
 
       <TopBar
@@ -616,12 +618,10 @@ export default function HubHomeClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.04 }}
-                className="mt-6 max-w-4xl text-balance text-4xl font-semibold leading-[0.96] tracking-tight text-white sm:text-6xl xl:text-7xl"
+                className="mt-6 max-w-4xl text-balance text-4xl font-semibold leading-[0.98] tracking-[-0.02em] text-white sm:text-[3.6rem] xl:text-[4.6rem]"
               >
                 {copy.hero.titleBefore}
-                <span className="bg-gradient-to-r from-[color:var(--accent)] via-white to-white/70 bg-clip-text text-transparent">
-                  {brandTitleSafe}
-                </span>
+                <span className="text-[color:var(--accent)]">{brandTitleSafe}</span>
                 {copy.hero.titleAfter}
               </motion.h1>
 
@@ -629,7 +629,7 @@ export default function HubHomeClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.08 }}
-                className="mt-6 max-w-2xl text-pretty text-base leading-8 text-white/68 sm:text-lg"
+                className="mt-7 max-w-2xl text-pretty text-base leading-8 text-white/72 sm:text-lg"
               >
                 {introText}
               </motion.p>
