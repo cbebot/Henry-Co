@@ -297,20 +297,16 @@ export function NotificationSignalProvider({
       channel = supabase
         .channel(`customer_notifications:user:${userId}`)
         .on(
-          // @ts-expect-error - "postgres_changes" is the canonical Supabase
-          // Realtime event name; the SDK type doesn't always expose it
-          // when DB types aren't generated, but the runtime accepts it.
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "customer_notifications", filter },
           () => debouncedRefresh(),
         )
         .on(
-          // @ts-expect-error - same as above
           "postgres_changes",
           { event: "UPDATE", schema: "public", table: "customer_notifications", filter },
           () => debouncedRefresh(),
         )
-        .subscribe((status) => {
+        .subscribe((status: string) => {
           if (cancelled) return;
           if (status === "SUBSCRIBED") {
             backoffMs = REALTIME_BACKOFF_INITIAL_MS;

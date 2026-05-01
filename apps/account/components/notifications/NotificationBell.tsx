@@ -4,7 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
+import {
+  formatSurfaceTemplate,
+  translateSurfaceLabel,
+  useHenryCoLocale,
+  type AppLocale,
+} from "@henryco/i18n";
 import { ChevronRight } from "lucide-react";
 import { timeAgoLocalized } from "@/lib/format";
 import { useNotificationSignalContext, type SignalNotification } from "@/lib/notification-signal";
@@ -58,7 +63,7 @@ function SourceMark({
  * Pre-computes the auxiliary data each card needs (severity style, deep
  * link, division accent) so the render path stays straightforward.
  */
-function useCardMeta(notifications: BellNotification[], locale: string) {
+function useCardMeta(notifications: BellNotification[], locale: AppLocale) {
   return useMemo(() => {
     return notifications.map((notification) => {
       const severityStyle = resolveSeverity(notification.priority, notification.category);

@@ -6,6 +6,7 @@ import {
   CreditCard,
   Receipt,
   Bell,
+  BellRing,
   LifeBuoy,
   MapPin,
   FileText,
@@ -59,6 +60,7 @@ export const accountNavItems: NavItem[] = [
   { href: "/verification", label: "Submit KYC", icon: ShieldCheck, section: "Settings" },
   { href: "/security", label: "Security", icon: Shield, section: "Settings" },
   { href: "/settings", label: "Preferences", icon: Settings, section: "Settings" },
+  { href: "/settings/notifications", label: "Notification Preferences", icon: BellRing, section: "Settings" },
 ];
 
 export function getNavSections() {
