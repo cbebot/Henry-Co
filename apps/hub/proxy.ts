@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { COMPANY } from "@henryco/config";
+import { COMPANY, buildSecurityHeaders } from "@henryco/config";
 
 const csp = [
   "default-src 'self'",
@@ -15,6 +15,16 @@ const csp = [
   "object-src 'none'",
   "upgrade-insecure-requests",
 ].join("; ");
+
+const sharedSecurityHeaders = buildSecurityHeaders();
+
+function applyBaselineSecurityHeaders(res: NextResponse) {
+  for (const { key, value } of sharedSecurityHeaders) {
+    res.headers.set(key, value);
+  }
+  res.headers.set("Content-Security-Policy", csp);
+  res.headers.set("Cross-Origin-Resource-Policy", "same-origin");
+}
 
 function normalizeHost(value?: string | null) {
   return String(value || "")
@@ -61,13 +71,7 @@ export function proxy(request: NextRequest) {
   const redirectUrl = request.nextUrl.clone();
 
   function withSecurityHeaders(res: NextResponse) {
-    res.headers.set("Content-Security-Policy", csp);
-    res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-    res.headers.set("X-Frame-Options", "DENY");
-    res.headers.set("X-Content-Type-Options", "nosniff");
-    res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-    res.headers.set("Cross-Origin-Opener-Policy", "same-origin");
-    res.headers.set("Cross-Origin-Resource-Policy", "same-origin");
+    applyBaselineSecurityHeaders(res);
     return res;
   }
 
@@ -118,13 +122,7 @@ export function proxy(request: NextRequest) {
       ? NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } })
       : NextResponse.next({ request: { headers: requestHeaders } });
 
-  response.headers.set("Content-Security-Policy", csp);
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
-  response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
+  applyBaselineSecurityHeaders(response);
 
   if (
     request.nextUrl.pathname.startsWith("/owner") ||
