@@ -3,8 +3,29 @@ import {
   mapAccountSupportCategoryToDivision,
 } from "@henryco/config";
 import { LOCALE_COOKIE, normalizeLocale } from "@henryco/i18n/server";
+import { publishNotification, type Division } from "@henryco/notifications";
 import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
+
+const KNOWN_DIVISIONS: ReadonlySet<Division> = new Set([
+  "hub",
+  "account",
+  "staff",
+  "care",
+  "marketplace",
+  "property",
+  "logistics",
+  "jobs",
+  "learn",
+  "studio",
+  "security",
+  "system",
+]);
+
+function normalizeDivision(value: string | null | undefined): Division {
+  const lowered = String(value || "").trim().toLowerCase();
+  return KNOWN_DIVISIONS.has(lowered as Division) ? (lowered as Division) : "account";
+}
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import {
   buildNotificationLocalization,
@@ -17,19 +38,6 @@ import { getIdempotentResponse, rememberIdempotentResponse } from "@/lib/idempot
 
 function cleanText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function isMissingNotificationColumn(
-  error: { message?: string | null; code?: string | null } | null | undefined,
-  column: string
-) {
-  const message = cleanText(error?.message).toLowerCase();
-  const code = cleanText(error?.code);
-  return (
-    message.includes(`customer_notifications.${column.toLowerCase()}`) ||
-    message.includes(`${column.toLowerCase()} does not exist`) ||
-    code === "42703"
-  );
 }
 
 export async function POST(request: Request) {
@@ -176,33 +184,19 @@ export async function POST(request: Request) {
       locale: notificationLocale,
     });
 
-    const notificationRow = {
-      user_id: user.id,
-      division,
+    const publishResult = await publishNotification({
+      userId: user.id,
+      division: normalizeDivision(division),
+      eventType: "support.thread.created",
+      severity: triage.shouldEscalate ? "urgent" : "info",
       title: localizedNotification.title,
       body: localizedNotification.body,
-      category: "support",
-      priority: triage.shouldEscalate ? "high" : "normal",
-      action_url: `/support/${thread.id}`,
-      reference_type: "support_thread",
-      reference_id: thread.id,
-      detail_payload: {
-        triage_intent: triage.intent,
-        triage_confidence: triage.confidence,
-        localization: notificationLocalization,
-      },
-    };
-
-    let { error: notificationErr } = await admin.from("customer_notifications").insert(
-      notificationRow
-    );
-    if (notificationErr && isMissingNotificationColumn(notificationErr, "detail_payload")) {
-      ({ error: notificationErr } = await admin.from("customer_notifications").insert({
-        ...notificationRow,
-        detail_payload: undefined,
-      }));
-    }
-    if (notificationErr) sideEffectFailures.push("notification");
+      deepLink: `/support/${thread.id}`,
+      relatedType: "support_thread",
+      relatedId: thread.id,
+      publisher: "bridge:apps/account/app/api/support/create",
+    });
+    if (!publishResult.ok) sideEffectFailures.push("notification");
 
     try {
       await emitIntelligenceEvent({

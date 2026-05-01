@@ -1,7 +1,28 @@
 import "server-only";
 
 import { mapCareSupportStatusToAccountStatus } from "@henryco/config";
+import { publishNotification, type Division } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
+
+const KNOWN_DIVISIONS: ReadonlySet<Division> = new Set([
+  "hub",
+  "account",
+  "staff",
+  "care",
+  "marketplace",
+  "property",
+  "logistics",
+  "jobs",
+  "learn",
+  "studio",
+  "security",
+  "system",
+]);
+
+function normalizeDivision(value: string | null | undefined): Division {
+  const lowered = String(value || "").trim().toLowerCase();
+  return KNOWN_DIVISIONS.has(lowered as Division) ? (lowered as Division) : "account";
+}
 
 function cleanText(value: unknown) {
   return String(value ?? "").trim();
@@ -144,17 +165,27 @@ export async function syncSupportReplyToAccountThread(input: {
 
   const summary = cleanSummary(thread.subject);
   try {
-    await admin.from("customer_notifications").insert({
-      user_id: thread.user_id,
-      division: thread.division || "account",
+    const publishResult = await publishNotification({
+      userId: String(thread.user_id),
+      division: normalizeDivision(thread.division),
+      eventType: "support.reply.received",
+      severity: nextStatus === "resolved" ? "info" : "urgent",
       title: "Support replied",
       body: `New response on "${summary}".`,
-      category: "support",
-      priority: nextStatus === "resolved" ? "normal" : "high",
-      action_url: `/support/${input.threadId}`,
-      reference_type: "support_thread",
-      reference_id: input.threadId,
-    } as never);
+      deepLink: `/support/${input.threadId}`,
+      relatedType: "support_thread",
+      relatedId: input.threadId,
+      actorUserId: cleanText(input.senderId) || undefined,
+      publisher: "bridge:apps/care/lib/support/account-sync.ts",
+    });
+
+    if (!publishResult.ok && process.env.NODE_ENV !== "production") {
+      console.warn(
+        "[care:syncSupportReplyToAccountThread] shim rejected",
+        publishResult.error,
+        publishResult.detail,
+      );
+    }
 
     await admin.from("customer_activity").insert({
       user_id: thread.user_id,

@@ -1,24 +1,32 @@
 import { NextResponse } from "next/server";
 import { normalizeLocale } from "@henryco/i18n";
+import { publishNotification, type Division } from "@henryco/notifications";
 import { createStaffSupabaseServer } from "@/lib/supabase/server";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
 import { getStaffViewer } from "@/lib/staff-auth";
 
-function clean(value: unknown) {
-  return String(value ?? "").trim();
+const KNOWN_DIVISIONS: ReadonlySet<Division> = new Set([
+  "hub",
+  "account",
+  "staff",
+  "care",
+  "marketplace",
+  "property",
+  "logistics",
+  "jobs",
+  "learn",
+  "studio",
+  "security",
+  "system",
+]);
+
+function normalizeDivision(value: string | null | undefined): Division {
+  const lowered = String(value || "").trim().toLowerCase();
+  return KNOWN_DIVISIONS.has(lowered as Division) ? (lowered as Division) : "account";
 }
 
-function isMissingNotificationColumn(
-  error: { message?: string | null; code?: string | null } | null | undefined,
-  column: string
-) {
-  const message = clean(error?.message).toLowerCase();
-  const code = clean(error?.code);
-  return (
-    message.includes(`customer_notifications.${column.toLowerCase()}`) ||
-    message.includes(`${column.toLowerCase()} does not exist`) ||
-    code === "42703"
-  );
+function clean(value: unknown) {
+  return String(value ?? "").trim();
 }
 
 function renderSupportReplyNotification(locale: string, subject: string) {
@@ -99,53 +107,31 @@ export async function POST(request: Request) {
 
     const { data: profile } = await admin
       .from("customer_profiles")
-      .select("language, full_name")
+      .select("language")
       .eq("id", String(thread.user_id))
       .maybeSingle();
 
     const locale = clean(profile?.language) || "en";
     const subject = clean(thread.subject) || "your request";
-    const customerName = clean(profile?.full_name) || "Customer";
     const rendered = renderSupportReplyNotification(locale, subject);
 
     const sideEffectFailures: string[] = [];
 
-    const notificationRow = {
-      user_id: thread.user_id,
-      division: clean(thread.division) || "support",
-      category: "support",
+    const publishResult = await publishNotification({
+      userId: String(thread.user_id),
+      division: normalizeDivision(clean(thread.division)),
+      eventType: "support.reply.received",
+      severity: "info",
       title: rendered.title,
       body: rendered.body,
-      priority: "normal",
-      action_url: `/support/${thread_id}`,
-      reference_type: "support_thread",
-      reference_id: thread_id,
-      detail_payload: {
-        localization: {
-          key: "support.reply.received",
-          locale,
-          params: {
-            subject,
-            threadId: thread_id,
-            customerName,
-            customerUserId: clean(thread.user_id),
-          },
-          rendered,
-        },
-      },
-    };
+      deepLink: `/support/${thread_id}`,
+      relatedType: "support_thread",
+      relatedId: thread_id,
+      publisher: "bridge:apps/staff/app/api/support/reply",
+    });
 
-    let { error: notificationErr } = await admin.from("customer_notifications").insert(
-      notificationRow as never
-    );
-    if (notificationErr && isMissingNotificationColumn(notificationErr, "detail_payload")) {
-      ({ error: notificationErr } = await admin.from("customer_notifications").insert({
-        ...notificationRow,
-        detail_payload: undefined,
-      } as never));
-    }
-    if (notificationErr) {
-      console.error("[staff/support/reply] Failed to create customer notification:", notificationErr);
+    if (!publishResult.ok) {
+      console.error("[staff/support/reply] Failed to create customer notification:", publishResult.error);
       sideEffectFailures.push("customer_notification");
     }
 

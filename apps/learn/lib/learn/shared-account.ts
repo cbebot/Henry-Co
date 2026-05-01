@@ -1,5 +1,15 @@
 import { createHash } from "node:crypto";
+import { publishNotification, type Severity } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
+
+function severityFromPriority(priority: string | null | undefined): Severity {
+  const value = String(priority || "").trim().toLowerCase();
+  if (value === "high" || value === "urgent" || value === "critical") return "urgent";
+  if (value === "warning") return "warning";
+  if (value === "success") return "success";
+  if (value === "security") return "security";
+  return "info";
+}
 
 type OptionalString = string | null | undefined;
 
@@ -130,22 +140,35 @@ export async function appendCustomerNotification(input: {
   const userId = await resolveUserId(input);
   if (!userId) return;
 
-  const admin = createAdminSupabase();
-  const result = await admin.from("customer_notifications").insert({
-    id: createId(),
-    user_id: userId,
-    title: input.title,
-    body: input.body,
-    category: sharedNotificationCategory(input.category),
-    priority: cleanText(input.priority) || "normal",
-    action_url: cleanText(input.actionUrl) || null,
-    action_label: cleanText(input.actionLabel) || null,
+  const publishResult = await publishNotification({
+    userId,
     division: "learn",
-    reference_type: cleanText(input.referenceType) || null,
-    reference_id: cleanText(input.referenceId) || null,
-    is_read: false,
-  } as never);
-  throwIfError(result, "Appending customer notification");
+    eventType: "learn.enrollment.update",
+    severity: severityFromPriority(input.priority),
+    title: input.title,
+    body: cleanText(input.body) || undefined,
+    deepLink: cleanText(input.actionUrl) || "/learn",
+    actionLabel: cleanText(input.actionLabel) || undefined,
+    relatedType: cleanText(input.referenceType) || undefined,
+    relatedId: cleanText(input.referenceId) || undefined,
+    publisher: "bridge:apps/learn/lib/learn/shared-account.ts",
+  });
+
+  if (!publishResult.ok) {
+    // Preserve the original throw-on-error semantics for non-validation
+    // failures so callers see the same throw they did before. Validation
+    // and rate-limit rejections degrade silently to operator logs in non-prod.
+    if (publishResult.error !== "validation" && publishResult.error !== "rate_limited") {
+      throw new Error(`Appending customer notification failed: ${publishResult.error}`);
+    }
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        "[learn:appendCustomerNotification] shim rejected",
+        publishResult.error,
+        publishResult.detail,
+      );
+    }
+  }
 }
 
 export async function upsertCustomerInvoice(input: {

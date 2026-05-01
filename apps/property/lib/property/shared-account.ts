@@ -1,7 +1,17 @@
 import "server-only";
 
 import { normalizeEmail, normalizePhone } from "@henryco/config";
+import { publishNotification, type Severity } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
+
+function severityFromPriority(priority: string | null | undefined): Severity {
+  const value = String(priority || "").trim().toLowerCase();
+  if (value === "high" || value === "urgent" || value === "critical") return "urgent";
+  if (value === "warning") return "warning";
+  if (value === "success") return "success";
+  if (value === "security") return "security";
+  return "info";
+}
 
 type OptionalString = string | null | undefined;
 
@@ -169,27 +179,26 @@ export async function appendCustomerNotification(input: {
   const userId = await resolveUserId(input);
   if (!userId) return null;
 
-  const admin = createAdminSupabase();
-  const { error } = await admin.from("customer_notifications").insert({
-    id: createId(),
-    user_id: userId,
-    title: input.title,
-    body: input.body,
-    category: cleanText(input.category) || "general",
-    priority: cleanText(input.priority) || "normal",
-    action_url: cleanText(input.actionUrl) || null,
-    action_label: cleanText(input.actionLabel) || null,
+  const result = await publishNotification({
+    userId,
     division: "property",
-    reference_type: cleanText(input.referenceType) || null,
-    reference_id: cleanText(input.referenceId) || null,
-    is_read: false,
-  } as never);
+    eventType: "property.viewing.update",
+    severity: severityFromPriority(input.priority),
+    title: input.title,
+    body: cleanText(input.body) || undefined,
+    deepLink: cleanText(input.actionUrl) || "/property",
+    actionLabel: cleanText(input.actionLabel) || undefined,
+    relatedType: cleanText(input.referenceType) || undefined,
+    relatedId: cleanText(input.referenceId) || undefined,
+    publisher: "bridge:apps/property/lib/property/shared-account.ts",
+  });
 
-  if (error) {
-    logSharedAccountError("append_customer_notification", error, {
-      userId,
-      referenceId: input.referenceId,
-    });
+  if (!result.ok) {
+    logSharedAccountError(
+      "append_customer_notification",
+      { message: `shim ${result.error}: ${result.detail ?? ""}` },
+      { userId, referenceId: input.referenceId },
+    );
     return null;
   }
 

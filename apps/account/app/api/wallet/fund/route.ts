@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publishNotification } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
@@ -130,13 +131,16 @@ export async function POST(request: Request) {
         },
       });
 
-      await admin.from("customer_notifications").insert({
-        user_id: user.id,
-        division: "wallet",
+      await publishNotification({
+        userId: user.id,
+        division: "account",
+        eventType: "wallet.transaction.update",
+        severity: "info",
         title: "Funding request created",
         body: `Transfer NGN ${amountNaira.toLocaleString()} using the bank details on the next screen, then upload proof for verification.`,
-        category: "wallet",
-        action_url: `/wallet/funding/${requestId}`,
+        deepLink: `/wallet/funding/${requestId}`,
+        relatedType: "wallet_funding_request",
+        publisher: "bridge:apps/account/app/api/wallet/fund",
       });
 
       return NextResponse.json({
@@ -200,13 +204,16 @@ export async function POST(request: Request) {
       },
     });
 
-    await admin.from("customer_notifications").insert({
-      user_id: user.id,
-      division: "wallet",
+    await publishNotification({
+      userId: user.id,
+      division: "account",
+      eventType: "wallet.transaction.update",
+      severity: "info",
       title: "Funding request created",
       body: `Transfer NGN ${amountNaira.toLocaleString()} using the bank details shown, then upload proof for verification.`,
-      category: "wallet",
-      action_url: `/wallet/funding/${transaction.id}`,
+      deepLink: `/wallet/funding/${transaction.id}`,
+      relatedType: "wallet_funding_request",
+      publisher: "bridge:apps/account/app/api/wallet/fund",
     });
 
     return NextResponse.json({

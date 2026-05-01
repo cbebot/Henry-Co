@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publishNotification } from "@henryco/notifications";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
@@ -148,13 +149,16 @@ export async function POST(request: Request, { params }: Props) {
       },
     });
 
-    await admin.from("customer_notifications").insert({
-      user_id: user.id,
-      division: "wallet",
+    await publishNotification({
+      userId: user.id,
+      division: "account",
+      eventType: "wallet.transaction.update",
+      severity: "info",
       title: "Proof received",
       body: "We have your transfer proof and will review it shortly.",
-      category: "wallet",
-      action_url: `/wallet/funding/${requestId}`,
+      deepLink: `/wallet/funding/${requestId}`,
+      relatedType: "wallet_funding_request",
+      publisher: "bridge:apps/account/app/api/wallet/funding/proof",
     });
 
     return NextResponse.json({

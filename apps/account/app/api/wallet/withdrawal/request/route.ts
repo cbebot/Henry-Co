@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publishNotification } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -197,14 +198,17 @@ export async function POST(request: Request) {
         action_url: "/wallet/withdrawals",
       } as never);
 
-      await admin.from("customer_notifications").insert({
-        user_id: user.id,
-        division: "wallet",
+      await publishNotification({
+        userId: user.id,
+        division: "account",
+        eventType: "wallet.transaction.update",
+        severity: "info",
         title: "Withdrawal requested",
         body: `We received your withdrawal request for NGN ${amountNaira.toLocaleString()}. Finance will review and process it.`,
-        category: "wallet",
-        action_url: "/wallet/withdrawals",
-      } as never);
+        deepLink: "/wallet/withdrawals",
+        relatedType: "wallet_withdrawal_request",
+        publisher: "bridge:apps/account/app/api/wallet/withdrawal/request",
+      });
 
       return NextResponse.json({ success: true, id: String((legacyRow as { id: string }).id) });
     }
@@ -227,14 +231,17 @@ export async function POST(request: Request) {
       action_url: "/wallet/withdrawals",
     } as never);
 
-    await admin.from("customer_notifications").insert({
-      user_id: user.id,
-      division: "wallet",
+    await publishNotification({
+      userId: user.id,
+      division: "account",
+      eventType: "wallet.transaction.update",
+      severity: "info",
       title: "Withdrawal requested",
       body: `We received your withdrawal request for NGN ${amountNaira.toLocaleString()}. Finance will review and process it.`,
-      category: "wallet",
-      action_url: "/wallet/withdrawals",
-    } as never);
+      deepLink: "/wallet/withdrawals",
+      relatedType: "wallet_withdrawal_request",
+      publisher: "bridge:apps/account/app/api/wallet/withdrawal/request",
+    });
 
     return NextResponse.json({ success: true, id: (row as { id: string }).id });
   } catch (error) {

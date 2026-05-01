@@ -31,8 +31,10 @@ export type EventTypeId =
   | "studio.project.update"
   | "care.booking.update"
   | "support.reply.received"
+  | "support.thread.created"
   | "wallet.transaction.update"
-  | "kyc.review.update";
+  | "kyc.review.update"
+  | "system.notification.relay";
 
 export type EventTypeSpec = {
   defaultSeverity: Severity;
@@ -100,6 +102,22 @@ export const EVENT_TYPES: Record<EventTypeId, EventTypeSpec> = {
   "support.reply.received": {
     defaultSeverity: "info",
     deepLinkTemplate: "/support",
+    allowedPayloadKeys: [],
+  },
+  // Severity 'info' rather than 'success' — opening a support thread is a
+  // neutral state change for the customer, not a celebration.
+  "support.thread.created": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/support",
+    allowedPayloadKeys: [],
+  },
+  // Generic cross-division relay used by the account-side webhook
+  // (notification.send case). The webhook is HMAC-verified upstream;
+  // payload severity/division/copy come from the calling app. Severity
+  // defaults to 'info' — sensitive cases override per-call.
+  "system.notification.relay": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/account",
     allowedPayloadKeys: [],
   },
   "wallet.transaction.update": {

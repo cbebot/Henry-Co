@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publishNotification } from "@henryco/notifications";
 import { createStaffSupabaseServer } from "@/lib/supabase/server";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
 import { getStaffViewer } from "@/lib/staff-auth";
@@ -223,16 +224,26 @@ export async function POST(request: Request) {
       },
     } as never);
 
-    await admin.from("customer_notifications").insert({
-      user_id: userId,
+    const publishResult = await publishNotification({
+      userId,
       division: "account",
-      title: decision === "approved" ? "Verification approved" : "Verification needs more information",
+      eventType: "kyc.review.update",
+      severity: decision === "approved" ? "success" : "warning",
+      title:
+        decision === "approved"
+          ? "Verification approved"
+          : "Verification needs more information",
       body: reviewerNote,
-      category: "verification",
-      action_url: "/verification",
-      reference_type: "verification_submission",
-      reference_id: submissionId,
-    } as never);
+      deepLink: "/verification",
+      relatedType: "verification_submission",
+      relatedId: submissionId,
+      actorUserId: user.id,
+      publisher: "bridge:apps/staff/app/api/kyc/review",
+    });
+
+    if (!publishResult.ok && process.env.NODE_ENV !== "production") {
+      console.warn("[kyc/review] shim rejected publish", publishResult.error, publishResult.detail);
+    }
 
     return respond(request, {
       ok: true,
