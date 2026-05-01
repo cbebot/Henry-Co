@@ -9,8 +9,21 @@ import {
   phoneSearchVariants,
   phonesMatch,
 } from "@henryco/config";
+import { publishNotification, type Severity } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getCareBookingHref } from "@/lib/account-links";
+
+// Map the legacy freeform `priority` strings ("normal" / "high") onto the
+// publisher's typed Severity enum. Care-sync passes "high" when the
+// booking has an outstanding balance and "normal" otherwise.
+function severityFromPriority(priority: string | null | undefined): Severity {
+  const value = String(priority || "").trim().toLowerCase();
+  if (value === "high" || value === "urgent" || value === "critical") return "urgent";
+  if (value === "warning") return "warning";
+  if (value === "success") return "success";
+  if (value === "security") return "security";
+  return "info";
+}
 
 export type CareAccountIdentity = {
   userId: string;
@@ -469,15 +482,39 @@ async function syncCareArtifacts(identity: CareAccountIdentity, bookings: CareBo
     }
 
     if (notificationId) {
+      // UPDATE path: the booking already has an inbox row that we are
+      // refreshing in place (status changed, balance changed, etc.).
+      // This is a sync-refresh, not a publish event, so it stays a
+      // direct admin update — the publisher shim is for new publishes.
       await admin
         .from("customer_notifications")
         .update(notificationPayload as never)
         .eq("id", notificationId);
     } else {
-      await admin.from("customer_notifications").insert({
-        user_id: identity.userId,
-        ...notificationPayload,
-      } as never);
+      // INSERT path: this is the first time this booking is appearing in
+      // the user's inbox. Route through the publisher shim for
+      // validation, rate limit, mute resolution, and audit log writes.
+      const result = await publishNotification({
+        userId: identity.userId,
+        division: "care",
+        eventType: "care.booking.update",
+        severity: severityFromPriority(notificationPayload.priority),
+        title: notificationPayload.title,
+        body: notificationPayload.body || undefined,
+        deepLink: notificationPayload.action_url,
+        actionLabel: notificationPayload.action_label,
+        relatedType: "care_booking",
+        relatedId: booking.id,
+        publisher: "bridge:apps/account/lib/care-sync.ts",
+      });
+
+      if (!result.ok && process.env.NODE_ENV !== "production") {
+        console.warn(
+          "[care-sync] shim rejected publish",
+          result.error,
+          result.detail,
+        );
+      }
     }
   }
 }

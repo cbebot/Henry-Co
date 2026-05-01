@@ -18,6 +18,7 @@
     "@henryco/config": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
+    "@henryco/notifications": "workspace:^",
     "@henryco/trust": "workspace:^",
     "@henryco/pricing": "workspace:^",
     "@henryco/ui": "workspace:^",

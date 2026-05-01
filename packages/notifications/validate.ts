@@ -81,6 +81,40 @@ function isSafeRelativePath(value: string): boolean {
   return true;
 }
 
+// Cross-division deep links use absolute URLs because the user navigates
+// across domains (account.henrycogroup.com -> marketplace.henrycogroup.com).
+// Allow https:// URLs whose host is on a HenryCo-controlled TLD; reject
+// everything else. The TLD list is intentionally narrow — adding a host
+// here is a deliberate change.
+const HENRYCO_HOST_SUFFIXES: readonly string[] = [
+  "henrycogroup.com",
+  "henryco.local", // dev/preview hostnames in CI
+];
+
+function isSafeHenryCoUrl(value: string): boolean {
+  if (value.length === 0 || value.length > DEEP_LINK_MAX) return false;
+  if (CONTROL_CHARS_RE.test(value)) return false;
+  if (value.includes("<") || value.includes(">") || value.includes('"')) return false;
+  let parsed: URL;
+  try {
+    parsed = new URL(value);
+  } catch {
+    return false;
+  }
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return false;
+  // No userinfo (https://user:pass@host) — those are phishing carriers.
+  if (parsed.username || parsed.password) return false;
+  const host = parsed.hostname.toLowerCase();
+  for (const suffix of HENRYCO_HOST_SUFFIXES) {
+    if (host === suffix || host.endsWith(`.${suffix}`)) return true;
+  }
+  return false;
+}
+
+function isSafeDeepLink(value: string): boolean {
+  return isSafeRelativePath(value) || isSafeHenryCoUrl(value);
+}
+
 export function validatePublishInput(input: PublishInput): ValidationFailure | ValidatedInput {
   if (!isUuid(input.userId)) return { code: "validation", field: "userId" };
   if (!isDivision(input.division)) return { code: "validation", field: "division" };
@@ -114,7 +148,7 @@ export function validatePublishInput(input: PublishInput): ValidationFailure | V
   }
 
   const deepLink = typeof input.deepLink === "string" ? input.deepLink.trim() : "";
-  if (!isSafeRelativePath(deepLink)) return { code: "validation", field: "deepLink" };
+  if (!isSafeDeepLink(deepLink)) return { code: "validation", field: "deepLink" };
 
   let actionLabel: string | null = null;
   if (input.actionLabel !== undefined && input.actionLabel !== null) {
