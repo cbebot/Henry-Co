@@ -399,9 +399,15 @@ export function SellerApplicationWizard({
                 const document = form.documents[item.key];
                 const uploading = uploadingKeys.includes(item.key);
                 const sizeLabel = formatSize(document?.size ?? null);
+                // Stable per-tile id so the visible upload button (a label
+                // with htmlFor) reliably opens the file picker. The previous
+                // structure wrapped everything (including a Review-file <a>
+                // when a document was already uploaded) in a single <label>,
+                // which on some browsers swallowed the file-input click.
+                const inputId = `seller-doc-${item.key}`;
 
                 return (
-                  <label
+                  <div
                     key={item.key}
                     className="group rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-5"
                   >
@@ -457,7 +463,10 @@ export function SellerApplicationWizard({
                     </div>
 
                     <div className="mt-4">
-                      <span className="market-button-secondary inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold">
+                      <label
+                        htmlFor={inputId}
+                        className="market-button-secondary inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                      >
                         {uploading ? (
                           <>
                             <HenryCoActivityIndicator size="sm" label="Uploading seller document" />
@@ -469,10 +478,11 @@ export function SellerApplicationWizard({
                             {document ? "Replace file" : "Upload file"}
                           </>
                         )}
-                      </span>
+                      </label>
                       <input
+                        id={inputId}
                         type="file"
-                        accept=".jpg,.jpeg,.png,.webp,.pdf"
+                        accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
                         className="sr-only"
                         disabled={uploading}
                         onChange={(event) => {
@@ -482,7 +492,7 @@ export function SellerApplicationWizard({
                         }}
                       />
                     </div>
-                  </label>
+                  </div>
                 );
               })}
             </div>
