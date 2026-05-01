@@ -337,7 +337,19 @@ export function PublicHeader({
         {wrapIdentity(mobileIdentityOrdered)}
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            setOpen((v) => {
+              const next = !v;
+              // When opening from the bottom of a long page, scroll
+              // the viewport back to the top so the drawer + its menu
+              // items are visible immediately. Skip when closing or
+              // when the user is already near the top.
+              if (next && typeof window !== "undefined" && window.scrollY > 80) {
+                window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+              }
+              return next;
+            });
+          }}
           className={cn(
             "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200/90 bg-white text-zinc-950 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]",
             floating && "h-10 w-10 rounded-xl",
