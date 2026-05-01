@@ -6,6 +6,12 @@ export type SignalNotification = {
   is_read: boolean;
   message_href: string;
   related_url: string | null;
+  /**
+   * Raw deep_link / action_url stored on customer_notifications. The bell
+   * spreads the full localized row into its payload, so this field is
+   * present at runtime even though older clients only consumed message_href.
+   */
+  action_url?: string | null;
   division?: string | null;
   category?: string | null;
   priority?: string | null;

@@ -34,6 +34,15 @@ import {
   shouldTriggerNotificationVibration,
 } from "./notification-signal-rules";
 import { triggerNotificationVibration } from "./notification-vibration";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
+
+// V2-NOT-01-B B3.2: Realtime subscription tuning. The push-to-poll trigger
+// pattern means a Realtime INSERT/UPDATE simply calls refreshFeed() — the
+// server-side localization + brand-resolution pipeline at
+// /api/notifications/recent is reused so client and server stay in sync.
+const REALTIME_BACKOFF_INITIAL_MS = 1_000;
+const REALTIME_BACKOFF_MAX_MS = 30_000;
+const REALTIME_REFRESH_DEBOUNCE_MS = 250;
 
 export type PreviewToastItem = SignalNotification & {
   toastId: string;
@@ -234,6 +243,92 @@ export function NotificationSignalProvider({
 
     return stopPolling;
   }, []);
+
+  // V2-NOT-01-B B3.2: Realtime push channel. When customer_notifications
+  // changes for the current user, refresh the feed via the existing REST
+  // path so we keep one localization pipeline. Polling continues in the
+  // background as a fallback for missed events during disconnections.
+  //
+  // RLS on customer_notifications restricts SELECT to user_id = auth.uid(),
+  // and Supabase Realtime applies SELECT-side RLS to the subscription
+  // stream. The explicit user_id=eq.<userId> filter below is
+  // belt-and-braces — if RLS were ever misconfigured, the channel filter
+  // still scopes events to the current user.
+  useEffect(() => {
+    let cancelled = false;
+    let channel: ReturnType<ReturnType<typeof createSupabaseBrowser>["channel"]> | null = null;
+    let backoffMs = REALTIME_BACKOFF_INITIAL_MS;
+    let retryTimer: number | null = null;
+    let lastRefreshAt = 0;
+
+    const debouncedRefresh = () => {
+      const now = Date.now();
+      if (now - lastRefreshAt < REALTIME_REFRESH_DEBOUNCE_MS) return;
+      lastRefreshAt = now;
+      void refreshFeed();
+    };
+
+    const teardown = () => {
+      if (channel) {
+        const supabase = createSupabaseBrowser();
+        void supabase.removeChannel(channel);
+        channel = null;
+      }
+      if (retryTimer !== null) {
+        window.clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+    };
+
+    const start = async () => {
+      if (cancelled) return;
+      const supabase = createSupabaseBrowser();
+      const { data, error: authError } = await supabase.auth.getUser();
+      if (cancelled) return;
+      if (authError || !data.user) {
+        // Anonymous session — Realtime cannot scope to a user. Polling
+        // is the only delivery path. No retry; auth state changes will
+        // remount this provider.
+        return;
+      }
+      const userId = data.user.id;
+      const filter = `user_id=eq.${userId}`;
+
+      channel = supabase
+        .channel(`customer_notifications:user:${userId}`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "customer_notifications", filter },
+          () => debouncedRefresh(),
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "customer_notifications", filter },
+          () => debouncedRefresh(),
+        )
+        .subscribe((status: string) => {
+          if (cancelled) return;
+          if (status === "SUBSCRIBED") {
+            backoffMs = REALTIME_BACKOFF_INITIAL_MS;
+            return;
+          }
+          if (status === "CLOSED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            teardown();
+            retryTimer = window.setTimeout(() => {
+              backoffMs = Math.min(backoffMs * 2, REALTIME_BACKOFF_MAX_MS);
+              void start();
+            }, backoffMs);
+          }
+        });
+    };
+
+    void start();
+
+    return () => {
+      cancelled = true;
+      teardown();
+    };
+  }, [refreshFeed]);
 
   useEffect(() => {
     if (!hasMountedPathRef.current) {

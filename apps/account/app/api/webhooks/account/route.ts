@@ -1,7 +1,28 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { normalizeLocale } from "@henryco/i18n/server";
+import { publishNotification, type Division } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
+
+const KNOWN_DIVISIONS: ReadonlySet<Division> = new Set([
+  "hub",
+  "account",
+  "staff",
+  "care",
+  "marketplace",
+  "property",
+  "logistics",
+  "jobs",
+  "learn",
+  "studio",
+  "security",
+  "system",
+]);
+
+function normalizeDivision(value: string | null | undefined, fallback: Division = "account"): Division {
+  const lowered = String(value || "").trim().toLowerCase();
+  return KNOWN_DIVISIONS.has(lowered as Division) ? (lowered as Division) : fallback;
+}
 import { sendAccountEmail } from "@/lib/email/send";
 import { welcomeEmail, securityAlertEmail, walletFundedEmail } from "@/lib/email/templates";
 import {
@@ -54,38 +75,6 @@ function isFreshTimestamp(value: string) {
   if (!Number.isFinite(ts)) return false;
   const now = Math.floor(Date.now() / 1000);
   return Math.abs(now - ts) <= WEBHOOK_TTL_SECONDS;
-}
-
-function isMissingNotificationColumn(
-  error: { message?: string | null; code?: string | null } | null | undefined,
-  column: string
-) {
-  const message = clean(error?.message).toLowerCase();
-  const code = clean(error?.code);
-  return (
-    message.includes(`customer_notifications.${column.toLowerCase()}`) ||
-    message.includes(`${column.toLowerCase()} does not exist`) ||
-    code === "42703"
-  );
-}
-
-async function insertCustomerNotification(
-  admin: ReturnType<typeof createAdminSupabase>,
-  row: Record<string, unknown>
-) {
-  let { error } = await admin.from("customer_notifications").insert(row as never);
-  if (!error) {
-    return null;
-  }
-
-  if (!isMissingNotificationColumn(error, "detail_payload") || !("detail_payload" in row)) {
-    return error;
-  }
-
-  const legacyRow = { ...row };
-  delete legacyRow.detail_payload;
-  ({ error } = await admin.from("customer_notifications").insert(legacyRow as never));
-  return error ?? null;
 }
 
 async function alreadyProcessedEvent(eventId: string) {
@@ -270,7 +259,6 @@ export async function POST(request: Request) {
         const fallbackTitle = clean(payload.title) || "Notification";
         const fallbackBody = clean(payload.body) || "";
         const messageKey = clean(payload.message_key);
-        const detailPayload = asObject(payload.detail_payload);
         const localization = messageKey
           ? buildNotificationLocalization({
               key: messageKey,
@@ -290,25 +278,38 @@ export async function POST(request: Request) {
               locale: preferredLocale,
             })
           : { title: fallbackTitle, body: fallbackBody };
-        const insertError = await insertCustomerNotification(admin, {
-          user_id: userId,
+        const priority = clean(payload.priority).toLowerCase();
+        const severity =
+          priority === "high" || priority === "urgent" || priority === "critical"
+            ? "urgent"
+            : priority === "warning"
+              ? "warning"
+              : priority === "success"
+                ? "success"
+                : priority === "security"
+                  ? "security"
+                  : "info";
+        const publishResult = await publishNotification({
+          userId,
+          division: normalizeDivision(clean(payload.division), "account"),
+          eventType: "system.notification.relay",
+          severity,
           title: localizedNotification.title,
           body: localizedNotification.body,
-          category: clean(payload.category) || "general",
-          priority: clean(payload.priority) || "normal",
-          action_url: clean(payload.action_url) || null,
-          division: clean(payload.division) || null,
-          detail_payload: {
-            ...detailPayload,
-            ...(localization
-              ? {
-                  localization,
-                }
-              : {}),
-          },
+          deepLink: clean(payload.action_url) || "/account",
+          publisher: `webhook:${eventName}:${eventId}`,
+          requestId: eventId,
         });
-        if (insertError) {
-          return NextResponse.json({ error: insertError.message }, { status: 500 });
+        if (!publishResult.ok) {
+          // Validation failures still return 200 to the webhook caller —
+          // the upstream replay logic does not benefit from a retry on a
+          // payload-shape error.
+          if (publishResult.error !== "validation" && publishResult.error !== "rate_limited") {
+            return NextResponse.json(
+              { error: `relay publish failed: ${publishResult.error}` },
+              { status: 500 },
+            );
+          }
         }
         break;
       }
@@ -323,10 +324,9 @@ export async function POST(request: Request) {
       }
       case "support.staff_reply": {
         // Emitted by staff/hub when a staff member replies to a customer support thread.
-        // Creates a customer notification with the support.reply.received localization key.
+        // Routes through the shim with the support.reply.received event type.
         const threadId = clean(payload.thread_id);
         const subject = clean(payload.subject) || "your request";
-        const division = clean(payload.division) || "support";
         if (!threadId) break;
 
         const localization = buildNotificationLocalization({
@@ -344,22 +344,26 @@ export async function POST(request: Request) {
           },
           locale: preferredLocale,
         });
-        const insertError = await insertCustomerNotification(admin, {
-          user_id: userId,
-          division,
-          category: "support",
+        const publishResult = await publishNotification({
+          userId,
+          division: normalizeDivision(clean(payload.division), "account"),
+          eventType: "support.reply.received",
+          severity: "info",
           title: localizedNotification.title,
           body: localizedNotification.body,
-          priority: "normal",
-          action_url: `/support/${threadId}`,
-          reference_type: "support_thread",
-          reference_id: threadId,
-          detail_payload: {
-            localization,
-          },
+          deepLink: `/support/${threadId}`,
+          relatedType: "support_thread",
+          relatedId: threadId,
+          publisher: `webhook:${eventName}:${eventId}`,
+          requestId: eventId,
         });
-        if (insertError) {
-          return NextResponse.json({ error: insertError.message }, { status: 500 });
+        if (!publishResult.ok) {
+          if (publishResult.error !== "validation" && publishResult.error !== "rate_limited") {
+            return NextResponse.json(
+              { error: `relay publish failed: ${publishResult.error}` },
+              { status: 500 },
+            );
+          }
         }
         break;
       }

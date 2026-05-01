@@ -5,8 +5,8 @@ import { requireAccountUser } from "@/lib/auth";
 import { getNotificationFeed } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
-import EmptyState from "@/components/layout/EmptyState";
 import NotificationsFeed from "@/components/notifications/NotificationsFeed";
+import { NotificationsFeedEmptyState } from "@/components/notifications/NotificationsFeedEmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -25,11 +25,7 @@ export default async function NotificationsPage() {
       />
 
       {notifications.length === 0 ? (
-        <EmptyState
-          icon={Bell}
-          title={t("No notifications")}
-          description={t("You're all caught up. Notifications from across HenryCo services will appear here.")}
-        />
+        <NotificationsFeedEmptyState variant="inbox" />
       ) : (
         <NotificationsFeed notifications={notifications} />
       )}

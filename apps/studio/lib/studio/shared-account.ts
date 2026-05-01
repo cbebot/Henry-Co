@@ -1,6 +1,16 @@
 import "server-only";
 
+import { publishNotification, type Severity } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
+
+function severityFromPriority(priority: string | null | undefined): Severity {
+  const value = String(priority || "").trim().toLowerCase();
+  if (value === "high" || value === "urgent" || value === "critical") return "urgent";
+  if (value === "warning") return "warning";
+  if (value === "success") return "success";
+  if (value === "security") return "security";
+  return "info";
+}
 
 type OptionalString = string | null | undefined;
 
@@ -247,13 +257,30 @@ export async function appendCustomerNotification(input: {
   };
 
   await performSharedWrite("customer_notification", input, payload, async (userId) => {
-    const admin = createAdminSupabase();
-    const { error } = await admin.from("customer_notifications").insert({
-      ...payload,
-      user_id: userId,
-    } as never);
+    const result = await publishNotification({
+      userId,
+      division: "studio",
+      eventType: "studio.project.update",
+      severity: severityFromPriority(input.priority),
+      title: input.title,
+      body: cleanText(input.body) || undefined,
+      deepLink: cleanText(input.actionUrl) || "/studio",
+      actionLabel: cleanText(input.actionLabel) || undefined,
+      relatedType: cleanText(input.referenceType) || undefined,
+      relatedId: cleanText(input.referenceId) || undefined,
+      publisher: "bridge:apps/studio/lib/studio/shared-account.ts",
+    });
 
-    if (error) throw error;
+    if (!result.ok) {
+      // Non-validation errors thrown so the performSharedWrite retry/pending
+      // queue still kicks in; validation errors degrade silently in prod.
+      if (result.error !== "validation" && result.error !== "rate_limited") {
+        throw new Error(`shim publish failed: ${result.error}`);
+      }
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("[studio:appendCustomerNotification] shim rejected", result.error, result.detail);
+      }
+    }
   });
 }
 

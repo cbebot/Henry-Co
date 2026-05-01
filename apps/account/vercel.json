@@ -2,5 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter @henryco/account build"
+  "buildCommand": "cd ../.. && pnpm --filter @henryco/account build",
+  "crons": [
+    {
+      "path": "/api/cron/notification-email-fallback",
+      "schedule": "*/15 * * * *"
+    }
+  ]
 }

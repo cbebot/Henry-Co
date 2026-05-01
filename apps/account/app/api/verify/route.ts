@@ -6,6 +6,7 @@ import {
   buildSupabaseCookieOptions,
   resolveRequestCookieDomain,
 } from "@henryco/config";
+import { publishNotification } from "@henryco/notifications";
 import { uploadOwnedAsset } from "@/lib/cloudinary";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
@@ -177,16 +178,18 @@ export async function POST(request: Request) {
       },
     } as never);
 
-    await admin.from("customer_notifications").insert({
-      user_id: user.id,
+    await publishNotification({
+      userId: user.id,
       division: "account",
+      eventType: "kyc.review.update",
+      severity: "info",
       title: "Verification document received",
       body: `${getDocumentTypeLabel(documentType)} is now in the review queue.`,
-      category: "verification",
-      action_url: "/verification",
-      reference_type: "verification_document",
-      reference_id: docRecord.id,
-    } as never);
+      deepLink: "/verification",
+      relatedType: "verification_document",
+      relatedId: docRecord.id,
+      publisher: "bridge:apps/account/app/api/verify",
+    });
 
     const verification = await getVerificationState(user.id);
     const submission =

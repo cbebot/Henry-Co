@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { normalizeEmail } from "@henryco/config";
+import { publishNotification } from "@henryco/notifications";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getPendingWithdrawalHoldKobo, getWalletSummary, getWithdrawalRequests } from "@/lib/account-data";
@@ -151,14 +152,18 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       action_url: `/studio/payments/${paymentRow.id}`,
       metadata: { project_id: projectRow.id, debit_reference: debitReference },
     } as never);
-    await admin.from("customer_notifications").insert({
-      user_id: user.id,
+    await publishNotification({
+      userId: user.id,
       division: "studio",
+      eventType: "studio.project.update",
+      severity: "info",
       title: "Studio wallet payment submitted",
       body: "Your wallet debit is recorded and waiting for finance confirmation.",
-      category: "studio",
-      action_url: `/studio/payments/${paymentRow.id}`,
-    } as never);
+      deepLink: `/studio/payments/${paymentRow.id}`,
+      relatedType: "studio_payment",
+      relatedId: String(paymentRow.id),
+      publisher: "bridge:apps/account/app/api/studio/payments/wallet",
+    });
 
     return NextResponse.json({ ok: true });
   } catch {

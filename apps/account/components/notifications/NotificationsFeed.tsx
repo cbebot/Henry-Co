@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { translateSurfaceLabel, useHenryCoLocale, type AppLocale } from "@henryco/i18n";
 import type { EnrichedNotification } from "@/lib/account-data";
-import EmptyState from "@/components/layout/EmptyState";
-import { Bell } from "lucide-react";
 import NotificationLifecycleControls from "@/components/messages/NotificationLifecycleControls";
 import { timeAgoLocalized } from "@/lib/format";
+import { divisionAccentVar, resolveSeverity } from "./severity-style";
+import { NotificationsFeedEmptyState } from "./NotificationsFeedEmptyState";
 
 function SourceMark({ notification, sourceLabel }: { notification: EnrichedNotification; sourceLabel: string }) {
   const source = notification.source;
@@ -47,6 +47,12 @@ function NotificationCard({
   openMessageBoardLabel: string;
 }) {
   const sourceLabel = translateSurfaceLabel(locale, notification.source.label);
+  // V2-NOT-01-B-2: severity icon + division accent applied per-row.
+  const severityStyle = resolveSeverity(
+    (notification as { priority?: string | null }).priority,
+    (notification as { category?: string | null }).category,
+  );
+  const divisionVar = divisionAccentVar(notification.source.key);
 
   return (
     <div
@@ -55,6 +61,11 @@ function NotificationCard({
           ? "border-[var(--acct-line)] bg-[var(--acct-bg-elevated)]"
           : "border-[var(--acct-gold)]/15 bg-[var(--acct-gold-soft)]/65"
       }`}
+      style={{
+        borderLeftWidth: 3,
+        borderLeftStyle: "solid",
+        borderLeftColor: `var(${divisionVar})`,
+      }}
     >
       <div className="flex items-start gap-4">
         <SourceMark notification={notification} sourceLabel={sourceLabel} />
@@ -63,6 +74,18 @@ function NotificationCard({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em]"
+                    style={{
+                      backgroundColor: `var(${severityStyle.softVar})`,
+                      color: `var(${severityStyle.colorVar})`,
+                    }}
+                  >
+                    <span aria-hidden className="inline-flex items-center">
+                      <severityStyle.Icon size={10} />
+                    </span>
+                    {severityStyle.label}
+                  </span>
                   <span
                     className="rounded-full px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em]"
                     style={{
@@ -197,11 +220,7 @@ export default function NotificationsFeed({
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState
-          icon={Bell}
-          title={t("No notifications match this view")}
-          description={t("Try switching the source or state filters to bring recent notifications back into focus.")}
-        />
+        <NotificationsFeedEmptyState variant="filter" filterLabel={t("active filter")} />
       ) : (
         <div className="space-y-6">
           {unread.length > 0 ? (
