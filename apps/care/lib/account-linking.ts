@@ -1,7 +1,17 @@
 import "server-only";
 
+import { publishNotification, type Severity } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, normalizePhone } from "@henryco/config";
+
+function severityFromPriority(priority: string | null | undefined): Severity {
+  const value = String(priority || "").trim().toLowerCase();
+  if (value === "high" || value === "urgent" || value === "critical") return "urgent";
+  if (value === "warning") return "warning";
+  if (value === "success") return "success";
+  if (value === "security") return "security";
+  return "info";
+}
 
 type BookingLinkRecord = {
   id: string;
@@ -169,14 +179,35 @@ export async function ensureCareBookingAccountLink(
   };
 
   if (existingNotification?.id) {
+    // Pattern C: UPDATE branch is a sync-refresh, NOT a publish event,
+    // so it stays a direct admin update rather than going through the shim.
     await supabase
       .from("customer_notifications")
       .update(notificationPayload as never)
       .eq("id", existingNotification.id);
   } else {
-    await supabase.from("customer_notifications").insert({
-      user_id: input.userId,
-      ...notificationPayload,
-    } as never);
+    // Pattern C: INSERT branch is a new publish event — route through the
+    // shim for validation, mute resolution, audit log.
+    const publishResult = await publishNotification({
+      userId: input.userId,
+      division: "care",
+      eventType: "care.booking.update",
+      severity: severityFromPriority(notificationPayload.priority),
+      title: notificationPayload.title,
+      body: notificationPayload.body || undefined,
+      deepLink: notificationPayload.action_url,
+      actionLabel: notificationPayload.action_label,
+      relatedType: "care_booking",
+      relatedId: input.booking.id,
+      publisher: "bridge:apps/care/lib/account-linking.ts",
+    });
+
+    if (!publishResult.ok && process.env.NODE_ENV !== "production") {
+      console.warn(
+        "[care:account-linking] shim rejected publish",
+        publishResult.error,
+        publishResult.detail,
+      );
+    }
   }
 }
