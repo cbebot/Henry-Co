@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Newsreader } from "next/font/google";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, ScrollToTopOnNavigation } from "@henryco/config";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
@@ -51,6 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className={`${display.variable} ${sans.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
       >
         <PublicThemeGuard>
+          <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             {children}
             <AssistDock division="jobs" />

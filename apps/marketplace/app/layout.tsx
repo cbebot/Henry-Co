@@ -6,7 +6,7 @@ import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
 import { getMarketplaceShellState } from "@/lib/marketplace/data";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, ScrollToTopOnNavigation } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
@@ -56,6 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className={`${fraunces.variable} ${manrope.variable} min-h-screen bg-[var(--market-bg)] text-[var(--market-ink)] antialiased`}
       >
         <PublicThemeGuard>
+          <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             <MarketplaceRuntimeProvider initialShell={shell}>
               {children}

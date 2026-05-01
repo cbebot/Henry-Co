@@ -9,6 +9,7 @@ import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
+import { ScrollToTopOnNavigation } from "@henryco/config";
 import { getCareSettings } from "@/lib/care-data";
 import { getCarePublicLocale } from "@/lib/locale-server";
 
@@ -53,6 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className="min-h-screen bg-white text-zinc-950 antialiased dark:bg-[#08101C] dark:text-white"
       >
         <PublicThemeGuard>
+          <ScrollToTopOnNavigation />
           <Suspense fallback={null}>
             <CareToaster locale={lang} />
           </Suspense>
