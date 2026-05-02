@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageSquare } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
 import { StoreActionsClient } from "@/components/marketplace/store-actions-client";
@@ -78,9 +78,22 @@ export default async function StorePage({
               Support
             </p>
             <p className="mt-2 max-w-md text-sm leading-7 text-white/72">
-              Use HenryCo Marketplace to contact this store. Messages are logged and tied to your
-              order reference so every update stays in one place.
+              <Link
+                href={`/help?vendor=${encodeURIComponent(data.vendor.slug)}&subject=${encodeURIComponent(`Question for ${data.vendor.name}`)}&return_to=${encodeURIComponent(`/store/${data.vendor.slug}`)}`}
+                className="font-semibold text-[var(--market-brass)] underline-offset-4 outline-none transition hover:underline focus-visible:underline focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
+              >
+                Use HenryCo Marketplace to contact this store
+              </Link>
+              {" "}— messages are logged and tied to your order reference so every update stays in one place.
             </p>
+            <Link
+              href={`/help?vendor=${encodeURIComponent(data.vendor.slug)}&subject=${encodeURIComponent(`Question for ${data.vendor.name}`)}&return_to=${encodeURIComponent(`/store/${data.vendor.slug}`)}`}
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--market-paper-white)] transition hover:bg-white/[0.08] motion-safe:hover:-translate-y-[1px] motion-safe:hover:shadow-[0_12px_28px_rgba(178,134,59,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
+              <MessageSquare className="h-3.5 w-3.5 text-[var(--market-brass)]" aria-hidden />
+              Contact this store
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </Link>
           </div>
         </aside>
       </section>

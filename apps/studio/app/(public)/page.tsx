@@ -137,13 +137,16 @@ export default async function StudioHomePage() {
 
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {featuredPackages.map((pkg, idx) => (
-            <article
+            <Link
               key={pkg.id}
-              className={
+              href={`/pricing#${pkg.id}`}
+              className={[
+                "studio-card-tactile block rounded-[2.2rem] p-6 outline-none",
                 idx === 1
-                  ? "studio-panel rounded-[2.2rem] p-6 ring-1 ring-[var(--studio-signal)]/40 shadow-[0_28px_80px_-30px_rgba(151,244,243,0.4)]"
-                  : "studio-panel rounded-[2.2rem] p-6"
-              }
+                  ? "studio-panel ring-1 ring-[var(--studio-signal)]/40 shadow-[0_28px_80px_-30px_rgba(151,244,243,0.4)]"
+                  : "studio-panel",
+              ].join(" ")}
+              aria-label={`${pkg.name} package — ${formatCurrency(pkg.price)}, ${pkg.timelineWeeks} weeks`}
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="studio-kicker">{pkg.name}</div>
@@ -168,7 +171,11 @@ export default async function StudioHomePage() {
                 </div>
               </dl>
               <div className="mt-5 text-sm text-[var(--studio-ink-soft)]"><span className="text-[var(--studio-ink)] font-medium">Best for:</span> {pkg.bestFor}</div>
-            </article>
+              <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--studio-signal)]">
+                Open package detail
+                <ArrowRight className="h-3.5 w-3.5 transition motion-safe:group-hover:translate-x-0.5" aria-hidden />
+              </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -180,14 +187,20 @@ export default async function StudioHomePage() {
             <h2 className="studio-heading mt-4">Specialised services built around real business outcomes.</h2>
             <ul className="mt-8 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
               {featuredServices.map((service) => (
-                <li key={service.id} className="flex flex-wrap items-baseline justify-between gap-3 py-4">
-                  <div>
-                    <div className="text-base font-semibold tracking-tight text-[var(--studio-ink)]">{service.name}</div>
-                    <p className="mt-1 max-w-xl text-sm leading-relaxed text-[var(--studio-ink-soft)]">{service.headline}</p>
-                  </div>
-                  <div className="text-sm font-semibold text-[var(--studio-signal)] whitespace-nowrap">
-                    from {formatCurrency(service.startingPrice)}
-                  </div>
+                <li key={service.id}>
+                  <Link
+                    href={`/services#${service.id}`}
+                    className="studio-row-tactile group flex flex-wrap items-baseline justify-between gap-3 px-2 py-4 -mx-2"
+                  >
+                    <div>
+                      <div className="text-base font-semibold tracking-tight text-[var(--studio-ink)]">{service.name}</div>
+                      <p className="mt-1 max-w-xl text-sm leading-relaxed text-[var(--studio-ink-soft)]">{service.headline}</p>
+                    </div>
+                    <div className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--studio-signal)] whitespace-nowrap">
+                      from {formatCurrency(service.startingPrice)}
+                      <ArrowRight className="h-3.5 w-3.5 opacity-0 transition motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:opacity-100" aria-hidden />
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -197,14 +210,23 @@ export default async function StudioHomePage() {
             <div className="studio-kicker">Selected work</div>
             <div className="mt-6 space-y-5">
               {featuredCases.map((item) => (
-                <article key={item.id} className="border-l-2 border-[var(--studio-signal)]/40 pl-5">
+                <Link
+                  key={item.id}
+                  href={`/work#${item.id}`}
+                  className="studio-row-tactile group block border-l-2 border-[var(--studio-signal)]/40 pl-5 outline-none"
+                >
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="text-lg font-semibold text-[var(--studio-ink)]">{item.name}</div>
+                    <div className="text-lg font-semibold text-[var(--studio-ink)] transition motion-safe:group-hover:text-[var(--studio-signal)]">
+                      {item.name}
+                    </div>
                     <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">{item.type}</div>
                   </div>
                   <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.challenge}</p>
-                  <div className="mt-3 text-sm font-medium text-[var(--studio-ink)]">{item.impact}</div>
-                </article>
+                  <div className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-[var(--studio-ink)]">
+                    {item.impact}
+                    <ArrowRight className="h-3.5 w-3.5 opacity-0 transition motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:opacity-100" aria-hidden />
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -239,13 +261,14 @@ export default async function StudioHomePage() {
           </div>
           <div className="flex flex-wrap gap-2">
             {featuredTeams.map((team) => (
-              <span
+              <Link
                 key={team.id}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] bg-black/15 px-3.5 py-1.5 text-xs font-medium text-[var(--studio-ink)]"
+                href={`/teams#${team.id}`}
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] bg-black/15 px-3.5 py-1.5 text-xs font-medium text-[var(--studio-ink)] outline-none transition motion-safe:hover:-translate-y-[1px] hover:border-[rgba(151,244,243,0.45)] hover:bg-[rgba(151,244,243,0.06)] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117]"
               >
                 {team.name}
                 <span className="text-[10px] uppercase tracking-[0.18em] text-[var(--studio-signal)]">{team.availability}</span>
-              </span>
+              </Link>
             ))}
           </div>
         </div>

@@ -37,7 +37,7 @@ export default async function WorkPage() {
 
       <ol className="mt-16 grid gap-5 lg:grid-cols-3">
         {catalog.caseStudies.map((item) => (
-          <li key={item.id}>
+          <li key={item.id} id={item.id} className="scroll-mt-32">
             <Link
               href={`/work/${studioCaseStudySlug(item)}`}
               className="group flex h-full flex-col rounded-[1.8rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] p-6 transition duration-300 hover:-translate-y-1 hover:border-[var(--studio-signal)]/40"

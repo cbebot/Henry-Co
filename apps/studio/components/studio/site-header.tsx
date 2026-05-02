@@ -9,6 +9,7 @@ import {
   type PublicNavItem,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 import { StudioThemeToggle } from "@/components/studio/theme-toggle";
 
 const studio = getDivisionConfig("studio");
@@ -73,8 +74,11 @@ export function StudioSiteHeader({
         href: "/",
         name: studio.name,
         mark: (
-          <div className="studio-brand-mark">
-            <span>HC</span>
+          <div
+            className="studio-brand-mark"
+            style={{ color: studio.accent || "#49C0C5" }}
+          >
+            <HenryCoMonogram size={28} accent={studio.accent || "#49C0C5"} />
           </div>
         ),
         text: (
