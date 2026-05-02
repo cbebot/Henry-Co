@@ -33,16 +33,30 @@ export default function AddMoneyForm() {
         }),
       });
 
-      const data = (await res.json()) as { error?: string; requestId?: string };
-      if (!res.ok || !data.requestId) {
-        throw new Error(data.error || "Unable to create funding request.");
+      const data = (await res
+        .json()
+        .catch(() => null)) as { error?: string; requestId?: string } | null;
+
+      if (!res.ok || !data?.requestId) {
+        console.error("[wallet/AddMoneyForm] funding request failed", {
+          status: res.status,
+          serverError: data?.error ?? null,
+        });
+        setMessage({
+          type: "error",
+          text: "We couldn't start that funding request. Please try again in a moment.",
+        });
+        return;
       }
 
       router.push(`/wallet/funding/${data.requestId}`);
       router.refresh();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Something went wrong";
-      setMessage({ type: "error", text: msg });
+    } catch (err) {
+      console.error("[wallet/AddMoneyForm] network or parse error", err);
+      setMessage({
+        type: "error",
+        text: "We couldn't reach the wallet service. Check your connection and try again.",
+      });
     } finally {
       setLoading(false);
     }
