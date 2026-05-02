@@ -12,7 +12,7 @@ import {
 } from "@henryco/config";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
-import { resolveAuthenticatedDestination } from "@/lib/post-auth-routing";
+import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
 import { recordReferralConversion } from "@/lib/referral-data";
 import { detectSecurityRequestContext, logSecurityEvent } from "@/lib/security-events";
 
@@ -126,12 +126,16 @@ export async function GET(request: Request) {
           return NextResponse.redirect(verifiedUrl);
         }
 
-        const destination = await resolveAuthenticatedDestination({
+        const preferredDashboardKey = cookieStore.get(DASHBOARD_PREFERENCE_COOKIE)?.value || null;
+        const resolution = await resolveUserDashboard({
           user,
           next,
           origin,
+          preferredDashboardKey,
         });
-        return NextResponse.redirect(destination);
+        return NextResponse.redirect(
+          resolution.kind === "redirect" ? resolution.redirectUrl : resolution.chooserUrl
+        );
       }
     }
   }
