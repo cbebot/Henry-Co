@@ -1,70 +1,67 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
-import { ButtonPendingContent } from "@henryco/ui";
-import { Paperclip, Send, X } from "lucide-react";
+import {
+  formatSurfaceTemplate,
+  translateSurfaceLabel,
+  useHenryCoLocale,
+} from "@henryco/i18n";
+import { ChatComposer } from "@henryco/chat-composer";
+import type { ComposerSendPayload } from "@henryco/chat-composer";
+
+const ACCOUNT_ACCEPTED_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+  "text/plain",
+] as const;
+
+const ACCOUNT_MAX_ATTACHMENTS = 4;
+const ACCOUNT_MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 export default function SupportReplyForm({ threadId }: { threadId: string }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const [message, setMessage] = useState("");
-  const [attachments, setAttachments] = useState<File[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: "error" | "success"; text: string } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const draftKey = useMemo(() => `henryco-support-draft:${threadId}`, [threadId]);
+  const [feedback, setFeedback] = useState<{
+    type: "error" | "success";
+    text: string;
+  } | null>(null);
 
-  function localizeSupportReplyError(messageText: string) {
-    switch (messageText) {
-      case "Unauthorized":
-        return t("Please sign in to continue.");
-      case "Thread ID and body required":
-        return t("Thread and reply body are required.");
-      case "Thread not found":
-      case "Thread not found.":
-        return t("Thread not found.");
-      case "Upload JPG, PNG, WebP, PDF, or TXT attachments only.":
-        return t("Upload JPG, PNG, WebP, PDF, or TXT attachments only.");
-      case "Failed to add support reply":
-      case "Failed to update support thread":
-      case "Internal error":
-      case "Unable to send your reply.":
-        return t("Unable to send your reply.");
-      default:
-        return t(messageText);
-    }
-  }
+  const localizeSupportReplyError = useCallback(
+    (messageText: string) => {
+      switch (messageText) {
+        case "Unauthorized":
+          return t("Please sign in to continue.");
+        case "Thread ID and body required":
+          return t("Thread and reply body are required.");
+        case "Thread not found":
+        case "Thread not found.":
+          return t("Thread not found.");
+        case "Upload JPG, PNG, WebP, PDF, or TXT attachments only.":
+          return t("Upload JPG, PNG, WebP, PDF, or TXT attachments only.");
+        case "Failed to add support reply":
+        case "Failed to update support thread":
+        case "Internal error":
+        case "Unable to send your reply.":
+          return t("Unable to send your reply.");
+        default:
+          return t(messageText);
+      }
+    },
+    [t]
+  );
 
-  useEffect(() => {
-    const stored = window.localStorage.getItem(draftKey);
-    if (stored) {
-      setMessage(stored);
-    }
-  }, [draftKey]);
-
-  useEffect(() => {
-    if (message.trim()) {
-      window.localStorage.setItem(draftKey, message);
-    } else {
-      window.localStorage.removeItem(draftKey);
-    }
-  }, [draftKey, message]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) return;
-    setLoading(true);
-    setFeedback(null);
-
-    try {
+  const handleSend = useCallback(
+    async ({ text, attachments }: ComposerSendPayload) => {
+      setFeedback(null);
       const formData = new FormData();
       formData.set("thread_id", threadId);
-      formData.set("body", message);
+      formData.set("body", text);
       for (const attachment of attachments) {
-        formData.append("attachments", attachment);
+        formData.append("attachments", attachment.file);
       }
 
       const response = await fetch("/api/support/reply", {
@@ -72,28 +69,22 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
         body: formData,
       });
 
-      const data = (await response.json()) as { error?: string };
+      const data = (await response.json().catch(() => ({}))) as {
+        error?: string;
+      };
       if (!response.ok) {
-        throw new Error(localizeSupportReplyError(data.error || "Unable to send your reply."));
+        throw new Error(
+          localizeSupportReplyError(data.error || "Unable to send your reply.")
+        );
       }
-
-      setMessage("");
-      setAttachments([]);
-      window.localStorage.removeItem(draftKey);
       setFeedback({ type: "success", text: t("Reply sent.") });
       router.refresh();
-    } catch (error) {
-      setFeedback({
-        type: "error",
-        text: error instanceof Error ? localizeSupportReplyError(error.message) : t("Unable to send your reply."),
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [threadId, localizeSupportReplyError, router, t]
+  );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3" data-live-refresh-pause="true">
+    <div className="space-y-3" data-live-refresh-pause="true">
       {feedback ? (
         <div
           className={`rounded-2xl px-4 py-3 text-sm ${
@@ -106,80 +97,41 @@ export default function SupportReplyForm({ threadId }: { threadId: string }) {
         </div>
       ) : null}
 
-      <div className="rounded-[1.6rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-3 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.05)]">
-        <textarea
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-          className="min-h-[76px] w-full resize-none border-0 bg-transparent px-2 py-2 text-sm leading-7 text-[var(--acct-ink)] outline-none"
-          placeholder={t("Reply with context, screenshots, or next steps. Drafts stay here while you type.")}
-          required
-        />
-
-        {attachments.length > 0 ? (
-          <div className="mt-2 flex flex-wrap gap-2 px-2">
-            {attachments.map((attachment, index) => (
-              <div
-                key={`${attachment.name}-${index}`}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--acct-surface)] px-3 py-1.5 text-xs font-medium text-[var(--acct-ink)]"
-              >
-                <span className="max-w-[12rem] truncate">{attachment.name}</span>
-                <button
-                  type="button"
-                  onClick={() => setAttachments((current) => current.filter((_, itemIndex) => itemIndex !== index))}
-                  className="rounded-full p-0.5 text-[var(--acct-muted)] transition hover:bg-[var(--acct-bg)] hover:text-[var(--acct-ink)]"
-                  aria-label={formatSurfaceTemplate(t("Remove {name}"), { name: attachment.name })}
-                >
-                  <X size={12} />
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : null}
-
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--acct-line)] px-2 pt-3">
-          <div className="flex items-center gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/jpeg,image/png,image/webp,application/pdf,text/plain"
-              onChange={(event) => {
-                const nextFiles = Array.from(event.target.files ?? []);
-                setAttachments((current) => [...current, ...nextFiles].slice(0, 4));
-                event.currentTarget.value = "";
-              }}
-              className="hidden"
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="acct-button-ghost rounded-xl"
-            >
-              <Paperclip size={15} />
-              {t("Attach")}
-            </button>
-            <p className="text-xs text-[var(--acct-muted)]">
-              {t("Mobile-safe composer with draft memory and attachments.")}
-            </p>
-          </div>
-          <button
-            type="submit"
-            disabled={loading || !message.trim()}
-            className="acct-button-primary rounded-xl px-4"
-          >
-            <ButtonPendingContent
-              pending={loading}
-              pendingLabel={t("Sending reply...")}
-              spinnerLabel={t("Sending reply...")}
-            >
-              <>
-                <Send size={16} />
-                {t("Send reply")}
-              </>
-            </ButtonPendingContent>
-          </button>
-        </div>
-      </div>
-    </form>
+      <ChatComposer
+        threadId={threadId}
+        tone="account"
+        ariaLabel={t("Support reply composer")}
+        placeholder={t(
+          "Reply with context, screenshots, or next steps. Drafts stay here while you type."
+        )}
+        maxAttachments={ACCOUNT_MAX_ATTACHMENTS}
+        maxFileBytes={ACCOUNT_MAX_FILE_BYTES}
+        acceptedMimeTypes={ACCOUNT_ACCEPTED_MIME_TYPES}
+        labels={{
+          sendLabel: t("Send reply"),
+          sendingLabel: t("Sending reply..."),
+          attachLabel: t("Attach"),
+          draftSavedLabel: t("Draft saved"),
+          discardDraftLabel: t("Discard"),
+          expandLabel: t("Open full-screen reply"),
+          collapseLabel: t("Collapse reply"),
+          fullScreenTitleLabel: t("Reply"),
+          removeAttachmentLabel: formatSurfaceTemplate(t("Remove {name}"), {
+            name: t("file"),
+          }),
+          retryUploadLabel: t("Retry upload"),
+          failedSendLabel: t(
+            "One or more attachments failed to upload — retry or remove them first."
+          ),
+        }}
+        onSend={handleSend}
+        onSendError={(error) =>
+          setFeedback({
+            type: "error",
+            text: localizeSupportReplyError(error.message),
+          })
+        }
+      />
+    </div>
   );
 }

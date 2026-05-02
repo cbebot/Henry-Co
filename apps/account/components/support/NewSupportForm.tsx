@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
+import { ChatComposer } from "@henryco/chat-composer";
+import type { ComposerSendPayload } from "@henryco/chat-composer";
 
 const SUPPORT_CATEGORIES = [
   "general",
@@ -130,32 +132,45 @@ export default function NewSupportForm() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
+  const submit = useCallback(
+    async (bodyText: string) => {
+      const trimmedSubject = subject.trim();
+      if (!trimmedSubject) {
+        throw new Error(localizeSupportError("Subject and message required"));
+      }
       const res = await fetch("/api/support/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subject, category, message }),
+        body: JSON.stringify({ subject: trimmedSubject, category, message: bodyText }),
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(localizeSupportError(data.error || "Failed to create request"));
-
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        throw new Error(
+          localizeSupportError(data.error || "Failed to create request")
+        );
+      }
       router.push("/support");
       router.refresh();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? localizeSupportError(err.message) : t("Something went wrong"));
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [subject, category, router, localizeSupportError, t]
+  );
+
+  const handleSend = useCallback(
+    async ({ text }: ComposerSendPayload) => {
+      setError(null);
+      setLoading(true);
+      try {
+        await submit(text);
+        setMessage("");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [submit]
+  );
 
   return (
-    <form onSubmit={handleSubmit} className="acct-card p-6">
+    <div className="acct-card p-6">
       {error && (
         <div className="mb-4 rounded-xl bg-[var(--acct-red-soft)] px-4 py-3 text-sm text-[var(--acct-red)]">
           {error}
@@ -192,26 +207,44 @@ export default function NewSupportForm() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium">{t("Message")}</label>
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="acct-textarea"
+          <ChatComposer
+            threadId={`new-support:${category}`}
+            tone="account"
+            ariaLabel={t("New support request")}
             placeholder={t("Describe your issue in detail...")}
-            rows={5}
-            required
+            initialText={message}
+            busy={loading}
+            disabled={loading}
+            enableAttachments={false}
+            labels={{
+              sendLabel: t("Submit request"),
+              sendingLabel: t("Submitting request..."),
+              draftSavedLabel: t("Draft saved"),
+              discardDraftLabel: t("Discard"),
+              expandLabel: t("Open full-screen"),
+              collapseLabel: t("Collapse"),
+              fullScreenTitleLabel: t("New support request"),
+            }}
+            onSend={handleSend}
+            onSendError={(err) =>
+              setError(localizeSupportError(err.message))
+            }
           />
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="acct-button-primary mt-6 w-full rounded-xl py-3"
+      {/*
+        Hidden fallback button so screen-readers and progressive-enhancement
+        users always have a non-keyboard path. The composer's ⌘/Ctrl + Enter
+        and on-screen send button remain the primary submit affordance.
+      */}
+      <ButtonPendingContent
+        pending={loading}
+        pendingLabel={t("Submitting request...")}
+        spinnerLabel={t("Submitting request...")}
       >
-        <ButtonPendingContent pending={loading} pendingLabel={t("Submitting request...")} spinnerLabel={t("Submitting request...")}>
-          {t("Submit request")}
-        </ButtonPendingContent>
-      </button>
-    </form>
+        <span className="sr-only">{t("Submit request")}</span>
+      </ButtonPendingContent>
+    </div>
   );
 }

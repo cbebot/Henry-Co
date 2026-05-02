@@ -21,6 +21,9 @@ importers:
       '@henryco/brand':
         specifier: workspace:^
         version: link:../../packages/brand
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
@@ -109,6 +112,9 @@ importers:
 
   apps/care:
     dependencies:
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
@@ -391,6 +397,9 @@ importers:
 
   apps/jobs:
     dependencies:
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
@@ -904,6 +913,9 @@ importers:
 
   apps/studio:
     dependencies:
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
@@ -1106,6 +1118,43 @@ importers:
         version: 5.9.3
 
   packages/brand: {}
+
+  packages/chat-composer:
+    dependencies:
+      '@henryco/ui':
+        specifier: workspace:^
+        version: link:../ui
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+      tailwind-merge:
+        specifier: ^3.5.0
+        version: 3.5.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.10
+        version: 22.19.15
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/config:
     dependencies:

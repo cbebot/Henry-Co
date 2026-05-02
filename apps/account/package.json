@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@henryco/brand": "workspace:^",
+    "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/intelligence": "workspace:^",
