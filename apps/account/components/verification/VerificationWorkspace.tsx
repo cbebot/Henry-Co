@@ -4,6 +4,7 @@ import { getAccountTrustProfile, getTrustTierLabel } from "@/lib/trust";
 import { getVerificationState } from "@/lib/verification";
 import PageHeader from "@/components/layout/PageHeader";
 import VerificationWorkspaceClient from "@/components/verification/VerificationWorkspaceClient";
+import { DownloadDocumentButton } from "@/components/branded-documents/DownloadDocumentButton";
 
 export default async function VerificationWorkspace() {
   const user = await requireAccountUser();
@@ -18,6 +19,17 @@ export default async function VerificationWorkspace() {
         title="Verification"
         description="Real document review, honest trust scoring, and the exact actions that stay gated until identity truth is established."
         icon={ShieldCheck}
+        actions={
+          verification.submissions.length > 0 ? (
+            <DownloadDocumentButton
+              endpoint="/api/documents/kyc-summary/me"
+              suggestedFilename="HenryCo-KycSummary.pdf"
+              shareTitle="HenryCo Identity Verification Summary"
+              variant="secondary"
+              label="Download summary"
+            />
+          ) : undefined
+        }
       />
 
       <VerificationWorkspaceClient

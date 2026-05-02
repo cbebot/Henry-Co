@@ -7,6 +7,7 @@ import { getInvoiceWorkspaceHref } from "@/lib/account-links";
 import { divisionLabel, formatDate, formatDateTime, formatNaira } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
+import { DownloadDocumentButton } from "@/components/branded-documents/DownloadDocumentButton";
 
 export const dynamic = "force-dynamic";
 const statusChip: Record<string, string> = { paid: "acct-chip-green", pending: "acct-chip-orange", overdue: "acct-chip-red", draft: "acct-chip-blue", cancelled: "acct-chip-red", refunded: "acct-chip-purple" };
@@ -47,7 +48,33 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="space-y-6 acct-fade-in">
       <Link href="/invoices" className="acct-button-ghost w-fit rounded-xl"><ArrowLeft size={16} /> {t("Back to invoices")}</Link>
-      <PageHeader title={String(invoice.description || invoice.invoice_no || t("Invoice"))} description={t("Shared invoice record with status, payment references, and whatever structured receipt data is currently available.")} icon={Receipt} actions={workspaceHref ? <a href={workspaceHref} target="_blank" rel="noopener noreferrer" className="acct-button-primary rounded-xl">{t("Open division workspace")} <ExternalLink size={14} /></a> : undefined} />
+      <PageHeader
+        title={String(invoice.description || invoice.invoice_no || t("Invoice"))}
+        description={t("Shared invoice record with status, payment references, and whatever structured receipt data is currently available.")}
+        icon={Receipt}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <DownloadDocumentButton
+              endpoint={`/api/documents/invoice/${invoiceId}`}
+              suggestedFilename={`HenryCo-Invoice-${String(invoice.invoice_no || invoiceId)}.pdf`}
+              shareTitle={`HenryCo Invoice ${String(invoice.invoice_no || invoiceId)}`}
+              label={t("Download invoice")}
+            />
+            <DownloadDocumentButton
+              endpoint={`/api/documents/receipt/${invoiceId}`}
+              suggestedFilename={`HenryCo-Receipt-${String(invoice.invoice_no || invoiceId)}.pdf`}
+              shareTitle={`HenryCo Receipt ${String(invoice.invoice_no || invoiceId)}`}
+              variant="secondary"
+              label={t("Download receipt")}
+            />
+            {workspaceHref ? (
+              <a href={workspaceHref} target="_blank" rel="noopener noreferrer" className="acct-button-ghost rounded-xl">
+                {t("Open division workspace")} <ExternalLink size={14} />
+              </a>
+            ) : null}
+          </div>
+        }
+      />
       <div className="acct-card p-6">
         <div className="flex flex-wrap items-center gap-3"><span className={`acct-chip ${statusChip[String(invoice.status || "")] || "acct-chip-gold"}`}>{String(invoice.status || "Unknown")}</span><span className="text-sm text-[var(--acct-muted)]">{divisionLabel(String(invoice.division || "service"))}</span><span className="text-sm text-[var(--acct-muted)]">{String(invoice.invoice_no || "No invoice number")}</span></div>
         <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">

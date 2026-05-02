@@ -22,11 +22,48 @@ function displayName(value?: string | null, fallback = "HenryCo learner") {
   return text || fallback;
 }
 
-export async function generateMetadata() {
+export async function generateMetadata({ params }: { params: Promise<{ code: string }> }) {
+  const { code } = await params;
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const data = await getCertificateByCode(code);
 
-  return { title: t("Certificate verification") };
+  if (!data) {
+    return { title: t("Certificate verification"), robots: { index: false, follow: false } };
+  }
+
+  const profileDirectory = await lookupLearnProfiles([
+    {
+      userId: data.enrollment?.userId || data.certificate.userId,
+      normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
+    },
+  ]);
+  const learnerProfile = resolveLearnProfile(profileDirectory, {
+    userId: data.enrollment?.userId || data.certificate.userId,
+    normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
+  });
+  const learnerName = (learnerProfile?.fullName || t("HenryCo learner")).trim();
+  const courseTitle = data.course?.title || t("HenryCo Learn programme");
+  const title = `${learnerName} · ${courseTitle} — HenryCo Learn certificate`;
+  const description = `Verified HenryCo Learn certificate ${data.certificate.certificateNo}. ${t("This page is the live, public verification surface — no login required.")}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/certifications/verify/${data.certificate.verificationCode}` },
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      siteName: "HenryCo Learn",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+    robots: { index: true, follow: true },
+  };
 }
 
 export default async function CertificateVerifyPage({
@@ -69,7 +106,12 @@ export default async function CertificateVerifyPage({
                 <LearnStatusBadge label={t("Verification live")} tone="signal" />
               </div>
               <div className="flex flex-wrap gap-3">
-                <CertificateDownloadButton label={t("Download certificate")} />
+                <CertificateDownloadButton
+                  verificationCode={data.certificate.verificationCode}
+                  learnerName={learnerName}
+                  courseTitle={data.course?.title || null}
+                  label={t("Download certificate")}
+                />
                 <Link
                   href="/certifications"
                   className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold"

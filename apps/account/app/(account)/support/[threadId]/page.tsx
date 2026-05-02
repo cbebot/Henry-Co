@@ -13,6 +13,7 @@ import {
 import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import SupportThreadRoom from "@/components/support/SupportThreadRoom";
+import { DownloadDocumentButton } from "@/components/branded-documents/DownloadDocumentButton";
 
 export const dynamic = "force-dynamic";
 
@@ -107,6 +108,15 @@ export default async function SupportThreadPage({ params }: Props) {
         <PageHeader
           title={subject}
           description={`${categoryLabel} · ${statusLabel}`}
+          actions={
+            <DownloadDocumentButton
+              endpoint={`/api/documents/support-thread/${threadId}`}
+              suggestedFilename={`HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`}
+              shareTitle={`HenryCo Support Thread — ${subject}`}
+              variant="secondary"
+              label={t("Download thread")}
+            />
+          }
         />
       </div>
       <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-4 py-3">
