@@ -107,6 +107,129 @@ async function updateNotificationWithFallback(
   return "Notification update could not be completed.";
 }
 
+export async function restoreNotification(input: {
+  notificationId: string;
+  userId: string;
+}) {
+  const admin = createAdminSupabase();
+  const { data: existing, error } = await admin
+    .from("customer_notifications")
+    .select("id, deleted_at, archived_at, division, title, reference_id")
+    .eq("id", input.notificationId)
+    .eq("user_id", input.userId)
+    .maybeSingle();
+
+  if (error) {
+    return { ok: false as const, status: 500, error: error.message };
+  }
+  if (!existing) {
+    return { ok: false as const, status: 404, error: "Notification not found." };
+  }
+
+  const row = existing as Record<string, unknown>;
+  if (!asNullableText(row.deleted_at)) {
+    // Idempotent restore — if already not deleted, nothing to do.
+    return { ok: true as const };
+  }
+
+  // Restore by clearing deleted_at. Leave archived_at intact: an archived-then-
+  // deleted notification returns to archived state when restored, mirroring
+  // the iOS Mail mental model. is_read is also preserved.
+  const { error: updateError } = await admin
+    .from("customer_notifications")
+    .update({ deleted_at: null })
+    .eq("id", input.notificationId)
+    .eq("user_id", input.userId);
+
+  if (updateError) {
+    return { ok: false as const, status: 500, error: updateError.message };
+  }
+
+  await admin.from("customer_activity").insert({
+    user_id: input.userId,
+    division: asNullableText(row.division) || "account",
+    activity_type: "notification_restore",
+    title: "Notification restored",
+    description: asNullableText(row.title) || "Notification restored from recently-deleted.",
+    status: "restored",
+    reference_type: "customer_notification",
+    reference_id: asNullableText(row.reference_id) || asText(row.id),
+    action_url: notificationMessageHref(asText(row.id)),
+    metadata: {
+      notificationId: asText(row.id),
+      lifecycleAction: "restore",
+      updatedAt: new Date().toISOString(),
+    },
+  } as never);
+
+  return { ok: true as const };
+}
+
+export async function purgeNotification(input: {
+  notificationId: string;
+  userId: string;
+}) {
+  const admin = createAdminSupabase();
+  const { data: existing, error } = await admin
+    .from("customer_notifications")
+    .select("id, deleted_at, division, title, reference_id, category")
+    .eq("id", input.notificationId)
+    .eq("user_id", input.userId)
+    .maybeSingle();
+
+  if (error) {
+    return { ok: false as const, status: 500, error: error.message };
+  }
+  if (!existing) {
+    return { ok: false as const, status: 404, error: "Notification not found." };
+  }
+
+  const row = existing as Record<string, unknown>;
+
+  // Purge is only available on already-soft-deleted rows. Front-end never
+  // exposes this on the main inbox; defense-in-depth guard so a forged
+  // request cannot bypass the recently-deleted UX.
+  if (!asNullableText(row.deleted_at)) {
+    return {
+      ok: false as const,
+      status: 409,
+      error: "Move this notification to recently-deleted before permanent removal.",
+    };
+  }
+
+  const { error: deleteError } = await admin
+    .from("customer_notifications")
+    .delete()
+    .eq("id", input.notificationId)
+    .eq("user_id", input.userId);
+
+  if (deleteError) {
+    return { ok: false as const, status: 500, error: deleteError.message };
+  }
+
+  // Audit-log the hard-delete via notification_delivery_log. The row id is
+  // captured in metadata since the FK target no longer exists.
+  await admin.from("notification_delivery_log").insert({
+    user_id: input.userId,
+    notification_id: null,
+    channel: "audit",
+    provider: "user_action",
+    status: "purged",
+    division: asNullableText(row.division) || "account",
+    event_name: asNullableText(row.category) || "notification.purge",
+    publisher: "user:account/notifications/recently-deleted",
+    purged_at: new Date().toISOString(),
+    metadata: {
+      audience: "customer",
+      purged_table: "customer_notifications",
+      purged_id: input.notificationId,
+      trigger: "user_action",
+    },
+  } as never);
+
+  return { ok: true as const };
+}
+
 export async function updateNotificationLifecycle(input: {
   notificationId: string;
   userId: string;

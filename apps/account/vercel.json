@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/notification-email-fallback",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/notification-purge",
+      "schedule": "0 3 * * *"
     }
   ]
 }

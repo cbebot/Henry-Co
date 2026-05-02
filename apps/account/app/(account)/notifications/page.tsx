@@ -1,4 +1,5 @@
-import { Bell } from "lucide-react";
+import Link from "next/link";
+import { Bell, Trash2 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
@@ -29,6 +30,16 @@ export default async function NotificationsPage() {
       ) : (
         <NotificationsFeed notifications={notifications} />
       )}
+
+      <div className="flex justify-end">
+        <Link
+          href="/notifications/recently-deleted"
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-4 py-2 text-xs font-semibold text-[var(--acct-muted)] transition hover:border-[var(--acct-gold)]/30 hover:text-[var(--acct-ink)]"
+        >
+          <Trash2 size={13} />
+          {t("Recently deleted")}
+        </Link>
+      </div>
     </div>
   );
 }
