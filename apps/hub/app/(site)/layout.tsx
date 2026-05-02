@@ -24,7 +24,13 @@ function toMetadataUrl(domain?: string | null) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { settings } = await getCompanySettings();
+  /** Belt-and-braces: getCompanySettings() already returns a fallback,
+   * but if any future regression made it throw, we want metadata
+   * generation to keep working rather than poisoning the route render. */
+  const { settings } = await getCompanySettings().catch(() => ({
+    settings: { default_meta_title: null, brand_title: null, brand_description: null, base_domain: null, favicon_url: null, logo_url: null } as never,
+    hasServerError: true,
+  }));
   const title = settings.default_meta_title || settings.brand_title || "Henry & Co.";
   const description =
     settings.default_meta_description ||
@@ -51,15 +57,29 @@ export default async function SiteLayout({
 }: {
   children: ReactNode;
 }) {
-  const [company, locale, h, chipUser] = await Promise.all([
+  /** Use allSettled so one failing fetcher (e.g. supabase auth flake on a
+   * preview deploy where env is partially configured) cannot crash the
+   * entire (site) tree and leak through to error.tsx. Each fetcher
+   * already returns a safe shape; this is a hard barrier on top. */
+  const [companyResult, localeResult, headerResult, chipResult] = await Promise.allSettled([
     getCompanySettings(),
     getHubPublicLocale(),
     headers(),
     getHubPublicChipUser(),
   ]);
+  const company = companyResult.status === "fulfilled"
+    ? companyResult.value
+    : { settings: { brand_accent: "#C9A227" } as never, hasServerError: true };
+  const locale = localeResult.status === "fulfilled" ? localeResult.value : "en";
+  /** headers() shouldn't realistically reject in this context, but if it
+   * ever did we want to fall back to a "no headers known" reader rather
+   * than crash the layout. The narrow contract used downstream is .get(). */
+  const headerReader: { get: (name: string) => string | null } =
+    headerResult.status === "fulfilled" ? headerResult.value : { get: () => null };
+  const chipUser = chipResult.status === "fulfilled" ? chipResult.value : null;
   const { settings } = company;
   const consentCopy = getConsentCopy(locale);
-  const returnPath = h.get("x-hub-return-path") || "/";
+  const returnPath = headerReader.get("x-hub-return-path") || "/";
   const accountChip = {
     user: chipUser,
     loginHref: getHubSharedLoginUrl(returnPath),

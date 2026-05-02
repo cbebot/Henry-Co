@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { page } = await getCompanyPage("contact");
+  const { page } = await getCompanyPage("contact").catch(() => ({ page: null }));
   const resolved = page ?? createFallbackCompanyPage("contact");
 
   return {
@@ -19,13 +19,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
-  const { page, hasServerError } = await getCompanyPage("contact");
+  /** Defensive: return safe fallback rather than letting a thrown
+   * supabase error bubble up to the (site) error boundary. */
+  const result = await getCompanyPage("contact").catch(() => ({ page: null, hasServerError: true }));
 
   return (
     <CompanyPageClient
       pageKey="contact"
-      initialData={page ?? createFallbackCompanyPage("contact")}
-      serverWarning={hasServerError}
+      initialData={result.page ?? createFallbackCompanyPage("contact")}
+      serverWarning={result.hasServerError}
     />
   );
 }

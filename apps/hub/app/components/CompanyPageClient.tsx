@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronRight, Clock3, Globe2, Landmark, ShieldCheck } from "lucide-react";
+import { HenryCoHeroCard } from "@henryco/ui";
 import type { CompanyPageRecord } from "../lib/company-pages";
 import { normalizeCompanyPage } from "../lib/company-pages";
 import SectionBlock from "./SectionBlock";
@@ -147,7 +148,18 @@ export default function CompanyPageClient({
               initial={reduceMotion ? false : { opacity: 0, y: 14 }}
               animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.04 }}
-              className="mt-5 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-white sm:text-[2.9rem] md:text-[3.4rem]"
+              /** clamp + safe overflow — same hardening hub home received,
+               * applied here so /about /contact /privacy /terms cannot
+               * clip "Focused" → "ocused" on 320–360 px. */
+              style={{
+                fontSize: "clamp(2rem, 5.4vw + 0.6rem, 3.4rem)",
+                lineHeight: 1.04,
+                letterSpacing: "-0.025em",
+                wordBreak: "normal",
+                overflowWrap: "break-word",
+                hyphens: "auto",
+              }}
+              className="mt-5 max-w-3xl text-balance font-semibold text-white"
             >
               {page.title}
             </motion.h1>
@@ -225,7 +237,10 @@ export default function CompanyPageClient({
             ) : null}
           </div>
 
-          {/* Aside — real hero image OR editorial summary card */}
+          {/* Aside — real hero image OR HenryCoHeroCard editorial summary.
+              Using the shared primitive guarantees mobile-safe clamp
+              typography, consistent motion, and tap-friendly behaviour
+              across every hub site page. */}
           <motion.aside
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
@@ -233,42 +248,28 @@ export default function CompanyPageClient({
             className="lg:pt-2"
           >
             {page.hero_image_url ? (
-              <div className="overflow-hidden rounded-[2.4rem] border border-white/10">
+              <div className="overflow-hidden rounded-[2rem] border border-white/10 sm:rounded-[2.4rem]">
                 <img
                   src={page.hero_image_url}
                   alt={page.title}
-                  className="h-[320px] w-full object-cover sm:h-[460px]"
+                  className="h-[280px] w-full object-cover sm:h-[460px]"
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
             ) : (
-              <div className="rounded-[2.4rem] border border-white/12 bg-[linear-gradient(135deg,rgba(214,168,81,0.08)_0%,rgba(38,22,12,0.4)_100%)] px-7 py-9 sm:px-9 sm:py-11">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
-                  Henry &amp; Co.
-                </p>
-                <h2 className="mt-4 text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.8rem]">
-                  Premium company surface for trust, clarity, and long-term credibility.
-                </h2>
-                <p className="mt-4 max-w-md text-sm leading-7 text-white/68">
-                  Every public document is signed off by the same standard the operating
-                  divisions use internally — no marketing varnish, no hidden footnotes.
-                </p>
-                <dl className="mt-7 divide-y divide-white/10 border-y border-white/10">
-                  {metaItems.map((meta, index) => (
-                    <div
-                      key={`${meta.label}-${index}`}
-                      className="flex items-baseline gap-3 py-3"
-                    >
-                      <span className="text-[#d6a851]">{meta.icon}</span>
-                      <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                        {meta.label}
-                      </dt>
-                      <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                        {meta.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
+              <HenryCoHeroCard
+                tone="spotlight"
+                accentVar="#d6a851"
+                eyebrow="Henry & Co."
+                title="Premium company surface for trust, clarity, and long-term credibility."
+                body="Every public document is signed off by the same standard the operating divisions use internally — no marketing varnish, no hidden footnotes."
+                rows={metaItems.map((meta, index) => ({
+                  key: `${meta.label}-${index}`,
+                  label: meta.label,
+                  value: meta.value,
+                }))}
+              />
             )}
 
             {serverWarning ? (

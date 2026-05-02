@@ -14,7 +14,11 @@ import {
 } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
 import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
-import { PublicSpotlight } from "@henryco/ui/public-shell";
+import {
+  HenryCoHeroCard,
+  HenryCoTactileCard,
+  PublicSpotlight,
+} from "@henryco/ui/public-shell";
 
 import CareFlow from "@/components/care/CareFlow";
 import {
@@ -171,10 +175,17 @@ export default async function CareHomePage() {
         } as CSSProperties
       }
     >
-      {/* Premium editorial hero — no oversized rounded panel. Hairline brand
-          rule, tight typography, real photo (when configured) breathing in
-          the asymmetric grid. Three concierge-style service paths sit just
-          below the headline so visitors land knowing what to do. */}
+      {/* Premium editorial hero — pinned to a deliberate dark "stage"
+          surface that does not depend on the visitor's system theme. Above
+          the fold reads consistently in both light and dark, while below-
+          the-fold content continues to swap via care's theme tokens. This
+          is the editorial pattern owner asked for: the hero is the same
+          premium first impression on every device. */}
+      <div className="dark relative isolate overflow-hidden bg-[#06101e] text-white">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(900px_440px_at_20%_-10%,rgba(107,124,255,0.18),transparent_55%),radial-gradient(720px_360px_at_80%_8%,rgba(51,211,199,0.10),transparent_55%),radial-gradient(900px_520px_at_50%_110%,rgba(38,22,82,0.65),transparent_60%)]"
+        />
       <section className="relative mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 sm:pt-12 lg:px-10 lg:pt-16">
         <div
           aria-hidden
@@ -251,8 +262,10 @@ export default async function CareHomePage() {
             </div>
 
             {/* Three concierge service paths — clear next step for every
-                kind of visitor. Each lands directly in the booking flow with
-                the right service preselected. */}
+                kind of visitor. HenryCoTactileCard scopes hover lift to fine
+                pointers only so touch devices never see the stuck-hover
+                state the owner flagged. Each card lands directly in the
+                booking flow with the right service preselected. */}
             <div className="mt-9 grid gap-3 sm:grid-cols-3">
               {[
                 {
@@ -271,11 +284,7 @@ export default async function CareHomePage() {
                   title: t("After-hours and recurring workplace cleaning."),
                 },
               ].map((path) => (
-                <Link
-                  key={path.href}
-                  href={path.href}
-                  className="group flex flex-col justify-between rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4 transition outline-none hover:border-[color:var(--accent)]/40 hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071020] active:translate-y-[0.5px] sm:p-5"
-                >
+                <HenryCoTactileCard key={path.href} href={path.href} ariaLabel={`${path.eyebrow}: ${path.title}`}>
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
                       {path.eyebrow}
@@ -284,18 +293,20 @@ export default async function CareHomePage() {
                       {path.title}
                     </p>
                   </div>
-                  <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65 transition group-hover:text-white">
+                  <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65 transition [@media(hover:hover)]:group-hover:text-white">
                     {t("Start booking")}
-                    <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" />
+                    <ArrowRight className="h-3 w-3 transition [@media(hover:hover)]:group-hover:translate-x-0.5" />
                   </div>
-                </Link>
+                </HenryCoTactileCard>
               ))}
             </div>
           </div>
 
           {/* Aside — when imagery configured, full-bleed photographic spread
-              with a single editorial caption. When not configured, a calm
-              service-desk dial: hours + line, no card-on-card chrome. */}
+              with a single editorial caption. When not configured, the
+              HenryCoHeroCard primitive renders the calm service-desk dial
+              (hours + phone + recurring care) with mobile-safe typography
+              and consistent motion across every HenryCo public surface. */}
           <aside>
             {heroImageUrl ? (
               <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.65)]">
@@ -309,7 +320,16 @@ export default async function CareHomePage() {
                     <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />
                     {t("Signature service")}
                   </div>
-                  <p className="mt-4 max-w-md text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.015em] text-white sm:text-[1.85rem]">
+                  <p
+                    className="mt-4 max-w-md text-balance font-semibold text-white"
+                    style={{
+                      fontSize: "clamp(1.4rem, 3.4vw + 0.5rem, 1.85rem)",
+                      lineHeight: 1.12,
+                      letterSpacing: "-0.015em",
+                      overflowWrap: "break-word",
+                      hyphens: "auto",
+                    }}
+                  >
                     {t("Hand off the work — see it move, finish, and come back to you.")}
                   </p>
                   <p className="mt-3 max-w-md text-sm leading-relaxed text-white/72">
@@ -318,47 +338,33 @@ export default async function CareHomePage() {
                 </div>
               </div>
             ) : (
-              <div className="grid gap-3 self-end">
-                <div className="flex items-center gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20 text-[color:var(--accent)]">
-                    <Clock3 className="h-4 w-4" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-                      {t("Service hours")}
-                    </p>
-                    <p className="mt-1 truncate text-sm font-semibold text-white">
-                      {settings.pickup_hours || "Mon – Sat • 8:00 AM to 7:00 PM"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20 text-[color:var(--accent)]">
-                    <PhoneCall className="h-4 w-4" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-                      {t("Talk to the desk")}
-                    </p>
-                    <p className="mt-1 truncate text-sm font-semibold text-white">
-                      {supportPhone || supportEmail || "care@henrycogroup.com"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20 text-[color:var(--accent)]">
-                    <Repeat className="h-4 w-4" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/55">
-                      {t("Recurring care")}
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-white">
-                      {t("Saved schedules, fewer reminders, steady follow-through.")}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <HenryCoHeroCard
+                tone="spotlight"
+                accentVar="var(--accent, #6b7cff)"
+                eyebrow={t("At your service")}
+                title={t("Hand off the work — we keep it moving.")}
+                body={t("One tracking code per request, one calm service flow, and a real human on the line whenever the day asks for it.")}
+                rows={[
+                  {
+                    key: "hours",
+                    icon: <Clock3 className="h-4 w-4" />,
+                    label: t("Service hours"),
+                    value: settings.pickup_hours || "Mon–Sat · 8:00 AM – 7:00 PM",
+                  },
+                  {
+                    key: "desk",
+                    icon: <PhoneCall className="h-4 w-4" />,
+                    label: t("Talk to the desk"),
+                    value: supportPhone || supportEmail || "care@henrycogroup.com",
+                  },
+                  {
+                    key: "recurring",
+                    icon: <Repeat className="h-4 w-4" />,
+                    label: t("Recurring care"),
+                    value: t("Saved schedules · steady follow-through"),
+                  },
+                ]}
+              />
             )}
           </aside>
         </div>
@@ -398,6 +404,7 @@ export default async function CareHomePage() {
           ))}
         </div>
       </section>
+      </div>
 
       {/* CareFlow — real product, kept untouched */}
       <section id="services" className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
