@@ -33,6 +33,8 @@ export interface PlacesAutocompleteProps {
   className?: string;
   inputClassName?: string;
   ariaLabel?: string;
+  ariaInvalid?: boolean;
+  ariaDescribedBy?: string;
   disabled?: boolean;
 }
 
@@ -57,6 +59,8 @@ export default function PlacesAutocomplete({
   className,
   inputClassName,
   ariaLabel = "Address",
+  ariaInvalid,
+  ariaDescribedBy,
   disabled = false,
 }: PlacesAutocompleteProps) {
   const [query, setQuery] = useState(initialValue);
@@ -158,11 +162,14 @@ export default function PlacesAutocomplete({
         value={query}
         disabled={disabled}
         placeholder={placeholder}
+        role="combobox"
         aria-label={ariaLabel}
         aria-autocomplete="list"
         aria-controls={listboxId}
         aria-expanded={open}
         aria-activedescendant={open ? `${listboxId}-opt-${activeIdx}` : undefined}
+        aria-invalid={ariaInvalid || undefined}
+        aria-describedby={ariaDescribedBy}
         className={inputClassName}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={onKeyDown}

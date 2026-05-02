@@ -96,3 +96,10 @@ export {
   HenryCoSearchBreadcrumb,
 } from "./search/CrossDivisionSearchExperience";
 export type { PublicMobileMenu } from "./public-shell";
+export {
+  SkipLink,
+  useFocusTrap,
+  useReducedMotion,
+  VisuallyHidden,
+  LiveRegion,
+} from "./a11y";

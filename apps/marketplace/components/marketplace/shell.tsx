@@ -43,7 +43,7 @@ export function PublicSurface({ children }: { children: React.ReactNode }) {
   return (
     <div className="market-page">
       <PublicHeader signedIn={false} />
-      <main>{children}</main>
+      <main id="henryco-main" tabIndex={-1}>{children}</main>
       <PublicFooter />
       <MarketplaceCartDrawer />
       <MarketplaceToastStack />

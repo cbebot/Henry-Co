@@ -7,6 +7,9 @@
     ".": "./index.ts",
     "./scroll-to-top": "./scroll-to-top.tsx"
   },
+  "scripts": {
+    "test": "node --test __tests__/*.test.mjs"
+  },
   "peerDependencies": {
     "next": "^15.0.0 || ^16.0.0",
     "react": "^18.0.0 || ^19.0.0"

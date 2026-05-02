@@ -13,6 +13,13 @@
     "test:workspace": "pnpm --filter @henryco/super-app run test:ci",
     "ci:validate": "pnpm run lint:all && pnpm run typecheck:all && pnpm run test:workspace && pnpm run build:all",
     "data-governance:sanity": "node scripts/data-governance-sanity.mjs",
+    "a11y:audit": "node scripts/a11y/audit.mjs",
+    "a11y:contrast": "node scripts/a11y/contrast-matrix.mjs",
+    "a11y:headers": "node scripts/a11y/headers-scan.mjs",
+    "a11y:report": "node scripts/a11y/aggregate.mjs",
+    "a11y:gate": "node scripts/a11y/gate.mjs",
+    "a11y:diff": "node scripts/a11y/diff.mjs",
+    "a11y": "pnpm run a11y:audit && pnpm run a11y:contrast && pnpm run a11y:headers && pnpm run a11y:report",
     "build:logistics": "pnpm --filter @henryco/logistics build",
     "lint:logistics": "pnpm --filter @henryco/logistics lint",
     "typecheck:logistics": "pnpm --filter @henryco/logistics typecheck",
@@ -35,6 +42,11 @@
     "@henryco/config": "workspace:^"
   },
   "devDependencies": {
-    "next": "16.1.6"
+    "@axe-core/playwright": "^4.11.3",
+    "@playwright/test": "^1.59.0",
+    "axe-core": "^4.11.4",
+    "next": "16.1.6",
+    "picocolors": "^1.1.1",
+    "wcag-contrast": "^3.0.0"
   }
 }
