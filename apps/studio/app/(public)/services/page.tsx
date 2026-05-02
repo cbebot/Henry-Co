@@ -22,7 +22,11 @@ export default async function ServicesPage() {
 
       <ol className="mt-14 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
         {catalog.services.map((service, i) => (
-          <li key={service.id} className="grid gap-8 py-10 xl:grid-cols-[0.4fr,0.6fr]">
+          <li
+            key={service.id}
+            id={service.id}
+            className="grid scroll-mt-32 gap-8 py-10 xl:grid-cols-[0.4fr,0.6fr]"
+          >
             <div>
               <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
                 Service {String(i + 1).padStart(2, "0")} &middot; {service.name}
@@ -80,10 +84,10 @@ export default async function ServicesPage() {
 
               <Link
                 href={`/services/${studioServiceSlug(service)}`}
-                className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
+                className="group mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] rounded-sm"
               >
                 View service detail
-                <ArrowUpRight className="h-3.5 w-3.5" />
+                <ArrowUpRight className="h-3.5 w-3.5 transition motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5" aria-hidden />
               </Link>
             </div>
           </li>

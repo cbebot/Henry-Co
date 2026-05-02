@@ -3,7 +3,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   Bookmark,
-  BookOpen,
   ChevronRight,
   Clock3,
   GraduationCap,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import type { AppLocale } from "@henryco/i18n";
 import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/env";
 import type { LearnCourse, LearnPath } from "@/lib/learn/types";
@@ -431,8 +431,8 @@ export function QuickMetricStrip({
 
 export function BrandMark() {
   return (
-    <div className="learn-brand-mark">
-      <BookOpen className="h-5 w-5" />
+    <div className="learn-brand-mark" style={{ color: "var(--learn-accent, #C9A227)" }}>
+      <HenryCoMonogram size={28} accent="var(--learn-accent, #C9A227)" />
     </div>
   );
 }

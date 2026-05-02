@@ -61,11 +61,11 @@ export default async function DealsPage() {
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-3">
                 <Link
-                  href={`/products/${today.product.slug}`}
-                  className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                  href={`/product/${today.product.slug}`}
+                  className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px] motion-safe:hover:-translate-y-[1px] motion-safe:hover:shadow-[0_18px_48px_rgba(178,134,59,0.25)]"
                 >
                   See today&rsquo;s deal
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 transition motion-safe:group-hover:translate-x-0.5" />
                 </Link>
                 <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
                   Refreshed daily

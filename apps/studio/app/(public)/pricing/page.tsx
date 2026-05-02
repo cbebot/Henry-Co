@@ -50,7 +50,8 @@ export default async function PricingPage() {
             return (
               <article
                 key={pkg.id}
-                className="flex h-full flex-col rounded-[1.8rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] p-6 transition duration-300 hover:-translate-y-1 hover:border-[var(--studio-signal)]/40"
+                id={pkg.id}
+                className="studio-card-tactile flex h-full flex-col scroll-mt-32 rounded-[1.8rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] p-6"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
@@ -98,6 +99,13 @@ export default async function PricingPage() {
                     </li>
                   ))}
                 </ul>
+                <Link
+                  href={`/request?package=${pkg.id}`}
+                  className="studio-button-primary group mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px]"
+                >
+                  Start with this package
+                  <ArrowRight className="h-3.5 w-3.5 transition motion-safe:group-hover:translate-x-0.5" aria-hidden />
+                </Link>
               </article>
             );
           })}

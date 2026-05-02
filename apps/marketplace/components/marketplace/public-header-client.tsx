@@ -6,6 +6,7 @@ import { getAccountUrl, getHubUrl } from "@henryco/config";
 import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 import {
   Bell,
   Globe,
@@ -234,9 +235,16 @@ export function PublicHeaderClient() {
       ) : null}
       <div className="market-panel relative z-50 mx-auto max-w-[1480px] overflow-visible rounded-[2rem]">
         <div className="flex items-center gap-3 border-b border-[var(--market-line)] px-4 py-3 sm:px-5">
-          <Link href="/" className="flex shrink-0 items-center gap-3">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[var(--market-line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-sm font-semibold tracking-[0.22em] text-[var(--market-paper-white)]">
-              HC
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] rounded-2xl"
+            aria-label="HenryCo Marketplace home"
+          >
+            <span
+              className="inline-flex h-12 w-12 items-center justify-center rounded-[1.45rem] border border-[var(--market-line-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] text-[var(--market-paper-white)] shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
+              style={{ color: "#F6E7C7" }}
+            >
+              <HenryCoMonogram size={32} accent="#B2863B" />
             </span>
             <div className="hidden min-w-0 sm:block">
               <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[var(--market-brass)]">

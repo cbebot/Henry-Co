@@ -11,6 +11,7 @@ import {
   type PublicNavItem,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 
 export type DivisionPublicConfig = {
   name: string;
@@ -25,23 +26,17 @@ export type DivisionPublicConfig = {
 
 function BrandMark({
   name,
-  shortName,
   logoUrl,
+  accent,
 }: {
   name: string;
   shortName?: string;
   logoUrl?: string | null;
+  accent?: string | null;
 }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const cleanSrc = typeof logoUrl === "string" && logoUrl.trim() ? logoUrl.trim() : null;
   const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
-  const fallback = (shortName || name)
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
 
   return (
     <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.08] shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-xl">
@@ -57,7 +52,7 @@ function BrandMark({
           }}
         />
       ) : (
-        <span className="text-sm font-black tracking-tight text-white">{fallback || "HC"}</span>
+        <HenryCoMonogram size={32} accent={accent || "#C9A227"} />
       )}
     </div>
   );
@@ -113,6 +108,7 @@ export default function CareNavbar({
             name={division.name}
             shortName={division.shortName}
             logoUrl={division.logoUrl}
+            accent={division.accent ?? "#C9A227"}
           />
         ),
       }}

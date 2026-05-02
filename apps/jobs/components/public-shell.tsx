@@ -9,6 +9,7 @@ import {
   PublicAccountChip,
   PublicFooter,
 } from "@henryco/ui";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 import { PublicHeader, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import {
   getSharedAccountJobsUrl,
@@ -58,7 +59,18 @@ export async function PublicShell({
   return (
     <div className="jobs-page jobs-shell">
       <PublicHeader
-        brand={{ name: jobs.name, sub: jobs.sub }}
+        brand={{
+          name: jobs.name,
+          sub: jobs.sub,
+          mark: (
+            <span
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.06] text-white shadow-[0_10px_30px_rgba(0,0,0,0.18)]"
+              style={{ color: jobs.accent || "#C9A227" }}
+            >
+              <HenryCoMonogram size={28} accent={jobs.accent || "#C9A227"} />
+            </span>
+          ),
+        }}
         items={[...getSiteNavigationConfig("jobs").primaryNav]}
         primaryCta={resolvedPrimary}
         secondaryCta={resolvedSecondary}

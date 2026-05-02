@@ -4,7 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Layers3, Mail, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
 import {
   type PublicAccountUser,
@@ -15,6 +15,7 @@ import {
   PublicShellLayout,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 import {
   normalizeCompanySettings,
   type CompanySettingsRecord,
@@ -67,7 +68,7 @@ function BrandLogo({
           }}
         />
       ) : (
-        <Layers3 className="h-5 w-5" style={{ color: accent }} />
+        <HenryCoMonogram size={28} accent={accent} />
       )}
     </div>
   );

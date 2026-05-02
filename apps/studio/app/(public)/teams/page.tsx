@@ -21,8 +21,8 @@ export default async function TeamsPage() {
 
       <ol className="mt-14 grid gap-5 lg:grid-cols-2">
         {catalog.teams.map((team) => (
-          <li key={team.id}>
-            <article className="flex h-full flex-col rounded-[1.8rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] p-6 transition duration-300 hover:-translate-y-1 hover:border-[var(--studio-signal)]/40">
+          <li key={team.id} id={team.id} className="scroll-mt-32">
+            <article className="studio-card-tactile flex h-full flex-col rounded-[1.8rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] p-6">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">

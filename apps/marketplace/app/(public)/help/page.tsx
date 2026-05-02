@@ -1,9 +1,37 @@
 import Link from "next/link";
 import { ArrowRight, BadgeAlert, ClipboardList, MessageSquare, ShieldAlert } from "lucide-react";
+import { getMarketplaceVendorBySlug } from "@/lib/marketplace/data";
 
 export const dynamic = "force-dynamic";
 
-export default function HelpPage() {
+type HelpSearchParams = {
+  vendor?: string;
+  subject?: string;
+  return_to?: string;
+  context?: string;
+};
+
+export default async function HelpPage({
+  searchParams,
+}: {
+  searchParams?: Promise<HelpSearchParams>;
+}) {
+  const params = (await searchParams) ?? {};
+  const vendorSlug = typeof params.vendor === "string" ? params.vendor.trim() : "";
+  const vendor = vendorSlug ? await getMarketplaceVendorBySlug(vendorSlug) : null;
+  const prefilledSubject =
+    typeof params.subject === "string" && params.subject.trim()
+      ? params.subject.trim()
+      : vendor
+        ? `Question for ${vendor.vendor.name}`
+        : "";
+  const returnTo =
+    typeof params.return_to === "string" && params.return_to.startsWith("/")
+      ? params.return_to
+      : "/help";
+  const contextNote = vendor
+    ? `You're contacting ${vendor.vendor.name}. Messages route through HenryCo Marketplace support and are tied to the order reference if you mention one below.`
+    : null;
   const channels = [
     {
       icon: ClipboardList,
@@ -97,7 +125,19 @@ export default function HelpPage() {
             className="grid gap-4 rounded-[1.8rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] p-6 sm:p-8"
           >
             <input type="hidden" name="intent" value="support_thread_create" />
-            <input type="hidden" name="return_to" value="/help" />
+            <input type="hidden" name="return_to" value={returnTo} />
+            {vendor ? (
+              <input type="hidden" name="vendor_slug" value={vendor.vendor.slug} />
+            ) : null}
+            {contextNote ? (
+              <p
+                role="status"
+                className="rounded-[1.4rem] border border-[var(--market-brass)]/35 bg-[var(--market-brass)]/[0.06] px-4 py-3 text-sm leading-relaxed text-[var(--market-ink)]"
+              >
+                <MessageSquare className="mr-2 inline h-4 w-4 align-text-bottom text-[var(--market-brass)]" aria-hidden />
+                {contextNote}
+              </p>
+            ) : null}
             <div className="grid gap-4 md:grid-cols-2">
               <label className="grid gap-1 text-sm">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
@@ -128,6 +168,7 @@ export default function HelpPage() {
                 <input
                   name="subject"
                   required
+                  defaultValue={prefilledSubject}
                   className="market-input rounded-2xl px-4 py-3"
                   placeholder="e.g. Refund stuck after split shipment delivery"
                 />

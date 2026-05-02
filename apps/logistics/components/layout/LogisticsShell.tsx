@@ -6,6 +6,7 @@ import {
   PublicHeader,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 import type { ReactNode } from "react";
 
 export default function LogisticsShell({
@@ -26,6 +27,14 @@ export default function LogisticsShell({
         brand={{
           href: "/",
           name: "",
+          mark: (
+            <span
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-[var(--logistics-line)] bg-white/[0.04] shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
+              style={{ color: logistics.accent || "#D06F32" }}
+            >
+              <HenryCoMonogram size={28} accent={logistics.accent || "#D06F32"} />
+            </span>
+          ),
           text: (
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">

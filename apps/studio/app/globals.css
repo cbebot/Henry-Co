@@ -302,6 +302,76 @@ html.dark .studio-listbox-dropdown {
   letter-spacing: -0.08em;
 }
 
+/* studio-card-tactile — tasteful hover lift for cards that are real
+   click targets (case studies, package cards, service rows). Pairs a
+   subtle Y translate with a brightening accent border + shadow. The
+   reduced-motion media query at the bottom of this file disables the
+   transform; the focus-visible ring is kept regardless. */
+.studio-card-tactile {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+
+.studio-card-tactile:hover,
+.studio-card-tactile:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(151, 244, 243, 0.32);
+  box-shadow:
+    var(--studio-shadow-soft),
+    0 32px 80px -28px rgba(88, 212, 210, 0.36);
+}
+
+.studio-card-tactile:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(151, 244, 243, 0.5),
+    0 0 0 4px rgba(4, 17, 23, 0.92),
+    0 32px 80px -28px rgba(88, 212, 210, 0.4);
+}
+
+.studio-card-tactile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(151, 244, 243, 0.0) 30%, rgba(151, 244, 243, 0.06) 100%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  z-index: -1;
+}
+
+.studio-card-tactile:hover::after,
+.studio-card-tactile:focus-visible::after {
+  opacity: 1;
+}
+
+/* studio-row-tactile — a quieter relative for list-row hover states.
+   No translate (would jitter inside dense ul rows); just a faint
+   surface and accent. */
+.studio-row-tactile {
+  transition:
+    background 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease;
+  border-radius: 1rem;
+}
+
+.studio-row-tactile:hover,
+.studio-row-tactile:focus-visible {
+  background: rgba(151, 244, 243, 0.05);
+  outline: none;
+}
+
+.studio-row-tactile:focus-visible {
+  box-shadow: 0 0 0 2px rgba(151, 244, 243, 0.5);
+}
+
 .studio-brand-mark::after {
   content: "";
   position: absolute;

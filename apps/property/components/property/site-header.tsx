@@ -9,6 +9,7 @@ import {
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
 import type { PublicNavItem } from "@henryco/ui/public-shell";
+import { HenryCoMonogram } from "@henryco/ui/brand";
 
 const property = getDivisionConfig("property");
 const propertyNav = getSiteNavigationConfig("property");
@@ -50,8 +51,11 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
         href: "/",
         name: "",
         mark: (
-          <div className="property-brand-mark">
-            <span>HC</span>
+          <div
+            className="property-brand-mark"
+            style={{ color: property.accent || "#B06C3E" }}
+          >
+            <HenryCoMonogram size={28} accent={property.accent || "#B06C3E"} />
           </div>
         ),
         text: (

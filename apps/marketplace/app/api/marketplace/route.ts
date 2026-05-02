@@ -1159,8 +1159,19 @@ export async function POST(request: Request) {
       case "support_thread_create": {
         const contactEmail = normalizeEmail(text(formData, "contact_email") || viewer.user?.email);
         const contactName = text(formData, "contact_name") || viewer.user?.fullName || "Marketplace contact";
-        const subject = text(formData, "subject");
+        const rawSubject = text(formData, "subject");
         const message = text(formData, "message");
+        const vendorSlugInput = text(formData, "vendor_slug");
+        const vendorRecord = vendorSlugInput
+          ? snapshot.vendors.find((item) => item.slug === vendorSlugInput) ?? null
+          : null;
+        const subject = vendorRecord
+          ? `[Store: ${vendorRecord.name}] ${rawSubject}`
+          : rawSubject;
+        const vendorPrefix = vendorRecord
+          ? `Store context: ${vendorRecord.name} (${vendorRecord.slug})\n\n`
+          : "";
+        const messageBody = `${vendorPrefix}${message}`;
 
         const { data: thread } = await admin
           .from("marketplace_support_threads")
@@ -1170,7 +1181,7 @@ export async function POST(request: Request) {
             subject,
             status: "open",
             channel: "web",
-            last_message: message,
+            last_message: messageBody,
           } as never)
           .select("id")
           .maybeSingle();
@@ -1181,7 +1192,7 @@ export async function POST(request: Request) {
             user_id: viewer.user?.id ?? null,
             normalized_email: contactEmail,
             sender_type: viewer.user ? "buyer" : "guest",
-            body: message,
+            body: messageBody,
           } as never);
         } catch {
           // tolerate support message table not existing until schema is applied
