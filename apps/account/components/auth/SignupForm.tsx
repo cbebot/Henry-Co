@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 import { formatSurfaceTemplate, getActiveCountries, getAuthCopy, getSurfaceCopy } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
-import { getAccountUrl, normalizeTrustedRedirect } from "@henryco/config";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { normalizeTrustedRedirect } from "@henryco/config";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
 import { Eye, EyeOff, CheckCircle2, Mail, ShieldCheck, Sparkles } from "lucide-react";
 
@@ -23,10 +22,8 @@ function buildLoginHref(next: string | null) {
   return safeNext === "/" ? "/login" : `/login?next=${encodeURIComponent(safeNext)}`;
 }
 
-function buildEmailRedirectTo(next: string | null) {
-  const safeNext = normalizeTrustedRedirect(next);
-  const base = getAccountUrl("/auth/callback");
-  return safeNext === "/" ? base : `${base}?next=${encodeURIComponent(safeNext)}`;
+function buildSignupNext(next: string | null) {
+  return normalizeTrustedRedirect(next);
 }
 
 export default function SignupForm() {
@@ -71,26 +68,33 @@ export default function SignupForm() {
 
     setLoading(true);
     try {
-      const supabase = createSupabaseBrowser();
       const fullPhone = phone.trim() ? `${selectedCountry?.dial || ""}${phone.trim().replace(/^0+/, "")}` : null;
 
-      const { error: authError } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
-        password,
-        options: {
-          emailRedirectTo: buildEmailRedirectTo(next),
-          data: {
-            full_name: fullName.trim(),
-            country,
-            phone: fullPhone,
-            contact_preference: contactPref,
-            currency: selectedCountry?.currency || "NGN",
-            timezone: selectedCountry?.timezone || "Africa/Lagos",
-          },
-        },
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+          fullName: fullName.trim(),
+          country,
+          phone: fullPhone,
+          contactPreference: contactPref,
+          currency: selectedCountry?.currency || "NGN",
+          timezone: selectedCountry?.timezone || "Africa/Lagos",
+          next: buildSignupNext(next),
+        }),
       });
 
-      if (authError) { setError(mapAccountAuthMessage(authError.message, "sign_up", locale)); return; }
+      const payload = (await response.json().catch(() => null)) as
+        | { ok?: boolean; error?: string; message?: string }
+        | null;
+
+      if (!response.ok || !payload?.ok) {
+        setError(mapAccountAuthMessage(payload?.message, "sign_up", locale));
+        return;
+      }
+
       setSuccess(true);
     } catch {
       setError(surfaceCopy.accountForms.createAccountUnavailable);

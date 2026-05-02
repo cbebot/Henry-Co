@@ -1,28 +1,12 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { normalizeLocale } from "@henryco/i18n/server";
-import { publishNotification, type Division } from "@henryco/notifications";
+import {
+  normalizeDivision,
+  publishNotification,
+  severityFromPriority,
+} from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
-
-const KNOWN_DIVISIONS: ReadonlySet<Division> = new Set([
-  "hub",
-  "account",
-  "staff",
-  "care",
-  "marketplace",
-  "property",
-  "logistics",
-  "jobs",
-  "learn",
-  "studio",
-  "security",
-  "system",
-]);
-
-function normalizeDivision(value: string | null | undefined, fallback: Division = "account"): Division {
-  const lowered = String(value || "").trim().toLowerCase();
-  return KNOWN_DIVISIONS.has(lowered as Division) ? (lowered as Division) : fallback;
-}
 import { sendAccountEmail } from "@/lib/email/send";
 import { welcomeEmail, securityAlertEmail, walletFundedEmail } from "@/lib/email/templates";
 import {
@@ -278,17 +262,7 @@ export async function POST(request: Request) {
               locale: preferredLocale,
             })
           : { title: fallbackTitle, body: fallbackBody };
-        const priority = clean(payload.priority).toLowerCase();
-        const severity =
-          priority === "high" || priority === "urgent" || priority === "critical"
-            ? "urgent"
-            : priority === "warning"
-              ? "warning"
-              : priority === "success"
-                ? "success"
-                : priority === "security"
-                  ? "security"
-                  : "info";
+        const severity = severityFromPriority(clean(payload.priority));
         const publishResult = await publishNotification({
           userId,
           division: normalizeDivision(clean(payload.division), "account"),

@@ -1,29 +1,9 @@
 import { NextResponse } from "next/server";
 import { normalizeLocale } from "@henryco/i18n";
-import { publishNotification, type Division } from "@henryco/notifications";
+import { normalizeDivision, publishNotification } from "@henryco/notifications";
 import { createStaffSupabaseServer } from "@/lib/supabase/server";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
 import { getStaffViewer } from "@/lib/staff-auth";
-
-const KNOWN_DIVISIONS: ReadonlySet<Division> = new Set([
-  "hub",
-  "account",
-  "staff",
-  "care",
-  "marketplace",
-  "property",
-  "logistics",
-  "jobs",
-  "learn",
-  "studio",
-  "security",
-  "system",
-]);
-
-function normalizeDivision(value: string | null | undefined): Division {
-  const lowered = String(value || "").trim().toLowerCase();
-  return KNOWN_DIVISIONS.has(lowered as Division) ? (lowered as Division) : "account";
-}
 
 function clean(value: unknown) {
   return String(value ?? "").trim();

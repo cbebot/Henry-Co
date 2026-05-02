@@ -159,7 +159,16 @@ export default function VerificationWorkspaceClient({
         | null;
 
       if (!response.ok || !payload?.verification || !payload.submission) {
-        throw new Error(payload?.error || "Upload failed.");
+        console.error("[verification/upload] request failed", {
+          status: response.status,
+          documentType,
+          serverError: payload?.error ?? null,
+        });
+        setMessage({
+          type: "error",
+          text: "We couldn't add that file to the review queue. Try again in a moment, or contact support if it keeps happening.",
+        });
+        return;
       }
 
       const nextSubmissions = [
@@ -182,9 +191,10 @@ export default function VerificationWorkspaceClient({
       input.value = "";
       router.refresh();
     } catch (error) {
+      console.error("[verification/upload] network or parse error", error);
       setMessage({
         type: "error",
-        text: error instanceof Error ? error.message : "Upload failed.",
+        text: "We couldn't reach the verification service. Check your connection and try again.",
       });
     } finally {
       setUploadingType(null);

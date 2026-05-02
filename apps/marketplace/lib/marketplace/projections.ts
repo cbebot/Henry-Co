@@ -1,21 +1,9 @@
 import "server-only";
 
 import { getDivisionUrl } from "@henryco/config";
-import { publishNotification, type Severity } from "@henryco/notifications";
+import { publishNotification, severityFromPriority } from "@henryco/notifications";
 import { normalizeEmail } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
-
-// Map the freeform `priority` strings the marketplace dispatcher passes
-// ("normal" / "high" / "critical" / etc.) onto the publisher's typed
-// Severity enum. Unknown values fall back to "info".
-function severityFromPriority(priority: string | null | undefined): Severity {
-  const value = String(priority || "").trim().toLowerCase();
-  if (value === "high" || value === "urgent" || value === "critical") return "urgent";
-  if (value === "warning") return "warning";
-  if (value === "success") return "success";
-  if (value === "security") return "security";
-  return "info";
-}
 
 // `entityType` from the marketplace dispatcher (e.g. "order", "dispute",
 // "vendor_application") needs to satisfy the shim's relatedType shape:
