@@ -1,15 +1,23 @@
+import type { Metadata } from "next";
 import { getCourseCatalog, getPublicAcademyData } from "@/lib/learn/data";
 import { CourseCard, LearnEmptyState, LearnSectionIntro } from "@/components/learn/ui";
 import { getSharedAuthUrl } from "@/lib/learn/links";
 import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { getLearnPublicLocale } from "@/lib/locale-server";
+import { createDivisionMetadata } from "@henryco/config";
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  return { title: t("Course catalog") };
+  return createDivisionMetadata("learn", {
+    title: t("Course catalog"),
+    description: t(
+      "Browse practical HenryCo courses you can finish, with clear progress and credentials employers can verify.",
+    ),
+    path: "/courses",
+  });
 }
 
 export default async function CoursesPage({

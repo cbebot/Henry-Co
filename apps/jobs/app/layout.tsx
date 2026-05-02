@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
 import { Manrope, Newsreader } from "next/font/google";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
+import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getJobsPublicLocale } from "@/lib/locale-server";
+import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 import "./globals.css";
 
 const display = Newsreader({
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-jobs-display",
 });
 
 const sans = Manrope({
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-jobs-sans",
 });
 
@@ -24,21 +28,14 @@ export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   const jobs = getDivisionConfig("jobs");
-  const domain =
-    process.env.NODE_ENV === "production"
-      ? `https://${jobs.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-      : "http://localhost:3000";
-
   return {
-    title: jobs.name,
-    description: jobs.description,
-    metadataBase: new URL(domain),
-    openGraph: {
+    ...createDivisionMetadata("jobs", {
       title: jobs.name,
-      description: jobs.tagline,
-      siteName: jobs.name,
-      type: "website",
-    },
+      description: jobs.description,
+      openGraphDescription: jobs.tagline,
+      path: "/",
+    }),
+    verification: getVerificationMeta("jobs"),
   };
 }
 
@@ -51,6 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body
         className={`${display.variable} ${sans.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
       >
+        <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
@@ -58,6 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <AssistDock division="jobs" />
           </LocaleProvider>
         </PublicThemeGuard>
+        <HenryCoAnalytics />
       </body>
     </html>
   );

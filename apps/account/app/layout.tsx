@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "My Account — Henry & Co.",
   description:
     "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
+  robots: { index: false, follow: false },
   metadataBase: new URL(
     process.env.NODE_ENV === "production"
       ? `https://account.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`

@@ -5,13 +5,15 @@ import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
+import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import LogisticsShell from "@/components/layout/LogisticsShell";
 import { getLogisticsSharedLoginUrl, getLogisticsSharedSignupUrl } from "@/lib/logistics-public-links";
 import { getLogisticsPublicChipUser } from "@/lib/logistics-public-viewer";
+import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 import "./globals.css";
 
 const logistics = getDivisionConfig("logistics");
@@ -35,15 +37,13 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: `${logistics.name} | Henry & Co.`,
-  description: logistics.description,
-  metadataBase: logisticsMetadataBase(),
-  openGraph: {
-    title: logistics.name,
-    description: logistics.tagline,
-    siteName: logistics.name,
-    type: "website",
-  },
+  ...createDivisionMetadata("logistics", {
+    title: `${logistics.name} | Henry & Co.`,
+    description: logistics.description,
+    openGraphDescription: logistics.tagline,
+    path: "/",
+  }),
+  verification: getVerificationMeta("logistics"),
 };
 
 export default async function RootLayout({
@@ -79,6 +79,7 @@ export default async function RootLayout({
   return (
     <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
+        <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
@@ -86,6 +87,7 @@ export default async function RootLayout({
             <AssistDock division="logistics" accent="#D77539" />
           </LocaleProvider>
         </PublicThemeGuard>
+        <HenryCoAnalytics />
       </body>
     </html>
   );

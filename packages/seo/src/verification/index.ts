@@ -1,0 +1,1 @@
+export { getVerificationMeta } from "./tags";

@@ -5,25 +5,21 @@ import { AssistDock } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
+import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
+import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 
 const learn = getDivisionConfig("learn");
 
 export const metadata: Metadata = {
-  title: learn.name,
-  description: learn.description,
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? `https://${learn.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-      : "http://localhost:3018"
-  ),
-  openGraph: {
+  ...createDivisionMetadata("learn", {
     title: learn.name,
-    description: learn.tagline,
-    siteName: learn.name,
-    type: "website",
-  },
+    description: learn.description,
+    openGraphDescription: learn.tagline,
+    path: "/",
+  }),
+  verification: getVerificationMeta("learn"),
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -33,6 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen bg-[var(--learn-bg)] text-[var(--learn-ink)] antialiased">
+        <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
@@ -40,6 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <AssistDock division="learn" />
           </LocaleProvider>
         </PublicThemeGuard>
+        <HenryCoAnalytics />
       </body>
     </html>
   );
