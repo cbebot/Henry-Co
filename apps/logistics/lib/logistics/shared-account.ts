@@ -1,20 +1,7 @@
 import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
-import { publishNotification, type Severity } from "@henryco/notifications";
-
-// Map the freeform `priority` strings the existing logistics callers pass
-// ("normal" / "high" / "warning") onto the publisher's typed Severity enum.
-// Unknown values fall back to "info" — strict-typed events will not silently
-// degrade to a misleading severity.
-function severityFromPriority(priority: string | null | undefined): Severity {
-  const value = String(priority || "").trim().toLowerCase();
-  if (value === "high" || value === "urgent") return "urgent";
-  if (value === "warning") return "warning";
-  if (value === "success") return "success";
-  if (value === "security") return "security";
-  return "info";
-}
+import { publishNotification, severityFromPriority } from "@henryco/notifications";
 
 type OptionalString = string | null | undefined;
 

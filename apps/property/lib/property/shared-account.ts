@@ -1,17 +1,8 @@
 import "server-only";
 
 import { normalizeEmail, normalizePhone } from "@henryco/config";
-import { publishNotification, type Severity } from "@henryco/notifications";
+import { publishNotification, severityFromPriority } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
-
-function severityFromPriority(priority: string | null | undefined): Severity {
-  const value = String(priority || "").trim().toLowerCase();
-  if (value === "high" || value === "urgent" || value === "critical") return "urgent";
-  if (value === "warning") return "warning";
-  if (value === "success") return "success";
-  if (value === "security") return "security";
-  return "info";
-}
 
 type OptionalString = string | null | undefined;
 

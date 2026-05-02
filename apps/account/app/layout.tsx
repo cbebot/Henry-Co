@@ -17,6 +17,13 @@ export const metadata: Metadata = {
       ? `https://account.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
       : "http://localhost:3003"
   ),
+  openGraph: {
+    title: "My Account — Henry & Co.",
+    description:
+      "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
+    siteName: "Henry & Co. Account",
+    type: "website",
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

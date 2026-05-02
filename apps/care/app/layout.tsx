@@ -38,8 +38,19 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    metadataBase: new URL(
+      process.env.NODE_ENV === "production"
+        ? `https://care.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
+        : "http://localhost:3000",
+    ),
     icons: {
       icon: settings.favicon_url || settings.logo_url || undefined,
+    },
+    openGraph: {
+      title,
+      description,
+      siteName: "Henry & Co. Care",
+      type: "website",
     },
   };
 }
