@@ -2,13 +2,23 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Bookmark, Trash2 } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
-import { useMarketplaceCart, useMarketplaceWishlist } from "@/components/marketplace/runtime-provider";
+import {
+  useMarketplaceCart,
+  useMarketplaceWishlist,
+} from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
 
 export function CartExperience() {
-  const { cart, cartBusy, updateCartQuantity } = useMarketplaceCart();
+  const {
+    cart,
+    cartBusy,
+    updateCartQuantity,
+    removeCartItem,
+    moveCartItemToSaved,
+    pendingSavedItemIds,
+  } = useMarketplaceCart();
   const { isWishlisted, pendingWishlistSlugs, toggleWishlist } = useMarketplaceWishlist();
 
   const grouped = Object.entries(
@@ -45,6 +55,7 @@ export function CartExperience() {
               {items.map((item) => {
                 const saving = pendingWishlistSlugs.includes(item.productSlug);
                 const saved = isWishlisted(item.productSlug);
+                const movingToSaved = pendingSavedItemIds.includes(item.id);
 
                 return (
                   <div
@@ -107,24 +118,43 @@ export function CartExperience() {
                           ) : null}
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={movingToSaved}
+                          aria-busy={movingToSaved}
+                          onClick={() => void moveCartItemToSaved(item.id)}
+                          className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold disabled:cursor-wait"
+                        >
+                          {movingToSaved ? (
+                            <HenryCoActivityIndicator size="sm" label="Saving for later" />
+                          ) : (
+                            <Bookmark className="h-4 w-4" />
+                          )}
+                          <span>{movingToSaved ? "Saving..." : "Save for later"}</span>
+                        </button>
+                        <button
+                          type="button"
+                          disabled={cartBusy}
+                          onClick={() => void removeCartItem(item.id)}
+                          className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-transparent px-4 py-2 text-sm font-semibold text-[var(--market-muted)] hover:text-[var(--market-paper-white)] disabled:cursor-wait"
+                          aria-label={`Remove ${item.title} from cart`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span>Remove</span>
+                        </button>
                         <button
                           type="button"
                           disabled={saving}
                           aria-busy={saving}
                           onClick={() => void toggleWishlist(item.productSlug)}
-                          className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold disabled:cursor-wait"
+                          className="text-sm font-semibold text-[var(--market-brass)] disabled:cursor-wait"
                         >
-                          {saving ? (
-                            <HenryCoActivityIndicator size="sm" label="Updating wishlist" />
-                          ) : (
-                            <Heart className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
-                          )}
-                          <span>{saving ? "Saving..." : saved ? "Saved for later" : "Move to wishlist"}</span>
+                          {saving ? "..." : saved ? "Wishlisted" : "Add to wishlist"}
                         </button>
                         <Link
                           href={`/product/${item.productSlug}`}
-                          className="text-sm font-semibold text-[var(--market-brass)]"
+                          className="ml-auto text-sm font-semibold text-[var(--market-brass)]"
                         >
                           Open product
                         </Link>

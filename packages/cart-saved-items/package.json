@@ -1,0 +1,17 @@
+{
+  "name": "@henryco/cart-saved-items",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./client": "./client/index.tsx",
+    "./server": "./server/index.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

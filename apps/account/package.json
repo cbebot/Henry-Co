@@ -15,6 +15,7 @@
   "dependencies": {
     "@henryco/address-selector": "workspace:^",
     "@henryco/brand": "workspace:^",
+    "@henryco/cart-saved-items": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/email": "workspace:^",

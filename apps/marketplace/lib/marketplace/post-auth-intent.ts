@@ -5,11 +5,13 @@ const DEFAULT_TTL_MS = 15 * 60 * 1000;
 
 export type MarketplacePostAuthIntentV1 =
   | { v: 1; action: "wishlist"; productSlug: string; exp: number }
-  | { v: 1; action: "follow"; vendorSlug: string; exp: number };
+  | { v: 1; action: "follow"; vendorSlug: string; exp: number }
+  | { v: 1; action: "save_for_later"; cartItemId: string; exp: number };
 
 export type MarketplacePostAuthStashInput =
   | { action: "wishlist"; productSlug: string }
-  | { action: "follow"; vendorSlug: string };
+  | { action: "follow"; vendorSlug: string }
+  | { action: "save_for_later"; cartItemId: string };
 
 function isBrowser() {
   return typeof window !== "undefined" && typeof window.sessionStorage !== "undefined";
@@ -21,7 +23,9 @@ export function stashMarketplacePostAuthIntent(intent: MarketplacePostAuthStashI
   const payload: MarketplacePostAuthIntentV1 =
     intent.action === "wishlist"
       ? { v: 1, action: "wishlist", productSlug: intent.productSlug, exp }
-      : { v: 1, action: "follow", vendorSlug: intent.vendorSlug, exp };
+      : intent.action === "follow"
+      ? { v: 1, action: "follow", vendorSlug: intent.vendorSlug, exp }
+      : { v: 1, action: "save_for_later", cartItemId: intent.cartItemId, exp };
   try {
     window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch {
@@ -40,6 +44,7 @@ export function takeMarketplacePostAuthIntent(): MarketplacePostAuthIntentV1 | n
     if (Date.now() > parsed.exp) return null;
     if (parsed.action === "wishlist" && typeof parsed.productSlug === "string") return parsed;
     if (parsed.action === "follow" && typeof parsed.vendorSlug === "string") return parsed;
+    if (parsed.action === "save_for_later" && typeof parsed.cartItemId === "string") return parsed;
     return null;
   } catch {
     return null;

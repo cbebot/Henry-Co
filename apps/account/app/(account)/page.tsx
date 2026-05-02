@@ -18,8 +18,17 @@ import {
 import { parseHenryFeatureFlags } from "@henryco/intelligence";
 import { formatAccountTemplate, getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
+import { listSavedItems } from "@henryco/cart-saved-items/server";
 import { requireAccountUser } from "@/lib/auth";
-import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
+import {
+  getCartRecoveryState,
+  getDashboardSummary,
+  getRecentlyViewed,
+  getSupportThreads,
+  getWalletFundingContext,
+} from "@/lib/account-data";
+import { createAdminSupabase } from "@/lib/supabase";
+import { WelcomeBackSurface } from "@/components/saved-items/WelcomeBackSurface";
 import { buildAccountRecommendations, buildAccountTasks } from "@/lib/intelligence-rollout";
 import { activityMessageHref } from "@/lib/notification-center";
 import { formatNaira, timeAgoLocalized, divisionLabel, divisionColor } from "@/lib/format";
@@ -41,12 +50,25 @@ export default async function OverviewPage() {
   const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const copy = getAccountCopy(locale);
-  const [data, funding, trust, supportThreads, lifecycleSnapshot] = await Promise.all([
+  const adminClient = createAdminSupabase();
+  const [
+    data,
+    funding,
+    trust,
+    supportThreads,
+    lifecycleSnapshot,
+    savedItems,
+    recentlyViewed,
+    cartRecovery,
+  ] = await Promise.all([
     getDashboardSummary(user.id, locale),
     getWalletFundingContext(user.id),
     getAccountTrustProfile(user.id),
     getSupportThreads(user.id),
     collectAndPersistLifecycleSnapshot(user.id).catch(() => null),
+    listSavedItems(adminClient, user.id, { includeStatuses: ["active"], limit: 20 }),
+    getRecentlyViewed(user.id, 6),
+    getCartRecoveryState(user.id),
   ]);
   const openSupportCount = supportThreads.filter((thread: Record<string, unknown>) => {
     const status = String(thread.status || "");
@@ -136,6 +158,14 @@ export default async function OverviewPage() {
       <PageHeader
         title={`${copy.overview.welcomeBack}${user.fullName ? `, ${user.fullName.split(" ")[0]}` : ""}`}
         description={copy.overview.description}
+      />
+
+      {/* V2-CART-01 — Welcome-back surface (cart resume + saved + recently viewed) */}
+      <WelcomeBackSurface
+        savedItems={savedItems}
+        recentlyViewed={recentlyViewed}
+        cartRecovery={cartRecovery}
+        firstName={user.fullName ? user.fullName.split(" ")[0] : null}
       />
 
       {/* Metric cards */}

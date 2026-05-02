@@ -411,6 +411,46 @@ export async function getPreferences(userId: string) {
   return data;
 }
 
+/**
+ * V2-CART-01 — Active saved-items count (across all divisions). Used by the
+ * sidebar badge and the overview "Saved" metric tile.
+ */
+export async function getSavedItemsCount(userId: string) {
+  const { count } = await admin()
+    .from("saved_items")
+    .select("id", { head: true, count: "exact" })
+    .eq("user_id", userId)
+    .eq("status", "active");
+  return count ?? 0;
+}
+
+/**
+ * V2-CART-01 — Recently viewed across divisions (welcome-back surface).
+ */
+export async function getRecentlyViewed(userId: string, limit = 6) {
+  const { data } = await admin()
+    .from("recently_viewed_items")
+    .select("division, item_type, item_id, title, href, image_url, last_viewed_at")
+    .eq("user_id", userId)
+    .order("last_viewed_at", { ascending: false })
+    .limit(limit);
+  return data ?? [];
+}
+
+/**
+ * V2-CART-01 — Cart recovery state (last division/surface the user touched).
+ */
+export async function getCartRecoveryState(userId: string) {
+  const { data } = await admin()
+    .from("cart_recovery_state")
+    .select(
+      "last_division, last_surface, last_item_count, last_subtotal_kobo, last_visited_at"
+    )
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data ?? null;
+}
+
 export async function getProfile(userId: string) {
   const { data } = await admin()
     .from("customer_profiles")

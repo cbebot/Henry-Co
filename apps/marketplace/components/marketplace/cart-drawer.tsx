@@ -3,14 +3,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, ShoppingBag, X } from "lucide-react";
+import { Bookmark, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useMarketplaceCart, useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
 
 export function MarketplaceCartDrawer() {
   const runtime = useMarketplaceRuntime();
-  const { cart, cartBusy, cartOpen, closeCart, pendingCartSlugs, updateCartQuantity, removeCartItem } = useMarketplaceCart();
+  const {
+    cart,
+    cartBusy,
+    cartOpen,
+    closeCart,
+    pendingCartSlugs,
+    updateCartQuantity,
+    removeCartItem,
+    moveCartItemToSaved,
+    pendingSavedItemIds,
+  } = useMarketplaceCart();
   const cartSyncing = cartBusy || pendingCartSlugs.length > 0;
 
   return (
@@ -124,18 +134,37 @@ export function MarketplaceCartDrawer() {
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      disabled={cartBusy}
-                      aria-busy={cartBusy}
-                      onClick={() => removeCartItem(item.id)}
-                      className="mt-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] disabled:cursor-wait"
-                    >
-                      {cartBusy ? (
-                        <HenryCoActivityIndicator size="sm" className="text-[var(--market-muted)]" label="Updating cart" />
-                      ) : null}
-                      <span>{cartBusy ? "Updating..." : "Remove"}</span>
-                    </button>
+                    <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                      <button
+                        type="button"
+                        disabled={pendingSavedItemIds.includes(item.id)}
+                        aria-busy={pendingSavedItemIds.includes(item.id)}
+                        onClick={() => void moveCartItemToSaved(item.id)}
+                        className="inline-flex items-center gap-1.5 hover:text-[var(--market-brass)] disabled:cursor-wait"
+                      >
+                        {pendingSavedItemIds.includes(item.id) ? (
+                          <HenryCoActivityIndicator size="sm" className="text-[var(--market-muted)]" label="Saving for later" />
+                        ) : (
+                          <Bookmark className="h-3.5 w-3.5" />
+                        )}
+                        <span>
+                          {pendingSavedItemIds.includes(item.id) ? "Saving..." : "Save for later"}
+                        </span>
+                      </button>
+                      <span aria-hidden="true">·</span>
+                      <button
+                        type="button"
+                        disabled={cartBusy}
+                        aria-busy={cartBusy}
+                        onClick={() => removeCartItem(item.id)}
+                        className="inline-flex items-center gap-1.5 hover:text-[var(--market-paper-white)] disabled:cursor-wait"
+                      >
+                        {cartBusy ? (
+                          <HenryCoActivityIndicator size="sm" className="text-[var(--market-muted)]" label="Updating cart" />
+                        ) : null}
+                        <span>{cartBusy ? "Updating..." : "Remove"}</span>
+                      </button>
+                    </div>
                   </article>
                 ))
               ) : (
@@ -145,13 +174,23 @@ export function MarketplaceCartDrawer() {
                   <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">
                     Quick-add from any card and the basket will stay updated here without a hard refresh.
                   </p>
-                  <Link
-                    href="/search"
-                    onClick={closeCart}
-                    className="mt-5 inline-flex rounded-full bg-[var(--market-paper-white)] px-5 py-3 text-sm font-semibold text-[var(--market-noir)]"
-                  >
-                    Explore products
-                  </Link>
+                  <div className="mt-5 flex flex-col items-center gap-2">
+                    <Link
+                      href="/search"
+                      onClick={closeCart}
+                      className="inline-flex rounded-full bg-[var(--market-paper-white)] px-5 py-3 text-sm font-semibold text-[var(--market-noir)]"
+                    >
+                      Explore products
+                    </Link>
+                    <Link
+                      href="/account/saved"
+                      onClick={closeCart}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--market-brass)]"
+                    >
+                      <Bookmark className="h-3 w-3" />
+                      View saved items
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>

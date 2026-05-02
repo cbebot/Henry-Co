@@ -14,7 +14,9 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@henryco/address-selector": "workspace:^",
     "@henryco/brand": "workspace:^",
+    "@henryco/cart-saved-items": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",

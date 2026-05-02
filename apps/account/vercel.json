@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/notification-purge",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/engagement-sweep",
+      "schedule": "13 * * * *"
     }
   ]
 }
