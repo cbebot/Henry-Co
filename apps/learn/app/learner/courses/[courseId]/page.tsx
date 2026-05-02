@@ -360,7 +360,13 @@ export default async function LearnerCoursePage({
             HenryCo account
           </a>
           {certificate ? (
-            <CertificateDownloadButton label="Download certificate" className="learn-print-hidden" />
+            <CertificateDownloadButton
+              verificationCode={certificate.verificationCode}
+              learnerName={viewer.user?.fullName ?? null}
+              courseTitle={course.title}
+              label="Download certificate"
+              className="learn-print-hidden"
+            />
           ) : null}
         </>
       }
@@ -598,7 +604,13 @@ export default async function LearnerCoursePage({
                       Open certificate
                     </Link>
                   ) : null}
-                  <CertificateDownloadButton label="Download certificate" className="learn-print-hidden" />
+                  <CertificateDownloadButton
+                    verificationCode={certificate.verificationCode}
+                    learnerName={viewer.user?.fullName ?? null}
+                    courseTitle={course.title}
+                    label="Download certificate"
+                    className="learn-print-hidden"
+                  />
                 </div>
               </div>
             ) : null}
@@ -618,7 +630,12 @@ export default async function LearnerCoursePage({
                   Download-ready and publicly verifiable
                 </h2>
               </div>
-              <CertificateDownloadButton label="Download certificate" />
+              <CertificateDownloadButton
+                verificationCode={certificate.verificationCode}
+                learnerName={viewer.user?.fullName ?? null}
+                courseTitle={course.title}
+                label="Download certificate"
+              />
             </div>
 
             <div className="mt-8 rounded-[1.9rem] border border-[var(--learn-line)] bg-white/5 p-8 sm:p-10">

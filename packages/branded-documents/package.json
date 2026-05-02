@@ -1,0 +1,39 @@
+{
+  "name": "@henryco/branded-documents",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens": "./src/tokens.ts",
+    "./qr": "./src/qr.ts",
+    "./filename": "./src/filename.ts",
+    "./render": "./src/render.ts",
+    "./templates/transaction-history": "./src/templates/transaction-history.tsx",
+    "./templates/invoice": "./src/templates/invoice.tsx",
+    "./templates/receipt": "./src/templates/receipt.tsx",
+    "./templates/kyc-summary": "./src/templates/kyc-summary.tsx",
+    "./templates/care-booking": "./src/templates/care-booking.tsx",
+    "./templates/property-listing": "./src/templates/property-listing.tsx",
+    "./templates/jobs-application": "./src/templates/jobs-application.tsx",
+    "./templates/learn-certificate": "./src/templates/learn-certificate.tsx",
+    "./templates/support-thread-export": "./src/templates/support-thread-export.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.1.0",
+    "@fontsource/jetbrains-mono": "^5.1.0",
+    "@fontsource/newsreader": "^5.1.0",
+    "@henryco/brand": "workspace:^",
+    "@react-pdf/renderer": "^4.3.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.2.14",
+    "typescript": "^5.9.3"
+  }
+}

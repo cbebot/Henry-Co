@@ -24,6 +24,9 @@ importers:
       '@henryco/brand':
         specifier: workspace:^
         version: link:../../packages/brand
+      '@henryco/branded-documents':
+        specifier: workspace:^
+        version: link:../../packages/branded-documents
       '@henryco/cart-saved-items':
         specifier: workspace:^
         version: link:../../packages/cart-saved-items
@@ -488,6 +491,9 @@ importers:
 
   apps/learn:
     dependencies:
+      '@henryco/branded-documents':
+        specifier: workspace:^
+        version: link:../../packages/branded-documents
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config

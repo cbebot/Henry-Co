@@ -8,6 +8,7 @@ import { timeAgoLocalized, divisionLabel, divisionColor, formatNaira } from "@/l
 import { getAccountAppLocale } from "@/lib/locale-server";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/layout/EmptyState";
+import { ActivityFiltersClient } from "@/components/branded-documents/ActivityFiltersClient";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +59,16 @@ export default async function ActivityPage() {
         title={copy.title}
         description={copy.description}
         icon={Activity}
+      />
+
+      <ActivityFiltersClient
+        availableDivisions={Array.from(
+          new Set(
+            (activity as Array<Record<string, unknown>>)
+              .map((row) => String(row.division || "").trim().toLowerCase())
+              .filter(Boolean)
+          )
+        ).sort()}
       />
 
       {activity.length === 0 ? (
