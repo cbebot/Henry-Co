@@ -18,6 +18,8 @@
     "@henryco/i18n": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/newsletter": "workspace:^",
+    "@henryco/search-core": "workspace:^",
+    "@henryco/search-ui": "workspace:^",
     "@henryco/seo": "workspace:^",
     "@henryco/ui": "workspace:^",
     "@hookform/resolvers": "^5.2.2",

@@ -19,6 +19,7 @@ import {
   normalizeCompanySettings,
   type CompanySettingsRecord,
 } from "../lib/company-settings-shared";
+import PaletteHost from "./PaletteHost";
 
 function BrandLogo({
   src,
@@ -104,6 +105,7 @@ export default function PublicSiteShell({
       <div
         style={{ ["--accent" as string]: settings.brand_accent } as CSSProperties}
       >
+      <PaletteHost />
       {isHomepage ? (
         children
       ) : (
