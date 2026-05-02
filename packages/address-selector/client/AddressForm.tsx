@@ -231,6 +231,8 @@ export default function AddressForm({
             onChange={(e) => setLabel(e.target.value as UserAddressLabel)}
             disabled={mode === "edit"}
             className={classNames?.select}
+            aria-invalid={Boolean(errors.label) || undefined}
+            aria-describedby={errors.label ? `${formId}-label-err` : undefined}
           >
             {labelOptions.map((opt) => (
               <option key={opt.value} value={opt.value} disabled={opt.disabled}>
@@ -239,7 +241,11 @@ export default function AddressForm({
               </option>
             ))}
           </select>
-          {errors.label && <p className={classNames?.error}>{errors.label}</p>}
+          {errors.label && (
+            <p id={`${formId}-label-err`} role="alert" className={classNames?.error}>
+              {errors.label}
+            </p>
+          )}
         </div>
       )}
 
@@ -254,10 +260,27 @@ export default function AddressForm({
           onClearWithoutPick={handleClearPick}
           inputClassName={classNames?.input}
           ariaLabel="Search for your address"
+          ariaInvalid={Boolean(errors.google_place_id || placesError)}
+          ariaDescribedBy={
+            [
+              placesError ? `${formId}-places-err` : null,
+              errors.google_place_id ? `${formId}-place-err` : null,
+            ]
+              .filter(Boolean)
+              .join(" ") || undefined
+          }
         />
         {resolvingPlace && <p>Resolving address details…</p>}
-        {placesError && <p className={classNames?.error}>{placesError}</p>}
-        {errors.google_place_id && <p className={classNames?.error}>{errors.google_place_id}</p>}
+        {placesError && (
+          <p id={`${formId}-places-err`} role="alert" className={classNames?.error}>
+            {placesError}
+          </p>
+        )}
+        {errors.google_place_id && (
+          <p id={`${formId}-place-err`} role="alert" className={classNames?.error}>
+            {errors.google_place_id}
+          </p>
+        )}
       </div>
 
       {picked && (
@@ -270,8 +293,14 @@ export default function AddressForm({
               value={streetOverride}
               onChange={(e) => setStreetOverride(e.target.value)}
               className={classNames?.input}
+              aria-invalid={Boolean(errors.street) || undefined}
+              aria-describedby={errors.street ? `${formId}-street-err` : undefined}
             />
-            {errors.street && <p className={classNames?.error}>{errors.street}</p>}
+            {errors.street && (
+              <p id={`${formId}-street-err`} role="alert" className={classNames?.error}>
+                {errors.street}
+              </p>
+            )}
           </div>
 
           <div className={classNames?.field}>
@@ -307,8 +336,14 @@ export default function AddressForm({
               onChange={(e) => setPhone(e.target.value)}
               className={classNames?.input}
               placeholder="+234…"
+              aria-invalid={Boolean(errors.phone) || undefined}
+              aria-describedby={errors.phone ? `${formId}-phone-err` : undefined}
             />
-            {errors.phone && <p className={classNames?.error}>{errors.phone}</p>}
+            {errors.phone && (
+              <p id={`${formId}-phone-err`} role="alert" className={classNames?.error}>
+                {errors.phone}
+              </p>
+            )}
           </div>
 
           <div className={classNames?.field}>

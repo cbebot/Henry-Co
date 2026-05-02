@@ -1,0 +1,61 @@
+# V2-A11Y-01 — accessibility + security-headers PR gate.
+#
+# This workflow runs on every PR and protects two invariants:
+#   1. The V2-PNH-04 security baseline (snapshot test in @henryco/config).
+#   2. The brand contrast matrix (no body text below 4.5:1).
+#
+# The full axe-core audit (pnpm a11y:audit) is intentionally NOT run here —
+# it requires booting all 10 apps and is too slow for the per-PR gate. That
+# scan runs nightly; the gate that reads its summary.json (pnpm a11y:gate)
+# only fires when an artefact is checked in and is updated by the audit job.
+
+name: a11y
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: a11y-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  a11y-gate:
+    name: PNH baseline + contrast matrix + headers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: V2-PNH-04 baseline snapshot
+        run: pnpm --filter @henryco/config test
+
+      - name: Brand contrast matrix
+        run: pnpm run a11y:contrast
+
+      - name: Production security headers
+        run: pnpm run a11y:headers
+        continue-on-error: true # production fetch failures must not block PRs from forks
+
+      - name: a11y gate (summary.json + headers.json regressions)
+        if: always()
+        run: pnpm run a11y:gate -- --dry-run
+
+      - name: Upload artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2-a11y-01-artefacts
+          path: .codex-temp/v2-a11y-01/
+          if-no-files-found: ignore
+          retention-days: 30

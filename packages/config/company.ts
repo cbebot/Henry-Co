@@ -27,6 +27,14 @@ export type DivisionConfig = {
   subdomain: string | null;
   accent: string;
   accentStrong: string;
+  /**
+   * WCAG-AA-safe darker sibling of `accent`, intended for text/icon use on
+   * white surfaces (≥4.5:1 contrast). Use `accent` for fills, gradients, and
+   * decorative dividers; use `accentText` whenever the accent is rendered as
+   * body text or as an interactive icon glyph. V2-A11Y-01 derived these from
+   * `accent` to clear WCAG 1.4.3 on white/near-white surfaces.
+   */
+  accentText: string;
   dark: string;
   supportEmail: string;
   supportPhone: string;
@@ -76,6 +84,7 @@ export const COMPANY = {
       subdomain: null,
       accent: "#C9A227",
       accentStrong: "#F2D77A",
+      accentText: "#8A6F00",
       dark: "#05070D",
       supportEmail: "hello@henrycogroup.com",
       supportPhone: "+234 000 000 0000",
@@ -99,6 +108,7 @@ export const COMPANY = {
       subdomain: "care",
       accent: "#6B7CFF",
       accentStrong: "#E8EBFF",
+      accentText: "#4F5BD0",
       dark: "#09112B",
       supportEmail: "care@henrycogroup.com",
       supportPhone: "+234 000 000 0000",
@@ -126,6 +136,7 @@ export const COMPANY = {
       subdomain: "building",
       accent: "#C9A227",
       accentStrong: "#F2D77A",
+      accentText: "#8A6F00",
       dark: "#07111F",
       supportEmail: "building@henrycogroup.com",
       supportPhone: "+2349133957084",
@@ -149,6 +160,7 @@ export const COMPANY = {
       subdomain: "hotel",
       accent: "#C9A227",
       accentStrong: "#F2D77A",
+      accentText: "#8A6F00",
       dark: "#07111F",
       supportEmail: "hotel@henrycogroup.com",
       supportPhone: "+234 000 000 0000",
@@ -173,6 +185,7 @@ export const COMPANY = {
       subdomain: "marketplace",
       accent: "#B2863B",
       accentStrong: "#F7E8CA",
+      accentText: "#7E5E1F",
       dark: "#18120C",
       supportEmail: "marketplace@henrycogroup.com",
       supportPhone: "+2349133957084",
@@ -199,6 +212,7 @@ export const COMPANY = {
       subdomain: "property",
       accent: "#B06C3E",
       accentStrong: "#F8DDCB",
+      accentText: "#7A4924",
       dark: "#130B08",
       supportEmail: "property@henrycogroup.com",
       supportPhone: "+2349133957084",
@@ -224,6 +238,7 @@ export const COMPANY = {
       subdomain: "logistics",
       accent: "#D06F32",
       accentStrong: "#FFE4D3",
+      accentText: "#9D4F1F",
       dark: "#120B08",
       supportEmail: "logistics@henrycogroup.com",
       supportPhone: "+2349133957084",
@@ -252,6 +267,7 @@ export const COMPANY = {
       subdomain: "studio",
       accent: "#4AC1C5",
       accentStrong: "#D3FBFC",
+      accentText: "#1F7375",
       dark: "#081219",
       supportEmail: "studio@henrycogroup.com",
       supportPhone: "+2349133957084",
@@ -281,6 +297,7 @@ export const COMPANY = {
       subdomain: "jobs",
       accent: "#0E7C86",
       accentStrong: "#D7F4F3",
+      accentText: "#0E7C86",
       dark: "#071418",
       supportEmail: "jobs@henrycogroup.com",
       supportPhone: "+2349133957084",
@@ -307,6 +324,7 @@ export const COMPANY = {
       subdomain: "learn",
       accent: "#3C8C7A",
       accentStrong: "#D8F4EB",
+      accentText: "#2E6E5F",
       dark: "#081414",
       supportEmail: "learn@henrycogroup.com",
       supportPhone: "+2349133957084",

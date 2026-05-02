@@ -90,7 +90,7 @@ export async function PublicShell({
           />
         }
       />
-      <main className="jobs-main">{children}</main>
+      <main id="henryco-main" tabIndex={-1} className="jobs-main">{children}</main>
       <PublicFooter
         brand={jobs.name}
         description={jobs.description}

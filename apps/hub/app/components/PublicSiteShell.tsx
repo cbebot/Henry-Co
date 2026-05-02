@@ -178,7 +178,7 @@ export default function PublicSiteShell({
         navClassName="hidden shrink-0 items-center gap-6 lg:flex"
       />
 
-      <main>{children}</main>
+      <main id="henryco-main" tabIndex={-1}>{children}</main>
 
       <footer className="mt-20 border-t border-white/10 bg-[var(--site-footer-bg,rgba(0,0,0,0.22))]">
         <div
