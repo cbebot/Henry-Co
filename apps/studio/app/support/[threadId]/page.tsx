@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { requireStudioRoles } from "@/lib/studio/auth";
 import { supportNav } from "@/lib/studio/navigation";
 import { getStudioSnapshot } from "@/lib/studio/store";
-import { StudioSubmitButton } from "@/components/studio/submit-button";
 import { StudioWorkspaceShell } from "@/components/studio/workspace/shell";
+import { StudioSupportReplyComposer } from "@/components/studio/support-reply-composer";
 
 export default async function SupportThreadPage({
   params,
@@ -46,18 +46,12 @@ export default async function SupportThreadPage({
 
       <section className="studio-panel rounded-[1.75rem] p-6">
         <div className="studio-kicker">Reply</div>
-        <form action="/api/support/reply" method="post" className="mt-5 space-y-4">
-          <input type="hidden" name="threadId" value={thread.id} />
-          <input type="hidden" name="redirectTo" value={`/support/${thread.id}`} />
-          <textarea
-            name="body"
-            required
-            rows={5}
-            className="min-h-32 w-full rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 text-sm text-[var(--studio-ink)] outline-none placeholder:text-[var(--studio-ink-soft)]"
-            placeholder="Reply with the next action, clarification, or resolution."
+        <div className="mt-5">
+          <StudioSupportReplyComposer
+            threadId={thread.id}
+            redirectTo={`/support/${thread.id}`}
           />
-          <StudioSubmitButton label="Send reply" pendingLabel="Sending reply..." />
-        </form>
+        </div>
       </section>
     </StudioWorkspaceShell>
   );
