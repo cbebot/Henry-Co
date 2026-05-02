@@ -8,7 +8,12 @@ const root = resolve(appDir, "../..");
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: root,
-  transpilePackages: ["@henryco/brand", "@henryco/config", "@henryco/ui"],
+  transpilePackages: [
+    "@henryco/brand",
+    "@henryco/config",
+    "@henryco/notifications-ui",
+    "@henryco/ui",
+  ],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },

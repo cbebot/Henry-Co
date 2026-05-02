@@ -189,6 +189,55 @@ export async function getNotifications(userId: string, limit = 20) {
   );
 }
 
+/**
+ * V2-NOT-02-A · N5a — recently-deleted page query.
+ * Returns customer_notifications rows with deleted_at IS NOT NULL,
+ * ordered by deletion time, scoped to the calling user.
+ *
+ * RLS already isolates own-only on `customer_notifications`, but we
+ * filter explicitly on user_id as a defense-in-depth posture mirroring
+ * every other account-data query.
+ */
+export async function getRecentlyDeletedNotifications(userId: string, limit = 50) {
+  const { data, error } = await admin()
+    .from("customer_notifications")
+    .select("*")
+    .eq("user_id", userId)
+    .not("deleted_at", "is", null)
+    .order("deleted_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.warn("[notifications] recently-deleted query failed:", error.message);
+    return [] as Array<Record<string, unknown>>;
+  }
+  return (data ?? []) as Array<Record<string, unknown>>;
+}
+
+export async function getRecentlyDeletedNotificationFeed(
+  userId: string,
+  limit = 50,
+  locale?: AppLocale,
+): Promise<EnrichedNotification[]> {
+  const rows = await getRecentlyDeletedNotifications(userId, limit);
+  return Promise.all(
+    rows.map(async (row) => {
+      const localized = localizeNotificationRow(row, locale);
+      const source = await getDivisionBrand(resolveNotificationKey(localized));
+      return {
+        ...localized,
+        source,
+        message_href: notificationMessageHref(asText(localized.id)),
+        related_url: await resolveSafeActionUrl(
+          localized.action_url,
+          source.key,
+          source.primaryUrl,
+        ),
+      };
+    }),
+  );
+}
+
 export async function getNotificationFeed(
   userId: string,
   limit = 20,
@@ -322,14 +371,34 @@ export async function markNotificationsReadByActionUrl(userId: string, actionUrl
 }
 
 export async function getAddresses(userId: string) {
+  // V2-ADDR-01: canonical user_addresses table.
   const { data } = await admin()
-    .from("customer_addresses")
+    .from("user_addresses")
     .select("*")
     .eq("user_id", userId)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });
 
   return data || [];
+}
+
+/**
+ * V2-ADDR-01: helper for cross-division surfaces (care, logistics, marketplace
+ * checkout) that need to load the user's address book server-side. Returns the
+ * canonical row shape from public.user_addresses.
+ */
+export async function getCanonicalUserAddresses(userId: string) {
+  const { data, error } = await admin()
+    .from("user_addresses")
+    .select("*")
+    .eq("user_id", userId)
+    .order("is_default", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return [];
+  }
+  return data ?? [];
 }
 
 export async function getPreferences(userId: string) {

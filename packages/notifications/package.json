@@ -1,11 +1,13 @@
 {
   "name": "@henryco/notifications",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "exports": {
     ".": "./index.ts",
     "./event-types": "./event-types.ts",
+    "./staff-event-types": "./staff-event-types.ts",
+    "./staff-types": "./staff-types.ts",
     "./types": "./types.ts"
   },
   "scripts": {
