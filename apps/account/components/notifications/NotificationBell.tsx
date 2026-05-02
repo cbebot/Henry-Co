@@ -14,6 +14,7 @@ import { ChevronRight } from "lucide-react";
 import { timeAgoLocalized } from "@/lib/format";
 import { useNotificationSignalContext, type SignalNotification } from "@/lib/notification-signal";
 import { HenryCoBell, MarkReadIcon, ArchiveIcon, DeleteIcon, EmptyStateGlyph } from "./icons/HenryCoIcons";
+import { SwipeableNotificationCard } from "./SwipeableNotificationCard";
 import {
   badgeColorVar,
   divisionAccentVar,
@@ -207,7 +208,7 @@ export default function NotificationBell({
   );
 
   const performInlineAction = useCallback(
-    async (item: BellNotification, action: BellAction) => {
+    async (item: BellNotification, action: BellAction): Promise<void> => {
       // Optimistic local update where we can; server roundtrip drives the
       // canonical state via refreshFeed afterwards.
       if (action === "read") {
@@ -331,19 +332,33 @@ export default function NotificationBell({
               <PopoverEmptyState t={t} />
             ) : (
               cardMeta.map(({ notification, severityStyle, sourceLabel, safeDestination, divisionVar }) => (
-                <PopoverCard
+                <SwipeableNotificationCard
                   key={notification.id}
-                  notification={notification}
-                  sourceLabel={sourceLabel}
-                  destination={safeDestination}
-                  severityIcon={<severityStyle.Icon size={14} />}
-                  severityColorVar={severityStyle.colorVar}
-                  divisionVar={divisionVar}
-                  onActivate={() => void handleItemActivate(notification, safeDestination)}
-                  onAction={(action) => void performInlineAction(notification, action)}
-                  t={t}
-                  locale={locale}
-                />
+                  isRead={notification.is_read}
+                  onMarkRead={() => performInlineAction(notification, "read")}
+                  onMarkUnread={() => performInlineAction(notification, "unread")}
+                  onArchive={() => performInlineAction(notification, "archive")}
+                  onDelete={() => performInlineAction(notification, "delete")}
+                  labels={{
+                    archive: t("Archive"),
+                    delete: t("Delete"),
+                    markRead: t("Mark as read"),
+                    markUnread: t("Mark as unread"),
+                  }}
+                >
+                  <PopoverCard
+                    notification={notification}
+                    sourceLabel={sourceLabel}
+                    destination={safeDestination}
+                    severityIcon={<severityStyle.Icon size={14} />}
+                    severityColorVar={severityStyle.colorVar}
+                    divisionVar={divisionVar}
+                    onActivate={() => void handleItemActivate(notification, safeDestination)}
+                    onAction={(action) => void performInlineAction(notification, action)}
+                    t={t}
+                    locale={locale}
+                  />
+                </SwipeableNotificationCard>
               ))
             )}
           </div>

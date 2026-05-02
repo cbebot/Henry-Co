@@ -2,13 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { translateSurfaceLabel, useHenryCoLocale, type AppLocale } from "@henryco/i18n";
 import type { EnrichedNotification } from "@/lib/account-data";
 import NotificationLifecycleControls from "@/components/messages/NotificationLifecycleControls";
 import { timeAgoLocalized } from "@/lib/format";
 import { divisionAccentVar, resolveSeverity } from "./severity-style";
 import { NotificationsFeedEmptyState } from "./NotificationsFeedEmptyState";
+import { SwipeableNotificationCard } from "./SwipeableNotificationCard";
 
 function SourceMark({ notification, sourceLabel }: { notification: EnrichedNotification; sourceLabel: string }) {
   const source = notification.source;
@@ -40,12 +42,20 @@ function NotificationCard({
   locale,
   unreadLabel,
   openMessageBoardLabel,
+  swipeLabels,
 }: {
   notification: EnrichedNotification;
   locale: AppLocale;
   unreadLabel: string;
   openMessageBoardLabel: string;
+  swipeLabels: {
+    archive: string;
+    delete: string;
+    markRead: string;
+    markUnread: string;
+  };
 }) {
+  const router = useRouter();
   const sourceLabel = translateSurfaceLabel(locale, notification.source.label);
   // V2-NOT-01-B-2: severity icon + division accent applied per-row.
   const severityStyle = resolveSeverity(
@@ -53,8 +63,46 @@ function NotificationCard({
     (notification as { category?: string | null }).category,
   );
   const divisionVar = divisionAccentVar(notification.source.key);
+  const notificationId = String(notification.id);
+
+  const runMutation = useCallback(
+    async (path: string, method: "POST" | "DELETE") => {
+      try {
+        const res = await fetch(path, { method, credentials: "same-origin" });
+        if (!res.ok) return;
+      } finally {
+        router.refresh();
+      }
+    },
+    [router],
+  );
+
+  const onMarkRead = useCallback(
+    () => runMutation(`/api/notifications/${notificationId}/read`, "POST"),
+    [notificationId, runMutation],
+  );
+  const onMarkUnread = useCallback(
+    () => runMutation(`/api/notifications/${notificationId}/unread`, "POST"),
+    [notificationId, runMutation],
+  );
+  const onArchive = useCallback(
+    () => runMutation(`/api/notifications/${notificationId}/archive`, "POST"),
+    [notificationId, runMutation],
+  );
+  const onDelete = useCallback(
+    () => runMutation(`/api/notifications/${notificationId}`, "DELETE"),
+    [notificationId, runMutation],
+  );
 
   return (
+    <SwipeableNotificationCard
+      isRead={Boolean(notification.is_read)}
+      onMarkRead={onMarkRead}
+      onMarkUnread={onMarkUnread}
+      onArchive={onArchive}
+      onDelete={onDelete}
+      labels={swipeLabels}
+    >
     <div
       className={`rounded-[1.55rem] border px-4 py-4 transition hover:border-[var(--acct-gold)]/30 hover:shadow-md ${
         notification.is_read
@@ -129,6 +177,7 @@ function NotificationCard({
         </div>
       </div>
     </div>
+    </SwipeableNotificationCard>
   );
 }
 
@@ -152,6 +201,17 @@ export default function NotificationsFeed({
     }
     return Array.from(seen.entries()).map(([key, label]) => ({ key, label }));
   }, [locale, notifications]);
+
+  const swipeLabels = useMemo(
+    () => ({
+      archive: t("Archive"),
+      delete: t("Delete"),
+      markRead: t("Mark as read"),
+      markUnread: t("Mark as unread"),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- locale-driven recomputation
+    [locale],
+  );
 
   const filtered = notifications.filter((notification) => {
     const sourceMatch = selectedSource === "all" || notification.source.key === selectedSource;
@@ -239,6 +299,7 @@ export default function NotificationsFeed({
                     locale={locale}
                     unreadLabel={t("Unread")}
                     openMessageBoardLabel={t("Open message board")}
+                    swipeLabels={swipeLabels}
                   />
                 ))}
               </div>
@@ -261,6 +322,7 @@ export default function NotificationsFeed({
                     locale={locale}
                     unreadLabel={t("Unread")}
                     openMessageBoardLabel={t("Open message board")}
+                    swipeLabels={swipeLabels}
                   />
                 ))}
               </div>
