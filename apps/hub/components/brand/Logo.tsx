@@ -1,15 +1,18 @@
 "use client";
 
+import Image from "next/image";
+
 const LOGO_URL = process.env.NEXT_PUBLIC_LOGO_URL || "";
 
 export default function Logo({ size = 40, className = "" }: { size?: number; className?: string }) {
   if (LOGO_URL) {
     return (
-      <img
+      <Image
         src={LOGO_URL}
         alt="Henry & Co."
         width={size}
         height={size}
+        priority
         className={`object-contain ${className}`}
       />
     );
