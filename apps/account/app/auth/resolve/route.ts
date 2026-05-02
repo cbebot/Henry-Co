@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { getAccountUrl, isRecoverableSupabaseAuthError } from "@henryco/config";
-import { resolveAuthenticatedDestination } from "@/lib/post-auth-routing";
+import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
@@ -26,11 +27,17 @@ export async function GET(request: Request) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const destination = await resolveAuthenticatedDestination({
+  const cookieStore = await cookies();
+  const preferredDashboardKey = cookieStore.get(DASHBOARD_PREFERENCE_COOKIE)?.value || null;
+
+  const resolution = await resolveUserDashboard({
     user,
     next: url.searchParams.get("next"),
     origin: url.origin,
+    preferredDashboardKey,
   });
 
-  return NextResponse.redirect(destination);
+  return NextResponse.redirect(
+    resolution.kind === "redirect" ? resolution.redirectUrl : resolution.chooserUrl
+  );
 }

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isRecoverableSupabaseAuthError } from "@henryco/config";
 import { getAuthCopy } from "@henryco/i18n";
@@ -7,7 +7,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import LoginLanguageAccess from "@/components/auth/LoginLanguageAccess";
 import Logo from "@/components/brand/Logo";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import { resolveAuthenticatedDestination } from "@/lib/post-auth-routing";
+import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 export async function generateMetadata() {
@@ -36,17 +36,20 @@ export default async function LoginPage({
 
   if (user) {
     const headerStore = await headers();
+    const cookieStore = await cookies();
     const forwardedHost = headerStore.get("x-forwarded-host") || headerStore.get("host");
     const forwardedProto = headerStore.get("x-forwarded-proto") || "https";
     const origin = forwardedHost ? `${forwardedProto}://${forwardedHost}` : "https://account.henrycogroup.com";
+    const preferredDashboardKey = cookieStore.get(DASHBOARD_PREFERENCE_COOKIE)?.value || null;
 
-    redirect(
-      await resolveAuthenticatedDestination({
-        user,
-        next: params.next,
-        origin,
-      })
-    );
+    const resolution = await resolveUserDashboard({
+      user,
+      next: params.next,
+      origin,
+      preferredDashboardKey,
+    });
+
+    redirect(resolution.kind === "redirect" ? resolution.redirectUrl : resolution.chooserUrl);
   }
 
   const signupHref = params.next ? `/signup?next=${encodeURIComponent(params.next)}` : "/signup";
