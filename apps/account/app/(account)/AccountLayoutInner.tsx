@@ -7,6 +7,7 @@ import {
   NotificationPreviewToastStack,
   NotificationSignalProvider,
 } from "@/lib/notification-signal";
+import AccountPaletteHost from "@/components/search/PaletteHost";
 
 export default async function AccountLayoutInner({ children }: { children: React.ReactNode }) {
   const user = await requireAccountUser();
@@ -22,6 +23,7 @@ export default async function AccountLayoutInner({ children }: { children: React
     <NotificationSignalProvider initialPreferences={preferences}>
       <div className="min-h-screen">
         <AccountStudioToastRoot />
+        <AccountPaletteHost />
         <Sidebar user={userInfo} />
         <MobileNav user={userInfo} />
         <main className="lg:pl-[var(--acct-sidebar-width)]">

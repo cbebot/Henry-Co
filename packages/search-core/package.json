@@ -1,0 +1,32 @@
+{
+  "name": "@henryco/search-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./collections": "./src/collections.ts",
+    "./schema": "./src/schema.ts",
+    "./client": "./src/client.ts",
+    "./query": "./src/query.ts",
+    "./outbox": "./src/outbox.ts",
+    "./ranking": "./src/ranking.ts",
+    "./role": "./src/role.ts",
+    "./rate-limit": "./src/rate-limit.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@henryco/config": "workspace:^",
+    "@henryco/intelligence": "workspace:^",
+    "@supabase/supabase-js": "^2.98.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/node": "^22.13.10",
+    "typescript": "^5.9.3"
+  }
+}

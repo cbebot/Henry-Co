@@ -25,6 +25,8 @@
     "@henryco/lifecycle": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",
+    "@henryco/search-core": "workspace:^",
+    "@henryco/search-ui": "workspace:^",
     "@henryco/trust": "workspace:^",
     "@henryco/ui": "workspace:^",
     "@supabase/ssr": "^0.9.0",
