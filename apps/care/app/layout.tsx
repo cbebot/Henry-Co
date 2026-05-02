@@ -9,9 +9,12 @@ import "./globals.css";
 import CareToaster from "@/components/feedback/CareToaster";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
+import { createDivisionMetadata } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
+import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { getCareSettings } from "@/lib/care-data";
 import { getCarePublicLocale } from "@/lib/locale-server";
+import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [settings, locale] = await Promise.all([getCareSettings(), getCarePublicLocale()]);
@@ -35,23 +38,18 @@ export async function generateMetadata(): Promise<Metadata> {
     }),
   ]);
 
+  const icon = settings.favicon_url || settings.logo_url || null;
   return {
-    title,
-    description,
-    metadataBase: new URL(
-      process.env.NODE_ENV === "production"
-        ? `https://care.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-        : "http://localhost:3000",
-    ),
-    icons: {
-      icon: settings.favicon_url || settings.logo_url || undefined,
-    },
-    openGraph: {
+    ...createDivisionMetadata("care", {
       title,
       description,
+      openGraphTitle: title,
+      openGraphDescription: description,
       siteName: "Henry & Co. Care",
-      type: "website",
-    },
+      path: "/",
+      icon,
+    }),
+    verification: getVerificationMeta("care"),
   };
 }
 
@@ -64,6 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body
         className="min-h-screen bg-white text-zinc-950 antialiased dark:bg-[#08101C] dark:text-white"
       >
+        <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <Suspense fallback={null}>
@@ -72,6 +71,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {children}
           <AssistDock division="care" accent="#C9A227" />
         </PublicThemeGuard>
+        <HenryCoAnalytics />
       </body>
     </html>
   );

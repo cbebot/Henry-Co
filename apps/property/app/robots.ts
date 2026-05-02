@@ -8,6 +8,9 @@ export default function robots(): MetadataRoute.Robots {
     "/agent",
     "/api/",
     "/login",
+    "/moderation",
+    "/operations",
+    "/owner",
     "/support",
   ]);
 }

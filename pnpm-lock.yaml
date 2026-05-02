@@ -136,6 +136,9 @@ importers:
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/trust':
         specifier: workspace:^
         version: link:../../packages/trust
@@ -321,6 +324,9 @@ importers:
       '@henryco/newsletter':
         specifier: workspace:^
         version: link:../../packages/newsletter
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -418,6 +424,9 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/trust':
         specifier: workspace:^
         version: link:../../packages/trust
@@ -506,6 +515,9 @@ importers:
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -591,6 +603,9 @@ importers:
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -685,6 +700,9 @@ importers:
       '@henryco/pricing':
         specifier: workspace:^
         version: link:../../packages/pricing
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/trust':
         specifier: workspace:^
         version: link:../../packages/trust
@@ -773,6 +791,9 @@ importers:
       '@henryco/pricing':
         specifier: workspace:^
         version: link:../../packages/pricing
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/trust':
         specifier: workspace:^
         version: link:../../packages/trust
@@ -946,6 +967,9 @@ importers:
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -1326,6 +1350,37 @@ importers:
         version: 5.9.3
 
   packages/pricing: {}
+
+  packages/seo:
+    dependencies:
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
+      '@vercel/analytics':
+        specifier: ^1.4.1
+        version: 1.6.1(next@16.1.6(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+      '@vercel/speed-insights':
+        specifier: ^1.1.0
+        version: 1.3.1(next@16.1.6(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+      next:
+        specifier: ^16.0.0
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/trust: {}
 
@@ -3583,6 +3638,55 @@ packages:
     resolution: {integrity: sha512-Yy19y6O2GJq8f7CHf7L0nxL8bf4PZCPaVOCgJrusOeFHY1LvHgYXnmnXg6N5iwAnbgbZCDjo60SiM6IPJi9C5g==}
     peerDependencies:
       react: '>= 16.8.0'
+
+  '@vercel/analytics@1.6.1':
+    resolution: {integrity: sha512-oH9He/bEM+6oKlv3chWuOOcp8Y6fo6/PSro8hEkgCW3pu9/OiCXiUpRUogDh3Fs3LH2sosDrx8CxeOLBEE+afg==}
+    peerDependencies:
+      '@remix-run/react': ^2
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@remix-run/react':
+        optional: true
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+
+  '@vercel/speed-insights@1.3.1':
+    resolution: {integrity: sha512-PbEr7FrMkUrGYvlcLHGkXdCkxnylCWePx7lPxxq36DNdfo9mcUjLOmqOyPDHAOgnfqgGGdmE3XI9L/4+5fr+vQ==}
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
 
   '@webgpu/types@0.1.69':
     resolution: {integrity: sha512-RPmm6kgRbI8e98zSD3RVACvnuktIja5+yLgDAkTmxLr90BEwdTXRQWNLF3ETTTyH/8mKhznZuN5AveXYFEsMGQ==}
@@ -10829,6 +10933,16 @@ snapshots:
   '@use-gesture/react@10.3.1(react@19.2.3)':
     dependencies:
       '@use-gesture/core': 10.3.1
+      react: 19.2.3
+
+  '@vercel/analytics@1.6.1(next@16.1.6(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
+    optionalDependencies:
+      next: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+
+  '@vercel/speed-insights@1.3.1(next@16.1.6(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
+    optionalDependencies:
+      next: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
 
   '@webgpu/types@0.1.69': {}

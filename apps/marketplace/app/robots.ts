@@ -15,7 +15,7 @@ export default function robots(): MetadataRoute.Robots {
     "/owner",
     "/signup",
     "/support",
-    "/track/",
+    "/track",
     "/vendor",
   ]);
 }

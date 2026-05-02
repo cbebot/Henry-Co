@@ -9,24 +9,19 @@ import {
   ThirdPartyRuntimeProviders,
 } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
-import { COMPANY } from "@henryco/config";
+import { COMPANY, createDivisionMetadata } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
+import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { getHubPublicLocale, getHubLocaleSuggestion } from "@/lib/locale-server";
+import { SeoJsonLd } from "./components/SeoJsonLd";
 
 export const metadata: Metadata = {
-  title: "Henry & Co. Company Hub",
-  description: "Premium multi-division ecosystem for Henry & Co.",
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? `https://${COMPANY.group.baseDomain}`
-      : "http://localhost:3000"
-  ),
-  openGraph: {
-    title: "Henry & Co.",
+  ...createDivisionMetadata("hub", {
+    title: "Henry & Co. Company Hub",
     description: COMPANY.group.mission,
-    siteName: "Henry & Co.",
-    type: "website",
-  },
+    path: "/",
+  }),
+  verification: getVerificationMeta("hub"),
 };
 
 export default async function RootLayout({
@@ -43,6 +38,7 @@ export default async function RootLayout({
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
+        <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <ThirdPartyRuntimeProviders>{children}</ThirdPartyRuntimeProviders>
@@ -50,6 +46,7 @@ export default async function RootLayout({
           <ConsentNotice preferencesHref="/preferences" locale={lang} />
           <LocaleSuggestion suggestedLocale={suggestedLocale} currentLocale={lang} />
         </PublicThemeGuard>
+        <HenryCoAnalytics />
       </body>
     </html>
   );

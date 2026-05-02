@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { getDivisionConfig } from "@henryco/config";
+import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
+import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
+import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 import "./globals.css";
 
 const sans = localFont({
@@ -43,19 +45,13 @@ const display = localFont({
 const property = getDivisionConfig("property");
 
 export const metadata: Metadata = {
-  title: property.name,
-  description: property.description,
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? `https://${property.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com"}`
-      : "http://localhost:3000"
-  ),
-  openGraph: {
+  ...createDivisionMetadata("property", {
     title: property.name,
-    description: property.tagline,
-    siteName: property.name,
-    type: "website",
-  },
+    description: property.description,
+    openGraphDescription: property.tagline,
+    path: "/",
+  }),
+  verification: getVerificationMeta("property"),
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -65,6 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
+        <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
@@ -72,6 +69,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <AssistDock division="property" />
           </LocaleProvider>
         </PublicThemeGuard>
+        <HenryCoAnalytics />
       </body>
     </html>
   );
