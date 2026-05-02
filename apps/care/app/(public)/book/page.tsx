@@ -345,11 +345,14 @@ async function getBookingIdentity() {
   }
 
   const admin = createAdminSupabase();
+  // V2-ADDR-01: read from canonical user_addresses (replaces customer_addresses).
   const [{ data: profile }, { data: addresses }] = await Promise.all([
     admin.from("customer_profiles").select("full_name, phone").eq("id", user.id).maybeSingle(),
     admin
-      .from("customer_addresses")
-      .select("id, label, line1, line2, city, state, country, is_default")
+      .from("user_addresses")
+      .select(
+        "id, label, street, city, state, country, postal_code, formatted_address, is_default, kyc_verified"
+      )
       .eq("user_id", user.id)
       .order("is_default", { ascending: false })
       .order("created_at", { ascending: false })
@@ -367,11 +370,13 @@ async function getBookingIdentity() {
     },
     addresses: (addresses ?? []).map((row) => ({
       id: String(row.id),
-      label: String(row.label || row.line1 || "Saved address"),
-      fullAddress: [row.line1, row.line2, row.city, row.state, row.country]
-        .map((part) => String(part || "").trim())
-        .filter(Boolean)
-        .join(", "),
+      label: String(row.label || "Saved address"),
+      fullAddress:
+        String(row.formatted_address || "").trim() ||
+        [row.street, row.city, row.state, row.country]
+          .map((part) => String(part || "").trim())
+          .filter(Boolean)
+          .join(", "),
       isDefault: Boolean(row.is_default),
     })),
   };

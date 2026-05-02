@@ -1,0 +1,35 @@
+{
+  "name": "@henryco/address-selector",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./types": "./types.ts",
+    "./validate": "./validate.ts",
+    "./server": "./server/index.ts",
+    "./server/geocode": "./server/geocode.ts",
+    "./server/kyc-match": "./server/kyc-match.ts",
+    "./client": "./client/index.tsx",
+    "./client/AddressSelector": "./client/AddressSelector.tsx",
+    "./client/AddressForm": "./client/AddressForm.tsx",
+    "./client/PlacesAutocomplete": "./client/PlacesAutocomplete.tsx"
+  },
+  "comment": "exports map subpaths -> source .ts/.tsx files; internal package imports use NO extension (matches @henryco/notifications convention)",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.98.0"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.6.0"
+  }
+}

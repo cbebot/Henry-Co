@@ -181,19 +181,22 @@ export default async function BookPage() {
 }
 
 async function loadSavedAddresses(userId: string) {
+  // V2-ADDR-01: canonical user_addresses (replaces customer_addresses).
   const admin = createAdminSupabase();
   const { data } = await admin
-    .from("customer_addresses")
-    .select("id, label, line1, city, state, is_default")
+    .from("user_addresses")
+    .select("id, label, street, city, state, country, formatted_address, is_default")
     .eq("user_id", userId)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(6);
   return (data ?? []).map((row) => ({
     id: String(row.id),
-    label: String(row.label || row.line1 || "Saved address"),
-    fullAddress: [row.line1, row.city, row.state].filter(Boolean).join(", "),
-    line1: String(row.line1 || ""),
+    label: String(row.label || "Saved address"),
+    fullAddress:
+      String(row.formatted_address || "").trim() ||
+      [row.street, row.city, row.state, row.country].filter(Boolean).join(", "),
+    line1: String(row.street || ""),
     city: String(row.city || ""),
     region: String(row.state || ""),
   }));
