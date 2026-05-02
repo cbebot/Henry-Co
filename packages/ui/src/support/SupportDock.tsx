@@ -966,9 +966,16 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-[60] pointer-events-none flex flex-col items-end gap-3 px-4 sm:px-6"
+      // Right-anchored, narrow column. Was previously `inset-x-0` (full
+      // viewport width) which made the wrapper span the whole bottom row
+      // and could intercept scroll/tap events on touch devices. Now the
+      // dock only occupies the area it needs and the rest of the bottom
+      // strip stays free for page content + system safe-area gestures.
+      className="fixed bottom-0 right-0 z-[60] pointer-events-none flex flex-col items-end gap-3"
       style={{
-        paddingBottom: "max(1rem, env(safe-area-inset-bottom, 1rem))",
+        paddingBottom: "max(0.85rem, env(safe-area-inset-bottom, 0.85rem))",
+        paddingRight: "max(1rem, env(safe-area-inset-right, 1rem))",
+        paddingLeft: "1rem",
       }}
     >
       {/* Mobile dim backdrop — only shown when sheet is open on small screens */}
@@ -978,13 +985,17 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
           onClick={() => setOpen(false)}
           aria-label={copy.close}
           className={[
-            "fixed inset-0 z-[55] bg-black/55 backdrop-blur-[3px] sm:hidden pointer-events-auto",
+            "fixed inset-0 z-[55] bg-black/60 backdrop-blur-[2px] sm:hidden pointer-events-auto",
             reduceMotion ? "" : "transition-opacity duration-200",
           ].join(" ")}
         />
       ) : null}
 
-      {/* Panel — only mounted after first interaction */}
+      {/* Panel — only mounted after first interaction.
+          Mobile: bottom sheet with safe-area inset, drag-handle, and a
+          slight inset from the screen edges so the rounded top corners
+          read as a deliberate sheet (not a full-bleed slab).
+          Desktop: a narrow floating panel anchored above the trigger. */}
       {hasOpened ? (
         <div
           ref={panelRef}
@@ -995,17 +1006,19 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
           className={[
             "pointer-events-auto",
             "ml-auto",
-            "w-full sm:w-[22.5rem]",
-            "max-w-[100vw] sm:max-w-[22.5rem]",
-            "max-h-[min(82vh,640px)]",
-            "rounded-t-[1.6rem] sm:rounded-[1.4rem]",
+            // Mobile: inset 0.5rem from edges, fill remaining width.
+            // Desktop: fixed-width floating panel.
+            "w-[calc(100vw-1rem)] sm:w-[23rem]",
+            "max-w-[28rem] sm:max-w-[23rem]",
+            "max-h-[min(85dvh,640px)]",
+            "rounded-[1.6rem] sm:rounded-[1.4rem]",
             "border border-zinc-200/85 dark:border-zinc-700/65",
             "bg-white dark:bg-zinc-950",
-            "shadow-[0_30px_90px_rgba(8,12,28,0.35)]",
+            "shadow-[0_30px_90px_rgba(8,12,28,0.4)]",
             "overflow-hidden",
             "fixed sm:static",
-            "left-0 right-0 sm:left-auto sm:right-auto",
-            "bottom-0 sm:bottom-auto",
+            // Mobile: anchor with safe-area aware inset; centered horizontally.
+            "left-1/2 -translate-x-1/2 sm:left-auto sm:right-auto sm:translate-x-0",
             "z-[58]",
             // motion
             reduceMotion
@@ -1016,6 +1029,12 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
                 ? "translate-y-0 opacity-100 transition-[transform,opacity] duration-280 ease-[cubic-bezier(0.22,1,0.36,1)]"
                 : "translate-y-3 opacity-0 pointer-events-none transition-[transform,opacity] duration-180 ease-out",
           ].join(" ")}
+          style={{
+            // Mobile vertical anchor: hover just above the safe-area + a
+            // little breathing space; on desktop, this is overridden by
+            // the static positioning of the parent flex container.
+            bottom: "max(0.75rem, env(safe-area-inset-bottom, 0.75rem))",
+          }}
           tabIndex={-1}
         >
           {/* Header */}
@@ -1060,14 +1079,20 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
             </button>
           </div>
 
-          {/* Search */}
+          {/* Search.
+              The input font-size MUST be >= 16px on mobile or iOS Safari
+              auto-zooms the viewport when the field receives focus. We
+              render at 16px on touch devices and let the desktop `sm:`
+              breakpoint shrink to a more proportionate 14px. The visual
+              chrome stays the same — only the typed text size changes
+              by 2px at the breakpoint. */}
           <div className="border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
             <label htmlFor={searchId} className="sr-only">
               {copy.searchLabel}
             </label>
-            <div className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700 focus-within:border-zinc-400 focus-within:bg-white dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:focus-within:border-zinc-500 dark:focus-within:bg-zinc-950">
+            <div className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-zinc-700 focus-within:border-zinc-400 focus-within:bg-white dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:focus-within:border-zinc-500 dark:focus-within:bg-zinc-950">
               <span className="text-zinc-400 dark:text-zinc-500">
-                <IconSearch size={14} />
+                <IconSearch size={15} />
               </span>
               <input
                 id={searchId}
@@ -1076,9 +1101,11 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={copy.searchPlaceholder}
-                className="w-full bg-transparent text-[0.86rem] text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+                className="w-full bg-transparent text-[16px] text-zinc-800 outline-none placeholder:text-zinc-400 sm:text-[14px] dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 autoComplete="off"
                 spellCheck={false}
+                inputMode="search"
+                enterKeyHint="search"
               />
               {query ? (
                 <button
@@ -1088,9 +1115,9 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
                     searchRef.current?.focus();
                   }}
                   aria-label={copy.close}
-                  className="rounded-md p-1 text-zinc-400 transition hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200"
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                 >
-                  <IconClose size={12} />
+                  <IconClose size={13} />
                 </button>
               ) : null}
             </div>
@@ -1216,7 +1243,13 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
         </div>
       ) : null}
 
-      {/* Trigger — premium capsule, always pointer-events-auto */}
+      {/* Trigger — premium capsule, always pointer-events-auto.
+          On mobile we render a tighter monogram-only pill (44x44 thumb
+          target, no stacked text — keeps the chrome quiet so it doesn't
+          fight page content). The full label expands at sm: where the
+          dock has more breathing room. The trigger is hidden when the
+          panel is open on mobile so it doesn't compete with the close
+          button at the top of the sheet. */}
       <button
         ref={triggerRef}
         type="button"
@@ -1227,7 +1260,12 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
         className={[
           "pointer-events-auto",
           "ml-auto",
-          "group inline-flex items-center gap-2.5 rounded-full pl-2 pr-4 py-2 text-sm font-semibold",
+          // Hide trigger on mobile when panel is open — close button
+          // inside the panel takes over. On desktop it stays visible.
+          open ? "hidden sm:inline-flex" : "inline-flex",
+          "group items-center gap-2.5 rounded-full font-semibold",
+          // Mobile: square-ish, monogram only.
+          "h-12 w-12 justify-center p-0 sm:h-auto sm:w-auto sm:justify-start sm:py-2 sm:pl-2 sm:pr-4",
           "outline-none focus-visible:ring-2 focus-visible:ring-white/85 focus-visible:ring-offset-2 focus-visible:ring-offset-black/10",
           reduceMotion
             ? "transition-colors"
@@ -1238,14 +1276,16 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
       >
         <span
           className={[
-            "grid h-8 w-8 place-items-center rounded-full bg-white/15 backdrop-blur-sm",
+            "grid place-items-center rounded-full bg-white/15 backdrop-blur-sm",
+            // Slightly larger monogram chip on mobile (no text alongside)
+            "h-9 w-9 sm:h-8 sm:w-8",
             reduceMotion ? "" : "transition group-hover:scale-[1.04]",
           ].join(" ")}
           aria-hidden="true"
         >
           <HenryCoMonogram size={22} accent={accentText} />
         </span>
-        <span className="flex flex-col items-start leading-none">
+        <span className="hidden flex-col items-start leading-none sm:flex">
           <span className="text-[10px] font-semibold uppercase tracking-[0.22em] opacity-80">
             {copy.triggerHint}
           </span>
