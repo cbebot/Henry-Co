@@ -1,1 +1,12 @@
-export { default, runtime, alt, size, contentType } from "./opengraph-image";
+import { ImageResponse } from "next/og";
+import { DefaultOgTemplate, OG_SIZE, OG_CONTENT_TYPE } from "@henryco/seo";
+import { getDivisionConfig } from "@henryco/config";
+
+export const runtime = "edge";
+export const alt = getDivisionConfig("hub").name;
+export const size = OG_SIZE;
+export const contentType = OG_CONTENT_TYPE;
+
+export default async function TwitterImage() {
+  return new ImageResponse(<DefaultOgTemplate divisionKey="hub" />, { ...OG_SIZE });
+}
