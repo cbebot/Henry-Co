@@ -215,6 +215,17 @@ export async function appendCustomerDocument(input: {
   } as never);
 }
 
+/**
+ * @deprecated V2-ADDR-01: This helper used to write into the legacy
+ * `customer_addresses` table without geocoding. The canonical path is
+ * `/api/addresses` in @henryco/account, which requires geocoded input
+ * (place_id + coordinates). Logistics shipments now snapshot delivery
+ * addresses into `logistics_addresses` per-shipment instead of mutating
+ * the user's address book.
+ *
+ * This function is intentionally a no-op — kept exported to avoid breaking
+ * any caller that hasn't been migrated. Callers should be removed.
+ */
 export async function upsertCustomerAddress(input: {
   userId?: string | null;
   email?: string | null;
@@ -228,31 +239,13 @@ export async function upsertCustomerAddress(input: {
   postalCode?: string | null;
   landmark?: string | null;
   isDefault?: boolean;
-}) {
-  const userId = await resolveUserId(input);
-  if (!userId) return;
-
-  if (input.isDefault) {
-    await createAdminSupabase()
-      .from("customer_addresses")
-      .update({ is_default: false } as never)
-      .eq("user_id", userId);
+}): Promise<void> {
+  void input;
+  if (process.env.NODE_ENV !== "production") {
+    console.warn(
+      "[V2-ADDR-01] upsertCustomerAddress is deprecated and a no-op. Use /api/addresses (geocoded) instead."
+    );
   }
-
-  await createAdminSupabase().from("customer_addresses").insert({
-    id: createId(),
-    user_id: userId,
-    label: input.label,
-    full_name: input.fullName,
-    phone: cleanText(input.phone) || null,
-    address_line1: input.addressLine1,
-    address_line2: cleanText(input.addressLine2) || null,
-    city: input.city,
-    state: input.state,
-    postal_code: cleanText(input.postalCode) || null,
-    landmark: cleanText(input.landmark) || null,
-    is_default: Boolean(input.isDefault),
-  } as never);
 }
 
 export async function createSupportThread(input: {

@@ -18,6 +18,9 @@ importers:
 
   apps/account:
     dependencies:
+      '@henryco/address-selector':
+        specifier: workspace:^
+        version: link:../../packages/address-selector
       '@henryco/brand':
         specifier: workspace:^
         version: link:../../packages/brand
@@ -1115,6 +1118,31 @@ importers:
         version: 19.1.0(react@19.1.0)
       typescript:
         specifier: ~5.9.2
+        version: 5.9.3
+
+  packages/address-selector:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      react:
+        specifier: ^19
+        version: 19.2.3
+      react-dom:
+        specifier: ^19
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.6.0
         version: 5.9.3
 
   packages/brand: {}
@@ -8404,7 +8432,6 @@ snapshots:
       - graphql
       - supports-color
       - utf-8-validate
-    optional: true
 
   '@expo/code-signing-certificates@0.0.6':
     dependencies:
@@ -8469,7 +8496,6 @@ snapshots:
     optionalDependencies:
       react: 19.2.3
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   '@expo/env@2.0.11':
     dependencies:
@@ -8536,7 +8562,7 @@ snapshots:
       postcss: 8.4.49
       resolve-from: 5.0.0
     optionalDependencies:
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -8616,7 +8642,7 @@ snapshots:
       '@expo/json-file': 10.0.13
       '@react-native/normalize-colors': 0.81.5
       debug: 4.4.3
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       resolve-from: 5.0.0
       semver: 7.7.4
       xml2js: 0.6.0
@@ -8644,7 +8670,6 @@ snapshots:
       expo-font: 14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react: 19.2.3
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   '@expo/ws-tunnel@1.0.6': {}
 
@@ -9617,7 +9642,6 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
     optionalDependencies:
       '@types/react': 19.2.14
-    optional: true
 
   '@react-navigation/bottom-tabs@7.15.9(@react-navigation/native@7.2.2(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-safe-area-context@5.6.2(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-screens@4.16.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -10722,7 +10746,7 @@ snapshots:
       resolve-from: 5.0.0
     optionalDependencies:
       '@babel/runtime': 7.28.6
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color
@@ -11829,7 +11853,6 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   expo-constants@18.0.13(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)):
     dependencies:
@@ -11848,7 +11871,6 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   expo-device@8.0.10(expo@54.0.33):
     dependencies:
@@ -11864,7 +11886,6 @@ snapshots:
     dependencies:
       expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   expo-font@14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -11879,7 +11900,6 @@ snapshots:
       fontfaceobserver: 2.3.0
       react: 19.2.3
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   expo-haptics@15.0.8(expo@54.0.33):
     dependencies:
@@ -11902,7 +11922,6 @@ snapshots:
     dependencies:
       expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    optional: true
 
   expo-linear-gradient@15.0.8(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -11950,7 +11969,6 @@ snapshots:
       invariant: 2.2.4
       react: 19.2.3
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   expo-notifications@0.32.16(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -12153,7 +12171,6 @@ snapshots:
       - graphql
       - supports-color
       - utf-8-validate
-    optional: true
 
   exponential-backoff@3.1.3: {}
 
@@ -14593,7 +14610,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   react-refresh@0.14.2: {}
 
