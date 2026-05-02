@@ -3,29 +3,9 @@ import {
   mapAccountSupportCategoryToDivision,
 } from "@henryco/config";
 import { LOCALE_COOKIE, normalizeLocale } from "@henryco/i18n/server";
-import { publishNotification, type Division } from "@henryco/notifications";
+import { normalizeDivision, publishNotification } from "@henryco/notifications";
 import { createServerClient } from "@supabase/ssr";
 import { createAdminSupabase } from "@/lib/supabase";
-
-const KNOWN_DIVISIONS: ReadonlySet<Division> = new Set([
-  "hub",
-  "account",
-  "staff",
-  "care",
-  "marketplace",
-  "property",
-  "logistics",
-  "jobs",
-  "learn",
-  "studio",
-  "security",
-  "system",
-]);
-
-function normalizeDivision(value: string | null | undefined): Division {
-  const lowered = String(value || "").trim().toLowerCase();
-  return KNOWN_DIVISIONS.has(lowered as Division) ? (lowered as Division) : "account";
-}
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import {
   buildNotificationLocalization,

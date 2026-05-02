@@ -47,6 +47,31 @@ export const DIVISIONS: readonly Division[] = [
   "system",
 ] as const;
 
+const DIVISION_SET: ReadonlySet<Division> = new Set(DIVISIONS);
+
+/**
+ * Runtime guard for the Division union. Accepts unknown input — useful at
+ * webhook + bridge boundaries where the value originates outside the type
+ * system.
+ */
+export function isDivision(value: unknown): value is Division {
+  return typeof value === "string" && DIVISION_SET.has(value as Division);
+}
+
+/**
+ * Normalize an unknown `division` field (typically from a webhook payload
+ * or cross-app bridge) onto the typed Division union. Trims, lowercases,
+ * and falls back to the supplied `fallback` (default `"account"`) when the
+ * value is missing or not a known division.
+ */
+export function normalizeDivision(
+  value: string | null | undefined,
+  fallback: Division = "account",
+): Division {
+  const lowered = String(value || "").trim().toLowerCase();
+  return DIVISION_SET.has(lowered as Division) ? (lowered as Division) : fallback;
+}
+
 export type Severity = "info" | "success" | "warning" | "urgent" | "security";
 
 export const SEVERITIES: readonly Severity[] = [

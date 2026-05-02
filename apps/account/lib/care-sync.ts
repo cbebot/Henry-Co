@@ -9,21 +9,9 @@ import {
   phoneSearchVariants,
   phonesMatch,
 } from "@henryco/config";
-import { publishNotification, type Severity } from "@henryco/notifications";
+import { publishNotification, severityFromPriority } from "@henryco/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getCareBookingHref } from "@/lib/account-links";
-
-// Map the legacy freeform `priority` strings ("normal" / "high") onto the
-// publisher's typed Severity enum. Care-sync passes "high" when the
-// booking has an outstanding balance and "normal" otherwise.
-function severityFromPriority(priority: string | null | undefined): Severity {
-  const value = String(priority || "").trim().toLowerCase();
-  if (value === "high" || value === "urgent" || value === "critical") return "urgent";
-  if (value === "warning") return "warning";
-  if (value === "success") return "success";
-  if (value === "security") return "security";
-  return "info";
-}
 
 export type CareAccountIdentity = {
   userId: string;
