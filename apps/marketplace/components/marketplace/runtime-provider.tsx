@@ -61,6 +61,8 @@ type MarketplaceRuntimeContextValue = {
   addToCart: (input: AddToCartInput, quantity?: number) => Promise<boolean>;
   updateCartQuantity: (itemId: string, quantity: number) => Promise<void>;
   removeCartItem: (itemId: string) => Promise<void>;
+  moveCartItemToSaved: (itemId: string) => Promise<boolean>;
+  pendingSavedItemIds: string[];
   toggleWishlist: (productSlug: string) => Promise<void>;
   toggleFollow: (vendorSlug: string) => Promise<void>;
   isWishlisted: (productSlug: string) => boolean;
@@ -146,6 +148,7 @@ export function MarketplaceRuntimeProvider({
   const [pendingWishlistSlugs, setPendingWishlistSlugs] = useState<string[]>([]);
   const [pendingFollowSlugs, setPendingFollowSlugs] = useState<string[]>([]);
   const [pendingCartSlugs, setPendingCartSlugs] = useState<string[]>([]);
+  const [pendingSavedItemIds, setPendingSavedItemIds] = useState<string[]>([]);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const broadcastRef = useRef<BroadcastChannel | null>(null);
   const refreshShellRef = useRef<(silent?: boolean) => Promise<void>>(async () => undefined);
@@ -328,24 +331,44 @@ export function MarketplaceRuntimeProvider({
         return;
       }
 
-      setPendingFollowSlugs((current) => [...current, intent.vendorSlug]);
-      try {
-        const response = await fetch("/api/follows", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ vendorSlug: intent.vendorSlug }),
-        });
-        if (response.ok) {
-          const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
-          startTransition(() => setShell(payload.shell));
-          pushToast(payload.active ? "Store followed" : "Store unfollowed", "success");
-          emitCrossTabRefresh("follow", intent.vendorSlug);
-        } else if (response.status === 401) {
-          stashMarketplacePostAuthIntent({ action: "follow", vendorSlug: intent.vendorSlug });
-          goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
+      if (intent.action === "follow") {
+        setPendingFollowSlugs((current) => [...current, intent.vendorSlug]);
+        try {
+          const response = await fetch("/api/follows", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ vendorSlug: intent.vendorSlug }),
+          });
+          if (response.ok) {
+            const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
+            startTransition(() => setShell(payload.shell));
+            pushToast(payload.active ? "Store followed" : "Store unfollowed", "success");
+            emitCrossTabRefresh("follow", intent.vendorSlug);
+          } else if (response.status === 401) {
+            stashMarketplacePostAuthIntent({ action: "follow", vendorSlug: intent.vendorSlug });
+            goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
+          }
+        } finally {
+          setPendingFollowSlugs((current) => current.filter((slug) => slug !== intent.vendorSlug));
         }
-      } finally {
-        setPendingFollowSlugs((current) => current.filter((slug) => slug !== intent.vendorSlug));
+        return;
+      }
+
+      if (intent.action === "save_for_later") {
+        // After login, retry the move-to-saved request. The cart item id may
+        // have rotated when the guest cart merged into the user cart, but the
+        // server-side cart-merge keeps quantities — we just refresh the shell
+        // and let the user redo the action from the updated cart.
+        try {
+          await fetch("/api/saved-items", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cartItemId: intent.cartItemId }),
+          });
+        } catch {
+          // user can retry from the cart UI
+        }
+        await refreshShell(true);
       }
     };
 
@@ -462,6 +485,58 @@ export function MarketplaceRuntimeProvider({
     await updateCartQuantity(itemId, 0);
   }
 
+  async function moveCartItemToSaved(itemId: string): Promise<boolean> {
+    if (!shell.viewer.signedIn) {
+      stashMarketplacePostAuthIntent({ action: "save_for_later", cartItemId: itemId });
+      goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
+      return false;
+    }
+
+    const previous = shell;
+    setPendingSavedItemIds((current) => [...current, itemId]);
+    // Optimistic — remove from cart immediately so the UI feels instant.
+    setShell((current) => {
+      const items = current.cart.items.filter((item) => item.id !== itemId);
+      return {
+        ...current,
+        cart: {
+          items,
+          count: items.reduce((sum, item) => sum + item.quantity, 0),
+          subtotal: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        },
+      };
+    });
+
+    try {
+      const response = await fetch("/api/saved-items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartItemId: itemId }),
+      });
+
+      if (response.status === 401) {
+        stashMarketplacePostAuthIntent({ action: "save_for_later", cartItemId: itemId });
+        goToSharedAccountLogin(`${window.location.pathname}${window.location.search}`);
+        return false;
+      }
+
+      if (!response.ok) {
+        throw new Error("Save for later failed.");
+      }
+      const payload = (await response.json()) as { shell: MarketplaceShellState };
+      setShell(payload.shell);
+      pushToast("Saved for later", "success", "Find it under Saved items in your account.");
+      emitCrossTabRefresh("saved_items", itemId);
+      return true;
+    } catch {
+      setShell(previous);
+      pushToast("Could not save that item.", "error");
+      return false;
+    } finally {
+      setPendingSavedItemIds((current) => current.filter((id) => id !== itemId));
+    }
+  }
+
   async function toggleWishlist(productSlug: string) {
     if (!shell.viewer.signedIn) {
       stashMarketplacePostAuthIntent({ action: "wishlist", productSlug });
@@ -574,6 +649,8 @@ export function MarketplaceRuntimeProvider({
         addToCart,
         updateCartQuantity,
         removeCartItem,
+        moveCartItemToSaved,
+        pendingSavedItemIds,
         toggleWishlist,
         toggleFollow,
         isWishlisted: (productSlug) => shell.wishlistSlugs.includes(productSlug),
@@ -606,6 +683,8 @@ export function useMarketplaceCart() {
     addToCart: runtime.addToCart,
     updateCartQuantity: runtime.updateCartQuantity,
     removeCartItem: runtime.removeCartItem,
+    moveCartItemToSaved: runtime.moveCartItemToSaved,
+    pendingSavedItemIds: runtime.pendingSavedItemIds,
   };
 }
 

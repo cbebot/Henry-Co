@@ -442,7 +442,8 @@ export type MarketplaceRealtimePayload = {
     | "order"
     | "inventory"
     | "vendor_application"
-    | "payout";
+    | "payout"
+    | "saved_items";
   entityId: string;
   timestamp: string;
   payload?: Record<string, unknown>;

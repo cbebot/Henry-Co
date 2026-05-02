@@ -7,6 +7,7 @@ import {
   Receipt,
   Bell,
   BellRing,
+  Bookmark,
   LifeBuoy,
   MapPin,
   FileText,
@@ -45,6 +46,7 @@ export const accountNavItems: NavItem[] = [
   { href: "/notifications", label: "Notifications", icon: Bell, section: "Account" },
   { href: "/support", label: "Support", icon: LifeBuoy, section: "Account" },
   { href: "/addresses", label: "Addresses", icon: MapPin, section: "Account" },
+  { href: "/saved-items", label: "Saved Items", icon: Bookmark, section: "Account" },
   { href: "/documents", label: "Documents", icon: FileText, section: "Account" },
   { href: "/verification", label: "Verification", icon: ShieldCheck, section: "Account" },
   // Divisions
