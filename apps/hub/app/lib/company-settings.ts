@@ -8,9 +8,18 @@ import {
 const fallbackSettings: CompanySettingsRecord = normalizeCompanySettings(null);
 
 async function createSupabaseServer() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  /** Guard the env: previews have historically shipped without these
+   * (see project_henryco_vercel_preview_env_gap), and a missing URL
+   * would otherwise throw inside @supabase/ssr at request time. The
+   * caller's outer try/catch handles the rejection; we just make sure
+   * we never construct a half-real client. */
+  if (!url || !anon) {
+    throw new Error("Hub Supabase env not configured for this deploy.");
+  }
+
   const cookieStore = await cookies();
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
   return createServerClient(url, anon, {
     cookies: {

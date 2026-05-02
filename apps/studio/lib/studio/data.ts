@@ -158,6 +158,50 @@ export async function getProjectWorkspace(input: {
   };
 }
 
+/**
+ * getPaymentWorkspace — server-side fetch for the dedicated /pay/[id] route.
+ *
+ * Resolves the payment plus its project context (so we can show project
+ * name, milestone label, and the existing project workspace deep-link),
+ * the milestone (for human-readable label), and the platform finance
+ * configuration (bank details, support contacts) in one call. Returns
+ * null when the access key does not match or the payment is missing —
+ * the route then redirects to the studio account hub with a toast.
+ */
+export async function getPaymentWorkspace(input: {
+  paymentId: string;
+  accessKey?: string | null;
+  viewer?: StudioViewer | null;
+  snapshot?: StudioSnapshot;
+}) {
+  const snapshot = input.snapshot ?? (await getStudioSnapshot());
+  const payment = snapshot.payments.find((item) => item.id === input.paymentId);
+  if (!payment) return null;
+
+  const projectWorkspace = await getProjectWorkspace({
+    projectId: payment.projectId,
+    accessKey: input.accessKey,
+    viewer: input.viewer,
+    snapshot,
+  });
+  if (!projectWorkspace) return null;
+
+  const milestone =
+    payment.milestoneId
+      ? projectWorkspace.project.milestones.find((m) => m.id === payment.milestoneId) ?? null
+      : null;
+
+  return {
+    payment,
+    project: projectWorkspace.project,
+    milestone,
+    proposal: projectWorkspace.proposal,
+    platform: projectWorkspace.platform,
+    /** Other payments on the same project so we can show "1 of 3". */
+    sameProjectPayments: projectWorkspace.payments,
+  };
+}
+
 export function getProjectHealth(project: StudioProject, payments: StudioSnapshot["payments"]) {
   const projectPayments = payments.filter((item) => item.projectId === project.id);
   const paidCount = projectPayments.filter((item) => item.status === "paid").length;

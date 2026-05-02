@@ -77,6 +77,8 @@ export {
 export { PublicHero, PublicHeroActions } from "./public-hero";
 export { PublicSpotlight } from "./public-spotlight";
 export type { PublicSpotlightProps } from "./public-spotlight";
+export { HenryCoHeroCard, HenryCoTactileCard } from "./henryco-hero-card";
+export type { HenryCoHeroCardProps } from "./henryco-hero-card";
 export { PublicProofRail } from "./public-proof-rail";
 export type { PublicProofRailProps, PublicProofItem } from "./public-proof-rail";
 export {

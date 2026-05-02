@@ -8,7 +8,7 @@ import {
   Search,
   ShieldCheck,
 } from "lucide-react";
-import { PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
+import { HenryCoTactileCard, PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
 import {
   PropertyAgentCard,
   PropertyAreaCard,
@@ -84,11 +84,14 @@ export default async function PropertyHomePage() {
         </div>
 
         {/* Two persona paths — clear next step for renters/buyers vs owners/agents.
-            Returning users see a "continue where you left off" surface. */}
+            HenryCoTactileCard scopes hover lift to fine pointers only so
+            touch devices never see the stuck-hover state owner flagged on
+            /care, and gives mobile a clean :active feedback instead. */}
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:gap-5">
-          <Link
+          <HenryCoTactileCard
             href="/search"
-            className="group flex flex-col justify-between rounded-[1.6rem] border border-[var(--property-line)] bg-black/15 p-5 transition outline-none hover:border-[var(--property-accent-strong)]/55 hover:bg-black/25 focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] sm:p-6"
+            ariaLabel="Looking for a place"
+            className="border-[var(--property-line)] bg-black/15"
           >
             <div>
               <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-accent-strong)]">
@@ -105,13 +108,14 @@ export default async function PropertyHomePage() {
             </div>
             <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--property-ink)]">
               {copy.home.primaryCta}
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 transition [@media(hover:hover)]:group-hover:translate-x-0.5" />
             </div>
-          </Link>
+          </HenryCoTactileCard>
 
-          <Link
+          <HenryCoTactileCard
             href="/submit"
-            className="group flex flex-col justify-between rounded-[1.6rem] border border-[var(--property-line)] bg-black/15 p-5 transition outline-none hover:border-[var(--property-accent-strong)]/55 hover:bg-black/25 focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] sm:p-6"
+            ariaLabel="Listing a place"
+            className="border-[var(--property-line)] bg-black/15"
           >
             <div>
               <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-accent-strong)]">
@@ -128,9 +132,9 @@ export default async function PropertyHomePage() {
             </div>
             <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--property-ink)]">
               {copy.home.secondaryCta}
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 transition [@media(hover:hover)]:group-hover:translate-x-0.5" />
             </div>
-          </Link>
+          </HenryCoTactileCard>
         </div>
 
         {/* Returning user shortcut — small, never in the way of new visitors. */}

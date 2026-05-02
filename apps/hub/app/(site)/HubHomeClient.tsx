@@ -26,7 +26,12 @@ import {
 } from "lucide-react";
 import HubParticles from "./HubParticles";
 import type { PublicAccountUser } from "@henryco/ui";
-import { cn, HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import {
+  cn,
+  HenryCoHeroCard,
+  HenryCoPublicAccountPresets,
+  PublicAccountChip,
+} from "@henryco/ui";
 import type { DivisionRow } from "../lib/divisions";
 
 type StatusFilter = "all" | "active" | "coming_soon" | "paused";
@@ -618,7 +623,18 @@ export default function HubHomeClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.04 }}
-                className="mt-6 max-w-4xl text-balance text-4xl font-semibold leading-[0.98] tracking-[-0.02em] text-white sm:text-[3.6rem] xl:text-[4.6rem]"
+                /* clamp + safe overflow protect against the 320–360px clip
+                   ("Focused" → "ocused") that the previous static
+                   text-4xl + negative tracking caused. */
+                style={{
+                  fontSize: "clamp(2rem, 6.4vw + 0.6rem, 4.6rem)",
+                  lineHeight: 1,
+                  letterSpacing: "-0.025em",
+                  wordBreak: "normal",
+                  overflowWrap: "break-word",
+                  hyphens: "auto",
+                }}
+                className="mt-6 max-w-4xl text-balance font-semibold text-white"
               >
                 {copy.hero.titleBefore}
                 <span className="text-[color:var(--accent)]">{brandTitleSafe}</span>
@@ -690,54 +706,48 @@ export default function HubHomeClient({
               initial={reduceMotion ? false : { opacity: 0, y: 20 }}
               animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.14 }}
-              className="relative lg:pt-2"
+              className="relative space-y-4 lg:pt-2"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
-                    {copy.standardCard.eyebrow}
-                  </p>
-                  <h2 className="mt-3 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
-                    {copy.standardCard.title}
-                  </h2>
-                </div>
-
-                <BrandMark
-                  src={brandLogoUrlSafe}
-                  alt={`${brandTitleSafe} logo`}
-                  accent={brandAccentSafe}
-                  wrapperClassName="h-11 w-11 shrink-0"
-                  imageClassName="object-contain p-2"
-                  iconClassName="h-5 w-5"
-                />
-              </div>
-
-              <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
-                {copy.standardCard.bullets.map((line) => (
-                  <li key={line} className="flex gap-3 py-3 text-sm leading-7 text-white/75">
-                    <BadgeCheck className="mt-1 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <dl className="mt-6 divide-y divide-white/10 border-y border-white/10">
-                <GlassMiniCard
-                  icon={<TrendingUp className="h-4 w-4" />}
-                  label={copy.standardCard.latestUpdate}
-                  value={latestUpdate}
-                />
-                <GlassMiniCard
-                  icon={<Workflow className="h-4 w-4" />}
-                  label={copy.standardCard.operatingStandard}
-                  value={copy.standardCard.operatingStandardValue}
-                />
-              </dl>
+              {/* Premium first-card on the landing page hero. The
+                  HenryCoHeroCard primitive guarantees mobile-safe typography
+                  (clamp + overflow-wrap) and consistent motion across every
+                  HenryCo public surface. */}
+              <HenryCoHeroCard
+                eyebrow={copy.standardCard.eyebrow}
+                title={copy.standardCard.title}
+                accentVar={brandAccentSafe}
+                tone="spotlight"
+                brandMark={
+                  <BrandMark
+                    src={brandLogoUrlSafe}
+                    alt={`${brandTitleSafe} logo`}
+                    accent={brandAccentSafe}
+                    wrapperClassName="h-11 w-11 shrink-0"
+                    imageClassName="object-contain p-2"
+                    iconClassName="h-5 w-5"
+                  />
+                }
+                bullets={copy.standardCard.bullets}
+                rows={[
+                  {
+                    key: "latestUpdate",
+                    icon: <TrendingUp className="h-4 w-4" />,
+                    label: copy.standardCard.latestUpdate,
+                    value: latestUpdate,
+                  },
+                  {
+                    key: "operatingStandard",
+                    icon: <Workflow className="h-4 w-4" />,
+                    label: copy.standardCard.operatingStandard,
+                    value: copy.standardCard.operatingStandardValue,
+                  },
+                ]}
+              />
 
               {spotlightDivision ? (
-                <div className="mt-7 border-l-2 border-[color:var(--accent)]/55 pl-5">
+                <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.02] p-5 sm:p-6">
                   <div className="flex items-start justify-between gap-3">
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                         {copy.standardCard.spotlightEyebrow}
                       </p>
@@ -777,10 +787,10 @@ export default function HubHomeClient({
                     </div>
                   ) : null}
 
-                  <div className="mt-5 flex flex-wrap gap-3">
+                  <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <button
                       onClick={() => setSelected(spotlightDivision)}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-white/35 hover:bg-white/[0.04]"
+                      className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 active:translate-y-[0.5px] [@media(hover:hover)]:hover:border-white/35 [@media(hover:hover)]:hover:bg-white/[0.04]"
                     >
                       {copy.standardCard.viewDetails}
                       <ChevronRight className="h-4 w-4" />
@@ -789,7 +799,7 @@ export default function HubHomeClient({
                     {spotlightDivision.primary_url ? (
                       <button
                         onClick={() => safeOpen(spotlightDivision.primary_url)}
-                        className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+                        className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-black transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 active:translate-y-[0.5px] [@media(hover:hover)]:hover:opacity-90"
                         style={{
                           background: getAccent(
                             spotlightDivision.accent,
@@ -804,7 +814,7 @@ export default function HubHomeClient({
                   </div>
 
                   {spotlightHost ? (
-                    <p className="mt-4 font-mono text-[11px] tracking-tight text-white/45">
+                    <p className="mt-4 font-mono text-[11px] tracking-tight text-white/45 [overflow-wrap:anywhere]">
                       {spotlightHost}
                     </p>
                   ) : null}
@@ -812,7 +822,7 @@ export default function HubHomeClient({
               ) : null}
 
               {hasServerError ? (
-                <p className="mt-5 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
+                <p className="border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
                   {copy.standardCard.serverError}
                 </p>
               ) : null}

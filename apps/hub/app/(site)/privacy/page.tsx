@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { page } = await getCompanyPage("privacy");
+  const { page } = await getCompanyPage("privacy").catch(() => ({ page: null }));
   const resolved = page ?? createFallbackCompanyPage("privacy");
 
   return {
@@ -19,13 +19,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PrivacyPage() {
-  const { page, hasServerError } = await getCompanyPage("privacy");
+  const result = await getCompanyPage("privacy").catch(() => ({ page: null, hasServerError: true }));
 
   return (
     <CompanyPageClient
       pageKey="privacy"
-      initialData={page ?? createFallbackCompanyPage("privacy")}
-      serverWarning={hasServerError}
+      initialData={result.page ?? createFallbackCompanyPage("privacy")}
+      serverWarning={result.hasServerError}
     />
   );
 }

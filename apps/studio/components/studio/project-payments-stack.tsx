@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { StudioFileField } from "@/components/studio/studio-file-field";
 import { StudioPaymentGuide } from "@/components/studio/payment-guide";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
@@ -189,6 +191,20 @@ export function ProjectPaymentsStack({
                   />
                   <StudioSubmitButton label="Submit payment proof" pendingLabel="Uploading…" />
                 </form>
+              ) : null}
+
+              {/* Deep-link to the dedicated focused payment workspace —
+                  /pay/[paymentId] gives the customer a single calm
+                  surface for one payment when the milestone-list view
+                  feels too dense. */}
+              {!isStaff ? (
+                <Link
+                  href={`/pay/${payment.id}${access ? `?access=${access}` : ""}`}
+                  className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--studio-signal)] underline-offset-4 transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 [@media(hover:hover)]:hover:underline"
+                >
+                  Open dedicated payment workspace
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
               ) : null}
             </div>
           );

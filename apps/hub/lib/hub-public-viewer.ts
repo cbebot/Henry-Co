@@ -18,9 +18,16 @@ export async function getHubPublicChipUser(): Promise<PublicAccountUser | null> 
     const auth = await supabase.auth.getUser();
     user = auth.data.user ?? null;
   } catch (error) {
+    /** Non-recoverable supabase auth errors used to re-throw and reach
+     * error.tsx, surfacing as a "server error" on the about / privacy /
+     * terms pages on preview deploys where the env wasn't fully wired.
+     * These are read-only public surfaces; treating any auth failure as
+     * "no chip user" is correct — the page should still render. */
     if (!isRecoverableSupabaseAuthError(error)) {
-      throw error;
+      // Log so we still see infra issues without taking down the page.
+      console.error("[hub/getHubPublicChipUser] non-recoverable auth error", error);
     }
+    user = null;
   }
 
   if (!user) {

@@ -74,6 +74,11 @@ export {
 } from "./public-shell/public-form";
 export { PublicHero, PublicHeroActions } from "./public-shell/public-hero";
 export {
+  HenryCoHeroCard,
+  HenryCoTactileCard,
+  type HenryCoHeroCardProps,
+} from "./public-shell/henryco-hero-card";
+export {
   PublicToastProvider,
   usePublicToast,
   makePublicToastApi,
