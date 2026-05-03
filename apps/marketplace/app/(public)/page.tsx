@@ -7,7 +7,7 @@ import {
   Truck,
   WandSparkles,
 } from "lucide-react";
-import { PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
+import { PublicSpotlight } from "@henryco/ui/public-shell";
 import {
   CampaignBanner,
   CollectionCard,
@@ -51,15 +51,15 @@ export default async function MarketplaceHomePage() {
   return (
     <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-6 sm:px-6 sm:py-8 xl:px-8">
       <section className="grid gap-6 xl:grid-cols-[1.18fr,0.82fr]">
-        <article className="market-panel relative overflow-hidden rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-8 xl:rounded-[2.8rem] xl:p-12">
+        <article className="market-panel relative overflow-hidden rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-7 xl:rounded-[2.8rem] xl:p-9">
           <div className="absolute inset-y-0 right-0 hidden w-[42%] bg-[radial-gradient(circle_at_center,rgba(154,174,164,0.18),transparent_64%)] xl:block" />
-          <div className="relative max-w-4xl space-y-5 sm:space-y-7">
+          <div className="relative max-w-4xl space-y-5 sm:space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] sm:px-4 sm:py-2 sm:text-xs">
               <Sparkles className="h-3.5 w-3.5 text-[var(--market-brass)]" />
               {copy.home.heroKicker}
             </div>
             <div className="space-y-3 sm:space-y-4">
-              <h1 className="market-display max-w-4xl text-balance text-[var(--market-paper-white)]">
+              <h1 className="market-display max-w-3xl text-[var(--market-paper-white)]">
                 {copy.home.heroTitle}
               </h1>
               <p className="max-w-2xl text-pretty text-[15px] leading-7 text-[var(--market-muted)] sm:text-base sm:leading-8">
@@ -80,6 +80,20 @@ export default async function MarketplaceHomePage() {
                 {copy.home.secondaryCta}
               </Link>
             </div>
+            {kpis.length ? (
+              <dl className="mt-2 grid grid-cols-3 gap-3 rounded-2xl border border-[var(--market-line)] bg-[rgba(255,255,255,0.025)] p-4 sm:gap-5 sm:p-5">
+                {kpis.slice(0, 3).map((kpi) => (
+                  <div key={kpi.label} className="min-w-0">
+                    <dt className="truncate text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                      {kpi.label}
+                    </dt>
+                    <dd className="mt-1 truncate text-xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-2xl">
+                      {kpi.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]/85">
               <span className="inline-flex items-center gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5 text-[var(--market-brass)]" />
@@ -116,12 +130,6 @@ export default async function MarketplaceHomePage() {
           </ul>
         </article>
       </section>
-
-      <PublicProofRail
-        density="default"
-        variant="rail"
-        items={kpis.map((k) => ({ label: k.label, value: k.value, hint: k.hint }))}
-      />
 
       {data.campaigns[0] ? <CampaignBanner campaign={data.campaigns[0]} /> : null}
 

@@ -145,10 +145,12 @@ textarea {
 
 .property-display {
   font-family: var(--font-property-display);
-  font-size: clamp(3.4rem, 9vw, 7.5rem);
-  line-height: 0.88;
-  letter-spacing: -0.06em;
+  font-size: clamp(1.9rem, 3.6vw + 0.6rem, 3.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
   font-weight: 600;
+  text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 .property-heading {
