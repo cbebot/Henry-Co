@@ -119,11 +119,15 @@ export function PropertyListingCard({
   href,
   saved,
   copy,
+  priority,
 }: {
   listing: PropertyListing;
   href?: string;
   saved?: boolean;
   copy?: PropertyPublicCopy;
+  /** When true, the hero image loads eagerly with high fetchpriority — use
+   *  for above-the-fold cards (typically the first row in a grid). */
+  priority?: boolean;
 }) {
   const listingCopy = copy?.listingCard;
   const target = href || `/property/${listing.slug}`;
@@ -138,6 +142,8 @@ export function PropertyListingCard({
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             className="object-cover transition duration-500 group-hover:scale-[1.04]"
+            priority={priority}
+            loading={priority ? "eager" : "lazy"}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(16,10,8,0.78)] via-[rgba(16,10,8,0.14)] to-transparent" />
           <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">

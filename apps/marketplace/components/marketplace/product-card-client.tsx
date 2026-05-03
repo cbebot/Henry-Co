@@ -15,7 +15,14 @@ import { cn, formatCurrency } from "@/lib/utils";
 const fallbackImage =
   "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80";
 
-export function ProductCardClient({ product }: { product: MarketplaceProduct }) {
+export function ProductCardClient({
+  product,
+  priority,
+}: {
+  product: MarketplaceProduct;
+  /** Above-the-fold card hint — eager-loads the image and bypasses lazy. */
+  priority?: boolean;
+}) {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const copy = getMarketplacePublicCopy(locale);
   const { addToCart, pendingCartSlugs } = useMarketplaceCart();
@@ -75,6 +82,8 @@ export function ProductCardClient({ product }: { product: MarketplaceProduct }) 
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
           className="object-cover transition duration-500 group-hover:scale-[1.04]"
+          priority={priority}
+          loading={priority ? "eager" : "lazy"}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.9)] via-[rgba(4,7,13,0.12)] to-transparent" />
 
