@@ -1,63 +1,17 @@
 import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
-function PropertyLoadingBar({ widthClass }: { widthClass: string }) {
-  return (
-    <div
-      className={`property-loading-shimmer h-3 rounded-full bg-[rgba(255,255,255,0.08)] ${widthClass}`}
-    />
-  );
-}
-
+/**
+ * Property route-segment loader.
+ *
+ * The previous implementation rendered a 60-line shimmer skeleton (panels,
+ * image placeholders, grid). That much painted scaffolding pushed perceived
+ * load time up rather than down — visitors saw a heavy fake page before
+ * the real one.
+ *
+ * Now: just the canonical thin top progress bar (delayed 320ms so fast nav
+ * stays invisible). When the real content arrives it paints directly into
+ * an empty viewport — no skeleton-to-content reflow.
+ */
 export default function Loading() {
-  return (
-    <div className="property-page property-shell">
-      <PublicRouteLoader
-        tone="onDark"
-        eyebrow="HenryCo Property"
-        title="Loading"
-        subtitle="Preparing listings, search, and your saved context."
-        className="mx-auto max-w-[92rem] px-5 sm:px-8 lg:px-10"
-        spinnerClassName="text-white/80"
-      >
-        <section className="property-panel rounded-[2rem] p-6 sm:p-8 lg:p-10">
-          <div className="space-y-4">
-            <PropertyLoadingBar widthClass="max-w-72" />
-            <PropertyLoadingBar widthClass="max-w-4xl" />
-            <PropertyLoadingBar widthClass="max-w-3xl" />
-          </div>
-        </section>
-
-        <section className="mt-8 grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-          <div className="space-y-6">
-            <div className="property-paper property-loading-shimmer aspect-[16/10] rounded-[2rem] bg-[rgba(255,255,255,0.04)]" />
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="property-paper property-loading-shimmer h-28 rounded-[1.6rem] bg-[rgba(255,255,255,0.04)]"
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className="property-panel rounded-[2rem] p-6 sm:p-8"
-              >
-                <div className="space-y-4">
-                  <PropertyLoadingBar widthClass="max-w-40" />
-                  <PropertyLoadingBar widthClass="max-w-80" />
-                  <PropertyLoadingBar widthClass="max-w-full" />
-                  <PropertyLoadingBar widthClass="max-w-[92%]" />
-                  <div className="property-loading-shimmer h-12 max-w-52 rounded-full bg-[rgba(255,255,255,0.06)]" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </PublicRouteLoader>
-    </div>
-  );
+  return <PublicRouteLoader />;
 }
