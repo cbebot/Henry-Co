@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import {
   renderAuthEmail,
+  resolveSenderIdentity,
   sendBrevoEmail,
   sendResendEmail,
   type AuthHookEmailData,
@@ -17,8 +18,6 @@ const REPLAY_WINDOW_SECONDS = 5 * 60;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 10;
 const DEDUPE_TTL_MS = 60_000;
-const SENDER_EMAIL = "accounts@henrycogroup.com";
-const SENDER_NAME = "HenryCo Accounts";
 
 type Bucket = { count: number; windowStartedAt: number };
 const rateBuckets = new Map<string, Bucket>();
@@ -214,14 +213,15 @@ export async function POST(req: NextRequest) {
   const baseProto = req.headers.get("x-forwarded-proto") || requestUrl.protocol.replace(/:$/, "") || "https";
   const fallbackSiteUrl = `${baseProto}://${baseHost}`;
   const rendered = renderAuthEmail(parsed.data, fallbackSiteUrl);
+  const sender = resolveSenderIdentity("auth");
 
   const result = await dispatchWithFallback({
     to: parsed.user_email,
     subject: rendered.subject,
     html: rendered.html,
     text: rendered.text,
-    from: SENDER_EMAIL,
-    fromName: SENDER_NAME,
+    from: sender.email,
+    fromName: sender.name,
     purpose: "auth",
   });
 
