@@ -25,7 +25,7 @@
       "destination": "/owner"
     },
     {
-      "source": "/:path((?!(?:owner|api|privacy|terms)(?:/|$)).*)",
+      "source": "/:path((?!(?:owner|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
@@ -55,7 +55,7 @@
       "destination": "/workspace"
     },
     {
-      "source": "/:path((?!(?:workspace|api|privacy|terms)(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
@@ -65,7 +65,7 @@
       "destination": "/workspace/:path*"
     },
     {
-      "source": "/:path((?!(?:workspace|api|privacy|terms)(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
