@@ -115,12 +115,16 @@ export default async function HomePage() {
   const firstName = chipUser?.displayName?.trim().split(/\s+/).filter(Boolean)[0];
   const heroWelcome = firstName ? `Welcome back, ${firstName}` : null;
 
+  // Fall back to the platform-served brand monogram so the Knowledge Panel
+  // logo never goes empty. CMS-driven `logo_url` overrides the default.
+  const organizationLogo =
+    settings.logo_url || "https://henrycogroup.com/brand/monogram.svg";
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: settings.brand_title ?? "HenryCo",
     url: "https://henrycogroup.com",
-    logo: settings.logo_url ?? undefined,
+    logo: organizationLogo,
     description:
       settings.brand_description ??
       "HenryCo is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",

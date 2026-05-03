@@ -66,7 +66,7 @@ export default async function StudioTemplateDetailPage({
   const balanceAmount = template.price - depositAmount;
 
   return (
-    <main className="mx-auto max-w-[80rem] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
+    <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[80rem] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
       <Link
         href="/pick"
         className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)] transition hover:text-[var(--studio-ink)]"

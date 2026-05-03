@@ -71,7 +71,7 @@ export default function StudioPickPage() {
   );
 
   return (
-    <main className="mx-auto max-w-[92rem] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
+    <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[92rem] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
       <section>
         <p className="studio-kicker">Ready-made by HenryCo Studio</p>
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">

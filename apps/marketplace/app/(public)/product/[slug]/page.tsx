@@ -160,8 +160,15 @@ export default async function ProductPage({
                 data.vendor
                   ? `${data.vendor.name} seller passport is linked directly from this page`
                   : "Vendor trust surface is still pending linkage",
-                `${data.product.reviewCount} review${data.product.reviewCount === 1 ? "" : "s"} at ${data.product.rating.toFixed(1)} average rating`,
-              ].map((item) => (
+                /* Suppress rating line entirely until a genuine review exists.
+                 * Showing "0 reviews at 0.0 average rating" reads as broken,
+                 * not new. */
+                data.product.reviewCount > 0
+                  ? `${data.product.reviewCount} review${data.product.reviewCount === 1 ? "" : "s"} at ${data.product.rating.toFixed(1)} average rating`
+                  : null,
+              ]
+                .filter((item): item is string => Boolean(item))
+                .map((item) => (
                 <li
                   key={item}
                   className="flex gap-2.5 text-sm leading-7 text-[var(--market-muted)]"

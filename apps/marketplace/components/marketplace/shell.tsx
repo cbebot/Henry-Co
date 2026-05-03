@@ -271,7 +271,7 @@ export function VendorCard({
                 Rating
               </dt>
               <dd className="mt-1.5 text-[1.05rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)]">
-                {vendor.reviewScore.toFixed(1)}
+                {vendor.reviewScore > 0 ? vendor.reviewScore.toFixed(1) : "New"}
               </dd>
             </div>
           </dl>

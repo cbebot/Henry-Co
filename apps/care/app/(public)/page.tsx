@@ -167,6 +167,8 @@ export default async function CareHomePage() {
 
   return (
     <main
+      id="henryco-main"
+      tabIndex={-1}
       className="overflow-hidden bg-transparent pb-24"
       style={
         {

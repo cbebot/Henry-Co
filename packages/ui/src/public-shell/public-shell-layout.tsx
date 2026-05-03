@@ -1,23 +1,28 @@
 import type { ReactNode } from "react";
 import { cn } from "../lib/cn";
-import { SkipLink } from "../a11y/skip-link";
 
 /**
  * Shared structural wrapper for all public HenryCo pages.
- * Provides min-height, background tokens, and children slots for
- * header, main content, and footer. Mounts a SkipLink that targets
- * id="henryco-main" — app shells should mount their main content as
- * <main id="henryco-main" tabIndex={-1}>.
+ * Provides min-height and background tokens. The skip-to-content
+ * primitive is now baked into PublicHeader so any app rendering
+ * PublicHeader gets WCAG 2.4.1 compliance automatically; this layout
+ * stays minimal and presentation-only.
+ *
+ * `skipLinkLabel` is retained for API compatibility with existing
+ * consumers but is ignored at runtime. Per-app shells should still
+ * mount `<main id="henryco-main" tabIndex={-1}>` so the skip target
+ * exists.
  */
 export function PublicShellLayout({
   children,
   className,
-  skipLinkLabel,
+  skipLinkLabel: _skipLinkLabel,
 }: {
   children: ReactNode;
   className?: string;
   skipLinkLabel?: string;
 }) {
+  void _skipLinkLabel;
   return (
     <div
       className={cn(
@@ -25,7 +30,6 @@ export function PublicShellLayout({
         className
       )}
     >
-      <SkipLink href="#henryco-main">{skipLinkLabel ?? "Skip to main content"}</SkipLink>
       {children}
     </div>
   );

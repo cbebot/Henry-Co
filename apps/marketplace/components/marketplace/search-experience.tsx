@@ -151,6 +151,13 @@ export function SearchExperience({
    * first row. Show-more keeps below-fold work amortised.
    */
   const PAGE_SIZE = 24;
+  /**
+   * Below this listing count in the unfiltered public view, the 3-up grid
+   * looks intentionally sparse and undermines marketplace trust. Switch to
+   * a 2-up curated layout + "More arriving soon" panel until inventory
+   * exceeds the threshold.
+   */
+  const SPARSE_THRESHOLD = 10;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
@@ -365,7 +372,18 @@ export function SearchExperience({
 
           {sortedItems.length ? (
             <>
-              <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+              {/* Sparse-grid guard: when the public default view (no filters,
+               * no query) has fewer than SPARSE_THRESHOLD results, fall back
+               * to a curated 2-up featured layout instead of a half-empty
+               * 3-up grid. With filters/query active, a small result count is
+               * informative — keep the existing layout. */}
+              <div
+                className={
+                  activeChips.length === 0 && !deferredQuery.trim() && sortedItems.length < SPARSE_THRESHOLD
+                    ? "grid gap-5 md:grid-cols-2"
+                    : "grid gap-5 md:grid-cols-2 2xl:grid-cols-3"
+                }
+              >
                 {visibleItems.map((product, index) => (
                   <ProductCardClient
                     key={product.slug}
@@ -376,6 +394,35 @@ export function SearchExperience({
                   />
                 ))}
               </div>
+              {activeChips.length === 0 && !deferredQuery.trim() && sortedItems.length < SPARSE_THRESHOLD ? (
+                <div className="mt-8 rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.025)] p-6 sm:p-8">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
+                    More arriving soon
+                  </p>
+                  <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--market-paper-white)]">
+                    HenryCo Marketplace is opening with a small, hand-picked set of vendors
+                    so the trust signals stay real.
+                  </p>
+                  <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
+                    New stores and listings are being verified weekly. Save the categories you
+                    care about and we will surface fresh inventory as it lands.
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <Link
+                      href="/sell"
+                      className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                    >
+                      Apply to sell
+                    </Link>
+                    <Link
+                      href="/trust"
+                      className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                    >
+                      How trust works
+                    </Link>
+                  </div>
+                </div>
+              ) : null}
               {hasMore ? (
                 <div className="mt-10 flex flex-col items-center gap-3 border-t border-[var(--market-line)] pt-8">
                   <p className="text-sm text-[var(--market-muted)]">

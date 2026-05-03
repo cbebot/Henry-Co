@@ -16,7 +16,7 @@ export default async function TeamDetailPage({
   if (!team) notFound();
 
   return (
-    <main className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8 lg:px-10">
+    <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8 lg:px-10">
       <section>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl">

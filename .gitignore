@@ -2,6 +2,9 @@ node_modules
 
 # Temporary directories and build artifacts
 .codex-logs/
+.codex-temp/
+.worktree/
+live-walk.tsv
 .tmp-*
 .tmp-edge-supabase-profile/
 .tmp-vercel-env

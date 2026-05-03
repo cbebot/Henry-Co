@@ -120,13 +120,15 @@ export function ProductCardClient({
           </button>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 p-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.12)] bg-[rgba(4,7,13,0.58)] px-3 py-1 text-xs text-[var(--market-paper-white)] backdrop-blur-xl">
-            <Star className="h-3.5 w-3.5 fill-[var(--market-brass)] text-[var(--market-brass)]" />
-            <span className="font-semibold">{product.rating.toFixed(1)}</span>
-            <span className="text-[rgba(255,255,255,0.66)]">({product.reviewCount})</span>
+        {product.reviewCount > 0 ? (
+          <div className="absolute inset-x-0 bottom-0 p-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.12)] bg-[rgba(4,7,13,0.58)] px-3 py-1 text-xs text-[var(--market-paper-white)] backdrop-blur-xl">
+              <Star className="h-3.5 w-3.5 fill-[var(--market-brass)] text-[var(--market-brass)]" />
+              <span className="font-semibold">{product.rating.toFixed(1)}</span>
+              <span className="text-[rgba(255,255,255,0.66)]">({product.reviewCount})</span>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col gap-5 p-5">

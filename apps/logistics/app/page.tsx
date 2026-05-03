@@ -24,7 +24,7 @@ export default async function LogisticsHomePage() {
   }));
 
   return (
-    <main className="px-4 py-10 sm:px-6 lg:px-10">
+    <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[92rem] space-y-16">
         {/* Editorial hero — eyebrow + display + CTAs, then a separate ProofRail below */}
         <section>

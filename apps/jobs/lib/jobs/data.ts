@@ -88,23 +88,40 @@ function asObjectArray(value: unknown) {
   return Array.isArray(value) ? value.map(asObject) : [];
 }
 
+// Treat <=0 / non-finite as "unspecified" so the public surface never renders
+// "₦0 - ₦0" — that pattern destroys employer credibility on first impression.
+function normalizeSalaryAmount(value: number | null): number | null {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : null;
+}
+
+function sanitizeStoredSalaryLabel(value: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const digits = trimmed.replace(/[^\d]/g, "");
+  if (digits.length > 0 && /^0+$/.test(digits)) return null;
+  return trimmed;
+}
+
 function formatSalaryLabel(min: number | null, max: number | null, currency = "NGN") {
-  if (min == null && max == null) return null;
+  const cleanMin = normalizeSalaryAmount(min);
+  const cleanMax = normalizeSalaryAmount(max);
+  if (cleanMin == null && cleanMax == null) return null;
   const formatter = new Intl.NumberFormat(currency === "NGN" ? "en-NG" : "en-US", {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
   });
 
-  if (min != null && max != null) {
-    return `${formatter.format(min)} - ${formatter.format(max)}`;
+  if (cleanMin != null && cleanMax != null) {
+    return `${formatter.format(cleanMin)} - ${formatter.format(cleanMax)}`;
   }
 
-  if (min != null) {
-    return `${formatter.format(min)}+`;
+  if (cleanMin != null) {
+    return `${formatter.format(cleanMin)}+`;
   }
 
-  return `Up to ${formatter.format(max ?? 0)}`;
+  return `Up to ${formatter.format(cleanMax!)}`;
 }
 
 function calculateCompletionScore(input: {
@@ -671,8 +688,8 @@ function buildJobPost(input: {
     asString(row.reference_id) ||
     "unknown";
   const employerName = asString(content.employerName) || input.employer?.name || "Employer";
-  const salaryMin = asNullableNumber(content.salaryMin);
-  const salaryMax = asNullableNumber(content.salaryMax);
+  const salaryMin = normalizeSalaryAmount(asNullableNumber(content.salaryMin));
+  const salaryMax = normalizeSalaryAmount(asNullableNumber(content.salaryMax));
   const currency = asString(content.currency, "NGN");
   const slug = asString(content.slug || row.reference_id || row.id);
 
@@ -707,7 +724,8 @@ function buildJobPost(input: {
     salaryMax,
     currency,
     salaryLabel:
-      asNullableString(content.salaryLabel) || formatSalaryLabel(salaryMin, salaryMax, currency),
+      sanitizeStoredSalaryLabel(asNullableString(content.salaryLabel)) ||
+      formatSalaryLabel(salaryMin, salaryMax, currency),
     featured: asBoolean(content.featured),
     internal: asBoolean(content.internal),
     isPublished: activityIsJobPublished(row),

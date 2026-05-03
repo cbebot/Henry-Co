@@ -21,6 +21,7 @@
     "a11y:diff": "node scripts/a11y/diff.mjs",
     "a11y": "pnpm run a11y:audit && pnpm run a11y:contrast && pnpm run a11y:headers && pnpm run a11y:report",
     "search:backfill": "tsx scripts/search-backfill.mjs",
+    "brand:icons": "node scripts/brand/generate-png-icons.mjs",
     "build:logistics": "pnpm --filter @henryco/logistics build",
     "lint:logistics": "pnpm --filter @henryco/logistics lint",
     "typecheck:logistics": "pnpm --filter @henryco/logistics typecheck",
@@ -50,6 +51,7 @@
     "axe-core": "^4.11.4",
     "next": "16.1.6",
     "picocolors": "^1.1.1",
+    "sharp": "^0.34.5",
     "tsx": "^4.20.6",
     "wcag-contrast": "^3.0.0"
   }

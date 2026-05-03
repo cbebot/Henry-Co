@@ -25,6 +25,15 @@ export const metadata: Metadata = {
     siteName: "Henry & Co. Account",
     type: "website",
   },
+  icons: {
+    apple: [
+      {
+        url: "/brand/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

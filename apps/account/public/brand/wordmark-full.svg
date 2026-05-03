@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" role="img" aria-label="Henry &amp; Co.">
+  <title>Henry &amp; Co.</title>
+  <g fill="currentColor" style="font-family: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;">
+    <text x="0" y="46" font-weight="500" font-size="48" letter-spacing="-0.03em">Henry</text>
+    <text x="148" y="42" font-style="italic" font-weight="400" font-size="36" letter-spacing="-0.01em" opacity="0.92">&amp;</text>
+    <text x="186" y="46" font-weight="500" font-size="48" letter-spacing="-0.03em">Co.</text>
+  </g>
+</svg>

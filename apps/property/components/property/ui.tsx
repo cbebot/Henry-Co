@@ -546,7 +546,7 @@ export function PropertyWorkspaceShell({
         </nav>
       </aside>
 
-      <main className="space-y-10">
+      <main id="henryco-main" tabIndex={-1} className="space-y-10">
         <section>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
