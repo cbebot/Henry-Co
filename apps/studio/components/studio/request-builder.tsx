@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, ArrowRight, Check, LoaderCircle } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { requestSteps } from "@/components/studio/request-builder-data";
 import { StudioRequestActivationStep } from "@/components/studio/request-activation-step";
 import { StudioRequestCommercialStep } from "@/components/studio/request-commercial-step";
@@ -53,6 +53,16 @@ export function StudioRequestBuilder({
     filterModifierOptions(requestConfig.timelineOptions, initialServiceKind)[0]?.label || "";
   const initialUrgency =
     filterModifierOptions(requestConfig.urgencyOptions, initialServiceKind)[0]?.label || "";
+  const initialProgrammingLanguage =
+    requestConfig.programmingLanguageOptions[0] || "HenryCo's recommendation";
+  const initialFramework =
+    filterPricedOptions(requestConfig.frameworkOptions, initialServiceKind)[0]?.label ||
+    "HenryCo's framework recommendation";
+  const initialBackend =
+    filterPricedOptions(requestConfig.backendOptions, initialServiceKind)[0]?.label ||
+    "HenryCo recommends the backend";
+  const initialHosting =
+    requestConfig.hostingOptions[0] || "HenryCo recommends the host";
   const [stepIndex, setStepIndex] = useState(0);
   const [serviceKind, setServiceKind] = useState<StudioService["kind"]>(initialServiceKind);
   const [pathway, setPathway] = useState<"package" | "custom">(presetHint?.pathway ?? "custom");
@@ -66,6 +76,12 @@ export function StudioRequestBuilder({
   const [selectedModules, setSelectedModules] = useState<string[]>([]);
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [selectedTech, setSelectedTech] = useState<string[]>([]);
+  const [selectedProgrammingLanguage, setSelectedProgrammingLanguage] = useState(
+    initialProgrammingLanguage,
+  );
+  const [selectedFramework, setSelectedFramework] = useState(initialFramework);
+  const [selectedBackend, setSelectedBackend] = useState(initialBackend);
+  const [selectedHosting, setSelectedHosting] = useState(initialHosting);
   const [businessType, setBusinessType] = useState("");
   const [budgetBand, setBudgetBand] = useState("");
   const [urgency, setUrgency] = useState(initialUrgency);
@@ -130,6 +146,26 @@ export function StudioRequestBuilder({
     teams[0] ??
     null;
 
+  /**
+   * When the project's service kind changes (e.g. Website → Mobile app),
+   * reset framework / backend selections that no longer apply. Avoids the
+   * UX hazard of a stale "Next.js" choice after switching to mobile.
+   */
+  useEffect(() => {
+    const validFrameworks = filterPricedOptions(requestConfig.frameworkOptions, serviceKind);
+    if (
+      selectedFramework &&
+      !validFrameworks.find((option) => option.label === selectedFramework)
+    ) {
+      setSelectedFramework(validFrameworks[0]?.label ?? "HenryCo's framework recommendation");
+    }
+    const validBackends = filterPricedOptions(requestConfig.backendOptions, serviceKind);
+    if (selectedBackend && !validBackends.find((option) => option.label === selectedBackend)) {
+      setSelectedBackend(validBackends[0]?.label ?? "HenryCo recommends the backend");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serviceKind]);
+
   const pricingPreview = useMemo(
     () =>
       estimateStudioPricing(
@@ -150,6 +186,10 @@ export function StudioRequestBuilder({
                   addonServices: selectedAddOns,
                 }
               : null,
+          techStack: {
+            framework: selectedFramework,
+            backend: selectedBackend,
+          },
         },
         requestConfig,
       ),
@@ -165,6 +205,8 @@ export function StudioRequestBuilder({
       selectedService,
       effectiveTimeline,
       effectiveUrgency,
+      selectedFramework,
+      selectedBackend,
     ],
   );
 
@@ -178,6 +220,13 @@ export function StudioRequestBuilder({
     if (selectedModules.length >= 3) score += 10;
     if (selectedAddOns.length >= 2) score += 6;
     if (selectedTech.length >= 1) score += 4;
+    // Tech-stack picks signal a serious operator; the score reflects that.
+    if (selectedProgrammingLanguage && selectedProgrammingLanguage !== "HenryCo's recommendation")
+      score += 3;
+    if (selectedFramework && selectedFramework !== "HenryCo's framework recommendation")
+      score += 3;
+    if (selectedBackend && selectedBackend !== "HenryCo recommends the backend") score += 3;
+    if (selectedHosting && selectedHosting !== "HenryCo recommends the host") score += 2;
     if (businessType) score += 4;
     if (budgetBand) score += 4;
     if (effectiveUrgency) score += 4;
@@ -202,6 +251,10 @@ export function StudioRequestBuilder({
     effectivePlatform,
     effectiveProjectType,
     selectedTech.length,
+    selectedProgrammingLanguage,
+    selectedFramework,
+    selectedBackend,
+    selectedHosting,
     scopeNotes,
     effectiveTimeline,
     effectiveUrgency,
@@ -241,6 +294,10 @@ export function StudioRequestBuilder({
       />
       <input type="hidden" name="designDirection" value={selectedDesign} />
       <input type="hidden" name="preferredLanguage" value={preferredLanguage} />
+      <input type="hidden" name="programmingLanguage" value={selectedProgrammingLanguage} />
+      <input type="hidden" name="frameworkPreference" value={selectedFramework} />
+      <input type="hidden" name="backendPreference" value={selectedBackend} />
+      <input type="hidden" name="hostingPreference" value={selectedHosting} />
 
       {/* Editorial brief header — no panel chrome, magazine progress strip */}
       <section>
@@ -386,6 +443,14 @@ export function StudioRequestBuilder({
               setSelectedAddOns={setSelectedAddOns}
               selectedTech={selectedTech}
               setSelectedTech={setSelectedTech}
+              selectedProgrammingLanguage={selectedProgrammingLanguage}
+              setSelectedProgrammingLanguage={setSelectedProgrammingLanguage}
+              selectedFramework={selectedFramework}
+              setSelectedFramework={setSelectedFramework}
+              selectedBackend={selectedBackend}
+              setSelectedBackend={setSelectedBackend}
+              selectedHosting={selectedHosting}
+              setSelectedHosting={setSelectedHosting}
             />
           ) : null}
           {stepIndex === 2 ? (

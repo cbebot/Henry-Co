@@ -23,7 +23,17 @@ export type StudioRequestConfig = {
   businessOptions: string[];
   budgetOptions: string[];
   designOptions: string[];
+  /** Legacy free-form stack list — kept for backward compat with older briefs.
+   *  New code should prefer `frameworkOptions` / `backendOptions` / `hostingOptions`. */
   stackOptions: string[];
+  /** Programming language preferences. Free-text list; reads as a "house language". */
+  programmingLanguageOptions: string[];
+  /** Frontend / app framework choices (filtered by serviceKind). */
+  frameworkOptions: StudioPricedOption[];
+  /** Backend / data platform choices (filtered by serviceKind). */
+  backendOptions: StudioPricedOption[];
+  /** Hosting / deployment lane (free-form list — most are no-cost and HenryCo neutral). */
+  hostingOptions: string[];
   projectTypes: StudioPricedOption[];
   platformOptions: StudioPricedOption[];
   pageOptions: StudioPricedOption[];
@@ -141,19 +151,201 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       "HenryCo should direct the aesthetic",
     ],
     stackOptions: [
-      "Best-fit stack recommendation",
-      "Managed backend",
-      "Custom CMS",
-      "React Native",
-      "Flutter",
-      "Node.js services",
-      "Existing stack continuation",
+      "HenryCo recommends the stack",
+      "Continue with our existing stack",
+      "Open-source first / no vendor lock-in",
+      "Cloud-native / serverless preferred",
+      "Strict on-prem or self-hosted",
     ],
+    programmingLanguageOptions: [
+      "HenryCo's recommendation",
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "Go",
+      "Rust",
+      "PHP",
+      "Ruby",
+      "Java / Kotlin",
+      "C# / .NET",
+      "Swift",
+      "Dart",
+    ],
+    frameworkOptions: [
+      {
+        id: "framework-recommend",
+        label: "HenryCo's framework recommendation",
+        description: "We pick the right framework for the job once scope is reviewed.",
+        amount: 0,
+        isActive: true,
+      },
+      {
+        id: "framework-nextjs",
+        label: "Next.js (React) — App Router",
+        description: "Server components, streaming, edge-ready. HenryCo's default for premium web.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["website", "ecommerce", "internal_system", "custom_software", "ui_ux"],
+      },
+      {
+        id: "framework-react-vite",
+        label: "React + Vite SPA",
+        description: "Lighter SPA shell when SEO is not the priority and bundle independence matters.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["custom_software", "internal_system"],
+      },
+      {
+        id: "framework-astro",
+        label: "Astro (content-first)",
+        description: "Zero-JS-by-default sites for content marketing and editorial speed.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["website"],
+      },
+      {
+        id: "framework-svelte",
+        label: "SvelteKit",
+        description: "Compiler-driven framework — small bundles, fast TTI for smaller surfaces.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["website", "internal_system", "custom_software"],
+      },
+      {
+        id: "framework-react-native",
+        label: "React Native (Expo)",
+        description: "Cross-platform mobile from a single TypeScript codebase. Default mobile lane.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["mobile_app"],
+      },
+      {
+        id: "framework-flutter",
+        label: "Flutter (Dart)",
+        description: "Single codebase iOS + Android with strong UI fidelity and native bridges.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["mobile_app"],
+      },
+      {
+        id: "framework-native",
+        label: "Native iOS (Swift) and Android (Kotlin)",
+        description: "Two native codebases for projects that demand platform-native polish or hardware access.",
+        amount: 850000,
+        isActive: true,
+        serviceKinds: ["mobile_app"],
+      },
+      {
+        id: "framework-django",
+        label: "Django (Python)",
+        description: "Mature batteries-included Python web framework — strong fit for content + admin.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "website"],
+      },
+      {
+        id: "framework-fastapi",
+        label: "FastAPI (Python services)",
+        description: "Async Python services for typed APIs and data-heavy workloads.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["custom_software", "internal_system"],
+      },
+      {
+        id: "framework-laravel",
+        label: "Laravel (PHP)",
+        description: "Established PHP stack with strong ecosystem for ops + admin systems.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "website"],
+      },
+    ],
+    backendOptions: [
+      {
+        id: "backend-recommend",
+        label: "HenryCo recommends the backend",
+        description: "We choose between Supabase, custom Node services, or a managed cloud stack.",
+        amount: 0,
+        isActive: true,
+      },
+      {
+        id: "backend-supabase",
+        label: "Supabase (Postgres + Auth + Storage)",
+        description: "HenryCo's default — Postgres, row-level security, magic-link auth, file storage.",
+        amount: 0,
+        isActive: true,
+      },
+      {
+        id: "backend-firebase",
+        label: "Firebase (Google Cloud)",
+        description: "When the team already uses Firebase auth, Firestore, or Cloud Functions.",
+        amount: 0,
+        isActive: true,
+        serviceKinds: ["mobile_app", "custom_software"],
+      },
+      {
+        id: "backend-node-services",
+        label: "Custom Node.js services",
+        description: "Bespoke API services in Node/TypeScript with the database of your choice.",
+        amount: 380000,
+        isActive: true,
+      },
+      {
+        id: "backend-rails",
+        label: "Ruby on Rails monolith",
+        description: "Mature monolith pattern for ops-heavy products with rich admin needs.",
+        amount: 420000,
+        isActive: true,
+        serviceKinds: ["custom_software", "internal_system"],
+      },
+      {
+        id: "backend-aws",
+        label: "AWS-native (Lambda + DynamoDB / RDS)",
+        description: "Serverless services on AWS for enterprise alignment or compliance scopes.",
+        amount: 620000,
+        isActive: true,
+        serviceKinds: ["custom_software", "internal_system"],
+      },
+      {
+        id: "backend-headless-cms",
+        label: "Headless CMS (Sanity / Contentful)",
+        description: "Editorial CMS layered with a custom frontend.",
+        amount: 240000,
+        isActive: true,
+        serviceKinds: ["website", "ecommerce"],
+      },
+      {
+        id: "backend-existing",
+        label: "Continue with our existing backend",
+        description: "We integrate with the API or platform you already operate.",
+        amount: 0,
+        isActive: true,
+      },
+    ],
+    hostingOptions: [
+      "HenryCo recommends the host",
+      "Vercel (managed Next.js / Edge)",
+      "Cloudflare Pages / Workers",
+      "Netlify",
+      "AWS (Amplify / EC2 / ECS)",
+      "Google Cloud / Firebase Hosting",
+      "DigitalOcean / Render",
+      "On-prem / private cloud",
+      "Continue with our current host",
+    ],
+    /**
+     * Project types — the kind of thing the customer is building.
+     *
+     * Project types are the FIRST decision and drive every downstream filter.
+     * They are deliberately mutually exclusive of platforms: a "Mobile app"
+     * project type implies the mobile platform, so we no longer carry a
+     * duplicate "Mobile app" platform option.
+     */
     projectTypes: [
       {
         id: "project-type-executive-company-website",
         label: "Executive company website",
-        description: "For premium lead-generation, corporate positioning, and credibility-first websites.",
+        description: "Premium lead-generation site for credibility, services, and corporate positioning.",
         amount: 0,
         isActive: true,
         serviceKinds: ["website"],
@@ -161,39 +353,39 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       {
         id: "project-type-lead-generation-funnel",
         label: "Lead generation or campaign funnel",
-        description: "Revenue-focused landing experiences with stronger conversion logic and campaign reporting.",
+        description: "Revenue-focused landing pages with conversion logic and campaign reporting.",
         amount: 280000,
         isActive: true,
-        serviceKinds: ["website", "branding", "ui_ux"],
+        serviceKinds: ["website"],
       },
       {
         id: "project-type-premium-ecommerce",
         label: "Premium e-commerce storefront",
-        description: "Commerce-led experiences with merchandising, checkout logic, and backend operations.",
+        description: "Commerce-led experience with merchandising, checkout logic, and back-of-house ops.",
         amount: 580000,
         isActive: true,
-        serviceKinds: ["ecommerce", "website"],
+        serviceKinds: ["ecommerce"],
       },
       {
         id: "project-type-client-portal",
         label: "Client portal or account workspace",
-        description: "Secure customer-facing spaces with account views, status, files, and approvals.",
+        description: "Secure customer-facing space with account views, status, files, and approvals.",
         amount: 760000,
         isActive: true,
-        serviceKinds: ["website", "custom_software", "internal_system"],
+        serviceKinds: ["custom_software", "internal_system"],
       },
       {
         id: "project-type-internal-dashboard",
         label: "Internal operations dashboard",
-        description: "Control-room interfaces for teams, finance, sales, delivery, and reporting.",
+        description: "Control-room interface for teams: finance, sales, dispatch, reporting.",
         amount: 840000,
         isActive: true,
-        serviceKinds: ["internal_system", "custom_software"],
+        serviceKinds: ["internal_system"],
       },
       {
         id: "project-type-mobile-app",
         label: "Mobile app",
-        description: "Native-feeling mobile products, member apps, or companion platforms.",
+        description: "iOS + Android product, member app, or companion app to a web platform.",
         amount: 1180000,
         isActive: true,
         serviceKinds: ["mobile_app"],
@@ -201,36 +393,40 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       {
         id: "project-type-marketplace-booking",
         label: "Marketplace or booking platform",
-        description: "Multi-sided experiences with listings, bookings, payments, and operational logic.",
+        description: "Multi-sided experience with listings, bookings, payments, and operational logic.",
         amount: 980000,
         isActive: true,
-        serviceKinds: ["custom_software", "ecommerce", "mobile_app"],
+        serviceKinds: ["custom_software", "ecommerce"],
       },
       {
         id: "project-type-custom-workflow-software",
         label: "Custom operations software",
-        description: "Software for approvals, team coordination, process automation, or client operations.",
+        description: "Approvals, team coordination, process automation, or client operations.",
         amount: 1240000,
         isActive: true,
-        serviceKinds: ["custom_software", "internal_system"],
+        serviceKinds: ["custom_software"],
       },
       {
         id: "project-type-brand-system",
-        label: "Brand system and digital identity",
-        description: "Identity, brand direction, and digital design language for higher-trust launches.",
+        label: "Brand identity & system",
+        description: "Naming support, identity direction, visual language, and core brand assets.",
         amount: 320000,
         isActive: true,
-        serviceKinds: ["branding", "ui_ux"],
+        serviceKinds: ["branding"],
       },
       {
         id: "project-type-product-design-system",
-        label: "Product UX/UI direction",
+        label: "Product UX / UI direction",
         description: "Research-led interface design, flows, and component libraries for complex products.",
         amount: 460000,
         isActive: true,
         serviceKinds: ["ui_ux"],
       },
     ],
+    /**
+     * Platforms — where the thing is delivered. No longer overlaps with
+     * project types (Mobile app removed; that's a project type now).
+     */
     platformOptions: [
       {
         id: "platform-best-fit",
@@ -241,47 +437,58 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       },
       {
         id: "platform-website-only",
-        label: "Website only",
-        description: "Public-facing website without a deeper account or operations layer.",
+        label: "Public website only",
+        description: "Public-facing site without a deeper account or operations layer.",
         amount: 0,
         isActive: true,
+        serviceKinds: ["website", "ecommerce", "branding", "ui_ux"],
       },
       {
         id: "platform-web-app",
         label: "Web app / SaaS product",
-        description: "Product-grade authenticated application layer with real user journeys and business logic.",
+        description: "Authenticated application layer with real user journeys and business logic.",
         amount: 1050000,
         isActive: true,
-      },
-      {
-        id: "platform-mobile-app",
-        label: "Mobile app",
-        description: "iOS/Android-oriented product delivery with app-specific interaction and release overhead.",
-        amount: 1450000,
-        isActive: true,
+        serviceKinds: ["custom_software", "internal_system"],
       },
       {
         id: "platform-website-admin",
-        label: "Website plus operations dashboard",
+        label: "Public site + private operations dashboard",
         description: "Public site plus a private operations and publishing layer.",
         amount: 900000,
         isActive: true,
+        serviceKinds: ["website", "ecommerce", "internal_system"],
       },
       {
         id: "platform-portal-ops",
-        label: "Client portal plus operations layer",
+        label: "Client portal + private operations layer",
         description: "Customer-facing workspace with a private team management surface.",
         amount: 1750000,
         isActive: true,
+        serviceKinds: ["custom_software", "internal_system"],
       },
       {
         id: "platform-commerce-backend",
-        label: "Commerce storefront plus backend operations layer",
+        label: "Storefront + back-of-house operations",
         description: "Storefront, order pipeline, fulfillment, and operational control surfaces.",
         amount: 1550000,
         isActive: true,
+        serviceKinds: ["ecommerce"],
+      },
+      {
+        id: "platform-mobile-companion",
+        label: "Mobile app paired with a web companion",
+        description: "Native-feeling mobile product with a web admin/console companion.",
+        amount: 1450000,
+        isActive: true,
+        serviceKinds: ["mobile_app"],
       },
     ],
+    /**
+     * Pages — now constrained to web/commerce service kinds. Mobile and
+     * software projects use module/feature options instead, so they don't
+     * see irrelevant page choices.
+     */
     pageOptions: [
       {
         id: "page-home-offers",
@@ -289,6 +496,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Core landing architecture, offer framing, and conversion-first lead surfaces.",
         amount: 240000,
         isActive: true,
+        serviceKinds: ["website", "ecommerce"],
       },
       {
         id: "page-services-solutions",
@@ -296,6 +504,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Service detail, solution architecture, or product marketing pages.",
         amount: 180000,
         isActive: true,
+        serviceKinds: ["website"],
       },
       {
         id: "page-about-trust",
@@ -303,6 +512,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Reassurance surfaces for credibility, company profile, and team positioning.",
         amount: 160000,
         isActive: true,
+        serviceKinds: ["website"],
       },
       {
         id: "page-proof",
@@ -310,6 +520,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Proof-led pages for results, delivery stories, and trust assets.",
         amount: 220000,
         isActive: true,
+        serviceKinds: ["website"],
       },
       {
         id: "page-pricing-proposal",
@@ -317,29 +528,38 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Commercial clarity pages for quotes, packages, or scoped decision flows.",
         amount: 180000,
         isActive: true,
+        serviceKinds: ["website", "ecommerce"],
       },
       {
-        id: "page-client-portal",
-        label: "Client account or portal views",
-        description: "Authenticated user-facing account, project, or portal screens.",
-        amount: 620000,
+        id: "page-blog-content",
+        label: "Blog, newsroom, or content hub",
+        description: "Editorial publishing surface with categories, search, and structured authoring.",
+        amount: 320000,
         isActive: true,
+        serviceKinds: ["website"],
       },
       {
-        id: "page-admin-control",
-        label: "Operations dashboard or control room",
-        description: "Private dashboards, queues, approvals, and operational coordination.",
-        amount: 780000,
+        id: "page-product-catalog",
+        label: "Product catalogue & listing",
+        description: "Browseable storefront, filters, and product detail pages.",
+        amount: 380000,
         isActive: true,
+        serviceKinds: ["ecommerce"],
       },
       {
         id: "page-checkout-payment",
         label: "Checkout, payment, or invoice views",
-        description: "Transaction-facing views for payment, invoice, proof, or commerce confirmation.",
+        description: "Transaction surfaces — checkout, invoice, payment confirmation.",
         amount: 280000,
         isActive: true,
+        serviceKinds: ["ecommerce", "website"],
       },
     ],
+    /**
+     * Modules / features — now project-aware. Web pages live in `pageOptions`,
+     * software/mobile features live here so the user only sees relevant
+     * choices for what they're actually building.
+     */
     moduleOptions: [
       {
         id: "module-cms",
@@ -347,13 +567,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Publishing flows and controlled content administration.",
         amount: 320000,
         isActive: true,
-      },
-      {
-        id: "module-admin",
-        label: "Operations dashboard",
-        description: "Operational oversight surfaces for private team use.",
-        amount: 760000,
-        isActive: true,
+        serviceKinds: ["website", "ecommerce"],
       },
       {
         id: "module-permissions",
@@ -361,6 +575,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Secure access models across staff, client, and finance roles.",
         amount: 280000,
         isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "ecommerce"],
       },
       {
         id: "module-payments",
@@ -368,13 +583,15 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Payment records, proofs, invoices, and finance coordination.",
         amount: 460000,
         isActive: true,
+        serviceKinds: ["ecommerce", "custom_software", "internal_system"],
       },
       {
         id: "module-bookings",
         label: "Bookings, scheduling, or calendar logic",
-        description: "Reservations, schedules, availability, or appointment logic.",
+        description: "Reservations, schedules, availability, and appointment logic.",
         amount: 420000,
         isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "mobile_app"],
       },
       {
         id: "module-client-account",
@@ -382,6 +599,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Customer-visible workspace, status history, and account features.",
         amount: 620000,
         isActive: true,
+        serviceKinds: ["custom_software", "ecommerce", "mobile_app"],
       },
       {
         id: "module-automation",
@@ -389,6 +607,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Email, WhatsApp, reminders, and triggered operations.",
         amount: 540000,
         isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "ecommerce", "mobile_app"],
       },
       {
         id: "module-analytics",
@@ -396,6 +615,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Operational visibility, reporting, and commercial performance views.",
         amount: 380000,
         isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "ecommerce", "mobile_app"],
       },
       {
         id: "module-integrations",
@@ -403,6 +623,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "External platforms, middleware, and enterprise connection logic.",
         amount: 680000,
         isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "ecommerce"],
       },
       {
         id: "module-file-vault",
@@ -410,8 +631,29 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Structured file storage, delivery handoff, and proof/document rails.",
         amount: 340000,
         isActive: true,
+        serviceKinds: ["custom_software", "internal_system"],
+      },
+      {
+        id: "module-push-offline",
+        label: "Push notifications & offline support",
+        description: "Mobile push, offline-first sync, and background fetch.",
+        amount: 380000,
+        isActive: true,
+        serviceKinds: ["mobile_app"],
+      },
+      {
+        id: "module-realtime",
+        label: "Real-time updates (websockets / live)",
+        description: "Live dashboards, presence, chat, or collaborative editing.",
+        amount: 480000,
+        isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "mobile_app"],
       },
     ],
+    /**
+     * Add-ons — non-core supporting work. Stays unfiltered (any project can
+     * benefit) but de-duped against `moduleOptions`.
+     */
     addOnOptions: [
       {
         id: "addon-brand-identity",
@@ -433,6 +675,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Search structure, metadata, and technical launch fundamentals.",
         amount: 320000,
         isActive: true,
+        serviceKinds: ["website", "ecommerce"],
       },
       {
         id: "addon-launch-campaign",
@@ -440,6 +683,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Launch-specific landing experiences, campaign structure, and selling surfaces.",
         amount: 540000,
         isActive: true,
+        serviceKinds: ["website", "ecommerce"],
       },
       {
         id: "addon-email-automation",
@@ -456,6 +700,14 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         isActive: true,
       },
       {
+        id: "addon-app-store-launch",
+        label: "App Store + Play Store launch",
+        description: "Listings, screenshots, review prep, and submission across both stores.",
+        amount: 280000,
+        isActive: true,
+        serviceKinds: ["mobile_app"],
+      },
+      {
         id: "addon-maintenance",
         label: "Maintenance or retained support",
         description: "Ongoing technical care, iteration, and operator support after launch.",
@@ -468,6 +720,14 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
         description: "Operator enablement, walkthroughs, and team transition support.",
         amount: 300000,
         isActive: true,
+      },
+      {
+        id: "addon-data-migration",
+        label: "Data migration from legacy system",
+        description: "Mapping, cleaning, and migrating records from your existing platform.",
+        amount: 520000,
+        isActive: true,
+        serviceKinds: ["custom_software", "internal_system", "ecommerce"],
       },
     ],
     urgencyOptions: [
@@ -570,6 +830,13 @@ export function normalizeStudioRequestConfig(value?: unknown): StudioRequestConf
     budgetOptions: normalizeStringList(record.budgetOptions, defaults.budgetOptions),
     designOptions: normalizeStringList(record.designOptions, defaults.designOptions),
     stackOptions: normalizeStringList(record.stackOptions, defaults.stackOptions),
+    programmingLanguageOptions: normalizeStringList(
+      record.programmingLanguageOptions,
+      defaults.programmingLanguageOptions,
+    ),
+    frameworkOptions: normalizePricedOptions(record.frameworkOptions, defaults.frameworkOptions),
+    backendOptions: normalizePricedOptions(record.backendOptions, defaults.backendOptions),
+    hostingOptions: normalizeStringList(record.hostingOptions, defaults.hostingOptions),
     projectTypes: normalizePricedOptions(record.projectTypes, defaults.projectTypes),
     platformOptions: normalizePricedOptions(record.platformOptions, defaults.platformOptions),
     pageOptions: normalizePricedOptions(record.pageOptions, defaults.pageOptions),

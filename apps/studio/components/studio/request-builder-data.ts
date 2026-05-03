@@ -1,15 +1,35 @@
+/**
+ * The brief is split into four stages that mirror the real production
+ * sequence we follow at HenryCo Studio after a project is signed:
+ *
+ *   1. PATH      — Define the kind of thing being built. This decision
+ *                  drives every downstream filter (pages, modules,
+ *                  framework, backend), so duplicates and irrelevant
+ *                  options are removed automatically once chosen.
+ *   2. SCOPE     — Pages, features, and the actual tech stack the team
+ *                  will use during build (programming language, framework,
+ *                  backend, hosting). What you tick here lands in the
+ *                  proposal as priced line-items.
+ *   3. COMMERCIAL— Domain plan, budget, urgency, and supporting context.
+ *   4. ACTIVATION— Team fit, contact, and submit. The brief becomes a real
+ *                  Studio lead with a senior team assigned by name.
+ *
+ * Each stage is independently navigable (forward and back) and progress is
+ * persisted across step changes — leave the page and the saved selections
+ * are preserved in the in-flight component state until submit.
+ */
 export const requestSteps = [
   {
     key: "path",
     label: "What you are building",
-    title: "Pick the lane that fits—package speed or custom depth.",
-    body: "Packages suit familiar builds we have delivered many times. Custom suits software, portals, and one-of-a-kind products.",
+    title: "Pick the lane that fits — package speed or custom depth.",
+    body: "Packages suit familiar builds we have delivered many times. Custom suits software, portals, and one-of-a-kind products. Your choice here filters every option you'll see next.",
   },
   {
     key: "scope",
-    label: "Shape of the work",
-    title: "Pages, features, and the parts people will actually use.",
-    body: "Tick what matters; we refine architecture and pricing with you before anything is final.",
+    label: "Pages, features & stack",
+    title: "Pages, features, and the actual tech stack we'll use.",
+    body: "Tick what matters. Each page or feature is a priced line-item. Choose your programming language, framework, backend, and host — or let HenryCo recommend.",
   },
   {
     key: "commercial",
@@ -21,7 +41,7 @@ export const requestSteps = [
     key: "activation",
     label: "Review & send",
     title: "Team fit, contact details, and submit.",
-    body: "You get a real Studio record, clear next steps, and honest payment guidance—never a silent inbox.",
+    body: "You get a real Studio record, clear next steps, and honest payment guidance — never a silent inbox.",
   },
 ] as const;
 

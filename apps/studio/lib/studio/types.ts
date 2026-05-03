@@ -60,6 +60,58 @@ export type StudioCaseStudy = {
   metrics: string[];
 };
 
+/**
+ * Ready-made studio website. Distinct from packages and services — these are
+ * pre-built, production-ready sites HenryCo Studio owns and ships to clients
+ * with a customisation pass. Listed on /pick and detailed at /pick/[slug].
+ */
+export type StudioTemplate = {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  /** Service this maps to so the request flow can prefill the right lane. */
+  serviceKind: StudioServiceKind;
+  /** Maps to a `projectTypes` label inside StudioRequestConfig. */
+  projectTypeLabel: string;
+  audience: string;
+  tagline: string;
+  summary: string;
+  /** Real, ready-to-quote price in NGN. */
+  price: number;
+  /** Standard package this template anchors to (for downstream proposal). */
+  packageId?: string;
+  depositRate: number;
+  timelineWeeks: number;
+  readyInDays: number;
+  pages: string[];
+  features: string[];
+  stack: string[];
+  outcomes: string[];
+  /** Two CSS color stops used to render the gradient hero preview. */
+  preview: {
+    from: string;
+    to: string;
+    accent: string;
+  };
+  /** Optional live-demo URL (kept null when not yet hosted). */
+  demoUrl?: string | null;
+};
+
+/**
+ * HenryCo Studio leadership profile. Surfaced on /teams alongside the four
+ * delivery pods. Studio purposely does not publish individual operator
+ * headshots for the four delivery teams (Orbit / Axis / Nova / Vector) —
+ * but the leadership panel is named so prospects know who's accountable.
+ */
+export type StudioLeader = {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  focus: string[];
+};
+
 export type StudioFaqItem = {
   id: string;
   question: string;

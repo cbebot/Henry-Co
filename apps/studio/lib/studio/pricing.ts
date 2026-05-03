@@ -40,6 +40,11 @@ type EstimateInput = {
     StudioCustomRequest,
     "projectType" | "platformPreference" | "pageRequirements" | "addonServices"
   > | null;
+  /** Tech-stack picks. Optional — `HenryCo recommends ...` selections cost 0. */
+  techStack?: {
+    framework?: string | null;
+    backend?: string | null;
+  } | null;
 };
 
 function roundAmount(value: number) {
@@ -147,6 +152,28 @@ export function estimateStudioPricing(
       label: "Growth add-ons",
       amount: addonAmount,
       detail: `${customRequest?.addonServices?.length || 0} selected add-on(s)`,
+    });
+  }
+
+  const techStack = input.techStack ?? null;
+  const frameworkAmount =
+    findPricedOptionByLabel(config.frameworkOptions, techStack?.framework || null, service.kind)
+      ?.amount ?? 0;
+  if (frameworkAmount > 0) {
+    lines.push({
+      label: "Framework / runtime premium",
+      amount: frameworkAmount,
+      detail: techStack?.framework || null,
+    });
+  }
+  const backendAmount =
+    findPricedOptionByLabel(config.backendOptions, techStack?.backend || null, service.kind)
+      ?.amount ?? 0;
+  if (backendAmount > 0) {
+    lines.push({
+      label: "Backend / data platform",
+      amount: backendAmount,
+      detail: techStack?.backend || null,
     });
   }
 
