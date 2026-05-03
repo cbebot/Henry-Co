@@ -446,7 +446,7 @@ export function PublicAccountChip({
           aria-label={surfaceCopy.publicAccount.accountMenu}
           onKeyDown={handleMenuKeyDown}
           className={cn(
-            "absolute right-0 z-[60] mt-2.5 w-[min(280px,calc(100vw-1.5rem))] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
+            "absolute right-0 z-[60] mt-2.5 w-[min(320px,calc(100vw-1rem))] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
             dropdownShellClass(resolvedTone),
             dropdownClassName
           )}

@@ -28,7 +28,7 @@ export function PropertySiteHeader({ accountSlot }: { accountSlot: ReactNode }) 
       toolbarClassName="px-5 sm:px-8 lg:px-10"
       mobileMenuContainerClassName="px-5 sm:px-8 lg:px-10"
       mobileDrawerClassName="border-[var(--property-line)]"
-      navClassName="hidden shrink-0 items-center gap-1 lg:flex"
+      navClassName="hidden shrink-0 items-center gap-3 lg:flex"
       prepend={
         <div className="border-b border-[rgba(232,184,148,0.08)]">
           <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-4 px-5 py-2 text-xs text-[var(--property-ink-soft)] sm:px-8 lg:px-10">
