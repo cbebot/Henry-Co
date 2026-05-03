@@ -112,7 +112,7 @@ export function PublicHeader({
   mobileSheetAfterNav,
   renderMobileSheetAfterNav,
   mobileSheetBeforeNav,
-  showAccountInMobileSheetFooter = false,
+  showAccountInMobileSheetFooter = true,
   /** Most division shells use full-bleed themed headers; set `"floating"` for elevated rounded chrome. */
   variant = "default",
   groupIdentityActions = true,
