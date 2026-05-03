@@ -267,7 +267,7 @@ function ProgressTab({ detail }: { detail: NonNullable<Awaited<ReturnType<typeof
         Milestone tracker
       </h2>
       <p className="mt-1.5 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-        This is the answer to "what stage are we at?" — the current milestone is highlighted, and
+        This is the answer to &ldquo;what stage are we at?&rdquo; — the current milestone is highlighted, and
         completed work shows the date it was approved.
       </p>
       <div className="mt-5">

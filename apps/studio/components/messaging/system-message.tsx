@@ -12,7 +12,6 @@ type Props = { message: StudioMessage };
  */
 export function SystemMessage({ message }: Props) {
   const meta = message.metadata || {};
-  const Icon = iconForType(message.messageType);
   const headline = headlineForMessage(message);
   const subtle = formatMessageTimestamp(message.createdAt);
 
@@ -31,7 +30,7 @@ export function SystemMessage({ message }: Props) {
           textShadow: "0 1px 0 rgba(0,0,0,0.25)",
         }}
       >
-        <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        {renderTypeIcon(message.messageType)}
         <span className="font-medium not-italic tracking-[0.005em]">{headline}</span>
         <span className="text-[#d4b14e]/55 not-italic">·</span>
         <time
@@ -49,20 +48,22 @@ export function SystemMessage({ message }: Props) {
   );
 }
 
-function iconForType(type: StudioMessage["messageType"]) {
+const TYPE_ICON_CLS = "h-3.5 w-3.5 shrink-0";
+
+function renderTypeIcon(type: StudioMessage["messageType"]) {
   switch (type) {
     case "milestone_update":
-      return FlagTriangleRight;
+      return <FlagTriangleRight className={TYPE_ICON_CLS} aria-hidden />;
     case "file_share":
-      return FileUp;
+      return <FileUp className={TYPE_ICON_CLS} aria-hidden />;
     case "payment_update":
-      return Receipt;
+      return <Receipt className={TYPE_ICON_CLS} aria-hidden />;
     case "approval_request":
-      return ShieldCheck;
+      return <ShieldCheck className={TYPE_ICON_CLS} aria-hidden />;
     case "system":
-      return Sparkles;
+      return <Sparkles className={TYPE_ICON_CLS} aria-hidden />;
     default:
-      return CheckCircle2;
+      return <CheckCircle2 className={TYPE_ICON_CLS} aria-hidden />;
   }
 }
 

@@ -61,7 +61,7 @@ export default async function ClientPaymentsPage() {
           Payments
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Pay outstanding invoices, see what is being verified, and review every payment you've made
+          Pay outstanding invoices, see what is being verified, and review every payment you&apos;ve made
           to HenryCo Studio.
         </p>
       </header>
@@ -78,7 +78,7 @@ export default async function ClientPaymentsPage() {
         </h2>
         {outstanding.length === 0 ? (
           <p className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-5 py-4 text-[13px] text-[var(--studio-ink-soft)]">
-            You're all caught up. Nothing to pay right now.
+            You&apos;re all caught up. Nothing to pay right now.
           </p>
         ) : (
           <div className="grid gap-3">

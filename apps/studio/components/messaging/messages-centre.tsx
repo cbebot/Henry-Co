@@ -239,7 +239,7 @@ function ThreadColumnPlaceholder({
       </header>
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
         <p className="max-w-md text-[13px] text-white/55">
-          Open this project's full conversation, including history, files,
+          Open this project&apos;s full conversation, including history, files,
           and team context.
         </p>
         <Link

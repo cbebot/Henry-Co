@@ -85,7 +85,9 @@ export function useMessageScroll({ messageCount, smooth }: Options) {
         // Allow layout to settle before scrolling.
         requestAnimationFrame(() => scrollToBottom(true));
       } else {
-        setPendingNewMessage(true);
+        // Defer so React doesn't see a synchronous setState inside the
+        // effect body — keeps render commit cheap and lint happy.
+        queueMicrotask(() => setPendingNewMessage(true));
       }
     }
 

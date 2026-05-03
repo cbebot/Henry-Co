@@ -80,7 +80,6 @@ function ImageAttachment({ attachment, ownTone }: Props) {
 }
 
 function FileAttachment({ attachment, ownTone }: Props) {
-  const Icon = iconFor(attachment);
   const containerToneCls = ownTone
     ? "border-white/[0.18] bg-white/[0.06] hover:bg-white/[0.10]"
     : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05]";
@@ -100,7 +99,7 @@ function FileAttachment({ attachment, ownTone }: Props) {
             : "bg-[#d4b14e]/15 text-[#d4b14e]"
         }`}
       >
-        <Icon className="h-5 w-5" aria-hidden />
+        {renderAttachmentIcon(attachment)}
       </span>
       <div className="min-w-0 flex-1">
         <div
@@ -139,18 +138,20 @@ function FileAttachment({ attachment, ownTone }: Props) {
   );
 }
 
-function iconFor(attachment: MessageAttachment) {
+const ATTACHMENT_ICON_CLS = "h-5 w-5";
+
+function renderAttachmentIcon(attachment: MessageAttachment) {
   switch (attachment.kind) {
     case "image":
-      return ImageIcon;
+      return <ImageIcon className={ATTACHMENT_ICON_CLS} aria-hidden />;
     case "pdf":
-      return FileText;
+      return <FileText className={ATTACHMENT_ICON_CLS} aria-hidden />;
     case "doc":
-      return FileSpreadsheet;
+      return <FileSpreadsheet className={ATTACHMENT_ICON_CLS} aria-hidden />;
     case "video":
-      return FileType2;
+      return <FileType2 className={ATTACHMENT_ICON_CLS} aria-hidden />;
     default:
-      return Paperclip;
+      return <Paperclip className={ATTACHMENT_ICON_CLS} aria-hidden />;
   }
 }
 

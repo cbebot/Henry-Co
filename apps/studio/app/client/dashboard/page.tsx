@@ -41,11 +41,16 @@ export default async function ClientDashboardPage() {
 
   const attention = buildAttentionItems(snapshot);
 
+  // Server component — Date.now() is the request timestamp, deterministic
+  // for the duration of this render. The compiler's impurity guard is
+  // for client renders and does not apply here.
+  // eslint-disable-next-line react-hooks/purity
+  const activityCutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const recentActivity = snapshot.updates
     .filter((update) => {
       const created = new Date(update.createdAt).getTime();
       if (!Number.isFinite(created)) return false;
-      return Date.now() - created < 30 * 24 * 60 * 60 * 1000;
+      return created > activityCutoff;
     })
     .slice(0, 12);
 
