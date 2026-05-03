@@ -34,8 +34,14 @@ export interface TypesenseEnv {
 }
 
 export function readTypesenseEnv(env: NodeJS.ProcessEnv = process.env): TypesenseEnv {
+  const host = cleanText(env.TYPESENSE_HOST) || cleanText(env.NEXT_PUBLIC_TYPESENSE_HOST);
+
   return {
-    host: cleanText(env.TYPESENSE_HOST) || cleanText(env.NEXT_PUBLIC_TYPESENSE_HOST),
+    host: normalizeTypesenseHost({
+      host,
+      protocol: cleanText(env.TYPESENSE_PROTOCOL) || cleanText(env.NEXT_PUBLIC_TYPESENSE_PROTOCOL),
+      port: cleanText(env.TYPESENSE_PORT) || cleanText(env.NEXT_PUBLIC_TYPESENSE_PORT),
+    }),
     adminApiKey: cleanText(env.TYPESENSE_ADMIN_API_KEY) || undefined,
     searchApiKey:
       cleanText(env.TYPESENSE_SEARCH_API_KEY) ||
@@ -46,6 +52,22 @@ export function readTypesenseEnv(env: NodeJS.ProcessEnv = process.env): Typesens
 
 function cleanText(value: unknown): string {
   return String(value ?? "").trim();
+}
+
+function normalizeTypesenseHost(input: { host: string; protocol?: string; port?: string }): string {
+  const host = input.host.replace(/\/+$/, "");
+  if (!host) return "";
+  if (/^https?:\/\//i.test(host)) return host;
+
+  const protocol = input.protocol?.toLowerCase() === "http" ? "http" : "https";
+  const port = Number(input.port);
+  const shouldAppendPort =
+    Number.isFinite(port) &&
+    port > 0 &&
+    !host.includes(":") &&
+    !((protocol === "https" && port === 443) || (protocol === "http" && port === 80));
+
+  return `${protocol}://${host}${shouldAppendPort ? `:${port}` : ""}`;
 }
 
 function assertHost(env: TypesenseEnv): string {
