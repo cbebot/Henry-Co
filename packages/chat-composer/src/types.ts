@@ -42,7 +42,13 @@ export type AttachmentUploader = (
   signal: AbortSignal
 ) => Promise<RemoteAttachment>;
 
-export type ComposerTone = "account" | "care" | "jobs" | "marketplace" | "neutral";
+export type ComposerTone =
+  | "account"
+  | "care"
+  | "jobs"
+  | "marketplace"
+  | "studio"
+  | "neutral";
 
 export type ComposerLabels = {
   placeholder?: string;

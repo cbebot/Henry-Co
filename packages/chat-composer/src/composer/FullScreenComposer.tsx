@@ -24,6 +24,7 @@ const TONE_ACCENT: Record<string, { base: string; deep: string }> = {
   care: { base: "#4F5DDA", deep: "#3C49B0" },
   jobs: { base: "#0E7C86", deep: "#0A5C63" },
   marketplace: { base: "#B2863B", deep: "#8C6326" },
+  studio: { base: "#d4b14e", deep: "#a98835" },
 };
 
 const COLLAPSE_VELOCITY = 0.85; // px/ms
