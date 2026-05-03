@@ -240,8 +240,8 @@ export function StudioRequestScopeStep({
         <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
           <div className="studio-kicker">Required features</div>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-            What does the product need to do for users on day one? Pick what's
-            non-negotiable; we'll suggest sensible additions during proposal review.
+            What does the product need to do for users on day one? Pick what&apos;s
+            non-negotiable; we&apos;ll suggest sensible additions during proposal review.
           </p>
           <div className="mt-5">
             <ScopeSummaryHeader
@@ -265,7 +265,7 @@ export function StudioRequestScopeStep({
       <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
         <div className="studio-kicker">Tech stack</div>
         <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          Tell us your preferences. We'll honour them where it serves the project,
+          Tell us your preferences. We&apos;ll honour them where it serves the project,
           push back honestly where a different choice would serve you better. Cost
           deltas are shown — most picks are zero-delta.
         </p>
@@ -364,7 +364,7 @@ export function StudioRequestScopeStep({
         <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
           <div className="studio-kicker">Add-on services</div>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-            Optional supporting work. Skip what's not needed — pricing recalculates live.
+            Optional supporting work. Skip what&apos;s not needed — pricing recalculates live.
           </p>
           <div className="mt-5">
             <ScopeSummaryHeader
