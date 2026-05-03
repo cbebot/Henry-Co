@@ -1,16 +1,15 @@
 import type { MetadataRoute } from "next";
-import { getDivisionConfig } from "@henryco/config";
 
 export default function manifest(): MetadataRoute.Manifest {
-  const division = getDivisionConfig("marketplace");
   return {
-    name: division.name,
-    short_name: division.shortName,
-    description: division.description,
+    name: "HenryCo Account",
+    short_name: "HenryCo",
+    description:
+      "Your HenryCo account — single sign-on across all Henry & Co. divisions, with activity, payments, and notifications in one place.",
     start_url: "/",
     display: "standalone",
-    background_color: division.dark,
-    theme_color: division.accent,
+    background_color: "#050816",
+    theme_color: "#C9A227",
     icons: [
       { src: "/brand/monogram.svg", type: "image/svg+xml", sizes: "any" },
       { src: "/icon", type: "image/svg+xml", sizes: "any" },

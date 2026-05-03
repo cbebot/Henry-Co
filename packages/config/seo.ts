@@ -162,7 +162,20 @@ export function createDivisionMetadata(
           shortcut: [{ url: icon }],
           apple: [{ url: icon }],
         }
-      : undefined,
+      : {
+          // iOS Safari Add-to-Home-Screen does not read PNG entries from the
+          // web app manifest, so the apple-touch-icon link must be present in
+          // the document head. Each app serves a 180x180 PNG generated from
+          // the canonical monogram via `pnpm brand:icons` into its own
+          // public/brand/ directory.
+          apple: [
+            {
+              url: "/brand/apple-touch-icon.png",
+              sizes: "180x180",
+              type: "image/png",
+            },
+          ],
+        },
     robots: options.noIndex
       ? {
           index: false,
