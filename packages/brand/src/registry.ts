@@ -107,3 +107,38 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
 export function getCompany(key: CompanyKey) {
   return COMPANIES[key];
 }
+
+/**
+ * Brand mark asset references. Source SVGs ship with @henryco/ui/brand
+ * (see `packages/ui/src/brand/static/`). Each app exposes its own copy
+ * via `public/brand/{file}.svg` and via the Next.js `app/icon.svg`
+ * convention (auto-served at /icon), so absolute URLs can be composed
+ * from the host: `https://{host}/brand/monogram.svg`.
+ *
+ * Use `marks.monogram.appPath` for in-app references (e.g. JSON-LD logo
+ * fields where you compose absolute URLs at request time). Use
+ * `marks.monogram.staticImport` only inside the @henryco/ui workspace.
+ */
+export const marks = {
+  monogram: {
+    /** Public-served path for absolute-URL composition. */
+    appPath: "/brand/monogram.svg",
+    /** Next.js auto-favicon path served from app/icon.svg. */
+    iconPath: "/icon",
+    /** Workspace-internal source. Use only inside @henryco/ui. */
+    staticImport: "@henryco/ui/brand/static/monogram.svg",
+    width: 64,
+    height: 64,
+    viewBox: "0 0 64 64",
+  },
+  wordmarkFull: {
+    appPath: "/brand/wordmark-full.svg",
+    staticImport: "@henryco/ui/brand/static/wordmark-full.svg",
+  },
+  wordmarkCompact: {
+    appPath: "/brand/wordmark-compact.svg",
+    staticImport: "@henryco/ui/brand/static/wordmark-compact.svg",
+  },
+} as const;
+
+export type BrandMark = keyof typeof marks;
