@@ -62,8 +62,11 @@ export function NotificationToast({
     return map;
   }, [projectSubscriptions]);
   const pausedRef = useRef(paused);
-  pausedRef.current = paused;
   const seenIdsRef = useRef(new Set<string>());
+
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
 
   useEffect(() => {
     if (!viewerId) return;

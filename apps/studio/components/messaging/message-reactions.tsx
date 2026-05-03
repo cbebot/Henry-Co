@@ -90,7 +90,9 @@ export function ReactionPicker({
 
   useEffect(() => {
     if (!open) return;
-    setFocusIdx(0);
+    // Reset focus index when picker opens — defer past the effect
+    // commit so React doesn't see a synchronous setState in an effect.
+    queueMicrotask(() => setFocusIdx(0));
   }, [open]);
 
   useEffect(() => {

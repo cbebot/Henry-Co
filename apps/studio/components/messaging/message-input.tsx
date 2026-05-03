@@ -145,7 +145,7 @@ export function MessageInput({
           className="rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-1.5 text-[11px] font-medium text-amber-200"
           role="status"
         >
-          You're offline — your next message will be queued and sent
+          You&apos;re offline — your next message will be queued and sent
           automatically once the connection returns.
         </div>
       ) : null}
