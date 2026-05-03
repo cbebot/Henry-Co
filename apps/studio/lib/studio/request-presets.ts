@@ -1,11 +1,17 @@
 import { filterPricedOptions } from "@/lib/studio/request-config";
 import type { StudioRequestConfig } from "@/lib/studio/request-config";
+import { studioTemplates } from "@/lib/studio/templates";
 import type { StudioServiceKind } from "@/lib/studio/types";
 
 export type StudioRequestPresetResult = {
   serviceKind: StudioServiceKind;
   pathway: "package" | "custom";
   projectTypeLabel: string;
+  /** When the preset originates from a ready-made template, the slug + name
+   *  flow into the activation step so the lead carries that context. */
+  templateSlug?: string;
+  templateName?: string;
+  packageId?: string;
 };
 
 type PresetDef = {
@@ -132,5 +138,36 @@ export function resolveStudioRequestPreset(
     serviceKind: def.serviceKind,
     pathway: def.pathway ?? "custom",
     projectTypeLabel: match.label,
+  };
+}
+
+/**
+ * Resolve a `?template=<slug>` query into the same preset shape used by the
+ * legacy `?preset=<key>` flow. Templates always anchor to the `package`
+ * pathway because a ready-made site has a defined scope and price.
+ */
+export function resolveStudioTemplatePreset(
+  rawSlug: string | null | undefined,
+  requestConfig: StudioRequestConfig
+): StudioRequestPresetResult | null {
+  const slug = String(rawSlug || "")
+    .trim()
+    .toLowerCase();
+  if (!slug) return null;
+  const template = studioTemplates.find((tpl) => tpl.slug === slug);
+  if (!template) return null;
+
+  const types = filterPricedOptions(requestConfig.projectTypes, template.serviceKind);
+  const match =
+    types.find((t) => t.label === template.projectTypeLabel) ?? types[0] ?? null;
+  if (!match) return null;
+
+  return {
+    serviceKind: template.serviceKind,
+    pathway: "package",
+    projectTypeLabel: match.label,
+    templateSlug: template.slug,
+    templateName: template.name,
+    packageId: template.packageId,
   };
 }
