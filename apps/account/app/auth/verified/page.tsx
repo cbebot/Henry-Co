@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 import { isRecoverableSupabaseAuthError, normalizeTrustedRedirect } from "@henryco/config";
+import { resolveSenderIdentity } from "@henryco/email";
 import Logo from "@/components/brand/Logo";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
@@ -43,6 +44,7 @@ export default async function VerifiedPage({
   const fullName =
     (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
     null;
+  const accountsSender = resolveSenderIdentity("auth");
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4 py-10">
@@ -110,7 +112,7 @@ export default async function VerifiedPage({
         </div>
 
         <p className="mt-6 text-center text-[11px] text-[var(--acct-muted)]">
-          Need help? Reach <span className="text-[var(--acct-ink)]">accounts@henrycogroup.com</span> any time.
+          Need help? Reach <span className="text-[var(--acct-ink)]">{accountsSender.email}</span> any time.
         </p>
       </div>
     </div>

@@ -53,7 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             {children}
-            <AssistDock division="jobs" />
+            <AssistDock division="jobs" accent="#0E7C86" />
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

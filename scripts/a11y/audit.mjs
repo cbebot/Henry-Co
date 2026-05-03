@@ -13,7 +13,7 @@
 
 import { spawn } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { chromium } from "@playwright/test";
@@ -51,7 +51,7 @@ for (const entry of APPS) {
 
   if (!argv["base-url"]) {
     serverProc = await startNext(entry);
-    await waitForReady(baseUrl, 60_000);
+    await waitForReady(baseUrl, 60_000, serverProc);
   }
 
   const browser = await chromium.launch();
@@ -168,23 +168,88 @@ function countBySeverity(violations) {
 async function startNext(entry) {
   console.log(pc.gray(`  spawning next start on :${entry.devPort}`));
   const isWin = process.platform === "win32";
-  const cmd = isWin ? "pnpm.cmd" : "pnpm";
-  const proc = spawn(
-    cmd,
-    [
-      "--filter",
-      entry.pkg,
-      "exec",
-      "next",
-      "start",
-      "--port",
-      String(entry.devPort),
-    ],
-    { stdio: ["ignore", "pipe", "pipe"], cwd: ROOT, shell: false },
-  );
-  proc.stderr.on("data", () => {});
-  proc.stdout.on("data", () => {});
+  const env = loadEnvForApp(entry);
+  const args = [
+    "--filter",
+    entry.pkg,
+    "exec",
+    "next",
+    "start",
+    "--port",
+    String(entry.devPort),
+  ];
+  const proc = isWin
+    ? spawn("cmd.exe", ["/d", "/s", "/c", "pnpm", ...args], {
+        stdio: ["ignore", "pipe", "pipe"],
+        cwd: ROOT,
+        env,
+        shell: false,
+        windowsHide: true,
+      })
+    : spawn("pnpm", args, {
+        stdio: ["ignore", "pipe", "pipe"],
+        cwd: ROOT,
+        env,
+        shell: false,
+      });
+
+  proc.a11yLog = "";
+  const capture = (chunk) => {
+    proc.a11yLog = (proc.a11yLog + chunk.toString()).slice(-4000);
+  };
+  proc.stderr.on("data", capture);
+  proc.stdout.on("data", capture);
   return proc;
+}
+
+function loadEnvForApp(entry) {
+  const env = { ...process.env };
+  const appRoot = join(ROOT, "apps", entry.app);
+  const files = [
+    join(ROOT, ".env.local"),
+    join(ROOT, ".env.production.vercel"),
+    ...listAppEnvFiles(appRoot),
+  ];
+
+  for (const file of files) {
+    if (!existsSync(file)) continue;
+    for (const [key, value] of Object.entries(parseEnvFile(file))) {
+      if (value) env[key] = value;
+    }
+  }
+
+  return env;
+}
+
+function listAppEnvFiles(appRoot) {
+  try {
+    return readdirSync(appRoot)
+      .filter((name) => name.startsWith(".env"))
+      .sort()
+      .map((name) => join(appRoot, name));
+  } catch {
+    return [];
+  }
+}
+
+function parseEnvFile(file) {
+  const out = {};
+  for (const rawLine of readFileSync(file, "utf8").split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eq = line.indexOf("=");
+    if (eq <= 0) continue;
+    const key = line.slice(0, eq).trim();
+    let value = line.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    out[key] = value;
+  }
+  return out;
 }
 
 async function stopProc(proc) {
@@ -201,9 +266,22 @@ async function stopProc(proc) {
   }
 }
 
-async function waitForReady(url, timeoutMs) {
+async function waitForReady(url, timeoutMs, proc) {
   const deadline = Date.now() + timeoutMs;
+  let exitDetails = null;
+  proc?.once("exit", (code, signal) => {
+    exitDetails = { code, signal };
+  });
+
   while (Date.now() < deadline) {
+    if (exitDetails) {
+      throw new Error(
+        `Server exited before becoming ready at ${url} (code ${exitDetails.code ?? "null"}, signal ${
+          exitDetails.signal ?? "null"
+        }).\n${proc?.a11yLog || ""}`,
+      );
+    }
+
     try {
       const r = await fetch(url, { method: "HEAD" });
       if (r.status < 500) return;
@@ -212,5 +290,5 @@ async function waitForReady(url, timeoutMs) {
     }
     await sleep(1000);
   }
-  throw new Error(`Server never became ready at ${url}`);
+  throw new Error(`Server never became ready at ${url}.\n${proc?.a11yLog || ""}`);
 }

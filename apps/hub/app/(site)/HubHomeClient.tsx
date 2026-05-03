@@ -32,6 +32,7 @@ import {
   HenryCoPublicAccountPresets,
   PublicAccountChip,
 } from "@henryco/ui";
+import { HenryCoLogo } from "@henryco/brand";
 import type { DivisionRow } from "../lib/divisions";
 
 type StatusFilter = "all" | "active" | "coming_soon" | "paused";
@@ -193,13 +194,18 @@ function toFaqItems(
   return items.length ? items : fallback;
 }
 
+/**
+ * BrandMark — renders the canonical HenryCo monogram SVG.
+ *
+ * No image is loaded. `src` is intentionally ignored to enforce one source of
+ * truth across the platform; surfaces that previously fed a Supabase
+ * `logo_url` now resolve to the same SVG and color it via `accent`.
+ */
 function BrandMark({
-  src,
   alt,
   accent,
   wrapperClassName,
   imageClassName,
-  iconClassName,
 }: {
   src?: string | null;
   alt: string;
@@ -208,10 +214,6 @@ function BrandMark({
   imageClassName?: string;
   iconClassName?: string;
 }) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const cleanSrc = normalizeImageUrl(src);
-  const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
-
   return (
     <div
       className={cn(
@@ -219,32 +221,23 @@ function BrandMark({
         wrapperClassName
       )}
     >
-      {cleanSrc && !isFailed ? (
-        <img
-          src={cleanSrc}
-          alt={alt}
-          className={cn("h-full w-full object-contain", imageClassName)}
-          loading="eager"
-          decoding="async"
-          onLoad={() => setFailedSrc(null)}
-          onError={() => {
-            if (cleanSrc) {
-              setFailedSrc(cleanSrc);
-            }
-          }}
-        />
-      ) : (
-        <Layers3
-          className={cn("text-[color:var(--accent)]", iconClassName)}
-          style={{ color: accent }}
-        />
-      )}
+      <HenryCoLogo
+        tone="mono"
+        accent={accent}
+        variant="mark"
+        label={alt}
+        className={cn("h-full w-full p-1.5", imageClassName)}
+      />
     </div>
   );
 }
 
+/**
+ * DivisionMark — division thumbnail using the canonical HenryCo SVG, colored
+ * by the division accent. No image asset is loaded; division identity is
+ * conveyed through accent + label, not through a separate logo upload.
+ */
 function DivisionMark({
-  src,
   alt,
   accent,
   wrapperClassName,
@@ -256,36 +249,21 @@ function DivisionMark({
   wrapperClassName?: string;
   imageClassName?: string;
 }) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const cleanSrc = normalizeImageUrl(src);
   const safeAccent = getAccent(accent);
-  const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
-
   return (
     <div
       className={cn(
         "grid place-items-center overflow-hidden rounded-2xl border border-white/12 bg-black/25",
         wrapperClassName
       )}
-      style={!cleanSrc || isFailed ? { background: safeAccent } : undefined}
     >
-      {cleanSrc && !isFailed ? (
-        <img
-          src={cleanSrc}
-          alt={alt}
-          className={cn("h-full w-full object-contain", imageClassName)}
-          loading="lazy"
-          decoding="async"
-          onLoad={() => setFailedSrc(null)}
-          onError={() => {
-            if (cleanSrc) {
-              setFailedSrc(cleanSrc);
-            }
-          }}
-        />
-      ) : (
-        <Building2 className="h-5 w-5 text-black" />
-      )}
+      <HenryCoLogo
+        tone="mono"
+        accent={safeAccent}
+        variant="mark"
+        label={alt}
+        className={cn("h-full w-full p-1.5", imageClassName)}
+      />
     </div>
   );
 }
@@ -623,13 +601,13 @@ export default function HubHomeClient({
                 initial={reduceMotion ? false : { opacity: 0, y: 18 }}
                 animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.04 }}
-                /* clamp + safe overflow protect against the 320–360px clip
-                   ("Focused" → "ocused") that the previous static
-                   text-4xl + negative tracking caused. */
+                /* Bounded clamp — cap at ~3.4rem so the headline never
+                   eats the viewport. Mobile floor at 1.95rem keeps the
+                   320–360px clip fix from V2-HERO-01 intact. */
                 style={{
-                  fontSize: "clamp(2rem, 6.4vw + 0.6rem, 4.6rem)",
-                  lineHeight: 1,
-                  letterSpacing: "-0.025em",
+                  fontSize: "clamp(1.95rem, 3.8vw + 0.6rem, 3.4rem)",
+                  lineHeight: 1.06,
+                  letterSpacing: "-0.022em",
                   wordBreak: "normal",
                   overflowWrap: "break-word",
                   hyphens: "auto",

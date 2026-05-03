@@ -5,6 +5,14 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./registry": "./src/registry.ts"
+    "./registry": "./src/registry.ts",
+    "./logo": "./src/Logo.tsx"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0"
   }
 }

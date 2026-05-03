@@ -1,29 +1,32 @@
 "use client";
 
-import Image from "next/image";
+import { HenryCoLogo, type HenryCoLogoTone } from "@henryco/brand";
 
-const LOGO_URL = process.env.NEXT_PUBLIC_LOGO_URL || "";
-
-export default function Logo({ size = 40, className = "" }: { size?: number; className?: string }) {
-  if (LOGO_URL) {
-    return (
-      <Image
-        src={LOGO_URL}
-        alt="Henry & Co."
-        width={size}
-        height={size}
-        priority
-        className={`object-contain ${className}`}
-      />
-    );
-  }
-
+/**
+ * Hub-side brand mark.
+ *
+ * Source of truth: `@henryco/brand` SVG. No image asset is loaded — the mark
+ * is drawn so it never 404s, scales crisply, and inherits the surface's
+ * accent color when needed.
+ */
+export default function Logo({
+  size = 40,
+  className = "",
+  tone = "default",
+  accent,
+}: {
+  size?: number;
+  className?: string;
+  tone?: HenryCoLogoTone;
+  accent?: string;
+}) {
   return (
-    <div
-      className={`flex items-center justify-center rounded-xl bg-[var(--acct-gold)] font-bold text-white ${className}`}
-      style={{ width: size, height: size, fontSize: size * 0.4 }}
-    >
-      H
-    </div>
+    <HenryCoLogo
+      size={size}
+      tone={tone}
+      accent={accent}
+      className={className}
+      label="Henry & Co."
+    />
   );
 }

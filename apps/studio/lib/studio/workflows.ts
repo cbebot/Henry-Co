@@ -78,6 +78,14 @@ export type SubmitStudioBriefInput = {
   projectType?: string | null;
   platformPreference?: string | null;
   preferredLanguage?: string | null;
+  /** Programming language preferred for the build (e.g. TypeScript, Python). */
+  programmingLanguage?: string | null;
+  /** Frontend / app framework preference. */
+  frameworkPreference?: string | null;
+  /** Backend / data platform preference. */
+  backendPreference?: string | null;
+  /** Hosting / deployment preference. */
+  hostingPreference?: string | null;
   designDirection?: string | null;
   pageRequirements?: string[];
   addonServices?: string[];
@@ -320,6 +328,10 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
       timeline: input.timeline,
     },
     customRequest: draftCustomRequest,
+    techStack: {
+      framework: input.frameworkPreference ?? null,
+      backend: input.backendPreference ?? null,
+    },
   }, catalog.requestConfig);
   const investment = pricing.total;
   const { proposalMilestones, projectMilestones } = buildMilestonePlan(
@@ -420,7 +432,19 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
             `Project type: ${customRequest.projectType}`,
             `Platform preference: ${customRequest.platformPreference}`,
             ...(cleanText(input.preferredLanguage)
-              ? [`Preferred language: ${cleanText(input.preferredLanguage)}`]
+              ? [`Content language: ${cleanText(input.preferredLanguage)}`]
+              : []),
+            ...(cleanText(input.programmingLanguage)
+              ? [`Programming language: ${cleanText(input.programmingLanguage)}`]
+              : []),
+            ...(cleanText(input.frameworkPreference)
+              ? [`Framework: ${cleanText(input.frameworkPreference)}`]
+              : []),
+            ...(cleanText(input.backendPreference)
+              ? [`Backend: ${cleanText(input.backendPreference)}`]
+              : []),
+            ...(cleanText(input.hostingPreference)
+              ? [`Hosting: ${cleanText(input.hostingPreference)}`]
               : []),
             `Design direction: ${customRequest.designDirection}`,
           ]

@@ -187,10 +187,12 @@ textarea {
 
 .studio-display {
   font-family: var(--font-studio-display);
-  font-size: clamp(3rem, 8vw, 7rem);
-  line-height: 0.9;
-  letter-spacing: -0.06em;
+  font-size: clamp(1.9rem, 3.6vw + 0.6rem, 3.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
   font-weight: 700;
+  text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 .studio-heading {

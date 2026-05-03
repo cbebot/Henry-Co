@@ -31,6 +31,14 @@ export type RequestBuilderSelectionProps = {
   setSelectedAddOns: (value: string[]) => void;
   selectedTech: string[];
   setSelectedTech: (value: string[]) => void;
+  selectedProgrammingLanguage: string;
+  setSelectedProgrammingLanguage: (value: string) => void;
+  selectedFramework: string;
+  setSelectedFramework: (value: string) => void;
+  selectedBackend: string;
+  setSelectedBackend: (value: string) => void;
+  selectedHosting: string;
+  setSelectedHosting: (value: string) => void;
   businessType: string;
   setBusinessType: (value: string) => void;
   budgetBand: string;

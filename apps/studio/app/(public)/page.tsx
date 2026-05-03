@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Layers3, Sparkles, Target } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, Layers3, Sparkles, Target } from "lucide-react";
 import { PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
 import { getStudioCatalog } from "@/lib/studio/catalog";
+import { studioTemplates } from "@/lib/studio/templates";
 import { formatCurrency } from "@/lib/env";
 
 export default async function StudioHomePage() {
@@ -11,12 +12,17 @@ export default async function StudioHomePage() {
   const featuredTeams = catalog.teams.slice(0, 4);
   const featuredCases = catalog.caseStudies.slice(0, 3);
   const featuredTestimonials = catalog.testimonials.slice(0, 2);
+  const featuredTemplates = studioTemplates.slice(0, 4);
+  const fastestTemplateDays = studioTemplates.reduce(
+    (min, tpl) => Math.min(min, tpl.readyInDays),
+    Number.POSITIVE_INFINITY,
+  );
 
   return (
     <main className="pb-24">
       <section className="mx-auto max-w-[92rem] px-5 pt-6 sm:px-8 sm:pt-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <div className="studio-panel studio-hero studio-mesh rounded-[2rem] px-5 py-7 sm:rounded-[2.4rem] sm:px-9 sm:py-12 lg:rounded-[3rem] lg:px-14 lg:py-16">
+          <div className="studio-panel studio-hero studio-mesh rounded-[2rem] px-5 py-7 sm:rounded-[2.4rem] sm:px-8 sm:py-10 lg:rounded-[3rem] lg:px-10 lg:py-12">
             <div className="flex flex-wrap items-center gap-2">
               <span className="studio-kicker">HenryCo Studio</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
@@ -94,6 +100,62 @@ export default async function StudioHomePage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <div className="studio-kicker">Ready-made by Studio</div>
+            <h2 className="studio-heading mt-4">
+              Pick a template — launch in {fastestTemplateDays}+ days.
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-[var(--studio-ink-soft)]">
+              Real prices. Real timelines. We tailor the chosen site to your brand and
+              content, then launch.
+            </p>
+          </div>
+          <Link href="/pick" className="text-sm font-semibold text-[var(--studio-ink)]">
+            Browse all templates
+          </Link>
+        </div>
+
+        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {featuredTemplates.map((tpl) => (
+            <Link
+              key={tpl.id}
+              href={`/pick/${tpl.slug}`}
+              className="studio-card-tactile group flex h-full flex-col rounded-[1.6rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] p-4 transition duration-300 hover:-translate-y-1 hover:border-[var(--studio-signal)]/40"
+            >
+              <div
+                aria-hidden
+                className="relative h-24 w-full overflow-hidden rounded-[1.1rem]"
+                style={{
+                  background: `linear-gradient(135deg, ${tpl.preview.from} 0%, ${tpl.preview.to} 100%)`,
+                }}
+              >
+                <div
+                  className="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-30 blur-2xl"
+                  style={{ background: tpl.preview.accent }}
+                />
+              </div>
+              <h3 className="mt-4 text-[1rem] font-semibold leading-snug tracking-tight text-[var(--studio-ink)]">
+                {tpl.name}
+              </h3>
+              <p className="mt-1.5 line-clamp-2 text-[12.5px] leading-relaxed text-[var(--studio-ink-soft)]">
+                {tpl.tagline}
+              </p>
+              <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-[12.5px]">
+                <span className="font-semibold text-[var(--studio-ink)]">
+                  {formatCurrency(tpl.price)}
+                </span>
+                <span className="inline-flex items-center gap-1 font-mono uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+                  <Clock className="h-3 w-3" />
+                  {tpl.readyInDays} days
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 

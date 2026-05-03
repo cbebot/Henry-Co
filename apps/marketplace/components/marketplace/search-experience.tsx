@@ -143,6 +143,21 @@ export function SearchExperience({
     }
   }, [items, sort]);
 
+  /**
+   * Reveal cards in pages of 24 instead of rendering the entire result set
+   * upfront. As the marketplace grows past a few hundred products, mounting
+   * every card explodes initial JS work and causes hundreds of `<Image>`
+   * intersection-observers to be wired even when the user only sees the
+   * first row. Show-more keeps below-fold work amortised.
+   */
+  const PAGE_SIZE = 24;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [items.length, sort]);
+  const visibleItems = sortedItems.slice(0, visibleCount);
+  const hasMore = visibleCount < sortedItems.length;
+
   const activeChips = [
     category
       ? {
@@ -349,11 +364,37 @@ export function SearchExperience({
           ) : null}
 
           {sortedItems.length ? (
-            <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-              {sortedItems.map((product) => (
-                <ProductCardClient key={product.slug} product={product} />
-              ))}
-            </div>
+            <>
+              <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+                {visibleItems.map((product, index) => (
+                  <ProductCardClient
+                    key={product.slug}
+                    product={product}
+                    /* Eager-load the first row so we don't pay an intersection-
+                     * observer round-trip for the LCP image. */
+                    priority={index < 3}
+                  />
+                ))}
+              </div>
+              {hasMore ? (
+                <div className="mt-10 flex flex-col items-center gap-3 border-t border-[var(--market-line)] pt-8">
+                  <p className="text-sm text-[var(--market-muted)]">
+                    Showing {visibleItems.length} of {sortedItems.length} products
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                    className="market-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
+                  >
+                    Show {Math.min(PAGE_SIZE, sortedItems.length - visibleCount)} more
+                  </button>
+                </div>
+              ) : sortedItems.length > PAGE_SIZE ? (
+                <p className="mt-10 border-t border-[var(--market-line)] pt-8 text-center text-sm text-[var(--market-muted)]">
+                  All {sortedItems.length} products shown.
+                </p>
+              ) : null}
+            </>
           ) : (
             <div className="border-l-2 border-[var(--market-brass)]/55 pl-5 py-3">
               <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">

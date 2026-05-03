@@ -173,10 +173,12 @@ textarea {
 
 .jobs-display {
   font-family: var(--font-jobs-display);
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 0.95;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.9rem, 3.6vw + 0.6rem, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
   font-weight: 600;
+  text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 .jobs-heading {

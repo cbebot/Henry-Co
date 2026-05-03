@@ -37,7 +37,7 @@ export default async function HomePage() {
     <main>
       <section className="learn-hero">
         <div className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 sm:py-16 xl:px-10 xl:py-20">
-          <div className="learn-panel learn-mesh rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-10 xl:rounded-[2.8rem] xl:p-14">
+          <div className="learn-panel learn-mesh rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-8 xl:rounded-[2.8rem] xl:p-10">
             <p className="learn-kicker">HenryCo Learn</p>
             {viewer.user ? (
               <p className="mt-4 text-sm font-semibold tracking-tight text-[var(--learn-ink-soft)]">

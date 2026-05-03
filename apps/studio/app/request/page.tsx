@@ -3,7 +3,11 @@ import Link from "next/link";
 import { ArrowRight, Compass, Layers3, Sparkles, Waypoints } from "lucide-react";
 import { StudioRequestBuilder } from "@/components/studio/request-builder";
 import { getStudioCatalog } from "@/lib/studio/catalog";
-import { resolveStudioRequestPreset } from "@/lib/studio/request-presets";
+import {
+  resolveStudioRequestPreset,
+  resolveStudioTemplatePreset,
+} from "@/lib/studio/request-presets";
+import { getStudioTemplateBySlug } from "@/lib/studio/templates";
 
 export const metadata: Metadata = {
   title: "Studio brief — Tell us what you need | HenryCo Studio",
@@ -29,14 +33,50 @@ export const metadata: Metadata = {
 export default async function RequestPage({
   searchParams,
 }: {
-  searchParams: Promise<{ team?: string; preset?: string }>;
+  searchParams: Promise<{ team?: string; preset?: string; template?: string }>;
 }) {
   const params = await searchParams;
   const catalog = await getStudioCatalog();
-  const presetHint = resolveStudioRequestPreset(params.preset, catalog.requestConfig);
+  const templateHint = resolveStudioTemplatePreset(params.template, catalog.requestConfig);
+  const presetHint =
+    templateHint ?? resolveStudioRequestPreset(params.preset, catalog.requestConfig);
+  const startedFromTemplate = params.template
+    ? getStudioTemplateBySlug(params.template)
+    : null;
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
+      {startedFromTemplate ? (
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-[1.4rem] border border-[var(--studio-signal)]/40 bg-[rgba(11,42,52,0.55)] px-5 py-4 sm:px-6">
+          <div className="flex items-start gap-3">
+            <div
+              aria-hidden
+              className="h-10 w-10 shrink-0 rounded-[0.9rem]"
+              style={{
+                background: `linear-gradient(135deg, ${startedFromTemplate.preview.from} 0%, ${startedFromTemplate.preview.to} 100%)`,
+              }}
+            />
+            <div className="min-w-0">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+                Brief prefilled from template
+              </p>
+              <p className="mt-1 truncate text-sm font-semibold text-[var(--studio-ink)]">
+                {startedFromTemplate.name}
+              </p>
+              <p className="mt-0.5 text-[12.5px] text-[var(--studio-ink-soft)]">
+                Customise scope, timing, and stack below — every choice stays editable.
+              </p>
+            </div>
+          </div>
+          <Link
+            href={`/pick/${startedFromTemplate.slug}`}
+            className="shrink-0 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
+          >
+            ← Back to template
+          </Link>
+        </div>
+      ) : null}
+
       {/* Editorial brief hero — no panel chrome */}
       <section>
         <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--studio-signal)]">

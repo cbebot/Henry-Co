@@ -300,12 +300,14 @@ a {
 }
 
 .care-display {
-  /* Mobile-first: 2.4rem ensures the H1 fits a 360px viewport without
-     wrapping into 4 lines. Scales smoothly to 6rem on large screens. */
-  font-size: clamp(2.4rem, 7vw, 6rem);
-  line-height: 1;
+  /* Premium-bounded: cap at ~3.2rem so the headline never dominates the
+     viewport. Editorial serif retained for division voice. */
+  font-size: clamp(1.9rem, 3.6vw + 0.6rem, 3.2rem);
+  line-height: 1.06;
   font-weight: 600;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
   font-family:
     var(--font-display),
     "Iowan Old Style",
@@ -314,8 +316,8 @@ a {
 }
 @media (min-width: 640px) {
   .care-display {
-    line-height: 0.94;
-    letter-spacing: -0.04em;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
   }
 }
 

@@ -69,7 +69,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <CareToaster locale={lang} />
           </Suspense>
           {children}
-          <AssistDock division="care" accent="#C9A227" />
+          <AssistDock division="care" accent="#6B7CFF" />
         </PublicThemeGuard>
         <HenryCoAnalytics />
       </body>

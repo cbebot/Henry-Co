@@ -154,10 +154,12 @@ a.learn-button-secondary {
 
 .learn-display {
   font-family: var(--font-learn-display);
-  font-size: clamp(3.4rem, 8vw, 7rem);
-  line-height: 0.92;
-  letter-spacing: -0.06em;
+  font-size: clamp(1.9rem, 3.6vw + 0.6rem, 3.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
   font-weight: 600;
+  text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 .learn-heading {
