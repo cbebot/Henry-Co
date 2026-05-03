@@ -6,6 +6,8 @@ node_modules
 .tmp-edge-supabase-profile/
 .tmp-vercel-env
 .tmp-studio-start.ps1
+**/supabase/.temp/*
+!**/supabase/.temp/cli-latest
 *.tsbuildinfo
 .vercel
 .next
@@ -27,6 +29,9 @@ codex-*.log
 .env.production.vercel
 .env.vercel.*
 .env.pull.*
+# Vercel CLI pull artefacts — never commit (carry tokens + anon keys)
+.env.*.pulled
+**/.env.*.pulled
 
 # IDE and tooling
 .claude/

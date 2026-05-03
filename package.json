@@ -20,6 +20,7 @@
     "a11y:gate": "node scripts/a11y/gate.mjs",
     "a11y:diff": "node scripts/a11y/diff.mjs",
     "a11y": "pnpm run a11y:audit && pnpm run a11y:contrast && pnpm run a11y:headers && pnpm run a11y:report",
+    "search:backfill": "tsx scripts/search-backfill.mjs",
     "build:logistics": "pnpm --filter @henryco/logistics build",
     "lint:logistics": "pnpm --filter @henryco/logistics lint",
     "typecheck:logistics": "pnpm --filter @henryco/logistics typecheck",
@@ -39,7 +40,9 @@
     "staff:typecheck": "pnpm --filter @henryco/staff typecheck"
   },
   "dependencies": {
-    "@henryco/config": "workspace:^"
+    "@henryco/config": "workspace:^",
+    "@henryco/search-core": "workspace:^",
+    "@supabase/supabase-js": "^2.98.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
@@ -47,6 +50,7 @@
     "axe-core": "^4.11.4",
     "next": "16.1.6",
     "picocolors": "^1.1.1",
+    "tsx": "^4.20.6",
     "wcag-contrast": "^3.0.0"
   }
 }
