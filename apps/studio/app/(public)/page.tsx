@@ -19,7 +19,7 @@ export default async function StudioHomePage() {
   );
 
   return (
-    <main className="pb-24">
+    <main id="henryco-main" tabIndex={-1} className="pb-24">
       <section className="mx-auto max-w-[92rem] px-5 pt-6 sm:px-8 sm:pt-8 lg:px-10">
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="studio-panel studio-hero studio-mesh rounded-[2rem] px-5 py-7 sm:rounded-[2.4rem] sm:px-8 sm:py-10 lg:rounded-[3rem] lg:px-10 lg:py-12">

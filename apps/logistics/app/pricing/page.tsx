@@ -17,7 +17,7 @@ export default async function PricingPage() {
   const cards = rateCards.length > 0 ? rateCards : DEFAULT_RATE_CARDS;
 
   return (
-    <main className="px-4 py-12 sm:px-6 lg:px-8">
+    <main id="henryco-main" tabIndex={-1} className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[88rem] space-y-14">
         <header>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">

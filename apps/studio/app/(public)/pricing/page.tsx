@@ -7,7 +7,7 @@ export default async function PricingPage() {
   const catalog = await getStudioCatalog();
 
   return (
-    <main className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 lg:px-10">
+    <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 lg:px-10">
       {/* Editorial hero */}
       <section>
         <p className="studio-kicker">Packages and pricing</p>

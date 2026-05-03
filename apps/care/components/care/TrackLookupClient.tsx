@@ -289,7 +289,7 @@ export default function TrackLookupClient({
   const returnAddress = extractReturnAddress(booking?.special_instructions);
 
   return (
-    <main className="overflow-hidden bg-transparent pb-24 pt-8">
+    <main id="henryco-main" tabIndex={-1} className="overflow-hidden bg-transparent pb-24 pt-8">
       <section className="mx-auto max-w-7xl px-3 sm:px-8 lg:px-10">
         <div className="relative overflow-hidden rounded-[1.6rem] border border-black/10 bg-white/85 px-5 py-9 shadow-[0_14px_34px_rgba(0,0,0,0.08)] backdrop-blur-0 sm:rounded-[2rem] sm:px-8 sm:py-16 md:rounded-[44px] md:shadow-[0_24px_80px_rgba(0,0,0,0.08)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_24px_100px_rgba(0,0,0,0.28)] sm:py-20 lg:px-14 lg:py-24">
           <div className="pointer-events-none absolute -left-20 top-0 h-72 w-72 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />

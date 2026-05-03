@@ -35,7 +35,7 @@ export default async function TrackPage({ searchParams }: Props) {
   const lookupAttempted = Boolean(code && phone);
 
   return (
-    <main className="px-4 py-10 sm:px-6 lg:px-10">
+    <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[88rem] space-y-12">
         <section>
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">

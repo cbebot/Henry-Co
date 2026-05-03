@@ -139,6 +139,8 @@ export default async function BookPage({
 
   return (
     <main
+      id="henryco-main"
+      tabIndex={-1}
       className="care-page min-h-screen px-3 py-8 text-zinc-950 sm:px-6 sm:py-12 lg:px-10 dark:text-white"
       style={
         {

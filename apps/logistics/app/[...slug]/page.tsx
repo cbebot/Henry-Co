@@ -23,7 +23,7 @@ export default async function LogisticsCatchAllPage({
   const requestedPath = `/${slug.join("/")}`;
 
   return (
-    <main className="px-4 py-16 sm:px-6 lg:px-8">
+    <main id="henryco-main" tabIndex={-1} className="px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-lg text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
           {logistics.name}

@@ -45,7 +45,7 @@ export default async function RequestPage({
     : null;
 
   return (
-    <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
+    <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       {startedFromTemplate ? (
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-[1.4rem] border border-[var(--studio-signal)]/40 bg-[rgba(11,42,52,0.55)] px-5 py-4 sm:px-6">
           <div className="flex items-start gap-3">

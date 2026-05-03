@@ -10,6 +10,7 @@ import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn } from "../lib/cn";
 import { ThemeToggle } from "../public/theme-toggle";
 import { HenryCoPublicSurfaceTokens } from "./surface-tokens";
+import { SkipLink } from "../a11y/skip-link";
 
 function isNavActive(pathname: string, href: string) {
   return pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
@@ -455,6 +456,12 @@ export function PublicHeader({
   );
 
   return (
+    <>
+      {/* WCAG 2.4.1 — first focusable element on every public surface that
+       * mounts PublicHeader. Targets `id="henryco-main"` on the page's main
+       * landmark; per-app shells should mount `<main id="henryco-main"
+       * tabIndex={-1}>` so this link lands focus correctly. */}
+      <SkipLink href="#henryco-main" />
     <header
       className={cn(
         "sticky top-0 z-50",
@@ -481,5 +488,6 @@ export function PublicHeader({
         )}
       </div>
     </header>
+    </>
   );
 }
