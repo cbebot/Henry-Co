@@ -140,7 +140,7 @@ begin
       update public.user_addresses
          set is_default = false
        where user_id = new.user_id
-         and id <> coalesce(new.id, uuid_nil());
+         and id <> coalesce(new.id, '00000000-0000-0000-0000-000000000000'::uuid);
     else
       -- If user has zero defaults, auto-promote this row
       select count(*) into default_count
@@ -164,6 +164,13 @@ begin
     end if;
     -- If is_default flipped to false, ensure at least one default remains
     if old.is_default and not new.is_default then
+      -- Internal demotions happen from this same trigger when another row is
+      -- being promoted to default. The promoted row is not visible yet inside
+      -- the recursive BEFORE trigger, so allow that controlled path.
+      if pg_trigger_depth() > 1 then
+        return new;
+      end if;
+
       select count(*) into default_count
         from public.user_addresses
        where user_id = new.user_id
@@ -256,24 +263,37 @@ create policy user_addresses_owner_delete on public.user_addresses
 -- -----------------------------------------------------------------------------
 create or replace function public.is_platform_staff()
 returns boolean
-language sql
+language plpgsql
 stable
 security definer
 set search_path = public
 as $$
-  select
-    public.is_staff_in('hub', 'owner')
-    or public.is_staff_in('hub', 'admin')
-    or public.is_staff_in('hub', 'superadmin')
-    or public.is_staff_in('staff', 'owner')
-    or public.is_staff_in('staff', 'admin')
-    or public.is_staff_in('staff', 'superadmin')
-    or public.is_staff_in('account', 'owner')
-    or public.is_staff_in('account', 'admin')
-    or public.is_staff_in('account', 'superadmin')
-    or public.is_staff_in('security', 'owner')
-    or public.is_staff_in('security', 'admin')
-    or public.is_staff_in('security', 'superadmin')
+declare
+  v_result boolean;
+begin
+  if to_regprocedure('public.is_staff_in(text,text)') is null then
+    return false;
+  end if;
+
+  execute $platform_staff$
+    select
+      public.is_staff_in('hub', 'owner')
+      or public.is_staff_in('hub', 'admin')
+      or public.is_staff_in('hub', 'superadmin')
+      or public.is_staff_in('staff', 'owner')
+      or public.is_staff_in('staff', 'admin')
+      or public.is_staff_in('staff', 'superadmin')
+      or public.is_staff_in('account', 'owner')
+      or public.is_staff_in('account', 'admin')
+      or public.is_staff_in('account', 'superadmin')
+      or public.is_staff_in('security', 'owner')
+      or public.is_staff_in('security', 'admin')
+      or public.is_staff_in('security', 'superadmin')
+  $platform_staff$
+  into v_result;
+
+  return coalesce(v_result, false);
+end
 $$;
 
 revoke all on function public.is_platform_staff() from public;
@@ -281,7 +301,8 @@ grant execute on function public.is_platform_staff() to authenticated, service_r
 
 comment on function public.is_platform_staff() is
   'V2-ADDR-01: predicate for platform-tier staff (owner/admin/superadmin in hub/staff/account/security divisions). '
-  'Used by RLS on tables that should be readable by org-wide admins but not by per-division operators.';
+  'Used by RLS on tables that should be readable by org-wide admins but not by per-division operators. '
+  'Returns false until the optional is_staff_in(text,text) predicate is installed.';
 
 -- Staff (platform-tier): read all
 drop policy if exists user_addresses_staff_select on public.user_addresses;
