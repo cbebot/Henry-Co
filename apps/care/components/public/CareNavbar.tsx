@@ -2,7 +2,7 @@
 "use client";
 
 import { PhoneCall, Sparkles } from "lucide-react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { getHubUrl } from "@henryco/config";
 import {
@@ -39,12 +39,38 @@ function BrandMark({
   const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
 
   return (
-    <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.08] shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+    <div
+      className="
+        group/brandmark
+        relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden
+        rounded-2xl border border-black/10 bg-white/72
+        shadow-[0_12px_35px_rgba(0,0,0,0.06)] backdrop-blur-xl
+        transition duration-300 ease-out
+        hover:border-[color:var(--care-accent)]/35 hover:shadow-[0_18px_40px_rgba(107,124,255,0.18)]
+        dark:border-white/10 dark:bg-white/[0.08] dark:shadow-[0_12px_35px_rgba(0,0,0,0.32)]
+      "
+      style={
+        {
+          // Subtle inner gradient sheen — only visible on hover, picks up
+          // the Care periwinkle. Keeps the mark feeling "alive" without
+          // being noisy on idle.
+          "--care-mark-accent": accent || "#6B7CFF",
+        } as CSSProperties
+      }
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition duration-500 group-hover/brandmark:opacity-100"
+        style={{
+          background:
+            "radial-gradient(120% 100% at 30% 20%, color-mix(in srgb, var(--care-mark-accent) 22%, transparent) 0%, transparent 70%)",
+        }}
+      />
       {cleanSrc && !isFailed ? (
         <img
           src={cleanSrc}
           alt={name}
-          className="h-full w-full object-contain p-1.5"
+          className="relative h-full w-full object-contain p-1.5 transition duration-300 group-hover/brandmark:scale-[1.03]"
           loading="eager"
           decoding="async"
           onError={() => {
@@ -52,17 +78,18 @@ function BrandMark({
           }}
         />
       ) : (
-        <CareMonogram size={32} accent={accent || "#6B7CFF"} />
+        <CareMonogram
+          size={32}
+          accent={accent || "#6B7CFF"}
+          className="relative text-zinc-950 transition duration-300 group-hover/brandmark:scale-[1.04] dark:text-white"
+        />
       )}
     </div>
   );
 }
 
-const DEFAULT_TAGLINE =
-  "Pickup delivery, home cleaning, office cleaning, and recurring care";
-
-const DEFAULT_SUB =
-  "Garment care, home cleaning, office cleaning, and pickup delivery";
+const DEFAULT_TAGLINE = "Premium garment care, home cleaning, and recurring service";
+const DEFAULT_SUB = "Premium garment, home, and workplace care";
 
 export default function CareNavbar({
   division,
