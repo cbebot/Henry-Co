@@ -5,29 +5,24 @@ import Link from "next/link";
 import { useState } from "react";
 import { getHubUrl } from "@henryco/config";
 import type { DivisionPublicConfig } from "@/components/public/CareNavbar";
+import { CareMonogram } from "@/components/brand/CareMonogram";
 
 function FooterBrandMark({
   name,
-  shortName,
   logoUrl,
+  accent,
 }: {
   name: string;
   shortName?: string;
   logoUrl?: string | null;
+  accent?: string | null;
 }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const cleanSrc = typeof logoUrl === "string" && logoUrl.trim() ? logoUrl.trim() : null;
   const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
-  const fallback = (shortName || name)
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
 
   return (
-    <div className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.06]">
+    <div className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] text-white">
       {cleanSrc && !isFailed ? (
         <img
           src={cleanSrc}
@@ -38,7 +33,7 @@ function FooterBrandMark({
           onError={() => setFailedSrc(cleanSrc)}
         />
       ) : (
-        <span className="text-xs font-black tracking-tight text-white">{fallback || "HC"}</span>
+        <CareMonogram size={26} accent={accent || "#6B7CFF"} />
       )}
     </div>
   );
@@ -60,6 +55,7 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
               name={division.name}
               shortName={division.shortName}
               logoUrl={division.logoUrl}
+              accent={division.accent}
             />
             <div>
               <div className="text-base font-semibold tracking-[-0.01em] text-white">

@@ -1,6 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" role="img" aria-label="HenryCo">
-  <title>HenryCo</title>
-  <g fill="currentColor" style="font-family: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; font-feature-settings: 'kern' 1, 'liga' 1;">
-    <text x="0" y="46" font-weight="600" font-size="48" letter-spacing="-0.04em">HenryCo</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" role="img" aria-label="Care by Henry &amp; Co.">
+  <title>Care by Henry &amp; Co.</title>
+  <g fill="currentColor" style="font-family: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;">
+    <text x="0" y="36" font-weight="500" font-size="34" letter-spacing="-0.02em">Care</text>
+    <text x="86" y="34" font-style="italic" font-weight="400" font-size="14" opacity="0.7" letter-spacing="0.04em">by</text>
+    <text x="116" y="36" font-weight="500" font-size="20" letter-spacing="-0.01em" opacity="0.85">Henry &amp; Co.</text>
   </g>
+  <rect x="0" y="42" width="76" height="2" fill="#6B7CFF"/>
 </svg>
