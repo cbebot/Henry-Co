@@ -15,6 +15,7 @@ import {
   filterPricedOptions,
   type StudioRequestConfig,
 } from "@/lib/studio/request-config";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
 import type { StudioRequestPresetResult } from "@/lib/studio/request-presets";
 import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
 
@@ -25,6 +26,12 @@ type Props = {
   requestConfig: StudioRequestConfig;
   preferredTeamId?: string | null;
   presetHint?: StudioRequestPresetResult | null;
+  /** Structured brief output from the Brief Co-pilot. When provided,
+   * seeds the form's initial state so the user lands on a brief that's
+   * already drafted rather than an empty form. The parent (brief-request
+   * entry) re-mounts this component with a new `key` whenever a fresh
+   * seed arrives, so the seed is consumed exactly at mount. */
+  copilotSeed?: BriefCopilotStructured | null;
 };
 
 export function StudioRequestBuilder({
@@ -34,6 +41,7 @@ export function StudioRequestBuilder({
   requestConfig,
   preferredTeamId,
   presetHint,
+  copilotSeed,
 }: Props) {
   const resolvedKind =
     presetHint?.serviceKind && services.some((s) => s.kind === presetHint.serviceKind)
@@ -41,28 +49,40 @@ export function StudioRequestBuilder({
       : (services[0]?.kind ?? "website");
   const initialServiceKind = resolvedKind;
   const initialProjectType =
+    copilotSeed?.projectType ||
     presetHint?.projectTypeLabel ||
     filterPricedOptions(requestConfig.projectTypes, initialServiceKind)[0]?.label ||
     "Custom digital program";
   const initialPlatform =
+    copilotSeed?.platformPreference ||
     filterPricedOptions(requestConfig.platformOptions, initialServiceKind)[0]?.label ||
     "Best-fit recommendation";
   const initialDesign =
-    requestConfig.designOptions[0] || "Quiet luxury and high-trust";
+    copilotSeed?.designDirection ||
+    requestConfig.designOptions[0] ||
+    "Quiet luxury and high-trust";
   const initialTimeline =
-    filterModifierOptions(requestConfig.timelineOptions, initialServiceKind)[0]?.label || "";
+    copilotSeed?.timeline ||
+    filterModifierOptions(requestConfig.timelineOptions, initialServiceKind)[0]?.label ||
+    "";
   const initialUrgency =
-    filterModifierOptions(requestConfig.urgencyOptions, initialServiceKind)[0]?.label || "";
+    copilotSeed?.urgency ||
+    filterModifierOptions(requestConfig.urgencyOptions, initialServiceKind)[0]?.label ||
+    "";
   const initialProgrammingLanguage =
     requestConfig.programmingLanguageOptions[0] || "HenryCo's recommendation";
   const initialFramework =
+    copilotSeed?.frameworkPreference ||
     filterPricedOptions(requestConfig.frameworkOptions, initialServiceKind)[0]?.label ||
     "HenryCo's framework recommendation";
   const initialBackend =
+    copilotSeed?.backendPreference ||
     filterPricedOptions(requestConfig.backendOptions, initialServiceKind)[0]?.label ||
     "HenryCo recommends the backend";
   const initialHosting =
-    requestConfig.hostingOptions[0] || "HenryCo recommends the host";
+    copilotSeed?.hostingPreference ||
+    requestConfig.hostingOptions[0] ||
+    "HenryCo recommends the host";
   const [stepIndex, setStepIndex] = useState(0);
   const [serviceKind, setServiceKind] = useState<StudioService["kind"]>(initialServiceKind);
   const [pathway, setPathway] = useState<"package" | "custom">(presetHint?.pathway ?? "custom");
@@ -71,23 +91,33 @@ export function StudioRequestBuilder({
   const [selectedProjectType, setSelectedProjectType] = useState(initialProjectType);
   const [selectedPlatform, setSelectedPlatform] = useState(initialPlatform);
   const [selectedDesign, setSelectedDesign] = useState(initialDesign);
-  const [preferredLanguage, setPreferredLanguage] = useState("English");
-  const [selectedPages, setSelectedPages] = useState<string[]>([]);
-  const [selectedModules, setSelectedModules] = useState<string[]>([]);
-  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
-  const [selectedTech, setSelectedTech] = useState<string[]>([]);
+  const [preferredLanguage, setPreferredLanguage] = useState(
+    copilotSeed?.preferredLanguage || "English",
+  );
+  const [selectedPages, setSelectedPages] = useState<string[]>(
+    copilotSeed?.pageRequirements ?? [],
+  );
+  const [selectedModules, setSelectedModules] = useState<string[]>(
+    copilotSeed?.requiredFeatures ?? [],
+  );
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>(
+    copilotSeed?.addonServices ?? [],
+  );
+  const [selectedTech, setSelectedTech] = useState<string[]>(
+    copilotSeed?.techPreferences ?? [],
+  );
   const [selectedProgrammingLanguage, setSelectedProgrammingLanguage] = useState(
     initialProgrammingLanguage,
   );
   const [selectedFramework, setSelectedFramework] = useState(initialFramework);
   const [selectedBackend, setSelectedBackend] = useState(initialBackend);
   const [selectedHosting, setSelectedHosting] = useState(initialHosting);
-  const [businessType, setBusinessType] = useState("");
-  const [budgetBand, setBudgetBand] = useState("");
+  const [businessType, setBusinessType] = useState(copilotSeed?.businessType ?? "");
+  const [budgetBand, setBudgetBand] = useState(copilotSeed?.budgetBand ?? "");
   const [urgency, setUrgency] = useState(initialUrgency);
   const [timeline, setTimeline] = useState(initialTimeline);
-  const [goals, setGoals] = useState("");
-  const [scopeNotes, setScopeNotes] = useState("");
+  const [goals, setGoals] = useState(copilotSeed?.goals ?? "");
+  const [scopeNotes, setScopeNotes] = useState(copilotSeed?.scopeNotes ?? "");
   const [inspirationSummary, setInspirationSummary] = useState("");
   const [isStepTransitioning, setIsStepTransitioning] = useState(false);
   const [progressHint, setProgressHint] = useState<string | null>(null);

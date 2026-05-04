@@ -1,7 +1,14 @@
 import type { PublicNavItem } from "../public-header";
 import type { SiteNavigationConfig } from "./types";
 
-/** Studio marketing IA (routes match `apps/studio` public pages) */
+/** Studio marketing IA (routes match `apps/studio` public pages).
+ *
+ * "Workspace" links to `/client` — Studio's authenticated client portal.
+ * Signed-out visitors clicking it are redirected by the proxy middleware
+ * to the shared account login with `next=` set, so they land back on
+ * the workspace after sign-in. This keeps the entry visible to clients
+ * who have a project in flight without exposing portal data publicly.
+ */
 const studioPublicNav: PublicNavItem[] = [
   { href: "/pick", label: "Project types" },
   { href: "/services", label: "Services" },
@@ -10,6 +17,7 @@ const studioPublicNav: PublicNavItem[] = [
   { href: "/teams", label: "Teams" },
   { href: "/process", label: "Process" },
   { href: "/trust", label: "Trust" },
+  { href: "/client", label: "Workspace" },
   { href: "/contact", label: "Contact" },
 ];
 

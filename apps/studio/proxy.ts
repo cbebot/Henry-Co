@@ -4,10 +4,52 @@ import {
   buildSharedCookieWriteOptions,
   filterValidSupabaseSessionCookies,
   findMalformedSupabaseSessionCookieNames,
+  getAccountUrl,
+  getDivisionUrl,
   getSharedCookieDomain,
   isRecoverableSupabaseAuthError,
   isSupabaseAuthTokenCookie,
 } from "@henryco/config";
+
+/**
+ * Auth-gated path prefixes. A request to any of these paths must carry a
+ * valid Supabase session — if it doesn't, we issue an HTTP 307 to the
+ * shared account login here in the middleware, BEFORE any RSC streaming
+ * starts.
+ *
+ * Why middleware and not the page-level `requireStudioUser`/
+ * `requireClientPortalViewer`? The page-level guards live inside server
+ * components that are wrapped in Suspense by `loading.tsx`. Once Next
+ * has begun streaming the loading shell, throwing `redirect()` from the
+ * inner page is too late — Next serialises the redirect digest into the
+ * RSC payload but the wire response stays HTTP 200, so the browser sits
+ * on the skeleton forever. Gating in middleware sidesteps that by
+ * returning a real 307 before any bytes are written.
+ *
+ * Page-level guards are kept as defence-in-depth (e.g. for direct API
+ * calls or a future relax of the matcher).
+ */
+const AUTH_GATED_PREFIXES = [
+  "/client",
+  "/sales",
+  "/pm",
+  "/finance",
+  "/delivery",
+  "/owner",
+  "/support",
+] as const;
+
+function isAuthGatedPath(pathname: string): boolean {
+  return AUTH_GATED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+function buildLoginRedirect(request: NextRequest): URL {
+  const returnTo = `${getDivisionUrl("studio")}${request.nextUrl.pathname}${request.nextUrl.search}`;
+  const loginPath = `/login?next=${encodeURIComponent(returnTo)}`;
+  return new URL(getAccountUrl(loginPath));
+}
 
 function clearSupabaseAuthCookies(
   request: NextRequest,
@@ -82,13 +124,19 @@ export async function proxy(request: NextRequest) {
     },
   });
 
+  let userId: string | null = null;
   try {
-    await supabase.auth.getUser();
+    const auth = await supabase.auth.getUser();
+    userId = auth.data.user?.id ?? null;
   } catch (error) {
     if (!isRecoverableSupabaseAuthError(error)) {
       throw error;
     }
     clearSupabaseAuthCookies(request, response);
+  }
+
+  if (!userId && isAuthGatedPath(request.nextUrl.pathname)) {
+    return NextResponse.redirect(buildLoginRedirect(request), 307);
   }
 
   return response;
