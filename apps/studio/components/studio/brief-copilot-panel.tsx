@@ -343,12 +343,135 @@ function SuccessSummary({
         ) : null}
       </div>
 
+      <NextActionsRail structured={structured} confidence={confidencePct} />
+
       {meta.callsRemaining !== null ? (
         <p className="mt-3 text-[11px] text-[var(--studio-ink-soft)]">
           {meta.callsRemaining} co-pilot {meta.callsRemaining === 1 ? "draft" : "drafts"} left in
           this window.
         </p>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * Next actions rail — surfaces post-generation CTAs that match the
+ * user's current state. The path is always: brief → review → submit
+ * → project workspace + deposit. We tailor the secondary actions:
+ *  - Low confidence (<60%) → suggest talking to a Studio lead, since
+ *    the structured output had to infer a lot.
+ *  - High confidence (≥80%) → skip the lead path; go straight to
+ *    "submit the brief" so the user doesn't drift.
+ *  - Always offer "browse matching templates" so a user who picked a
+ *    common project type can jump to /pick if they want to bypass
+ *    the brief entirely.
+ *
+ * Each CTA is honest about the next step — no AI persona, no fake
+ * recommendations. The brief stays the canonical commercial record.
+ */
+function NextActionsRail({
+  structured,
+  confidence,
+}: {
+  structured: BriefCopilotStructured;
+  confidence: number;
+}) {
+  const wantsTemplates =
+    structured.projectType !== "Other" &&
+    structured.projectType !== "Custom website" &&
+    structured.projectType !== "Web app or platform";
+  const lowConfidence = confidence < 60;
+
+  function scrollToBuilder() {
+    if (typeof window === "undefined") return;
+    const el = document.getElementById("studio-brief-builder");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  return (
+    <div className="mt-4 border-t border-[var(--studio-line)] pt-4">
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+        Next steps
+      </p>
+      <ol className="mt-2 grid gap-2 sm:grid-cols-3">
+        <li>
+          <button
+            type="button"
+            onClick={scrollToBuilder}
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] px-3 py-2.5 text-left transition hover:bg-[rgba(151,244,243,0.14)]"
+          >
+            <span
+              aria-hidden
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--studio-signal)] text-[11px] font-semibold text-[#021016]"
+            >
+              1
+            </span>
+            <div className="min-w-0">
+              <div className="text-[12.5px] font-semibold text-[var(--studio-ink)]">
+                Review &amp; refine the brief
+              </div>
+              <div className="mt-0.5 text-[11px] leading-5 text-[var(--studio-ink-soft)]">
+                Every field stays editable below.
+              </div>
+            </div>
+          </button>
+        </li>
+        <li>
+          <a
+            href={lowConfidence ? "/contact" : "#studio-brief-builder"}
+            onClick={lowConfidence ? undefined : (event) => {
+              event.preventDefault();
+              scrollToBuilder();
+            }}
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-3 py-2.5 text-left transition hover:border-[rgba(151,244,243,0.35)] hover:bg-[rgba(255,255,255,0.04)]"
+          >
+            <span
+              aria-hidden
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-black/15 text-[11px] font-semibold text-[var(--studio-ink-soft)]"
+            >
+              2
+            </span>
+            <div className="min-w-0">
+              <div className="text-[12.5px] font-semibold text-[var(--studio-ink)]">
+                {lowConfidence
+                  ? "Talk to a Studio lead first"
+                  : "Submit & lock the scope"}
+              </div>
+              <div className="mt-0.5 text-[11px] leading-5 text-[var(--studio-ink-soft)]">
+                {lowConfidence
+                  ? "A few details still need clarifying — a senior lead can shape the brief with you in 15 minutes."
+                  : "Submit the brief; we issue a fixed-price proposal and a deposit invoice within a business day."}
+              </div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a
+            href={wantsTemplates ? "/pick" : "/checkout/template/portfolio-studio"}
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-3 py-2.5 text-left transition hover:border-[rgba(151,244,243,0.35)] hover:bg-[rgba(255,255,255,0.04)]"
+          >
+            <span
+              aria-hidden
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-black/15 text-[11px] font-semibold text-[var(--studio-ink-soft)]"
+            >
+              3
+            </span>
+            <div className="min-w-0">
+              <div className="text-[12.5px] font-semibold text-[var(--studio-ink)]">
+                {wantsTemplates
+                  ? "Or skip — pay deposit on a template"
+                  : "Pay a deposit & start"}
+              </div>
+              <div className="mt-0.5 text-[11px] leading-5 text-[var(--studio-ink-soft)]">
+                {wantsTemplates
+                  ? "Ready-made templates ship in days. Browse the gallery if you want to skip the brief entirely."
+                  : "Reserve your slot now — we open the project workspace the moment your deposit clears."}
+              </div>
+            </div>
+          </a>
+        </li>
+      </ol>
     </div>
   );
 }
