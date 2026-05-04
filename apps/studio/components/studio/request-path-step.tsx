@@ -147,22 +147,27 @@ export function StudioRequestPathStep({
                     className="absolute inset-y-0 left-0 w-[2px] bg-[var(--studio-signal)]"
                   />
                 ) : null}
-                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                  <div className="flex min-w-0 items-baseline gap-2">
-                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
-                      {service.name}
-                    </span>
-                    <span className="truncate text-sm font-semibold text-[var(--studio-ink)]">
+                {/* Mobile: kicker on its own line, headline below.
+                 * Desktop (sm+): kicker + headline on one row, delivery
+                 * + price docked right. Stacked layout on narrow widths
+                 * stops the right column from overflowing the viewport
+                 * — which was clipping headlines on phones. */}
+                <div className="min-w-0">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
+                    {service.name}
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 sm:mt-0.5">
+                    <span className="min-w-0 flex-1 text-sm font-semibold text-[var(--studio-ink)]">
                       {service.headline}
                     </span>
-                  </div>
-                  <div className="flex shrink-0 items-baseline gap-3 text-[11px] tabular-nums">
-                    <span className="text-[var(--studio-ink-soft)]">
-                      {service.deliveryWindow}
-                    </span>
-                    <span className="font-semibold text-[var(--studio-signal)]">
-                      ₦{service.startingPrice.toLocaleString("en-NG")}+
-                    </span>
+                    <div className="flex shrink-0 items-baseline gap-2 text-[11px] tabular-nums">
+                      <span className="text-[var(--studio-ink-soft)]">
+                        {service.deliveryWindow}
+                      </span>
+                      <span className="font-semibold text-[var(--studio-signal)]">
+                        ₦{service.startingPrice.toLocaleString("en-NG")}+
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <p className="line-clamp-2 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">

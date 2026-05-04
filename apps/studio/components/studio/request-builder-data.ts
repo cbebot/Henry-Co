@@ -21,25 +21,25 @@
 export const requestSteps = [
   {
     key: "path",
-    label: "What you are building",
+    label: "Path",
     title: "Pick the lane that fits — package speed or custom depth.",
     body: "Packages suit familiar builds we have delivered many times. Custom suits software, portals, and one-of-a-kind products. Your choice here filters every option you'll see next.",
   },
   {
     key: "scope",
-    label: "Pages, features & stack",
+    label: "Scope",
     title: "Pages, features, and the actual tech stack we'll use.",
     body: "Tick what matters. Each page or feature is a priced line-item. Choose your programming language, framework, backend, and host — or let HenryCo recommend.",
   },
   {
     key: "commercial",
-    label: "Context & launch",
+    label: "Context",
     title: "Domain, timing, budget, and anything we should study.",
     body: "Plain language is perfect. This step includes your web-address plan and reference uploads.",
   },
   {
     key: "activation",
-    label: "Review & send",
+    label: "Review",
     title: "Team fit, contact details, and submit.",
     body: "You get a real Studio record, clear next steps, and honest payment guidance — never a silent inbox.",
   },
