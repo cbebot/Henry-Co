@@ -9,6 +9,13 @@ import {
 } from "@/lib/studio/request-presets";
 import { getStudioTemplateBySlug, studioTemplates } from "@/lib/studio/templates";
 
+// Server action invoked from this route (generateStudioBriefDraftAction)
+// hits the Anthropic API. Vercel's default function timeout (10s on
+// Hobby) kills the call mid-flight on cold start. We set 60s here so
+// the prompt-cache miss + first-token latency has full headroom; the
+// SDK itself caps at 25s internally.
+export const maxDuration = 60;
+
 export const metadata: Metadata = {
   title: "Studio brief — Tell us what you need | HenryCo Studio",
   description:

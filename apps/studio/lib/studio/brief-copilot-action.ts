@@ -467,10 +467,14 @@ export async function generateStudioBriefDraftAction(
   let modelUsed = BRIEF_COPILOT_MODEL;
 
   try {
+    // SDK timeout 25s + no automatic retry. Sits inside a route with
+    // maxDuration=60 so even a slow prompt-cache miss completes before
+    // Vercel reaps the function. A retry on a slow call would push us
+    // past the 60s ceiling, hence maxRetries: 0.
     const client = new Anthropic({
       apiKey,
-      timeout: 30 * 1000,
-      maxRetries: 1,
+      timeout: 25 * 1000,
+      maxRetries: 0,
     });
 
     const response = await client.messages.create({

@@ -79,7 +79,14 @@ export function StudioListbox({
   }
 
   return (
-    <div className={`relative ${className}`} ref={rootRef}>
+    // When open, lift the wrapper out of any sibling stacking context
+    // (studio-panel uses backdrop-filter which creates one). Without
+    // this the dropdown was painted UNDER the live brief summary side
+    // panel that follows it in document order on smaller viewports.
+    <div
+      className={`relative ${open ? "z-[120]" : "z-0"} ${className}`}
+      ref={rootRef}
+    >
       <input type="hidden" name={name} value={value} required={required} />
       <label htmlFor={id} className="sr-only">
         {label}

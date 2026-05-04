@@ -56,124 +56,174 @@ export function StudioRequestPathStep({
   return (
     <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
       <div className="studio-kicker">Buying lane</div>
-      <div className="mt-6 grid gap-4 xl:grid-cols-2">
+      {/* Two-up segmented control. Replaces the prior pair of large
+       * tile-cards with a horizontal segment for fast comparison —
+       * less vertical real estate, equal information weight, no
+       * card stacking on narrow widths. */}
+      <div
+        role="radiogroup"
+        aria-label="Buying lane"
+        className="mt-5 grid grid-cols-2 gap-2 rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 p-1.5"
+      >
         {[
           {
             value: "package" as const,
-            title: "Package-led engagement",
-            body: "Use this when the work fits a premium predefined lane and you want faster pricing clarity with a cleaner decision path.",
+            title: "Package",
+            body: "Predefined lane",
             icon: Layers3,
           },
           {
             value: "custom" as const,
-            title: "Custom project route",
-            body: "Use this when the website, app, portal, or software needs a tailored scope, delivery model, or multi-role architecture.",
+            title: "Custom",
+            body: "Tailored scope",
             icon: Sparkles,
           },
-        ].map((item) => (
-          <button
-            key={item.value}
-            type="button"
-            onClick={() => {
-              setPathway(item.value);
-              if (item.value === "package" && filteredPackages[0]) {
-                setSelectedPackageId(filteredPackages[0].id);
-              }
-            }}
-            className={joinClassNames(
-              "rounded-[2rem] border p-6 text-left transition duration-200",
-              pathway === item.value
-                ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-                : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.2)]"
-            )}
-          >
-            <item.icon className="h-5 w-5 text-[var(--studio-signal)]" />
-            <div className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--studio-ink)]">
-              {item.title}
-            </div>
-            <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{item.body}</p>
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-8 grid gap-4 lg:grid-cols-2">
-        {services.map((service) => {
-          const isActive = serviceKind === service.kind;
+        ].map((item) => {
+          const isActive = pathway === item.value;
           return (
             <button
-              key={service.id}
+              key={item.value}
               type="button"
+              role="radio"
+              aria-checked={isActive}
               onClick={() => {
-                setServiceKind(service.kind);
-                const nextPackages = packages.filter(
-                  (pkg) => services.find((item) => item.id === pkg.serviceId)?.kind === service.kind
-                );
-                setSelectedPackageId(nextPackages[0]?.id ?? "");
+                setPathway(item.value);
+                if (item.value === "package" && filteredPackages[0]) {
+                  setSelectedPackageId(filteredPackages[0].id);
+                }
               }}
               className={joinClassNames(
-                "rounded-[1.8rem] border p-5 text-left transition duration-200",
+                "flex items-center justify-center gap-2 rounded-[0.95rem] px-3 py-2.5 text-sm font-semibold transition",
                 isActive
-                  ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-                  : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.18)]"
+                  ? "bg-[rgba(151,244,243,0.12)] text-[var(--studio-ink)] shadow-[inset_0_0_0_1px_rgba(151,244,243,0.45)]"
+                  : "text-[var(--studio-ink-soft)] hover:text-[var(--studio-ink)]"
               )}
             >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-xs uppercase tracking-[0.18em] text-[var(--studio-signal)]">
-                  {service.name}
-                </div>
-                <div className="text-right">
-                  <div className="text-xs uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                    {service.deliveryWindow}
-                  </div>
-                  <div className="mt-1 text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                    From ₦{service.startingPrice.toLocaleString("en-NG")}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 text-xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">
-                {service.headline}
-              </div>
-              <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{service.summary}</p>
+              <item.icon
+                className={joinClassNames(
+                  "h-3.5 w-3.5",
+                  isActive ? "text-[var(--studio-signal)]" : "text-[var(--studio-ink-soft)]"
+                )}
+              />
+              <span>{item.title}</span>
+              <span className="hidden text-[11px] font-normal text-[var(--studio-ink-soft)] sm:inline">
+                · {item.body}
+              </span>
             </button>
           );
         })}
       </div>
 
+      {/* Service kinds — hairline-divided list. The previous version
+       * was a 2-up grid of large bordered tiles, each with full padding
+       * + 4-line content; with 5+ service kinds this stacked into a
+       * dense card wall. The list form is denser and lets the user
+       * scan headlines without scroll fatigue. */}
+      <ul className="mt-7 divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10">
+        {services.map((service) => {
+          const isActive = serviceKind === service.kind;
+          return (
+            <li key={service.id}>
+              <button
+                type="button"
+                onClick={() => {
+                  setServiceKind(service.kind);
+                  const nextPackages = packages.filter(
+                    (pkg) =>
+                      services.find((item) => item.id === pkg.serviceId)?.kind === service.kind
+                  );
+                  setSelectedPackageId(nextPackages[0]?.id ?? "");
+                }}
+                className={joinClassNames(
+                  "relative flex w-full flex-col gap-2 px-4 py-3 text-left transition sm:px-5 sm:py-4",
+                  isActive
+                    ? "bg-[rgba(151,244,243,0.06)]"
+                    : "hover:bg-[rgba(255,255,255,0.02)]"
+                )}
+              >
+                {isActive ? (
+                  <span
+                    aria-hidden
+                    className="absolute inset-y-0 left-0 w-[2px] bg-[var(--studio-signal)]"
+                  />
+                ) : null}
+                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                  <div className="flex min-w-0 items-baseline gap-2">
+                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
+                      {service.name}
+                    </span>
+                    <span className="truncate text-sm font-semibold text-[var(--studio-ink)]">
+                      {service.headline}
+                    </span>
+                  </div>
+                  <div className="flex shrink-0 items-baseline gap-3 text-[11px] tabular-nums">
+                    <span className="text-[var(--studio-ink-soft)]">
+                      {service.deliveryWindow}
+                    </span>
+                    <span className="font-semibold text-[var(--studio-signal)]">
+                      ₦{service.startingPrice.toLocaleString("en-NG")}+
+                    </span>
+                  </div>
+                </div>
+                <p className="line-clamp-2 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
+                  {service.summary}
+                </p>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
       {pathway === "package" ? (
-        <div className="mt-8 space-y-4">
+        <div className="mt-7">
           {filteredPackages.length === 0 ? (
-            <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4 text-sm text-[var(--studio-ink-soft)]">
-              No fixed package is available for this service yet. Switch to the custom project route.
+            <div className="rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3 text-sm text-[var(--studio-ink-soft)]">
+              No fixed package is available for this service yet. Switch to the
+              custom project route.
             </div>
           ) : null}
-          {filteredPackages.map((pkg) => (
-            <button
-              key={pkg.id}
-              type="button"
-              onClick={() => setSelectedPackageId(pkg.id)}
-              className={joinClassNames(
-                "w-full rounded-[1.9rem] border p-5 text-left transition duration-200",
-                selectedPackage?.id === pkg.id
-                  ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))]"
-                  : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.18)]"
-              )}
-            >
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="max-w-2xl">
-                  <div className="text-2xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">
-                    {pkg.name}
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{pkg.summary}</p>
-                </div>
-                <div className="text-right text-sm">
-                  <div className="font-semibold text-[var(--studio-ink)]">₦{pkg.price.toLocaleString("en-NG")}</div>
-                  <div className="mt-1 uppercase tracking-[0.16em] text-[var(--studio-signal)]">
-                    Deposit {Math.round(pkg.depositRate * 100)}%
-                  </div>
-                </div>
-              </div>
-            </button>
-          ))}
+          <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10">
+            {filteredPackages.map((pkg) => {
+              const isActive = selectedPackage?.id === pkg.id;
+              return (
+                <li key={pkg.id}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPackageId(pkg.id)}
+                    className={joinClassNames(
+                      "relative flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition sm:px-5 sm:py-4",
+                      isActive
+                        ? "bg-[rgba(151,244,243,0.06)]"
+                        : "hover:bg-[rgba(255,255,255,0.02)]"
+                    )}
+                  >
+                    {isActive ? (
+                      <span
+                        aria-hidden
+                        className="absolute inset-y-0 left-0 w-[2px] bg-[var(--studio-signal)]"
+                      />
+                    ) : null}
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold text-[var(--studio-ink)]">
+                        {pkg.name}
+                      </div>
+                      <p className="mt-1 line-clamp-2 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
+                        {pkg.summary}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="text-sm font-semibold tabular-nums text-[var(--studio-ink)]">
+                        ₦{pkg.price.toLocaleString("en-NG")}
+                      </div>
+                      <div className="mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                        {Math.round(pkg.depositRate * 100)}% deposit
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       ) : (
         <div className="mt-8 space-y-7">
