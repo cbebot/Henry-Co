@@ -112,7 +112,7 @@ export function BriefCopilotPanel({
         <div>
           <p className="flex items-center gap-2 studio-kicker">
             <Sparkles className="h-3.5 w-3.5" />
-            Brief Co-pilot · Claude Haiku 4.5
+            Brief Co-pilot · Studio Intelligence
           </p>
           <h2 className="mt-3 max-w-2xl text-balance text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.02em] text-[var(--studio-ink)] sm:text-[1.8rem]">
             Describe what you want in your own words. We&rsquo;ll structure it.
@@ -194,7 +194,7 @@ export function BriefCopilotPanel({
             </span>
           ) : (
             <span>
-              Free for early users · Claude Haiku 4.5 · Your text is never used to train models.
+              Free for early users · Powered by HenryCo Studio Intelligence · Your text is never used to train external models.
             </span>
           )}
         </p>
