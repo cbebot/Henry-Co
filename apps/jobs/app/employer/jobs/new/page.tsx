@@ -4,6 +4,7 @@ import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
 import { employerNav } from "@/lib/jobs/navigation";
 import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
+import { isEmployerSubscribed } from "@/lib/jobs/employer-subscription";
 import { EmptyState, InlineNotice } from "@/components/feedback";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
@@ -16,14 +17,17 @@ export default async function EmployerNewJobPage() {
   const membership = data.memberships[0];
   const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true }) : null;
   const employer = companyRecord?.employer ?? null;
-  const eligibility = membership
-    ? await getEmployerPostingEligibility({
-        userId: viewer.user!.id,
-        email: viewer.user!.email,
-        employerSlug: membership.employerSlug,
-        actorRole: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
-      })
-    : null;
+  const [eligibility, subscription] = membership
+    ? await Promise.all([
+        getEmployerPostingEligibility({
+          userId: viewer.user!.id,
+          email: viewer.user!.email,
+          employerSlug: membership.employerSlug,
+          actorRole: viewer.internalRole || (viewer.roles.includes("employer") ? "employer" : null),
+        }),
+        isEmployerSubscribed(membership.employerSlug),
+      ])
+    : [null, null];
 
   return (
     <WorkspaceShell
@@ -101,6 +105,23 @@ export default async function EmployerNewJobPage() {
         </SectionCard>
       ) : (
         <SectionCard title="Create a new role" body="Fill in the details below. New posts may go through a brief review before going live.">
+          {subscription && !subscription.allowed ? (
+            <div className="mb-5">
+              <InlineNotice
+                tone="warn"
+                title="Subscription required to publish"
+                body={`Your employer subscription is "${subscription.status}". Posting is blocked until a live subscription is in place. Contact the HenryCo team to renew before publishing.`}
+              />
+            </div>
+          ) : null}
+          {subscription && subscription.allowed && subscription.status === "soft-fail" ? (
+            <div className="mb-5">
+              <InlineNotice
+                title="Subscription pending"
+                body="Posting roles will require an active employer subscription once billing rolls out. You can publish today; expect a follow-up from the HenryCo team about plan selection."
+              />
+            </div>
+          ) : null}
           {eligibility ? (
             <div className="mb-5 space-y-3">
               {eligibility.verificationStatus !== "verified" ? (

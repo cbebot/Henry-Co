@@ -35,7 +35,12 @@ const standards = [
 export default async function SubmitListingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ submitted?: string; policy?: string; verification?: string }>;
+  searchParams: Promise<{
+    submitted?: string;
+    policy?: string;
+    verification?: string;
+    ref?: string;
+  }>;
 }) {
   const params = await searchParams;
   const snapshot = await getPropertySnapshot();
@@ -53,18 +58,58 @@ export default async function SubmitListingPage({
       />
 
       {params.submitted === "1" ? (
-        <div className="mt-8 border-l-2 border-[rgba(152,179,154,0.55)] pl-5">
+        <div className="mt-8 rounded-[1.4rem] border border-[rgba(152,179,154,0.45)] bg-[rgba(152,179,154,0.06)] p-6">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-sage-soft)]">
-            Submitted
+            Submission received
           </p>
-          <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-            HenryCo Property logged the record, queued moderation, and routed the follow-up
-            notification flow.
-            {params.policy ? (
-              <span className="block pt-2">
-                Current policy state: {params.policy.replaceAll("_", " ")}.
-              </span>
+          <h2 className="mt-2 text-balance text-[1.2rem] font-semibold leading-[1.25] tracking-[-0.012em] text-[var(--property-ink)] sm:text-[1.35rem]">
+            Your listing is under review and remains private until governance clears it.
+          </h2>
+          <dl className="mt-5 grid gap-3 sm:grid-cols-3">
+            {params.ref ? (
+              <div className="rounded-[1.1rem] border border-[var(--property-line)] bg-white/40 px-4 py-3">
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                  Reference
+                </dt>
+                <dd className="mt-1 break-all text-sm font-semibold tracking-tight text-[var(--property-ink)]">
+                  {params.ref}
+                </dd>
+              </div>
             ) : null}
+            <div className="rounded-[1.1rem] border border-[var(--property-line)] bg-white/40 px-4 py-3">
+              <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                Stage
+              </dt>
+              <dd className="mt-1 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
+                {params.policy ? params.policy.replaceAll("_", " ") : "Queued for review"}
+              </dd>
+            </div>
+            <div className="rounded-[1.1rem] border border-[var(--property-line)] bg-white/40 px-4 py-3">
+              <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
+                Expected response
+              </dt>
+              <dd className="mt-1 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
+                Within 2 business days
+              </dd>
+            </div>
+          </dl>
+          <p className="mt-5 text-sm leading-7 text-[var(--property-ink-soft)]">
+            Quote the reference above when contacting the property team. Need to amend the
+            submission?{" "}
+            <Link
+              href={getAccountUrl("/property")}
+              className="font-semibold text-[var(--property-ink)] underline-offset-4 hover:underline"
+            >
+              Open your property workspace
+            </Link>
+            {" "}or email{" "}
+            <a
+              href="mailto:property@henrycogroup.com"
+              className="font-semibold text-[var(--property-ink)] underline-offset-4 hover:underline"
+            >
+              property@henrycogroup.com
+            </a>
+            .
           </p>
         </div>
       ) : null}

@@ -5,6 +5,7 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileCheck2, ShieldCheck, UploadCloud } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
+import { sellerPlans } from "@/lib/marketplace/governance";
 import type {
   MarketplaceSellerDocumentRecord,
   MarketplaceVendorApplication,
@@ -15,6 +16,7 @@ type SellerWizardStep = "start" | "verification" | "review";
 type SellerApplicationWizardProps = {
   step: SellerWizardStep;
   initialApplication: MarketplaceVendorApplication | null;
+  initialPlan?: string | null;
 };
 
 type FormState = {
@@ -26,6 +28,7 @@ type FormState = {
   story: string;
   documents: Record<string, MarketplaceSellerDocumentRecord>;
   agreementAccepted: boolean;
+  plan: string | null;
 };
 
 type DocumentKey = "businessRegistration" | "founderIdentity" | "payoutProof";
@@ -133,9 +136,14 @@ function formatSize(bytes: number | null) {
 export function SellerApplicationWizard({
   step,
   initialApplication,
+  initialPlan = null,
 }: SellerApplicationWizardProps) {
   const { pushToast } = useMarketplaceRuntime();
   const initialDraft = initialApplication?.draftPayload ?? {};
+  const draftPlan =
+    typeof (initialDraft as Record<string, unknown>).plan === "string"
+      ? ((initialDraft as Record<string, unknown>).plan as string)
+      : null;
   const [form, setForm] = useState<FormState>({
     storeName: String(initialDraft.storeName || initialApplication?.storeName || ""),
     storeSlug: String(initialDraft.storeSlug || initialApplication?.slug || ""),
@@ -145,7 +153,12 @@ export function SellerApplicationWizard({
     story: String(initialDraft.story || initialApplication?.story || ""),
     documents: normalizeDocuments(initialDraft.documents, initialApplication?.documents),
     agreementAccepted: Boolean(initialApplication?.agreementAcceptedAt),
+    plan: initialPlan ?? draftPlan,
   });
+  const selectedPlanDefinition = useMemo(
+    () => (form.plan ? sellerPlans.find((item) => item.id === form.plan) ?? null : null),
+    [form.plan]
+  );
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "submitted">("idle");
@@ -282,6 +295,27 @@ export function SellerApplicationWizard({
 
   return (
     <div className="space-y-6">
+      {selectedPlanDefinition ? (
+        <div className="market-panel rounded-[1.9rem] p-5">
+          <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
+            Plan selected from pricing
+          </p>
+          <p className="mt-2 text-base font-semibold tracking-tight text-[var(--market-paper-white)]">
+            {selectedPlanDefinition.name}
+            {" — "}
+            <span className="text-[var(--market-brass)]">
+              {selectedPlanDefinition.monthlyFee == null
+                ? "Custom"
+                : selectedPlanDefinition.monthlyFee === 0
+                  ? "Free"
+                  : `NGN ${selectedPlanDefinition.monthlyFee.toLocaleString()}/month`}
+            </span>
+          </p>
+          <p className="mt-1.5 text-sm leading-7 text-[var(--market-muted)]">
+            {selectedPlanDefinition.summary} You can confirm or change this when vendor onboarding opens after approval.
+          </p>
+        </div>
+      ) : null}
       <div className="market-panel rounded-[1.9rem] p-5">
         <div className="flex flex-wrap items-center gap-3">
           {stepOrder.map((item, index) => (

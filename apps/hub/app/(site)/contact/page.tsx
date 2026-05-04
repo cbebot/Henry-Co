@@ -22,7 +22,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function ContactPage() {
+const VALID_REASONS = new Set([
+  "general",
+  "partnerships",
+  "media",
+  "supplier",
+  "investor",
+  "complaint",
+  "other",
+]);
+
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ reason?: string; plan?: string }>;
+}) {
   /** Defensive: return safe fallback rather than letting a thrown
    * supabase error bubble up to the (site) error boundary. */
   const [pageResult, settingsResult] = await Promise.allSettled([
@@ -40,9 +54,18 @@ export default async function ContactPage() {
   const supportEmail =
     settings.support_email?.trim() || COMPANY.group.supportEmail;
 
+  const sp = (await searchParams) ?? {};
+  const initialReason =
+    sp.reason && VALID_REASONS.has(sp.reason) ? sp.reason : "general";
+  const planContext = typeof sp.plan === "string" ? sp.plan : null;
+
   return (
     <>
-      <ContactHeroLayout supportEmail={supportEmail} />
+      <ContactHeroLayout
+        supportEmail={supportEmail}
+        initialReason={initialReason}
+        planContext={planContext}
+      />
       <CompanyPageClient
         pageKey="contact"
         initialData={page.page ?? createFallbackCompanyPage("contact")}

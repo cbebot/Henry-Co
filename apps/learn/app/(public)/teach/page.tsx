@@ -1,10 +1,11 @@
-import { CheckCircle2, FileStack, Sparkles, UsersRound } from "lucide-react";
+import { CheckCircle2, FileStack, Sparkles, UsersRound, BadgePercent } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitTeacherApplicationAction } from "@/lib/learn/actions";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getTeacherApplicationForViewer } from "@/lib/learn/data";
 import { getSharedAuthUrl } from "@/lib/learn/links";
 import { getLearnPublicLocale } from "@/lib/locale-server";
+import { getLearnSetting } from "@/lib/learn/store";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnStatusBadge } from "@/components/learn/ui";
 
@@ -40,6 +41,22 @@ export default async function TeachPage({
     !application ||
     application.status === "changes_requested" ||
     application.status === "rejected";
+
+  // Operator-controlled commission economics. Read from learn_settings
+  // so the platform never hardcodes a percentage. Both keys accept a
+  // raw number jsonb value (e.g. `15` for 15%, `7` for 7 days).
+  const [commissionRate, reviewBusinessDays] = await Promise.all([
+    getLearnSetting<number>("platform_commission_rate"),
+    getLearnSetting<number>("instructor_review_business_days"),
+  ]);
+  const commissionLabel =
+    typeof commissionRate === "number" && commissionRate > 0
+      ? `${commissionRate}% platform commission`
+      : "Set by operator — disclosed before any approved instructor publishes";
+  const reviewWindowLabel =
+    typeof reviewBusinessDays === "number" && reviewBusinessDays > 0
+      ? `Typically within ${reviewBusinessDays} business day${reviewBusinessDays === 1 ? "" : "s"}`
+      : "Reviewed manually — written response, no automatic decisions";
 
   const pillars = [
     {
@@ -133,6 +150,45 @@ export default async function TeachPage({
             "HenryCo Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one HenryCo account so review, onboarding, and any future commercial relationship stay coherent.",
           )}
         </p>
+      </section>
+
+      <section className="mt-10 grid gap-6 rounded-[1.6rem] border border-[var(--learn-line)] bg-white/[0.04] p-6 sm:p-7 md:grid-cols-3">
+        <div>
+          <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
+            <BadgePercent className="h-3.5 w-3.5" aria-hidden />
+            {t("Free to apply")}
+          </p>
+          <p className="mt-3 text-base font-semibold tracking-tight text-[var(--learn-ink)]">
+            {t("Apply at no cost")}
+          </p>
+          <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
+            {t("HenryCo never charges instructors to submit, review, or appeal an application. We earn when learners pay — not before.")}
+          </p>
+        </div>
+        <div>
+          <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
+            <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+            {t("Review window")}
+          </p>
+          <p className="mt-3 text-base font-semibold tracking-tight text-[var(--learn-ink)]">
+            {reviewWindowLabel}
+          </p>
+          <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
+            {t("Every application receives a written decision: approved, change-request, or decline. No silent rejections.")}
+          </p>
+        </div>
+        <div>
+          <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden />
+            {t("Platform commission")}
+          </p>
+          <p className="mt-3 text-base font-semibold tracking-tight text-[var(--learn-ink)]">
+            {commissionLabel}
+          </p>
+          <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
+            {t("Commission is deducted at sale and disclosed in the instructor agreement before publishing opens. Featured placement (paid promotion in search results) is coming soon — separate from the base commission.")}
+          </p>
+        </div>
       </section>
 
       <section className="mt-12">

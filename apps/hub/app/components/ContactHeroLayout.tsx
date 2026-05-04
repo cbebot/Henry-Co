@@ -9,9 +9,13 @@ import ContactHeroForm from "./ContactHeroForm";
 export default function ContactHeroLayout({
   supportEmail,
   responseTime,
+  initialReason,
+  planContext,
 }: {
   supportEmail: string;
   responseTime?: string;
+  initialReason?: string;
+  planContext?: string | null;
 }) {
   return (
     <section className="relative">
@@ -75,6 +79,8 @@ export default function ContactHeroLayout({
           <ContactHeroForm
             supportEmail={supportEmail}
             responseTime={responseTime}
+            initialReason={initialReason}
+            planContext={planContext ?? null}
           />
         </div>
       </div>

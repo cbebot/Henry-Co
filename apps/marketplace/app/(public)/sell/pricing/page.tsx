@@ -1,8 +1,21 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { getHubUrl } from "@henryco/config";
 import { sellerPlanRows, sellerTrustTierRules } from "@/lib/marketplace/policy";
 
 export const dynamic = "force-dynamic";
+
+function planCtaHref(planId: string) {
+  if (planId === "partner") {
+    return getHubUrl("/contact?reason=partnerships&plan=partner");
+  }
+  return `/account/seller-application/start?plan=${planId}`;
+}
+
+function planCtaLabel(planId: string, planName: string) {
+  if (planId === "partner") return "Contact for partner terms";
+  return `Start with ${planName}`;
+}
 
 const economics = [
   "Transaction commissions are deducted from each vendor order-group settlement before payout release.",
@@ -107,6 +120,13 @@ export default function SellerPricingPage() {
                   </dd>
                 </div>
               </dl>
+              <Link
+                href={planCtaHref(plan.id)}
+                className="market-button-primary mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold"
+              >
+                {planCtaLabel(plan.id, plan.name)}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </li>
           ))}
         </ul>

@@ -157,7 +157,7 @@ export function MarketplaceCartDrawer() {
                         disabled={cartBusy}
                         aria-busy={cartBusy}
                         onClick={() => removeCartItem(item.id)}
-                        className="inline-flex items-center gap-1.5 hover:text-[var(--market-paper-white)] disabled:cursor-wait"
+                        className="inline-flex items-center gap-1.5 text-red-500 hover:text-red-400 disabled:cursor-wait"
                       >
                         {cartBusy ? (
                           <HenryCoActivityIndicator size="sm" className="text-[var(--market-muted)]" label="Updating cart" />
