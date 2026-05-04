@@ -58,59 +58,82 @@ export default async function SubmitListingPage({
       />
 
       {params.submitted === "1" ? (
-        <div className="mt-8 rounded-[1.4rem] border border-[rgba(152,179,154,0.45)] bg-[rgba(152,179,154,0.06)] p-6">
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-sage-soft)]">
-            Submission received
-          </p>
-          <h2 className="mt-2 text-balance text-[1.2rem] font-semibold leading-[1.25] tracking-[-0.012em] text-[var(--property-ink)] sm:text-[1.35rem]">
-            Your listing is under review and remains private until governance clears it.
-          </h2>
-          <dl className="mt-5 grid gap-3 sm:grid-cols-3">
-            {params.ref ? (
-              <div className="rounded-[1.1rem] border border-[var(--property-line)] bg-white/40 px-4 py-3">
-                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                  Reference
+        // Submission confirmation — refined editorial treatment.
+        // Governance info preserved (reference + stage + expected window
+        // + contact path) per CHROME-02 contract; only the visual
+        // treatment is restated. Three-column ledger on desktop, single
+        // column on mobile, hairline divides instead of nested cards.
+        <div
+          className="
+            mt-8 overflow-hidden rounded-[1.4rem]
+            border border-[rgba(152,179,154,0.36)]
+            bg-gradient-to-br from-[rgba(152,179,154,0.10)] via-transparent to-[rgba(232,184,148,0.05)]
+          "
+        >
+          <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-start sm:justify-between sm:gap-10 sm:p-8">
+            <div className="max-w-xl">
+              <p className="inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--property-sage-soft)]">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--property-sage-soft)]" />
+                Submission received
+              </p>
+              <h2 className="mt-3 text-balance text-[1.25rem] font-semibold leading-[1.2] tracking-[-0.014em] text-[var(--property-ink)] sm:text-[1.5rem]">
+                Your listing is under review and stays private until governance clears it.
+              </h2>
+              <p className="mt-3 max-w-md text-[13.5px] leading-7 text-[var(--property-ink-soft)]">
+                Quote the reference when you write in. Edits and additional
+                evidence land directly on the same record.
+              </p>
+            </div>
+
+            {/* Ledger column — three rows on a hairline rail. No nested
+                cards. Tabular numerals, accent-strong reference. */}
+            <dl className="w-full max-w-md divide-y divide-[var(--property-line)] border-y border-[var(--property-line)] sm:w-auto">
+              {params.ref ? (
+                <div className="flex items-baseline justify-between gap-6 py-3">
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
+                    Reference
+                  </dt>
+                  <dd className="break-all text-right text-[13px] font-semibold tracking-[-0.005em] tabular-nums text-[var(--property-accent-strong)]">
+                    {params.ref}
+                  </dd>
+                </div>
+              ) : null}
+              <div className="flex items-baseline justify-between gap-6 py-3">
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
+                  Stage
                 </dt>
-                <dd className="mt-1 break-all text-sm font-semibold tracking-tight text-[var(--property-ink)]">
-                  {params.ref}
+                <dd className="text-right text-[13px] font-semibold tracking-tight text-[var(--property-ink)]">
+                  {params.policy ? params.policy.replaceAll("_", " ") : "Queued for review"}
                 </dd>
               </div>
-            ) : null}
-            <div className="rounded-[1.1rem] border border-[var(--property-line)] bg-white/40 px-4 py-3">
-              <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                Stage
-              </dt>
-              <dd className="mt-1 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
-                {params.policy ? params.policy.replaceAll("_", " ") : "Queued for review"}
-              </dd>
-            </div>
-            <div className="rounded-[1.1rem] border border-[var(--property-line)] bg-white/40 px-4 py-3">
-              <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                Expected response
-              </dt>
-              <dd className="mt-1 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
-                Within 2 business days
-              </dd>
-            </div>
-          </dl>
-          <p className="mt-5 text-sm leading-7 text-[var(--property-ink-soft)]">
-            Quote the reference above when contacting the property team. Need to amend the
-            submission?{" "}
-            <Link
-              href={getAccountUrl("/property")}
-              className="font-semibold text-[var(--property-ink)] underline-offset-4 hover:underline"
-            >
-              Open your property workspace
-            </Link>
-            {" "}or email{" "}
-            <a
-              href="mailto:property@henrycogroup.com"
-              className="font-semibold text-[var(--property-ink)] underline-offset-4 hover:underline"
-            >
-              property@henrycogroup.com
-            </a>
-            .
-          </p>
+              <div className="flex items-baseline justify-between gap-6 py-3">
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
+                  Expected response
+                </dt>
+                <dd className="text-right text-[13px] font-semibold tracking-tight text-[var(--property-ink)]">
+                  Within 2 business days
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div className="border-t border-[rgba(152,179,154,0.22)] bg-[rgba(152,179,154,0.04)] px-6 py-4 sm:px-8">
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px] text-[var(--property-ink-soft)]">
+              <span>Need to amend the submission?</span>
+              <Link
+                href={getAccountUrl("/property")}
+                className="font-semibold text-[var(--property-accent-strong)] underline-offset-4 transition hover:underline"
+              >
+                Open your property workspace
+              </Link>
+              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[var(--property-line)] sm:inline-block" />
+              <a
+                href="mailto:property@henrycogroup.com"
+                className="font-semibold text-[var(--property-ink)] underline-offset-4 transition hover:text-[var(--property-accent-strong)] hover:underline"
+              >
+                property@henrycogroup.com
+              </a>
+            </p>
+          </div>
         </div>
       ) : null}
       {params.verification && params.verification !== "verified" ? (
