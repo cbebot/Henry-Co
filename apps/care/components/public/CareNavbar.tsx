@@ -11,7 +11,7 @@ import {
   type PublicNavItem,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
-import { HenryCoMonogram } from "@henryco/ui/brand";
+import { CareMonogram } from "@/components/brand/CareMonogram";
 
 export type DivisionPublicConfig = {
   name: string;
@@ -52,7 +52,7 @@ function BrandMark({
           }}
         />
       ) : (
-        <HenryCoMonogram size={32} accent={accent || "#C9A227"} />
+        <CareMonogram size={32} accent={accent || "#6B7CFF"} />
       )}
     </div>
   );

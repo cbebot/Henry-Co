@@ -1,8 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" role="img" aria-label="Henry &amp; Co.">
-  <title>Henry &amp; Co.</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 64" role="img" aria-label="Henry &amp; Co. Fabric Care">
+  <title>Henry &amp; Co. Fabric Care</title>
   <g fill="currentColor" style="font-family: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;">
     <text x="0" y="46" font-weight="500" font-size="48" letter-spacing="-0.03em">Henry</text>
     <text x="148" y="42" font-style="italic" font-weight="400" font-size="36" letter-spacing="-0.01em" opacity="0.92">&amp;</text>
     <text x="186" y="46" font-weight="500" font-size="48" letter-spacing="-0.03em">Co.</text>
+  </g>
+  <g style="font-family: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', serif; font-feature-settings: 'smcp' 1, 'kern' 1; font-variant: small-caps;">
+    <text x="296" y="46" font-weight="500" font-size="36" letter-spacing="0.04em" fill="#6B7CFF">Fabric Care</text>
   </g>
 </svg>
