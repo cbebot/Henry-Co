@@ -90,10 +90,10 @@ export default async function StudioTemplateDetailPage({
 
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
-              href={`/request?template=${template.slug}`}
+              href={`/checkout/template/${template.slug}`}
               className="studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Customise & start now
+              Pay {Math.round(template.depositRate * 100)}% deposit & start
               <ArrowRight className="h-4 w-4" />
             </Link>
             {template.demoUrl ? (
@@ -108,10 +108,10 @@ export default async function StudioTemplateDetailPage({
               </Link>
             ) : null}
             <Link
-              href="/request"
+              href={`/request?template=${template.slug}`}
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
             >
-              Need something different?
+              Customise the brief first
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -312,17 +312,24 @@ export default async function StudioTemplateDetailPage({
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              href={`/request?template=${template.slug}`}
+              href={`/checkout/template/${template.slug}`}
               className="studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Start brief with this template
+              Pay deposit & start
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/contact"
+              href={`/request?template=${template.slug}`}
               className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
             >
+              Customise the brief first
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-1.5 self-center text-sm font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
+            >
               Talk to a Studio lead
+              <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>

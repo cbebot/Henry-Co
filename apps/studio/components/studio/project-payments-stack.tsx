@@ -86,37 +86,61 @@ export function ProjectPaymentsStack({
         </div>
       </div>
 
-      <div className={`mt-6 grid gap-4 md:grid-cols-4 ${isPriority ? "rounded-[1.5rem] border border-[var(--studio-line)] bg-black/15 p-4" : ""}`}>
+      {/* Stat grid: 2x2 on mobile (balanced), 4-up on desktop. The
+       * earlier md:grid-cols-4 stacked one column at a time on narrow
+       * widths and felt off-balance — 2x2 keeps it square and calm. */}
+      <div
+        className={`mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4 ${
+          isPriority
+            ? "rounded-[1.5rem] border border-[var(--studio-line)] bg-black/15 p-4"
+            : ""
+        }`}
+      >
         {[
           ["Total", formatCurrency(paymentOverview.total, proposalCurrency)],
           ["Paid", formatCurrency(paymentOverview.paid, proposalCurrency)],
           ["Processing", formatCurrency(paymentOverview.processing, proposalCurrency)],
           ["Outstanding", formatCurrency(paymentOverview.outstanding, proposalCurrency)],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 p-4">
-            <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">{label}</div>
-            <div className="mt-2 text-lg font-semibold text-[var(--studio-ink)]">{value}</div>
+          <div key={label} className="rounded-[1.2rem] border border-[var(--studio-line)] bg-black/10 px-3 py-3 sm:px-4 sm:py-4">
+            <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">{label}</div>
+            <div className="mt-1.5 truncate text-[15px] font-semibold tabular-nums text-[var(--studio-ink)] sm:text-lg">{value}</div>
           </div>
         ))}
       </div>
 
-      <div className="mt-5 space-y-3">
-        {pricingBreakdown.map((line) => (
-          <div key={`${line.label}-${line.amount}`} className="rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-sm font-semibold text-[var(--studio-ink)]">{line.label}</div>
-                {line.detail ? (
-                  <div className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">{line.detail}</div>
-                ) : null}
+      {/* Proposal-style pricing breakdown is reference detail. For
+       * clients it's the third place they see the same numbers (hero,
+       * stat grid, then this). Collapse it behind a quiet disclosure so
+       * the action — paying and uploading proof — stays the visible
+       * surface. Finance still sees it expanded by default for audit.
+       * This is the "long card good for nothing" we trimmed. */}
+      {pricingBreakdown.length > 0 ? (
+        <details
+          className="group/breakdown mt-5 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3"
+          open={isFinance || isStaff}
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)] outline-none [&::-webkit-details-marker]:hidden">
+            <span>Proposal pricing detail</span>
+            <span className="text-[var(--studio-ink-soft)] transition group-open/breakdown:rotate-180">▾</span>
+          </summary>
+          <div className="mt-3 space-y-2.5">
+            {pricingBreakdown.map((line) => (
+              <div key={`${line.label}-${line.amount}`} className="flex items-start justify-between gap-4 border-t border-[var(--studio-line)] pt-2.5 first:border-t-0 first:pt-0">
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-[var(--studio-ink)]">{line.label}</div>
+                  {line.detail ? (
+                    <div className="mt-0.5 text-[11px] uppercase tracking-[0.14em] text-[var(--studio-ink-soft)]">{line.detail}</div>
+                  ) : null}
+                </div>
+                <div className="shrink-0 text-sm font-semibold tabular-nums text-[var(--studio-signal)]">
+                  {formatCurrency(line.amount, proposalCurrency)}
+                </div>
               </div>
-              <div className="text-sm font-semibold text-[var(--studio-signal)]">
-                {formatCurrency(line.amount, proposalCurrency)}
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </details>
+      ) : null}
 
       <div className="mt-6">
         <StudioPaymentGuide
@@ -177,20 +201,53 @@ export function ProjectPaymentsStack({
                 ) : null}
               </div>
               {payment.status !== "paid" && !isStaff ? (
-                <form action={uploadPaymentProofAction} className="mt-4 space-y-3">
-                  <input type="hidden" name="paymentId" value={payment.id} />
-                  <input type="hidden" name="redirectPath" value={redirectPath} />
-                  <input type="hidden" name="accessKey" value={access || ""} />
-                  <StudioFileField
-                    name="proof"
-                    required
-                    variant="compact"
-                    title="Upload payment proof"
-                    description="Bank receipt, debit alert screenshot, or PDF—anything that shows amount, date, and destination."
-                    footerHint="Review your file name before submit—we show a trimmed label so you know exactly what finance received."
-                  />
-                  <StudioSubmitButton label="Submit payment proof" pendingLabel="Uploading…" />
-                </form>
+                <>
+                  {/* Three-step "what happens next" rail — keeps the
+                   * customer oriented: transfer → upload → finance
+                   * verifies. Balanced horizontally, stacks vertically
+                   * on narrow screens. */}
+                  <ol className="mt-4 grid gap-2 sm:grid-cols-3">
+                    {[
+                      { num: "1", label: "Transfer", body: "Use the verified bank details above." },
+                      { num: "2", label: "Upload", body: "Attach your receipt or alert below." },
+                      { num: "3", label: "Verified", body: "Finance confirms within one business day." },
+                    ].map((step) => (
+                      <li
+                        key={step.num}
+                        className="flex items-start gap-3 rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-3 py-2.5"
+                      >
+                        <span
+                          aria-hidden
+                          className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] text-[11px] font-semibold text-[var(--studio-signal)]"
+                        >
+                          {step.num}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink)]">
+                            {step.label}
+                          </div>
+                          <p className="mt-0.5 text-[11.5px] leading-5 text-[var(--studio-ink-soft)]">
+                            {step.body}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                  <form action={uploadPaymentProofAction} className="mt-4 space-y-3">
+                    <input type="hidden" name="paymentId" value={payment.id} />
+                    <input type="hidden" name="redirectPath" value={redirectPath} />
+                    <input type="hidden" name="accessKey" value={access || ""} />
+                    <StudioFileField
+                      name="proof"
+                      required
+                      variant="compact"
+                      title="Upload payment proof"
+                      description="Bank receipt, debit alert screenshot, or PDF — must show amount, date, and destination."
+                      footerHint="Review your file name before submit — we show a trimmed label so you know exactly what finance received."
+                    />
+                    <StudioSubmitButton label="Submit payment proof" pendingLabel="Uploading…" />
+                  </form>
+                </>
               ) : null}
 
               {/* Deep-link to the dedicated focused payment workspace —

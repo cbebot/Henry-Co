@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { StudioRequestLanding } from "@/components/studio/request-landing";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import {
@@ -32,7 +33,12 @@ export const metadata: Metadata = {
 export default async function RequestPage({
   searchParams,
 }: {
-  searchParams: Promise<{ team?: string; preset?: string; template?: string }>;
+  searchParams: Promise<{
+    team?: string;
+    preset?: string;
+    template?: string;
+    path?: string;
+  }>;
 }) {
   const params = await searchParams;
   const catalog = await getStudioCatalog();
@@ -43,10 +49,25 @@ export default async function RequestPage({
     ? getStudioTemplateBySlug(params.template)
     : null;
 
-  // When a template or preset param is present, drop the user straight
-  // into the manual builder (with the seed already applied) — they've
-  // already chosen their path, no point making them re-pick.
-  const initialPath = startedFromTemplate || presetHint ? "custom" : "copilot";
+  // /request authors a brief — only "copilot" or "custom" lanes live
+  // here. Pre-built templates moved to /pick (the canonical gallery
+  // and checkout surface), so `?path=templates` is now a redirect to
+  // keep old links and outdated bookmarks working.
+  if (params.path === "templates") {
+    redirect("/pick");
+  }
+
+  // Path priority:
+  //   1. Explicit `?path=` query (from /pick "Describe a fully custom build"
+  //      and similar deep-links — the user already decided upstream, so
+  //      we skip the three-tile picker entirely and land them directly).
+  //   2. Template / preset hint → custom builder, since they've already
+  //      picked their path implicitly.
+  //   3. Default → co-pilot (the calmest entry for a cold visitor).
+  const explicitPath =
+    params.path === "custom" || params.path === "copilot" ? params.path : null;
+  const initialPath: "copilot" | "custom" =
+    explicitPath ?? (startedFromTemplate || presetHint ? "custom" : "copilot");
 
   return (
     <main
@@ -99,9 +120,16 @@ export default async function RequestPage({
           Tell us what you need. Pricing appears as you choose.
         </h1>
         <p className="mt-3 max-w-2xl text-pretty text-[14.5px] leading-[1.7] text-[var(--studio-ink-soft)] sm:text-[15.5px]">
-          Three calm paths. Pick whichever matches the way you think — you can
-          switch at any time. Every path ends with the same thing: a clear plan,
-          a real price, and a payment route that isn&rsquo;t a black box.
+          Two calm lanes — describe it in your words and let the co-pilot draft
+          the brief, or step through the manual builder yourself. Already know
+          you want a ready-made template? Skip the brief and{" "}
+          <Link
+            href="/pick"
+            className="font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
+          >
+            browse templates &amp; pay deposit
+          </Link>
+          .
         </p>
       </section>
 
@@ -115,6 +143,12 @@ export default async function RequestPage({
           preferredTeamId={params.team || null}
           presetHint={presetHint}
           initialPath={initialPath}
+          // When the path was chosen upstream (URL ?path= or
+          // template/preset hint), the user already declared their lane,
+          // so the in-page picker collapses to a compact switcher and
+          // the custom builder starts at step 2 (Scope) — they don't
+          // need to re-answer "package or custom".
+          pathChosenUpstream={Boolean(explicitPath || startedFromTemplate || presetHint)}
         />
       </section>
     </main>

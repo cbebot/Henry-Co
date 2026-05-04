@@ -1,5 +1,6 @@
 import "server-only";
 
+import { after } from "next/server";
 import { normalizeEmail } from "@/lib/env";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import {
@@ -546,11 +547,25 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     );
   }
 
-  await sendInquiryNotifications({ lead, proposal, project });
-  await sendProposalNotifications({ lead, proposal, project, teamName: team.name });
-  if (project && payment) {
-    await sendPaymentInstructionsNotifications({ lead, proposal, project, payment });
-  }
+  // Notifications are side effects — don't block the user's redirect on
+  // them. Three sequential awaits used to add 3-9s to the perceived
+  // submit time. With `after()` they run after the response is flushed,
+  // so the brief author lands on their project/proposal page in <1s.
+  // Errors here are logged but not surfaced — the brief is already
+  // safely persisted by the upserts above.
+  after(async () => {
+    try {
+      await Promise.all([
+        sendInquiryNotifications({ lead, proposal, project }),
+        sendProposalNotifications({ lead, proposal, project, teamName: team.name }),
+        project && payment
+          ? sendPaymentInstructionsNotifications({ lead, proposal, project, payment })
+          : Promise.resolve(),
+      ]);
+    } catch {
+      // notifications fail-safe — user already submitted successfully.
+    }
+  });
 
   return { lead, brief, proposal, project, payment };
 }

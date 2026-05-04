@@ -52,7 +52,57 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem; /* clear the fixed Studio header on jump links */
   -webkit-text-size-adjust: 100%;
+  /* Mobile Safari momentum scroll on overflow containers without
+   * affecting native vertical scroll on the document itself. */
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  /* Prevent rubber-band overscroll bouncing on iOS so headers and
+   * sticky elements feel anchored, not jittery. */
+  overscroll-behavior-y: none;
+}
+
+/* Any in-page scroll container on Studio (sidebars, attention strips,
+ * thread panes) gets iOS momentum scrolling and contained overscroll
+ * so a child scroll never propagates to the document. */
+.studio-scroll,
+[data-studio-scroll="y"] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Honour reduced-motion users — disable all transitions, animations,
+ * and smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Crisp tap interactions on touch devices: anything that's a button,
+ * link, or interactive control should respond visibly inside the same
+ * frame the user lifts their finger. */
+@media (hover: none) and (pointer: coarse) {
+  a,
+  button,
+  [role="button"],
+  [role="tab"] {
+    touch-action: manipulation;
+  }
 }
 
 html.dark {

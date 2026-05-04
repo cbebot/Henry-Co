@@ -34,6 +34,36 @@
   --property-sage-soft: #e0efe0;
   --property-shadow: 0 44px 120px rgba(0, 0, 0, 0.32);
   --property-shadow-soft: 0 22px 72px rgba(0, 0, 0, 0.18);
+
+  /*
+   * HenryCo platform token mapping.
+   *
+   * Property's --property-* tokens are the canonical colour soul of
+   * this division (warm copper + sage on a deep ember stage). The
+   * --hc-* aliases below are the platform-shared semantic role
+   * tokens (defined in packages/ui/src/styles/globals.css) — they
+   * resolve via `var()` to the --property-* values, so when .light
+   * flips --property-bg, --hc-bg automatically flips too. No
+   * duplication, no drift. Shared primitives in @henryco/ui can
+   * read --hc-ink / --hc-line / --hc-accent and render correctly
+   * inside any property route without knowing the soul name.
+   */
+  --hc-bg: var(--property-bg);
+  --hc-bg-soft: var(--property-bg-soft);
+  --hc-surface: var(--property-surface);
+  --hc-surface-strong: var(--property-surface-strong);
+  --hc-paper: var(--property-paper);
+  --hc-ink: var(--property-ink);
+  --hc-ink-soft: var(--property-ink-soft);
+  --hc-ink-muted: var(--property-ink-muted);
+  --hc-ink-on-accent: #1c120d;
+  --hc-line: var(--property-line);
+  --hc-line-strong: var(--property-line-strong);
+  --hc-accent: var(--property-accent);
+  --hc-accent-strong: var(--property-accent-strong);
+  --hc-accent-soft: var(--property-accent-soft);
+  --hc-shadow: var(--property-shadow);
+  --hc-shadow-soft: var(--property-shadow-soft);
 }
 
 .light {

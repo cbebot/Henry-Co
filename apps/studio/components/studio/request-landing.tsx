@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ArrowRight,
+  ArrowUpRight,
   Compass,
   Layers3,
-  Sparkles,
   Wand2,
 } from "lucide-react";
 import { BriefCopilotPanel } from "@/components/studio/brief-copilot-panel";
@@ -21,7 +21,13 @@ import type {
   StudioTemplate,
 } from "@/lib/studio/types";
 
-type PathKey = "copilot" | "templates" | "custom";
+/**
+ * /request authors a fresh brief with two in-page lanes (Co-pilot or
+ * Custom). Pre-built templates live at /pick — that's the canonical
+ * gallery + checkout. The templates card on this page is a deep link
+ * out, not an in-page tab, so /pick and /request stop overlapping.
+ */
+type PathKey = "copilot" | "custom";
 
 type PathTileDefinition = {
   key: PathKey;
@@ -43,15 +49,6 @@ const PATHS: PathTileDefinition[] = [
     icon: Wand2,
   },
   {
-    key: "templates",
-    kicker: "Ready to start",
-    title: "Pick a prebuilt brief",
-    summary:
-      "Use one of the studio templates — already scoped, priced, and timed — and tweak it to fit. No blank-page anxiety.",
-    hint: "Browse 14 templates",
-    icon: Layers3,
-  },
-  {
     key: "custom",
     kicker: "Most control",
     title: "Build your own brief",
@@ -61,12 +58,6 @@ const PATHS: PathTileDefinition[] = [
     icon: Compass,
   },
 ];
-
-const NAIRA = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  maximumFractionDigits: 0,
-});
 
 /**
  * Three-path entry for the Studio brief request flow.
@@ -93,6 +84,7 @@ export function StudioRequestLanding({
   preferredTeamId,
   presetHint,
   initialPath,
+  pathChosenUpstream = false,
 }: {
   services: StudioService[];
   packages: StudioPackage[];
@@ -104,10 +96,27 @@ export function StudioRequestLanding({
   /** Optional initial path — preset/template params land users on the
    * matching flow on first paint. */
   initialPath?: PathKey;
+  /** True when the path was already declared upstream (e.g. /pick →
+   * /request?path=custom, or a template seed). The full three-tile
+   * picker is replaced by a compact switcher so the chosen content is
+   * immediately visible — especially on mobile where the tiles
+   * otherwise stack and push the actual brief below the fold.
+   * The user can still switch paths via the compact switcher. */
+  pathChosenUpstream?: boolean;
 }) {
   const [activePath, setActivePath] = useState<PathKey>(initialPath ?? "copilot");
   const [copilotSeed, setCopilotSeed] = useState<BriefCopilotStructured | null>(null);
   const [seedVersion, setSeedVersion] = useState(0);
+  // Once the user has actively switched paths in-page (or the page was
+  // entered without an upstream choice), we want the full picker back so
+  // they can compare options at a glance.
+  const [picksMade, setPicksMade] = useState(false);
+  const showCompact = pathChosenUpstream && !picksMade;
+
+  function handlePathSelect(next: PathKey) {
+    setPicksMade(true);
+    setActivePath(next);
+  }
 
   const handleCopilotApply = useCallback((structured: BriefCopilotStructured) => {
     setCopilotSeed(structured);
@@ -118,11 +127,16 @@ export function StudioRequestLanding({
     }
   }, []);
 
-  const featuredTemplates = useMemo(() => templates.slice(0, 6), [templates]);
-
   return (
     <div className="space-y-12">
-      <PathSelector active={activePath} onSelect={setActivePath} />
+      {showCompact ? (
+        <CompactPathSwitcher active={activePath} onSelect={handlePathSelect} />
+      ) : (
+        <>
+          <PathSelector active={activePath} onSelect={handlePathSelect} />
+          <TemplatesLinkCard count={templates.length} />
+        </>
+      )}
 
       {activePath === "copilot" ? (
         <section className="space-y-10" aria-labelledby="studio-path-copilot">
@@ -145,14 +159,6 @@ export function StudioRequestLanding({
         </section>
       ) : null}
 
-      {activePath === "templates" ? (
-        <TemplateBrowser
-          templates={featuredTemplates}
-          totalCount={templates.length}
-          onPickCustom={() => setActivePath("custom")}
-        />
-      ) : null}
-
       {activePath === "custom" ? (
         <section className="space-y-6" aria-labelledby="studio-path-custom">
           <h2 id="studio-path-custom" className="sr-only">
@@ -171,10 +177,83 @@ export function StudioRequestLanding({
               requestConfig={requestConfig}
               preferredTeamId={preferredTeamId}
               presetHint={presetHint}
+              // When path was chosen upstream the lane is already
+              // "custom" — start at step 2 (Scope) so the user isn't
+              // asked "package or custom?" a second time. They can
+              // still tap step 1 (Path) in the rail to revisit it.
+              initialStepIndex={pathChosenUpstream ? 1 : 0}
+              initialPathway={pathChosenUpstream ? "custom" : undefined}
             />
           </div>
         </section>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * Compact horizontal switcher used after the user has already chosen
+ * a path upstream (e.g. /pick → /request?path=custom). The full
+ * three-tile selector would otherwise stack on mobile and push the
+ * brief content below the fold — replacing it with a pill row keeps
+ * the path switchable while making the brief itself the visible
+ * surface.
+ */
+function CompactPathSwitcher({
+  active,
+  onSelect,
+}: {
+  active: PathKey;
+  onSelect: (path: PathKey) => void;
+}) {
+  const activePath = PATHS.find((p) => p.key === active);
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex items-center gap-3 min-w-0">
+        {activePath ? (
+          <span
+            aria-hidden
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.1)] text-[var(--studio-signal)]"
+          >
+            <activePath.icon className="h-3.5 w-3.5" />
+          </span>
+        ) : null}
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+            {activePath?.kicker || "Brief path"}
+          </p>
+          <p className="truncate text-[13px] font-semibold text-[var(--studio-ink)]">
+            {activePath?.title || "Build your brief"}
+          </p>
+        </div>
+      </div>
+      <div
+        role="tablist"
+        aria-label="Switch brief path"
+        className="flex flex-wrap gap-1.5"
+      >
+        {PATHS.map((path) => {
+          const isActive = path.key === active;
+          return (
+            <button
+              key={path.key}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => onSelect(path.key)}
+              className={[
+                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11.5px] font-semibold transition",
+                isActive
+                  ? "border-[rgba(151,244,243,0.55)] bg-[rgba(151,244,243,0.12)] text-[var(--studio-signal)]"
+                  : "border-[var(--studio-line)] bg-transparent text-[var(--studio-ink-soft)] hover:border-[rgba(151,244,243,0.35)] hover:text-[var(--studio-ink)]",
+              ].join(" ")}
+            >
+              <path.icon className="h-3 w-3" aria-hidden />
+              {path.key === "copilot" ? "Co-pilot" : "Custom"}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -261,105 +340,42 @@ function PathSelector({
   );
 }
 
-function TemplateBrowser({
-  templates,
-  totalCount,
-  onPickCustom,
-}: {
-  templates: StudioTemplate[];
-  totalCount: number;
-  onPickCustom: () => void;
-}) {
+/**
+ * Quiet bridge to /pick — the templates path is no longer an in-page
+ * tab on /request. Instead we surface a single calm card that links
+ * out so /request stays focused on brief authoring and /pick stays
+ * canonical for ready-made templates + checkout. Resolves the prior
+ * duplication where both surfaces re-displayed the template browser.
+ */
+function TemplatesLinkCard({ count }: { count: number }) {
   return (
-    <section className="space-y-7" aria-labelledby="studio-path-templates">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
+    <Link
+      href="/pick"
+      className="group/tpl-link flex flex-col gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-5 py-4 transition hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.45)] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5"
+    >
+      <div className="flex items-start gap-4">
+        <span
+          aria-hidden
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--studio-line)] bg-[rgba(151,244,243,0.05)] text-[var(--studio-signal)]"
+        >
+          <Layers3 className="h-4 w-4" />
+        </span>
+        <div className="min-w-0">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-            Featured templates
+            Or skip the brief — pay the deposit and start
           </p>
-          <h2
-            id="studio-path-templates"
-            className="mt-2 text-[1.4rem] font-semibold leading-tight tracking-[-0.01em] text-[var(--studio-ink)] sm:text-[1.6rem]"
-          >
-            Pick a brief that&rsquo;s already scoped for you.
-          </h2>
+          <p className="mt-1 text-[14px] font-semibold text-[var(--studio-ink)] sm:text-[15px]">
+            Browse {count} ready-made templates with real prices, real timelines.
+          </p>
+          <p className="mt-1 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
+            Each template ships in days. Pay the deposit on the template page and we start the moment payment clears.
+          </p>
         </div>
-        <Link
-          href="/pick"
-          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--studio-signal)] underline-offset-4 hover:underline"
-        >
-          Browse all {totalCount}
-          <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      </header>
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {templates.map((template) => (
-          <article
-            key={template.id}
-            className="group/tpl relative overflow-hidden rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] p-5 transition hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.35)]"
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-12 opacity-70"
-              style={{
-                background: `linear-gradient(135deg, ${template.preview.from} 0%, ${template.preview.to} 100%)`,
-              }}
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute right-3 top-3 h-7 w-7 rounded-lg"
-              style={{
-                background: `linear-gradient(135deg, ${template.preview.from} 0%, ${template.preview.to} 100%)`,
-              }}
-            />
-            <div className="relative pt-8">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                {template.projectTypeLabel}
-              </p>
-              <h3 className="mt-2 text-[15px] font-semibold leading-snug text-[var(--studio-ink)]">
-                {template.name}
-              </h3>
-              <p className="mt-2 line-clamp-3 text-[12.5px] leading-6 text-[var(--studio-ink-soft)]">
-                {template.tagline}
-              </p>
-              <div className="mt-4 flex items-baseline justify-between gap-2 border-t border-[var(--studio-line)] pt-3">
-                <span className="text-[14px] font-semibold tabular-nums text-[var(--studio-ink)]">
-                  {NAIRA.format(template.price)}
-                </span>
-                <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                  {template.timelineWeeks}w · {Math.round(template.depositRate * 100)}% deposit
-                </span>
-              </div>
-              <Link
-                href={`/request?template=${template.slug}`}
-                className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--studio-signal)] underline-offset-4 group-hover/tpl:underline"
-              >
-                Start with this template
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </article>
-        ))}
       </div>
-
-      <div className="flex flex-wrap gap-3 border-t border-[var(--studio-line)] pt-6">
-        <Link
-          href="/pick"
-          className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-5 py-2.5 text-[13px] font-semibold text-[var(--studio-ink)] transition hover:border-[rgba(151,244,243,0.45)]"
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          See every template with case-study previews
-        </Link>
-        <button
-          type="button"
-          onClick={onPickCustom}
-          className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-5 py-2.5 text-[13px] font-semibold text-[var(--studio-ink)] transition hover:border-[rgba(151,244,243,0.45)]"
-        >
-          <Compass className="h-3.5 w-3.5" />
-          None fit — build a custom brief
-        </button>
-      </div>
-    </section>
+      <span className="inline-flex shrink-0 items-center gap-1.5 self-end text-[12.5px] font-semibold text-[var(--studio-signal)] underline-offset-4 group-hover/tpl-link:underline sm:self-center">
+        Browse templates
+        <ArrowUpRight className="h-3.5 w-3.5" />
+      </span>
+    </Link>
   );
 }

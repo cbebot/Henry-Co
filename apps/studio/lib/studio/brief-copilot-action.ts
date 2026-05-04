@@ -1,7 +1,7 @@
 "use server";
 
-import { randomBytes, randomUUID } from "node:crypto";
-import { cookies } from "next/headers";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { cookies, headers } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { getOptionalEnv, normalizeEmail } from "@/lib/env";
 import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
@@ -13,10 +13,36 @@ import {
 import { writeStudioLog } from "@/lib/studio/store";
 
 const SESSION_COOKIE = "studio_copilot_session";
+
+/**
+ * Anti-abuse rules — kept conservative on purpose. These are the
+ * standard professional ceilings we tell finance + ops about, sized
+ * so a runaway client or a leaked credential can't drain the budget
+ * before someone notices.
+ *
+ * Cost guard rails (each row enforced in order — first that trips
+ * blocks the call):
+ *   1. Min-word-count + min-length   — defeats keyboard-mash spam
+ *   2. Per-session cap (anon)        — 5 generations per session cookie
+ *   3. Per-account cap (authed)      — 20 generations per 24h
+ *   4. Per-IP backstop               — 10 generations per IP per 24h
+ *                                       (defeats cookie-clear bypass)
+ *   5. System-wide ceiling           — 500 successful calls per 24h
+ *                                       (final brake against runaway)
+ *   6. Duplicate-input dedup         — same SHA-256 input_hash from
+ *                                       same identity within 24h →
+ *                                       returns the cached structured
+ *                                       output, no model call billed
+ */
 const ANON_LIMIT_PER_SESSION = 5;
 const AUTH_LIMIT_PER_DAY = 20;
+const IP_LIMIT_PER_DAY = 10;
+const SYSTEM_LIMIT_PER_DAY = 500;
 const MAX_INPUT_LENGTH = 1600;
 const MIN_INPUT_LENGTH = 30;
+const MIN_WORD_COUNT = 8;
+const DEDUP_WINDOW_SECONDS = 60 * 60 * 24;
+const COPILOT_INTENT = "studio_brief";
 
 export type BriefCopilotResult =
   | {
@@ -142,6 +168,39 @@ function parseAssistantJson(text: string): unknown {
   }
 }
 
+function countWords(value: string): number {
+  return value.trim().split(/\s+/).filter(Boolean).length;
+}
+
+// Salted SHA-256. Salt comes from BRIEF_COPILOT_HASH_SALT (server-only)
+// so a leaked database can't be reverse-resolved to raw IPs or inputs.
+// Falls back to a deterministic compile-time string in dev so the dedup
+// path still works without setup; rotate once we know production runs
+// with the salt set.
+const COPILOT_HASH_SALT_FALLBACK = "henryco_studio_copilot_v1";
+function copilotHash(input: string): string {
+  const salt = getOptionalEnv("BRIEF_COPILOT_HASH_SALT") || COPILOT_HASH_SALT_FALLBACK;
+  return createHash("sha256").update(`${salt}::${input}`).digest("hex");
+}
+
+async function resolveRequestIp(): Promise<string | null> {
+  try {
+    const headerStore = await headers();
+    const xff = headerStore.get("x-forwarded-for");
+    if (xff) {
+      const first = xff.split(",")[0]?.trim();
+      if (first) return first;
+    }
+    const real = headerStore.get("x-real-ip");
+    if (real) return real.trim();
+    const cf = headerStore.get("cf-connecting-ip");
+    if (cf) return cf.trim();
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 async function getOrCreateSessionId(): Promise<string> {
   const store = await cookies();
   const existing = store.get(SESSION_COOKIE)?.value?.trim();
@@ -187,7 +246,80 @@ async function countRecentDrafts(input: {
   }
 }
 
-export async function generateStudioBriefDraftAction(formData: FormData): Promise<BriefCopilotResult> {
+async function countByIpHash(ipHash: string, windowSeconds: number): Promise<number> {
+  if (!hasAdminSupabaseEnv() || !ipHash) return 0;
+  const admin = createAdminSupabase();
+  const since = new Date(Date.now() - windowSeconds * 1000).toISOString();
+  try {
+    const { count, error } = await admin
+      .from("studio_brief_drafts")
+      .select("id", { count: "exact", head: true })
+      .eq("ip_hash", ipHash)
+      .gte("created_at", since)
+      .neq("status", "rate_limited");
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function countSystemWide(windowSeconds: number): Promise<number> {
+  if (!hasAdminSupabaseEnv()) return 0;
+  const admin = createAdminSupabase();
+  const since = new Date(Date.now() - windowSeconds * 1000).toISOString();
+  try {
+    const { count, error } = await admin
+      .from("studio_brief_drafts")
+      .select("id", { count: "exact", head: true })
+      .eq("intent", COPILOT_INTENT)
+      .eq("status", "completed")
+      .gte("created_at", since);
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function findCachedDraft(input: {
+  inputHash: string;
+  userId: string | null;
+  email: string | null;
+  sessionId: string;
+  windowSeconds: number;
+}): Promise<BriefCopilotStructured | null> {
+  if (!hasAdminSupabaseEnv() || !input.inputHash) return null;
+  const admin = createAdminSupabase();
+  const since = new Date(Date.now() - input.windowSeconds * 1000).toISOString();
+
+  const identityFilter = input.userId
+    ? `user_id.eq.${input.userId}`
+    : input.email
+      ? `normalized_email.eq.${input.email}`
+      : `session_id.eq.${input.sessionId}`;
+
+  try {
+    const { data, error } = await admin
+      .from("studio_brief_drafts")
+      .select("structured_output")
+      .eq("input_hash", input.inputHash)
+      .eq("status", "completed")
+      .or(identityFilter)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle<{ structured_output: unknown }>();
+    if (error || !data) return null;
+    return normaliseStructured(data.structured_output);
+  } catch {
+    return null;
+  }
+}
+
+export async function generateStudioBriefDraftAction(
+  formData: FormData
+): Promise<BriefCopilotResult> {
   const description = String(formData.get("description") || "").trim();
 
   if (description.length < MIN_INPUT_LENGTH) {
@@ -206,6 +338,14 @@ export async function generateStudioBriefDraftAction(formData: FormData): Promis
     };
   }
 
+  if (countWords(description) < MIN_WORD_COUNT) {
+    return {
+      ok: false,
+      reason: "input_too_short",
+      message: `Use at least ${MIN_WORD_COUNT} words so the co-pilot can map your project to the right scope.`,
+    };
+  }
+
   const apiKey = getOptionalEnv("ANTHROPIC_API_KEY");
   if (!apiKey) {
     return {
@@ -219,19 +359,66 @@ export async function generateStudioBriefDraftAction(formData: FormData): Promis
   const sessionId = await getOrCreateSessionId();
   const userId = viewer.user?.id ?? null;
   const email = viewer.normalizedEmail || normalizeEmail(viewer.user?.email);
+  const rawIp = await resolveRequestIp();
+  const ipHash = rawIp ? copilotHash(`ip:${rawIp}`) : null;
+  const inputHash = copilotHash(`brief:${description.toLowerCase().replace(/\s+/g, " ")}`);
 
   const isAuthenticated = Boolean(userId);
   const limit = isAuthenticated ? AUTH_LIMIT_PER_DAY : ANON_LIMIT_PER_SESSION;
-  const windowSeconds = isAuthenticated ? 60 * 60 * 24 : 60 * 60 * 24 * 7;
+  const identityWindow = isAuthenticated ? 60 * 60 * 24 : 60 * 60 * 24 * 7;
+  const ipWindow = 60 * 60 * 24;
+  const systemWindow = 60 * 60 * 24;
 
-  const usedCount = await countRecentDrafts({
-    userId,
-    email,
-    sessionId,
-    windowSeconds,
-  });
+  // Identity-based cap (session for anon, account for authed) — runs in
+  // parallel with the IP backstop, system ceiling, and dedup lookup so
+  // a single round-trip enforces all four guards.
+  const [usedCount, ipCount, systemCount, cachedDraft] = await Promise.all([
+    countRecentDrafts({ userId, email, sessionId, windowSeconds: identityWindow }),
+    ipHash ? countByIpHash(ipHash, ipWindow) : Promise.resolve(0),
+    countSystemWide(systemWindow),
+    findCachedDraft({
+      inputHash,
+      userId,
+      email,
+      sessionId,
+      windowSeconds: DEDUP_WINDOW_SECONDS,
+    }),
+  ]);
 
-  if (usedCount >= limit) {
+  // ── DEDUP — answered already in the last 24h, return the cached
+  // structured output without billing the model. This is the cheapest
+  // path so it runs before the rate-limit refusals.
+  if (cachedDraft) {
+    await writeStudioLog({
+      eventType: "studio_brief_copilot_dedup_hit",
+      route: "/request",
+      success: true,
+      meta: { userId, email, role: isAuthenticated ? "client" : "anon" },
+      details: { input_hash: inputHash.slice(0, 12), confidence: cachedDraft.confidence },
+    });
+    return {
+      ok: true,
+      structured: cachedDraft,
+      meta: {
+        modelUsed: BRIEF_COPILOT_MODEL,
+        durationMs: 0,
+        confidence: cachedDraft.confidence,
+        cached: true,
+        callsRemaining: Math.max(0, limit - usedCount),
+      },
+    };
+  }
+
+  const tripped =
+    usedCount >= limit
+      ? "identity"
+      : ipHash && ipCount >= IP_LIMIT_PER_DAY
+        ? "ip"
+        : systemCount >= SYSTEM_LIMIT_PER_DAY
+          ? "system"
+          : null;
+
+  if (tripped) {
     if (hasAdminSupabaseEnv()) {
       const admin = createAdminSupabase();
       await admin
@@ -241,23 +428,32 @@ export async function generateStudioBriefDraftAction(formData: FormData): Promis
           user_id: userId,
           normalized_email: email,
           session_id: sessionId,
+          ip_hash: ipHash,
+          input_hash: inputHash,
+          intent: COPILOT_INTENT,
           raw_input: description,
           structured_output: {},
           model_used: BRIEF_COPILOT_MODEL,
           status: "rate_limited",
-          error_reason: `limit_exceeded:${limit}`,
+          error_reason: `limit_exceeded:${tripped}:${limit}`,
         } as never)
         .then(
           () => undefined,
           () => undefined
         );
     }
+    const message =
+      tripped === "system"
+        ? "The co-pilot has hit today's safety ceiling. Studio is paused while staff review usage — please fill the brief manually below; we read every submission."
+        : tripped === "ip"
+          ? "Too many co-pilot drafts from this network today. Try again tomorrow, or fill the brief manually below — Studio reads every brief."
+          : isAuthenticated
+            ? `You've hit the daily co-pilot limit (${AUTH_LIMIT_PER_DAY}/day). It resets at midnight Lagos time.`
+            : `You've used all ${ANON_LIMIT_PER_SESSION} free co-pilot generations for this session. Sign in for a higher limit, or fill the brief manually below.`;
     return {
       ok: false,
       reason: "rate_limited",
-      message: isAuthenticated
-        ? `You've hit the daily co-pilot limit (${AUTH_LIMIT_PER_DAY}/day). It resets at midnight Lagos time.`
-        : `You've used all ${ANON_LIMIT_PER_SESSION} free co-pilot generations for this session. Sign in for a higher limit, or fill the brief manually below.`,
+      message,
       callsRemaining: 0,
     };
   }
@@ -331,6 +527,9 @@ export async function generateStudioBriefDraftAction(formData: FormData): Promis
           user_id: userId,
           normalized_email: email,
           session_id: sessionId,
+          ip_hash: ipHash,
+          input_hash: inputHash,
+          intent: COPILOT_INTENT,
           raw_input: description,
           structured_output: {},
           model_used: BRIEF_COPILOT_MODEL,
@@ -378,6 +577,9 @@ export async function generateStudioBriefDraftAction(formData: FormData): Promis
           user_id: userId,
           normalized_email: email,
           session_id: sessionId,
+          ip_hash: ipHash,
+          input_hash: inputHash,
+          intent: COPILOT_INTENT,
           raw_input: description,
           structured_output: { raw_text: assistantText.slice(0, 4000) },
           model_used: modelUsed,
@@ -413,6 +615,9 @@ export async function generateStudioBriefDraftAction(formData: FormData): Promis
         user_id: userId,
         normalized_email: email,
         session_id: sessionId,
+        ip_hash: ipHash,
+        input_hash: inputHash,
+        intent: COPILOT_INTENT,
         raw_input: description,
         structured_output: structured as unknown as Record<string, unknown>,
         model_used: modelUsed,

@@ -32,6 +32,13 @@ type Props = {
    * entry) re-mounts this component with a new `key` whenever a fresh
    * seed arrives, so the seed is consumed exactly at mount. */
   copilotSeed?: BriefCopilotStructured | null;
+  /** Step (0-based) the builder should mount on. Defaults to 0 (Path).
+   * When the path was already chosen upstream — /pick → /request?path=custom,
+   * or a template/preset hint — pass 1 to skip step 1 and land on Scope. */
+  initialStepIndex?: number;
+  /** Pathway preselect — when the path was chosen upstream we know the
+   * lane and don't want a re-pick. Defaults to presetHint?.pathway or "custom". */
+  initialPathway?: "package" | "custom";
 };
 
 export function StudioRequestBuilder({
@@ -42,6 +49,8 @@ export function StudioRequestBuilder({
   preferredTeamId,
   presetHint,
   copilotSeed,
+  initialStepIndex = 0,
+  initialPathway,
 }: Props) {
   const resolvedKind =
     presetHint?.serviceKind && services.some((s) => s.kind === presetHint.serviceKind)
@@ -83,9 +92,16 @@ export function StudioRequestBuilder({
     copilotSeed?.hostingPreference ||
     requestConfig.hostingOptions[0] ||
     "HenryCo recommends the host";
-  const [stepIndex, setStepIndex] = useState(0);
+  // Step index can be pre-set by the parent so callers arriving from
+  // upstream path-pickers (e.g. /pick → /request?path=custom) don't get
+  // re-asked "package or custom?" on step 1.
+  const [stepIndex, setStepIndex] = useState(
+    Math.min(Math.max(0, initialStepIndex), 3)
+  );
   const [serviceKind, setServiceKind] = useState<StudioService["kind"]>(initialServiceKind);
-  const [pathway, setPathway] = useState<"package" | "custom">(presetHint?.pathway ?? "custom");
+  const [pathway, setPathway] = useState<"package" | "custom">(
+    initialPathway ?? presetHint?.pathway ?? "custom"
+  );
   const [selectedPackageId, setSelectedPackageId] = useState("");
   const [selectedTeamId, setSelectedTeamId] = useState(preferredTeamId ?? "");
   const [selectedProjectType, setSelectedProjectType] = useState(initialProjectType);
