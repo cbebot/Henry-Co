@@ -63,6 +63,14 @@ export default async function HirePage() {
                 interviews on visible stages. Employers and posts are reviewed to protect quality on
                 both sides.
               </p>
+              <p className="mt-4 inline-flex max-w-2xl items-start gap-2 rounded-2xl border border-black/10 bg-white/60 px-4 py-3 text-[13.5px] leading-7 text-[var(--jobs-muted)] dark:border-white/10 dark:bg-white/[0.03]">
+                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-[var(--jobs-accent)]" aria-hidden />
+                <span>
+                  Posting live roles requires an active employer subscription. Candidates always
+                  browse for free; the subscription pays for moderation, anti-scam review, and
+                  candidate trust signals.
+                </span>
+              </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={startUrl}

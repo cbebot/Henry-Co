@@ -17,7 +17,6 @@ import {
 } from "@/lib/studio/request-config";
 import type { StudioRequestPresetResult } from "@/lib/studio/request-presets";
 import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
-import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
 
 type Props = {
   services: StudioService[];
@@ -26,13 +25,6 @@ type Props = {
   requestConfig: StudioRequestConfig;
   preferredTeamId?: string | null;
   presetHint?: StudioRequestPresetResult | null;
-  /**
-   * Structured seed produced by the Brief Co-pilot. The builder reads
-   * this only when remounted via the parent's `key` prop (entry point at
-   * studio/components/studio/brief-request-entry.tsx). Behaviour without
-   * a seed is unchanged.
-   */
-  copilotSeed?: BriefCopilotStructured | null;
 };
 
 export function StudioRequestBuilder({

@@ -24,6 +24,7 @@ import {
   JOBS_DIVISION,
 } from "@/lib/jobs/data";
 import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
+import { isEmployerSubscribed } from "@/lib/jobs/employer-subscription";
 import {
   alreadyAppliedReason,
   conflictOfInterestReason,
@@ -1073,12 +1074,29 @@ export async function createJobPost(input: {
   const employerSlug = employer?.employerSlug || "henryco-group";
   const employerName = employer?.employerName || "HenryCo Group";
   const isPrivileged = input.actor.role === "owner" || input.actor.role === "manager";
-  const eligibility = await getEmployerPostingEligibility({
-    userId: input.actor.userId,
-    email: input.actor.email,
-    employerSlug,
-    actorRole: input.actor.role,
-  });
+  const [eligibility, subscription] = await Promise.all([
+    getEmployerPostingEligibility({
+      userId: input.actor.userId,
+      email: input.actor.email,
+      employerSlug,
+      actorRole: input.actor.role,
+    }),
+    isEmployerSubscribed(employerSlug),
+  ]);
+
+  // Subscription gate: hard-block when an employer has a non-active
+  // record (expired / cancelled / past_due). When the table is empty
+  // or no record exists for this employer, the helper soft-fails to
+  // allow posting so we do not interrupt live operations before
+  // billing is in place. Owners/managers retain the override path
+  // they already have for trust-tier and verification rules.
+  if (!subscription.allowed && !isPrivileged) {
+    throw new Error(
+      `A live HenryCo Jobs employer subscription is required to post roles. ` +
+        `The current subscription status for ${employerSlug} is "${subscription.status}". ` +
+        `Renew or talk to the HenryCo team before publishing this role.`
+    );
+  }
   const internal = asText(input.formData.get("internal")) === "1" && isPrivileged;
   const employerProfile = eligibility.employer
     ? { employer: eligibility.employer, jobs: [] }

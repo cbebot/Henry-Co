@@ -42,9 +42,13 @@ function SubmitButton() {
 export default function ContactHeroForm({
   supportEmail,
   responseTime = "Replies within 1 business day",
+  initialReason = "general",
+  planContext = null,
 }: {
   supportEmail: string;
   responseTime?: string;
+  initialReason?: string;
+  planContext?: string | null;
 }) {
   const [state, formAction] = useFormState(submitContactMessage, INITIAL_STATE);
 
@@ -115,7 +119,7 @@ export default function ContactHeroForm({
         </span>
         <select
           name="reason"
-          defaultValue="general"
+          defaultValue={initialReason}
           className="h-12 rounded-xl border border-white/12 bg-black/30 px-3 text-base text-white outline-none focus:border-[#d6a851]"
         >
           {REASONS.map((item) => (
@@ -126,6 +130,10 @@ export default function ContactHeroForm({
         </select>
       </label>
 
+      {planContext ? (
+        <input type="hidden" name="planContext" value={planContext} />
+      ) : null}
+
       <label className="mt-4 flex flex-col gap-1.5">
         <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
           Message
@@ -134,6 +142,11 @@ export default function ContactHeroForm({
           name="message"
           required
           rows={5}
+          defaultValue={
+            planContext === "partner"
+              ? "I'd like to discuss the marketplace Partner tier — custom inventory terms and direct placement controls. Here is what I'm working with: "
+              : ""
+          }
           placeholder="A short note about why you are reaching out."
           className="rounded-xl border border-white/12 bg-black/30 px-3.5 py-3 text-base leading-7 text-white outline-none placeholder:text-white/30 focus:border-[#d6a851]"
         />

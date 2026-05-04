@@ -1141,6 +1141,7 @@ export async function POST(request: Request) {
         revalidatePropertyRoutes(listing.slug);
         let submitRedirect = withQuery("/submit", "submitted", "1");
         submitRedirect = withQuery(submitRedirect, "policy", nextStatus);
+        submitRedirect = withQuery(submitRedirect, "ref", listing.slug);
         if (trust.signals.verificationStatus !== "verified") {
           submitRedirect = withQuery(submitRedirect, "verification", trust.signals.verificationStatus);
         }

@@ -44,7 +44,7 @@ export default function RecentShipmentCards({
         </span>
       </div>
       <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {shipments.map((shipment) => {
+        {shipments.map((shipment, index) => {
           const date =
             formatDate(shipment.scheduledDeliveryAt) ??
             formatDate(shipment.createdAt);
@@ -55,7 +55,7 @@ export default function RecentShipmentCards({
           const href = `/track?${params.toString()}`;
 
           return (
-            <li key={shipment.trackingCode || Math.random()}>
+            <li key={shipment.trackingCode || `shipment-${index}`}>
               <Link
                 href={href}
                 className="group block h-full rounded-2xl border border-[var(--logistics-line)] bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:border-white/22 hover:bg-white/[0.05]"
