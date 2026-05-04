@@ -1,26 +1,26 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { getHubUrl } from "@henryco/config";
 import type { DivisionPublicConfig } from "@/components/public/CareNavbar";
 import { CareMonogram } from "@/components/brand/CareMonogram";
 
+/**
+ * Footer brand mark — always renders CareMonogram. The operator-uploaded
+ * `division.logoUrl` is intentionally not consulted here. Care is a
+ * sub-brand of Henry & Co. and must own its own monogram across every
+ * surface; allowing a stale operator upload to override it (which used
+ * to leak the parent HenryCoMonogram into Care chrome) breaks the brand
+ * system. Same rule was applied to the navbar BrandMark in c1acf32 —
+ * this brings the footer in line.
+ */
 function FooterBrandMark({
-  name,
-  logoUrl,
   accent,
 }: {
   name: string;
   shortName?: string;
-  logoUrl?: string | null;
   accent?: string | null;
 }) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const cleanSrc = typeof logoUrl === "string" && logoUrl.trim() ? logoUrl.trim() : null;
-  const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
-
   return (
     <div
       className="
@@ -29,18 +29,7 @@ function FooterBrandMark({
         dark:border-white/10 dark:bg-white/[0.06] dark:text-white
       "
     >
-      {cleanSrc && !isFailed ? (
-        <img
-          src={cleanSrc}
-          alt={name}
-          className="h-full w-full object-contain p-1"
-          loading="lazy"
-          decoding="async"
-          onError={() => setFailedSrc(cleanSrc)}
-        />
-      ) : (
-        <CareMonogram size={26} accent={accent || "#6B7CFF"} />
-      )}
+      <CareMonogram size={26} accent={accent || "#6B7CFF"} />
     </div>
   );
 }
@@ -66,7 +55,6 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
             <FooterBrandMark
               name={division.name}
               shortName={division.shortName}
-              logoUrl={division.logoUrl}
               accent={division.accent}
             />
             <div>
