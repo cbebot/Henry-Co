@@ -41,6 +41,7 @@
     "staff:typecheck": "pnpm --filter @henryco/staff typecheck"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.92.0",
     "@henryco/config": "workspace:^",
     "@henryco/search-core": "workspace:^",
     "@supabase/supabase-js": "^2.98.0"

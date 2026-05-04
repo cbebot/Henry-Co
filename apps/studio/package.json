@@ -16,6 +16,7 @@
     "verify:live": "node --conditions=react-server --import tsx ./scripts/verify-live-flow.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.92.0",
     "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/email": "workspace:^",
