@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Compass, Layers3, Sparkles, Waypoints } from "lucide-react";
-import { StudioRequestBuilder } from "@/components/studio/request-builder";
+import { StudioBriefRequestEntry } from "@/components/studio/brief-request-entry";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import {
   resolveStudioRequestPreset,
@@ -174,7 +174,7 @@ export default async function RequestPage({
       </section>
 
       <section className="mt-12">
-        <StudioRequestBuilder
+        <StudioBriefRequestEntry
           services={catalog.services}
           packages={catalog.packages}
           teams={catalog.teams}
