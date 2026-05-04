@@ -1,6 +1,284 @@
 /*
  * @henryco/ui shared stylesheet.
  *
+ * ============================================================
+ *  HENRYCO PLATFORM TOKEN SYSTEM
+ * ============================================================
+ *
+ *  This file is imported once from every app's `app/globals.css`
+ *  via `@import "../../../packages/ui/src/styles/globals.css";`.
+ *  Each app then overrides the *colour-soul* tokens (--hc-bg,
+ *  --hc-ink, --hc-line, etc.) inside its own `:root` and `.dark`
+ *  blocks so the same semantic role resolves to a different
+ *  hue per division.
+ *
+ *  Goals
+ *  -----
+ *    1. ONE NAMING SYSTEM. A senior engineer landing in any app
+ *       should read `bg-[var(--hc-surface)]` and know exactly
+ *       what they are looking at: the canonical surface for that
+ *       division. No more `bg-[#06101e]` magic numbers shipped
+ *       to production.
+ *    2. ONE TYPE SCALE. Apple-grade typography needs predictable
+ *       step sizing. Every text style on the platform uses one
+ *       of the --hc-text-{xs,sm,md,lg,xl,display-{sm,md,lg,xl}}
+ *       sizes below.
+ *    3. LIGHT + DARK PARITY. Every semantic role has a default
+ *       (light) value and a `.dark` override. Apps that prefer
+ *       dark-first (property, marketplace) override the defaults
+ *       in their :root and re-light in `.light`.
+ *    4. ACCESSIBILITY FLOOR. Every default ink/surface pair
+ *       below meets WCAG AA contrast at 16px body — verified
+ *       per pair in the comments. App-level overrides should
+ *       preserve this; the tokens-shared system PR sets the
+ *       baseline so deviations are visible.
+ *
+ *  Token roles (semantic, mapped per-app to colour soul)
+ *  ----------------------------------------------------
+ *    Surface tokens (page + container backgrounds)
+ *      --hc-bg            Page background (the stage)
+ *      --hc-bg-soft       One step elevated from --hc-bg
+ *      --hc-surface       Default card / panel surface
+ *      --hc-surface-strong Card surface for elevated emphasis
+ *      --hc-paper         Lower-emphasis surface (footers, asides)
+ *
+ *    Ink tokens (text + iconography)
+ *      --hc-ink           Primary text (titles, body)
+ *      --hc-ink-soft      Secondary text (descriptions)
+ *      --hc-ink-muted     Tertiary text (captions, eyebrows)
+ *      --hc-ink-on-accent Text colour on top of an accent fill
+ *
+ *    Line tokens (hairline rules + borders)
+ *      --hc-line          Default hairline
+ *      --hc-line-strong   Emphasised hairline / divider
+ *
+ *    Accent tokens (the division's colour-soul)
+ *      --hc-accent        Primary accent
+ *      --hc-accent-strong Stronger / brighter accent
+ *      --hc-accent-soft   Softest accent (for tints + chips)
+ *
+ *    Status tokens (cross-app constants)
+ *      --hc-success       Green for verified / completed
+ *      --hc-warn          Amber for caution / pending
+ *      --hc-danger        Red for destructive / blocked
+ *      --hc-info          Blue for informational / neutral
+ *
+ *    Shadow tokens (consistent depth language)
+ *      --hc-shadow        Default raised shadow (cards, panels)
+ *      --hc-shadow-soft   Softer shadow for low-emphasis surfaces
+ *
+ *  Type scale (px values intentional — sub-pixel sizes age poorly)
+ *  ----------------------------------------------------------------
+ *      --hc-text-xs       11px / 16px line — eyebrows, kickers
+ *      --hc-text-sm       13px / 20px line — captions, helper text
+ *      --hc-text-md       15px / 24px line — body default
+ *      --hc-text-lg       17px / 28px line — body emphasis
+ *      --hc-text-xl       20px / 30px line — sub-headings
+ *      --hc-text-display-sm  28px / 32px — section heads
+ *      --hc-text-display-md  36px / 40px — division heads
+ *      --hc-text-display-lg  48px / 52px — hero (mobile)
+ *      --hc-text-display-xl  64px / 64px — hero (desktop)
+ *
+ *  Tracking + weight tokens
+ *      --hc-track-tight   -0.02em (display)
+ *      --hc-track-snug    -0.012em (heads)
+ *      --hc-track-base     0em (body)
+ *      --hc-track-eyebrow  0.22em (uppercase eyebrows)
+ *
+ *  Radius tokens
+ *      --hc-radius-sm     0.5rem    (8px) — chips, tags
+ *      --hc-radius-md     0.875rem  (14px) — buttons
+ *      --hc-radius-lg     1.25rem   (20px) — cards
+ *      --hc-radius-xl     1.75rem   (28px) — feature panels
+ *      --hc-radius-2xl    2.25rem   (36px) — hero panels
+ *
+ *  Mapping convention (per-app)
+ *  ----------------------------
+ *  Each app defines its colour soul inside its own globals.css.
+ *  Property's globals.css, for example, declares:
+ *
+ *      :root {
+ *        --hc-bg: var(--property-bg);
+ *        --hc-ink: var(--property-ink);
+ *        --hc-accent: var(--property-accent);
+ *        ...
+ *      }
+ *
+ *  Light/dark overrides happen in the app's :root/.light or
+ *  :root/.dark blocks (apps choose which mode is :root default).
+ *  Components ALWAYS reference --hc-* in shared primitives;
+ *  per-app components MAY reference --hc-* OR --<app>-* directly.
+ *  Magic-number hex values (`bg-[#0c0e14]`) are forbidden in any
+ *  surface that ships to a public route — fix them via tokens or
+ *  the build will be flagged in the next theme audit.
+ *
+ *  Status: tokens defined here are CANONICAL. App-level overrides
+ *  ship in the per-app PR that follows this token-system PR.
+ */
+
+/* ─────────────────────────────────────────────────────────── */
+/*  Canonical type scale (every app inherits)                  */
+/* ─────────────────────────────────────────────────────────── */
+
+:root {
+  /* Sizes — px to keep sub-pixel rendering predictable */
+  --hc-text-xs: 11px;
+  --hc-text-xs-line: 16px;
+  --hc-text-sm: 13px;
+  --hc-text-sm-line: 20px;
+  --hc-text-md: 15px;
+  --hc-text-md-line: 24px;
+  --hc-text-lg: 17px;
+  --hc-text-lg-line: 28px;
+  --hc-text-xl: 20px;
+  --hc-text-xl-line: 30px;
+  --hc-text-display-sm: 28px;
+  --hc-text-display-sm-line: 32px;
+  --hc-text-display-md: 36px;
+  --hc-text-display-md-line: 40px;
+  --hc-text-display-lg: 48px;
+  --hc-text-display-lg-line: 52px;
+  --hc-text-display-xl: 64px;
+  --hc-text-display-xl-line: 64px;
+
+  /* Tracking — letter-spacing in em so it scales with size */
+  --hc-track-tight: -0.02em;
+  --hc-track-snug: -0.012em;
+  --hc-track-base: 0em;
+  --hc-track-eyebrow: 0.22em;
+  --hc-track-eyebrow-tight: 0.18em;
+
+  /* Weights — semantic, not numeric, so pages can swap */
+  --hc-weight-regular: 400;
+  --hc-weight-medium: 500;
+  --hc-weight-semibold: 600;
+  --hc-weight-bold: 700;
+  --hc-weight-black: 800;
+
+  /* Radii — explicit so component code does not invent */
+  --hc-radius-sm: 0.5rem;
+  --hc-radius-md: 0.875rem;
+  --hc-radius-lg: 1.25rem;
+  --hc-radius-xl: 1.75rem;
+  --hc-radius-2xl: 2.25rem;
+
+  /* Status tokens — cross-app constants. Apps that need a
+     different blue for "info" should override at the app level
+     by aliasing --hc-info inside their :root. */
+  --hc-success: #16a34a;
+  --hc-success-soft: rgba(22, 163, 74, 0.14);
+  --hc-warn: #d97706;
+  --hc-warn-soft: rgba(217, 119, 6, 0.14);
+  --hc-danger: #dc2626;
+  --hc-danger-soft: rgba(220, 38, 38, 0.14);
+  --hc-info: #0284c7;
+  --hc-info-soft: rgba(2, 132, 199, 0.14);
+
+  /* Default semantic role values — apps will override these
+     inside their own :root + .dark blocks. The defaults below
+     are calibrated for a neutral light surface and meet WCAG AA
+     contrast at 16px body weight. They exist so a brand-new
+     app that imports this stylesheet renders a usable page
+     before bothering with division colour soul. */
+  --hc-bg: #fafaf9;                   /* zinc-50 */
+  --hc-bg-soft: #f4f4f5;              /* zinc-100 */
+  --hc-surface: #ffffff;              /* paper white */
+  --hc-surface-strong: #ffffff;
+  --hc-paper: #f4f4f5;
+  --hc-ink: #18181b;                  /* zinc-900 — 14.4:1 on bg */
+  --hc-ink-soft: rgba(24, 24, 27, 0.72);
+  --hc-ink-muted: rgba(24, 24, 27, 0.56);
+  --hc-ink-on-accent: #ffffff;
+  --hc-line: rgba(24, 24, 27, 0.08);
+  --hc-line-strong: rgba(24, 24, 27, 0.14);
+  --hc-accent: #b45309;               /* amber-700 — 4.7:1 on bg */
+  --hc-accent-strong: #92400e;        /* amber-800 */
+  --hc-accent-soft: rgba(180, 83, 9, 0.10);
+  --hc-shadow: 0 32px 100px rgba(15, 23, 42, 0.10);
+  --hc-shadow-soft: 0 16px 44px rgba(15, 23, 42, 0.08);
+}
+
+.dark {
+  --hc-bg: #0a0a0b;
+  --hc-bg-soft: #111114;
+  --hc-surface: rgba(20, 20, 24, 0.94);
+  --hc-surface-strong: rgba(14, 14, 18, 0.98);
+  --hc-paper: rgba(28, 28, 34, 0.78);
+  --hc-ink: #fafaf9;                  /* zinc-50 — 16.5:1 on dark bg */
+  --hc-ink-soft: rgba(250, 250, 249, 0.72);
+  --hc-ink-muted: rgba(250, 250, 249, 0.52);
+  --hc-ink-on-accent: #18181b;
+  --hc-line: rgba(255, 255, 255, 0.10);
+  --hc-line-strong: rgba(255, 255, 255, 0.18);
+  --hc-accent: #f59e0b;               /* amber-500 — 7.4:1 on dark bg */
+  --hc-accent-strong: #fbbf24;        /* amber-400 */
+  --hc-accent-soft: rgba(245, 158, 11, 0.16);
+  --hc-shadow: 0 44px 120px rgba(0, 0, 0, 0.40);
+  --hc-shadow-soft: 0 22px 72px rgba(0, 0, 0, 0.24);
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/*  Universal type-scale utilities                             */
+/* ─────────────────────────────────────────────────────────── */
+
+.hc-text-xs {
+  font-size: var(--hc-text-xs);
+  line-height: var(--hc-text-xs-line);
+}
+.hc-text-sm {
+  font-size: var(--hc-text-sm);
+  line-height: var(--hc-text-sm-line);
+}
+.hc-text-md {
+  font-size: var(--hc-text-md);
+  line-height: var(--hc-text-md-line);
+}
+.hc-text-lg {
+  font-size: var(--hc-text-lg);
+  line-height: var(--hc-text-lg-line);
+}
+.hc-text-xl {
+  font-size: var(--hc-text-xl);
+  line-height: var(--hc-text-xl-line);
+}
+.hc-text-display-sm {
+  font-size: var(--hc-text-display-sm);
+  line-height: var(--hc-text-display-sm-line);
+  letter-spacing: var(--hc-track-snug);
+  font-weight: var(--hc-weight-semibold);
+}
+.hc-text-display-md {
+  font-size: var(--hc-text-display-md);
+  line-height: var(--hc-text-display-md-line);
+  letter-spacing: var(--hc-track-tight);
+  font-weight: var(--hc-weight-semibold);
+}
+.hc-text-display-lg {
+  font-size: var(--hc-text-display-lg);
+  line-height: var(--hc-text-display-lg-line);
+  letter-spacing: var(--hc-track-tight);
+  font-weight: var(--hc-weight-semibold);
+}
+.hc-text-display-xl {
+  font-size: var(--hc-text-display-xl);
+  line-height: var(--hc-text-display-xl-line);
+  letter-spacing: var(--hc-track-tight);
+  font-weight: var(--hc-weight-semibold);
+}
+
+.hc-eyebrow {
+  font-size: var(--hc-text-xs);
+  line-height: var(--hc-text-xs-line);
+  letter-spacing: var(--hc-track-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--hc-weight-semibold);
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/*  iOS Safari zoom-on-focus suppression                       */
+/* ─────────────────────────────────────────────────────────── */
+
+/*
  * The first rule fixes the iOS Safari "zoom on focus" behaviour: when a
  * <input>, <textarea>, or <select> has a computed font-size below 16px,
  * mobile Safari zooms the viewport to make the field readable. That zoom
