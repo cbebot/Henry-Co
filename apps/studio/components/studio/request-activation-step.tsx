@@ -23,7 +23,7 @@ export function StudioRequestActivationStep({
   const selectedTeam = teams.find((team) => team.id === selectedTeamId);
 
   return (
-    <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+    <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
       <div className="studio-kicker">Review & send</div>
       <div className="mt-6 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="space-y-4">

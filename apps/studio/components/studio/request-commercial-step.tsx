@@ -102,7 +102,7 @@ export function StudioRequestCommercialStep({
     <div className="space-y-8">
       <StudioDomainLaunchSection />
 
-      <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+      <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
         <div className="studio-kicker">Commercial context</div>
         <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
           Tell us the budget and the outcome. We come back inside one business day with a fixed

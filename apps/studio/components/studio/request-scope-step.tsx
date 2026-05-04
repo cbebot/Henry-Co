@@ -60,9 +60,13 @@ function ScopeSummaryHeader({
 }
 
 /**
- * PricedCheckboxList — uniform renderer for any priced option list. Replaces
- * three almost-identical inline JSX blocks that duplicated layout and made
- * the form feel like a long card.
+ * PricedCheckboxList — hairline-divided premium list. Replaces the
+ * earlier "card grid" rendering where each option was a bordered tile
+ * with full padding — stacking 8-12 of those felt like a long stack of
+ * cards. A divided list packs more density per screen, lets the user
+ * scan faster, and reads as editorial rather than form-heavy. Selected
+ * state is communicated by an accent left-rail + brighter text instead
+ * of a heavy gradient fill.
  */
 function PricedCheckboxList({
   name,
@@ -76,42 +80,58 @@ function PricedCheckboxList({
   onToggle: (label: string) => void;
 }) {
   return (
-    <div className="space-y-3">
+    <ul className="divide-y divide-[var(--studio-line)] overflow-hidden rounded-[1.2rem] border border-[var(--studio-line)] bg-[rgba(0,0,0,0.06)]">
       {options.map((item) => {
         const isSelected = selected.includes(item.label);
         return (
-          <label
-            key={item.id}
-            className={joinClassNames(
-              "block rounded-[1.35rem] border px-4 py-4 text-sm transition duration-200",
-              isSelected
-                ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))] text-[var(--studio-ink)]"
-                : "border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink-soft)]"
-            )}
-          >
-            <div className="flex items-start gap-3">
+          <li key={item.id}>
+            <label
+              className={joinClassNames(
+                "relative flex cursor-pointer items-start gap-3 px-4 py-3 text-sm transition duration-150 sm:px-5",
+                isSelected
+                  ? "bg-[rgba(151,244,243,0.06)] text-[var(--studio-ink)]"
+                  : "text-[var(--studio-ink-soft)] hover:bg-[rgba(255,255,255,0.02)] hover:text-[var(--studio-ink)]"
+              )}
+            >
+              {isSelected ? (
+                <span
+                  aria-hidden
+                  className="absolute inset-y-0 left-0 w-[2px] bg-[var(--studio-signal)]"
+                />
+              ) : null}
               <input
                 type="checkbox"
                 name={name}
                 value={item.label}
                 checked={isSelected}
                 onChange={() => onToggle(item.label)}
-                className="mt-0.5"
+                className="mt-1 h-4 w-4 shrink-0 accent-[var(--studio-signal)]"
               />
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="font-semibold text-[var(--studio-ink)]">{item.label}</span>
-                  <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--studio-signal)]">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                  <span className="font-semibold text-[var(--studio-ink)]">
+                    {item.label}
+                  </span>
+                  <span
+                    className={joinClassNames(
+                      "shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] tabular-nums",
+                      item.amount > 0
+                        ? "text-[var(--studio-signal)]"
+                        : "text-[var(--studio-ink-soft)]"
+                    )}
+                  >
                     {amountLabel(item.amount)}
                   </span>
                 </div>
-                <div className="mt-1 leading-7">{item.description}</div>
+                <div className="mt-0.5 text-[12.5px] leading-5">
+                  {item.description}
+                </div>
               </div>
-            </div>
-          </label>
+            </label>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }
 
@@ -194,7 +214,7 @@ export function StudioRequestScopeStep({
   return (
     <div className="space-y-8">
       {pathway === "package" && selectedPackage ? (
-        <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+        <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
           <div className="studio-kicker">Package context</div>
           <div className="mt-3 rounded-[1.6rem] border border-[var(--studio-line)] bg-black/10 p-5">
             <div className="text-lg font-semibold text-[var(--studio-ink)]">
@@ -211,7 +231,7 @@ export function StudioRequestScopeStep({
 
       {/* PAGES — only for website / ecommerce builds */}
       {pathway === "custom" && showPagesSection ? (
-        <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+        <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
           <div className="studio-kicker">Pages or sections</div>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
             Tick the pages this site needs at launch. Each page is priced individually
@@ -237,7 +257,7 @@ export function StudioRequestScopeStep({
 
       {/* FEATURES — for every project type. Module list is project-aware. */}
       {moduleOptions.length > 0 ? (
-        <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+        <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
           <div className="studio-kicker">Required features</div>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
             What does the product need to do for users on day one? Pick what&apos;s
@@ -262,7 +282,7 @@ export function StudioRequestScopeStep({
       ) : null}
 
       {/* TECH STACK — single dedicated panel; no duplication. */}
-      <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+      <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
         <div className="studio-kicker">Tech stack</div>
         <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
           Tell us your preferences. We&apos;ll honour them where it serves the project,
@@ -329,17 +349,17 @@ export function StudioRequestScopeStep({
               total={requestConfig.stackOptions.length}
               hint="Pick zero or many"
             />
-            <div className="mt-4 grid gap-2 md:grid-cols-2">
+            <div className="mt-4 flex flex-wrap gap-1.5">
               {requestConfig.stackOptions.map((item) => {
                 const selected = selectedTech.includes(item);
                 return (
                   <label
                     key={item}
                     className={joinClassNames(
-                      "flex items-start gap-3 rounded-[1.2rem] border px-4 py-3 text-sm transition duration-200",
+                      "inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-[12.5px] font-medium transition duration-150",
                       selected
-                        ? "border-[rgba(151,244,243,0.42)] bg-[linear-gradient(180deg,rgba(11,42,52,0.94),rgba(7,22,30,0.98))] text-[var(--studio-ink)]"
-                        : "border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink-soft)]"
+                        ? "border-[rgba(151,244,243,0.55)] bg-[rgba(151,244,243,0.1)] text-[var(--studio-ink)]"
+                        : "border-[var(--studio-line)] bg-transparent text-[var(--studio-ink-soft)] hover:border-[rgba(151,244,243,0.35)] hover:text-[var(--studio-ink)]"
                     )}
                   >
                     <input
@@ -348,9 +368,9 @@ export function StudioRequestScopeStep({
                       value={item}
                       checked={selected}
                       onChange={() => setSelectedTech(toggleValue(selectedTech, item))}
-                      className="mt-0.5"
+                      className="h-3.5 w-3.5 accent-[var(--studio-signal)]"
                     />
-                    <span className="font-medium leading-snug">{item}</span>
+                    <span>{item}</span>
                   </label>
                 );
               })}
@@ -361,7 +381,7 @@ export function StudioRequestScopeStep({
 
       {/* ADD-ONS — single dedicated section, no longer concatenated with stack. */}
       {addOnOptions.length > 0 ? (
-        <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+        <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
           <div className="studio-kicker">Add-on services</div>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
             Optional supporting work. Skip what&apos;s not needed — pricing recalculates live.
