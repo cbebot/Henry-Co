@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AboutHonestBlock from "../../components/AboutHonestBlock";
 import AboutLeadershipGrid from "../../components/AboutLeadershipGrid";
 import CompanyPageClient from "../../components/CompanyPageClient";
 import { getPublishedPeople } from "../../lib/about-people";
@@ -6,6 +7,12 @@ import {
   createFallbackCompanyPage,
   getCompanyPage,
 } from "../../lib/company-pages";
+import { getCompanySettings } from "../../lib/company-settings";
+import {
+  normalizeCompanySettings,
+  type CompanySettingsRecord,
+} from "../../lib/company-settings-shared";
+import { getPublishedDivisions, type DivisionRow } from "../../lib/divisions";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -25,16 +32,27 @@ export default async function AboutPage() {
    * The static fallback is the source of truth when supabase is unavailable
    * (e.g., preview env without secrets) — the page still renders premium
    * content without the dynamic edits. */
-  const [pageResult, peopleResult] = await Promise.allSettled([
-    getCompanyPage("about"),
-    getPublishedPeople("about"),
-  ]);
+  const [pageResult, peopleResult, settingsResult, divisionsResult] =
+    await Promise.allSettled([
+      getCompanyPage("about"),
+      getPublishedPeople("about"),
+      getCompanySettings(),
+      getPublishedDivisions(),
+    ]);
   const pageData = pageResult.status === "fulfilled"
     ? pageResult.value
     : { page: null, hasServerError: true };
   const people = peopleResult.status === "fulfilled"
     ? peopleResult.value
     : { people: [], hasServerError: true };
+  const settings: CompanySettingsRecord = normalizeCompanySettings(
+    settingsResult.status === "fulfilled" ? settingsResult.value : null
+  );
+  const divisions: DivisionRow[] =
+    divisionsResult.status === "fulfilled" &&
+    Array.isArray(divisionsResult.value?.divisions)
+      ? divisionsResult.value.divisions
+      : [];
 
   return (
     <>
@@ -42,7 +60,10 @@ export default async function AboutPage() {
         pageKey="about"
         initialData={pageData.page ?? createFallbackCompanyPage("about")}
         serverWarning={Boolean(pageData.hasServerError || people.hasServerError)}
+        hideSections
+        hideFooter
       />
+      <AboutHonestBlock settings={settings} divisions={divisions} />
       <AboutLeadershipGrid people={people.people} />
     </>
   );

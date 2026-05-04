@@ -32,21 +32,38 @@ export default async function MarketplaceHomePage() {
   const leadVendor = data.vendors[0] ?? null;
   const supportVendor = data.vendors[1] ?? leadVendor;
   const [sellerBodyStart, sellerBodyEnd = ""] = copy.home.sellerBody.split("/sell");
-  const kpis = data.kpis.map((item, index) => ({
-    ...item,
-    label:
-      index === 0
-        ? copy.kpiLabels.verifiedStores
-        : index === 1
-          ? copy.kpiLabels.activeListings
-          : copy.kpiLabels.trustRating,
-    hint:
-      index === 0
-        ? copy.kpiHints.verifiedStores
-        : index === 1
-          ? copy.kpiHints.activeListings
-          : copy.kpiHints.trustRating,
-  }));
+  /*
+   * CHROME-01B FIX 5: marketplace KPI reframing. Below 20 active listings
+   * we replace the raw catalog count with a curatorial line ("Selective
+   * catalog · quality over volume") so a small grid does not undermine the
+   * premium positioning the hero is making.
+   */
+  const PRODUCT_COUNT_THRESHOLD = 20;
+  const productCount = data.products.length;
+  const reframeActiveListings = productCount > 0 && productCount < PRODUCT_COUNT_THRESHOLD;
+
+  const kpis = data.kpis.map((item, index) => {
+    const isActiveListings = index === 1;
+    const reframed = isActiveListings && reframeActiveListings;
+    return {
+      ...item,
+      label: reframed
+        ? "Selective catalog"
+        : index === 0
+          ? copy.kpiLabels.verifiedStores
+          : index === 1
+            ? copy.kpiLabels.activeListings
+            : copy.kpiLabels.trustRating,
+      value: reframed ? "Quality over volume" : item.value,
+      hint: reframed
+        ? "We onboard sellers slowly so listings are vetted before they go public."
+        : index === 0
+          ? copy.kpiHints.verifiedStores
+          : index === 1
+            ? copy.kpiHints.activeListings
+            : copy.kpiHints.trustRating,
+    };
+  });
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-6 sm:px-6 sm:py-8 xl:px-8">
@@ -82,16 +99,25 @@ export default async function MarketplaceHomePage() {
             </div>
             {kpis.length ? (
               <dl className="mt-2 grid grid-cols-3 gap-3 rounded-2xl border border-[var(--market-line)] bg-[rgba(255,255,255,0.025)] p-4 sm:gap-5 sm:p-5">
-                {kpis.slice(0, 3).map((kpi) => (
-                  <div key={kpi.label} className="min-w-0">
-                    <dt className="truncate text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                      {kpi.label}
-                    </dt>
-                    <dd className="mt-1 truncate text-xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-2xl">
-                      {kpi.value}
-                    </dd>
-                  </div>
-                ))}
+                {kpis.slice(0, 3).map((kpi) => {
+                  const isShortValue = /^[\d.,%]+$/.test(kpi.value);
+                  return (
+                    <div key={kpi.label} className="min-w-0">
+                      <dt className="truncate text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                        {kpi.label}
+                      </dt>
+                      <dd
+                        className={
+                          isShortValue
+                            ? "mt-1 truncate text-xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-2xl"
+                            : "mt-1 text-balance text-sm font-semibold leading-snug tracking-tight text-[var(--market-paper-white)] sm:text-base"
+                        }
+                      >
+                        {kpi.value}
+                      </dd>
+                    </div>
+                  );
+                })}
               </dl>
             ) : null}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]/85">
@@ -130,6 +156,54 @@ export default async function MarketplaceHomePage() {
           </ul>
         </article>
       </section>
+
+      {/*
+       * CHROME-01B FIX 4: featured products strip lifted above the fold.
+       * A marketplace that does not show products is not a marketplace, so
+       * the first paint after the hero now reveals real listings with
+       * price, seller name, and trust badges. The fallback below 3 products
+       * keeps the grid from reading as empty.
+       */}
+      {featuredProducts.length > 0 ? (
+        <section className="space-y-5">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="market-kicker">{copy.home.featuredKicker}</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-[2rem]">
+                {copy.home.featuredTitle}
+              </h2>
+            </div>
+            <Link href="/search" className="text-sm font-semibold text-[var(--market-brass)]">
+              {copy.home.browseAll}
+            </Link>
+          </div>
+          {featuredProducts.length >= 3 ? (
+            <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.slug} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-3">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.slug} product={product} />
+              ))}
+              <div className="flex h-full min-h-[260px] flex-col items-start justify-end rounded-[2rem] border border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.02)] p-6">
+                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
+                  More listings arriving
+                </p>
+                <p className="mt-2 text-base font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
+                  Selective catalog &mdash; quality over volume.
+                </p>
+                <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
+                  We onboard sellers slowly so the listings you do see are
+                  vetted before they go public.
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
+      ) : null}
 
       {data.campaigns[0] ? <CampaignBanner campaign={data.campaigns[0]} /> : null}
 
@@ -213,25 +287,6 @@ export default async function MarketplaceHomePage() {
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-
-      <section className="space-y-5">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="market-kicker">{copy.home.featuredKicker}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-[2.4rem]">
-              {copy.home.featuredTitle}
-            </h2>
-          </div>
-          <Link href="/search" className="text-sm font-semibold text-[var(--market-brass)]">
-            {copy.home.browseAll}
-          </Link>
-        </div>
-        <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
         </div>
       </section>
 

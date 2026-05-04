@@ -93,9 +93,12 @@ export function HenryCoHeroCard({
     return () => window.cancelAnimationFrame(id);
   }, []);
 
+  React.useEffect(() => {
+    mountHeroCardStyles();
+  }, []);
+
   return (
     <>
-      <HenryCoHeroCardStyles />
       <section
         id={id}
         aria-label={ariaLabel}
@@ -276,10 +279,12 @@ export function HenryCoTactileCard({
     "focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#c9a227)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40",
     className,
   );
+  React.useEffect(() => {
+    mountHeroCardStyles();
+  }, []);
   if (href) {
     return (
       <Link href={href} aria-label={ariaLabel} className={classes}>
-        <HenryCoHeroCardStyles />
         {children}
       </Link>
     );
@@ -287,36 +292,36 @@ export function HenryCoTactileCard({
   if (asChild) {
     return (
       <span aria-label={ariaLabel} className={classes}>
-        <HenryCoHeroCardStyles />
         {children}
       </span>
     );
   }
   return (
     <button type="button" aria-label={ariaLabel} onClick={onClick} className={classes}>
-      <HenryCoHeroCardStyles />
       {children}
     </button>
   );
 }
 
 /**
- * Single-source styles for the hero card primitives. Injected idempotently
- * via a stable id so multiple HenryCoHeroCard instances on a page only mount
- * one stylesheet.
+ * Singleton stylesheet mount. Browser-only. Idempotent via a stable id so
+ * multiple HeroCard / TactileCard instances inject the rules exactly once.
  *
- * Keeps the package free of build-time CSS plumbing while still giving us
- * named curves (henrycoHeroEnter / henrycoCardLift), clamp-based typography,
- * and the @media (hover: hover) hover-isolation that the apps rely on.
+ * Why a DOM mount instead of an inline `<style>` element in JSX:
+ * an inline `<style>` rendered inside an `<a>` (Link) or `<button>` is
+ * invalid HTML; some browsers / RSC streamers serialize the rule text as
+ * visible text content. CHROME-01A audit caught this leak on /about.
  */
-function HenryCoHeroCardStyles() {
-  return (
-    <style
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: HENRYCO_HERO_CARD_CSS }}
-      data-henryco-hero-card-styles=""
-    />
-  );
+const HERO_CARD_STYLE_ID = "henryco-hero-card-styles";
+
+function mountHeroCardStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(HERO_CARD_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = HERO_CARD_STYLE_ID;
+  style.setAttribute("data-henryco-hero-card-styles", "");
+  style.appendChild(document.createTextNode(HENRYCO_HERO_CARD_CSS));
+  document.head.appendChild(style);
 }
 
 const HENRYCO_HERO_CARD_CSS = `

@@ -1,6 +1,13 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { resolveViewerContext } from "@/lib/messaging/queries";
 import { NotificationToast } from "@/components/messaging";
+import { requireClientPortalViewer } from "@/lib/portal/auth";
+
+/** Authenticated portal — never serve a cached unauthenticated render
+ * (CHROME-01A FIX 15). All client-portal pages re-evaluate the auth
+ * gate on every request. */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 /**
  * STUDIO-MSG-01: client-section layout mounts the system-level
@@ -11,12 +18,20 @@ import { NotificationToast } from "@/components/messaging";
  * STUDIO-CP-01 will likely wrap this layout in the portal shell
  * (sidebar, header). When that lands, this layout becomes the inner
  * wrapper that mounts cross-page system overlays.
+ *
+ * CHROME-01A: also enforces the client-portal auth gate at the layout
+ * level so every nested route (dashboard, files, projects, payments,
+ * profile, messages, proposals, reviews) returns a server-side redirect
+ * to the shared account login when the viewer is unauthenticated.
+ * Without this, a portal page that forgets to call the gate would
+ * render server-side as 200.
  */
 export default async function StudioClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await requireClientPortalViewer("/client");
   const subscriptions = await resolveViewerProjectSubscriptions();
 
   return (

@@ -12,6 +12,7 @@ import {
   type CompanySettingsRecord,
 } from "../lib/company-settings-shared";
 import { getPublishedDivisions, type DivisionRow } from "../lib/divisions";
+import { getDivisionLiveStats, type DivisionLiveStat } from "../lib/division-stats";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
@@ -83,6 +84,7 @@ export default async function HomePage() {
   let settings = fallbackSettings;
   let divisions: DivisionRow[] = [];
   let faqs: PublicFaqRecord[] = [];
+  let divisionStats: Record<string, DivisionLiveStat> = {};
 
   try {
     const [settingsResult, divisionsResult, faqsResult] = await Promise.all([
@@ -92,11 +94,27 @@ export default async function HomePage() {
     ]);
 
     settings = normalizeCompanySettings(settingsResult);
-    divisions = Array.isArray(divisionsResult?.divisions) ? divisionsResult.divisions : [];
+    /*
+     * CHROME-01B FIX 10: coming-soon divisions are excluded from the public
+     * home page entirely. They will earn their place when they launch — until
+     * then, the hub presents only active operating businesses.
+     */
+    const allDivisions = Array.isArray(divisionsResult?.divisions)
+      ? divisionsResult.divisions
+      : [];
+    divisions = allDivisions.filter((d) => d.status !== "coming_soon");
     faqs = Array.isArray(faqsResult) ? faqsResult : [];
     hasServerError = Boolean(
       settingsResult?.hasServerError || divisionsResult?.hasServerError
     );
+
+    if (divisions.length) {
+      const activeKeys = divisions
+        .filter((d) => d.status === "active")
+        .map((d) => String(d.key || "").toLowerCase())
+        .filter(Boolean);
+      divisionStats = await getDivisionLiveStats(activeKeys).catch(() => ({}));
+    }
   } catch {
     hasServerError = true;
   }
@@ -155,6 +173,7 @@ export default async function HomePage() {
       intro={settings.brand_description ?? ""}
       initialDivisions={divisions}
       initialFaqs={faqs}
+      divisionStats={divisionStats}
       hasServerError={hasServerError}
       copy={copy}
       locale={locale}

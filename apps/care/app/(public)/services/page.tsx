@@ -37,18 +37,20 @@ export default async function ServicesPage() {
         } as CSSProperties
       }
     >
-      {/* Editorial hero */}
+      {/* Editorial hero — compressed so the three-lane service grid below
+       * is visible above the fold. CHROME-01A audit caught the previous
+       * variant taking the full first viewport, hiding the lanes. */}
       <section className="mx-auto max-w-[88rem] px-5 sm:px-8 lg:px-10">
-        <div className="care-dash-card rounded-[2.6rem] px-8 py-12 sm:px-10 lg:px-14 lg:py-14">
+        <div className="care-dash-card rounded-[2.2rem] px-6 py-6 sm:px-8 sm:py-7 lg:px-10 lg:py-8">
           <div className="max-w-3xl">
-            <div className="care-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/76">
-              <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
+            <div className="care-chip inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/76">
+              <Sparkles className="h-3.5 w-3.5 text-[color:var(--accent)]" />
               Service collection
             </div>
-            <h1 className="mt-7 care-display max-w-3xl text-balance text-white">
+            <h1 className="mt-3 max-w-3xl text-balance text-[1.7rem] font-semibold leading-[1.1] tracking-[-0.025em] text-white sm:text-[2rem] md:text-[2.3rem]">
               Wardrobes, homes, workplaces &mdash; one operating standard.
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-base leading-[1.7] text-white/72 sm:text-lg">
+            <p className="mt-3 max-w-2xl text-pretty text-sm leading-[1.65] text-white/72 sm:text-base">
               Garment care, home cleaning, and office cleaning held on one standard of timing,
               communication, and quality.
             </p>
@@ -57,7 +59,7 @@ export default async function ServicesPage() {
       </section>
 
       {/* Three lanes — editorial 3-col with hairline dividers, no panels */}
-      <section className="mx-auto mt-20 max-w-[88rem] px-5 sm:px-8 lg:px-10">
+      <section className="mx-auto mt-10 max-w-[88rem] px-5 sm:px-8 lg:px-10">
         <div className="flex items-baseline gap-4">
           <p className="care-kicker">Three lanes</p>
           <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />

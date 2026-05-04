@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { CampaignBanner, PageIntro, ProductCard } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
 
@@ -27,12 +26,6 @@ export default async function DealsPage() {
     }))
     .sort((a, b) => b.discount - a.discount);
 
-  // Today's deal = single biggest discount among the eligible set. (When
-  // a marketplace_deals_curation row in slot='today' is active, that row
-  // wins instead — wired via getMarketplaceHomeData in the next pass.)
-  const today = allDeals[0] ?? null;
-  const rest = today ? allDeals.slice(1) : allDeals;
-
   return (
     <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:px-6 lg:px-8">
       <PageIntro
@@ -41,62 +34,46 @@ export default async function DealsPage() {
         description="Deals are only surfaced when the listing quality, seller trust passport, and stock status are clean enough to protect conversion and reduce buyer regret."
       />
 
-      {today ? (
-        <section
-          aria-label="Today's deal"
-          className="overflow-hidden rounded-[1.8rem] border border-[var(--market-line)] bg-[linear-gradient(135deg,rgba(178,134,59,0.18),rgba(20,16,12,0.92))] p-6 sm:p-8"
-        >
-          <div className="grid gap-6 lg:grid-cols-[0.55fr_0.45fr] lg:items-center">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--market-brass)]/40 bg-[var(--market-brass)]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--market-brass)]">
-                <Sparkles className="h-3.5 w-3.5" />
-                Today&rsquo;s deal
-              </span>
-              <h2 className="mt-3 text-balance text-2xl font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[2rem]">
-                {today.product.title}
-              </h2>
-              <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--market-muted)]">
-                {today.discount}% off — verified seller, stock confirmed,
-                payment-protected. Limited to current inventory.
-              </p>
-              <div className="mt-5 flex flex-wrap items-center gap-3">
-                <Link
-                  href={`/product/${today.product.slug}`}
-                  className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px] motion-safe:hover:-translate-y-[1px] motion-safe:hover:shadow-[0_18px_48px_rgba(178,134,59,0.25)]"
-                >
-                  See today&rsquo;s deal
-                  <ArrowRight className="h-4 w-4 transition motion-safe:group-hover:translate-x-0.5" />
-                </Link>
-                <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                  Refreshed daily
+      {/*
+       * CHROME-01B FIX 8: deals shown as a 3-column grid, not a single
+       * oversized hero card. "Refreshed daily" was renamed to "Updated
+       * regularly" because the page does not yet implement a true daily
+       * refresh job.
+       */}
+      {allDeals.length > 0 ? (
+        <section aria-label="Verified deals">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--market-brass)]">
+              <Sparkles className="h-3.5 w-3.5" />
+              Verified deals
+            </p>
+            <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">
+              Updated regularly
+            </span>
+          </div>
+          <div className="mt-4 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {allDeals.map(({ product, discount }) => (
+              <div key={product.slug} className="relative">
+                <span className="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-[var(--market-brass)] px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-black shadow">
+                  −{discount}%
                 </span>
+                <ProductCard product={product} />
               </div>
-            </div>
-            <div className="rounded-[1.4rem] border border-white/8 bg-black/30 p-2 sm:p-3">
-              <ProductCard product={today.product} />
-            </div>
+            ))}
           </div>
         </section>
-      ) : null}
-
-      {data.campaigns[1] ? <CampaignBanner campaign={data.campaigns[1]} /> : null}
-
-      {rest.length > 0 ? (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {rest.map(({ product }) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
-        </div>
       ) : (
         <div className="rounded-[1.4rem] border border-dashed border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-6 py-12 text-center">
           <p className="text-sm font-semibold text-[var(--market-paper-white)]">
-            No additional deals right now
+            No verified deals right now
           </p>
           <p className="mt-1 text-sm text-[var(--market-muted)]">
-            Verified discounts roll in as sellers list them. Check back tomorrow.
+            Verified discounts roll in as sellers list them. Check back soon.
           </p>
         </div>
       )}
+
+      {data.campaigns[1] ? <CampaignBanner campaign={data.campaigns[1]} /> : null}
     </div>
   );
 }

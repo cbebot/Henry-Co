@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../../../packages/ui/src/styles/globals.css";
 @source "../../../packages/ui/src";
 
 /* HenryCo Hub — shared account surface tokens + HQ command center */

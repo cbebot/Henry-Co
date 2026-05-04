@@ -73,10 +73,20 @@ export default function CareNavbar({
 }) {
   const careNav = useMemo(() => getSiteNavigationConfig("care"), []);
 
+  /** Drop nav entries that the header already renders as the primary /
+   * secondary CTA buttons. Without this filter the header shows two
+   * "Track" links and two "Book"/"Book now" buttons in the same row. */
+  const ctaHrefs = useMemo(() => {
+    const set = new Set<string>();
+    if (careNav.defaultCtas?.primary?.href) set.add(careNav.defaultCtas.primary.href);
+    if (careNav.defaultCtas?.secondary?.href) set.add(careNav.defaultCtas.secondary.href);
+    return set;
+  }, [careNav.defaultCtas]);
+
   const nav = useMemo<PublicNavItem[]>(() => {
-    if (division.publicNav?.length) return division.publicNav;
-    return [...careNav.primaryNav];
-  }, [division.publicNav, careNav.primaryNav]);
+    const source = division.publicNav?.length ? division.publicNav : careNav.primaryNav;
+    return source.filter((item) => !ctaHrefs.has(item.href));
+  }, [division.publicNav, careNav.primaryNav, ctaHrefs]);
 
   const actions = (
     <>
@@ -110,6 +120,34 @@ export default function CareNavbar({
             logoUrl={division.logoUrl}
             accent={division.accent ?? "#C9A227"}
           />
+        ),
+        /** Custom brand text — keeps "Henry & Co. Fabric Care" on a
+         * single line at every viewport above 320px. Without this
+         * override the default PublicHeader brand block let the long
+         * name wrap to four lines and clipped "PREMIUM" → "PRE…" on
+         * narrow shells (CHROME-01A audit). On the smallest screens
+         * (<sm) we collapse to the short brand only so the toolbar
+         * actions still fit. */
+        text: (
+          <div className="min-w-0 leading-tight">
+            <div
+              className="block truncate text-[13px] font-black tracking-[0.01em] text-zinc-950 sm:hidden dark:text-white"
+              title={division.name}
+            >
+              {division.shortName || "Fabric Care"}
+            </div>
+            <div
+              className="hidden truncate text-[13.5px] font-black tracking-[0.01em] text-zinc-950 sm:block md:text-[15px] lg:text-base dark:text-white"
+              title={division.name}
+            >
+              {division.name}
+            </div>
+            {division.sub ? (
+              <div className="hidden truncate text-[10.5px] uppercase tracking-[0.18em] text-zinc-500 md:block dark:text-white/45">
+                {division.sub}
+              </div>
+            ) : null}
+          </div>
         ),
       }}
       items={nav}

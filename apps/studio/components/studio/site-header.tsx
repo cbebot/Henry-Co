@@ -81,15 +81,23 @@ export function StudioSiteHeader({
             <HenryCoMonogram size={28} accent={studio.accent || "#49C0C5"} />
           </div>
         ),
+        /** Brand text shrinks at the `lg` breakpoint so the 8-item nav
+         * clears the brand column without overlap. CHROME-01A audit
+         * confirmed the U-10 fix left a residual collision because the
+         * brand cluster (kicker + name) occupied the same row as the
+         * navigation items. The kicker is hidden between lg and xl
+         * (where space is tightest) and reinstated at xl. */
         text: (
-          <div>
-            <div className="studio-kicker">{studio.shortName}</div>
-            <div className="text-sm font-semibold text-[var(--studio-ink)]">{studio.name}</div>
+          <div className="min-w-0">
+            <div className="studio-kicker truncate lg:hidden xl:block">{studio.shortName}</div>
+            <div className="truncate text-[13px] font-semibold text-[var(--studio-ink)] lg:text-[12.5px] xl:text-sm">
+              {studio.name}
+            </div>
           </div>
         ),
       }}
       afterBrand={
-        <div className="hidden rounded-full border border-[var(--studio-line)] bg-black/10 px-3 py-2 text-xs text-[var(--studio-ink-soft)] xl:flex">
+        <div className="hidden rounded-full border border-[var(--studio-line)] bg-black/10 px-3 py-2 text-xs text-[var(--studio-ink-soft)] 2xl:flex">
           Premium digital product delivery
         </div>
       }
@@ -101,7 +109,7 @@ export function StudioSiteHeader({
         />
       }
       getNavItemClassName={getNavItemClassName}
-      navClassName="hidden shrink-0 items-center gap-1 lg:flex"
+      navClassName="hidden shrink min-w-0 items-center gap-1 lg:flex"
       auxLink={studioNav.defaultCtas?.aux}
       primaryCta={studioNav.defaultCtas?.primary}
       auxLinkClassName="border-[var(--studio-line)] px-4 py-3 text-sm font-semibold text-[var(--studio-ink-soft)] shadow-none hover:bg-transparent dark:border-[var(--studio-line)] dark:hover:bg-transparent"

@@ -1,0 +1,29 @@
+/*
+ * @henryco/ui shared stylesheet.
+ *
+ * The first rule fixes the iOS Safari "zoom on focus" behaviour: when a
+ * <input>, <textarea>, or <select> has a computed font-size below 16px,
+ * mobile Safari zooms the viewport to make the field readable. That zoom
+ * is then sticky and never resets, so the user is left dragging a
+ * wider-than-screen layout around to read anything else.
+ *
+ * The fix is scoped via @supports (-webkit-touch-callout: none) so only
+ * iOS UAs are affected — Android, desktop browsers, and other engines
+ * keep their existing utility-driven sizing. Pinch-zoom is NOT locked;
+ * only the unwanted auto-zoom on focus is suppressed (the meta viewport
+ * tag still permits user-scalable=yes via the harness defaults).
+ *
+ * Form types that render as compact controls (checkbox, radio, range,
+ * color, button-like inputs) are excluded so we do not bloat their hit
+ * area or visual size.
+ *
+ * Imported from each app's `app/globals.css` so the fix lands in every
+ * public surface uniformly. (CHROME-01B follow-up.)
+ */
+@supports (-webkit-touch-callout: none) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]):not([type="file"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}

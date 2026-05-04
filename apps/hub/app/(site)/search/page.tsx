@@ -26,7 +26,7 @@ export default async function HubSearchPage({
     <CrossDivisionSearchExperience
       context="public"
       title="Search HenryCo across divisions, workflows, and help routes."
-      description="This V2 pass routes you into real HenryCo destinations only: divisions, route-level workflows, help surfaces, and mature discovery entry points. It does not fake federated product or private-record search."
+      description="Find divisions, account workflows, and support routes from one calm entry point."
       placeholder="Search HenryCo: notifications, wallet, marketplace orders, jobs help, logistics tracking..."
       initialQuery={query}
       results={getHubSearchResults({ signedIn })}

@@ -53,11 +53,23 @@ export default async function PropertyHomePage() {
             <ShieldCheck className="h-3 w-3 text-[var(--property-accent-strong)]" />
             Vetted listings, verified owners
           </span>
+          {/*
+           * CHROME-01B FIX 5: reframe sub-threshold counts. Below 10 listings
+           * we drop the raw number and lead with the trust position instead,
+           * so a small number does not read as a failure on a premium page.
+           */}
           {liveListingCount > 0 ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] bg-black/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]">
-              <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/85" />
-              {liveListingCount} live listings now
-            </span>
+            liveListingCount >= 10 ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] bg-black/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/85" />
+                {liveListingCount} live listings now
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--property-line)] bg-black/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/85" />
+                Curated listings, vetted before public
+              </span>
+            )
           ) : null}
         </div>
 

@@ -42,14 +42,30 @@ export default async function JobsPage({
 
   const secondaryCta = { label: "How hiring works", href: "/help" };
 
+  /*
+   * CHROME-01B FIX 5: reframe sub-threshold roles count. Below 50 live
+   * roles we keep the raw number but lead the label with "Verified roles ·
+   * {count} live now" so a small board reads as a curated standard rather
+   * than an empty pipeline.
+   */
+  const ROLE_COUNT_THRESHOLD = 50;
+  const matchingLabel =
+    jobs.length >= ROLE_COUNT_THRESHOLD
+      ? "Matching now"
+      : `Verified roles · ${jobs.length} live now`;
+  const matchingDetail =
+    jobs.length >= ROLE_COUNT_THRESHOLD
+      ? hasQuery
+        ? "Roles that fit the filters above."
+        : "Everything live on the board right now."
+      : "Each role passes employer review before it goes live.";
+
   const heroFacts = [
     {
       icon: BriefcaseBusiness,
-      label: "Matching now",
+      label: matchingLabel,
       value: jobs.length,
-      detail: hasQuery
-        ? "Roles that fit the filters above."
-        : "Everything live on the board right now.",
+      detail: matchingDetail,
     },
     {
       icon: ShieldCheck,

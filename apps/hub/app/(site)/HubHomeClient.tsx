@@ -28,12 +28,12 @@ import HubParticles from "./HubParticles";
 import type { PublicAccountUser } from "@henryco/ui";
 import {
   cn,
-  HenryCoHeroCard,
   HenryCoPublicAccountPresets,
   PublicAccountChip,
 } from "@henryco/ui";
 import { HenryCoLogo } from "@henryco/brand";
 import type { DivisionRow } from "../lib/divisions";
+import type { DivisionLiveStat } from "../lib/division-stats";
 
 type StatusFilter = "all" | "active" | "coming_soon" | "paused";
 
@@ -277,6 +277,7 @@ export default function HubHomeClient({
   intro,
   initialDivisions,
   initialFaqs,
+  divisionStats,
   hasServerError,
   copy,
   locale,
@@ -291,6 +292,7 @@ export default function HubHomeClient({
   intro?: string | null;
   initialDivisions?: DivisionRow[];
   initialFaqs?: Array<{ question?: string | null; answer?: string | null }>;
+  divisionStats?: Record<string, DivisionLiveStat>;
   hasServerError?: boolean;
   copy: HubHomeCopy;
   locale: AppLocale;
@@ -528,10 +530,19 @@ export default function HubHomeClient({
 
   const footerText = brandFooterBlurbSafe || introText;
 
-  const spotlightDivision = featured[0] ?? null;
-  const spotlightHost = spotlightDivision
-    ? domainFromUrl(spotlightDivision.primary_url, spotlightDivision.subdomain)
-    : null;
+  const heroDivisions = useMemo(
+    () =>
+      [...divisions]
+        .filter((division) => division.status === "active")
+        .sort(
+          (a, b) =>
+            Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999)
+        )
+        .slice(0, 6),
+    [divisions]
+  );
+
+  const liveStats = divisionStats ?? {};
 
   return (
     <HubChromeContext.Provider value={chrome}>
@@ -561,273 +572,152 @@ export default function HubHomeClient({
 
       <main>
         <section id="top" className="relative overflow-hidden">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 pb-12 pt-14 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:px-8 lg:pt-20">
-            <div>
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.45 }}
-                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-4 py-2 text-xs font-medium text-white/82"
-              >
-                {brandLogoUrlSafe ? (
-                  <BrandMark
-                    src={brandLogoUrlSafe}
-                    alt={`${brandTitleSafe} logo`}
-                    accent={brandAccentSafe}
-                    wrapperClassName="h-5 w-5 rounded-full border-white/10 bg-transparent"
-                    imageClassName="object-contain p-0.5"
-                    iconClassName="h-3.5 w-3.5"
-                  />
-                ) : (
-                  <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
-                )}
-                {copy.hero.badgeBefore}
-                <b>/</b>
-                {copy.hero.badgeAfter}
-              </motion.div>
-
-              {heroWelcome ? (
-                <motion.p
-                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-                  animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                  transition={{ duration: 0.42, delay: 0.02 }}
-                  className="mt-4 text-sm font-medium tracking-wide text-white/52"
-                >
-                  {heroWelcome}
-                </motion.p>
-              ) : null}
-
-              <motion.h1
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.04 }}
-                /* Bounded clamp — cap at ~3.4rem so the headline never
-                   eats the viewport. Mobile floor at 1.95rem keeps the
-                   320–360px clip fix from V2-HERO-01 intact. */
-                style={{
-                  fontSize: "clamp(1.95rem, 3.8vw + 0.6rem, 3.4rem)",
-                  lineHeight: 1.06,
-                  letterSpacing: "-0.022em",
-                  wordBreak: "normal",
-                  overflowWrap: "break-word",
-                  hyphens: "auto",
-                }}
-                className="mt-6 max-w-4xl text-balance font-semibold text-white"
-              >
-                {copy.hero.titleBefore}
-                <span className="text-[color:var(--accent)]">{brandTitleSafe}</span>
-                {copy.hero.titleAfter}
-              </motion.h1>
-
-              <motion.p
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.08 }}
-                className="mt-7 max-w-2xl text-pretty text-base leading-8 text-white/72 sm:text-lg"
-              >
-                {introText}
-              </motion.p>
-
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.12 }}
-                className="mt-7 flex flex-col gap-3 sm:flex-row"
-              >
-                <a
-                  href="#divisions"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-                >
-                  {copy.hero.ctaExplore}
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-
-                <a
-                  href="#featured"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-5 py-3 text-sm text-white/88 transition hover:bg-white/10"
-                >
-                  {copy.hero.ctaFeatured}
-                  <ChevronRight className="h-4 w-4" />
-                </a>
-              </motion.div>
-
-              <motion.dl
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.16 }}
-                className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
-              >
-                <StatCard
-                  icon={<Building2 className="h-4 w-4" />}
-                  label={copy.stats.divisions}
-                  value={`${stats.total}`}
-                />
-                <StatCard
-                  icon={<Zap className="h-4 w-4" />}
-                  label={copy.stats.activeNow}
-                  value={`${stats.active}`}
-                />
-                <StatCard
-                  icon={<Star className="h-4 w-4" />}
-                  label={copy.stats.comingSoon}
-                  value={`${stats.soon}`}
-                />
-                <StatCard
-                  icon={<Globe2 className="h-4 w-4" />}
-                  label={copy.stats.sectors}
-                  value={`${stats.sectors}`}
-                />
-              </motion.dl>
-            </div>
-
-            <motion.aside
-              initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+          <div className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-8 lg:pt-16">
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, y: 14 }}
               animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.14 }}
-              className="relative space-y-4 lg:pt-2"
+              transition={{ duration: 0.4 }}
+              className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-4 py-2 text-xs font-medium text-white/82"
             >
-              {/* Premium first-card on the landing page hero. The
-                  HenryCoHeroCard primitive guarantees mobile-safe typography
-                  (clamp + overflow-wrap) and consistent motion across every
-                  HenryCo public surface. */}
-              <HenryCoHeroCard
-                eyebrow={copy.standardCard.eyebrow}
-                title={copy.standardCard.title}
-                accentVar={brandAccentSafe}
-                tone="spotlight"
-                brandMark={
-                  <BrandMark
-                    src={brandLogoUrlSafe}
-                    alt={`${brandTitleSafe} logo`}
-                    accent={brandAccentSafe}
-                    wrapperClassName="h-11 w-11 shrink-0"
-                    imageClassName="object-contain p-2"
-                    iconClassName="h-5 w-5"
-                  />
-                }
-                bullets={copy.standardCard.bullets}
-                rows={[
-                  {
-                    key: "latestUpdate",
-                    icon: <TrendingUp className="h-4 w-4" />,
-                    label: copy.standardCard.latestUpdate,
-                    value: latestUpdate,
-                  },
-                  {
-                    key: "operatingStandard",
-                    icon: <Workflow className="h-4 w-4" />,
-                    label: copy.standardCard.operatingStandard,
-                    value: copy.standardCard.operatingStandardValue,
-                  },
-                ]}
-              />
+              {brandLogoUrlSafe ? (
+                <BrandMark
+                  src={brandLogoUrlSafe}
+                  alt={`${brandTitleSafe} logo`}
+                  accent={brandAccentSafe}
+                  wrapperClassName="h-5 w-5 rounded-full border-white/10 bg-transparent"
+                  imageClassName="object-contain p-0.5"
+                  iconClassName="h-3.5 w-3.5"
+                />
+              ) : (
+                <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
+              )}
+              {copy.hero.badgeBefore}
+              <b>/</b>
+              {copy.hero.badgeAfter}
+            </motion.div>
 
-              {spotlightDivision ? (
-                <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.02] p-5 sm:p-6">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                        {copy.standardCard.spotlightEyebrow}
-                      </p>
-                      <p className="mt-2 text-[1.05rem] font-semibold tracking-tight text-white">
-                        {spotlightDivision.name}
-                      </p>
-                      <p className="mt-2 max-w-md text-sm leading-7 text-white/68">
-                        {spotlightDivision.tagline ||
-                          spotlightDivision.description ||
-                          copy.standardCard.spotlightFallback}
-                      </p>
-                    </div>
+            {heroWelcome ? (
+              <motion.p
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.02 }}
+                className="mt-4 text-sm font-medium tracking-wide text-white/52"
+              >
+                {heroWelcome}
+              </motion.p>
+            ) : null}
 
-                    <span
-                      className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-black"
-                      style={{
-                        background: getAccent(
-                          spotlightDivision.accent,
-                          brandAccentSafe,
-                        ),
-                      }}
-                    >
-                      {copy.standardCard.featured}
-                    </span>
-                  </div>
+            {/*
+             * Hero headline demoted to subtext (CHROME-01B FIX 1):
+             * the divisions grid below is the primary above-fold visual,
+             * the tagline is supporting copy. Bounded clamp ~1.5–2.1rem.
+             */}
+            <motion.p
+              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.04 }}
+              style={{
+                fontSize: "clamp(1.5rem, 1.8vw + 0.8rem, 2.1rem)",
+                lineHeight: 1.18,
+                letterSpacing: "-0.012em",
+              }}
+              className="mt-5 max-w-3xl text-balance font-semibold text-white"
+            >
+              {copy.hero.titleBefore}
+              <span className="text-[color:var(--accent)]">{brandTitleSafe}</span>
+              {copy.hero.titleAfter}
+            </motion.p>
 
-                  {(spotlightDivision.categories ?? []).length ? (
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {(spotlightDivision.categories ?? []).slice(0, 3).map((item) => (
-                        <span
-                          key={item}
-                          className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] font-medium text-white/72"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
+            <motion.p
+              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.06 }}
+              className="mt-4 max-w-2xl text-pretty text-sm leading-7 text-white/72 sm:text-base"
+            >
+              {introText}
+            </motion.p>
 
-                  <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                    <button
-                      onClick={() => setSelected(spotlightDivision)}
-                      className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/85 transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 active:translate-y-[0.5px] [@media(hover:hover)]:hover:border-white/35 [@media(hover:hover)]:hover:bg-white/[0.04]"
-                    >
-                      {copy.standardCard.viewDetails}
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.08 }}
+              className="mt-5 flex flex-col gap-3 sm:flex-row"
+            >
+              <a
+                href="#divisions"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90"
+              >
+                {copy.hero.ctaExplore}
+                <ArrowRight className="h-4 w-4" />
+              </a>
 
-                    {spotlightDivision.primary_url ? (
-                      <button
-                        onClick={() => safeOpen(spotlightDivision.primary_url)}
-                        className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-black transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 active:translate-y-[0.5px] [@media(hover:hover)]:hover:opacity-90"
-                        style={{
-                          background: getAccent(
-                            spotlightDivision.accent,
-                            brandAccentSafe,
-                          ),
-                        }}
-                      >
-                        {copy.standardCard.visitDivision}
-                        <ExternalLink className="h-4 w-4" />
-                      </button>
-                    ) : null}
-                  </div>
+              <a
+                href="#featured"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-5 py-3 text-sm text-white/88 transition hover:bg-white/10"
+              >
+                {copy.hero.ctaFeatured}
+                <ChevronRight className="h-4 w-4" />
+              </a>
+            </motion.div>
 
-                  {spotlightHost ? (
-                    <p className="mt-4 font-mono text-[11px] tracking-tight text-white/45 [overflow-wrap:anywhere]">
-                      {spotlightHost}
-                    </p>
-                  ) : null}
+            {/* DIVISIONS GRID — primary above-fold visual (CHROME-01B FIX 1). */}
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.12 }}
+              className="mt-10"
+            >
+              {heroDivisions.length ? (
+                <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {heroDivisions.map((division) => (
+                    <HeroDivisionTile
+                      key={division.id}
+                      division={division}
+                      stat={liveStats[division.key.toLowerCase()] ?? null}
+                      onOpen={() => setSelected(division)}
+                    />
+                  ))}
+                </ul>
+              ) : (
+                <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68">
+                  {copy.directory.empty}
                 </div>
-              ) : null}
+              )}
+            </motion.div>
 
-              {hasServerError ? (
-                <p className="border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
-                  {copy.standardCard.serverError}
-                </p>
-              ) : null}
-            </motion.aside>
-          </div>
-        </section>
+            <motion.dl
+              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.16 }}
+              className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
+            >
+              <StatCard
+                icon={<Building2 className="h-4 w-4" />}
+                label={copy.stats.divisions}
+                value={`${stats.total}`}
+              />
+              <StatCard
+                icon={<Zap className="h-4 w-4" />}
+                label={copy.stats.activeNow}
+                value={`${stats.active}`}
+              />
+              <StatCard
+                icon={<TrendingUp className="h-4 w-4" />}
+                label={copy.standardCard.latestUpdate}
+                value={latestUpdate}
+              />
+              <StatCard
+                icon={<Globe2 className="h-4 w-4" />}
+                label={copy.stats.sectors}
+                value={`${stats.sectors}`}
+              />
+            </motion.dl>
 
-        <section className="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-3 md:gap-0">
-            <PremiumFeature
-              icon={<Sparkles className="h-5 w-5" />}
-              eyebrow={copy.premiumRow.discovery.eyebrow}
-              title={copy.premiumRow.discovery.title}
-              text={copy.premiumRow.discovery.text}
-            />
-            <PremiumFeature
-              icon={<Landmark className="h-5 w-5" />}
-              eyebrow={copy.premiumRow.corporate.eyebrow}
-              title={copy.premiumRow.corporate.title}
-              text={copy.premiumRow.corporate.text}
-            />
-            <PremiumFeature
-              icon={<Workflow className="h-5 w-5" />}
-              eyebrow={copy.premiumRow.scale.eyebrow}
-              title={copy.premiumRow.scale.title}
-              text={copy.premiumRow.scale.text}
-            />
+            {hasServerError ? (
+              <p className="mt-6 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
+                {copy.standardCard.serverError}
+              </p>
+            ) : null}
           </div>
         </section>
 
@@ -1515,29 +1405,6 @@ function DirectoryMiniStat({
   );
 }
 
-function PremiumFeature({
-  eyebrow,
-  title,
-  text,
-  icon,
-}: {
-  eyebrow: string;
-  title: string;
-  text: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <div className="border-t border-white/10 pt-6 md:border-l md:border-t-0 md:pl-6 md:pt-0 md:first:border-l-0 md:first:pl-0">
-      <span className="text-[color:var(--accent)]">{icon}</span>
-      <div className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-white/55">
-        {eyebrow}
-      </div>
-      <h3 className="mt-2 text-base font-semibold tracking-tight text-white">{title}</h3>
-      <p className="mt-2 text-sm leading-7 text-white/68">{text}</p>
-    </div>
-  );
-}
-
 function BigFeature({
   icon,
   title,
@@ -1557,6 +1424,77 @@ function BigFeature({
         <p className="mt-1.5 text-sm leading-7 text-white/68">{text}</p>
       </div>
     </div>
+  );
+}
+
+function HeroDivisionTile({
+  division,
+  stat,
+  onOpen,
+}: {
+  division: DivisionRow;
+  stat: DivisionLiveStat | null;
+  onOpen: () => void;
+}) {
+  const accent = getAccent(division.accent);
+  const cta = stat?.cta || "Open division";
+  const metric = stat?.metric || division.tagline || division.description || null;
+  const purpose =
+    division.tagline ||
+    division.description ||
+    "A focused Henry & Co. operating business.";
+
+  const handleVisit = (event: React.MouseEvent) => {
+    if (division.primary_url) {
+      event.preventDefault();
+      safeOpen(division.primary_url);
+      return;
+    }
+    event.preventDefault();
+    onOpen();
+  };
+
+  return (
+    <li
+      className="group relative flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:-translate-y-0.5 hover:border-white/22 hover:bg-white/[0.05]"
+      style={{ "--tileAccent": accent } as React.CSSProperties}
+    >
+      <div className="flex items-start gap-3">
+        <span
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-black/30"
+          aria-hidden
+        >
+          <span
+            className="block h-2.5 w-2.5 rounded-full"
+            style={{ background: accent }}
+          />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-base font-semibold tracking-tight text-white">
+            {division.name}
+          </h3>
+          <p className="mt-1 line-clamp-2 text-[13px] leading-6 text-white/68">
+            {purpose}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <a
+          href={division.primary_url ?? "#divisions"}
+          onClick={handleVisit}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-white transition hover:text-[color:var(--tileAccent)]"
+        >
+          {cta}
+          <ArrowRight className="h-3.5 w-3.5" />
+        </a>
+        {metric ? (
+          <span className="truncate rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-medium text-white/72">
+            {metric}
+          </span>
+        ) : null}
+      </div>
+    </li>
   );
 }
 
