@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ContactHeroForm from "./ContactHeroForm";
 
 /**
@@ -60,18 +61,18 @@ export default function ContactHeroLayout({
           </ul>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <a
+            <Link
               href="/#divisions"
               className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-transparent px-4 py-2 text-[13px] font-medium text-white/72 transition hover:border-white/30 hover:bg-white/[0.04] hover:text-white"
             >
               Explore divisions
-            </a>
-            <a
+            </Link>
+            <Link
               href="/about"
               className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-transparent px-4 py-2 text-[13px] font-medium text-white/72 transition hover:border-white/30 hover:bg-white/[0.04] hover:text-white"
             >
               About the company
-            </a>
+            </Link>
           </div>
         </div>
 
