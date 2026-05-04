@@ -477,17 +477,6 @@ export default function HubHomeClient({
     [divisions, categories]
   );
 
-  const latestUpdate = useMemo(() => {
-    const values = divisions
-      .map((division) => division.updated_at)
-      .filter(Boolean)
-      .map((value) => new Date(String(value)).getTime())
-      .filter((value) => !Number.isNaN(value));
-
-    if (!values.length) return "—";
-    return formatUpdatedAt(new Date(Math.max(...values)).toISOString(), formatShort);
-  }, [divisions, formatShort]);
-
   const activeFilterCount = useMemo(() => {
     let total = 0;
     if (query.trim()) total += 1;
@@ -591,9 +580,20 @@ export default function HubHomeClient({
               ) : (
                 <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
               )}
-              {copy.hero.badgeBefore}
-              <b>/</b>
-              {copy.hero.badgeAfter}
+              {/*
+               * Mobile shows the calm "Corporate platform" prefix only
+               * — the "press / to search" suffix is a desktop-keyboard
+               * hint that has no meaning on a phone (no `/` key, no
+               * shortcut surface). On sm+ the keyboard hint appears
+               * inline as before.
+               */}
+              <span>{copy.hero.badgeBefore.replace(/\s+·\s+press\s*$/, "")}</span>
+              <span className="hidden sm:inline-flex sm:items-center sm:gap-1">
+                <span aria-hidden>·</span>
+                <span>press</span>
+                <b>/</b>
+                {copy.hero.badgeAfter}
+              </span>
             </motion.div>
 
             {heroWelcome ? (
@@ -685,11 +685,18 @@ export default function HubHomeClient({
               )}
             </motion.div>
 
+            {/*
+             * Stat rail: 3 customer-meaningful facts. We deliberately do
+             * NOT show "Last update" — a timestamp that ages poorly
+             * (stale = neglect signal, fresh = backend admin signal,
+             * neither helps a customer). Three calm stats breathe
+             * better on both mobile (single row of three) and desktop.
+             */}
             <motion.dl
               initial={reduceMotion ? false : { opacity: 0, y: 12 }}
               animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.16 }}
-              className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
+              className="mt-10 grid grid-cols-3 gap-x-4 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
             >
               <StatCard
                 icon={<Building2 className="h-4 w-4" />}
@@ -700,11 +707,6 @@ export default function HubHomeClient({
                 icon={<Zap className="h-4 w-4" />}
                 label={copy.stats.activeNow}
                 value={`${stats.active}`}
-              />
-              <StatCard
-                icon={<TrendingUp className="h-4 w-4" />}
-                label={copy.standardCard.latestUpdate}
-                value={latestUpdate}
               />
               <StatCard
                 icon={<Globe2 className="h-4 w-4" />}
@@ -914,10 +916,6 @@ export default function HubHomeClient({
                   <div className="flex items-baseline justify-between gap-3 py-3 text-white/72">
                     <dt>{copy.directory.activeRefinements}</dt>
                     <dd className="font-semibold text-white">{activeFilterCount}</dd>
-                  </div>
-                  <div className="flex items-baseline justify-between gap-3 py-3 text-white/72">
-                    <dt>{copy.directory.lastUpdated}</dt>
-                    <dd className="font-semibold text-white">{latestUpdate}</dd>
                   </div>
                 </dl>
               </div>
@@ -1438,7 +1436,11 @@ function HeroDivisionTile({
 }) {
   const accent = getAccent(division.accent);
   const cta = stat?.cta || "Open division";
-  const metric = stat?.metric || division.tagline || division.description || null;
+  // Live KPI from the Supabase live_stats lookup — only shown when real.
+  // The previous fallback chain duplicated the tagline/description that's
+  // already rendered above, which produced the truncated "Premium d..."
+  // overflow on mobile cards.
+  const liveMetric = stat?.metric ?? null;
   const purpose =
     division.tagline ||
     division.description ||
@@ -1479,7 +1481,7 @@ function HeroDivisionTile({
         </div>
       </div>
 
-      <div className="mt-5 flex items-center justify-between gap-3">
+      <div className="mt-auto flex flex-col items-stretch gap-2 pt-5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <a
           href={division.primary_url ?? "#divisions"}
           onClick={handleVisit}
@@ -1488,9 +1490,9 @@ function HeroDivisionTile({
           {cta}
           <ArrowRight className="h-3.5 w-3.5" />
         </a>
-        {metric ? (
-          <span className="truncate rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-medium text-white/72">
-            {metric}
+        {liveMetric ? (
+          <span className="truncate rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-medium text-white/72 sm:max-w-[55%]">
+            {liveMetric}
           </span>
         ) : null}
       </div>
