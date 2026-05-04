@@ -23,6 +23,26 @@ export default async function LogisticsHomePage() {
     hint: m.note,
   }));
 
+  /*
+   * CHROME-01B FIX 6: surface coverage at the top of the hero so a visitor
+   * never books a delivery before discovering they are outside the service
+   * area. We pull the live zone names from the data layer (one line, not
+   * a map) — a map is a future enhancement.
+   */
+  const activeZones = snapshot.zones.filter((zone) => zone.active);
+  const coverageNames = Array.from(
+    new Set(activeZones.map((zone) => zone.name.trim()).filter(Boolean))
+  );
+  const coverageLine = coverageNames.length
+    ? `Currently serving ${
+        coverageNames.length === 1
+          ? coverageNames[0]
+          : coverageNames.length === 2
+            ? `${coverageNames[0]} and ${coverageNames[1]}`
+            : `${coverageNames.slice(0, -1).join(", ")}, and ${coverageNames.at(-1)}`
+      }.`
+    : null;
+
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[92rem] space-y-16">
@@ -40,6 +60,12 @@ export default async function LogisticsHomePage() {
                 Built for people and businesses that need honest ETAs, clean handoffs,
                 and a customer experience that stays premium when operations get noisy.
               </p>
+              {coverageLine ? (
+                <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-3.5 py-2 text-[12.5px] font-medium text-white/82">
+                  <MapPin className="h-3.5 w-3.5 text-[var(--logistics-accent)]" aria-hidden />
+                  {coverageLine}
+                </p>
+              ) : null}
               <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
                 <Link
                   href="/book"

@@ -149,8 +149,8 @@ export default async function BookPage({
         } as CSSProperties
       }
     >
-      <div className="mx-auto grid max-w-[92rem] items-start gap-12 2xl:grid-cols-[0.85fr_1.15fr]">
-        <section className="space-y-12">
+      <div className="mx-auto grid max-w-[92rem] items-start gap-12 2xl:grid-cols-[1.15fr_0.85fr]">
+        <section className="order-2 space-y-12 2xl:order-2">
           <div>
             <p className="care-kicker inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--accent)]">
               <CalendarCheck2 className="h-3.5 w-3.5" />
@@ -279,7 +279,7 @@ export default async function BookPage({
           </div>
         </section>
 
-        <section>
+        <section className="order-1 2xl:order-1">
           <div className="rounded-[1.6rem] border border-black/10 bg-white/85 p-5 shadow-[0_18px_60px_rgba(16,19,31,0.06)] backdrop-blur-xl sm:rounded-[2.4rem] sm:p-8 dark:border-white/10 dark:bg-white/[0.04]">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
               {t("Booking form")}

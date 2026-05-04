@@ -285,17 +285,22 @@ export function PublicHeaderClient() {
           </form>
 
           <div className="ml-auto flex items-center gap-2">
-            <Link
-              href={notificationsHref}
-              className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)]"
-            >
-              <Bell className="h-4 w-4" />
-              {runtime.shell.unreadNotificationCount ? (
-                <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-alert)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
-                  {Math.min(runtime.shell.unreadNotificationCount, 99)}
-                </span>
-              ) : null}
-            </Link>
+            {/* Guests see no bell — there is nothing to notify them about until
+             * they sign in. CHROME-01A audit caught a "99" badge rendering on
+             * an unauthenticated marketplace homepage. */}
+            {runtime.shell.viewer.signedIn ? (
+              <Link
+                href={notificationsHref}
+                className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] text-[var(--market-paper-white)]"
+              >
+                <Bell className="h-4 w-4" />
+                {runtime.shell.unreadNotificationCount ? (
+                  <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-alert)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
+                    {Math.min(runtime.shell.unreadNotificationCount, 99)}
+                  </span>
+                ) : null}
+              </Link>
+            ) : null}
 
             <button
               type="button"

@@ -4,8 +4,10 @@ import { ArrowRight, Clock3, Eye, MapPinned, ShieldCheck } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
 import { buildLogisticsMapViewport } from "@/lib/logistics/map-provider";
 import { getPublicLogisticsSnapshot, getShipmentByTrackingLookup, getShipmentDetail } from "@/lib/logistics/data";
+import { getRecentLogisticsShipmentsForViewer } from "@/lib/logistics/recent-shipments";
 import { formatCurrency } from "@/lib/env";
 import LogisticsTimeline from "@/components/tracking/LogisticsTimeline";
+import RecentShipmentCards from "@/components/tracking/RecentShipmentCards";
 import TrackingMapPanel from "@/components/tracking/TrackingMapPanel";
 
 export const metadata: Metadata = {
@@ -21,7 +23,10 @@ type Props = {
 
 export default async function TrackPage({ searchParams }: Props) {
   const { code, phone } = await searchParams;
-  const snapshot = await getPublicLogisticsSnapshot();
+  const [snapshot, recentShipments] = await Promise.all([
+    getPublicLogisticsSnapshot(),
+    getRecentLogisticsShipmentsForViewer().catch(() => []),
+  ]);
   const shipment = code && phone ? await getShipmentByTrackingLookup({ trackingCode: code, phone }) : null;
   const detail = shipment ? await getShipmentDetail(shipment.id) : null;
   const map = detail
@@ -81,9 +86,15 @@ export default async function TrackPage({ searchParams }: Props) {
           </div>
         </section>
 
+        {recentShipments.length ? (
+          <RecentShipmentCards shipments={recentShipments} />
+        ) : null}
+
         <section>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-            Look up a shipment
+            {recentShipments.length
+              ? "Or enter a tracking code manually"
+              : "Look up a shipment"}
           </p>
           <form
             className="mt-5 grid gap-4 border-y border-[var(--logistics-line)] py-6 sm:grid-cols-[1fr,1fr,auto] sm:items-end"

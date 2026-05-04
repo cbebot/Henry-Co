@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   title: "Dashboard",
 };
 
+/** Authenticated portal — never serve a cached unauthenticated render.
+ * Forces every request through the auth gate (CHROME-01A FIX 15). */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 function greetingFor(name: string | null) {
   const hour = new Date().getHours();
   const slot = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";

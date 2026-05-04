@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronRight, Clock3, Globe2, Landmark, ShieldCheck } from "lucide-react";
-import { HenryCoHeroCard } from "@henryco/ui";
 import type { CompanyPageRecord } from "../lib/company-pages";
 import { normalizeCompanyPage } from "../lib/company-pages";
 import SectionBlock from "./SectionBlock";
@@ -34,10 +33,29 @@ export default function CompanyPageClient({
   pageKey,
   initialData,
   serverWarning,
+  hideSections = false,
+  hideFooter = false,
+  hideHero = false,
 }: {
   pageKey: string;
   initialData: CompanyPageRecord;
   serverWarning?: boolean;
+  /**
+   * When true, the long-form CMS sections list is skipped — useful when a
+   * company page wants to render a hand-crafted layout below the hero
+   * instead of the generic SectionBlock loop. (CHROME-01B FIX 2.)
+   */
+  hideSections?: boolean;
+  /**
+   * When true, the trailing editorial footer block is skipped. The about
+   * page (FIX 2) replaces it with a founder-note placeholder.
+   */
+  hideFooter?: boolean;
+  /**
+   * When true, the editorial hero is skipped — for pages that own their
+   * own above-the-fold layout (CHROME-01B FIX 3 contact form).
+   */
+  hideHero?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
   const [page, setPage] = useState<CompanyPageRecord>(initialData);
@@ -116,7 +134,17 @@ export default function CompanyPageClient({
     return items;
   }, [page.subtitle, page.updated_at]);
 
-  const hasRealStats = page.stats.some((s) => (s.label || "").trim() && (s.value || "").trim());
+  /** Reject stats whose numeric value is zero. CMS-edited stats with
+   * label="Management" value="0" otherwise survive (since "0" is non-empty)
+   * and undermine the credibility the about page is trying to build. */
+  const isMeaningfulStat = (s: { label?: string; value?: string }) => {
+    const label = (s.label || "").trim();
+    const raw = (s.value || "").trim();
+    if (!label || !raw) return false;
+    const numeric = Number(raw.replace(/[\s,]/g, ""));
+    return !(Number.isFinite(numeric) && numeric === 0);
+  };
+  const hasRealStats = page.stats.some(isMeaningfulStat);
 
   return (
     <div className="relative isolate min-h-screen overflow-x-hidden bg-[#0a0807] text-[#f5f1eb]">
@@ -130,6 +158,7 @@ export default function CompanyPageClient({
 
       {/* Editorial hero — eyebrow + display + body + CTAs, with an aside that
           either shows the real hero image or a clean editorial summary card. */}
+      {!hideHero ? (
       <section className="relative">
         <div className="mx-auto grid max-w-[88rem] gap-10 px-5 pb-14 pt-16 sm:px-8 sm:pt-20 lg:grid-cols-[1.15fr,0.85fr] lg:px-10 lg:pt-24">
           <div>
@@ -222,7 +251,7 @@ export default function CompanyPageClient({
                 className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-white/10 py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-10"
               >
                 {page.stats
-                  .filter((s) => (s.label || "").trim() && (s.value || "").trim())
+                  .filter(isMeaningfulStat)
                   .map((stat, index) => (
                     <div key={stat.id || `stat-${index + 1}`} className="flex flex-col gap-1">
                       <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
@@ -237,10 +266,11 @@ export default function CompanyPageClient({
             ) : null}
           </div>
 
-          {/* Aside — real hero image OR HenryCoHeroCard editorial summary.
-              Using the shared primitive guarantees mobile-safe clamp
-              typography, consistent motion, and tap-friendly behaviour
-              across every hub site page. */}
+          {/* Aside — real hero image when set, otherwise a quiet meta rail.
+              The previous default rendered HenryCoHeroCard with identical
+              boilerplate copy on /about, /contact, /privacy, /terms — the
+              repetition read as a mission stencil rather than editorial
+              intention (CHROME-01A). */}
           <motion.aside
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
@@ -258,18 +288,22 @@ export default function CompanyPageClient({
                 />
               </div>
             ) : (
-              <HenryCoHeroCard
-                tone="spotlight"
-                accentVar="#d6a851"
-                eyebrow="Henry & Co."
-                title="Premium company surface for trust, clarity, and long-term credibility."
-                body="Every public document is signed off by the same standard the operating divisions use internally — no marketing varnish, no hidden footnotes."
-                rows={metaItems.map((meta, index) => ({
-                  key: `${meta.label}-${index}`,
-                  label: meta.label,
-                  value: meta.value,
-                }))}
-              />
+              <dl className="divide-y divide-white/10 border-y border-white/10">
+                {metaItems.map((meta, index) => (
+                  <div
+                    key={`${meta.label}-${index}`}
+                    className="flex items-baseline gap-3 py-3 text-sm"
+                  >
+                    <span className="text-[#d6a851]">{meta.icon}</span>
+                    <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+                      {meta.label}
+                    </dt>
+                    <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                      {meta.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             )}
 
             {serverWarning ? (
@@ -280,9 +314,10 @@ export default function CompanyPageClient({
           </motion.aside>
         </div>
       </section>
+      ) : null}
 
       {/* Section navigator — hairline rule, no panel chrome */}
-      {sectionLinks.length ? (
+      {!hideSections && sectionLinks.length ? (
         <nav
           aria-label="Page sections"
           className="mx-auto max-w-[88rem] px-5 pb-2 sm:px-8 lg:px-10"
@@ -302,17 +337,20 @@ export default function CompanyPageClient({
       ) : null}
 
       {/* Long-form sections — kept as-is. SectionBlock owns its own typography. */}
-      <section className="mx-auto max-w-[88rem] space-y-10 px-5 py-14 sm:px-8 lg:px-10">
-        {page.sections.map((section, index) => (
-          <SectionBlock
-            key={section.id || `section-${index + 1}`}
-            section={section}
-            index={index}
-          />
-        ))}
-      </section>
+      {!hideSections ? (
+        <section className="mx-auto max-w-[88rem] space-y-10 px-5 py-14 sm:px-8 lg:px-10">
+          {page.sections.map((section, index) => (
+            <SectionBlock
+              key={section.id || `section-${index + 1}`}
+              section={section}
+              index={index}
+            />
+          ))}
+        </section>
+      ) : null}
 
       {/* Footer — restrained editorial, no fake "trust quality" InfoPills */}
+      {!hideFooter ? (
       <section className="mx-auto max-w-[88rem] px-5 pb-20 sm:px-8 lg:px-10">
         <div className="grid gap-8 border-t border-white/10 pt-10 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
           <div>
@@ -354,6 +392,7 @@ export default function CompanyPageClient({
           </ul>
         </div>
       </section>
+      ) : null}
     </div>
   );
 }

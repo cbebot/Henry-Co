@@ -2,8 +2,10 @@
 import type { Metadata } from "next";
 import { getDivisionConfig } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
+import RecentBookingCards from "@/components/care/RecentBookingCards";
 import TrackLookupClient from "@/components/care/TrackLookupClient";
 import { getCarePublicLocale } from "@/lib/locale-server";
+import { getRecentCareBookingsForViewer } from "@/lib/care-recent-bookings";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -23,7 +25,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TrackPage() {
-  const locale = await getCarePublicLocale();
+  const [locale, bookings] = await Promise.all([
+    getCarePublicLocale(),
+    getRecentCareBookingsForViewer().catch(() => []),
+  ]);
 
-  return <TrackLookupClient locale={locale} />;
+  return (
+    <>
+      {bookings.length ? (
+        <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+          <RecentBookingCards bookings={bookings} />
+        </div>
+      ) : null}
+      <TrackLookupClient locale={locale} />
+    </>
+  );
 }

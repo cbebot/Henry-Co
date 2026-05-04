@@ -182,6 +182,15 @@ export async function getOwnerWorkspaceData() {
   };
 }
 
+/** Synthetic Codex/auditor seed names that must never reach an agent
+ * surface. Match the format `Codex Prospect 1775204389762` (any case,
+ * numeric tail) plus the bare "Codex Prospect" label. CHROME-01A. */
+const SYNTHETIC_PROSPECT_NAME = /^codex\s+prospect(\s+\d+)?$/i;
+
+function isSyntheticProspect(name?: string | null) {
+  return SYNTHETIC_PROSPECT_NAME.test(String(name || "").trim());
+}
+
 export async function getAgentWorkspaceData() {
   const snapshot = await getPropertySnapshot();
   const viewer = await getPropertyViewer();
@@ -191,8 +200,12 @@ export async function getAgentWorkspaceData() {
     viewer,
     agent,
     listings: snapshot.listings.filter((item) => item.agentId === agent?.id),
-    inquiries: snapshot.inquiries.filter((item) => item.assignedAgentId === agent?.id),
-    viewings: snapshot.viewingRequests.filter((item) => item.assignedAgentId === agent?.id),
+    inquiries: snapshot.inquiries.filter(
+      (item) => item.assignedAgentId === agent?.id && !isSyntheticProspect(item.name),
+    ),
+    viewings: snapshot.viewingRequests.filter(
+      (item) => item.assignedAgentId === agent?.id && !isSyntheticProspect(item.attendeeName),
+    ),
   };
 }
 

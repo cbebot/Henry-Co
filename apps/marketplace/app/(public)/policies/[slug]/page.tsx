@@ -5,6 +5,38 @@ import { ecosystemOffers, policyPages } from "@/lib/marketplace/policy";
 
 export const dynamic = "force-dynamic";
 
+type PolicyMetadata = {
+  coverage: string;
+  enforcement: string;
+  updated: string;
+};
+
+/** Differentiated metadata per policy. The previous single hardcoded row
+ * showed "Buyers + sellers" on the seller policy page (factually wrong)
+ * because the page used one shared block for every slug. CHROME-01A. */
+function policyMetadata(slug: string): PolicyMetadata {
+  switch (slug) {
+    case "buyer-protection":
+      return {
+        coverage: "Buyers",
+        enforcement: "Server-held payments + dispute freeze",
+        updated: "On payment + dispute revisions",
+      };
+    case "seller-policy":
+      return {
+        coverage: "Sellers",
+        enforcement: "Trust-tier review + payout reserve",
+        updated: "On seller standards revisions",
+      };
+    default:
+      return {
+        coverage: "Marketplace participants",
+        enforcement: "Server-logged trail",
+        updated: "On policy revisions",
+      };
+  }
+}
+
 export default async function MarketplacePolicyPage({
   params,
 }: {
@@ -13,6 +45,7 @@ export default async function MarketplacePolicyPage({
   const { slug } = await params;
   const policy = policyPages.find((item) => item.slug === slug);
   if (!policy) notFound();
+  const meta = policyMetadata(slug);
 
   return (
     <main className="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6 lg:px-8">
@@ -50,7 +83,7 @@ export default async function MarketplacePolicyPage({
                 Coverage
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                Buyers + sellers
+                {meta.coverage}
               </span>
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
@@ -58,7 +91,7 @@ export default async function MarketplacePolicyPage({
                 Enforcement
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                Server-logged trail
+                {meta.enforcement}
               </span>
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0">
@@ -66,7 +99,7 @@ export default async function MarketplacePolicyPage({
                 Updated
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                On policy revisions
+                {meta.updated}
               </span>
             </li>
           </ul>

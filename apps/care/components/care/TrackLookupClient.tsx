@@ -289,35 +289,27 @@ export default function TrackLookupClient({
   const returnAddress = extractReturnAddress(booking?.special_instructions);
 
   return (
-    <main id="henryco-main" tabIndex={-1} className="overflow-hidden bg-transparent pb-24 pt-8">
+    <main id="henryco-main" tabIndex={-1} className="overflow-hidden bg-transparent pb-24 pt-6">
       <section className="mx-auto max-w-7xl px-3 sm:px-8 lg:px-10">
-        <div className="relative overflow-hidden rounded-[1.6rem] border border-black/10 bg-white/85 px-5 py-9 shadow-[0_14px_34px_rgba(0,0,0,0.08)] backdrop-blur-0 sm:rounded-[2rem] sm:px-8 sm:py-16 md:rounded-[44px] md:shadow-[0_24px_80px_rgba(0,0,0,0.08)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_24px_100px_rgba(0,0,0,0.28)] sm:py-20 lg:px-14 lg:py-24">
+        <div className="relative overflow-hidden rounded-[1.6rem] border border-black/10 bg-white/85 px-5 py-7 shadow-[0_14px_34px_rgba(0,0,0,0.08)] backdrop-blur-0 sm:rounded-[2rem] sm:px-8 sm:py-10 md:rounded-[44px] md:shadow-[0_24px_80px_rgba(0,0,0,0.08)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_24px_100px_rgba(0,0,0,0.28)] lg:px-14 lg:py-12">
           <div className="pointer-events-none absolute -left-20 top-0 h-72 w-72 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
           <div className="pointer-events-none absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-zinc-300/30 blur-3xl dark:bg-white/5" />
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-3 rounded-3xl border border-black/10 bg-white/75 px-6 py-3 text-sm font-medium text-zinc-700 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-white/72">
-              <Package className="h-5 w-5 text-[color:var(--accent)]" />
+            <div className="inline-flex items-center gap-3 rounded-3xl border border-black/10 bg-white/75 px-5 py-2.5 text-sm font-medium text-zinc-700 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-white/72">
+              <Package className="h-4 w-4 text-[color:var(--accent)]" />
               <span>{t("Service tracking")}</span>
             </div>
 
-            <h1 className="mt-6 text-balance text-[2.4rem] font-black leading-[1] tracking-[-0.04em] text-zinc-950 dark:text-white sm:mt-8 sm:text-6xl sm:leading-[0.95] sm:tracking-[-0.055em] md:text-7xl lg:text-[82px]">
-              {t("Track the exact")}
-              <br />
-              {t("stage of service.")}
+            <h1 className="mt-4 text-balance text-[1.7rem] font-black leading-[1.05] tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-[2.1rem] md:text-[2.6rem]">
+              {t("Track the exact stage of service.")}
             </h1>
-
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-white/68 sm:mt-6 sm:text-xl">
-              {t(
-                "Wardrobe care follows movement and delivery. Home and office cleaning follow on-site execution and completion quality. The timeline shown here matches the type of service you booked.",
-              )}
-            </p>
 
             {justBooked && initialCode ? <BookingSuccessNotice locale={locale} tracking={initialCode} /> : null}
           </div>
 
           <form
-            className="mt-8 max-w-3xl sm:mt-12"
+            className="mt-6 max-w-3xl"
             onSubmit={(event) => {
               event.preventDefault();
               void lookup();
@@ -361,9 +353,15 @@ export default function TrackLookupClient({
             </div>
           </form>
 
-          <div className="mt-6 text-xs font-medium uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
+          <div className="mt-5 text-xs font-medium uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
             {t("Use your real booking code, for example: TRK-N0RFUKI5")}
           </div>
+
+          <p className="mt-6 max-w-2xl border-t border-black/10 pt-5 text-sm leading-relaxed text-zinc-600 dark:border-white/10 dark:text-white/68">
+            {t(
+              "Wardrobe care follows movement and delivery. Home and office cleaning follow on-site execution and completion quality. The timeline shown here matches the type of service you booked.",
+            )}
+          </p>
         </div>
       </section>
 

@@ -1,11 +1,27 @@
 import Link from "next/link";
 import { ArrowRight, Mail, Phone } from "lucide-react";
+import { getDivisionConfig } from "@henryco/config";
 import { getStudioCatalog } from "@/lib/studio/catalog";
+
+const studioDivision = getDivisionConfig("studio");
+
+/** Reject support emails that belong to other divisions. The studio page
+ * was rendering `care@henrycogroup.com` because the shared settings table
+ * is owned by Care and was leaking into Studio's fallback chain. */
+function resolveStudioContactEmail(value: string | null) {
+  const trimmed = String(value || "").trim().toLowerCase();
+  if (!trimmed) return studioDivision.supportEmail;
+  if (trimmed.startsWith("studio@")) return value!;
+  if (/^(care|building|hotel|marketplace|property|logistics|jobs|learn)@/.test(trimmed)) {
+    return studioDivision.supportEmail;
+  }
+  return value!;
+}
 
 export default async function ContactPage() {
   const catalog = await getStudioCatalog();
-  const supportEmail = catalog.platform.supportEmail || "studio@henrycogroup.com";
-  const supportPhone = catalog.platform.supportPhone || "+2349133957084";
+  const supportEmail = resolveStudioContactEmail(catalog.platform.supportEmail);
+  const supportPhone = catalog.platform.supportPhone || studioDivision.supportPhone;
 
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[64rem] px-5 py-12 sm:px-8">

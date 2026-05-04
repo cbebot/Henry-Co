@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
+import { COMPANY } from "@henryco/config";
 import CompanyPageClient from "../../components/CompanyPageClient";
+import ContactHeroLayout from "../../components/ContactHeroLayout";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
 } from "../../lib/company-pages";
+import { getCompanySettings } from "../../lib/company-settings";
+import { normalizeCompanySettings } from "../../lib/company-settings-shared";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -21,13 +25,30 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage() {
   /** Defensive: return safe fallback rather than letting a thrown
    * supabase error bubble up to the (site) error boundary. */
-  const result = await getCompanyPage("contact").catch(() => ({ page: null, hasServerError: true }));
+  const [pageResult, settingsResult] = await Promise.allSettled([
+    getCompanyPage("contact"),
+    getCompanySettings(),
+  ]);
+
+  const page = pageResult.status === "fulfilled"
+    ? pageResult.value
+    : { page: null, hasServerError: true };
+  const settings = normalizeCompanySettings(
+    settingsResult.status === "fulfilled" ? settingsResult.value : null
+  );
+
+  const supportEmail =
+    settings.support_email?.trim() || COMPANY.group.supportEmail;
 
   return (
-    <CompanyPageClient
-      pageKey="contact"
-      initialData={result.page ?? createFallbackCompanyPage("contact")}
-      serverWarning={result.hasServerError}
-    />
+    <>
+      <ContactHeroLayout supportEmail={supportEmail} />
+      <CompanyPageClient
+        pageKey="contact"
+        initialData={page.page ?? createFallbackCompanyPage("contact")}
+        serverWarning={page.hasServerError}
+        hideHero
+      />
+    </>
   );
 }

@@ -1,7 +1,17 @@
 import "server-only";
 
-import { getAccountUrl, getDivisionUrl } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig, getDivisionUrl } from "@henryco/config";
 import { hasAdminSupabaseEnv, createAdminSupabase } from "@/lib/supabase";
+
+/** Studio-owned support contacts, sourced from divisionConfig (single source
+ * of truth in `packages/config/company.ts`). Used as the *first* fallback
+ * before reading the shared company-wide settings table — without this guard
+ * the Studio contact page picked up the Care division support email
+ * (care@henrycogroup.com) because the shared settings table is the Care
+ * settings table. CHROME-01A. */
+const studioDivision = getDivisionConfig("studio");
+const STUDIO_DIVISION_SUPPORT_EMAIL = studioDivision.supportEmail || null;
+const STUDIO_DIVISION_SUPPORT_PHONE = studioDivision.supportPhone || null;
 
 export type StudioPlatformSettings = {
   currency: string;
@@ -76,8 +86,14 @@ export function normalizeStudioPlatformSettings(
 
   return {
     currency: asText(source.currency, "NGN"),
-    supportEmail: asNullableText(source.support_email) ?? sharedSupportEmail,
-    supportPhone: asNullableText(source.support_phone) ?? sharedSupportPhone,
+    supportEmail:
+      asNullableText(source.support_email) ??
+      STUDIO_DIVISION_SUPPORT_EMAIL ??
+      sharedSupportEmail,
+    supportPhone:
+      asNullableText(source.support_phone) ??
+      STUDIO_DIVISION_SUPPORT_PHONE ??
+      sharedSupportPhone,
     primaryCta: asText(source.primary_cta, "Start a Studio project"),
     paymentBankName,
     paymentAccountName,
