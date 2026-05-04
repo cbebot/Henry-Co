@@ -54,7 +54,7 @@ export function StudioRequestPathStep({
   const platformOptions = filterPricedOptions(requestConfig.platformOptions, serviceKind);
 
   return (
-    <section className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
+    <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
       <div className="studio-kicker">Buying lane</div>
       <div className="mt-6 grid gap-4 xl:grid-cols-2">
         {[

@@ -3,20 +3,12 @@
 @source "../../../packages/ui/src";
 
 :root {
-  --font-studio-sans:
-    "Plus Jakarta Sans",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-  --font-studio-display:
-    "Space Grotesk",
-    "Aptos Display",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
+  /* Studio inherits the canonical HenryCo brand stack — see comment
+   * in apps/marketplace/app/globals.css for rationale. The Studio
+   * display variable now resolves to Source Serif 4 for editorial
+   * surfaces; sans surfaces stay Inter. */
+  --font-studio-sans: var(--hc-font-sans);
+  --font-studio-display: var(--hc-font-serif);
   --studio-ink: #edf6fa;
   --studio-ink-soft: rgba(237, 246, 250, 0.72);
   --studio-bg: #061017;

@@ -376,28 +376,30 @@ export function StudioRequestBuilder({
           </div>
         </div>
 
-        {/* Premium step navigator — horizontal numbered rail with progress fill */}
-        <nav aria-label="Brief steps" className="mt-8">
+        {/* Compact step navigator — number disc + label only. The
+         * step body already lives in the H2 paragraph above so we don't
+         * repeat it inside each card (the prior "long cards" issue:
+         * the same paragraph rendered four times stacked on mobile,
+         * pushing the actual brief fields below the fold). */}
+        <nav aria-label="Brief steps" className="mt-7">
           <div className="relative">
-            {/* hairline track */}
             <div className="absolute left-0 right-0 top-[18px] h-px bg-[var(--studio-line)]" />
-            {/* progress fill */}
             <div
               className="absolute left-0 top-[18px] h-px bg-[var(--studio-signal)] transition-all duration-500"
               style={{ width: `${progressPct}%` }}
               aria-hidden
             />
-            <ol className="relative grid grid-cols-2 gap-x-3 gap-y-6 lg:grid-cols-4">
+            <ol className="relative grid grid-cols-4 gap-x-2 gap-y-2 sm:gap-x-3">
               {requestSteps.map((step, index) => {
                 const isActive = index === stepIndex;
                 const isComplete = index < stepIndex;
                 return (
-                  <li key={step.key}>
+                  <li key={step.key} className="min-w-0">
                     <button
                       type="button"
                       onClick={() => goToStep(index)}
                       aria-current={isActive ? "step" : undefined}
-                      className="group block w-full text-left"
+                      className="group block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 rounded-lg"
                     >
                       <span
                         className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-[11px] font-mono font-semibold tracking-tight transition ${
@@ -411,22 +413,13 @@ export function StudioRequestBuilder({
                         {isComplete ? <Check className="h-4 w-4" /> : `0${index + 1}`}
                       </span>
                       <p
-                        className={`mt-3 text-[10.5px] font-semibold uppercase tracking-[0.22em] transition ${
+                        className={`mt-2.5 truncate text-[10.5px] font-semibold uppercase tracking-[0.18em] transition sm:tracking-[0.22em] ${
                           isActive
                             ? "text-[var(--studio-signal)]"
                             : "text-[var(--studio-ink-soft)] group-hover:text-[var(--studio-ink)]"
                         }`}
                       >
                         {step.label}
-                      </p>
-                      <p
-                        className={`mt-2 text-sm leading-snug transition ${
-                          isActive
-                            ? "text-[var(--studio-ink)]"
-                            : "text-[var(--studio-ink-soft)] group-hover:text-[var(--studio-ink)]"
-                        }`}
-                      >
-                        {step.body}
                       </p>
                     </button>
                   </li>
