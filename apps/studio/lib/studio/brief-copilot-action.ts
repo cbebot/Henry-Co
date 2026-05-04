@@ -522,6 +522,15 @@ export async function generateStudioBriefDraftAction(
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Co-pilot model call failed";
+    // Surface the underlying API error to Vercel runtime logs so we can
+    // diagnose failures without scraping Supabase. Log message + name
+    // (e.g. APIConnectionError, APIError) — never the API key. The user
+    // gets back the friendly "didn't respond in time" copy regardless.
+    console.error("[studio][brief-copilot] model call failed", {
+      reason: message.slice(0, 240),
+      name: error instanceof Error ? error.name : "unknown",
+      authed: isAuthenticated,
+    });
     if (hasAdminSupabaseEnv()) {
       const admin = createAdminSupabase();
       await admin
