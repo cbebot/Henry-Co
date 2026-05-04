@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { withStudioToast } from "@/lib/studio/redirect-with-toast";
+import { hasPublicSupabaseEnv } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import {
   getStudioViewer,
@@ -124,10 +125,21 @@ async function requirePaymentWorkspaceAccess(
 }
 
 export async function submitStudioBriefAction(formData: FormData) {
-  const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: { id: string; email?: string | null } | null = null;
+
+  if (hasPublicSupabaseEnv()) {
+    try {
+      const supabase = await createSupabaseServer();
+      const auth = await supabase.auth.getUser();
+      user = auth.data.user;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Studio auth lookup failed";
+      console.error("[studio][brief-submit] auth lookup skipped", {
+        reason: message.slice(0, 180),
+      });
+    }
+  }
 
   const files = formData
     .getAll("referenceFiles")

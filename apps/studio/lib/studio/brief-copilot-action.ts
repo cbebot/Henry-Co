@@ -4,13 +4,18 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { getOptionalEnv, normalizeEmail } from "@/lib/env";
-import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
+import {
+  createAdminSupabase,
+  hasAdminSupabaseEnv,
+  hasPublicSupabaseEnv,
+} from "@/lib/supabase";
 import { getStudioViewer } from "@/lib/studio/auth";
 import {
   BRIEF_COPILOT_MODEL,
   BRIEF_COPILOT_SYSTEM_PROMPT,
 } from "@/lib/studio/brief-copilot-prompt";
 import { writeStudioLog } from "@/lib/studio/store";
+import type { StudioViewer } from "@/lib/studio/types";
 
 const SESSION_COOKIE = "studio_copilot_session";
 
@@ -43,6 +48,13 @@ const MIN_INPUT_LENGTH = 30;
 const MIN_WORD_COUNT = 8;
 const DEDUP_WINDOW_SECONDS = 60 * 60 * 24;
 const COPILOT_INTENT = "studio_brief";
+const FALLBACK_MODEL = "studio-local-brief-parser-v1";
+
+const ANONYMOUS_VIEWER: StudioViewer = {
+  user: null,
+  normalizedEmail: null,
+  roles: [],
+};
 
 export type BriefCopilotResult =
   | {
@@ -148,6 +160,244 @@ function normaliseStructured(raw: unknown): BriefCopilotStructured | null {
   };
 }
 
+function includesAny(value: string, terms: string[]) {
+  return terms.some((term) => value.includes(term));
+}
+
+function uniqueList(items: string[], max: number) {
+  return [...new Set(items.map((item) => item.trim()).filter(Boolean))].slice(0, max);
+}
+
+function redactSensitiveText(value: string) {
+  return value
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email removed]")
+    .replace(/(?:\+?\d[\d\s().-]{7,}\d)/g, "[phone removed]")
+    .trim();
+}
+
+function resolveFallbackProjectType(input: string) {
+  if (includesAny(input, ["redesign", "revamp", "refresh existing"])) return "Website redesign";
+  if (includesAny(input, ["mobile app", "react native", "flutter", "ios", "android"])) {
+    return "Mobile app";
+  }
+  if (includesAny(input, ["internal", "ops", "operation", "admin", "staff tool"])) {
+    return "Internal ops tool";
+  }
+  if (includesAny(input, ["storefront", "ecommerce", "e-commerce", "shop", "cart"])) {
+    return "Storefront";
+  }
+  if (includesAny(input, ["platform", "saas", "dashboard", "portal", "marketplace"])) {
+    return "Web app or platform";
+  }
+  if (includesAny(input, ["landing", "funnel", "campaign"])) return "Landing page or funnel";
+  if (includesAny(input, ["brand", "identity", "logo"])) return "Brand system";
+  if (includesAny(input, ["website", "site", "web"])) return "Custom website";
+  return "Other";
+}
+
+function resolveFallbackPlatform(input: string) {
+  if (input.includes("react native")) return "React Native";
+  if (input.includes("flutter")) return "Flutter";
+  if (input.includes("shopify")) return "Shopify";
+  if (input.includes("wordpress")) return "WordPress";
+  if (input.includes("webflow")) return "Webflow";
+  if (input.includes("next.js") || input.includes("nextjs")) return "Next.js";
+  if (includesAny(input, ["saas", "dashboard", "portal", "platform", "internal"])) return "Next.js";
+  return "Best-fit recommendation";
+}
+
+function resolveFallbackBackend(input: string) {
+  if (input.includes("supabase")) return "Supabase";
+  if (input.includes("firebase")) return "Firebase";
+  if (input.includes("postgres") || input.includes("postgresql")) return "Postgres";
+  if (input.includes("node")) return "Node.js API";
+  if (input.includes("python")) return "Python backend";
+  if (includesAny(input, ["auth", "login", "payment", "database", "admin", "dashboard", "api"])) {
+    return "HenryCo recommends the backend";
+  }
+  return "HenryCo recommends the backend";
+}
+
+function resolveFallbackHosting(input: string) {
+  if (input.includes("vercel")) return "Vercel";
+  if (input.includes("aws")) return "AWS";
+  if (input.includes("gcp") || input.includes("google cloud")) return "Google Cloud";
+  if (input.includes("cloudflare")) return "Cloudflare";
+  return "HenryCo recommends the host";
+}
+
+function resolveFallbackBudget(input: string) {
+  const wordNumbers: Record<string, number> = {
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+    ten: 10,
+    eleven: 11,
+    twelve: 12,
+    fifteen: 15,
+    twenty: 20,
+  };
+  const numericMillions = [...input.matchAll(/(\d+(?:\.\d+)?)\s*(?:m|million|mn)\b/g)].map(
+    (match) => Number(match[1])
+  );
+  const wordMillions = Object.entries(wordNumbers)
+    .filter(([word]) => input.includes(`${word} million`))
+    .map(([, amount]) => amount);
+  const amounts = [...numericMillions, ...wordMillions].filter(Number.isFinite);
+  const maxAmount = amounts.length ? Math.max(...amounts) : 0;
+
+  if (!maxAmount) return "Not sure yet";
+  if (maxAmount < 1) return "Below ₦1M";
+  if (maxAmount <= 3) return "₦1M – ₦3M";
+  if (maxAmount <= 8) return "₦3M – ₦8M";
+  if (maxAmount <= 20) return "₦8M – ₦20M";
+  return "₦20M+";
+}
+
+function resolveFallbackUrgency(input: string) {
+  if (includesAny(input, ["asap", "urgent", "immediately", "two weeks", "2 weeks"])) {
+    return "ASAP — within 2 weeks";
+  }
+  if (includesAny(input, ["four weeks", "4 weeks", "one month", "next month"])) {
+    return "Within 4 weeks";
+  }
+  if (includesAny(input, ["six weeks", "6 weeks", "eight weeks", "8 weeks"])) {
+    return "Within 8 weeks";
+  }
+  if (includesAny(input, ["ten weeks", "10 weeks", "twelve weeks", "12 weeks", "quarter"])) {
+    return "Within 3 months";
+  }
+  return "No fixed deadline";
+}
+
+function resolveFallbackBusinessType(input: string) {
+  if (input.includes("logistics")) return "Logistics operations";
+  if (includesAny(input, ["investment", "investor", "finance", "fintech"])) return "Financial services";
+  if (includesAny(input, ["agency", "studio", "creative"])) return "Agency operations";
+  if (includesAny(input, ["school", "learn", "education", "course"])) return "Education";
+  if (includesAny(input, ["clinic", "health", "medical"])) return "Healthcare";
+  if (includesAny(input, ["real estate", "property"])) return "Real estate";
+  if (includesAny(input, ["restaurant", "food", "hotel", "hospitality"])) return "Hospitality";
+  return "Digital business";
+}
+
+function buildFallbackPages(input: string, projectType: string) {
+  const pages =
+    projectType === "Internal ops tool"
+      ? ["Login", "Operations dashboard", "Project intake", "Reporting"]
+      : projectType === "Mobile app"
+        ? ["Onboarding", "User dashboard", "Core workflow", "Settings"]
+        : projectType === "Storefront"
+          ? ["Home", "Product catalog", "Product detail", "Cart", "Checkout"]
+          : ["Home", "Services", "About", "Contact"];
+
+  if (includesAny(input, ["admin", "compliance"])) pages.push("Admin dashboard");
+  if (includesAny(input, ["client portal", "customer portal", "portal"])) pages.push("Client portal");
+  if (includesAny(input, ["analytics", "reporting", "reports"])) pages.push("Analytics");
+  if (includesAny(input, ["payment", "invoice", "bank transfer"])) pages.push("Payments");
+  if (includesAny(input, ["courier", "dispatch", "tracking"])) pages.push("Tracking dashboard");
+  return uniqueList(pages, 12);
+}
+
+function buildFallbackFeatures(input: string) {
+  const features = ["Responsive interface", "Secure contact capture", "Admin-ready content model"];
+  if (includesAny(input, ["auth", "login", "member", "kyc", "two-factor", "2fa"])) {
+    features.push("Authentication and access control");
+  }
+  if (includesAny(input, ["payment", "invoice", "bank transfer", "checkout"])) {
+    features.push("Payment and invoice flow");
+  }
+  if (includesAny(input, ["dashboard", "analytics", "reporting", "reports"])) {
+    features.push("Dashboard and reporting");
+  }
+  if (includesAny(input, ["file", "document", "sign documents"])) {
+    features.push("Document handling");
+  }
+  if (includesAny(input, ["mobile", "courier", "dispatch"])) {
+    features.push("Mobile workflow support");
+  }
+  if (includesAny(input, ["integrate", "integration", "accounting", "api"])) {
+    features.push("Third-party integration");
+  }
+  return uniqueList(features, 10);
+}
+
+function buildFallbackStructured(description: string): BriefCopilotStructured {
+  const safeDescription = redactSensitiveText(description);
+  const input = safeDescription.toLowerCase();
+  const projectType = resolveFallbackProjectType(input);
+  const platformPreference = resolveFallbackPlatform(input);
+  const requiredFeatures = buildFallbackFeatures(input);
+  const urgency = resolveFallbackUrgency(input);
+  const pageRequirements = buildFallbackPages(input, projectType);
+  const techPreferences = uniqueList(
+    [
+      input.includes("next.js") || input.includes("nextjs") ? "Next.js" : "",
+      input.includes("react native") ? "React Native" : "",
+      input.includes("flutter") ? "Flutter" : "",
+      input.includes("supabase") ? "Supabase" : "",
+      input.includes("postgres") ? "Postgres" : "",
+      input.includes("stripe") ? "Stripe" : "",
+      input.includes("paystack") ? "Paystack" : "",
+      input.includes("vercel") ? "Vercel" : "",
+    ],
+    8
+  );
+
+  return {
+    projectType,
+    platformPreference,
+    designDirection: includesAny(input, ["luxury", "executive", "premium", "restrained"])
+      ? "Restrained, executive, high-trust interface"
+      : "Clean, modern, high-trust product experience",
+    preferredLanguage: "English",
+    frameworkPreference:
+      platformPreference === "Best-fit recommendation"
+        ? "HenryCo's framework recommendation"
+        : platformPreference,
+    backendPreference: resolveFallbackBackend(input),
+    hostingPreference: resolveFallbackHosting(input),
+    pageRequirements,
+    requiredFeatures,
+    addonServices: uniqueList(
+      [
+        includesAny(input, ["seo", "search"]) ? "SEO setup" : "",
+        includesAny(input, ["analytics", "reporting"]) ? "Analytics wiring" : "",
+        includesAny(input, ["payment", "invoice", "checkout"]) ? "Payment setup" : "",
+        includesAny(input, ["copy", "content"]) ? "Copy refinement" : "",
+      ],
+      5
+    ),
+    techPreferences,
+    businessType: resolveFallbackBusinessType(input),
+    budgetBand: resolveFallbackBudget(input),
+    urgency,
+    timeline:
+      urgency === "No fixed deadline"
+        ? "To be confirmed"
+        : urgency.replace("ASAP — ", ""),
+    goals: safeDescription.slice(0, 600),
+    scopeNotes: `Initial structured draft generated from the supplied paragraph. Review scope, integrations, payment needs, content ownership, and launch constraints before submitting.`,
+    summary: `${projectType} brief with ${requiredFeatures.slice(0, 3).join(", ").toLowerCase()}.`,
+    confidence: countWords(safeDescription) >= 35 ? 0.68 : 0.56,
+    uncertainties: uniqueList(
+      [
+        "Confirm final budget range.",
+        "Confirm launch deadline and priority features.",
+        "Confirm integrations and admin access needs.",
+        techPreferences.length === 0 ? "Confirm preferred technology stack." : "",
+      ],
+      4
+    ),
+  };
+}
+
 function parseAssistantJson(text: string): unknown {
   const trimmed = text.trim();
   // Anthropic Haiku 4.5 in JSON mode usually returns clean JSON; strip a
@@ -214,6 +464,23 @@ async function getOrCreateSessionId(): Promise<string> {
     maxAge: 60 * 60 * 24 * 30,
   });
   return fresh;
+}
+
+async function getCopilotViewer(): Promise<StudioViewer> {
+  if (!hasPublicSupabaseEnv()) {
+    return ANONYMOUS_VIEWER;
+  }
+
+  try {
+    return await getStudioViewer();
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Studio auth lookup failed";
+    console.error("[studio][brief-copilot] auth lookup skipped", {
+      reason: message.slice(0, 180),
+    });
+    return ANONYMOUS_VIEWER;
+  }
 }
 
 async function countRecentDrafts(input: {
@@ -348,14 +615,21 @@ export async function generateStudioBriefDraftAction(
 
   const apiKey = getOptionalEnv("ANTHROPIC_API_KEY");
   if (!apiKey) {
+    const fallback = buildFallbackStructured(description);
     return {
-      ok: false,
-      reason: "model_unavailable",
-      message: "The co-pilot is not configured for this environment yet.",
+      ok: true,
+      structured: fallback,
+      meta: {
+        modelUsed: FALLBACK_MODEL,
+        durationMs: 0,
+        confidence: fallback.confidence,
+        cached: false,
+        callsRemaining: null,
+      },
     };
   }
 
-  const viewer = await getStudioViewer();
+  const viewer = await getCopilotViewer();
   const sessionId = await getOrCreateSessionId();
   const userId = viewer.user?.id ?? null;
   const email = viewer.normalizedEmail || normalizeEmail(viewer.user?.email);
@@ -562,19 +836,32 @@ export async function generateStudioBriefDraftAction(
       meta: { userId, email, role: isAuthenticated ? "client" : "anon" },
       details: { error: message.slice(0, 240) },
     });
+    const fallback = buildFallbackStructured(description);
     return {
-      ok: false,
-      reason: "model_error",
-      message:
-        "The co-pilot didn't respond in time. Try again, or fill the brief manually below.",
+      ok: true,
+      structured: fallback,
+      meta: {
+        modelUsed: FALLBACK_MODEL,
+        durationMs: Date.now() - start,
+        confidence: fallback.confidence,
+        cached: false,
+        callsRemaining: Math.max(0, limit - usedCount),
+      },
     };
   }
 
   if (!assistantText) {
+    const fallback = buildFallbackStructured(description);
     return {
-      ok: false,
-      reason: "invalid_response",
-      message: "The co-pilot returned an empty response. Try rephrasing your description.",
+      ok: true,
+      structured: fallback,
+      meta: {
+        modelUsed: FALLBACK_MODEL,
+        durationMs: Date.now() - start,
+        confidence: fallback.confidence,
+        cached: false,
+        callsRemaining: Math.max(0, limit - usedCount),
+      },
     };
   }
 
@@ -609,11 +896,17 @@ export async function generateStudioBriefDraftAction(
           () => undefined
         );
     }
+    const fallback = buildFallbackStructured(description);
     return {
-      ok: false,
-      reason: "invalid_response",
-      message:
-        "The co-pilot returned something we couldn't parse. Try rephrasing or fill the brief manually below.",
+      ok: true,
+      structured: fallback,
+      meta: {
+        modelUsed: FALLBACK_MODEL,
+        durationMs: Date.now() - start,
+        confidence: fallback.confidence,
+        cached: false,
+        callsRemaining: Math.max(0, limit - usedCount),
+      },
     };
   }
 
