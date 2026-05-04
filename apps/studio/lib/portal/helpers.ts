@@ -1,4 +1,6 @@
-import "server-only";
+// helpers.ts holds pure formatters consumed by both server and client
+// components (e.g. message-thread renders relativeTime). It must NOT
+// be marked server-only or the client bundles fail to build.
 
 import { formatCurrency } from "@/lib/env";
 import type {
