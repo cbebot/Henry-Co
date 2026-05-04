@@ -51,7 +51,7 @@ export default function RecentBookingCards({
         </span>
       </div>
       <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {bookings.map((booking) => {
+        {bookings.map((booking, index) => {
           const date = formatDate(booking.pickupDate) ?? formatDate(booking.createdAt);
           const card = (
             <article className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-left transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05]">
@@ -108,7 +108,7 @@ export default function RecentBookingCards({
           }
 
           return (
-            <li key={booking.trackingCode || Math.random()}>
+            <li key={booking.trackingCode || `booking-${index}`}>
               <Link
                 href={
                   booking.trackingCode
