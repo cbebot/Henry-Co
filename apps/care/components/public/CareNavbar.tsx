@@ -1,9 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { PhoneCall, Sparkles } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { getHubUrl } from "@henryco/config";
 import {
   HenryCoSearchBreadcrumb,
@@ -18,26 +17,24 @@ export type DivisionPublicConfig = {
   sub?: string;
   shortName?: string;
   accent?: string | null;
+  /**
+   * Operator-uploadable logo url is intentionally NOT honoured in the
+   * public Care navbar mark. Care's brand identity is the in-house
+   * CareMonogram (Henry & Co. serif H + small-caps "Care" caption +
+   * periwinkle droplet). Allowing operators to swap that for an
+   * uploaded raster logo created the bug the user flagged: stale
+   * uploads of the parent monogram kept overriding the proper Care
+   * mark and Care never showed its own identity. The prop stays in
+   * the type for non-public surfaces that still want operator
+   * override (e.g. admin chrome).
+   */
   logoUrl?: string | null;
   supportEmail?: string | null;
   supportPhone?: string | null;
   publicNav?: PublicNavItem[];
 };
 
-function BrandMark({
-  name,
-  logoUrl,
-  accent,
-}: {
-  name: string;
-  shortName?: string;
-  logoUrl?: string | null;
-  accent?: string | null;
-}) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const cleanSrc = typeof logoUrl === "string" && logoUrl.trim() ? logoUrl.trim() : null;
-  const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
-
+function BrandMark({ accent }: { accent?: string | null }) {
   return (
     <div
       className="
@@ -51,9 +48,6 @@ function BrandMark({
       "
       style={
         {
-          // Subtle inner gradient sheen — only visible on hover, picks up
-          // the Care periwinkle. Keeps the mark feeling "alive" without
-          // being noisy on idle.
           "--care-mark-accent": accent || "#6B7CFF",
         } as CSSProperties
       }
@@ -66,24 +60,11 @@ function BrandMark({
             "radial-gradient(120% 100% at 30% 20%, color-mix(in srgb, var(--care-mark-accent) 22%, transparent) 0%, transparent 70%)",
         }}
       />
-      {cleanSrc && !isFailed ? (
-        <img
-          src={cleanSrc}
-          alt={name}
-          className="relative h-full w-full object-contain p-1.5 transition duration-300 group-hover/brandmark:scale-[1.03]"
-          loading="eager"
-          decoding="async"
-          onError={() => {
-            if (cleanSrc) setFailedSrc(cleanSrc);
-          }}
-        />
-      ) : (
-        <CareMonogram
-          size={32}
-          accent={accent || "#6B7CFF"}
-          className="relative text-zinc-950 transition duration-300 group-hover/brandmark:scale-[1.04] dark:text-white"
-        />
-      )}
+      <CareMonogram
+        size={32}
+        accent={accent || "#6B7CFF"}
+        className="relative text-zinc-950 transition duration-300 group-hover/brandmark:scale-[1.04] dark:text-white"
+      />
     </div>
   );
 }
@@ -140,14 +121,7 @@ export default function CareNavbar({
         name: division.name,
         sub: division.sub ?? DEFAULT_SUB,
         href: "/",
-        mark: (
-          <BrandMark
-            name={division.name}
-            shortName={division.shortName}
-            logoUrl={division.logoUrl}
-            accent={division.accent ?? "#C9A227"}
-          />
-        ),
+        mark: <BrandMark accent={division.accent ?? "#6B7CFF"} />,
         /** Custom brand text — keeps "Henry & Co. Fabric Care" on a
          * single line at every viewport above 320px. Without this
          * override the default PublicHeader brand block let the long

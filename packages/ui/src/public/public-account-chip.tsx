@@ -180,6 +180,13 @@ export function PublicAccountChip({
 }) {
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  // Mobile-only: when the chip sits mid-toolbar (left of the hamburger
+  // button), `absolute right-0` anchors the dropdown to the chip's
+  // right edge and the dropdown's 320px width can extend off-screen
+  // left. We measure the trigger's exact bottom-Y on open so the
+  // dropdown becomes fixed-positioned right under the chip with the
+  // chip's actual offset, not a magic-number header height.
+  const [mobileTopOffset, setMobileTopOffset] = useState<number | null>(null);
   const locale = useOptionalHenryCoLocale() ?? "en";
   const surfaceCopy = getSurfaceCopy(locale);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -215,6 +222,29 @@ export function PublicAccountChip({
     if (!open || !menuRef.current) return;
     const first = menuRef.current.querySelector<HTMLElement>(MENU_ITEM_SELECTOR);
     first?.focus();
+  }, [open]);
+
+  // Measure the trigger's bottom-edge Y when the dropdown opens so the
+  // mobile fixed-position panel sits flush under the chip regardless
+  // of header height (Studio's prepend bar makes the header taller
+  // than the default 4.25rem; per-app navbars vary). Re-measure on
+  // resize so an orientation flip doesn't strand the dropdown.
+  useEffect(() => {
+    if (!open) {
+      setMobileTopOffset(null);
+      return;
+    }
+    function measure() {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (rect) setMobileTopOffset(rect.bottom + 8);
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    window.addEventListener("orientationchange", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("orientationchange", measure);
+    };
   }, [open]);
 
   function handleMenuKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
@@ -446,10 +476,24 @@ export function PublicAccountChip({
           aria-label={surfaceCopy.publicAccount.accountMenu}
           onKeyDown={handleMenuKeyDown}
           className={cn(
-            "absolute right-0 z-[60] mt-2.5 w-[min(320px,calc(100vw-1rem))] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
+            // On mobile (<sm) the chip can sit mid-toolbar (left of
+            // the hamburger button), so anchoring `right-0` to the
+            // chip pushes the 320px-wide dropdown off-screen on the
+            // left. Mobile uses a fixed-position panel pinned to the
+            // viewport's right edge, with `top` measured from the
+            // trigger's actual bottom-Y. On sm+, revert to the chip-
+            // anchored absolute position.
+            "z-[60] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
+            "fixed right-3 w-[min(320px,calc(100vw-1.5rem))]",
+            "sm:absolute sm:right-0 sm:top-auto sm:mt-2.5 sm:w-[min(320px,calc(100vw-1rem))]",
             dropdownShellClass(resolvedTone),
             dropdownClassName
           )}
+          style={
+            mobileTopOffset != null
+              ? { top: `${mobileTopOffset}px` }
+              : undefined
+          }
         >
           <div className={cn("px-4 py-4", identityBlockClass(resolvedTone))}>
             <div className="flex items-start gap-3.5">

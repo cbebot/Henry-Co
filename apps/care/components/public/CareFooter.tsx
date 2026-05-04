@@ -22,7 +22,13 @@ function FooterBrandMark({
   const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
 
   return (
-    <div className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] text-white">
+    <div
+      className="
+        grid h-10 w-10 place-items-center overflow-hidden rounded-xl
+        border border-black/10 bg-white/72 text-zinc-950
+        dark:border-white/10 dark:bg-white/[0.06] dark:text-white
+      "
+    >
       {cleanSrc && !isFailed ? (
         <img
           src={cleanSrc}
@@ -43,7 +49,13 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-20 border-t border-white/10 bg-[#071020] text-white backdrop-blur-2xl">
+    <footer
+      className="
+        mt-20 border-t backdrop-blur-2xl
+        border-black/10 bg-[var(--care-bg-soft)] text-zinc-900
+        dark:border-white/10 dark:bg-[#071020] dark:text-white
+      "
+    >
       <div
         aria-hidden
         className="pointer-events-none mx-auto h-px max-w-[88rem] bg-gradient-to-r from-transparent via-[color:var(--accent)]/40 to-transparent"
@@ -58,21 +70,25 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
               accent={division.accent}
             />
             <div>
-              <div className="text-base font-semibold tracking-[-0.01em] text-white">
+              <div className="text-base font-semibold tracking-[-0.01em] text-zinc-950 dark:text-white">
                 {division.name}
               </div>
-              <div className="text-[11px] uppercase tracking-[0.22em] text-white/55">
+              <div className="text-[11px] uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
                 Care
               </div>
             </div>
           </div>
-          <p className="max-w-md text-sm leading-7 text-white/66">
+          <p className="max-w-md text-sm leading-7 text-zinc-600 dark:text-white/66">
             Garment care, home cleaning, office cleaning, and pickup delivery — clear booking,
             careful handling, and responsive support from request to finish.
           </p>
-          <div className="space-y-1.5 text-sm text-white/75">
-            <p className="font-medium text-white">{division.supportEmail ?? "care@henrycogroup.com"}</p>
-            <p className="text-white/55">{division.supportPhone ?? "+234 000 000 0000"}</p>
+          <div className="space-y-1.5 text-sm">
+            <p className="font-medium text-zinc-900 dark:text-white">
+              {division.supportEmail ?? "care@henrycogroup.com"}
+            </p>
+            <p className="text-zinc-500 dark:text-white/55">
+              {division.supportPhone ?? "+234 000 000 0000"}
+            </p>
           </div>
         </div>
 
@@ -105,10 +121,10 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
         />
       </div>
 
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[88rem] flex-col items-start gap-3 px-5 py-5 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
+      <div className="border-t border-black/10 dark:border-white/10">
+        <div className="mx-auto flex max-w-[88rem] flex-col items-start gap-3 px-5 py-5 text-xs text-zinc-500 dark:text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
           <div>© {year} {division.name}. All rights reserved.</div>
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]/85" />
             Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
           </span>
@@ -127,7 +143,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
         {title}
       </div>
       <div className="mt-4 grid gap-3 text-sm">
@@ -138,7 +154,7 @@ function FooterColumn({
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/75 transition hover:text-white"
+              className="text-zinc-600 transition hover:text-zinc-950 dark:text-white/75 dark:hover:text-white"
             >
               {item.label}
             </a>
@@ -146,7 +162,7 @@ function FooterColumn({
             <Link
               key={item.href}
               href={item.href}
-              className="text-white/75 transition hover:text-white"
+              className="text-zinc-600 transition hover:text-zinc-950 dark:text-white/75 dark:hover:text-white"
             >
               {item.label}
             </Link>
