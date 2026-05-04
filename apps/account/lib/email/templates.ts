@@ -245,7 +245,7 @@ function layout(content: string, locale: AppLocale = "en") {
 <title>HenryCo</title>
 <style>
   :root { color-scheme: light dark; }
-  body { margin: 0; padding: 0; background: ${BG_COLOR}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif; color: ${DARK_TEXT}; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; padding: 0; background: ${BG_COLOR}; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: ${DARK_TEXT}; -webkit-font-smoothing: antialiased; }
   .wrapper { max-width: 560px; margin: 0 auto; padding: 48px 20px; }
   .card { background: #FFFFFF; border: 1px solid #ECE8DF; border-radius: 24px; padding: 36px 32px; box-shadow: 0 20px 60px -30px rgba(26,24,20,0.18); }
   .brand { text-align: center; margin-bottom: 28px; }

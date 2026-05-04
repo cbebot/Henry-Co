@@ -1086,7 +1086,7 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
               <h2
                 id={headingId}
                 className="mt-0.5 text-[1.05rem] font-semibold leading-snug tracking-[-0.01em]"
-                style={{ color: accentText, fontFamily: '"Newsreader","Iowan Old Style","Palatino Linotype",serif' }}
+                style={{ color: accentText, fontFamily: "var(--hc-font-serif)" }}
               >
                 {copy.title}
               </h2>

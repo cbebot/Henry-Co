@@ -3,20 +3,12 @@
 @source "../../../packages/ui/src";
 
 :root {
-  --font-property-sans:
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-  --font-property-display:
-    "Cormorant Garamond",
-    "Times New Roman",
-    ui-serif,
-    Georgia,
-    serif;
+  /* Property uses the canonical HenryCo brand stack — Inter for sans,
+   * Source Serif 4 for editorial display. The local woff2 files in
+   * apps/property/app/fonts/ are no longer wired and may be removed
+   * after the next deploy clears CDN caches. */
+  --font-property-sans: var(--hc-font-sans);
+  --font-property-display: var(--hc-font-serif);
   --property-bg: #130d0a;
   --property-bg-soft: #1a1210;
   --property-surface: rgba(28, 20, 17, 0.84);

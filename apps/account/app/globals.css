@@ -28,8 +28,8 @@
   --acct-radius-sm: 0.75rem;
   --acct-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
   --acct-shadow-lg: 0 4px 12px rgba(0,0,0,0.06);
-  --acct-font-display: "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif;
-  --acct-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --acct-font-display: var(--hc-font-serif);
+  --acct-font-sans: var(--hc-font-sans);
   --acct-sidebar-width: 260px;
 
   /* ─── V2-NOT-01-B-2: Named motion curves ─── */

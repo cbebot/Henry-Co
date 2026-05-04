@@ -345,15 +345,7 @@ const HENRYCO_HERO_CARD_CSS = `
   line-height: 1.1;
   letter-spacing: -0.02em;
   font-weight: 600;
-  font-family:
-    var(--font-display, "Iowan Old Style"),
-    "Iowan Old Style",
-    "Baskerville Old Face",
-    Baskerville,
-    "Palatino Linotype",
-    "Book Antiqua",
-    "Times New Roman",
-    serif;
+  font-family: var(--hc-font-serif);
 }
 @media (min-width: 640px) {
   .henryco-hero-card-title {

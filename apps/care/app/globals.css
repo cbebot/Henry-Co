@@ -3,24 +3,11 @@
 @source "../../../packages/ui/src";
 
 :root {
-  --font-jakarta:
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    "Inter",
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
-  --font-display:
-    "Iowan Old Style",
-    "Baskerville Old Face",
-    Baskerville,
-    "Palatino Linotype",
-    "Book Antiqua",
-    "Times New Roman",
-    serif;
+  /* Care uses the canonical HenryCo brand stack — Inter for sans,
+   * Source Serif 4 for editorial display. Variable names retained so
+   * existing care-* selectors keep working. */
+  --font-jakarta: var(--hc-font-sans);
+  --font-display: var(--hc-font-serif);
   --care-bg: #eef2fb;
   --care-bg-elevated: rgba(255, 255, 255, 0.84);
   --care-bg-soft: rgba(246, 248, 255, 0.78);
@@ -293,11 +280,7 @@ a {
   line-height: 1;
   font-weight: 600;
   letter-spacing: -0.03em;
-  font-family:
-    var(--font-display),
-    "Iowan Old Style",
-    "Palatino Linotype",
-    serif;
+  font-family: var(--hc-font-serif);
 }
 
 .care-display {
@@ -309,11 +292,7 @@ a {
   letter-spacing: -0.025em;
   text-wrap: balance;
   overflow-wrap: break-word;
-  font-family:
-    var(--font-display),
-    "Iowan Old Style",
-    "Palatino Linotype",
-    serif;
+  font-family: var(--hc-font-serif);
 }
 @media (min-width: 640px) {
   .care-display {

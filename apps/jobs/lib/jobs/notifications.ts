@@ -87,11 +87,11 @@ function renderEmailTemplate(input: EmailTemplateInput) {
   return {
     subject: subjectMap[input.key],
     html: `
-      <div style="background:#f2f7f7;padding:32px;font-family:Manrope,Segoe UI,Arial,sans-serif;color:#102124;">
+      <div style="background:#f2f7f7;padding:32px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#102124;">
         <div style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid rgba(16,33,36,0.08);border-radius:28px;overflow:hidden;box-shadow:0 28px 80px rgba(15,35,39,0.12);">
           <div style="padding:28px 32px;background:linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%);color:#f6ffff;">
             <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;font-weight:800;opacity:0.82;">HenryCo Jobs</div>
-            <h1 style="margin:14px 0 0;font-family:Newsreader,Georgia,serif;font-size:36px;line-height:1;font-weight:600;">${input.heading}</h1>
+            <h1 style="margin:14px 0 0;font-family:'Source Serif 4',Georgia,Cambria,'Times New Roman',serif;font-size:36px;line-height:1;font-weight:600;">${input.heading}</h1>
           </div>
           <div style="padding:28px 32px;">
             <p style="margin:0 0 18px;font-size:15px;line-height:1.75;color:#30474b;">${input.summary}</p>

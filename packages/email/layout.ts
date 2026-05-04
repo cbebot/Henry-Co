@@ -1,4 +1,29 @@
 /**
+ * Email-safe HenryCo font stacks. Hardcoded as a literal string here
+ * (instead of imported from @henryco/ui/brand-typography) because this
+ * file runs in non-Next contexts: edge functions, server actions,
+ * Resend background workers. We accept the duplication so that an
+ * email rendered from a worker without Next still gets the same
+ * brand-aligned font family the website serves.
+ *
+ * Email clients cannot self-host or preload web fonts reliably:
+ *   - Outlook strips @font-face
+ *   - Gmail rewrites font declarations
+ *   - Apple Mail honours them inconsistently across iOS/macOS
+ *
+ * So the stacks below lead with our brand families (Inter, Source
+ * Serif 4) for clients that *can* fetch them, then drop into the
+ * widest-available system fallback. Body always uses sans for legibility.
+ * If you change Inter / Source Serif 4 in @henryco/ui/brand-typography,
+ * change them here too.
+ */
+export const HENRYCO_EMAIL_FONT_STACK =
+  "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+
+export const HENRYCO_EMAIL_SERIF_STACK =
+  "'Source Serif 4', Georgia, Cambria, 'Times New Roman', serif";
+
+/**
  * HenryCo dark-mode-safe email layout primitives.
  *
  * Why this exists: Gmail mobile / Apple Mail dark mode aggressively
@@ -246,7 +271,7 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
     <meta name="supported-color-schemes" content="dark light" />
     <title>${escapeHtml(layout.subject)}</title>
   </head>
-  <body style="margin:0; padding:0; background-color:${t.outerBg}; color:${t.bodyText}; font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;">
+  <body style="margin:0; padding:0; background-color:${t.outerBg}; color:${t.bodyText}; font-family:${HENRYCO_EMAIL_FONT_STACK};">
     <span style="display:none; visibility:hidden; opacity:0; max-height:0; max-width:0; overflow:hidden; mso-hide:all;">${escapeHtml(layout.intro)}</span>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${t.outerBg}; padding:32px 12px;">
       <tr>

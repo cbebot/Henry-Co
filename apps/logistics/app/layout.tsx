@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Manrope } from "next/font/google";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { henrycoFontVariables } from "@henryco/ui/brand-typography";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
@@ -29,12 +29,6 @@ function logisticsMetadataBase(): URL {
     return new URL("https://logistics.henrycogroup.com");
   }
 }
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   ...createDivisionMetadata("logistics", {
@@ -77,7 +71,7 @@ export default async function RootLayout({
   );
 
   return (
-    <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className={henrycoFontVariables} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>

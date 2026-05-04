@@ -104,7 +104,7 @@ function renderEmail(layout: EmailLayout) {
           }
         </style>
       </head>
-      <body style="margin:0; padding:0; background:#eef7f3; font-family:Manrope,'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
+      <body style="margin:0; padding:0; background:#eef7f3; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:28px 12px;">
           <tr>
             <td align="center">

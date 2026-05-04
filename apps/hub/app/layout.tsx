@@ -9,6 +9,7 @@ import {
   ThirdPartyRuntimeProviders,
 } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
+import { henrycoFontVariables } from "@henryco/ui/brand-typography";
 import { COMPANY, createDivisionMetadata } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
@@ -36,7 +37,7 @@ export default async function RootLayout({
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html lang={lang} dir={dir} suppressHydrationWarning className={henrycoFontVariables}>
       <body className="min-h-screen antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>

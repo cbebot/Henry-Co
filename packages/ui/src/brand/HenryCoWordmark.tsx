@@ -5,9 +5,9 @@ import { cn } from "../cn";
  * HenryCoWordmark — the canonical "Henry & Co." set in a refined serif.
  *
  * Design notes (so future iterations stay coherent):
- *   - "Henry" + "Co." in serif (Newsreader / Fraunces / system serif fallback)
- *     at 500 weight. The serif voice lands "heritage and considered" without
- *     being decorative.
+ *   - "Henry" + "Co." in serif (Source Serif 4 / system serif fallback) at 500
+ *     weight. The serif voice lands "heritage and considered" without being
+ *     decorative.
  *   - The ampersand is its own micro-statement: italic, slightly smaller,
  *     and lifted to a higher x-height baseline so it reads as a connector
  *     rather than a glyph in line.
@@ -27,21 +27,27 @@ export type HenryCoWordmarkProps = Omit<
   variant?: "full" | "compact";
   /** Render height in pixels. Width is auto-derived from the viewBox. */
   height?: number;
-  /** Sets the underlying font stack — defaults to `"Newsreader"` so the
-   * mark looks at home in the jobs / care / property contexts. Override
-   * to `"Fraunces"` for marketplace, or fall back to system serif. */
+  /** Sets the underlying font stack — defaults to the canonical brand
+   * serif (`var(--hc-font-serif)` → Source Serif 4) so the mark stays
+   * unified across every division. Override only when a host surface
+   * needs a deliberately different voice. */
   fontFamily?: string;
   /** Optional accessible label. Defaults to "Henry & Co." */
   label?: string;
 };
 
-const FALLBACK_SERIF =
-  '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif';
+/** Brand serif stack used as the SVG `font-family`. We pass the
+ * canonical `--hc-font-serif` chain (defined in
+ * `packages/ui/src/styles/globals.css`) so the wordmark renders in
+ * Source Serif 4 wherever the shared stylesheet is loaded, and falls
+ * back to a long system-serif chain elsewhere. */
+const BRAND_SERIF_STACK =
+  'var(--hc-font-serif), "Source Serif 4", ui-serif, Georgia, Cambria, "Times New Roman", serif';
 
 export function HenryCoWordmark({
   variant = "full",
   height = 28,
-  fontFamily = "Newsreader",
+  fontFamily,
   label = "Henry & Co.",
   className,
   style,
@@ -49,7 +55,7 @@ export function HenryCoWordmark({
   "aria-label": ariaLabel,
   ...rest
 }: HenryCoWordmarkProps) {
-  const stack = `"${fontFamily}", ${FALLBACK_SERIF}`;
+  const stack = fontFamily ? `"${fontFamily}", ${BRAND_SERIF_STACK}` : BRAND_SERIF_STACK;
   const accessibleLabel = ariaLabel ?? label;
 
   // Width tuned per variant to give a snug bounding box without clipping

@@ -84,8 +84,7 @@ export function CareMonogram({
         fill="currentColor"
         opacity={0.84}
         style={{
-          fontFamily:
-            '"Newsreader", "Iowan Old Style", "Palatino Linotype", serif',
+          fontFamily: "var(--hc-font-serif)",
           fontFeatureSettings: '"smcp" 1, "kern" 1',
           fontVariant: "small-caps",
         }}

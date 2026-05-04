@@ -87,7 +87,7 @@ export function HenryCoMonogram({
         opacity={0.78}
         style={{
           fontFamily:
-            '"Newsreader", "Iowan Old Style", "Palatino Linotype", serif',
+            'var(--hc-font-serif), "Source Serif 4", ui-serif, Georgia, Cambria, "Times New Roman", serif',
           fontFeatureSettings: '"smcp" 1, "kern" 1',
           fontVariant: "small-caps",
         }}

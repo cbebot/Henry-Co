@@ -350,11 +350,11 @@ function renderOwnerReportEmail(input: {
     .join("");
 
   const html = `
-    <div style="background:#f3efe8;padding:32px;font-family:Manrope,Segoe UI,Arial,sans-serif;color:#17120f;">
+    <div style="background:#f3efe8;padding:32px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#17120f;">
       <div style="max-width:760px;margin:0 auto;background:#fffdfa;border:1px solid rgba(23,18,15,0.08);border-radius:32px;overflow:hidden;box-shadow:0 32px 90px rgba(15,15,15,0.12);">
         <div style="padding:30px 34px;background:linear-gradient(135deg,#17120f 0%,#4f4232 55%,#c9a227 100%);color:#fffaf2;">
           <div style="font-size:11px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;opacity:0.78;">HenryCo HQ</div>
-          <h1 style="margin:14px 0 8px;font-family:Newsreader,Georgia,serif;font-size:40px;line-height:1;font-weight:600;">${escapeHtml(title)}</h1>
+          <h1 style="margin:14px 0 8px;font-family:'Source Serif 4',Georgia,Cambria,'Times New Roman',serif;font-size:40px;line-height:1;font-weight:600;">${escapeHtml(title)}</h1>
           <p style="margin:0;font-size:15px;line-height:1.7;max-width:620px;color:rgba(255,250,242,0.9);">${escapeHtml(intro)}</p>
         </div>
 

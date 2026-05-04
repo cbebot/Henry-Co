@@ -3,19 +3,10 @@
 @source "../../../packages/ui/src";
 
 :root {
-  --font-learn-sans:
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-  --font-learn-display:
-    "Fraunces",
-    "Iowan Old Style",
-    Georgia,
-    serif;
+  /* Learn uses the canonical HenryCo brand stack — Inter for sans,
+   * Source Serif 4 for editorial display. */
+  --font-learn-sans: var(--hc-font-sans);
+  --font-learn-display: var(--hc-font-serif);
   --learn-ink: #eef7f4;
   --learn-ink-soft: rgba(238, 247, 244, 0.72);
   --learn-bg: #061311;

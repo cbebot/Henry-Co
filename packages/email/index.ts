@@ -20,6 +20,8 @@ export { resolveSenderIdentity, getNoReplyIdentity } from "./sender-identity";
 
 export {
   HENRYCO_EMAIL_TOKENS,
+  HENRYCO_EMAIL_FONT_STACK,
+  HENRYCO_EMAIL_SERIF_STACK,
   renderHenryCoEmail,
   renderHenryCoEmailText,
   escapeHtml,

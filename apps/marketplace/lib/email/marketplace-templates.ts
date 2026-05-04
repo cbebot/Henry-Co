@@ -87,12 +87,12 @@ export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput) 
 <title>${escapeHtml(input.headline)}</title>
 <style>
   :root { color-scheme: light dark; }
-  body { margin:0; padding:0; background:#f6f1e7; font-family:Manrope,Aptos,'Segoe UI',sans-serif; color:#1d1811; -webkit-font-smoothing:antialiased; }
+  body { margin:0; padding:0; background:#f6f1e7; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; color:#1d1811; -webkit-font-smoothing:antialiased; }
   .wrap { max-width:640px; margin:0 auto; padding:32px 20px 48px; }
   .card { border:1px solid rgba(63,44,18,0.12); background:rgba(255,251,245,0.96); border-radius:28px; overflow:hidden; box-shadow:0 24px 80px rgba(45,28,9,0.12); }
   .hero { padding:28px 28px 12px; background:linear-gradient(135deg,#fffaf2 0%,#f3e3c5 100%); }
   .eyebrow { font-size:11px; letter-spacing:0.28em; text-transform:uppercase; font-weight:800; color:#b2863b; }
-  h1 { margin:18px 0 0; font-family:Fraunces,Georgia,serif; font-size:34px; line-height:1.05; letter-spacing:-0.03em; color:#1d1811; }
+  h1 { margin:18px 0 0; font-family:'Source Serif 4',Georgia,Cambria,'Times New Roman',serif; font-size:34px; line-height:1.05; letter-spacing:-0.03em; color:#1d1811; }
   .lede { margin:18px 0 0; font-size:15px; line-height:1.8; color:#6e6557; }
   .body { padding:0 28px 28px; }
   ul { margin:20px 0; padding-left:20px; color:#6e6557; line-height:1.8; }

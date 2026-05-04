@@ -4,19 +4,11 @@
 
 :root {
   color-scheme: light;
-  --font-jobs-sans:
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-  --font-jobs-display:
-    "Newsreader",
-    "Iowan Old Style",
-    "Palatino Linotype",
-    serif;
+  /* Jobs uses the canonical HenryCo brand stack — Inter for sans,
+   * Source Serif 4 for display. The Jobs-prefixed aliases below let
+   * existing CSS keep its semantic naming. */
+  --font-jobs-sans: var(--hc-font-sans);
+  --font-jobs-display: var(--hc-font-serif);
   --jobs-bg: #eef4f4;
   --jobs-paper: rgba(255, 255, 255, 0.92);
   --jobs-paper-soft: rgba(249, 252, 252, 0.72);

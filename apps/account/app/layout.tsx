@@ -4,6 +4,7 @@ import { LocaleProvider } from "@henryco/i18n/react";
 import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
+import { henrycoFontVariables } from "@henryco/ui/brand-typography";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -41,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(locale) ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
+    <html lang={locale} dir={dir} suppressHydrationWarning className={henrycoFontVariables}>
       <body className="min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased">
         <HenryCoThemeBlocking />
         <ThemeProvider>

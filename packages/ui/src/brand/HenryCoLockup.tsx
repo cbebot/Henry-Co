@@ -14,7 +14,8 @@ export type HenryCoLockupProps = {
   height?: number;
   /** Forwarded to the wordmark — "full" or "compact". */
   wordmarkVariant?: HenryCoWordmarkProps["variant"];
-  /** Override the wordmark font stack — defaults to Newsreader. */
+  /** Override the wordmark font stack — defaults to the canonical
+   * brand serif (Source Serif 4 via `var(--hc-font-serif)`). */
   fontFamily?: string;
   /** Brand accent for the monogram rule. */
   accent?: string;

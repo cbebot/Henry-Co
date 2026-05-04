@@ -33,15 +33,7 @@ body {
     radial-gradient(circle at 12% 84%, rgba(111, 78, 68, 0.16), transparent 28%),
     linear-gradient(180deg, #08050a 0%, #09070c 42%, #120d12 100%);
   color: var(--logistics-ink);
-  font-family:
-    var(--font-manrope),
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
+  font-family: var(--hc-font-sans);
 }
 
 body::before {

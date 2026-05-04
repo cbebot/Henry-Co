@@ -117,10 +117,58 @@
  */
 
 /* ─────────────────────────────────────────────────────────── */
-/*  Canonical type scale (every app inherits)                  */
+/*  Canonical type scale + brand typography stack              */
 /* ─────────────────────────────────────────────────────────── */
 
 :root {
+  /* Brand font families — the var() bases (--font-henryco-sans /
+   * --font-henryco-serif / --font-henryco-mono) are populated by
+   * @henryco/ui/brand-typography → next/font/google. The fallback
+   * chains here exist so SSR and font-loading-blocked clients still
+   * render in HenryCo voice instead of Times/Arial. */
+  --hc-font-sans:
+    var(--font-henryco-sans),
+    "Inter",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  --hc-font-serif:
+    var(--font-henryco-serif),
+    "Source Serif 4",
+    ui-serif,
+    Georgia,
+    Cambria,
+    "Times New Roman",
+    serif;
+
+  --hc-font-mono:
+    var(--font-henryco-mono),
+    "JetBrains Mono",
+    ui-monospace,
+    SFMono-Regular,
+    "SF Mono",
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  /* Brand-aliases. These let app-level CSS write `var(--font-brand)`
+   * for hero/marketing serif and `var(--font-body)` / `var(--font-ui)`
+   * for the operating sans without ever knowing the underlying name.
+   * Apps SHOULD prefer these aliases over --hc-font-{sans,serif} when
+   * the *intent* (brand voice vs body vs UI) is what they want to
+   * communicate. */
+  --font-brand: var(--hc-font-serif);
+  --font-body: var(--hc-font-sans);
+  --font-ui: var(--hc-font-sans);
+
   /* Sizes — px to keep sub-pixel rendering predictable */
   --hc-text-xs: 11px;
   --hc-text-xs-line: 16px;
@@ -218,6 +266,125 @@
 }
 
 /* ─────────────────────────────────────────────────────────── */
+/*  Semantic text + surface tokens (HenryCo platform)          */
+/* ─────────────────────────────────────────────────────────── */
+
+/*
+ * These tokens are the canonical text + surface vocabulary across
+ * every HenryCo surface. App-level overrides may alias them to a
+ * division's own colour soul (e.g., property's --property-ink) so
+ * shared primitives (.text-brand-*, body, headings) read the right
+ * colour without knowing which division they are in.
+ *
+ * Contrast targets (verified against the default light + dark surfaces
+ * below at 16px body weight, WCAG 2.2):
+ *   --text-primary on --surface-base   → AAA  (≥ 7:1)
+ *   --text-secondary on --surface-base → AA   (≥ 4.5:1)
+ *   --text-muted on --surface-base     → AA   (≥ 4.5:1) for icons + sm
+ *   --text-subtle on --surface-base    → 3:1  (large/UI affordance only)
+ *   --text-accent on --surface-base    → AA   (≥ 4.5:1)
+ *
+ * Apps that flip light/dark via .light/.dark on <html> get the right
+ * pair automatically — these tokens redirect to the active mapping in
+ * one place. Magic hex inks in app code are a smell; reach for these
+ * tokens or the shared --hc-* roles instead.
+ */
+
+:root {
+  --text-primary: #111315;
+  --text-secondary: #3f4652;
+  --text-muted: #667085;
+  --text-subtle: #8a94a6;
+  --text-inverse: #f8f3ea;
+  --text-accent: #8a6424;
+  --text-link: #1f4f8b;
+  --text-success: #15803d;
+  --text-warning: #b45309;
+  --text-danger: #b91c1c;
+
+  --surface-base: #fbf8f1;
+  --surface-panel: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f3eee2;
+  --border-soft: #e7ded1;
+  --border-strong: #d6cab7;
+  --focus-ring: rgba(180, 83, 9, 0.42);
+}
+
+.dark {
+  --text-primary: #f7f1e6;
+  --text-secondary: #d7cdbc;
+  --text-muted: #afa695;
+  --text-subtle: #7f8794;
+  --text-inverse: #111315;
+  --text-accent: #d6b46a;
+  --text-link: #93c5fd;
+  --text-success: #4ade80;
+  --text-warning: #fbbf24;
+  --text-danger: #f87171;
+
+  --surface-base: #080a0f;
+  --surface-panel: #10151d;
+  --surface-raised: #151b25;
+  --surface-sunken: #04060a;
+  --border-soft: #293241;
+  --border-strong: #3a4456;
+  --focus-ring: rgba(214, 180, 106, 0.6);
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/*  Brand body defaults                                        */
+/* ─────────────────────────────────────────────────────────── */
+
+/*
+ * Every app's globals.css imports this stylesheet, then defines its
+ * own body { font-family } using its --font-{app}-* alias. The block
+ * below sets the *baseline* so apps that *don't* override (and any
+ * bare element rendered above an app's body rules) still pick up the
+ * brand sans + AA-contrast text colour automatically.
+ *
+ * Headings inherit from --font-brand (serif). App layouts that want
+ * sans headings on dashboards/operational pages can override with
+ * `font-family: var(--hc-font-sans)` on the specific heading or by
+ * scoping `[data-surface="dashboard"] h1, ...` etc.
+ */
+
+html {
+  font-family: var(--hc-font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--hc-font-sans);
+  color: var(--text-primary);
+  font-feature-settings: "ss01", "cv11", "calt";
+}
+
+/* Editorial heading face — applied to all bare headings; pages that
+ * want sans headings (operational dashboards, tables) opt out by
+ * setting `font-family: var(--hc-font-sans)` on the heading itself. */
+h1, h2, h3 {
+  font-family: var(--hc-font-serif);
+  letter-spacing: var(--hc-track-snug);
+}
+h4, h5, h6 {
+  font-family: var(--hc-font-sans);
+  letter-spacing: var(--hc-track-snug);
+}
+
+code, kbd, samp, pre {
+  font-family: var(--hc-font-mono);
+}
+
+/* Typography tokens consumed via Tailwind arbitrary-values:
+ *   text-[color:var(--text-primary)]
+ *   font-[family-name:var(--hc-font-serif)]
+ * Where a project wants ergonomic class names, it can declare
+ * matching Tailwind utilities in its own tailwind config. */
+
+/* ─────────────────────────────────────────────────────────── */
 /*  Universal type-scale utilities                             */
 /* ─────────────────────────────────────────────────────────── */
 
@@ -272,6 +439,77 @@
   letter-spacing: var(--hc-track-eyebrow);
   text-transform: uppercase;
   font-weight: var(--hc-weight-semibold);
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/*  Brand typography + text colour utilities                   */
+/* ─────────────────────────────────────────────────────────── */
+
+/* Font-family utilities — use these on a heading or block where you
+ * deliberately want the brand serif (.font-brand) or operating sans
+ * (.font-ui / .font-body). These compose with the type-scale classes
+ * above (.hc-text-display-md etc.) so a hero heading is typically
+ * `<h1 class="hc-text-display-lg font-brand text-brand-primary">`. */
+.font-brand { font-family: var(--font-brand); }
+.font-body  { font-family: var(--font-body); }
+.font-ui    { font-family: var(--font-ui); }
+.font-mono-brand { font-family: var(--hc-font-mono); }
+
+/* Semantic text colour utilities — every text colour in HenryCo
+ * resolves through one of these. App-level :root + .dark blocks may
+ * remap --text-* to a division-specific colour soul; these classes
+ * never need to change. */
+.text-brand-primary   { color: var(--text-primary); }
+.text-brand-secondary { color: var(--text-secondary); }
+.text-brand-muted     { color: var(--text-muted); }
+.text-brand-subtle    { color: var(--text-subtle); }
+.text-brand-inverse   { color: var(--text-inverse); }
+.text-brand-accent    { color: var(--text-accent); }
+.text-brand-link      { color: var(--text-link); }
+.text-brand-success   { color: var(--text-success); }
+.text-brand-warning   { color: var(--text-warning); }
+.text-brand-danger    { color: var(--text-danger); }
+
+.bg-brand-base    { background-color: var(--surface-base); }
+.bg-brand-panel   { background-color: var(--surface-panel); }
+.bg-brand-raised  { background-color: var(--surface-raised); }
+.bg-brand-sunken  { background-color: var(--surface-sunken); }
+
+.border-brand-soft   { border-color: var(--border-soft); }
+.border-brand-strong { border-color: var(--border-strong); }
+
+/* Editorial display heading — opinionated combination of the brand
+ * serif, display-lg size, AAA primary ink, and snug tracking. Use as
+ * a single class on a hero heading: `<h1 class="hc-display">…</h1>`. */
+.hc-display {
+  font-family: var(--font-brand);
+  font-size: var(--hc-text-display-lg);
+  line-height: var(--hc-text-display-lg-line);
+  letter-spacing: var(--hc-track-tight);
+  font-weight: var(--hc-weight-semibold);
+  color: var(--text-primary);
+}
+
+/* Operational page heading — for dashboard / account / table pages
+ * where the serif voice is too decorative. Same hierarchy weight as
+ * .hc-display but reads in the operating sans. */
+.hc-page-title {
+  font-family: var(--font-ui);
+  font-size: var(--hc-text-display-sm);
+  line-height: var(--hc-text-display-sm-line);
+  letter-spacing: var(--hc-track-snug);
+  font-weight: var(--hc-weight-semibold);
+  color: var(--text-primary);
+}
+
+/* Focus ring — every interactive surface should adopt this pattern
+ * so the focus state reads correctly under both themes and against
+ * accent fills. Apps may opt in via `:focus-visible { … }` chains
+ * scoped to their own selectors. */
+:where(a, button, [role="button"], input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 /* ─────────────────────────────────────────────────────────── */

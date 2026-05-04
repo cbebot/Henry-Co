@@ -1,46 +1,15 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
 import { AssistDock } from "@henryco/ui/support";
+import { henrycoFontVariables } from "@henryco/ui/brand-typography";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 import "./globals.css";
-
-const sans = localFont({
-  src: "./fonts/property-sans-latin.woff2",
-  variable: "--font-property-sans",
-  weight: "200 800",
-  display: "swap",
-  fallback: ["Aptos", "Segoe UI Variable", "Segoe UI", "system-ui", "sans-serif"],
-});
-
-const display = localFont({
-  src: [
-    {
-      path: "./fonts/property-display-latin.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "./fonts/property-display-latin.woff2",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "./fonts/property-display-latin.woff2",
-      weight: "700",
-      style: "normal",
-    },
-  ],
-  variable: "--font-property-display",
-  display: "swap",
-  fallback: ["Times New Roman", "Georgia", "serif"],
-});
 
 const property = getDivisionConfig("property");
 
@@ -59,7 +28,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
+    <html lang={lang} dir={dir} suppressHydrationWarning className={henrycoFontVariables}>
       <body className="min-h-screen bg-[var(--property-bg)] text-[var(--property-ink)] antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>

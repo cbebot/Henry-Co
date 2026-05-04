@@ -20,7 +20,7 @@
   --staff-critical: #f87171;
   --staff-critical-soft: rgba(248, 113, 113, 0.12);
   --staff-sidebar-width: 260px;
-  --staff-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --staff-font-sans: var(--hc-font-sans);
   --staff-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 50px rgba(0, 0, 0, 0.35);
   --staff-shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.45);
   --staff-radius: 1rem;

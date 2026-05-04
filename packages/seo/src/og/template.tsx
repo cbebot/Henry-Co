@@ -24,6 +24,13 @@ export function DefaultOgTemplate({
   const tagline = subtitle ?? division.tagline;
   const topLabel = eyebrow ?? division.sub;
 
+  // OG images render under @vercel/og without `next/font` font loading
+  // (edge runtime ImageResponse). The eyebrow + tagline use the
+  // platform sans (system-ui — same shape as Inter on most servers);
+  // the hero headline uses serif so the brand voice survives even when
+  // we don't ship a custom font into the edge bundle. If we later want
+  // exact Source Serif 4 in OG, we can fetch + pass via the
+  // ImageResponse `fonts` option from each per-app OG route.
   return (
     <div
       style={{
@@ -35,7 +42,7 @@ export function DefaultOgTemplate({
         padding: "72px 88px",
         position: "relative",
         color: "white",
-        fontFamily: "system-ui, sans-serif",
+        fontFamily: "Inter, system-ui, sans-serif",
       }}
     >
       <div
@@ -93,6 +100,7 @@ export function DefaultOgTemplate({
         </span>
         <span
           style={{
+            fontFamily: "'Source Serif 4', Georgia, Cambria, 'Times New Roman', serif",
             fontSize: 84,
             fontWeight: 700,
             lineHeight: 1.05,

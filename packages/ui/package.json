@@ -13,7 +13,8 @@
     "./public-shell": "./src/public-shell/index.ts",
     "./a11y": "./src/a11y/index.ts",
     "./identity": "./src/public/account-identity.ts",
-    "./brand": "./src/brand/index.ts"
+    "./brand": "./src/brand/index.ts",
+    "./brand-typography": "./src/brand-typography/index.ts"
   },
   "peerDependencies": {
     "next": "^16.1.6",

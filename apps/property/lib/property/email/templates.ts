@@ -50,12 +50,12 @@ export function renderPropertyEmailTemplate(input: PropertyTemplateInput) {
 <title>${escapeHtml(input.headline)}</title>
 <style>
   :root { color-scheme: light dark; }
-  body { margin:0; padding:0; background:#f5eee9; font-family:Manrope,Aptos,'Segoe UI',sans-serif; color:#1c1511; -webkit-font-smoothing:antialiased; }
+  body { margin:0; padding:0; background:#f5eee9; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; color:#1c1511; -webkit-font-smoothing:antialiased; }
   .wrap { max-width:640px; margin:0 auto; padding:32px 20px 48px; }
   .card { border:1px solid rgba(74,44,24,0.1); background:rgba(255,251,248,0.96); border-radius:28px; overflow:hidden; box-shadow:0 24px 80px rgba(39,22,12,0.12); }
   .hero { padding:28px 28px 12px; background:linear-gradient(135deg,#fff9f5 0%,#f2d8ca 100%); }
   .eyebrow { font-size:11px; letter-spacing:0.28em; text-transform:uppercase; font-weight:800; color:#b06c3e; }
-  h1 { margin:18px 0 0; font-family:Fraunces,Georgia,serif; font-size:34px; line-height:1.05; letter-spacing:-0.03em; color:#1c1511; }
+  h1 { margin:18px 0 0; font-family:'Source Serif 4',Georgia,Cambria,'Times New Roman',serif; font-size:34px; line-height:1.05; letter-spacing:-0.03em; color:#1c1511; }
   .lede { margin:18px 0 0; font-size:15px; line-height:1.8; color:#6e5d54; }
   .body { padding:0 28px 28px; }
   ul { margin:20px 0; padding-left:20px; color:#6e5d54; line-height:1.8; }

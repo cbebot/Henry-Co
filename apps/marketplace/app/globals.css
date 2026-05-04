@@ -3,19 +3,13 @@
 @source "../../../packages/ui/src";
 
 :root {
-  --font-marketplace-sans:
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-  --font-marketplace-display:
-    "Fraunces",
-    "Iowan Old Style",
-    "Palatino Linotype",
-    serif;
+  /* Marketplace inherits the canonical HenryCo brand stack
+   * (--hc-font-sans / --hc-font-serif from packages/ui globals).
+   * The aliases below let in-package CSS keep using the Marketplace
+   * names; both names resolve to the same Inter/Source Serif 4 pair
+   * loaded once via @henryco/ui/brand-typography. */
+  --font-marketplace-sans: var(--hc-font-sans);
+  --font-marketplace-display: var(--hc-font-serif);
   --market-bg: #090a0e;
   --market-bg-elevated: rgba(19, 18, 18, 0.9);
   --market-bg-soft: rgba(26, 23, 20, 0.74);

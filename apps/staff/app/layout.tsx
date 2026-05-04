@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { ThemeProvider } from "next-themes";
 import { getStaffHqUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
+import { henrycoFontVariables } from "@henryco/ui/brand-typography";
 
 export const metadata: Metadata = {
   title: "Staff HQ — Henry & Co.",
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
+    <html lang="en" dir="ltr" suppressHydrationWarning className={henrycoFontVariables}>
       <body className="min-h-screen antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
           <ScrollToTopOnNavigation />
