@@ -24,7 +24,10 @@ type SellerApplicationPayload = {
   story?: string;
   documents?: Record<string, MarketplaceSellerDocumentRecord | string>;
   agreementAccepted?: boolean;
+  plan?: string | null;
 };
+
+const VALID_SELLER_PLAN_IDS = new Set(["launch", "growth", "scale", "partner"]);
 
 function normalizeDocuments(
   documents: SellerApplicationPayload["documents"]
@@ -129,6 +132,10 @@ export async function POST(request: Request) {
   const progressStep = String(payload.progressStep || "start").trim();
   const documents = normalizeDocuments(payload.documents);
   const agreementAccepted = Boolean(payload.agreementAccepted);
+  const plan =
+    typeof payload.plan === "string" && VALID_SELLER_PLAN_IDS.has(payload.plan)
+      ? payload.plan
+      : null;
   const missingCriticalDocuments = ["founderIdentity", "payoutProof"].filter((key) => !documents[key]?.fileUrl);
 
   if (mode === "submit" && (!storeName || !storeSlug || !legalName)) {
@@ -244,6 +251,7 @@ export async function POST(request: Request) {
       categoryFocus,
       story,
       documents,
+      plan,
     },
     agreement_accepted_at:
       agreementAccepted ? existing?.agreement_accepted_at || new Date().toISOString() : existing?.agreement_accepted_at || null,
