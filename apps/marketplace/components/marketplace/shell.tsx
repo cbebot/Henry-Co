@@ -15,7 +15,7 @@ import {
   WorkspaceMobileNav,
   type WorkspaceNavGroup,
 } from "@/components/marketplace/workspace-mobile-nav";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
@@ -97,9 +97,17 @@ export async function PublicFooter() {
             title={copy.footer.supportTitle}
             links={[
               { href: "/help", label: translateSurfaceLabel(locale, "Help and support") },
-              { href: "/contact", label: translateSurfaceLabel(locale, "Contact") },
+              {
+                href: getHubUrl("/contact"),
+                label: translateSurfaceLabel(locale, "Contact"),
+                external: true,
+              },
               { href: "/trust", label: translateSurfaceLabel(locale, "Trust") },
-              { href: "/preferences", label: translateSurfaceLabel(locale, "Preferences") },
+              {
+                href: getHubUrl("/preferences"),
+                label: translateSurfaceLabel(locale, "Preferences"),
+                external: true,
+              },
             ]}
           />
         </div>
@@ -107,12 +115,22 @@ export async function PublicFooter() {
         <div className="mt-10 flex flex-col items-start gap-3 border-t border-[var(--market-line)] pt-5 text-xs text-[var(--market-muted)]/90 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <span>&copy; {new Date().getFullYear()} HenryCo Marketplace. {translateSurfaceLabel(locale, "All rights reserved")}.</span>
-            <Link href="/privacy" className="transition hover:text-[var(--market-paper-white)]">
+            <a
+              href={getHubUrl("/privacy")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-[var(--market-paper-white)]"
+            >
               {translateSurfaceLabel(locale, "Privacy")}
-            </Link>
-            <Link href="/terms" className="transition hover:text-[var(--market-paper-white)]">
+            </a>
+            <a
+              href={getHubUrl("/terms")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-[var(--market-paper-white)]"
+            >
               {translateSurfaceLabel(locale, "Terms")}
-            </Link>
+            </a>
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
