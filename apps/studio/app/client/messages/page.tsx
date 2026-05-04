@@ -48,9 +48,7 @@ export default async function MessagesCentrePage() {
       <MessagesCentre
         summaries={summaries}
         initialThread={initialThread}
-        hrefForProject={(projectId) =>
-          `/client/projects/${projectId}/messages`
-        }
+        hrefTemplate="/client/projects/{projectId}/messages"
       />
     </main>
   );

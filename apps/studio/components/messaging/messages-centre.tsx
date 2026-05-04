@@ -15,8 +15,10 @@ type Props = {
   summaries: ProjectThreadSummary[];
   /** Pre-loaded initial state for the thread that should open by default. */
   initialThread?: ThreadInitialState | null;
-  /** Build a route link for a project (used for back-button + list links). */
-  hrefForProject?: (projectId: string) => string;
+  /** URL template with {projectId} placeholder. Resolved on the client.
+   * Replaces the previous function-prop pattern which RSC can't pass
+   * across the server/client boundary. */
+  hrefTemplate?: string;
 };
 
 /**
@@ -28,8 +30,11 @@ type Props = {
 export function MessagesCentre({
   summaries,
   initialThread,
-  hrefForProject,
+  hrefTemplate,
 }: Props) {
+  const hrefForProject = hrefTemplate
+    ? (projectId: string) => hrefTemplate.replace("{projectId}", projectId)
+    : undefined;
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     initialThread?.context.projectId || summaries[0]?.projectId || null,
   );

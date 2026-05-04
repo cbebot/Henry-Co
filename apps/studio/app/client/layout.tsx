@@ -41,9 +41,7 @@ export default async function StudioClientLayout({
         <NotificationToast
           viewerId={subscriptions.viewerId}
           projectSubscriptions={subscriptions.projects}
-          hrefForProject={(projectId) =>
-            `/client/projects/${projectId}/messages`
-          }
+          hrefTemplate="/client/projects/{projectId}/messages"
         />
       ) : null}
     </>

@@ -32,8 +32,11 @@ type Props = {
   projectSubscriptions: Array<{ projectId: string; projectTitle: string }>;
   /** Resolve viewer id (don't toast on viewer's own messages). */
   viewerId: string | null;
-  /** Build the destination href for the project messages tab. */
-  hrefForProject: (projectId: string) => string;
+  /** URL template with {projectId} placeholder — resolved on the
+   * client to build the destination href for the project messages
+   * tab. Was previously a function, but functions can't cross the
+   * server/client boundary as RSC props. */
+  hrefTemplate: string;
   /**
    * Pause notifications when truthy — used to suppress toasts while
    * the user is in the middle of a form input or upload. The host
@@ -52,9 +55,13 @@ type Props = {
 export function NotificationToast({
   projectSubscriptions,
   viewerId,
-  hrefForProject,
+  hrefTemplate,
   paused,
 }: Props) {
+  const hrefForProject = useCallback(
+    (projectId: string) => hrefTemplate.replace("{projectId}", projectId),
+    [hrefTemplate],
+  );
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const projectMap = useMemo(() => {
     const map = new Map<string, string>();
