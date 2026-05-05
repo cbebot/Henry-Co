@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
-import { getOrderByNumber } from "@/lib/marketplace/data";
+import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -14,7 +14,8 @@ export default async function AccountOrderDetailPage({
 }) {
   await requireMarketplaceUser("/account/orders");
   const { orderNo } = await params;
-  const order = await getOrderByNumber(orderNo);
+  const { orders } = await getBuyerDashboardData();
+  const order = orders.find((candidate) => candidate.orderNo === orderNo);
   if (!order) notFound();
 
   return (

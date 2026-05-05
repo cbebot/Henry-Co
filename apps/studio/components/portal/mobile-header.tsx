@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Bell, Sparkles } from "lucide-react";
 import type { ClientPortalViewer } from "@/types/portal";
 
@@ -55,9 +56,12 @@ export function PortalMobileHeader({
           aria-label="Profile"
         >
           {viewer.avatarUrl ? (
-            <img
+            <Image
               src={viewer.avatarUrl}
               alt={viewer.fullName || "Profile"}
+              width={36}
+              height={36}
+              unoptimized
               className="h-full w-full rounded-full object-cover"
             />
           ) : (

@@ -606,7 +606,8 @@ export async function createPublicBookingAction(formData: FormData) {
         trackingCode: bookingResult.data.tracking_code,
         amountDue: `₦${quote.total.toLocaleString()}`,
         currencyLabel: settings.payment_currency || "NGN",
-        accountName: settings.payment_account_name || settings.company_account_name || "HenryCo Care",
+        accountName:
+          settings.payment_account_name || settings.company_account_name || "Payment account unavailable",
         accountNumber:
           settings.payment_account_number || settings.company_account_number || "Not available",
         bankName: settings.payment_bank_name || settings.company_bank_name || "Not available",
@@ -936,7 +937,8 @@ export async function createPublicBookingAction(formData: FormData) {
       trackingCode: bookingResult.data.tracking_code,
       amountDue: `₦${quoted_total.toLocaleString()}`,
       currencyLabel: settings.payment_currency || "NGN",
-      accountName: settings.payment_account_name || settings.company_account_name || "HenryCo Care",
+      accountName:
+        settings.payment_account_name || settings.company_account_name || "Payment account unavailable",
       accountNumber:
         settings.payment_account_number || settings.company_account_number || "Not available",
       bankName: settings.payment_bank_name || settings.company_bank_name || "Not available",

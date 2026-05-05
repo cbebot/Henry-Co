@@ -4,10 +4,14 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export type HenryCoAnalyticsProps = {
   gaMeasurementId?: string;
+  vercelAnalytics?: boolean;
 };
 
-export function HenryCoAnalytics({ gaMeasurementId }: HenryCoAnalyticsProps = {}) {
-  const vercelEnabled = process.env.NEXT_PUBLIC_VERCEL_ANALYTICS !== "0";
+export function HenryCoAnalytics({
+  gaMeasurementId,
+  vercelAnalytics,
+}: HenryCoAnalyticsProps = {}) {
+  const vercelEnabled = vercelAnalytics ?? process.env.NEXT_PUBLIC_VERCEL_ANALYTICS !== "0";
   const ga = gaMeasurementId ?? process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const isProduction = process.env.NODE_ENV === "production";
 

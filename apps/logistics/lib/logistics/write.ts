@@ -4,7 +4,11 @@ import { normalizeEmail } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { buildPricingBreakdown, resolveZone } from "@/lib/logistics/pricing";
 import { getLogisticsRateCards, getLogisticsZones } from "@/lib/logistics/data";
-import { appendCustomerActivity, ensureCustomerProfile } from "@/lib/logistics/shared-account";
+import {
+  appendCustomerActivity,
+  ensureCustomerProfile,
+  upsertCustomerInvoice,
+} from "@/lib/logistics/shared-account";
 import type { LogisticsServiceType, LogisticsUrgency } from "@/lib/logistics/types";
 
 function cleanText(value?: unknown) {
@@ -286,6 +290,30 @@ export async function createLogisticsRequest(input: CreateLogisticsRequestInput)
       actionUrl,
       metadata: { trackingCode, serviceType: input.serviceType },
     });
+
+    if (input.mode === "book") {
+      await upsertCustomerInvoice({
+        invoiceNo: trackingCode,
+        userId: input.customerUserId,
+        email: normalizedEmail,
+        subtotal: pricing.total,
+        total: pricing.total,
+        description: `Logistics booking ${trackingCode}`,
+        status: "pending",
+        currency: pricing.currency,
+        paymentMethod: "manual",
+        paymentReference: trackingCode,
+        referenceType: "logistics_shipment",
+        referenceId: shipmentId,
+        lineItems: [
+          {
+            label: `${zone.name} ${input.serviceType.replace(/_/g, " ")}`,
+            amount: pricing.total,
+            currency: pricing.currency,
+          },
+        ],
+      });
+    }
   }
 
   return {

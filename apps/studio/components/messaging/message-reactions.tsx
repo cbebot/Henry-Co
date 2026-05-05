@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Smile } from "lucide-react";
 import { REACTIONS, type ReactionEmoji } from "@/lib/messaging/constants";
 import type { MessageReaction } from "@/lib/messaging/types";
 

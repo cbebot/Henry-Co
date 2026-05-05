@@ -74,12 +74,16 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
     `Tracking code: ${input.trackingCode}`,
     `Lane: ${input.zoneLabel}`,
     `Indicative total: ${input.currency} ${input.amountQuoted.toLocaleString("en-NG")}`,
+    input.mode === "book" ? `Payment reference: ${input.trackingCode}` : null,
+    input.mode === "book"
+      ? "A HenryCo account invoice has been opened for this booking; use the tracking code as the transfer reference if paying by bank transfer."
+      : null,
     `Typical window: ${input.promiseWindowHours[0]}–${input.promiseWindowHours[1]} hours (estimate, not a guarantee).`,
     "",
     `Track your shipment: ${input.trackingUrl}`,
     "",
     "— HenryCo Logistics",
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 
   const email = cleanText(input.senderEmail);
   const templateKey = input.mode === "quote" ? "quote_created" : "booking_created";

@@ -17,6 +17,11 @@ import {
 } from "@/lib/marketplace/governance";
 import { checkReviewAuthenticity, syncVendorTrustScore } from "@/lib/marketplace/trust";
 import { logMarketplaceAction, sendMarketplaceEvent } from "@/lib/marketplace/notifications";
+import {
+  getMarketplaceWalletSnapshot,
+  makeMarketplacePaymentReference,
+  uploadMarketplacePaymentProof,
+} from "@/lib/marketplace/payment";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
@@ -437,7 +442,15 @@ export async function POST(request: Request) {
         }
 
         const orderNo = makeRef("MKT-ORD");
-        const paymentMethod = text(formData, "payment_method") || "bank_transfer";
+        const rawPaymentMethod = text(formData, "payment_method") || "bank_transfer";
+        const paymentMethod = ["wallet_balance", "bank_transfer", "cod"].includes(rawPaymentMethod)
+          ? rawPaymentMethod
+          : "bank_transfer";
+        const isWalletPayment = paymentMethod === "wallet_balance";
+        const isBankTransfer = paymentMethod === "bank_transfer";
+        const paymentReference = text(formData, "payment_reference") || makeMarketplacePaymentReference();
+        const bankReference = text(formData, "bank_reference");
+        const proofFile = formData.get("proof");
         const shippingCity = text(formData, "shipping_city");
         const shippingRegion = text(formData, "shipping_region");
         const buyerName = text(formData, "buyer_name") || viewer.user.fullName || "HenryCo Buyer";
@@ -455,6 +468,34 @@ export async function POST(request: Request) {
         const platformFeeTotal =
           breakdown.lines.find((line) => line.code === "platform_fee")?.amount.amount ?? 0;
         const grandTotal = breakdown.totals.customerTotal.amount;
+        const amountKobo = Math.max(0, Math.round(grandTotal * 100));
+        let walletSnapshot: Awaited<ReturnType<typeof getMarketplaceWalletSnapshot>> | null = null;
+        let proofUpload: Awaited<ReturnType<typeof uploadMarketplacePaymentProof>> | null = null;
+
+        if (isWalletPayment) {
+          walletSnapshot = await getMarketplaceWalletSnapshot(viewer.user.id);
+          if (!walletSnapshot.walletId || !walletSnapshot.isActive) {
+            return redirectTo(request, "/checkout?error=wallet-unavailable");
+          }
+          if (walletSnapshot.availableKobo < amountKobo) {
+            return redirectTo(request, "/checkout?error=insufficient-balance");
+          }
+        }
+
+        if (isBankTransfer) {
+          if (!bankReference) {
+            return redirectTo(request, "/checkout?error=missing-bank-reference");
+          }
+          if (!(proofFile instanceof File) || proofFile.size <= 0) {
+            return redirectTo(request, "/checkout?error=missing-payment-proof");
+          }
+          try {
+            proofUpload = await uploadMarketplacePaymentProof(proofFile, viewer.user.id, orderNo);
+          } catch {
+            return redirectTo(request, "/checkout?error=payment-proof-upload-failed");
+          }
+        }
+
         const { count: priorOrderCount } = await admin
           .from("marketplace_orders")
           .select("id", { count: "exact", head: true })
@@ -464,6 +505,8 @@ export async function POST(request: Request) {
           emailVerified: Boolean(viewer.user.email),
           phoneVerified: Boolean(buyerPhone),
         });
+        const orderStatus = isWalletPayment ? "paid_held" : paymentMethod === "cod" ? "placed" : "awaiting_payment";
+        const paymentStatus = isWalletPayment ? "verified" : isBankTransfer ? "receipt_submitted" : "pending";
 
         const { data: createdOrder, error: orderError } = await admin
           .from("marketplace_orders")
@@ -471,8 +514,8 @@ export async function POST(request: Request) {
             order_no: orderNo,
             user_id: viewer.user.id,
             normalized_email: normalizeEmail(viewer.user.email),
-            status: paymentMethod === "cod" ? "placed" : "awaiting_payment",
-            payment_status: "pending",
+            status: orderStatus,
+            payment_status: paymentStatus,
             payment_method: paymentMethod,
             currency: "NGN",
             subtotal,
@@ -488,7 +531,11 @@ export async function POST(request: Request) {
             shipping_region: shippingRegion,
             timeline: [
               "Order placed",
-              paymentMethod === "cod" ? "Awaiting vendor acceptance" : "Awaiting payment verification",
+              isWalletPayment
+                ? "Paid from HenryCo wallet balance"
+                : paymentMethod === "cod"
+                  ? "Awaiting vendor acceptance"
+                  : "Payment proof submitted for finance verification",
               "HenryCo will hold seller funds in escrow until fulfillment and trust checks are complete.",
             ],
           } as never)
@@ -554,8 +601,12 @@ export async function POST(request: Request) {
               vendor_id: vendor?.id ?? null,
               owner_type: vendor?.ownerType ?? "company",
               fulfillment_status: "awaiting_acceptance",
-              payment_status: "pending",
-              payout_status: vendor?.ownerType === "vendor" ? "awaiting_payment" : "paid",
+              payment_status: paymentStatus,
+              payout_status: isWalletPayment
+                ? "paid_held"
+                : vendor?.ownerType === "vendor"
+                  ? "awaiting_payment"
+                  : "paid",
               subtotal: groupSubtotal,
               commission_amount: settlement.commissionAmount,
               net_vendor_amount: settlement.netVendorAmount,
@@ -610,14 +661,85 @@ export async function POST(request: Request) {
           });
         }
 
+        let walletTransactionId: string | null = null;
+        if (isWalletPayment && walletSnapshot?.walletId) {
+          const currentBalanceKobo = walletSnapshot.balanceKobo;
+          const nextBalanceKobo = Math.max(0, currentBalanceKobo - amountKobo);
+          const { data: walletUpdateRow, error: walletUpdateError } = await admin
+            .from("customer_wallets")
+            .update({ balance_kobo: nextBalanceKobo, updated_at: new Date().toISOString() } as never)
+            .eq("user_id", viewer.user.id)
+            .eq("balance_kobo", currentBalanceKobo)
+            .select("id")
+            .maybeSingle();
+
+          if (walletUpdateError || !walletUpdateRow?.id) {
+            await admin
+              .from("marketplace_orders")
+              .update({ status: "awaiting_payment", payment_status: "pending" } as never)
+              .eq("id", orderId);
+            await admin
+              .from("marketplace_order_groups")
+              .update({ payment_status: "pending", payout_status: "awaiting_payment" } as never)
+              .eq("order_id", orderId);
+            return redirectTo(request, "/checkout?error=wallet-changed");
+          }
+
+          const debitReference = `marketplace-wallet-${orderNo}`;
+          const { data: debitRow, error: debitError } = await admin
+            .from("customer_wallet_transactions")
+            .insert({
+              wallet_id: walletSnapshot.walletId,
+              user_id: viewer.user.id,
+              type: "debit",
+              amount_kobo: amountKobo,
+              balance_after_kobo: nextBalanceKobo,
+              description: `Marketplace order: ${orderNo}`,
+              status: "completed",
+              reference_type: "marketplace_order",
+              reference_id: orderId,
+              metadata: {
+                source: "marketplace_checkout",
+                order_no: orderNo,
+                payment_reference: paymentReference,
+                debit_reference: debitReference,
+                currency: "NGN",
+              },
+            } as never)
+            .select("id")
+            .maybeSingle();
+
+          if (debitError || !debitRow?.id) throw debitError ?? new Error("Wallet debit log failed.");
+          walletTransactionId = String(debitRow.id);
+        }
+
         await admin.from("marketplace_payment_records").insert({
           order_id: orderId,
           order_no: orderNo,
-          provider: paymentMethod === "cod" ? "cod" : "manual",
+          provider: isWalletPayment ? "wallet" : paymentMethod === "cod" ? "cod" : "manual",
           method: paymentMethod,
-          status: "pending",
-          reference: makeRef("MKT-PMT"),
+          status: paymentStatus,
+          reference: paymentReference,
           amount: grandTotal,
+          bank_reference: bankReference || null,
+          proof_url: proofUpload?.secureUrl ?? null,
+          proof_public_id: proofUpload?.publicId ?? null,
+          proof_name: proofFile instanceof File && proofFile.size > 0 ? proofFile.name : null,
+          proof_uploaded_at: proofUpload ? new Date().toISOString() : null,
+          submitted_at: isBankTransfer || isWalletPayment ? new Date().toISOString() : null,
+          verified_at: isWalletPayment ? new Date().toISOString() : null,
+          wallet_transaction_id: walletTransactionId,
+          evidence_note: isWalletPayment
+            ? `Paid from HenryCo wallet balance with reference ${paymentReference}.`
+            : isBankTransfer
+              ? `Bank reference: ${bankReference}. Proof uploaded at checkout.`
+              : null,
+          metadata: {
+            checkout_source: "marketplace_checkout",
+            payment_reference: paymentReference,
+            bank_reference: bankReference || null,
+            proof_name: proofFile instanceof File && proofFile.size > 0 ? proofFile.name : null,
+          },
         } as never);
 
         await writeMarketplaceEvent(admin, {
@@ -631,6 +753,10 @@ export async function POST(request: Request) {
           payload: {
             orderNo,
             paymentMethod,
+            paymentReference,
+            bankReference: bankReference || null,
+            proofUploaded: Boolean(proofUpload),
+            walletTransactionId,
             subtotal,
             shippingTotal,
             grandTotal,
@@ -657,11 +783,15 @@ export async function POST(request: Request) {
           payload: {
             orderNo,
             statusLabel:
-              paymentMethod === "cod" ? "awaiting vendor acceptance" : "awaiting payment verification",
+              isWalletPayment
+                ? "paid from wallet and held in escrow"
+                : paymentMethod === "cod"
+                  ? "awaiting vendor acceptance"
+                  : "payment proof submitted for verification",
           },
         });
 
-        if (paymentMethod !== "cod") {
+        if (isBankTransfer) {
           await sendMarketplaceEvent({
             event: "payment_reminder",
             userId: viewer.user.id,
@@ -674,7 +804,7 @@ export async function POST(request: Request) {
             entityId: orderId,
             payload: {
               orderNo,
-              statusLabel: "waiting for transfer proof",
+              statusLabel: "payment proof submitted for finance review",
             },
           });
         }
@@ -685,6 +815,7 @@ export async function POST(request: Request) {
         }
         revalidatePath("/cart");
         revalidatePath("/account/orders");
+        revalidatePath("/account/payments");
         return response;
       }
 
@@ -1619,6 +1750,7 @@ export async function POST(request: Request) {
 
         revalidatePath("/finance");
         revalidatePath(`/track/${orderNo}`);
+        revalidatePath("/account/payments");
         return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}verified=1`);
       }
 

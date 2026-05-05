@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   BriefcaseBusiness,
   Crown,
@@ -115,12 +116,13 @@ function PersonAvatar({
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
   return cleanSrc && failedSrc !== cleanSrc ? (
-    <img
+    <Image
       src={cleanSrc}
       alt={person.full_name}
+      width={96}
+      height={96}
+      unoptimized
       className={`${sizeClassName} rounded-3xl border border-white/12 object-cover shadow-[0_14px_36px_rgba(0,0,0,0.28)]`}
-      loading="lazy"
-      decoding="async"
       onLoad={() => setFailedSrc(null)}
       onError={() => setFailedSrc(cleanSrc)}
     />

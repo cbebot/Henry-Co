@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LogOut, Sparkles } from "lucide-react";
 import { isNavActive, portalNavItems, type PortalNavItem } from "@/lib/portal/navigation";
@@ -78,11 +79,12 @@ export function PortalSidebar({
       <div className="mt-auto rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)] p-3.5">
         <div className="flex items-center gap-3">
           {viewer.avatarUrl ? (
-            <img
+            <Image
               src={viewer.avatarUrl}
               alt={viewer.fullName || "Profile"}
               width={40}
               height={40}
+              unoptimized
               className="h-10 w-10 rounded-full border border-[var(--studio-line-strong)] object-cover"
             />
           ) : (

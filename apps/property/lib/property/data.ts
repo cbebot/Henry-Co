@@ -185,10 +185,10 @@ export async function getOwnerWorkspaceData() {
 /** Synthetic Codex/auditor seed names that must never reach an agent
  * surface. Match the format `Codex Prospect 1775204389762` (any case,
  * numeric tail) plus the bare "Codex Prospect" label. CHROME-01A. */
-const SYNTHETIC_PROSPECT_NAME = /^codex\s+prospect(\s+\d+)?$/i;
+const PROPERTY_QA_TITLE_PATTERN = /^codex\s+prospect(\s+\d+)?$/i;
 
 function isSyntheticProspect(name?: string | null) {
-  return SYNTHETIC_PROSPECT_NAME.test(String(name || "").trim());
+  return PROPERTY_QA_TITLE_PATTERN.test(String(name || "").trim());
 }
 
 export async function getAgentWorkspaceData() {
