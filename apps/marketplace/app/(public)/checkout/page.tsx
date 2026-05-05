@@ -8,6 +8,11 @@ import { EmptyState, PageIntro } from "@/components/marketplace/shell";
 import { CheckoutExperience } from "@/components/marketplace/checkout-experience";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { getCartPreview, getMarketplaceShellState } from "@/lib/marketplace/data";
+import {
+  getMarketplacePaymentRail,
+  getMarketplaceWalletSnapshot,
+  makeMarketplacePaymentReference,
+} from "@/lib/marketplace/payment";
 import { getMarketplaceAddresses } from "@/lib/marketplace/addresses";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -95,7 +100,11 @@ export default async function CheckoutPage() {
     );
   }
 
-  const addresses = await getMarketplaceAddresses(viewer.user.id);
+  const [addresses, paymentRail, wallet] = await Promise.all([
+    getMarketplaceAddresses(viewer.user.id),
+    getMarketplacePaymentRail(),
+    getMarketplaceWalletSnapshot(viewer.user.id),
+  ]);
 
   // V2-CART-01 — record recovery state + engagement signal so the user can
   // resume from any device / surface. Best-effort; never blocks the page.
@@ -132,6 +141,9 @@ export default async function CheckoutPage() {
       cart={shell.cart}
       cartToken={cart.token ?? null}
       addresses={addresses}
+      paymentRail={paymentRail}
+      wallet={wallet}
+      paymentReference={makeMarketplacePaymentReference()}
       buyer={{
         fullName: viewer.user.fullName ?? null,
         email: viewer.user.email ?? null,

@@ -67,6 +67,67 @@ export default async function TrackOrderPage({
         </div>
       </section>
 
+      {order.paymentRecord ? (
+        <section className="market-paper rounded-[2rem] p-6 sm:p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
+                Payment record
+              </p>
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
+                {order.paymentRecord.reference}
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
+                {order.paymentRecord.method === "wallet_balance"
+                  ? "Wallet balance was debited and the order is held in escrow for fulfillment."
+                  : order.paymentRecord.proofUrl
+                    ? "Transfer proof is attached for HenryCo finance review."
+                    : "Payment is waiting for finance evidence or delivery reconciliation."}
+              </p>
+            </div>
+            <dl className="grid gap-3 text-sm sm:grid-cols-3 lg:min-w-[520px]">
+              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                  Method
+                </dt>
+                <dd className="mt-1 font-semibold capitalize text-[var(--market-ink)]">
+                  {order.paymentRecord.method.replace(/_/g, " ")}
+                </dd>
+              </div>
+              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                  Status
+                </dt>
+                <dd className="mt-1 font-semibold capitalize text-[var(--market-ink)]">
+                  {order.paymentRecord.status.replace(/_/g, " ")}
+                </dd>
+              </div>
+              <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
+                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                  Proof
+                </dt>
+                <dd className="mt-1 font-semibold text-[var(--market-ink)]">
+                  {order.paymentRecord.proofUrl ? (
+                    <a
+                      href={order.paymentRecord.proofUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[var(--market-brass)]"
+                    >
+                      {order.paymentRecord.proofName || "View proof"}
+                    </a>
+                  ) : order.paymentRecord.walletTransactionId ? (
+                    "Wallet debit"
+                  ) : (
+                    "Pending"
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+      ) : null}
+
       <section className="grid gap-12 lg:grid-cols-[0.95fr,1.05fr] lg:divide-x lg:divide-[var(--market-line)]">
         <div>
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">Timeline</p>

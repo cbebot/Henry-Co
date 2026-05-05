@@ -5,13 +5,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  AlertCircle,
   Banknote,
   Bookmark,
   Check,
   ChevronLeft,
   ChevronRight,
+  Copy,
   Lock,
   Truck,
+  UploadCloud,
   Wallet,
 } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
@@ -41,6 +44,13 @@ const STEPS: Array<{ id: CheckoutStep; label: string; description: string }> = [
 
 const PAYMENT_METHODS = [
   {
+    id: "wallet_balance",
+    label: "HenryCo balance",
+    description:
+      "Use cleared HenryCo wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
+    icon: Wallet,
+  },
+  {
     id: "bank_transfer",
     label: "Bank transfer",
     description:
@@ -57,6 +67,28 @@ const PAYMENT_METHODS = [
 ] as const;
 
 type PaymentMethodId = (typeof PAYMENT_METHODS)[number]["id"];
+
+type PaymentRailShape = {
+  bankName: string | null;
+  accountName: string | null;
+  accountNumber: string | null;
+  currency: string;
+  instructions: string;
+  supportEmail: string | null;
+  supportWhatsApp: string | null;
+  ready: boolean;
+  source: string;
+};
+
+type WalletShape = {
+  walletId: string | null;
+  balanceKobo: number;
+  pendingWithdrawalKobo: number;
+  availableKobo: number;
+  currency: string;
+  isActive: boolean;
+  issue: string | null;
+};
 
 type CartShape = {
   count: number;
@@ -80,11 +112,17 @@ export function CheckoutExperience({
   cart,
   cartToken,
   addresses,
+  paymentRail,
+  wallet,
+  paymentReference,
   buyer,
 }: {
   cart: CartShape;
   cartToken: string | null;
   addresses: UserAddressRecord[];
+  paymentRail: PaymentRailShape;
+  wallet: WalletShape;
+  paymentReference: string;
   buyer: { fullName: string | null; email: string | null };
 }) {
   const { moveCartItemToSaved, pendingSavedItemIds } = useMarketplaceCart();
@@ -107,7 +145,17 @@ export function CheckoutExperience({
   });
   const [usingOneShot, setUsingOneShot] = useState<boolean>(addresses.length === 0);
   const [phoneOverride, setPhoneOverride] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>("bank_transfer");
+  const subtotal = cart.subtotal;
+  const shipping = subtotal > 350000 ? 0 : 18000;
+  const total = subtotal + shipping;
+  const currency = cart.items[0]?.currency || "NGN";
+  const totalKobo = Math.max(0, Math.round(total * 100));
+  const walletCanPay = wallet.isActive && Boolean(wallet.walletId) && wallet.availableKobo >= totalKobo;
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(
+    walletCanPay ? "wallet_balance" : "bank_transfer"
+  );
+  const [bankReference, setBankReference] = useState("");
+  const [proofName, setProofName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [agreed, setAgreed] = useState(true);
 
@@ -121,6 +169,7 @@ export function CheckoutExperience({
         const parsed = JSON.parse(draft) as {
           step?: CheckoutStep;
           paymentMethod?: PaymentMethodId;
+          bankReference?: string;
           phoneOverride?: string;
           oneShot?: typeof oneShot;
           usingOneShot?: boolean;
@@ -128,6 +177,7 @@ export function CheckoutExperience({
         };
         if (parsed.step) setStep(parsed.step);
         if (parsed.paymentMethod) setPaymentMethod(parsed.paymentMethod);
+        if (typeof parsed.bankReference === "string") setBankReference(parsed.bankReference);
         if (typeof parsed.phoneOverride === "string") setPhoneOverride(parsed.phoneOverride);
         if (parsed.oneShot) setOneShot(parsed.oneShot);
         if (typeof parsed.usingOneShot === "boolean") setUsingOneShot(parsed.usingOneShot);
@@ -148,6 +198,7 @@ export function CheckoutExperience({
         JSON.stringify({
           step,
           paymentMethod,
+          bankReference,
           phoneOverride,
           oneShot,
           usingOneShot,
@@ -157,17 +208,28 @@ export function CheckoutExperience({
     } catch {
       // ignore quota
     }
-  }, [step, paymentMethod, phoneOverride, oneShot, usingOneShot, selectedAddressId]);
+  }, [step, paymentMethod, bankReference, phoneOverride, oneShot, usingOneShot, selectedAddressId]);
+
+  useEffect(() => {
+    if (paymentMethod === "wallet_balance" && !walletCanPay) {
+      setPaymentMethod("bank_transfer");
+    }
+    if (paymentMethod === "bank_transfer" && !paymentRail.ready && walletCanPay) {
+      setPaymentMethod("wallet_balance");
+    }
+  }, [paymentMethod, paymentRail.ready, walletCanPay]);
 
   const selectedAddress = useMemo(
     () => addresses.find((a) => a.id === selectedAddressId) ?? null,
     [addresses, selectedAddressId]
   );
 
-  const subtotal = cart.subtotal;
-  const shipping = subtotal > 350000 ? 0 : 18000;
-  const total = subtotal + shipping;
-  const currency = cart.items[0]?.currency || "NGN";
+  const paymentReady =
+    paymentMethod === "wallet_balance"
+      ? walletCanPay
+      : paymentMethod === "bank_transfer"
+      ? paymentRail.ready && Boolean(bankReference.trim()) && Boolean(proofName)
+      : true;
 
   const deliveryReady = useMemo(() => {
     if (usingOneShot) {
@@ -184,6 +246,7 @@ export function CheckoutExperience({
 
   function next() {
     if (step === "delivery" && !deliveryReady) return;
+    if (step === "payment" && !paymentReady) return;
     setStep((current) =>
       current === "delivery" ? "payment" : current === "payment" ? "confirm" : current
     );
@@ -204,6 +267,10 @@ export function CheckoutExperience({
   async function placeOrder() {
     if (submitting) return;
     if (!agreed) return;
+    if (!paymentReady) {
+      setStep("payment");
+      return;
+    }
     setSubmitting(true);
     // The form posts traditionally so we keep the existing api/marketplace
     // server contract — submitting=true just locks the UI for the duration.
@@ -246,6 +313,7 @@ export function CheckoutExperience({
           ref={formRef}
           action="/api/marketplace"
           method="POST"
+          encType="multipart/form-data"
           className="space-y-5"
           onSubmit={() => setSubmitting(true)}
         >
@@ -253,6 +321,7 @@ export function CheckoutExperience({
           <input type="hidden" name="return_to" value="/checkout" />
           <input type="hidden" name="cart_token" value={cartToken ?? ""} />
           <input type="hidden" name="payment_method" value={paymentMethod} />
+          <input type="hidden" name="payment_reference" value={paymentReference} />
           <input type="hidden" name="buyer_name" value={buyerName} />
           <input type="hidden" name="buyer_phone" value={phone || ""} />
           <input type="hidden" name="shipping_city" value={shippingCity} />
@@ -281,7 +350,7 @@ export function CheckoutExperience({
             />
           ) : null}
 
-          {step === "payment" ? (
+          <div className={step === "payment" ? "" : "hidden"}>
             <PaymentStep
               method={paymentMethod}
               onSelect={setPaymentMethod}
@@ -289,8 +358,17 @@ export function CheckoutExperience({
               shipping={shipping}
               total={total}
               currency={currency}
+              paymentRail={paymentRail}
+              wallet={wallet}
+              totalKobo={totalKobo}
+              walletCanPay={walletCanPay}
+              paymentReference={paymentReference}
+              bankReference={bankReference}
+              setBankReference={setBankReference}
+              proofName={proofName}
+              setProofName={setProofName}
             />
-          ) : null}
+          </div>
 
           {step === "confirm" ? (
             <ConfirmStep
@@ -300,6 +378,10 @@ export function CheckoutExperience({
               total={total}
               currency={currency}
               paymentMethod={paymentMethod}
+              paymentReference={paymentReference}
+              bankReference={bankReference}
+              proofName={proofName}
+              wallet={wallet}
               selectedAddress={selectedAddress}
               oneShot={usingOneShot ? oneShot : null}
               agreed={agreed}
@@ -326,7 +408,7 @@ export function CheckoutExperience({
               <button
                 type="button"
                 onClick={next}
-                disabled={step === "delivery" && !deliveryReady}
+                disabled={(step === "delivery" && !deliveryReady) || (step === "payment" && !paymentReady)}
                 className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Continue
@@ -338,7 +420,7 @@ export function CheckoutExperience({
               <button
                 type="button"
                 onClick={() => void placeOrder()}
-                disabled={submitting || !agreed}
+                disabled={submitting || !agreed || !paymentReady}
                 aria-busy={submitting}
                 className="market-button-primary inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-70"
               >
@@ -641,6 +723,18 @@ function DeliveryStep({
 function PaymentStep({
   method,
   onSelect,
+  cart,
+  total,
+  currency,
+  paymentRail,
+  wallet,
+  totalKobo,
+  walletCanPay,
+  paymentReference,
+  bankReference,
+  setBankReference,
+  proofName,
+  setProofName,
 }: {
   method: PaymentMethodId;
   onSelect: (id: PaymentMethodId) => void;
@@ -648,10 +742,39 @@ function PaymentStep({
   shipping: number;
   total: number;
   currency: string;
+  paymentRail: PaymentRailShape;
+  wallet: WalletShape;
+  totalKobo: number;
+  walletCanPay: boolean;
+  paymentReference: string;
+  bankReference: string;
+  setBankReference: (value: string) => void;
+  proofName: string;
+  setProofName: (value: string) => void;
 }) {
   // COD eligibility is enforced server-side at /api/marketplace; the UI offers
   // both methods and the server rejects ineligible carts with a clear message.
   const codEligible = true;
+  const [copied, setCopied] = useState<string | null>(null);
+  const available = wallet.availableKobo / 100;
+  const shortfall = Math.max(0, totalKobo - wallet.availableKobo) / 100;
+  const bankDetails: Array<[string, string | null]> = [
+    ["Bank", paymentRail.bankName],
+    ["Account name", paymentRail.accountName],
+    ["Account number", paymentRail.accountNumber],
+  ];
+
+  async function copyValue(label: string, value: string | null) {
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(label);
+      window.setTimeout(() => setCopied(null), 1600);
+    } catch {
+      setCopied(null);
+    }
+  }
+
   return (
     <article className="market-panel rounded-[2rem] p-6 sm:p-8">
       <header className="flex items-center gap-3">
@@ -667,15 +790,30 @@ function PaymentStep({
       </header>
 
       <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-        Pay-on-receipt where eligible, or transfer and upload proof. Either way,
-        the order timeline updates the moment the payment team verifies.
+        Use cleared HenryCo balance first when it covers the total, or transfer the
+        exact amount and upload proof before the order enters finance review.
       </p>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid gap-3 lg:grid-cols-3">
         {PAYMENT_METHODS.map((option) => {
           const Icon = option.icon;
           const active = method === option.id;
-          const disabled = option.id === "cod" && !codEligible;
+          const disabled =
+            (option.id === "wallet_balance" && !walletCanPay) ||
+            (option.id === "bank_transfer" && !paymentRail.ready) ||
+            (option.id === "cod" && !codEligible);
+          const detail =
+            option.id === "wallet_balance"
+              ? walletCanPay
+                ? `${formatCurrency(available, wallet.currency)} available`
+                : shortfall > 0
+                ? `${formatCurrency(shortfall, wallet.currency)} short`
+                : wallet.issue || "Wallet unavailable"
+              : option.id === "bank_transfer"
+              ? paymentRail.ready
+                ? `${paymentRail.bankName} ready`
+                : "Payment rail unavailable"
+              : "Seller acceptance still applies";
           return (
             <label
               key={option.id}
@@ -710,22 +848,179 @@ function PaymentStep({
               <p className="text-sm leading-6 text-[var(--market-muted)]">
                 {option.description}
               </p>
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--market-brass)]">
+                {detail}
+              </span>
             </label>
           );
         })}
       </div>
 
-      <aside className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4 text-sm leading-7 text-[var(--market-muted)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
-          What you&apos;ll see after Place order
-        </p>
-        <ul className="mt-2 space-y-1.5">
-          <li>· Bank transfer details (if you chose transfer)</li>
-          <li>· Payment timeline you can return to anytime</li>
-          <li>· Confirmation in your HenryCo account inbox</li>
-        </ul>
-      </aside>
+      {method === "wallet_balance" ? (
+        <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+          <div className="grid gap-3 text-sm sm:grid-cols-3">
+            <Metric label="Available balance" value={formatCurrency(available, wallet.currency)} />
+            <Metric label="Order total" value={formatCurrency(total, currency)} />
+            <Metric
+              label="After payment"
+              value={formatCurrency(Math.max(0, wallet.availableKobo - totalKobo) / 100, wallet.currency)}
+            />
+          </div>
+          {walletCanPay ? (
+            <p className="mt-4 flex items-start gap-2 text-sm leading-7 text-[var(--market-muted)]">
+              <Check className="mt-1 h-4 w-4 text-[var(--market-brass)]" />
+              Balance payment will debit your wallet and create the order as paid-held for
+              fulfillment and escrow controls.
+            </p>
+          ) : (
+            <div className="mt-4 rounded-[1.2rem] border border-amber-400/30 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="mt-1 h-4 w-4 shrink-0" />
+                <p>
+                  Balance cannot cover this checkout. Fund your wallet or use bank
+                  transfer with proof.
+                </p>
+              </div>
+              <Link
+                href="https://account.henrycogroup.com/wallet/funding"
+                className="mt-3 inline-flex font-semibold text-[var(--market-paper-white)]"
+              >
+                Top up wallet
+              </Link>
+            </div>
+          )}
+        </section>
+      ) : null}
+
+      {method === "bank_transfer" ? (
+        <section className="mt-5 space-y-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
+                Transfer exactly
+              </p>
+              <p className="mt-1 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">
+                {formatCurrency(total, currency)}
+              </p>
+            </div>
+            <div className="rounded-[1.1rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.18)] px-4 py-3 text-sm">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                Payment reference
+              </p>
+              <div className="mt-1 flex items-center gap-2">
+                <code className="text-base font-semibold text-[var(--market-paper-white)]">
+                  {paymentReference}
+                </code>
+                <button
+                  type="button"
+                  onClick={() => void copyValue("reference", paymentReference)}
+                  className="rounded-full border border-[var(--market-line)] p-2 text-[var(--market-brass)]"
+                  aria-label="Copy payment reference"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              {copied === "reference" ? (
+                <p className="mt-1 text-xs text-[var(--market-brass)]">Copied</p>
+              ) : null}
+            </div>
+          </div>
+
+          {paymentRail.ready ? (
+            <dl className="grid gap-3 sm:grid-cols-3">
+              {bankDetails.map(([label, value]) => (
+                <div
+                  key={label}
+                  className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4"
+                >
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                    {label}
+                  </dt>
+                  <dd className="mt-1 flex items-center justify-between gap-2 text-sm font-semibold text-[var(--market-paper-white)]">
+                    <span>{value}</span>
+                    <button
+                      type="button"
+                      onClick={() => void copyValue(label, value)}
+                      className="rounded-full border border-[var(--market-line)] p-1.5 text-[var(--market-brass)]"
+                      aria-label={`Copy ${label}`}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </button>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          ) : (
+            <p className="rounded-[1.2rem] border border-amber-400/30 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100">
+              Bank transfer is temporarily unavailable because payment account settings are not configured.
+            </p>
+          )}
+
+          <p className="text-sm leading-7 text-[var(--market-muted)]">{paymentRail.instructions}</p>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <label className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                Bank/reference number
+              </span>
+              <input
+                name="bank_reference"
+                value={bankReference}
+                onChange={(event) => setBankReference(event.target.value)}
+                className="market-input rounded-[1.2rem] px-4 py-3"
+                placeholder="Enter the bank receipt/reference number"
+                required={method === "bank_transfer"}
+              />
+            </label>
+
+            <label className="group flex cursor-pointer items-center gap-3 rounded-[1.2rem] border border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-brass)]">
+                <UploadCloud className="h-5 w-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                  Upload proof
+                </span>
+                <span className="mt-1 block truncate text-sm font-semibold text-[var(--market-paper-white)]">
+                  {proofName || "PNG, JPG, WebP, or PDF under 10 MB"}
+                </span>
+              </span>
+              <input
+                type="file"
+                name="proof"
+                accept="image/png,image/jpeg,image/jpg,image/webp,application/pdf"
+                className="sr-only"
+                required={method === "bank_transfer"}
+                onChange={(event) => setProofName(event.currentTarget.files?.[0]?.name ?? "")}
+              />
+            </label>
+          </div>
+        </section>
+      ) : null}
+
+      {method === "cod" ? (
+        <aside className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4 text-sm leading-7 text-[var(--market-muted)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
+            Cash on delivery
+          </p>
+          <p className="mt-2">
+            COD keeps payment pending for this {cart.count}-item order until delivery collection is
+            reconciled. Wallet or transfer remains faster when available.
+          </p>
+        </aside>
+      ) : null}
     </article>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+        {label}
+      </p>
+      <p className="mt-1 text-base font-semibold text-[var(--market-paper-white)]">{value}</p>
+    </div>
   );
 }
 
@@ -736,6 +1031,10 @@ function ConfirmStep({
   total,
   currency,
   paymentMethod,
+  paymentReference,
+  bankReference,
+  proofName,
+  wallet,
   selectedAddress,
   oneShot,
   agreed,
@@ -749,6 +1048,10 @@ function ConfirmStep({
   total: number;
   currency: string;
   paymentMethod: PaymentMethodId;
+  paymentReference: string;
+  bankReference: string;
+  proofName: string;
+  wallet: WalletShape;
   selectedAddress: UserAddressRecord | null;
   oneShot: { fullName: string; phone: string; city: string; region: string; line1: string } | null;
   agreed: boolean;
@@ -817,7 +1120,11 @@ function ConfirmStep({
           </p>
           <p className="mt-1 text-sm leading-6 text-[var(--market-muted)]">
             {paymentMethod === "bank_transfer"
-              ? "Transfer instructions appear right after Place order."
+              ? `Reference ${paymentReference}${bankReference ? ` · bank ref ${bankReference}` : ""}${
+                  proofName ? ` · proof ${proofName}` : ""
+                }`
+              : paymentMethod === "wallet_balance"
+              ? `Wallet debit from ${formatCurrency(wallet.availableKobo / 100, wallet.currency)} available balance.`
               : "Pay the rider on delivery — confirmation message after seller acceptance."}
           </p>
         </section>
