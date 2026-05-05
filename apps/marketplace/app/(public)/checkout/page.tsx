@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getAccountUrl } from "@henryco/config";
 import { LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
 import {
   emitEngagementEvent,
@@ -144,6 +145,7 @@ export default async function CheckoutPage() {
       paymentRail={paymentRail}
       wallet={wallet}
       paymentReference={makeMarketplacePaymentReference()}
+      walletTopUpHref={getAccountUrl("/wallet/funding")}
       buyer={{
         fullName: viewer.user.fullName ?? null,
         email: viewer.user.email ?? null,

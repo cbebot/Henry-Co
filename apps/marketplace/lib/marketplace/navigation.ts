@@ -4,6 +4,7 @@ export function accountNav(active: string): NavItem[] {
   return [
     { href: "/account", label: "Overview", active: active === "/account" },
     { href: "/account/orders", label: "Orders", active: active === "/account/orders" },
+    { href: "/account/wallet", label: "Wallet", active: active === "/account/wallet" },
     { href: "/account/payments", label: "Payments", active: active === "/account/payments" },
     { href: "/account/disputes", label: "Disputes", active: active === "/account/disputes" },
     { href: "/account/addresses", label: "Addresses", active: active === "/account/addresses" },
@@ -48,7 +49,12 @@ export function accountNavGroups(active: string) {
     },
     {
       label: "Commerce",
-      items: [byHref("/account/payments"), byHref("/account/disputes"), byHref("/account/addresses")],
+      items: [
+        byHref("/account/wallet"),
+        byHref("/account/payments"),
+        byHref("/account/disputes"),
+        byHref("/account/addresses"),
+      ],
     },
     {
       label: "Help",

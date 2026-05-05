@@ -115,6 +115,7 @@ export function CheckoutExperience({
   paymentRail,
   wallet,
   paymentReference,
+  walletTopUpHref,
   buyer,
 }: {
   cart: CartShape;
@@ -123,6 +124,7 @@ export function CheckoutExperience({
   paymentRail: PaymentRailShape;
   wallet: WalletShape;
   paymentReference: string;
+  walletTopUpHref: string;
   buyer: { fullName: string | null; email: string | null };
 }) {
   const { moveCartItemToSaved, pendingSavedItemIds } = useMarketplaceCart();
@@ -363,6 +365,7 @@ export function CheckoutExperience({
               totalKobo={totalKobo}
               walletCanPay={walletCanPay}
               paymentReference={paymentReference}
+              walletTopUpHref={walletTopUpHref}
               bankReference={bankReference}
               setBankReference={setBankReference}
               proofName={proofName}
@@ -731,6 +734,7 @@ function PaymentStep({
   totalKobo,
   walletCanPay,
   paymentReference,
+  walletTopUpHref,
   bankReference,
   setBankReference,
   proofName,
@@ -747,6 +751,7 @@ function PaymentStep({
   totalKobo: number;
   walletCanPay: boolean;
   paymentReference: string;
+  walletTopUpHref: string;
   bankReference: string;
   setBankReference: (value: string) => void;
   proofName: string;
@@ -882,7 +887,7 @@ function PaymentStep({
                 </p>
               </div>
               <Link
-                href="https://account.henrycogroup.com/wallet/funding"
+                href={walletTopUpHref}
                 className="mt-3 inline-flex font-semibold text-[var(--market-paper-white)]"
               >
                 Top up wallet
