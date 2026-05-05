@@ -39,6 +39,11 @@ export const JOBS_ACTIVITY_EMPLOYER_PROFILE = "jobs_employer_profile";
 export const JOBS_ACTIVITY_JOB_POST = "jobs_post";
 export const JOBS_ACTIVITY_EMPLOYER_MEMBERSHIP = "jobs_employer_membership";
 export const JOBS_ACTIVITY_EMPLOYER_VERIFICATION = "jobs_employer_verification";
+export const JOBS_VERIFICATION_SYNTHETIC_PATTERN = /^codex\s+prospect(\s+\d+)?$/i;
+
+function isJobsVerificationSynthetic(value?: string | null) {
+  return JOBS_VERIFICATION_SYNTHETIC_PATTERN.test(String(value || "").trim());
+}
 
 function asObject(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -1089,6 +1094,7 @@ export async function getEmployerProfiles(options?: { includeUnpublished?: boole
       })
     )
     .filter((value): value is EmployerProfile => Boolean(value))
+    .filter((employer) => !isJobsVerificationSynthetic(employer.name))
     .sort((a, b) => {
       if (b.openRoleCount !== a.openRoleCount) return b.openRoleCount - a.openRoleCount;
       return a.name.localeCompare(b.name);
@@ -1151,6 +1157,11 @@ export async function getJobPosts(options?: {
         applicationCount:
           applicationCountMap.get(asString(asObject(row.metadata).slug || row.reference_id)) ?? 0,
       })
+    )
+    .filter(
+      (job) =>
+        !isJobsVerificationSynthetic(job.title) &&
+        !isJobsVerificationSynthetic(job.employerName)
     )
     .filter((job) => (options?.includeUnpublished ? true : job.isPublished))
     .filter((job) => (options?.employerSlug ? job.employerSlug === options.employerSlug : true))

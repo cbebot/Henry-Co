@@ -21,6 +21,9 @@ apps/super-app/dist
 apps/company-hub/dist-check
 apps/company-hub/dist
 
+# Generated browser SDK workers
+**/public/OneSignalSDKWorker.js
+
 # Log files
 *.err
 *.out
