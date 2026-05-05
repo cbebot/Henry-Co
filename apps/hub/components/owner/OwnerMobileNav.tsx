@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
@@ -84,9 +85,12 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
             {/* User header */}
             <div className="flex items-center gap-3 border-b border-[var(--acct-line)] p-4">
               {user.avatarUrl ? (
-                <img
+                <Image
                   src={user.avatarUrl}
                   alt=""
+                  width={40}
+                  height={40}
+                  unoptimized
                   className="h-10 w-10 rounded-full object-cover ring-2 ring-[var(--owner-accent)]/30"
                 />
               ) : (

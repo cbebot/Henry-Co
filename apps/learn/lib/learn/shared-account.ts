@@ -40,15 +40,6 @@ function toKobo(amount: number) {
   return Math.max(0, Math.round(Number(amount || 0) * 100));
 }
 
-function sharedNotificationCategory(value?: string | null) {
-  const category = cleanText(value).toLowerCase();
-  if (["general", "billing", "order", "support", "studio"].includes(category)) {
-    return category;
-  }
-
-  return "general";
-}
-
 function throwIfError(
   result: { error?: { message?: string } | null },
   context: string

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
+import { OwnerPageHeader } from "@/components/owner/OwnerPrimitives";
 import { getWorkforceCenterData } from "@/lib/owner-data";
 import { OWNER_DIVISION_SLUGS } from "@/lib/owner-workforce-catalog";
 import { divisionLabel } from "@/lib/format";

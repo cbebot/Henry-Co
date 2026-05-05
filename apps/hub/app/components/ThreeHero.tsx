@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 
 export default function ThreeHero({
@@ -53,9 +54,13 @@ export default function ThreeHero({
         <div className="relative">
           <div className="relative aspect-[4/3] overflow-hidden rounded-[30px] border border-white/10 bg-black/25">
             {imageUrl ? (
-              <img
+              <Image
                 src={imageUrl}
                 alt={title}
+                width={900}
+                height={675}
+                priority
+                unoptimized
                 className="h-full w-full object-cover"
               />
             ) : (

@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
@@ -49,17 +50,19 @@ function BrandLogo({
         .join(" ")}
     >
       {cleanSrc && !isFailed ? (
-        <img
+        <Image
           src={cleanSrc}
           alt={alt}
+          width={64}
+          height={64}
+          priority
+          unoptimized
           className={[
             "h-full w-full object-contain",
             imageClassName,
           ]
             .filter(Boolean)
             .join(" ")}
-          loading="eager"
-          decoding="async"
           onLoad={() => setFailedSrc(null)}
           onError={() => {
             if (cleanSrc) {

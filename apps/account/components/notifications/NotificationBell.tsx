@@ -29,6 +29,7 @@ type BellAction = "read" | "unread" | "archive" | "delete";
 
 const LONG_PRESS_MS = 400;
 const BADGE_PULSE_DEBOUNCE_MS = 800;
+const EMPTY_NOTIFICATIONS: BellNotification[] = [];
 
 function SourceMark({
   notification,
@@ -102,7 +103,7 @@ export default function NotificationBell({
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const unreadCount = notificationSignal?.unreadCount ?? 0;
-  const items = notificationSignal?.recentNotifications ?? [];
+  const items = notificationSignal?.recentNotifications ?? EMPTY_NOTIFICATIONS;
   const loading = notificationSignal?.loading ?? false;
   const error = notificationSignal?.error;
   const cardMeta = useCardMeta(items, locale);

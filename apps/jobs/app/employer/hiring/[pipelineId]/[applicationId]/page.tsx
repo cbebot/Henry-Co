@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { requireJobsRoles } from "@/lib/auth";
 import {
@@ -86,9 +87,12 @@ export default async function ApplicationDetailPage({
         >
           <div className="flex items-start gap-4">
             {application.candidateAvatarUrl ? (
-              <img
+              <Image
                 src={application.candidateAvatarUrl}
                 alt=""
+                width={56}
+                height={56}
+                unoptimized
                 className="h-14 w-14 rounded-full object-cover"
               />
             ) : (

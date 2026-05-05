@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { requireStudioUser } from "@/lib/studio/auth";
 import { fetchThreadInitialState } from "@/lib/messaging/queries";

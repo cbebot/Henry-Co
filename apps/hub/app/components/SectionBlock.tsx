@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import type { CompanyPageItem, CompanyPageSection } from "../lib/company-pages";
 
@@ -47,9 +48,12 @@ export default function SectionBlock({
 
       {section.image_url ? (
         <div className="mt-6 overflow-hidden rounded-[28px] border border-white/10">
-          <img
+          <Image
             src={section.image_url}
             alt={section.title || "Section visual"}
+            width={960}
+            height={540}
+            unoptimized
             className="h-[280px] w-full object-cover sm:h-[360px]"
           />
         </div>

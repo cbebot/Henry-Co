@@ -49,6 +49,10 @@ const MIN_WORD_COUNT = 8;
 const DEDUP_WINDOW_SECONDS = 60 * 60 * 24;
 const COPILOT_INTENT = "studio_brief";
 const FALLBACK_MODEL = "studio-local-brief-parser-v1";
+const MODEL_TIMEOUT_MS = 12 * 1000;
+const MODEL_DISABLED_BACKOFF_MS = 15 * 60 * 1000;
+
+let modelDisabledUntil = 0;
 
 const ANONYMOUS_VIEWER: StudioViewer = {
   user: null,
@@ -418,6 +422,32 @@ function parseAssistantJson(text: string): unknown {
   }
 }
 
+async function withModelTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  promise.catch(() => undefined);
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`model_timeout:${timeoutMs}`)), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+function shouldTemporarilyDisableModel(message: string) {
+  const lower = message.toLowerCase();
+  return (
+    lower.includes("credit balance") ||
+    lower.includes("billing") ||
+    lower.includes("authentication") ||
+    lower.includes("invalid x-api-key") ||
+    lower.includes("permission")
+  );
+}
+
 function countWords(value: string): number {
   return value.trim().split(/\s+/).filter(Boolean).length;
 }
@@ -629,6 +659,21 @@ export async function generateStudioBriefDraftAction(
     };
   }
 
+  if (modelDisabledUntil > Date.now()) {
+    const fallback = buildFallbackStructured(description);
+    return {
+      ok: true,
+      structured: fallback,
+      meta: {
+        modelUsed: FALLBACK_MODEL,
+        durationMs: 0,
+        confidence: fallback.confidence,
+        cached: false,
+        callsRemaining: null,
+      },
+    };
+  }
+
   const viewer = await getCopilotViewer();
   const sessionId = await getOrCreateSessionId();
   const userId = viewer.user?.id ?? null;
@@ -741,38 +786,39 @@ export async function generateStudioBriefDraftAction(
   let modelUsed = BRIEF_COPILOT_MODEL;
 
   try {
-    // SDK timeout 25s + no automatic retry. Sits inside a route with
-    // maxDuration=60 so even a slow prompt-cache miss completes before
-    // Vercel reaps the function. A retry on a slow call would push us
-    // past the 60s ceiling, hence maxRetries: 0.
+    // SDK timeout 25s + no automatic retry, wrapped by a shorter Studio
+    // timeout so billing/auth outages fall back before the page feels stuck.
     const client = new Anthropic({
       apiKey,
       timeout: 25 * 1000,
       maxRetries: 0,
     });
 
-    const response = await client.messages.create({
-      model: BRIEF_COPILOT_MODEL,
-      max_tokens: 1024,
-      system: [
-        {
-          type: "text",
-          text: BRIEF_COPILOT_SYSTEM_PROMPT,
-          cache_control: { type: "ephemeral" },
-        },
-      ],
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Brief input from prospective Studio client:\n\n"""\n${description}\n"""\n\nReturn the structured JSON now. JSON object only.`,
-            },
-          ],
-        },
-      ],
-    });
+    const response = await withModelTimeout(
+      client.messages.create({
+        model: BRIEF_COPILOT_MODEL,
+        max_tokens: 1024,
+        system: [
+          {
+            type: "text",
+            text: BRIEF_COPILOT_SYSTEM_PROMPT,
+            cache_control: { type: "ephemeral" },
+          },
+        ],
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Brief input from prospective Studio client:\n\n"""\n${description}\n"""\n\nReturn the structured JSON now. JSON object only.`,
+              },
+            ],
+          },
+        ],
+      }),
+      MODEL_TIMEOUT_MS
+    );
 
     modelUsed = response.model || BRIEF_COPILOT_MODEL;
     const usage = response.usage as
@@ -805,6 +851,9 @@ export async function generateStudioBriefDraftAction(
       name: error instanceof Error ? error.name : "unknown",
       authed: isAuthenticated,
     });
+    if (shouldTemporarilyDisableModel(message)) {
+      modelDisabledUntil = Date.now() + MODEL_DISABLED_BACKOFF_MS;
+    }
     if (hasAdminSupabaseEnv()) {
       const admin = createAdminSupabase();
       await admin

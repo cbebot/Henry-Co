@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   createFallbackCompanyPage,
   normalizeCompanyPage,
@@ -429,12 +430,13 @@ function AssetUploadField({
         <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-3">
           <div className="grid h-14 w-14 place-items-center overflow-hidden rounded-2xl border border-white/12 bg-white/[0.06]">
             {!previewFailed ? (
-              <img
+              <Image
                 src={previewUrl}
                 alt={`${label} preview`}
+                width={56}
+                height={56}
+                unoptimized
                 className="h-full w-full object-contain p-1"
-                loading="lazy"
-                decoding="async"
                 onError={() => setPreviewFailed(true)}
               />
             ) : (
@@ -1622,12 +1624,13 @@ function RemoteImageFrame({
       }`}
     >
       {showImage ? (
-        <img
+        <Image
           src={cleanSrc}
           alt={alt}
+          width={160}
+          height={160}
+          unoptimized
           className={`h-full w-full object-contain ${imageClassName ?? ""}`}
-          loading="lazy"
-          decoding="async"
           onLoad={() => setFailedSrc(null)}
           onError={() => setFailedSrc(cleanSrc)}
         />

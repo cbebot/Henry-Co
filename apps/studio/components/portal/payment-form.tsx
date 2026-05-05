@@ -11,7 +11,7 @@ import {
   Trash2,
   UploadCloud,
 } from "lucide-react";
-import { submitPaymentProofAction, type PaymentProofResult } from "@/lib/portal/actions";
+import { submitPaymentProofAction } from "@/lib/portal/actions";
 
 const ACCEPT_MIME = ["image/png", "image/jpeg", "image/jpg", "image/webp", "application/pdf"];
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -199,15 +199,7 @@ export function PaymentForm({
         {file ? (
           <div className="mt-2 flex items-start gap-3 rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.04)] p-3 sm:p-4">
             <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)] text-[var(--studio-ink)]">
-              {file.type.startsWith("image/") ? (
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt="Selected proof preview"
-                  className="h-10 w-10 rounded-[inherit] object-cover"
-                />
-              ) : (
-                <FileText className="h-5 w-5" />
-              )}
+              <FileText className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="truncate text-[13.5px] font-semibold text-[var(--studio-ink)]">

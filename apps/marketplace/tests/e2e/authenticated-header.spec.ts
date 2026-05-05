@@ -124,7 +124,7 @@ async function buildSharedSessionCookie() {
 }
 
 test("signed-in header exposes account menu shortcuts", async ({ context, page }) => {
-  const { cookies, email } = await buildSharedSessionCookie();
+  const { cookies } = await buildSharedSessionCookie();
   await context.addCookies(cookies);
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
