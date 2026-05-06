@@ -10,6 +10,7 @@ import { StudioSubmitButton } from "@/components/studio/submit-button";
 import { uploadPaymentProofAction } from "@/lib/studio/actions";
 import { getStudioViewer } from "@/lib/studio/auth";
 import { getPaymentWorkspace } from "@/lib/studio/data";
+import { getStudioSnapshot } from "@/lib/studio/store";
 import { formatCurrency } from "@/lib/env";
 import {
   getStudioAccountUrl,
@@ -75,11 +76,18 @@ export default async function StudioPaymentWorkspace({
   const { access } = await searchParams;
   const accessKey = access?.trim() || null;
 
-  const viewer = await getStudioViewer();
+  // V5-CLEAR Bug B: parallelize the viewer + snapshot fetch. getPaymentWorkspace
+  // accepts a pre-fetched snapshot, so the two independent reads can run as a
+  // Promise.all instead of sequentially blocking on viewer first.
+  const [viewer, snapshot] = await Promise.all([
+    getStudioViewer(),
+    getStudioSnapshot(),
+  ]);
   const workspace = await getPaymentWorkspace({
     paymentId,
     accessKey,
     viewer,
+    snapshot,
   });
 
   if (!workspace) {
