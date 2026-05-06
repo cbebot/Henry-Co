@@ -3,13 +3,13 @@ import type { TourMachine } from "./engine";
 export const publicTour: TourMachine = {
   id: "care-public",
   version: 1,
-  name: "Welcome to HenryCo Care",
-  description: "Learn how to use our premium care services",
+  name: "HenryCo Care tour",
+  description: "A short walkthrough of HenryCo Care services and how to book one",
   steps: [
     {
       id: "welcome",
-      title: "Welcome to HenryCo Care",
-      body: "We provide premium garment care, home cleaning, and office cleaning services. Let us show you around so you feel confident using our platform.",
+      title: "About HenryCo Care",
+      body: "Premium garment care, home cleaning, and office cleaning. The tour points to where each service lives so the platform feels familiar from the first booking.",
       placement: "center",
     },
     {
@@ -56,8 +56,8 @@ export const publicTour: TourMachine = {
     },
     {
       id: "complete",
-      title: "You are all set!",
-      body: "You now know everything you need to use HenryCo Care confidently. Book your first service, track your order, and reach out anytime you need help. We are here for you.",
+      title: "Ready to book",
+      body: "The basics are covered. Book the first service, track its progress, and reach support any time a question comes up.",
       placement: "center",
       actionLabel: "Book your first service",
       actionHref: "/book",
@@ -73,8 +73,8 @@ export const ownerTour: TourMachine = {
   steps: [
     {
       id: "welcome",
-      title: "Welcome to your Command Center",
-      body: "This is your operational headquarters. From here you have complete visibility over finance, service performance, staffing, and company health. Let us walk through the key areas.",
+      title: "Owner command center",
+      body: "Operational headquarters with complete visibility over finance, service performance, staffing, and company health. The tour points out the key areas.",
       placement: "center",
     },
     {
@@ -136,7 +136,7 @@ export const managerTour: TourMachine = {
   steps: [
     {
       id: "welcome",
-      title: "Welcome, Operations Manager",
+      title: "Operations manager workspace",
       body: "Your role is daily execution: moving bookings through the pipeline, coordinating staff, managing intake quality, and keeping the operation running smoothly.",
       placement: "center",
     },
@@ -178,7 +178,7 @@ export const supportTour: TourMachine = {
   steps: [
     {
       id: "welcome",
-      title: "Welcome to Support",
+      title: "Support workspace",
       body: "You are the voice of HenryCo Care. Your job is to respond to customers promptly, resolve issues thoroughly, and ensure every interaction builds trust.",
       placement: "center",
     },
@@ -227,7 +227,7 @@ export const riderTour: TourMachine = {
   steps: [
     {
       id: "welcome",
-      title: "Welcome, Rider",
+      title: "Rider workspace",
       body: "Your role is pickup and delivery movement. This dashboard keeps your routes clear and your tasks organized so you can focus on efficient, reliable service.",
       placement: "center",
     },
@@ -269,7 +269,7 @@ export const staffTour: TourMachine = {
   steps: [
     {
       id: "welcome",
-      title: "Welcome to your workspace",
+      title: "Service staff workspace",
       body: "You handle home and office service execution. This dashboard shows your assigned visits, service details, and history so you can deliver consistent, high-quality work.",
       placement: "center",
     },
