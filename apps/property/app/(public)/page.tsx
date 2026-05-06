@@ -204,7 +204,7 @@ export default async function PropertyHomePage() {
               {viewer.user ? (
                 <>
                   <span className="text-[var(--property-ink)]">
-                    Welcome back{viewerFirstName ? `, ${viewerFirstName}` : ""}.
+                    Signed in{viewerFirstName ? ` · ${viewerFirstName}` : ""}.
                   </span>
                   <Link
                     href={getSharedAccountPropertyUrl()}
