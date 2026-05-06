@@ -43,9 +43,9 @@ export function HenryCoThemeBlocking() {
       --site-surface: rgba(255,255,255,0.05);
       --site-surface-strong: rgba(255,255,255,0.08);
       --site-border: rgba(255,255,255,0.10);
-      --site-text: rgba(255,255,255,0.96);
-      --site-text-soft: rgba(255,255,255,0.70);
-      --site-text-muted: rgba(255,255,255,0.52);
+      --site-text: #F5F1E8;
+      --site-text-soft: #C9C2B6;
+      --site-text-muted: #8A857C;
       --site-header-bg: rgba(5,8,22,0.82);
       --site-footer-bg: rgba(0,0,0,0.20);
       --site-card-shadow: 0 24px 100px rgba(0,0,0,0.24);
