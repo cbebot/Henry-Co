@@ -29,6 +29,15 @@ type BaseProps = {
   pending?: boolean;
   pendingLabel?: React.ReactNode;
   spinnerLabel?: string;
+  /**
+   * Success-lock state. When true, the button visually confirms the
+   * commit (check icon + successLabel) and pointer-events go inert so
+   * a second click cannot re-fire the action. Controlled — parent flips
+   * `success` to `false` after the success window closes (typically via
+   * navigation, toast dismiss, or an explicit timeout).
+   */
+  success?: boolean;
+  successLabel?: React.ReactNode;
 };
 
 type ButtonProps = BaseProps &
@@ -67,24 +76,50 @@ export function PublicButton(props: ButtonProps | LinkProps) {
     pending,
     pendingLabel,
     spinnerLabel,
+    success,
+    successLabel,
     disabled,
     ...rest
   } = props as ButtonProps;
 
   return (
     <button
-      className={cn(className, pending && "cursor-wait")}
-      disabled={disabled || pending}
+      className={cn(
+        className,
+        pending && "cursor-wait",
+        success && "pointer-events-none cursor-default"
+      )}
+      disabled={disabled || pending || success}
       data-pending={pending ? "true" : undefined}
+      data-success={success ? "true" : undefined}
+      aria-live={success ? "polite" : undefined}
       {...rest}
     >
-      <ButtonPendingContent
-        pending={Boolean(pending)}
-        pendingLabel={pendingLabel}
-        spinnerLabel={spinnerLabel}
-      >
-        {children}
-      </ButtonPendingContent>
+      {success ? (
+        <span className="inline-flex items-center gap-2">
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="3.5 8.5 6.5 11.5 12.5 5.5" />
+          </svg>
+          {successLabel ?? children}
+        </span>
+      ) : (
+        <ButtonPendingContent
+          pending={Boolean(pending)}
+          pendingLabel={pendingLabel}
+          spinnerLabel={spinnerLabel}
+        >
+          {children}
+        </ButtonPendingContent>
+      )}
     </button>
   );
 }
