@@ -566,22 +566,17 @@ function InlineActionButton({
   );
 }
 
-/**
- * Premium typographic empty state for the popover. Final user-facing
- * copy is owned by V2-COPY-01; the literal strings here are placeholders.
- */
 function PopoverEmptyState({ t }: { t: (text: string) => string }) {
   return (
     <div className="m-2 flex flex-col items-center gap-3 rounded-2xl border border-dashed border-[var(--acct-line)] bg-[var(--acct-bg)] px-6 py-10 text-center">
       <span className="text-[var(--acct-muted)]" aria-hidden>
         <EmptyStateGlyph size={44} />
       </span>
-      {/* PLACEHOLDER COPY — final wording owned by V2-COPY-01 */}
       <p className="acct-display text-base text-[var(--acct-ink)]">
         {t("All caught up.")}
       </p>
       <p className="text-xs leading-6 text-[var(--acct-muted)]">
-        {t("New activity from across HenryCo will arrive here.")}
+        {t("Activity from across HenryCo surfaces here.")}
       </p>
     </div>
   );
