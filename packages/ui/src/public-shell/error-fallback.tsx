@@ -31,11 +31,11 @@ export function HenryCoErrorFallback({
         Something didn&rsquo;t load
       </p>
       <h1 className="mt-3 text-balance text-3xl font-semibold leading-tight tracking-tight text-zinc-950 sm:text-4xl dark:text-white">
-        We hit a snag rendering this page.
+        This page failed to render.
       </h1>
       <p className="mt-4 max-w-xl text-base leading-7 text-zinc-600 dark:text-white/70">
-        Your data is safe. Try again — and if it persists, contact support and
-        share the reference below so we can trace it quickly.
+        Your data is safe. Try again — and if the issue persists, share the
+        reference below with support so it can be traced quickly.
       </p>
       {error.digest ? (
         <p className="mt-3 inline-flex rounded-md border border-zinc-200 bg-zinc-50 px-3 py-1.5 font-mono text-xs text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-white/70">

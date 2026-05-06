@@ -23,8 +23,8 @@ import { cn } from "../lib/cn";
 interface ConsentNoticeProps {
   /**
    * Optional URL where the user can review and update privacy preferences.
-   * When provided, a "Review settings" link is shown alongside "Got it".
-   * When omitted, only the "Got it" dismiss button is shown.
+   * When provided, a "Review settings" link is shown alongside the dismiss button.
+   * When omitted, only the dismiss button is shown.
    */
   preferencesHref?: string;
   locale?: AppLocale;
@@ -36,7 +36,7 @@ const CONSENT_NOTICE_LABELS: Record<
   AppLocale,
   { gotIt: string; reviewSettings: string; privacyNoticeAria: string }
 > = {
-  en: { gotIt: "Got it", reviewSettings: "Review settings", privacyNoticeAria: "Privacy notice" },
+  en: { gotIt: "Continue", reviewSettings: "Review settings", privacyNoticeAria: "Privacy notice" },
   fr: { gotIt: "Compris", reviewSettings: "Vérifier les réglages", privacyNoticeAria: "Avis de confidentialité" },
   es: { gotIt: "Entendido", reviewSettings: "Revisar ajustes", privacyNoticeAria: "Aviso de privacidad" },
   pt: { gotIt: "Entendi", reviewSettings: "Rever ajustes", privacyNoticeAria: "Aviso de privacidade" },

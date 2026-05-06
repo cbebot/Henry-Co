@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
     const message =
       this.props.fallbackMessage ??
-      "Something went wrong. Please try again.";
+      "An unexpected error stopped the request. Try again, or reach support if it continues.";
 
     return (
       <View className="flex-1 items-center justify-center bg-[#0B0B0C] px-6">
@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <View className="mb-4 h-1 w-12 self-center rounded-full bg-[#C9A227]" />
 
           <Text className="mb-2 text-center text-lg font-bold text-white">
-            Oops
+            Something went wrong
           </Text>
 
           <Text className="mb-4 text-center text-sm leading-5 text-[#B8B8C0]">

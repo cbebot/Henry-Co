@@ -43,8 +43,8 @@ export default async function StaffDashboard() {
       <RouteLiveRefresh />
       <StaffPageHeader
         eyebrow="Staff HQ"
-        title={`Welcome back, ${firstName}`}
-        description="Your unified command center for Henry & Co. operations across all divisions."
+        title={firstName && firstName !== "there" ? `${firstName}, here is today` : "Operations overview"}
+        description="Unified command center for Henry & Co. operations across all divisions."
       />
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

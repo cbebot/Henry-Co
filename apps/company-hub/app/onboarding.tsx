@@ -25,9 +25,9 @@ type Slide = {
 const SLIDES: Slide[] = [
   {
     icon: "domain",
-    title: "Welcome to\nHenry & Co.",
+    title: "Henry & Co.\nat a glance",
     description:
-      "Your connected entry point to every Henry & Co. division. Explore services spanning fabric care, technology, commerce, talent, property, education, logistics, and more — all under one roof.",
+      "A single entry point into every Henry & Co. division. Services span fabric care, technology, commerce, talent, property, education, logistics, and more — all under one roof.",
   },
   {
     icon: "view-grid-outline",
