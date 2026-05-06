@@ -234,14 +234,14 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
   switch (event) {
     case "buyer_welcome":
       return {
-        inAppTitle: "Welcome to HenryCo Marketplace",
-        inAppBody: "Your account is ready for premium browsing, tracked orders, and trusted seller discovery.",
+        inAppTitle: "Marketplace account ready",
+        inAppBody: "Browse premium products, track split orders across multiple sellers, and follow verified stores.",
         email: {
           templateKey: event,
           eyebrow: "Buyer onboarding",
           headline: "Your marketplace account is ready.",
           summary:
-            "You can now save products, follow verified stores, track split orders, manage disputes, and move into seller onboarding later from the same HenryCo identity.",
+            "Save products, follow verified stores, track split orders, and manage disputes — and move into seller onboarding later from the same HenryCo identity.",
           bullets: [
             "Track orders and payments from one account",
             "Follow stores and save products for later",
@@ -250,7 +250,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Open your account",
           ctaHref: `${marketplaceBaseUrl}/account`,
         },
-        whatsappText: "HenryCo Marketplace: your account is ready. Browse premium products, track orders, and follow verified stores from one place.",
+        whatsappText: "HenryCo Marketplace: account is ready. Browse premium products, track orders, and follow verified stores from one place.",
         whatsappTemplateEnv: "WHATSAPP_TEMPLATE_ORDER_CONFIRMATION",
         whatsappTemplateValues: ["HenryCo Marketplace", "Your account is ready"],
       };
