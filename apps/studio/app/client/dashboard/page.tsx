@@ -68,11 +68,11 @@ export default async function ClientDashboardPage() {
           {greetingFor(viewer.fullName || viewer.email)}
         </span>
         <h1 className="text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
-          Welcome to your client portal
+          Project workspace
         </h1>
         <p className="max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Everything about your engagement with HenryCo Studio lives here — milestones, deliverables,
-          messages, and payments. We will keep this space updated as the project moves forward.
+          Everything about the engagement with HenryCo Studio sits here — milestones, deliverables,
+          messages, and payments. The space stays current as the project moves forward.
         </p>
       </header>
 
