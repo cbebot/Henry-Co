@@ -2,6 +2,11 @@
 // All templates return plain HTML strings for Resend
 
 import type { AppLocale } from "@henryco/i18n";
+import {
+  HENRYCO_EMAIL_TOKENS,
+  renderHenryCoEmailFooter,
+  renderHenryCoEmailHeader,
+} from "@henryco/email";
 
 const BRAND_COLOR = "#C9A227";
 const BG_COLOR = "#FAFAF8";
@@ -206,26 +211,26 @@ function getEmailCopy(locale: AppLocale) {
   return {
     footerManage: "Manage account",
     footerReason: "You received this because you have an account with HenryCo.",
-    welcomeSubject: "Welcome to HenryCo",
-    welcomeTitle: (name: string) => `Welcome to Henry & Co., ${name || "there"}!`,
-    welcomeIntro: "Your unified HenryCo account is ready. From here you can manage everything across all our services - Care, Marketplace, Studio, and more.",
-    welcomeListIntro: "Here's what you can do:",
+    welcomeSubject: "Your HenryCo account is ready",
+    welcomeTitle: (name: string) => `Your HenryCo account is ready${name ? `, ${name}` : ""}.`,
+    welcomeIntro: "The unified HenryCo account is set up. From here, manage everything across Care, Marketplace, Studio, and more.",
+    welcomeListIntro: "What lives in this account:",
     welcomeList: [
       "Fund your HenryCo Wallet for quick payments",
       "Track orders, bookings, and projects",
       "Manage addresses and payment methods",
       "Get unified support across all services",
     ],
-    welcomeButton: "Go to your dashboard",
+    welcomeButton: "Open the dashboard",
     securitySubject: (event: string) => `Security alert: ${event}`,
     securityTitle: "Security alert",
-    securityIntro: "We detected a security event on your HenryCo account:",
+    securityIntro: "A security event was detected on your HenryCo account:",
     securityEvent: "Event",
-    securityAction: "If this wasn't you, please change your password immediately and contact support.",
+    securityAction: "If this wasn't you, change your password immediately and contact support.",
     securityButton: "Review security",
     walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} added to your wallet`,
     walletTitle: "Wallet funded",
-    walletIntro: (name: string) => `Hi ${name || "there"}, money has been added to your HenryCo Wallet.`,
+    walletIntro: (name: string) => `${name ? `${name}, money` : "Money"} has been added to your HenryCo Wallet.`,
     walletAmount: "Amount added",
     walletBalance: "New balance",
     walletButton: "View wallet",
@@ -235,6 +240,15 @@ function getEmailCopy(locale: AppLocale) {
 function layout(content: string, locale: AppLocale = "en") {
   const copy = getEmailCopy(locale);
   const dir = locale === "ar" ? "rtl" : "ltr";
+  const t = HENRYCO_EMAIL_TOKENS;
+  const brandHeader = renderHenryCoEmailHeader("auth", "dark");
+  const brandFooter = renderHenryCoEmailFooter({
+    purpose: "auth",
+    supportEmail: "accounts@henrycogroup.com",
+    preferencesUrl: "https://account.henrycogroup.com/settings#email-preferences",
+    reasonLine: copy.footerReason,
+  });
+
   return `<!DOCTYPE html>
 <html lang="${locale}" dir="${dir}">
 <head>
@@ -245,51 +259,34 @@ function layout(content: string, locale: AppLocale = "en") {
 <title>HenryCo</title>
 <style>
   :root { color-scheme: light dark; }
-  body { margin: 0; padding: 0; background: ${BG_COLOR}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif; color: ${DARK_TEXT}; -webkit-font-smoothing: antialiased; }
-  .wrapper { max-width: 560px; margin: 0 auto; padding: 48px 20px; }
+  body { margin: 0; padding: 0; background: ${t.outerBg}; font-family: ${t.bodyFont}; color: ${DARK_TEXT}; -webkit-font-smoothing: antialiased; }
+  .wrapper { max-width: 560px; margin: 0 auto; padding: 32px 20px; background: ${BG_COLOR}; }
   .card { background: #FFFFFF; border: 1px solid #ECE8DF; border-radius: 24px; padding: 36px 32px; box-shadow: 0 20px 60px -30px rgba(26,24,20,0.18); }
-  .brand { text-align: center; margin-bottom: 28px; }
-  .brand-logo { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; background: ${BRAND_COLOR}; color: #1A1814; font-weight: 800; font-size: 15px; letter-spacing: 0.02em; border-radius: 14px; box-shadow: 0 10px 32px -10px rgba(201,162,39,0.55); }
-  .brand-name { display: block; margin-top: 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: ${MUTED_TEXT}; }
-  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 10px; color: ${DARK_TEXT}; }
-  p { font-size: 15px; line-height: 1.7; color: #4B4540; margin: 0 0 16px; }
-  .btn { display: inline-block; padding: 13px 28px; background: ${BRAND_COLOR}; color: #1A1814 !important; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.01em; border-radius: 999px; box-shadow: 0 12px 30px -10px rgba(201,162,39,0.45); }
-  .footer { text-align: center; margin-top: 28px; font-size: 12px; line-height: 1.7; color: ${MUTED_TEXT}; }
-  .footer a { color: ${BRAND_COLOR}; text-decoration: none; font-weight: 600; }
-  .attribution { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: ${MUTED_TEXT}; }
-  .attribution::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 999px; background: ${BRAND_COLOR}; }
+  h1 { font-family: ${t.headingFont}; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 12px; color: ${DARK_TEXT}; }
+  p { font-family: ${t.bodyFont}; font-size: 15px; line-height: 1.7; color: #4B4540; margin: 0 0 16px; }
+  .btn { display: inline-block; padding: 13px 28px; background: ${BRAND_COLOR}; color: #1A1814 !important; text-decoration: none; font-family: ${t.bodyFont}; font-weight: 700; font-size: 14px; letter-spacing: 0.01em; border-radius: 999px; box-shadow: 0 12px 30px -10px rgba(201,162,39,0.45); }
   .metric { background: #F5F3EF; border: 1px solid #ECE8DF; border-radius: 14px; padding: 16px 18px; margin: 14px 0; }
-  .metric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: ${MUTED_TEXT}; }
-  .metric-value { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; color: ${DARK_TEXT}; margin-top: 6px; }
-  ul { color: #4B4540; font-size: 15px; line-height: 1.85; padding-left: 22px; margin: 14px 0; }
+  .metric-label { font-family: ${t.bodyFont}; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: ${MUTED_TEXT}; }
+  .metric-value { font-family: ${t.headingFont}; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; color: ${DARK_TEXT}; margin-top: 6px; }
+  ul { font-family: ${t.bodyFont}; color: #4B4540; font-size: 15px; line-height: 1.85; padding-left: 22px; margin: 14px 0; }
 
   @media (prefers-color-scheme: dark) {
-    body { background: #0B0A08 !important; color: #F2EEE4 !important; }
+    .wrapper { background: #0B0A08 !important; }
     .card { background: #141210 !important; border-color: #2A2722 !important; box-shadow: 0 30px 90px rgba(0,0,0,0.6) !important; }
     h1 { color: #F6F1E5 !important; }
     p, ul { color: #BDB4A5 !important; }
     .metric { background: #1C1915 !important; border-color: #2A2722 !important; }
     .metric-label { color: #9B9280 !important; }
     .metric-value { color: #F6F1E5 !important; }
-    .footer, .attribution { color: #9B9280 !important; }
-    .brand-name { color: #9B9280 !important; }
-    .brand-logo { box-shadow: 0 14px 40px -10px rgba(201,162,39,0.35) !important; }
   }
 </style>
 </head>
 <body>
+${brandHeader}
 <div class="wrapper">
-  <div class="brand">
-    <div class="brand-logo">H&amp;Co</div>
-    <span class="brand-name">Henry &amp; Co.</span>
-  </div>
   <div class="card">${content}</div>
-  <div class="footer">
-    <p>Henry &amp; Co. Group &middot; <a href="https://account.henrycogroup.com">${copy.footerManage}</a></p>
-    <p>${copy.footerReason}</p>
-    <div class="attribution">Designed by HenryCo Studio</div>
-  </div>
 </div>
+${brandFooter}
 </body>
 </html>`;
 }
