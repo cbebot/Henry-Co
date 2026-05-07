@@ -368,7 +368,7 @@ export function MarketplaceRuntimeProvider({
         } catch {
           // user can retry from the cart UI
         }
-        await refreshShell(true);
+        await refreshShellRef.current(true);
       }
     };
 

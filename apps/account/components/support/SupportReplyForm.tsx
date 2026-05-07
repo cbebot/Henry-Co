@@ -23,7 +23,7 @@ const ACCOUNT_MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 export default function SupportReplyForm({ threadId }: { threadId: string }) {
   const locale = useHenryCoLocale();
-  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const t = useCallback((text: string) => translateSurfaceLabel(locale, text), [locale]);
   const router = useRouter();
   const [feedback, setFeedback] = useState<{
     type: "error" | "success";

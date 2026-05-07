@@ -232,11 +232,18 @@ export type MarketplaceOrderGroup = {
 export type MarketplacePaymentRecord = {
   id: string;
   orderNo: string;
-  method: "bank_transfer" | "cod";
-  provider: "manual" | "cod";
+  method: "bank_transfer" | "cod" | "wallet_balance";
+  provider: "manual" | "cod" | "wallet";
   status: PaymentStatus;
   amount: number;
   reference: string;
+  bankReference: string | null;
+  proofUrl: string | null;
+  proofName: string | null;
+  proofPublicId: string | null;
+  proofUploadedAt: string | null;
+  walletTransactionId: string | null;
+  submittedAt: string | null;
   verifiedAt: string | null;
 };
 
@@ -258,6 +265,7 @@ export type MarketplaceOrder = {
   timeline: string[];
   groups: MarketplaceOrderGroup[];
   items: MarketplaceOrderItem[];
+  paymentRecord: MarketplacePaymentRecord | null;
 };
 
 export type MarketplaceAddress = {

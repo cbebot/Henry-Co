@@ -49,11 +49,9 @@ type StudioUpsertEvent =
   | "studio_review_upsert"
   | "studio_notification_append";
 
-const STUDIO_BUCKET = "studio-assets";
 const FALLBACK_SECRET = "henryco-studio-secret";
 const STUDIO_STORE_ROUTE = "/studio/store";
 
-let studioBucketEnsured = false;
 const tablePresenceCache = new Map<string, boolean>();
 const tableColumnSupportCache = new Map<string, boolean>();
 
@@ -87,28 +85,6 @@ function sanitizeFileSegment(value: string) {
     .replace(/[^a-z0-9.-]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "") || "file";
-}
-
-async function ensureStudioBucket() {
-  if (!hasAdminSupabaseEnv()) return;
-  if (studioBucketEnsured) return;
-
-  try {
-    const admin = createAdminSupabase();
-    const { data: buckets } = await admin.storage.listBuckets();
-    const exists = (buckets ?? []).some((bucket) => bucket.name === STUDIO_BUCKET);
-
-    if (!exists) {
-      await admin.storage.createBucket(STUDIO_BUCKET, {
-        public: false,
-        fileSizeLimit: "50MB",
-      });
-    }
-
-    studioBucketEnsured = true;
-  } catch {
-    // Keep runtime resilient during first boot or local verification.
-  }
 }
 
 function accessSeed(namespace: "proposal" | "project", id: string) {

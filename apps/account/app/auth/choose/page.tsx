@@ -87,7 +87,7 @@ export default async function ChoosePage({
     (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
     (typeof user.user_metadata?.name === "string" && user.user_metadata.name.trim()) ||
     null;
-  const greeting = fullName ? `Welcome back, ${fullName.split(" ")[0]}.` : "Welcome back.";
+  const greeting = fullName ? `Signed in as ${fullName.split(" ")[0]}.` : "Signed in to HenryCo.";
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-[var(--acct-bg)] px-4 py-10 sm:items-center sm:py-16">

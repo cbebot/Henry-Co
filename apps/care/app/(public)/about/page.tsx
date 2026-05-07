@@ -32,7 +32,7 @@ export default async function AboutPage() {
   ]);
 
   const supportEmail = settings.support_email || care.supportEmail || "care@henrycogroup.com";
-  const supportPhone = settings.support_phone || care.supportPhone || "+234 000 000 0000";
+  const supportPhone = settings.support_phone || care.supportPhone;
   const pickupHours = settings.pickup_hours || "Mon - Sat • 8:00 AM to 7:00 PM";
   const heroTitle = settings.about_title || "Trust. Timing. Service quality.";
   const heroBody =

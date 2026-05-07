@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { getHubUrl } from "@henryco/config";
+import { getDivisionConfig, getHubUrl } from "@henryco/config";
 import type { DivisionPublicConfig } from "@/components/public/CareNavbar";
 import { CareMonogram } from "@/components/brand/CareMonogram";
+
+const careDivision = getDivisionConfig("care");
 
 /**
  * Footer brand mark — always renders CareMonogram. The operator-uploaded
@@ -75,7 +77,7 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
               {division.supportEmail ?? "care@henrycogroup.com"}
             </p>
             <p className="text-zinc-500 dark:text-white/55">
-              {division.supportPhone ?? "+234 000 000 0000"}
+              {division.supportPhone ?? careDivision.supportPhone}
             </p>
           </div>
         </div>

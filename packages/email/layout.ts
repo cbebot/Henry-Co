@@ -4,23 +4,37 @@
  * Why this exists: Gmail mobile / Apple Mail dark mode aggressively
  * inverts light email backgrounds and re-tints text. Hero sections that
  * relied on dark gradients with light copy ended up illegible because
- * the client recolored both layers. We fix this by:
+ * the client recolored both layers. The fix:
  *
- *   - using a deliberately dark outer background (#070d14) so dark-mode
- *     clients leave it alone, and a slightly lifted card (#0f1923) so the
- *     card still reads as a card on light *and* dark mode;
- *   - using near-white #f5faff for hero copy and #d3dde6 for body — both
- *     remain readable when clients re-tint;
- *   - dropping fragile decorative gradients from behind hero copy (a thin
- *     accent rule replaces them); and
- *   - putting hard contrast borders/inline `color`/`background-color` on
- *     every node so MSO/Gmail can't strip the variant we depend on.
+ *   - a deliberately dark outer background (#070d14) so dark-mode clients
+ *     leave it alone, and a slightly lifted card (#0f1923) so the card
+ *     still reads as a card on light *and* dark mode;
+ *   - near-white #f5faff for hero copy and #d3dde6 for body — both remain
+ *     readable when clients re-tint;
+ *   - no fragile decorative gradients behind hero copy (a thin accent rule
+ *     replaces them); and
+ *   - hard contrast borders / inline `color` / `background-color` on every
+ *     node so MSO/Gmail cannot strip the variant the layout depends on.
  *
- * Every public renderer should go through `renderHenryCoEmail` to get
- * the same hardening.
+ * Every public renderer should go through `renderHenryCoEmail` to get the
+ * same hardening. `renderHenryCoEmailHeader` and `renderHenryCoEmailFooter`
+ * are exported so division-specific custom templates can compose the same
+ * brand strap above and below their own hero blocks (V2-EMAIL-BRAND-01).
  */
 
 import type { EmailPurpose } from "./types";
+
+/**
+ * Brand typography stacks. Source Serif 4 for headings (with wide
+ * fallbacks to Source Serif Pro / Newsreader / Georgia so MSO and other
+ * clients that cannot fetch web fonts still render a serif). Inter for
+ * body, with the same broad fallback chain that resolves to a system
+ * sans across every major mail client.
+ */
+const HEADING_FONT_STACK =
+  "'Source Serif 4', 'Source Serif Pro', Newsreader, 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif";
+const BODY_FONT_STACK =
+  "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
 export const HENRYCO_EMAIL_TOKENS = {
   outerBg: "#070d14",
@@ -36,6 +50,8 @@ export const HENRYCO_EMAIL_TOKENS = {
   ctaBorder: "#e6b94a",
   divider: "rgba(255,255,255,0.08)",
   footerText: "#7e8b97",
+  headingFont: HEADING_FONT_STACK,
+  bodyFont: BODY_FONT_STACK,
 } as const;
 
 const PURPOSE_KICKER: Record<EmailPurpose, string> = {
@@ -192,22 +208,143 @@ function renderCta(
 }
 
 /**
- * Inline SVG monogram rendered in the header of every email so the
- * brand identity carries past clients that strip remote images. The
- * `H` armature mirrors the in-app HenryCoMonogram primitive; the
- * accent rule below it picks up the per-division palette to tie the
- * email to the website tone the recipient will land on.
+ * HENRY & CO. wordmark — rendered as native HTML text with a serif font
+ * stack rather than as an image. Email clients across Gmail, Apple Mail,
+ * Outlook (web + Mac + iOS), and major Android clients render this
+ * faithfully from system fonts; clients without web-font support fall
+ * back through Newsreader → Iowan Old Style → Palatino → Georgia, all of
+ * which carry the same premium serif read. This keeps the brand visible
+ * regardless of remote-image blocking and avoids the MSO data-URI strip.
+ *
+ * The 28×28 monogram tile to the left mirrors the in-app HenryCoMonogram
+ * primitive (drawn inline as SVG, dark-mode-safe via the outer card
+ * background), and the per-division accent rule beneath ties the email
+ * to the website tone the recipient will land on.
  */
 function renderBrandMark(palette: ResolvedPalette): string {
-  // 28px monogram, inline so Gmail / Outlook can render it without
-  // remote-image blocking. Encoded as a data URI to keep the email
-  // body fully self-contained.
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 64' width='28' height='28' aria-hidden='true'><g fill='none' stroke='%23f5faff' stroke-width='2.6' stroke-linecap='square'><path d='M9 7 H17 V57 H9 Z'/><path d='M37 7 H45 V57 H37 Z'/><path d='M9 28 H45 V34 H9 Z'/></g><rect x='6.5' y='7' width='13' height='2' fill='${encodeURIComponent(palette.accent)}'/><rect x='34.5' y='55' width='13' height='2' fill='${encodeURIComponent(palette.accent)}'/></svg>`;
+  const t = HENRYCO_EMAIL_TOKENS;
+  // 28px monogram, inline so every client can render it without remote
+  // image blocking. Encoded as a data URI so the email body stays fully
+  // self-contained. Uses currentColor so a light variant is implicit on
+  // dark cards (the H stroke renders in #f5faff via the surrounding fill).
+  const monogramSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 64' width='24' height='24' aria-hidden='true'><g fill='none' stroke='%23f5faff' stroke-width='2.6' stroke-linecap='square'><path d='M9 7 H17 V57 H9 Z'/><path d='M37 7 H45 V57 H37 Z'/><path d='M9 28 H45 V34 H9 Z'/></g><rect x='6.5' y='7' width='13' height='2' fill='${encodeURIComponent(palette.accent)}'/><rect x='34.5' y='55' width='13' height='2' fill='${encodeURIComponent(palette.accent)}'/></svg>`;
   return `
-    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 18px 0;">
       <tr>
-        <td style="width:48px; height:48px; padding:0; background-color:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; text-align:center; vertical-align:middle;">
-          <img src="data:image/svg+xml;utf8,${svg}" alt="HenryCo" width="28" height="28" style="display:inline-block; border:0; outline:none; text-decoration:none;" />
+        <td style="padding:0; vertical-align:middle;">
+          <table role="presentation" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="width:40px; height:40px; padding:0; background-color:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:11px; text-align:center; vertical-align:middle;">
+                <img src="data:image/svg+xml;utf8,${monogramSvg}" alt="" width="24" height="24" style="display:inline-block; border:0; outline:none; text-decoration:none;" />
+              </td>
+              <td style="padding:0 0 0 14px; vertical-align:middle;">
+                <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:21px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry &amp; Co.</div>
+                <div style="margin:4px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9.5px; font-weight:700; letter-spacing:0.32em; text-transform:uppercase; color:${palette.accent};">Group</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>`;
+}
+
+/**
+ * Standalone brand header partial. Custom division templates compose
+ * this above their existing hero sections so every email leads with
+ * the same Henry & Co. group identity. Returns email-safe table-based
+ * markup with inline styles — usable in any of the per-division
+ * templates without further hardening.
+ *
+ * @param purpose drives the per-division accent under the wordmark.
+ * @param tone   "dark" (default) renders the strap on a dark band
+ *               appropriate for templates whose hero is light;
+ *               "transparent" renders it without its own background so
+ *               division templates with their own dark hero can place
+ *               it on top of their hero gradient.
+ */
+export function renderHenryCoEmailHeader(
+  purpose: EmailPurpose,
+  tone: "dark" | "transparent" = "dark",
+): string {
+  const t = HENRYCO_EMAIL_TOKENS;
+  const palette = paletteFor(purpose);
+  const monogramSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 64' width='22' height='22' aria-hidden='true'><g fill='none' stroke='%23f5faff' stroke-width='2.6' stroke-linecap='square'><path d='M9 7 H17 V57 H9 Z'/><path d='M37 7 H45 V57 H37 Z'/><path d='M9 28 H45 V34 H9 Z'/></g><rect x='6.5' y='7' width='13' height='2' fill='${encodeURIComponent(palette.accent)}'/><rect x='34.5' y='55' width='13' height='2' fill='${encodeURIComponent(palette.accent)}'/></svg>`;
+  const bg = tone === "dark" ? t.outerBg : "transparent";
+  const border = tone === "dark" ? `border-bottom:1px solid ${t.divider};` : "";
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${bg}; ${border}">
+      <tr>
+        <td align="left" style="padding:18px 28px;">
+          <table role="presentation" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="width:36px; height:36px; padding:0; background-color:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; text-align:center; vertical-align:middle;">
+                <img src="data:image/svg+xml;utf8,${monogramSvg}" alt="" width="22" height="22" style="display:inline-block; border:0; outline:none; text-decoration:none;" />
+              </td>
+              <td style="padding:0 0 0 12px; vertical-align:middle;">
+                <div style="margin:0; padding:0; font-family:${t.headingFont}; font-size:18px; font-weight:600; line-height:1; letter-spacing:-0.01em; color:${t.heroText};">Henry &amp; Co.</div>
+                <div style="margin:3px 0 0 0; padding:0; font-family:${t.bodyFont}; font-size:9px; font-weight:700; letter-spacing:0.30em; text-transform:uppercase; color:${palette.accent};">Group</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>`;
+}
+
+export type HenryCoEmailFooterOptions = {
+  /** Sender division for the kicker line ("HenryCo Care", etc.). */
+  purpose?: EmailPurpose;
+  /** Optional support contact line (e.g. "support@henrycogroup.com"). */
+  supportEmail?: string | null;
+  /** Optional one-click unsubscribe URL. Required for marketing
+   *  templates per RFC 8058; transactional templates may omit. */
+  unsubscribeUrl?: string | null;
+  /** Optional preferences URL for granular email-channel control. */
+  preferencesUrl?: string | null;
+  /** Override the default body of the "you are receiving this" line. */
+  reasonLine?: string;
+};
+
+/**
+ * Standalone brand footer partial. Custom division templates compose
+ * this below their existing body / signature so every email closes with
+ * the same Henry & Co. legal entity, address, and support contact.
+ * Email-safe table-based markup with inline styles.
+ */
+export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): string {
+  const t = HENRYCO_EMAIL_TOKENS;
+  const palette = paletteFor(opts.purpose || "generic");
+  const eyebrow = opts.purpose ? PURPOSE_KICKER[opts.purpose] : PURPOSE_KICKER.generic;
+  const supportLink = opts.supportEmail
+    ? `<a href="mailto:${escapeHtml(opts.supportEmail)}" style="color:${palette.accent}; text-decoration:none;">${escapeHtml(opts.supportEmail)}</a>`
+    : `<a href="mailto:support@henrycogroup.com" style="color:${palette.accent}; text-decoration:none;">support@henrycogroup.com</a>`;
+  const unsubscribeBlock = opts.unsubscribeUrl
+    ? ` &middot; <a href="${escapeHtml(opts.unsubscribeUrl)}" style="color:${t.footerText}; text-decoration:underline;">Unsubscribe</a>`
+    : "";
+  const preferencesBlock = opts.preferencesUrl
+    ? ` &middot; <a href="${escapeHtml(opts.preferencesUrl)}" style="color:${t.footerText}; text-decoration:underline;">Email preferences</a>`
+    : "";
+  const reason =
+    opts.reasonLine ||
+    "This is a HenryCo transactional message. You received it because of an action on your HenryCo account.";
+
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${t.outerBg};">
+      <tr>
+        <td style="padding:24px 28px 28px 28px;">
+          <div style="font-family:${t.bodyFont}; font-size:10.5px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:${palette.accent};">${escapeHtml(eyebrow)}</div>
+          <p style="margin:8px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
+            ${escapeHtml(reason)}
+          </p>
+          <p style="margin:10px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
+            Henry &amp; Co. Group &middot; Lagos, Nigeria
+          </p>
+          <p style="margin:6px 0 0 0; font-family:${t.bodyFont}; font-size:11.5px; line-height:1.7; color:${t.footerText};">
+            Need help? ${supportLink}${unsubscribeBlock}${preferencesBlock}
+          </p>
+          <p style="margin:14px 0 0 0; font-family:${t.bodyFont}; font-size:11px; line-height:1.7; color:${t.footerText};">
+            &copy; ${new Date().getFullYear()} Henry &amp; Co. Group. All rights reserved.
+          </p>
         </td>
       </tr>
     </table>`;
@@ -237,6 +374,12 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
     ? `<p style="margin:8px 0 0 0; font-size:12.5px; line-height:1.7; color:${t.mutedText};">${escapeHtml(layout.supportLine)}</p>`
     : "";
 
+  const footerSupportEmail = layout.purpose === "auth" ? "accounts@henrycogroup.com" : null;
+  const footer = renderHenryCoEmailFooter({
+    purpose: layout.purpose,
+    supportEmail: footerSupportEmail,
+  });
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -246,7 +389,7 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
     <meta name="supported-color-schemes" content="dark light" />
     <title>${escapeHtml(layout.subject)}</title>
   </head>
-  <body style="margin:0; padding:0; background-color:${t.outerBg}; color:${t.bodyText}; font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;">
+  <body style="margin:0; padding:0; background-color:${t.outerBg}; color:${t.bodyText}; font-family:${t.bodyFont};">
     <span style="display:none; visibility:hidden; opacity:0; max-height:0; max-width:0; overflow:hidden; mso-hide:all;">${escapeHtml(layout.intro)}</span>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${t.outerBg}; padding:32px 12px;">
       <tr>
@@ -256,9 +399,9 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
               <td style="padding:36px 32px 28px 32px; background-color:${t.cardBg};">
                 ${brandMark}
                 <div style="height:2px; width:46px; background-color:${palette.accent}; border-radius:999px;"></div>
-                <div style="margin-top:18px; font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:${palette.accent};">${escapeHtml(eyebrow)}</div>
-                <h1 style="margin:14px 0 0 0; font-size:26px; line-height:1.25; font-weight:700; color:${t.heroText}; letter-spacing:-0.01em;">${escapeHtml(layout.title)}</h1>
-                <p style="margin:14px 0 0 0; font-size:15.5px; line-height:1.75; color:${t.heroText};">${escapeHtml(layout.intro)}</p>
+                <div style="margin-top:18px; font-family:${t.bodyFont}; font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:${palette.accent};">${escapeHtml(eyebrow)}</div>
+                <h1 style="margin:14px 0 0 0; font-family:${t.headingFont}; font-size:28px; line-height:1.22; font-weight:600; color:${t.heroText}; letter-spacing:-0.012em;">${escapeHtml(layout.title)}</h1>
+                <p style="margin:16px 0 0 0; font-family:${t.bodyFont}; font-size:15.5px; line-height:1.75; color:${t.heroText};">${escapeHtml(layout.intro)}</p>
                 ${highlight}
                 ${sections}
                 ${bullets}
@@ -269,13 +412,8 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
               </td>
             </tr>
             <tr>
-              <td style="padding:18px 32px 28px 32px; background-color:${t.cardBg}; border-top:1px solid ${t.divider};">
-                <p style="margin:0; font-size:11.5px; line-height:1.7; color:${t.footerText};">
-                  This is a HenryCo transactional message. You received it because of an action on your HenryCo account.
-                </p>
-                <p style="margin:6px 0 0 0; font-size:11.5px; line-height:1.7; color:${t.footerText};">
-                  &copy; ${new Date().getFullYear()} HenryCo. All rights reserved.
-                </p>
+              <td style="padding:0; background-color:${t.cardBg};">
+                ${footer}
               </td>
             </tr>
           </table>

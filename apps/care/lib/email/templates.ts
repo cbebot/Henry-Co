@@ -1,6 +1,11 @@
 import "server-only";
 
 import { getDivisionConfig } from "@henryco/config";
+import {
+  HENRYCO_EMAIL_TOKENS,
+  renderHenryCoEmailFooter,
+  renderHenryCoEmailHeader,
+} from "@henryco/email";
 import type { CareSettingsRecord } from "@/lib/care-settings-shared";
 
 type EmailSection = {
@@ -353,6 +358,15 @@ function renderText(layout: EmailLayout, settings: CareSettingsRecord) {
 
 function renderHtml(layout: EmailLayout, settings: CareSettingsRecord) {
   const supportLine = [settings.support_email, settings.support_phone].filter(Boolean).join(" • ");
+  const t = HENRYCO_EMAIL_TOKENS;
+  const brandHeader = renderHenryCoEmailHeader("care", "dark");
+  const brandFooter = renderHenryCoEmailFooter({
+    purpose: "care",
+    supportEmail: settings.support_email || null,
+    reasonLine: supportLine
+      ? `This is a HenryCo Care transactional message. ${supportLine}`
+      : undefined,
+  });
 
   return `
     <!doctype html>
@@ -371,30 +385,31 @@ function renderHtml(layout: EmailLayout, settings: CareSettingsRecord) {
             .care-body { color:#e2e8f4 !important; }
             .care-body-text { color:#b9c4d5 !important; }
             .care-closing { color:#9eacc1 !important; }
-            .care-footer { background:#0a0f1a !important; border-color:rgba(139,220,248,0.14) !important; }
-            .care-footer-brand { color:#8cc2e0 !important; }
-            .care-footer-body { color:#8a99ae !important; }
-            .care-attribution { color:#7d8ca3 !important; }
           }
         </style>
       </head>
-      <body style="margin:0; padding:0; background:#edf2f8; font-family:Inter,'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
+      <body style="margin:0; padding:0; background:${t.outerBg}; font-family:${t.bodyFont}; -webkit-font-smoothing:antialiased;">
         <div style="display:none; max-height:0; overflow:hidden; opacity:0;">${escapeHtml(layout.preview)}</div>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#edf2f8; padding:32px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${t.outerBg}; padding:32px 12px;">
           <tr>
             <td align="center">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="care-shell" style="max-width:640px; overflow:hidden; border-radius:28px; background:#ffffff; box-shadow:0 20px 70px rgba(7,17,31,0.10);">
                 <tr>
+                  <td style="padding:0; background:#0a142b;">
+                    ${brandHeader}
+                  </td>
+                </tr>
+                <tr>
                   <td style="padding:32px 32px 24px; background:linear-gradient(135deg, #07111F 0%, #101B46 52%, #152860 100%); color:#ffffff;">
-                    <div style="font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:#8BDCF8; font-weight:700;">${escapeHtml(layout.eyebrow)}</div>
-                    <div style="margin-top:14px; font-size:34px; line-height:1.08; font-weight:800; letter-spacing:-0.04em;">${escapeHtml(layout.title)}</div>
-                    <div style="margin-top:14px; max-width:520px; font-size:15px; line-height:1.8; color:rgba(255,255,255,0.76);">${paragraphize(layout.intro)}</div>
+                    <div style="font-family:${t.bodyFont}; font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:#8BDCF8; font-weight:700;">${escapeHtml(layout.eyebrow)}</div>
+                    <div style="margin-top:14px; font-family:${t.headingFont}; font-size:32px; line-height:1.1; font-weight:600; letter-spacing:-0.025em;">${escapeHtml(layout.title)}</div>
+                    <div style="margin-top:14px; max-width:520px; font-family:${t.bodyFont}; font-size:15px; line-height:1.8; color:rgba(255,255,255,0.76);">${paragraphize(layout.intro)}</div>
                     ${
                       layout.highlightLabel && layout.highlightValue
                         ? `
                           <div style="margin-top:22px; display:inline-block; border-radius:22px; border:1px solid rgba(139,220,248,0.22); background:rgba(255,255,255,0.06); padding:14px 18px;">
-                            <div style="font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#A8F3E8; font-weight:700;">${escapeHtml(layout.highlightLabel)}</div>
-                            <div style="margin-top:6px; font-size:22px; line-height:1.2; font-weight:800; color:#ffffff;">${escapeHtml(layout.highlightValue)}</div>
+                            <div style="font-family:${t.bodyFont}; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#A8F3E8; font-weight:700;">${escapeHtml(layout.highlightLabel)}</div>
+                            <div style="margin-top:6px; font-family:${t.headingFont}; font-size:22px; line-height:1.2; font-weight:600; color:#ffffff;">${escapeHtml(layout.highlightValue)}</div>
                           </div>
                         `
                         : ""
@@ -402,7 +417,7 @@ function renderHtml(layout: EmailLayout, settings: CareSettingsRecord) {
                   </td>
                 </tr>
                 <tr>
-                  <td class="care-body" style="padding:28px 32px 30px; color:#122033;">
+                  <td class="care-body" style="padding:28px 32px 30px; color:#122033; font-family:${t.bodyFont};">
                     ${renderSections(layout.sections ?? [])}
                     ${renderLists(layout.lists ?? [])}
                     ${renderAction(layout.primaryAction, "primary")}
@@ -417,15 +432,8 @@ function renderHtml(layout: EmailLayout, settings: CareSettingsRecord) {
                   </td>
                 </tr>
                 <tr>
-                  <td class="care-footer" style="padding:18px 32px 24px; border-top:1px solid rgba(16,27,70,0.08); background:#f6f8fc;">
-                    <div class="care-footer-brand" style="font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:#6b7c93; font-weight:700;">${escapeHtml(care.name)}</div>
-                    <div class="care-footer-body" style="margin-top:8px; font-size:13px; line-height:1.7; color:#55657d;">
-                      Garment care, home cleaning, office cleaning, and pickup delivery.
-                      ${supportLine ? `<br />${escapeHtml(supportLine)}` : ""}
-                    </div>
-                    <div class="care-attribution" style="margin-top:14px; display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#6b7c93;">
-                      <span style="display:inline-block; width:5px; height:5px; border-radius:50%; background:#8BDCF8; margin-right:6px; vertical-align:middle;"></span>Designed by HenryCo Studio
-                    </div>
+                  <td style="padding:0; background:${t.outerBg};">
+                    ${brandFooter}
                   </td>
                 </tr>
               </table>

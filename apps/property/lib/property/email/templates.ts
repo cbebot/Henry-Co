@@ -1,4 +1,9 @@
 import { getDivisionConfig, getDivisionUrl } from "@henryco/config";
+import {
+  HENRYCO_EMAIL_TOKENS,
+  renderHenryCoEmailFooter,
+  renderHenryCoEmailHeader,
+} from "@henryco/email";
 
 export type PropertyTemplateKey =
   | "inquiry_received"
@@ -39,6 +44,13 @@ export function renderPropertyEmailTemplate(input: PropertyTemplateInput) {
   const bullets = input.bullets?.filter(Boolean) ?? [];
 
   const subject = `${input.headline} | ${property.shortName}`;
+  const t = HENRYCO_EMAIL_TOKENS;
+  const brandHeader = renderHenryCoEmailHeader("property", "dark");
+  const brandFooter = renderHenryCoEmailFooter({
+    purpose: "property",
+    supportEmail: property.supportEmail,
+    reasonLine: `This is a HenryCo Property transactional message. Support: ${property.supportEmail} · ${property.supportPhone}`,
+  });
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -50,35 +62,32 @@ export function renderPropertyEmailTemplate(input: PropertyTemplateInput) {
 <title>${escapeHtml(input.headline)}</title>
 <style>
   :root { color-scheme: light dark; }
-  body { margin:0; padding:0; background:#f5eee9; font-family:Manrope,Aptos,'Segoe UI',sans-serif; color:#1c1511; -webkit-font-smoothing:antialiased; }
+  body { margin:0; padding:0; background:${t.outerBg}; font-family:${t.bodyFont}; color:#1c1511; -webkit-font-smoothing:antialiased; }
   .wrap { max-width:640px; margin:0 auto; padding:32px 20px 48px; }
   .card { border:1px solid rgba(74,44,24,0.1); background:rgba(255,251,248,0.96); border-radius:28px; overflow:hidden; box-shadow:0 24px 80px rgba(39,22,12,0.12); }
   .hero { padding:28px 28px 12px; background:linear-gradient(135deg,#fff9f5 0%,#f2d8ca 100%); }
-  .eyebrow { font-size:11px; letter-spacing:0.28em; text-transform:uppercase; font-weight:800; color:#b06c3e; }
-  h1 { margin:18px 0 0; font-family:Fraunces,Georgia,serif; font-size:34px; line-height:1.05; letter-spacing:-0.03em; color:#1c1511; }
-  .lede { margin:18px 0 0; font-size:15px; line-height:1.8; color:#6e5d54; }
-  .body { padding:0 28px 28px; }
+  .eyebrow { font-family:${t.bodyFont}; font-size:11px; letter-spacing:0.28em; text-transform:uppercase; font-weight:700; color:#b06c3e; }
+  h1 { margin:18px 0 0; font-family:${t.headingFont}; font-size:32px; line-height:1.1; font-weight:600; letter-spacing:-0.025em; color:#1c1511; }
+  .lede { margin:18px 0 0; font-family:${t.bodyFont}; font-size:15px; line-height:1.8; color:#6e5d54; }
+  .body { padding:0 28px 28px; font-family:${t.bodyFont}; }
   ul { margin:20px 0; padding-left:20px; color:#6e5d54; line-height:1.8; }
-  .cta { display:inline-block; padding:14px 24px; border-radius:999px; background:linear-gradient(135deg,#7f4e2f 0%,#b06c3e 58%,#e3b38e 100%); color:#fffaf6 !important; font-size:14px; font-weight:700; text-decoration:none; }
-  .sig { margin-top:28px; padding-top:24px; border-top:1px solid rgba(74,44,24,0.1); font-size:13px; line-height:1.8; color:#6e5d54; }
-  .sig-brand { font-weight:800; color:#1c1511; letter-spacing:-0.005em; }
-  .attribution { display:inline-flex; align-items:center; gap:6px; margin-top:14px; font-size:10px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#6e5d54; }
-  .attribution::before { content:''; display:inline-block; width:5px; height:5px; border-radius:999px; background:#b06c3e; }
+  .cta { display:inline-block; padding:14px 24px; border-radius:999px; background:linear-gradient(135deg,#7f4e2f 0%,#b06c3e 58%,#e3b38e 100%); color:#fffaf6 !important; font-family:${t.bodyFont}; font-size:14px; font-weight:700; text-decoration:none; }
+  .sig { margin-top:28px; padding-top:24px; border-top:1px solid rgba(74,44,24,0.1); font-family:${t.bodyFont}; font-size:13px; line-height:1.8; color:#6e5d54; }
+  .sig-brand { font-family:${t.headingFont}; font-weight:600; font-size:16px; color:#1c1511; letter-spacing:-0.01em; }
 
   @media (prefers-color-scheme: dark) {
-    body { background:#0d0806 !important; color:#f1e6dc !important; }
     .card { background:#1a1210 !important; border-color:#2d201a !important; box-shadow:0 32px 90px rgba(0,0,0,0.6) !important; }
     .hero { background:linear-gradient(135deg,#1a1210 0%,#3b281f 100%) !important; }
     .eyebrow { color:#dfa781 !important; }
     h1 { color:#f6ead0 !important; }
     .lede, ul, .sig { color:#b4998a !important; }
     .sig-brand { color:#f6ead0 !important; }
-    .attribution { color:#9c8273 !important; }
     .cta { color:#1a1210 !important; }
   }
 </style>
 </head>
 <body>
+  ${brandHeader}
   <div class="wrap">
     <div class="card">
       <div class="hero">
@@ -100,12 +109,11 @@ export function renderPropertyEmailTemplate(input: PropertyTemplateInput) {
         <div class="sig">
           <div class="sig-brand">${escapeHtml(property.name)}</div>
           <div>${escapeHtml(property.tagline)}</div>
-          <div style="margin-top:10px;">Support: ${escapeHtml(property.supportEmail)} &middot; ${escapeHtml(property.supportPhone)}</div>
-          <div class="attribution">Designed by HenryCo Studio</div>
         </div>
       </div>
     </div>
   </div>
+  ${brandFooter}
 </body>
 </html>`;
 

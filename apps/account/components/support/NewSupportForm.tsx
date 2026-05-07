@@ -85,7 +85,7 @@ function buildSupportPrefill(searchParams: SearchParamsReader) {
 
 export default function NewSupportForm() {
   const locale = useHenryCoLocale();
-  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const t = useCallback((text: string) => translateSurfaceLabel(locale, text), [locale]);
   const searchParams = useSearchParams();
   const categories = [
     { value: "general", label: t("General") },
@@ -115,7 +115,7 @@ export default function NewSupportForm() {
     setMessage(prefill.message);
   }, [prefill.category, prefill.message, prefill.subject]);
 
-  function localizeSupportError(message: string) {
+  const localizeSupportError = useCallback((message: string) => {
     switch (message) {
       case "Unauthorized":
         return t("Please sign in to continue.");
@@ -130,7 +130,7 @@ export default function NewSupportForm() {
       default:
         return t(message);
     }
-  }
+  }, [t]);
 
   const submit = useCallback(
     async (bodyText: string) => {
@@ -152,7 +152,7 @@ export default function NewSupportForm() {
       router.push("/support");
       router.refresh();
     },
-    [subject, category, router, localizeSupportError, t]
+    [subject, category, router, localizeSupportError]
   );
 
   const handleSend = useCallback(

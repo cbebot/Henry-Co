@@ -86,7 +86,7 @@ export function WelcomeBackSurface({
       />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="acct-kicker">Welcome back</p>
+          <p className="acct-kicker">For you</p>
           <h2 className="mt-2 text-xl font-semibold text-[var(--acct-ink)]">
             {firstName ? `Pick up where you left off, ${firstName}.` : "Pick up where you left off."}
           </h2>

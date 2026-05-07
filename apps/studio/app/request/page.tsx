@@ -45,9 +45,21 @@ export default async function RequestPage({
     preset?: string;
     template?: string;
     path?: string;
+    paymentId?: string;
   }>;
 }) {
   const params = await searchParams;
+
+  // V5-CLEAR Bug C: if a paymentId arrives in context (deep-link from a
+  // stale or rerouted email/share that should have gone to the pay flow),
+  // short-circuit to /pay/[paymentId] rather than landing the user in a
+  // brief composer they don't need. /pay is the canonical payment surface;
+  // /request is the canonical brief composer — disjoint flows, single
+  // intent per route.
+  if (params.paymentId) {
+    redirect(`/pay/${params.paymentId}`);
+  }
+
   const catalog = await getStudioCatalog();
   const templateHint = resolveStudioTemplatePreset(params.template, catalog.requestConfig);
   const presetHint =

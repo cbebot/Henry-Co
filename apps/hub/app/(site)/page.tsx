@@ -131,7 +131,7 @@ export default async function HomePage() {
     accountHref: getAccountUrl("/"),
   };
   const firstName = chipUser?.displayName?.trim().split(/\s+/).filter(Boolean)[0];
-  const heroWelcome = firstName ? `Welcome back, ${firstName}` : null;
+  const heroWelcome = firstName ? `Signed in · ${firstName}` : null;
 
   // Fall back to the platform-served brand monogram so the Knowledge Panel
   // logo never goes empty. CMS-driven `logo_url` overrides the default.

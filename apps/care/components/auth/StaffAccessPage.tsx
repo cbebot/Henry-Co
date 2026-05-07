@@ -152,7 +152,7 @@ export default async function StaffAccessPage({
             </div>
 
             <h2 className="mt-4 text-3xl font-bold tracking-[-0.03em]">
-              Welcome back
+              Sign in to staff access
             </h2>
             <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
               Use your approved staff email and password to enter the correct role-based dashboard.

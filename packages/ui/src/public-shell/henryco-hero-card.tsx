@@ -61,7 +61,7 @@ export interface HenryCoHeroCardProps {
   className?: string;
   id?: string;
   ariaLabel?: string;
-  /** Optional eyebrow line shown above the eyebrow row, e.g. "Welcome back, X". */
+  /** Optional eyebrow line shown above the eyebrow row, e.g. "Signed in · X". */
   signedInEyebrow?: React.ReactNode;
 }
 

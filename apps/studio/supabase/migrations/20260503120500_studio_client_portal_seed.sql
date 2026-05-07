@@ -180,7 +180,7 @@ begin
     demo_project_id,
     'HenryCo Studio',
     'team',
-    'Welcome to your client portal. Everything about your project lives here — milestones, files, payments, and a direct line to the team. Reply any time.',
+    'The client portal is open. Milestones, files, payments, and a direct line to the team all live here — reply any time.',
     false,
     timezone('utc', now()) - interval '1 day'
   )
@@ -195,8 +195,8 @@ begin
     'note',
     'note',
     'Portal opened',
-    'Your client portal is live. Use the dashboard to track progress, files, and payments.',
-    'You can use this space to message the team, approve deliverables, and pay milestone invoices. We will keep this feed updated as the project moves forward.',
+    'The client portal is live. Use the dashboard to track progress, files, and payments.',
+    'This space is for messaging the team, approving deliverables, and paying milestone invoices. The feed stays current as the project moves forward.',
     jsonb_build_object('seed', true)
   )
   on conflict (id) do nothing;

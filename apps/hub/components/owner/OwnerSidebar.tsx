@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 import { getAccountUrl, getStaffHqUrl } from "@henryco/config";
@@ -169,9 +170,12 @@ export default function OwnerSidebar({ user }: OwnerSidebarProps) {
       <div className="border-t border-[var(--acct-line)] p-3">
         <div className="flex items-center gap-3 rounded-xl p-2">
           {user.avatarUrl ? (
-            <img
+            <Image
               src={user.avatarUrl}
               alt=""
+              width={36}
+              height={36}
+              unoptimized
               className="h-9 w-9 rounded-full object-cover ring-2 ring-[var(--owner-accent)]/30"
             />
           ) : (

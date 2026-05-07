@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import {
   Archive,
@@ -64,11 +65,13 @@ export function FileCard({
         <div className="flex items-start gap-3">
           <div className="grid h-12 w-12 flex-shrink-0 place-items-center overflow-hidden rounded-xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)]">
             {deliverable.fileType === "image" && deliverable.thumbnailUrl ? (
-              <img
+              <Image
                 src={deliverable.thumbnailUrl}
                 alt=""
+                width={48}
+                height={48}
+                unoptimized
                 className="h-full w-full object-cover"
-                loading="lazy"
               />
             ) : (
               <Icon className="h-5 w-5 text-[var(--studio-ink-soft)]" />
@@ -175,7 +178,14 @@ export function FileCard({
               <X className="h-4 w-4" />
             </button>
             {deliverable.fileType === "image" ? (
-              <img src={deliverable.fileUrl} alt={deliverable.title} />
+              <Image
+                src={deliverable.fileUrl}
+                alt={deliverable.title}
+                width={1200}
+                height={900}
+                unoptimized
+                className="max-h-[80vh] w-auto max-w-full object-contain"
+              />
             ) : (
               <iframe src={deliverable.fileUrl} title={deliverable.title} className="h-[80vh] w-full" />
             )}

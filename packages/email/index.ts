@@ -22,9 +22,12 @@ export {
   HENRYCO_EMAIL_TOKENS,
   renderHenryCoEmail,
   renderHenryCoEmailText,
+  renderHenryCoEmailHeader,
+  renderHenryCoEmailFooter,
   escapeHtml,
   type HenryCoEmailLayout,
   type HenryCoEmailSection,
+  type HenryCoEmailFooterOptions,
 } from "./layout";
 
 export {

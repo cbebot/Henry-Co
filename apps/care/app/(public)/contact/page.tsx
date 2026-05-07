@@ -21,7 +21,7 @@ const care = getDivisionConfig("care");
 export default async function ContactPage() {
   const settings = await getCareSettings();
   const supportEmail = settings.support_email || care.supportEmail || "care@henrycogroup.com";
-  const supportPhone = settings.support_phone || care.supportPhone || "+234 000 000 0000";
+  const supportPhone = settings.support_phone || care.supportPhone;
   const whatsappNumber =
     settings.payment_support_whatsapp || settings.payment_whatsapp || settings.support_phone || supportPhone;
   const pickupHours = settings.pickup_hours || "Mon - Sat • 8:00 AM to 7:00 PM";

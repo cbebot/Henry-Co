@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import React, { createContext, useContext, useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import { getAccountUrl } from "@henryco/config";
@@ -147,15 +148,6 @@ function getStatusTone(status: DivisionRow["status"]) {
   }
 
   return "border-emerald-500/25 bg-emerald-500/12 text-emerald-200";
-}
-
-function formatUpdatedAt(value: string | undefined | null, fmt: Intl.DateTimeFormat) {
-  if (!value) return "—";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-
-  return fmt.format(date);
 }
 
 function formatUpdatedAtLong(value: string | undefined | null, fmt: Intl.DateTimeFormat) {
@@ -1362,28 +1354,6 @@ function StatCard({
   );
 }
 
-function GlassMiniCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-baseline gap-3 border-b border-white/10 py-3 last:border-b-0">
-      <span className="text-[color:var(--accent)]">{icon}</span>
-      <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-        {label}
-      </span>
-      <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-        {value}
-      </span>
-    </div>
-  );
-}
-
 function DirectoryMiniStat({
   label,
   value,
@@ -1513,13 +1483,14 @@ function FeaturedDivisionCard({ division }: { division: DivisionRow }) {
     >
       {extra.cover_url ? (
         <div className="relative h-44 overflow-hidden">
-          <img
+          <Image
             src={extra.cover_url}
             alt=""
             aria-hidden="true"
+            width={720}
+            height={360}
+            unoptimized
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
-            loading="lazy"
-            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,8,22,0.78)] via-[rgba(5,8,22,0.16)] to-transparent" />
         </div>
@@ -1625,13 +1596,14 @@ function DivisionCard({
     >
       {extra.cover_url ? (
         <div className="relative h-40 overflow-hidden">
-          <img
+          <Image
             src={extra.cover_url}
             alt=""
             aria-hidden="true"
+            width={640}
+            height={320}
+            unoptimized
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
-            loading="lazy"
-            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(5,8,22,0.72)] via-[rgba(5,8,22,0.14)] to-transparent" />
         </div>
@@ -1881,12 +1853,13 @@ function DetailsModal({
         >
         {extra.cover_url ? (
           <div className="h-44 overflow-hidden border-b border-white/10 sm:h-52">
-            <img
+            <Image
               src={extra.cover_url}
               alt=""
+              width={900}
+              height={460}
+              unoptimized
               className="h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
             />
           </div>
         ) : null}

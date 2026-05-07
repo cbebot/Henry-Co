@@ -39,7 +39,6 @@ import { useMessageScroll } from "./use-message-scroll";
 import { useOfflineQueue } from "./use-offline-queue";
 import {
   useRealtimeMessages,
-  type RawIncomingMessage,
 } from "./use-realtime-messages";
 import { useTypingIndicator } from "./use-typing-indicator";
 
@@ -79,14 +78,13 @@ export function ProjectThread({
     status: realtimeStatus,
     upsertOptimistic,
     removeOptimistic,
-    prependHistory,
   } = useRealtimeMessages({
     projectId,
     initialMessages: initial.messages,
     viewerId: initial.viewerId,
   });
 
-  const { typists, beginTyping, stopTyping } = useTypingIndicator({
+  const { typists, beginTyping } = useTypingIndicator({
     projectId,
     viewerId: initial.viewerId,
     viewerName: initial.viewerName,

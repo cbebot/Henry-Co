@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { requireJobsRoles } from "@/lib/auth";
 import { getPipelineById, getApplications } from "@/lib/jobs/hiring";
@@ -87,9 +88,12 @@ export default async function PipelineDetailPage({
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       {app.candidateAvatarUrl ? (
-                        <img
+                        <Image
                           src={app.candidateAvatarUrl}
                           alt=""
+                          width={40}
+                          height={40}
+                          unoptimized
                           className="h-10 w-10 rounded-full object-cover"
                         />
                       ) : (

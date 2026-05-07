@@ -40,9 +40,9 @@ export const PublicBrandTokens = {
     raised: "var(--site-surface, rgba(255,255,255,0.05))",
     elevated: "var(--site-surface-strong, rgba(255,255,255,0.08))",
     border: "var(--site-border, rgba(255,255,255,0.10))",
-    text: "var(--site-text, rgba(255,255,255,0.96))",
-    textSoft: "var(--site-text-soft, rgba(255,255,255,0.70))",
-    textMuted: "var(--site-text-muted, rgba(255,255,255,0.52))",
+    text: "var(--site-text, #F5F1E8)",
+    textSoft: "var(--site-text-soft, #C9C2B6)",
+    textMuted: "var(--site-text-muted, #8A857C)",
   },
 } as const;
 

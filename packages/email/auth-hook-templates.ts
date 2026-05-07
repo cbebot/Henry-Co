@@ -65,7 +65,7 @@ export function renderAuthEmail(data: AuthHookEmailData, fallbackSiteUrl: string
       eyebrow: "HenryCo Accounts",
       title: "Confirm your email to activate your HenryCo account",
       intro:
-        "Welcome to HenryCo. Confirm this email address so we can keep your account, bookings, and saved preferences secure.",
+        "Confirm this email to activate the HenryCo account. The address keeps account access, bookings, and saved preferences secure across every division.",
       actionLabel: "Confirm email",
       actionHref: cta,
       footnote: "This link expires in 24 hours and can only be used once.",
@@ -120,10 +120,10 @@ export function renderAuthEmail(data: AuthHookEmailData, fallbackSiteUrl: string
       eyebrow: "HenryCo Accounts",
       title: "Confirm your new email address",
       intro:
-        "We received a request to change the email on your HenryCo account. Confirm this address to complete the change.",
+        "A request was made to change the email on the HenryCo account. Confirm this address to complete the change.",
       actionLabel: "Confirm new email",
       actionHref: cta,
-      footnote: "If you didn't request this change, contact support immediately — your old email still works for now.",
+      footnote: "If you didn't request this change, contact support immediately — the old email still works for now.",
     });
   }
 
@@ -134,7 +134,7 @@ export function renderAuthEmail(data: AuthHookEmailData, fallbackSiteUrl: string
       eyebrow: "HenryCo Accounts",
       title: "Confirm a sensitive action",
       intro:
-        "We need to re-verify it's you before this action goes through. Tap the link below to confirm.",
+        "Re-verification is required before this action goes through. Tap the link below to confirm.",
       actionLabel: "Confirm",
       actionHref: cta,
       footnote: "This confirmation expires in 5 minutes.",

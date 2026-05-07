@@ -57,6 +57,7 @@ function normalizeHostname(value?: string | null) {
 const BASE_DOMAIN =
   normalizeHostname(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com") ||
   "henrycogroup.com";
+const GROUP_SUPPORT_PHONE = "+2349133957084";
 
 export const COMPANY = {
   group: {
@@ -68,7 +69,7 @@ export const COMPANY = {
     promise:
       "Every Henry & Co. division should feel premium, dependable, and beautifully structured.",
     supportEmail: "hello@henrycogroup.com",
-    supportPhone: "+2349133957084",
+    supportPhone: GROUP_SUPPORT_PHONE,
   },
 
   divisions: {
@@ -87,7 +88,7 @@ export const COMPANY = {
       accentText: "#8A6F00",
       dark: "#05070D",
       supportEmail: "hello@henrycogroup.com",
-      supportPhone: "+234 000 000 0000",
+      supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Directory", href: "/#directory" },
         { label: "How It Works", href: "/#how" },
@@ -111,7 +112,7 @@ export const COMPANY = {
       accentText: "#4F5BD0",
       dark: "#09112B",
       supportEmail: "care@henrycogroup.com",
-      supportPhone: "+234 000 000 0000",
+      supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Home", href: "/" },
         { label: "Services", href: "/services" },
@@ -163,7 +164,7 @@ export const COMPANY = {
       accentText: "#8A6F00",
       dark: "#07111F",
       supportEmail: "hotel@henrycogroup.com",
-      supportPhone: "+234 000 000 0000",
+      supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Home", href: "/" },
         { label: "Rooms", href: "/rooms" },

@@ -1,4 +1,9 @@
 import { getDivisionConfig, getDivisionUrl } from "@henryco/config";
+import {
+  HENRYCO_EMAIL_TOKENS,
+  renderHenryCoEmailFooter,
+  renderHenryCoEmailHeader,
+} from "@henryco/email";
 
 export type MarketplaceTemplateKey =
   | "buyer_welcome"
@@ -77,6 +82,14 @@ export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput) 
         .join("")}</ul>`
     : "";
 
+  const t = HENRYCO_EMAIL_TOKENS;
+  const brandHeader = renderHenryCoEmailHeader("marketplace", "dark");
+  const brandFooter = renderHenryCoEmailFooter({
+    purpose: "marketplace",
+    supportEmail: marketplace.supportEmail,
+    reasonLine: `This is a HenryCo Marketplace transactional message. Support: ${marketplace.supportEmail} · ${marketplace.supportPhone}`,
+  });
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,36 +100,33 @@ export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput) 
 <title>${escapeHtml(input.headline)}</title>
 <style>
   :root { color-scheme: light dark; }
-  body { margin:0; padding:0; background:#f6f1e7; font-family:Manrope,Aptos,'Segoe UI',sans-serif; color:#1d1811; -webkit-font-smoothing:antialiased; }
+  body { margin:0; padding:0; background:${t.outerBg}; font-family:${t.bodyFont}; color:#1d1811; -webkit-font-smoothing:antialiased; }
   .wrap { max-width:640px; margin:0 auto; padding:32px 20px 48px; }
   .card { border:1px solid rgba(63,44,18,0.12); background:rgba(255,251,245,0.96); border-radius:28px; overflow:hidden; box-shadow:0 24px 80px rgba(45,28,9,0.12); }
   .hero { padding:28px 28px 12px; background:linear-gradient(135deg,#fffaf2 0%,#f3e3c5 100%); }
-  .eyebrow { font-size:11px; letter-spacing:0.28em; text-transform:uppercase; font-weight:800; color:#b2863b; }
-  h1 { margin:18px 0 0; font-family:Fraunces,Georgia,serif; font-size:34px; line-height:1.05; letter-spacing:-0.03em; color:#1d1811; }
-  .lede { margin:18px 0 0; font-size:15px; line-height:1.8; color:#6e6557; }
-  .body { padding:0 28px 28px; }
+  .eyebrow { font-family:${t.bodyFont}; font-size:11px; letter-spacing:0.28em; text-transform:uppercase; font-weight:700; color:#b2863b; }
+  h1 { margin:18px 0 0; font-family:${t.headingFont}; font-size:32px; line-height:1.1; font-weight:600; letter-spacing:-0.025em; color:#1d1811; }
+  .lede { margin:18px 0 0; font-family:${t.bodyFont}; font-size:15px; line-height:1.8; color:#6e6557; }
+  .body { padding:0 28px 28px; font-family:${t.bodyFont}; }
   ul { margin:20px 0; padding-left:20px; color:#6e6557; line-height:1.8; }
   .secondary { margin:0 0 24px; font-size:14px; line-height:1.8; color:#6e6557; }
-  .cta { display:inline-block; padding:14px 24px; border-radius:999px; background:linear-gradient(135deg,#7e5f2d 0%,#b2863b 58%,#dec48a 100%); color:#fffaf2 !important; font-size:14px; font-weight:700; text-decoration:none; }
-  .sig { margin-top:28px; padding-top:24px; border-top:1px solid rgba(63,44,18,0.12); font-size:13px; line-height:1.8; color:#6e6557; }
-  .sig-brand { font-weight:800; color:#1d1811; letter-spacing:-0.005em; }
-  .attribution { display:inline-flex; align-items:center; gap:6px; margin-top:14px; font-size:10px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#6e6557; }
-  .attribution::before { content:''; display:inline-block; width:5px; height:5px; border-radius:999px; background:#b2863b; }
+  .cta { display:inline-block; padding:14px 24px; border-radius:999px; background:linear-gradient(135deg,#7e5f2d 0%,#b2863b 58%,#dec48a 100%); color:#fffaf2 !important; font-family:${t.bodyFont}; font-size:14px; font-weight:700; text-decoration:none; }
+  .sig { margin-top:28px; padding-top:24px; border-top:1px solid rgba(63,44,18,0.12); font-family:${t.bodyFont}; font-size:13px; line-height:1.8; color:#6e6557; }
+  .sig-brand { font-family:${t.headingFont}; font-weight:600; font-size:16px; color:#1d1811; letter-spacing:-0.01em; }
 
   @media (prefers-color-scheme: dark) {
-    body { background:#0c0906 !important; color:#f1e7d2 !important; }
     .card { background:#17120a !important; border-color:#2d2319 !important; box-shadow:0 32px 90px rgba(0,0,0,0.62) !important; }
     .hero { background:linear-gradient(135deg,#17120a 0%,#3a2d18 100%) !important; }
     .eyebrow { color:#e1b870 !important; }
     h1 { color:#f6e8c8 !important; }
     .lede, ul, .secondary, .sig { color:#b4a286 !important; }
     .sig-brand { color:#f6e8c8 !important; }
-    .attribution { color:#9b8969 !important; }
     .cta { color:#17120a !important; }
   }
 </style>
 </head>
 <body>
+  ${brandHeader}
   <div class="wrap">
     <div class="card">
       <div class="hero">
@@ -139,12 +149,11 @@ export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput) 
         <div class="sig">
           <div class="sig-brand">${escapeHtml(marketplace.name)}</div>
           <div>${escapeHtml(marketplace.tagline)}</div>
-          <div style="margin-top:10px;">Support: ${escapeHtml(marketplace.supportEmail)} &middot; ${escapeHtml(marketplace.supportPhone)}</div>
-          <div class="attribution">Designed by HenryCo Studio</div>
         </div>
       </div>
     </div>
   </div>
+  ${brandFooter}
 </body>
 </html>`;
 

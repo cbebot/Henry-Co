@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronRight, Clock3, Globe2, Landmark, ShieldCheck } from "lucide-react";
@@ -279,12 +280,14 @@ export default function CompanyPageClient({
           >
             {page.hero_image_url ? (
               <div className="overflow-hidden rounded-[2rem] border border-white/10 sm:rounded-[2.4rem]">
-                <img
+                <Image
                   src={page.hero_image_url}
                   alt={page.title}
+                  width={760}
+                  height={920}
+                  priority
+                  unoptimized
                   className="h-[280px] w-full object-cover sm:h-[460px]"
-                  loading="eager"
-                  decoding="async"
                 />
               </div>
             ) : (

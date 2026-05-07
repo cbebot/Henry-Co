@@ -1,4 +1,7 @@
+import { getDivisionConfig } from "@henryco/config";
 import { CARE_ACCENT } from "@/lib/care-theme";
+
+const careDivision = getDivisionConfig("care");
 
 export const BRAND = {
   name: "Henry & Co. Fabric Care",
@@ -8,5 +11,5 @@ export const BRAND = {
   dark: "#07111F",
   timezone: "Africa/Lagos",
   supportEmail: "care@henrycogroup.com",
-  supportPhone: "+234 000 000 0000",
+  supportPhone: careDivision.supportPhone,
 } as const;

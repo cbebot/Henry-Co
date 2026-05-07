@@ -56,23 +56,23 @@ export function localizeEmailError(
 
   // Default user-safe fallback — never leak provider, quota, or key state.
   if (!safe) {
-    return "We couldn't send that email right now. Please try again in a moment.";
+    return "That email could not be sent right now. Please try again in a moment.";
   }
 
   if (QUOTA_PATTERNS.some((re) => re.test(safe))) {
-    return "We're temporarily unable to send that email. Please try again shortly.";
+    return "Email delivery is paused for a moment. Please try again shortly.";
   }
   if (AUTH_PATTERNS.some((re) => re.test(safe))) {
-    return "Our messaging service is being checked. Please try again shortly.";
+    return "The messaging service is being checked. Please try again shortly.";
   }
   if (VALIDATION_PATTERNS.some((re) => re.test(safe))) {
-    return "That email address couldn't be reached. Please verify it and try again.";
+    return "That email address could not be reached. Please verify it and try again.";
   }
   if (NETWORK_PATTERNS.some((re) => re.test(safe))) {
-    return "Connection hiccup while sending. Please try again.";
+    return "Connection interrupted while sending. Please try again.";
   }
 
-  return "We couldn't send that email right now. Please try again in a moment.";
+  return "That email could not be sent right now. Please try again in a moment.";
 }
 
 /**

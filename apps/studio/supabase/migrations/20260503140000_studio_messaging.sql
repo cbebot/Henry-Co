@@ -378,7 +378,7 @@ begin
       'HenryCo Studio',
       'team',
       format(
-        'Welcome to %s. %sWe will keep everything organised here — questions, updates, files, and decisions all in one place. Feel free to ask anything.',
+        '%s is open in Studio. %sQuestions, updates, files, and decisions all live here in one organised place — ask anything any time.',
         new.title,
         case
           when resolved_team_label is null then ''

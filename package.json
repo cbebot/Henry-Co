@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build:all": "pnpm -r --filter \"./apps/*\" run build",
+    "lint": "pnpm run lint:all",
     "lint:all": "pnpm -r --filter \"./apps/*\" run lint",
     "typecheck:all": "pnpm -r --filter \"./apps/*\" run typecheck",
     "test:workspace": "pnpm --filter @henryco/super-app run test:ci",

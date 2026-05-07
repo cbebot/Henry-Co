@@ -43,6 +43,26 @@ type IdentityScopeOps<T> = T & {
   eq: (column: string, value: string | null) => T;
 };
 
+function mapMarketplacePaymentRecord(row: Record<string, unknown>): MarketplacePaymentRecord {
+  return {
+    id: String(row.id),
+    orderNo: String(row.order_no || ""),
+    method: String(row.method || "bank_transfer") as MarketplacePaymentRecord["method"],
+    provider: String(row.provider || "manual") as MarketplacePaymentRecord["provider"],
+    status: String(row.status || "pending") as MarketplacePaymentRecord["status"],
+    amount: Number(row.amount || 0),
+    reference: String(row.reference || ""),
+    bankReference: row.bank_reference ? String(row.bank_reference) : null,
+    proofUrl: row.proof_url ? String(row.proof_url) : null,
+    proofName: row.proof_name ? String(row.proof_name) : null,
+    proofPublicId: row.proof_public_id ? String(row.proof_public_id) : null,
+    proofUploadedAt: row.proof_uploaded_at ? String(row.proof_uploaded_at) : null,
+    walletTransactionId: row.wallet_transaction_id ? String(row.wallet_transaction_id) : null,
+    submittedAt: row.submitted_at ? String(row.submitted_at) : null,
+    verifiedAt: row.verified_at ? String(row.verified_at) : null,
+  };
+}
+
 const emptyHomeData: Snapshot = {
   kpis: [
     {
@@ -789,6 +809,17 @@ export async function getBuyerDashboardData() {
     const snapshot = await getMarketplaceHomeData();
     const vendorById = new Map(snapshot.vendors.map((item) => [item.id, item]));
     const productById = new Map(snapshot.products.map((item) => [item.id, item]));
+    const buyerOrderIds = new Set((ordersRes.data ?? []).map((row: Record<string, unknown>) => String(row.id)));
+    const buyerOrderNos = new Set((ordersRes.data ?? []).map((row: Record<string, unknown>) => String(row.order_no)));
+    const buyerPaymentRows = (paymentsRes.data ?? []).filter((row: Record<string, unknown>) => {
+      return buyerOrderIds.has(String(row.order_id || "")) || buyerOrderNos.has(String(row.order_no || ""));
+    });
+    const paymentByOrderId = new Map(
+      buyerPaymentRows.map((row: Record<string, unknown>) => [String(row.order_id || ""), mapMarketplacePaymentRecord(row)])
+    );
+    const paymentByOrderNo = new Map(
+      buyerPaymentRows.map((row: Record<string, unknown>) => [String(row.order_no || ""), mapMarketplacePaymentRecord(row)])
+    );
 
     const orders = (ordersRes.data ?? []).map((row: Record<string, unknown>) => {
       const groups = (orderGroupsRes.data ?? [])
@@ -840,19 +871,13 @@ export async function getBuyerDashboardData() {
         timeline: Array.isArray(row.timeline) ? row.timeline.map(String) : [],
         groups,
         items,
+        paymentRecord: paymentByOrderId.get(String(row.id)) ?? paymentByOrderNo.get(String(row.order_no)) ?? null,
       } satisfies MarketplaceOrder;
     });
 
-    const payments = (paymentsRes.data ?? []).map((row: Record<string, unknown>) => ({
-      id: String(row.id),
-      orderNo: String(row.order_no || ""),
-      method: String(row.method || "bank_transfer") as MarketplacePaymentRecord["method"],
-      provider: String(row.provider || "manual") as MarketplacePaymentRecord["provider"],
-      status: String(row.status || "pending") as MarketplacePaymentRecord["status"],
-      amount: Number(row.amount || 0),
-      reference: String(row.reference || ""),
-      verifiedAt: row.verified_at ? String(row.verified_at) : null,
-    }));
+    const payments = buyerPaymentRows.map((row: Record<string, unknown>) =>
+      mapMarketplacePaymentRecord(row)
+    );
 
     const disputes = (disputesRes.data ?? []).map((row: Record<string, unknown>) => ({
       id: String(row.id),
@@ -1284,13 +1309,19 @@ export async function getStaffQueueData() {
 export async function getOrderByNumber(orderNo: string) {
   try {
     const admin = createAdminSupabase();
-    const [orderRes, groupsRes, itemsRes] = await Promise.all([
+    const [orderRes, groupsRes, itemsRes, paymentsRes] = await Promise.all([
       admin.from("marketplace_orders").select("*").eq("order_no", orderNo).maybeSingle(),
       admin.from("marketplace_order_groups").select("*").eq("order_no", orderNo),
       admin.from("marketplace_order_items").select("*").eq("order_no", orderNo),
+      admin
+        .from("marketplace_payment_records")
+        .select("*")
+        .eq("order_no", orderNo)
+        .order("created_at", { ascending: false })
+        .limit(1),
     ]);
 
-    if (orderRes.error || groupsRes.error || itemsRes.error || !orderRes.data) {
+    if (orderRes.error || groupsRes.error || itemsRes.error || paymentsRes.error || !orderRes.data) {
       throw new Error("Order not found");
     }
 
@@ -1339,6 +1370,9 @@ export async function getOrderByNumber(orderNo: string) {
         lineTotal: Number(item.line_total || 0),
         vendorSlug: vendorById.get(String(item.vendor_id))?.slug || null,
       })),
+      paymentRecord: paymentsRes.data?.[0]
+        ? mapMarketplacePaymentRecord(paymentsRes.data[0] as Record<string, unknown>)
+        : null,
     } satisfies MarketplaceOrder;
   } catch {
     return null;

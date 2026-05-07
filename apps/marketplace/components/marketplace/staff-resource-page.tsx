@@ -314,7 +314,7 @@ export async function StaffResourcePage({
   if ((root === "/finance" && resource === "payments") || (root === "/finance" && resource === "payment-verification")) {
     const items =
       resource === "payment-verification"
-        ? queue.orders.filter((order: Record<string, unknown>) => String(order.payment_status || "pending") !== "verified")
+        ? queue.payments.filter((payment: Record<string, unknown>) => String(payment.status || "pending") !== "verified")
         : queue.payments;
 
     return (
@@ -330,6 +330,45 @@ export async function StaffResourcePage({
                 <p className="mt-2 text-sm text-[var(--market-muted)]">
                   {String(item.status || item.payment_status || "pending")}
                 </p>
+                <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+                  <div>
+                    <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                      Method
+                    </dt>
+                    <dd className="mt-1 font-semibold capitalize text-[var(--market-ink)]">
+                      {String(item.method || "bank_transfer").replace(/_/g, " ")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                      Reference
+                    </dt>
+                    <dd className="mt-1 font-semibold text-[var(--market-ink)]">
+                      {String(item.reference || item.bank_reference || "Pending")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                      Proof
+                    </dt>
+                    <dd className="mt-1 font-semibold text-[var(--market-ink)]">
+                      {item.proof_url ? (
+                        <a
+                          href={String(item.proof_url)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[var(--market-brass)]"
+                        >
+                          {String(item.proof_name || "View proof")}
+                        </a>
+                      ) : item.wallet_transaction_id ? (
+                        "Wallet debit"
+                      ) : (
+                        "Not attached"
+                      )}
+                    </dd>
+                  </div>
+                </dl>
                 {resource === "payment-verification" ? (
                   <form action="/api/marketplace" method="POST" className="mt-4 flex flex-wrap gap-3">
                     <input type="hidden" name="intent" value="payment_verify" />

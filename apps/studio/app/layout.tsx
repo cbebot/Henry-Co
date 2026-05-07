@@ -52,7 +52,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <AssistDock division="studio" accent="#49C0C5" />
           </LocaleProvider>
         </PublicThemeGuard>
-        <HenryCoAnalytics />
+        <HenryCoAnalytics vercelAnalytics={false} />
       </body>
     </html>
   );

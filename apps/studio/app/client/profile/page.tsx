@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ExternalLink, MailIcon, ShieldCheck, UserCircle } from "lucide-react";
 
@@ -30,9 +31,12 @@ export default async function ClientProfilePage() {
 
       <section className="portal-card-elev flex flex-col gap-5 p-5 sm:flex-row sm:items-start sm:gap-6 sm:p-7">
         {viewer.avatarUrl ? (
-          <img
+          <Image
             src={viewer.avatarUrl}
             alt={viewer.fullName || "Profile"}
+            width={64}
+            height={64}
+            unoptimized
             className="h-16 w-16 flex-shrink-0 rounded-2xl border border-[var(--studio-line-strong)] object-cover"
           />
         ) : (

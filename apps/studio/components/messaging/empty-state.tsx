@@ -19,8 +19,8 @@ type Props = {
  */
 export function EmptyThreadState({ projectName, teamLabel }: Props) {
   const welcomeBody = teamLabel
-    ? `Welcome to ${projectName}. Your Studio team is ${teamLabel}. We will keep everything organised here — questions, updates, files, and decisions all in one place. Feel free to ask anything.`
-    : `Welcome to ${projectName}. We will keep everything organised here — questions, updates, files, and decisions all in one place. Feel free to ask anything.`;
+    ? `${projectName} is open in Studio. Your Studio team is ${teamLabel}. Questions, updates, files, and decisions all live here in one organised place — ask anything any time.`
+    : `${projectName} is open in Studio. Questions, updates, files, and decisions all live here in one organised place — ask anything any time.`;
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
@@ -51,7 +51,7 @@ export function EmptyThreadState({ projectName, teamLabel }: Props) {
         <div className="text-[12px] font-medium uppercase tracking-[0.10em] text-[#d4b14e]">
           HenryCo Studio
           <span className="ml-2 text-[10px] font-medium tracking-[0.10em] text-white/35">
-            Welcome
+            Opening note
           </span>
         </div>
         <p className="mt-1.5 text-[14px] leading-relaxed text-[#F5F4EE]">

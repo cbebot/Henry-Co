@@ -26,7 +26,7 @@ export function PublicShellLayout({
   return (
     <div
       className={cn(
-        "min-h-screen bg-white text-zinc-950 dark:bg-[var(--site-bg,#050816)] dark:text-[var(--site-text,#ffffff)]",
+        "min-h-screen bg-white text-zinc-950 dark:bg-[var(--site-bg,#050816)] dark:text-[var(--site-text,#F5F1E8)]",
         className
       )}
     >

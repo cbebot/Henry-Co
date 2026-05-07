@@ -31,6 +31,38 @@ export default async function AccountPaymentsPage() {
                   <p>{payment.verifiedAt ? formatDate(payment.verifiedAt) : "Awaiting review"}</p>
                 </div>
               </div>
+              <dl className="mt-4 grid gap-3 border-t border-[var(--market-line)] pt-4 text-sm sm:grid-cols-3">
+                <div>
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                    Method
+                  </dt>
+                  <dd className="mt-1 font-semibold capitalize text-[var(--market-ink)]">
+                    {payment.method.replace(/_/g, " ")}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                    HenryCo reference
+                  </dt>
+                  <dd className="mt-1 font-semibold text-[var(--market-ink)]">{payment.reference}</dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+                    Proof
+                  </dt>
+                  <dd className="mt-1 font-semibold text-[var(--market-ink)]">
+                    {payment.proofUrl ? (
+                      <a href={payment.proofUrl} target="_blank" rel="noreferrer" className="text-[var(--market-brass)]">
+                        {payment.proofName || "View proof"}
+                      </a>
+                    ) : payment.walletTransactionId ? (
+                      "Wallet debit recorded"
+                    ) : (
+                      "Not uploaded"
+                    )}
+                  </dd>
+                </div>
+              </dl>
             </article>
           ))}
         </div>

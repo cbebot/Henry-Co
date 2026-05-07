@@ -116,8 +116,8 @@ export default async function AccountOverviewPage() {
 
   return (
     <WorkspaceShell
-      title={`Welcome back, ${firstName}`}
-      description="Your orders, saved items, store follows, and account activity in one calmer view. HenryCo unifies these signals across divisions so the trail stays attached to the same account."
+      title={firstName ? `${firstName}'s marketplace activity` : "Marketplace activity"}
+      description="Orders, saved items, store follows, and account activity in one calmer view. HenryCo unifies these signals across divisions so the trail stays attached to the same account."
       {...accountWorkspaceNav("/account")}
       actions={
         <div className="flex flex-wrap gap-2.5">

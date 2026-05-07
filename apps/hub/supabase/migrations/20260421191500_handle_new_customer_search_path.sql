@@ -23,8 +23,8 @@ begin
   insert into public.customer_notifications (user_id, title, body, category, action_url)
   values (
     new.id,
-    'Welcome to HenryCo',
-    'Your account is ready. Explore our services and manage everything from your dashboard.',
+    'Your HenryCo account is ready',
+    'The account is set up. Explore the services and manage everything from one dashboard.',
     'account',
     '/'
   );
@@ -34,8 +34,8 @@ begin
     new.id,
     'account',
     'account_created',
-    'Account Created',
-    'Welcome to HenryCo! Your unified account has been set up.'
+    'Account created',
+    'The unified HenryCo account has been set up.'
   );
 
   return new;

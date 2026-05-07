@@ -2,18 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   Award,
-  BookCheck,
-  ChevronRight,
   CircleAlert,
   CircleCheckBig,
-  FileStack,
-  GraduationCap,
   Layers3,
-  MessageSquareText,
   Trophy,
-  UsersRound,
 } from "lucide-react";
-import { completeLessonAction, submitQuizAttemptAction } from "@/lib/learn/actions";
+import { submitQuizAttemptAction } from "@/lib/learn/actions";
 import { requireLearnUser } from "@/lib/learn/auth";
 import { getLearnerWorkspace } from "@/lib/learn/data";
 import { getAccountLearnUrl } from "@/lib/learn/links";
@@ -24,7 +18,6 @@ import { CertificateDownloadButton } from "@/components/learn/certificate-downlo
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import {
   humanizeLabel,
-  LearnMarkdown,
   LearnPanel,
   LearnStatusBadge,
   LearnWorkspaceShell,
@@ -59,16 +52,6 @@ function displayName(value?: string | null) {
   return text.split(/\s+/).slice(0, 2).join(" ");
 }
 
-function initialsForName(value?: string | null) {
-  const parts = String(value || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2);
-  if (parts.length === 0) return "HC";
-  return parts.map((part) => part[0]?.toUpperCase() || "").join("");
-}
-
 function isAnswerCorrect(expected: string[], submitted: string[] | undefined) {
   const expectedSignature = expected.map((value) => value.trim().toLowerCase()).sort().join("|");
   const submittedSignature = (submitted || []).map((value) => value.trim().toLowerCase()).sort().join("|");
@@ -87,9 +70,6 @@ export default async function LearnerCoursePage({
   const course = workspace.snapshot.courses.find((item) => item.id === courseId);
   const enrollment = workspace.enrollments.find((item) => item.courseId === courseId);
   if (!course || !enrollment) notFound();
-
-  const instructor =
-    workspace.snapshot.instructors.find((item) => item.id === course.primaryInstructorId) || null;
   const courseAccessActive = ["active", "completed"].includes(enrollment.status);
 
   const modules = workspace.snapshot.modules
@@ -113,75 +93,6 @@ export default async function LearnerCoursePage({
   const completedLessonIds = new Set(
     [...progressByLesson.values()].filter((item) => item.status === "completed").map((item) => item.lessonId)
   );
-
-  // Read the per-course unlock policy. Defaults to 'sequential' so any
-  // existing course (or pre-migration row) keeps the strict gate.
-  const unlockPolicyRaw = (course as { unlockPolicy?: string }).unlockPolicy;
-  const unlockPolicy: "sequential" | "open" | "module_gated" =
-    unlockPolicyRaw === "open" || unlockPolicyRaw === "module_gated"
-      ? unlockPolicyRaw
-      : "sequential";
-
-  const enrichedModules = modules.map((module, moduleIndex) => {
-    const previousModulesComplete = modules
-      .slice(0, moduleIndex)
-      .every((previousModule) => previousModule.lessons.every((lesson) => completedLessonIds.has(lesson.id)));
-
-    // Module gating depends on the policy:
-    //   - open: every module unlocked
-    //   - sequential / module_gated: previous module must be 100% complete
-    const moduleUnlocked =
-      courseAccessActive &&
-      (unlockPolicy === "open" || moduleIndex === 0 || previousModulesComplete);
-
-    const lessons = module.lessons.map((lesson, lessonIndex) => {
-      const previousLessonsComplete = module.lessons
-        .slice(0, lessonIndex)
-        .every((previousLesson) => completedLessonIds.has(previousLesson.id));
-
-      // Lesson gating within a module:
-      //   - open / module_gated: any order inside an unlocked module
-      //   - sequential: must finish previous lesson first
-      const lessonUnlocked =
-        moduleUnlocked &&
-        (unlockPolicy !== "sequential" ||
-          lessonIndex === 0 ||
-          previousLessonsComplete ||
-          completedLessonIds.has(lesson.id));
-
-      return {
-        ...lesson,
-        completed: completedLessonIds.has(lesson.id),
-        unlocked: lessonUnlocked,
-      };
-    });
-
-    return {
-      ...module,
-      unlocked: moduleUnlocked,
-      completed: lessons.every((lesson) => lesson.completed),
-      lessons,
-    };
-  });
-
-  const currentLesson =
-    enrichedModules.flatMap((module) => module.lessons).find((lesson) => lesson.unlocked && !lesson.completed) ||
-    enrichedModules
-      .flatMap((module) => module.lessons)
-      .find((lesson) => lesson.id === enrollment.lastLessonId) ||
-    flatLessons[0] ||
-    null;
-
-  const currentModule =
-    enrichedModules.find((module) => module.lessons.some((lesson) => lesson.id === currentLesson?.id)) || null;
-  const roomResources = (currentModule?.lessons || flatLessons)
-    .flatMap((lesson) =>
-      lesson.resources.map((resource) => ({
-        ...resource,
-        lessonTitle: lesson.title,
-      }))
-    )
-    .slice(0, 8);
 
   const quiz = workspace.snapshot.quizzes.find((item) => item.courseId === course.id) || null;
   const questions = quiz
@@ -281,7 +192,6 @@ export default async function LearnerCoursePage({
       return rightTime - leftTime || right.percentComplete - left.percentComplete;
     });
 
-  const recentParticipants = participants.slice(0, 6);
   const activityReferenceTime = participants.reduce((latest, participant) => {
     const activityTime = participant.lastActivityAt
       ? new Date(participant.lastActivityAt).getTime()
@@ -292,58 +202,6 @@ export default async function LearnerCoursePage({
     if (!participant.lastActivityAt) return false;
     return activityReferenceTime - new Date(participant.lastActivityAt).getTime() <= 7 * 24 * 60 * 60 * 1000;
   }).length;
-
-  const lessonLookup = new Map(flatLessons.map((lesson) => [lesson.id, lesson]));
-  const enrollmentIds = new Set(courseEnrollments.map((item) => item.id));
-  const roomFeed = [
-    ...workspace.snapshot.progress
-      .filter((item) => item.courseId === course.id && enrollmentIds.has(item.enrollmentId))
-      .map((item) => {
-        const match = courseEnrollments.find((enrollmentItem) => enrollmentItem.id === item.enrollmentId);
-        const profile = resolveLearnProfile(profileDirectory, {
-          userId: match?.userId || null,
-          normalizedEmail: match?.normalizedEmail || null,
-        });
-        return {
-          id: `progress:${item.id}`,
-          type: "lesson",
-          name: displayName(profile?.fullName),
-          avatarUrl: profile?.avatarUrl || null,
-          title: `${displayName(profile?.fullName)} completed ${lessonLookup.get(item.lessonId)?.title || "a lesson"}`,
-          detail: formatRelativeTime(item.completedAt),
-        };
-      }),
-    ...workspace.snapshot.attempts
-      .filter((item) => enrollmentIds.has(item.enrollmentId) && (!quiz || item.quizId === quiz.id))
-      .map((item) => {
-        const match = courseEnrollments.find((enrollmentItem) => enrollmentItem.id === item.enrollmentId);
-        const profile = resolveLearnProfile(profileDirectory, {
-          userId: match?.userId || null,
-          normalizedEmail: match?.normalizedEmail || null,
-        });
-        return {
-          id: `attempt:${item.id}`,
-          type: "assessment",
-          name: displayName(profile?.fullName),
-          avatarUrl: profile?.avatarUrl || null,
-          title: item.passed
-            ? `${displayName(profile?.fullName)} passed the assessment`
-            : `${displayName(profile?.fullName)} submitted the assessment`,
-          detail: `${item.score}% score`,
-        };
-      }),
-  ].slice(0, 8);
-
-  const nextActionLabel =
-    enrollment.status === "awaiting_payment"
-      ? "Complete payment confirmation"
-      : certificate
-        ? "Review or download your certificate"
-        : currentLesson && !completedLessonIds.has(currentLesson.id)
-          ? `Continue with ${currentLesson.title}`
-          : quiz && !quizPassed
-            ? "Take the final assessment"
-            : "Course complete";
 
   return (
     <LearnWorkspaceShell
