@@ -4,6 +4,7 @@ import Link from "next/link";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileCheck2, ShieldCheck, UploadCloud } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
+import { ActionButton } from "@henryco/dashboard-shell/components";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
 import { sellerPlans } from "@/lib/marketplace/governance";
 import type {
@@ -607,23 +608,24 @@ export function SellerApplicationWizard({
                 Continue
               </Link>
             ) : (
-              <button
-                type="button"
+              <ActionButton
+                tone="primary"
                 disabled={
                   !form.storeName ||
                   !form.legalName ||
                   missingCriticalDocuments.length > 0 ||
                   submitState === "submitting"
                 }
-                onClick={() => void submitApplication()}
-                className="market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:opacity-60"
+                spinner={submitState === "submitting"}
+                success={submitState === "submitted"}
+                onClick={() => submitApplication()}
               >
                 {submitState === "submitting"
                   ? "Submitting..."
                   : submitState === "submitted"
                     ? "Submitted"
                     : "Submit seller application"}
-              </button>
+              </ActionButton>
             )}
           </div>
         </div>

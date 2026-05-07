@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { DivisionImage } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import { ArrowRight, BookmarkPlus, ShoppingBag } from "lucide-react";
 import {
@@ -86,21 +86,23 @@ function SavedItemCard({
           {/* href present → wrap image in a link to the product */}
           {href ? (
             <Link href={href} className="absolute inset-0">
-              <Image
+              <DivisionImage
                 src={image}
                 alt={title}
                 fill
                 sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 95vw"
                 className="object-cover transition duration-300 hover:scale-[1.02]"
+                radius="0"
               />
             </Link>
           ) : (
-            <Image
+            <DivisionImage
               src={image}
               alt={title}
               fill
               sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 95vw"
               className="object-cover"
+              radius="0"
             />
           )}
         </div>

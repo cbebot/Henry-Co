@@ -1,8 +1,9 @@
 "use client";
 
-import Image from "next/image";
+import { DivisionImage, ActionButton } from "@henryco/dashboard-shell/components";
+import { SaveForLaterButton } from "@henryco/cart-saved-items/client";
 import Link from "next/link";
-import { Bookmark, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import {
   useMarketplaceCart,
@@ -64,12 +65,13 @@ export function CartExperience() {
                   >
                     <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem] bg-[var(--market-soft-wash)]">
                       {item.image ? (
-                        <Image
+                        <DivisionImage
                           src={item.image}
                           alt={item.title}
                           fill
                           sizes="148px"
                           className="object-cover"
+                          radius="0"
                         />
                       ) : null}
                     </div>
@@ -119,39 +121,36 @@ export function CartExperience() {
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <button
-                          type="button"
-                          disabled={movingToSaved}
-                          aria-busy={movingToSaved}
-                          onClick={() => void moveCartItemToSaved(item.id)}
+                        <SaveForLaterButton
+                          onMove={async () => {
+                            await moveCartItemToSaved(item.id);
+                          }}
+                          pending={movingToSaved}
                           className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold disabled:cursor-wait"
-                        >
-                          {movingToSaved ? (
-                            <HenryCoActivityIndicator size="sm" label="Saving for later" />
-                          ) : (
-                            <Bookmark className="h-4 w-4" />
-                          )}
-                          <span>{movingToSaved ? "Saving..." : "Save for later"}</span>
-                        </button>
-                        <button
-                          type="button"
+                          labelIdle="Save for later"
+                          labelBusy="Saving..."
+                        />
+                        <ActionButton
+                          tone="ghost"
+                          onClick={async () => {
+                            await removeCartItem(item.id);
+                          }}
                           disabled={cartBusy}
-                          onClick={() => void removeCartItem(item.id)}
-                          className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-transparent px-4 py-2 text-sm font-semibold text-red-500 hover:border-red-400/50 hover:text-red-400 disabled:cursor-wait"
+                          icon={<Trash2 className="h-4 w-4" />}
                           aria-label={`Remove ${item.title} from cart`}
                         >
-                          <Trash2 className="h-4 w-4" />
-                          <span>Remove</span>
-                        </button>
-                        <button
-                          type="button"
+                          Remove
+                        </ActionButton>
+                        <ActionButton
+                          tone="ghost"
+                          onClick={async () => {
+                            await toggleWishlist(item.productSlug);
+                          }}
+                          spinner={saving}
                           disabled={saving}
-                          aria-busy={saving}
-                          onClick={() => void toggleWishlist(item.productSlug)}
-                          className="text-sm font-semibold text-[var(--market-brass)] disabled:cursor-wait"
                         >
-                          {saving ? "..." : saved ? "Wishlisted" : "Add to wishlist"}
-                        </button>
+                          {saved ? "Wishlisted" : "Add to wishlist"}
+                        </ActionButton>
                         <Link
                           href={`/product/${item.productSlug}`}
                           className="ml-auto text-sm font-semibold text-[var(--market-brass)]"

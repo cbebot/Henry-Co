@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { DivisionImage } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import { getAccountUrl, getHubUrl } from "@henryco/config";
 import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
@@ -119,7 +119,7 @@ function AccountAvatar({
       )}
     >
       {showImage && avatarUrl ? (
-        <Image
+        <DivisionImage
           src={avatarUrl}
           alt={`${label} avatar`}
           fill
@@ -127,6 +127,7 @@ function AccountAvatar({
           sizes="48px"
           unoptimized
           onError={() => setFailed(true)}
+          radius="0"
         />
       ) : (
         initials

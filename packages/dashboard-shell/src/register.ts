@@ -67,12 +67,47 @@ export type ModuleSize = "sm" | "md" | "lg";
 export type RailSlot = "primary" | "secondary" | "utility";
 
 /**
+ * One route entry a module owns. The shell's catch-all module router
+ * (`apps/account/app/(account)/modules/[...slug]/page.tsx`) consumes
+ * these to know which sub-paths under `/modules/<slug>/...` map to a
+ * registered surface.
+ *
+ * `path` is the relative path under the module's slug (no leading
+ * slash). For example, the marketplace module's `orders` entry
+ * resolves to `/modules/marketplace/orders` at the shell level.
+ *
+ * `kind` distinguishes a module's home from its detail/sub-routes;
+ * the shell renders the home view by default and uses sub-route
+ * entries for deep-linked navigation.
+ */
+export type RouteEntry = {
+  /** Relative path under the module slug, no leading slash. */
+  path: string;
+  /** "home" = the module's main view; "detail" = a sub-page. */
+  kind: "home" | "detail";
+  /** Display label for breadcrumbs / tooltips. */
+  label: string;
+  /** Optional dynamic-segment names — e.g. `["orderId"]` for `/orders/[orderId]`. */
+  params?: ReadonlyArray<string>;
+};
+
+/**
  * The contract every dashboard module ships.
  *
  * Modules are server-side objects (no React state, no hooks at the
  * registry level). The shell calls each method on demand during a
  * server-component render, so each method receives the live viewer
  * and can decide what to surface based on the viewer's access.
+ *
+ * 8 manifest exports per the DASH-2 spec:
+ *   1. getEligibleViewer  → quick "allowed" | "hidden" decision
+ *   2. getRoleGate        → RoleDecision detail (subset of #1)
+ *   3. getHomeWidgets     → home-grid contributions
+ *   4. getRoutes          → owned URL templates for the catch-all router
+ *   5. getCommandPaletteEntries → DASH-5 consumes
+ *   6. getNotificationCategories → DASH-6 consumes
+ *   7. getEmptyTeaching   → empty-state UI when the module has no content
+ *   8. getDeepLinkTemplate → realtime spine URL interpolation
  */
 export type DashboardModule = {
   /** Stable slug — used as the URL segment and as the registry key. */
@@ -91,9 +126,19 @@ export type DashboardModule = {
   railSlot: RailSlot;
 
   /**
+   * Coarse eligibility check — used by the rail to decide whether to
+   * render the module's entry at all. Equivalent to "is `getRoleGate`
+   * non-null", but expressed as a literal "allowed" | "hidden" for
+   * call sites that want a single boolean-shaped answer without
+   * branching on the RoleDecision shape.
+   */
+  getEligibleViewer: (viewer: UnifiedViewer) => "allowed" | "hidden";
+
+  /**
    * Module-side gate. Returns `null` to hide the module entirely from
    * the viewer; returns a RoleDecision to gate specific features
-   * within the module.
+   * within the module. `getEligibleViewer` is the boolean projection
+   * of this method.
    */
   getRoleGate: (viewer: UnifiedViewer) => RoleDecision | null;
 
@@ -103,6 +148,15 @@ export type DashboardModule = {
    * pack algorithm decides final placement.
    */
   getHomeWidgets: (viewer: UnifiedViewer) => Promise<ReadonlyArray<HomeWidget>>;
+
+  /**
+   * Owned URL templates. The shell's catch-all module router
+   * (`/modules/[...slug]/page.tsx`) consults this to resolve which
+   * registered module owns a given sub-path. Returning at least one
+   * entry with `kind: "home"` is required for the module's home view
+   * to be reachable via `/modules/<slug>`.
+   */
+  getRoutes: () => ReadonlyArray<RouteEntry>;
 
   /**
    * Cmd+K palette entries the module contributes (DASH-5 consumes).
@@ -148,27 +202,74 @@ export type EmptyTeaching = {
 };
 
 /**
- * The registry is a Map keyed by module slug. DASH-2 introduces
- * `registerModule(module)` and `getRegisteredModules()`. DASH-1 ships
- * the type and an empty stub so consumers can import the type without
- * a registry implementation.
+ * The registry is a Map keyed by module slug.
  */
 export type ModuleRegistry = Map<ModuleSlug, DashboardModule>;
 
 /**
- * Empty placeholder registry. Replaced in DASH-2 with the real
- * register/getEligibleModules API.
+ * Process-wide module registry. Modules call `registerModule()` once
+ * at module-load time; the shell calls `getEligibleModules(viewer)`
+ * during a server-component render to walk the registry.
+ *
+ * The registry is a singleton because Next.js App Router caches
+ * imported modules per server worker; a single registry per worker
+ * is the natural shape (modules registered once, viewer-scoped walks
+ * resolve eligibility per request).
  */
-export const _PLACEHOLDER_REGISTRY: ModuleRegistry = new Map();
+const REGISTRY: ModuleRegistry = new Map();
+
+/**
+ * Registers a module. Idempotent — re-registering the same slug is a
+ * no-op so HMR + double-imports don't throw. Different modules
+ * registering the same slug throws so a typo'd slug doesn't silently
+ * collide with another module.
+ */
+export function registerModule(module: DashboardModule): void {
+  const existing = REGISTRY.get(module.slug);
+  if (existing && existing !== module) {
+    throw new Error(
+      `[@henryco/dashboard-shell] module slug collision: ` +
+        `"${module.slug}" registered twice with different module objects.`,
+    );
+  }
+  REGISTRY.set(module.slug, module);
+}
+
+/**
+ * Returns every registered module, in registration order. Mostly for
+ * dev tooling; production callers want `getEligibleModules(viewer)`
+ * which applies the role gate.
+ */
+export function getRegisteredModules(): ReadonlyArray<DashboardModule> {
+  return Array.from(REGISTRY.values());
+}
 
 /**
  * Returns the modules this viewer is eligible to see, gated by each
- * module's `getRoleGate`. DASH-2 implements; DASH-1 stubs to an empty
- * array so type-checkers can verify call sites compile.
+ * module's `getRoleGate`. A module that returns `null` from its
+ * `getRoleGate(viewer)` is filtered out entirely.
+ *
+ * Called once per shell render (server-side); the result is the
+ * registry walk for the current viewer at the current request.
  */
-export function getEligibleModules(_viewer: UnifiedViewer): ReadonlyArray<DashboardModule> {
-  // DASH-2 will replace this with the real registry walk.
-  return [];
+export function getEligibleModules(viewer: UnifiedViewer): ReadonlyArray<DashboardModule> {
+  const eligible: DashboardModule[] = [];
+  for (const module of REGISTRY.values()) {
+    const decision = module.getRoleGate(viewer);
+    if (decision && decision.kind === "allow") {
+      eligible.push(module);
+    }
+  }
+  return eligible;
+}
+
+/**
+ * Test-only: clear the registry. Lets unit tests register a fixture
+ * module without leaking state across tests. Not exposed in the
+ * package barrel.
+ */
+export function _resetRegistryForTests(): void {
+  REGISTRY.clear();
 }
 
 /**

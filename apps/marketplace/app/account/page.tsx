@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { DivisionImage } from "@henryco/dashboard-shell/components";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -485,12 +485,13 @@ function SavedItemTile({ product }: { product: MarketplaceProduct }) {
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-[rgba(0,0,0,0.2)]">
         {imageSrc ? (
-          <Image
+          <DivisionImage
             src={imageSrc}
             alt={product.title}
             fill
             sizes="(max-width: 1024px) 50vw, 25vw"
             className="object-cover transition duration-500 group-hover:scale-[1.04]"
+            radius="0"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

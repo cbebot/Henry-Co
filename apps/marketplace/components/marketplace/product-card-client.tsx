@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { DivisionImage } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Star } from "lucide-react";
@@ -76,7 +76,7 @@ export function ProductCardClient({
       )}
     >
       <div className="relative aspect-[4/4.6] overflow-hidden bg-[var(--market-soft-wash)]">
-        <Image
+        <DivisionImage
           src={product.gallery[0] || fallbackImage}
           alt={product.title}
           fill
@@ -84,6 +84,7 @@ export function ProductCardClient({
           className="object-cover transition duration-500 group-hover:scale-[1.04]"
           priority={priority}
           loading={priority ? "eager" : "lazy"}
+          radius="0"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.9)] via-[rgba(4,7,13,0.12)] to-transparent" />
 

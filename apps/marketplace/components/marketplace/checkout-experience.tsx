@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
+import { DivisionImage, ActionButton } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import {
   AlertCircle,
@@ -17,7 +17,6 @@ import {
   UploadCloud,
   Wallet,
 } from "lucide-react";
-import { HenryCoActivityIndicator } from "@henryco/ui";
 import type { UserAddressRecord } from "@henryco/address-selector";
 import { useMarketplaceCart } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
@@ -408,32 +407,27 @@ export function CheckoutExperience({
             ) : null}
 
             {step === "delivery" || step === "payment" ? (
-              <button
-                type="button"
+              <ActionButton
+                tone="primary"
                 onClick={next}
                 disabled={(step === "delivery" && !deliveryReady) || (step === "payment" && !paymentReady)}
-                className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+                icon={<ChevronRight className="h-4 w-4" />}
+                iconPosition="trailing"
               >
                 Continue
-                <ChevronRight className="h-4 w-4" />
-              </button>
+              </ActionButton>
             ) : null}
 
             {step === "confirm" ? (
-              <button
-                type="button"
-                onClick={() => void placeOrder()}
+              <ActionButton
+                tone="primary"
+                onClick={() => placeOrder()}
                 disabled={submitting || !agreed || !paymentReady}
-                aria-busy={submitting}
-                className="market-button-primary inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-70"
+                spinner={submitting}
+                icon={<Lock className="h-4 w-4" />}
               >
-                {submitting ? (
-                  <HenryCoActivityIndicator size="sm" label="Placing order" />
-                ) : (
-                  <Lock className="h-4 w-4" />
-                )}
                 {submitting ? "Placing order..." : "Place order"}
-              </button>
+              </ActionButton>
             ) : null}
 
             <p className="ml-auto inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">
@@ -1161,7 +1155,7 @@ function ConfirmStep({
               >
                 <div className="relative h-14 w-14 overflow-hidden rounded-[0.9rem] bg-[var(--market-soft-wash)]">
                   {item.image ? (
-                    <Image src={item.image} alt={item.title} fill sizes="56px" className="object-cover" />
+                    <DivisionImage src={item.image} alt={item.title} fill sizes="56px" className="object-cover" radius="0" />
                   ) : null}
                 </div>
                 <div className="min-w-0">
@@ -1263,7 +1257,7 @@ function OrderSummaryRail({
             <div key={item.id} className="grid grid-cols-[40px,1fr,auto] items-center gap-3 text-sm">
               <div className="relative h-10 w-10 overflow-hidden rounded-md bg-[var(--market-soft-wash)]">
                 {item.image ? (
-                  <Image src={item.image} alt={item.title} fill sizes="40px" className="object-cover" />
+                  <DivisionImage src={item.image} alt={item.title} fill sizes="40px" className="object-cover" radius="0" />
                 ) : null}
               </div>
               <div className="min-w-0">
