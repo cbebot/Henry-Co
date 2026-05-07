@@ -12,13 +12,13 @@ export default async function TrackOrderPage({
   searchParams,
 }: {
   params: Promise<{ orderNo: string }>;
-  searchParams?: Promise<{ placed?: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { orderNo } = await params;
-  const query = searchParams ? await searchParams : {};
+  const search = (await searchParams) ?? {};
+  const justPlaced = search.placed === "1";
   const order = await getOrderByNumber(orderNo);
   if (!order) notFound();
-  const justPlaced = query.placed === "1";
 
   const payoutFrozen = order.groups.some((group) => group.payoutStatus === "payout_frozen");
   const showCompletionConfirm = order.groups.some(
@@ -31,20 +31,10 @@ export default async function TrackOrderPage({
       {justPlaced ? (
         <PlacementAcknowledgement
           orderNo={order.orderNo}
-          total={order.grandTotal}
-          currency={order.currency}
+          paymentMethod={order.paymentRecord?.method ?? null}
           buyerEmail={order.buyerEmail || null}
-          paymentRecord={
-            order.paymentRecord
-              ? {
-                  method: order.paymentRecord.method,
-                  reference: order.paymentRecord.reference,
-                  status: order.paymentRecord.status,
-                  proofName: order.paymentRecord.proofName ?? null,
-                  proofUrl: order.paymentRecord.proofUrl ?? null,
-                }
-              : null
-          }
+          grandTotal={order.grandTotal}
+          currency={order.currency}
         />
       ) : null}
 
