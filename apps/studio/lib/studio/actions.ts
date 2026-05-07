@@ -196,8 +196,6 @@ export async function uploadPaymentProofAction(formData: FormData) {
   const redirectPath = String(formData.get("redirectPath") || getStudioAccountUrl());
   const accessKey = String(formData.get("accessKey") || "") || null;
   const proof = formData.get("proof");
-  /** Always land on shared account Studio hub after a successful proof upload (cross-domain). */
-  const accountStudioAfterProof = getStudioAccountUrl();
 
   if (!paymentId || !(proof instanceof File) || proof.size === 0) {
     redirect(withStudioToast(redirectPath, "proof_required"));
@@ -209,7 +207,7 @@ export async function uploadPaymentProofAction(formData: FormData) {
   } catch {
     redirect(withStudioToast(redirectPath, "proof_upload_failed"));
   }
-  redirect(withStudioToast(accountStudioAfterProof, "proof_uploaded"));
+  redirect(withStudioToast(redirectPath, "proof_uploaded"));
 }
 
 export async function createProjectFromProposalAction(formData: FormData) {

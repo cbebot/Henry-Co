@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight, CalendarClock, Receipt, Shield } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarClock,
+  FileCheck2,
+  Receipt,
+  Shield,
+  UploadCloud,
+} from "lucide-react";
 
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
 import { StudioFileField } from "@/components/studio/studio-file-field";
@@ -43,6 +51,17 @@ function formatDueDate(value: string | null) {
 function relativeProjectPath(projectId: string, accessKey: string | null) {
   const search = accessKey ? `?access=${encodeURIComponent(accessKey)}` : "";
   return `/project/${projectId}${search}`;
+}
+
+function proofDateLabel(value: string | null) {
+  if (!value) return "now";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "now";
+  return date.toLocaleDateString("en-NG", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 /**
@@ -108,6 +127,7 @@ export default async function StudioPaymentWorkspace({
   const dueLabel = formatDueDate(payment.dueDate);
   const isPaid = payment.status === "paid";
   const isProcessing = payment.status === "processing";
+  const proofOnFile = Boolean(payment.proofName || payment.proofUrl);
 
   const heroBody = isPaid
     ? "Payment confirmed. Thank you — your project lane stays moving."
@@ -142,7 +162,7 @@ export default async function StudioPaymentWorkspace({
           used across the platform. Status-aware copy. */}
       <div className="mt-5">
         <HenryCoHeroCard
-          tone="panel"
+          tone="contrast"
           accentVar="var(--studio-signal, #97f4f3)"
           eyebrow={`Payment · ${paymentRank} of ${totalPayments}`}
           title={payment.label || "Studio payment"}
@@ -198,7 +218,7 @@ export default async function StudioPaymentWorkspace({
       {/* Bank details + step-by-step + support — the rewritten,
           hairline-divided StudioPaymentGuide. Identical data shape used
           on the proposal page so finance copy stays consistent. */}
-      {!isPaid ? (
+      {!isPaid && !proofOnFile ? (
         <div className="mt-6">
           <StudioPaymentGuide
             title="Send the deposit using the verified company account"
@@ -217,15 +237,69 @@ export default async function StudioPaymentWorkspace({
         </div>
       ) : null}
 
+      {proofOnFile && !isPaid ? (
+        <section className="mt-6 rounded-[1.4rem] border border-[rgba(151,244,243,0.3)] bg-[rgba(151,244,243,0.07)] p-5 sm:p-6">
+          <div className="flex items-start gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(151,244,243,0.35)] bg-[rgba(151,244,243,0.08)] text-[var(--studio-signal)]">
+              <FileCheck2 className="h-5 w-5" aria-hidden />
+            </div>
+            <div className="min-w-0">
+              <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+                Payment proof received
+              </div>
+              <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)]">
+                Finance is verifying this transfer
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
+                {payment.proofName ? (
+                  <>
+                    <span className="font-semibold text-[var(--studio-ink)]">{payment.proofName}</span>{" "}
+                    is attached to this payment. We are matching it to the bank transfer and will
+                    mark the checkpoint confirmed once it clears.
+                  </>
+                ) : (
+                  "A proof file is attached to this payment. We are matching it to the bank transfer and will mark the checkpoint confirmed once it clears."
+                )}
+              </p>
+              <div className="mt-4 grid gap-3 text-[12.5px] text-[var(--studio-ink-soft)] sm:grid-cols-3">
+                <div className="rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-3 py-2">
+                  <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
+                    Status
+                  </span>
+                  <span className="mt-1 block font-semibold text-[var(--studio-ink)]">{statusLabel}</span>
+                </div>
+                <div className="rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-3 py-2">
+                  <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
+                    Submitted
+                  </span>
+                  <span className="mt-1 block font-semibold text-[var(--studio-ink)]">
+                    {proofDateLabel(payment.updatedAt)}
+                  </span>
+                </div>
+                <div className="rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-3 py-2">
+                  <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
+                    Next
+                  </span>
+                  <span className="mt-1 block font-semibold text-[var(--studio-ink)]">Finance confirmation</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       {/* Inline proof upload — only when the payment is still open.
           Submits to the existing canonical action so we don't fork the
           finance pipeline. */}
-      {!isPaid ? (
+      {!isPaid && !proofOnFile ? (
         <section className="mt-6 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--studio-line)] bg-[rgba(151,244,243,0.06)] text-[var(--studio-signal)]">
+              <UploadCloud className="h-5 w-5" aria-hidden />
+            </div>
             <div>
               <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
-                Send your proof
+                {isProcessing ? "Attach the missing proof" : "Send your proof"}
               </div>
               <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--studio-ink-soft)]">
                 Upload your receipt or alert. Finance reviews and confirms within one business day —
@@ -259,7 +333,8 @@ export default async function StudioPaymentWorkspace({
           </div>
           <p className="mt-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
             Confirmed on {payment.updatedAt ? new Date(payment.updatedAt).toLocaleDateString("en-NG", { year: "numeric", month: "short", day: "numeric" }) : "—"}.
-            Your project workspace shows the milestone unlock and the next step.
+            {payment.proofName ? ` Proof on file: ${payment.proofName}.` : ""} Your project
+            workspace shows the milestone unlock and the next step.
           </p>
           <Link
             href={projectHref}

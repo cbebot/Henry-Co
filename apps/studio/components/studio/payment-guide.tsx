@@ -52,7 +52,7 @@ export function StudioPaymentGuide({
   return (
     <section className="space-y-5">
       <HenryCoHeroCard
-        tone="panel"
+        tone="contrast"
         accentVar="var(--studio-signal, #97f4f3)"
         eyebrow={statusLabel}
         title={title}

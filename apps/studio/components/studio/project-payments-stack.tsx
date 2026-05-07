@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock3, FileCheck2, UploadCloud } from "lucide-react";
 import { StudioFileField } from "@/components/studio/studio-file-field";
 import { StudioPaymentGuide } from "@/components/studio/payment-guide";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
@@ -39,6 +39,67 @@ function supportWhatsappHref(value: string | null) {
   if (!value) return null;
   const digits = value.replace(/[^\d]/g, "");
   return digits ? `https://wa.me/${digits}` : null;
+}
+
+function paymentWorkspaceHref(paymentId: string, access: string) {
+  return `/pay/${paymentId}${access ? `?access=${encodeURIComponent(access)}` : ""}`;
+}
+
+function PaymentProofStatus({ payment }: { payment: StudioPayment }) {
+  const proofName = payment.proofName?.trim() || null;
+  const proofOnFile = Boolean(proofName || payment.proofUrl);
+
+  if (payment.status === "paid") {
+    return (
+      <div className="mt-4 rounded-[1.15rem] border border-[rgba(141,232,179,0.32)] bg-[rgba(141,232,179,0.08)] px-4 py-3">
+        <div className="flex items-start gap-3">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#8de8b3]" aria-hidden />
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-[var(--studio-ink)]">
+              {proofOnFile ? "Payment proof verified" : "Payment verified"}
+            </div>
+            <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
+              {proofName
+                ? `Finance verified ${proofName} and recorded this payment against the project.`
+                : "Finance has confirmed this transfer and recorded it against the project."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (proofOnFile) {
+    return (
+      <div className="mt-4 rounded-[1.15rem] border border-[rgba(151,244,243,0.28)] bg-[rgba(151,244,243,0.07)] px-4 py-3">
+        <div className="flex items-start gap-3">
+          <FileCheck2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--studio-signal)]" aria-hidden />
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-[var(--studio-ink)]">Payment proof on file</div>
+            <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
+              {proofName
+                ? `${proofName} is attached. Finance is matching it to the transfer and will mark this checkpoint confirmed once it clears.`
+                : "A proof file is attached. Finance is matching it to the transfer and will mark this checkpoint confirmed once it clears."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 rounded-[1.15rem] border border-[rgba(255,197,128,0.28)] bg-[rgba(255,197,128,0.07)] px-4 py-3">
+      <div className="flex items-start gap-3">
+        <UploadCloud className="mt-0.5 h-4 w-4 shrink-0 text-[#f0c89a]" aria-hidden />
+        <div className="min-w-0">
+          <div className="text-sm font-semibold text-[var(--studio-ink)]">No payment proof uploaded yet</div>
+          <p className="mt-1 text-xs leading-5 text-[var(--studio-ink-soft)]">
+            Use the secure payment workspace below to transfer, attach your receipt, and move this checkpoint into finance verification.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function ProjectPaymentsStack({
@@ -166,6 +227,9 @@ export function ProjectPaymentsStack({
       <div className="mt-6 space-y-4">
         {payments.map((payment) => {
           const phase = studioPaymentCheckpointCopy(payment);
+          const proofOnFile = Boolean(payment.proofName || payment.proofUrl);
+          const paymentHref = paymentWorkspaceHref(payment.id, access);
+          const shouldShowUpload = payment.status !== "paid" && !proofOnFile;
           return (
             <div key={payment.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
               <div className="flex flex-wrap items-start justify-between gap-4">
@@ -185,6 +249,7 @@ export function ProjectPaymentsStack({
                       Due {new Date(payment.dueDate).toLocaleDateString("en-NG")}
                     </div>
                   ) : null}
+                  <PaymentProofStatus payment={payment} />
                 </div>
                 {isFinance ? (
                   <form action={setPaymentStatusAction} className="flex gap-2">
@@ -202,66 +267,72 @@ export function ProjectPaymentsStack({
               </div>
               {payment.status !== "paid" && !isStaff ? (
                 <>
-                  {/* Three-step "what happens next" rail — keeps the
-                   * customer oriented: transfer → upload → finance
-                   * verifies. Balanced horizontally, stacks vertically
-                   * on narrow screens. */}
-                  <ol className="mt-4 grid gap-2 sm:grid-cols-3">
-                    {[
-                      { num: "1", label: "Transfer", body: "Use the verified bank details above." },
-                      { num: "2", label: "Upload", body: "Attach your receipt or alert below." },
-                      { num: "3", label: "Verified", body: "Finance confirms within one business day." },
-                    ].map((step) => (
-                      <li
-                        key={step.num}
-                        className="flex items-start gap-3 rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-3 py-2.5"
-                      >
-                        <span
-                          aria-hidden
-                          className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] text-[11px] font-semibold text-[var(--studio-signal)]"
+                  {!proofOnFile ? (
+                    <ol className="mt-4 grid gap-2 sm:grid-cols-3">
+                      {[
+                        { num: "1", label: "Transfer", body: "Use the verified bank details." },
+                        { num: "2", label: "Attach proof", body: "Receipt, alert screenshot, or PDF." },
+                        { num: "3", label: "Finance clears it", body: "Usually within one business day." },
+                      ].map((step) => (
+                        <li
+                          key={step.num}
+                          className="flex items-start gap-3 rounded-[1rem] border border-[var(--studio-line)] bg-black/10 px-3 py-2.5"
                         >
-                          {step.num}
-                        </span>
-                        <div className="min-w-0">
-                          <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink)]">
-                            {step.label}
+                          <span
+                            aria-hidden
+                            className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] text-[11px] font-semibold text-[var(--studio-signal)]"
+                          >
+                            {step.num}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink)]">
+                              {step.label}
+                            </div>
+                            <p className="mt-0.5 text-[11.5px] leading-5 text-[var(--studio-ink-soft)]">
+                              {step.body}
+                            </p>
                           </div>
-                          <p className="mt-0.5 text-[11.5px] leading-5 text-[var(--studio-ink-soft)]">
-                            {step.body}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                  <form action={uploadPaymentProofAction} className="mt-4 space-y-3">
-                    <input type="hidden" name="paymentId" value={payment.id} />
-                    <input type="hidden" name="redirectPath" value={redirectPath} />
-                    <input type="hidden" name="accessKey" value={access || ""} />
-                    <StudioFileField
-                      name="proof"
-                      required
-                      variant="compact"
-                      title="Upload payment proof"
-                      description="Bank receipt, debit alert screenshot, or PDF — must show amount, date, and destination."
-                      footerHint="Review your file name before submit — we show a trimmed label so you know exactly what finance received."
-                    />
-                    <StudioSubmitButton label="Submit payment proof" pendingLabel="Uploading…" />
-                  </form>
-                </>
-              ) : null}
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
 
-              {/* Deep-link to the dedicated focused payment workspace —
-                  /pay/[paymentId] gives the customer a single calm
-                  surface for one payment when the milestone-list view
-                  feels too dense. */}
-              {!isStaff ? (
-                <Link
-                  href={`/pay/${payment.id}${access ? `?access=${access}` : ""}`}
-                  className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--studio-signal)] underline-offset-4 transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 [@media(hover:hover)]:hover:underline"
-                >
-                  Open dedicated payment workspace
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <Link
+                      href={paymentHref}
+                      className="studio-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
+                    >
+                      {proofOnFile ? "Open payment status" : "Open secure payment workspace"}
+                      {proofOnFile ? <Clock3 className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+                    </Link>
+                    <p className="max-w-md text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
+                      The focused payment page keeps the amount, account details, proof upload, and finance status in one clean view.
+                    </p>
+                  </div>
+
+                  {shouldShowUpload ? (
+                    <details className="group/proof mt-3 rounded-[1.15rem] border border-[var(--studio-line)] bg-black/10 px-4 py-3">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-signal)] outline-none [&::-webkit-details-marker]:hidden">
+                        <span>Upload proof here instead</span>
+                        <span className="text-[var(--studio-ink-soft)] transition group-open/proof:rotate-180">▾</span>
+                      </summary>
+                      <form action={uploadPaymentProofAction} className="mt-4 space-y-3">
+                        <input type="hidden" name="paymentId" value={payment.id} />
+                        <input type="hidden" name="redirectPath" value={redirectPath} />
+                        <input type="hidden" name="accessKey" value={access || ""} />
+                        <StudioFileField
+                          name="proof"
+                          required
+                          variant="compact"
+                          title="Payment proof file"
+                          description="Bank receipt, debit alert screenshot, or PDF — must show amount, date, and destination."
+                          footerHint="After upload, this page will show the proof as received while finance verifies it."
+                        />
+                        <StudioSubmitButton label="Submit payment proof" pendingLabel="Uploading…" />
+                      </form>
+                    </details>
+                  ) : null}
+                </>
               ) : null}
             </div>
           );
