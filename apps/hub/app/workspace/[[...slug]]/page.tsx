@@ -19,7 +19,7 @@ function staffHqUrl(
     }
   }
   const query = qs.toString();
-  const base = `https://staffhq.${COMPANY.group.baseDomain}${normalizedPath}`;
+  const base = `https://staff.${COMPANY.group.baseDomain}${normalizedPath}`;
   return query ? `${base}?${query}` : base;
 }
 

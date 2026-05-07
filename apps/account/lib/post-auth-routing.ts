@@ -80,7 +80,7 @@ function getHenryCoHosts() {
   return {
     accountHost: `account.${baseDomain}`,
     hqHost: `hq.${baseDomain}`,
-    staffHost: `staffhq.${baseDomain}`,
+    staffHost: `staff.${baseDomain}`,
     workspaceHost: `workspace.${baseDomain}`,
   };
 }
