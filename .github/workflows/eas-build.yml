@@ -27,7 +27,6 @@ on:
 
 jobs:
   eas:
-    if: ${{ secrets.EXPO_TOKEN != '' }}
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.profile == 'production' && 'production' || 'eas-nonprod' }}
     defaults:
