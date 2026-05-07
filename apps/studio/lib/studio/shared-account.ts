@@ -147,6 +147,17 @@ function toKobo(amount: number) {
   return Math.max(0, Math.round(Number(amount || 0) * 100));
 }
 
+function customerInvoiceStatus(value: unknown) {
+  const status = cleanText(value).toLowerCase();
+  if (["paid", "pending", "overdue", "draft", "cancelled", "refunded"].includes(status)) {
+    return status;
+  }
+  if (["open", "requested", "processing", "pending_verification"].includes(status)) {
+    return "pending";
+  }
+  return "pending";
+}
+
 export async function ensureCustomerProfile(input: {
   userId?: string | null;
   email?: string | null;
@@ -295,7 +306,7 @@ export async function upsertCustomerInvoice(input: {
   const payload = {
     invoice_no: input.invoiceNo,
     division: "studio",
-    status: input.status,
+    status: customerInvoiceStatus(input.status),
     subtotal_kobo: toKobo(input.subtotal),
     total_kobo: toKobo(input.total),
     currency: cleanText(input.currency) || "NGN",
@@ -482,7 +493,7 @@ async function replayPendingSharedPayload(input: {
         subtotal: Number(input.payload.subtotal_kobo || 0) / 100,
         total: Number(input.payload.total_kobo || 0) / 100,
         description: cleanText(input.payload.description),
-        status: cleanText(input.payload.status) || "open",
+        status: customerInvoiceStatus(input.payload.status),
         currency: cleanText(input.payload.currency) || "NGN",
         paymentMethod: cleanText(input.payload.payment_method) || null,
         paymentReference: cleanText(input.payload.payment_reference) || null,

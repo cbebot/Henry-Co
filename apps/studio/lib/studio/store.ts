@@ -1117,7 +1117,7 @@ async function upsertPayment(payment: StudioPayment, meta?: UpsertMeta) {
     userId: meta?.userId,
     email: meta?.email,
     invoiceNo: `STUDIO-${payment.id.slice(0, 8).toUpperCase()}`,
-    status: payment.status === "paid" ? "paid" : payment.status === "cancelled" ? "cancelled" : "open",
+    status: payment.status === "paid" ? "paid" : payment.status === "cancelled" ? "cancelled" : "pending",
     subtotal: Math.round(asNumber(payment.amount)),
     total: Math.round(asNumber(payment.amount)),
     currency: payment.currency,

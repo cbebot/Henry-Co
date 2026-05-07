@@ -3,6 +3,7 @@ import { requireJobsUser } from "@/lib/auth";
 import { getCandidateConversations } from "@/lib/jobs/hiring";
 import { candidateNav } from "@/lib/jobs/navigation";
 import { SectionCard, WorkspaceShell } from "@/components/workspace-shell";
+import { EmptyState } from "@/components/feedback";
 
 export const dynamic = "force-dynamic";
 
@@ -24,11 +25,19 @@ export default async function CandidateConversationsPage() {
         body="Messages from employers about your applications."
       >
         {conversations.length === 0 ? (
-          <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-6 text-center">
-            <p className="text-sm text-[var(--jobs-muted)]">
-              No conversations yet. When an employer messages you about an application, it will appear here.
-            </p>
-          </div>
+          <EmptyState
+            kicker="No conversations yet"
+            title="Hiring conversations will appear here."
+            body="When an employer responds to one of your applications, the thread opens here. Every message stays on-platform for audit and security."
+            action={
+              <Link
+                href="/candidate/applications"
+                className="jobs-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
+              >
+                View applications
+              </Link>
+            }
+          />
         ) : (
           <div className="space-y-3">
             {conversations.map((conv) => (

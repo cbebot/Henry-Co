@@ -106,6 +106,13 @@ export default async function ProjectDetailPage({
       ];
   const isFinance = viewerHasRole(viewer, ["studio_owner", "finance"]);
   const paymentPriority = unpaidPayments.length > 0;
+  const primaryOpenPayment =
+    unpaidPayments.find((payment) => payment.status === "requested" || payment.status === "overdue") ??
+    unpaidPayments[0] ??
+    null;
+  const primaryPaymentHref = primaryOpenPayment
+    ? `/pay/${primaryOpenPayment.id}?access=${encodeURIComponent(project.accessKey)}`
+    : "#studio-payment-checkpoint";
   const accountUrl = getStudioAccountUrl();
   const onboardingGateActive =
     project.status === "pending_deposit" ||
@@ -118,13 +125,13 @@ export default async function ProjectDetailPage({
     const verifying = payments.some((p) => p.status === "processing");
     if (openInvoice) {
       clientCta = {
-        href: "#studio-payment-checkpoint",
+        href: primaryPaymentHref,
         label: "Pay & upload proof",
         sub: "This secures your slot so we can start onboarding and schedule build work with confidence.",
       };
     } else if (verifying) {
       clientCta = {
-        href: "#studio-payment-checkpoint",
+        href: primaryPaymentHref,
         label: "View payment status",
         sub: "Finance is verifying your proof—this workspace updates as soon as it clears.",
       };

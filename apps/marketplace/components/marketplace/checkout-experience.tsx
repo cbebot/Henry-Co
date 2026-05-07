@@ -441,6 +441,16 @@ export function CheckoutExperience({
               Encrypted · session bound · audit-logged
             </p>
           </div>
+
+          {step === "confirm" ? (
+            <p className="border-l-2 border-[var(--market-brass)]/55 pl-4 text-xs leading-6 text-[var(--market-muted)]">
+              {paymentMethod === "wallet_balance"
+                ? "On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches."
+                : paymentMethod === "bank_transfer"
+                ? "On confirm, your transfer proof routes to finance. Verification typically completes within a few business hours and the timeline updates the moment it does."
+                : "On confirm, the order opens for vendor acceptance. The rider collects payment when the order arrives."}
+            </p>
+          ) : null}
         </form>
 
         {/* Order rail — sticky summary */}

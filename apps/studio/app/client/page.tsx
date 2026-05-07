@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { formatCurrency } from "@/lib/env";
-import { requireStudioUser } from "@/lib/studio/auth";
+import { requireClientPortalViewer } from "@/lib/portal/auth";
 import { studioClientSnapshot } from "@/lib/studio/data";
 import { clientNav } from "@/lib/studio/navigation";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import { clientProjectStatusLabel, friendlyMilestoneStatus } from "@/lib/studio/project-workspace-copy";
+import type { StudioViewer } from "@/lib/studio/types";
 import {
   StudioEmptyState,
   StudioMetricCard,
@@ -12,7 +13,17 @@ import {
 } from "@/components/studio/workspace/shell";
 
 export default async function ClientDashboardPage() {
-  const viewer = await requireStudioUser("/client");
+  const portalViewer = await requireClientPortalViewer("/client");
+  const viewer: StudioViewer = {
+    user: {
+      id: portalViewer.userId,
+      email: portalViewer.email,
+      fullName: portalViewer.fullName,
+      avatarUrl: portalViewer.avatarUrl,
+    },
+    normalizedEmail: portalViewer.normalizedEmail,
+    roles: ["client"],
+  };
   const snapshot = await getStudioSnapshot();
   const clientData = studioClientSnapshot(viewer, snapshot);
 
@@ -62,7 +73,16 @@ export default async function ClientDashboardPage() {
         <section className="studio-panel rounded-[1.75rem] p-6">
           <div className="studio-kicker">Projects</div>
           <div className="mt-5 space-y-4">
-            {clientData.projects.map((project) => (
+            {clientData.projects.map((project) => {
+              const milestones = project.milestones ?? [];
+              const openPayment =
+                clientData.payments.find(
+                  (payment) => payment.projectId === project.id && payment.status !== "paid" && payment.status !== "cancelled"
+                ) ?? null;
+              const projectHref = openPayment
+                ? `/pay/${openPayment.id}?access=${project.accessKey}`
+                : `/project/${project.id}?access=${project.accessKey}`;
+              return (
               <article key={project.id} className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="max-w-3xl">
@@ -77,19 +97,20 @@ export default async function ClientDashboardPage() {
                   </div>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {project.milestones.map((milestone) => (
+                  {milestones.map((milestone) => (
                     <span key={milestone.id} className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs text-[var(--studio-ink-soft)]">
                       {milestone.name} · {friendlyMilestoneStatus(milestone.status)}
                     </span>
                   ))}
                 </div>
                 <div className="mt-5">
-                  <Link href={`/project/${project.id}?access=${project.accessKey}`} className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold">
-                    Open project
+                  <Link href={projectHref} className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold">
+                    {openPayment ? "Continue payment" : "Open project"}
                   </Link>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </section>
       ) : null}

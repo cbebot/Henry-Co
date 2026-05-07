@@ -163,10 +163,14 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
       </form>
 
       {!reviews.length ? (
-        <section className="market-soft rounded-[1.7rem] p-6 text-center">
-          <p className="text-xl font-semibold text-[var(--market-paper-white)]">No reviews yet.</p>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-            Verified purchase reviews will appear here once you start submitting feedback through the protected account flow.
+        <section className="border-l-2 border-[var(--market-brass)]/55 px-5 py-4">
+          <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
+            No reviews submitted yet.
+          </p>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--market-muted)]">
+            Verified purchase reviews live here. Pick a product above, rate it,
+            and your feedback joins the trust layer the next time someone
+            considers it.
           </p>
         </section>
       ) : (

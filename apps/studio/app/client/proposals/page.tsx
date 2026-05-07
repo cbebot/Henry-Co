@@ -5,7 +5,7 @@ import { studioClientSnapshot } from "@/lib/studio/data";
 import { clientNav } from "@/lib/studio/navigation";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import { friendlyProposalStatus } from "@/lib/studio/project-workspace-copy";
-import { StudioWorkspaceShell } from "@/components/studio/workspace/shell";
+import { StudioEmptyState, StudioWorkspaceShell } from "@/components/studio/workspace/shell";
 
 export default async function ClientProposalsPage() {
   const viewer = await requireStudioUser("/client/proposals");
@@ -19,6 +19,20 @@ export default async function ClientProposalsPage() {
       description="Proposal history stays available here so scope, pricing, and milestone logic are always easy to revisit."
       nav={clientNav("/client/proposals")}
     >
+      {clientData.proposals.length === 0 ? (
+        <StudioEmptyState
+          title="No proposals on your account yet."
+          body="Once a brief is reviewed, the Studio team sends a proposal with scope, pricing, and milestone logic — it lives here so you can revisit it any time."
+          action={
+            <Link
+              href="/request"
+              className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold"
+            >
+              Submit a brief
+            </Link>
+          }
+        />
+      ) : null}
       <section className="grid gap-4 lg:grid-cols-2">
         {clientData.proposals.map((proposal) => (
           <article key={proposal.id} className="studio-panel rounded-[1.75rem] p-6">
