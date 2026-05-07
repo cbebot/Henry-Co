@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireStudioUser } from "@/lib/studio/auth";
 import {
@@ -6,6 +7,8 @@ import {
   fetchThreadInitialState,
 } from "@/lib/messaging/queries";
 import { MessagesCentre } from "@/components/messaging";
+import { clientNav } from "@/lib/studio/navigation";
+import { StudioEmptyState, StudioWorkspaceShell } from "@/components/studio/workspace/shell";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -33,6 +36,30 @@ export default async function MessagesCentrePage() {
 
   if (summaries.length === 1) {
     redirect(`/client/projects/${summaries[0].projectId}/messages`);
+  }
+
+  if (summaries.length === 0) {
+    return (
+      <StudioWorkspaceShell
+        kicker="Messages"
+        title="Every project conversation lives here."
+        description="Threads open as soon as a brief becomes a project, so you and the Studio team stay on the same page through delivery."
+        nav={clientNav("/client/messages")}
+      >
+        <StudioEmptyState
+          title="No project threads yet."
+          body="Submit a brief and a thread is created the moment Studio responds. From there, every revision, file, and decision lives in one place."
+          action={
+            <Link
+              href="/request"
+              className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold"
+            >
+              Submit a brief
+            </Link>
+          }
+        />
+      </StudioWorkspaceShell>
+    );
   }
 
   const focused = pickFocusedProject(summaries);
