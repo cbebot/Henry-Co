@@ -13,7 +13,8 @@
  * Closes audit §C.10 #3.
  */
 
-export type { Database, Json, SignalFeedRow } from "./database.types";
+export type { Database, Json } from "./database.types";
+export type { SignalFeedRow } from "./signal-feed";
 export { createDataAdminClient, type TypedSupabaseClient } from "./client";
 
 export {

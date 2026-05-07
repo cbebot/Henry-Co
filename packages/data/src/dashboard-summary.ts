@@ -61,7 +61,8 @@ export type NotificationRow = {
 export type SubscriptionRow = {
   id: string;
   status: string;
-  planId: string | null;
+  planName: string;
+  planTier: string | null;
 };
 
 export type InvoiceRow = {
@@ -252,12 +253,13 @@ async function readSubscriptions(
 ): Promise<SubscriptionRow[]> {
   const { data } = await client
     .from("customer_subscriptions")
-    .select("id, status, plan_id")
+    .select("id, status, plan_name, plan_tier")
     .eq("user_id", userId);
   return (data ?? []).map((row) => ({
     id: row.id,
     status: row.status,
-    planId: row.plan_id,
+    planName: row.plan_name,
+    planTier: row.plan_tier,
   }));
 }
 

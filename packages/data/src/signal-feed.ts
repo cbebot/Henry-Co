@@ -2,7 +2,23 @@ import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
 import { createDataAdminClient } from "./client";
-import type { SignalFeedRow } from "./database.types";
+import type { Database } from "./database.types";
+
+/**
+ * Row shape returned by the SQL `public.get_signal_feed` function.
+ * Derived from the generated types so it stays in sync with the
+ * database without manual maintenance.
+ */
+export type SignalFeedRow =
+  Database["public"]["Functions"]["get_signal_feed"]["Returns"][number] & {
+    /**
+     * The SQL function returns text 'kind' but only emits two known
+     * values: 'notification' (from customer_notifications) and
+     * 'activity' (from customer_activity). Narrow the type so callers
+     * can switch exhaustively.
+     */
+    kind: "notification" | "activity";
+  };
 
 /**
  * @henryco/data/signal-feed — unified ranked signal stream.
