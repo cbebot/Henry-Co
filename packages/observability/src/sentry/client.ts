@@ -13,6 +13,9 @@
 
 import { defaultRedactor } from "../redaction";
 
+/** See note in ./server.ts about the lossy hook typing. */
+type SentryHook = (event: any, hint?: any) => any;
+
 export type ClientSentryConfig = {
   dsn: string | undefined;
   environment: string;
@@ -20,10 +23,8 @@ export type ClientSentryConfig = {
   tracesSampleRate: number;
   replaysSessionSampleRate: number;
   replaysOnErrorSampleRate: number;
-  beforeSend: (event: SentryEvent) => SentryEvent | null;
+  beforeSend: SentryHook;
 };
-
-type SentryEvent = Record<string, unknown>;
 
 const DEFAULT_TRACES_SAMPLE_RATE = 0.1;
 const DEFAULT_REPLAYS_SESSION_SAMPLE_RATE = 0.0; // Disabled by default — replays are heavy.
@@ -50,7 +51,7 @@ export function buildClientSentryConfig(opts: { release?: string } = {}): Client
     ),
     beforeSend: (event) => {
       try {
-        return defaultRedactor(event) as SentryEvent;
+        return defaultRedactor(event);
       } catch {
         return event;
       }

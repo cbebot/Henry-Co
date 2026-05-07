@@ -25,14 +25,26 @@
 
 import { defaultRedactor } from "../redaction";
 
+/**
+ * Sentry's `beforeSend` / `beforeBreadcrumb` signatures are runtime-
+ * specific (NodeOptions / VercelEdgeOptions / BrowserOptions in
+ * @sentry/nextjs). To stay version-agnostic at the package layer
+ * while still satisfying the call-site type at `Sentry.init(...)`,
+ * the callbacks accept `any` and return `any`. The redactor is
+ * structural (walks any object, redacts keys), so the lossy typing
+ * here costs nothing at runtime — Sentry validates the rest of the
+ * option shape itself.
+ */
+type SentryHook = (event: any, hint?: any) => any;
+
 export type ServerSentryConfig = {
   dsn: string | undefined;
   environment: string;
   release: string | undefined;
   tracesSampleRate: number;
   profilesSampleRate: number;
-  beforeSend: (event: SentryEvent) => SentryEvent | null;
-  beforeBreadcrumb: (breadcrumb: SentryBreadcrumb) => SentryBreadcrumb | null;
+  beforeSend: SentryHook;
+  beforeBreadcrumb: SentryHook;
 };
 
 export type EdgeSentryConfig = {
@@ -40,11 +52,8 @@ export type EdgeSentryConfig = {
   environment: string;
   release: string | undefined;
   tracesSampleRate: number;
-  beforeSend: (event: SentryEvent) => SentryEvent | null;
+  beforeSend: SentryHook;
 };
-
-type SentryEvent = Record<string, unknown>;
-type SentryBreadcrumb = Record<string, unknown>;
 
 const DEFAULT_TRACES_SAMPLE_RATE = 0.1;
 const DEFAULT_PROFILES_SAMPLE_RATE = 0.1;
@@ -69,14 +78,14 @@ export function buildServerSentryConfig(opts: { release?: string } = {}): Server
     beforeSend: (event) => {
       // Redact PII from the event body before transmission.
       try {
-        return defaultRedactor(event) as SentryEvent;
+        return defaultRedactor(event);
       } catch {
         return event;
       }
     },
     beforeBreadcrumb: (breadcrumb) => {
       try {
-        return defaultRedactor(breadcrumb) as SentryBreadcrumb;
+        return defaultRedactor(breadcrumb);
       } catch {
         return breadcrumb;
       }
@@ -96,7 +105,7 @@ export function buildEdgeSentryConfig(opts: { release?: string } = {}): EdgeSent
     tracesSampleRate: numericEnv("SENTRY_TRACES_SAMPLE_RATE", DEFAULT_TRACES_SAMPLE_RATE),
     beforeSend: (event) => {
       try {
-        return defaultRedactor(event) as SentryEvent;
+        return defaultRedactor(event);
       } catch {
         return event;
       }
