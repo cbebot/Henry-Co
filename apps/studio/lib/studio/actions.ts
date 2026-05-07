@@ -180,6 +180,12 @@ export async function submitStudioBriefAction(formData: FormData) {
     domainIntent: parseDomainIntentFromForm(String(formData.get("domainIntentJson") || "")),
   });
 
+  if (result.project && result.payment) {
+    redirect(
+      withStudioToast(`/pay/${result.payment.id}?access=${result.project.accessKey}`, "brief_submitted")
+    );
+  }
+
   if (result.project) {
     redirect(
       withStudioToast(`/project/${result.project.id}?access=${result.project.accessKey}`, "brief_submitted")

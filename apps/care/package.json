@@ -15,6 +15,7 @@
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/notifications": "workspace:^",
+    "@henryco/payment-surface": "workspace:^",
     "@henryco/seo": "workspace:^",
     "@henryco/trust": "workspace:^",
     "@henryco/ui": "workspace:^",

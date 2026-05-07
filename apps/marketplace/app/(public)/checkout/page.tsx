@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getAccountUrl } from "@henryco/config";
-import { LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
+import { AlertCircle, LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
 import {
   emitEngagementEvent,
   recordCartRecoveryState,
@@ -20,7 +20,40 @@ import { createAdminSupabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-export default async function CheckoutPage() {
+const CHECKOUT_ERROR_COPY: Record<string, { title: string; body: string }> = {
+  "wallet-unavailable": {
+    title: "Wallet didn't respond cleanly.",
+    body: "Switch to bank transfer to keep moving, or try again — your cart and progress are intact.",
+  },
+  "insufficient-balance": {
+    title: "Wallet balance is short of the order total.",
+    body: "Top up the difference, or switch to bank transfer. Your delivery details are still saved.",
+  },
+  "wallet-changed": {
+    title: "Wallet balance shifted mid-submission.",
+    body: "A debit landed between your review and our charge. Refresh and try again, or switch payment method.",
+  },
+  "missing-bank-reference": {
+    title: "We need the bank reference number.",
+    body: "Enter the reference from your bank receipt so finance can match the transfer to this order.",
+  },
+  "missing-payment-proof": {
+    title: "We need the transfer proof attached.",
+    body: "Attach the screenshot or PDF — finance matches it against the bank rail before the order moves.",
+  },
+  "payment-proof-upload-failed": {
+    title: "Upload didn't complete.",
+    body: "Reattach the file. PNG, JPG, WebP, or PDF, under 10 MB.",
+  },
+};
+
+export default async function CheckoutPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ error?: string }>;
+}) {
+  const query = (await (searchParams ?? Promise.resolve({}))) as { error?: string };
+  const errorCopy = query.error ? CHECKOUT_ERROR_COPY[query.error] : null;
   const [viewer, cart, shell] = await Promise.all([
     getMarketplaceViewer(),
     getCartPreview(),
@@ -138,18 +171,41 @@ export default async function CheckoutPage() {
   }
 
   return (
-    <CheckoutExperience
-      cart={shell.cart}
-      cartToken={cart.token ?? null}
-      addresses={addresses}
-      paymentRail={paymentRail}
-      wallet={wallet}
-      paymentReference={makeMarketplacePaymentReference()}
-      walletTopUpHref={getAccountUrl("/wallet/funding")}
-      buyer={{
-        fullName: viewer.user.fullName ?? null,
-        email: viewer.user.email ?? null,
-      }}
-    />
+    <>
+      {errorCopy ? (
+        <div className="mx-auto max-w-[1480px] px-4 pt-6 sm:px-6 xl:px-8">
+          <CheckoutErrorNotice title={errorCopy.title} body={errorCopy.body} />
+        </div>
+      ) : null}
+      <CheckoutExperience
+        cart={shell.cart}
+        cartToken={cart.token ?? null}
+        addresses={addresses}
+        paymentRail={paymentRail}
+        wallet={wallet}
+        paymentReference={makeMarketplacePaymentReference()}
+        walletTopUpHref={getAccountUrl("/wallet/funding")}
+        buyer={{
+          fullName: viewer.user.fullName ?? null,
+          email: viewer.user.email ?? null,
+        }}
+      />
+    </>
+  );
+}
+
+function CheckoutErrorNotice({ title, body }: { title: string; body: string }) {
+  return (
+    <div
+      role="alert"
+      aria-live="polite"
+      className="flex items-start gap-3 rounded-[1.4rem] border border-amber-400/30 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100"
+    >
+      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+      <div>
+        <p className="font-semibold text-[var(--market-paper-white)]">{title}</p>
+        <p className="mt-1 text-amber-100/90">{body}</p>
+      </div>
+    </div>
   );
 }

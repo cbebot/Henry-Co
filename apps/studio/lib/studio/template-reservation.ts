@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomBytes, randomUUID } from "node:crypto";
+import { after } from "next/server";
 import { normalizeEmail, normalizePhone } from "@/lib/env";
 import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 import { getStudioCatalog } from "@/lib/studio/catalog";
@@ -46,6 +47,8 @@ export type TemplateReservationResult = {
   invoiceNumber: string;
   amountKobo: number;
   projectId: string;
+  projectAccessKey: string;
+  paymentId: string;
   proposalId: string;
   leadId: string;
 };
@@ -419,16 +422,19 @@ export async function reserveStudioTemplate(
     created_at: now.toISOString(),
   } as never);
 
-  // Also fire the existing notification pipeline so the team is alerted
-  // through the same channels they already monitor.
-  await sendInquiryNotifications({ lead, proposal, project }).catch(() => null);
-  await sendProposalNotifications({ lead, proposal, project, teamName: team.name }).catch(() => null);
-  await sendPaymentInstructionsNotifications({
-    lead,
-    proposal,
-    project,
-    payment: legacyPayment,
-  }).catch(() => null);
+  // Notification side effects should not hold the checkout redirect.
+  after(async () => {
+    await Promise.all([
+      sendInquiryNotifications({ lead, proposal, project }),
+      sendProposalNotifications({ lead, proposal, project, teamName: team.name }),
+      sendPaymentInstructionsNotifications({
+        lead,
+        proposal,
+        project,
+        payment: legacyPayment,
+      }),
+    ]).catch(() => null);
+  });
 
   return {
     template,
@@ -437,6 +443,8 @@ export async function reserveStudioTemplate(
     invoiceNumber,
     amountKobo: depositKobo,
     projectId,
+    projectAccessKey: project.accessKey,
+    paymentId: legacyPayment.id,
     proposalId,
     leadId,
   };

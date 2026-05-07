@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  ArrowRight,
   CheckCircle2,
   Clock,
   Layers3,
@@ -16,6 +15,7 @@ import { getStudioViewer } from "@/lib/studio/auth";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioTemplateBySlug } from "@/lib/studio/templates";
 import { reserveStudioTemplateAction } from "@/lib/studio/template-actions";
+import { TemplateReserveSubmitButton } from "@/components/studio/template-reserve-submit-button";
 
 export const dynamic = "force-dynamic";
 
@@ -361,10 +361,7 @@ export default async function TemplateCheckoutPage({
               </strong>{" "}
               by bank transfer.
             </p>
-            <button type="submit" className="portal-button portal-button-primary">
-              Reserve and continue to payment
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            <TemplateReserveSubmitButton />
           </div>
         </form>
 

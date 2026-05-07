@@ -1,5 +1,6 @@
 "use server";
 
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
 import { getStudioViewer } from "@/lib/studio/auth";
 import { reserveStudioTemplate } from "@/lib/studio/template-reservation";
@@ -82,13 +83,14 @@ export async function reserveStudioTemplateAction(formData: FormData) {
         template_slug: slug,
         invoice_id: result.invoiceId,
         project_id: result.projectId,
+        payment_id: result.paymentId,
         amount_kobo: result.amountKobo,
       },
     });
 
-    redirect(`/payment?invoice=${result.invoiceToken}`);
+    redirect(`/pay/${result.paymentId}?access=${result.projectAccessKey}`);
   } catch (error) {
-    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+    if (isRedirectError(error)) {
       throw error;
     }
     await writeStudioLog({

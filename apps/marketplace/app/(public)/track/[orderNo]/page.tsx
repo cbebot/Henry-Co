@@ -3,17 +3,22 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ClipboardCheck, Lock, ShieldCheck, Truck } from "lucide-react";
 import { getOrderByNumber } from "@/lib/marketplace/data";
 import { formatCurrency } from "@/lib/utils";
+import { PlacementAcknowledgement } from "@/components/marketplace/placement-acknowledgement";
 
 export const dynamic = "force-dynamic";
 
 export default async function TrackOrderPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ orderNo: string }>;
+  searchParams?: Promise<{ placed?: string }>;
 }) {
   const { orderNo } = await params;
+  const query = searchParams ? await searchParams : {};
   const order = await getOrderByNumber(orderNo);
   if (!order) notFound();
+  const justPlaced = query.placed === "1";
 
   const payoutFrozen = order.groups.some((group) => group.payoutStatus === "payout_frozen");
   const showCompletionConfirm = order.groups.some(
@@ -23,6 +28,26 @@ export default async function TrackOrderPage({
 
   return (
     <main className="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6 lg:px-8">
+      {justPlaced ? (
+        <PlacementAcknowledgement
+          orderNo={order.orderNo}
+          total={order.grandTotal}
+          currency={order.currency}
+          buyerEmail={order.buyerEmail || null}
+          paymentRecord={
+            order.paymentRecord
+              ? {
+                  method: order.paymentRecord.method,
+                  reference: order.paymentRecord.reference,
+                  status: order.paymentRecord.status,
+                  proofName: order.paymentRecord.proofName ?? null,
+                  proofUrl: order.paymentRecord.proofUrl ?? null,
+                }
+              : null
+          }
+        />
+      ) : null}
+
       <section>
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
