@@ -10,19 +10,31 @@
  *     --schema public \
  *     > packages/data/src/database.types.ts
  *
- * Requires `SUPABASE_PROJECT_ID` env + a Supabase admin token via
- * `supabase login`. The owner runs this once after merge, commits the
- * regenerated file, and consumers gain the full row-typed query
- * surface across the workspace.
- *
  * Until regeneration: the shape below is a STRUCTURAL STUB that
- * mirrors the columns packages/data queries. It is sufficient for
- * DASH-1's typecheck gates BUT does not replace the live-generated
- * types for downstream consumers (DASH-2+ modules).
+ * mirrors the columns packages/data queries against the **live
+ * production schema** (verified via `mcp Supabase list_tables` +
+ * `information_schema.columns` query at 2026-05-07).
  *
- * The structure follows supabase-js v2's `Database` interface:
+ * Schema notes (real prod table names + columns the package uses):
+ *   * customer_activity (NOT customer_activity_log) — has columns
+ *     id, user_id, division, activity_type, title, description,
+ *     status, action_url, created_at, archived_at.
+ *   * support_threads (NOT customer_support_threads) — has columns
+ *     id, user_id, subject, division, category, status, priority,
+ *     created_at, updated_at, customer_last_read_at.
+ *   * tasks does NOT exist in this database; the original DASH-1
+ *     migration referenced it incorrectly. Removed from the type
+ *     surface. DASH-6 will reintroduce a tasks-equivalent source if
+ *     and when one ships.
+ *   * staff_notifications + staff_notification_states do NOT exist in
+ *     production (the V2-NOT-02-A audience migration on disk at
+ *     20260502120000_staff_notifications_audience.sql has not been
+ *     applied). Removed from the type surface; DASH-6 will reintroduce
+ *     when the audience migration ships.
+ *
+ * Structure follows supabase-js v2's `Database` interface:
  *   { public: { Tables, Views, Functions, Enums, CompositeTypes } }
- * — empty objects are required for the keys we don't define so the
+ * — empty objects required for the keys we don't define so the
  * client's generic constraints satisfy.
  */
 
@@ -56,11 +68,12 @@ type CustomerNotificationRow = {
   priority: string;
   title: string;
   body: string | null;
-  is_read: boolean;
+  is_read: boolean | null;
   deleted_at: string | null;
   created_at: string;
-  source_division: string | null;
+  division: string | null;
   action_url: string | null;
+  action_label: string | null;
 };
 type CustomerNotificationInsert = CustomerNotificationRow;
 type CustomerNotificationUpdate = Partial<CustomerNotificationRow>;
@@ -71,38 +84,15 @@ type CustomerActivityRow = {
   division: string;
   activity_type: string;
   title: string;
+  description: string | null;
+  status: string | null;
+  action_url: string | null;
+  amount_kobo: number | null;
   created_at: string;
+  archived_at: string | null;
 };
 type CustomerActivityInsert = CustomerActivityRow;
 type CustomerActivityUpdate = Partial<CustomerActivityRow>;
-
-type StaffNotificationRow = {
-  id: string;
-  recipient_user_id: string | null;
-  recipient_role: string | null;
-  recipient_division: string | null;
-  division: string;
-  category: string;
-  priority: string;
-  title: string;
-  body: string | null;
-  action_url: string | null;
-  created_at: string;
-};
-type StaffNotificationInsert = StaffNotificationRow;
-type StaffNotificationUpdate = Partial<StaffNotificationRow>;
-
-type TaskRow = {
-  id: string;
-  assigned_user_id: string | null;
-  division: string;
-  title: string;
-  status: string;
-  priority: string;
-  created_at: string;
-};
-type TaskInsert = TaskRow;
-type TaskUpdate = Partial<TaskRow>;
 
 type CustomerSubscriptionRow = {
   id: string;
@@ -123,15 +113,21 @@ type CustomerInvoiceRow = {
 type CustomerInvoiceInsert = CustomerInvoiceRow;
 type CustomerInvoiceUpdate = Partial<CustomerInvoiceRow>;
 
-type CustomerSupportThreadRow = {
+type SupportThreadRow = {
   id: string;
   user_id: string;
+  subject: string;
+  division: string | null;
+  category: string | null;
   status: string;
-  subject: string | null;
+  priority: string | null;
   created_at: string;
+  updated_at: string;
+  customer_last_read_at: string | null;
+  staff_last_read_at: string | null;
 };
-type CustomerSupportThreadInsert = CustomerSupportThreadRow;
-type CustomerSupportThreadUpdate = Partial<CustomerSupportThreadRow>;
+type SupportThreadInsert = SupportThreadRow;
+type SupportThreadUpdate = Partial<SupportThreadRow>;
 
 export type Database = {
   public: {
@@ -160,22 +156,10 @@ export type Database = {
         Update: CustomerNotificationUpdate;
         Relationships: [];
       };
-      customer_activity_log: {
+      customer_activity: {
         Row: CustomerActivityRow;
         Insert: CustomerActivityInsert;
         Update: CustomerActivityUpdate;
-        Relationships: [];
-      };
-      staff_notifications: {
-        Row: StaffNotificationRow;
-        Insert: StaffNotificationInsert;
-        Update: StaffNotificationUpdate;
-        Relationships: [];
-      };
-      tasks: {
-        Row: TaskRow;
-        Insert: TaskInsert;
-        Update: TaskUpdate;
         Relationships: [];
       };
       customer_subscriptions: {
@@ -190,19 +174,15 @@ export type Database = {
         Update: CustomerInvoiceUpdate;
         Relationships: [];
       };
-      customer_support_threads: {
-        Row: CustomerSupportThreadRow;
-        Insert: CustomerSupportThreadInsert;
-        Update: CustomerSupportThreadUpdate;
+      support_threads: {
+        Row: SupportThreadRow;
+        Insert: SupportThreadInsert;
+        Update: SupportThreadUpdate;
         Relationships: [];
       };
     };
     Views: Record<string, never>;
     Functions: {
-      is_staff_in: {
-        Args: { division_key: string; role_key?: string | null };
-        Returns: boolean;
-      };
       get_signal_feed: {
         Args: {
           viewer_id: string;
@@ -220,7 +200,7 @@ export type Database = {
 
 export type SignalFeedRow = {
   id: string;
-  kind: "notification" | "activity" | "task" | "staff_notification";
+  kind: "notification" | "activity";
   source: string;
   division: string;
   priority: string;

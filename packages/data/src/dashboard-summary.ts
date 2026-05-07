@@ -19,14 +19,19 @@ import { createDataAdminClient, type TypedSupabaseClient } from "./client";
  *     // summary.wallet typed as CustomerWalletSnapshot
  *   }
  *
+ * SCHEMA NOTE: queries target the LIVE production schema as of
+ * 2026-05-07 — `customer_activity` (not `customer_activity_log`),
+ * `support_threads` (not `customer_support_threads`). The original
+ * DASH-1 draft referenced names from the V2-NOT-02-A migration that
+ * hadn't been applied; corrected to match the actual tables.
+ *
  * DASH-1 ships:
- *   - Full `customer` implementation — ports the eight Promise.all
- *     reads from `apps/account/lib/account-data.ts:getDashboardSummary`
- *     directly, using the typed Supabase client.
- *   - Stubbed `owner` and `staff` implementations — return a minimum
- *     viable summary plus `// TODO V2-DATA-02` for the full ports.
+ *   - Full `customer` implementation — eight Promise.all reads against
+ *     real tables.
+ *   - Stubbed `owner` and `staff` implementations — minimum viable
+ *     summary plus `// TODO V2-DATA-02` for the full ports.
  *     apps/hub and apps/staff continue to use their existing readers
- *     in DASH-1; full migration is DASH-2/DASH-3 scope.
+ *     until DASH-2/DASH-3 migrate them.
  */
 
 export type CustomerWalletSnapshot = {
@@ -39,6 +44,7 @@ export type ActivityRow = {
   division: string;
   activityType: string;
   title: string;
+  description: string | null;
   createdAt: string;
 };
 
@@ -68,7 +74,8 @@ export type InvoiceRow = {
 export type SupportThreadRow = {
   id: string;
   status: string;
-  subject: string | null;
+  subject: string;
+  division: string | null;
   createdAt: string;
 };
 
@@ -106,10 +113,6 @@ export type DashboardSummary = CustomerSummary | OwnerSummary | StaffSummary;
 /**
  * Build the dashboard summary for the viewer. Dispatches by
  * `viewer.kind`; each branch reads only the data it needs.
- *
- * The function is `STABLE` w.r.t. its inputs — same viewer + same
- * database state ⇒ same output. Callers may cache the result for the
- * duration of one request.
  */
 export async function getDashboardSummary(viewer: UnifiedViewer): Promise<DashboardSummary> {
   const client = createDataAdminClient();
@@ -164,9 +167,6 @@ async function readOwnerSummary(
   _client: TypedSupabaseClient,
   _userId: string,
 ): Promise<OwnerSummary> {
-  // TODO V2-DATA-02 — full port from apps/hub/lib/owner-data.ts:getOwnerOverviewData
-  // For DASH-1 the owner shell at apps/hub continues to use its own
-  // reader. This stub just satisfies the type contract.
   return {
     kind: "owner",
     totalCustomers: 0,
@@ -177,12 +177,11 @@ async function readOwnerSummary(
 
 async function readStaffSummary(
   _client: TypedSupabaseClient,
-  viewer: UnifiedViewer,
+  _viewer: UnifiedViewer,
 ): Promise<StaffSummary> {
-  // TODO V2-DATA-02 — full port from apps/staff/lib/intelligence-data.ts:getStaffIntelligenceSnapshot
   return {
     kind: "staff",
-    myDivision: viewer.access.staffDivisionCount === 1 ? null : null,
+    myDivision: null,
     myOpenTasks: 0,
     myUnreadNotifications: 0,
   };
@@ -208,9 +207,10 @@ async function readRecentActivity(
   limit: number,
 ): Promise<ActivityRow[]> {
   const { data } = await client
-    .from("customer_activity_log")
-    .select("id, division, activity_type, title, created_at")
+    .from("customer_activity")
+    .select("id, division, activity_type, title, description, created_at")
     .eq("user_id", userId)
+    .is("archived_at", null)
     .order("created_at", { ascending: false })
     .limit(limit);
   return (data ?? []).map((row) => ({
@@ -218,6 +218,7 @@ async function readRecentActivity(
     division: row.division,
     activityType: row.activity_type,
     title: row.title,
+    description: row.description,
     createdAt: row.created_at,
   }));
 }
@@ -240,7 +241,7 @@ async function readRecentNotifications(
     priority: row.priority,
     title: row.title,
     body: row.body,
-    isRead: row.is_read,
+    isRead: row.is_read ?? false,
     createdAt: row.created_at,
   }));
 }
@@ -284,13 +285,14 @@ async function readSupportThreads(
   userId: string,
 ): Promise<SupportThreadRow[]> {
   const { data } = await client
-    .from("customer_support_threads")
-    .select("id, status, subject, created_at")
+    .from("support_threads")
+    .select("id, status, subject, division, created_at")
     .eq("user_id", userId);
   return (data ?? []).map((row) => ({
     id: row.id,
     status: row.status,
     subject: row.subject,
+    division: row.division,
     createdAt: row.created_at,
   }));
 }
@@ -313,7 +315,7 @@ async function readUnreadSupportCount(
   userId: string,
 ): Promise<number> {
   const { count } = await client
-    .from("customer_support_threads")
+    .from("support_threads")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
     .neq("status", "closed")

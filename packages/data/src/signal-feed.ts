@@ -9,10 +9,13 @@ import type { SignalFeedRow } from "./database.types";
  *
  * Calls the SQL `public.get_signal_feed(viewer_id, limit_count,
  * after_score, after_created_at)` function (DASH-1's migration G6).
- * The function joins customer_notifications, customer_activity_log,
- * tasks, and (for staff viewers) staff_notifications, ranks by
- * (priority weight × recency weight × role-fit weight), and returns
- * up to `limit` rows.
+ *
+ * DASH-1 SCOPE: the function joins customer_notifications +
+ * customer_activity (the two sources that exist in production today),
+ * ranks by (priority weight × recency weight), and returns up to
+ * `limit` rows. DASH-6 will EXTEND this function with the
+ * staff_notifications source + role-fit weight once the V2-NOT-02-A
+ * audience migration ships to production.
  *
  * Cursor pagination: pass the last item's `score` + `created_at` as
  * the cursor. Avoids offset pagination pitfalls on large result sets.

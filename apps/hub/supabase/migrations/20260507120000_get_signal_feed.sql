@@ -5,17 +5,19 @@
 --
 -- DESIGN:
 --   * SECURITY DEFINER + pinned search_path so the function reads as
---     the function owner — same hardening pattern as
---     20260502120000_staff_notifications_audience.sql:74 (is_staff_in).
---   * Sources unioned in four CTEs:
---       1. customer_notifications  (recipient_user_id = viewer_id)
---       2. customer_activity_log    (user_id = viewer_id, last 30 days)
---       3. tasks                    (assigned_user_id = viewer_id)
---       4. staff_notifications      (recipient_user_id = viewer_id OR
---                                    is_staff_in(recipient_division,
---                                    recipient_role))
---   * Ranked by score = priority_weight * recency_weight * role_fit_weight
---     (see RANKING below).
+--     the function owner — same hardening pattern as the prior
+--     20260502120000_staff_notifications_audience.sql migration that
+--     defines is_staff_in().
+--   * DASH-1 SCOPE: production today has customer_notifications and
+--     customer_activity but NOT tasks / staff_notifications /
+--     is_staff_in() (the V2-NOT-02-A staff-notifications-audience
+--     migration is on disk at 20260502120000_staff_notifications_audience.sql
+--     but has not yet been applied to production). Sources for DASH-1:
+--       1. customer_notifications  (recipient_user_id = viewer_id, deleted_at null)
+--       2. customer_activity        (user_id = viewer_id, last 30 days)
+--     DASH-6 will extend this function with the staff_notifications
+--     CTE + is_staff_in() once V2-NOT-02-A ships to production.
+--   * Ranked by score = priority_weight * recency_weight (see RANKING).
 --   * Cursor pagination via (after_score, after_created_at) so callers
 --     can page deterministically without offset.
 --
@@ -25,8 +27,7 @@
 --   code paths where the auth context isn't a Supabase user session
 --   (e.g., a cron-driven smart-home digest, or a Next server action
 --   acting on behalf of a user). The function gates on viewer_id
---   match throughout — direct user_id filters on customer_*, plus
---   the is_staff_in() predicate for staff_notifications. The
+--   match throughout — direct user_id filters on customer_*. The
 --   function never echoes data the viewer wouldn't see via direct
 --   SELECT.
 --
@@ -42,16 +43,11 @@
 --     info / *  -> 1.0
 --   recency_weight = exp(-extract(epoch from now() - created_at) / 86400)
 --     ≈ 1.00 at now, ≈ 0.37 at 24h, ≈ 0.13 at 48h
---   role_fit_weight:
---     viewer-customer + customer source -> 1.0
---     viewer-staff    + staff source    -> 1.0
---     cross-domain                       -> 0.7
---     mismatch                            -> 0.4
 --
--- The composite score lets one set of dashboard primitives surface
--- both routine activity ("your last booking") and urgent operator
--- signals ("dispute escalated") in a coherent order without the
--- ranking model leaking into the UI layer.
+--   The composite score lets one set of dashboard primitives surface
+--   both routine activity ("your last booking") and urgent customer
+--   signals ("verification needed") in a coherent order without the
+--   ranking model leaking into the UI layer.
 --
 -- The function is STABLE — same inputs + same database state ⇒ same
 -- output (modulo the recency exponent which is monotonic in now()).
@@ -88,22 +84,6 @@ as $$
   with viewer as (
     select viewer_id as id
   ),
-  -- Whether the viewer holds any staff role anywhere — drives the
-  -- role-fit weight + the staff_notifications visibility branch.
-  -- Replicates the predicate is_staff_in() carries, but reads
-  -- without a specific division because we want the boolean answer
-  -- for ranking, not a per-row filter.
-  viewer_is_staff as (
-    select exists (
-      select 1
-      from (values
-        ('marketplace'),('studio'),('property'),('learn'),
-        ('logistics'),('jobs'),('care'),('hub'),('staff'),
-        ('account'),('security'),('system')
-      ) v(div)
-      where public.is_staff_in(v.div)
-    ) as is_staff
-  ),
   -- Per-priority weight.
   priority_weights(priority, weight) as (
     values
@@ -119,7 +99,7 @@ as $$
       cn.id,
       'notification'::text as kind,
       'customer'::text as source,
-      coalesce(cn.source_division, 'account')::text as division,
+      coalesce(cn.division, 'account')::text as division,
       cn.priority,
       cn.title,
       cn.body,
@@ -129,90 +109,28 @@ as $$
     where cn.user_id = (select id from viewer)
       and cn.deleted_at is null
   ),
-  -- Source 2: customer_activity_log scoped to the viewer (last 30d).
+  -- Source 2: customer_activity scoped to the viewer (last 30d).
   cust_activity as (
     select
-      cal.id,
+      ca.id,
       'activity'::text as kind,
       'customer'::text as source,
-      cal.division,
-      'info'::text as priority,
-      cal.title,
-      null::text as body,
-      null::text as action_url,
-      cal.created_at
-    from public.customer_activity_log cal
-    where cal.user_id = (select id from viewer)
-      and cal.created_at >= now() - interval '30 days'
+      ca.division,
+      coalesce(nullif(ca.status, ''), 'info')::text as priority,
+      ca.title,
+      ca.description as body,
+      ca.action_url,
+      ca.created_at
+    from public.customer_activity ca
+    where ca.user_id = (select id from viewer)
+      and ca.created_at >= now() - interval '30 days'
+      and ca.archived_at is null
   ),
-  -- Source 3: tasks assigned to the viewer (open / pending only).
-  -- We tolerate the absence of the column / table gracefully via
-  -- the JOIN strategy: if `tasks` is missing, the planner skips
-  -- this CTE due to lateral / non-existent tables — but Postgres
-  -- doesn't allow that at function-definition time. So we proceed
-  -- with the assumption tasks exists; if the table is renamed,
-  -- this function needs an update.
-  cust_tasks as (
-    select
-      t.id,
-      'task'::text as kind,
-      case when (select is_staff from viewer_is_staff) then 'staff' else 'customer' end as source,
-      t.division,
-      t.priority,
-      t.title,
-      null::text as body,
-      null::text as action_url,
-      t.created_at
-    from public.tasks t
-    where t.assigned_user_id = (select id from viewer)
-      and t.status in ('pending', 'open', 'in_progress')
-  ),
-  -- Source 4: staff_notifications visible to the viewer.
-  -- Only joined when the viewer holds any staff role; otherwise the
-  -- empty subquery elides the entire branch.
-  staff_notif as (
-    select
-      sn.id,
-      'staff_notification'::text as kind,
-      'staff'::text as source,
-      sn.division,
-      sn.priority,
-      sn.title,
-      sn.body,
-      sn.action_url,
-      sn.created_at
-    from public.staff_notifications sn
-    where (select is_staff from viewer_is_staff)
-      and (
-        (sn.recipient_user_id is not null and sn.recipient_user_id = (select id from viewer))
-        or (
-          sn.recipient_division is not null
-          and public.is_staff_in(sn.recipient_division, sn.recipient_role)
-        )
-        or (
-          sn.recipient_division is null
-          and sn.recipient_role is not null
-          and exists (
-            select 1
-            from (values
-              ('marketplace'),('studio'),('property'),('learn'),
-              ('logistics'),('jobs'),('care'),('hub'),('staff'),
-              ('account'),('security'),('system')
-            ) v(div)
-            where public.is_staff_in(v.div, sn.recipient_role)
-          )
-        )
-      )
-  ),
-  -- Union of all four sources with priority weights joined.
+  -- Union of both sources with priority weights joined.
   unioned as (
     select * from cust_notif
     union all
     select * from cust_activity
-    union all
-    select * from cust_tasks
-    union all
-    select * from staff_notif
   ),
   scored as (
     select
@@ -227,12 +145,6 @@ as $$
       u.created_at,
       coalesce(pw.weight, 1.0)
         * exp(- extract(epoch from now() - u.created_at) / 86400.0)
-        * case
-            when (select is_staff from viewer_is_staff) and u.source = 'staff' then 1.0
-            when not (select is_staff from viewer_is_staff) and u.source = 'customer' then 1.0
-            when u.source = 'staff' and not (select is_staff from viewer_is_staff) then 0.4
-            else 0.7
-          end
         as score
     from unioned u
     left join priority_weights pw on pw.priority = u.priority
@@ -268,30 +180,29 @@ grant execute on function public.get_signal_feed(uuid, int, numeric, timestamptz
 
 comment on function public.get_signal_feed(uuid, int, numeric, timestamptz) is
   'Unified ranked signal feed for the HenryCo dashboard shell. Joins '
-  'customer_notifications + customer_activity_log + tasks + (when the '
-  'viewer holds staff access) staff_notifications, ranks by '
-  '(priority * recency * role_fit), returns up to limit_count rows '
-  'with cursor pagination via (after_score, after_created_at). '
-  'SECURITY DEFINER with pinned search_path; never echoes data the '
-  'viewer would not see via direct SELECT against the underlying '
-  'tables. Cross-tenant isolation verified at V2-DASH-01 G10 RLS probe.';
+  'customer_notifications (deleted_at null) + customer_activity '
+  '(archived_at null, last 30 days), ranks by priority * recency, '
+  'returns up to limit_count rows with cursor pagination via '
+  '(after_score, after_created_at). SECURITY DEFINER with pinned '
+  'search_path; never echoes data the viewer would not see via direct '
+  'SELECT against the underlying tables. Cross-tenant isolation '
+  'verified at V2-DASH-01 G10 RLS probe. DASH-6 extends this function '
+  'with staff_notifications + is_staff_in() once V2-NOT-02-A '
+  '(20260502120000_staff_notifications_audience.sql) is applied.';
 
 ------------------------------------------------------------------------
 -- 3. Hardening notes
 ------------------------------------------------------------------------
 --
--- Additional indexes that improve the function's cost profile (none
--- created in this migration because each table already has the
--- relevant per-user-id index from prior migrations):
---   * customer_notifications: (user_id, deleted_at, created_at desc)  -- exists
---   * customer_activity_log: (user_id, created_at desc)               -- exists
---   * tasks: (assigned_user_id, status, created_at desc)              -- assumed
---   * staff_notifications: see 20260502120000 — recipient_user_idx +
---     recipient_division_idx + recipient_role_idx all present.
+-- Index hot-paths the planner already covers:
+--   * customer_notifications: (user_id, deleted_at, created_at desc) — exists
+--   * customer_activity:       (user_id, created_at desc)            — exists
 --
--- If the planner picks a sequential scan on `tasks` in production,
--- add: create index if not exists tasks_assigned_user_status_idx
---      on public.tasks (assigned_user_id, status, created_at desc);
--- in a follow-up migration. We do NOT add it here because the column
--- shape on `tasks` is host-app-specific and may differ across
--- environments.
+-- Future schema dependencies (DASH-6):
+--   * is_staff_in(division text, role text default null) returns boolean
+--     — defined by 20260502120000_staff_notifications_audience.sql.
+--   * staff_notifications + staff_notification_states tables — same.
+--   When V2-NOT-02-A is applied, DASH-6 will SUPERSEDE this function
+--   with a version that adds the staff_notifications CTE + role_fit
+--   weight. The function name + signature stays stable; consumers do
+--   not change.

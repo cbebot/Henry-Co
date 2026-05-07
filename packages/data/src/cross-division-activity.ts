@@ -6,13 +6,14 @@ import { createDataAdminClient } from "./client";
 /**
  * @henryco/data/cross-division-activity — unified activity timeline.
  *
- * Reads `customer_activity_log` for customer viewers, joining division
- * tags so the consumer can render the activity grouped by division.
+ * Reads `customer_activity` (live prod table; not `customer_activity_log`
+ * as the original DASH-1 draft assumed) for customer viewers, joining
+ * division tags so the consumer can render the activity grouped by
+ * division.
  *
- * For owner / staff viewers the table is the same but the filter is
- * different (no `user_id` filter, but RLS still scopes to allowed
- * divisions). DASH-1 ships the customer path; DASH-2+ extends to the
- * other lanes when the modules ship.
+ * For owner / staff viewers the reader sits on different schemas
+ * (workspace_audit_log, staff_activity_log) which DASH-1 does not yet
+ * extend to. DASH-2+ plumbs the additional reader paths.
  */
 
 export type ActivityItem = {
@@ -20,6 +21,7 @@ export type ActivityItem = {
   division: string;
   activityType: string;
   title: string;
+  description: string | null;
   createdAt: string;
 };
 
@@ -32,9 +34,10 @@ export async function getCrossDivisionActivity(
 
   if (viewer.kind === "customer") {
     const { data } = await client
-      .from("customer_activity_log")
-      .select("id, division, activity_type, title, created_at")
+      .from("customer_activity")
+      .select("id, division, activity_type, title, description, created_at")
       .eq("user_id", viewer.user.id)
+      .is("archived_at", null)
       .order("created_at", { ascending: false })
       .limit(limit);
     return (data ?? []).map((row) => ({
@@ -42,6 +45,7 @@ export async function getCrossDivisionActivity(
       division: row.division,
       activityType: row.activity_type,
       title: row.title,
+      description: row.description,
       createdAt: row.created_at,
     }));
   }
