@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
   async headers() {
     return defaultSecurityHeadersConfig();
   },
+  async redirects() {
+    return [
+      { source: "/privacy", destination: "/policies/privacy", permanent: true },
+      { source: "/terms", destination: "/policies/terms", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

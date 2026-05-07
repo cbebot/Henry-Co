@@ -28,11 +28,11 @@ export function normalizeTrustedRedirect(next?: string | null) {
   const value = String(next || "").trim();
   if (!value) return "/";
 
-  /** Legacy / mistaken callers passed bare `staffhq` instead of an absolute staff URL. */
+  /** Legacy / mistaken callers passed bare staff tokens instead of an absolute staff URL. */
   const token = value.toLowerCase();
   if (token === "staffhq" || token === "staff") {
     const base = String(COMPANY.group.baseDomain || "").trim().toLowerCase();
-    return base ? `https://staffhq.${base}/` : "/";
+    return base ? `https://staff.${base}/` : "/";
   }
 
   if (value.startsWith("/")) {

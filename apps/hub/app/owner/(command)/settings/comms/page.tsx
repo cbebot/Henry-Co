@@ -58,7 +58,7 @@ export default function OwnerCommsGovernancePage() {
             <Users className="mt-0.5 h-4 w-4 shrink-0 text-[var(--acct-gold)]" />
             <span>
               <span className="font-semibold text-[var(--acct-ink)]">Operators & leadership: </span>
-              <span className="font-medium text-[var(--acct-ink)]">staffhq.</span> is the live staff
+              <span className="font-medium text-[var(--acct-ink)]">staff.</span> is the live staff
               workspace host. The older <span className="font-medium text-[var(--acct-ink)]">workspace.</span>{" "}
               hostname is now treated as a legacy alias and should not be used in new links. Use{" "}
               <span className="font-medium text-[var(--acct-ink)]">Team internal chat</span> in HQ for

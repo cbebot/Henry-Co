@@ -62,11 +62,12 @@ export function proxy(request: NextRequest) {
 
   const isLegacyWorkspaceHost = host.startsWith("workspace.");
   const isStaffHqHost = host.startsWith("staffhq.");
-  const isWorkspaceHost = isLegacyWorkspaceHost || isStaffHqHost;
+  const isStaffHost = host.startsWith("staff.");
+  const isWorkspaceHost = isLegacyWorkspaceHost || isStaffHqHost || isStaffHost;
   const isHqHost = host.startsWith("hq.");
   const baseDomain = COMPANY.group.baseDomain;
   const preferredHqOrigin = `https://hq.${baseDomain}`;
-  const preferredStaffHqOrigin = `https://staffhq.${baseDomain}`;
+  const preferredStaffHqOrigin = `https://staff.${baseDomain}`;
   const rewriteUrl = request.nextUrl.clone();
   const redirectUrl = request.nextUrl.clone();
 
@@ -92,7 +93,7 @@ export function proxy(request: NextRequest) {
     return withSecurityHeaders(NextResponse.redirect(redirectUrl, 307));
   }
 
-  if (isLegacyWorkspaceHost) {
+  if (isLegacyWorkspaceHost || isStaffHqHost) {
     redirectUrl.href = `${preferredStaffHqOrigin}${request.nextUrl.pathname}${request.nextUrl.search}`;
     return withSecurityHeaders(NextResponse.redirect(redirectUrl, 307));
   }
