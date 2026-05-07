@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getAccountUrl } from "@henryco/config";
-import { LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
+import { AlertCircle, LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
 import {
   emitEngagementEvent,
   recordCartRecoveryState,
@@ -20,7 +20,42 @@ import { createAdminSupabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-export default async function CheckoutPage() {
+const CHECKOUT_ERROR_COPY: Record<string, { title: string; body: string }> = {
+  "wallet-unavailable": {
+    title: "Wallet isn't ready for marketplace debits yet",
+    body: "Your HenryCo wallet isn't activated for direct payments. Switch to bank transfer with proof, or top up your wallet first.",
+  },
+  "insufficient-balance": {
+    title: "Wallet balance didn't cover the order",
+    body: "Top up the shortfall, switch to bank transfer with proof, or use cash on delivery if the order is eligible.",
+  },
+  "missing-bank-reference": {
+    title: "Bank reference missing",
+    body: "Add the bank receipt or reference number from your transfer so finance can match it cleanly.",
+  },
+  "missing-payment-proof": {
+    title: "Payment proof missing",
+    body: "Attach a screenshot or PDF of your transfer receipt — finance can't verify a transfer without evidence.",
+  },
+  "payment-proof-upload-failed": {
+    title: "Proof didn't upload",
+    body: "Try a smaller file (under 10 MB) or a different image format. PNG, JPG, WebP, and PDF are accepted.",
+  },
+  "wallet-changed": {
+    title: "Wallet balance shifted mid-checkout",
+    body: "Your wallet was updated while we were placing the order. Reload the page to confirm the latest balance, then submit again.",
+  },
+};
+
+export default async function CheckoutPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const search = (await searchParams) ?? {};
+  const errorKey = typeof search.error === "string" ? search.error : null;
+  const errorCopy = errorKey ? CHECKOUT_ERROR_COPY[errorKey] ?? null : null;
+
   const [viewer, cart, shell] = await Promise.all([
     getMarketplaceViewer(),
     getCartPreview(),
@@ -138,18 +173,38 @@ export default async function CheckoutPage() {
   }
 
   return (
-    <CheckoutExperience
-      cart={shell.cart}
-      cartToken={cart.token ?? null}
-      addresses={addresses}
-      paymentRail={paymentRail}
-      wallet={wallet}
-      paymentReference={makeMarketplacePaymentReference()}
-      walletTopUpHref={getAccountUrl("/wallet/funding")}
-      buyer={{
-        fullName: viewer.user.fullName ?? null,
-        email: viewer.user.email ?? null,
-      }}
-    />
+    <>
+      {errorCopy ? (
+        <div className="mx-auto max-w-[1480px] px-4 pt-8 sm:px-6 xl:px-8">
+          <div
+            role="alert"
+            aria-live="polite"
+            className="flex items-start gap-3 rounded-[1.4rem] border border-amber-400/30 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-200/90">
+                Order not placed
+              </p>
+              <p className="mt-1 text-sm font-semibold text-amber-50">{errorCopy.title}</p>
+              <p className="mt-1 text-sm leading-6 text-amber-100/85">{errorCopy.body}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <CheckoutExperience
+        cart={shell.cart}
+        cartToken={cart.token ?? null}
+        addresses={addresses}
+        paymentRail={paymentRail}
+        wallet={wallet}
+        paymentReference={makeMarketplacePaymentReference()}
+        walletTopUpHref={getAccountUrl("/wallet/funding")}
+        buyer={{
+          fullName: viewer.user.fullName ?? null,
+          email: viewer.user.email ?? null,
+        }}
+      />
+    </>
   );
 }
