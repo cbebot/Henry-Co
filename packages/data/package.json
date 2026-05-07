@@ -1,0 +1,27 @@
+{
+  "name": "@henryco/data",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./database.types": "./src/database.types.ts",
+    "./client": "./src/client.ts",
+    "./dashboard-summary": "./src/dashboard-summary.ts",
+    "./signal-feed": "./src/signal-feed.ts",
+    "./cross-division-activity": "./src/cross-division-activity.ts",
+    "./support-summary": "./src/support-summary.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "@henryco/auth": "workspace:^",
+    "@supabase/supabase-js": "^2.98.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.9.3"
+  }
+}
