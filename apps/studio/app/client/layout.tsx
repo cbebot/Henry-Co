@@ -1,7 +1,17 @@
+import { headers } from "next/headers";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { resolveViewerContext } from "@/lib/messaging/queries";
 import { NotificationToast } from "@/components/messaging";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
+import {
+  buildAttentionItems,
+  getClientPortalSnapshot,
+  unreadMessageCount,
+} from "@/lib/portal/data";
+import { getStudioAccountUrl } from "@/lib/studio/links";
+import { PortalSidebar } from "@/components/portal/sidebar";
+import { PortalMobileHeader } from "@/components/portal/mobile-header";
+import { PortalBottomNav } from "@/components/portal/bottom-nav";
 
 /** Authenticated portal — never serve a cached unauthenticated render
  * (CHROME-01A FIX 15). All client-portal pages re-evaluate the auth
@@ -9,34 +19,78 @@ import { requireClientPortalViewer } from "@/lib/portal/auth";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+const FULL_TAKEOVER_PREFIXES = ["/client/messages"];
+
 /**
- * STUDIO-MSG-01: client-section layout mounts the system-level
- * notification toast so an inbound message surfaces from any portal
- * page (dashboard, files, payments, projects). The toast subscribes
- * to all projects the viewer participates in.
+ * /client workspace layout — wraps every client-portal page in the
+ * premium portal shell (desktop sidebar + mobile header + bottom nav).
+ * One page deliberately opts out: /client/messages renders a full-bleed
+ * inbox-and-thread takeover that would only be cluttered by chrome.
  *
- * STUDIO-CP-01 will likely wrap this layout in the portal shell
- * (sidebar, header). When that lands, this layout becomes the inner
- * wrapper that mounts cross-page system overlays.
- *
- * CHROME-01A: also enforces the client-portal auth gate at the layout
- * level so every nested route (dashboard, files, projects, payments,
- * profile, messages, proposals, reviews) returns a server-side redirect
- * to the shared account login when the viewer is unauthenticated.
- * Without this, a portal page that forgets to call the gate would
- * render server-side as 200.
+ * The shell pre-loads the viewer's portal snapshot once at the layout
+ * level so the sidebar can show live unread/outstanding/attention
+ * counts without each page re-fetching them.
  */
 export default async function StudioClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await requireClientPortalViewer("/client");
+  const viewer = await requireClientPortalViewer("/client");
   const subscriptions = await resolveViewerProjectSubscriptions();
 
+  const pathname = await currentPathname();
+  const isTakeover = FULL_TAKEOVER_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+
+  if (isTakeover) {
+    return (
+      <>
+        {children}
+        {subscriptions.viewerId ? (
+          <NotificationToast
+            viewerId={subscriptions.viewerId}
+            projectSubscriptions={subscriptions.projects}
+            hrefTemplate="/client/projects/{projectId}/messages"
+          />
+        ) : null}
+      </>
+    );
+  }
+
+  const snapshot = await getClientPortalSnapshot(viewer);
+  const attentionCount = buildAttentionItems(snapshot).length;
+  const unreadCount = unreadMessageCount(snapshot);
+  const outstandingInvoices = snapshot.invoices.filter(
+    (invoice) => invoice.status === "sent" || invoice.status === "overdue",
+  ).length;
+  const accountUrl = getStudioAccountUrl();
+
   return (
-    <>
-      {children}
+    <div className="flex min-h-[100dvh] bg-[var(--studio-bg)] text-[var(--studio-ink)]">
+      <PortalSidebar
+        viewer={viewer}
+        unreadCount={unreadCount}
+        outstandingInvoices={outstandingInvoices}
+        attentionCount={attentionCount}
+        accountUrl={accountUrl}
+      />
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <PortalMobileHeader viewer={viewer} attentionCount={attentionCount} />
+        <main
+          id="henryco-main"
+          className="flex-1 px-4 pb-24 pt-5 sm:px-6 lg:px-10 lg:pb-12 lg:pt-10"
+        >
+          <div className="mx-auto w-full max-w-5xl">{children}</div>
+        </main>
+        <PortalBottomNav
+          unreadCount={unreadCount}
+          outstandingInvoices={outstandingInvoices}
+        />
+      </div>
+
       {subscriptions.viewerId ? (
         <NotificationToast
           viewerId={subscriptions.viewerId}
@@ -44,8 +98,26 @@ export default async function StudioClientLayout({
           hrefTemplate="/client/projects/{projectId}/messages"
         />
       ) : null}
-    </>
+    </div>
   );
+}
+
+async function currentPathname(): Promise<string> {
+  // next/headers exposes the current request path via the
+  // "x-invoke-path" or "next-url" header in app-router server components.
+  // We try a couple of common locations and fall back gracefully so the
+  // takeover detection never breaks the render.
+  try {
+    const headerStore = await headers();
+    return (
+      headerStore.get("x-invoke-path") ||
+      headerStore.get("next-url") ||
+      headerStore.get("x-pathname") ||
+      ""
+    );
+  } catch {
+    return "";
+  }
 }
 
 async function resolveViewerProjectSubscriptions(): Promise<{

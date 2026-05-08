@@ -1,31 +1,60 @@
-export const candidateNav = [
-  { href: "/candidate", label: "Home" },
-  { href: "/candidate/profile", label: "Profile" },
-  { href: "/candidate/applications", label: "Applications" },
-  { href: "/candidate/conversations", label: "Messages" },
-  { href: "/candidate/interviews", label: "Interviews" },
-  { href: "/candidate/saved-jobs", label: "Saved Jobs" },
-  { href: "/candidate/alerts", label: "Alerts" },
-  { href: "/candidate/files", label: "Files" },
-  { href: "/candidate/settings", label: "Settings" },
+import {
+  Activity,
+  Bell,
+  BookmarkPlus,
+  Briefcase,
+  Building2,
+  CalendarDays,
+  ChartColumnBig,
+  ClipboardList,
+  FileText,
+  History,
+  Home,
+  LayoutDashboard,
+  ListChecks,
+  MessageSquare,
+  Plus,
+  Settings,
+  ShieldCheck,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
+
+export type WorkspaceNavItem = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+};
+
+export const candidateNav: WorkspaceNavItem[] = [
+  { href: "/candidate", label: "Home", icon: Home },
+  { href: "/candidate/profile", label: "Profile", icon: UserRound },
+  { href: "/candidate/applications", label: "Applications", icon: ClipboardList },
+  { href: "/candidate/conversations", label: "Messages", icon: MessageSquare },
+  { href: "/candidate/interviews", label: "Interviews", icon: CalendarDays },
+  { href: "/candidate/saved-jobs", label: "Saved Jobs", icon: BookmarkPlus },
+  { href: "/candidate/alerts", label: "Alerts", icon: Bell },
+  { href: "/candidate/files", label: "Files", icon: FileText },
+  { href: "/candidate/settings", label: "Settings", icon: Settings },
 ];
 
-export const employerNav = [
-  { href: "/employer", label: "Console" },
-  { href: "/employer/company", label: "Company" },
-  { href: "/employer/jobs", label: "Jobs" },
-  { href: "/employer/jobs/new", label: "Post Role" },
-  { href: "/employer/applicants", label: "Applicants" },
-  { href: "/employer/hiring", label: "Hiring" },
-  { href: "/employer/analytics", label: "Analytics" },
-  { href: "/employer/settings", label: "Settings" },
+export const employerNav: WorkspaceNavItem[] = [
+  { href: "/employer", label: "Console", icon: LayoutDashboard },
+  { href: "/employer/company", label: "Company", icon: Building2 },
+  { href: "/employer/jobs", label: "Jobs", icon: Briefcase },
+  { href: "/employer/jobs/new", label: "Post Role", icon: Plus },
+  { href: "/employer/applicants", label: "Applicants", icon: Users },
+  { href: "/employer/hiring", label: "Hiring", icon: ListChecks },
+  { href: "/employer/analytics", label: "Analytics", icon: ChartColumnBig },
+  { href: "/employer/settings", label: "Settings", icon: Settings },
 ];
 
-export const recruiterNav = [
-  { href: "/recruiter", label: "Console" },
-  { href: "/recruiter/pipeline", label: "Pipeline" },
-  { href: "/recruiter/jobs", label: "Jobs" },
-  { href: "/recruiter/employers", label: "Employers" },
-  { href: "/recruiter/verification", label: "Verification" },
-  { href: "/recruiter/history", label: "History" },
+export const recruiterNav: WorkspaceNavItem[] = [
+  { href: "/recruiter", label: "Console", icon: LayoutDashboard },
+  { href: "/recruiter/pipeline", label: "Pipeline", icon: Activity },
+  { href: "/recruiter/jobs", label: "Jobs", icon: Briefcase },
+  { href: "/recruiter/employers", label: "Employers", icon: Building2 },
+  { href: "/recruiter/verification", label: "Verification", icon: ShieldCheck },
+  { href: "/recruiter/history", label: "History", icon: History },
 ];

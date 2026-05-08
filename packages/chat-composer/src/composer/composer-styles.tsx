@@ -150,6 +150,68 @@ const STYLE_BODY = `
   pointer-events: none;
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   Fullscreen composer — bulletproof readability.
+   The FullScreenComposer renders into document.body via createPortal,
+   which means it escapes any parent surface (e.g., the studio
+   messaging centre's hardcoded dark surface). Tailwind's dark: variant
+   relies on prefers-color-scheme by default, but the platform also
+   exposes a class-based theme toggle (html.dark / data-theme). Without
+   these explicit rules the textarea inherits a light-text colour over
+   a dark portal background and the user can't see what they're
+   typing — the bug owner reported on May 2026.
+
+   Rules below cover three triggers for a dark fullscreen:
+     1. html.dark / [data-theme="dark"] — class-based theme
+     2. prefers-color-scheme: dark — system theme
+     3. data-tone="studio"/"marketplace" — surfaces that are always
+        dark regardless of the page-level theme
+   ────────────────────────────────────────────────────────────────── */
+
+[data-composer-fullscreen="true"] {
+  background: #ffffff;
+  color: #18181b;
+}
+[data-composer-fullscreen="true"] textarea {
+  color: #18181b;
+  caret-color: #18181b;
+}
+[data-composer-fullscreen="true"] textarea::placeholder {
+  color: rgba(15, 23, 42, 0.45);
+}
+
+:where(html.dark, html[data-theme="dark"]) [data-composer-fullscreen="true"],
+[data-composer-fullscreen="true"][data-tone="studio"],
+[data-composer-fullscreen="true"][data-tone="marketplace"] {
+  background: #070D18;
+  color: #F5F4EE;
+}
+:where(html.dark, html[data-theme="dark"]) [data-composer-fullscreen="true"] textarea,
+[data-composer-fullscreen="true"][data-tone="studio"] textarea,
+[data-composer-fullscreen="true"][data-tone="marketplace"] textarea {
+  color: #F5F4EE;
+  caret-color: #F5F4EE;
+}
+:where(html.dark, html[data-theme="dark"]) [data-composer-fullscreen="true"] textarea::placeholder,
+[data-composer-fullscreen="true"][data-tone="studio"] textarea::placeholder,
+[data-composer-fullscreen="true"][data-tone="marketplace"] textarea::placeholder {
+  color: rgba(245, 244, 238, 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-composer-fullscreen="true"]:not([data-color-scheme="light"]) {
+    background: #070D18;
+    color: #F5F4EE;
+  }
+  [data-composer-fullscreen="true"]:not([data-color-scheme="light"]) textarea {
+    color: #F5F4EE;
+    caret-color: #F5F4EE;
+  }
+  [data-composer-fullscreen="true"]:not([data-color-scheme="light"]) textarea::placeholder {
+    color: rgba(245, 244, 238, 0.45);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .henryco-draft-pulse,
   .henryco-draft-saved-pop,

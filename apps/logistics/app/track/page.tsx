@@ -217,7 +217,7 @@ export default async function TrackPage({ searchParams }: Props) {
               </div>
             </section>
 
-            <TrackingMapPanel map={map} />
+            <TrackingMapPanel map={map} shipment={detail.shipment} />
 
             <section className="grid gap-10 lg:grid-cols-[1.1fr,0.9fr]">
               <div>

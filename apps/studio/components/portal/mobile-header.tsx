@@ -23,7 +23,7 @@ export function PortalMobileHeader({
 
   return (
     <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-bg)_92%,transparent)] px-4 py-3 backdrop-blur-xl">
-      <Link href="/client/dashboard" className="flex items-center gap-2.5 min-w-0">
+      <Link href="/client" className="flex items-center gap-2.5 min-w-0">
         <span className="grid h-8 w-8 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[linear-gradient(135deg,#dff8fb,#4eb8c2)] text-[#021016]">
           <Sparkles className="h-3.5 w-3.5" />
         </span>
@@ -39,7 +39,7 @@ export function PortalMobileHeader({
 
       <div className="flex items-center gap-2.5">
         <Link
-          href="/client/dashboard"
+          href="/client"
           className="relative inline-grid h-9 w-9 place-items-center rounded-full border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)] text-[var(--studio-ink-soft)]"
           aria-label={`Notifications${attentionCount > 0 ? ` (${attentionCount})` : ""}`}
         >

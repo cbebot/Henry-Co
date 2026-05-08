@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { isNavActive, portalNavItems } from "@/lib/portal/navigation";
+import { isNavActive, portalMobileNavItems } from "@/lib/portal/navigation";
 
 export function PortalBottomNav({
   unreadCount,
@@ -15,7 +15,7 @@ export function PortalBottomNav({
 
   return (
     <nav className="portal-bottom-nav" aria-label="Portal navigation">
-      {portalNavItems.map((item) => {
+      {portalMobileNavItems.map((item) => {
         const Icon = item.icon;
         const active = isNavActive(pathname, item);
         const badge =
