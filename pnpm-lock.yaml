@@ -72,9 +72,18 @@ importers:
       '@henryco/dashboard-modules-account':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-account
+      '@henryco/dashboard-modules-building':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-building
+      '@henryco/dashboard-modules-hotel':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-hotel
       '@henryco/dashboard-modules-marketplace':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-marketplace
+      '@henryco/dashboard-modules-wallet':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-wallet
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../../packages/dashboard-shell
@@ -168,7 +177,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -262,7 +271,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -1450,6 +1459,74 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/dashboard-modules-building:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-hotel:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/dashboard-modules-marketplace:
     dependencies:
       react:
@@ -1465,6 +1542,46 @@ importers:
       '@henryco/cart-saved-items':
         specifier: workspace:^
         version: link:../cart-saved-items
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-wallet:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
       '@henryco/config':
         specifier: workspace:^
         version: link:../config
