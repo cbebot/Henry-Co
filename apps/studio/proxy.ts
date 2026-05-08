@@ -80,6 +80,12 @@ function clearSupabaseAuthCookies(
 export async function proxy(request: NextRequest) {
   const reqHeaders = new Headers(request.headers);
   reqHeaders.set("x-studio-return-path", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+  // x-pathname: read by the /client portal layout to decide whether to
+  // render the chrome shell or hand off to a full-bleed takeover (e.g.
+  // /client/messages). Next.js does not expose pathname in async
+  // server-component scope; the proxy is the only place we can stamp
+  // this header before the page renders.
+  reqHeaders.set("x-pathname", request.nextUrl.pathname);
   const malformedCookieNames = new Set(findMalformedSupabaseSessionCookieNames(request.cookies.getAll()));
   const isGatedRequest = isAuthGatedPath(request.nextUrl.pathname);
 
