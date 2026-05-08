@@ -39,8 +39,8 @@ export function PortalMobileHeader({
 
       <div className="flex items-center gap-2.5">
         <Link
-          href="/client"
-          className="relative inline-grid h-9 w-9 place-items-center rounded-full border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)] text-[var(--studio-ink-soft)]"
+          href="/client/notifications"
+          className="relative inline-grid h-9 w-9 place-items-center rounded-full border border-[var(--studio-line)] bg-[rgba(255,255,255,0.04)] text-[var(--studio-ink-soft)] transition hover:border-[rgba(151,244,243,0.4)] hover:text-[var(--studio-ink)]"
           aria-label={`Notifications${attentionCount > 0 ? ` (${attentionCount})` : ""}`}
         >
           <Bell className="h-4 w-4" />

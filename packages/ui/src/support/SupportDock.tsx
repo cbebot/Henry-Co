@@ -999,7 +999,11 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
       // and could intercept scroll/tap events on touch devices. Now the
       // dock only occupies the area it needs and the rest of the bottom
       // strip stays free for page content + system safe-area gestures.
-      className="fixed bottom-0 right-0 z-[60] pointer-events-none flex flex-col items-end gap-3"
+      // Mobile/tablet: lift above any portal bottom-nav (~64-72px high) so
+      // the launcher never overlaps a primary mobile-nav button. Desktop
+      // (lg+): sidebar owns the chrome, dock returns to the OS safe-area
+      // gutter at the bottom edge.
+      className="fixed bottom-20 right-0 z-[60] pointer-events-none flex flex-col items-end gap-3 lg:bottom-0"
       style={{
         paddingBottom: "max(0.85rem, env(safe-area-inset-bottom, 0.85rem))",
         paddingRight: "max(1rem, env(safe-area-inset-right, 1rem))",

@@ -888,6 +888,13 @@ html.dark .studio-listbox-dropdown {
   border-top: 1px solid var(--studio-line);
   backdrop-filter: blur(18px);
 }
+/* Hide on desktop — the sidebar owns the chrome there. Without this
+   rule both nav surfaces render simultaneously at lg+. */
+@media (min-width: 1024px) {
+  .portal-bottom-nav {
+    display: none;
+  }
+}
 .portal-bottom-nav-item {
   display: flex;
   flex: 1 1 0;
