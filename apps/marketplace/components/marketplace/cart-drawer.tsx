@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import { DivisionImage, ActionButton } from "@henryco/dashboard-shell/components";
+import { SaveForLaterButton } from "@henryco/cart-saved-items/client";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, Minus, Plus, ShoppingBag, X } from "lucide-react";
@@ -71,12 +72,13 @@ export function MarketplaceCartDrawer() {
                     <div className="grid grid-cols-[84px,1fr] gap-4">
                       <div className="relative aspect-square overflow-hidden rounded-[1.15rem] bg-[rgba(255,255,255,0.06)]">
                         {item.image ? (
-                          <Image
+                          <DivisionImage
                             src={item.image}
                             alt={item.title}
                             fill
                             sizes="84px"
                             className="object-cover"
+                            radius="0"
                           />
                         ) : null}
                       </div>
@@ -135,35 +137,27 @@ export function MarketplaceCartDrawer() {
                     </div>
 
                     <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                      <button
-                        type="button"
-                        disabled={pendingSavedItemIds.includes(item.id)}
-                        aria-busy={pendingSavedItemIds.includes(item.id)}
-                        onClick={() => void moveCartItemToSaved(item.id)}
+                      <SaveForLaterButton
+                        onMove={async () => {
+                          await moveCartItemToSaved(item.id);
+                        }}
+                        pending={pendingSavedItemIds.includes(item.id)}
+                        compact
                         className="inline-flex items-center gap-1.5 hover:text-[var(--market-brass)] disabled:cursor-wait"
-                      >
-                        {pendingSavedItemIds.includes(item.id) ? (
-                          <HenryCoActivityIndicator size="sm" className="text-[var(--market-muted)]" label="Saving for later" />
-                        ) : (
-                          <Bookmark className="h-3.5 w-3.5" />
-                        )}
-                        <span>
-                          {pendingSavedItemIds.includes(item.id) ? "Saving..." : "Save for later"}
-                        </span>
-                      </button>
+                        labelIdle="Save for later"
+                        labelBusy="Saving..."
+                      />
                       <span aria-hidden="true">·</span>
-                      <button
-                        type="button"
+                      <ActionButton
+                        tone="ghost"
+                        spinner={cartBusy}
                         disabled={cartBusy}
-                        aria-busy={cartBusy}
-                        onClick={() => removeCartItem(item.id)}
-                        className="inline-flex items-center gap-1.5 text-red-500 hover:text-red-400 disabled:cursor-wait"
+                        onClick={async () => {
+                          await removeCartItem(item.id);
+                        }}
                       >
-                        {cartBusy ? (
-                          <HenryCoActivityIndicator size="sm" className="text-[var(--market-muted)]" label="Updating cart" />
-                        ) : null}
-                        <span>{cartBusy ? "Updating..." : "Remove"}</span>
-                      </button>
+                        {cartBusy ? "Updating..." : "Remove"}
+                      </ActionButton>
                     </div>
                   </article>
                 ))

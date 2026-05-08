@@ -22,8 +22,13 @@ export type DivisionImageProps = Omit<ImageProps, "alt" | "loader" | "src"> & {
   alt: string;
   /** Override the radius. Default: 0.75rem. */
   radius?: string;
-  /** Wrapping container className. */
+  /**
+   * className for the inner `<img>` — same semantic as next/image's
+   * `className`. Use for `object-fit`, hover transforms, etc.
+   */
   className?: string;
+  /** className for the wrapper span. */
+  containerClassName?: string;
   /** Wrapping container style — merged AFTER defaults. */
   containerStyle?: CSSProperties;
 };
@@ -33,6 +38,7 @@ export function DivisionImage({
   alt,
   radius = "0.75rem",
   className,
+  containerClassName,
   containerStyle,
   width,
   height,
@@ -54,17 +60,30 @@ export function DivisionImage({
       }
     : undefined;
 
-  return (
-    <span
-      className={className}
-      style={{
+  // When `fill` is set, the inner <Image> uses position: absolute;
+  // inset: 0; which only works inside a sized, positioned parent.
+  // Make the wrapper fill its own parent so callers don't need to
+  // know about the wrapper's existence — they pass `fill` as they
+  // would to next/image and the geometry is identical.
+  const wrapperStyle: CSSProperties = fill
+    ? {
+        position: "absolute",
+        inset: 0,
+        display: "block",
+        overflow: "hidden",
+        borderRadius: radius,
+        ...containerStyle,
+      }
+    : {
         position: "relative",
         display: "inline-block",
         overflow: "hidden",
         borderRadius: radius,
         ...containerStyle,
-      }}
-    >
+      };
+
+  return (
+    <span className={containerClassName} style={wrapperStyle}>
       <Image
         src={src}
         alt={alt}
@@ -74,6 +93,7 @@ export function DivisionImage({
         fill={fill}
         sizes={sizes}
         priority={priority}
+        className={className}
         {...rest}
       />
     </span>

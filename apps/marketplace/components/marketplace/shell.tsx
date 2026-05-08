@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { DivisionImage } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -239,12 +239,13 @@ export function VendorCard({
     <Link href={`/store/${vendor.slug}`} className="group block">
       <article className="overflow-hidden rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
         <div className="relative h-44 overflow-hidden">
-          <Image
+          <DivisionImage
             src={imageSrc}
             alt={vendor.name}
             fill
             sizes="(max-width: 1024px) 100vw, 33vw"
             className="object-cover transition duration-500 group-hover:scale-[1.04]"
+            radius="0"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.85)] via-[rgba(4,7,13,0.18)] to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex flex-wrap gap-1.5 p-5">

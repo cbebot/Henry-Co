@@ -18,6 +18,7 @@
     "@henryco/brand": "workspace:^",
     "@henryco/cart-saved-items": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/notifications": "workspace:^",

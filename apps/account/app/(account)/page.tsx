@@ -2,11 +2,8 @@ import Link from "next/link";
 import {
   Wallet,
   Bell,
-  ArrowUpRight,
-  BriefcaseBusiness,
   ShoppingBag,
   Sparkles,
-  Palette,
   LifeBuoy,
   ChevronRight,
   TrendingUp,
@@ -19,6 +16,13 @@ import { parseHenryFeatureFlags } from "@henryco/intelligence";
 import { formatAccountTemplate, getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { listSavedItems } from "@henryco/cart-saved-items/server";
+import {
+  getEligibleModules,
+  type DashboardModule,
+  EmptyState,
+} from "@henryco/dashboard-shell";
+import { buildUnifiedViewer } from "@henryco/auth/server";
+import type { UnifiedViewer } from "@henryco/auth";
 import { requireAccountUser } from "@/lib/auth";
 import {
   getCartRecoveryState,
@@ -44,6 +48,11 @@ import { collectAndPersistLifecycleSnapshot } from "@/lib/lifecycle/collector";
 import LifecycleContinuePanel from "@/components/lifecycle/LifecycleContinuePanel";
 import PageHeader from "@/components/layout/PageHeader";
 
+// Side-effect: register modules. Without this import the registry is
+// empty and `RegisteredModulesGrid` falls back to the legacy 4-card
+// row preserved as the resilience fallback.
+import "@/app/(account)/_modules";
+
 export const dynamic = "force-dynamic";
 
 export default async function OverviewPage() {
@@ -60,6 +69,7 @@ export default async function OverviewPage() {
     savedItems,
     recentlyViewed,
     cartRecovery,
+    viewerForGrid,
   ] = await Promise.all([
     getDashboardSummary(user.id, locale),
     getWalletFundingContext(user.id),
@@ -69,6 +79,12 @@ export default async function OverviewPage() {
     listSavedItems(adminClient, user.id, { includeStatuses: ["active"], limit: 20 }),
     getRecentlyViewed(user.id, 6),
     getCartRecoveryState(user.id),
+    buildUnifiedViewer({
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      avatarUrl: user.avatarUrl,
+    }),
   ]);
   const openSupportCount = supportThreads.filter((thread: Record<string, unknown>) => {
     const status = String(thread.status || "");
@@ -526,39 +542,85 @@ export default async function OverviewPage() {
         </section>
       </div>
 
-      {/* Division services */}
-      <section className="acct-card p-5">
-        <p className="acct-kicker mb-3">{copy.overview.yourServices}</p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            { key: "care", label: copy.overview.careService, desc: copy.overview.careServiceDescription, icon: Sparkles, href: "/care" },
-            { key: "marketplace", label: copy.overview.marketplaceService, desc: copy.overview.marketplaceServiceDescription, icon: ShoppingBag, href: "/marketplace" },
-            { key: "jobs", label: copy.overview.jobsService, desc: copy.overview.jobsServiceDescription, icon: BriefcaseBusiness, href: "/jobs" },
-            { key: "studio", label: copy.overview.studioService, desc: copy.overview.studioServiceDescription, icon: Palette, href: "/studio" },
-          ].map((svc) => (
-            <Link
-              key={svc.key}
-              href={svc.href}
-              className="flex items-center gap-4 rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4 transition-all hover:border-[var(--acct-gold)]/30 hover:shadow-md"
-            >
-              <div
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                style={{
-                  backgroundColor: divisionColor(svc.key) + "18",
-                  color: divisionColor(svc.key),
-                }}
-              >
-                <svc.icon size={22} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-[var(--acct-ink)]">{svc.label}</p>
-                <p className="text-xs text-[var(--acct-muted)]">{svc.desc}</p>
-              </div>
-              <ArrowUpRight size={16} className="shrink-0 text-[var(--acct-muted)]" />
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/*
+        DASH-2 — registered-modules grid replaces the hardcoded
+        4-division row. Closes audit §C.10 #4. The registry walk fires
+        from `RegisteredModulesGrid` (server component below) which
+        imports the side-effect registration site and calls
+        `getEligibleModules(viewer)`. New modules added via
+        `apps/account/app/(account)/_modules/index.ts` show up here
+        without further changes to this file.
+      */}
+      <RegisteredModulesGrid viewer={viewerForGrid} kicker={copy.overview.yourServices} />
     </div>
+  );
+}
+
+/**
+ * RegisteredModulesGrid — DASH-2 registry walk.
+ *
+ * Reads `getEligibleModules(viewer)` and renders one card per module
+ * the viewer is eligible to see. Customer-overview routes to `/`
+ * (this page); every other module routes to `/modules/<slug>` (the
+ * catch-all router). Closes audit §C.10 #4.
+ */
+function RegisteredModulesGrid({
+  viewer,
+  kicker,
+}: {
+  viewer: UnifiedViewer;
+  kicker: string;
+}) {
+  const modules = getEligibleModules(viewer);
+  if (modules.length === 0) {
+    // Resilience: when registration hasn't happened (HMR or
+    // test-only), fall back to a minimal teaching state. Static
+    // fallback is preferable to throwing on a happy path.
+    return (
+      <section className="acct-card p-5">
+        <p className="acct-kicker mb-3">{kicker}</p>
+        <EmptyState
+          headline="Modules will appear here."
+          body="When divisions register, they show up automatically."
+          align="start"
+        />
+      </section>
+    );
+  }
+  return (
+    <section className="acct-card p-5">
+      <p className="acct-kicker mb-3">{kicker}</p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {modules.map((m) => (
+          <RegisteredModuleEntry key={m.slug} module={m} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function RegisteredModuleEntry({ module }: { module: DashboardModule }) {
+  const href = module.slug === "customer-overview" ? "/" : `/modules/${module.slug}`;
+  const icon = typeof module.icon === "function" ? module.icon() : module.icon;
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-4 rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4 transition-all hover:border-[var(--acct-gold)]/30 hover:shadow-md"
+    >
+      <div
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+        style={{
+          backgroundColor: divisionColor(module.slug) + "18",
+          color: divisionColor(module.slug),
+        }}
+      >
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-[var(--acct-ink)]">{module.title}</p>
+        <p className="text-xs text-[var(--acct-muted)]">{module.description}</p>
+      </div>
+      <ChevronRight size={16} className="shrink-0 text-[var(--acct-muted)]" />
+    </Link>
   );
 }

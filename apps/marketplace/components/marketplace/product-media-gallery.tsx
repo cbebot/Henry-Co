@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { DivisionImage } from "@henryco/dashboard-shell/components";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Expand, Play, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -31,13 +31,14 @@ function renderMedia(url: string, title: string, priority = false) {
   }
 
   return (
-    <Image
+    <DivisionImage
       src={url}
       alt={title}
       fill
       priority={priority}
       sizes="(max-width: 1280px) 100vw, 54vw"
       className="object-cover"
+      radius="0"
     />
   );
 }
