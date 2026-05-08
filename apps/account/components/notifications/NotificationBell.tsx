@@ -591,10 +591,10 @@ function PopoverEmptyState({ t }: { t: (text: string) => string }) {
         <EmptyStateGlyph size={44} />
       </span>
       <p className="acct-display text-base text-[var(--acct-ink)]">
-        {t("All caught up.")}
+        {t("Nothing's waiting")}
       </p>
       <p className="text-xs leading-6 text-[var(--acct-muted)]">
-        {t("Activity from across HenryCo surfaces here.")}
+        {t("When something needs you, it lands here.")}
       </p>
     </div>
   );

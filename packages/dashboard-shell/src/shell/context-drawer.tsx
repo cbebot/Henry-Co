@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Bell } from "lucide-react";
 import { Drawer } from "../components/drawer";
 import { typeStyle } from "../tokens/type";
@@ -9,14 +9,18 @@ import { RADIUS } from "../tokens/spacing";
 import { focusVisibleStyle } from "../tokens/focus";
 import { Badge } from "../components/badge";
 import { useRealtimeOptional } from "./supabase-realtime-provider";
+import { isMutedDivision } from "./realtime-rules";
 
 /**
  * ContextDrawer — the right-edge notifications + signal-feed panel.
  *
  * DASH-6 wires it to the shell realtime spine:
  *   - The trigger button reads the live customer-audience unread count
- *     via `useRealtimeOptional()` so the badge updates on every realtime
- *     event without the host needing to wire it.
+ *     via `useRealtimeOptional()` and applies the same muted-division
+ *     filter the bell uses, so the drawer trigger badge and any
+ *     shell-wide `<NotificationsBell>` always show the same number.
+ *   - When the channel is degraded (error/closed), a small amber dot
+ *     replaces the count so the user knows the badge may be lagging.
  *   - The body is provided as `children` — apps pass
  *     `<NotificationsDrawerBody>` from
  *     `@henryco/dashboard-shell/components/notifications`.
@@ -47,8 +51,23 @@ export function ContextDrawer({
   t = (s) => s,
 }: ContextDrawerProps) {
   const realtime = useRealtimeOptional();
-  const liveUnread = realtime?.customerUnread ?? 0;
+  // Apply the same muted-division filter the bell uses so the drawer
+  // trigger badge and the bell badge always match.
+  const liveUnread = useMemo(() => {
+    if (!realtime) return 0;
+    let count = 0;
+    for (const s of realtime.signals) {
+      if (s.audience !== "customer") continue;
+      if (s.is_read || s.archived_at || s.deleted_at) continue;
+      if (isMutedDivision(realtime.preferences, s.division)) continue;
+      count += 1;
+    }
+    return count;
+  }, [realtime]);
   const unreadCount = unreadOverride ?? liveUnread;
+  const channelDegraded =
+    realtime?.customerChannelStatus === "error" ||
+    realtime?.customerChannelStatus === "closed";
   const [open, setOpen] = useState(false);
 
   // Keyboard escape — fallback in case the Drawer primitive's listener
@@ -62,16 +81,22 @@ export function ContextDrawer({
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
+  const triggerLabel = (() => {
+    if (channelDegraded) {
+      return `${t("Notifications")} — ${t("reconnecting")}`;
+    }
+    if (unreadCount > 0) {
+      return `${t("Notifications")} — ${unreadCount} ${t("unread")}`;
+    }
+    return t("Notifications");
+  })();
+
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label={
-          unreadCount > 0
-            ? `${t("Notifications")} — ${unreadCount} ${t("unread")}`
-            : t("Notifications")
-        }
+        aria-label={triggerLabel}
         aria-expanded={open}
         aria-haspopup="dialog"
         style={{
@@ -90,7 +115,22 @@ export function ContextDrawer({
         }}
       >
         <Bell size={16} aria-hidden />
-        {unreadCount > 0 ? (
+        {channelDegraded ? (
+          <span
+            aria-hidden
+            title={t("Reconnecting to live activity")}
+            style={{
+              position: "absolute",
+              top: "-0.25rem",
+              right: "-0.25rem",
+              width: "0.55rem",
+              height: "0.55rem",
+              borderRadius: "9999px",
+              backgroundColor: "#c9a227",
+              boxShadow: `0 0 0 2px var(${CSS_VARS.surface})`,
+            }}
+          />
+        ) : unreadCount > 0 ? (
           <span
             aria-hidden
             style={{ position: "absolute", top: "-0.4rem", right: "-0.4rem" }}

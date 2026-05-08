@@ -58,12 +58,18 @@ import {
  *     channel filter `recipient_user_id=eq.<userId>`.
  */
 
+/**
+ * Minimum surface of `@supabase/supabase-js` the spine actually
+ * exercises. Typed loosely (return values are `unknown` where we only
+ * use them for chaining) so a real Supabase client conforms by
+ * structural typing without callers needing `as never` / `as unknown`
+ * casts at the call site. Keeps `@supabase/supabase-js` out of the
+ * package's import graph; the host app remains the only place that
+ * imports the actual SDK.
+ */
 type SupabaseLike = {
   channel: (name: string) => RealtimeChannelLike;
   removeChannel: (channel: RealtimeChannelLike) => unknown;
-  auth: {
-    getUser: () => Promise<{ data: { user: { id: string } | null }; error: unknown }>;
-  };
 };
 
 type RealtimeChannelLike = {
@@ -210,16 +216,44 @@ function projectHydrationItem(
   };
 }
 
+/**
+ * Merge a fresh hydration into the local signal store.
+ *
+ * `trustedAudiences` lists the audience(s) whose fetch resolved
+ * authoritatively (HTTP OK + parseable body). For those audiences the
+ * incoming list is the source of truth: any locally-cached row of that
+ * audience that is NOT in incoming is dropped. This is what lets a
+ * soft-deleted notification disappear from the bell + inbox the moment
+ * the recent endpoint stops returning it (the recent endpoint filters
+ * `deleted_at IS NOT NULL` out, so without this drop the stale row
+ * would linger until 50 newer notifications evicted it).
+ *
+ * Audiences NOT in `trustedAudiences` (typically because their fetch
+ * failed) keep their cached rows so a network blip doesn't blank the
+ * UI.
+ *
+ * Within trusted audiences, incoming wins on ID collision so the freshly
+ * projected row (with the latest `is_read`, `email_dispatched_at`, etc.)
+ * replaces the stale copy.
+ */
 function mergeSignals(
   current: ReadonlyArray<RealtimeSignal>,
   incoming: ReadonlyArray<RealtimeSignal>,
+  trustedAudiences: ReadonlySet<SignalAudience>,
 ): ReadonlyArray<RealtimeSignal> {
   const byId = new Map<string, RealtimeSignal>();
   for (const item of incoming) {
     byId.set(item.id, item);
   }
   for (const item of current) {
-    if (!byId.has(item.id)) byId.set(item.id, item);
+    if (byId.has(item.id)) continue;
+    if (trustedAudiences.has(item.audience)) {
+      // The incoming hydration for this audience succeeded but did not
+      // include this row → it has been removed (soft-delete, archive,
+      // age-out beyond the visible window). Drop it from local.
+      continue;
+    }
+    byId.set(item.id, item);
   }
   return Object.freeze(
     Array.from(byId.values())
@@ -277,6 +311,16 @@ export function SupabaseRealtimeProvider({
     new Map<string, Set<(signal: RealtimeSignal) => void>>(),
   );
   const supabaseRef = useRef<SupabaseLike | null>(null);
+  // Stash the host-supplied factory in a ref so the realtime channel
+  // effects don't re-subscribe when the parent re-renders with a fresh
+  // arrow identity. The factory is read once at first connect; thereafter
+  // the cached `supabaseRef.current` is reused. Updating the ref via a
+  // `useEffect` keeps the stash in sync if the host swaps factories at
+  // runtime (rare, e.g. test harness swaps).
+  const getSupabaseRef = useRef<typeof getSupabase>(getSupabase);
+  useEffect(() => {
+    getSupabaseRef.current = getSupabase;
+  }, [getSupabase]);
 
   // Hydration: GET the customer + (when staff) staff endpoints, project
   // into RealtimeSignal[]. Refresh runs on mount, on every channel event
@@ -284,36 +328,40 @@ export function SupabaseRealtimeProvider({
   const hydrateOnce = useCallback(async () => {
     if (!viewer?.user.id) return;
     try {
-      const reqs: Array<Promise<RealtimeSignal[]>> = [];
+      type Bucket = { audience: SignalAudience; items: RealtimeSignal[]; ok: boolean };
+      const reqs: Array<Promise<Bucket>> = [];
       reqs.push(
         fetch(config.customerHydrateUrl, { method: "GET", cache: "no-store" })
-          .then((r) => (r.ok ? (r.json() as Promise<HydrationPayload>) : null))
-          .then((p) =>
-            p?.items
-              ? p.items
-                  .map((it) => projectHydrationItem(it, "customer"))
-                  .filter((x): x is RealtimeSignal => x !== null)
-              : [],
-          )
-          .catch(() => []),
+          .then(async (r): Promise<Bucket> => {
+            if (!r.ok) return { audience: "customer", items: [], ok: false };
+            const p = (await r.json()) as HydrationPayload;
+            const items = (p?.items ?? [])
+              .map((it) => projectHydrationItem(it, "customer"))
+              .filter((x): x is RealtimeSignal => x !== null);
+            return { audience: "customer", items, ok: true };
+          })
+          .catch(() => ({ audience: "customer", items: [], ok: false })),
       );
       if (viewer.access.hasStaffAccess) {
         reqs.push(
           fetch(config.staffHydrateUrl, { method: "GET", cache: "no-store" })
-            .then((r) => (r.ok ? (r.json() as Promise<HydrationPayload>) : null))
-            .then((p) =>
-              p?.items
-                ? p.items
-                    .map((it) => projectHydrationItem(it, "staff"))
-                    .filter((x): x is RealtimeSignal => x !== null)
-                : [],
-            )
-            .catch(() => []),
+            .then(async (r): Promise<Bucket> => {
+              if (!r.ok) return { audience: "staff", items: [], ok: false };
+              const p = (await r.json()) as HydrationPayload;
+              const items = (p?.items ?? [])
+                .map((it) => projectHydrationItem(it, "staff"))
+                .filter((x): x is RealtimeSignal => x !== null);
+              return { audience: "staff", items, ok: true };
+            })
+            .catch(() => ({ audience: "staff", items: [], ok: false })),
         );
       }
       const buckets = await Promise.all(reqs);
-      const combined = buckets.flat();
-      setSignals((current) => mergeSignals(current, combined));
+      const combined = buckets.flatMap((b) => b.items);
+      const trusted = new Set<SignalAudience>(
+        buckets.filter((b) => b.ok).map((b) => b.audience),
+      );
+      setSignals((current) => mergeSignals(current, combined, trusted));
       setError(null);
       setLoading(false);
     } catch (e) {
@@ -323,14 +371,24 @@ export function SupabaseRealtimeProvider({
     }
   }, [viewer?.user.id, viewer?.access.hasStaffAccess, config]);
 
+  // Stash the latest hydrateOnce in a ref so the realtime + polling
+  // effects don't tear down when the function identity changes.
+  // debouncedRefresh becomes a stable callback that simply reads the
+  // ref. This is the React equivalent of "always call the latest
+  // closure" without inflating effect deps.
+  const hydrateOnceRef = useRef(hydrateOnce);
+  useEffect(() => {
+    hydrateOnceRef.current = hydrateOnce;
+  }, [hydrateOnce]);
+
   const debouncedRefresh = useCallback(() => {
     const now = Date.now();
     if (now - lastRefreshAtRef.current < REALTIME_REFRESH_DEBOUNCE_MS) return;
     lastRefreshAtRef.current = now;
     setLastSignalAt(now);
     setInvalidationTag((t) => t + 1);
-    void hydrateOnce();
-  }, [hydrateOnce]);
+    void hydrateOnceRef.current();
+  }, []);
 
   // Hydrate preferences once on mount.
   useEffect(() => {
@@ -359,8 +417,15 @@ export function SupabaseRealtimeProvider({
   }, [viewer?.user.id, hydrateOnce]);
 
   // Customer realtime channel — single subscription, exponential backoff.
+  // Effect deps intentionally exclude `getSupabase` and `debouncedRefresh`
+  // so a parent re-render that hands fresh function identities does NOT
+  // tear down + reconnect the channel. The factory is read from
+  // `getSupabaseRef`; refreshes go through `debouncedRefresh` which
+  // itself reads `hydrateOnceRef`.
   useEffect(() => {
-    if (!viewer?.user.id || !getSupabase) return;
+    if (!viewer?.user.id) return;
+    const factory = getSupabaseRef.current;
+    if (!factory) return;
     let cancelled = false;
     let backoffMs = REALTIME_BACKOFF_INITIAL_MS;
     let retryTimer: number | null = null;
@@ -381,11 +446,26 @@ export function SupabaseRealtimeProvider({
       }
     };
 
+    const handleUpdate = (payload: { new?: Record<string, unknown> }) => {
+      // Soft-delete fast path: if the UPDATE event tells us the row has
+      // been deleted, splice it out of local state immediately. The
+      // subsequent debounced refresh re-confirms; this just removes the
+      // visible-in-UI flicker between the click and the refresh.
+      const row = payload?.new;
+      if (row && typeof row.id === "string" && typeof row.deleted_at === "string") {
+        const id = row.id;
+        setSignals((current) =>
+          Object.freeze(current.filter((s) => s.id !== id)),
+        );
+      }
+      debouncedRefresh();
+    };
+
     const start = () => {
       if (cancelled) return;
       let supabase = supabaseRef.current;
       if (!supabase) {
-        supabase = getSupabase();
+        supabase = factory();
         if (!supabase) {
           setCustomerStatus("disabled");
           return;
@@ -416,7 +496,7 @@ export function SupabaseRealtimeProvider({
             table: "customer_notifications",
             filter,
           },
-          () => debouncedRefresh(),
+          handleUpdate,
         )
         .subscribe((status: string) => {
           if (cancelled) return;
@@ -446,11 +526,14 @@ export function SupabaseRealtimeProvider({
       cancelled = true;
       teardown();
     };
-  }, [viewer?.user.id, getSupabase, debouncedRefresh]);
+  }, [viewer?.user.id, debouncedRefresh]);
 
   // Staff realtime channels — gated by hasStaffAccess.
+  // Same stable-deps approach as the customer effect.
   useEffect(() => {
-    if (!viewer?.user.id || !viewer.access.hasStaffAccess || !getSupabase) return;
+    if (!viewer?.user.id || !viewer.access.hasStaffAccess) return;
+    const factory = getSupabaseRef.current;
+    if (!factory) return;
     let cancelled = false;
     let backoffMs = REALTIME_BACKOFF_INITIAL_MS;
     let retryTimer: number | null = null;
@@ -487,7 +570,7 @@ export function SupabaseRealtimeProvider({
       if (cancelled) return;
       let supabase = supabaseRef.current;
       if (!supabase) {
-        supabase = getSupabase();
+        supabase = factory();
         if (!supabase) {
           setStaffStatus("disabled");
           return;
@@ -564,10 +647,11 @@ export function SupabaseRealtimeProvider({
       cancelled = true;
       teardown();
     };
-  }, [viewer?.user.id, viewer?.access.hasStaffAccess, getSupabase, debouncedRefresh]);
+  }, [viewer?.user.id, viewer?.access.hasStaffAccess, debouncedRefresh]);
 
   // Polling fallback — covers the gap when Realtime drops events during
-  // disconnects. Pauses while tab hidden.
+  // disconnects. Pauses while tab hidden. Uses the hydrate ref so this
+  // effect doesn't tear down on every hydrateOnce identity change.
   useEffect(() => {
     if (!viewer?.user.id || disablePolling) return;
     let cancelled = false;
@@ -579,14 +663,14 @@ export function SupabaseRealtimeProvider({
         timer = window.setTimeout(tick, POLL_FALLBACK_INTERVAL_MS);
         return;
       }
-      void hydrateOnce();
+      void hydrateOnceRef.current();
       timer = window.setTimeout(tick, POLL_FALLBACK_INTERVAL_MS);
     };
 
     timer = window.setTimeout(tick, POLL_FALLBACK_INTERVAL_MS);
     const onVisibility = () => {
       if (typeof document !== "undefined" && !document.hidden) {
-        void hydrateOnce();
+        void hydrateOnceRef.current();
       }
     };
     if (typeof document !== "undefined") {
@@ -600,7 +684,7 @@ export function SupabaseRealtimeProvider({
         document.removeEventListener("visibilitychange", onVisibility);
       }
     };
-  }, [viewer?.user.id, disablePolling, hydrateOnce]);
+  }, [viewer?.user.id, disablePolling]);
 
   const markReadLocally = useCallback((id: string) => {
     setSignals((current) => {

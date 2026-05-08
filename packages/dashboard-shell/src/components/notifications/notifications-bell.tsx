@@ -89,7 +89,11 @@ export function NotificationsBell(props: NotificationsBellProps) {
     limit: 8,
   });
   const unreadCount = useUnreadCount(audience);
-  const { markReadLocally, refresh } = useRealtime();
+  const { markReadLocally, refresh, customerChannelStatus, staffChannelStatus } =
+    useRealtime();
+  const channelStatus =
+    audience === "staff" ? staffChannelStatus : customerChannelStatus;
+  const channelDegraded = channelStatus === "error" || channelStatus === "closed";
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
   const highest = resolver.highestSeverity(
@@ -169,9 +173,11 @@ export function NotificationsBell(props: NotificationsBellProps) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={
-          unreadCount > 0
-            ? `${tt("Notifications")} — ${unreadCount} ${tt("unread")}`
-            : tt("Notifications")
+          channelDegraded
+            ? `${tt("Notifications")} — ${tt("reconnecting")}`
+            : unreadCount > 0
+              ? `${tt("Notifications")} — ${unreadCount} ${tt("unread")}`
+              : tt("Notifications")
         }
         aria-expanded={open}
         aria-haspopup="dialog"
@@ -191,7 +197,22 @@ export function NotificationsBell(props: NotificationsBellProps) {
         }}
       >
         <HenryCoBell size={18} />
-        {unreadCount > 0 ? (
+        {channelDegraded ? (
+          <span
+            aria-hidden
+            title={tt("Reconnecting to live activity")}
+            style={{
+              position: "absolute",
+              top: "-0.2rem",
+              right: "-0.2rem",
+              width: "0.55rem",
+              height: "0.55rem",
+              borderRadius: "9999px",
+              backgroundColor: "#c9a227",
+              boxShadow: `0 0 0 2px var(${CSS_VARS.surface})`,
+            }}
+          />
+        ) : unreadCount > 0 ? (
           <span
             aria-hidden
             style={{
@@ -419,7 +440,7 @@ function BellEmptyState({ t }: { t: (s: string) => string }) {
           margin: "0.35rem 0 0",
         }}
       >
-        {t("Activity from across HenryCo surfaces here.")}
+        {t("When something needs you, it lands here.")}
       </p>
     </div>
   );
