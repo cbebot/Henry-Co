@@ -3,10 +3,12 @@ import { redirect } from "next/navigation";
 import {
   ContextDrawer,
   DEFAULT_CSS_VAR_VALUES,
+  MOBILE_SHELL_CSS,
   MOTION_KEYFRAMES_CSS,
   NotificationsDrawerBody,
   NotificationsToastViewport,
   getEligibleModules,
+  type ModuleNavEntry,
 } from "@henryco/dashboard-shell";
 import type { ModuleJumpEntry } from "@henryco/search-ui";
 import {
@@ -23,6 +25,7 @@ import AccountPaletteHost from "@/components/search/PaletteHost";
 import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
+import { MobileChromeBridge } from "./MobileChromeBridge";
 
 // Side-effect import — registers every module so getEligibleModules
 // has a populated registry when computing moduleJumpEntries below.
@@ -118,12 +121,24 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
   // Cmd+1..9 module shortcuts — first 9 eligible modules in rail
   // order. Computed server-side so the client bridge receives a
   // stable list (no client role re-derivation; anti-pattern #7).
-  const moduleJumpEntries: ModuleJumpEntry[] = getEligibleModules(viewer)
+  const eligibleModules = getEligibleModules(viewer);
+  const moduleJumpEntries: ModuleJumpEntry[] = eligibleModules
     .slice(0, 9)
     .map((m) => ({
       slug: m.slug,
       href: m.slug === "customer-overview" ? "/" : `/modules/${m.slug}`,
     }));
+
+  // BottomActionBar Modules drawer — richer entry with title +
+  // description + icon for the role-aware module list. Same registry
+  // walk as moduleJumpEntries so the two surfaces stay in sync.
+  const mobileModuleEntries: ModuleNavEntry[] = eligibleModules.map((m) => ({
+    slug: m.slug,
+    title: m.title,
+    description: m.description,
+    href: m.slug === "customer-overview" ? "/" : `/modules/${m.slug}`,
+    icon: typeof m.icon === "function" ? m.icon() : m.icon,
+  }));
 
   return (
     <RealtimeBrowserBridge
@@ -134,7 +149,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
           : null
       }
     >
-      <style dangerouslySetInnerHTML={{ __html: MOTION_KEYFRAMES_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: MOTION_KEYFRAMES_CSS + MOBILE_SHELL_CSS }} />
       <AccountPaletteHost userId={user.id} moduleJumpEntries={moduleJumpEntries}>
         <div
           style={{
@@ -165,6 +180,10 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
             {children}
             {drawer}
           </AccountLayoutInner>
+          <MobileChromeBridge
+            modules={mobileModuleEntries}
+            onSignOut={signOutAction}
+          />
           <NotificationsToastViewport audience="customer" />
         </div>
       </AccountPaletteHost>
