@@ -328,6 +328,36 @@ select.jobs-select option {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   CTA polish — focus-visible rings (a11y + keyboard premium feel),
+   tactile :active feedback, and an honest disabled state. Applied to
+   the canonical button utility classes so every CTA across the app
+   inherits without per-component opt-in.
+   ────────────────────────────────────────────────────────────────── */
+
+.jobs-button-primary:focus-visible,
+.jobs-button-secondary:focus-visible {
+  outline: 2px solid var(--jobs-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--jobs-accent) 22%, transparent);
+}
+
+.jobs-button-primary:active,
+.jobs-button-secondary:active {
+  transform: translateY(0);
+  transition-duration: 80ms;
+}
+
+.jobs-button-primary:disabled,
+.jobs-button-primary[aria-disabled="true"],
+.jobs-button-secondary:disabled,
+.jobs-button-secondary[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.2);
+}
+
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */
 html, body { overflow-x: clip; max-width: 100vw; }
 @supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }
