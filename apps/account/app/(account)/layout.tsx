@@ -3,10 +3,11 @@ import { redirect } from "next/navigation";
 import {
   ContextDrawer,
   DEFAULT_CSS_VAR_VALUES,
-  IdentityBar,
   MOTION_KEYFRAMES_CSS,
   SupabaseRealtimeProvider,
+  getEligibleModules,
 } from "@henryco/dashboard-shell";
+import type { ModuleJumpEntry } from "@henryco/search-ui";
 import {
   buildUnifiedViewer,
   loadDashboardOptions,
@@ -16,7 +17,13 @@ import {
 import type { DashboardOption } from "@henryco/auth";
 import AccountLayoutInner from "./AccountLayoutInner";
 import AccountRouteLoading from "@/components/layout/AccountRouteLoading";
+import IdentityBarPaletteBridge from "@/components/search/IdentityBarPaletteBridge";
+import AccountPaletteHost from "@/components/search/PaletteHost";
 import { requireAccountUser } from "@/lib/auth";
+
+// Side-effect import — registers every module so getEligibleModules
+// has a populated registry when computing moduleJumpEntries below.
+import "@/app/(account)/_modules";
 
 /**
  * V2-DASH-01 G7 — apps/account shell composition.
@@ -117,6 +124,16 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
   // hides it when options.length <= 1.
   const switcherOptions = options.length > 1 ? options : undefined;
 
+  // Cmd+1..9 module shortcuts — first 9 eligible modules in rail
+  // order. Computed server-side so the client bridge receives a
+  // stable list (no client role re-derivation; anti-pattern #7).
+  const moduleJumpEntries: ModuleJumpEntry[] = getEligibleModules(viewer)
+    .slice(0, 9)
+    .map((m) => ({
+      slug: m.slug,
+      href: m.slug === "customer-overview" ? "/" : `/modules/${m.slug}`,
+    }));
+
   return (
     <SupabaseRealtimeProvider>
       <style
@@ -127,50 +144,50 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
         // The keyframes are reduced-motion-aware via the same string.
         dangerouslySetInnerHTML={{ __html: MOTION_KEYFRAMES_CSS }}
       />
-      <div
-        style={{
-          ...DEFAULT_CSS_VAR_VALUES,
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "var(--hc-surface)",
-        }}
-      >
-        <IdentityBar
-          viewer={viewer}
-          options={switcherOptions}
-          onSelectOption={selectLaneAction}
-          onSignOut={signOutAction}
-        />
-        {/* Existing inner chrome — Sidebar + MobileNav + palette
-             host + notification stack — left intact so all 45
-             protected routes continue to render unchanged. DASH-2
-             onward migrates module pages out of the legacy chrome. */}
-        <AccountLayoutInner>
-          {/* Parallel route slot for the rail. DASH-2 fills with
-               module entries; DASH-1 renders the empty default. */}
-          {rail}
-          {children}
-          {/* Parallel route slot for the drawer. DASH-6 fills with
-               the realtime signal feed; DASH-1 renders the empty
-               default which the ContextDrawer trigger below opens. */}
-          {drawer}
-        </AccountLayoutInner>
-        {/* Floating ContextDrawer trigger — fixed bottom-right.
-             DASH-6 will move this trigger into IdentityBar's
-             trailing slot once the unread count + categories
-             surface from the realtime spine. */}
+      <AccountPaletteHost userId={user.id} moduleJumpEntries={moduleJumpEntries}>
         <div
           style={{
-            position: "fixed",
-            bottom: "1.25rem",
-            right: "1.25rem",
-            zIndex: 80,
+            ...DEFAULT_CSS_VAR_VALUES,
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "var(--hc-surface)",
           }}
         >
-          <ContextDrawer />
+          <IdentityBarPaletteBridge
+            viewer={viewer}
+            options={switcherOptions}
+            onSelectOption={selectLaneAction}
+            onSignOut={signOutAction}
+          />
+          {/* Existing inner chrome — Sidebar + MobileNav + legacy
+               palette host + notification stack. DASH-5 replaces the
+               legacy palette host with PaletteHost mounted via
+               AccountPaletteHost above; AccountLayoutInner no longer
+               renders its own palette. */}
+          <AccountLayoutInner>
+            {/* Parallel route slot for the rail. */}
+            {rail}
+            {children}
+            {/* Parallel route slot for the drawer. */}
+            {drawer}
+          </AccountLayoutInner>
+          {/* Floating ContextDrawer trigger — fixed bottom-right.
+               DASH-6 will move this trigger into IdentityBar's
+               trailing slot once the unread count + categories
+               surface from the realtime spine. */}
+          <div
+            style={{
+              position: "fixed",
+              bottom: "1.25rem",
+              right: "1.25rem",
+              zIndex: 80,
+            }}
+          >
+            <ContextDrawer />
+          </div>
         </div>
-      </div>
+      </AccountPaletteHost>
     </SupabaseRealtimeProvider>
   );
 }

@@ -7,8 +7,13 @@ import {
   NotificationPreviewToastStack,
   NotificationSignalProvider,
 } from "@/lib/notification-signal";
-import AccountPaletteHost from "@/components/search/PaletteHost";
 
+/**
+ * AccountLayoutInner — inner chrome rendered inside the
+ * AccountPaletteHost provider (DASH-5). The palette + provider are
+ * mounted by the parent server layout so any client descendant —
+ * including the IdentityBar's search button — can call openPalette().
+ */
 export default async function AccountLayoutInner({ children }: { children: React.ReactNode }) {
   const user = await requireAccountUser();
   const preferences = await getPreferences(user.id);
@@ -23,7 +28,6 @@ export default async function AccountLayoutInner({ children }: { children: React
     <NotificationSignalProvider initialPreferences={preferences}>
       <div className="min-h-screen">
         <AccountStudioToastRoot />
-        <AccountPaletteHost />
         <Sidebar user={userInfo} />
         <MobileNav user={userInfo} />
         <main className="lg:pl-[var(--acct-sidebar-width)]">
