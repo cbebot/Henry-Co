@@ -120,7 +120,11 @@ export function Drawer({
           position: "absolute",
           top: 0,
           right: 0,
-          height: "100vh",
+          // DASH-7 — `100dvh` tracks the visible viewport on iOS Safari
+          // (so the drawer doesn't extend behind the collapsing address
+          // bar). Browser support: iOS 15.4+, Chrome 108+, Firefox 101+.
+          // The shell only targets modern browsers per V5-CLEAR baseline.
+          height: "100dvh",
           width,
           maxWidth: "100vw",
           backgroundColor: `var(${CSS_VARS.surface})`,

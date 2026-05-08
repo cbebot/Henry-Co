@@ -58,8 +58,12 @@ export type ModuleNavEntry = {
   description?: string;
   /** Resolved href the link navigates to. */
   href: string;
-  /** Optional division accent CSS variable name (e.g. "--studio-accent"). */
-  accent?: string;
+  /**
+   * Division accent hex (e.g. `#B2863B` for marketplace). Renders as a
+   * 3 px left stripe on the drawer entry + tints the icon container.
+   * Optional — falls back to HenryCo gold when omitted.
+   */
+  accentHex?: string;
   /** Optional division-specific icon. */
   icon?: ReactNode;
 };
@@ -265,13 +269,22 @@ export function BottomActionBar({
  * open sheet. An open sheet wins (Modules / Inbox / More) so the bar
  * reads as a stateful affordance. With nothing open, Home wins on `/`,
  * Modules wins on `/modules/...`, otherwise Home is the default.
+ *
+ * Exported for unit testing via `node:test`.
  */
-function computeActive(pathname: string, openSheet: AnchorKey | null): AnchorKey {
+export function computeActive(
+  pathname: string,
+  openSheet: AnchorKey | null,
+): AnchorKey {
   if (openSheet) return openSheet;
   if (pathname === "/" || pathname === "") return "home";
   if (pathname.startsWith("/modules")) return "modules";
   return "home";
 }
+
+/** Anchor key set — exported for type-narrowing call sites + tests. */
+export const BOTTOM_ACTION_BAR_ANCHOR_KEYS = ANCHOR_KEYS;
+export type BottomActionBarAnchorKey = AnchorKey;
 
 type AnchorButtonProps = {
   kind: "link" | "button";
@@ -417,6 +430,11 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
         const isActive =
           activeHref === module.href ||
           (module.href !== "/" && activeHref.startsWith(module.href + "/"));
+        const accentHex = module.accentHex;
+        // Soft tint for the icon container — derive from the accent
+        // hex via 18% alpha. Falls back to the shell's accentSoft token
+        // when no accent supplied.
+        const accentTint = accentHex ? `${accentHex}2E` : undefined;
         return (
           <li key={module.slug}>
             <Link
@@ -424,10 +442,11 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
               onClick={onPick}
               aria-current={isActive ? "page" : undefined}
               style={{
+                position: "relative",
                 display: "flex",
                 alignItems: "center",
                 gap: "0.85rem",
-                padding: "0.85rem 0.85rem",
+                padding: "0.85rem 0.85rem 0.85rem 1rem",
                 minHeight: "56px",
                 borderRadius: RADIUS.lg,
                 border: `1px solid var(${CSS_VARS.hairline})`,
@@ -436,9 +455,26 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
                   : `var(${CSS_VARS.surface})`,
                 color: `var(${CSS_VARS.ink})`,
                 textDecoration: "none",
+                overflow: "hidden",
                 ...focusVisibleStyle(),
               }}
             >
+              {/* DASH-7 — left accent stripe in the module's division
+                  color. Closes anti-pattern #15 at a per-entry level
+                  while preserving HenryCo gold as the active state. */}
+              {accentHex ? (
+                <span
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    width: "3px",
+                    backgroundColor: accentHex,
+                  }}
+                />
+              ) : null}
               <span
                 aria-hidden
                 style={{
@@ -448,10 +484,8 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
                   width: "2.25rem",
                   height: "2.25rem",
                   borderRadius: RADIUS.md,
-                  backgroundColor: module.accent
-                    ? `var(${module.accent})`
-                    : `var(${CSS_VARS.accentSoft})`,
-                  color: `var(${CSS_VARS.accentText})`,
+                  backgroundColor: accentTint ?? `var(${CSS_VARS.accentSoft})`,
+                  color: accentHex ?? `var(${CSS_VARS.accentText})`,
                   flexShrink: 0,
                 }}
               >
@@ -469,10 +503,10 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
                 </span>
                 {module.description ? (
                   <span
+                    className="hc-module-entry-description"
                     style={{
                       ...typeStyle("small"),
                       color: `var(${CSS_VARS.inkSoft})`,
-                      display: "block",
                       marginTop: "0.1rem",
                     }}
                   >
@@ -518,7 +552,10 @@ function MoreSheetBody({
     onSignOut();
   };
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+    <div
+      className="hc-more-sheet-body"
+      style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+    >
       <MoreLink
         href={settingsHref}
         icon={<Settings size={18} aria-hidden />}

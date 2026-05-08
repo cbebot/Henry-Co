@@ -26,10 +26,28 @@ import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 import { MobileChromeBridge } from "./MobileChromeBridge";
+import { COMPANY } from "@henryco/config";
 
 // Side-effect import — registers every module so getEligibleModules
 // has a populated registry when computing moduleJumpEntries below.
 import "@/app/(account)/_modules";
+
+/**
+ * Map a module slug to its division accent hex.
+ * - care/marketplace/property/logistics/studio/jobs/learn/building/hotel
+ *   → COMPANY.divisions[slug].accent
+ * - customer-overview / wallet / support / notifications / settings →
+ *   the default HenryCo gold (`COMPANY.divisions.hub.accent`).
+ *
+ * Lives in apps/account because COMPANY.divisions is the host-app's
+ * canonical config; the shell stays decoupled from the division
+ * catalog.
+ */
+function divisionAccentFor(slug: string): string {
+  const direct = (COMPANY.divisions as Record<string, { accent: string }>)[slug];
+  if (direct) return direct.accent;
+  return COMPANY.divisions.hub.accent;
+}
 
 /**
  * V2-DASH-01 G7 + V2-DASH-05 + V2-DASH-06 — apps/account shell composition.
@@ -130,14 +148,17 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     }));
 
   // BottomActionBar Modules drawer — richer entry with title +
-  // description + icon for the role-aware module list. Same registry
-  // walk as moduleJumpEntries so the two surfaces stay in sync.
+  // description + icon + division accent for the role-aware module
+  // list. Same registry walk as moduleJumpEntries so the two surfaces
+  // stay in sync. Accent maps via COMPANY.divisions so each entry
+  // wears its division color in the drawer (premium polish).
   const mobileModuleEntries: ModuleNavEntry[] = eligibleModules.map((m) => ({
     slug: m.slug,
     title: m.title,
     description: m.description,
     href: m.slug === "customer-overview" ? "/" : `/modules/${m.slug}`,
     icon: typeof m.icon === "function" ? m.icon() : m.icon,
+    accentHex: divisionAccentFor(m.slug),
   }));
 
   return (

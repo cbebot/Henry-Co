@@ -104,8 +104,12 @@ export function ContextDrawer({
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          width: "2.25rem",
-          height: "2.25rem",
+          // DASH-7 G7 — promote to ≥ 44 × 44 px tap target (WCAG 2.5.5
+          // AAA). Pre-DASH-7 this was 36 × 36; the bell now matches the
+          // BottomActionBar.Inbox anchor so shell chrome is uniformly
+          // thumb-friendly across desktop + mobile.
+          minWidth: "44px",
+          minHeight: "44px",
           borderRadius: RADIUS.pill,
           border: `1px solid var(${CSS_VARS.hairline})`,
           backgroundColor: `var(${CSS_VARS.surface})`,
@@ -114,7 +118,7 @@ export function ContextDrawer({
           ...focusVisibleStyle(),
         }}
       >
-        <Bell size={16} aria-hidden />
+        <Bell size={18} aria-hidden />
         {channelDegraded ? (
           <span
             aria-hidden

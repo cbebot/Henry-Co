@@ -41,7 +41,10 @@ export {
 } from "./realtime-data-source";
 export {
   BottomActionBar,
+  computeActive,
+  BOTTOM_ACTION_BAR_ANCHOR_KEYS,
   type BottomActionBarProps,
+  type BottomActionBarAnchorKey,
   type ModuleNavEntry,
 } from "./bottom-action-bar";
 export {
