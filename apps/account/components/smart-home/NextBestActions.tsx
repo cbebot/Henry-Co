@@ -117,6 +117,33 @@ export function NextBestActions({ actions }: NextBestActionsProps) {
               >
                 {action.reason}
               </p>
+              {action.confidence !== "low" ? (
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.3rem",
+                    marginTop: "0.6rem",
+                    paddingInline: "0.5rem",
+                    paddingBlock: "0.2rem",
+                    borderRadius: "999px",
+                    fontSize: "0.65rem",
+                    fontWeight: 600,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    backgroundColor:
+                      action.confidence === "high"
+                        ? "rgba(201, 162, 39, 0.12)"
+                        : "rgba(107, 114, 128, 0.10)",
+                    color:
+                      action.confidence === "high"
+                        ? "var(--hc-accent-text, #8C6B0F)"
+                        : "var(--acct-muted, #6B7280)",
+                  }}
+                >
+                  {action.confidence === "high" ? "High match" : "Likely useful"}
+                </span>
+              ) : null}
             </Link>
           </Panel>
         ))}

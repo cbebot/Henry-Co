@@ -589,3 +589,118 @@ select.acct-input {
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */
 html, body { overflow-x: clip; max-width: 100vw; }
 @supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }
+
+/* ---------------------------------------------------------------- */
+/* DASH-4 follow-up — Smart Home responsive grid + live indicators. */
+/* ---------------------------------------------------------------- */
+
+/*
+ * Smart Home module grid. Composes the remaining home widgets after
+ * the ranked metric strip claims its bucket. Grid columns step down
+ * cleanly on each breakpoint so widgets stack instead of shrinking
+ * into illegible slivers on mobile.
+ *
+ *   ≥ 1024px  → 4 columns
+ *   640-1023  → 2 columns
+ *   < 640px   → 1 column
+ *
+ * Cell size classes carry the per-widget col-span:
+ *   .hc-smart-home-cell-sm → 1 col
+ *   .hc-smart-home-cell-md → 2 cols (becomes 2/2 = full row at 2-col,
+ *                                    1 col at 1-col)
+ *   .hc-smart-home-cell-lg → spans every column
+ */
+.hc-smart-home-module-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.hc-smart-home-module-grid > .hc-smart-home-cell-sm { grid-column: span 1; }
+.hc-smart-home-module-grid > .hc-smart-home-cell-md { grid-column: span 2; }
+.hc-smart-home-module-grid > .hc-smart-home-cell-lg { grid-column: 1 / -1; }
+
+@media (max-width: 1023px) {
+  .hc-smart-home-module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hc-smart-home-module-grid > .hc-smart-home-cell-md { grid-column: 1 / -1; }
+}
+
+@media (max-width: 639px) {
+  .hc-smart-home-module-grid { grid-template-columns: 1fr; }
+  .hc-smart-home-module-grid > .hc-smart-home-cell-sm,
+  .hc-smart-home-module-grid > .hc-smart-home-cell-md,
+  .hc-smart-home-module-grid > .hc-smart-home-cell-lg { grid-column: 1 / -1; }
+}
+
+/*
+ * Live chip — the small "Live · 30s refresh" indicator beside the
+ * SmartHomeHeader. The dot pulses when [data-state="pulsing"] is set
+ * by DASH-6's realtime listener after a `revalidateTag(...)` lands,
+ * for the duration of one breath; otherwise the chip is static. The
+ * `prefers-reduced-motion: reduce` query short-circuits the animation
+ * for users who opt out.
+ */
+.hc-live-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.10);
+  color: var(--acct-green, #047857);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.hc-live-chip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+  transition: box-shadow 200ms ease;
+}
+
+@keyframes hc-live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); }
+  60%  { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18); }
+}
+
+.hc-live-chip[data-state="pulsing"] .hc-live-chip__dot {
+  animation: hc-live-pulse 1100ms ease-out 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-live-chip[data-state="pulsing"] .hc-live-chip__dot {
+    animation: none;
+  }
+}
+
+/*
+ * Saved-items rail — the quiet header pill exposing saved-for-later
+ * count. Calm hover state; uses the same accent token as the rest of
+ * the SmartHome action slot.
+ */
+.hc-smart-home-saved-rail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background-color: rgba(201, 162, 39, 0.10);
+  color: var(--hc-accent-text, #8C6B0F);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+.hc-smart-home-saved-rail:hover {
+  background-color: rgba(201, 162, 39, 0.18);
+}
+.hc-smart-home-saved-rail:focus-visible {
+  outline: 2px solid var(--hc-accent, #C9A227);
+  outline-offset: 2px;
+}

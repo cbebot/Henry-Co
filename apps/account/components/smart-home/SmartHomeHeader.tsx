@@ -1,4 +1,7 @@
+import Link from "next/link";
+import { Bookmark } from "lucide-react";
 import { PageHeader as ShellPageHeader } from "@henryco/dashboard-shell";
+import { formatRelative } from "@/lib/smart-home/format";
 
 /**
  * SmartHomeHeader — content-first lead. Closes anti-pattern #17.
@@ -11,17 +14,22 @@ import { PageHeader as ShellPageHeader } from "@henryco/dashboard-shell";
  * activity, the description falls back to the lifecycle teaching
  * surface instead of a hollow welcome string.
  *
- * The header carries a live-data indicator chip (a pulsing dot + label).
- * Static visual in DASH-4; DASH-6's realtime listener will animate the
- * pulse when a fresh invalidation arrives. The same chip is used by the
- * ContextDrawer to signal real-time state — keeping the visual language
- * consistent across the shell.
+ * Action slot composition (right side):
+ *   - SavedItemsRail (when count > 0) — surfaces saved-for-later work the
+ *     viewer can resume. Without this, saved items were dark matter on
+ *     the home surface — fetched but never visible unless the page was
+ *     also empty (and then they vanished into the empty fallback).
+ *   - LiveChip — the calm "live data" indicator. The pulse is driven
+ *     by `[data-state="pulsing"]` so DASH-6's realtime listener can
+ *     flip it via a CSS variable when `revalidateTag(signalFeedTag(...))`
+ *     fires. Honours `prefers-reduced-motion: reduce`.
  */
 export type SmartHomeHeaderProps = {
   firstName: string | null;
   unreadCount: number;
   attentionCount: number;
   lastActivityIso: string | null;
+  savedItemsCount?: number;
   fallbackBody?: string;
 };
 
@@ -30,13 +38,33 @@ export function SmartHomeHeader({
   unreadCount,
   attentionCount,
   lastActivityIso,
+  savedItemsCount = 0,
   fallbackBody,
 }: SmartHomeHeaderProps) {
   const lead = buildLead({ unreadCount, attentionCount, lastActivityIso });
   const title = firstName ? firstName : "Your dashboard";
   const description =
     lead || fallbackBody || "Live signals across HenryCo will surface here as they land.";
-  return <ShellPageHeader title={title} description={description} action={<LiveChip />} />;
+  return (
+    <ShellPageHeader
+      title={title}
+      description={description}
+      action={
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
+          }}
+        >
+          {savedItemsCount > 0 ? <SavedItemsRail count={savedItemsCount} /> : null}
+          <LiveChip />
+        </div>
+      }
+    />
+  );
 }
 
 function buildLead({
@@ -55,64 +83,49 @@ function buildLead({
   if (attentionCount > 0) {
     parts.push(`${attentionCount} need${attentionCount === 1 ? "s" : ""} attention`);
   }
-  const last = lastActivityIso ? formatLastActivity(lastActivityIso) : null;
+  const last = lastActivityIso ? formatRelative(lastActivityIso) : null;
   if (last) parts.push(`last activity ${last}`);
   if (parts.length === 0) return null;
   return parts.join(" · ");
 }
 
-function formatLastActivity(iso: string): string | null {
-  const t = Date.parse(iso);
-  if (Number.isNaN(t)) return null;
-  const diffMs = Math.max(0, Date.now() - t);
-  const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  const months = Math.floor(days / 30);
-  return `${months}mo ago`;
+/**
+ * SavedItemsRail — quiet header pill exposing saved-for-later count.
+ * Closes the "saved items are dark matter" gap from the audit: the
+ * SmartHome already fetches savedItems but only consulted them inside
+ * the empty-state gate. Now they earn a permanent header slot when the
+ * viewer has any.
+ */
+function SavedItemsRail({ count }: { count: number }) {
+  return (
+    <Link
+      href="/saved-items"
+      className="hc-smart-home-saved-rail"
+      aria-label={`${count} saved item${count === 1 ? "" : "s"} — resume`}
+    >
+      <Bookmark size={12} aria-hidden />
+      <span style={{ fontVariantNumeric: "tabular-nums" }}>{count}</span>
+      <span>saved · resume</span>
+    </Link>
+  );
 }
 
 /**
- * LiveChip — the calm "live data" indicator at the right of the
- * SmartHomeHeader. The chip shows a 6-px accent dot + the label
- * "Live · refreshes every 30s". When DASH-6's realtime listener
- * fires `revalidateTag(signalFeedTag(userId))` and a new signal
- * lands, the dot pulses for a beat. In DASH-4 the pulse is static —
- * we ship the visual signature so DASH-6's listener can drive it
- * without further UI work.
+ * LiveChip — the calm "live data" indicator. Uses className-driven CSS
+ * (rather than inline style) so DASH-6's realtime listener can flip
+ * `data-state="pulsing"` on the chip when an invalidation lands and the
+ * stylesheet drives the animation. `prefers-reduced-motion: reduce`
+ * short-circuits the pulse so it never bothers users who opt out.
  */
 function LiveChip() {
   return (
     <div
+      className="hc-live-chip"
+      data-state="idle"
       role="status"
       aria-label="Smart home is live; data refreshes every 30 seconds"
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "0.5rem",
-        padding: "0.4rem 0.75rem",
-        borderRadius: "999px",
-        backgroundColor: "rgba(16, 185, 129, 0.10)",
-        color: "var(--acct-green, #047857)",
-        fontSize: "0.7rem",
-        fontWeight: 600,
-        letterSpacing: "0.04em",
-      }}
     >
-      <span
-        aria-hidden
-        style={{
-          width: "6px",
-          height: "6px",
-          borderRadius: "50%",
-          backgroundColor: "currentColor",
-          boxShadow: "0 0 0 4px rgba(16, 185, 129, 0.18)",
-        }}
-      />
+      <span aria-hidden className="hc-live-chip__dot" />
       Live · 30s refresh
     </div>
   );

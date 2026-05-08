@@ -4,6 +4,7 @@ import type { UnifiedViewer } from "@henryco/auth";
 import type { DashboardModule } from "@henryco/dashboard-shell";
 import type { LifecycleSnapshot } from "@henryco/lifecycle";
 import type { SignalFeedItem } from "@henryco/data";
+import { divisionLabel } from "@/lib/format";
 
 /**
  * One recommendation surfaced in the Next-Best Actions strip. The
@@ -90,7 +91,7 @@ export function rankNextBestActions(input: RecommenderInputs): ReadonlyArray<Nex
     accept({
       id: `signal:${s.id}`,
       source: "signal",
-      kicker: divisionToKicker(s.division),
+      kicker: divisionLabel(s.division),
       label: s.title,
       href: s.actionUrl,
       reason: s.body ?? "Review and confirm.",
@@ -117,13 +118,4 @@ export function rankNextBestActions(input: RecommenderInputs): ReadonlyArray<Nex
   }
 
   return out;
-}
-
-function divisionToKicker(division: string): string {
-  // Reuse the SignalCard kicker format — the division name as a
-  // SHORT label. The shell's divisionLabel() lives in
-  // apps/account/lib/format.ts; keep this helper local to avoid
-  // pulling the format module into a server-only library.
-  if (!division) return "Signal";
-  return division.charAt(0).toUpperCase() + division.slice(1);
 }

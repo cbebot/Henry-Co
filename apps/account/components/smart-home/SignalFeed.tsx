@@ -3,6 +3,13 @@ import { ChevronLeft, ChevronRight, Inbox } from "lucide-react";
 import { EmptyState, Panel, Section, SignalCard } from "@henryco/dashboard-shell";
 import type { SignalFeedItem, SignalFeedCursor } from "@henryco/data";
 import { divisionColor, divisionLabel } from "@/lib/format";
+import {
+  formatRelative,
+  groupByRecency,
+  mapSignalPriority,
+  RECENCY_LABEL,
+  RECENCY_ORDER,
+} from "@/lib/smart-home/format";
 
 /**
  * SignalFeed — the server-rendered signal stream below the attention
@@ -33,23 +40,15 @@ export type SignalFeedProps = {
   nextCursor: SignalFeedCursor | null;
   prevHref: string | null;
   hideEmpty?: boolean;
+  /**
+   * Viewer's IANA timezone — drives the "Today / Yesterday" bucket
+   * boundaries. Falls back to `Africa/Lagos` (HenryCo's default
+   * audience) inside `bucketRecency` when omitted.
+   */
+  timezone?: string;
 };
 
-type RecencyBucket = "today" | "yesterday" | "this-week" | "earlier";
-const BUCKET_LABEL: Record<RecencyBucket, string> = {
-  today: "Today",
-  yesterday: "Yesterday",
-  "this-week": "Earlier this week",
-  earlier: "Earlier",
-};
-const BUCKET_ORDER: ReadonlyArray<RecencyBucket> = [
-  "today",
-  "yesterday",
-  "this-week",
-  "earlier",
-];
-
-export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFeedProps) {
+export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }: SignalFeedProps) {
   if (items.length === 0) {
     if (hideEmpty) return null;
     return (
@@ -67,7 +66,7 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
     ? `/?cursor.score=${encodeURIComponent(String(nextCursor.score))}&cursor.created_at=${encodeURIComponent(nextCursor.createdAt)}`
     : null;
 
-  const grouped = groupByRecency(items);
+  const grouped = groupByRecency(items, { timezone });
 
   return (
     <Section
@@ -91,25 +90,26 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
       }
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-        {BUCKET_ORDER.map((bucket) => {
+        {RECENCY_ORDER.map((bucket) => {
           const rows = grouped[bucket];
           if (!rows || rows.length === 0) return null;
           return (
             <div key={bucket}>
-              <p
+              <h3
                 style={{
                   fontSize: "0.7rem",
                   fontWeight: 600,
                   letterSpacing: "0.14em",
                   textTransform: "uppercase",
                   color: "var(--acct-muted, #6B7280)",
+                  margin: 0,
                   marginBottom: "0.5rem",
                   display: "flex",
                   alignItems: "baseline",
                   gap: "0.5rem",
                 }}
               >
-                <span>{BUCKET_LABEL[bucket]}</span>
+                <span>{RECENCY_LABEL[bucket]}</span>
                 <span
                   aria-hidden
                   style={{
@@ -118,10 +118,10 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
                     backgroundColor: "var(--acct-line, rgba(0,0,0,0.06))",
                   }}
                 />
-                <span style={{ fontSize: "0.7rem", color: "var(--acct-muted, #6B7280)" }}>
+                <span style={{ fontSize: "0.7rem", color: "var(--acct-muted, #6B7280)", fontVariantNumeric: "tabular-nums" }}>
                   {rows.length}
                 </span>
-              </p>
+              </h3>
               <div style={{ display: "grid", gap: "0.6rem" }}>
                 {rows.map((signal) => (
                   <SignalCard
@@ -129,7 +129,7 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
                     kicker={divisionLabel(signal.division)}
                     title={signal.title}
                     body={signal.body ?? undefined}
-                    priority={mapPriority(signal.priority)}
+                    priority={mapSignalPriority(signal.priority)}
                     accent={divisionColor(signal.division)}
                     timestamp={formatRelative(signal.createdAt)}
                     href={signal.actionUrl ?? "/notifications"}
@@ -196,58 +196,4 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
       ) : null}
     </Section>
   );
-}
-
-function groupByRecency(
-  items: ReadonlyArray<SignalFeedItem>,
-): Record<RecencyBucket, SignalFeedItem[]> {
-  const now = Date.now();
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const startOfTodayMs = startOfToday.getTime();
-  const startOfYesterdayMs = startOfTodayMs - 24 * 60 * 60 * 1000;
-  const startOfWeekMs = startOfTodayMs - 7 * 24 * 60 * 60 * 1000;
-
-  const out: Record<RecencyBucket, SignalFeedItem[]> = {
-    today: [],
-    yesterday: [],
-    "this-week": [],
-    earlier: [],
-  };
-
-  for (const item of items) {
-    const t = Date.parse(item.createdAt);
-    if (Number.isNaN(t)) {
-      out.earlier.push(item);
-      continue;
-    }
-    if (t >= startOfTodayMs && t <= now) out.today.push(item);
-    else if (t >= startOfYesterdayMs) out.yesterday.push(item);
-    else if (t >= startOfWeekMs) out["this-week"].push(item);
-    else out.earlier.push(item);
-  }
-
-  return out;
-}
-
-function mapPriority(priority: string): "info" | "warning" | "urgent" | "security" {
-  if (priority === "security") return "security";
-  if (priority === "urgent") return "urgent";
-  if (priority === "warning") return "warning";
-  return "info";
-}
-
-function formatRelative(iso: string): string {
-  const t = Date.parse(iso);
-  if (Number.isNaN(t)) return "";
-  const diffMs = Math.max(0, Date.now() - t);
-  const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  const months = Math.floor(days / 30);
-  return `${months}mo ago`;
 }
