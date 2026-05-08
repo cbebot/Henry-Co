@@ -42,6 +42,28 @@ function asArray(value: string | string[] | undefined): string[] | null {
   return Array.isArray(value) ? value : [value];
 }
 
+/**
+ * Hash a filter into a stable key derived from its primitive contents.
+ * Lets the hooks memoize correctly when callers pass an inline object
+ * literal at the JSX call site (the common case): without this, the
+ * object identity changes every render → useMemo never hits → filtering
+ * runs on every render even when inputs are semantically unchanged.
+ */
+function filterKey(filter: SignalFilter | undefined): string {
+  if (!filter) return "";
+  const join = (v: string | string[] | undefined) =>
+    Array.isArray(v) ? v.join(",") : v ?? "";
+  return [
+    filter.audience ?? "",
+    join(filter.division),
+    join(filter.category),
+    join(filter.priority),
+    filter.unreadOnly ? "u" : "",
+    filter.visibleOnly === false ? "" : "v",
+    filter.limit ?? "",
+  ].join("|");
+}
+
 function matches(signal: RealtimeSignal, filter: SignalFilter): boolean {
   if (filter.audience && signal.audience !== filter.audience) return false;
 
@@ -83,6 +105,7 @@ export function useNotificationSignal(filter?: SignalFilter): {
   error: string | null;
 } {
   const { signals, loading, error } = useRealtime();
+  const key = filterKey(filter);
   return useMemo(() => {
     const effective: SignalFilter = {
       visibleOnly: true,
@@ -100,7 +123,11 @@ export function useNotificationSignal(filter?: SignalFilter): {
       loading,
       error,
     };
-  }, [signals, loading, error, filter]);
+    // `key` captures the filter's primitive contents; intentionally
+    // exclude `filter` from deps so an inline object literal at the
+    // call site doesn't defeat the memo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signals, loading, error, key]);
 }
 
 /**
@@ -113,6 +140,7 @@ export function useTaskSignal(filter?: Omit<SignalFilter, "category">): {
   loading: boolean;
 } {
   const { signals, loading } = useRealtime();
+  const key = filterKey(filter);
   return useMemo(() => {
     const result = signals.filter((s) => {
       if (!s.category || !s.category.startsWith("task.")) return false;
@@ -120,7 +148,8 @@ export function useTaskSignal(filter?: Omit<SignalFilter, "category">): {
     });
     const limited = filter?.limit ? result.slice(0, filter.limit) : result;
     return { signals: Object.freeze(limited), loading };
-  }, [signals, loading, filter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signals, loading, key]);
 }
 
 /**

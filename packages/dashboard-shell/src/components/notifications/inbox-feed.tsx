@@ -365,8 +365,8 @@ function InboxEmptyState({
         }}
       >
         {mode === "unread"
-          ? t("Nothing waiting for your attention")
-          : t("No activity to show")}
+          ? t("Nothing waiting on you")
+          : t("All quiet")}
       </p>
       <p
         style={{
@@ -375,7 +375,7 @@ function InboxEmptyState({
           margin: "0.5rem 0 0",
         }}
       >
-        {t("New activity from across HenryCo arrives here automatically.")}
+        {t("When something needs you, it lands here.")}
       </p>
     </div>
   );
