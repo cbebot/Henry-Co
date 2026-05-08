@@ -27,5 +27,6 @@ export * from "./shell";
 export * from "./register";
 export * from "./home-widget";
 export * from "./command-palette";
+export * from "./command-aggregator";
 export * from "./notification-categories";
 export * from "./role-gate";

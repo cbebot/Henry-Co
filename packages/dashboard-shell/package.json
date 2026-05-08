@@ -11,6 +11,7 @@
     "./register": "./src/register.ts",
     "./home-widget": "./src/home-widget.ts",
     "./command-palette": "./src/command-palette.ts",
+    "./command-aggregator": "./src/command-aggregator.ts",
     "./notification-categories": "./src/notification-categories.ts",
     "./role-gate": "./src/role-gate.ts"
   },
