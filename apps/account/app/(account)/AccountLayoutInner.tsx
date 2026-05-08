@@ -1,22 +1,26 @@
 import { requireAccountUser } from "@/lib/auth";
-import { getPreferences } from "@/lib/account-data";
 import Sidebar from "@/components/layout/Sidebar";
 import MobileNav from "@/components/layout/MobileNav";
 import { AccountStudioToastRoot } from "@/components/studio/AccountStudioToastRoot";
-import {
-  NotificationPreviewToastStack,
-  NotificationSignalProvider,
-} from "@/lib/notification-signal";
 
 /**
- * AccountLayoutInner — inner chrome rendered inside the
- * AccountPaletteHost provider (DASH-5). The palette + provider are
- * mounted by the parent server layout so any client descendant —
- * including the IdentityBar's search button — can call openPalette().
+ * V2-DASH-05 + V2-DASH-06 — apps/account inner chrome.
+ *
+ * The notification spine is owned at the shell level by
+ * `<SupabaseRealtimeProvider>` (mounted via `<RealtimeBrowserBridge>` in
+ * the parent layout). Bells / popovers / lifecycle controls under this
+ * subtree consume the shell hooks (`useNotificationSignal`,
+ * `useUnreadCount`, `useNotificationPreferences`) directly — the legacy
+ * in-app `NotificationSignalProvider` bridge has been removed.
+ *
+ * The Cmd+K palette is similarly mounted at the parent layout
+ * (`<AccountPaletteHost>` wraps this entire subtree plus the
+ * IdentityBar). This inner shell therefore only carries
+ * apps/account-specific chrome: Sidebar, MobileNav, studio toast root,
+ * and the main content area.
  */
 export default async function AccountLayoutInner({ children }: { children: React.ReactNode }) {
   const user = await requireAccountUser();
-  const preferences = await getPreferences(user.id);
 
   const userInfo = {
     fullName: user.fullName,
@@ -25,16 +29,13 @@ export default async function AccountLayoutInner({ children }: { children: React
   };
 
   return (
-    <NotificationSignalProvider initialPreferences={preferences}>
-      <div className="min-h-screen">
-        <AccountStudioToastRoot />
-        <Sidebar user={userInfo} />
-        <MobileNav user={userInfo} />
-        <main className="lg:pl-[var(--acct-sidebar-width)]">
-          <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
-        </main>
-        <NotificationPreviewToastStack />
-      </div>
-    </NotificationSignalProvider>
+    <div className="min-h-screen">
+      <AccountStudioToastRoot />
+      <Sidebar user={userInfo} />
+      <MobileNav user={userInfo} />
+      <main className="lg:pl-[var(--acct-sidebar-width)]">
+        <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
+      </main>
+    </div>
   );
 }

@@ -62,8 +62,16 @@ export type IdentityBarProps = {
    */
   trailing?: ReactNode;
   /**
-   * Unread notification count — surfaced as a Badge next to the
-   * search trigger. Updated via Realtime in DASH-6.
+   * Notifications trigger slot — DASH-6 mount point. Host apps pass the
+   * shell-wide `<NotificationsBell>` (or `<ContextDrawer>` button) here.
+   * The trigger owns its own badge; IdentityBar no longer renders the
+   * unread count inline when this slot is set.
+   */
+  notificationsTrigger?: ReactNode;
+  /**
+   * Legacy unread notification count — kept for back-compat with DASH-1
+   * callers. New callers (DASH-6+) pass `notificationsTrigger` with a
+   * self-managed bell. When both are set, the trigger wins.
    */
   unreadCount?: number;
 };
@@ -75,6 +83,7 @@ export function IdentityBar({
   onSearchClick,
   onSignOut,
   trailing,
+  notificationsTrigger,
   unreadCount,
 }: IdentityBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -181,10 +190,14 @@ export function IdentityBar({
         {/* TODO V2-COPY-01: review search prompt */}
       </button>
 
-      {/* Notifications badge */}
-      {typeof unreadCount === "number" && unreadCount > 0 ? (
-        <Badge value={unreadCount} tone="urgent" />
-      ) : null}
+      {/* Notifications trigger — DASH-6 mount point.
+          Host passes <NotificationsBell> or <ContextDrawer>;
+          legacy `unreadCount` falls through if no trigger supplied. */}
+      {notificationsTrigger ?? (
+        typeof unreadCount === "number" && unreadCount > 0 ? (
+          <Badge value={unreadCount} tone="urgent" />
+        ) : null
+      )}
 
       {/* Role switcher */}
       {showSwitcher && options ? (

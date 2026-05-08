@@ -33,6 +33,8 @@ export {
 
 export {
   getSignalFeed,
+  signalFeedTag,
+  SMART_HOME_TAG,
   type SignalFeedItem,
   type SignalFeedCursor,
   type SignalFeedOptions,
