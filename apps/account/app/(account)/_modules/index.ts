@@ -14,3 +14,10 @@
 
 import "@henryco/dashboard-modules-account";
 import "@henryco/dashboard-modules-marketplace";
+import "@henryco/dashboard-modules-wallet";
+
+// Hidden future modules — register their slots so the rail surfaces
+// them automatically once each division flips its `MODULE_ENABLED`
+// constant in `packages/dashboard-modules-{building,hotel}/src/module.tsx`.
+import "@henryco/dashboard-modules-building";
+import "@henryco/dashboard-modules-hotel";
