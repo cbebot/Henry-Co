@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 import {
@@ -199,33 +200,33 @@ export type ClientPortalSnapshot = {
   payments: StudioPaymentSubmission[];
 };
 
-export async function getClientPortalSnapshot(
-  viewer: ClientPortalViewer
-): Promise<ClientPortalSnapshot> {
-  const supabase = await createSupabaseServer();
-  const projects = await fetchProjectsForViewer(supabase, viewer);
-  const projectIds = projects.map((project) => project.id);
+export const getClientPortalSnapshot = cache(
+  async (viewer: ClientPortalViewer): Promise<ClientPortalSnapshot> => {
+    const supabase = await createSupabaseServer();
+    const projects = await fetchProjectsForViewer(supabase, viewer);
+    const projectIds = projects.map((project) => project.id);
 
-  const [milestones, deliverables, invoices, messages, updates, payments] = await Promise.all([
-    fetchMilestonesForProjects(supabase, projectIds, viewer.userId),
-    fetchDeliverablesForProjects(supabase, projectIds),
-    fetchInvoicesForViewer(supabase, viewer, projectIds),
-    fetchMessagesForProjects(supabase, projectIds, viewer.userId),
-    fetchUpdatesForProjects(supabase, projectIds),
-    fetchPaymentsForProjects(supabase, projectIds),
-  ]);
+    const [milestones, deliverables, invoices, messages, updates, payments] = await Promise.all([
+      fetchMilestonesForProjects(supabase, projectIds, viewer.userId),
+      fetchDeliverablesForProjects(supabase, projectIds),
+      fetchInvoicesForViewer(supabase, viewer, projectIds),
+      fetchMessagesForProjects(supabase, projectIds, viewer.userId),
+      fetchUpdatesForProjects(supabase, projectIds),
+      fetchPaymentsForProjects(supabase, projectIds),
+    ]);
 
-  return {
-    viewer,
-    projects,
-    milestones,
-    invoices,
-    deliverables,
-    messages,
-    updates,
-    payments,
-  };
-}
+    return {
+      viewer,
+      projects,
+      milestones,
+      invoices,
+      deliverables,
+      messages,
+      updates,
+      payments,
+    };
+  },
+);
 
 export async function getClientProject(
   viewer: ClientPortalViewer,

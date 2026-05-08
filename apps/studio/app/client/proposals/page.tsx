@@ -1,55 +1,145 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, ScrollText, Sparkles } from "lucide-react";
 import { formatCurrency } from "@/lib/env";
 import { requireStudioUser } from "@/lib/studio/auth";
 import { studioClientSnapshot } from "@/lib/studio/data";
-import { clientNav } from "@/lib/studio/navigation";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import { friendlyProposalStatus } from "@/lib/studio/project-workspace-copy";
-import { StudioEmptyState, StudioWorkspaceShell } from "@/components/studio/workspace/shell";
+import { PortalEmptyState } from "@/components/portal/empty-state";
+
+export const metadata: Metadata = {
+  title: "Proposals",
+};
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+const STATUS_TONE: Record<string, string> = {
+  draft: "var(--studio-ink-soft)",
+  sent: "var(--studio-signal)",
+  accepted: "#bdf2cf",
+  rejected: "#ffb8b8",
+  expired: "#f3d28a",
+};
 
 export default async function ClientProposalsPage() {
   const viewer = await requireStudioUser("/client/proposals");
   const snapshot = await getStudioSnapshot();
   const clientData = studioClientSnapshot(viewer, snapshot);
 
-  return (
-    <StudioWorkspaceShell
-      kicker="Client proposals"
-      title="Review every Studio proposal tied to your account."
-      description="Proposal history stays available here so scope, pricing, and milestone logic are always easy to revisit."
-      nav={clientNav("/client/proposals")}
-    >
-      {clientData.proposals.length === 0 ? (
-        <StudioEmptyState
-          title="No proposals on your account yet."
+  if (clientData.proposals.length === 0) {
+    return (
+      <div className="space-y-6">
+        <Header />
+        <PortalEmptyState
+          icon={Sparkles}
+          title="No proposals on your account yet"
           body="Once a brief is reviewed, the Studio team sends a proposal with scope, pricing, and milestone logic — it lives here so you can revisit it any time."
           action={
-            <Link
-              href="/request"
-              className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold"
-            >
+            <Link href="/request" className="portal-button portal-button-primary">
               Submit a brief
+              <ArrowRight className="h-4 w-4" />
             </Link>
           }
         />
-      ) : null}
-      <section className="grid gap-4 lg:grid-cols-2">
-        {clientData.proposals.map((proposal) => (
-          <article key={proposal.id} className="studio-panel rounded-[1.75rem] p-6">
-            <h3 className="text-2xl font-semibold text-[var(--studio-ink)]">{proposal.title}</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{proposal.summary}</p>
-            <div className="mt-4 text-2xl font-semibold text-[var(--studio-ink)]">
-              {formatCurrency(proposal.investment, proposal.currency)}
-            </div>
-            <div className="mt-2 text-sm text-[var(--studio-ink-soft)]">{friendlyProposalStatus(proposal.status)}</div>
-            <div className="mt-5">
-              <Link href={`/proposals/${proposal.id}?access=${proposal.accessKey}`} className="studio-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
+      </div>
+    );
+  }
+
+  // Sort: open proposals first (sent/draft), then accepted, then archive
+  const ordered = [...clientData.proposals].sort((a, b) => {
+    const order = (s: string) =>
+      s === "sent" ? 0 : s === "draft" ? 1 : s === "accepted" ? 2 : 3;
+    return order(a.status) - order(b.status);
+  });
+
+  return (
+    <div className="space-y-7">
+      <Header />
+
+      <section className="grid gap-3 sm:grid-cols-2">
+        {ordered.map((proposal) => {
+          const tone = STATUS_TONE[proposal.status] ?? "var(--studio-ink-soft)";
+          const expired = proposal.validUntil
+            ? Date.parse(proposal.validUntil) < Date.now()
+            : false;
+          return (
+            <article
+              key={proposal.id}
+              className="portal-card flex flex-col gap-4 px-5 py-5"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em]" style={{ color: tone }}>
+                    <ScrollText className="mr-1.5 inline h-3 w-3 -translate-y-px" />
+                    {friendlyProposalStatus(proposal.status)}
+                  </div>
+                  <h2 className="mt-1.5 truncate text-[15px] font-semibold tracking-[-0.005em] text-[var(--studio-ink)]">
+                    {proposal.title}
+                  </h2>
+                </div>
+              </div>
+
+              {proposal.summary ? (
+                <p className="line-clamp-3 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
+                  {proposal.summary}
+                </p>
+              ) : null}
+
+              <div className="flex items-baseline justify-between gap-3">
+                <div>
+                  <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+                    Investment
+                  </div>
+                  <div className="mt-0.5 text-[18px] font-semibold tracking-[-0.005em] text-[var(--studio-ink)]">
+                    {formatCurrency(proposal.investment, proposal.currency)}
+                  </div>
+                </div>
+                {proposal.validUntil ? (
+                  <div className="text-right">
+                    <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+                      {expired ? "Expired" : "Valid until"}
+                    </div>
+                    <div className="mt-0.5 text-[12.5px] tabular-nums text-[var(--studio-ink-soft)]">
+                      {new Date(proposal.validUntil).toLocaleDateString("en-NG", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+
+              <Link
+                href={`/proposals/${proposal.id}?access=${proposal.accessKey}`}
+                className="portal-button portal-button-secondary self-start"
+              >
                 Open proposal
+                <ArrowRight className="h-4 w-4" />
               </Link>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </section>
-    </StudioWorkspaceShell>
+    </div>
+  );
+}
+
+function Header() {
+  return (
+    <header>
+      <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+        Scope · pricing · milestones
+      </div>
+      <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
+        Proposals
+      </h1>
+      <p className="mt-2 max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
+        Every Studio proposal tied to your account. Open one to revisit the
+        scope, milestone breakdown, and the deposit-or-template path.
+      </p>
+    </header>
   );
 }
