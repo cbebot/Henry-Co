@@ -24,6 +24,7 @@
     "@henryco/dashboard-modules-building": "workspace:^",
     "@henryco/dashboard-modules-hotel": "workspace:^",
     "@henryco/dashboard-modules-marketplace": "workspace:^",
+    "@henryco/dashboard-modules-support": "workspace:^",
     "@henryco/dashboard-modules-wallet": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/data": "workspace:^",
