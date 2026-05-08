@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { SearchOutput } from "@henryco/search-core";
 
 interface UseSearchQueryOptions {
@@ -24,16 +24,21 @@ interface UseSearchQueryResult {
   data: SearchOutput | null;
   loading: boolean;
   error: string | null;
+  /** Re-issue the last query; used by the palette's shared retry button. */
+  refetch: () => void;
 }
 
 export function useSearchQuery(options: UseSearchQueryOptions = {}): UseSearchQueryResult {
   const { endpoint = "/api/search", debounceMs = 160, divisions, enabled = true } = options;
   const [query, setQuery] = useState("");
+  const [tick, setTick] = useState(0);
   const [data, setData] = useState<SearchOutput | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const refetch = useCallback(() => setTick((t) => t + 1), []);
 
   useEffect(() => {
     if (!enabled) {
@@ -73,7 +78,7 @@ export function useSearchQuery(options: UseSearchQueryOptions = {}): UseSearchQu
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [query, endpoint, debounceMs, enabled, divisions?.join(",")]);
+  }, [query, endpoint, debounceMs, enabled, divisions?.join(","), tick]);
 
-  return { query, setQuery, data, loading, error };
+  return { query, setQuery, data, loading, error, refetch };
 }

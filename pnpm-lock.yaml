@@ -1785,6 +1785,9 @@ importers:
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../intelligence
+      '@henryco/lifecycle':
+        specifier: workspace:^
+        version: link:../lifecycle
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.98.0
@@ -1798,12 +1801,21 @@ importers:
       '@types/node':
         specifier: ^22.13.10
         version: 22.19.15
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
 
   packages/search-ui:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../intelligence
@@ -8784,6 +8796,7 @@ packages:
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@7.0.3:

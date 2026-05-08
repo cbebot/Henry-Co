@@ -1,6 +1,42 @@
-export { CommandPalette, type CommandPaletteProps } from "./palette";
+export {
+  CommandPalette,
+  type CommandPaletteProps,
+  DashboardCommandPalette,
+  type DashboardCommandPaletteController,
+  type DashboardCommandPaletteProps,
+  PaletteResultRow,
+  type PaletteResultRowProps,
+  KeyboardCheatSheet,
+  type KeyboardCheatSheetProps,
+  aggregate,
+  rankPaletteRows,
+  loadRecents,
+  saveRecent,
+  clearRecents,
+  recentsToRows,
+  PALETTE_CLEAR_RECENTS_EVENT,
+  type AggregatorInput,
+  type AggregatorOutput,
+  type RankerInput,
+  type RankerOutput,
+  type PaletteGroup,
+  type PaletteGroupKey,
+  type PaletteRow,
+  type PaletteRowKind,
+  type StoredRecent,
+} from "./palette";
 export { SearchResultsPage, type SearchResultsPageProps } from "./results";
-export { useCommandKey, useSearchQuery } from "./hooks";
+export {
+  useCommandKey,
+  useSearchQuery,
+  usePaletteCommands,
+  usePaletteSuggestions,
+  useIsMobilePalette,
+  useModuleJumpKeys,
+  type UsePaletteCommandsResult,
+  type UsePaletteSuggestionsResult,
+  type ModuleJumpEntry,
+} from "./hooks";
 export {
   henrycoCommandOpenCurve,
   henrycoCommandOpenMs,
