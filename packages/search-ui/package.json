@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./palette": "./src/palette/index.ts",
+    "./palette/dashboard": "./src/palette/DashboardCommandPalette.tsx",
     "./results": "./src/results/index.ts",
     "./motion": "./src/motion.ts",
     "./hooks": "./src/hooks/index.ts"
@@ -19,6 +20,8 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
+    "@henryco/auth": "workspace:^",
+    "@henryco/dashboard-shell": "workspace:^",
     "@henryco/intelligence": "workspace:^",
     "@henryco/search-core": "workspace:^",
     "@henryco/ui": "workspace:^",
