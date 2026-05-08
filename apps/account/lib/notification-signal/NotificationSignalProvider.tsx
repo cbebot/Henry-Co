@@ -1,48 +1,37 @@
 "use client";
 
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useEffectEvent,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
-import { usePathname } from "next/navigation";
-import {
-  fetchRecentNotifications,
-  startNotificationPolling,
-  type BellPayload,
-  type SignalNotification,
-} from "./notification-polling";
-import {
-  isNotificationAudioUnlocked,
-  playNotificationSound,
-  testNotificationSound,
-  unlockNotificationAudio,
-} from "./notification-sound";
+  useNotificationSignal,
+  useRealtime,
+  useNotificationPreferences,
+} from "@henryco/dashboard-shell";
 import {
   normalizeNotificationSignalPreferences,
   type NotificationSignalPreferences,
 } from "./notification-signal-preferences";
-import {
-  getNotificationPriorityBadge,
-  shouldPlayNotificationSound,
-  shouldShowNotificationPreview,
-  shouldTriggerNotificationVibration,
-} from "./notification-signal-rules";
-import { triggerNotificationVibration } from "./notification-vibration";
-import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import type { SignalNotification } from "./notification-polling";
 
-// V2-NOT-01-B B3.2: Realtime subscription tuning. The push-to-poll trigger
-// pattern means a Realtime INSERT/UPDATE simply calls refreshFeed() — the
-// server-side localization + brand-resolution pipeline at
-// /api/notifications/recent is reused so client and server stay in sync.
-const REALTIME_BACKOFF_INITIAL_MS = 1_000;
-const REALTIME_BACKOFF_MAX_MS = 30_000;
-const REALTIME_REFRESH_DEBOUNCE_MS = 250;
+/**
+ * V2-DASH-06 — NotificationSignalProvider is now a THIN BRIDGE around
+ * the shell-level SupabaseRealtimeProvider in `@henryco/dashboard-shell`.
+ *
+ * Before DASH-6 this provider mounted its own Supabase Realtime channel
+ * + polled `/api/notifications/recent` itself. That fragmented the
+ * notification spine across apps and kept `@henryco/notifications-ui`
+ * locked inside `apps/account` (audit §A.3-1).
+ *
+ * After DASH-6:
+ *   - The shell's SupabaseRealtimeProvider owns the single subscription
+ *     per session (closes anti-pattern #9).
+ *   - This bridge re-projects the shell store into the legacy
+ *     `useNotificationSignalContext()` shape so the existing 7+ call
+ *     sites (NotificationBell, NotificationsFeed, NotificationLifecycleControls,
+ *     etc.) compile unchanged.
+ *
+ * Once a follow-up phase migrates each call site to the shell hooks
+ * directly, this bridge can be deleted.
+ */
 
 export type PreviewToastItem = SignalNotification & {
   toastId: string;
@@ -65,309 +54,138 @@ type NotificationSignalContextValue = {
   testSound: () => Promise<boolean>;
 };
 
-type NotificationSignalProviderProps = {
-  children: ReactNode;
-  initialPreferences?: Record<string, unknown> | null;
-};
-
-const MAX_PREVIEW_QUEUE = 6;
-const NotificationSignalContext = createContext<NotificationSignalContextValue | null>(null);
+const NotificationSignalContext = createContext<NotificationSignalContextValue | null>(
+  null,
+);
 
 export function useNotificationSignalContext() {
   return useContext(NotificationSignalContext);
+}
+
+type NotificationSignalProviderProps = {
+  children: ReactNode;
+  /**
+   * Initial preferences from the server-rendered customer_preferences
+   * row. The shell's provider already accepts this; the bridge accepts
+   * it too for back-compat with existing call sites that pass it.
+   */
+  initialPreferences?: Record<string, unknown> | null;
+};
+
+/**
+ * Project a `RealtimeSignal` into the legacy `SignalNotification` shape
+ * the bell + feed components expect.
+ */
+function toSignalNotification(s: ReturnType<typeof useNotificationSignal>["signals"][number]): SignalNotification {
+  return {
+    id: s.id,
+    title: s.title,
+    body: s.body ?? "",
+    created_at: s.created_at,
+    is_read: s.is_read,
+    message_href: s.message_href,
+    related_url: null,
+    action_url: s.action_url,
+    division: s.division,
+    category: s.category,
+    priority: s.priority,
+    reference_type: null,
+    source: s.source ?? {
+      key: s.division ?? "system",
+      label: "HenryCo",
+      accent: "#111827",
+      logoUrl: null,
+    },
+  };
 }
 
 export function NotificationSignalProvider({
   children,
   initialPreferences,
 }: NotificationSignalProviderProps) {
-  const pathname = usePathname();
-  const [preferences, setPreferences] = useState(() =>
-    normalizeNotificationSignalPreferences(initialPreferences),
+  const { signals, unreadCount, loading, error } = useNotificationSignal({
+    audience: "customer",
+    visibleOnly: true,
+    limit: 12,
+  });
+  const { refresh, markReadLocally } = useRealtime();
+  const { preferences: shellPrefs, apply } = useNotificationPreferences();
+
+  const recentNotifications = useMemo(
+    () => signals.map(toSignalNotification),
+    [signals],
   );
-  const [audioUnlocked, setAudioUnlocked] = useState(isNotificationAudioUnlocked);
-  const [feed, setFeed] = useState<BellPayload>({ unreadCount: 0, items: [] });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [previewToasts, setPreviewToasts] = useState<PreviewToastItem[]>([]);
-  const hasMountedPathRef = useRef(false);
-  const signaledIdsRef = useRef<Set<string>>(new Set());
 
-  useEffect(() => {
-    setPreferences(normalizeNotificationSignalPreferences(initialPreferences));
-  }, [initialPreferences]);
-
-  const refreshFeed = useCallback(async () => {
-    const payload = await fetchRecentNotifications();
-    if (!payload) {
-      setError("Unable to load notifications.");
-      setLoading(false);
-      return;
-    }
-
-    setFeed(payload);
-    setError(null);
-    setLoading(false);
-  }, []);
+  // Bridge preferences from the shell shape onto the legacy shape.
+  const legacyPrefs = useMemo<NotificationSignalPreferences>(() => {
+    return normalizeNotificationSignalPreferences({
+      ...initialPreferences,
+      // Shell prefs override the server seed — they reflect the latest
+      // optimistic edits + PATCH responses.
+      in_app_toast_enabled: shellPrefs.in_app_toast_enabled,
+      notification_sound_enabled: shellPrefs.notification_sound_enabled,
+      notification_vibration_enabled: shellPrefs.notification_vibration_enabled,
+      high_priority_only: shellPrefs.high_priority_only,
+      quiet_hours_enabled: shellPrefs.quiet_hours_enabled,
+      quiet_hours_start: shellPrefs.quiet_hours_start,
+      quiet_hours_end: shellPrefs.quiet_hours_end,
+    });
+  }, [initialPreferences, shellPrefs]);
 
   const updatePreferences = useCallback(
     (updates: Partial<NotificationSignalPreferences>) => {
-      setPreferences((current) =>
-        normalizeNotificationSignalPreferences({
-          ...current,
-          ...updates,
-        }),
-      );
+      // Map a subset of legacy keys onto the shell shape. Division
+      // toggles (notification_care, notification_marketplace, etc.) in
+      // the legacy shape are managed by the legacy /settings page —
+      // the shell uses muted_divisions[] which the new PreferencesPanel
+      // writes directly. This bridge intentionally doesn't map them
+      // both ways to avoid double-writes.
+      apply({
+        in_app_toast_enabled: updates.in_app_toast_enabled,
+        notification_sound_enabled: updates.notification_sound_enabled,
+        notification_vibration_enabled: updates.notification_vibration_enabled,
+        high_priority_only: updates.high_priority_only,
+        quiet_hours_enabled: updates.quiet_hours_enabled,
+        quiet_hours_start: updates.quiet_hours_start,
+        quiet_hours_end: updates.quiet_hours_end,
+      });
     },
-    [],
+    [apply],
   );
 
-  const dismissToast = useCallback((toastId: string) => {
-    setPreviewToasts((current) => current.filter((item) => item.toastId !== toastId));
-  }, []);
+  const refreshFeed = useCallback(async () => {
+    await refresh();
+  }, [refresh]);
 
-  const markNotificationReadLocally = useCallback((notificationId: string) => {
-    setFeed((current) => ({
-      unreadCount: Math.max(
-        0,
-        current.unreadCount - (current.items.some((item) => item.id === notificationId && !item.is_read) ? 1 : 0),
-      ),
-      items: current.items.map((item) =>
-        item.id === notificationId ? { ...item, is_read: true } : item,
-      ),
-    }));
-    setPreviewToasts((current) => current.filter((item) => item.id !== notificationId));
-  }, []);
-
-  const handleAudioInteraction = useEffectEvent(async () => {
-    if (audioUnlocked) return;
-
-    const unlocked = await unlockNotificationAudio();
-    if (unlocked) {
-      setAudioUnlocked(true);
-    }
-  });
-
-  useEffect(() => {
-    if (audioUnlocked) return;
-
-    document.addEventListener("click", handleAudioInteraction, { passive: true });
-    document.addEventListener("keydown", handleAudioInteraction, { passive: true });
-    document.addEventListener("touchstart", handleAudioInteraction, { passive: true });
-
-    return () => {
-      document.removeEventListener("click", handleAudioInteraction);
-      document.removeEventListener("keydown", handleAudioInteraction);
-      document.removeEventListener("touchstart", handleAudioInteraction);
-    };
-  }, [audioUnlocked]);
-
-  const handleSnapshot = useEffectEvent((payload: BellPayload) => {
-    setFeed(payload);
-    setLoading(false);
-    setError(null);
-  });
-
-  const handleNewNotifications = useEffectEvent(async (notifications: SignalNotification[]) => {
-    const unseenNotifications = notifications.filter((notification) => {
-      if (signaledIdsRef.current.has(notification.id)) {
-        return false;
-      }
-
-      signaledIdsRef.current.add(notification.id);
-      return true;
-    });
-
-    if (unseenNotifications.length === 0) {
-      return;
-    }
-
-    if (signaledIdsRef.current.size > 180) {
-      signaledIdsRef.current = new Set([
-        ...feed.items.slice(0, 32).map((item) => item.id),
-        ...unseenNotifications.slice(-16).map((item) => item.id),
-      ]);
-    }
-
-    const shouldPlaySoundForBatch =
-      audioUnlocked &&
-      unseenNotifications.some((notification) =>
-        shouldPlayNotificationSound(notification, preferences),
-      );
-    const shouldVibrateForBatch = unseenNotifications.some((notification) =>
-      shouldTriggerNotificationVibration(notification, preferences),
-    );
-
-    if (shouldPlaySoundForBatch) {
-      await playNotificationSound();
-    }
-
-    if (shouldVibrateForBatch) {
-      triggerNotificationVibration();
-    }
-
-    setPreviewToasts((current) => {
-      const next = [...current];
-
-      for (const notification of unseenNotifications) {
-        if (!shouldShowNotificationPreview(notification, preferences)) {
-          continue;
-        }
-
-        const toastId = `notification-toast:${notification.id}`;
-        if (next.some((item) => item.toastId === toastId)) {
-          continue;
-        }
-
-        next.push({
-          ...notification,
-          toastId,
-          shownAt: Date.now(),
-          priorityBadge: getNotificationPriorityBadge(notification),
-        });
-      }
-
-      return next.slice(-MAX_PREVIEW_QUEUE);
-    });
-  });
-
-  useEffect(() => {
-    const stopPolling = startNotificationPolling({
-      onSnapshot: handleSnapshot,
-      onNewNotifications: handleNewNotifications,
-      onError: () => {
-        setError("Unable to load notifications.");
-        setLoading(false);
-      },
-    });
-
-    return stopPolling;
-  }, []);
-
-  // V2-NOT-01-B B3.2: Realtime push channel. When customer_notifications
-  // changes for the current user, refresh the feed via the existing REST
-  // path so we keep one localization pipeline. Polling continues in the
-  // background as a fallback for missed events during disconnections.
-  //
-  // RLS on customer_notifications restricts SELECT to user_id = auth.uid(),
-  // and Supabase Realtime applies SELECT-side RLS to the subscription
-  // stream. The explicit user_id=eq.<userId> filter below is
-  // belt-and-braces — if RLS were ever misconfigured, the channel filter
-  // still scopes events to the current user.
-  useEffect(() => {
-    let cancelled = false;
-    let channel: ReturnType<ReturnType<typeof createSupabaseBrowser>["channel"]> | null = null;
-    let backoffMs = REALTIME_BACKOFF_INITIAL_MS;
-    let retryTimer: number | null = null;
-    let lastRefreshAt = 0;
-
-    const debouncedRefresh = () => {
-      const now = Date.now();
-      if (now - lastRefreshAt < REALTIME_REFRESH_DEBOUNCE_MS) return;
-      lastRefreshAt = now;
-      void refreshFeed();
-    };
-
-    const teardown = () => {
-      if (channel) {
-        const supabase = createSupabaseBrowser();
-        void supabase.removeChannel(channel);
-        channel = null;
-      }
-      if (retryTimer !== null) {
-        window.clearTimeout(retryTimer);
-        retryTimer = null;
-      }
-    };
-
-    const start = async () => {
-      if (cancelled) return;
-      const supabase = createSupabaseBrowser();
-      const { data, error: authError } = await supabase.auth.getUser();
-      if (cancelled) return;
-      if (authError || !data.user) {
-        // Anonymous session — Realtime cannot scope to a user. Polling
-        // is the only delivery path. No retry; auth state changes will
-        // remount this provider.
-        return;
-      }
-      const userId = data.user.id;
-      const filter = `user_id=eq.${userId}`;
-
-      channel = supabase
-        .channel(`customer_notifications:user:${userId}`)
-        .on(
-          "postgres_changes",
-          { event: "INSERT", schema: "public", table: "customer_notifications", filter },
-          () => debouncedRefresh(),
-        )
-        .on(
-          "postgres_changes",
-          { event: "UPDATE", schema: "public", table: "customer_notifications", filter },
-          () => debouncedRefresh(),
-        )
-        .subscribe((status: string) => {
-          if (cancelled) return;
-          if (status === "SUBSCRIBED") {
-            backoffMs = REALTIME_BACKOFF_INITIAL_MS;
-            return;
-          }
-          if (status === "CLOSED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-            teardown();
-            retryTimer = window.setTimeout(() => {
-              backoffMs = Math.min(backoffMs * 2, REALTIME_BACKOFF_MAX_MS);
-              void start();
-            }, backoffMs);
-          }
-        });
-    };
-
-    void start();
-
-    return () => {
-      cancelled = true;
-      teardown();
-    };
-  }, [refreshFeed]);
-
-  useEffect(() => {
-    if (!hasMountedPathRef.current) {
-      hasMountedPathRef.current = true;
-      return;
-    }
-
-    void refreshFeed();
-  }, [pathname, refreshFeed]);
-
-  useEffect(() => {
-    setPreviewToasts((current) =>
-      current.filter((item) => shouldShowNotificationPreview(item, preferences)),
-    );
-  }, [preferences]);
-
-  const handleTestSound = useCallback(async () => {
-    const played = await testNotificationSound();
-    setAudioUnlocked(isNotificationAudioUnlocked());
-    return played;
-  }, []);
+  const value = useMemo<NotificationSignalContextValue>(
+    () => ({
+      preferences: legacyPrefs,
+      audioUnlocked: false,
+      loading,
+      error,
+      unreadCount,
+      recentNotifications,
+      previewToasts: [],
+      updatePreferences,
+      dismissToast: () => undefined,
+      refreshFeed,
+      markNotificationReadLocally: markReadLocally,
+      testSound: async () => false,
+    }),
+    [
+      legacyPrefs,
+      loading,
+      error,
+      unreadCount,
+      recentNotifications,
+      updatePreferences,
+      refreshFeed,
+      markReadLocally,
+    ],
+  );
 
   return (
-    <NotificationSignalContext.Provider
-      value={{
-        preferences,
-        audioUnlocked,
-        loading,
-        error,
-        unreadCount: feed.unreadCount,
-        recentNotifications: feed.items,
-        previewToasts,
-        updatePreferences,
-        dismissToast,
-        refreshFeed,
-        markNotificationReadLocally,
-        testSound: handleTestSound,
-      }}
-    >
+    <NotificationSignalContext.Provider value={value}>
       {children}
     </NotificationSignalContext.Provider>
   );
