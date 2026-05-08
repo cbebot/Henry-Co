@@ -15,10 +15,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
-  useState,
   type ReactNode,
 } from "react";
 import {
@@ -34,7 +32,6 @@ interface PaletteContextValue {
   close: () => void;
   toggle: () => void;
   clearRecentsForViewer: () => void;
-  ready: boolean;
 }
 
 const PaletteContext = createContext<PaletteContextValue | null>(null);
@@ -50,7 +47,6 @@ export function usePaletteOpen(): PaletteContextValue {
       close: () => undefined,
       toggle: () => undefined,
       clearRecentsForViewer: () => undefined,
-      ready: false,
     };
   }
   return ctx;
@@ -68,11 +64,6 @@ export default function PaletteOpenProvider({
   children,
 }: PaletteOpenProviderProps) {
   const controllerRef = useRef<DashboardCommandPaletteController>(null);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setReady(true);
-  }, []);
 
   const open = useCallback(() => controllerRef.current?.open(), []);
   const close = useCallback(() => controllerRef.current?.close(), []);
@@ -86,8 +77,8 @@ export default function PaletteOpenProvider({
   }, [userId]);
 
   const value = useMemo<PaletteContextValue>(
-    () => ({ open, close, toggle, clearRecentsForViewer, ready }),
-    [open, close, toggle, clearRecentsForViewer, ready],
+    () => ({ open, close, toggle, clearRecentsForViewer }),
+    [open, close, toggle, clearRecentsForViewer],
   );
 
   return (
