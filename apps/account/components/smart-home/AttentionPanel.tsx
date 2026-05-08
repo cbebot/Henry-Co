@@ -4,6 +4,7 @@ import type { SignalFeedItem } from "@henryco/data";
 import type { LifecycleSnapshot } from "@henryco/lifecycle";
 import LifecycleContinuePanel from "@/components/lifecycle/LifecycleContinuePanel";
 import { divisionColor, divisionLabel } from "@/lib/format";
+import { formatRelative, mapSignalPriority } from "@/lib/smart-home/format";
 
 /**
  * AttentionPanel — the highest-priority cluster on the Smart Home.
@@ -133,7 +134,7 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
                 kicker={divisionLabel(signal.division)}
                 title={signal.title}
                 body={signal.body ?? undefined}
-                priority={mapPriority(signal.priority)}
+                priority={mapSignalPriority(signal.priority)}
                 accent={divisionColor(signal.division)}
                 icon={<AlertOctagon size={14} aria-hidden />}
                 timestamp={formatRelative(signal.createdAt)}
@@ -203,24 +204,3 @@ function PriorityChip({
   );
 }
 
-function mapPriority(priority: string): "info" | "warning" | "urgent" | "security" {
-  if (priority === "security") return "security";
-  if (priority === "urgent") return "urgent";
-  if (priority === "warning") return "warning";
-  return "info";
-}
-
-function formatRelative(iso: string): string {
-  const t = Date.parse(iso);
-  if (Number.isNaN(t)) return "";
-  const diffMs = Math.max(0, Date.now() - t);
-  const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  const months = Math.floor(days / 30);
-  return `${months}mo ago`;
-}

@@ -1,8 +1,9 @@
 import "server-only";
 
-import { listSavedItems } from "@henryco/cart-saved-items/server";
+import { countActiveSavedItems } from "@henryco/cart-saved-items/server";
 import { getEligibleModules } from "@henryco/dashboard-shell";
 import type { SignalFeedCursor, SignalFeedItem } from "@henryco/data";
+import { logger } from "@henryco/observability";
 import { getCachedSignalFeed } from "@/lib/smart-home/signal-feed-cache";
 import type { UnifiedViewer } from "@henryco/auth";
 import {
@@ -22,6 +23,8 @@ import { RankedMetricStrip } from "./RankedMetricStrip";
 import { SignalFeed } from "./SignalFeed";
 import { SmartHomeEmpty } from "./SmartHomeEmpty";
 import { SmartHomeHeader } from "./SmartHomeHeader";
+
+const smartHomeLogger = logger.child({ namespace: "smart-home" });
 
 /**
  * SmartHome — the WorkspaceSlot's default landing.
@@ -58,15 +61,13 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
   // server-only and most are idempotent — `getCachedSignalFeed` shares
   // the 30s `unstable_cache` window across requests, the lifecycle
   // collector persists its snapshot, the home-widget walk is fault-
-  // tolerant per module.
-  const [signalFeed, lifecycle, widgets, savedItems] = await Promise.all([
+  // tolerant per module. The saved-items count is a head-only `select
+  // exact` — no rows transferred.
+  const [signalFeed, lifecycle, widgets, savedItemsCount] = await Promise.all([
     getCachedSignalFeed(viewer, cursor ? { cursor, limit: 50 } : { limit: 50 }),
     collectAndPersistLifecycleSnapshot(viewer.user.id).catch(() => null),
     collectHomeWidgets(modules, viewer),
-    listSavedItems(createAdminSupabase(), viewer.user.id, {
-      includeStatuses: ["active"],
-      limit: 1,
-    }).catch(() => []),
+    countActiveSavedItems(createAdminSupabase(), viewer.user.id).catch(() => 0),
   ]);
 
   const attentionSignals = signalFeed.items.filter(
@@ -102,15 +103,41 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
     rankedMetrics.length === 0 &&
     restWidgets.length === 0 &&
     (lifecycle?.actionables.length ?? 0) === 0 &&
-    savedItems.length === 0;
+    savedItemsCount === 0;
+
+  // One render-telemetry line per request. Drives the operator
+  // dashboard's "what does the home look like for whom" view without
+  // adding a new HenryEventName (taxonomy changes are V2-OBS-02
+  // territory). The line is a workspace `logger.info` so it goes
+  // through the structured logger + Sentry breadcrumb path.
+  smartHomeLogger.info("smart_home.rendered", {
+    viewerId: viewer.user.id,
+    viewerKind: viewer.kind,
+    role: viewer.role,
+    moduleCount: modules.length,
+    signalCount: signalFeed.items.length,
+    attentionCount,
+    rankedMetricsCount: rankedMetrics.length,
+    restWidgetsCount: restWidgets.length,
+    nextBestActionsCount: nextBestActions.length,
+    savedItemsCount,
+    isEmpty,
+    cursorPresent: cursor !== null,
+  });
 
   if (isEmpty) {
+    // Drop hardcoded "Add money to wallet / Browse marketplace"
+    // fallbacks. The recommender's deterministic ranker already
+    // produces viewer-aware actions — sourcing from lifecycle, signals,
+    // and module empty-teachings. When even the ranker is dry the
+    // empty state stays purely typographic (anti-pattern #16) rather
+    // than inventing actions the viewer didn't earn.
     const primary = nextBestActions[0]
       ? { label: nextBestActions[0].label, href: nextBestActions[0].href }
-      : { label: "Add money to wallet", href: "/wallet/add" };
+      : null;
     const secondary = nextBestActions[1]
       ? { label: nextBestActions[1].label, href: nextBestActions[1].href }
-      : { label: "Browse marketplace", href: "/marketplace" };
+      : null;
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -119,6 +146,7 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
           unreadCount={0}
           attentionCount={0}
           lastActivityIso={null}
+          savedItemsCount={0}
           fallbackBody="Welcome — start with a small first step. Your live signals will appear here as soon as activity lands."
         />
         <SmartHomeEmpty
@@ -137,6 +165,7 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
         unreadCount={unreadCount}
         attentionCount={attentionCount}
         lastActivityIso={lastActivityIso}
+        savedItemsCount={savedItemsCount}
       />
 
       <AttentionPanel attentionSignals={attentionSignals} lifecycle={lifecycle} />
@@ -167,20 +196,28 @@ async function collectEmptyTeachings(
   }>
 > {
   const settled = await Promise.allSettled(
-    modules.map(async (module) => {
-      if (!module.getEmptyTeaching) return null;
-      const teaching = await module.getEmptyTeaching(viewer);
+    modules.map(async (mod) => {
+      if (!mod.getEmptyTeaching) return null;
+      const teaching = await mod.getEmptyTeaching(viewer);
       if (!teaching) return null;
-      return { module, teaching };
+      return { module: mod, teaching };
     }),
   );
   const out: Array<{
     module: (typeof modules)[number];
     teaching: { headline: string; action?: { label: string; href: string } | undefined };
   }> = [];
-  for (const r of settled) {
-    if (r.status === "fulfilled" && r.value) {
+  for (let i = 0; i < settled.length; i++) {
+    const r = settled[i];
+    const mod = modules[i];
+    if (r && r.status === "fulfilled" && r.value) {
       out.push(r.value);
+    } else if (r && r.status === "rejected") {
+      smartHomeLogger.warn("module_empty_teaching_rejected", {
+        moduleSlug: mod?.slug,
+        viewerId: viewer.user.id,
+        error: r.reason instanceof Error ? r.reason.message : String(r.reason),
+      });
     }
   }
   return out;

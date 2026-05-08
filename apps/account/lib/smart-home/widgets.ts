@@ -2,6 +2,9 @@ import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
 import type { DashboardModule, HomeWidget, ModuleSize } from "@henryco/dashboard-shell";
+import { logger } from "@henryco/observability";
+
+const widgetLogger = logger.child({ namespace: "smart-home.widgets" });
 
 /**
  * One home widget annotated with the module that contributed it. The
@@ -31,14 +34,28 @@ export async function collectHomeWidgets(
   viewer: UnifiedViewer,
 ): Promise<ReadonlyArray<AnnotatedHomeWidget>> {
   const settled = await Promise.allSettled(
-    modules.map(async (module) => {
-      const widgets = await module.getHomeWidgets(viewer);
-      return widgets.map<AnnotatedHomeWidget>((w) => ({ ...w, module }));
+    modules.map(async (mod) => {
+      const widgets = await mod.getHomeWidgets(viewer);
+      return widgets.map<AnnotatedHomeWidget>((w) => ({ ...w, module: mod }));
     }),
   );
   const flat: AnnotatedHomeWidget[] = [];
-  for (const r of settled) {
-    if (r.status === "fulfilled") flat.push(...r.value);
+  for (let i = 0; i < settled.length; i++) {
+    const r = settled[i];
+    const mod = modules[i];
+    if (r && r.status === "fulfilled") {
+      flat.push(...r.value);
+    } else if (r && r.status === "rejected") {
+      // A division throwing inside getHomeWidgets must not take the
+      // home down — but operators need the signal that a module is
+      // sick. Log at warn with the module slug so the alert is
+      // routable.
+      widgetLogger.warn("module_widgets_rejected", {
+        moduleSlug: mod?.slug,
+        viewerId: viewer.user.id,
+        error: r.reason instanceof Error ? r.reason.message : String(r.reason),
+      });
+    }
   }
   return flat;
 }

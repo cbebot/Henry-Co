@@ -4,6 +4,7 @@ import type { UnifiedViewer } from "@henryco/auth";
 import type { DashboardModule } from "@henryco/dashboard-shell";
 import type { LifecycleSnapshot } from "@henryco/lifecycle";
 import type { SignalFeedItem } from "@henryco/data";
+import { divisionLabel } from "@/lib/format";
 
 /**
  * One recommendation surfaced in the Next-Best Actions strip. The
@@ -31,8 +32,25 @@ export type NextBestAction = {
  *   - the top N signals from `getSignalFeed`
  *   - the eligible modules' `getEmptyTeaching(viewer)` outputs
  *
- * Output: up to 3 actions, deduped by `href`, ordered by source
- * priority (lifecycle > signal > module-empty) then by confidence.
+ * Output: up to 3 actions, deduped by `href`, sorted by tier-aware
+ * merit. Within a tier, sources keep their natural pre-ranked order.
+ *
+ * Tier model (lower = surfaced first):
+ *
+ *   0 — Security signals. Time-sensitive: fraud alerts, wallet
+ *       security challenges, account compromise. Always beat lifecycle
+ *       items because the cost of missing one is asymmetric.
+ *   1 — Lifecycle critical. Blocking actionables: KYC required,
+ *       verification expired, payout blocked.
+ *   2 — Lifecycle high. Important but not blocking: incomplete
+ *       profile, dormant subscription, referral about to expire.
+ *   3 — Module empty-teachings. Onboarding floor for first-run users.
+ *
+ * Why tier-aware (not source-priority loop): the previous
+ * implementation walked source-by-source, filling slots until the
+ * limit hit. With 8 lifecycle "high" actionables and 1 security
+ * signal, a viewer would see 3 lifecycle items and never the security
+ * signal — exactly the wrong call.
  *
  * This is the "floor" recommender — it ships unconditionally so the
  * Smart Home is never empty for an active user. When the
@@ -52,23 +70,27 @@ export type RecommenderInputs = {
   limit?: number;
 };
 
+const TIER_SECURITY_SIGNAL = 0;
+const TIER_LIFECYCLE_CRITICAL = 1;
+const TIER_LIFECYCLE_HIGH = 2;
+const TIER_MODULE_EMPTY = 3;
+
+type Candidate = NextBestAction & { tier: number; arrival: number };
+
 export function rankNextBestActions(input: RecommenderInputs): ReadonlyArray<NextBestAction> {
   const limit = input.limit ?? 3;
-  const out: NextBestAction[] = [];
-  const seenHrefs = new Set<string>();
+  const candidates: Candidate[] = [];
+  let arrival = 0;
 
-  const accept = (action: NextBestAction): void => {
-    if (seenHrefs.has(action.href)) return;
-    seenHrefs.add(action.href);
-    out.push(action);
-  };
+  // Collect every candidate from every source. Each candidate carries
+  // its tier (drives sort order) and `arrival` index (preserves the
+  // source's natural pre-ranked order as the within-tier tiebreak).
 
-  // 1. Lifecycle actionables (pre-ranked by @henryco/lifecycle).
+  // Lifecycle actionables — already pre-ranked inside @henryco/lifecycle.
   for (const a of input.lifecycle?.actionables ?? []) {
-    if (out.length >= limit) break;
     if (a.priority !== "critical" && a.priority !== "high") continue;
     if (!a.actionUrl) continue;
-    accept({
+    candidates.push({
       id: `lifecycle:${a.pillar}:${a.stage}`,
       source: "lifecycle",
       kicker: a.title,
@@ -76,36 +98,38 @@ export function rankNextBestActions(input: RecommenderInputs): ReadonlyArray<Nex
       href: a.actionUrl,
       reason: a.detail,
       confidence: a.priority === "critical" ? "high" : "medium",
+      tier: a.priority === "critical" ? TIER_LIFECYCLE_CRITICAL : TIER_LIFECYCLE_HIGH,
+      arrival: arrival++,
     });
   }
 
-  // 2. Security-priority signals not yet in the Attention panel.
-  //    These exist when a security signal has slipped past lifecycle
-  //    derivation — e.g., a wallet challenge created from a webhook
-  //    before the lifecycle collector last ran.
+  // Security signals — every signal feed item the SQL function emits
+  // as `priority='security'` that hasn't already been promoted to the
+  // Attention panel by the consumer. These can slip past lifecycle
+  // derivation (e.g., a wallet challenge created from a webhook
+  // before the lifecycle collector last ran).
   for (const s of input.signals) {
-    if (out.length >= limit) break;
     if (s.priority !== "security") continue;
     if (!s.actionUrl) continue;
-    accept({
+    candidates.push({
       id: `signal:${s.id}`,
       source: "signal",
-      kicker: divisionToKicker(s.division),
+      kicker: divisionLabel(s.division),
       label: s.title,
       href: s.actionUrl,
       reason: s.body ?? "Review and confirm.",
       confidence: "high",
+      tier: TIER_SECURITY_SIGNAL,
+      arrival: arrival++,
     });
   }
 
-  // 3. Module empty-teachings — surface a module's "next-best
-  //    onboarding action" when the module has nothing to render. This
-  //    is what a brand-new account sees: each registered division
-  //    teaches its own first-step CTA.
+  // Module empty-teachings — each registered division's first-step CTA
+  // for the brand-new viewer. Carries the lowest tier so it never
+  // crowds out a real signal.
   for (const t of input.emptyTeachings) {
-    if (out.length >= limit) break;
     if (!t.teaching.action) continue;
-    accept({
+    candidates.push({
       id: `module-empty:${t.module.slug}`,
       source: "module-empty",
       kicker: t.module.title,
@@ -113,17 +137,41 @@ export function rankNextBestActions(input: RecommenderInputs): ReadonlyArray<Nex
       href: t.teaching.action.href,
       reason: t.teaching.headline,
       confidence: "low",
+      tier: TIER_MODULE_EMPTY,
+      arrival: arrival++,
+    });
+  }
+
+  // Sort: tier ascending (security signals first), then arrival order
+  // within tier (preserves the source's pre-ranked order as the calm
+  // tiebreak).
+  candidates.sort((a, b) => {
+    if (a.tier !== b.tier) return a.tier - b.tier;
+    return a.arrival - b.arrival;
+  });
+
+  // Dedupe by href — two sources may point at the same destination
+  // (e.g., the lifecycle collector and a notification both pointing to
+  // /verification). The higher-tier candidate wins because it sorts
+  // first.
+  const out: NextBestAction[] = [];
+  const seenHrefs = new Set<string>();
+  for (const c of candidates) {
+    if (out.length >= limit) break;
+    if (seenHrefs.has(c.href)) continue;
+    seenHrefs.add(c.href);
+    // Project the public contract — drop the internal sort fields so
+    // they don't leak through JSON serialization or React-prop diffs.
+    out.push({
+      id: c.id,
+      source: c.source,
+      kicker: c.kicker,
+      label: c.label,
+      href: c.href,
+      reason: c.reason,
+      confidence: c.confidence,
     });
   }
 
   return out;
-}
-
-function divisionToKicker(division: string): string {
-  // Reuse the SignalCard kicker format — the division name as a
-  // SHORT label. The shell's divisionLabel() lives in
-  // apps/account/lib/format.ts; keep this helper local to avoid
-  // pulling the format module into a server-only library.
-  if (!division) return "Signal";
-  return division.charAt(0).toUpperCase() + division.slice(1);
 }
