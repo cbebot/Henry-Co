@@ -39,6 +39,14 @@ export type SignalFeedRow =
  * The function is SECURITY DEFINER + RLS-aware: the viewer never sees
  * rows they wouldn't see via direct SELECT against the underlying
  * tables. G10 (live RLS probe) verifies cross-tenant isolation.
+ *
+ * DASH-4 EXTENSION: each notification-kind item is augmented with
+ * `emailDispatched` (the value of `customer_notifications.email_dispatched_at
+ * IS NOT NULL`). The Smart Home dims signals already mirrored to
+ * email — see audit §A.8. We do NOT add the column to the SQL
+ * function (V2 scope boundary forbids new SQL). Instead we issue a
+ * single follow-up `select id, email_dispatched_at` filtered by the
+ * viewer's user_id.
  */
 
 export type SignalFeedItem = {
@@ -52,6 +60,13 @@ export type SignalFeedItem = {
   actionUrl: string | null;
   createdAt: string;
   score: number;
+  /**
+   * True when this notification has already been mirrored to email
+   * via the notification-email-fallback cron. The Smart Home renders
+   * those signals dimmer because they have a parallel acknowledgement
+   * channel. Always false for activity-kind rows.
+   */
+  emailDispatched: boolean;
 };
 
 export type SignalFeedCursor = {
@@ -68,6 +83,22 @@ export type SignalFeedResult = {
   items: ReadonlyArray<SignalFeedItem>;
   nextCursor: SignalFeedCursor | null;
 };
+
+/**
+ * Build the cache tag for a viewer's signal feed. DASH-6's realtime
+ * spine calls `revalidateTag(signalFeedTag(userId))` when a new
+ * notification is published, dropping the 30s cache window early so
+ * the next render reads fresh data.
+ */
+export function signalFeedTag(viewerId: string): string {
+  return `signal-feed:${viewerId}`;
+}
+
+/**
+ * The shared cache tag for any Smart Home read. Used as a coarse
+ * "drop everything" hook for global invalidation paths.
+ */
+export const SMART_HOME_TAG = "smart-home";
 
 export async function getSignalFeed(
   viewer: UnifiedViewer,
@@ -96,6 +127,12 @@ export async function getSignalFeed(
 
   const rows: SignalFeedRow[] = (data ?? []) as SignalFeedRow[];
 
+  // Look up email_dispatched_at for the notification-kind subset so
+  // the Smart Home can render dispatched signals dimmer. One round
+  // trip; service-role admin client; viewer-scoped (defence in depth
+  // even though the SQL function already guards by user_id).
+  const dispatchedSet = await loadEmailDispatchedSet(client, viewer.user.id, rows);
+
   const items: SignalFeedItem[] = rows.map((row) => ({
     id: row.id,
     kind: row.kind,
@@ -107,6 +144,7 @@ export async function getSignalFeed(
     actionUrl: row.action_url,
     createdAt: row.created_at,
     score: row.score,
+    emailDispatched: row.kind === "notification" && dispatchedSet.has(row.id),
   }));
 
   const last = items[items.length - 1];
@@ -115,3 +153,31 @@ export async function getSignalFeed(
 
   return { items, nextCursor };
 }
+
+async function loadEmailDispatchedSet(
+  client: ReturnType<typeof createDataAdminClient>,
+  viewerId: string,
+  rows: ReadonlyArray<SignalFeedRow>,
+): Promise<ReadonlySet<string>> {
+  const notificationIds = rows.filter((r) => r.kind === "notification").map((r) => r.id);
+  if (notificationIds.length === 0) return new Set();
+
+  const { data, error } = await client
+    .from("customer_notifications")
+    .select("id")
+    .eq("user_id", viewerId)
+    .in("id", notificationIds)
+    .not("email_dispatched_at", "is", null);
+
+  if (error || !data) return new Set();
+  return new Set((data as Array<{ id: string }>).map((row) => row.id));
+}
+
+// NOTE: the 30-second TTL cache wrapper for `getSignalFeed` lives in
+// the host app at `apps/account/lib/smart-home/signal-feed-cache.ts`.
+// It's kept out of this package so `@henryco/data` doesn't grow a
+// hard dependency on `next/cache` or `react` — `@henryco/data` is
+// designed to be importable from any Next 16 app (account, hub,
+// staff, marketplace) without adding a Next-version coupling here.
+// Tags + helpers (`signalFeedTag`, `SMART_HOME_TAG`) ARE shipped
+// from this package because they are pure constants/helpers.
