@@ -35,3 +35,10 @@ export {
   type PaletteSuggestion,
   type SuggestionsWirePayload,
 } from "./suggestions";
+export {
+  rankPaletteRows,
+  type RankablePaletteRow,
+  type RankableStoredRecent,
+  type RankerInput,
+  type RankerOutput,
+} from "./palette-ranker";

@@ -114,7 +114,27 @@ export interface DashboardCommandPaletteProps {
   userId: string | null;
   /** First 9 eligible modules in rail order, for Cmd+1..9. */
   moduleJumpEntries?: ReadonlyArray<ModuleJumpEntry>;
+  /**
+   * Optional telemetry sink. Called for `open`, `select`, `dismiss`,
+   * `query` events. The host app may forward to the existing
+   * `@henryco/observability` logger or to PostHog. The palette never
+   * sends telemetry on its own (host-controlled).
+   */
+  onTelemetry?: (event: PaletteTelemetryEvent) => void;
 }
+
+export type PaletteTelemetryEvent =
+  | { kind: "open"; trigger: "shortcut" | "click"; at: number }
+  | { kind: "dismiss"; reason: "esc" | "backdrop" | "select"; at: number }
+  | { kind: "query"; query: string; resultCount: number; at: number }
+  | {
+      kind: "select";
+      rowKind: "command" | "search" | "recent" | "suggestion";
+      sourceId: string;
+      href: string;
+      query: string;
+      at: number;
+    };
 
 export const DashboardCommandPalette = forwardRef<
   DashboardCommandPaletteController,
@@ -126,6 +146,7 @@ export const DashboardCommandPalette = forwardRef<
     suggestionsEndpoint = "/api/dashboard/suggestions",
     userId,
     moduleJumpEntries = [],
+    onTelemetry,
   },
   ref,
 ) {
@@ -145,8 +166,14 @@ export const DashboardCommandPalette = forwardRef<
   // Wire Cmd+K + "/" via the existing hook.
   useCommandKey(
     useCallback(() => {
-      setOpen((prev) => !prev);
-    }, []),
+      setOpen((prev) => {
+        const next = !prev;
+        if (next && onTelemetry) {
+          onTelemetry({ kind: "open", trigger: "shortcut", at: Date.now() });
+        }
+        return next;
+      });
+    }, [onTelemetry]),
   );
 
   // Cmd+1..9 module jumps work even when the palette is closed.
@@ -155,11 +182,16 @@ export const DashboardCommandPalette = forwardRef<
   useImperativeHandle(
     ref,
     () => ({
-      open: () => setOpen(true),
+      open: () => {
+        setOpen(true);
+        if (onTelemetry) {
+          onTelemetry({ kind: "open", trigger: "click", at: Date.now() });
+        }
+      },
       close: () => setOpen(false),
       toggle: () => setOpen((prev) => !prev),
     }),
-    [],
+    [onTelemetry],
   );
 
   // Listen for the layout's signOut event and wipe local recents.
@@ -263,25 +295,58 @@ export const DashboardCommandPalette = forwardRef<
     }
   }, [flat.length, highlight]);
 
-  const close = useCallback(() => {
-    setOpen(false);
-    setQuery("");
-    setScope(null);
-  }, [setQuery]);
+  const close = useCallback(
+    (reason: "esc" | "backdrop" | "select" = "esc") => {
+      setOpen(false);
+      setQuery("");
+      setScope(null);
+      if (onTelemetry) {
+        onTelemetry({ kind: "dismiss", reason, at: Date.now() });
+      }
+    },
+    [setQuery, onTelemetry],
+  );
 
   const commitRow = useCallback(
     (row: PaletteRow) => {
       saveRecent(userId, row);
       setRecents(loadRecents(userId));
       setNavigating(true);
+      if (onTelemetry) {
+        onTelemetry({
+          kind: "select",
+          rowKind: row.kind,
+          sourceId: row.sourceId,
+          href: row.href,
+          query,
+          at: Date.now(),
+        });
+      }
       // Brief defer so the surface can run its close animation before
       // navigation steals paint.
       window.setTimeout(() => {
         window.location.assign(row.href);
       }, 30);
     },
-    [userId],
+    [userId, onTelemetry, query],
   );
+
+  // Telemetry: emit a `query` event after each search settles. We
+  // batch via a debounce-of-debounces by waiting for the search hook
+  // to leave loading, then emit if the query has changed since last.
+  const lastQueryEmittedRef = useRef<string>("");
+  useEffect(() => {
+    if (!open || !onTelemetry) return;
+    if (searchLoading) return;
+    if (query === lastQueryEmittedRef.current) return;
+    lastQueryEmittedRef.current = query;
+    onTelemetry({
+      kind: "query",
+      query,
+      resultCount: (searchData?.hits?.length ?? 0) + commands.length + suggestions.length,
+      at: Date.now(),
+    });
+  }, [open, onTelemetry, query, searchLoading, searchData, commands, suggestions]);
 
   // Keyboard surface — Esc / Up / Down / Enter / Tab.
   useEffect(() => {
@@ -289,7 +354,7 @@ export const DashboardCommandPalette = forwardRef<
     function handleKey(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
-        close();
+        close("esc");
         return;
       }
       if (event.key === "ArrowDown") {
@@ -373,7 +438,7 @@ export const DashboardCommandPalette = forwardRef<
       inputRef={inputRef}
       loading={searchLoading || commandsLoading || suggestionsLoading}
       navigating={navigating}
-      onClose={close}
+      onClose={() => close("backdrop")}
       isMobile={isMobile}
     />
   );
@@ -402,7 +467,7 @@ export const DashboardCommandPalette = forwardRef<
         isMobile ? (
           <BottomSheet
             open={open}
-            onClose={close}
+            onClose={() => close("backdrop")}
             tall
             kicker="Search HenryCo"
             title="Find anything"
@@ -410,7 +475,7 @@ export const DashboardCommandPalette = forwardRef<
             {body}
           </BottomSheet>
         ) : (
-          <DesktopDialog onClose={close}>{body}</DesktopDialog>
+          <DesktopDialog onClose={() => close("backdrop")}>{body}</DesktopDialog>
         )
       ) : null}
       <KeyboardCheatSheet
