@@ -5,10 +5,8 @@ import { useRouter } from "next/navigation";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent } from "@henryco/ui";
-import {
-  pickNotificationSignalPreferenceUpdates,
-  useNotificationSignalContext,
-} from "@/lib/notification-signal";
+import { useNotificationPreferences } from "@henryco/dashboard-shell";
+import { signalAudio } from "@/lib/notification-signal/audio";
 
 type Props = {
   preferences: Record<string, boolean | string> | null;
@@ -110,11 +108,14 @@ function Toggle({
 
 export default function PreferencesForm({ preferences }: Props) {
   const locale = useHenryCoLocale();
-  const signalContext = useNotificationSignalContext();
+  const { apply: applyShellPreferences } = useNotificationPreferences();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const [prefs, setPrefs] = useState(() => buildInitialState(preferences));
   const [loading, setLoading] = useState(false);
   const [testingSound, setTestingSound] = useState(false);
+  const [audioUnlocked, setAudioUnlocked] = useState<boolean>(() =>
+    typeof window === "undefined" ? false : signalAudio.isUnlocked(),
+  );
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const router = useRouter();
 
@@ -146,28 +147,20 @@ export default function PreferencesForm({ preferences }: Props) {
         throw new Error("Failed to save");
       }
 
-      signalContext?.updatePreferences(
-        pickNotificationSignalPreferenceUpdates({
-          push_enabled: prefs.push_enabled,
-          notification_care: prefs.notification_care,
-          notification_marketplace: prefs.notification_marketplace,
-          notification_studio: prefs.notification_studio,
-          notification_jobs: prefs.notification_jobs,
-          notification_learn: prefs.notification_learn,
-          notification_property: prefs.notification_property,
-          notification_logistics: prefs.notification_logistics,
-          notification_wallet: prefs.notification_wallet,
-          notification_security: prefs.notification_security,
-          notification_referrals: prefs.notification_referrals,
-          in_app_toast_enabled: prefs.in_app_toast_enabled,
-          notification_sound_enabled: prefs.notification_sound_enabled,
-          notification_vibration_enabled: prefs.notification_vibration_enabled,
-          high_priority_only: prefs.high_priority_only,
-          quiet_hours_enabled: prefs.quiet_hours_enabled,
-          quiet_hours_start: prefs.quiet_hours_start,
-          quiet_hours_end: prefs.quiet_hours_end,
-        }),
-      );
+      // Reflect the shell-shape subset locally so the bell + drawer
+      // pick up the change without waiting for the next polling tick.
+      // Per-division toggles (notification_care, etc.) live on the
+      // legacy POST body above and reach the shell via the next
+      // hydration of `customer_preferences`.
+      applyShellPreferences({
+        in_app_toast_enabled: prefs.in_app_toast_enabled,
+        notification_sound_enabled: prefs.notification_sound_enabled,
+        notification_vibration_enabled: prefs.notification_vibration_enabled,
+        high_priority_only: prefs.high_priority_only,
+        quiet_hours_enabled: prefs.quiet_hours_enabled,
+        quiet_hours_start: prefs.quiet_hours_start,
+        quiet_hours_end: prefs.quiet_hours_end,
+      });
 
       setMessage({ type: "success", text: t("Preferences saved") });
       router.refresh();
@@ -179,18 +172,22 @@ export default function PreferencesForm({ preferences }: Props) {
   };
 
   const handleTestSound = async () => {
-    if (!signalContext || !prefs.notification_sound_enabled || testingSound) return;
+    if (!prefs.notification_sound_enabled || testingSound) return;
 
     setTestingSound(true);
     try {
-      await signalContext.testSound();
+      const unlocked = await signalAudio.unlock();
+      setAudioUnlocked(unlocked);
+      if (unlocked) {
+        signalAudio.playChime("default");
+      }
     } finally {
       setTestingSound(false);
     }
   };
 
   const soundStatusText = prefs.notification_sound_enabled
-    ? signalContext?.audioUnlocked
+    ? audioUnlocked
       ? t("Sound enabled")
       : t("Sound blocked until you interact")
     : null;

@@ -24,14 +24,13 @@ import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 /**
  * V2-DASH-01 G7 + V2-DASH-06 — apps/account shell composition.
  *
- * DASH-6 wires the realtime spine: the SupabaseRealtimeProvider now
- * receives the unified viewer + a browser Supabase client factory,
- * so a SINGLE subscription per session powers the bell, popover,
- * toast viewport, and drawer body. The legacy
- * `apps/account/lib/notification-signal/NotificationSignalProvider` is
- * retained as a thin bridge for back-compat with existing call sites
- * (it now reads through the shell store rather than owning its own
- * Supabase channel).
+ * DASH-6 wires the realtime spine: the SupabaseRealtimeProvider
+ * receives the unified viewer + a browser Supabase client factory, so
+ * a SINGLE subscription per session powers the bell, popover, toast
+ * viewport, and drawer body. The legacy in-app bridge has been removed
+ * — every consumer (NotificationBell, PreferencesForm, lifecycle
+ * controls) reads the shell hooks (`useNotificationSignal`,
+ * `useUnreadCount`, `useNotificationPreferences`) directly.
  *
  * Mount points:
  *   - SupabaseRealtimeProvider  — root, provides spine to everything
