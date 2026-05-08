@@ -34,15 +34,15 @@ export async function collectHomeWidgets(
   viewer: UnifiedViewer,
 ): Promise<ReadonlyArray<AnnotatedHomeWidget>> {
   const settled = await Promise.allSettled(
-    modules.map(async (module) => {
-      const widgets = await module.getHomeWidgets(viewer);
-      return widgets.map<AnnotatedHomeWidget>((w) => ({ ...w, module }));
+    modules.map(async (mod) => {
+      const widgets = await mod.getHomeWidgets(viewer);
+      return widgets.map<AnnotatedHomeWidget>((w) => ({ ...w, module: mod }));
     }),
   );
   const flat: AnnotatedHomeWidget[] = [];
   for (let i = 0; i < settled.length; i++) {
     const r = settled[i];
-    const module = modules[i];
+    const mod = modules[i];
     if (r && r.status === "fulfilled") {
       flat.push(...r.value);
     } else if (r && r.status === "rejected") {
@@ -51,7 +51,7 @@ export async function collectHomeWidgets(
       // sick. Log at warn with the module slug so the alert is
       // routable.
       widgetLogger.warn("module_widgets_rejected", {
-        moduleSlug: module?.slug,
+        moduleSlug: mod?.slug,
         viewerId: viewer.user.id,
         error: r.reason instanceof Error ? r.reason.message : String(r.reason),
       });

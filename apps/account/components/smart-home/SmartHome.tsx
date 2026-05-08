@@ -196,11 +196,11 @@ async function collectEmptyTeachings(
   }>
 > {
   const settled = await Promise.allSettled(
-    modules.map(async (module) => {
-      if (!module.getEmptyTeaching) return null;
-      const teaching = await module.getEmptyTeaching(viewer);
+    modules.map(async (mod) => {
+      if (!mod.getEmptyTeaching) return null;
+      const teaching = await mod.getEmptyTeaching(viewer);
       if (!teaching) return null;
-      return { module, teaching };
+      return { module: mod, teaching };
     }),
   );
   const out: Array<{
@@ -209,12 +209,12 @@ async function collectEmptyTeachings(
   }> = [];
   for (let i = 0; i < settled.length; i++) {
     const r = settled[i];
-    const module = modules[i];
+    const mod = modules[i];
     if (r && r.status === "fulfilled" && r.value) {
       out.push(r.value);
     } else if (r && r.status === "rejected") {
       smartHomeLogger.warn("module_empty_teaching_rejected", {
-        moduleSlug: module?.slug,
+        moduleSlug: mod?.slug,
         viewerId: viewer.user.id,
         error: r.reason instanceof Error ? r.reason.message : String(r.reason),
       });
