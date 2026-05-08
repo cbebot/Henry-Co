@@ -54,6 +54,12 @@ export default async function ClientProposalsPage() {
     return order(a.status) - order(b.status);
   });
 
+  // Server component — Date.now() is request-deterministic for this render.
+  // Captured once and passed down so the row closure stays pure
+  // (react-hooks/purity).
+  // eslint-disable-next-line react-hooks/purity
+  const renderedAt = Date.now();
+
   return (
     <div className="space-y-7">
       <Header />
@@ -62,7 +68,7 @@ export default async function ClientProposalsPage() {
         {ordered.map((proposal) => {
           const tone = STATUS_TONE[proposal.status] ?? "var(--studio-ink-soft)";
           const expired = proposal.validUntil
-            ? Date.parse(proposal.validUntil) < Date.now()
+            ? Date.parse(proposal.validUntil) < renderedAt
             : false;
           return (
             <article

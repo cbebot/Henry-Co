@@ -109,7 +109,7 @@ function Header() {
         Reviews
       </h1>
       <p className="mt-2 max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
-        Feedback you've published after a delivery. They stay tied to the
+        Feedback you&apos;ve published after a delivery. They stay tied to the
         engagement so the receipt is always easy to find.
       </p>
     </header>
