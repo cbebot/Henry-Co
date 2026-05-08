@@ -1,6 +1,31 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/workspace-shell/src/styles.css";
 @source "../../../packages/ui/src";
+@source "../../../packages/workspace-shell/src";
+
+/* ──────────────────────────────────────────────────────────────────
+   Workspace-shell token mapping for the studio division.
+
+   The shared @henryco/workspace-shell engine reads its chrome from
+   --ws-* variables. This block redirects them onto the studio brand
+   tokens so the engine renders in studio colors without a single
+   hard-coded value.
+   ────────────────────────────────────────────────────────────────── */
+
+[data-workspace-division="studio"] {
+  --ws-bg: var(--studio-bg);
+  --ws-bg-soft: rgba(255, 255, 255, 0.025);
+  --ws-bg-elev: rgba(255, 255, 255, 0.04);
+  --ws-ink: var(--studio-ink);
+  --ws-ink-soft: var(--studio-ink-soft);
+  --ws-ink-mute: rgba(245, 244, 238, 0.45);
+  --ws-line: var(--studio-line);
+  --ws-line-strong: var(--studio-line-strong);
+  --ws-accent: var(--studio-signal);
+  --ws-accent-soft: rgba(151, 244, 243, 0.16);
+  --ws-signal: var(--studio-signal);
+}
 
 :root {
   /* Studio inherits the canonical HenryCo brand stack — see comment

@@ -1,4 +1,10 @@
 import { headers } from "next/headers";
+import { Sparkles } from "lucide-react";
+import {
+  WorkspaceShell,
+  type WorkspaceBrand,
+  type WorkspaceViewer,
+} from "@henryco/workspace-shell";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { resolveViewerContext } from "@/lib/messaging/queries";
 import { NotificationToast } from "@/components/messaging";
@@ -9,9 +15,7 @@ import {
   unreadMessageCount,
 } from "@/lib/portal/data";
 import { getStudioAccountUrl } from "@/lib/studio/links";
-import { PortalSidebar } from "@/components/portal/sidebar";
-import { PortalMobileHeader } from "@/components/portal/mobile-header";
-import { PortalBottomNav } from "@/components/portal/bottom-nav";
+import { portalNavItems, portalMobileNavItems } from "@/lib/portal/navigation";
 
 /** Authenticated portal — never serve a cached unauthenticated render
  * (CHROME-01A FIX 15). All client-portal pages re-evaluate the auth
@@ -19,17 +23,21 @@ import { PortalBottomNav } from "@/components/portal/bottom-nav";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+/** Routes that opt out of the standard chrome — currently only the
+ * messages inbox, which renders a full-bleed thread layout. */
 const FULL_TAKEOVER_PREFIXES = ["/client/messages"];
 
+const STUDIO_BRAND: WorkspaceBrand = {
+  shortName: "Studio portal",
+  kicker: "HenryCo",
+  href: "/client",
+  icon: Sparkles,
+};
+
 /**
- * /client workspace layout — wraps every client-portal page in the
- * premium portal shell (desktop sidebar + mobile header + bottom nav).
- * One page deliberately opts out: /client/messages renders a full-bleed
- * inbox-and-thread takeover that would only be cluttered by chrome.
- *
- * The shell pre-loads the viewer's portal snapshot once at the layout
- * level so the sidebar can show live unread/outstanding/attention
- * counts without each page re-fetching them.
+ * /client workspace layout — composes the shared @henryco/workspace-shell
+ * engine. Auth + data fetching stay here in the host; the engine handles
+ * sidebar / mobile-header / bottom-nav / takeover branching from typed props.
  */
 export default async function StudioClientLayout({
   children,
@@ -38,26 +46,7 @@ export default async function StudioClientLayout({
 }) {
   const viewer = await requireClientPortalViewer("/client");
   const subscriptions = await resolveViewerProjectSubscriptions();
-
   const pathname = await currentPathname();
-  const isTakeover = FULL_TAKEOVER_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-
-  if (isTakeover) {
-    return (
-      <>
-        {children}
-        {subscriptions.viewerId ? (
-          <NotificationToast
-            viewerId={subscriptions.viewerId}
-            projectSubscriptions={subscriptions.projects}
-            hrefTemplate="/client/projects/{projectId}/messages"
-          />
-        ) : null}
-      </>
-    );
-  }
 
   const snapshot = await getClientPortalSnapshot(viewer);
   const attentionCount = buildAttentionItems(snapshot).length;
@@ -67,29 +56,36 @@ export default async function StudioClientLayout({
   ).length;
   const accountUrl = getStudioAccountUrl();
 
-  return (
-    <div className="flex min-h-[100dvh] bg-[var(--studio-bg)] text-[var(--studio-ink)]">
-      <PortalSidebar
-        viewer={viewer}
-        unreadCount={unreadCount}
-        outstandingInvoices={outstandingInvoices}
-        attentionCount={attentionCount}
-        accountUrl={accountUrl}
-      />
+  const shellViewer: WorkspaceViewer = {
+    fullName: viewer.fullName,
+    email: viewer.email,
+    avatarUrl: viewer.avatarUrl,
+  };
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <PortalMobileHeader viewer={viewer} attentionCount={attentionCount} />
-        <main
-          id="henryco-main"
-          className="flex-1 px-4 pb-24 pt-5 sm:px-6 lg:px-10 lg:pb-12 lg:pt-10"
-        >
-          <div className="mx-auto w-full max-w-5xl">{children}</div>
-        </main>
-        <PortalBottomNav
-          unreadCount={unreadCount}
-          outstandingInvoices={outstandingInvoices}
-        />
-      </div>
+  const badges = {
+    "/client/messages": unreadCount,
+    "/client/payments": outstandingInvoices,
+    "/client/notifications": attentionCount,
+  };
+
+  return (
+    <>
+      <WorkspaceShell
+        division="studio"
+        brand={STUDIO_BRAND}
+        viewer={shellViewer}
+        navigation={portalNavItems}
+        mobileNavigation={portalMobileNavItems}
+        badges={badges}
+        attentionCount={attentionCount}
+        notificationsHref="/client/notifications"
+        profileHref="/client/profile"
+        accountSettingsUrl={accountUrl}
+        takeoverPrefixes={FULL_TAKEOVER_PREFIXES}
+        pathname={pathname}
+      >
+        {children}
+      </WorkspaceShell>
 
       {subscriptions.viewerId ? (
         <NotificationToast
@@ -98,21 +94,19 @@ export default async function StudioClientLayout({
           hrefTemplate="/client/projects/{projectId}/messages"
         />
       ) : null}
-    </div>
+    </>
   );
 }
 
 async function currentPathname(): Promise<string> {
-  // next/headers exposes the current request path via the
-  // "x-invoke-path" or "next-url" header in app-router server components.
-  // We try a couple of common locations and fall back gracefully so the
-  // takeover detection never breaks the render.
+  // proxy.ts stamps x-pathname on every request; we also fall back to
+  // the canonical Next.js header keys defensively.
   try {
     const headerStore = await headers();
     return (
+      headerStore.get("x-pathname") ||
       headerStore.get("x-invoke-path") ||
       headerStore.get("next-url") ||
-      headerStore.get("x-pathname") ||
       ""
     );
   } catch {
@@ -140,12 +134,10 @@ async function resolveViewerProjectSubscriptions(): Promise<{
     }
     return {
       viewerId: viewer.userId,
-      projects: (result.data as Array<{ id: string; title: string }>).map(
-        (row) => ({
-          projectId: row.id,
-          projectTitle: row.title,
-        }),
-      ),
+      projects: (result.data as Array<{ id: string; title: string }>).map((row) => ({
+        projectId: row.id,
+        projectTitle: row.title,
+      })),
     };
   } catch {
     return { viewerId: null, projects: [] };
