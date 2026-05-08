@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, FolderKanban, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowRight, FolderKanban, Mail, Phone } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 
@@ -22,7 +22,6 @@ export default async function ContactPage() {
   const catalog = await getStudioCatalog();
   const supportEmail = resolveStudioContactEmail(catalog.platform.supportEmail);
   const supportPhone = catalog.platform.supportPhone || studioDivision.supportPhone;
-  const headquarters = catalog.platform.headquarters || studioDivision.headquarters;
 
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[64rem] px-5 py-12 sm:px-8">
@@ -66,17 +65,6 @@ export default async function ContactPage() {
               </a>
             </dd>
           </div>
-          {headquarters ? (
-            <div className="flex items-baseline gap-3 py-4">
-              <MapPin className="h-3.5 w-3.5 text-[var(--studio-signal)]" />
-              <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
-                Headquarters
-              </dt>
-              <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
-                {headquarters}
-              </dd>
-            </div>
-          ) : null}
         </dl>
 
         <div className="mt-8 flex flex-wrap gap-3">
