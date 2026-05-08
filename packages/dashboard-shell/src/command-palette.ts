@@ -8,6 +8,7 @@
 
 import type { ReactNode } from "react";
 import type { ModuleSlug } from "./register";
+import type { StaffModuleSlug } from "./staff-register";
 
 /**
  * One palette entry. The palette UI groups entries by `groupLabel`
@@ -22,8 +23,8 @@ export type PaletteEntry = {
   /** Stable id within the module — used as the React key. */
   id: string;
 
-  /** Module that contributed this entry. */
-  source: ModuleSlug;
+  /** Module that contributed this entry. Track A or Track C slug. */
+  source: ModuleSlug | StaffModuleSlug;
 
   /** The visible label. */
   label: string;

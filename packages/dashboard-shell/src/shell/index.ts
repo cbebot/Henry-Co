@@ -3,6 +3,14 @@
  */
 export { IdentityBar, type IdentityBarProps } from "./identity-bar";
 export { WorkspaceRail, type WorkspaceRailProps } from "./workspace-rail";
+export {
+  StaffShell,
+  StaffRailGroup,
+  StaffRailEntry,
+  type StaffShellProps,
+  type StaffRailGroupProps,
+  type StaffRailEntryProps,
+} from "./staff-shell";
 export { WorkspaceSlot, type WorkspaceSlotProps } from "./workspace-slot";
 export { ContextDrawer, type ContextDrawerProps } from "./context-drawer";
 export {

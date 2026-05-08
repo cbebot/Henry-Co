@@ -1,35 +1,45 @@
 "use client";
 
-import { AlertTriangle, RotateCcw } from "lucide-react";
-
-export default function WorkspaceError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+/**
+ * (workspace) error boundary — DASH-9 G9 minimal stub.
+ *
+ * Replaced V1 chrome-aware error UI. The remaining DEEP-LINK routes
+ * (newsletter editor) inherit this minimal boundary.
+ */
+export default function WorkspaceError({ reset }: { error: Error; reset: () => void }) {
   return (
-    <div className="staff-fade-in flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--staff-critical-soft)]">
-        <AlertTriangle className="h-8 w-8 text-[var(--staff-critical)]" />
-      </div>
-      <h2 className="text-xl font-bold text-[var(--staff-ink)]">Something went wrong</h2>
-      <p className="mt-2 max-w-md text-sm leading-relaxed text-[var(--staff-muted)]">
-        An unexpected error occurred while loading this page. This has been logged for investigation.
+    <div style={{ padding: "1.5rem", maxWidth: "640px" }}>
+      <h1 style={{ fontSize: "1.25rem", fontWeight: 600 }}>Something went wrong.</h1>
+      <p style={{ marginTop: "0.5rem", color: "rgba(10,10,10,0.65)" }}>
+        Try again, or return to the operator briefing.
       </p>
-      {error.digest && (
-        <p className="mt-2 text-xs text-[var(--staff-muted)]">
-          Reference: {error.digest}
-        </p>
-      )}
-      <button
-        onClick={reset}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--staff-gold)] px-5 py-2.5 text-sm font-semibold text-[var(--staff-bg)] transition-all hover:brightness-110"
-      >
-        <RotateCcw size={16} />
-        Try again
-      </button>
+      <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
+        <button
+          type="button"
+          onClick={reset}
+          style={{
+            padding: "0.5rem 0.875rem",
+            borderRadius: "0.5rem",
+            border: "1px solid rgba(10,10,10,0.12)",
+            background: "transparent",
+            cursor: "pointer",
+          }}
+        >
+          Retry
+        </button>
+        <a
+          href="/modules/staff-overview"
+          style={{
+            padding: "0.5rem 0.875rem",
+            borderRadius: "0.5rem",
+            background: "var(--hc-accent, #C9A227)",
+            color: "#0A0A0A",
+            textDecoration: "none",
+          }}
+        >
+          Open overview
+        </a>
+      </div>
     </div>
   );
 }

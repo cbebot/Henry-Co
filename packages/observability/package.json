@@ -8,6 +8,7 @@
     "./logger": "./src/logger.ts",
     "./events": "./src/events.ts",
     "./redaction": "./src/redaction.ts",
+    "./audit-log": "./src/audit-log.ts",
     "./sentry/server": "./src/sentry/server.ts",
     "./sentry/client": "./src/sentry/client.ts",
     "./sentry/instrumentation": "./src/sentry/instrumentation.ts"

@@ -15,6 +15,7 @@
 
 import type { ReactNode } from "react";
 import type { ModuleSlug } from "./register";
+import type { StaffModuleSlug } from "./staff-register";
 
 /**
  * One category declaration.
@@ -31,8 +32,8 @@ export type NotificationCategory = {
   /** Human-readable label shown in the drawer. */
   label: string;
 
-  /** Module that owns this category. */
-  source: ModuleSlug;
+  /** Module that owns this category. Track A or Track C slug. */
+  source: ModuleSlug | StaffModuleSlug;
 
   /** Lucide icon for the drawer item. */
   icon?: ReactNode;

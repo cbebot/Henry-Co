@@ -8,7 +8,8 @@
     "./server": "./src/server.ts",
     "./types": "./src/types.ts",
     "./cookies": "./src/cookies.ts",
-    "./viewer": "./src/viewer.ts"
+    "./viewer": "./src/viewer.ts",
+    "./staff": "./src/staff.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

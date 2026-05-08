@@ -25,6 +25,34 @@ export { TypeaheadGrid, type TypeaheadGridProps } from "./typeahead-grid";
 export { BottomSheet, type BottomSheetProps } from "./bottom-sheet";
 export { Drawer, type DrawerProps } from "./drawer";
 
+// Track C (DASH-9) primitives — staff queue surfaces.
+export { SLAChip, type SLAChipProps, type SLABucket } from "./sla-chip";
+export {
+  BulkActionBar,
+  type BulkAction,
+  type BulkActionBarProps,
+  type BulkActionBarHandle,
+} from "./bulk-action-bar";
+export {
+  AdvancedFilterBar,
+  summarizeActiveFilters,
+  type AdvancedFilterBarProps,
+  type FilterField,
+  type FilterValue,
+  type FilterValueMap,
+} from "./advanced-filter-bar";
+export {
+  BulkExportButton,
+  type BulkExportButtonProps,
+  type BulkExportFormat,
+} from "./bulk-export-button";
+export {
+  QueueTable,
+  type QueueTableProps,
+  type QueueRow,
+  type QueueColumn,
+} from "./queue-table";
+
 // Notifications (DASH-6)
 export {
   NotificationCard,

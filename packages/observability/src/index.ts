@@ -49,3 +49,11 @@ export {
 } from "./sentry/client";
 
 export { registerHenryCoInstrumentation } from "./sentry/instrumentation";
+
+// Track C (DASH-9) — audit log writer.
+export {
+  writeAuditLog,
+  writeBulkAuditLog,
+  type AuditLogInput,
+  type AuditLogSupabaseClient,
+} from "./audit-log";
