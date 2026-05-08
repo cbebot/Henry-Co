@@ -11,8 +11,13 @@ import {
   type AppLocale,
 } from "@henryco/i18n";
 import { ChevronRight } from "lucide-react";
+import {
+  useNotificationSignal,
+  useRealtime,
+  useUnreadCount,
+  type RealtimeSignal,
+} from "@henryco/dashboard-shell";
 import { timeAgoLocalized } from "@/lib/format";
-import { useNotificationSignalContext, type SignalNotification } from "@/lib/notification-signal";
 import { HenryCoBell, MarkReadIcon, ArchiveIcon, DeleteIcon, EmptyStateGlyph } from "./icons/HenryCoIcons";
 import { SwipeableNotificationCard } from "./SwipeableNotificationCard";
 import {
@@ -24,12 +29,35 @@ import {
   type SignalSeverity,
 } from "./severity-style";
 
-type BellNotification = SignalNotification;
+/**
+ * Customer bell + popover. DASH-6: consumes the shell realtime spine
+ * directly via `useNotificationSignal()` / `useUnreadCount()` /
+ * `useRealtime()` from `@henryco/dashboard-shell`. The legacy
+ * `useNotificationSignalContext()` bridge is gone — this component
+ * reads through the single shell-level subscription (anti-pattern #9).
+ */
+type BellSource = NonNullable<RealtimeSignal["source"]>;
+type BellNotification = Omit<RealtimeSignal, "source"> & { source: BellSource };
 type BellAction = "read" | "unread" | "archive" | "delete";
 
 const LONG_PRESS_MS = 400;
 const BADGE_PULSE_DEBOUNCE_MS = 800;
 const EMPTY_NOTIFICATIONS: BellNotification[] = [];
+
+function withFallbackSource(signal: RealtimeSignal): BellNotification {
+  if (signal.source) {
+    return signal as BellNotification;
+  }
+  return {
+    ...signal,
+    source: {
+      key: signal.division ?? "system",
+      label: signal.division ?? "HenryCo",
+      accent: "#111827",
+      logoUrl: null,
+    },
+  };
+}
 
 function SourceMark({
   notification,
@@ -70,12 +98,11 @@ function useCardMeta(notifications: BellNotification[], locale: AppLocale) {
     return notifications.map((notification) => {
       const severityStyle = resolveSeverity(notification.priority, notification.category);
       const sourceLabel = translateSurfaceLabel(locale, notification.source.label);
-      const rawDestination = notification.action_url || notification.message_href || "/notifications";
+      const rawDestination =
+        notification.action_url || notification.message_href || "/notifications";
       const safeDestination = isSafeNotificationDeepLink(rawDestination)
         ? rawDestination
         : "/notifications";
-      // notification.source.key is the division identifier resolved by the
-      // signal endpoint via getDivisionBrand. Map it onto the accent token.
       const divisionVar = divisionAccentVar(notification.source.key);
       return {
         notification,
@@ -95,22 +122,25 @@ export default function NotificationBell({
   align?: "left" | "right";
   buttonClassName?: string;
 }) {
-  const notificationSignal = useNotificationSignalContext();
+  const { signals, loading, error } = useNotificationSignal({
+    audience: "customer",
+    visibleOnly: true,
+    limit: 12,
+  });
+  const unreadCount = useUnreadCount("customer");
+  const { markReadLocally, refresh } = useRealtime();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  const unreadCount = notificationSignal?.unreadCount ?? 0;
-  const items = notificationSignal?.recentNotifications ?? EMPTY_NOTIFICATIONS;
-  const loading = notificationSignal?.loading ?? false;
-  const error = notificationSignal?.error;
+  const items = useMemo<BellNotification[]>(
+    () => (signals.length === 0 ? EMPTY_NOTIFICATIONS : signals.map(withFallbackSource)),
+    [signals],
+  );
   const cardMeta = useCardMeta(items, locale);
 
-  // Track the highest-severity unread for the badge color and bell alert
-  // state. Recomputes on every signal change. unread = items where is_read
-  // is false (the signal endpoint already filters but we double-check).
   const highestUnreadSeverity = useMemo<SignalSeverity | null>(
     () => highestSeverity(items),
     [items],
@@ -136,8 +166,7 @@ export default function NotificationBell({
   }, [unreadCount]);
 
   // Bell alert state plays once when there is an unread backlog, so the
-  // user notices the bell after a fresh page load. Derived state captured
-  // at lazy-init time, then transitioned via dispatch (no setState-in-effect).
+  // user notices the bell after a fresh page load.
   const [alertPlayed, markAlertPlayed] = useReducer(() => true, false);
   useEffect(() => {
     if (alertPlayed) return;
@@ -146,8 +175,8 @@ export default function NotificationBell({
 
   useEffect(() => {
     if (!open) return;
-    void notificationSignal?.refreshFeed();
-  }, [notificationSignal, open]);
+    void refresh();
+  }, [open, refresh]);
 
   useEffect(() => {
     if (!open) return;
@@ -178,10 +207,6 @@ export default function NotificationBell({
   const navigateSafely = useCallback(
     (destination: string) => {
       if (!isSafeNotificationDeepLink(destination)) {
-        // Hard guard: if a malicious or malformed deepLink reached this
-        // far, fall back to the inbox rather than navigating to an
-        // off-platform URL. The publisher already validates, but
-        // defense-in-depth.
         router.push("/notifications");
         return;
       }
@@ -197,7 +222,7 @@ export default function NotificationBell({
   const handleItemActivate = useCallback(
     async (item: BellNotification, destination: string) => {
       if (!item.is_read) {
-        notificationSignal?.markNotificationReadLocally(item.id);
+        markReadLocally(item.id);
         fetch(`/api/notifications/${item.id}/read`, { method: "POST" }).catch(
           () => undefined,
         );
@@ -205,15 +230,13 @@ export default function NotificationBell({
       setOpen(false);
       navigateSafely(destination);
     },
-    [notificationSignal, navigateSafely],
+    [markReadLocally, navigateSafely],
   );
 
   const performInlineAction = useCallback(
     async (item: BellNotification, action: BellAction): Promise<void> => {
-      // Optimistic local update where we can; server roundtrip drives the
-      // canonical state via refreshFeed afterwards.
       if (action === "read") {
-        notificationSignal?.markNotificationReadLocally(item.id);
+        markReadLocally(item.id);
       }
 
       const url =
@@ -229,19 +252,16 @@ export default function NotificationBell({
       try {
         const res = await fetch(url, { method, credentials: "same-origin" });
         if (!res.ok) {
-          // Surface a soft inline rollback by re-fetching the canonical
-          // feed; the server is the source of truth and the user's
-          // optimistic state will reconcile.
-          await notificationSignal?.refreshFeed();
+          await refresh();
           return;
         }
       } catch {
-        await notificationSignal?.refreshFeed();
+        await refresh();
         return;
       }
-      await notificationSignal?.refreshFeed();
+      await refresh();
     },
-    [notificationSignal],
+    [markReadLocally, refresh],
   );
 
   const unreadSummary =
@@ -257,9 +277,10 @@ export default function NotificationBell({
       : t("You are caught up for now");
 
   const displayCount = unreadCount > 9 ? "9+" : String(unreadCount);
-  const bellAriaLabel = unreadCount > 0
-    ? `${t("Open notifications")} — ${unreadCount} ${unreadCount === 1 ? "unread" : "unread"}`
-    : t("Open notifications");
+  const bellAriaLabel =
+    unreadCount > 0
+      ? `${t("Open notifications")} — ${unreadCount} ${unreadCount === 1 ? "unread" : "unread"}`
+      : t("Open notifications");
 
   return (
     <div className="relative" ref={containerRef}>
@@ -313,7 +334,7 @@ export default function NotificationBell({
           </div>
 
           <div className="max-h-[24rem] overflow-y-auto px-2 py-2 acct-scrollbar">
-            {loading ? (
+            {loading && items.length === 0 ? (
               <div className="space-y-2 p-2">
                 {Array.from({ length: 4 }).map((_, index) => (
                   <div key={index} className="flex animate-pulse gap-3 rounded-2xl bg-[var(--acct-surface)] px-3 py-3">
@@ -392,10 +413,7 @@ export default function NotificationBell({
 
 /**
  * One popover card with hover/focus reveal of inline actions and mobile
- * long-press support. The card itself is a button (activates → marks
- * read + navigates); the inline actions are nested buttons. Pointer
- * events are stopped on the inline buttons so the parent activate path
- * does not fire.
+ * long-press support.
  */
 function PopoverCard({
   notification,

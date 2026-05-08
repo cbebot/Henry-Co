@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Bell } from "lucide-react";
 import { Drawer } from "../components/drawer";
 import { typeStyle } from "../tokens/type";
@@ -8,30 +8,59 @@ import { CSS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
 import { focusVisibleStyle } from "../tokens/focus";
 import { Badge } from "../components/badge";
+import { useRealtimeOptional } from "./supabase-realtime-provider";
 
 /**
  * ContextDrawer — the right-edge notifications + signal-feed panel.
  *
- * DASH-1 ships the trigger button + empty drawer placeholder.
- * DASH-6 fills the drawer with the realtime signal feed
- * (`get_signal_feed` SQL ranks; the SupabaseRealtimeProvider invalidates
- * caches on incoming notifications).
+ * DASH-6 wires it to the shell realtime spine:
+ *   - The trigger button reads the live customer-audience unread count
+ *     via `useRealtimeOptional()` so the badge updates on every realtime
+ *     event without the host needing to wire it.
+ *   - The body is provided as `children` — apps pass
+ *     `<NotificationsDrawerBody>` from
+ *     `@henryco/dashboard-shell/components/notifications`.
+ *   - On narrow viewports the drawer becomes a bottom sheet via the
+ *     underlying `<Drawer>` primitive.
  *
- * The trigger button is rendered in the IdentityBar's trailing slot.
- * This component encapsulates both the trigger and the drawer body so
- * the IdentityBar consumer doesn't need to manage open-state.
+ * `useRealtimeOptional()` is used so the drawer can render outside the
+ * shell during transient unauthenticated states without crashing.
  */
 export type ContextDrawerProps = {
-  /** Optional initial unread count — overridden once Realtime fan-out
-   * lands in DASH-6. */
+  /**
+   * Override the unread count read from the spine. Useful for the SSR
+   * placeholder during hydration. The live spine takes over on mount.
+   */
   unreadCount?: number;
-  /** Optional drawer body — DASH-6 will pass the signal feed here.
-   * DASH-1's default placeholder explains the not-yet-wired state. */
+  /**
+   * Body content. Passed via children so the package stays composable
+   * across apps that render their own preferences mix.
+   */
   children?: ReactNode;
+  /** Optional translation function for ARIA labels. */
+  t?: (key: string) => string;
 };
 
-export function ContextDrawer({ unreadCount = 0, children }: ContextDrawerProps) {
+export function ContextDrawer({
+  unreadCount: unreadOverride,
+  children,
+  t = (s) => s,
+}: ContextDrawerProps) {
+  const realtime = useRealtimeOptional();
+  const liveUnread = realtime?.customerUnread ?? 0;
+  const unreadCount = unreadOverride ?? liveUnread;
   const [open, setOpen] = useState(false);
+
+  // Keyboard escape — fallback in case the Drawer primitive's listener
+  // doesn't bind under a hydration race.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <>
@@ -40,9 +69,11 @@ export function ContextDrawer({ unreadCount = 0, children }: ContextDrawerProps)
         onClick={() => setOpen(true)}
         aria-label={
           unreadCount > 0
-            ? `Notifications (${unreadCount} unread)`
-            : "Notifications"
+            ? `${t("Notifications")} — ${unreadCount} ${t("unread")}`
+            : t("Notifications")
         }
+        aria-expanded={open}
+        aria-haspopup="dialog"
         style={{
           position: "relative",
           display: "inline-flex",
@@ -61,6 +92,7 @@ export function ContextDrawer({ unreadCount = 0, children }: ContextDrawerProps)
         <Bell size={16} aria-hidden />
         {unreadCount > 0 ? (
           <span
+            aria-hidden
             style={{ position: "absolute", top: "-0.4rem", right: "-0.4rem" }}
           >
             <Badge value={unreadCount} tone="urgent" />
@@ -71,8 +103,8 @@ export function ContextDrawer({ unreadCount = 0, children }: ContextDrawerProps)
       <Drawer
         open={open}
         onClose={() => setOpen(false)}
-        kicker="Activity"
-        title="Signal feed"
+        kicker={t("Activity")}
+        title={t("Signal feed")}
       >
         {children ?? (
           <div style={{ padding: "1.5rem 0", textAlign: "center" }}>
@@ -83,7 +115,7 @@ export function ContextDrawer({ unreadCount = 0, children }: ContextDrawerProps)
                 marginBottom: "0.5rem",
               }}
             >
-              Notifications coming online…
+              {t("Notifications coming online…")}
             </p>
             <p
               style={{
@@ -91,10 +123,9 @@ export function ContextDrawer({ unreadCount = 0, children }: ContextDrawerProps)
                 color: `var(${CSS_VARS.inkMuted})`,
               }}
             >
-              {/* TODO V2-COPY-01: review */}
-              Realtime fan-out wires in DASH-6. Until then, the drawer is the
-              shell-level mount point — your existing notification feed at
-              <code> /notifications </code>continues to surface canonical state.
+              {t(
+                "Drawer body not yet provided — pass <NotificationsDrawerBody> as children to populate.",
+              )}
             </p>
           </div>
         )}
