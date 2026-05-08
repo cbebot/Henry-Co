@@ -37,49 +37,91 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
   const hasLifecycle = (lifecycle?.actionables.length ?? 0) > 0;
   if (!hasSignals && !hasLifecycle) return null;
 
+  const securityCount = attentionSignals.filter((s) => s.priority === "security").length;
+  const urgentCount = attentionSignals.filter((s) => s.priority === "urgent").length;
+  const lifecycleBlocking = lifecycle
+    ? lifecycle.actionables.filter((a) => a.priority === "critical").length
+    : 0;
+
   return (
     <Panel tone="raised">
       <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-        <header style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <span
-            aria-hidden
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "2rem",
-              height: "2rem",
-              borderRadius: "0.6rem",
-              backgroundColor: "rgba(185, 28, 28, 0.10)",
-              color: "#B91C1C",
-            }}
-          >
-            <AlertOctagon size={16} aria-hidden />
-          </span>
-          <div>
-            <p
+        <header
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "0.75rem",
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <span
+              aria-hidden
               style={{
-                fontSize: "0.7rem",
-                fontWeight: 600,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "var(--acct-muted, #6B7280)",
-                margin: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "2rem",
+                height: "2rem",
+                borderRadius: "0.6rem",
+                backgroundColor: "rgba(185, 28, 28, 0.10)",
+                color: "#B91C1C",
               }}
             >
-              Attention
-            </p>
-            <h2
-              style={{
-                fontSize: "1.1rem",
-                fontWeight: 600,
-                color: "var(--acct-ink, #0F172A)",
-                margin: 0,
-                marginTop: "0.15rem",
-              }}
-            >
-              Open threads ranked by what blocks first
-            </h2>
+              <AlertOctagon size={16} aria-hidden />
+            </span>
+            <div>
+              <p
+                style={{
+                  fontSize: "0.7rem",
+                  fontWeight: 600,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "var(--acct-muted, #6B7280)",
+                  margin: 0,
+                }}
+              >
+                Attention
+              </p>
+              <h2
+                style={{
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                  color: "var(--acct-ink, #0F172A)",
+                  margin: 0,
+                  marginTop: "0.15rem",
+                }}
+              >
+                Open threads ranked by what blocks first
+              </h2>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+            {securityCount > 0 ? (
+              <PriorityChip
+                count={securityCount}
+                label="security"
+                background="rgba(185, 28, 28, 0.10)"
+                color="#B91C1C"
+              />
+            ) : null}
+            {urgentCount > 0 ? (
+              <PriorityChip
+                count={urgentCount}
+                label="urgent"
+                background="rgba(217, 119, 6, 0.12)"
+                color="#B45309"
+              />
+            ) : null}
+            {lifecycleBlocking > 0 ? (
+              <PriorityChip
+                count={lifecycleBlocking}
+                label="blocking"
+                background="rgba(124, 58, 237, 0.12)"
+                color="#6D28D9"
+              />
+            ) : null}
           </div>
         </header>
 
@@ -125,6 +167,39 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
         ) : null}
       </div>
     </Panel>
+  );
+}
+
+function PriorityChip({
+  count,
+  label,
+  background,
+  color,
+}: {
+  count: number;
+  label: string;
+  background: string;
+  color: string;
+}) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "0.35rem",
+        padding: "0.25rem 0.6rem",
+        borderRadius: "999px",
+        backgroundColor: background,
+        color,
+        fontSize: "0.7rem",
+        fontWeight: 600,
+        letterSpacing: "0.04em",
+        textTransform: "uppercase",
+      }}
+    >
+      <span style={{ fontVariantNumeric: "tabular-nums" }}>{count}</span>
+      <span>{label}</span>
+    </span>
   );
 }
 

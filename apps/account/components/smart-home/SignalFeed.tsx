@@ -12,6 +12,11 @@ import { divisionColor, divisionLabel } from "@/lib/format";
  * a parallel acknowledgement channel for those, so they shouldn't
  * compete visually with truly fresh signals (audit §A.8).
  *
+ * Recency grouping: signals are bucketed by created_at into "Today /
+ * Yesterday / Earlier this week / Older". Each bucket renders as a
+ * sub-section so the visual hierarchy carries time without forcing
+ * the user to read the timestamp on every row.
+ *
  * Pagination uses cursor search-params:
  *   /?cursor.score=<n>&cursor.created_at=<iso>
  *
@@ -30,6 +35,20 @@ export type SignalFeedProps = {
   hideEmpty?: boolean;
 };
 
+type RecencyBucket = "today" | "yesterday" | "this-week" | "earlier";
+const BUCKET_LABEL: Record<RecencyBucket, string> = {
+  today: "Today",
+  yesterday: "Yesterday",
+  "this-week": "Earlier this week",
+  earlier: "Earlier",
+};
+const BUCKET_ORDER: ReadonlyArray<RecencyBucket> = [
+  "today",
+  "yesterday",
+  "this-week",
+  "earlier",
+];
+
 export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFeedProps) {
   if (items.length === 0) {
     if (hideEmpty) return null;
@@ -47,6 +66,8 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
   const nextHref = nextCursor
     ? `/?cursor.score=${encodeURIComponent(String(nextCursor.score))}&cursor.created_at=${encodeURIComponent(nextCursor.createdAt)}`
     : null;
+
+  const grouped = groupByRecency(items);
 
   return (
     <Section
@@ -69,21 +90,59 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
         </Link>
       }
     >
-      <div style={{ display: "grid", gap: "0.75rem" }}>
-        {items.map((signal) => (
-          <SignalCard
-            key={signal.id}
-            kicker={divisionLabel(signal.division)}
-            title={signal.title}
-            body={signal.body ?? undefined}
-            priority={mapPriority(signal.priority)}
-            accent={divisionColor(signal.division)}
-            timestamp={formatRelative(signal.createdAt)}
-            href={signal.actionUrl ?? "/notifications"}
-            read={signal.emailDispatched}
-            action={signal.emailDispatched ? { label: "Emailed", tone: "neutral" } : undefined}
-          />
-        ))}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+        {BUCKET_ORDER.map((bucket) => {
+          const rows = grouped[bucket];
+          if (!rows || rows.length === 0) return null;
+          return (
+            <div key={bucket}>
+              <p
+                style={{
+                  fontSize: "0.7rem",
+                  fontWeight: 600,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "var(--acct-muted, #6B7280)",
+                  marginBottom: "0.5rem",
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: "0.5rem",
+                }}
+              >
+                <span>{BUCKET_LABEL[bucket]}</span>
+                <span
+                  aria-hidden
+                  style={{
+                    flex: 1,
+                    height: "1px",
+                    backgroundColor: "var(--acct-line, rgba(0,0,0,0.06))",
+                  }}
+                />
+                <span style={{ fontSize: "0.7rem", color: "var(--acct-muted, #6B7280)" }}>
+                  {rows.length}
+                </span>
+              </p>
+              <div style={{ display: "grid", gap: "0.6rem" }}>
+                {rows.map((signal) => (
+                  <SignalCard
+                    key={signal.id}
+                    kicker={divisionLabel(signal.division)}
+                    title={signal.title}
+                    body={signal.body ?? undefined}
+                    priority={mapPriority(signal.priority)}
+                    accent={divisionColor(signal.division)}
+                    timestamp={formatRelative(signal.createdAt)}
+                    href={signal.actionUrl ?? "/notifications"}
+                    read={signal.emailDispatched}
+                    action={
+                      signal.emailDispatched ? { label: "Emailed", tone: "neutral" } : undefined
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
       {(prevHref || nextHref) ? (
         <nav
@@ -92,7 +151,9 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
             display: "flex",
             justifyContent: "space-between",
             gap: "0.5rem",
-            marginTop: "1rem",
+            marginTop: "1.25rem",
+            paddingTop: "1rem",
+            borderTop: "1px solid var(--acct-line, rgba(0,0,0,0.06))",
           }}
         >
           {prevHref ? (
@@ -135,6 +196,38 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty }: SignalFee
       ) : null}
     </Section>
   );
+}
+
+function groupByRecency(
+  items: ReadonlyArray<SignalFeedItem>,
+): Record<RecencyBucket, SignalFeedItem[]> {
+  const now = Date.now();
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const startOfTodayMs = startOfToday.getTime();
+  const startOfYesterdayMs = startOfTodayMs - 24 * 60 * 60 * 1000;
+  const startOfWeekMs = startOfTodayMs - 7 * 24 * 60 * 60 * 1000;
+
+  const out: Record<RecencyBucket, SignalFeedItem[]> = {
+    today: [],
+    yesterday: [],
+    "this-week": [],
+    earlier: [],
+  };
+
+  for (const item of items) {
+    const t = Date.parse(item.createdAt);
+    if (Number.isNaN(t)) {
+      out.earlier.push(item);
+      continue;
+    }
+    if (t >= startOfTodayMs && t <= now) out.today.push(item);
+    else if (t >= startOfYesterdayMs) out.yesterday.push(item);
+    else if (t >= startOfWeekMs) out["this-week"].push(item);
+    else out.earlier.push(item);
+  }
+
+  return out;
 }
 
 function mapPriority(priority: string): "info" | "warning" | "urgent" | "security" {

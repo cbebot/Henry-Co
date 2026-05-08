@@ -10,6 +10,12 @@ import { PageHeader as ShellPageHeader } from "@henryco/dashboard-shell";
  * If the viewer has zero signals AND zero attention items AND no last
  * activity, the description falls back to the lifecycle teaching
  * surface instead of a hollow welcome string.
+ *
+ * The header carries a live-data indicator chip (a pulsing dot + label).
+ * Static visual in DASH-4; DASH-6's realtime listener will animate the
+ * pulse when a fresh invalidation arrives. The same chip is used by the
+ * ContextDrawer to signal real-time state — keeping the visual language
+ * consistent across the shell.
  */
 export type SmartHomeHeaderProps = {
   firstName: string | null;
@@ -28,8 +34,9 @@ export function SmartHomeHeader({
 }: SmartHomeHeaderProps) {
   const lead = buildLead({ unreadCount, attentionCount, lastActivityIso });
   const title = firstName ? firstName : "Your dashboard";
-  const description = lead || fallbackBody || "Live signals across HenryCo will surface here as they land.";
-  return <ShellPageHeader title={title} description={description} />;
+  const description =
+    lead || fallbackBody || "Live signals across HenryCo will surface here as they land.";
+  return <ShellPageHeader title={title} description={description} action={<LiveChip />} />;
 }
 
 function buildLead({
@@ -67,4 +74,46 @@ function formatLastActivity(iso: string): string | null {
   if (days < 30) return `${days}d ago`;
   const months = Math.floor(days / 30);
   return `${months}mo ago`;
+}
+
+/**
+ * LiveChip — the calm "live data" indicator at the right of the
+ * SmartHomeHeader. The chip shows a 6-px accent dot + the label
+ * "Live · refreshes every 30s". When DASH-6's realtime listener
+ * fires `revalidateTag(signalFeedTag(userId))` and a new signal
+ * lands, the dot pulses for a beat. In DASH-4 the pulse is static —
+ * we ship the visual signature so DASH-6's listener can drive it
+ * without further UI work.
+ */
+function LiveChip() {
+  return (
+    <div
+      role="status"
+      aria-label="Smart home is live; data refreshes every 30 seconds"
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "0.5rem",
+        padding: "0.4rem 0.75rem",
+        borderRadius: "999px",
+        backgroundColor: "rgba(16, 185, 129, 0.10)",
+        color: "var(--acct-green, #047857)",
+        fontSize: "0.7rem",
+        fontWeight: 600,
+        letterSpacing: "0.04em",
+      }}
+    >
+      <span
+        aria-hidden
+        style={{
+          width: "6px",
+          height: "6px",
+          borderRadius: "50%",
+          backgroundColor: "currentColor",
+          boxShadow: "0 0 0 4px rgba(16, 185, 129, 0.18)",
+        }}
+      />
+      Live · 30s refresh
+    </div>
+  );
 }
