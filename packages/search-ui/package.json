@@ -12,7 +12,8 @@
     "./hooks": "./src/hooks/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "tsx --test src/palette/__tests__/error-copy.test.ts"
   },
   "peerDependencies": {
     "next": "^16.1.6",

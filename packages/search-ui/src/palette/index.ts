@@ -8,6 +8,7 @@ export { PaletteResultRow, type PaletteResultRowProps } from "./PaletteResultRow
 export { KeyboardCheatSheet, type KeyboardCheatSheetProps } from "./KeyboardCheatSheet";
 export { aggregate, type AggregatorInput, type AggregatorOutput } from "./aggregator";
 export { rankPaletteRows, type RankerInput, type RankerOutput } from "./ranker";
+export { humaniseError } from "./error-copy";
 export {
   loadRecents,
   saveRecent,

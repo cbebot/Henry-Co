@@ -1,5 +1,6 @@
 /**
- * Role-isolation probes — V2-SEARCH-01 verification.
+ * Role-isolation probes — V2-SEARCH-01 verification, runtime-executed
+ * since DASH-5 elevation pass.
  *
  * The security boundary of the cross-division search system is:
  *
@@ -9,9 +10,16 @@
  *
  * These probes assert the clause shape without hitting Typesense. A leak
  * here is catastrophic; the tests must be cheap, fast, and frequent.
+ *
+ * Runtime: node:test (Node 24+). Run via `pnpm --filter
+ * @henryco/search-core test`. Originally authored against @jest/globals;
+ * converted in the DASH-5 elevation pass so the V3 cross-tenant filter
+ * shape is verified at runtime locally (the live Postgres-RLS probe
+ * still requires a preview branch — see search-rls-probe.md).
  */
 
-import { describe, it, expect } from "@jest/globals";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 
 import { COLLECTIONS_BY_NAME, listPermittedCollections } from "../collections";
 import { buildFilterClauses } from "../role";
@@ -55,28 +63,28 @@ describe("listPermittedCollections — staff_only enforcement", () => {
   it("excludes hc_logistics_shipments and hc_studio_projects from anonymous", () => {
     const list = listPermittedCollections({ role_visibility: ANON.role_visibility });
     const names = list.map((c) => c.name);
-    expect(names).not.toContain("hc_logistics_shipments");
-    expect(names).not.toContain("hc_studio_projects");
+    assert.ok(!names.includes("hc_logistics_shipments"));
+    assert.ok(!names.includes("hc_studio_projects"));
   });
 
   it("excludes staff-only from a signed-in non-staff user", () => {
     const list = listPermittedCollections({ role_visibility: SIGNED_IN.role_visibility });
     const names = list.map((c) => c.name);
-    expect(names).not.toContain("hc_logistics_shipments");
-    expect(names).not.toContain("hc_studio_projects");
+    assert.ok(!names.includes("hc_logistics_shipments"));
+    assert.ok(!names.includes("hc_studio_projects"));
   });
 
   it("includes staff-only collections for staff", () => {
     const list = listPermittedCollections({ role_visibility: STAFF.role_visibility });
     const names = list.map((c) => c.name);
-    expect(names).toContain("hc_logistics_shipments");
-    expect(names).toContain("hc_studio_projects");
+    assert.ok(names.includes("hc_logistics_shipments"));
+    assert.ok(names.includes("hc_studio_projects"));
   });
 
   it("includes everything for platform owner", () => {
     const list = listPermittedCollections({ role_visibility: PLATFORM_OWNER.role_visibility });
     const names = list.map((c) => c.name);
-    expect(names.length).toBeGreaterThanOrEqual(Object.keys(COLLECTIONS_BY_NAME).length);
+    assert.ok(names.length >= Object.keys(COLLECTIONS_BY_NAME).length);
   });
 });
 
@@ -84,13 +92,13 @@ describe("buildFilterClauses — user-scoped binding", () => {
   it("locks workflows to owner_user_id for non-staff", () => {
     const collection = COLLECTIONS_BY_NAME.hc_workflows!;
     const clauses = buildFilterClauses({ collection, resolution: SIGNED_IN });
-    expect(clauses).toContain(`owner_user_id:=\`${SIGNED_IN.user_id}\``);
+    assert.ok(clauses.includes(`owner_user_id:=\`${SIGNED_IN.user_id}\``));
   });
 
   it("zero-rows-for-anonymous on user-scoped collections", () => {
     const collection = COLLECTIONS_BY_NAME.hc_notifications!;
     const clauses = buildFilterClauses({ collection, resolution: ANON });
-    expect(clauses).toContain(`owner_user_id:=__anonymous__`);
+    assert.ok(clauses.includes(`owner_user_id:=__anonymous__`));
   });
 
   it("does NOT add owner_user_id for staff (cross-owner reads allowed)", () => {
@@ -99,7 +107,7 @@ describe("buildFilterClauses — user-scoped binding", () => {
     // Staff need to triage all support threads, so the owner_user_id
     // restriction must NOT be applied. Visibility is enforced via
     // role_visibility:[staff].
-    expect(clauses).not.toContain(`owner_user_id:=`);
+    assert.ok(!clauses.includes(`owner_user_id:=`));
   });
 });
 
@@ -107,19 +115,19 @@ describe("buildFilterClauses — trust-state hiding", () => {
   it("hides closed/archived/deleted from non-staff", () => {
     const collection = COLLECTIONS_BY_NAME.hc_marketplace_products!;
     const clauses = buildFilterClauses({ collection, resolution: ANON });
-    expect(clauses).toContain("trust_state:!=");
-    expect(clauses).toContain("`deleted`");
-    expect(clauses).toContain("`archived`");
-    expect(clauses).toContain("`closed`");
+    assert.ok(clauses.includes("trust_state:!="));
+    assert.ok(clauses.includes("`deleted`"));
+    assert.ok(clauses.includes("`archived`"));
+    assert.ok(clauses.includes("`closed`"));
   });
 
   it("frozen content is hidden from everyone except platform_owner", () => {
     const collection = COLLECTIONS_BY_NAME.hc_marketplace_products!;
     const staffClauses = buildFilterClauses({ collection, resolution: STAFF });
-    expect(staffClauses).toContain("trust_state:!=`frozen`");
+    assert.ok(staffClauses.includes("trust_state:!=`frozen`"));
 
     const ownerClauses = buildFilterClauses({ collection, resolution: PLATFORM_OWNER });
-    expect(ownerClauses).not.toContain("trust_state:!=`frozen`");
+    assert.ok(!ownerClauses.includes("trust_state:!=`frozen`"));
   });
 });
 
@@ -127,15 +135,15 @@ describe("buildFilterClauses — role_visibility intersection", () => {
   it("anon role-array contains only `public`", () => {
     const collection = COLLECTIONS_BY_NAME.hc_marketplace_products!;
     const clauses = buildFilterClauses({ collection, resolution: ANON });
-    expect(clauses).toContain("role_visibility:=[`public`]");
+    assert.ok(clauses.includes("role_visibility:=[`public`]"));
   });
 
   it("signed-in user has public, authenticated, owner", () => {
     const collection = COLLECTIONS_BY_NAME.hc_marketplace_products!;
     const clauses = buildFilterClauses({ collection, resolution: SIGNED_IN });
-    expect(clauses).toContain("role_visibility:=");
-    expect(clauses).toMatch(/`public`/);
-    expect(clauses).toMatch(/`authenticated`/);
-    expect(clauses).toMatch(/`owner`/);
+    assert.ok(clauses.includes("role_visibility:="));
+    assert.match(clauses, /`public`/);
+    assert.match(clauses, /`authenticated`/);
+    assert.match(clauses, /`owner`/);
   });
 });

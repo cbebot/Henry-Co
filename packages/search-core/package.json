@@ -19,8 +19,9 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --test src/__tests__/palette-ranker.test.ts",
-    "test:ranker": "tsx --test src/__tests__/palette-ranker.test.ts"
+    "test": "tsx --test src/__tests__/palette-ranker.test.ts src/__tests__/role-isolation.test.ts",
+    "test:ranker": "tsx --test src/__tests__/palette-ranker.test.ts",
+    "test:role-isolation": "tsx --test src/__tests__/role-isolation.test.ts"
   },
   "dependencies": {
     "@henryco/config": "workspace:^",

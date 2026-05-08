@@ -62,6 +62,7 @@ import { useModuleJumpKeys, type ModuleJumpEntry } from "../hooks/useModuleJumpK
 
 import { aggregate } from "./aggregator";
 import { rankPaletteRows } from "./ranker";
+import { humaniseError } from "./error-copy";
 import { KeyboardCheatSheet } from "./KeyboardCheatSheet";
 import { PaletteResultRow } from "./PaletteResultRow";
 import {
@@ -788,22 +789,6 @@ function PaletteErrorBanner({
   );
 }
 
-/**
- * Map raw fetch error strings to a calm one-line user-facing copy.
- * Server-shape signals get translated; everything else falls back.
- */
-function humaniseError(raw: string): string {
-  if (!raw) return "Try again in a moment.";
-  if (/abort/i.test(raw)) return "Cancelled. Try again.";
-  if (/network|failed to fetch/i.test(raw))
-    return "Check your connection, then retry.";
-  const status = raw.match(/(\d{3})/)?.[1];
-  if (status === "401" || status === "403")
-    return "Your session expired. Refresh the page.";
-  if (status === "429") return "Too many searches — slow down a moment.";
-  if (status?.startsWith("5")) return "Our search service is reconnecting.";
-  return "Try again in a moment.";
-}
 
 function PaletteSearchInput({
   query,
