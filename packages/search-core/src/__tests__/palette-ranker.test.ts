@@ -11,9 +11,14 @@
  *   - scope chip alignment lifts matching division
  *   - empty query + no recents = stable order by key
  *   - filter-out below noise floor when the query is non-empty
+ *
+ * Runtime: node:test (built into Node 24+). Run via `pnpm test:ranker`,
+ * which invokes `tsx --test` with this file. No external test framework
+ * is required — the workspace already ships tsx as a devDep.
  */
 
-import { describe, it, expect } from "@jest/globals";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 
 import {
   rankPaletteRows,
@@ -53,9 +58,15 @@ describe("rankPaletteRows", () => {
         ],
         now: NOW,
       });
-      expect(result.rows[0]!.key).toBe("a");
-      expect(result.scores[0]).toBeGreaterThan(result.scores[1]!);
-      expect(result.scores[1]).toBeGreaterThan(result.scores[2]!);
+      assert.equal(result.rows[0]!.key, "a");
+      assert.ok(
+        result.scores[0]! > result.scores[1]!,
+        `expected score[0] > score[1]; got ${result.scores[0]} vs ${result.scores[1]}`,
+      );
+      assert.ok(
+        result.scores[1]! > result.scores[2]!,
+        `expected score[1] > score[2]; got ${result.scores[1]} vs ${result.scores[2]}`,
+      );
     });
 
     it("matches abbreviations of label words", () => {
@@ -70,7 +81,7 @@ describe("rankPaletteRows", () => {
         now: NOW,
       });
       // Pickup orders matches by "po" abbrev → ranks first.
-      expect(result.rows[0]!.key).toBe("po");
+      assert.equal(result.rows[0]!.key, "po");
     });
 
     it("tolerates a one-letter typo via trigraph match", () => {
@@ -85,7 +96,7 @@ describe("rankPaletteRows", () => {
         now: NOW,
       });
       // Even with the typo, Withdraw should surface above Open library.
-      expect(result.rows[0]!.key).toBe("with");
+      assert.equal(result.rows[0]!.key, "with");
     });
 
     it("drops rows below the noise floor when query is non-empty", () => {
@@ -99,7 +110,7 @@ describe("rankPaletteRows", () => {
         ],
         now: NOW,
       });
-      expect(result.rows).toHaveLength(0);
+      assert.equal(result.rows.length, 0);
     });
   });
 
@@ -121,7 +132,7 @@ describe("rankPaletteRows", () => {
       // The fresh row carries the recency boost; despite "Wallet"'s
       // shorter label match advantage, the recency lift puts
       // "Wallet activity" first.
-      expect(result.rows[0]!.key).toBe("fresh");
+      assert.equal(result.rows[0]!.key, "fresh");
     });
 
     it("does not boost rows older than 30 days", () => {
@@ -138,7 +149,7 @@ describe("rankPaletteRows", () => {
         rows: [row({ key: "old", label: "Wallet activity", href: "/wallet/activity" })],
         now: NOW,
       });
-      expect(result.scores[0]).toBe(0);
+      assert.equal(result.scores[0], 0);
     });
   });
 
@@ -166,7 +177,7 @@ describe("rankPaletteRows", () => {
         ],
         now: NOW,
       });
-      expect(result.rows[0]!.key).toBe("a");
+      assert.equal(result.rows[0]!.key, "a");
     });
   });
 
@@ -184,7 +195,10 @@ describe("rankPaletteRows", () => {
         now: NOW,
       });
       // All scores 0 (no query, no recents) — tie-break by key asc.
-      expect(result.rows.map((r) => r.key)).toEqual(["a", "m", "z"]);
+      assert.deepEqual(
+        result.rows.map((r) => r.key),
+        ["a", "m", "z"],
+      );
     });
 
     it("produces identical orderings on identical inputs", () => {
@@ -201,8 +215,11 @@ describe("rankPaletteRows", () => {
       });
       const r1 = rankPaletteRows(make());
       const r2 = rankPaletteRows(make());
-      expect(r1.rows.map((r) => r.key)).toEqual(r2.rows.map((r) => r.key));
-      expect(r1.scores).toEqual(r2.scores);
+      assert.deepEqual(
+        r1.rows.map((r) => r.key),
+        r2.rows.map((r) => r.key),
+      );
+      assert.deepEqual(r1.scores, r2.scores);
     });
   });
 
@@ -218,7 +235,7 @@ describe("rankPaletteRows", () => {
         ],
         now: NOW,
       });
-      expect(result.rows[0]!.key).toBe("sug");
+      assert.equal(result.rows[0]!.key, "sug");
     });
   });
 });

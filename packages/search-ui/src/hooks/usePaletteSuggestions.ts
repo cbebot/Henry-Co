@@ -25,8 +25,10 @@ export function usePaletteSuggestions(options: {
   endpoint?: string;
   /** Only fetch when this is true (the palette's open + empty-query gate). */
   enabled?: boolean;
+  /** External retry handle — bumping triggers a refetch. */
+  nonce?: number;
 } = {}): UsePaletteSuggestionsResult {
-  const { endpoint = "/api/dashboard/suggestions", enabled = true } = options;
+  const { endpoint = "/api/dashboard/suggestions", enabled = true, nonce = 0 } = options;
   const [suggestions, setSuggestions] = useState<PaletteSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +57,7 @@ export function usePaletteSuggestions(options: {
       cancelled = true;
       controller.abort();
     };
-  }, [endpoint, enabled]);
+  }, [endpoint, enabled, nonce]);
 
   return { suggestions, loading, error };
 }

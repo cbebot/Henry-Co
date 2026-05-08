@@ -22,8 +22,14 @@ export interface UsePaletteCommandsResult {
 export function usePaletteCommands(options: {
   endpoint?: string;
   enabled?: boolean;
+  /**
+   * External retry handle. Bumping `nonce` triggers a refetch even if
+   * the endpoint hasn't changed. Used by the palette's shared retry
+   * button so a single click clears the error across all hooks.
+   */
+  nonce?: number;
 } = {}): UsePaletteCommandsResult {
-  const { endpoint = "/api/dashboard/commands", enabled = true } = options;
+  const { endpoint = "/api/dashboard/commands", enabled = true, nonce = 0 } = options;
   const [commands, setCommands] = useState<WireCommand[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +61,7 @@ export function usePaletteCommands(options: {
       cancelled = true;
       controller.abort();
     };
-  }, [endpoint, enabled, tick]);
+  }, [endpoint, enabled, tick, nonce]);
 
   return { commands, loading, error, refetch };
 }

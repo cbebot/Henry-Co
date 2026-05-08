@@ -86,8 +86,13 @@ export function PaletteResultRow({
     cursor: "pointer",
     color: `var(${CSS_VARS.ink})`,
     borderRadius: 0,
-    transition: "background 140ms cubic-bezier(0.16, 1, 0.3, 1), transform 140ms cubic-bezier(0.16, 1, 0.3, 1)",
-    transform: active ? "translateZ(0) scale(1.0)" : "translateZ(0) scale(0.998)",
+    // Hold both states at scale 1 — the original 0.998 inactive state
+    // produced subtle layout jitter on every Up/Down keystroke. The
+    // active affordance is now carried entirely by the gold left bar
+    // and accent-soft background. translateZ(0) stays so the row gets
+    // its own GPU layer and the background-fade animates cleanly.
+    transition: "background 140ms cubic-bezier(0.16, 1, 0.3, 1)",
+    transform: "translateZ(0)",
     ...(active ? {} : focusVisibleStyle()),
   };
 

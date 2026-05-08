@@ -92,14 +92,22 @@ export function rankPaletteRows<R extends RankablePaletteRow>(
   const { query, scope, recents, rows } = input;
   const now = input.now ?? Date.now;
 
-  const recencyMap = new Map<string, RankableStoredRecent>();
-  for (const r of recents) recencyMap.set(r.href, r);
+  const nowMs = now();
 
-  // Compute frequency-of-use as a count of times each href appears
-  // in the recents list. (Recents are deduped at write time; for
-  // proper frequency we'd need an event log, deferred to V3.)
+  // Only consider recents within the horizon — stale entries
+  // contribute neither a recency NOR a frequency boost. This keeps
+  // affinityBoost() symmetric (a row past the horizon scores 0 from
+  // affinity by construction) and matches the determinism contract.
+  const recencyMap = new Map<string, RankableStoredRecent>();
   const frequencyMap = new Map<string, number>();
   for (const r of recents) {
+    if (nowMs - r.lastUsedAt >= RECENCY_HORIZON_MS) continue;
+    // Keep the freshest entry per href (recents are append-style at
+    // write time; the most recent activation is the head of the array).
+    const existing = recencyMap.get(r.href);
+    if (!existing || r.lastUsedAt > existing.lastUsedAt) {
+      recencyMap.set(r.href, r);
+    }
     frequencyMap.set(r.href, (frequencyMap.get(r.href) ?? 0) + 1);
   }
 
@@ -118,7 +126,7 @@ export function rankPaletteRows<R extends RankablePaletteRow>(
       score += textualScore(row, trimmed, tokens, trigrams);
     }
 
-    score += affinityBoost(row, recencyMap, frequencyMap, scope, now);
+    score += affinityBoost(row, recencyMap, frequencyMap, scope, nowMs);
 
     if (trimmed.length > 0 && score < 0.05) {
       // Below the noise floor — drop.
@@ -183,20 +191,22 @@ function affinityBoost<R extends RankablePaletteRow>(
   recencyMap: Map<string, RankableStoredRecent>,
   frequencyMap: Map<string, number>,
   scope: string | null,
-  now: () => number,
+  nowMs: number,
 ): number {
   let boost = 0;
 
   const recent = recencyMap.get(row.href);
   if (recent) {
-    const age = now() - recent.lastUsedAt;
-    if (age < RECENCY_HORIZON_MS) {
-      // Exponential decay — half-life 7 days, capped at 0.4.
-      const decay = Math.exp(-Math.LN2 * (age / RECENCY_HALF_LIFE_MS));
-      boost += 0.4 * decay;
-    }
+    // recencyMap is pre-filtered to within RECENCY_HORIZON_MS, so any
+    // hit here is still in-horizon. Exponential decay — half-life 7
+    // days, capped at 0.4.
+    const age = nowMs - recent.lastUsedAt;
+    const decay = Math.exp(-Math.LN2 * (age / RECENCY_HALF_LIFE_MS));
+    boost += 0.4 * decay;
   }
 
+  // frequencyMap is built from the same pre-filtered set, so a stale
+  // recent contributes neither recency nor frequency.
   const freq = frequencyMap.get(row.href) ?? 0;
   if (freq > 0) {
     boost += 0.3 * Math.min(1, Math.log10(freq + 1) / Math.log10(11));

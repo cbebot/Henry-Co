@@ -31,6 +31,7 @@ import {
   forwardRef,
   useCallback,
   useEffect,
+  useId,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -38,7 +39,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { Loader2, Search as SearchIcon, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Loader2, Search as SearchIcon, Sparkles, X } from "lucide-react";
 
 import {
   BottomSheet,
@@ -136,6 +137,8 @@ export type PaletteTelemetryEvent =
       at: number;
     };
 
+const NOOP_TELEMETRY: (event: PaletteTelemetryEvent) => void = () => undefined;
+
 export const DashboardCommandPalette = forwardRef<
   DashboardCommandPaletteController,
   DashboardCommandPaletteProps
@@ -150,6 +153,10 @@ export const DashboardCommandPalette = forwardRef<
   },
   ref,
 ) {
+  // Default to a stable no-op so the rest of the file can call
+  // `telemetry(...)` directly without `if (onTelemetry)` guards on
+  // every emit. Host wiring stays exactly the same.
+  const telemetry = onTelemetry ?? NOOP_TELEMETRY;
   const [open, setOpen] = useState(false);
   const [scope, setScope] = useState<string | null>(null);
   const [highlight, setHighlight] = useState(0);
@@ -157,9 +164,15 @@ export const DashboardCommandPalette = forwardRef<
   const [recents, setRecents] = useState<StoredRecent[]>([]);
   const [navigating, setNavigating] = useState(false);
   const [hintIndex, setHintIndex] = useState(0);
+  const [retryNonce, setRetryNonce] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const listboxId = useStableId("hc-palette-listbox");
-  const liveRegionId = useStableId("hc-palette-live");
+  // React.useId — stable across renders, unique per instance, and
+  // hydration-safe. Replaces a module-level counter that risked
+  // collisions when more than one palette instance mounted (e.g.
+  // tests rendering multiple palettes side-by-side).
+  const reactId = useId();
+  const listboxId = `hc-palette-listbox-${reactId}`;
+  const liveRegionId = `hc-palette-live-${reactId}`;
 
   const isMobile = useIsMobilePalette();
 
@@ -168,12 +181,10 @@ export const DashboardCommandPalette = forwardRef<
     useCallback(() => {
       setOpen((prev) => {
         const next = !prev;
-        if (next && onTelemetry) {
-          onTelemetry({ kind: "open", trigger: "shortcut", at: Date.now() });
-        }
+        if (next) telemetry({ kind: "open", trigger: "shortcut", at: Date.now() });
         return next;
       });
-    }, [onTelemetry]),
+    }, [telemetry]),
   );
 
   // Cmd+1..9 module jumps work even when the palette is closed.
@@ -184,14 +195,12 @@ export const DashboardCommandPalette = forwardRef<
     () => ({
       open: () => {
         setOpen(true);
-        if (onTelemetry) {
-          onTelemetry({ kind: "open", trigger: "click", at: Date.now() });
-        }
+        telemetry({ kind: "open", trigger: "click", at: Date.now() });
       },
       close: () => setOpen(false),
       toggle: () => setOpen((prev) => !prev),
     }),
-    [onTelemetry],
+    [telemetry],
   );
 
   // Listen for the layout's signOut event and wipe local recents.
@@ -229,20 +238,52 @@ export const DashboardCommandPalette = forwardRef<
     divisions: scope ? [scope] : undefined,
     enabled: open,
   });
-  const { query, setQuery, data: searchData, loading: searchLoading } = queryHandle;
+  const {
+    query,
+    setQuery,
+    data: searchData,
+    loading: searchLoading,
+    error: searchError,
+  } = queryHandle;
   const trimmed = query.trim();
 
   const commandsHandle = usePaletteCommands({
     endpoint: commandsEndpoint,
     enabled: open,
+    nonce: retryNonce,
   });
-  const { commands, loading: commandsLoading } = commandsHandle;
+  const {
+    commands,
+    loading: commandsLoading,
+    error: commandsError,
+    refetch: refetchCommands,
+  } = commandsHandle;
 
   const suggestionsHandle = usePaletteSuggestions({
     endpoint: suggestionsEndpoint,
     enabled: open && trimmed.length === 0,
+    nonce: retryNonce,
   });
-  const { suggestions, loading: suggestionsLoading } = suggestionsHandle;
+  const {
+    suggestions,
+    loading: suggestionsLoading,
+    error: suggestionsError,
+  } = suggestionsHandle;
+
+  // Aggregate error path. We surface only the most-relevant error
+  // (commands → suggestions → search) so the user sees a single,
+  // actionable banner. Retry kicks all three hooks plus useSearchQuery
+  // (the latter via its own retry handle if present) by bumping a
+  // shared nonce.
+  const aggregateError = trimmed.length === 0
+    ? commandsError ?? suggestionsError ?? null
+    : commandsError ?? searchError ?? null;
+  const refetchSearch = queryHandle.refetch;
+  const retry = useCallback(() => {
+    setRetryNonce((n) => n + 1);
+    refetchCommands();
+    refetchSearch();
+  }, [refetchCommands, refetchSearch]);
 
   const aggregated = useMemo(
     () =>
@@ -300,11 +341,9 @@ export const DashboardCommandPalette = forwardRef<
       setOpen(false);
       setQuery("");
       setScope(null);
-      if (onTelemetry) {
-        onTelemetry({ kind: "dismiss", reason, at: Date.now() });
-      }
+      telemetry({ kind: "dismiss", reason, at: Date.now() });
     },
-    [setQuery, onTelemetry],
+    [setQuery, telemetry],
   );
 
   const commitRow = useCallback(
@@ -312,23 +351,21 @@ export const DashboardCommandPalette = forwardRef<
       saveRecent(userId, row);
       setRecents(loadRecents(userId));
       setNavigating(true);
-      if (onTelemetry) {
-        onTelemetry({
-          kind: "select",
-          rowKind: row.kind,
-          sourceId: row.sourceId,
-          href: row.href,
-          query,
-          at: Date.now(),
-        });
-      }
+      telemetry({
+        kind: "select",
+        rowKind: row.kind,
+        sourceId: row.sourceId,
+        href: row.href,
+        query,
+        at: Date.now(),
+      });
       // Brief defer so the surface can run its close animation before
       // navigation steals paint.
       window.setTimeout(() => {
         window.location.assign(row.href);
       }, 30);
     },
-    [userId, onTelemetry, query],
+    [userId, telemetry, query],
   );
 
   // Telemetry: emit a `query` event after each search settles. We
@@ -336,17 +373,17 @@ export const DashboardCommandPalette = forwardRef<
   // to leave loading, then emit if the query has changed since last.
   const lastQueryEmittedRef = useRef<string>("");
   useEffect(() => {
-    if (!open || !onTelemetry) return;
+    if (!open) return;
     if (searchLoading) return;
     if (query === lastQueryEmittedRef.current) return;
     lastQueryEmittedRef.current = query;
-    onTelemetry({
+    telemetry({
       kind: "query",
       query,
       resultCount: (searchData?.hits?.length ?? 0) + commands.length + suggestions.length,
       at: Date.now(),
     });
-  }, [open, onTelemetry, query, searchLoading, searchData, commands, suggestions]);
+  }, [open, telemetry, query, searchLoading, searchData, commands, suggestions]);
 
   // Keyboard surface — Esc / Up / Down / Enter / Tab.
   useEffect(() => {
@@ -440,6 +477,8 @@ export const DashboardCommandPalette = forwardRef<
       navigating={navigating}
       onClose={() => close("backdrop")}
       isMobile={isMobile}
+      error={aggregateError}
+      onRetry={retry}
     />
   );
 
@@ -492,6 +531,14 @@ export const DashboardCommandPalette = forwardRef<
  * surface: hairline border, soft elevated shadow, gold-tinted gradient
  * backplate, glass-morphism backdrop. Anti-pattern #14 (no default
  * tailwind dialogs).
+ *
+ * Focus trap: the dialog wraps its body in two zero-size sentinel
+ * elements (`tabIndex=0`, `aria-hidden`). Tab from the last interactive
+ * descendant lands on the trailing sentinel, which forwards focus to
+ * the first interactive descendant; Shift-Tab from the first does the
+ * inverse. WCAG 2.1.2 (no keyboard trap) is satisfied because Esc
+ * still closes the dialog and the user can always reach the close
+ * button via Tab.
  */
 function DesktopDialog({
   children,
@@ -500,6 +547,7 @@ function DesktopDialog({
   children: ReactNode;
   onClose: () => void;
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
   return (
     <div
       role="presentation"
@@ -519,6 +567,7 @@ function DesktopDialog({
       }}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="HenryCo command palette"
@@ -536,6 +585,7 @@ function DesktopDialog({
           animation: `henrycoDrawerEntry ${FADE_MS}ms ${EASE_OUT}`,
         }}
       >
+        <FocusSentinel onCatch={() => focusTail(dialogRef.current)} />
         <span
           aria-hidden
           style={{
@@ -547,9 +597,56 @@ function DesktopDialog({
           }}
         />
         {children}
+        <FocusSentinel onCatch={() => focusHead(dialogRef.current)} />
       </div>
     </div>
   );
+}
+
+/**
+ * Zero-size focusable sentinel. When focus reaches one of these, the
+ * `onCatch` handler bounces it to the opposite end of the dialog so
+ * the user can never tab outside the palette while it's open.
+ */
+function FocusSentinel({ onCatch }: { onCatch: () => void }) {
+  return (
+    <span
+      tabIndex={0}
+      aria-hidden
+      onFocus={onCatch}
+      style={{
+        position: "absolute",
+        width: 1,
+        height: 1,
+        padding: 0,
+        margin: -1,
+        overflow: "hidden",
+        clip: "rect(0,0,0,0)",
+        whiteSpace: "nowrap",
+        border: 0,
+      }}
+    />
+  );
+}
+
+function focusableDescendants(root: HTMLElement | null): HTMLElement[] {
+  if (!root) return [];
+  const selector =
+    'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),' +
+    'textarea:not([disabled]),[tabindex]:not([tabindex="-1"]):not([aria-hidden="true"])';
+  return Array.from(root.querySelectorAll<HTMLElement>(selector)).filter(
+    (el) => el.offsetParent !== null && el.getAttribute("aria-hidden") !== "true",
+  );
+}
+
+function focusHead(root: HTMLElement | null) {
+  const items = focusableDescendants(root);
+  if (items.length > 0) items[0]!.focus();
+}
+
+function focusTail(root: HTMLElement | null) {
+  const items = focusableDescendants(root);
+  if (items.length > 0) items[items.length - 1]!.focus();
 }
 
 interface PaletteBodyProps {
@@ -570,6 +667,8 @@ interface PaletteBodyProps {
   navigating: boolean;
   onClose: () => void;
   isMobile: boolean;
+  error: string | null;
+  onRetry: () => void;
 }
 
 function PaletteBody({
@@ -590,6 +689,8 @@ function PaletteBody({
   navigating,
   onClose,
   isMobile,
+  error,
+  onRetry,
 }: PaletteBodyProps) {
   return (
     <div role="presentation" style={{ position: "relative" }}>
@@ -605,6 +706,7 @@ function PaletteBody({
         isMobile={isMobile}
       />
       <PaletteScopeChips scope={scope} onScope={onScope} />
+      {error ? <PaletteErrorBanner message={error} onRetry={onRetry} /> : null}
       <PaletteList
         groups={groups}
         flat={flat}
@@ -619,6 +721,88 @@ function PaletteBody({
       {!isMobile ? <PaletteFooter /> : null}
     </div>
   );
+}
+
+/**
+ * PaletteErrorBanner — calm in-line banner shown above the result list
+ * when one of the data sources fails. Closes the V10 documented gap
+ * ("error state on server failure with retry").
+ *
+ * Visual contract:
+ *   - Lives between the scope chips and the result list (anchored, not
+ *     a toast). Stays visible while the user inspects what's still
+ *     loaded — recents, suggestions cached from a prior successful
+ *     load — until they retry or dismiss the palette.
+ *   - Tone: hairline border in `--hc-warning`-soft, no big red surface.
+ *     The palette is a search box; the banner shouldn't dominate it.
+ *   - aria-live=polite so screen readers hear "Couldn't load …" when
+ *     the error appears mid-session.
+ */
+function PaletteErrorBanner({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry: () => void;
+}) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "0.65rem",
+        padding: "0.55rem 1rem",
+        borderBottom: `1px solid var(${CSS_VARS.hairline})`,
+        backgroundColor: `var(${CSS_VARS.surfaceElevated})`,
+        ...typeStyle("micro"),
+        color: `var(${CSS_VARS.ink})`,
+      }}
+    >
+      <AlertTriangle
+        size={14}
+        aria-hidden
+        style={{ color: `var(${CSS_VARS.accentText})`, flexShrink: 0 }}
+      />
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ ...typeStyle("bodyStrong") }}>Couldn’t load.</span>{" "}
+        <span style={{ color: `var(${CSS_VARS.inkSoft})` }}>{humaniseError(message)}</span>
+      </span>
+      <button
+        type="button"
+        onClick={onRetry}
+        style={{
+          border: `1px solid var(${CSS_VARS.hairline})`,
+          background: `var(${CSS_VARS.surface})`,
+          color: `var(${CSS_VARS.ink})`,
+          padding: "0.2rem 0.65rem",
+          borderRadius: RADIUS.pill,
+          cursor: "pointer",
+          ...typeStyle("micro"),
+        }}
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Map raw fetch error strings to a calm one-line user-facing copy.
+ * Server-shape signals get translated; everything else falls back.
+ */
+function humaniseError(raw: string): string {
+  if (!raw) return "Try again in a moment.";
+  if (/abort/i.test(raw)) return "Cancelled. Try again.";
+  if (/network|failed to fetch/i.test(raw))
+    return "Check your connection, then retry.";
+  const status = raw.match(/(\d{3})/)?.[1];
+  if (status === "401" || status === "403")
+    return "Your session expired. Refresh the page.";
+  if (status === "429") return "Too many searches — slow down a moment.";
+  if (status?.startsWith("5")) return "Our search service is reconnecting.";
+  return "Try again in a moment.";
 }
 
 function PaletteSearchInput({
@@ -1010,13 +1194,3 @@ function jumpToNeighbouringGroup(
   return starts[nextGroupIndex] ?? 0;
 }
 
-let idCounter = 0;
-function useStableId(prefix: string): string {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const ref = useRef<string | null>(null);
-  if (!ref.current) {
-    idCounter += 1;
-    ref.current = `${prefix}-${idCounter}`;
-  }
-  return ref.current;
-}
