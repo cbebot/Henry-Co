@@ -28,3 +28,10 @@ export {
   type RateLimitDecision,
   type RateLimitStore,
 } from "./rate-limit";
+export {
+  buildPaletteSuggestions,
+  toSuggestionsWire,
+  type BuildSuggestionsOptions,
+  type PaletteSuggestion,
+  type SuggestionsWirePayload,
+} from "./suggestions";
