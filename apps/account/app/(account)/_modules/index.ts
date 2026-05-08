@@ -14,6 +14,7 @@
 
 import "@henryco/dashboard-modules-account";
 import "@henryco/dashboard-modules-marketplace";
+import "@henryco/dashboard-modules-support";
 import "@henryco/dashboard-modules-wallet";
 
 // Hidden future modules — register their slots so the rail surfaces
