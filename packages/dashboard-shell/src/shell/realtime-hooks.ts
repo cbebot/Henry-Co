@@ -24,6 +24,7 @@
 import { useMemo } from "react";
 
 import { useRealtime } from "./supabase-realtime-provider";
+export { useRealtime } from "./supabase-realtime-provider";
 import {
   isMutedDivision,
   isMutedEventType,

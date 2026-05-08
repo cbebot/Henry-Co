@@ -24,3 +24,21 @@ export { QuickLink, type QuickLinkProps } from "./quick-link";
 export { TypeaheadGrid, type TypeaheadGridProps } from "./typeahead-grid";
 export { BottomSheet, type BottomSheetProps } from "./bottom-sheet";
 export { Drawer, type DrawerProps } from "./drawer";
+
+// Notifications (DASH-6)
+export {
+  NotificationCard,
+  NotificationsBell,
+  NotificationsToastViewport,
+  InboxFeed,
+  QuietHoursPanel,
+  PreferencesPanel,
+  NotificationsDrawerBody,
+  type NotificationCardProps,
+  type NotificationsBellProps,
+  type NotificationsToastViewportProps,
+  type InboxFeedProps,
+  type QuietHoursPanelProps,
+  type PreferencesPanelProps,
+  type NotificationsDrawerBodyProps,
+} from "./notifications";
