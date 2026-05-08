@@ -104,12 +104,33 @@ export const MOTION_KEYFRAMES_CSS = `
 @keyframes henrycoDrawerEntry {
   from {
     opacity: 0;
-    transform: translateY(0.5rem);
+    transform: translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes henrycoSheetEntry {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes henrycoSheetBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes henrycoBarPressIn {
+  from { transform: scale(1); }
+  to { transform: scale(0.96); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -120,6 +141,14 @@ export const MOTION_KEYFRAMES_CSS = `
   @keyframes henrycoDrawerEntry {
     from { opacity: 0; transform: none; }
     to { opacity: 1; transform: none; }
+  }
+  @keyframes henrycoSheetEntry {
+    from { opacity: 0; transform: none; }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes henrycoBarPressIn {
+    from { transform: none; }
+    to { transform: none; }
   }
 }
 ` as const;

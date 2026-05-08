@@ -17,10 +17,10 @@ import "@/app/(account)/_modules";
  * an `allow` decision for the viewer.
  *
  * The DASH-1 chrome at `apps/account/app/(account)/layout.tsx` hosts
- * the existing inner shell (Sidebar + MobileNav). The WorkspaceRail
- * here renders alongside that chrome at desktop breakpoints; on
- * mobile the rail is hidden and DASH-7's BottomActionBar surfaces
- * the same module entries.
+ * the inner shell (Sidebar). The WorkspaceRail renders alongside that
+ * chrome at desktop breakpoints; on mobile (< 768px) the rail is
+ * hidden via `MOBILE_SHELL_CSS` and DASH-7's `<BottomActionBar>`
+ * surfaces the same module entries via the Modules anchor's drawer.
  *
  * The shell's `<WorkspaceRail>` primitive ships in DASH-1 with hairline
  * borders + cream surface; the children we pass here are anchor tags

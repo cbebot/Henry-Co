@@ -39,3 +39,16 @@ export {
   type PreferencesPayload,
   type RealtimeSourceConfig,
 } from "./realtime-data-source";
+export {
+  BottomActionBar,
+  computeActive,
+  BOTTOM_ACTION_BAR_ANCHOR_KEYS,
+  type BottomActionBarProps,
+  type BottomActionBarAnchorKey,
+  type ModuleNavEntry,
+} from "./bottom-action-bar";
+export {
+  MOBILE_SHELL_CSS,
+  MOBILE_BREAKPOINT_PX,
+  TABLET_BREAKPOINT_PX,
+} from "./mobile-shell-css";

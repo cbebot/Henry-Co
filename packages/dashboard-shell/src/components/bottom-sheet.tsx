@@ -19,8 +19,11 @@ import { focusVisibleStyle } from "../tokens/focus";
  * Behaviour:
  *   - Backdrop dismiss (click outside)
  *   - Esc dismiss
- *   - Focus trap inside the sheet while open
+ *   - Hard focus trap inside the sheet while open (DASH-7)
  *   - Body scroll lock while open
+ *   - `overscroll-behavior-y: contain` so swipe doesn't scroll the
+ *     page underneath (DASH-7)
+ *   - Sticky-close header in the thumb zone (DASH-7)
  *   - Reduced-motion: no slide, just fade
  */
 export type BottomSheetProps = {
@@ -48,6 +51,8 @@ export function BottomSheet({
   tall,
 }: BottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
+  const leadingSentinelRef = useRef<HTMLSpanElement>(null);
+  const trailingSentinelRef = useRef<HTMLSpanElement>(null);
 
   // Body scroll lock + Esc dismiss + focus management.
   useEffect(() => {
@@ -70,6 +75,25 @@ export function BottomSheet({
     };
   }, [open, onClose]);
 
+  // Hard focus trap via leading/trailing sentinels — Tab cycles back
+  // into the sheet's focusables; Shift+Tab cycles to the last.
+  const onLeadingSentinelFocus = () => {
+    const focusables = collectFocusables(sheetRef.current);
+    if (focusables.length === 0) {
+      sheetRef.current?.focus();
+      return;
+    }
+    focusables[focusables.length - 1].focus();
+  };
+  const onTrailingSentinelFocus = () => {
+    const focusables = collectFocusables(sheetRef.current);
+    if (focusables.length === 0) {
+      sheetRef.current?.focus();
+      return;
+    }
+    focusables[0].focus();
+  };
+
   if (!open) return null;
 
   return (
@@ -87,6 +111,13 @@ export function BottomSheet({
         animation: `henrycoSheetBackdrop ${FADE_MS}ms ${EASE_OUT}`,
       }}
     >
+      <span
+        ref={leadingSentinelRef}
+        tabIndex={0}
+        aria-hidden
+        onFocus={onLeadingSentinelFocus}
+        style={{ position: "fixed", width: 1, height: 1, top: 0, left: 0, pointerEvents: "none", opacity: 0 }}
+      />
       <div
         ref={sheetRef}
         role="dialog"
@@ -94,6 +125,7 @@ export function BottomSheet({
         aria-label={title}
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
+        className="hc-modal-body"
         style={{
           width: "100%",
           maxWidth: "32rem",
@@ -104,6 +136,7 @@ export function BottomSheet({
           padding: "1.25rem 1rem",
           maxHeight: tall ? "90vh" : "75vh",
           overflowY: "auto",
+          overscrollBehaviorY: "contain",
           color: `var(${CSS_VARS.ink})`,
           animation: `henrycoSheetEntry ${FADE_MS}ms ${EASE_OUT}`,
         }}
@@ -119,15 +152,21 @@ export function BottomSheet({
           }}
         />
         <header
+          className="hc-sticky-close-header"
           style={{
             display: "flex",
             alignItems: "flex-start",
             justifyContent: "space-between",
             gap: "0.5rem",
-            marginBottom: "0.75rem",
+            // Pull edge-to-edge inside the sheet body so the sticky
+            // background covers the corners. The body padding is
+            // 1.25rem vertical / 1rem horizontal, so we negate that
+            // and re-add internal padding for the close button.
+            margin: "-1.25rem -1rem 0.75rem",
+            padding: "1rem 1rem 0.75rem",
           }}
         >
-          <div>
+          <div style={{ minWidth: 0 }}>
             {kicker ? (
               <p
                 style={{
@@ -163,6 +202,12 @@ export function BottomSheet({
               color: `var(${CSS_VARS.inkSoft})`,
               padding: "0.5rem",
               borderRadius: RADIUS.pill,
+              flexShrink: 0,
+              minWidth: "44px",
+              minHeight: "44px",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
               ...focusVisibleStyle(),
             }}
           >
@@ -171,6 +216,27 @@ export function BottomSheet({
         </header>
         <div>{children}</div>
       </div>
+      <span
+        ref={trailingSentinelRef}
+        tabIndex={0}
+        aria-hidden
+        onFocus={onTrailingSentinelFocus}
+        style={{ position: "fixed", width: 1, height: 1, bottom: 0, right: 0, pointerEvents: "none", opacity: 0 }}
+      />
     </div>
+  );
+}
+
+/**
+ * Collect every focusable descendant of the given root, excluding the
+ * sentinels themselves (which carry `aria-hidden`). Used by the focus
+ * trap to find the first/last tab stop.
+ */
+function collectFocusables(root: HTMLElement | null): HTMLElement[] {
+  if (!root) return [];
+  const sel =
+    'a[href]:not([aria-hidden="true"]), button:not([disabled]):not([aria-hidden="true"]), input:not([disabled]):not([aria-hidden="true"]), select:not([disabled]):not([aria-hidden="true"]), textarea:not([disabled]):not([aria-hidden="true"]), [tabindex]:not([tabindex="-1"]):not([aria-hidden="true"])';
+  return Array.from(root.querySelectorAll<HTMLElement>(sel)).filter(
+    (el) => el.offsetParent !== null || el === document.activeElement,
   );
 }

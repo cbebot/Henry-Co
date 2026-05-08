@@ -1,10 +1,9 @@
 import { requireAccountUser } from "@/lib/auth";
 import Sidebar from "@/components/layout/Sidebar";
-import MobileNav from "@/components/layout/MobileNav";
 import { AccountStudioToastRoot } from "@/components/studio/AccountStudioToastRoot";
 
 /**
- * V2-DASH-05 + V2-DASH-06 — apps/account inner chrome.
+ * V2-DASH-05 + V2-DASH-06 + V2-DASH-07 — apps/account inner chrome.
  *
  * The notification spine is owned at the shell level by
  * `<SupabaseRealtimeProvider>` (mounted via `<RealtimeBrowserBridge>` in
@@ -13,11 +12,16 @@ import { AccountStudioToastRoot } from "@/components/studio/AccountStudioToastRo
  * `useUnreadCount`, `useNotificationPreferences`) directly — the legacy
  * in-app `NotificationSignalProvider` bridge has been removed.
  *
- * The Cmd+K palette is similarly mounted at the parent layout
+ * The Cmd+K palette is mounted at the parent layout
  * (`<AccountPaletteHost>` wraps this entire subtree plus the
- * IdentityBar). This inner shell therefore only carries
- * apps/account-specific chrome: Sidebar, MobileNav, studio toast root,
- * and the main content area.
+ * IdentityBar). The mobile bottom action bar is mounted at the parent
+ * layout via `<MobileChromeBridge>`; the legacy `<MobileNav>` has been
+ * retired in favour of the shell's `<BottomActionBar>` primitive
+ * (DASH-7). This inner shell carries only:
+ *
+ *   - Sidebar (desktop only — `lg:flex`)
+ *   - AccountStudioToastRoot (studio cross-toast)
+ *   - The main content area
  */
 export default async function AccountLayoutInner({ children }: { children: React.ReactNode }) {
   const user = await requireAccountUser();
@@ -32,8 +36,7 @@ export default async function AccountLayoutInner({ children }: { children: React
     <div className="min-h-screen">
       <AccountStudioToastRoot />
       <Sidebar user={userInfo} />
-      <MobileNav user={userInfo} />
-      <main className="lg:pl-[var(--acct-sidebar-width)]">
+      <main className="hc-shell-main lg:pl-[var(--acct-sidebar-width)]">
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
       </main>
     </div>

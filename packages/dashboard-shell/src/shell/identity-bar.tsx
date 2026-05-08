@@ -274,7 +274,8 @@ export function IdentityBar({
 
       {trailing}
 
-      {/* Sign out */}
+      {/* Sign out — DASH-7 G7: promoted to ≥ 44 × 44 px tap target so
+          shell chrome reads premium uniformly with BottomActionBar. */}
       {onSignOut ? (
         <button
           type="button"
@@ -285,12 +286,16 @@ export function IdentityBar({
             border: "none",
             cursor: "pointer",
             color: `var(${CSS_VARS.inkSoft})`,
-            padding: "0.5rem",
+            minWidth: "44px",
+            minHeight: "44px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
             borderRadius: RADIUS.pill,
             ...focusVisibleStyle(),
           }}
         >
-          <LogOut size={16} aria-hidden />
+          <LogOut size={18} aria-hidden />
         </button>
       ) : null}
     </header>
