@@ -13,9 +13,11 @@ import {
   type WorkspaceDivision,
   type WorkspaceViewer,
 } from "@henryco/workspace-shell";
+import { NotificationsToastViewport } from "@henryco/dashboard-shell";
 import { getSharedAccountJobsUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
 import type { WorkspaceNavItem } from "@/lib/jobs/navigation";
+import { JobsRealtimeBridge } from "./JobsRealtimeBridge";
 
 /**
  * Jobs WorkspaceShell — Phase 7a migration.
@@ -136,21 +138,41 @@ export async function WorkspaceShell({
     </div>
   );
 
+  // Bridge viewer for the realtime spine (only authenticated callers
+  // hit a workspace surface, but defend against the bridge mounting
+  // empty by collapsing to userId:null when auth somehow returns no user).
+  const bridgeViewer = {
+    userId: jobsViewer.user?.id ?? null,
+    email: jobsViewer.user?.email ?? null,
+    fullName: jobsViewer.user?.fullName ?? null,
+    avatarUrl: jobsViewer.user?.avatarUrl ?? null,
+    hasStaffAccess: area === "moderation" || area === "analytics" || area === "recruiter",
+  };
+
   return (
-    <EngineWorkspaceShell
-      division={division}
-      brand={brand}
-      viewer={viewer}
-      navigation={nav}
-      pathname={pathname || activeHref}
-      notificationsHref={nav.find((n) => /messages|alerts|notifications/i.test(n.label))?.href ?? activeHref}
-      profileHref={nav.find((n) => /profile|settings/i.test(n.label))?.href ?? activeHref}
-      accountSettingsUrl={accountSettingsUrl}
-      sidebarTopSlot={areaBadge}
-      rightRail={rightRail}
-    >
-      {children}
-    </EngineWorkspaceShell>
+    <JobsRealtimeBridge viewer={bridgeViewer}>
+      <EngineWorkspaceShell
+        division={division}
+        brand={brand}
+        viewer={viewer}
+        navigation={nav}
+        pathname={pathname || activeHref}
+        notificationsHref={nav.find((n) => /messages|alerts|notifications/i.test(n.label))?.href ?? activeHref}
+        profileHref={nav.find((n) => /profile|settings/i.test(n.label))?.href ?? activeHref}
+        accountSettingsUrl={accountSettingsUrl}
+        sidebarTopSlot={areaBadge}
+        rightRail={rightRail}
+      >
+        {children}
+      </EngineWorkspaceShell>
+      {/* Live toast pop-ups for customer_notifications rows. The
+       * SupabaseRealtimeProvider above this component owns the single
+       * subscription; the viewport just renders new signals as they
+       * arrive. Audience auto-derives from the bridge's UnifiedViewer. */}
+      <NotificationsToastViewport
+        audience={bridgeViewer.hasStaffAccess ? "staff" : "customer"}
+      />
+    </JobsRealtimeBridge>
   );
 }
 
