@@ -1,0 +1,151 @@
+/**
+ * Audience-agnostic message shape consumed by the thread renderer.
+ * Hosts map their per-division row shape (studio_project_messages,
+ * jobs_interview_messages, care_threads, marketplace_seller_chat, ...)
+ * onto this via `MessageThreadAdapter.rowToMessage()`.
+ */
+export type ThreadMessage = {
+  id: string;
+  /** The thread / project / conversation ID this message belongs to. */
+  threadId: string;
+  /** Author user ID. Null when the message is system-generated. */
+  senderId: string | null;
+  /** Display name (eg. "Adaeze Okonkwo", "HenryCo Team"). */
+  senderName: string;
+  /** Coarse role for layout alignment + tone tinting:
+   *   - "viewer"  → render right-aligned with viewer styling
+   *   - "team"    → render left-aligned with team styling
+   *   - "system"  → render centered, muted (status changes, etc) */
+  senderRole: "viewer" | "team" | "system";
+  /** Plain-text body. Markdown is rendered safely if `renderMarkdown` is true. */
+  body: string;
+  /** Attachments rendered as chips below the body. */
+  attachments?: ThreadAttachment[];
+  /** ISO timestamp. */
+  createdAt: string;
+  /** ISO timestamp; null when not edited. */
+  editedAt?: string | null;
+  /** True when the viewer is the sender — drives "Sent" indicator + alignment. */
+  isOwnMessage?: boolean;
+};
+
+export type ThreadAttachment = {
+  url: string;
+  name: string;
+  type: string;
+  size?: number | null;
+};
+
+/** Minimal viewer profile rendered as the avatar / Sent-by badge. */
+export type ThreadViewer = {
+  userId: string;
+  fullName: string;
+  avatarUrl?: string | null;
+};
+
+/** Result of `sendAction` — host returns the persisted ID + optional row
+ * for replacing the optimistic message. */
+export type ThreadSendResult =
+  | {
+      ok: true;
+      messageId: string;
+      message?: Partial<ThreadMessage>;
+    }
+  | {
+      ok: false;
+      reason?: string;
+    };
+
+/** Result of `attachAction` — host returns the uploaded asset metadata. */
+export type ThreadAttachmentUploadResult =
+  | {
+      ok: true;
+      url: string;
+      name: string;
+      type: string;
+      size: number | null;
+    }
+  | {
+      ok: false;
+      reason?: string;
+    };
+
+/**
+ * Everything a host must supply to plug the thread engine into a
+ * specific Supabase table + server-action set.
+ *
+ * Engine owns: rendering, optimistic state, scroll, draft persistence.
+ * Host owns: subscription identifiers, row mapping, server actions.
+ */
+export type MessageThreadAdapter = {
+  /** Channel name used for the realtime subscription. Should be
+   * stable per-thread so multiple mounts share a channel. */
+  channelName: (threadId: string) => string;
+
+  /** Postgres-changes filter, eg. `project_id=eq.${threadId}`. */
+  subscriptionFilter: (threadId: string) => string;
+
+  /** Schema + table the engine subscribes to for INSERTs. */
+  schema?: string;
+  table: string;
+
+  /** Map a raw Supabase row → ThreadMessage. Return null to drop the row
+   * (eg. internal-only messages the viewer shouldn't see). */
+  rowToMessage: (row: Record<string, unknown>, viewerId: string) => ThreadMessage | null;
+
+  /** Server action that persists a message. Receives a FormData with
+   * `threadId`, `body`, optionally `attachments` (JSON-stringified). */
+  sendAction: (formData: FormData) => Promise<ThreadSendResult>;
+
+  /** Optional server action that marks all messages in this thread as
+   * read by the viewer. Engine fires it once on mount + after each
+   * incoming message. Defaults to no-op. */
+  markReadAction?: (formData: FormData) => Promise<void>;
+
+  /** Optional server action that uploads an attachment. Receives a
+   * FormData with `file`. */
+  attachAction?: (formData: FormData) => Promise<ThreadAttachmentUploadResult>;
+};
+
+/**
+ * Browser Supabase factory. The engine never imports `@supabase/supabase-js`
+ * directly — the host passes its own factory so the package stays portable.
+ *
+ * Returns null in environments without realtime (SSR, tests). The engine
+ * gracefully degrades to "no live updates" when null.
+ */
+export type ThreadSupabaseFactory = () => ThreadSupabaseLike | null;
+
+export type ThreadSupabaseLike = {
+  channel: (name: string) => ThreadChannelLike;
+  removeChannel: (channel: ThreadChannelLike) => unknown;
+};
+
+export type ThreadChannelLike = {
+  on: (
+    event: string,
+    options: { event: string; schema: string; table: string; filter?: string },
+    handler: (payload: { new?: Record<string, unknown> }) => void,
+  ) => ThreadChannelLike;
+  subscribe: (callback?: (status: string) => void) => ThreadChannelLike;
+};
+
+export type MessageThreadProps = {
+  /** Stable thread identifier (project ID, conversation ID, etc). */
+  threadId: string;
+  /** Initial messages from the host's server-side fetch. */
+  initialMessages: ThreadMessage[];
+  /** Authenticated viewer. */
+  viewer: ThreadViewer;
+  /** Per-thread adapter. */
+  adapter: MessageThreadAdapter;
+  /** Browser Supabase factory for the live subscription. */
+  getSupabase?: ThreadSupabaseFactory;
+  /** Optional placeholder text in the composer textarea. */
+  placeholder?: string;
+  /** Optional empty-state copy. */
+  emptyTitle?: string;
+  emptyBody?: string;
+  /** Render markdown in the body. Defaults to false (plain text). */
+  renderMarkdown?: boolean;
+};
