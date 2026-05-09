@@ -8,6 +8,7 @@ import {
   Send,
   X as XIcon,
 } from "lucide-react";
+import { useViewportKeyboard } from "@henryco/chat-composer";
 import type {
   MessageThreadProps,
   ThreadAttachment,
@@ -111,8 +112,30 @@ export function MessageThread({
   const [pending, startTransition] = useTransition();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [textareaFocused, setTextareaFocused] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const composerRef = useRef<HTMLFormElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Mobile keyboard handling — when the on-screen keyboard opens, the
+  // composer must stay visible above it. Hook is only "active" while the
+  // textarea is focused so we don't burn visualViewport listeners on
+  // pages that aren't actively typing. iOS Safari needs the explicit
+  // scrollIntoView because its auto-scroll-on-focus doesn't account for
+  // the inner thread scroll container.
+  const { bottomInset, isKeyboardOpen } = useViewportKeyboard(textareaFocused);
+
+  useEffect(() => {
+    if (!textareaFocused || !isKeyboardOpen) return;
+    // Defer one frame so the keyboard animation has started — without
+    // this, scrollIntoView fires before the visualViewport reports the
+    // new height and the composer ends up clipped.
+    const id = requestAnimationFrame(() => {
+      composerRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [textareaFocused, isKeyboardOpen, bottomInset]);
 
   // Autoscroll to bottom when message count changes.
   useEffect(() => {
@@ -257,7 +280,7 @@ export function MessageThread({
         </div>
       )}
 
-      <form className="mt-composer" onSubmit={handleSend}>
+      <form ref={composerRef} className="mt-composer" onSubmit={handleSend}>
         {attachments.length > 0 ? (
           <div className="mt-composer-attachments">
             {attachments.map((attachment, idx) => (
@@ -268,8 +291,7 @@ export function MessageThread({
                   type="button"
                   onClick={() => removeAttachment(idx)}
                   aria-label={`Remove ${attachment.name}`}
-                  className="mt-composer-icon-btn"
-                  style={{ width: "1.1rem", height: "1.1rem" }}
+                  className="mt-composer-attachment-remove"
                 >
                   <XIcon className="h-3 w-3" />
                 </button>
@@ -278,13 +300,23 @@ export function MessageThread({
           </div>
         ) : null}
 
-        <div className="mt-composer-row">
+        {/* Field wrapper owns the focus-within state so the border + halo
+         * + soft inner shadow swap as one element on textarea focus —
+         * one transition surface, no jarring border snap on the textarea
+         * alone. */}
+        <div className="mt-composer-field">
           <textarea
+            ref={textareaRef}
             className="mt-composer-textarea"
             placeholder={placeholder}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
+            onFocus={() => setTextareaFocused(true)}
+            onBlur={() => setTextareaFocused(false)}
             onKeyDown={(e) => {
+              // Cmd/Ctrl+Enter sends. Bare Enter is a newline (default).
+              // Power-user expectation: do NOT flip this — many users
+              // compose multi-paragraph replies.
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 e.currentTarget.form?.requestSubmit();
