@@ -182,6 +182,7 @@ as $$
 declare
   v_actor_id uuid := auth.uid();
   v_actor_role text;
+  v_entity_id uuid;
   v_audit_id uuid;
 begin
   -- Defence-in-depth: caller must be a staff member in some division
@@ -202,6 +203,15 @@ begin
     v_actor_role := null;
   end;
 
+  -- Defensive cast: audit_logs.entity_id is uuid on prod. Callers pass
+  -- the entity id as text (TS-side type is string). Empty/invalid
+  -- inputs degrade to NULL so the audit row still writes.
+  begin
+    v_entity_id := nullif(p_entity_id, '')::uuid;
+  exception when others then
+    v_entity_id := null;
+  end;
+
   insert into public.audit_logs (
     action,
     actor_id,
@@ -219,7 +229,7 @@ begin
     v_actor_id,
     v_actor_role,
     p_entity_type,
-    p_entity_id,
+    v_entity_id,
     p_old_values,
     p_new_values,
     p_reason,
