@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { typeStyle } from "../tokens/type";
 import { CSS_VARS } from "../tokens/color";
@@ -86,7 +86,12 @@ export function MetricCard({ label, value, icon, context, href, onClick }: Metri
           color: `var(${CSS_VARS.ink})`,
           marginTop: "0.5rem",
           marginBottom: 0,
+          ...displayValueStyle(value),
         }}
+        // The class hooks the global @keyframes hc-metric-arrive (defined
+        // in apps/account/app/globals.css) so the figure rises 4px and
+        // settles. Reduced-motion strips the animation.
+        className="hc-metric-value"
       >
         {value}
       </p>
@@ -154,4 +159,39 @@ function renderContextText(ctx: MetricContext): ReactNode {
     );
   }
   return <span>{ctx.magnitude}</span>;
+}
+
+/**
+ * Promote concise headline values to display-font hero scale.
+ *
+ * The dashboard ships a serif display token (Iowan Old Style → Baskerville
+ * → Palatino → Times) that is rarely used at impact size. Numeric / currency
+ * values short enough to typeset in one line get the editorial treatment:
+ * a clamp() font-size that scales with viewport, old-style figures, tight
+ * letter-spacing, and a `hc-metric-value` class hook for arrival motion.
+ *
+ * Strings that are *not* numeric (status words, labels) keep the existing
+ * `typeStyle("title")` so we don't accidentally apply oldstyle figures to
+ * "Active" or "Pending" — those read better in sans-serif at conventional
+ * weight.
+ */
+function displayValueStyle(value: string): CSSProperties {
+  const trimmed = value.trim();
+  if (!trimmed) return {};
+  // Allow currency symbols, digits, separators, decimals, percent, "+/-",
+  // and a single trailing letter cluster up to 3 chars (e.g. "12.4k", "3M").
+  const isHeadlineNumeric =
+    trimmed.length <= 9 &&
+    /^[+\-]?[₦$£€]?\s?[0-9][0-9,. ]*\s?[%kKmMbB]?$/.test(trimmed);
+  if (!isHeadlineNumeric) return {};
+  return {
+    fontFamily:
+      'var(--acct-font-display, "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif)',
+    fontWeight: 500,
+    fontSize: "clamp(2.25rem, 4vw, 3.5rem)",
+    lineHeight: 1.05,
+    letterSpacing: "-0.01em",
+    fontFeatureSettings: '"lnum" 0, "onum" 1, "kern" 1, "ss01" 1',
+    fontVariantNumeric: "oldstyle-nums proportional-nums",
+  };
 }

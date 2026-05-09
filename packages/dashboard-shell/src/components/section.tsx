@@ -7,16 +7,45 @@ import { CSS_VARS } from "../tokens/color";
  *
  * Used inside Panel for grouping related widgets. The visual signature
  * is calmer than PageHeader (smaller type scale, no full margin reset).
+ *
+ * V5-4: optional `divisionAccent` prop renders a 28×2 px rule above the
+ * kicker, color-keyed to the dominant division of the section's content.
+ * Falls back to the default gold accent. The rule sits in the global CSS
+ * (`.hc-section-marker` in apps/account/app/globals.css) — hosts that
+ * use this prop must mount that stylesheet.
  */
+export type SectionDivisionAccent =
+  | "hub"
+  | "account"
+  | "staff"
+  | "care"
+  | "marketplace"
+  | "property"
+  | "logistics"
+  | "jobs"
+  | "learn"
+  | "studio"
+  | "security"
+  | "system";
+
 export type SectionProps = {
   kicker?: string;
   headline?: string;
   description?: string;
   action?: ReactNode;
+  /** Render an editorial division-accent rule above the kicker. */
+  divisionAccent?: SectionDivisionAccent;
   children: ReactNode;
 };
 
-export function Section({ kicker, headline, description, action, children }: SectionProps) {
+export function Section({
+  kicker,
+  headline,
+  description,
+  action,
+  divisionAccent,
+  children,
+}: SectionProps) {
   return (
     <section style={{ marginBottom: "1.5rem" }}>
       {(kicker || headline || action) ? (
@@ -30,6 +59,15 @@ export function Section({ kicker, headline, description, action, children }: Sec
           }}
         >
           <div>
+            {divisionAccent ? (
+              <span
+                aria-hidden
+                className="hc-section-marker"
+                style={{
+                  ["--hc-section-accent" as string]: `var(--acct-div-${divisionAccent})`,
+                }}
+              />
+            ) : null}
             {kicker ? (
               <p
                 style={{

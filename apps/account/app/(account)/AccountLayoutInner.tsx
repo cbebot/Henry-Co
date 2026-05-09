@@ -34,9 +34,13 @@ export default async function AccountLayoutInner({ children }: { children: React
 
   return (
     <div className="min-h-screen">
+      {/* V5-4 a11y: skip link only visible when keyboard-focused */}
+      <a href="#hc-main" className="hc-skip-link">
+        Skip to main content
+      </a>
       <AccountStudioToastRoot />
       <Sidebar user={userInfo} />
-      <main className="hc-shell-main lg:pl-[var(--acct-sidebar-width)]">
+      <main id="hc-main" className="hc-shell-main lg:pl-[var(--acct-sidebar-width)]">
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
       </main>
     </div>

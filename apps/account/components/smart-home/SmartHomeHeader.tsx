@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { PageHeader as ShellPageHeader } from "@henryco/dashboard-shell";
 import { formatRelative } from "@/lib/smart-home/format";
+import { RealtimeStatusOrb } from "./RealtimeStatusOrb";
 
 /**
  * SmartHomeHeader — content-first lead. Closes anti-pattern #17.
@@ -60,7 +61,7 @@ export function SmartHomeHeader({
           }}
         >
           {savedItemsCount > 0 ? <SavedItemsRail count={savedItemsCount} /> : null}
-          <LiveChip />
+          <RealtimeStatusOrb />
         </div>
       }
     />

@@ -250,7 +250,13 @@ export function ChatComposer(props: ComposerProps) {
   const acceptForInput =
     acceptAttribute || acceptedMimeTypes.join(",");
 
-  const showFullScreenButton = enableFullScreenOnMobile && isMobile;
+  // V5-4 polish: surface the full-screen affordance on BOTH mobile and
+  // desktop when the host opts in. The mobile path is the canonical use
+  // case (the keyboard takes most of the screen); the desktop path is a
+  // power-user shortcut for long replies — same engine, same draft, same
+  // attachments, just a roomier surface. Hosts that only want it on
+  // mobile can pass `enableFullScreenOnMobile={false}` to suppress.
+  const showFullScreenButton = enableFullScreenOnMobile;
 
   const inlineComposer = (
     <div
@@ -265,6 +271,7 @@ export function ChatComposer(props: ComposerProps) {
       )}
       style={toneStyle(tone)}
       data-drag-over={isDragOver ? "true" : undefined}
+      data-has-text={text.length > 0 || hasAttachments ? "true" : "false"}
       onDragOver={(event) => {
         if (!enableAttachments) return;
         if (event.dataTransfer.types.includes("Files")) {
@@ -308,14 +315,16 @@ export function ChatComposer(props: ComposerProps) {
           disabled={disabled}
           aria-label={ariaLabel || "Message body"}
           aria-describedby={liveRegionId}
-          className="flex-1 px-2 py-2 text-zinc-900 dark:text-white"
+          data-hc-no-zoom
+          className="henryco-composer-input flex-1 px-2 py-2 text-[15px] leading-6 text-zinc-900 caret-[color:var(--composer-accent)] dark:text-white sm:text-[15.5px]"
         />
         {showFullScreenButton ? (
           <button
             type="button"
             onClick={() => setIsFullScreen(true)}
-            className="henryco-attach-pill mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[rgba(15,23,42,0.08)] text-zinc-700 dark:border-white/10 dark:text-white"
-            aria-label={labels?.expandLabel || "Open full-screen composer"}
+            className="henryco-attach-pill henryco-composer-expand mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[rgba(15,23,42,0.08)] text-zinc-700 dark:border-white/10 dark:text-white"
+            aria-label={labels?.expandLabel || (isMobile ? "Open full-screen composer" : "Expand composer")}
+            title={labels?.expandLabel || (isMobile ? "Open full-screen composer" : "Expand composer")}
           >
             <Maximize2 className="h-4 w-4" aria-hidden />
           </button>

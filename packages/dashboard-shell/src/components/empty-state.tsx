@@ -52,7 +52,15 @@ export function EmptyState({ kicker, headline, body, action, align = "center" }:
       ) : null}
       <p
         style={{
-          ...typeStyle("headline"),
+          // Editorial display: Iowan Old Style at headline scale, with
+          // a slight optical lift. Falls back to the host's headline
+          // typeStyle if no display token is present.
+          fontFamily:
+            'var(--acct-font-display, "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif)',
+          fontWeight: 500,
+          fontSize: "clamp(1.5rem, 2.5vw, 1.875rem)",
+          lineHeight: 1.2,
+          letterSpacing: "-0.005em",
           color: `var(${CSS_VARS.ink})`,
           margin: 0,
           maxWidth: "40ch",

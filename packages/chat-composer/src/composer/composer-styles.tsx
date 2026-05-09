@@ -150,6 +150,62 @@ const STYLE_BODY = `
   pointer-events: none;
 }
 
+/* V5-4 polish: composer text input — robust contrast and "alive" focus.
+   The textarea inherits color from the host theme (Tailwind dark: classes
+   set zinc-900 / white), but we ALSO bind to the global --site-text token
+   when present so hosts using the public theme system get the exact
+   foreground that everything else on the page uses. caret-color is
+   already set via Tailwind's caret-[var] but we mirror it here for safety
+   in case an ancestor overrode it. */
+.henryco-composer-input {
+  caret-color: var(--composer-accent, #0E7C86);
+  color: var(--site-text, currentColor);
+  -webkit-text-fill-color: var(--site-text, currentColor);
+}
+:where(.dark) .henryco-composer-input {
+  color: var(--site-text, #F5F1E8);
+  -webkit-text-fill-color: var(--site-text, #F5F1E8);
+}
+.henryco-composer-input::placeholder {
+  color: color-mix(in srgb, var(--site-text, currentColor) 45%, transparent);
+}
+:where(.dark) .henryco-composer-input::placeholder {
+  color: color-mix(in srgb, var(--site-text, #F5F1E8) 35%, transparent);
+}
+
+/* V5-4 polish: gentle "alive" expand-button breath when the composer is
+   empty. Stops as soon as the user types a character so it never
+   competes with active typing. Hosts can opt out by setting
+   data-hc-quiet on the composer shell. */
+@keyframes henryco-expand-breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--composer-accent, #0E7C86) 0%, transparent); }
+  50% { transform: scale(1.04); box-shadow: 0 0 0 6px color-mix(in srgb, var(--composer-accent, #0E7C86) 6%, transparent); }
+}
+.henryco-composer-shell:not([data-has-text="true"]):not([data-hc-quiet]) .henryco-composer-expand {
+  animation: henryco-expand-breathe 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .henryco-composer-shell .henryco-composer-expand {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* V5-4 polish: full-screen overlay surface that reads from the host
+   theme variables. Falls back to the white/zinc-#0b1220 Tailwind classes
+   already on the element — these rules just sit above as gentle
+   theme-aware overrides when the host actually defines --site-bg. */
+.henryco-fullscreen-overlay {
+  background-color: var(--site-bg, #ffffff);
+  color: var(--site-text, #0f172a);
+  -webkit-text-fill-color: var(--site-text, #0f172a);
+}
+:where(.dark) .henryco-fullscreen-overlay {
+  background-color: var(--site-bg, #0b1220);
+  color: var(--site-text, #F5F1E8);
+  -webkit-text-fill-color: var(--site-text, #F5F1E8);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .henryco-draft-pulse,
   .henryco-draft-saved-pop,

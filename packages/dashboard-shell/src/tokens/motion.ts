@@ -91,13 +91,21 @@ export const MOTION_PRESET = {
  */
 export const MOTION_KEYFRAMES_CSS = `
 @keyframes henrycoSurfaceEntry {
-  from {
+  /* V5-4 editorial: fade up 8px with a tiny optical settle (scale
+     0.985 → 1), three-phase rather than two so the surface reads as
+     "arriving" rather than "appearing". Reduced-motion strips both
+     transforms below. */
+  0% {
     opacity: 0;
-    transform: scale(${SOFT_SCALE_START});
+    transform: translateY(8px) scale(0.985);
   }
-  to {
+  60% {
     opacity: 1;
-    transform: scale(${SOFT_SCALE_END});
+    transform: translateY(0) scale(1.004);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -135,8 +143,8 @@ export const MOTION_KEYFRAMES_CSS = `
 
 @media (prefers-reduced-motion: reduce) {
   @keyframes henrycoSurfaceEntry {
-    from { opacity: 0; transform: none; }
-    to { opacity: 1; transform: none; }
+    0% { opacity: 0; transform: none; }
+    100% { opacity: 1; transform: none; }
   }
   @keyframes henrycoDrawerEntry {
     from { opacity: 0; transform: none; }
