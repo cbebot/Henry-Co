@@ -17,8 +17,10 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.92.0",
+    "@henryco/auth": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/notifications": "workspace:^",
