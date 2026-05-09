@@ -151,6 +151,8 @@ export default async function ClientProjectDetailPage({
           initialMessages={detail.messages}
           viewerId={viewer.userId}
           viewerName={viewer.fullName || viewer.email || "You"}
+          projectTitle={detail.project.title}
+          projectSummary={detail.project.summary || detail.project.brief || null}
         />
       ) : null}
       {activeTab === "payments" ? <PaymentsTab detail={detail} /> : null}

@@ -16,6 +16,7 @@ import type {
   ClientMessage,
   ClientMessageAttachment,
 } from "@/types/portal";
+import { RefineWithAiButton } from "./RefineWithAiButton";
 
 /**
  * Studio's adapter for the shared @henryco/messaging-thread engine.
@@ -115,18 +116,25 @@ export type StudioMessageThreadProps = {
   initialMessages: ClientMessage[];
   viewerId: string;
   viewerName: string;
+  /** Project title forwarded to the AI refine action so model output
+   * stays grounded in the right context. */
+  projectTitle?: string | null;
+  /** Project summary forwarded to the AI refine action. */
+  projectSummary?: string | null;
 };
 
 /**
  * Drop-in replacement for the legacy MessageThread used by
- * /client/projects/[projectId] messages tab. Same prop signature so
- * callers don't change.
+ * /client/projects/[projectId] messages tab. Adds the AI ✨ Refine
+ * button via the engine's composerExtras slot.
  */
 export function StudioMessageThread({
   projectId,
   initialMessages,
   viewerId,
   viewerName,
+  projectTitle,
+  projectSummary,
 }: StudioMessageThreadProps) {
   const adapter = useMemo(() => studioAdapter(), []);
   const initial = useMemo(
@@ -147,6 +155,14 @@ export function StudioMessageThread({
       viewer={{ userId: viewerId, fullName: viewerName }}
       adapter={adapter}
       getSupabase={getSupabase}
+      composerExtras={({ draft, setDraft }) => (
+        <RefineWithAiButton
+          draft={draft}
+          setDraft={setDraft}
+          projectTitle={projectTitle}
+          projectSummary={projectSummary}
+        />
+      )}
     />
   );
 }

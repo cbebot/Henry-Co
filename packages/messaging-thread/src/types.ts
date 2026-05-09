@@ -148,4 +148,18 @@ export type MessageThreadProps = {
   emptyBody?: string;
   /** Render markdown in the body. Defaults to false (plain text). */
   renderMarkdown?: boolean;
+  /**
+   * Extra controls rendered in the composer's actions row, before Send.
+   *
+   * Receives the live `draft` and a `setDraft` callback so the extras
+   * can both read AND mutate the textarea content. Used today for the
+   * studio "Refine with AI" sparkle button — the action takes the
+   * current draft, sends it to Claude, and replaces the draft with a
+   * polished version.
+   *
+   * Render prop instead of plain ReactNode so the slot stays purely
+   * declarative without forcing the engine to expose its internal
+   * draft state via context.
+   */
+  composerExtras?: (ctx: { draft: string; setDraft: (value: string) => void }) => import("react").ReactNode;
 };
