@@ -17,6 +17,14 @@ export {
 export { deepLTranslate, deepLTranslateMany, isDeepLSupported, type DeepLTranslateResult } from "./deepl";
 export { resolveLocalizedDynamicField, type LocaleTextMap } from "./dynamic-content";
 export {
+  translateText,
+  translateTextMany,
+  createSupabaseTranslationCache,
+  type TranslationCacheClient,
+  type TranslationKind,
+  type TranslateOptions,
+} from "./translate-runtime";
+export {
   formatDate,
   formatDateLong,
   formatTime,
