@@ -1,8 +1,10 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
 @import "../../../packages/workspace-shell/src/styles.css";
+@import "../../../packages/messaging-thread/src/styles.css";
 @source "../../../packages/ui/src";
 @source "../../../packages/workspace-shell/src";
+@source "../../../packages/messaging-thread/src";
 
 /* ──────────────────────────────────────────────────────────────────
    Workspace-shell token mapping for the studio division.
