@@ -9,6 +9,8 @@
     "./components": "./src/components/index.ts",
     "./shell": "./src/shell/index.ts",
     "./register": "./src/register.ts",
+    "./staff-register": "./src/staff-register.ts",
+    "./owner-register": "./src/owner-register.ts",
     "./home-widget": "./src/home-widget.ts",
     "./command-palette": "./src/command-palette.ts",
     "./command-aggregator": "./src/command-aggregator.ts",

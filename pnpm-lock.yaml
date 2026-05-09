@@ -375,12 +375,24 @@ importers:
 
   apps/hub:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/brand':
         specifier: workspace:^
         version: link:../../packages/brand
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/dashboard-modules-owner':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-owner
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../../packages/data
       '@henryco/email':
         specifier: workspace:^
         version: link:../../packages/email
@@ -480,7 +492,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       pg:
         specifier: ^8.20.0
         version: 8.20.0
@@ -969,9 +981,21 @@ importers:
 
   apps/staff:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/dashboard-modules-staff':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-staff
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../../packages/data
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -1569,6 +1593,92 @@ importers:
       '@henryco/data':
         specifier: workspace:^
         version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-owner:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-staff:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
       '@types/node':
         specifier: ^20
         version: 20.19.37

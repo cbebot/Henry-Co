@@ -87,16 +87,25 @@ export default async function DocumentsPage() {
                   </span>
                 </div>
               </div>
-              {doc.file_url && (
+              {doc.file_url ? (
                 <a
-                  href={doc.file_url as string}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`/api/documents/file/${doc.id}`}
+                  download={(doc.name as string) || "document"}
+                  rel="noopener"
                   className="acct-button-ghost rounded-lg"
                   aria-label={copy.downloadLabel}
+                  title={copy.downloadLabel}
                 >
                   <Download size={16} />
                 </a>
+              ) : (
+                <span
+                  className="acct-button-ghost rounded-lg opacity-40"
+                  aria-disabled="true"
+                  title="No file attached"
+                >
+                  <Download size={16} />
+                </span>
               )}
             </div>
           ))}

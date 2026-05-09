@@ -1,0 +1,1 @@
+export { ownerSettingsModule } from "./module";

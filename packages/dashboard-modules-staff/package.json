@@ -1,0 +1,45 @@
+{
+  "name": "@henryco/dashboard-modules-staff",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./modules": "./src/modules.ts",
+    "./shared": "./src/shared/index.ts",
+    "./staff-overview": "./src/staff-overview/index.ts",
+    "./staff-care": "./src/staff-care/index.ts",
+    "./staff-marketplace": "./src/staff-marketplace/index.tsx",
+    "./staff-property": "./src/staff-property/index.tsx",
+    "./staff-studio": "./src/staff-studio/index.tsx",
+    "./staff-jobs": "./src/staff-jobs/index.tsx",
+    "./staff-learn": "./src/staff-learn/index.tsx",
+    "./staff-logistics": "./src/staff-logistics/index.tsx",
+    "./staff-support": "./src/staff-support/index.tsx",
+    "./staff-moderation": "./src/staff-moderation/index.tsx",
+    "./staff-finance-operator": "./src/staff-finance-operator/index.tsx",
+    "./staff-settings": "./src/staff-settings/index.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "lucide-react": "^0.577.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@henryco/auth": "workspace:^",
+    "@henryco/config": "workspace:^",
+    "@henryco/dashboard-shell": "workspace:^",
+    "@henryco/data": "workspace:^",
+    "@henryco/observability": "workspace:^",
+    "@types/node": "^20",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "lucide-react": "^0.577.0",
+    "next": "^16.1.6",
+    "typescript": "^5.9.3"
+  }
+}

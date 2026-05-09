@@ -1,4 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
+import {
+  verifyWhatsAppSignature,
+  whatsAppFailureResponseInit,
+} from "@henryco/config/whatsapp-webhook";
 import { recordWhatsAppDeliveryReceipt } from "@/lib/support/whatsapp-observability";
 
 /**
@@ -23,18 +27,45 @@ export async function GET(request: NextRequest) {
 /**
  * POST handler for Meta WhatsApp webhook status updates.
  * Receives sent/delivered/read/failed status for outbound messages.
+ *
+ * V5-3 B1: HMAC-SHA256 of the raw body must match x-hub-signature-256
+ * against WHATSAPP_APP_SECRET, otherwise the receiver fails closed.
  */
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
+  const raw = await request.text();
+  const verdict = verifyWhatsAppSignature({
+    rawBody: raw,
+    header: request.headers.get("x-hub-signature-256"),
+    appSecret: process.env.WHATSAPP_APP_SECRET,
+  });
+  if (!verdict.valid) {
+    const init = whatsAppFailureResponseInit(verdict.reason);
+    return NextResponse.json(init.body, { status: init.status });
+  }
 
-    const entries = Array.isArray(body?.entry) ? body.entry : [];
+  let body: unknown;
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    return NextResponse.json({ ok: true });
+  }
+
+  try {
+    const root = body as Record<string, unknown>;
+    const entries = Array.isArray(root?.entry) ? root.entry : [];
     for (const entry of entries) {
-      const changes = Array.isArray(entry?.changes) ? entry.changes : [];
+      const changes = Array.isArray((entry as Record<string, unknown>)?.changes)
+        ? ((entry as Record<string, unknown>).changes as unknown[])
+        : [];
       for (const change of changes) {
-        const statuses = Array.isArray(change?.value?.statuses) ? change.value.statuses : [];
+        const value = (change as Record<string, unknown>)?.value as
+          | Record<string, unknown>
+          | undefined;
+        const statuses = Array.isArray(value?.statuses)
+          ? (value!.statuses as unknown[])
+          : [];
         for (const status of statuses) {
-          await recordWhatsAppDeliveryReceipt(status);
+          await recordWhatsAppDeliveryReceipt(status as never);
         }
       }
     }

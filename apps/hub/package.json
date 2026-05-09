@@ -12,8 +12,12 @@
     "db:probe": "node ./scripts/probe-supabase-tables.mjs"
   },
   "dependencies": {
+    "@henryco/auth": "workspace:^",
     "@henryco/brand": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/dashboard-modules-owner": "workspace:^",
+    "@henryco/dashboard-shell": "workspace:^",
+    "@henryco/data": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/intelligence": "workspace:^",

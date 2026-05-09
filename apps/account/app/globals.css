@@ -137,6 +137,175 @@ body {
   color: var(--acct-ink);
 }
 
+/*
+ * V5-4 ambient time-of-day tint.
+ *
+ * The dashboard surface gets a near-imperceptible hue overlay keyed to
+ * the user's local hour. Five buckets, all <5% opacity — you don't
+ * notice the layer, but the page feels inhabited rather than static.
+ *
+ * The hour bucket is set as `data-hc-tod` on <body> by the layout
+ * (server-side, from the user's tz cookie or the X-Vercel-IP-Timezone
+ * header). The rules below resolve the gradient.
+ *
+ * Reduced-motion: tints stay (they don't animate); only entrance
+ * animations elsewhere are suppressed.
+ */
+body[data-hc-tod="dawn"] {
+  background-image:
+    radial-gradient(
+      60% 40% at 12% 0%,
+      color-mix(in srgb, var(--acct-blue, #3B82F6) 6%, transparent) 0%,
+      transparent 80%
+    );
+  background-attachment: fixed;
+}
+body[data-hc-tod="day"] {
+  /* No overlay — the working hours stay clean. */
+  background-image: none;
+}
+body[data-hc-tod="golden"] {
+  background-image:
+    radial-gradient(
+      55% 38% at 88% 0%,
+      color-mix(in srgb, var(--acct-gold, #C9A227) 7%, transparent) 0%,
+      transparent 75%
+    );
+  background-attachment: fixed;
+}
+body[data-hc-tod="evening"] {
+  background-image:
+    radial-gradient(
+      80% 38% at 50% 100%,
+      color-mix(in srgb, var(--acct-orange, #F59E0B) 5%, transparent) 0%,
+      transparent 75%
+    );
+  background-attachment: fixed;
+}
+body[data-hc-tod="night"] {
+  background-image:
+    radial-gradient(
+      65% 35% at 30% 0%,
+      color-mix(in srgb, var(--acct-purple, #8B5CF6) 5%, transparent) 0%,
+      transparent 80%
+    );
+  background-attachment: fixed;
+}
+
+/*
+ * V5-4 KPI value arrival — a 4px lift-and-settle on metric cards when
+ * they paint. Honours prefers-reduced-motion. Layered so even when the
+ * card itself enters via acct-fade-in, the headline number arrives
+ * about 80ms later, like a typewriter dropping the figure in.
+ */
+@keyframes hc-metric-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hc-metric-value {
+  animation: hc-metric-arrive 480ms cubic-bezier(0.22, 0.61, 0.36, 1) 80ms both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hc-metric-value {
+    animation: none;
+  }
+}
+
+/*
+ * V5-4 editorial section marker — a 28px × 2px division-accent rule
+ * that sits above a Section's kicker. Hosts wire it by passing
+ * `divisionAccent` to <Section>; the shell renders this marker.
+ */
+.hc-section-marker {
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  margin-bottom: 12px;
+  background-color: var(--hc-section-accent, var(--acct-gold, #C9A227));
+  border-radius: 1px;
+  vertical-align: middle;
+}
+
+/*
+ * V5-4 skip-to-content — appears only when keyboard-focused. Critical
+ * for screen-reader + keyboard users; invisible and harmless to mouse
+ * users. The element is mounted as the very first child of the
+ * dashboard layout so Tab from the address bar lands here.
+ */
+.hc-skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 9999;
+  padding: 0.6rem 1rem;
+  background-color: var(--acct-ink);
+  color: var(--acct-bg);
+  border-radius: var(--acct-radius-sm);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.hc-skip-link:focus,
+.hc-skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 3px solid var(--acct-gold);
+  outline-offset: 3px;
+}
+
+/*
+ * V5-4 sidebar gold meridian — a 1px vertical rule on the right edge of
+ * the desktop sidebar, fading from gold (12% opacity) at the top to
+ * transparent over 60vh, then transparent for the rest. New Yorker
+ * column-rule trick: almost invisible, but present. Adds atmosphere
+ * without competing with content.
+ */
+.hc-sidebar {
+  position: fixed;
+}
+.hc-sidebar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -1px;
+  width: 1px;
+  height: 100vh;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--acct-gold, #C9A227) 14%, transparent) 0%,
+    color-mix(in srgb, var(--acct-gold, #C9A227) 4%, transparent) 35%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/*
+ * V5-4 unified focus-visible polish — every interactive surface in the
+ * dashboard chrome shows a calm gold ring on keyboard focus, never on
+ * mouse click. Modules can override via their own `:focus-visible` rules
+ * but the default is consistent.
+ */
+.acct-button-primary:focus-visible,
+.acct-button-secondary:focus-visible,
+.acct-button-ghost:focus-visible,
+.acct-card:focus-visible,
+.acct-card a:focus-visible,
+.acct-chip:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="link"]:focus-visible {
+  outline: 2px solid var(--acct-gold, #C9A227);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
 /* ─── Typography ─── */
 .acct-display {
   font-family: var(--acct-font-display);
@@ -620,16 +789,34 @@ html, body { overflow-x: clip; max-width: 100vw; }
 .hc-smart-home-module-grid > .hc-smart-home-cell-md { grid-column: span 2; }
 .hc-smart-home-module-grid > .hc-smart-home-cell-lg { grid-column: 1 / -1; }
 
+/*
+ * V5-4 editorial anchor cell — the highest-weight widget on the home
+ * grid is promoted to a 2x2 anchor on desktop (≥ 1024px) so it reads
+ * as the page's center of gravity. The grid stays calm; the anchor
+ * just earns more visual weight by occupying twice the footprint.
+ * Tablet/mobile fall back to the same span-2 / full-row treatment as
+ * a regular md/lg cell — anchor only kicks in on desktop.
+ */
+.hc-smart-home-module-grid > .hc-smart-home-cell-anchor {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
 @media (max-width: 1023px) {
   .hc-smart-home-module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hc-smart-home-module-grid > .hc-smart-home-cell-md { grid-column: 1 / -1; }
+  .hc-smart-home-module-grid > .hc-smart-home-cell-anchor {
+    grid-column: 1 / -1;
+    grid-row: span 1;
+  }
 }
 
 @media (max-width: 639px) {
   .hc-smart-home-module-grid { grid-template-columns: 1fr; }
   .hc-smart-home-module-grid > .hc-smart-home-cell-sm,
   .hc-smart-home-module-grid > .hc-smart-home-cell-md,
-  .hc-smart-home-module-grid > .hc-smart-home-cell-lg { grid-column: 1 / -1; }
+  .hc-smart-home-module-grid > .hc-smart-home-cell-lg,
+  .hc-smart-home-module-grid > .hc-smart-home-cell-anchor { grid-column: 1 / -1; grid-row: span 1; }
 }
 
 /*
@@ -675,6 +862,102 @@ html, body { overflow-x: clip; max-width: 100vw; }
 @media (prefers-reduced-motion: reduce) {
   .hc-live-chip[data-state="pulsing"] .hc-live-chip__dot {
     animation: none;
+  }
+}
+
+/*
+ * Realtime status orb — the calm, breathing dot in the dashboard
+ * header that reflects channel health. Three ambient states:
+ *   subscribed → 4-second breath in green; the page is alive.
+ *   connecting → 1.2-second pulse in soft amber.
+ *   error/closed → slow drift in warm amber; not red, not alarming.
+ *
+ * Uses CSS custom properties for the per-state palette so the host
+ * theme can override (each accent reads from --acct-* tokens).
+ */
+.hc-realtime-orb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background-color: var(--hc-orb-bg, rgba(16, 185, 129, 0.10));
+  color: var(--hc-orb-fg, var(--acct-green, #047857));
+  transition: background-color 320ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              color 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.hc-realtime-orb__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 0 6px var(--hc-orb-halo, rgba(16, 185, 129, 0.18));
+  transition: box-shadow 320ms ease;
+}
+
+.hc-realtime-orb__label {
+  font-variant-numeric: tabular-nums;
+}
+
+.hc-realtime-orb[data-state="subscribed"] {
+  --hc-orb-bg: rgba(16, 185, 129, 0.10);
+  --hc-orb-fg: var(--acct-green, #047857);
+  --hc-orb-halo: rgba(16, 185, 129, 0.20);
+}
+.hc-realtime-orb[data-state="connecting"] {
+  --hc-orb-bg: rgba(245, 158, 11, 0.10);
+  --hc-orb-fg: var(--acct-orange, #b45309);
+  --hc-orb-halo: rgba(245, 158, 11, 0.20);
+}
+.hc-realtime-orb[data-state="error"] {
+  --hc-orb-bg: rgba(178, 122, 0, 0.10);
+  --hc-orb-fg: var(--acct-sev-security, #B27A00);
+  --hc-orb-halo: rgba(178, 122, 0, 0.22);
+}
+
+@keyframes hc-orb-breathe {
+  0%, 100% {
+    box-shadow: 0 0 0 4px var(--hc-orb-halo, rgba(16, 185, 129, 0.18));
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--hc-orb-halo) 30%, transparent);
+    transform: scale(1.06);
+  }
+}
+@keyframes hc-orb-pulse-fast {
+  0%, 100% {
+    box-shadow: 0 0 0 5px var(--hc-orb-halo, rgba(245, 158, 11, 0.18));
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--hc-orb-halo) 50%, transparent);
+    transform: scale(1.10);
+  }
+}
+@keyframes hc-orb-drift {
+  0%, 100% { box-shadow: 0 0 0 5px var(--hc-orb-halo, rgba(178, 122, 0, 0.20)); }
+  50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--hc-orb-halo) 70%, transparent); }
+}
+
+.hc-realtime-orb[data-state="subscribed"] .hc-realtime-orb__dot {
+  animation: hc-orb-breathe 4000ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.hc-realtime-orb[data-state="connecting"] .hc-realtime-orb__dot {
+  animation: hc-orb-pulse-fast 1200ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.hc-realtime-orb[data-state="error"] .hc-realtime-orb__dot {
+  animation: hc-orb-drift 2400ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-realtime-orb__dot {
+    animation: none !important;
+    transform: none !important;
   }
 }
 

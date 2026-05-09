@@ -1,0 +1,1 @@
+export { ownerDivisionsModule } from "./module";

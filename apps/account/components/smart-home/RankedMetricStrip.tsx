@@ -25,7 +25,7 @@ export type RankedMetricStripProps = {
 export function RankedMetricStrip({ widgets }: RankedMetricStripProps) {
   if (widgets.length === 0) return null;
   return (
-    <Section kicker="Today" headline="Where you stand right now">
+    <Section kicker="Today" headline="Where you stand right now" divisionAccent="hub">
       <div
         style={{
           display: "grid",

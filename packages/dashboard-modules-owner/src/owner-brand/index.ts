@@ -1,0 +1,1 @@
+export { ownerBrandModule } from "./module";

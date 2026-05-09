@@ -329,6 +329,20 @@ export async function loadDashboardOptions(user: AuthenticatedUser): Promise<Das
 // Re-export viewer helpers for one-import server consumption.
 export { requireUnifiedViewer, buildUnifiedViewer, getViewerRoles } from "./viewer";
 
+// Track C (DASH-9) staff helpers. Re-exported here so single-import
+// callers (apps/staff/app/(track-c)/layout.tsx) can pick up everything
+// from @henryco/auth/server. Track-C-only imports may prefer
+// @henryco/auth/staff for clearer intent.
+export {
+  requireStaffViewer,
+  buildStaffViewer,
+  getStaffMemberships,
+  hasStaffAccessIn,
+  getStaffDivisionsForViewer,
+  getStaffRolesIn,
+  type StaffViewer,
+} from "./staff";
+
 // Re-export cookie helpers.
 export {
   setDashboardPreference,

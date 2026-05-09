@@ -1,0 +1,1 @@
+export { ownerMessagingModule } from "./module";

@@ -154,12 +154,9 @@ const STYLE_BODY = `
    Fullscreen composer — bulletproof readability.
    The FullScreenComposer renders into document.body via createPortal,
    which means it escapes any parent surface (e.g., the studio
-   messaging centre's hardcoded dark surface). Tailwind's dark: variant
-   relies on prefers-color-scheme by default, but the platform also
-   exposes a class-based theme toggle (html.dark / data-theme). Without
-   these explicit rules the textarea inherits a light-text colour over
-   a dark portal background and the user can't see what they're
-   typing — the bug owner reported on May 2026.
+   messaging centre's hardcoded dark surface). Without explicit rules
+   the textarea inherits a light-text colour over a dark portal
+   background and the user can't see what they're typing.
 
    Rules below cover three triggers for a dark fullscreen:
      1. html.dark / [data-theme="dark"] — class-based theme
@@ -209,6 +206,37 @@ const STYLE_BODY = `
   }
   [data-composer-fullscreen="true"]:not([data-color-scheme="light"]) textarea::placeholder {
     color: rgba(245, 244, 238, 0.45);
+  }
+}
+
+/* V5-4 polish: composer text input class hook — applied to the
+   textarea via .henryco-composer-input. Provides a precise caret
+   accent and host-theme-aware ::selection styling that the broader
+   [data-composer-fullscreen] rules above don't override. The fullscreen
+   rules win on color/background; this stays narrow to caret + selection
+   so the two layers compose rather than collide. */
+.henryco-composer-input {
+  caret-color: var(--composer-accent, #0E7C86);
+}
+.henryco-composer-input::selection {
+  background-color: color-mix(in srgb, var(--composer-accent, #0E7C86) 18%, transparent);
+}
+
+/* V5-4 polish: gentle "alive" expand-button breath when the composer is
+   empty. Stops as soon as the user types a character so it never
+   competes with active typing. Hosts can opt out by setting
+   data-hc-quiet on the composer shell. */
+@keyframes henryco-expand-breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--composer-accent, #0E7C86) 0%, transparent); }
+  50% { transform: scale(1.04); box-shadow: 0 0 0 6px color-mix(in srgb, var(--composer-accent, #0E7C86) 6%, transparent); }
+}
+.henryco-composer-shell:not([data-has-text="true"]):not([data-hc-quiet]) .henryco-composer-expand {
+  animation: henryco-expand-breathe 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .henryco-composer-shell .henryco-composer-expand {
+    animation: none !important;
+    transform: none !important;
   }
 }
 

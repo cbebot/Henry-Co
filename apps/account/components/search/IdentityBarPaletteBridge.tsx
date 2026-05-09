@@ -16,13 +16,17 @@
  */
 
 import { IdentityBar } from "@henryco/dashboard-shell/shell";
+import { ThemeToggle } from "@henryco/ui";
 import type { ComponentProps } from "react";
 
 import { usePaletteOpen } from "./PaletteOpenProvider";
 
 type IdentityBarProps = ComponentProps<typeof IdentityBar>;
 
-export type IdentityBarPaletteBridgeProps = Omit<IdentityBarProps, "onSearchClick">;
+export type IdentityBarPaletteBridgeProps = Omit<
+  IdentityBarProps,
+  "onSearchClick" | "trailing"
+>;
 
 export default function IdentityBarPaletteBridge(props: IdentityBarPaletteBridgeProps) {
   const palette = usePaletteOpen();
@@ -42,6 +46,10 @@ export default function IdentityBarPaletteBridge(props: IdentityBarPaletteBridge
       {...props}
       onSearchClick={() => palette.open()}
       onSignOut={wrappedSignOut}
+      // V5-4: actually mount the ThemeToggle in the chrome. Until this,
+      // the dashboard had no UI to flip light/dark — users were stuck on
+      // their system default. The toggle cycles light → dark → system.
+      trailing={<ThemeToggle />}
     />
   );
 }

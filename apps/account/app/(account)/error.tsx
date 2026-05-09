@@ -23,7 +23,7 @@ export default function AccountError({
   }, [error]);
 
   return (
-    <div className="acct-card mx-auto max-w-2xl p-6">
+    <div className="acct-card mx-auto max-w-2xl p-6 acct-fade-in">
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--acct-red-soft)] text-[var(--acct-red)]">
           <AlertTriangle size={20} />
@@ -36,6 +36,16 @@ export default function AccountError({
           <p className="mt-3 text-sm leading-7 text-[var(--acct-muted)]">
             {copy.errorBoundary.description}
           </p>
+          {error.digest ? (
+            <p className="mt-3 text-[11px] font-mono tracking-tight text-[var(--acct-muted)]">
+              <span aria-hidden>↳ </span>
+              ref&nbsp;
+              <code className="rounded bg-[var(--acct-surface)] px-1.5 py-0.5 text-[var(--acct-ink)]">
+                {error.digest}
+              </code>
+              <span className="ml-2 opacity-70">(share with support)</span>
+            </p>
+          ) : null}
           <div className="mt-5 flex flex-wrap gap-3">
             <button onClick={reset} className="acct-button-primary rounded-2xl">
               {copy.errorBoundary.reload}

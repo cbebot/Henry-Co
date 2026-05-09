@@ -31,11 +31,16 @@ export type ModuleWidgetGridProps = {
 export function ModuleWidgetGrid({ widgets }: ModuleWidgetGridProps) {
   if (widgets.length === 0) return null;
   return (
-    <Section kicker="Across your divisions" headline="Live snapshots from each registered module">
+    <Section kicker="Across your divisions" headline="Live snapshots from each registered module" divisionAccent="hub">
       <div className="hc-smart-home-module-grid">
-        {widgets.map((widget) => {
-          const cellClass =
-            widget.size === "md"
+        {widgets.map((widget, index) => {
+          // V5-4 editorial: the highest-weight widget (index 0) is
+          // promoted to a 2x2 anchor cell on desktop. The rest fall
+          // back to their declared size. Stays single-column on mobile.
+          const isAnchor = index === 0 && widgets.length >= 4;
+          const cellClass = isAnchor
+            ? "hc-smart-home-cell-anchor"
+            : widget.size === "md"
               ? "hc-smart-home-cell-md"
               : widget.size === "lg"
                 ? "hc-smart-home-cell-lg"

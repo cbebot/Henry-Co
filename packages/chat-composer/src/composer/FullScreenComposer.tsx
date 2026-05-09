@@ -176,6 +176,7 @@ export function FullScreenComposer(props: Props) {
     <div
       ref={containerRef}
       className={cn(
+        "henryco-fullscreen-overlay",
         "fixed inset-0 z-[2147483600] flex flex-col",
         !reduceMotion &&
           (closing
@@ -250,7 +251,8 @@ export function FullScreenComposer(props: Props) {
             fill
             placeholder={labels?.placeholder || "Write a message…"}
             aria-label={ariaLabel || "Message body"}
-            className="min-h-[40vh] text-base leading-7"
+            data-hc-no-zoom
+            className="henryco-composer-input min-h-[40vh] text-[16.5px] leading-7 selection:bg-[color:var(--composer-accent)]/15"
             disabled={busy}
           />
         </div>

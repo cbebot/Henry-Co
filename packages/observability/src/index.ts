@@ -49,3 +49,8 @@ export {
 } from "./sentry/client";
 
 export { registerHenryCoInstrumentation } from "./sentry/instrumentation";
+
+// Track C (DASH-9) — audit log writer is server-only and exposed via
+// the `@henryco/observability/audit-log` subpath ONLY. Re-exporting
+// from this default barrel would pull `server-only` into client
+// bundles for any app that imports the barrel.

@@ -89,6 +89,11 @@ const MAX_RETAINED = 50;
 const REALTIME_BACKOFF_INITIAL_MS = 1_000;
 const REALTIME_BACKOFF_MAX_MS = 30_000;
 const REALTIME_REFRESH_DEBOUNCE_MS = 250;
+// Watchdog: if the broker doesn't reach SUBSCRIBED (or emit an error)
+// inside this window, the channel is considered unhealthy and the start()
+// loop retries with exponential backoff. Without this the UI gets stuck on
+// "connecting" forever when the upstream session JWT is missing/stale.
+const REALTIME_CONNECT_TIMEOUT_MS = 10_000;
 const POLL_FALLBACK_INTERVAL_MS = 30_000;
 
 const RealtimeContext = createContext<RealtimeContextValue | null>(null);
@@ -476,6 +481,27 @@ export function SupabaseRealtimeProvider({
       const filter = `user_id=eq.${userId}`;
       setCustomerStatus("connecting");
 
+      // Watchdog: if the broker doesn't respond with SUBSCRIBED or an error
+      // within REALTIME_CONNECT_TIMEOUT_MS we treat it as an error and retry
+      // with backoff. Without this, a dropped JWT or RLS rejection that
+      // never emits a CLOSED/CHANNEL_ERROR/TIMED_OUT event leaves the UI
+      // pinned to "connecting" forever — that's the report.
+      let watchdog: number | null = window.setTimeout(() => {
+        if (cancelled) return;
+        setCustomerStatus("error");
+        teardown();
+        retryTimer = window.setTimeout(() => {
+          backoffMs = Math.min(backoffMs * 2, REALTIME_BACKOFF_MAX_MS);
+          start();
+        }, backoffMs);
+      }, REALTIME_CONNECT_TIMEOUT_MS);
+      const clearWatchdog = () => {
+        if (watchdog !== null) {
+          window.clearTimeout(watchdog);
+          watchdog = null;
+        }
+      };
+
       channel = supabase
         .channel(`customer_notifications:user:${userId}`)
         .on(
@@ -501,6 +527,7 @@ export function SupabaseRealtimeProvider({
         .subscribe((status: string) => {
           if (cancelled) return;
           if (status === "SUBSCRIBED") {
+            clearWatchdog();
             setCustomerStatus("subscribed");
             backoffMs = REALTIME_BACKOFF_INITIAL_MS;
             return;
@@ -510,6 +537,7 @@ export function SupabaseRealtimeProvider({
             status === "CHANNEL_ERROR" ||
             status === "TIMED_OUT"
           ) {
+            clearWatchdog();
             setCustomerStatus(status === "CLOSED" ? "closed" : "error");
             teardown();
             retryTimer = window.setTimeout(() => {
@@ -580,6 +608,37 @@ export function SupabaseRealtimeProvider({
       const userId = viewer.user.id;
       setStaffStatus("connecting");
 
+      // Track per-channel state so the aggregate staffStatus stays accurate.
+      let contentReady = false;
+      let stateReady = false;
+      const onPartReady = () => {
+        if (contentReady && stateReady) {
+          setStaffStatus("subscribed");
+          backoffMs = REALTIME_BACKOFF_INITIAL_MS;
+        }
+      };
+      const onPartFail = (cause: "closed" | "error") => {
+        if (cancelled) return;
+        setStaffStatus(cause);
+        teardown();
+        retryTimer = window.setTimeout(() => {
+          backoffMs = Math.min(backoffMs * 2, REALTIME_BACKOFF_MAX_MS);
+          start();
+        }, backoffMs);
+      };
+
+      // Watchdog for both staff channels combined.
+      let watchdog: number | null = window.setTimeout(() => {
+        if (cancelled) return;
+        if (!(contentReady && stateReady)) onPartFail("error");
+      }, REALTIME_CONNECT_TIMEOUT_MS);
+      const clearWatchdog = () => {
+        if (watchdog !== null) {
+          window.clearTimeout(watchdog);
+          watchdog = null;
+        }
+      };
+
       // Content rows: RLS isolates via is_staff_in() — no client filter.
       contentChannel = supabase
         .channel(`staff_notifications:user:${userId}`)
@@ -596,8 +655,9 @@ export function SupabaseRealtimeProvider({
         .subscribe((status: string) => {
           if (cancelled) return;
           if (status === "SUBSCRIBED") {
-            setStaffStatus("subscribed");
-            backoffMs = REALTIME_BACKOFF_INITIAL_MS;
+            contentReady = true;
+            if (contentReady && stateReady) clearWatchdog();
+            onPartReady();
             return;
           }
           if (
@@ -605,12 +665,8 @@ export function SupabaseRealtimeProvider({
             status === "CHANNEL_ERROR" ||
             status === "TIMED_OUT"
           ) {
-            setStaffStatus(status === "CLOSED" ? "closed" : "error");
-            teardown();
-            retryTimer = window.setTimeout(() => {
-              backoffMs = Math.min(backoffMs * 2, REALTIME_BACKOFF_MAX_MS);
-              start();
-            }, backoffMs);
+            clearWatchdog();
+            onPartFail(status === "CLOSED" ? "closed" : "error");
           }
         });
 
@@ -638,7 +694,23 @@ export function SupabaseRealtimeProvider({
           },
           () => debouncedRefresh(),
         )
-        .subscribe();
+        .subscribe((status: string) => {
+          if (cancelled) return;
+          if (status === "SUBSCRIBED") {
+            stateReady = true;
+            if (contentReady && stateReady) clearWatchdog();
+            onPartReady();
+            return;
+          }
+          if (
+            status === "CLOSED" ||
+            status === "CHANNEL_ERROR" ||
+            status === "TIMED_OUT"
+          ) {
+            clearWatchdog();
+            onPartFail(status === "CLOSED" ? "closed" : "error");
+          }
+        });
     };
 
     start();

@@ -134,4 +134,49 @@ export const MOBILE_SHELL_CSS = `
     ),
     transparent;
 }
+
+/* iOS auto-zoom prevention — the only reliable cure is a computed
+   font-size of at least 16px on the focused control. We scope the rule
+   to mobile so desktop typography is unaffected, and only target real
+   text-entry controls so radios/checkboxes don't grow. The "max(16px,
+   1em)" form keeps the rule deferential: callers that explicitly want
+   17px or 18px on a particular field still win. */
+@media (max-width: ${MOBILE_BREAKPOINT_PX - 1}px) {
+  .hc-shell-main input[type="text"],
+  .hc-shell-main input[type="search"],
+  .hc-shell-main input[type="email"],
+  .hc-shell-main input[type="password"],
+  .hc-shell-main input[type="number"],
+  .hc-shell-main input[type="tel"],
+  .hc-shell-main input[type="url"],
+  .hc-shell-main input:not([type]),
+  .hc-shell-main textarea,
+  .hc-shell-main select {
+    font-size: max(16px, 1em);
+  }
+  /* Also normalise visible "search" UIs that live outside .hc-shell-main
+     (palette overlays mount at the body root), so the iOS zoom fix
+     applies consistently across every dashboard text-entry surface. */
+  body input[data-hc-no-zoom],
+  body textarea[data-hc-no-zoom] {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* Search-input motion: a calm 160ms ease on focus so the keyboard
+   summon doesn't feel jagged. Honours prefers-reduced-motion. */
+.hc-shell-main input,
+.hc-shell-main textarea,
+.hc-shell-main select {
+  transition: box-shadow 160ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 160ms cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hc-shell-main input,
+  .hc-shell-main textarea,
+  .hc-shell-main select {
+    transition: none;
+  }
+}
 ` as const;
