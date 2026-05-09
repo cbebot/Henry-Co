@@ -1,0 +1,977 @@
+{
+  "surface": {
+    "fr": [
+      {
+        "path": "labels.Contact",
+        "en": "Contact",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.FAQ",
+        "en": "FAQ",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Services",
+        "en": "Services",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Support",
+        "en": "Support",
+        "gap": "echo"
+      },
+      {
+        "path": "publicHeader.menu",
+        "en": "Menu",
+        "gap": "echo"
+      },
+      {
+        "path": "publicHeader.actions",
+        "en": "Actions",
+        "gap": "echo"
+      },
+      {
+        "path": "privacyControls.marketingLabel",
+        "en": "Marketing",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "es": [
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "privacyControls.marketingLabel",
+        "en": "Marketing",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "pt": [
+      {
+        "path": "labels.FAQ",
+        "en": "FAQ",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "publicHeader.menu",
+        "en": "Menu",
+        "gap": "echo"
+      },
+      {
+        "path": "privacyControls.analyticsLabel",
+        "en": "Analytics",
+        "gap": "echo"
+      },
+      {
+        "path": "privacyControls.marketingLabel",
+        "en": "Marketing",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "ar": [
+      {
+        "path": "accountForms.emailPlaceholder",
+        "en": "you@example.com",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      }
+    ],
+    "de": [
+      {
+        "path": "labels.FAQ",
+        "en": "FAQ",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Jobs",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Services",
+        "en": "Services",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Support",
+        "en": "Support",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Teams",
+        "en": "Teams",
+        "gap": "echo"
+      },
+      {
+        "path": "privacyControls.marketingLabel",
+        "en": "Marketing",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.emailPlaceholder",
+        "en": "you@example.com",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "it": [
+      {
+        "path": "labels.Account",
+        "en": "Account",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Home",
+        "en": "Home",
+        "gap": "echo"
+      },
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "publicHeader.menu",
+        "en": "Menu",
+        "gap": "echo"
+      },
+      {
+        "path": "privacyControls.marketingLabel",
+        "en": "Marketing",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.emailPlaceholder",
+        "en": "you@example.com",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "zh": [
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.emailPlaceholder",
+        "en": "you@example.com",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "hi": [
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.emailPlaceholder",
+        "en": "you@example.com",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "ig": [
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.emailPlaceholder",
+        "en": "you@example.com",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactEmail",
+        "en": "Email",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "yo": [
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.emailPlaceholder",
+        "en": "you@example.com",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ],
+    "ha": [
+      {
+        "path": "labels.Studio",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "publicHeader.menu",
+        "en": "Menu",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.emailPlaceholder",
+        "en": "you@example.com",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.phonePlaceholder",
+        "en": "8012345678",
+        "gap": "echo"
+      },
+      {
+        "path": "accountForms.contactWhatsapp",
+        "en": "WhatsApp",
+        "gap": "echo"
+      }
+    ]
+  },
+  "account": {
+    "fr": [
+      {
+        "path": "common.source",
+        "en": "Source",
+        "gap": "echo"
+      },
+      {
+        "path": "common.page",
+        "en": "Page",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.notifications",
+        "en": "Notifications",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.scoreLabel",
+        "en": "Score",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.support",
+        "en": "Support",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.transactions",
+        "en": "Transactions",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.recentNotifications",
+        "en": "Notifications",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "tasks.priorityLabels.normal",
+        "en": "normal",
+        "gap": "echo"
+      }
+    ],
+    "es": [
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "tasks.priorityLabels.normal",
+        "en": "normal",
+        "gap": "echo"
+      }
+    ],
+    "pt": [
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "tasks.priorityLabels.normal",
+        "en": "normal",
+        "gap": "echo"
+      }
+    ],
+    "ar": [
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      }
+    ],
+    "de": [
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "tasks.priorityLabels.normal",
+        "en": "normal",
+        "gap": "echo"
+      }
+    ],
+    "it": [
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      }
+    ],
+    "zh": [
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      }
+    ],
+    "hi": [
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      }
+    ],
+    "ig": [
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      },
+      {
+        "path": "security.email",
+        "en": "Email",
+        "gap": "echo"
+      }
+    ],
+    "yo": [
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      }
+    ],
+    "ha": [
+      {
+        "path": "overview.careService",
+        "en": "Care",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.marketplaceService",
+        "en": "Marketplace",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.jobsService",
+        "en": "Jobs",
+        "gap": "echo"
+      },
+      {
+        "path": "overview.studioService",
+        "en": "Studio",
+        "gap": "echo"
+      }
+    ]
+  },
+  "hubHome": {
+    "fr": [
+      {
+        "path": "nav.faq",
+        "en": "FAQ",
+        "gap": "echo"
+      },
+      {
+        "path": "nav.contact",
+        "en": "Contact",
+        "gap": "echo"
+      },
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      },
+      {
+        "path": "stats.divisions",
+        "en": "Divisions",
+        "gap": "echo"
+      },
+      {
+        "path": "directory.total",
+        "en": "Total",
+        "gap": "echo"
+      },
+      {
+        "path": "cards.destination",
+        "en": "Destination",
+        "gap": "echo"
+      }
+    ],
+    "es": [
+      {
+        "path": "nav.faq",
+        "en": "FAQ",
+        "gap": "echo"
+      },
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      },
+      {
+        "path": "directory.total",
+        "en": "Total",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.kpiNo",
+        "en": "No",
+        "gap": "echo"
+      }
+    ],
+    "pt": [
+      {
+        "path": "nav.faq",
+        "en": "FAQ",
+        "gap": "echo"
+      },
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      },
+      {
+        "path": "directory.total",
+        "en": "Total",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.kpiStatus",
+        "en": "Status",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.links",
+        "en": "Links",
+        "gap": "echo"
+      }
+    ],
+    "ar": [
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      }
+    ],
+    "de": [
+      {
+        "path": "nav.faq",
+        "en": "FAQ",
+        "gap": "echo"
+      },
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      },
+      {
+        "path": "cards.details",
+        "en": "Details",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.kpiStatus",
+        "en": "Status",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.kpiSubdomain",
+        "en": "Subdomain",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.highlights",
+        "en": "Highlights",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.links",
+        "en": "Links",
+        "gap": "echo"
+      }
+    ],
+    "it": [
+      {
+        "path": "nav.directory",
+        "en": "Directory",
+        "gap": "echo"
+      },
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.kpiNo",
+        "en": "No",
+        "gap": "echo"
+      }
+    ],
+    "zh": [],
+    "hi": [],
+    "ig": [
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.kpiSubdomain",
+        "en": "Subdomain",
+        "gap": "echo"
+      }
+    ],
+    "yo": [
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.kpiSubdomain",
+        "en": "Subdomain",
+        "gap": "echo"
+      }
+    ],
+    "ha": [
+      {
+        "path": "hero.titleAfter",
+        "en": ".",
+        "gap": "echo"
+      },
+      {
+        "path": "modal.kpiSubdomain",
+        "en": "Subdomain",
+        "gap": "echo"
+      }
+    ]
+  },
+  "marketplace": {
+    "fr": [
+      {
+        "path": "checkout.total",
+        "en": "Total",
+        "gap": "echo"
+      }
+    ],
+    "es": [
+      {
+        "path": "checkout.subtotal",
+        "en": "Subtotal",
+        "gap": "echo"
+      },
+      {
+        "path": "checkout.total",
+        "en": "Total",
+        "gap": "echo"
+      }
+    ],
+    "pt": [
+      {
+        "path": "checkout.subtotal",
+        "en": "Subtotal",
+        "gap": "echo"
+      },
+      {
+        "path": "checkout.total",
+        "en": "Total",
+        "gap": "echo"
+      }
+    ],
+    "ar": [],
+    "de": [],
+    "it": [],
+    "zh": [],
+    "hi": [],
+    "ig": [
+      {
+        "path": "checkout.subtotal",
+        "en": "Subtotal",
+        "gap": "echo"
+      }
+    ],
+    "yo": [],
+    "ha": []
+  },
+  "jobs": {
+    "fr": [],
+    "es": [],
+    "pt": [],
+    "ar": [],
+    "de": [
+      {
+        "path": "filters.remote",
+        "en": "Remote",
+        "gap": "echo"
+      },
+      {
+        "path": "filters.hybrid",
+        "en": "Hybrid",
+        "gap": "echo"
+      }
+    ],
+    "it": [
+      {
+        "path": "filters.partTime",
+        "en": "Part-time",
+        "gap": "echo"
+      }
+    ],
+    "zh": [],
+    "hi": [],
+    "ig": [],
+    "yo": [],
+    "ha": []
+  },
+  "care": {
+    "fr": [],
+    "es": [],
+    "pt": [],
+    "ar": [],
+    "de": [],
+    "it": [],
+    "zh": [],
+    "hi": [],
+    "ig": [],
+    "yo": [],
+    "ha": []
+  },
+  "auth": {
+    "fr": [],
+    "es": [],
+    "pt": [],
+    "ar": [],
+    "de": [],
+    "it": [
+      {
+        "path": "login.passwordLabel",
+        "en": "Password",
+        "gap": "echo"
+      },
+      {
+        "path": "signup.passwordLabel",
+        "en": "Password",
+        "gap": "echo"
+      }
+    ],
+    "zh": [],
+    "hi": [],
+    "ig": [],
+    "yo": [],
+    "ha": []
+  },
+  "consent": {
+    "fr": [
+      {
+        "path": "panel.marketing.title",
+        "en": "Marketing",
+        "gap": "echo"
+      }
+    ],
+    "es": [
+      {
+        "path": "panel.marketing.title",
+        "en": "Marketing",
+        "gap": "echo"
+      }
+    ],
+    "pt": [
+      {
+        "path": "panel.marketing.title",
+        "en": "Marketing",
+        "gap": "echo"
+      }
+    ],
+    "ar": [],
+    "de": [
+      {
+        "path": "panel.marketing.title",
+        "en": "Marketing",
+        "gap": "echo"
+      }
+    ],
+    "it": [
+      {
+        "path": "fab",
+        "en": "Privacy",
+        "gap": "echo"
+      },
+      {
+        "path": "panel.marketing.title",
+        "en": "Marketing",
+        "gap": "echo"
+      }
+    ],
+    "zh": [],
+    "hi": [],
+    "ig": [],
+    "yo": [],
+    "ha": []
+  },
+  "state": {
+    "fr": [],
+    "es": [],
+    "pt": [],
+    "ar": [],
+    "de": [],
+    "it": [],
+    "zh": [],
+    "hi": [],
+    "ig": [],
+    "yo": [],
+    "ha": []
+  }
+}
