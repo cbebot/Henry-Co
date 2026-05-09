@@ -5,6 +5,10 @@ import {
   normalizeSupportServiceCategory,
   normalizeSupportUrgency,
 } from "@/lib/support/shared";
+import {
+  checkContactRate,
+  extractClientIp,
+} from "@/lib/support/contact-rate-limit";
 
 export const runtime = "nodejs";
 
@@ -17,6 +21,23 @@ function isValidEmail(value: string) {
 }
 
 export async function POST(req: Request) {
+  // V5-3 B4: rate-limit care contact submissions (5 per 60s per IP).
+  const ip = extractClientIp(req.headers);
+  const rate = checkContactRate(ip || "");
+  if (!rate.allowed) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "Too many contact submissions from this network. Please try again in a moment.",
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSeconds) },
+      },
+    );
+  }
+
   try {
     const contentType = String(req.headers.get("content-type") || "").toLowerCase();
     let payload: Record<string, unknown> = {};
