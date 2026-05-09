@@ -142,8 +142,14 @@ export type WorkspaceShellProps = {
   pathname: string;
 
   /** Optional children rendered above the brand strip in the sidebar.
-   * Used by hosts that want to render a division switcher. */
+   * Used by hosts that want to render a division switcher OR an area
+   * badge (eg. jobs renders an icon+title+subtitle pill at the top). */
   sidebarTopSlot?: ReactNode;
+
+  /** Optional right-rail content. When set the layout switches to
+   * three columns at lg+: sidebar (left) → main (center) → rail (right).
+   * Hidden on mobile/tablet — the rail content stacks below `children`. */
+  rightRail?: ReactNode;
 
   /** Optional content rendered as the page body. */
   children: ReactNode;

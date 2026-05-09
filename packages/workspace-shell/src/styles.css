@@ -104,6 +104,39 @@
   max-width: 64rem;
 }
 
+/* Wide variant — used when a right-rail slot is present so the
+   content + rail can sit side-by-side at lg+ without crowding. */
+.ws-shell-main-inner-wide {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 88rem;
+}
+
+/* Right-rail layout. Stacked on mobile (rail below content); two
+   columns at lg+. Order is preserved so screen readers + keyboard
+   users meet the main content first. */
+.ws-shell-with-rail {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .ws-shell-with-rail {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    align-items: start;
+  }
+}
+
+.ws-shell-content {
+  min-width: 0;
+}
+
+.ws-shell-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .ws-shell-takeover {
   display: contents;
 }

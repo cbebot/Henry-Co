@@ -5,7 +5,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { EmptyState, InlineNotice } from "@/components/feedback";
-import { SectionCard } from "@/components/workspace-shell";
+import { SectionCard } from "@/components/workspace-shell-primitives";
 import type { CandidateDocument } from "@/lib/jobs/types";
 
 function formatFileSize(value: number | null) {
