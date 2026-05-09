@@ -33,3 +33,6 @@ export * from "./role-gate";
 
 // Track C (DASH-9) — staff dashboard registry.
 export * from "./staff-register";
+
+// Track B (DASH-8) — owner dashboard registry.
+export * from "./owner-register";

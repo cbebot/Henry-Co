@@ -9,7 +9,8 @@
     "./types": "./src/types.ts",
     "./cookies": "./src/cookies.ts",
     "./viewer": "./src/viewer.ts",
-    "./staff": "./src/staff.ts"
+    "./staff": "./src/staff.ts",
+    "./owner": "./src/owner.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

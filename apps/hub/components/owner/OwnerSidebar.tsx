@@ -18,6 +18,19 @@ type OwnerSidebarProps = {
     avatarUrl: string | null;
     ownerRole: string | null;
   };
+  /**
+   * Track B / DASH-8 G2 — registry-derived rail entries. Optional for
+   * backward compatibility while the sidebar's hierarchical sub-children
+   * still come from `lib/owner-navigation.ts`. When present, the rail
+   * surfaces a registry-attribution data attribute so V11 can verify
+   * the consumption pattern.
+   */
+  ownerRailEntries?: ReadonlyArray<{
+    slug: string;
+    title: string;
+    href: string;
+    description: string;
+  }>;
 };
 
 function OwnerNavLink({
@@ -95,7 +108,7 @@ function OwnerNavLink({
   );
 }
 
-export default function OwnerSidebar({ user }: OwnerSidebarProps) {
+export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarProps) {
   const pathname = usePathname();
   const sections = getOwnerNavSections();
   const [signingOut, setSigningOut] = useState(false);
@@ -123,7 +136,11 @@ export default function OwnerSidebar({ user }: OwnerSidebarProps) {
   };
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-[var(--owner-sidebar-width)] lg:fixed lg:inset-y-0 lg:left-0 lg:border-r lg:border-[var(--acct-line)] owner-sidebar-bg">
+    <aside
+      className="hidden lg:flex lg:flex-col lg:w-[var(--owner-sidebar-width)] lg:fixed lg:inset-y-0 lg:left-0 lg:border-r lg:border-[var(--acct-line)] owner-sidebar-bg"
+      data-owner-rail-source={ownerRailEntries ? "registry" : "legacy-nav"}
+      data-owner-rail-slugs={ownerRailEntries?.map((entry) => entry.slug).join(",") ?? ""}
+    >
       {/* Brand header */}
       <div className="flex h-16 items-center gap-3 border-b border-[var(--acct-line)] px-5">
         <Logo size={32} />

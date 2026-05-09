@@ -1,0 +1,1 @@
+export { ownerAiModule } from "./module";

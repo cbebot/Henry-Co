@@ -90,12 +90,12 @@ export function proxy(request: NextRequest) {
           ? p.slice("/workspace".length)
           : p;
     redirectUrl.href = `${preferredStaffHqOrigin}${staffPath === "" ? "/" : staffPath}${request.nextUrl.search}`;
-    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 307));
+    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 308));
   }
 
   if (isLegacyWorkspaceHost || isStaffHqHost) {
     redirectUrl.href = `${preferredStaffHqOrigin}${request.nextUrl.pathname}${request.nextUrl.search}`;
-    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 307));
+    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 308));
   }
 
   if (

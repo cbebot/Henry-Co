@@ -1,5 +1,5 @@
 import { COMPANY } from "@henryco/config";
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -33,5 +33,5 @@ export default async function WorkspacePage({
   const { slug } = await params;
   const sp = await searchParams;
   const path = slug?.length ? `/${slug.join("/")}` : "/";
-  redirect(staffHqUrl(path, sp));
+  permanentRedirect(staffHqUrl(path, sp));
 }

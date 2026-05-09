@@ -1,17 +1,40 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Bot } from "lucide-react";
+import { buildUnifiedViewer } from "@henryco/auth/server";
 import { requireOwner } from "@/lib/owner-auth";
+import { getOwnerRailEntries } from "@/lib/owner-rail-from-registry";
 import OwnerSidebar from "@/components/owner/OwnerSidebar";
 import OwnerMobileNav from "@/components/owner/OwnerMobileNav";
 
 export default async function OwnerCommandLayout({ children }: { children: ReactNode }) {
   const user = await requireOwner();
 
+  // Track B / G2 — anti-pattern #19 enforcement. The owner shell rail
+  // consumes `getEligibleOwnerModules(viewer)` via `getOwnerRailEntries`,
+  // NOT `getEligibleModules` (Track A) and NOT `getEligibleStaffModules`
+  // (Track C). The bootstrap import inside `getOwnerRailFromRegistry`
+  // registers all 9 Track B modules at first call. The rail entries are
+  // passed to OwnerSidebar so the sidebar composition is registry-driven
+  // at the data layer; presentational sub-children continue to come
+  // from `lib/owner-navigation.ts` until the full migration lands in a
+  // follow-up DASH-8 PR.
+  const viewer = await buildUnifiedViewer({
+    id: user.id,
+    email: user.email,
+    fullName: user.fullName,
+    avatarUrl: user.avatarUrl,
+  });
+  const ownerRailEntries = getOwnerRailEntries(viewer);
+
   return (
-    <div className="owner-command-root min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)]">
+    <div
+      className="owner-command-root min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)]"
+      data-track="b"
+      data-owner-rail-modules={ownerRailEntries.map((e) => e.slug).join(",")}
+    >
       <OwnerMobileNav user={user} />
-      <OwnerSidebar user={user} />
+      <OwnerSidebar user={user} ownerRailEntries={ownerRailEntries} />
       <main className="min-h-screen pt-14 transition-[padding] duration-200 lg:pt-0 lg:pl-[var(--owner-sidebar-width)]">
         <div className="owner-command-backdrop pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(201,162,39,0.14),transparent_55%),radial-gradient(ellipse_80%_50%_at_100%_0%,rgba(59,130,246,0.06),transparent_45%)]" />
         <div className="relative mx-auto max-w-[1680px] px-4 py-6 sm:px-6 lg:px-10 lg:py-9">
