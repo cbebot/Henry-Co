@@ -177,14 +177,15 @@ export function FullScreenComposer(props: Props) {
       ref={containerRef}
       className={cn(
         "henryco-fullscreen-overlay",
-        "fixed inset-0 z-[2147483600] flex flex-col bg-white text-zinc-900",
-        "dark:bg-[#0b1220] dark:text-white",
+        "fixed inset-0 z-[2147483600] flex flex-col",
         !reduceMotion &&
           (closing
             ? "henryco-fullscreen-leave"
             : "henryco-fullscreen-enter")
       )}
       style={overlayStyle}
+      data-composer-fullscreen="true"
+      data-tone={tone}
       role="dialog"
       aria-modal="true"
       aria-label={
@@ -251,7 +252,7 @@ export function FullScreenComposer(props: Props) {
             placeholder={labels?.placeholder || "Write a message…"}
             aria-label={ariaLabel || "Message body"}
             data-hc-no-zoom
-            className="henryco-composer-input min-h-[40vh] text-[16.5px] leading-7 text-zinc-900 caret-[color:var(--composer-accent)] selection:bg-[color:var(--composer-accent)]/15 selection:text-zinc-900 dark:text-white dark:selection:text-white"
+            className="henryco-composer-input min-h-[40vh] text-[16.5px] leading-7 selection:bg-[color:var(--composer-accent)]/15"
             disabled={busy}
           />
         </div>
@@ -280,8 +281,9 @@ export function FullScreenComposer(props: Props) {
       </div>
 
       <div
-        className="flex items-center gap-3 border-t border-black/5 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#0b1220]"
+        className="flex items-center gap-3 border-t border-black/5 px-4 py-3 dark:border-white/10"
         style={{
+          backgroundColor: "inherit",
           paddingBottom: `max(env(safe-area-inset-bottom, 0px), 0.75rem)`,
         }}
       >

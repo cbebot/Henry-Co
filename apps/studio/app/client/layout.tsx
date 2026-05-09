@@ -1,7 +1,23 @@
+import { headers } from "next/headers";
+import { Sparkles } from "lucide-react";
+import {
+  WorkspaceShell,
+  type WorkspaceBrand,
+  type WorkspaceViewer,
+} from "@henryco/workspace-shell";
+import { NotificationsToastViewport } from "@henryco/dashboard-shell";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { resolveViewerContext } from "@/lib/messaging/queries";
 import { NotificationToast } from "@/components/messaging";
+import { StudioRealtimeBridge } from "@/components/portal/RealtimeBrowserBridge";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
+import {
+  buildAttentionItems,
+  getClientPortalSnapshot,
+  unreadMessageCount,
+} from "@/lib/portal/data";
+import { getStudioAccountUrl } from "@/lib/studio/links";
+import { portalNavItems, portalMobileNavItems } from "@/lib/portal/navigation";
 
 /** Authenticated portal — never serve a cached unauthenticated render
  * (CHROME-01A FIX 15). All client-portal pages re-evaluate the auth
@@ -9,34 +25,78 @@ import { requireClientPortalViewer } from "@/lib/portal/auth";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+/** Routes that opt out of the standard chrome — currently only the
+ * messages inbox, which renders a full-bleed thread layout. */
+const FULL_TAKEOVER_PREFIXES = ["/client/messages"];
+
+const STUDIO_BRAND: WorkspaceBrand = {
+  shortName: "Studio portal",
+  kicker: "HenryCo",
+  href: "/client",
+  icon: Sparkles,
+};
+
 /**
- * STUDIO-MSG-01: client-section layout mounts the system-level
- * notification toast so an inbound message surfaces from any portal
- * page (dashboard, files, payments, projects). The toast subscribes
- * to all projects the viewer participates in.
- *
- * STUDIO-CP-01 will likely wrap this layout in the portal shell
- * (sidebar, header). When that lands, this layout becomes the inner
- * wrapper that mounts cross-page system overlays.
- *
- * CHROME-01A: also enforces the client-portal auth gate at the layout
- * level so every nested route (dashboard, files, projects, payments,
- * profile, messages, proposals, reviews) returns a server-side redirect
- * to the shared account login when the viewer is unauthenticated.
- * Without this, a portal page that forgets to call the gate would
- * render server-side as 200.
+ * /client workspace layout — composes the shared @henryco/workspace-shell
+ * engine. Auth + data fetching stay here in the host; the engine handles
+ * sidebar / mobile-header / bottom-nav / takeover branching from typed props.
  */
 export default async function StudioClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await requireClientPortalViewer("/client");
+  const viewer = await requireClientPortalViewer("/client");
   const subscriptions = await resolveViewerProjectSubscriptions();
+  const pathname = await currentPathname();
+
+  const snapshot = await getClientPortalSnapshot(viewer);
+  const attentionCount = buildAttentionItems(snapshot).length;
+  const unreadCount = unreadMessageCount(snapshot);
+  const outstandingInvoices = snapshot.invoices.filter(
+    (invoice) => invoice.status === "sent" || invoice.status === "overdue",
+  ).length;
+  const accountUrl = getStudioAccountUrl();
+
+  const shellViewer: WorkspaceViewer = {
+    fullName: viewer.fullName,
+    email: viewer.email,
+    avatarUrl: viewer.avatarUrl,
+  };
+
+  const badges = {
+    "/client/messages": unreadCount,
+    "/client/payments": outstandingInvoices,
+    "/client/notifications": attentionCount,
+  };
 
   return (
-    <>
-      {children}
+    <StudioRealtimeBridge viewer={viewer}>
+      <WorkspaceShell
+        division="studio"
+        brand={STUDIO_BRAND}
+        viewer={shellViewer}
+        navigation={portalNavItems}
+        mobileNavigation={portalMobileNavItems}
+        badges={badges}
+        attentionCount={attentionCount}
+        notificationsHref="/client/notifications"
+        profileHref="/client/profile"
+        accountSettingsUrl={accountUrl}
+        takeoverPrefixes={FULL_TAKEOVER_PREFIXES}
+        pathname={pathname}
+      >
+        {children}
+      </WorkspaceShell>
+
+      {/* Cross-division customer-notifications toast — fires when a row
+       * lands in customer_notifications for this viewer (orders, system
+       * updates, invoice emails, etc). The studio-specific
+       * NotificationToast below stays for now and covers project-direct
+       * postgres_changes (project messages + updates), which the
+       * cross-division spine doesn't see yet. */}
+      <NotificationsToastViewport audience="customer" />
+
       {subscriptions.viewerId ? (
         <NotificationToast
           viewerId={subscriptions.viewerId}
@@ -44,8 +104,24 @@ export default async function StudioClientLayout({
           hrefTemplate="/client/projects/{projectId}/messages"
         />
       ) : null}
-    </>
+    </StudioRealtimeBridge>
   );
+}
+
+async function currentPathname(): Promise<string> {
+  // proxy.ts stamps x-pathname on every request; we also fall back to
+  // the canonical Next.js header keys defensively.
+  try {
+    const headerStore = await headers();
+    return (
+      headerStore.get("x-pathname") ||
+      headerStore.get("x-invoke-path") ||
+      headerStore.get("next-url") ||
+      ""
+    );
+  } catch {
+    return "";
+  }
 }
 
 async function resolveViewerProjectSubscriptions(): Promise<{
@@ -68,12 +144,10 @@ async function resolveViewerProjectSubscriptions(): Promise<{
     }
     return {
       viewerId: viewer.userId,
-      projects: (result.data as Array<{ id: string; title: string }>).map(
-        (row) => ({
-          projectId: row.id,
-          projectTitle: row.title,
-        }),
-      ),
+      projects: (result.data as Array<{ id: string; title: string }>).map((row) => ({
+        projectId: row.id,
+        projectTitle: row.title,
+      })),
     };
   } catch {
     return { viewerId: null, projects: [] };

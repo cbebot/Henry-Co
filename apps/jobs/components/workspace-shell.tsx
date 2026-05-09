@@ -4,16 +4,13 @@ import {
   Building2,
   ChartColumnBig,
   ShieldCheck,
-  Sparkles,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
 import { getSharedAccountJobsUrl, getSharedAccountOrigin } from "@/lib/account";
+import type { WorkspaceNavItem } from "@/lib/jobs/navigation";
 
-type NavItem = {
-  href: string;
-  label: string;
-};
+type NavItem = WorkspaceNavItem;
 
 const AREA_META: Record<
   string,
@@ -72,12 +69,22 @@ export function WorkspaceShell({
           </div>
 
           <nav className="mt-5 space-y-1.5">
-            {nav.map((item) => (
-              <Link key={item.href} href={item.href} className="jobs-sidebar-link" data-active={activeHref === item.href}>
-                <Sparkles className="h-4 w-4" />
-                <span>{item.label}</span>
-              </Link>
-            ))}
+            {nav.map((item) => {
+              const NavIcon = item.icon;
+              const active = activeHref === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="jobs-sidebar-link"
+                  data-active={active}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <NavIcon className="h-4 w-4" aria-hidden />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="mt-5 rounded-[1.7rem] bg-[var(--jobs-paper-soft)] p-4">

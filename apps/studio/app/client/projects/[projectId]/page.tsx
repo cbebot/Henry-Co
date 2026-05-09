@@ -29,7 +29,7 @@ import {
 } from "@/lib/portal/status";
 import { ActivityFeed } from "@/components/portal/activity-feed";
 import { FileCard } from "@/components/portal/file-card";
-import { MessageThread } from "@/components/portal/message-thread";
+import { StudioMessageThread } from "@/components/portal/StudioMessageThread";
 import { MilestoneProgress } from "@/components/portal/milestone-progress";
 import { PortalEmptyState } from "@/components/portal/empty-state";
 import { PortalTabBar, type PortalTabDefinition } from "@/components/portal/tabs";
@@ -146,11 +146,13 @@ export default async function ClientProjectDetailPage({
       {activeTab === "progress" ? <ProgressTab detail={detail} /> : null}
       {activeTab === "files" ? <FilesTab detail={detail} /> : null}
       {activeTab === "messages" ? (
-        <MessageThread
+        <StudioMessageThread
           projectId={detail.project.id}
           initialMessages={detail.messages}
           viewerId={viewer.userId}
           viewerName={viewer.fullName || viewer.email || "You"}
+          projectTitle={detail.project.title}
+          projectSummary={detail.project.summary || detail.project.brief || null}
         />
       ) : null}
       {activeTab === "payments" ? <PaymentsTab detail={detail} /> : null}

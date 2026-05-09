@@ -150,27 +150,76 @@ const STYLE_BODY = `
   pointer-events: none;
 }
 
-/* V5-4 polish: composer text input — robust contrast and "alive" focus.
-   The textarea inherits color from the host theme (Tailwind dark: classes
-   set zinc-900 / white), but we ALSO bind to the global --site-text token
-   when present so hosts using the public theme system get the exact
-   foreground that everything else on the page uses. caret-color is
-   already set via Tailwind's caret-[var] but we mirror it here for safety
-   in case an ancestor overrode it. */
+/* ──────────────────────────────────────────────────────────────────
+   Fullscreen composer — bulletproof readability.
+   The FullScreenComposer renders into document.body via createPortal,
+   which means it escapes any parent surface (e.g., the studio
+   messaging centre's hardcoded dark surface). Without explicit rules
+   the textarea inherits a light-text colour over a dark portal
+   background and the user can't see what they're typing.
+
+   Rules below cover three triggers for a dark fullscreen:
+     1. html.dark / [data-theme="dark"] — class-based theme
+     2. prefers-color-scheme: dark — system theme
+     3. data-tone="studio"/"marketplace" — surfaces that are always
+        dark regardless of the page-level theme
+   ────────────────────────────────────────────────────────────────── */
+
+[data-composer-fullscreen="true"] {
+  background: #ffffff;
+  color: #18181b;
+}
+[data-composer-fullscreen="true"] textarea {
+  color: #18181b;
+  caret-color: #18181b;
+}
+[data-composer-fullscreen="true"] textarea::placeholder {
+  color: rgba(15, 23, 42, 0.45);
+}
+
+:where(html.dark, html[data-theme="dark"]) [data-composer-fullscreen="true"],
+[data-composer-fullscreen="true"][data-tone="studio"],
+[data-composer-fullscreen="true"][data-tone="marketplace"] {
+  background: #070D18;
+  color: #F5F4EE;
+}
+:where(html.dark, html[data-theme="dark"]) [data-composer-fullscreen="true"] textarea,
+[data-composer-fullscreen="true"][data-tone="studio"] textarea,
+[data-composer-fullscreen="true"][data-tone="marketplace"] textarea {
+  color: #F5F4EE;
+  caret-color: #F5F4EE;
+}
+:where(html.dark, html[data-theme="dark"]) [data-composer-fullscreen="true"] textarea::placeholder,
+[data-composer-fullscreen="true"][data-tone="studio"] textarea::placeholder,
+[data-composer-fullscreen="true"][data-tone="marketplace"] textarea::placeholder {
+  color: rgba(245, 244, 238, 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-composer-fullscreen="true"]:not([data-color-scheme="light"]) {
+    background: #070D18;
+    color: #F5F4EE;
+  }
+  [data-composer-fullscreen="true"]:not([data-color-scheme="light"]) textarea {
+    color: #F5F4EE;
+    caret-color: #F5F4EE;
+  }
+  [data-composer-fullscreen="true"]:not([data-color-scheme="light"]) textarea::placeholder {
+    color: rgba(245, 244, 238, 0.45);
+  }
+}
+
+/* V5-4 polish: composer text input class hook — applied to the
+   textarea via .henryco-composer-input. Provides a precise caret
+   accent and host-theme-aware ::selection styling that the broader
+   [data-composer-fullscreen] rules above don't override. The fullscreen
+   rules win on color/background; this stays narrow to caret + selection
+   so the two layers compose rather than collide. */
 .henryco-composer-input {
   caret-color: var(--composer-accent, #0E7C86);
-  color: var(--site-text, currentColor);
-  -webkit-text-fill-color: var(--site-text, currentColor);
 }
-:where(.dark) .henryco-composer-input {
-  color: var(--site-text, #F5F1E8);
-  -webkit-text-fill-color: var(--site-text, #F5F1E8);
-}
-.henryco-composer-input::placeholder {
-  color: color-mix(in srgb, var(--site-text, currentColor) 45%, transparent);
-}
-:where(.dark) .henryco-composer-input::placeholder {
-  color: color-mix(in srgb, var(--site-text, #F5F1E8) 35%, transparent);
+.henryco-composer-input::selection {
+  background-color: color-mix(in srgb, var(--composer-accent, #0E7C86) 18%, transparent);
 }
 
 /* V5-4 polish: gentle "alive" expand-button breath when the composer is
@@ -189,21 +238,6 @@ const STYLE_BODY = `
     animation: none !important;
     transform: none !important;
   }
-}
-
-/* V5-4 polish: full-screen overlay surface that reads from the host
-   theme variables. Falls back to the white/zinc-#0b1220 Tailwind classes
-   already on the element — these rules just sit above as gentle
-   theme-aware overrides when the host actually defines --site-bg. */
-.henryco-fullscreen-overlay {
-  background-color: var(--site-bg, #ffffff);
-  color: var(--site-text, #0f172a);
-  -webkit-text-fill-color: var(--site-text, #0f172a);
-}
-:where(.dark) .henryco-fullscreen-overlay {
-  background-color: var(--site-bg, #0b1220);
-  color: var(--site-text, #F5F1E8);
-  -webkit-text-fill-color: var(--site-text, #F5F1E8);
 }
 
 @media (prefers-reduced-motion: reduce) {

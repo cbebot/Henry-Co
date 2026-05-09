@@ -1,49 +1,236 @@
+import { CheckCircle2, MapPin, Navigation, Radio } from "lucide-react";
 import type { LogisticsMapViewport } from "@/lib/logistics/map-provider";
+import type {
+  LogisticsAddress,
+  LogisticsLifecycleStatus,
+  LogisticsShipment,
+} from "@/lib/logistics/types";
 
-export default function TrackingMapPanel({ map }: { map: LogisticsMapViewport }) {
+type StatusTone = "neutral" | "active" | "warn" | "good";
+
+const STATUS_LABELS: Record<LogisticsLifecycleStatus, { label: string; tone: StatusTone }> = {
+  quote_requested: { label: "Quote requested", tone: "neutral" },
+  quoted: { label: "Quoted", tone: "neutral" },
+  awaiting_payment: { label: "Awaiting payment", tone: "neutral" },
+  booked: { label: "Booked", tone: "neutral" },
+  assigned: { label: "Rider assigned", tone: "active" },
+  pickup_confirmed: { label: "Pickup confirmed", tone: "active" },
+  in_transit: { label: "In transit", tone: "active" },
+  delayed: { label: "Delayed", tone: "warn" },
+  attempted_delivery: { label: "Attempted delivery", tone: "warn" },
+  delivered: { label: "Delivered", tone: "good" },
+  failed_delivery: { label: "Delivery failed", tone: "warn" },
+  return_initiated: { label: "Return initiated", tone: "warn" },
+  returned: { label: "Returned", tone: "neutral" },
+  cancelled: { label: "Cancelled", tone: "neutral" },
+};
+
+const TONE_STYLE: Record<StatusTone, { dot: string; pill: string; ring: string }> = {
+  neutral: {
+    dot: "bg-white/45",
+    pill: "border-white/15 bg-white/[0.04] text-white/80",
+    ring: "",
+  },
+  active: {
+    dot: "bg-[var(--logistics-accent)]",
+    pill:
+      "border-[var(--logistics-accent)]/40 bg-[rgba(215,117,57,0.10)] text-[var(--logistics-accent-soft)]",
+    ring: "shadow-[0_0_0_3px_rgba(215,117,57,0.18)]",
+  },
+  warn: {
+    dot: "bg-amber-300",
+    pill: "border-amber-400/35 bg-amber-400/[0.08] text-amber-100",
+    ring: "shadow-[0_0_0_3px_rgba(251,191,36,0.18)]",
+  },
+  good: {
+    dot: "bg-emerald-300",
+    pill: "border-emerald-400/35 bg-emerald-400/[0.08] text-emerald-100",
+    ring: "",
+  },
+};
+
+function formatRelative(iso: string | null) {
+  if (!iso) return null;
+  const at = new Date(iso).getTime();
+  if (!Number.isFinite(at)) return null;
+  const diffSec = Math.max(0, Math.round((Date.now() - at) / 1000));
+  if (diffSec < 60) return "just now";
+  if (diffSec < 3600) return `${Math.round(diffSec / 60)}m ago`;
+  if (diffSec < 86_400) return `${Math.round(diffSec / 3600)}h ago`;
+  return `${Math.round(diffSec / 86_400)}d ago`;
+}
+
+function addressSummary(address: LogisticsAddress | null | undefined): string {
+  if (!address) return "Address pending";
+  const cityRegion = [address.city, address.region].filter(Boolean).join(", ");
+  if (address.line1 && cityRegion) return `${address.line1} · ${cityRegion}`;
+  return address.line1 || cityRegion || "Address pending";
+}
+
+export default function TrackingMapPanel({
+  map,
+  shipment,
+}: {
+  map: LogisticsMapViewport;
+  shipment?: LogisticsShipment;
+}) {
+  const status = shipment ? STATUS_LABELS[shipment.lifecycleStatus] : null;
+  const tone = status ? TONE_STYLE[status.tone] : null;
+  const isLive = shipment ? status?.tone === "active" || status?.tone === "warn" : false;
+  const isDelivered = shipment?.lifecycleStatus === "delivered";
+  const promiseWindow = shipment?.pricingBreakdown.promiseWindowHours;
+  const lastUpdate = formatRelative(map.live?.recordedAt ?? null);
+
   return (
     <div className="overflow-hidden rounded-[1.5rem] border border-[var(--logistics-line)] bg-black/25">
-      <div className="border-b border-[var(--logistics-line)] px-4 py-3">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/45">Route map</div>
-        <p className="mt-1 text-sm text-[var(--logistics-muted)]">
-          We only plot coordinates captured from your addresses or live rider telemetry — never simulated GPS.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--logistics-line)] px-5 py-4">
+        <div>
+          <div className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-white/45">
+            Route
+          </div>
+          <p className="mt-1 text-sm leading-6 text-[var(--logistics-muted)]">
+            Coordinates come from your booking addresses and live rider telemetry — never simulated.
+          </p>
+        </div>
+        {status && tone ? (
+          <div
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11.5px] font-semibold ${tone.pill}`}
+          >
+            <span className="relative inline-flex h-1.5 w-1.5">
+              {isLive ? (
+                <span
+                  className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${tone.dot}`}
+                />
+              ) : null}
+              <span
+                className={`relative inline-flex h-1.5 w-1.5 rounded-full ${tone.dot}`}
+              />
+            </span>
+            {status.label}
+          </div>
+        ) : null}
       </div>
+
       <div className="relative aspect-[16/10] w-full bg-gradient-to-br from-[#1a1210] to-[#0a0809]">
         {map.embedUrl ? (
-          <iframe title="Shipment map" src={map.embedUrl} className="h-full w-full border-0" loading="lazy" />
+          <iframe
+            title="Shipment map"
+            src={map.embedUrl}
+            className="h-full w-full border-0"
+            loading="lazy"
+          />
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-            <div className="text-sm font-medium text-white/90">Map preview unavailable</div>
+            <span className="grid h-10 w-10 place-items-center rounded-full border border-[var(--logistics-line)] bg-white/[0.03] text-[var(--logistics-accent-soft)]">
+              <MapPin className="h-4 w-4" />
+            </span>
+            <div className="text-sm font-medium text-white/90">Map preview will appear here</div>
             <p className="max-w-md text-sm text-[var(--logistics-muted)]">
-              Add latitude and longitude to pickup or delivery addresses, or enable a map provider (Mapbox / Google)
-              to unlock richer rendering. Live rider breadcrumbs appear here automatically once the rider app posts
-              coordinates to logistics tracking.
+              We render the route as soon as either pickup or dropoff has a precise coordinate. Live
+              rider breadcrumbs join automatically once dispatch shares the position.
             </p>
           </div>
         )}
       </div>
-      <div className="grid gap-3 border-t border-[var(--logistics-line)] p-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-[var(--logistics-line)] bg-white/[0.03] px-3 py-2 text-sm">
-          <div className="text-[10px] uppercase tracking-wider text-white/40">Pickup pin</div>
-          <div className="mt-1 text-white">{map.pickup ? `${map.pickup.lat.toFixed(5)}, ${map.pickup.lng.toFixed(5)}` : "Not set"}</div>
+
+      <dl className="divide-y divide-[var(--logistics-line)]">
+        <RouteRow
+          icon={<Navigation className="h-3.5 w-3.5 -rotate-45" aria-hidden />}
+          label="Pickup"
+          primary={addressSummary(shipment?.pickupAddress ?? null)}
+          secondary={shipment?.pickupAddress?.landmark ?? null}
+          status={shipment?.pickupAddress?.latitude && shipment?.pickupAddress?.longitude ? "Pinned" : "Address only"}
+        />
+        <RouteRow
+          icon={<MapPin className="h-3.5 w-3.5" aria-hidden />}
+          label="Dropoff"
+          primary={addressSummary(shipment?.dropoffAddress ?? null)}
+          secondary={shipment?.dropoffAddress?.landmark ?? null}
+          status={shipment?.dropoffAddress?.latitude && shipment?.dropoffAddress?.longitude ? "Pinned" : "Address only"}
+        />
+        {isLive || isDelivered || map.showLiveLocationPlaceholder ? (
+          <RouteRow
+            icon={<Radio className={`h-3.5 w-3.5 ${isLive ? "animate-pulse" : ""}`} aria-hidden />}
+            label="Live rider"
+            primary={
+              isDelivered
+                ? "Delivered — tracking complete"
+                : map.live
+                ? "Position updated"
+                : "Awaiting GPS share from dispatch"
+            }
+            secondary={null}
+            status={
+              isDelivered
+                ? "Complete"
+                : lastUpdate
+                ? `Last update ${lastUpdate}`
+                : "Awaiting share"
+            }
+          />
+        ) : null}
+      </dl>
+
+      {promiseWindow && !isDelivered ? (
+        <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-[var(--logistics-line)] bg-white/[0.015] px-5 py-3 text-sm">
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/45">
+            Estimated arrival
+          </span>
+          <span className="font-semibold text-white">
+            {promiseWindow[0]}–{promiseWindow[1]}h window
+            <span className="ml-2 text-[12px] font-normal text-[var(--logistics-muted)]">
+              {shipment?.pricingBreakdown.promiseConfidence ?? 0}% confidence
+            </span>
+          </span>
         </div>
-        <div className="rounded-2xl border border-[var(--logistics-line)] bg-white/[0.03] px-3 py-2 text-sm">
-          <div className="text-[10px] uppercase tracking-wider text-white/40">Delivery pin</div>
-          <div className="mt-1 text-white">{map.dropoff ? `${map.dropoff.lat.toFixed(5)}, ${map.dropoff.lng.toFixed(5)}` : "Not set"}</div>
-        </div>
-        <div className="rounded-2xl border border-[var(--logistics-line)] bg-white/[0.03] px-3 py-2 text-sm">
-          <div className="text-[10px] uppercase tracking-wider text-white/40">Live rider</div>
-          <div className="mt-1 text-white">
-            {map.live ? `${map.live.lat.toFixed(5)}, ${map.live.lng.toFixed(5)}` : map.showLiveLocationPlaceholder ? "Awaiting GPS" : "—"}
-          </div>
-        </div>
-      </div>
-      {map.showLiveLocationPlaceholder ? (
-        <div className="border-t border-[var(--logistics-line)] bg-[rgba(215,117,57,0.08)] px-4 py-3 text-sm text-[var(--logistics-muted)]">
-          Rider assignment is active. A live position will appear when dispatch or the rider device shares coordinates.
+      ) : isDelivered ? (
+        <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-[var(--logistics-line)] bg-emerald-400/[0.04] px-5 py-3 text-sm">
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-emerald-200/85">
+            Delivered
+          </span>
+          <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-100">
+            <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Proof of delivery captured
+          </span>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function RouteRow({
+  icon,
+  label,
+  primary,
+  secondary,
+  status,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  primary: string;
+  secondary: string | null;
+  status: string;
+}) {
+  return (
+    <div className="flex items-start gap-3 px-5 py-3.5">
+      <span className="mt-0.5 grid h-7 w-7 flex-shrink-0 place-items-center rounded-full border border-[var(--logistics-line)] bg-white/[0.03] text-[var(--logistics-accent-soft)]">
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+          {label}
+        </div>
+        <div className="mt-0.5 truncate text-[13.5px] font-semibold text-white">{primary}</div>
+        {secondary ? (
+          <div className="mt-0.5 truncate text-[11.5px] text-[var(--logistics-muted)]">
+            {secondary}
+          </div>
+        ) : null}
+      </div>
+      <div className="flex-shrink-0 text-right">
+        <div className="text-[10.5px] font-medium tabular-nums text-[var(--logistics-muted)]">
+          {status}
+        </div>
+      </div>
     </div>
   );
 }

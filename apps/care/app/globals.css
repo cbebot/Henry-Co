@@ -434,6 +434,34 @@ a {
   }
 }
 
+/* CTA polish — focus rings + tactile active + honest disabled state.
+   Care already exposes .care-ring as a focus-ring utility but doesn't
+   apply it to .care-button-primary/.care-button-secondary by default;
+   wire it up here so every CTA has visible keyboard focus. */
+
+.care-button-primary:focus-visible,
+.care-button-secondary:focus-visible {
+  outline: 2px solid var(--care-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--care-accent) 22%, transparent);
+}
+
+.care-button-primary:active,
+.care-button-secondary:active {
+  transform: translateY(0);
+  transition-duration: 80ms;
+}
+
+.care-button-primary:disabled,
+.care-button-primary[aria-disabled="true"],
+.care-button-secondary:disabled,
+.care-button-secondary[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.2);
+}
+
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */
 html, body { overflow-x: clip; max-width: 100vw; }
 @supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }

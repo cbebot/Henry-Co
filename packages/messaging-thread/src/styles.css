@@ -1,0 +1,397 @@
+/* ──────────────────────────────────────────────────────────────────
+   @henryco/messaging-thread — token-driven thread renderer.
+
+   Inherits the --ws-* token vocabulary from @henryco/workspace-shell
+   so it themes per-division automatically when mounted inside a
+   workspace-shell tree. Hosts that mount it standalone need to supply
+   the same token mapping (or the defaults from workspace-shell/styles
+   will apply).
+   ────────────────────────────────────────────────────────────────── */
+
+.mt-thread {
+  display: flex;
+  height: 28rem;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border-radius: var(--ws-radius-lg, 1.25rem);
+  box-shadow:
+    0 28px 80px -48px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.03) inset;
+}
+
+@media (min-width: 640px) {
+  .mt-thread {
+    height: 32rem;
+  }
+}
+
+.mt-thread-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.mt-thread-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
+  background: var(--ws-accent-soft, rgba(151, 244, 243, 0.16));
+  color: var(--ws-signal, #97f4f3);
+}
+
+.mt-thread-empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ws-ink, #f5f4ee);
+}
+
+.mt-thread-empty-body {
+  max-width: 22rem;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+}
+
+.mt-thread-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .mt-thread-list {
+    padding-inline: 1.25rem;
+  }
+}
+
+.mt-thread-list-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Bubbles
+   ────────────────────────────────────────────────────────────────── */
+
+.mt-bubble-row {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.mt-bubble-row[data-side="own"] {
+  flex-direction: row-reverse;
+}
+
+.mt-bubble-row[data-side="system"] {
+  justify-content: center;
+}
+
+.mt-avatar {
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
+  background: var(--ws-accent-soft, rgba(151, 244, 243, 0.16));
+  border-radius: 9999px;
+  color: var(--ws-signal, #97f4f3);
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.mt-bubble {
+  position: relative;
+  max-width: min(28rem, 80%);
+  padding: 0.6rem 0.85rem;
+  border-radius: 1rem;
+  border: 1px solid var(--ws-line, rgba(245, 244, 238, 0.08));
+  background: var(--ws-bg-elev, rgba(255, 255, 255, 0.04));
+  color: var(--ws-ink, #f5f4ee);
+}
+
+.mt-bubble-row[data-side="own"] .mt-bubble {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ws-accent, #97f4f3) 14%, transparent),
+    color-mix(in srgb, var(--ws-accent, #97f4f3) 4%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--ws-accent, #97f4f3) 32%, transparent);
+}
+
+.mt-bubble-row[data-side="system"] .mt-bubble {
+  max-width: 32rem;
+  background: transparent;
+  border: 1px dashed var(--ws-line, rgba(245, 244, 238, 0.08));
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+  text-align: center;
+  font-size: 12px;
+}
+
+.mt-bubble-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+  font-size: 11px;
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+}
+
+.mt-bubble-row[data-side="own"] .mt-bubble-meta {
+  justify-content: flex-end;
+}
+
+.mt-bubble-name {
+  font-weight: 600;
+  color: var(--ws-ink, #f5f4ee);
+}
+
+.mt-bubble-body {
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.mt-bubble-attachments {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.mt-attachment-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--ws-ink, #f5f4ee);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mt-attachment-chip:hover {
+  border-color: color-mix(in srgb, var(--ws-accent, #97f4f3) 36%, transparent);
+}
+
+.mt-bubble-edited {
+  margin-left: 0.4rem;
+  font-style: italic;
+  font-size: 10.5px;
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Composer
+   ────────────────────────────────────────────────────────────────── */
+
+.mt-composer {
+  border-top: 1px solid var(--ws-line, rgba(245, 244, 238, 0.08));
+  background: var(--ws-bg-soft, rgba(255, 255, 255, 0.025));
+  padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .mt-composer {
+    padding: 1rem;
+  }
+}
+
+.mt-composer-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.mt-composer-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
+  background: var(--ws-bg-elev, rgba(255, 255, 255, 0.04));
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ws-ink, #f5f4ee);
+}
+
+.mt-composer-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.mt-composer-textarea {
+  flex: 1;
+  resize: none;
+  min-height: 2.4rem;
+  max-height: 12rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
+  border-radius: 0.85rem;
+  background: var(--ws-bg-elev, rgba(255, 255, 255, 0.04));
+  color: var(--ws-ink, #f5f4ee);
+  font-size: 14px;
+  line-height: 1.45;
+  font-family: inherit;
+}
+
+.mt-composer-textarea::placeholder {
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+}
+
+.mt-composer-textarea:focus-visible {
+  outline: 2px solid var(--ws-accent, #97f4f3);
+  outline-offset: 2px;
+}
+
+.mt-composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mt-composer-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
+  background: var(--ws-bg-elev, rgba(255, 255, 255, 0.04));
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+  cursor: pointer;
+}
+
+.mt-composer-icon-btn:hover:not(:disabled) {
+  color: var(--ws-ink, #f5f4ee);
+  border-color: color-mix(in srgb, var(--ws-accent, #97f4f3) 36%, transparent);
+}
+
+.mt-composer-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mt-composer-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 9999px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ws-accent, #97f4f3) 30%, white),
+    color-mix(in srgb, var(--ws-accent, #97f4f3) 70%, white) 42%,
+    color-mix(in srgb, var(--ws-accent, #97f4f3) 95%, var(--ws-bg, #060a10)) 100%
+  );
+  color: color-mix(in srgb, var(--ws-bg, #060a10) 95%, black);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mt-composer-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
+
+.mt-composer-error {
+  margin-top: 0.4rem;
+  font-size: 11.5px;
+  color: var(--ws-danger, #ffb8b8);
+}
+
+.mt-composer-hint {
+  margin-top: 0.4rem;
+  font-size: 11px;
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Composer-extras host-rendered controls (eg. studio's ✨ Refine button)
+   ────────────────────────────────────────────────────────────────── */
+
+.ws-refine-ai-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ws-refine-ai-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.42rem 0.7rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--ws-accent, #97f4f3) 32%, transparent);
+  background: color-mix(in srgb, var(--ws-accent, #97f4f3) 8%, transparent);
+  color: var(--ws-signal, #97f4f3);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.ws-refine-ai-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ws-accent, #97f4f3) 16%, transparent);
+  border-color: color-mix(in srgb, var(--ws-accent, #97f4f3) 50%, transparent);
+}
+
+.ws-refine-ai-btn:focus-visible {
+  outline: 2px solid var(--ws-accent, #97f4f3);
+  outline-offset: 2px;
+}
+
+.ws-refine-ai-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ws-refine-ai-label {
+  letter-spacing: 0.005em;
+}
+
+@media (max-width: 380px) {
+  /* Hide label on very narrow phones — keep the sparkle glyph visible. */
+  .ws-refine-ai-label {
+    display: none;
+  }
+}
+
+.ws-refine-ai-hint {
+  font-size: 10.5px;
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+  font-style: italic;
+}

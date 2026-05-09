@@ -1,6 +1,33 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/workspace-shell/src/styles.css";
+@import "../../../packages/messaging-thread/src/styles.css";
 @source "../../../packages/ui/src";
+@source "../../../packages/workspace-shell/src";
+@source "../../../packages/messaging-thread/src";
+
+/* ──────────────────────────────────────────────────────────────────
+   Workspace-shell token mapping for the studio division.
+
+   The shared @henryco/workspace-shell engine reads its chrome from
+   --ws-* variables. This block redirects them onto the studio brand
+   tokens so the engine renders in studio colors without a single
+   hard-coded value.
+   ────────────────────────────────────────────────────────────────── */
+
+[data-workspace-division="studio"] {
+  --ws-bg: var(--studio-bg);
+  --ws-bg-soft: rgba(255, 255, 255, 0.025);
+  --ws-bg-elev: rgba(255, 255, 255, 0.04);
+  --ws-ink: var(--studio-ink);
+  --ws-ink-soft: var(--studio-ink-soft);
+  --ws-ink-mute: rgba(245, 244, 238, 0.45);
+  --ws-line: var(--studio-line);
+  --ws-line-strong: var(--studio-line-strong);
+  --ws-accent: var(--studio-signal);
+  --ws-accent-soft: rgba(151, 244, 243, 0.16);
+  --ws-signal: var(--studio-signal);
+}
 
 :root {
   /* Studio inherits the canonical HenryCo brand stack — see comment
@@ -524,6 +551,397 @@ html.dark .studio-listbox-dropdown {
 }
 .studio-msg-composer .henryco-composer-shell textarea::placeholder {
   color: rgba(245, 244, 238, 0.45);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   PORTAL — Studio client workspace surface system.
+   The /client routes (dashboard, projects, files, payments, profile,
+   reviews, proposals) all render against this token vocabulary so
+   density, type, and interaction tone stay consistent with the
+   messaging centre. Hairline-line surfaces, tight typography, no
+   chunky 1.75rem cards.
+   ────────────────────────────────────────────────────────────────── */
+
+.portal-card {
+  position: relative;
+  border: 1px solid var(--studio-line);
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 1rem;
+  transition:
+    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.portal-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+:where(.light) .portal-card {
+  background: rgba(255, 255, 255, 0.65);
+}
+:where(.light) .portal-card:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.portal-card-elev {
+  position: relative;
+  border: 1px solid var(--studio-line-strong);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 28px 80px -48px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.03) inset;
+}
+:where(.light) .portal-card-elev {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.84));
+  box-shadow:
+    0 24px 64px -36px rgba(13, 34, 42, 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+
+.portal-divider {
+  height: 1px;
+  background: var(--studio-line);
+  border: none;
+}
+
+.portal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.portal-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(151, 244, 243, 0.55),
+    0 0 0 4px rgba(4, 17, 23, 0.92);
+}
+
+.portal-button-primary {
+  background: linear-gradient(135deg, #dff8fb 0%, #8df4f2 42%, #4eb8c2 100%);
+  color: #031117;
+  box-shadow: 0 18px 48px -22px rgba(88, 212, 210, 0.6);
+}
+.portal-button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 56px -22px rgba(88, 212, 210, 0.7);
+}
+.portal-button-primary:active {
+  transform: translateY(0);
+}
+
+.portal-button-secondary {
+  border: 1px solid var(--studio-line-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--studio-ink);
+}
+.portal-button-secondary:hover {
+  border-color: rgba(151, 244, 243, 0.45);
+  background: rgba(255, 255, 255, 0.06);
+}
+:where(.light) .portal-button-secondary {
+  background: rgba(255, 255, 255, 0.78);
+}
+:where(.light) .portal-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.portal-button-ghost {
+  color: var(--studio-ink-soft);
+  background: transparent;
+}
+.portal-button-ghost:hover {
+  color: var(--studio-ink);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.portal-attention-card {
+  position: relative;
+  border: 1px solid var(--studio-line);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 1rem;
+  padding: 0.95rem 1.1rem;
+  transition: border-color 220ms ease, background-color 220ms ease;
+}
+.portal-attention-card:hover {
+  border-color: rgba(151, 244, 243, 0.32);
+  background: rgba(255, 255, 255, 0.05);
+}
+.portal-attention-card[data-tone="warn"] {
+  border-color: rgba(243, 210, 138, 0.28);
+  background: rgba(243, 210, 138, 0.05);
+}
+.portal-attention-card[data-tone="danger"] {
+  border-color: rgba(255, 143, 143, 0.32);
+  background: rgba(255, 143, 143, 0.05);
+}
+:where(.light) .portal-attention-card {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.portal-progress-step {
+  display: flex;
+  position: relative;
+  gap: 0.85rem;
+}
+.portal-progress-step::before {
+  /* connecting rail behind the dots — hidden on the last item */
+  content: "";
+  position: absolute;
+  left: calc(0.45rem - 1px);
+  top: 1.25rem;
+  bottom: -0.5rem;
+  width: 2px;
+  background: var(--studio-line);
+  border-radius: 1px;
+}
+.portal-progress-step:last-child::before {
+  display: none;
+}
+.portal-progress-dot {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  height: 0.9rem;
+  width: 0.9rem;
+  flex-shrink: 0;
+  margin-top: 0.4rem;
+  border-radius: 999px;
+  border: 2px solid var(--studio-line-strong);
+  background: var(--studio-bg);
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.portal-progress-dot[data-state="complete"] {
+  border-color: rgba(151, 244, 243, 0.8);
+  background:
+    radial-gradient(circle, var(--studio-signal) 40%, transparent 41%),
+    var(--studio-bg);
+}
+.portal-progress-dot[data-state="current"] {
+  border-color: rgba(151, 244, 243, 0.9);
+  background: var(--studio-signal);
+  box-shadow: 0 0 0 4px rgba(151, 244, 243, 0.18);
+}
+
+.portal-step-rail {
+  position: relative;
+}
+.portal-step-rail::before {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 1px;
+  background: var(--studio-line);
+}
+
+.portal-tab-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--studio-ink-soft);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+.portal-tab-button:hover {
+  color: var(--studio-ink);
+  background: rgba(255, 255, 255, 0.04);
+}
+.portal-tab-button[data-active="true"],
+.portal-tab-button[aria-selected="true"] {
+  color: var(--studio-ink);
+  border-color: rgba(151, 244, 243, 0.4);
+  background: linear-gradient(135deg, rgba(151, 244, 243, 0.18), rgba(78, 184, 194, 0.08));
+}
+
+.portal-input,
+.portal-textarea {
+  width: 100%;
+  border: 1px solid var(--studio-line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--studio-ink);
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.9rem;
+  font-size: 14px;
+  line-height: 1.45;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+.portal-input::placeholder,
+.portal-textarea::placeholder {
+  color: color-mix(in srgb, var(--studio-ink) 38%, transparent);
+}
+.portal-input:focus,
+.portal-textarea:focus {
+  border-color: rgba(151, 244, 243, 0.5);
+  box-shadow: 0 0 0 3px rgba(88, 212, 210, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.portal-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 0.6rem;
+}
+.portal-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  animation: portal-skeleton-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes portal-skeleton-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.portal-message-bubble {
+  border-radius: 1.2rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid var(--studio-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--studio-ink);
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+}
+.portal-message-bubble[data-own="true"] {
+  border-color: rgba(151, 244, 243, 0.32);
+  background: linear-gradient(135deg, rgba(151, 244, 243, 0.18), rgba(78, 184, 194, 0.08));
+}
+
+.portal-dropzone {
+  border: 1.5px dashed var(--studio-line-strong);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1.5rem;
+  text-align: center;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.portal-dropzone:hover,
+.portal-dropzone[data-drag-over="true"] {
+  border-color: rgba(151, 244, 243, 0.5);
+  background: rgba(151, 244, 243, 0.04);
+}
+
+.portal-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.86);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+}
+.portal-lightbox-frame {
+  position: relative;
+  max-width: 92vw;
+  max-height: 88vh;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 60px 160px rgba(0, 0, 0, 0.7);
+}
+
+.portal-toast-stack {
+  position: fixed;
+  z-index: 90;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: min(360px, calc(100vw - 2rem));
+  pointer-events: none;
+}
+.portal-toast {
+  pointer-events: auto;
+  border: 1px solid var(--studio-line-strong);
+  background: var(--studio-surface-strong);
+  color: var(--studio-ink);
+  border-radius: 1rem;
+  padding: 0.85rem 1rem;
+  font-size: 13px;
+  line-height: 1.45;
+  box-shadow: var(--studio-shadow-soft);
+  animation: studio-msg-toast-in 220ms cubic-bezier(0.16, 0.84, 0.44, 1);
+}
+
+.portal-bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: space-around;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem max(env(safe-area-inset-bottom, 0px), 0.75rem);
+  background: color-mix(in srgb, var(--studio-bg) 92%, transparent);
+  border-top: 1px solid var(--studio-line);
+  backdrop-filter: blur(18px);
+}
+/* Hide on desktop — the sidebar owns the chrome there. Without this
+   rule both nav surfaces render simultaneously at lg+. */
+@media (min-width: 1024px) {
+  .portal-bottom-nav {
+    display: none;
+  }
+}
+.portal-bottom-nav-item {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: 0.85rem;
+  color: var(--studio-ink-soft);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  transition: color 160ms ease, background 160ms ease;
+}
+.portal-bottom-nav-item[data-active="true"] {
+  color: var(--studio-ink);
+  background: linear-gradient(135deg, rgba(151, 244, 243, 0.16), rgba(78, 184, 194, 0.06));
+}
+.portal-bottom-nav-item:hover {
+  color: var(--studio-ink);
 }
 
 @media (max-width: 767px) {

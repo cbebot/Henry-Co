@@ -1,141 +1,246 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { formatCurrency } from "@/lib/env";
-import { requireClientPortalViewer } from "@/lib/portal/auth";
-import { studioClientSnapshot } from "@/lib/studio/data";
-import { clientNav } from "@/lib/studio/navigation";
-import { getStudioSnapshot } from "@/lib/studio/store";
-import { clientProjectStatusLabel, friendlyMilestoneStatus } from "@/lib/studio/project-workspace-copy";
-import type { StudioViewer } from "@/lib/studio/types";
 import {
-  StudioEmptyState,
-  StudioMetricCard,
-  StudioWorkspaceShell,
-} from "@/components/studio/workspace/shell";
+  ArrowRight,
+  FolderKanban,
+  History,
+  MessageSquare,
+  Sparkles,
+} from "lucide-react";
 
-export default async function ClientDashboardPage() {
-  const portalViewer = await requireClientPortalViewer("/client");
-  const viewer: StudioViewer = {
-    user: {
-      id: portalViewer.userId,
-      email: portalViewer.email,
-      fullName: portalViewer.fullName,
-      avatarUrl: portalViewer.avatarUrl,
-    },
-    normalizedEmail: portalViewer.normalizedEmail,
-    roles: ["client"],
-  };
-  const snapshot = await getStudioSnapshot();
-  const clientData = studioClientSnapshot(viewer, snapshot);
+import { requireClientPortalViewer } from "@/lib/portal/auth";
+import {
+  buildAttentionItems,
+  getClientPortalSnapshot,
+} from "@/lib/portal/data";
+import { shortDate } from "@/lib/portal/helpers";
+import { projectStatusToken } from "@/lib/portal/status";
+import { ActivityFeed } from "@/components/portal/activity-feed";
+import { AttentionStrip } from "@/components/portal/attention-strip";
+import { MilestoneProgress } from "@/components/portal/milestone-progress";
+import { PortalEmptyState } from "@/components/portal/empty-state";
+import { StatusBadge } from "@/components/portal/status-badge";
+
+export const metadata: Metadata = {
+  title: "Studio workspace",
+};
+
+/** Authenticated portal — never serve a cached unauthenticated render. */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+function greetingFor(name: string | null): string {
+  const hour = new Date().getHours();
+  const slot = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const trimmed = (name || "").trim().split(/\s+/)[0];
+  return trimmed ? `${slot}, ${trimmed}` : slot;
+}
+
+export default async function ClientHomePage() {
+  const viewer = await requireClientPortalViewer("/client");
+  const snapshot = await getClientPortalSnapshot(viewer);
+
+  const activeProject =
+    snapshot.projects.find((project) =>
+      ["active", "review", "revision", "onboarding", "in_review"].includes(project.status),
+    ) ||
+    snapshot.projects[0] ||
+    null;
+
+  const milestones = activeProject
+    ? snapshot.milestones.filter((milestone) => milestone.projectId === activeProject.id)
+    : [];
+
+  const attention = buildAttentionItems(snapshot);
+
+  // Server component — Date.now() is the request timestamp, deterministic
+  // for the duration of this render.
+  // eslint-disable-next-line react-hooks/purity
+  const activityCutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const recentActivity = snapshot.updates
+    .filter((update) => {
+      const created = new Date(update.createdAt).getTime();
+      if (!Number.isFinite(created)) return false;
+      return created > activityCutoff;
+    })
+    .slice(0, 12);
+
+  const projectTitleById = new Map(snapshot.projects.map((p) => [p.id, p.title]));
+  const otherProjects = snapshot.projects.filter((p) => p.id !== activeProject?.id);
 
   return (
-    <StudioWorkspaceShell
-      kicker="Client workspace"
-      title="Track active proposals, payments, files, and delivery checkpoints."
-      description="This is the Studio surface clients use to see what is happening, what is due, and what the team needs next."
-      nav={clientNav("/client")}
-      actions={
-        <Link href="/request" className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold">
-          Request another project
-        </Link>
-      }
-    >
-      <section className="grid gap-4 md:grid-cols-3">
-        <StudioMetricCard
-          label="Projects"
-          value={String(clientData.projects.length)}
-          hint="Every active or recently delivered Studio engagement tied to your account."
-        />
-        <StudioMetricCard
-          label="Open payments"
-          value={String(clientData.payments.filter((payment) => payment.status !== "paid").length)}
-          hint="Deposit and milestone checkpoints still awaiting confirmation."
-        />
-        <StudioMetricCard
-          label="Deliverables"
-          value={String(clientData.deliverables.length)}
-          hint="Shared file batches and handoff packages already released into the workspace."
-        />
-      </section>
+    <div className="space-y-7">
+      <header className="flex flex-col gap-2">
+        <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+          {greetingFor(viewer.fullName || viewer.email)}
+        </span>
+        <h1 className="text-2xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-3xl">
+          Your Studio workspace
+        </h1>
+        <p className="max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
+          Everything tied to your engagement with HenryCo Studio — milestones, files,
+          messages, payments — stays current here as the work moves forward.
+        </p>
+      </header>
 
-      {clientData.projects.length === 0 && clientData.proposals.length === 0 ? (
-        <StudioEmptyState
-          title="No Studio activity yet"
-          body="Once you submit a brief or accept a proposal, your workspace will show project progress, milestone status, payment rails, files, and conversations here."
+      {activeProject ? (
+        <ActiveProjectCard project={activeProject} milestones={milestones} />
+      ) : (
+        <PortalEmptyState
+          icon={Sparkles}
+          title="Let's start your first project"
+          body="Once you submit a brief and we accept the proposal, your active project will live here with milestones, files, and a direct line to the team."
           action={
-            <Link href="/request" className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold">
+            <Link href="/request" className="portal-button portal-button-primary">
               Open the brief builder
+              <ArrowRight className="h-4 w-4" />
             </Link>
           }
         />
-      ) : null}
+      )}
 
-      {clientData.projects.length > 0 ? (
-        <section className="studio-panel rounded-[1.75rem] p-6">
-          <div className="studio-kicker">Projects</div>
-          <div className="mt-5 space-y-4">
-            {clientData.projects.map((project) => {
-              const milestones = project.milestones ?? [];
-              const openPayment =
-                clientData.payments.find(
-                  (payment) => payment.projectId === project.id && payment.status !== "paid" && payment.status !== "cancelled"
-                ) ?? null;
-              const projectHref = openPayment
-                ? `/pay/${openPayment.id}?access=${project.accessKey}`
-                : `/project/${project.id}?access=${project.accessKey}`;
-              return (
-              <article key={project.id} className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="max-w-3xl">
-                    <h3 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">
-                      {project.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{project.summary}</p>
-                    <p className="mt-3 text-sm text-[var(--studio-signal)]">{project.nextAction}</p>
-                  </div>
-                  <div className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
-                    {clientProjectStatusLabel(project.status)}
-                  </div>
-                </div>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {milestones.map((milestone) => (
-                    <span key={milestone.id} className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs text-[var(--studio-ink-soft)]">
-                      {milestone.name} · {friendlyMilestoneStatus(milestone.status)}
-                    </span>
-                  ))}
-                </div>
-                <div className="mt-5">
-                  <Link href={projectHref} className="studio-button-primary rounded-full px-5 py-3 text-sm font-semibold">
-                    {openPayment ? "Continue payment" : "Open project"}
-                  </Link>
-                </div>
-              </article>
-              );
-            })}
+      {attention.length > 0 ? <AttentionStrip items={attention} /> : null}
+
+      <section aria-label="Recent activity" className="space-y-4">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
+            Recent activity
+          </h2>
+          {snapshot.projects.length > 1 ? (
+            <Link
+              href="/client/projects"
+              className="text-[12px] font-semibold text-[var(--studio-signal)] hover:underline"
+            >
+              View all projects
+            </Link>
+          ) : null}
+        </div>
+
+        {recentActivity.length > 0 ? (
+          <ActivityFeed updates={recentActivity} projectTitleById={projectTitleById} />
+        ) : (
+          <PortalEmptyState
+            icon={History}
+            tone="muted"
+            title="The feed is just getting started"
+            body="Once we share files, complete milestones, or post updates, you will see the timeline build here. Replies and approvals from your side land here too."
+          />
+        )}
+      </section>
+
+      {otherProjects.length > 0 ? (
+        <section aria-label="Other projects" className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-base font-semibold tracking-[-0.01em] text-[var(--studio-ink)]">
+              Other projects
+            </h2>
+            <Link
+              href="/client/projects"
+              className="text-[12px] font-semibold text-[var(--studio-signal)] hover:underline"
+            >
+              See all
+            </Link>
           </div>
-        </section>
-      ) : null}
-
-      {clientData.proposals.length > 0 ? (
-        <section className="studio-panel rounded-[1.75rem] p-6">
-          <div className="studio-kicker">Proposals</div>
-          <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            {clientData.proposals.map((proposal) => (
-              <article key={proposal.id} className="rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                <h3 className="text-xl font-semibold text-[var(--studio-ink)]">{proposal.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{proposal.summary}</p>
-                <div className="mt-4 text-2xl font-semibold text-[var(--studio-ink)]">
-                  {formatCurrency(proposal.investment, proposal.currency)}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {otherProjects.slice(0, 4).map((project) => (
+              <Link
+                key={project.id}
+                href={`/client/projects/${project.id}`}
+                className="portal-card group flex items-start justify-between gap-3 px-4 py-3.5 transition hover:border-[rgba(151,244,243,0.4)]"
+              >
+                <div className="min-w-0">
+                  <div className="truncate text-[13.5px] font-semibold text-[var(--studio-ink)]">
+                    {project.title}
+                  </div>
+                  <div className="mt-0.5 line-clamp-1 text-[12px] text-[var(--studio-ink-soft)]">
+                    {project.summary || "Studio engagement"}
+                  </div>
                 </div>
-                <div className="mt-4">
-                  <Link href={`/proposals/${proposal.id}?access=${proposal.accessKey}`} className="studio-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
-                    Review proposal
-                  </Link>
-                </div>
-              </article>
+                <ArrowRight className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--studio-ink-soft)] transition group-hover:text-[var(--studio-ink)]" />
+              </Link>
             ))}
           </div>
         </section>
       ) : null}
-    </StudioWorkspaceShell>
+    </div>
+  );
+}
+
+function ActiveProjectCard({
+  project,
+  milestones,
+}: {
+  project: import("@/types/portal").ClientProject;
+  milestones: import("@/types/portal").ClientMilestone[];
+}) {
+  const status = projectStatusToken(project.status);
+  const completed = milestones.filter((m) => ["approved", "complete"].includes(m.status)).length;
+
+  return (
+    <section className="portal-card-elev p-5 sm:p-7" aria-label="Active project">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
+            <FolderKanban className="h-3.5 w-3.5" />
+            Active project
+          </div>
+          <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[var(--studio-ink)] sm:text-[1.5rem]">
+            {project.title}
+          </h2>
+          {project.nextAction || project.summary ? (
+            <p className="mt-2 max-w-2xl text-[13.5px] leading-6 text-[var(--studio-ink-soft)]">
+              {project.nextAction || project.summary}
+            </p>
+          ) : null}
+        </div>
+        <StatusBadge tone={status.tone} label={status.label} />
+      </div>
+
+      <hr className="portal-divider mt-5" />
+
+      <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-[var(--studio-ink-soft)]">
+        {project.startDate ? (
+          <span>
+            <span className="font-semibold uppercase tracking-[0.16em]">Started</span>{" "}
+            {shortDate(project.startDate)}
+          </span>
+        ) : null}
+        {project.estimatedCompletion ? (
+          <span>
+            <span className="font-semibold uppercase tracking-[0.16em]">Estimated completion</span>{" "}
+            {shortDate(project.estimatedCompletion)}
+          </span>
+        ) : null}
+        {milestones.length > 0 ? (
+          <span>
+            <span className="font-semibold uppercase tracking-[0.16em]">Progress</span>{" "}
+            {completed}/{milestones.length} milestones
+          </span>
+        ) : null}
+      </div>
+
+      {milestones.length > 0 ? (
+        <div className="mt-5">
+          <MilestoneProgress milestones={milestones} layout="horizontal" />
+        </div>
+      ) : null}
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Link
+          href={`/client/projects/${project.id}`}
+          className="portal-button portal-button-primary"
+        >
+          Open project
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+        <Link
+          href={`/client/projects/${project.id}/messages`}
+          className="portal-button portal-button-secondary"
+        >
+          <MessageSquare className="h-4 w-4" />
+          Message the team
+        </Link>
+      </div>
+    </section>
   );
 }
