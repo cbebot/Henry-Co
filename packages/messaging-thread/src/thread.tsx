@@ -103,6 +103,7 @@ export function MessageThread({
   placeholder = "Write a message…",
   emptyTitle = "Start the conversation",
   emptyBody = "Ask a question, share feedback, or attach a reference. Replies arrive here in real time.",
+  composerExtras,
 }: MessageThreadProps) {
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
   const [draft, setDraft] = useState("");
@@ -293,6 +294,7 @@ export function MessageThread({
           />
 
           <div className="mt-composer-actions">
+            {composerExtras ? composerExtras({ draft, setDraft }) : null}
             {adapter.attachAction ? (
               <>
                 <input

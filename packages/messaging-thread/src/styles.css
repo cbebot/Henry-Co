@@ -335,3 +335,63 @@
   font-size: 11px;
   color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
 }
+
+/* ──────────────────────────────────────────────────────────────────
+   Composer-extras host-rendered controls (eg. studio's ✨ Refine button)
+   ────────────────────────────────────────────────────────────────── */
+
+.ws-refine-ai-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ws-refine-ai-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.42rem 0.7rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--ws-accent, #97f4f3) 32%, transparent);
+  background: color-mix(in srgb, var(--ws-accent, #97f4f3) 8%, transparent);
+  color: var(--ws-signal, #97f4f3);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.ws-refine-ai-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ws-accent, #97f4f3) 16%, transparent);
+  border-color: color-mix(in srgb, var(--ws-accent, #97f4f3) 50%, transparent);
+}
+
+.ws-refine-ai-btn:focus-visible {
+  outline: 2px solid var(--ws-accent, #97f4f3);
+  outline-offset: 2px;
+}
+
+.ws-refine-ai-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ws-refine-ai-label {
+  letter-spacing: 0.005em;
+}
+
+@media (max-width: 380px) {
+  /* Hide label on very narrow phones — keep the sparkle glyph visible. */
+  .ws-refine-ai-label {
+    display: none;
+  }
+}
+
+.ws-refine-ai-hint {
+  font-size: 10.5px;
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
+  font-style: italic;
+}
