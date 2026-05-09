@@ -1057,12 +1057,18 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.92.0
         version: 0.92.0(zod@4.3.6)
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-shell
       '@henryco/email':
         specifier: workspace:^
         version: link:../../packages/email

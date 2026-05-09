@@ -5,9 +5,11 @@ import {
   type WorkspaceBrand,
   type WorkspaceViewer,
 } from "@henryco/workspace-shell";
+import { NotificationsToastViewport } from "@henryco/dashboard-shell";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { resolveViewerContext } from "@/lib/messaging/queries";
 import { NotificationToast } from "@/components/messaging";
+import { StudioRealtimeBridge } from "@/components/portal/RealtimeBrowserBridge";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import {
   buildAttentionItems,
@@ -69,7 +71,7 @@ export default async function StudioClientLayout({
   };
 
   return (
-    <>
+    <StudioRealtimeBridge viewer={viewer}>
       <WorkspaceShell
         division="studio"
         brand={STUDIO_BRAND}
@@ -87,6 +89,14 @@ export default async function StudioClientLayout({
         {children}
       </WorkspaceShell>
 
+      {/* Cross-division customer-notifications toast — fires when a row
+       * lands in customer_notifications for this viewer (orders, system
+       * updates, invoice emails, etc). The studio-specific
+       * NotificationToast below stays for now and covers project-direct
+       * postgres_changes (project messages + updates), which the
+       * cross-division spine doesn't see yet. */}
+      <NotificationsToastViewport audience="customer" />
+
       {subscriptions.viewerId ? (
         <NotificationToast
           viewerId={subscriptions.viewerId}
@@ -94,7 +104,7 @@ export default async function StudioClientLayout({
           hrefTemplate="/client/projects/{projectId}/messages"
         />
       ) : null}
-    </>
+    </StudioRealtimeBridge>
   );
 }
 
