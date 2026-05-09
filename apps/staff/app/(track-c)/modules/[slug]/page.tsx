@@ -19,8 +19,30 @@ import {
 } from "@henryco/dashboard-modules-staff";
 
 import { requireTrackCStaffViewer } from "../../_internal/viewer";
-import { handleStaffCareBulkAction, makeBulkActionHandler } from "../../_actions/bulk-actions";
-import { makeExportAction } from "../../_actions/exports";
+import {
+  handleStaffCareBulkAction,
+  handleStaffMarketplaceBulkAction,
+  handleStaffPropertyBulkAction,
+  handleStaffStudioBulkAction,
+  handleStaffJobsBulkAction,
+  handleStaffLearnBulkAction,
+  handleStaffLogisticsBulkAction,
+  handleStaffSupportBulkAction,
+  handleStaffModerationBulkAction,
+  handleStaffFinanceOperatorBulkAction,
+} from "../../_actions/bulk-actions";
+import {
+  handleStaffCareExport,
+  handleStaffMarketplaceExport,
+  handleStaffPropertyExport,
+  handleStaffStudioExport,
+  handleStaffJobsExport,
+  handleStaffLearnExport,
+  handleStaffLogisticsExport,
+  handleStaffSupportExport,
+  handleStaffModerationExport,
+  handleStaffFinanceOperatorExport,
+} from "../../_actions/exports";
 import { createStaffSupabaseServer } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -55,217 +77,105 @@ export default async function TrackCModulePage({
   const supabase = await createStaffSupabaseServer();
 
   switch (slug) {
-    case "staff-overview": {
+    case "staff-overview":
       return <StaffOverviewPage viewer={viewer} supabase={supabase as never} />;
-    }
-    case "staff-care": {
-      const exportHandler = await makeExportAction("staff-care", "care", "care_booking");
+    case "staff-care":
       return (
         <StaffCarePageServer
           viewer={viewer}
           supabase={supabase as never}
           bulkActionHandler={handleStaffCareBulkAction}
-          exportHandler={exportHandler}
+          exportHandler={handleStaffCareExport}
         />
       );
-    }
-    case "staff-marketplace": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-marketplace",
-        division: "marketplace",
-        entityType: "marketplace_order",
-        revalidatePath: "/modules/staff-marketplace",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-marketplace",
-        "marketplace",
-        "marketplace_order",
-      );
+    case "staff-marketplace":
       return (
         <StaffMarketplacePageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffMarketplaceBulkAction}
+          exportHandler={handleStaffMarketplaceExport}
         />
       );
-    }
-    case "staff-property": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-property",
-        division: "property",
-        entityType: "property_listing",
-        revalidatePath: "/modules/staff-property",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-property",
-        "property",
-        "property_listing",
-      );
+    case "staff-property":
       return (
         <StaffPropertyPageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffPropertyBulkAction}
+          exportHandler={handleStaffPropertyExport}
         />
       );
-    }
-    case "staff-studio": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-studio",
-        division: "studio",
-        entityType: "studio_project",
-        revalidatePath: "/modules/staff-studio",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-studio",
-        "studio",
-        "studio_project",
-      );
+    case "staff-studio":
       return (
         <StaffStudioPageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffStudioBulkAction}
+          exportHandler={handleStaffStudioExport}
         />
       );
-    }
-    case "staff-jobs": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-jobs",
-        division: "jobs",
-        entityType: "jobs_application",
-        revalidatePath: "/modules/staff-jobs",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-jobs",
-        "jobs",
-        "jobs_application",
-      );
+    case "staff-jobs":
       return (
         <StaffJobsPageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffJobsBulkAction}
+          exportHandler={handleStaffJobsExport}
         />
       );
-    }
-    case "staff-learn": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-learn",
-        division: "learn",
-        entityType: "learn_course",
-        revalidatePath: "/modules/staff-learn",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-learn",
-        "learn",
-        "learn_course",
-      );
+    case "staff-learn":
       return (
         <StaffLearnPageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffLearnBulkAction}
+          exportHandler={handleStaffLearnExport}
         />
       );
-    }
-    case "staff-logistics": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-logistics",
-        division: "logistics",
-        entityType: "logistics_shipment",
-        revalidatePath: "/modules/staff-logistics",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-logistics",
-        "logistics",
-        "logistics_shipment",
-      );
+    case "staff-logistics":
       return (
         <StaffLogisticsPageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffLogisticsBulkAction}
+          exportHandler={handleStaffLogisticsExport}
         />
       );
-    }
-    case "staff-support": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-support",
-        division: null,
-        entityType: "support_thread",
-        revalidatePath: "/modules/staff-support",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-support",
-        null,
-        "support_thread",
-      );
+    case "staff-support":
       return (
         <StaffSupportPageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffSupportBulkAction}
+          exportHandler={handleStaffSupportExport}
         />
       );
-    }
-    case "staff-moderation": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-moderation",
-        division: null,
-        entityType: "moderation_case",
-        revalidatePath: "/modules/staff-moderation",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-moderation",
-        null,
-        "moderation_case",
-      );
+    case "staff-moderation":
       return (
         <StaffModerationPageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffModerationBulkAction}
+          exportHandler={handleStaffModerationExport}
         />
       );
-    }
-    case "staff-finance-operator": {
-      const bulkActionHandler = makeBulkActionHandler({
-        module: "staff-finance-operator",
-        division: null,
-        entityType: "payout_request",
-        revalidatePath: "/modules/staff-finance-operator",
-      });
-      const exportHandler = await makeExportAction(
-        "staff-finance-operator",
-        null,
-        "payout_request",
-      );
+    case "staff-finance-operator":
       return (
         <StaffFinanceOperatorPageServer
           viewer={viewer}
           supabase={supabase as never}
-          bulkActionHandler={bulkActionHandler}
-          exportHandler={exportHandler}
+          bulkActionHandler={handleStaffFinanceOperatorBulkAction}
+          exportHandler={handleStaffFinanceOperatorExport}
         />
       );
-    }
-    case "staff-settings": {
+    case "staff-settings":
       return (
         <StaffSettingsPageServer
           viewer={viewer}
           accountSettingsUrl={getAccountUrl("/settings")}
         />
       );
-    }
     default:
       notFound();
   }

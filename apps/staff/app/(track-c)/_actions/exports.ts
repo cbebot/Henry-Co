@@ -5,45 +5,115 @@ import type { BulkExportFormat } from "@henryco/dashboard-shell/components";
 /**
  * Track C export server actions.
  *
- * Each module's StaffQueueShell calls onExport(format, capturedFilters)
- * which proxies to a server action calling DOCS-01. For DASH-9 we
- * ship the wiring shape: the action accepts format + captured
- * filters + visible ids and returns a downloadable file URL.
+ * Each module's StaffQueueShell calls `onExport(format, capturedFilters)`
+ * which proxies to one of the per-module server actions below. For
+ * DASH-9 the action records the export intent (module, division,
+ * entity_type, format, captured filters, visible ids, exportedAt) so
+ * a downstream pass can wire the actual DOCS-01 generator call. The
+ * captured-filter payload preserves the EXACT view the operator saw.
  *
- * The actual DOCS-01 invocation is delegated to the @henryco/branded-documents
- * (DOCS-01) package — which exposes generatePdf() / generateCsv()
- * helpers. This file routes between them.
+ * The integration with `@henryco/branded-documents` (DOCS-01) lands
+ * in a follow-up sub-pass.
  */
 
-export async function makeExportAction(
-  module: string,
-  division: string | null,
-  entityType: string,
-) {
-  return async function exportHandler(
-    format: BulkExportFormat,
-    capturedFilters: ReadonlyArray<{ label: string; value: string }>,
-    visibleIds: string[],
-  ): Promise<void> {
-    // DOCS-01 hand-off. The actual generator API call is intentionally
-    // minimal in DASH-9: we log the export intent and rely on the
-    // downstream pass to wire the generator URL into the response.
-    //
-    // The captured filters + visible ids land in the generator
-    // metadata so the generated document header reflects the EXACT
-    // view the operator saw.
-    const payload = {
-      module,
-      division,
-      entityType,
-      format,
-      capturedFilters,
-      visibleIds,
-      exportedAt: new Date().toISOString(),
-    };
-    // eslint-disable-next-line no-console -- intentional log line for the
-    // export hand-off; the production pass replaces with a typed
-    // logger call to @henryco/observability.
-    console.info("[track-c.export]", JSON.stringify(payload));
-  };
+async function recordExport(payload: {
+  module: string;
+  division: string | null;
+  entityType: string;
+  format: BulkExportFormat;
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>;
+  visibleIds: string[];
+}) {
+  console.info("[track-c.export]", JSON.stringify({
+    ...payload,
+    exportedAt: new Date().toISOString(),
+  }));
+}
+
+export async function handleStaffOverviewExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-overview", division: null, entityType: "overview", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffCareExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-care", division: "care", entityType: "care_booking", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffMarketplaceExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-marketplace", division: "marketplace", entityType: "marketplace_order", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffPropertyExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-property", division: "property", entityType: "property_listing", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffStudioExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-studio", division: "studio", entityType: "studio_project", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffJobsExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-jobs", division: "jobs", entityType: "jobs_application", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffLearnExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-learn", division: "learn", entityType: "learn_course", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffLogisticsExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-logistics", division: "logistics", entityType: "logistics_shipment", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffSupportExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-support", division: null, entityType: "support_thread", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffModerationExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-moderation", division: null, entityType: "moderation_case", format, capturedFilters, visibleIds });
+}
+
+export async function handleStaffFinanceOperatorExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-finance-operator", division: null, entityType: "payout_request", format, capturedFilters, visibleIds });
 }

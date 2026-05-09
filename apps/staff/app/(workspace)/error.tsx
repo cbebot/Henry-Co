@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 /**
  * (workspace) error boundary — DASH-9 G9 minimal stub.
  *
@@ -27,7 +29,7 @@ export default function WorkspaceError({ reset }: { error: Error; reset: () => v
         >
           Retry
         </button>
-        <a
+        <Link
           href="/modules/staff-overview"
           style={{
             padding: "0.5rem 0.875rem",
@@ -38,7 +40,7 @@ export default function WorkspaceError({ reset }: { error: Error; reset: () => v
           }}
         >
           Open overview
-        </a>
+        </Link>
       </div>
     </div>
   );

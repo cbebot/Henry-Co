@@ -11,7 +11,10 @@ import {
   type BulkExportFormat,
 } from "@henryco/dashboard-shell/components";
 
-import { StaffQueueShell, DEFAULT_STAFF_QUEUE_FILTERS, deriveSLABucket, STAFF_DIVISION_ACCENT } from ".";
+import { StaffQueueShell } from "./queue-shell";
+import { DEFAULT_STAFF_QUEUE_FILTERS } from "./queue-filters";
+import { STAFF_DIVISION_ACCENT } from "./division-accent";
+import { deriveSLABucket } from "./sla";
 import type { FilterField } from "@henryco/dashboard-shell/components";
 import type { StaffDivision } from "@henryco/auth/staff";
 

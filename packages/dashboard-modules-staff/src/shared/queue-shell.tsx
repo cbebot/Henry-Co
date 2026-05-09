@@ -18,6 +18,8 @@ import {
   type QueueRow,
 } from "@henryco/dashboard-shell/components";
 
+import { DEFAULT_STAFF_QUEUE_FILTERS } from "./queue-filters";
+
 /**
  * StaffQueueShell — composed queue surface for Track C modules.
  *
@@ -184,51 +186,7 @@ export function StaffQueueShell<T = unknown>({
   );
 }
 
-/**
- * Default filter field set Track C division modules surface. Modules
- * may extend or override.
- */
-export const DEFAULT_STAFF_QUEUE_FILTERS: ReadonlyArray<FilterField> = [
-  {
-    id: "status",
-    label: "Status",
-    kind: "segmented",
-    options: [
-      { value: "open", label: "Open" },
-      { value: "in_progress", label: "In progress" },
-      { value: "escalated", label: "Escalated" },
-      { value: "resolved", label: "Resolved" },
-    ],
-  },
-  {
-    id: "sla",
-    label: "SLA",
-    kind: "select",
-    options: [
-      { value: "breach", label: "Breach" },
-      { value: "warning", label: "Warning" },
-      { value: "healthy", label: "Healthy" },
-    ],
-  },
-  {
-    id: "assignee",
-    label: "Assignee",
-    kind: "select",
-    options: [
-      { value: "me", label: "Me" },
-      { value: "unassigned", label: "Unassigned" },
-      { value: "team", label: "My team" },
-    ],
-  },
-  {
-    id: "createdAt",
-    label: "Created",
-    kind: "daterange",
-  },
-  {
-    id: "search",
-    label: "Search",
-    kind: "text",
-    placeholder: "Subject, requester, ID…",
-  },
-];
+// DEFAULT_STAFF_QUEUE_FILTERS lives in ./queue-filters.ts so server
+// components can spread it without crossing a "use client" boundary.
+// Re-exported here for the existing barrel callers.
+export { DEFAULT_STAFF_QUEUE_FILTERS } from "./queue-filters";
