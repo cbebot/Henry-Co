@@ -34,6 +34,7 @@ export function WorkspaceShell({
   takeoverPrefixes,
   pathname,
   sidebarTopSlot,
+  rightRail,
   children,
 }: WorkspaceShellProps) {
   // Resolve sensible defaults from the navigation array so hosts can pass
@@ -83,7 +84,18 @@ export function WorkspaceShell({
         />
 
         <main id="henryco-main" tabIndex={-1} className="ws-shell-main">
-          <div className="ws-shell-main-inner">{children}</div>
+          <div className={rightRail ? "ws-shell-main-inner-wide" : "ws-shell-main-inner"}>
+            {rightRail ? (
+              <div className="ws-shell-with-rail">
+                <div className="ws-shell-content">{children}</div>
+                <aside className="ws-shell-rail" aria-label="Sidebar context">
+                  {rightRail}
+                </aside>
+              </div>
+            ) : (
+              children
+            )}
+          </div>
         </main>
 
         <WorkspaceBottomNav
