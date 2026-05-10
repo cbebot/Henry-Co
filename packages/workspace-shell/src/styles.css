@@ -800,8 +800,56 @@
   animation: ws-skeleton-shimmer 1400ms ease-in-out infinite;
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   Universal focus-visible coverage.
+
+   Every interactive surface in the engine — sidebar links, mobile
+   header brand + bell + profile, bottom-nav items, viewer card CTA,
+   sidebar brand link — gets a visible accent outline on keyboard
+   focus. Hosts that mount the engine inherit this for free.
+
+   The .ws-button family + .mt-composer-* surfaces have their own
+   focus styles defined alongside their hover / active rules; this
+   block covers the chrome elements that previously relied on the
+   browser default.
+   ────────────────────────────────────────────────────────────────── */
+
+.ws-sidebar-link:focus-visible,
+.ws-bottom-nav-item:focus-visible,
+.ws-mobile-icon-button:focus-visible,
+.ws-mobile-profile:focus-visible,
+.ws-mobile-brand:focus-visible,
+.ws-sidebar-brand:focus-visible,
+.ws-sidebar-viewer-cta:focus-visible {
+  outline: 2px solid var(--ws-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ws-accent) 22%, transparent);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   prefers-reduced-motion: reduce — universal sweep.
+
+   Stops every transition / animation in the engine for users who
+   request it, without breaking layouts. Specific surfaces with
+   interactive transforms (button hover lift) are caught by the
+   universal `*` rule below; the skeleton is named so its
+   `animation: none` overrides the keyframes.
+   ────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
+  .ws-shell-root,
+  .ws-shell-root *,
+  .ws-shell-root *::before,
+  .ws-shell-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
   .ws-skeleton {
-    animation: none;
+    animation: none !important;
+  }
+  .ws-button:hover,
+  .ws-button:active {
+    transform: none !important;
   }
 }
