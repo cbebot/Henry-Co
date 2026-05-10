@@ -161,26 +161,39 @@ export default function SupportThreadRoom({
                     <p className="text-sm leading-7">{String(msg.body || "")}</p>
                     {attachments.length > 0 ? (
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {attachments.map((attachment, index) => (
-                          <a
-                            key={`${msg.id}-${index}`}
-                            href={typeof attachment.url === "string" ? attachment.url : "#"}
-                            target="_blank"
-                            rel="noreferrer"
-                            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                              isCustomer
-                                ? "bg-white/12 text-white"
-                                : "bg-[var(--acct-bg)] text-[var(--acct-ink)]"
-                            }`}
-                          >
-                            {String(
-                              attachment.name ||
-                                formatSurfaceTemplate(t("Attachment {number}"), {
-                                  number: new Intl.NumberFormat(numberLocale).format(index + 1),
-                                })
-                            )}
-                          </a>
-                        ))}
+                        {attachments.map((attachment, index) => {
+                          const url =
+                            typeof attachment.url === "string" ? attachment.url : null;
+                          const name = String(
+                            attachment.name ||
+                              formatSurfaceTemplate(t("Attachment {number}"), {
+                                number: new Intl.NumberFormat(numberLocale).format(index + 1),
+                              })
+                          );
+                          // Cross-origin attachment URLs (Cloudinary,
+                          // Supabase storage) ignore the `download` attr,
+                          // so route through the same-origin proxy that
+                          // re-streams with Content-Disposition: attachment.
+                          // The proxy auth-gates + host-allowlists.
+                          const proxied = url
+                            ? `/api/proxy/download?u=${encodeURIComponent(url)}&n=${encodeURIComponent(name)}`
+                            : "#";
+                          return (
+                            <a
+                              key={`${msg.id}-${index}`}
+                              href={proxied}
+                              download={name}
+                              rel="noreferrer"
+                              className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                                isCustomer
+                                  ? "bg-white/12 text-white"
+                                  : "bg-[var(--acct-bg)] text-[var(--acct-ink)]"
+                              }`}
+                            >
+                              {name}
+                            </a>
+                          );
+                        })}
                       </div>
                     ) : null}
                   </div>

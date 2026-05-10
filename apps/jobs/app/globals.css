@@ -1,6 +1,83 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/workspace-shell/src/styles.css";
+@import "../../../packages/messaging-thread/src/styles.css";
 @source "../../../packages/ui/src";
+@source "../../../packages/workspace-shell/src";
+@source "../../../packages/messaging-thread/src";
+
+/* ──────────────────────────────────────────────────────────────────
+   Workspace-shell token mapping for jobs divisions.
+   The shared engine reads --ws-* — these blocks redirect them onto
+   the jobs brand tokens so candidate / employer / recruiter all use
+   the same chrome with the right palette.
+   ────────────────────────────────────────────────────────────────── */
+
+[data-workspace-division="jobs-candidate"],
+[data-workspace-division="jobs-employer"],
+[data-workspace-division="jobs-recruiter"] {
+  --ws-bg: var(--jobs-bg);
+  --ws-bg-soft: var(--jobs-paper-soft);
+  --ws-bg-elev: var(--jobs-paper);
+  --ws-ink: var(--jobs-ink);
+  --ws-ink-soft: var(--jobs-muted);
+  --ws-ink-mute: color-mix(in srgb, var(--jobs-muted) 70%, transparent);
+  --ws-line: var(--jobs-line);
+  --ws-line-strong: color-mix(in srgb, var(--jobs-line) 200%, transparent);
+  --ws-accent: var(--jobs-accent);
+  --ws-accent-soft: var(--jobs-accent-soft);
+  --ws-signal: var(--jobs-accent);
+  --ws-good: var(--jobs-success);
+  --ws-good-soft: var(--jobs-success-soft);
+  --ws-warn: var(--jobs-warning);
+  --ws-warn-soft: var(--jobs-warning-soft);
+  --ws-danger: var(--jobs-danger);
+  --ws-danger-soft: var(--jobs-danger-soft);
+}
+
+/* Jobs area-badge inside the engine sidebar's top slot. Carries the
+   per-area gradient so candidate / employer / recruiter still read
+   visually distinct even though the rest of the chrome inherits
+   division tokens. */
+.ws-jobs-area-badge {
+  border-radius: 1.5rem;
+  padding: 1rem;
+  color: white;
+}
+.ws-jobs-area-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.ws-jobs-area-badge-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  flex-shrink: 0;
+}
+.ws-jobs-area-badge-kicker {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+}
+.ws-jobs-area-badge-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: white;
+}
+.ws-jobs-area-badge-subtitle {
+  margin-top: 0.6rem;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.82);
+}
 
 :root {
   color-scheme: light;

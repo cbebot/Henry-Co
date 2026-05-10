@@ -505,18 +505,27 @@ importers:
 
   apps/jobs:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-shell
       '@henryco/email':
         specifier: workspace:^
         version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/messaging-thread':
+        specifier: workspace:^
+        version: link:../../packages/messaging-thread
       '@henryco/payment-surface':
         specifier: workspace:^
         version: link:../../packages/payment-surface
@@ -529,6 +538,9 @@ importers:
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@henryco/workspace-shell':
+        specifier: workspace:^
+        version: link:../../packages/workspace-shell
       '@supabase/ssr':
         specifier: ^0.9.0
         version: 0.9.0(@supabase/supabase-js@2.98.0)
@@ -1818,6 +1830,9 @@ importers:
 
   packages/messaging-thread:
     dependencies:
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../chat-composer
       lucide-react:
         specifier: ^0.577.0
         version: 0.577.0(react@19.2.3)
