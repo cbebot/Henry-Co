@@ -28,6 +28,30 @@
   --learn-mint-soft: #d8f4eb;
   --learn-copper: #e3bc7e;
   --learn-shadow: 0 42px 120px rgba(0, 0, 0, 0.36);
+
+  /* PASS 20 — canonical --hc-* mapping (learn).
+     Dark forest stage with mint accent; HenryCo gold lights up the
+     dashboard-shell badges/buttons so the family stays coherent. */
+  --hc-bg: var(--learn-bg);
+  --hc-bg-soft: var(--learn-bg-soft);
+  --hc-surface: var(--learn-surface);
+  --hc-surface-strong: var(--learn-surface-strong);
+  --hc-surface-elevated: var(--learn-surface);
+  --hc-paper: var(--learn-bg-soft);
+  --hc-ink: var(--learn-ink);
+  --hc-ink-soft: var(--learn-ink-soft);
+  --hc-ink-muted: rgba(238, 247, 244, 0.46);
+  --hc-line: var(--learn-line);
+  --hc-line-strong: var(--learn-line-strong);
+  --hc-hairline: var(--learn-line);
+  --hc-accent: #D4AF37;
+  --hc-accent-strong: #E5C870;
+  --hc-accent-pressed: #B89425;
+  --hc-accent-soft: rgba(212, 175, 55, 0.16);
+  --hc-accent-text: #E5C870;
+  --hc-accent-on-surface: #E5C870;
+  --hc-ink-on-accent: #061311;
+  --hc-focus-ring: #D4AF37;
   --learn-shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.22);
 }
 

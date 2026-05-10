@@ -38,6 +38,29 @@
   --accent-secondary: var(--care-accent-secondary);
   --accent-strong: var(--care-accent-strong);
   --accent-deep: var(--care-accent-deep);
+
+  /* PASS 20 — canonical --hc-* mapping. Care leans cobalt; we keep the
+     HenryCo gold for the focus ring + chips so the dashboard-shell
+     primitives still read as one product family. */
+  --hc-bg: var(--care-bg);
+  --hc-bg-soft: var(--care-bg-soft);
+  --hc-surface: var(--care-card);
+  --hc-surface-strong: var(--care-bg-elevated);
+  --hc-surface-elevated: var(--care-bg-elevated);
+  --hc-paper: var(--care-bg-soft);
+  --hc-ink: var(--care-text);
+  --hc-ink-soft: var(--care-muted);
+  --hc-ink-muted: rgba(7, 18, 38, 0.46);
+  --hc-line: var(--care-border);
+  --hc-line-strong: rgba(16, 27, 70, 0.16);
+  --hc-hairline: var(--care-border);
+  --hc-accent: #C9A227;
+  --hc-accent-strong: #A88718;
+  --hc-accent-pressed: #8A6F00;
+  --hc-accent-soft: rgba(201, 162, 39, 0.10);
+  --hc-accent-text: #8A6F00;
+  --hc-accent-on-surface: #8A6F00;
+  --hc-focus-ring: #C9A227;
 }
 
 .dark {
@@ -58,6 +81,28 @@
   --accent-secondary: var(--care-accent-secondary);
   --accent-strong: var(--care-accent-strong);
   --accent-deep: var(--care-accent-deep);
+
+  /* PASS 20 — dark mapping (mirrors light, with dark surfaces + premium gold). */
+  --hc-bg: var(--care-bg);
+  --hc-bg-soft: var(--care-bg-soft);
+  --hc-surface: var(--care-card);
+  --hc-surface-strong: var(--care-bg-elevated);
+  --hc-surface-elevated: var(--care-bg-elevated);
+  --hc-paper: var(--care-bg-soft);
+  --hc-ink: var(--care-text);
+  --hc-ink-soft: var(--care-muted);
+  --hc-ink-muted: rgba(226, 232, 255, 0.42);
+  --hc-line: var(--care-border);
+  --hc-line-strong: rgba(232, 235, 255, 0.20);
+  --hc-hairline: var(--care-border);
+  --hc-accent: #D4AF37;
+  --hc-accent-strong: #E5C870;
+  --hc-accent-pressed: #B89425;
+  --hc-accent-soft: rgba(212, 175, 55, 0.16);
+  --hc-accent-text: #E5C870;
+  --hc-accent-on-surface: #E5C870;
+  --hc-ink-on-accent: #040814;
+  --hc-focus-ring: #D4AF37;
 }
 
 * {

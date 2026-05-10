@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import {
-  renderAuthEmail,
+  renderLocalizedAuthEmail,
+  resolveRecipientLocale,
   resolveSenderIdentity,
   sendBrevoEmail,
   sendResendEmail,
@@ -9,6 +10,8 @@ import {
   type EmailDispatchResult,
   type SendTransactionalEmailInput,
 } from "@henryco/email";
+import { autoTranslateMany } from "@/lib/i18n/auto-translate";
+import { createAdminSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -212,7 +215,27 @@ export async function POST(req: NextRequest) {
   const baseHost = forwardedHost || requestUrl.host;
   const baseProto = req.headers.get("x-forwarded-proto") || requestUrl.protocol.replace(/:$/, "") || "https";
   const fallbackSiteUrl = `${baseProto}://${baseHost}`;
-  const rendered = renderAuthEmail(parsed.data, fallbackSiteUrl);
+
+  // PASS 18C — render the auth email in the user's preferred locale. We
+  // look up `customer_profiles.language` for the recipient; if not yet
+  // populated (signup case before profile creation), we fall back to "en".
+  // Best-effort lookup: any failure degrades to English render and dispatch
+  // continues uninterrupted.
+  let recipientLocale = "en";
+  try {
+    recipientLocale = await resolveRecipientLocale(createAdminSupabase() as never, {
+      email: parsed.user_email,
+    });
+  } catch {
+    recipientLocale = "en";
+  }
+
+  const rendered = await renderLocalizedAuthEmail(
+    parsed.data,
+    fallbackSiteUrl,
+    recipientLocale,
+    autoTranslateMany,
+  );
   const sender = resolveSenderIdentity("auth");
 
   const result = await dispatchWithFallback({

@@ -123,6 +123,14 @@ export type HenryCoEmailLayout = {
   footnote?: string | null;
   /** Optional support contact line. */
   supportLine?: string | null;
+  /**
+   * PASS 18C — recipient locale. Drives `<html lang>` and `<html dir>`
+   * attributes for accessibility and RTL language support. Caller is
+   * expected to translate the actual UI strings (subject, title, intro,
+   * etc.) before calling renderHenryCoEmail; this field only affects
+   * outer document attributes. Defaults to "en".
+   */
+  locale?: string | null;
 };
 
 export function escapeHtml(value: string): string {
@@ -380,8 +388,11 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
     supportEmail: footerSupportEmail,
   });
 
+  const lang = (layout.locale || "en").toLowerCase();
+  const dir = lang === "ar" ? "rtl" : "ltr";
+
   return `<!doctype html>
-<html lang="en">
+<html lang="${lang}" dir="${dir}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

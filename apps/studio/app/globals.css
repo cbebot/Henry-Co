@@ -50,6 +50,30 @@
   --studio-signal: #97f4f3;
   --studio-shadow: 0 42px 120px rgba(0, 0, 0, 0.36);
   --studio-shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.22);
+
+  /* PASS 20 — canonical --hc-* mapping (studio).
+     Cool deep-teal stage with mint signal; HenryCo gold lights up
+     dashboard-shell badges so the family stays coherent. */
+  --hc-bg: var(--studio-bg);
+  --hc-bg-soft: var(--studio-bg-soft);
+  --hc-surface: var(--studio-surface);
+  --hc-surface-strong: var(--studio-surface-strong);
+  --hc-surface-elevated: var(--studio-surface);
+  --hc-paper: var(--studio-bg-soft);
+  --hc-ink: var(--studio-ink);
+  --hc-ink-soft: var(--studio-ink-soft);
+  --hc-ink-muted: rgba(237, 246, 250, 0.46);
+  --hc-line: var(--studio-line);
+  --hc-line-strong: var(--studio-line-strong);
+  --hc-hairline: var(--studio-line);
+  --hc-accent: #D4AF37;
+  --hc-accent-strong: #E5C870;
+  --hc-accent-pressed: #B89425;
+  --hc-accent-soft: rgba(212, 175, 55, 0.16);
+  --hc-accent-text: #E5C870;
+  --hc-accent-on-surface: #E5C870;
+  --hc-ink-on-accent: #061017;
+  --hc-focus-ring: #D4AF37;
 }
 
 .light {
@@ -63,6 +87,28 @@
   --studio-line-strong: rgba(10, 26, 33, 0.18);
   --studio-shadow: 0 30px 100px rgba(13, 34, 42, 0.12);
   --studio-shadow-soft: 0 16px 42px rgba(13, 34, 42, 0.08);
+
+  /* PASS 20 — light mapping. */
+  --hc-bg: var(--studio-bg);
+  --hc-bg-soft: var(--studio-bg-soft);
+  --hc-surface: var(--studio-surface);
+  --hc-surface-strong: var(--studio-surface-strong);
+  --hc-surface-elevated: var(--studio-surface);
+  --hc-paper: var(--studio-bg-soft);
+  --hc-ink: var(--studio-ink);
+  --hc-ink-soft: var(--studio-ink-soft);
+  --hc-ink-muted: rgba(10, 26, 33, 0.46);
+  --hc-line: var(--studio-line);
+  --hc-line-strong: var(--studio-line-strong);
+  --hc-hairline: var(--studio-line);
+  --hc-accent: #C9A227;
+  --hc-accent-strong: #A88718;
+  --hc-accent-pressed: #8A6F00;
+  --hc-accent-soft: rgba(201, 162, 39, 0.10);
+  --hc-accent-text: #8A6F00;
+  --hc-accent-on-surface: #8A6F00;
+  --hc-ink-on-accent: #1A1814;
+  --hc-focus-ring: #C9A227;
 }
 
 * {

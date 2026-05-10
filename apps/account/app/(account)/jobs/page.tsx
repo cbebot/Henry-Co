@@ -95,20 +95,20 @@ export default async function JobsPage() {
         <div className="bg-[linear-gradient(135deg,#0F172A_0%,#0E7490_54%,#D4AF37_100%)] px-6 py-7 text-white sm:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-white/70">{t("Your account")}</p>
-              <h2 className="mt-3 acct-display text-3xl leading-tight sm:text-4xl">
+              <p className="hc-label uppercase tracking-[0.2em] text-white/75">{t("Your account")}</p>
+              <h2 className="hc-h1 acct-display mt-3 text-white">
                 {t("Your jobs activity, all in one place.")}
               </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/78">
+              <p className="hc-body-lg mt-3 max-w-2xl text-white/80">
                 {t("Applications, saved roles, recruiter updates, and profile readiness are linked to your HenryCo account.")}
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {data.stats.map((stat) => (
                 <div key={stat.id} className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-                  <div className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-white/70">{t(stat.label)}</div>
-                  <div className="mt-3 text-3xl font-semibold">{stat.value}</div>
-                  <p className="mt-2 text-sm leading-6 text-white/72">{t(stat.detail)}</p>
+                  <div className="hc-label uppercase tracking-[0.16em] text-white/75">{t(stat.label)}</div>
+                  <div className="hc-h1 hc-mono mt-3 text-white">{stat.value}</div>
+                  <p className="hc-body-sm mt-2 text-white/75">{t(stat.detail)}</p>
                 </div>
               ))}
             </div>
@@ -122,7 +122,7 @@ export default async function JobsPage() {
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="acct-kicker">{t("Next Actions")}</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("What deserves your attention now")}</h3>
+                <h3 className="hc-h3 mt-2 text-[var(--acct-ink)]">{t("What deserves your attention now")}</h3>
               </div>
               <a href={data.applicationsUrl} className="acct-button-ghost">
                 {t("Open timeline")} <ChevronRight size={14} />
@@ -151,7 +151,7 @@ export default async function JobsPage() {
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
                 <p className="acct-kicker">{t("Applications")}</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Live hiring movement")}</h3>
+                <h3 className="hc-h3 mt-2 text-[var(--acct-ink)]">{t("Live hiring movement")}</h3>
               </div>
               {data.stageSummary.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
@@ -267,7 +267,7 @@ export default async function JobsPage() {
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <p className="acct-kicker">{t("Saved Jobs")}</p>
-                  <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Shortlist with better context")}</h3>
+                  <h3 className="hc-h3 mt-2 text-[var(--acct-ink)]">{t("Shortlist with better context")}</h3>
                 </div>
                 <a href={data.savedJobsUrl} className="acct-button-ghost">
                   {t("Open saved roles")} <ChevronRight size={14} />
@@ -311,7 +311,7 @@ export default async function JobsPage() {
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <p className="acct-kicker">{t("Recommended Roles")}</p>
-                  <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("What fits your current signal")}</h3>
+                  <h3 className="hc-h3 mt-2 text-[var(--acct-ink)]">{t("What fits your current signal")}</h3>
                 </div>
                 <a href={data.browseJobsUrl} className="acct-button-ghost">
                   {t("Browse catalog")} <ChevronRight size={14} />
@@ -359,7 +359,7 @@ export default async function JobsPage() {
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="acct-kicker">{t("Recruiter Feed")}</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Messages, stage moves, and alerts")}</h3>
+                <h3 className="hc-h3 mt-2 text-[var(--acct-ink)]">{t("Messages, stage moves, and alerts")}</h3>
               </div>
               <a href={data.applicationsUrl} className="acct-button-ghost">
                 {t("Candidate inbox")} <ChevronRight size={14} />
@@ -403,7 +403,7 @@ export default async function JobsPage() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="acct-kicker">{t("Profile Strength")}</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Candidate readiness and CV quality")}</h3>
+                <h3 className="hc-h3 mt-2 text-[var(--acct-ink)]">{t("Candidate readiness and CV quality")}</h3>
               </div>
               <span className={toneChip(data.profile.trustScore >= 70 ? "green" : "orange")}>
                 {data.profile.trustScore}%
@@ -476,7 +476,7 @@ export default async function JobsPage() {
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="acct-kicker">{t("Shared Inbox")}</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Jobs notifications linked to your account")}</h3>
+                <h3 className="hc-h3 mt-2 text-[var(--acct-ink)]">{t("Jobs notifications linked to your account")}</h3>
               </div>
               <ShieldCheck className="h-5 w-5 text-[var(--acct-gold)]" />
             </div>
@@ -511,7 +511,7 @@ export default async function JobsPage() {
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="acct-kicker">{t("Alerts")}</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Saved search intent")}</h3>
+                <h3 className="hc-h3 mt-2 text-[var(--acct-ink)]">{t("Saved search intent")}</h3>
               </div>
               <Clock3 className="h-5 w-5 text-[var(--acct-blue)]" />
             </div>

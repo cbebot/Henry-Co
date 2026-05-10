@@ -3,12 +3,14 @@ import {
   HENRYCO_EMAIL_TOKENS,
   renderHenryCoEmailFooter,
   renderHenryCoEmailHeader,
+  resolveRecipientLocale,
   sendTransactionalEmail,
 } from "@henryco/email";
 import {
   extractEmailAddress,
   formatCurrency,
 } from "@/lib/env";
+import { autoTranslateMany } from "@/lib/i18n/auto-translate";
 import { getAccountLearnUrl } from "@/lib/learn/links";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createId, nowIso, upsertLearnRecord } from "@/lib/learn/store";
@@ -60,7 +62,56 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
-function renderEmail(layout: EmailLayout) {
+// PASS 18C — locale-aware layout localizer.
+async function localizeLearnLayout(layout: EmailLayout, locale: string): Promise<EmailLayout> {
+  if (!locale || locale === "en") return layout;
+
+  const sections = layout.sections ?? [];
+  const bullets = layout.bullets ?? [];
+
+  const subjectSeparator = " • ";
+  const subjectIdx = layout.subject.indexOf(subjectSeparator);
+  const subjectPrefix = subjectIdx >= 0 ? layout.subject.slice(0, subjectIdx) : layout.subject;
+  const subjectSuffix = subjectIdx >= 0 ? layout.subject.slice(subjectIdx) : "";
+
+  const inputs: string[] = [
+    subjectPrefix,
+    layout.eyebrow,
+    layout.title,
+    layout.intro,
+    layout.highlightLabel || "",
+    layout.actionLabel || "",
+    ...sections.map((s) => s.label),
+    ...bullets,
+  ];
+
+  let translated: string[];
+  try {
+    translated = await autoTranslateMany(inputs, locale as never);
+    if (!Array.isArray(translated) || translated.length !== inputs.length) {
+      return layout;
+    }
+  } catch {
+    return layout;
+  }
+
+  const sectionStart = 6;
+  const bulletStart = sectionStart + sections.length;
+
+  return {
+    ...layout,
+    subject: (translated[0] || subjectPrefix) + subjectSuffix,
+    eyebrow: translated[1] || layout.eyebrow,
+    title: translated[2] || layout.title,
+    intro: translated[3] || layout.intro,
+    highlightLabel: layout.highlightLabel ? (translated[4] || layout.highlightLabel) : layout.highlightLabel,
+    actionLabel: layout.actionLabel ? (translated[5] || layout.actionLabel) : layout.actionLabel,
+    sections: sections.map((s, i) => ({ label: translated[sectionStart + i] || s.label, value: s.value })),
+    bullets: bullets.map((b, i) => translated[bulletStart + i] || b),
+  };
+}
+
+function renderEmail(layout: EmailLayout, locale: string = "en") {
   const sections = (layout.sections ?? [])
     .map(
       (section) => `
@@ -94,9 +145,12 @@ function renderEmail(layout: EmailLayout) {
     supportEmail: learn.supportEmail,
   });
 
+  const isRtl = locale === "ar";
+  const dir = isRtl ? "rtl" : "ltr";
+
   return `
     <!doctype html>
-    <html lang="en">
+    <html lang="${locale}" dir="${dir}">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -314,13 +368,20 @@ async function sendEmail(input: {
     });
   }
 
+  // PASS 18C — render in recipient's locale.
+  const recipientLocale = await resolveRecipientLocale(createAdminSupabase() as never, {
+    userId: audience.userId,
+    email: audience.normalizedEmail || recipient,
+  });
+  const localizedLayout = await localizeLearnLayout(input.layout, recipientLocale);
+
   const dispatch = await sendTransactionalEmail({
     to: recipient,
     purpose: "learn",
     replyTo: learn.supportEmail,
-    subject: input.layout.subject,
-    html: renderEmail(input.layout),
-    text: toText(input.layout),
+    subject: localizedLayout.subject,
+    html: renderEmail(localizedLayout, recipientLocale),
+    text: toText(localizedLayout),
   });
 
   const status: LearnNotification["status"] =
@@ -342,8 +403,8 @@ async function sendEmail(input: {
     channel: "email",
     templateKey: input.templateKey,
     recipient,
-    title: input.title,
-    body: toText(input.layout),
+    title: localizedLayout.title || input.title,
+    body: toText(localizedLayout),
     status,
     reason,
     entityType: input.entityType || null,

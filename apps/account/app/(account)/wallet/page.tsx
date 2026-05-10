@@ -101,17 +101,18 @@ export default async function WalletPage() {
       {/* Balance card */}
       <div className="acct-card overflow-hidden">
         <div className="bg-gradient-to-br from-[var(--acct-gold)] to-[#A08520] px-6 py-8 text-white">
-          <p className="text-sm font-medium text-white/70">{t("Available balance")}</p>
-          <p className="mt-1 text-4xl font-bold">{formatNaira(availableBalanceKobo)}</p>
-          <p className="mt-2 text-sm text-white/60">
+          <p className="hc-label uppercase tracking-[0.16em] text-white/75">{t("Available balance")}</p>
+          <p className="hc-display hc-mono mt-2 text-white">{formatNaira(availableBalanceKobo)}</p>
+          <p className="hc-body-sm mt-3 text-white/70">
             {t("HenryCo Wallet")} &middot; {wallet.currency} &middot; {t("Available across HenryCo services")}
           </p>
-          <p className="mt-2 text-xs text-white/72">
+          <p className="hc-caption mt-1.5 text-white/65">
             {region.settlementNote}
           </p>
           {pendingWithdrawalKobo > 0 ? (
-            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/72">
-              {formatNaira(pendingWithdrawalKobo)} {t("held in pending withdrawal review")}
+            <p className="hc-micro mt-2 uppercase tracking-[0.16em] font-semibold text-white/75">
+              <span className="hc-mono">{formatNaira(pendingWithdrawalKobo)}</span>
+              {" "}{t("held in pending withdrawal review")}
             </p>
           ) : null}
         </div>
@@ -172,10 +173,10 @@ export default async function WalletPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="acct-kicker">{t("Pending funding")}</p>
-              <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
+              <p className="hc-h2 hc-mono mt-2 text-[var(--acct-ink)]">
                 {formatNaira(pending_kobo)}
               </p>
-              <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">
+              <p className="hc-body mt-2 text-[var(--acct-muted)]">
                 {t("Money stays here until transfer proof is uploaded and the HenryCo team confirms the payment.")}
               </p>
             </div>
@@ -190,10 +191,15 @@ export default async function WalletPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="acct-kicker">{t("Pending withdrawals")}</p>
-              <p className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-                {pendingWithdrawalKobo > 0
-                  ? `${formatNaira(pendingWithdrawalKobo)} ${t("awaiting finance review")}`
-                  : t("No pending withdrawals")}
+              <p className="hc-h3 mt-2 text-[var(--acct-ink)]">
+                {pendingWithdrawalKobo > 0 ? (
+                  <>
+                    <span className="hc-mono">{formatNaira(pendingWithdrawalKobo)}</span>
+                    {" "}{t("awaiting finance review")}
+                  </>
+                ) : (
+                  t("No pending withdrawals")
+                )}
               </p>
             </div>
             <ArrowUpRight className="h-5 w-5 text-[var(--acct-orange)]" />
@@ -211,7 +217,7 @@ export default async function WalletPage() {
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <p className="acct-kicker">{t("Recent funding requests")}</p>
-            <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Recent requests")}</h2>
+            <h2 className="hc-h2 mt-2 text-[var(--acct-ink)]">{t("Recent requests")}</h2>
           </div>
         </div>
 

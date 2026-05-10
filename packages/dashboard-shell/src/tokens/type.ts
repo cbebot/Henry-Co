@@ -22,6 +22,9 @@
 export const FONT_VARS = {
   serif: "var(--font-source-serif, ui-serif, Georgia, serif)",
   sans: "var(--font-inter, ui-sans-serif, system-ui, sans-serif)",
+  /** PASS 19 — monospace for amounts, IDs, timestamps. Mirrors the
+   *  `--hc-font-mono` declared in `packages/ui/src/styles/globals.css`. */
+  mono: "var(--hc-font-mono, ui-monospace, SF Mono, JetBrains Mono, Menlo, Consolas, monospace)",
 } as const;
 
 /**
@@ -40,15 +43,26 @@ export const FONT_VARS = {
  *   - micro: chip / badge text
  */
 export const TYPE_SCALE = {
-  micro: { size: "0.65rem", weight: 600, lineHeight: 1.2, tracking: "0.14em" },
-  small: { size: "0.75rem", weight: 500, lineHeight: 1.45, tracking: "0" },
+  micro: { size: "0.6875rem", weight: 500, lineHeight: 1.35, tracking: "0" },
+  small: { size: "0.8125rem", weight: 500, lineHeight: 1.5, tracking: "0" },
   body: { size: "0.875rem", weight: 400, lineHeight: 1.55, tracking: "0" },
   bodyStrong: { size: "0.875rem", weight: 600, lineHeight: 1.45, tracking: "0" },
+  bodyLg: { size: "1rem", weight: 400, lineHeight: 1.6, tracking: "0" },
+  label: { size: "0.75rem", weight: 600, lineHeight: 1.4, tracking: "0" },
+  caption: { size: "0.75rem", weight: 400, lineHeight: 1.4, tracking: "0" },
   kicker: { size: "0.7rem", weight: 600, lineHeight: 1.2, tracking: "0.16em" },
   eyebrow: { size: "0.7rem", weight: 500, lineHeight: 1.2, tracking: "0.18em" },
+  /** PASS 19 — semantic heading scale (h4 → display). Premium-confident
+   *  but disciplined; titles read large, body stays dense. */
+  h4: { size: "0.875rem", weight: 600, lineHeight: 1.4, tracking: "0" },
+  h3: { size: "1.125rem", weight: 600, lineHeight: 1.35, tracking: "-0.005em" },
+  h2: { size: "1.375rem", weight: 600, lineHeight: 1.3, tracking: "-0.012em" },
+  h1: { size: "2rem", weight: 700, lineHeight: 1.18, tracking: "-0.015em" },
+  display: { size: "2.75rem", weight: 700, lineHeight: 1.05, tracking: "-0.02em" },
+  /** Aliases for legacy callers — h3 / h1 / h1 respectively. */
   headline: { size: "1.125rem", weight: 600, lineHeight: 1.35, tracking: "-0.005em" },
-  title: { size: "1.5rem", weight: 700, lineHeight: 1.25, tracking: "-0.012em" },
-  heroTitle: { size: "1.875rem", weight: 700, lineHeight: 1.2, tracking: "-0.015em" },
+  title: { size: "2rem", weight: 700, lineHeight: 1.18, tracking: "-0.015em" },
+  heroTitle: { size: "2.75rem", weight: 700, lineHeight: 1.05, tracking: "-0.02em" },
 } as const;
 
 /**
@@ -69,7 +83,19 @@ export function typeStyle(key: keyof typeof TYPE_SCALE): React.CSSProperties {
     fontWeight: t.weight,
     lineHeight: t.lineHeight,
     letterSpacing: t.tracking,
-    textTransform: key === "kicker" || key === "eyebrow" || key === "micro" ? "uppercase" : undefined,
+    textTransform: key === "kicker" || key === "eyebrow" ? "uppercase" : undefined,
+  };
+}
+
+/**
+ * Mono-style helper — pairs with `typeStyle()` for amounts, IDs, and
+ * timestamps. Compose: `{ ...typeStyle("body"), ...monoStyle() }`.
+ */
+export function monoStyle(): React.CSSProperties {
+  return {
+    fontFamily: FONT_VARS.mono,
+    fontVariantNumeric: "tabular-nums",
+    letterSpacing: 0,
   };
 }
 

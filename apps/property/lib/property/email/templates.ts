@@ -3,6 +3,7 @@ import {
   HENRYCO_EMAIL_TOKENS,
   renderHenryCoEmailFooter,
   renderHenryCoEmailHeader,
+  type LocalizableTranslator,
 } from "@henryco/email";
 
 export type PropertyTemplateKey =
@@ -37,7 +38,7 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#039;");
 }
 
-export function renderPropertyEmailTemplate(input: PropertyTemplateInput) {
+export function renderPropertyEmailTemplate(input: PropertyTemplateInput, locale: string = "en") {
   const property = getDivisionConfig("property");
   const propertyUrl = getDivisionUrl("property");
   const ctaHref = input.ctaHref || propertyUrl;
@@ -51,9 +52,11 @@ export function renderPropertyEmailTemplate(input: PropertyTemplateInput) {
     supportEmail: property.supportEmail,
     reasonLine: `This is a HenryCo Property transactional message. Support: ${property.supportEmail} · ${property.supportPhone}`,
   });
+  const isRtl = locale === "ar";
+  const dir = isRtl ? "rtl" : "ltr";
 
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="${locale}" dir="${dir}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -137,4 +140,50 @@ export function renderPropertyEmailTemplate(input: PropertyTemplateInput) {
     text,
     templateKey: input.templateKey,
   };
+}
+
+// PASS 18C — locale-aware variants.
+export async function localizePropertyTemplateInput(
+  input: PropertyTemplateInput,
+  locale: string,
+  translator: LocalizableTranslator,
+): Promise<PropertyTemplateInput> {
+  if (!locale || locale === "en") return input;
+
+  const bullets = input.bullets ?? [];
+  const inputs: string[] = [
+    input.eyebrow,
+    input.headline,
+    input.summary,
+    input.ctaLabel || "",
+    ...bullets,
+  ];
+
+  let translated: string[];
+  try {
+    translated = await translator(inputs, locale);
+    if (!Array.isArray(translated) || translated.length !== inputs.length) {
+      return input;
+    }
+  } catch {
+    return input;
+  }
+
+  return {
+    ...input,
+    eyebrow: translated[0] || input.eyebrow,
+    headline: translated[1] || input.headline,
+    summary: translated[2] || input.summary,
+    ctaLabel: input.ctaLabel ? (translated[3] || input.ctaLabel) : input.ctaLabel,
+    bullets: bullets.length ? bullets.map((b, i) => translated[4 + i] || b) : input.bullets,
+  };
+}
+
+export async function renderLocalizedPropertyEmailTemplate(
+  input: PropertyTemplateInput,
+  locale: string,
+  translator: LocalizableTranslator,
+) {
+  const localizedInput = await localizePropertyTemplateInput(input, locale, translator);
+  return renderPropertyEmailTemplate(localizedInput, locale);
 }

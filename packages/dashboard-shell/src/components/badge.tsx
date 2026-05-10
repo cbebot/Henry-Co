@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { CSS_VARS } from "../tokens/color";
+import { CSS_VARS, STATUS_VARS } from "../tokens/color";
 import { typeStyle } from "../tokens/type";
 import { RADIUS } from "../tokens/spacing";
 
@@ -25,14 +25,23 @@ export type BadgeProps = {
 const TONE_STYLES: Record<NonNullable<BadgeProps["tone"]>, CSSProperties> = {
   accent: {
     backgroundColor: `var(${CSS_VARS.accent})`,
-    color: "white",
+    color: `var(${CSS_VARS.textOnAccent})`,
   },
-  success: { backgroundColor: "#1F8B4C", color: "white" },
-  warning: { backgroundColor: "#C9A227", color: "white" },
-  urgent: { backgroundColor: "#C04A1F", color: "white" },
+  success: {
+    backgroundColor: `var(${STATUS_VARS.success.text})`,
+    color: `var(${CSS_VARS.surface})`,
+  },
+  warning: {
+    backgroundColor: `var(${STATUS_VARS.warning.text})`,
+    color: `var(${CSS_VARS.surface})`,
+  },
+  urgent: {
+    backgroundColor: `var(${STATUS_VARS.danger.text})`,
+    color: `var(${CSS_VARS.surface})`,
+  },
   neutral: {
     backgroundColor: `var(${CSS_VARS.ink})`,
-    color: "white",
+    color: `var(${CSS_VARS.surface})`,
   },
 };
 

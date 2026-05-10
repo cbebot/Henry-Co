@@ -2,7 +2,6 @@ import { Suspense, type ReactNode } from "react";
 import { redirect } from "next/navigation";
 import {
   ContextDrawer,
-  DEFAULT_CSS_VAR_VALUES,
   MOBILE_SHELL_CSS,
   MOTION_KEYFRAMES_CSS,
   NotificationsDrawerBody,
@@ -172,13 +171,26 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     >
       <style dangerouslySetInnerHTML={{ __html: MOTION_KEYFRAMES_CSS + MOBILE_SHELL_CSS }} />
       <AccountPaletteHost userId={user.id} moduleJumpEntries={moduleJumpEntries}>
+        {/*
+          Theme-aware shell wrapper. The shell's `--hc-*` tokens are
+          provided by `packages/ui/src/styles/globals.css` (imported by
+          `apps/account/app/globals.css`) with both `:root` (light) and
+          `.dark` overrides. We deliberately do NOT spread
+          `DEFAULT_CSS_VAR_VALUES` here — that constant carries
+          light-only values, and as inline styles it would force shell
+          surfaces to render light even when `.dark` is active on the
+          html root. Letting the global cascade win lets every shell
+          primitive inside (Panel, SignalCard, MetricCard, etc.) follow
+          the active theme uniformly with the chrome (`--acct-*` tokens),
+          closing the "dark chrome / light panel" mixed-theme bug.
+        */}
         <div
           style={{
-            ...DEFAULT_CSS_VAR_VALUES,
             minHeight: "100vh",
             display: "flex",
             flexDirection: "column",
-            backgroundColor: "var(--hc-surface)",
+            backgroundColor: "var(--acct-bg)",
+            color: "var(--acct-ink)",
           }}
         >
           <IdentityBarPaletteBridge

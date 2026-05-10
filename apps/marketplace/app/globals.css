@@ -36,6 +36,31 @@
   --market-noir: #050608;
   --market-shadow: 0 28px 90px rgba(0, 0, 0, 0.4);
   --market-shadow-strong: 0 54px 180px rgba(0, 0, 0, 0.55);
+
+  /* PASS 20 — canonical --hc-* mapping (marketplace).
+     Marketplace runs a deep noir stage with brass + olive editorial
+     accents. The brass token is naturally close to gold, so we map
+     --hc-accent to it directly while keeping the brand-gold focus ring. */
+  --hc-bg: var(--market-bg);
+  --hc-bg-soft: var(--market-bg-soft);
+  --hc-surface: var(--market-paper);
+  --hc-surface-strong: var(--market-bg-elevated);
+  --hc-surface-elevated: var(--market-bg-elevated);
+  --hc-paper: var(--market-bg-soft);
+  --hc-ink: var(--market-ink);
+  --hc-ink-soft: var(--market-muted);
+  --hc-ink-muted: rgba(224, 216, 204, 0.50);
+  --hc-line: var(--market-line);
+  --hc-line-strong: var(--market-line-strong);
+  --hc-hairline: var(--market-line);
+  --hc-accent: var(--market-brass);
+  --hc-accent-strong: #d8b87f;
+  --hc-accent-pressed: #a88350;
+  --hc-accent-soft: var(--market-brass-soft);
+  --hc-accent-text: #ead7b0;
+  --hc-accent-on-surface: #ead7b0;
+  --hc-ink-on-accent: #1a130c;
+  --hc-focus-ring: var(--market-brass);
 }
 
 * {

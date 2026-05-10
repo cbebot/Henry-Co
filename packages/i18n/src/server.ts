@@ -1,4 +1,10 @@
 export { resolveLocaleOrder } from "./resolve-locale";
+export {
+  buildLocaleSeoMetadata,
+  getHtmlLangAttribute,
+  type LocaleSeoInput,
+  type LocaleSeoMetadata,
+} from "./seo-metadata";
 export { buildLocaleCookieOptions, localeCookieName } from "./cookie";
 export { getHubHomeCopy, getFaqFallbackForLocale, type HubHomeCopy } from "./hub-home-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
@@ -16,6 +22,14 @@ export {
 } from "./surface-copy";
 export { deepLTranslate, deepLTranslateMany, isDeepLSupported, type DeepLTranslateResult } from "./deepl";
 export { resolveLocalizedDynamicField, type LocaleTextMap } from "./dynamic-content";
+export {
+  translateText,
+  translateTextMany,
+  createSupabaseTranslationCache,
+  type TranslationCacheClient,
+  type TranslationKind,
+  type TranslateOptions,
+} from "./translate-runtime";
 export {
   formatDate,
   formatDateLong,

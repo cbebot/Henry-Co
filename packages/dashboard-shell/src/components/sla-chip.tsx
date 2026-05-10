@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 import { typeStyle } from "../tokens/type";
-import { CSS_VARS, STATUS } from "../tokens/color";
+import { CSS_VARS, STATUS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
 
 /**
@@ -48,24 +48,24 @@ function deriveLabel(bucket: SLABucket, dueAt?: string): string {
 
 const BUCKET_STYLE: Record<SLABucket, { fg: string; bg: string; ring: string }> = {
   healthy: {
-    fg: STATUS.success,
-    bg: "rgba(31, 139, 76, 0.10)",
-    ring: "rgba(31, 139, 76, 0.30)",
+    fg: `var(${STATUS_VARS.success.text})`,
+    bg: `var(${STATUS_VARS.success.bg})`,
+    ring: `var(${STATUS_VARS.success.border})`,
   },
   warning: {
-    fg: STATUS.warning,
-    bg: "rgba(201, 162, 39, 0.12)",
-    ring: "rgba(201, 162, 39, 0.36)",
+    fg: `var(${STATUS_VARS.warning.text})`,
+    bg: `var(${STATUS_VARS.warning.bg})`,
+    ring: `var(${STATUS_VARS.warning.border})`,
   },
   breach: {
-    fg: STATUS.security,
-    bg: "rgba(185, 28, 28, 0.12)",
-    ring: "rgba(185, 28, 28, 0.40)",
+    fg: `var(${STATUS_VARS.danger.text})`,
+    bg: `var(${STATUS_VARS.danger.bg})`,
+    ring: `var(${STATUS_VARS.danger.border})`,
   },
   done: {
-    fg: STATUS.info,
-    bg: "rgba(75, 85, 99, 0.10)",
-    ring: "rgba(75, 85, 99, 0.30)",
+    fg: `var(${CSS_VARS.textTertiary})`,
+    bg: `var(${CSS_VARS.surfaceSunken})`,
+    ring: `var(${CSS_VARS.borderSubtle})`,
   },
 };
 

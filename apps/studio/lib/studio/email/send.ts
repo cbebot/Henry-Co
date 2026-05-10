@@ -4,6 +4,7 @@ import { getAccountUrl, getDivisionConfig } from "@henryco/config";
 import {
   renderHenryCoEmail,
   renderHenryCoEmailText,
+  resolveRecipientLocale,
   sendTransactionalEmail,
   type HenryCoEmailLayout,
 } from "@henryco/email";
@@ -11,6 +12,7 @@ import {
   extractEmailAddress,
   formatCurrency,
 } from "@/lib/env";
+import { autoTranslateMany } from "@/lib/i18n/auto-translate";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { upsertStudioRecord } from "@/lib/studio/store";
@@ -46,7 +48,7 @@ type EmailLayout = {
   actionHref?: string | null;
 };
 
-function toSharedLayout(layout: EmailLayout): HenryCoEmailLayout {
+function toSharedLayout(layout: EmailLayout, locale: string = "en"): HenryCoEmailLayout {
   return {
     purpose: "studio",
     subject: layout.subject,
@@ -62,6 +64,56 @@ function toSharedLayout(layout: EmailLayout): HenryCoEmailLayout {
     supportLine: studio.supportEmail
       ? `Need help? Reach Studio at ${studio.supportEmail}.`
       : null,
+    locale,
+  };
+}
+
+// PASS 18C — locale-aware studio layout localizer.
+async function localizeStudioLayout(layout: EmailLayout, locale: string): Promise<EmailLayout> {
+  if (!locale || locale === "en") return layout;
+
+  const sections = layout.sections ?? [];
+  const bullets = layout.bullets ?? [];
+
+  const subjectSeparator = " • ";
+  const subjectIdx = layout.subject.indexOf(subjectSeparator);
+  const subjectPrefix = subjectIdx >= 0 ? layout.subject.slice(0, subjectIdx) : layout.subject;
+  const subjectSuffix = subjectIdx >= 0 ? layout.subject.slice(subjectIdx) : "";
+
+  const inputs: string[] = [
+    subjectPrefix,
+    layout.eyebrow,
+    layout.title,
+    layout.intro,
+    layout.highlightLabel || "",
+    layout.actionLabel || "",
+    ...sections.map((s) => s.label),
+    ...bullets,
+  ];
+
+  let translated: string[];
+  try {
+    translated = await autoTranslateMany(inputs, locale as never);
+    if (!Array.isArray(translated) || translated.length !== inputs.length) {
+      return layout;
+    }
+  } catch {
+    return layout;
+  }
+
+  const sectionStart = 6;
+  const bulletStart = sectionStart + sections.length;
+
+  return {
+    ...layout,
+    subject: (translated[0] || subjectPrefix) + subjectSuffix,
+    eyebrow: translated[1] || layout.eyebrow,
+    title: translated[2] || layout.title,
+    intro: translated[3] || layout.intro,
+    highlightLabel: layout.highlightLabel ? (translated[4] || layout.highlightLabel) : layout.highlightLabel,
+    actionLabel: layout.actionLabel ? (translated[5] || layout.actionLabel) : layout.actionLabel,
+    sections: sections.map((s, i) => ({ label: translated[sectionStart + i] || s.label, value: s.value })),
+    bullets: bullets.map((b, i) => translated[bulletStart + i] || b),
   };
 }
 
@@ -75,8 +127,17 @@ async function getPaymentSettings() {
   return catalog.platform;
 }
 
-function renderEmail(layout: EmailLayout) {
-  return renderHenryCoEmail(toSharedLayout(layout));
+// PASS 18C — wrap render with locale resolution. The synchronous English-only
+// renderEmail variant was removed in this pass; every dispatch now goes through
+// the localized path, which is a no-op on locale === "en".
+async function renderLocalizedEmail(layout: EmailLayout, locale: string): Promise<{ html: string; text: string; layout: EmailLayout }> {
+  const localized = await localizeStudioLayout(layout, locale);
+  const shared = toSharedLayout(localized, locale);
+  return {
+    html: renderHenryCoEmail(shared),
+    text: renderHenryCoEmailText(shared),
+    layout: localized,
+  };
 }
 
 async function getOwnerRecipients() {
@@ -175,23 +236,23 @@ async function sendWhatsApp(input: {
   });
 }
 
-function toText(layout: EmailLayout) {
-  return renderHenryCoEmailText(toSharedLayout(layout));
-}
-
-function renderAndSendEmail(input: {
+async function renderAndSendEmail(input: {
   to: string | null | undefined;
   entityId?: string | null;
   templateKey: string;
   layout: EmailLayout;
 }) {
-  const html = renderEmail(input.layout);
-  const text = toText(input.layout);
+  const recipient = extractEmailAddress(input.to);
+  // PASS 18C: resolve recipient locale before render so subject/body match.
+  const recipientLocale = await resolveRecipientLocale(createAdminSupabase() as never, {
+    email: recipient,
+  });
+  const localized = await renderLocalizedEmail(input.layout, recipientLocale);
   return sendEmail({
     to: input.to,
-    subject: input.layout.subject,
-    html,
-    text,
+    subject: localized.layout.subject,
+    html: localized.html,
+    text: localized.text,
     entityId: input.entityId,
     templateKey: input.templateKey,
   });

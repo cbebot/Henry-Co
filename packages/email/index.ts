@@ -32,12 +32,27 @@ export {
 
 export {
   renderAuthEmail,
+  renderLocalizedAuthEmail,
   type AuthHookEmailData,
   type SupabaseEmailActionType,
 } from "./auth-hook-templates";
 
 export {
   localizeEmailError,
+  localizeEmailErrorAsync,
   isOperatorOnlyEmailError,
   type ErrorAudience,
 } from "./localize-error";
+
+export {
+  resolveRecipientLocale,
+  resolveRecipientLocales,
+  normalizeAppLocaleSafe,
+  type RecipientLocaleIdentifier,
+} from "./recipient-locale";
+
+export {
+  translateStrings,
+  localizeSubjectPrefix,
+  type LocalizableTranslator,
+} from "./localize-layout";

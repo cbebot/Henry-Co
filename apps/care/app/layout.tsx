@@ -48,6 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "Henry & Co. Care",
       path: "/",
       icon,
+      locale, // PASS 18C — emit hreflang + og:locale for the active locale.
     }),
     verification: getVerificationMeta("care"),
   };

@@ -99,22 +99,22 @@ export default async function NewsletterCampaignDetailPage({
 
       <div className="mb-4 grid gap-3 sm:grid-cols-4">
         <StaffPanel title="Voice score">
-          <p className="text-2xl font-semibold text-[var(--staff-ink)]">
+          <p className="hc-h2 hc-mono text-[var(--staff-ink)]">
             {campaign.voice_guard_score ?? "—"}
           </p>
-          <p className="text-xs text-[var(--staff-muted)]">higher is better (100 max)</p>
+          <p className="hc-caption text-[var(--staff-muted)]">higher is better (100 max)</p>
         </StaffPanel>
         <StaffPanel title="Sent">
-          <p className="text-2xl font-semibold text-[var(--staff-ink)]">{sendSummary.sent}</p>
-          <p className="text-xs text-[var(--staff-muted)]">delivered/engaged records</p>
+          <p className="hc-h2 hc-mono text-[var(--staff-ink)]">{sendSummary.sent}</p>
+          <p className="hc-caption text-[var(--staff-muted)]">delivered/engaged records</p>
         </StaffPanel>
         <StaffPanel title="Skipped">
-          <p className="text-2xl font-semibold text-[var(--staff-ink)]">{sendSummary.skipped}</p>
-          <p className="text-xs text-[var(--staff-muted)]">suppressed or paused subscribers</p>
+          <p className="hc-h2 hc-mono text-[var(--staff-ink)]">{sendSummary.skipped}</p>
+          <p className="hc-caption text-[var(--staff-muted)]">suppressed or paused subscribers</p>
         </StaffPanel>
         <StaffPanel title="Failed">
-          <p className="text-2xl font-semibold text-[var(--staff-ink)]">{sendSummary.failed}</p>
-          <p className="text-xs text-[var(--staff-muted)]">provider errors</p>
+          <p className="hc-h2 hc-mono text-[var(--staff-ink)]">{sendSummary.failed}</p>
+          <p className="hc-caption text-[var(--staff-muted)]">provider errors</p>
         </StaffPanel>
       </div>
 

@@ -55,11 +55,11 @@ export function StaffPageHeader({
     <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         {eyebrow && <p className="staff-kicker mb-1.5">{eyebrow}</p>}
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--staff-ink)] sm:text-3xl">
+        <h1 className="hc-h1 text-[var(--staff-ink)]">
           {title}
         </h1>
         {description && (
-          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[var(--staff-muted)]">
+          <p className="hc-body-lg mt-2 max-w-[65ch] text-[var(--staff-muted)]">
             {description}
           </p>
         )}
@@ -83,7 +83,7 @@ export function StaffPanel({
   return (
     <div id={id} className={`staff-card p-5 sm:p-6 ${className}`}>
       {title && (
-        <h2 className="mb-4 text-sm font-semibold tracking-tight text-[var(--staff-ink)]">
+        <h2 className="hc-h3 mb-4 text-[var(--staff-ink)]">
           {title}
         </h2>
       )}
@@ -106,8 +106,8 @@ export function StaffEmptyState({
       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--staff-accent-soft)]">
         <Icon className="h-7 w-7 text-[var(--staff-accent)]" />
       </div>
-      <h3 className="text-base font-semibold text-[var(--staff-ink)]">{title}</h3>
-      <p className="mt-2 max-w-md text-sm leading-relaxed text-[var(--staff-muted)]">
+      <h3 className="hc-h3 text-[var(--staff-ink)]">{title}</h3>
+      <p className="hc-body mt-2 max-w-md text-[var(--staff-muted)]">
         {description}
       </p>
     </div>
@@ -133,12 +133,12 @@ export function StaffMetricCard({
         <Icon className="h-5 w-5 text-[var(--staff-gold)]" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-[var(--staff-muted)]">{label}</p>
-        <p className="mt-0.5 text-2xl font-bold tracking-tight text-[var(--staff-ink)]">
+        <p className="hc-label text-[var(--staff-muted)]">{label}</p>
+        <p className="hc-h2 hc-mono mt-1 text-[var(--staff-ink)]">
           {value}
         </p>
         {subtitle && (
-          <p className="mt-0.5 text-xs text-[var(--staff-muted)]">{subtitle}</p>
+          <p className="hc-caption mt-0.5 text-[var(--staff-muted)]">{subtitle}</p>
         )}
       </div>
     </>

@@ -12,15 +12,20 @@ import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
 
 const learn = getDivisionConfig("learn");
 
-export const metadata: Metadata = {
-  ...createDivisionMetadata("learn", {
-    title: learn.name,
-    description: learn.description,
-    openGraphDescription: learn.tagline,
-    path: "/",
-  }),
-  verification: getVerificationMeta("learn"),
-};
+// PASS 18C — emit hreflang + og:locale per request.
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLearnPublicLocale();
+  return {
+    ...createDivisionMetadata("learn", {
+      title: learn.name,
+      description: learn.description,
+      openGraphDescription: learn.tagline,
+      path: "/",
+      locale,
+    }),
+    verification: getVerificationMeta("learn"),
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getLearnPublicLocale();

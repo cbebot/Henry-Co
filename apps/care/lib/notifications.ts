@@ -1,5 +1,6 @@
 import "server-only";
 
+import { autoTranslateMany } from "@/lib/i18n/auto-translate";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   getAdminBookings,
@@ -710,9 +711,56 @@ async function buildNotificationsForRole(role: StaffRole) {
   return buildStaffNotifications();
 }
 
+// PASS 18C — locale-aware variant of role notifications. Translates each
+// item's title, body, group, and actionLabel via the autoTranslate cache so
+// the staff inbox renders entirely in the staff member's preferred language.
+// Cache hits are sub-millisecond per render after warm-up.
+export async function localizeRoleNotificationItems(
+  items: RoleNotificationItem[],
+  locale: string,
+): Promise<RoleNotificationItem[]> {
+  if (!locale || locale === "en" || items.length === 0) return items;
+
+  const sources: string[] = [];
+  for (const item of items) {
+    sources.push(item.title);
+    sources.push(item.body);
+    sources.push(item.group);
+    sources.push(item.actionLabel || "");
+  }
+
+  let translated: string[];
+  try {
+    translated = await autoTranslateMany(sources, locale as never);
+    if (!Array.isArray(translated) || translated.length !== sources.length) {
+      return items;
+    }
+  } catch {
+    return items;
+  }
+
+  return items.map((item, i) => {
+    const base = i * 4;
+    return {
+      ...item,
+      title: translated[base] || item.title,
+      body: translated[base + 1] || item.body,
+      group: translated[base + 2] || item.group,
+      actionLabel: item.actionLabel ? (translated[base + 3] || item.actionLabel) : item.actionLabel,
+    } satisfies RoleNotificationItem;
+  });
+}
+
 export async function getRoleNotificationCenter(input: {
   role: StaffRole;
   userId: string;
+  /**
+   * Optional staff locale. When provided, every item's title/body/group/
+   * actionLabel is auto-translated via the runtime cache before return.
+   * Pass `null` or omit to keep the English source (default behaviour for
+   * surfaces that have not yet wired locale resolution into the page).
+   */
+  locale?: string | null;
 }) {
   const [items, lastReadAt, readItemIds] = await Promise.all([
     buildNotificationsForRole(input.role),
@@ -732,12 +780,16 @@ export async function getRoleNotificationCenter(input: {
     } satisfies RoleNotificationItem;
   });
 
-  const unreadCount = sorted.filter((item) => item.isUnread).length;
+  const localizedItems = input.locale
+    ? await localizeRoleNotificationItems(sorted, input.locale)
+    : sorted;
+
+  const unreadCount = localizedItems.filter((item) => item.isUnread).length;
 
   return {
     role: input.role,
     unreadCount,
     lastReadAt,
-    items: sorted,
+    items: localizedItems,
   } satisfies RoleNotificationCenter;
 }

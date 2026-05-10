@@ -174,6 +174,22 @@
   --hc-info: #0284c7;
   --hc-info-soft: rgba(2, 132, 199, 0.14);
 
+  /* PASS 19 — semantic status family (bg / text / border per status).
+     Use these inside chips, badges, toasts, and inline alerts. The
+     `text` variant is AA-safe on the matched `bg` variant. */
+  --hc-status-success-bg: rgba(22, 163, 74, 0.10);
+  --hc-status-success-text: #15803d;       /* green-700 — 4.6:1 on white */
+  --hc-status-success-border: rgba(22, 163, 74, 0.30);
+  --hc-status-warning-bg: rgba(217, 119, 6, 0.10);
+  --hc-status-warning-text: #B45309;       /* amber-700 — 4.7:1 on white */
+  --hc-status-warning-border: rgba(217, 119, 6, 0.32);
+  --hc-status-danger-bg: rgba(220, 38, 38, 0.10);
+  --hc-status-danger-text: #B91C1C;        /* red-700 — 5.8:1 on white */
+  --hc-status-danger-border: rgba(220, 38, 38, 0.30);
+  --hc-status-info-bg: rgba(2, 132, 199, 0.10);
+  --hc-status-info-text: #0369A1;          /* sky-700 — 4.7:1 on white */
+  --hc-status-info-border: rgba(2, 132, 199, 0.30);
+
   /* Default semantic role values — apps will override these
      inside their own :root + .dark blocks. The defaults below
      are calibrated for a neutral light surface and meet WCAG AA
@@ -184,18 +200,115 @@
   --hc-bg-soft: #f4f4f5;              /* zinc-100 */
   --hc-surface: #ffffff;              /* paper white */
   --hc-surface-strong: #ffffff;
+  --hc-surface-elevated: #ffffff;     /* shell alias — cards/panels */
   --hc-paper: #f4f4f5;
   --hc-ink: #18181b;                  /* zinc-900 — 14.4:1 on bg */
   --hc-ink-soft: rgba(24, 24, 27, 0.72);
-  --hc-ink-muted: rgba(24, 24, 27, 0.56);
-  --hc-ink-on-accent: #ffffff;
+  --hc-ink-muted: rgba(24, 24, 27, 0.62);
+  /* PASS 19 — gold fill is luminous; white text on it falls below AA-LG.
+     The HenryCo brand pair is dark ink on gold (8.6:1) — premium and
+     legible. Apps that ship a darker accent (e.g. red CTA) may locally
+     override this back to #ffffff. */
+  --hc-ink-on-accent: #1A1814;
   --hc-line: rgba(24, 24, 27, 0.08);
   --hc-line-strong: rgba(24, 24, 27, 0.14);
-  --hc-accent: #b45309;               /* amber-700 — 4.7:1 on bg */
-  --hc-accent-strong: #92400e;        /* amber-800 */
-  --hc-accent-soft: rgba(180, 83, 9, 0.10);
+  --hc-hairline: rgba(24, 24, 27, 0.08);   /* shell alias of --hc-line */
+
+  /* PASS 19 — Premium HenryCo gold.
+     Brand gold #C9A227 anchors every accent surface in light mode.
+     For text *on light surfaces* (where the fill is unfilled and the
+     text itself reads gold), use --hc-accent-text — the brand gold
+     would only achieve 2.7:1 against white, well below AA. The text
+     variant is a deeper gold that hits 5.0:1.
+     The dark-mode gold (#D4AF37) is the classic metallic gold tone —
+     warmer, more confident than the light-mode brand gold against a
+     dark surface, and 8.4:1 on the canonical dark background. */
+  --hc-accent: #C9A227;               /* HenryCo brand gold — fills, buttons */
+  --hc-accent-strong: #A88718;        /* hover / pressed depth */
+  --hc-accent-pressed: #8A6F00;       /* pressed — same hue, deeper */
+  --hc-accent-soft: rgba(201, 162, 39, 0.10);
+  --hc-accent-text: #8A6F00;          /* AA-safe gold text on light surfaces (5.0:1) */
+  --hc-accent-on-surface: #8A6F00;    /* alias used by chip/badge text */
+  --hc-focus-ring: #C9A227;
+  --hc-focus-ring-shadow: 0 0 0 3px rgba(201, 162, 39, 0.40);
+
   --hc-shadow: 0 32px 100px rgba(15, 23, 42, 0.10);
   --hc-shadow-soft: 0 16px 44px rgba(15, 23, 42, 0.08);
+
+  /* PASS 20 — Elevation scale (the furnishing system).
+     A four-step ladder. Restraint, not weight. Cards barely lift,
+     overlays read as "another sheet of paper" not "a billboard".
+     elevation-0 is the page itself; elevation-1 is a card on the
+     page; elevation-2 is a popover/dropdown/modal; elevation-3 is
+     toasts and command bars (the highest layer). The legacy
+     --hc-shadow / --hc-shadow-soft pair is preserved for back-compat
+     but new code references --hc-elevation-{0,1,2,3}. */
+  --hc-elevation-0: none;
+  --hc-elevation-1: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --hc-elevation-2:
+    0 12px 32px -8px rgba(15, 23, 42, 0.12),
+    0 4px 12px -4px rgba(15, 23, 42, 0.06);
+  --hc-elevation-3:
+    0 20px 48px -8px rgba(15, 23, 42, 0.16),
+    0 8px 20px -4px rgba(15, 23, 42, 0.08);
+
+  /* PASS 20 — Motion duration scale.
+     Three steps. fast = a single beat (taps, hovers, focus changes).
+     base = most transitions (buttons, switches, popover open).
+     slow = surface-arrival moments (modal/sheet enter). 200ms FADE_MS
+     and 120ms button-press from PASS 17/18 map onto base/fast and
+     remain wired through MOTION_PRESET in @henryco/dashboard-shell. */
+  --hc-duration-fast: 120ms;
+  --hc-duration-base: 180ms;
+  --hc-duration-slow: 260ms;
+
+  /* PASS 20 — Easing curves.
+     standard: decelerating cubic — most entrances. The dashboard's
+       primary curve. Mirrors EASE_OUT in shell motion tokens.
+     in-out: symmetric ease — for state changes that "settle on both
+       sides" (toggle flips, tab switches).
+     emphasized: gentle overshoot — celebration only (success-lock,
+       confirm tick, payment land). Not for productivity controls.
+     linear: only for opacity-only crossfades on micro-interactions. */
+  --hc-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --hc-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --hc-ease-emphasized: cubic-bezier(0.34, 1.40, 0.64, 1);
+  --hc-ease-linear: linear;
+
+  /* PASS 20 — Interaction-state overlays.
+     A surface or fill layers one of these to express hover/pressed
+     without re-declaring per-component. Apply via inset box-shadow
+     or as a child layer with mix-blend. Disabled is opacity, not
+     overlay, because both text and bg need to fade together. */
+  --hc-state-hover-overlay: rgba(24, 24, 27, 0.04);
+  --hc-state-pressed-overlay: rgba(24, 24, 27, 0.08);
+  --hc-state-disabled-opacity: 0.55;
+
+  /* PASS 19 — semantic aliases (single source of truth).
+     Components should reference these names; apps may continue
+     overriding the role tokens above. */
+  --hc-surface-base: var(--hc-bg);
+  --hc-surface-raised: var(--hc-surface);
+  --hc-surface-overlay: var(--hc-surface-strong);
+  --hc-surface-sunken: var(--hc-paper);
+  --hc-text-primary: var(--hc-ink);
+  --hc-text-secondary: var(--hc-ink-soft);
+  --hc-text-tertiary: var(--hc-ink-muted);
+  --hc-text-quaternary: rgba(24, 24, 27, 0.46);
+  --hc-text-inverse: #fafaf9;
+  --hc-text-on-accent: var(--hc-ink-on-accent);
+  --hc-text-disabled: rgba(24, 24, 27, 0.38);
+  --hc-border-subtle: var(--hc-line);
+  --hc-border-default: rgba(24, 24, 27, 0.12);
+  --hc-border-strong: var(--hc-line-strong);
+  --hc-border-focus: var(--hc-focus-ring);
+  --hc-accent-default: var(--hc-accent);
+  --hc-accent-hover: var(--hc-accent-strong);
+  --hc-accent-subtle: var(--hc-accent-soft);
+
+  /* Mono family — used for amounts, IDs, timestamps. System stack
+     so no extra font payload; replace with JetBrains Mono if loaded. */
+  --hc-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 .dark {
@@ -203,18 +316,78 @@
   --hc-bg-soft: #111114;
   --hc-surface: rgba(20, 20, 24, 0.94);
   --hc-surface-strong: rgba(14, 14, 18, 0.98);
+  --hc-surface-elevated: rgba(20, 20, 24, 0.94);
   --hc-paper: rgba(28, 28, 34, 0.78);
   --hc-ink: #fafaf9;                  /* zinc-50 — 16.5:1 on dark bg */
   --hc-ink-soft: rgba(250, 250, 249, 0.72);
   --hc-ink-muted: rgba(250, 250, 249, 0.52);
-  --hc-ink-on-accent: #18181b;
+  --hc-ink-on-accent: #1a1814;
   --hc-line: rgba(255, 255, 255, 0.10);
   --hc-line-strong: rgba(255, 255, 255, 0.18);
-  --hc-accent: #f59e0b;               /* amber-500 — 7.4:1 on dark bg */
-  --hc-accent-strong: #fbbf24;        /* amber-400 */
-  --hc-accent-soft: rgba(245, 158, 11, 0.16);
+  --hc-hairline: rgba(255, 255, 255, 0.10);
+
+  /* PASS 19 — Premium gold (dark theme).
+     Classic metallic gold #D4AF37 — calmer, more expensive than
+     amber-500. 8.4:1 on the canonical dark surface. */
+  --hc-accent: #D4AF37;
+  --hc-accent-strong: #E5C870;        /* highlight / hover */
+  --hc-accent-pressed: #B89425;
+  --hc-accent-soft: rgba(212, 175, 55, 0.16);
+  --hc-accent-text: #E5C870;          /* AA-safe gold on dark surfaces */
+  --hc-accent-on-surface: #E5C870;
+  --hc-focus-ring: #D4AF37;
+  --hc-focus-ring-shadow: 0 0 0 3px rgba(212, 175, 55, 0.45);
+
   --hc-shadow: 0 44px 120px rgba(0, 0, 0, 0.40);
   --hc-shadow-soft: 0 22px 72px rgba(0, 0, 0, 0.24);
+
+  /* PASS 20 — Elevation scale (dark theme).
+     In dark mode a heavy outset shadow over a near-black surface
+     reads as a smudge, not depth. The pattern is a 1px inset top
+     highlight (light from above) plus a calibrated drop shadow
+     for the lift. Result: surfaces feel layered, not painted on.
+     elevation-0 is no decoration; -1 is a card lift; -2 is an
+     overlay (modal/popover); -3 is the highest layer. */
+  --hc-elevation-1:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --hc-elevation-2:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 24px 56px -8px rgba(0, 0, 0, 0.48),
+    0 8px 16px -4px rgba(0, 0, 0, 0.32);
+  --hc-elevation-3:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 32px 72px -12px rgba(0, 0, 0, 0.56),
+    0 12px 24px -6px rgba(0, 0, 0, 0.40);
+
+  /* PASS 20 — Interaction-state overlays (dark theme).
+     Hover/pressed reveal as a translucent white wash; on dark
+     surfaces an ink overlay would only deepen the canvas and read
+     as nothing changed. Disabled opacity is slightly lower to
+     preserve legibility against the darker base. */
+  --hc-state-hover-overlay: rgba(255, 255, 255, 0.05);
+  --hc-state-pressed-overlay: rgba(255, 255, 255, 0.10);
+  --hc-state-disabled-opacity: 0.50;
+
+  /* PASS 19 — semantic alias overrides for dark mode. */
+  --hc-text-quaternary: rgba(250, 250, 249, 0.36);
+  --hc-text-inverse: #18181b;
+  --hc-text-disabled: rgba(250, 250, 249, 0.32);
+  --hc-border-default: rgba(255, 255, 255, 0.14);
+
+  /* Status family — dark variants tuned for contrast on the dark canvas. */
+  --hc-status-success-bg: rgba(34, 197, 94, 0.14);
+  --hc-status-success-text: #4ADE80;       /* green-400 — 9.5:1 on dark bg */
+  --hc-status-success-border: rgba(34, 197, 94, 0.40);
+  --hc-status-warning-bg: rgba(245, 158, 11, 0.14);
+  --hc-status-warning-text: #FBBF24;        /* amber-400 — 11:1 on dark bg */
+  --hc-status-warning-border: rgba(245, 158, 11, 0.42);
+  --hc-status-danger-bg: rgba(239, 68, 68, 0.14);
+  --hc-status-danger-text: #FCA5A5;          /* red-300 — 8:1 on dark bg */
+  --hc-status-danger-border: rgba(239, 68, 68, 0.40);
+  --hc-status-info-bg: rgba(56, 189, 248, 0.14);
+  --hc-status-info-text: #7DD3FC;            /* sky-300 — 11:1 on dark bg */
+  --hc-status-info-border: rgba(56, 189, 248, 0.40);
 }
 
 /* ─────────────────────────────────────────────────────────── */
@@ -272,6 +445,152 @@
   letter-spacing: var(--hc-track-eyebrow);
   text-transform: uppercase;
   font-weight: var(--hc-weight-semibold);
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/*  PASS 19 — Semantic typography utilities                    */
+/*  Use these on every dashboard page header, section header,  */
+/*  card title, body region, label, and footnote.              */
+/* ─────────────────────────────────────────────────────────── */
+
+/* Display — hero numbers / dashboard greetings (use sparingly) */
+.hc-display {
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1.05;
+  letter-spacing: var(--hc-track-tight);
+  font-weight: var(--hc-weight-bold);
+  color: var(--hc-text-primary);
+}
+
+/* h1 — page titles (Overview, Wallet, Activity) — confident, generous */
+.hc-h1 {
+  font-size: clamp(28px, 2.6vw, 36px);
+  line-height: 1.18;
+  letter-spacing: var(--hc-track-snug);
+  font-weight: var(--hc-weight-bold);
+  color: var(--hc-text-primary);
+}
+
+/* h2 — section headers within a page */
+.hc-h2 {
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: var(--hc-track-snug);
+  font-weight: var(--hc-weight-semibold);
+  color: var(--hc-text-primary);
+}
+
+/* h3 — card / panel titles */
+.hc-h3 {
+  font-size: 18px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  font-weight: var(--hc-weight-semibold);
+  color: var(--hc-text-primary);
+}
+
+/* h4 — small group headers (column heads, sub-cards) */
+.hc-h4 {
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: var(--hc-weight-semibold);
+  color: var(--hc-text-primary);
+}
+
+/* Body — primary reading copy (important paragraphs) */
+.hc-body-lg {
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: var(--hc-weight-regular);
+  color: var(--hc-text-primary);
+}
+
+/* Body default — standard body text */
+.hc-body {
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: var(--hc-weight-regular);
+  color: var(--hc-text-secondary);
+}
+
+/* Body small — secondary descriptive text */
+.hc-body-sm {
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: var(--hc-weight-regular);
+  color: var(--hc-text-secondary);
+}
+
+/* Label — form labels, table headers (case-preserving) */
+.hc-label {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: var(--hc-weight-semibold);
+  color: var(--hc-text-secondary);
+}
+
+/* Caption — metadata, timestamps, helper text */
+.hc-caption {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: var(--hc-weight-regular);
+  color: var(--hc-text-tertiary);
+}
+
+/* Micro — legal, footnotes (smallest acceptable size) */
+.hc-micro {
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: var(--hc-weight-medium);
+  color: var(--hc-text-tertiary);
+}
+
+/* Mono — amounts, IDs, timestamps; pairs with sibling text size */
+.hc-mono {
+  font-family: var(--hc-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* Eyebrow strong — for module kickers above an h1 */
+.hc-eyebrow-strong {
+  font-size: var(--hc-text-xs);
+  line-height: var(--hc-text-xs-line);
+  letter-spacing: var(--hc-track-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--hc-weight-bold);
+  color: var(--hc-accent-text);
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/*  PASS 19 — Surface utility classes                          */
+/* ─────────────────────────────────────────────────────────── */
+
+.hc-surface-base {
+  background: var(--hc-surface-base);
+  color: var(--hc-text-primary);
+}
+
+.hc-surface-raised {
+  background: var(--hc-surface-raised);
+  color: var(--hc-text-primary);
+  border: 1px solid var(--hc-border-subtle);
+  border-radius: var(--hc-radius-lg);
+}
+
+.hc-surface-overlay {
+  background: var(--hc-surface-overlay);
+  color: var(--hc-text-primary);
+  border: 1px solid var(--hc-border-default);
+  border-radius: var(--hc-radius-lg);
+  box-shadow: var(--hc-shadow);
+}
+
+.hc-surface-sunken {
+  background: var(--hc-surface-sunken);
+  color: var(--hc-text-primary);
+  border-radius: var(--hc-radius-md);
 }
 
 /* ─────────────────────────────────────────────────────────── */

@@ -66,8 +66,8 @@ export function AttentionPanel({ attentionSignals, lifecycle }: AttentionPanelPr
                 width: "2rem",
                 height: "2rem",
                 borderRadius: "0.6rem",
-                backgroundColor: "rgba(185, 28, 28, 0.10)",
-                color: "#B91C1C",
+                backgroundColor: "var(--hc-status-danger-bg)",
+                color: "var(--hc-status-danger-text)",
               }}
             >
               <AlertOctagon size={16} aria-hidden />

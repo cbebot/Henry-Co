@@ -23,25 +23,64 @@ function toMetadataUrl(domain?: string | null) {
   }
 }
 
+// PASS 18C — locale-aware site metadata. Emits hreflang `languages` map and
+// OpenGraph `locale` so the public hub announces its language alternates to
+// crawlers. Locale is resolved per request from cookie/profile.
+const PUBLIC_HUB_LOCALES = ["en", "fr", "es", "pt", "ar", "de", "it"] as const;
+const HUB_OG_LOCALE: Record<string, string> = {
+  en: "en_US",
+  fr: "fr_FR",
+  es: "es_ES",
+  pt: "pt_PT",
+  ar: "ar_EG",
+  de: "de_DE",
+  it: "it_IT",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   /** Belt-and-braces: getCompanySettings() already returns a fallback,
    * but if any future regression made it throw, we want metadata
    * generation to keep working rather than poisoning the route render. */
-  const { settings } = await getCompanySettings().catch(() => ({
-    settings: { default_meta_title: null, brand_title: null, brand_description: null, base_domain: null, favicon_url: null, logo_url: null } as never,
-    hasServerError: true,
-  }));
+  const [{ settings }, locale] = await Promise.all([
+    getCompanySettings().catch(() => ({
+      settings: { default_meta_title: null, brand_title: null, brand_description: null, base_domain: null, favicon_url: null, logo_url: null } as never,
+      hasServerError: true,
+    })),
+    getHubPublicLocale().catch(() => "en"),
+  ]);
   const title = settings.default_meta_title || settings.brand_title || "Henry & Co.";
   const description =
     settings.default_meta_description ||
     settings.brand_description ||
     "Explore the businesses, services, and operating divisions of Henry & Co.";
   const icon = settings.favicon_url || settings.logo_url || undefined;
+  const metadataBase = toMetadataUrl(settings.base_domain);
+  const canonical = metadataBase ? metadataBase.toString().replace(/\/$/, "") + "/" : "/";
+  const languagesMap: Record<string, string> = {};
+  for (const code of PUBLIC_HUB_LOCALES) languagesMap[code] = canonical;
+  languagesMap["x-default"] = canonical;
+  const ogLocale = HUB_OG_LOCALE[locale] || HUB_OG_LOCALE.en;
+  const ogAlternateLocale = PUBLIC_HUB_LOCALES.filter((l) => l !== locale).map(
+    (l) => HUB_OG_LOCALE[l] || HUB_OG_LOCALE.en,
+  );
 
   return {
-    metadataBase: toMetadataUrl(settings.base_domain),
+    metadataBase,
     title,
     description,
+    alternates: {
+      canonical,
+      languages: languagesMap,
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: ogLocale,
+      alternateLocale: ogAlternateLocale,
+      siteName: title,
+      url: canonical,
+    },
     icons: icon
       ? {
           icon: [{ url: icon }],

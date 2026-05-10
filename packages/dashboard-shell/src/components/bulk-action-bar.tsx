@@ -12,7 +12,7 @@ import {
 } from "react";
 
 import { typeStyle } from "../tokens/type";
-import { CSS_VARS, STATUS } from "../tokens/color";
+import { CSS_VARS, STATUS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
 
 /**
@@ -158,14 +158,14 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
         case "primary":
           return {
             background: `var(${CSS_VARS.accent})`,
-            color: "#0A0A0A",
+            color: `var(${CSS_VARS.textOnAccent})`,
             boxShadow: `inset 0 0 0 1px var(${CSS_VARS.accentStrong})`,
           };
         case "destructive":
           return {
-            background: "rgba(185, 28, 28, 0.10)",
-            color: STATUS.security,
-            boxShadow: `inset 0 0 0 1px rgba(185, 28, 28, 0.32)`,
+            background: `var(${STATUS_VARS.danger.bg})`,
+            color: `var(${STATUS_VARS.danger.text})`,
+            boxShadow: `inset 0 0 0 1px var(${STATUS_VARS.danger.border})`,
           };
         default:
           return {
@@ -395,7 +395,7 @@ export const BulkActionBar = forwardRef<BulkActionBarHandle, BulkActionBarProps>
                   style={{
                     ...typeStyle("small"),
                     margin: 0,
-                    color: STATUS.security,
+                    color: `var(${STATUS_VARS.danger.text})`,
                   }}
                   role="alert"
                 >

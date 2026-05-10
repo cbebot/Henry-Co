@@ -44,15 +44,20 @@ const display = localFont({
 
 const property = getDivisionConfig("property");
 
-export const metadata: Metadata = {
-  ...createDivisionMetadata("property", {
-    title: property.name,
-    description: property.description,
-    openGraphDescription: property.tagline,
-    path: "/",
-  }),
-  verification: getVerificationMeta("property"),
-};
+// PASS 18C — emit hreflang + og:locale per request.
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getPropertyPublicLocale();
+  return {
+    ...createDivisionMetadata("property", {
+      title: property.name,
+      description: property.description,
+      openGraphDescription: property.tagline,
+      path: "/",
+      locale,
+    }),
+    verification: getVerificationMeta("property"),
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getPropertyPublicLocale();

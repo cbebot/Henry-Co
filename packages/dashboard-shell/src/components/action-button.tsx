@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { Loader2, Check, Lock } from "lucide-react";
 import { typeStyle } from "../tokens/type";
-import { CSS_VARS } from "../tokens/color";
+import { CSS_VARS, STATUS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
 import { focusVisibleStyle } from "../tokens/focus";
 import { SUCCESS_LOCK_MS } from "../tokens/motion";
@@ -231,15 +231,15 @@ function buildToneStyle(
 ): React.CSSProperties {
   if (success) {
     return {
-      backgroundColor: "#1F8B4C",
-      color: "white",
-      border: "1px solid rgba(31, 139, 76, 0.4)",
+      backgroundColor: `var(${STATUS_VARS.success.text})`,
+      color: `var(${CSS_VARS.surface})`,
+      border: `1px solid var(${STATUS_VARS.success.text})`,
     };
   }
   if (tone === "primary") {
     return {
       backgroundColor: `var(${CSS_VARS.accent})`,
-      color: `var(${CSS_VARS.surface})`,
+      color: `var(${CSS_VARS.textOnAccent})`,
       border: `1px solid var(${CSS_VARS.accent})`,
     };
   }
