@@ -83,14 +83,21 @@ function FileAttachment({ attachment, ownTone }: Props) {
   const containerToneCls = ownTone
     ? "border-white/[0.18] bg-white/[0.06] hover:bg-white/[0.10]"
     : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05]";
+  // Cross-origin (Cloudinary) URLs ignore the `download` attribute, so
+  // route the file through the same-origin /api/portal/download proxy
+  // which re-streams with Content-Disposition: attachment. The proxy
+  // auth-gates against the portal viewer + host-allowlists trusted
+  // sources (Cloudinary, Supabase storage). See PR #70 for the route.
+  const downloadHref = `/api/portal/download?u=${encodeURIComponent(
+    attachment.url,
+  )}&n=${encodeURIComponent(attachment.label || "attachment")}`;
   return (
     <a
-      href={attachment.url}
-      target="_blank"
+      href={downloadHref}
       rel="noopener noreferrer"
       className={`group flex max-w-[320px] items-center gap-3 rounded-2xl border px-3 py-2.5 transition-colors ${containerToneCls}`}
       aria-label={`Download ${attachment.label}`}
-      download={attachment.label}
+      download={attachment.label || true}
     >
       <span
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
