@@ -30,7 +30,7 @@ export default async function StaffTreePage() {
         <div className="pointer-events-none absolute left-8 top-0 h-full w-px bg-[var(--acct-line)] sm:left-10" aria-hidden />
         <div className="relative pl-8 sm:pl-12">
           <div className="rounded-[1.25rem] border border-[var(--acct-gold)]/35 bg-[var(--acct-gold-soft)] px-4 py-3">
-            <div className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--acct-muted)]">Root</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">Root</div>
             <div className="mt-1 text-lg font-semibold text-[var(--acct-ink)]">Henry &amp; Co. Group</div>
             <p className="mt-1 text-sm text-[var(--acct-muted)]">{data.metrics.total} people in workforce directory</p>
           </div>
@@ -44,7 +44,7 @@ export default async function StaffTreePage() {
                   <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4 sm:p-5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <div className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-[var(--acct-muted)]">
+                        <div className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">
                           Division branch
                         </div>
                         <h2 className="mt-1 text-xl font-semibold text-[var(--acct-ink)]">{divisionLabel(slug)}</h2>

@@ -36,7 +36,7 @@ export default async function HelperDashboardPage() {
           <p className="text-sm leading-relaxed text-[var(--acct-muted)]">{briefing.focus}</p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] p-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
                 Failed deliveries
               </p>
               <p className="mt-1 text-2xl font-semibold text-[var(--acct-ink)]">
@@ -44,7 +44,7 @@ export default async function HelperDashboardPage() {
               </p>
             </div>
             <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] p-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
                 WA skipped
               </p>
               <p className="mt-1 text-2xl font-semibold text-[var(--acct-ink)]">
@@ -52,7 +52,7 @@ export default async function HelperDashboardPage() {
               </p>
             </div>
             <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] p-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
                 Open support
               </p>
               <p className="mt-1 text-2xl font-semibold text-[var(--acct-ink)]">
@@ -60,7 +60,7 @@ export default async function HelperDashboardPage() {
               </p>
             </div>
             <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] p-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
                 Queued notices
               </p>
               <p className="mt-1 text-2xl font-semibold text-[var(--acct-ink)]">
@@ -82,7 +82,7 @@ export default async function HelperDashboardPage() {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-semibold text-[var(--acct-ink)]">{step.title}</span>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                     step.severity === "critical"
                       ? "bg-[var(--acct-red-soft)] text-[var(--acct-red)]"
                       : step.severity === "warning"

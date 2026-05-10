@@ -477,7 +477,7 @@ export default function CareBookingsDashboard({
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="acct-kicker">{copy.selectedBooking}</p>
-                <h2 className="mt-2 text-2xl font-bold text-[var(--acct-ink)]">
+                <h2 className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
                   {selectedBooking.service_type || copy.serviceFallback}
                 </h2>
                 <p className="mt-1 text-sm text-[var(--acct-muted)]">

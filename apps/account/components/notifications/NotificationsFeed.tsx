@@ -29,7 +29,7 @@ function SourceMark({ notification, sourceLabel }: { notification: EnrichedNotif
 
   return (
     <div
-      className="flex h-10 w-10 items-center justify-center rounded-2xl text-xs font-bold text-white"
+      className="flex h-10 w-10 items-center justify-center rounded-2xl text-xs font-semibold text-white"
       style={{ backgroundColor: source.accent }}
     >
       {sourceLabel.charAt(0)}

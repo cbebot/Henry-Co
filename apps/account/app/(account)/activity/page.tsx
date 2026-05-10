@@ -86,7 +86,7 @@ export default async function ActivityPage() {
               className="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-[var(--acct-bg-elevated)]"
             >
               <div
-                className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
+                className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-semibold text-white"
                 style={{ backgroundColor: divisionColor(item.division as string) }}
               >
                 {divisionLabel(item.division as string).charAt(0)}
