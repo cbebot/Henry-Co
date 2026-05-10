@@ -3,6 +3,7 @@ export * from "./organization";
 export * from "./website";
 export * from "./local-business";
 export * from "./product";
+export * from "./real-estate-listing";
 export * from "./service";
 export * from "./job-posting";
 export * from "./course";
