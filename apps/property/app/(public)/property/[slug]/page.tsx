@@ -7,6 +7,7 @@ import {
   Heart,
   ShieldCheck,
 } from "lucide-react";
+import { JsonLd, buildRealEstateListingLd } from "@henryco/seo";
 import { PropertyPendingButton } from "@/components/property/form-status";
 import {
   PropertyAgentCard,
@@ -130,8 +131,52 @@ export default async function PropertyDetailPage({
   const trustCopy = getTrustCopy(data.listing);
   const viewingFlow = getViewingFlow(data.listing.title);
 
+  const canonicalUrl = `${propertyOrigin.replace(/\/$/, "")}${returnPath}`;
+  const galleryImages = Array.from(
+    new Set(
+      [data.listing.heroImage, ...data.listing.gallery].filter(
+        (src): src is string => Boolean(src),
+      ),
+    ),
+  );
+  const listingJsonLd = buildRealEstateListingLd({
+    name: data.listing.title,
+    description: data.listing.description,
+    url: canonicalUrl,
+    imageUrls: galleryImages,
+    datePosted: data.listing.listedAt,
+    kind: data.listing.kind,
+    bedrooms: data.listing.bedrooms,
+    bathrooms: data.listing.bathrooms,
+    sizeSqm: data.listing.sizeSqm,
+    petsAllowed: data.listing.petFriendly,
+    amenities: data.listing.amenities,
+    address: {
+      streetAddress: data.listing.addressLine || undefined,
+      addressLocality: data.listing.locationLabel,
+      addressRegion: data.listing.district || undefined,
+      addressCountry: "NG",
+    },
+    offer: {
+      price: data.listing.price,
+      priceCurrency: data.listing.currency,
+      availability: data.listing.availableNow ? "InStock" : "PreOrder",
+      availabilityStarts: data.listing.availableFrom,
+    },
+    agent: data.agent
+      ? {
+          name: data.agent.name,
+          telephone: data.agent.phone || undefined,
+          email: data.agent.email || undefined,
+          imageUrl: data.agent.photoUrl || undefined,
+          areaServed: data.agent.territories,
+        }
+      : undefined,
+  });
+
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 lg:px-10">
+      <JsonLd id="property-listing-jsonld" data={listingJsonLd} />
       <PropertySectionIntro
         kicker={data.listing.locationLabel}
         title={data.listing.title}
