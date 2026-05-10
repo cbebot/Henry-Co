@@ -5,6 +5,7 @@ import {
   shouldAutoFlag,
   escalateSeverityForRepeatOffender,
 } from "@henryco/trust";
+import { BRAND_EMAILS } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { sendMarketplaceEvent } from "@/lib/marketplace/notifications";
@@ -305,7 +306,7 @@ export async function POST(request: Request) {
       recipientEmail:
         process.env.MARKETPLACE_OWNER_ALERT_EMAIL ||
         process.env.RESEND_SUPPORT_INBOX ||
-        "marketplace@henrycogroup.com",
+        BRAND_EMAILS.marketplace,
       actorUserId: viewer.user.id,
       actorEmail: viewer.user.email,
       entityType: "vendor_application",

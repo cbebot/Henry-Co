@@ -1,3 +1,4 @@
+export * from "./brand-emails";
 export * from "./company";
 export * from "./identity";
 export * from "./integrations";

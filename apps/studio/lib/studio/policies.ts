@@ -8,6 +8,8 @@
 // Treat any update as a contract amendment — bump the `lastUpdated` field
 // and let legal review changes before publishing.
 
+import { BRAND_EMAILS } from "@henryco/config";
+
 export type PolicyClause = {
   heading: string;
   body: string[];
@@ -28,9 +30,11 @@ export type PolicyDocument = {
 
 const COMPANY_NAME = "HenryCo Studio";
 const PARENT = "Henry & Co. Group Ltd.";
-const SUPPORT_EMAIL = "studio@henrycogroup.com";
-const FINANCE_EMAIL = "finance@henrycogroup.com";
-const PRIVACY_EMAIL = "privacy@henrycogroup.com";
+const SUPPORT_EMAIL = BRAND_EMAILS.studio;
+const FINANCE_EMAIL = BRAND_EMAILS.finance;
+const PRIVACY_EMAIL = BRAND_EMAILS.privacy;
+const SECURITY_EMAIL = BRAND_EMAILS.security;
+const ABUSE_EMAIL = BRAND_EMAILS.abuse;
 
 export const studioPolicyIndex: PolicyDocument[] = [
   // ─────────────────────────────────────────────────────────────────
@@ -128,7 +132,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "12. Governing law and disputes",
         body: [
-          "These Terms are governed by the laws of the Federal Republic of Nigeria. Disputes are first raised through the Client portal or to studio@henrycogroup.com. If unresolved within thirty (30) days, the parties submit to mediation in Lagos. Failing mediation, disputes are referred to the courts of Lagos State.",
+          `These Terms are governed by the laws of the Federal Republic of Nigeria. Disputes are first raised through the Client portal or to ${SUPPORT_EMAIL}. If unresolved within thirty (30) days, the parties submit to mediation in Lagos. Failing mediation, disputes are referred to the courts of Lagos State.`,
         ],
       },
       {
@@ -323,7 +327,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "7. Disputes",
         body: [
-          "If you disagree with a refund calculation, raise it in writing to finance@henrycogroup.com within thirty (30) days. We review the milestone-progress record on your project and respond with a written breakdown. Disputes that cannot be resolved go to mediation as set out in the Terms of Engagement.",
+          `If you disagree with a refund calculation, raise it in writing to ${FINANCE_EMAIL} within thirty (30) days. We review the milestone-progress record on your project and respond with a written breakdown. Disputes that cannot be resolved go to mediation as set out in the Terms of Engagement.`,
         ],
       },
       {
@@ -461,7 +465,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "9. Reporting a vulnerability",
         body: [
-          "If you find a security issue, email security@henrycogroup.com. We acknowledge within two (2) working days and aim to remediate critical issues within seven (7) days. We do not pursue legal action against good-faith researchers who follow responsible-disclosure norms.",
+          `If you find a security issue, email ${SECURITY_EMAIL}. We acknowledge within two (2) working days and aim to remediate critical issues within seven (7) days. We do not pursue legal action against good-faith researchers who follow responsible-disclosure norms.`,
         ],
       },
     ],
@@ -564,7 +568,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "5. Reporting misuse",
         body: [
-          "If you see something on a HenryCo-built surface that violates this policy, email abuse@henrycogroup.com. We investigate every credible report.",
+          `If you see something on a HenryCo-built surface that violates this policy, email ${ABUSE_EMAIL}. We investigate every credible report.`,
         ],
       },
     ],

@@ -1,3 +1,5 @@
+import { BRAND_EMAILS } from "@henryco/config";
+
 import type {
   EmailDispatchResult,
   ResolvedSender,
@@ -12,7 +14,7 @@ export function getBrevoApiKey(): string | null {
 }
 
 export function getBrevoSender(input: SendTransactionalEmailInput): ResolvedSender {
-  const fallbackEmail = process.env.BREVO_SENDER_EMAIL?.trim() || "noreply@henrycogroup.com";
+  const fallbackEmail = process.env.BREVO_SENDER_EMAIL?.trim() || BRAND_EMAILS.noreply;
   const fallbackName = process.env.BREVO_SENDER_NAME?.trim() || "HenryCo";
   return {
     email: input.from?.trim() || fallbackEmail,

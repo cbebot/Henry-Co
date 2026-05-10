@@ -13,7 +13,7 @@ import {
   Sparkles,
   Truck,
 } from "lucide-react";
-import { getDivisionConfig } from "@henryco/config";
+import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
 import { getCareBookingCatalog, getCareSettings } from "@/lib/care-data";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
@@ -31,7 +31,7 @@ export default async function AboutPage() {
     getCareBookingCatalog(),
   ]);
 
-  const supportEmail = settings.support_email || care.supportEmail || "care@henrycogroup.com";
+  const supportEmail = settings.support_email || care.supportEmail || BRAND_EMAILS.care;
   const supportPhone = settings.support_phone || care.supportPhone;
   const pickupHours = settings.pickup_hours || "Mon - Sat • 8:00 AM to 7:00 PM";
   const heroTitle = settings.about_title || "Trust. Timing. Service quality.";

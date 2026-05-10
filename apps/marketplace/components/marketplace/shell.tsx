@@ -15,7 +15,7 @@ import {
   WorkspaceMobileNav,
   type WorkspaceNavGroup,
 } from "@/components/marketplace/workspace-mobile-nav";
-import { getAccountUrl, getHubUrl } from "@henryco/config";
+import { BRAND_EMAILS, getAccountUrl, getHubUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
@@ -71,7 +71,7 @@ export async function PublicFooter() {
               {copy.footer.brandBody}
             </p>
             <div className="space-y-1.5 text-sm text-[var(--market-muted)]">
-              <p className="text-[var(--market-paper-white)]">marketplace@henrycogroup.com</p>
+              <p className="text-[var(--market-paper-white)]">{BRAND_EMAILS.marketplace}</p>
               <p>+234 913 395 7084</p>
             </div>
           </div>

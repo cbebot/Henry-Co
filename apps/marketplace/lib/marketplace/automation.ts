@@ -1,5 +1,6 @@
 import "server-only";
 
+import { BRAND_EMAILS } from "@henryco/config";
 import { deriveSellerTrustProfile, shouldAutoReleasePayout } from "@/lib/marketplace/governance";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
@@ -179,8 +180,8 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
       summary.autoReleasedPayouts += 1;
       await sendMarketplaceEvent({
         event: "owner_alert",
-        recipientEmail: process.env.RESEND_SUPPORT_INBOX || "marketplace@henrycogroup.com",
-        actorEmail: "automation@henrycogroup.com",
+        recipientEmail: process.env.RESEND_SUPPORT_INBOX || BRAND_EMAILS.marketplace,
+        actorEmail: BRAND_EMAILS.automation,
         entityType: "order_group",
         entityId: String(row.id),
         payload: {
@@ -192,8 +193,8 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
     for (const row of productsRes.data ?? []) {
       await sendMarketplaceEvent({
         event: "low_stock",
-        recipientEmail: process.env.RESEND_SUPPORT_INBOX || "marketplace@henrycogroup.com",
-        actorEmail: "automation@henrycogroup.com",
+        recipientEmail: process.env.RESEND_SUPPORT_INBOX || BRAND_EMAILS.marketplace,
+        actorEmail: BRAND_EMAILS.automation,
         entityType: "product",
         entityId: String(row.id),
         payload: {
@@ -216,7 +217,7 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
           normalizedEmail: row.normalized_email ? String(row.normalized_email) : null,
           recipientEmail: row.buyer_email ? String(row.buyer_email) : null,
           recipientPhone: row.buyer_phone ? String(row.buyer_phone) : null,
-          actorEmail: "automation@henrycogroup.com",
+          actorEmail: BRAND_EMAILS.automation,
           entityType: "order",
           entityId: String(row.id),
           payload: {
@@ -230,8 +231,8 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
       if (["placed", "awaiting_payment", "processing"].includes(status) && ageHours >= 24) {
         await sendMarketplaceEvent({
           event: "stale_order",
-          recipientEmail: process.env.RESEND_SUPPORT_INBOX || "marketplace@henrycogroup.com",
-          actorEmail: "automation@henrycogroup.com",
+          recipientEmail: process.env.RESEND_SUPPORT_INBOX || BRAND_EMAILS.marketplace,
+          actorEmail: BRAND_EMAILS.automation,
           entityType: "order",
           entityId: String(row.id),
           payload: {
@@ -254,7 +255,7 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
         userId: row.user_id ? String(row.user_id) : null,
         normalizedEmail: String(row.normalized_email || ""),
         recipientEmail: String(row.normalized_email || ""),
-        actorEmail: "automation@henrycogroup.com",
+        actorEmail: BRAND_EMAILS.automation,
         entityType: "cart",
         entityId: String(row.id),
         payload: {
@@ -270,8 +271,8 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
 
       await sendMarketplaceEvent({
         event: "owner_alert",
-        recipientEmail: process.env.RESEND_SUPPORT_INBOX || "marketplace@henrycogroup.com",
-        actorEmail: "automation@henrycogroup.com",
+        recipientEmail: process.env.RESEND_SUPPORT_INBOX || BRAND_EMAILS.marketplace,
+        actorEmail: BRAND_EMAILS.automation,
         entityType: "vendor_application",
         entityId: String(row.id),
         payload: {
@@ -287,8 +288,8 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
 
       await sendMarketplaceEvent({
         event: "owner_alert",
-        recipientEmail: process.env.RESEND_SUPPORT_INBOX || "marketplace@henrycogroup.com",
-        actorEmail: "automation@henrycogroup.com",
+        recipientEmail: process.env.RESEND_SUPPORT_INBOX || BRAND_EMAILS.marketplace,
+        actorEmail: BRAND_EMAILS.automation,
         entityType: "payout_request",
         entityId: String(row.id),
         payload: {
@@ -300,7 +301,7 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
 
     await logMarketplaceAction({
       eventType: "marketplace_automation_sweep_completed",
-      actorEmail: "automation@henrycogroup.com",
+      actorEmail: BRAND_EMAILS.automation,
       details: summary,
     });
 

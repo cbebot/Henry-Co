@@ -1,3 +1,5 @@
+import { BRAND_EMAILS } from "@henryco/config";
+
 export type BrevoClientConfig = {
   apiKey: string | null;
   senderEmail: string;
@@ -38,7 +40,7 @@ export function resolveBrevoConfig(
 ): BrevoClientConfig {
   return {
     apiKey: env.BREVO_API_KEY?.trim() || null,
-    senderEmail: env.BREVO_SENDER_EMAIL?.trim() || "noreply@henrycogroup.com",
+    senderEmail: env.BREVO_SENDER_EMAIL?.trim() || BRAND_EMAILS.noreply,
     senderName: env.BREVO_SENDER_NAME?.trim() || "HenryCo",
   };
 }

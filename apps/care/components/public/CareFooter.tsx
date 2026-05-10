@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { getDivisionConfig, getHubUrl } from "@henryco/config";
+import { BRAND_EMAILS, getDivisionConfig, getHubUrl } from "@henryco/config";
 import type { DivisionPublicConfig } from "@/components/public/CareNavbar";
 import { CareMonogram } from "@/components/brand/CareMonogram";
 
@@ -74,7 +74,7 @@ export default function CareFooter({ division }: { division: DivisionPublicConfi
           </p>
           <div className="space-y-1.5 text-sm">
             <p className="font-medium text-zinc-900 dark:text-white">
-              {division.supportEmail ?? "care@henrycogroup.com"}
+              {division.supportEmail ?? BRAND_EMAILS.care}
             </p>
             <p className="text-zinc-500 dark:text-white/55">
               {division.supportPhone ?? careDivision.supportPhone}

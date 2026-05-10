@@ -148,7 +148,7 @@ function resolveSafeCtaUrl(rawActionUrl: string | null): string {
 //
 // Critical invariant (V2-PNH-03B): Care must NEVER be the fallback identity.
 // Notifications from `account`/`hub`/`staff`/`system` route to the auth
-// purpose (accounts@henrycogroup.com), not care@. Notifications from
+// purpose (BRAND_EMAILS.accounts), not BRAND_EMAILS.care. Notifications from
 // `wallet` aren't a Division — wallet events ride under `account` per the
 // notification publisher's Division enum.
 

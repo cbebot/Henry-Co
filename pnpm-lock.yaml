@@ -492,7 +492,7 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       pg:
         specifier: ^8.20.0
         version: 8.20.0
@@ -1793,7 +1793,11 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/email: {}
+  packages/email:
+    dependencies:
+      '@henryco/config':
+        specifier: workspace:*
+        version: link:../config
 
   packages/i18n:
     dependencies:
@@ -1855,6 +1859,9 @@ importers:
 
   packages/newsletter:
     dependencies:
+      '@henryco/config':
+        specifier: workspace:*
+        version: link:../config
       '@henryco/intelligence':
         specifier: workspace:*
         version: link:../intelligence

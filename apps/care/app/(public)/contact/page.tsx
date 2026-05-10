@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { getDivisionConfig } from "@henryco/config";
+import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
 import ContactForm from "@/components/care/ContactForm";
 import CopyButton from "@/components/ui/CopyButton";
 import { getCareSettings } from "@/lib/care-data";
@@ -20,7 +20,7 @@ const care = getDivisionConfig("care");
 
 export default async function ContactPage() {
   const settings = await getCareSettings();
-  const supportEmail = settings.support_email || care.supportEmail || "care@henrycogroup.com";
+  const supportEmail = settings.support_email || care.supportEmail || BRAND_EMAILS.care;
   const supportPhone = settings.support_phone || care.supportPhone;
   const whatsappNumber =
     settings.payment_support_whatsapp || settings.payment_whatsapp || settings.support_phone || supportPhone;

@@ -1,3 +1,4 @@
+import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
 import { assignTrainingAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
@@ -18,7 +19,7 @@ export default async function OwnerAssignmentsPage() {
     >
       <LearnPanel className="rounded-[2rem]">
         <form action={assignTrainingAction} className="grid gap-4 md:grid-cols-2">
-          <input name="email" placeholder="learner@henrycogroup.com" className="learn-input rounded-2xl px-4 py-3" required />
+          <input name="email" placeholder={BRAND_EMAIL_PLACEHOLDERS.learner} className="learn-input rounded-2xl px-4 py-3" required />
           <input name="assigneeRole" placeholder="care_staff, logistics_lead..." className="learn-input rounded-2xl px-4 py-3" />
           <select name="courseId" className="learn-select rounded-2xl px-4 py-3">
             <option value="">Choose course</option>

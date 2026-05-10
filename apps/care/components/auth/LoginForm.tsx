@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
+import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
 
 export default function LoginForm() {
   return (
@@ -28,7 +29,7 @@ export default function LoginForm() {
             <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
             <input
               type="email"
-              placeholder="you@henrycogroup.com"
+              placeholder={BRAND_EMAIL_PLACEHOLDERS.user}
               autoComplete="email"
               required
               className="h-14 w-full rounded-2xl border border-black/10 bg-white px-12 pr-4 text-sm font-medium text-zinc-900 outline-none transition focus:border-[color:var(--accent)]/50 dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"

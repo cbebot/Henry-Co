@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, FileCheck2, ShieldCheck, Sparkles } from "lucide-react";
-import { getAccountUrl } from "@henryco/config";
+import { BRAND_EMAILS, getAccountUrl } from "@henryco/config";
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
 import { PropertySectionIntro } from "@/components/property/ui";
 import { PropertySubmissionForm } from "@/components/property/submit/PropertySubmissionForm";
@@ -127,10 +127,10 @@ export default async function SubmitListingPage({
               </Link>
               <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[var(--property-line)] sm:inline-block" />
               <a
-                href="mailto:property@henrycogroup.com"
+                href={`mailto:${BRAND_EMAILS.property}`}
                 className="font-semibold text-[var(--property-ink)] underline-offset-4 transition hover:text-[var(--property-accent-strong)] hover:underline"
               >
-                property@henrycogroup.com
+                {BRAND_EMAILS.property}
               </a>
             </p>
           </div>

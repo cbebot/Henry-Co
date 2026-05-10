@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
+import { BRAND_EMAILS } from "@henryco/config";
 import { PublicShell } from "@/components/public-shell";
 import { getSharedAccountJobsUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
@@ -76,9 +77,9 @@ export default async function HelpPage() {
             here does not match what you see on screen, contact{" "}
             <a
               className="font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
-              href="mailto:jobs@henrycogroup.com"
+              href={`mailto:${BRAND_EMAILS.jobs}`}
             >
-              jobs@henrycogroup.com
+              {BRAND_EMAILS.jobs}
             </a>
             .
           </p>
