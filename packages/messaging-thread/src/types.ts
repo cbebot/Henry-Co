@@ -25,6 +25,15 @@ export type ThreadMessage = {
   createdAt: string;
   /** ISO timestamp; null when not edited. */
   editedAt?: string | null;
+  /** Optional ISO timestamp the server marked the message as delivered to
+   * the recipient(s). When present on a viewer-owned bubble the engine
+   * shows a "Delivered" status. Adapters that don't track delivery can
+   * leave this undefined — the engine falls back to "Sent". */
+  deliveredAt?: string | null;
+  /** Optional ISO timestamp the recipient marked the message as read.
+   * When present on a viewer-owned bubble the engine shows "Read".
+   * Outranks `deliveredAt`. */
+  readAt?: string | null;
   /** True when the viewer is the sender — drives "Sent" indicator + alignment. */
   isOwnMessage?: boolean;
 };

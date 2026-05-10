@@ -33,14 +33,62 @@ function formatTime(iso: string): string {
     : date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 }
 
+function formatBytes(bytes: number | null | undefined): string {
+  if (bytes == null || !Number.isFinite(bytes) || bytes <= 0) return "";
+  const units = ["B", "KB", "MB", "GB"];
+  let value = bytes;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  return `${value < 10 && unit > 0 ? value.toFixed(1) : Math.round(value)} ${units[unit]}`;
+}
+
+/** Coarse, human label for a MIME type used in file chips. */
+function formatTypeLabel(type: string | null | undefined): string {
+  if (!type) return "FILE";
+  const subtype = type.split("/")[1] ?? type;
+  // Strip the +xml / +zip suffixes some MIME types carry.
+  const root = subtype.split("+")[0] ?? subtype;
+  if (root.length <= 4) return root.toUpperCase();
+  // A handful of common ones get nice short labels.
+  if (root === "pdf") return "PDF";
+  if (root === "msword" || root === "vnd.ms-word") return "DOC";
+  if (root.startsWith("vnd.openxmlformats-officedocument.wordprocessingml")) return "DOCX";
+  if (root.startsWith("vnd.openxmlformats-officedocument.spreadsheetml")) return "XLSX";
+  if (root === "vnd.ms-excel") return "XLS";
+  if (root.startsWith("vnd.openxmlformats-officedocument.presentationml")) return "PPTX";
+  if (root === "plain") return "TXT";
+  return root.slice(0, 4).toUpperCase();
+}
+
+function isImageAttachment(attachment: ThreadAttachment): boolean {
+  return Boolean(attachment.type && attachment.type.startsWith("image/"));
+}
+
+/** Status label shown under viewer-owned bubbles. Adapters opt-in by
+ * populating `readAt` / `deliveredAt`; engine-only consumers see
+ * "Sending…" while optimistic and "Sent" once persisted. */
+function ownStatusLabel(message: ThreadMessage, isPending: boolean): string {
+  if (isPending) return "Sending…";
+  if (message.readAt) return "Read";
+  if (message.deliveredAt) return "Delivered";
+  return "Sent";
+}
+
 function MessageBubble({ message }: { message: ThreadMessage }) {
   const isOwn = Boolean(message.isOwnMessage);
   const isSystem = message.senderRole === "system";
   const side = isSystem ? "system" : isOwn ? "own" : "team";
   const initials = getInitials(message.senderName);
+  const isPending = message.id.startsWith("optimistic-");
+  const attachments = message.attachments ?? [];
+  const images = attachments.filter(isImageAttachment);
+  const files = attachments.filter((a) => !isImageAttachment(a));
 
   return (
-    <li className="mt-bubble-row" data-side={side}>
+    <li className="mt-bubble-row" data-side={side} data-pending={isPending || undefined}>
       {!isSystem && !isOwn ? (
         <span className="mt-avatar" aria-hidden>
           {initials}
@@ -56,22 +104,74 @@ function MessageBubble({ message }: { message: ThreadMessage }) {
             {message.editedAt ? <span className="mt-bubble-edited">(edited)</span> : null}
           </div>
         ) : null}
-        <p className="mt-bubble-body">{message.body}</p>
-        {message.attachments && message.attachments.length > 0 ? (
-          <div className="mt-bubble-attachments">
-            {message.attachments.map((attachment, idx) => (
+        {message.body ? <p className="mt-bubble-body">{message.body}</p> : null}
+        {images.length > 0 ? (
+          <div
+            className="mt-bubble-images"
+            data-count={images.length > 1 ? "many" : "one"}
+          >
+            {images.map((attachment, idx) => (
               <a
-                key={`${attachment.url}-${idx}`}
+                key={`img-${attachment.url}-${idx}`}
                 href={attachment.url}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-attachment-chip"
+                className="mt-attachment-image"
+                aria-label={`Open image ${attachment.name} in a new tab`}
               >
-                <Paperclip className="h-3 w-3" aria-hidden />
-                <span>{attachment.name}</span>
+                <img
+                  src={attachment.url}
+                  alt={attachment.name || "Attached image"}
+                  loading="lazy"
+                  decoding="async"
+                />
               </a>
             ))}
           </div>
+        ) : null}
+        {files.length > 0 ? (
+          <ul className="mt-bubble-attachments">
+            {files.map((attachment, idx) => {
+              const sizeLabel = formatBytes(attachment.size ?? null);
+              const typeLabel = formatTypeLabel(attachment.type);
+              return (
+                <li key={`file-${attachment.url}-${idx}`}>
+                  <a
+                    href={attachment.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-attachment-chip"
+                  >
+                    <span className="mt-attachment-icon" aria-hidden>
+                      <Paperclip className="h-3 w-3" />
+                    </span>
+                    <span className="mt-attachment-text">
+                      <span className="mt-attachment-name">{attachment.name}</span>
+                      <span className="mt-attachment-meta">
+                        {[typeLabel, sizeLabel].filter(Boolean).join(" · ")}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+        {isOwn && !isSystem ? (
+          <span
+            className="mt-bubble-status"
+            data-state={
+              isPending
+                ? "pending"
+                : message.readAt
+                  ? "read"
+                  : message.deliveredAt
+                    ? "delivered"
+                    : "sent"
+            }
+          >
+            {ownStatusLabel(message, isPending)}
+          </span>
         ) : null}
       </div>
     </li>
@@ -93,13 +193,18 @@ function pickComposerTone(threadId: string): ComposerTone {
 
 /**
  * Audience-agnostic thread renderer. Owns:
- *   - render of bubble list
+ *   - render of bubble list with rich attachments (inline image
+ *     previews + file chips with type/size labels)
+ *   - per-bubble status on viewer-owned messages
+ *     (Sending… → Sent → Delivered → Read; the latter two only when
+ *     the adapter populates ThreadMessage.deliveredAt / readAt)
  *   - autoscroll on new message
  *   - optimistic send (pending bubble appears immediately, replaced
  *     with persisted ID on success or removed + error shown on failure)
  *   - mark-read fire-and-forget on mount + after each incoming message
  *   - realtime INSERT subscription (Supabase postgres_changes), with
  *     graceful no-op fallback when getSupabase returns null
+ *   - polite SR announcer that fires on incoming-only messages
  *
  * Composer concerns (autosize, drag-drop, paste, multi-attach, draft
  * persistence, full-screen mobile, send-button states, keyboard shortcuts,
@@ -124,6 +229,11 @@ export function MessageThread({
 }: MessageThreadProps) {
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
   const [composerError, setComposerError] = useState<string | null>(null);
+  // Hidden polite announcer for screen readers — gets the latest
+  // INCOMING message as a string (eg. "Adaeze said: thanks for the
+  // update"), so SR users hear new messages without the engine
+  // shouting on every state mutation.
+  const [announcement, setAnnouncement] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   // Autoscroll to bottom when message count changes.
@@ -163,9 +273,27 @@ export function MessageThread({
           const incoming = adapter.rowToMessage(payload.new, viewer.userId);
           if (!incoming) return;
           if (incoming.senderId === viewer.userId) return;
-          setMessages((prev) =>
-            prev.find((m) => m.id === incoming.id) ? prev : [...prev, incoming],
-          );
+          setMessages((prev) => {
+            if (prev.find((m) => m.id === incoming.id)) return prev;
+            return [...prev, incoming];
+          });
+          // Announce incoming-only (skip own messages, skip system).
+          if (incoming.senderRole !== "system") {
+            const preview = incoming.body
+              ? incoming.body.length > 140
+                ? `${incoming.body.slice(0, 140)}…`
+                : incoming.body
+              : incoming.attachments && incoming.attachments.length > 0
+                ? `sent ${incoming.attachments.length} attachment${
+                    incoming.attachments.length === 1 ? "" : "s"
+                  }`
+                : "";
+            setAnnouncement(
+              preview
+                ? `${incoming.senderName} said: ${preview}`
+                : `${incoming.senderName} sent a message`,
+            );
+          }
           if (adapter.markReadAction) {
             const formData = new FormData();
             formData.set("threadId", threadId);
@@ -273,7 +401,7 @@ export function MessageThread({
           <p className="mt-thread-empty-body">{emptyBody}</p>
         </div>
       ) : (
-        <div ref={scrollRef} className="mt-thread-list" aria-live="polite">
+        <div ref={scrollRef} className="mt-thread-list">
           <ul className="mt-thread-list-inner">
             {messages.map((message) => (
               <MessageBubble key={message.id} message={message} />
@@ -281,6 +409,18 @@ export function MessageThread({
           </ul>
         </div>
       )}
+
+      {/* Dedicated polite announcer — only ever holds the latest
+          incoming message string, so screen readers say it once
+          without re-announcing on every state mutation. */}
+      <div
+        className="mt-sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+        role="status"
+      >
+        {announcement}
+      </div>
 
       <div className="mt-composer-host">
         <ChatComposer
