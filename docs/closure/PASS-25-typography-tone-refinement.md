@@ -10,7 +10,14 @@
 
 ## 1. Weight occurrence map (before)
 
-48 `font-bold` occurrences across the in-scope dashboards. Zero `font-extrabold` / `font-black`. The `dashboard-shell` and `dashboard-modules-*` packages were already clean (0 occurrences) — every leak was at the per-app surface layer.
+49 `font-bold` occurrences across the in-scope dashboards (48 in the
+original audit + 1 picked up by the follow-up sweep on
+`apps/hub/app/(site)/preferences`, which is reached from the user-menu
+in every dashboard). Zero `font-extrabold` / `font-black`. The
+`dashboard-shell`, `dashboard-modules-*`, and `search-ui` packages were
+already clean (0 occurrences) — every leak was at the per-app surface
+layer. Other division apps (`jobs`, `learn`, `marketplace`, `property`,
+`studio`, `logistics`) verified clean during the broader sweep.
 
 | Surface | File | Occurrences | Pattern |
 |---|---|---|---|
@@ -33,6 +40,7 @@
 | Owner | `apps/hub/components/owner/OwnerMobileNav.tsx` | 2 | "CMD" eyebrow + initials avatar |
 | Owner | `apps/hub/components/owner/InternalTeamCommsClient.tsx` | 1 | Unread "new" chip |
 | Owner | `apps/hub/components/owner/MetricCard.tsx` | 1 | Metric value (count-or-currency, shared component) |
+| User-menu | `apps/hub/app/(site)/preferences/PreferencesClient.tsx` | 1 | Page-title h1 (text-3xl/4xl); follow-up sweep |
 | Staff | `apps/staff/components/StaffSidebar.tsx` | 5 | "div" chip + count badge + brand monogram + "Staff HQ" eyebrow + initials |
 | Staff | `apps/staff/components/StaffMobileNav.tsx` | 3 | Brand monogram + "Staff" eyebrow + initials |
 
@@ -42,6 +50,7 @@
 - **Status pills / chips / count badges** at `font-bold` against the prompt's "Status pills: medium" rule. 5 occurrences.
 - **Counts at `text-2xl font-bold`** doing two heavy-weight signals at once (size + bold) — the scale was already carrying authority. 4 occurrences.
 - **One `<h2>` heading** at `text-2xl font-bold` — heading-stack-of-two-bolds pattern with the kicker above. 1 occurrence.
+- **One `<h1>` heading** at `text-3xl/4xl font-bold` — page title carrying authority through both size *and* weight; size was already enough. 1 occurrence.
 - **One mono code display** at `font-bold` — already mono-spaced + tracking-wider doing the work. 1 occurrence.
 
 ---
@@ -60,13 +69,14 @@ The general move: where a small surface (eyebrow, chip, initial) was `font-bold`
 - `UserAvatar.tsx`, `NotificationBell.tsx` (×2), `NotificationFeed.tsx`, `NotificationsFeed.tsx`, `RecentlyDeletedFeed.tsx`, `activity/page.tsx`, `invoices/page.tsx`, `subscriptions/page.tsx`, `messages/notification/[id]/page.tsx`: all initials/badges → `font-semibold`.
 - `CopyReferralCode.tsx`: mono code display → `font-semibold` (mono + tracking-wider do the readability work).
 
-**Owner dashboard (`apps/hub`)** — 17 of 18 occurrences refined:
+**Owner dashboard + user-menu surface (`apps/hub`)** — 18 of 19 occurrences refined:
 - `staff/users/[id]/page.tsx`: 5 eyebrow labels → `font-semibold`.
 - `staff/tree/page.tsx`: 2 eyebrow labels → `font-semibold`.
 - `ai/page.tsx`: 4 metric eyebrows → `font-semibold` (sized at `text-[10px]`, the bold was screaming). 1 severity status pill → `font-semibold` (per "Status pills: medium").
 - `OwnerSidebar.tsx`: "Command Center" eyebrow + footer initials → `font-semibold`.
 - `OwnerMobileNav.tsx`: "CMD" eyebrow + drawer initials → `font-semibold`.
 - `InternalTeamCommsClient.tsx`: unread "X new" chip → `font-semibold tabular-nums` (tabular-nums added because it's a count).
+- `(site)/preferences/PreferencesClient.tsx`: page-title `<h1 text-3xl font-bold>` → `<h1 text-3xl font-semibold>`. Reached from the user-menu in every dashboard, so the heaviness was leaking into the user-dashboard reading experience. Section h2s on the same page were already `font-semibold`; flat-weight ladder + size differentiation now matches the prompt's "size carries the authority, not the weight" principle.
 - **MetricCard.tsx line 27 preserved** (shared component renders both counts and currency via `formatCurrencyAmount`).
 
 **Staff dashboard (`apps/staff`)** — 8 of 8 occurrences refined:
@@ -94,6 +104,7 @@ Walked each affected page mentally against the Pass 25 reading-priority test (h1
 - **User Care bookings dashboard**: the `<h2>` service title now sits at semibold below the gold kicker — same weight as the chips, but size and color do the hierarchy. No more "wall of bold" around the selected booking card.
 - **User notification feeds, activity, invoices, subscriptions**: division-initial avatars no longer compete with the body sentence next to them. The avatar is identity, the sentence is content; weights now reflect that.
 - **Staff/Owner sidebars + mobile nav**: brand monograms read as confident marks, not as "look at me" buttons. Section eyebrows recede into the chrome.
+- **Hub user-menu /preferences**: the page title used to land at the same shouty weight as a marketing landing-page headline; now it reads at the same weight as its own section h2s, and the `text-3xl/4xl` size is what carries the authority. Language tiles, theme buttons, consent toggles already used `font-semibold` — the page now has a single, calm weight throughout.
 - **Long content** (support threads, documents): no changes needed — those surfaces already use `body` weight = 400 from Pass 19.
 
 No card looks like a wall of bold anymore. The four preserved currency lines are now the *intentional* heaviest typography on their pages — exactly the editorial calm the owner asked for: money speaks loudest, everything else converses.
@@ -124,15 +135,45 @@ Re-run after the original session hibernated mid-validation (resumed 2026-05-10)
 | `pnpm --filter @henryco/account run build` | ✓ Builds clean |
 | `pnpm --filter @henryco/staff run build` | ✓ Builds clean |
 | `pnpm --filter @henryco/hub run build` | ✓ Builds clean |
-| Post-edit grep for `font-bold\|font-extrabold\|font-black` in scope | ✓ Only the 4 preserved currency lines remain (referrals ×2, CareBookingsDashboard, owner MetricCard) |
+| Post-edit grep for `font-bold\|font-extrabold\|font-black` in `apps/account` + `apps/hub` + `apps/staff` | ✓ Only the 4 preserved currency lines remain (referrals ×2, CareBookingsDashboard, owner MetricCard) |
+| Broader sweep — `packages/dashboard-shell` + `packages/dashboard-modules-*` + `packages/search-ui` | ✓ Zero occurrences (already calm by construction) |
+| Broader sweep — `apps/jobs` + `apps/learn` + `apps/marketplace` + `apps/property` + `apps/studio` + `apps/logistics` | ✓ Zero occurrences in any division-staff or division-owner surface |
 
-Visual verification in light + dark and live deploy IDs are pending the next CI/Vercel cycle once the changes land in `main` — preview deployments are owner-triggered for this branch.
+### CI + Preview deploys (PR #75)
+
+CI run **#25628187716** — `Lint, typecheck, test, build` — ✓ SUCCESS (started 12:01:00, completed 12:07:39 UTC).
+A11y run **#25628187713** — `PNH baseline + contrast matrix + headers` — ✓ SUCCESS.
+
+Vercel preview deploys (all SUCCESS):
+
+| App | Deploy URL |
+|---|---|
+| `@henryco/account` (user dashboard) | https://vercel.com/henry-co/henryco-account/7XiQ4fa3JJzx53BbGGtHazexBPRU |
+| `@henryco/hub` (owner dashboard) | https://vercel.com/henry-co/hub/ANPYuaHDyVYDjBZsxygP67CiGyii |
+| `@henryco/care` | https://vercel.com/henry-co/care/G9K6hEfyhLhLCP3jKNpYBJ9bMyzb |
+| `@henryco/jobs` | https://vercel.com/henry-co/jobs/5ydPwhSf4AZ7J42iK4KagnpfPDbh |
+| `@henryco/learn` | https://vercel.com/henry-co/learn/847Trynemu29JpEsRyf9NsFPxQ4B |
+| `@henryco/logistics` | https://vercel.com/henry-co/logistics/9SjwzAC16o5YhfCHJU6zi7fxTv9n |
+| `@henryco/marketplace` | https://vercel.com/henry-co/marketplace/HL5YK7fq8stJJ3FuF3sxHXUynGiL |
+| `@henryco/property` | https://vercel.com/henry-co/property/7uGPEXA2GWEnsqBkTYwdVD44RRt7 |
+| `@henryco/studio` | https://vercel.com/henry-co/studio/CArN5vqQTKFqH35EwDZgfoEZLHTn |
+
+Netlify preview: https://deploy-preview-75--henrycogroup.netlify.app
+
+Mergeable state: **CLEAN** (no conflicts with `main`, all checks green).
+
+Live visual verification per dashboard in light + dark is owner-driven from the URLs above; the principle the eye checks for is "money speaks loudest, everything else converses."
 
 ---
 
-## 6. Files changed (PASS 25 only)
+## 6. Files changed
 
-20 files touched by PASS 25. (The diff also lists `apps/account/app/api/cron/notification-email-fallback/route.ts`, `apps/account/app/api/documents/[type]/[id]/route.ts`, `apps/account/lib/email/templates.ts`, `apps/hub/components/owner/InviteStaffForm.tsx`, `apps/staff/app/(workspace)/operations/newsletter/NewsletterDraftEditor.tsx` — these are from a separate parallel session working on email/branding and are **not** part of PASS 25.)
+PASS 25 commit `ac499bd5` touches 20 dashboard surface files. A 21st file
+(`apps/hub/app/(site)/preferences/PreferencesClient.tsx`) is added in a
+follow-up commit on the same branch — the preferences page is reached
+from the user-menu in every dashboard, so it counts as a user-dashboard
+surface even though it sits in the `(site)` route group rather than
+`/owner` or `/(account)`. (The diff also lists `apps/account/app/api/cron/notification-email-fallback/route.ts`, `apps/account/app/api/documents/[type]/[id]/route.ts`, `apps/account/lib/email/templates.ts`, `apps/hub/components/owner/InviteStaffForm.tsx`, `apps/staff/app/(workspace)/operations/newsletter/NewsletterDraftEditor.tsx` — these are from a separate parallel session working on email/branding and are **not** part of PASS 25.)
 
 ```
 apps/account/app/(account)/activity/page.tsx
@@ -147,6 +188,7 @@ apps/account/components/notifications/NotificationFeed.tsx
 apps/account/components/notifications/NotificationsFeed.tsx
 apps/account/components/notifications/RecentlyDeletedFeed.tsx
 apps/account/components/referral/CopyReferralCode.tsx
+apps/hub/app/(site)/preferences/PreferencesClient.tsx   ← follow-up
 apps/hub/app/owner/(command)/ai/page.tsx
 apps/hub/app/owner/(command)/staff/tree/page.tsx
 apps/hub/app/owner/(command)/staff/users/[id]/page.tsx
@@ -156,3 +198,39 @@ apps/hub/components/owner/OwnerSidebar.tsx
 apps/staff/components/StaffMobileNav.tsx
 apps/staff/components/StaffSidebar.tsx
 ```
+
+---
+
+## 7. Out of scope — but observed
+
+A `font-black`-heavy aesthetic lives across `apps/care/app/(staff)/**`
+(care division staff dashboard: `manager/`, `owner/`, `support/`,
+`rider/`, `staff/page.tsx`). That weight is the deliberate signature of
+the 90B / 90D / 90E "Care division premium" redesigns — page titles
+stack `text-4xl font-black tracking-[-0.04em]` with intent, not by
+accident, and the colour palette + motion grammar are tuned to it. Pass
+25's calm-editorial principles (h1 = regular/medium, size carries
+authority) apply philosophically, but rebalancing care without owner
+sign-off would change the felt identity of that division.
+
+**Recommendation**: a follow-up "Pass 25 — Care division" sweep, scoped
+to `apps/care/app/(staff)/**` only, with the owner walking each page in
+preview before/after. That sweep is *not* included here so this PR keeps
+its surgical scope and reviewable diff.
+
+Confirmed clean (zero `font-bold` / `font-extrabold` / `font-black`):
+
+- `packages/dashboard-shell/**`
+- `packages/dashboard-modules-*/**` (account, marketplace, wallet, …)
+- `packages/search-ui/**`
+- `apps/jobs/**`
+- `apps/learn/**`
+- `apps/marketplace/**`
+- `apps/property/**`
+- `apps/studio/**`
+- `apps/logistics/**`
+
+The Pass 25 in-scope dashboards (`account` + `hub` + `staff`) plus the
+divisions other than care now carry zero stray heavy-weight Tailwind
+classes — the only `font-bold` left in the in-scope surface are the
+four currency anchors that the prompt asked us to preserve.
