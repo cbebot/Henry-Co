@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Panel, Section, ActionButton } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
 import { Truck, ArrowRight } from "lucide-react";
@@ -6,11 +7,17 @@ import type { MarketplaceSnapshot } from "../data";
 
 /**
  * OrdersInFlightCard — surfaces marketplace orders currently in
- * pending / preparing / shipped / out-for-delivery states. Each row
- * deep-links to `/marketplace/orders/[orderNo]` for the live tracker.
+ * pending / preparing / shipped / out-for-delivery states.
  *
  * Empty state: typographic minimalism per anti-pattern #16 — no
  * cartoon, no "you don't have any orders!" exclamation.
+ *
+ * PASS 22 issue #1+#2 — the per-order rows previously linked to
+ * `/marketplace/orders/[orderNo]` (no such route in apps/account → 404)
+ * via raw `<a>` (full reload). Detail pages live on the marketplace
+ * subdomain; until they're mirrored into the account shell we land users
+ * on `/marketplace` (the orders summary surface), and use Next/Link for
+ * SPA-fast navigation.
  */
 export function OrdersInFlightCard({
   snapshot,
@@ -30,7 +37,7 @@ export function OrdersInFlightCard({
         }
         action={
           <ActionButton
-            href="/marketplace/orders"
+            href="/marketplace"
             tone="ghost"
             icon={<ArrowRight size={14} />}
             iconPosition="trailing"
@@ -62,8 +69,8 @@ export function OrdersInFlightCard({
           >
             {ordersInFlight.slice(0, 3).map((order) => (
               <li key={order.id}>
-                <a
-                  href={`/marketplace/orders/${order.orderNo}`}
+                <Link
+                  href="/marketplace"
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -138,7 +145,7 @@ export function OrdersInFlightCard({
                   >
                     {formatMoney(order.grandTotal, order.currency)}
                   </span>
-                </a>
+                </Link>
               </li>
             ))}
           </ol>

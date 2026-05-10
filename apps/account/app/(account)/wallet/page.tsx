@@ -232,7 +232,7 @@ export default async function WalletPage() {
                 {formatNaira(request.amount_kobo)} · {request.reference || request.id}
               </p>
               <p className="mt-1 text-xs text-[var(--acct-muted)]">
-                {t(request.status.replaceAll("_", " "))}
+                {t((request.status ?? "unknown").replaceAll("_", " "))}
                 {request.proof_url ? ` · ${t("Proof uploaded").toLowerCase()}` : ` · ${t("Awaiting proof").toLowerCase()}`}
               </p>
             </Link>

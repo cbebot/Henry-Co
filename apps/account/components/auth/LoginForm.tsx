@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getAuthCopy, getSurfaceCopy } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
@@ -63,6 +64,8 @@ export default function LoginForm() {
           <label className="mb-1.5 block text-sm font-medium">{authCopy.login.emailLabel}</label>
           <input
             type="email"
+            name="email"
+            inputMode="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="acct-input"
@@ -75,16 +78,17 @@ export default function LoginForm() {
         <div>
           <div className="mb-1.5 flex items-center justify-between">
             <label className="text-sm font-medium">{authCopy.login.passwordLabel}</label>
-            <a
+            <Link
               href="/forgot-password"
               className="text-xs text-[var(--acct-gold)] hover:underline"
             >
               {authCopy.login.forgotPassword}
-            </a>
+            </Link>
           </div>
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="acct-input pr-10"

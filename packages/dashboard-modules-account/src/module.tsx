@@ -142,7 +142,9 @@ export const customerOverviewModule: DashboardModule = {
         title: "Welcome back",
         size: "lg",
         weight: 85,
-        href: "/saved",
+        // PASS 22 issue #1 — `/saved` was a dead route; the canonical
+        // saved-items surface in apps/account is `/saved-items`.
+        href: "/saved-items",
         render: async () => (
           <WelcomeBackWidget
             snapshot={snapshot}

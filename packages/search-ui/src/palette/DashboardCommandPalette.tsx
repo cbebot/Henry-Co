@@ -830,6 +830,8 @@ function PaletteSearchInput({
         type="search"
         autoComplete="off"
         spellCheck={false}
+        enterKeyHint="search"
+        inputMode="search"
         placeholder={placeholderHint}
         value={query}
         onChange={(event) => onQuery(event.target.value)}
@@ -846,6 +848,10 @@ function PaletteSearchInput({
           background: "transparent",
           color: `var(${CSS_VARS.ink})`,
           ...typeStyle("body"),
+          // PASS 22 issue #6: iOS Safari zooms in when an input's font-size
+          // is < 16px on focus, which is jarring on the mobile palette.
+          // Force 16px on the mobile sheet only (desktop stays compact).
+          fontSize: isMobile ? "1rem" : undefined,
         }}
       />
       {loading ? (

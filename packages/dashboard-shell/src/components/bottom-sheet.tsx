@@ -54,14 +54,25 @@ export function BottomSheet({
   const leadingSentinelRef = useRef<HTMLSpanElement>(null);
   const trailingSentinelRef = useRef<HTMLSpanElement>(null);
 
-  // Body scroll lock + Esc dismiss + focus management.
+  // Stable ref for onClose so the lifecycle effect below depends ONLY on `open`.
+  // Without this, callers that pass an inline arrow (e.g. `onClose={() => close()}`)
+  // generate a new function reference on every parent re-render, which retriggers
+  // the focus effect mid-typing and steals keyboard focus from any input inside the
+  // sheet — dismissing the on-screen keyboard on iOS/Android. PASS 22 issue #3.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Body scroll lock + Esc dismiss + focus management. Runs once per open
+  // transition; do NOT add `onClose` to the deps (see ref pattern above).
   useEffect(() => {
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     };
     document.addEventListener("keydown", onKey);
 
@@ -73,7 +84,7 @@ export function BottomSheet({
       document.removeEventListener("keydown", onKey);
       clearTimeout(t);
     };
-  }, [open, onClose]);
+  }, [open]);
 
   // Hard focus trap via leading/trailing sentinels — Tab cycles back
   // into the sheet's focusables; Shift+Tab cycles to the last.

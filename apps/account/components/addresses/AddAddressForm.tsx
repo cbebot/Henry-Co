@@ -112,32 +112,32 @@ export default function AddAddressForm() {
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">{copy.fullName}</label>
-          <input type="text" value={form.full_name} onChange={(e) => update("full_name", e.target.value)} className="acct-input" placeholder={copy.recipientPlaceholder} />
+          <input type="text" name="fullName" autoComplete="name" value={form.full_name} onChange={(e) => update("full_name", e.target.value)} className="acct-input" placeholder={copy.recipientPlaceholder} />
         </div>
       </div>
 
       <div>
         <label className="mb-1.5 block text-sm font-medium">{copy.addressLine1}</label>
-        <input type="text" value={form.address_line1} onChange={(e) => update("address_line1", e.target.value)} className="acct-input" placeholder={copy.streetPlaceholder} required />
+        <input type="text" name="addressLine1" autoComplete="address-line1" value={form.address_line1} onChange={(e) => update("address_line1", e.target.value)} className="acct-input" placeholder={copy.streetPlaceholder} required />
       </div>
 
       <div>
         <label className="mb-1.5 block text-sm font-medium">{copy.addressLine2}</label>
-        <input type="text" value={form.address_line2} onChange={(e) => update("address_line2", e.target.value)} className="acct-input" placeholder={copy.addressLine2Placeholder} />
+        <input type="text" name="addressLine2" autoComplete="address-line2" value={form.address_line2} onChange={(e) => update("address_line2", e.target.value)} className="acct-input" placeholder={copy.addressLine2Placeholder} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
           <label className="mb-1.5 block text-sm font-medium">{copy.city}</label>
-          <input type="text" value={form.city} onChange={(e) => update("city", e.target.value)} className="acct-input" required />
+          <input type="text" name="city" autoComplete="address-level2" value={form.city} onChange={(e) => update("city", e.target.value)} className="acct-input" required />
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">{copy.state}</label>
-          <input type="text" value={form.state} onChange={(e) => update("state", e.target.value)} className="acct-input" required />
+          <input type="text" name="state" autoComplete="address-level1" value={form.state} onChange={(e) => update("state", e.target.value)} className="acct-input" required />
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">{copy.phone}</label>
-          <input type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} className="acct-input" placeholder={copy.phonePlaceholder} />
+          <input type="tel" name="phone" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} className="acct-input" placeholder={copy.phonePlaceholder} />
         </div>
       </div>
 

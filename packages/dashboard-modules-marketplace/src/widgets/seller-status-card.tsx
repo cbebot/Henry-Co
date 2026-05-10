@@ -1,8 +1,20 @@
 import { Panel, Section, ActionButton } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
 import { Store, ArrowRight } from "lucide-react";
+import { getDivisionUrl } from "@henryco/config";
 import { titleCaseStatus } from "../format";
 import type { MarketplaceVendorStatus } from "../data";
+
+/**
+ * PASS 22 issue #1 — vendor surfaces (`/vendor`, `/account/seller-application`,
+ * `/store/<slug>`) live on the marketplace subdomain, not on the account
+ * shell. Treat the seller-status CTAs as cross-domain links so each click
+ * lands on the actual marketplace surface (`marketplace.henrycogroup.com/...`)
+ * instead of a 404 against the account shell.
+ */
+const MARKETPLACE_ORIGIN = getDivisionUrl("marketplace").replace(/\/$/, "");
+const marketplaceUrl = (path: string) =>
+  `${MARKETPLACE_ORIGIN}${path.startsWith("/") ? path : `/${path}`}`;
 
 /**
  * SellerStatusCard — vendor-only widget. Surfaces the viewer's
@@ -27,7 +39,8 @@ export function SellerStatusCard({
           description="Apply to open a store on HenryCo Marketplace."
           action={
             <ActionButton
-              href="/marketplace/account/seller-application/start"
+              href={marketplaceUrl("/account/seller-application/start")}
+              target="_blank"
               tone="primary"
               icon={<ArrowRight size={14} />}
               iconPosition="trailing"
@@ -59,8 +72,8 @@ export function SellerStatusCard({
       : "Awaiting review.";
 
   const ctaHref = vendorStatus.storeIsActive
-    ? "/marketplace/vendor"
-    : "/marketplace/account/seller-application";
+    ? marketplaceUrl("/vendor")
+    : marketplaceUrl("/account/seller-application");
 
   return (
     <Panel tone="raised">
@@ -71,6 +84,7 @@ export function SellerStatusCard({
         action={
           <ActionButton
             href={ctaHref}
+            target="_blank"
             tone="primary"
             icon={<Store size={14} />}
           >
@@ -80,7 +94,9 @@ export function SellerStatusCard({
       >
         {vendorStatus.storeIsActive ? (
           <a
-            href={`/marketplace/store/${vendorStatus.storeSlug}`}
+            href={marketplaceUrl(`/store/${vendorStatus.storeSlug}`)}
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               fontSize: "0.875rem",
               color: `var(${CSS_VARS.accentText})`,

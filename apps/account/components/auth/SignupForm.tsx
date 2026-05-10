@@ -225,6 +225,8 @@ export default function SignupForm() {
           <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.fullNameLabel}</label>
           <input
             type="text"
+            name="fullName"
+            autoComplete="name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             className="acct-input"
@@ -237,6 +239,8 @@ export default function SignupForm() {
           <label className="mb-1.5 block text-sm font-medium">{authCopy.signup.emailLabel}</label>
           <input
             type="email"
+            name="email"
+            inputMode="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="acct-input"
@@ -251,6 +255,7 @@ export default function SignupForm() {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="acct-input pr-10"
@@ -274,6 +279,7 @@ export default function SignupForm() {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
+              name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="acct-input pr-10"
@@ -316,6 +322,9 @@ export default function SignupForm() {
               </span>
               <input
                 type="tel"
+                name="phone"
+                inputMode="tel"
+                autoComplete="tel-national"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
                 className="acct-input rounded-l-none"
