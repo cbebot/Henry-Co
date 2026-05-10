@@ -17,9 +17,9 @@ export default function PageHeader({ title, description, icon: Icon, actions }: 
           </div>
         )}
         <div>
-          <h1 className="acct-display text-xl sm:text-2xl">{title}</h1>
+          <h1 className="hc-h1 acct-display">{title}</h1>
           {description && (
-            <p className="mt-0.5 text-sm text-[var(--acct-muted)]">{description}</p>
+            <p className="hc-body-lg mt-1.5 max-w-[65ch] text-[var(--acct-muted)]">{description}</p>
           )}
         </div>
       </div>

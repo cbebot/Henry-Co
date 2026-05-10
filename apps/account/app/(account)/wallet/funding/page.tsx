@@ -48,24 +48,24 @@ export default async function WalletFundingPage() {
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_22rem]">
         <div className="acct-card overflow-hidden">
           <div className="bg-[linear-gradient(140deg,#0F172A_0%,#21435B_58%,#C9A227_100%)] px-6 py-7 text-white">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-white/70">
+            <p className="hc-label uppercase tracking-[0.18em] text-white/75">
               {t("Wallet balance")}
             </p>
-            <p className="mt-3 text-4xl font-semibold">{formatNaira(data.wallet.balance_kobo)}</p>
-            <p className="mt-2 max-w-xl text-sm leading-7 text-white/72">
+            <p className="hc-display hc-mono mt-3 text-white">{formatNaira(data.wallet.balance_kobo)}</p>
+            <p className="hc-body-lg mt-3 max-w-xl text-white/75">
               {t("Verified balance is ready to spend. Pending funding sits separately until finance clears the transfer.")}
             </p>
           </div>
           <div className="grid gap-3 border-t border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5 sm:grid-cols-2">
             <div className="rounded-[1.4rem] bg-[var(--acct-surface)] p-4">
               <p className="acct-kicker">{t("Verified")}</p>
-              <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
+              <p className="hc-h2 hc-mono mt-2 text-[var(--acct-ink)]">
                 {formatNaira(data.wallet.balance_kobo)}
               </p>
             </div>
             <div className="rounded-[1.4rem] bg-[var(--acct-surface)] p-4">
               <p className="acct-kicker">{t("Pending verification")}</p>
-              <p className="mt-2 text-2xl font-semibold text-[var(--acct-ink)]">
+              <p className="hc-h2 hc-mono mt-2 text-[var(--acct-ink)]">
                 {formatNaira(data.pending_kobo)}
               </p>
             </div>
@@ -79,7 +79,7 @@ export default async function WalletFundingPage() {
             </div>
             <div>
               <p className="acct-kicker">{t("Transfer details")}</p>
-              <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("HenryCo finance account")}</h2>
+              <h2 className="hc-h2 mt-2 text-[var(--acct-ink)]">{t("HenryCo finance account")}</h2>
             </div>
           </div>
           <div className="mt-4 space-y-3">
@@ -122,7 +122,7 @@ export default async function WalletFundingPage() {
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <p className="acct-kicker">{t("Recent funding requests")}</p>
-            <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("Recent requests")}</h2>
+            <h2 className="hc-h2 mt-2 text-[var(--acct-ink)]">{t("Recent requests")}</h2>
           </div>
         </div>
 
@@ -152,8 +152,8 @@ export default async function WalletFundingPage() {
                       <span className="acct-chip acct-chip-orange text-[0.6rem]">{t("Awaiting proof")}</span>
                     )}
                   </div>
-                  <p className="mt-3 text-sm font-semibold text-[var(--acct-ink)]">
-                    {formatNaira(request.amount_kobo)} · {request.reference || request.id}
+                  <p className="hc-body-lg mt-3 font-semibold text-[var(--acct-ink)]">
+                    <span className="hc-mono">{formatNaira(request.amount_kobo)}</span> · {request.reference || request.id}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">
                     {formatSurfaceTemplate(t("Created {date}"), {

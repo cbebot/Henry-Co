@@ -127,7 +127,7 @@ export default async function SecurityPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="acct-kicker">{copy.security.trustProfile}</p>
-              <h2 className="mt-2 text-xl font-semibold text-[var(--acct-ink)]">
+              <h2 className="hc-h2 mt-2 text-[var(--acct-ink)]">
                 {getLocalizedTrustTierLabel(copy, trust.tier)}
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--acct-muted)]">
@@ -138,7 +138,7 @@ export default async function SecurityPage() {
               <p className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-blue)]">
                 {copy.security.trustScore}
               </p>
-              <p className="mt-2 text-3xl font-semibold text-[var(--acct-ink)]">{trust.score}</p>
+              <p className="hc-h1 hc-mono mt-2 text-[var(--acct-ink)]">{trust.score}</p>
             </div>
           </div>
 

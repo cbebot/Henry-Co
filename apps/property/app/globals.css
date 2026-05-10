@@ -52,6 +52,7 @@
   --hc-bg-soft: var(--property-bg-soft);
   --hc-surface: var(--property-surface);
   --hc-surface-strong: var(--property-surface-strong);
+  --hc-surface-elevated: var(--property-surface-strong);
   --hc-paper: var(--property-paper);
   --hc-ink: var(--property-ink);
   --hc-ink-soft: var(--property-ink-soft);
@@ -59,9 +60,14 @@
   --hc-ink-on-accent: #1c120d;
   --hc-line: var(--property-line);
   --hc-line-strong: var(--property-line-strong);
+  --hc-hairline: var(--property-line);
   --hc-accent: var(--property-accent);
   --hc-accent-strong: var(--property-accent-strong);
+  --hc-accent-pressed: #8a4f24;
   --hc-accent-soft: var(--property-accent-soft);
+  --hc-accent-text: #e8b894;
+  --hc-accent-on-surface: #e8b894;
+  --hc-focus-ring: var(--property-accent);
   --hc-shadow: var(--property-shadow);
   --hc-shadow-soft: var(--property-shadow-soft);
 }

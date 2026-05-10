@@ -5,7 +5,7 @@ import {
   EmptyState,
 } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
-import { typeStyle } from "@henryco/dashboard-shell/tokens";
+import { typeStyle, monoStyle } from "@henryco/dashboard-shell/tokens";
 import { ArrowDownLeft, ArrowUpRight, Download, Wallet } from "lucide-react";
 import { formatNaira, formatTransactionLabel, timeAgo } from "../format";
 import type { WalletSnapshot } from "../data";
@@ -136,6 +136,7 @@ export function RecentTransactionsCard({
                 <p
                   style={{
                     ...typeStyle("bodyStrong"),
+                    ...monoStyle(),
                     margin: 0,
                     color: isCredit
                       ? `var(${CSS_VARS.accentText})`

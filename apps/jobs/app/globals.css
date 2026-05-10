@@ -37,6 +37,29 @@
   --jobs-warning-soft: rgba(141, 107, 29, 0.12);
   --jobs-shadow: 0 28px 80px rgba(15, 35, 39, 0.12);
   --jobs-shadow-strong: 0 40px 120px rgba(10, 26, 29, 0.18);
+
+  /* PASS 20 — canonical --hc-* mapping (jobs).
+     Jobs is light-first with a teal-forest soul; brand gold anchors
+     CTA chrome so dashboard-shell primitives stay coherent. */
+  --hc-bg: var(--jobs-bg);
+  --hc-bg-soft: var(--jobs-paper-soft);
+  --hc-surface: var(--jobs-paper);
+  --hc-surface-strong: var(--jobs-paper);
+  --hc-surface-elevated: var(--jobs-paper);
+  --hc-paper: var(--jobs-paper-soft);
+  --hc-ink: var(--jobs-ink);
+  --hc-ink-soft: var(--jobs-muted);
+  --hc-ink-muted: rgba(16, 33, 36, 0.46);
+  --hc-line: var(--jobs-line);
+  --hc-line-strong: rgba(16, 33, 36, 0.18);
+  --hc-hairline: var(--jobs-line);
+  --hc-accent: #C9A227;
+  --hc-accent-strong: #A88718;
+  --hc-accent-pressed: #8A6F00;
+  --hc-accent-soft: rgba(201, 162, 39, 0.10);
+  --hc-accent-text: #8A6F00;
+  --hc-accent-on-surface: #8A6F00;
+  --hc-focus-ring: #C9A227;
 }
 
 .dark {

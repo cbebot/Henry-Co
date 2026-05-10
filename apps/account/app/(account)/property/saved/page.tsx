@@ -40,14 +40,14 @@ export default async function SavedPropertiesPage() {
       <section className="grid gap-4 md:grid-cols-3">
         <div className="acct-card p-5">
           <p className="acct-kicker">Saved now</p>
-          <p className="mt-3 text-3xl font-semibold text-[var(--acct-ink)]">{properties.length}</p>
+          <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{properties.length}</p>
           <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
             Properties you&apos;ve saved to your shortlist.
           </p>
         </div>
         <div className="acct-card p-5">
           <p className="acct-kicker">HenryCo managed</p>
-          <p className="mt-3 text-3xl font-semibold text-[var(--acct-ink)]">{managedCount}</p>
+          <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{managedCount}</p>
           <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
             Listings with clearer operational support and more accountable follow-through.
           </p>

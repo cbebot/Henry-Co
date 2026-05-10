@@ -13,6 +13,30 @@
   --logistics-mist: #a49486;
   --logistics-panel: linear-gradient(180deg, rgba(28, 16, 15, 0.88) 0%, rgba(16, 11, 13, 0.82) 100%);
   --logistics-shadow: 0 30px 110px rgba(0, 0, 0, 0.38);
+
+  /* PASS 20 — canonical --hc-* mapping so dashboard-shell primitives
+     adopt the logistics division's brand language (warm bronze on
+     near-black). Logistics is dark-only by design. */
+  --hc-bg: var(--logistics-bg);
+  --hc-bg-soft: #120d12;
+  --hc-surface: rgba(28, 16, 15, 0.88);
+  --hc-surface-strong: rgba(16, 11, 13, 0.92);
+  --hc-surface-elevated: rgba(28, 16, 15, 0.88);
+  --hc-paper: rgba(16, 11, 13, 0.82);
+  --hc-ink: var(--logistics-ink);
+  --hc-ink-soft: var(--logistics-muted);
+  --hc-ink-muted: rgba(241, 224, 213, 0.55);
+  --hc-line: var(--logistics-line);
+  --hc-line-strong: var(--logistics-line-strong);
+  --hc-hairline: var(--logistics-line);
+  --hc-accent: var(--logistics-accent);
+  --hc-accent-strong: #e88b54;
+  --hc-accent-pressed: #b35e26;
+  --hc-accent-soft: rgba(215, 117, 57, 0.16);
+  --hc-accent-text: #f3a877;
+  --hc-accent-on-surface: #f3a877;
+  --hc-ink-on-accent: #1a0f08;
+  --hc-focus-ring: var(--logistics-accent);
 }
 
 * {

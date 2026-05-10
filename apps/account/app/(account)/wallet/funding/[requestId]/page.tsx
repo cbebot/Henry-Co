@@ -84,11 +84,11 @@ export default async function WalletFundingRequestPage({ params }: Props) {
                   </span>
                 ) : null}
               </div>
-              <p className="mt-4 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/72">
+              <p className="hc-label uppercase tracking-[0.18em] mt-4 text-white/75">
                 {t("Funding reference")}
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-semibold">{request.reference || request.id}</h1>
+                <h1 className="hc-h1 hc-mono">{request.reference || request.id}</h1>
                 {request.reference || request.id ? (
                   <CopyValueButton
                     value={String(request.reference || request.id)}
@@ -97,7 +97,7 @@ export default async function WalletFundingRequestPage({ params }: Props) {
                   />
                 ) : null}
               </div>
-              <p className="mt-3 text-sm leading-7 text-white/75">
+              <p className="hc-body-lg mt-3 text-white/75">
                 {formatSurfaceTemplate(t("{amount} created on {date}."), {
                   amount: formatNaira(request.amount_kobo),
                   date: formatDateTime(request.created_at, locale),

@@ -356,24 +356,24 @@ export default async function LearnPage({
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <div className="acct-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.activeCourses}</p>
-          <p className="mt-3 text-3xl font-semibold text-[var(--acct-ink)]">{summary.metrics.activeCourses}</p>
+          <p className="hc-label uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.activeCourses}</p>
+          <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{summary.metrics.activeCourses}</p>
         </div>
         <div className="acct-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.completed}</p>
-          <p className="mt-3 text-3xl font-semibold text-[var(--acct-ink)]">{summary.metrics.completedCourses}</p>
+          <p className="hc-label uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.completed}</p>
+          <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{summary.metrics.completedCourses}</p>
         </div>
         <div className="acct-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.certificates}</p>
-          <p className="mt-3 text-3xl font-semibold text-[var(--acct-ink)]">{summary.metrics.certificates}</p>
+          <p className="hc-label uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.certificates}</p>
+          <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{summary.metrics.certificates}</p>
         </div>
         <div className="acct-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.assignedLearning}</p>
-          <p className="mt-3 text-3xl font-semibold text-[var(--acct-ink)]">{summary.metrics.assignedLearning}</p>
+          <p className="hc-label uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.assignedLearning}</p>
+          <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{summary.metrics.assignedLearning}</p>
         </div>
         <div className="acct-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.savedCourses}</p>
-          <p className="mt-3 text-3xl font-semibold text-[var(--acct-ink)]">{summary.metrics.savedCourses}</p>
+          <p className="hc-label uppercase tracking-[0.18em] text-[var(--acct-muted)]">{copy.metrics.savedCourses}</p>
+          <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{summary.metrics.savedCourses}</p>
         </div>
       </div>
 
