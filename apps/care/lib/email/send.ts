@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDivisionConfig } from "@henryco/config";
+import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
 import { resolveRecipientLocale, sendTransactionalEmail } from "@henryco/email";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getCareSettings } from "@/lib/care-data";
@@ -176,7 +176,7 @@ function buildFromAddress(settings: Awaited<ReturnType<typeof getCareSettings>>)
     settings.notification_reply_to_email ||
     settings.support_email ||
     "";
-  const fallbackEmail = "noreply@henrycogroup.com";
+  const fallbackEmail = BRAND_EMAILS.noreply;
   const fromEmail = extractEmailAddress(rawFrom) || fallbackEmail;
   const preformatted = sanitizeHeaderValue(rawFrom);
   const displayName = sanitizeHeaderValue(settings.notification_sender_name || care.name) || care.name;

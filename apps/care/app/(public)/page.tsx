@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   Star,
 } from "lucide-react";
-import { getDivisionConfig } from "@henryco/config";
+import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
 import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
 import {
   HenryCoHeroCard,
@@ -357,7 +357,7 @@ export default async function CareHomePage() {
                     key: "desk",
                     icon: <PhoneCall className="h-4 w-4" />,
                     label: t("Talk to the desk"),
-                    value: supportPhone || supportEmail || "care@henrycogroup.com",
+                    value: supportPhone || supportEmail || BRAND_EMAILS.care,
                   },
                   {
                     key: "recurring",

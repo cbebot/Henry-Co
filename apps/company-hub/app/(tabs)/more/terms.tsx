@@ -1,6 +1,7 @@
 import { ScrollView, Text, View } from "react-native";
 
 import { useHubAppearance } from "@/context/HubAppearanceContext";
+import { BRAND_EMAILS } from "@/lib/brand-emails";
 
 function Section({
   title,
@@ -151,7 +152,7 @@ export default function TermsScreen() {
         <Section title="9. Contact">
           <Body>
             For questions regarding these Terms, please contact us at
-            hello@henrycogroup.com or visit henrycogroup.com.
+            {` ${BRAND_EMAILS.hello} `}or visit henrycogroup.com.
           </Body>
         </Section>
       </View>

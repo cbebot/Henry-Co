@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, KeyRound, LifeBuoy, Mail, ShieldCheck } from "lucide-react";
-import { getDivisionConfig } from "@henryco/config";
+import { BRAND_EMAIL_PLACEHOLDERS, getDivisionConfig } from "@henryco/config";
 import PendingSubmitButton from "@/components/forms/PendingSubmitButton";
 import { getAuthenticatedProfile } from "@/lib/auth/server";
 import { STAFF_LOGIN_ROUTE } from "@/lib/auth/routes";
@@ -184,7 +184,7 @@ export default async function StaffRecoveryPage({
                   type="email"
                   required
                   autoComplete="email"
-                  placeholder="staff@henrycogroup.com"
+                  placeholder={BRAND_EMAIL_PLACEHOLDERS.staff}
                   className="h-14 rounded-2xl border border-black/10 bg-white px-4 text-base font-medium text-zinc-900 shadow-sm outline-none transition focus:border-[color:var(--accent)]/50 dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white md:text-sm"
                 />
               </label>

@@ -1,3 +1,5 @@
+import { BRAND_EMAILS } from "@henryco/config";
+
 import type {
   EmailDispatchResult,
   ResolvedSender,
@@ -17,7 +19,7 @@ export function getResendSender(input: SendTransactionalEmailInput): ResolvedSen
   const envEmail = angle ? angle[2].trim() : envFromRaw;
   const envName = angle ? angle[1].replace(/^["']|["']$/g, "").trim() : "";
 
-  const email = input.from?.trim() || envEmail || "noreply@henrycogroup.com";
+  const email = input.from?.trim() || envEmail || BRAND_EMAILS.noreply;
   const name = input.fromName?.trim() || envName || "HenryCo";
   return { email, name };
 }

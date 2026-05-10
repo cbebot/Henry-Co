@@ -14,6 +14,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
+import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
 import ConfirmButton from "@/components/feedback/ConfirmButton";
 import PendingSubmitButton from "@/components/forms/PendingSubmitButton";
 
@@ -333,7 +334,7 @@ export default async function OwnerStaffPage({
                   name="email"
                   type="email"
                   required
-                  placeholder="staff@henrycogroup.com"
+                  placeholder={BRAND_EMAIL_PLACEHOLDERS.staff}
                   className="h-12 rounded-2xl border border-black/10 bg-white px-4 text-sm font-medium text-zinc-900 shadow-sm outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
                 />
               </label>

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { BRAND_EMAILS } from "@henryco/config";
 import {
   InvoiceDocument,
   KycSummaryDocument,
@@ -140,7 +141,7 @@ export async function GET(request: NextRequest, ctx: RouteParams) {
           addressLines: ["Plot 14B, Admiralty Way", "Lekki Phase 1, Lagos"],
           rcNumber: null,
           vatNumber: null,
-          contactEmail: "billing@henrycogroup.com",
+          contactEmail: BRAND_EMAILS.billing,
           contactPhone: null,
         },
       });

@@ -6,7 +6,7 @@ import { getStudioCatalog } from "@/lib/studio/catalog";
 const studioDivision = getDivisionConfig("studio");
 
 /** Reject support emails that belong to other divisions. The studio page
- * was rendering `care@henrycogroup.com` because the shared settings table
+ * was rendering BRAND_EMAILS.care because the shared settings table
  * is owned by Care and was leaking into Studio's fallback chain. */
 function resolveStudioContactEmail(value: string | null) {
   const trimmed = String(value || "").trim().toLowerCase();

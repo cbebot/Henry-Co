@@ -2,6 +2,7 @@
 // All templates return plain HTML strings for Resend
 
 import type { AppLocale } from "@henryco/i18n";
+import { BRAND_EMAILS } from "@henryco/config";
 import {
   HENRYCO_EMAIL_TOKENS,
   renderHenryCoEmailFooter,
@@ -244,7 +245,7 @@ function layout(content: string, locale: AppLocale = "en") {
   const brandHeader = renderHenryCoEmailHeader("auth", "dark");
   const brandFooter = renderHenryCoEmailFooter({
     purpose: "auth",
-    supportEmail: "accounts@henrycogroup.com",
+    supportEmail: BRAND_EMAILS.accounts,
     preferencesUrl: "https://account.henrycogroup.com/settings#email-preferences",
     reasonLine: copy.footerReason,
   });

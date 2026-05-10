@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
 import type {
   NewsletterCampaignClass,
   NewsletterCampaignContent,
@@ -657,7 +658,7 @@ export default function NewsletterDraftEditor(props: Props) {
               type="email"
               value={testEmail}
               onChange={(e) => setTestEmail(e.target.value)}
-              placeholder="you@henrycogroup.com"
+              placeholder={BRAND_EMAIL_PLACEHOLDERS.user}
               className="flex-1 rounded-md border border-[var(--staff-line)] bg-[var(--staff-surface)] px-3 py-2 text-sm"
             />
             <button

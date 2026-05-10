@@ -1,3 +1,5 @@
+import { BRAND_EMAILS } from "@henryco/config";
+
 import {
   NEWSLETTER_DIVISIONS,
   NEWSLETTER_SUBSCRIBER_STATUSES,
@@ -79,7 +81,7 @@ export function runNewsletterSanity(): SanityCheck[] {
 
   checks.push({
     name: "email.role_detected",
-    ok: isRoleEmail("noreply@henrycogroup.com"),
+    ok: isRoleEmail(BRAND_EMAILS.noreply),
   });
 
   checks.push({

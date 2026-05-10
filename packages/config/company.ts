@@ -1,3 +1,5 @@
+import { BRAND_EMAILS } from "./brand-emails";
+
 export type DivisionKey =
   | "hub"
   | "care"
@@ -68,7 +70,7 @@ export const COMPANY = {
       "A premium group of service businesses built on clarity, trust, and operational excellence.",
     promise:
       "Every Henry & Co. division should feel premium, dependable, and beautifully structured.",
-    supportEmail: "hello@henrycogroup.com",
+    supportEmail: BRAND_EMAILS.hello,
     supportPhone: GROUP_SUPPORT_PHONE,
   },
 
@@ -87,7 +89,7 @@ export const COMPANY = {
       accentStrong: "#F2D77A",
       accentText: "#8A6F00",
       dark: "#05070D",
-      supportEmail: "hello@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.hello,
       supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Directory", href: "/#directory" },
@@ -111,7 +113,7 @@ export const COMPANY = {
       accentStrong: "#E8EBFF",
       accentText: "#4F5BD0",
       dark: "#09112B",
-      supportEmail: "care@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.care,
       supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Home", href: "/" },
@@ -139,7 +141,7 @@ export const COMPANY = {
       accentStrong: "#F2D77A",
       accentText: "#8A6F00",
       dark: "#07111F",
-      supportEmail: "building@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.building,
       supportPhone: "+2349133957084",
       publicNav: [
         { label: "Home", href: "/" },
@@ -163,7 +165,7 @@ export const COMPANY = {
       accentStrong: "#F2D77A",
       accentText: "#8A6F00",
       dark: "#07111F",
-      supportEmail: "hotel@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.hotel,
       supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Home", href: "/" },
@@ -188,7 +190,7 @@ export const COMPANY = {
       accentStrong: "#F7E8CA",
       accentText: "#7E5E1F",
       dark: "#18120C",
-      supportEmail: "marketplace@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.marketplace,
       supportPhone: "+2349133957084",
       publicNav: [
         { label: "Home", href: "/" },
@@ -215,7 +217,7 @@ export const COMPANY = {
       accentStrong: "#F8DDCB",
       accentText: "#7A4924",
       dark: "#130B08",
-      supportEmail: "property@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.property,
       supportPhone: "+2349133957084",
       publicNav: [
         { label: "Home", href: "/" },
@@ -241,7 +243,7 @@ export const COMPANY = {
       accentStrong: "#FFE4D3",
       accentText: "#9D4F1F",
       dark: "#120B08",
-      supportEmail: "logistics@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.logistics,
       supportPhone: "+2349133957084",
       publicNav: [
         { label: "Home", href: "/" },
@@ -270,7 +272,7 @@ export const COMPANY = {
       accentStrong: "#D3FBFC",
       accentText: "#1F7375",
       dark: "#081219",
-      supportEmail: "studio@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.studio,
       supportPhone: "+2349133957084",
       publicNav: [
         { label: "Home", href: "/" },
@@ -300,7 +302,7 @@ export const COMPANY = {
       accentStrong: "#D7F4F3",
       accentText: "#0E7C86",
       dark: "#071418",
-      supportEmail: "jobs@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.jobs,
       supportPhone: "+2349133957084",
       publicNav: [
         { label: "Find jobs", href: "/jobs" },
@@ -327,7 +329,7 @@ export const COMPANY = {
       accentStrong: "#D8F4EB",
       accentText: "#2E6E5F",
       dark: "#081414",
-      supportEmail: "learn@henrycogroup.com",
+      supportEmail: BRAND_EMAILS.learn,
       supportPhone: "+2349133957084",
       publicNav: [
         { label: "Courses", href: "/courses" },
