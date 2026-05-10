@@ -1,4 +1,10 @@
 export { resolveLocaleOrder } from "./resolve-locale";
+export {
+  buildLocaleSeoMetadata,
+  getHtmlLangAttribute,
+  type LocaleSeoInput,
+  type LocaleSeoMetadata,
+} from "./seo-metadata";
 export { buildLocaleCookieOptions, localeCookieName } from "./cookie";
 export { getHubHomeCopy, getFaqFallbackForLocale, type HubHomeCopy } from "./hub-home-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";

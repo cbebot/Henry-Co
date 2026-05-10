@@ -15,14 +15,21 @@ import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { getHubPublicLocale, getHubLocaleSuggestion } from "@/lib/locale-server";
 import { SeoJsonLd } from "./components/SeoJsonLd";
 
-export const metadata: Metadata = {
-  ...createDivisionMetadata("hub", {
-    title: "Henry & Co. Company Hub",
-    description: COMPANY.group.mission,
-    path: "/",
-  }),
-  verification: getVerificationMeta("hub"),
-};
+// PASS 18C — generateMetadata so hreflang + og:locale reflect the active
+// locale on every request. createDivisionMetadata emits the alternate
+// language map and OpenGraph locale fields when `locale` is supplied.
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getHubPublicLocale();
+  return {
+    ...createDivisionMetadata("hub", {
+      title: "Henry & Co. Company Hub",
+      description: COMPANY.group.mission,
+      path: "/",
+      locale: lang,
+    }),
+    verification: getVerificationMeta("hub"),
+  };
+}
 
 export default async function RootLayout({
   children,

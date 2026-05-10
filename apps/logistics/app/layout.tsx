@@ -24,15 +24,20 @@ const manrope = Manrope({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  ...createDivisionMetadata("logistics", {
-    title: `${logistics.name} | Henry & Co.`,
-    description: logistics.description,
-    openGraphDescription: logistics.tagline,
-    path: "/",
-  }),
-  verification: getVerificationMeta("logistics"),
-};
+// PASS 18C — emit hreflang + og:locale per request.
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  return {
+    ...createDivisionMetadata("logistics", {
+      title: `${logistics.name} | Henry & Co.`,
+      description: logistics.description,
+      openGraphDescription: logistics.tagline,
+      path: "/",
+      locale,
+    }),
+    verification: getVerificationMeta("logistics"),
+  };
+}
 
 export default async function RootLayout({
   children,

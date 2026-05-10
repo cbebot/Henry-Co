@@ -26,15 +26,20 @@ const display = Space_Grotesk({
 
 const studio = getDivisionConfig("studio");
 
-export const metadata: Metadata = {
-  ...createDivisionMetadata("studio", {
-    title: studio.name,
-    description: studio.description,
-    openGraphDescription: studio.tagline,
-    path: "/",
-  }),
-  verification: getVerificationMeta("studio"),
-};
+// PASS 18C — emit hreflang + og:locale per request.
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getStudioPublicLocale();
+  return {
+    ...createDivisionMetadata("studio", {
+      title: studio.name,
+      description: studio.description,
+      openGraphDescription: studio.tagline,
+      path: "/",
+      locale,
+    }),
+    verification: getVerificationMeta("studio"),
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getStudioPublicLocale();

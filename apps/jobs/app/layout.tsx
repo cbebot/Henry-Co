@@ -28,12 +28,15 @@ export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   const jobs = getDivisionConfig("jobs");
+  // PASS 18C — emit hreflang + og:locale.
+  const locale = await getJobsPublicLocale();
   return {
     ...createDivisionMetadata("jobs", {
       title: jobs.name,
       description: jobs.description,
       openGraphDescription: jobs.tagline,
       path: "/",
+      locale,
     }),
     verification: getVerificationMeta("jobs"),
   };

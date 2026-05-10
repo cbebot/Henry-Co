@@ -3,6 +3,7 @@ import {
   HENRYCO_EMAIL_TOKENS,
   renderHenryCoEmailFooter,
   renderHenryCoEmailHeader,
+  type LocalizableTranslator,
 } from "@henryco/email";
 
 export type MarketplaceTemplateKey =
@@ -68,7 +69,7 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#039;");
 }
 
-export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput) {
+export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput, locale: string = "en") {
   const marketplace = getDivisionConfig("marketplace");
   const marketplaceUrl = getDivisionUrl("marketplace");
   const ctaHref = input.ctaHref || marketplaceUrl;
@@ -89,9 +90,11 @@ export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput) 
     supportEmail: marketplace.supportEmail,
     reasonLine: `This is a HenryCo Marketplace transactional message. Support: ${marketplace.supportEmail} · ${marketplace.supportPhone}`,
   });
+  const isRtl = locale === "ar";
+  const dir = isRtl ? "rtl" : "ltr";
 
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="${locale}" dir="${dir}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -183,4 +186,58 @@ export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput) 
     text,
     templateKey: input.templateKey,
   };
+}
+
+// PASS 18C — locale-aware variants.
+// `localizeMarketplaceTemplateInput` returns a translated copy of the input.
+// Only the user-visible UI text fields are translated. Template key, CTA
+// href, and the embedded brand short-name in `subject` (added downstream by
+// `renderMarketplaceEmailTemplate`) stay untouched.
+export async function localizeMarketplaceTemplateInput(
+  input: MarketplaceTemplateInput,
+  locale: string,
+  translator: LocalizableTranslator,
+): Promise<MarketplaceTemplateInput> {
+  if (!locale || locale === "en") return input;
+
+  const bullets = input.bullets ?? [];
+  const inputs: string[] = [
+    input.preview || "",
+    input.eyebrow,
+    input.headline,
+    input.summary,
+    input.ctaLabel || "",
+    input.secondaryLine || "",
+    ...bullets,
+  ];
+
+  let translated: string[];
+  try {
+    translated = await translator(inputs, locale);
+    if (!Array.isArray(translated) || translated.length !== inputs.length) {
+      return input;
+    }
+  } catch {
+    return input;
+  }
+
+  return {
+    ...input,
+    preview: input.preview ? (translated[0] || input.preview) : input.preview,
+    eyebrow: translated[1] || input.eyebrow,
+    headline: translated[2] || input.headline,
+    summary: translated[3] || input.summary,
+    ctaLabel: input.ctaLabel ? (translated[4] || input.ctaLabel) : input.ctaLabel,
+    secondaryLine: input.secondaryLine ? (translated[5] || input.secondaryLine) : input.secondaryLine,
+    bullets: bullets.length ? bullets.map((b, i) => translated[6 + i] || b) : input.bullets,
+  };
+}
+
+export async function renderLocalizedMarketplaceEmailTemplate(
+  input: MarketplaceTemplateInput,
+  locale: string,
+  translator: LocalizableTranslator,
+) {
+  const localizedInput = await localizeMarketplaceTemplateInput(input, locale, translator);
+  return renderMarketplaceEmailTemplate(localizedInput, locale);
 }

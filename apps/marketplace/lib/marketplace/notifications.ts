@@ -1,9 +1,10 @@
 import "server-only";
 
 import { getDivisionConfig } from "@henryco/config";
-import { sendTransactionalEmail } from "@henryco/email";
+import { resolveRecipientLocale, sendTransactionalEmail } from "@henryco/email";
 import { normalizeEmail } from "@/lib/env";
-import { renderMarketplaceEmailTemplate, type MarketplaceTemplateInput, type MarketplaceTemplateKey } from "@/lib/email/marketplace-templates";
+import { autoTranslateMany } from "@/lib/i18n/auto-translate";
+import { renderLocalizedMarketplaceEmailTemplate, type MarketplaceTemplateInput, type MarketplaceTemplateKey } from "@/lib/email/marketplace-templates";
 import { syncMarketplaceAccountProjection } from "@/lib/marketplace/projections";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -996,7 +997,17 @@ async function performEmailDelivery(
     return result;
   }
 
-  const rendered = renderMarketplaceEmailTemplate(template);
+  // PASS 18C: render in recipient's preferred locale. Lookup is best-effort
+  // and falls back to "en" on any error so dispatch keeps working.
+  const recipientLocale = await resolveRecipientLocale(createAdminSupabase() as never, {
+    userId,
+    email,
+  });
+  const rendered = await renderLocalizedMarketplaceEmailTemplate(
+    template,
+    recipientLocale,
+    autoTranslateMany,
+  );
 
   const dispatch = await sendTransactionalEmail({
     to: email,

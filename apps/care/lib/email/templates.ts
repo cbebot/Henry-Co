@@ -356,7 +356,7 @@ function renderText(layout: EmailLayout, settings: CareSettingsRecord) {
   return lines.filter(Boolean).join("\n");
 }
 
-function renderHtml(layout: EmailLayout, settings: CareSettingsRecord) {
+function renderHtml(layout: EmailLayout, settings: CareSettingsRecord, locale: string = "en") {
   const supportLine = [settings.support_email, settings.support_phone].filter(Boolean).join(" • ");
   const t = HENRYCO_EMAIL_TOKENS;
   const brandHeader = renderHenryCoEmailHeader("care", "dark");
@@ -367,10 +367,12 @@ function renderHtml(layout: EmailLayout, settings: CareSettingsRecord) {
       ? `This is a HenryCo Care transactional message. ${supportLine}`
       : undefined,
   });
+  const isRtl = locale === "ar";
+  const dir = isRtl ? "rtl" : "ltr";
 
   return `
     <!doctype html>
-    <html lang="en">
+    <html lang="${locale}" dir="${dir}">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -863,6 +865,118 @@ export function renderCareEmailTemplate(
     subject: layout.subject,
     templateKey: layout.templateKey,
     html: renderHtml(layout, settings),
+    text: renderText(layout, settings),
+  };
+}
+
+// PASS 18C — locale-aware variant.
+// `localizeCareEmailLayout` takes the structured English layout and returns a
+// locale-translated copy. Only UI text is translated — dynamic data fields
+// (highlightValue, section.value, action.href) are preserved verbatim. Subject
+// is split on the " • " brand separator so the data half (tracking code,
+// month label, etc.) stays untouched.
+export type CareEmailTranslator = (
+  strings: string[],
+  locale: string,
+) => Promise<string[]>;
+
+export async function localizeCareEmailLayout(
+  layout: EmailLayout,
+  locale: string,
+  translator: CareEmailTranslator,
+): Promise<EmailLayout> {
+  if (!locale || locale === "en") return layout;
+
+  const sections = layout.sections ?? [];
+  const lists = layout.lists ?? [];
+  const closing = layout.closing ?? [];
+
+  // Subject: split on first " • " — translate the prefix only. Data half stays.
+  const subjectSeparator = " • ";
+  const subjectIdx = layout.subject.indexOf(subjectSeparator);
+  const subjectPrefix = subjectIdx >= 0 ? layout.subject.slice(0, subjectIdx) : layout.subject;
+  const subjectSuffix = subjectIdx >= 0 ? layout.subject.slice(subjectIdx) : "";
+
+  // Preview: split on first ". " (sentence boundary). If no boundary, translate whole.
+  // Most previews are single sentences with no embedded data, so default to whole-string.
+
+  const inputs: string[] = [];
+  inputs.push(subjectPrefix); // 0
+  inputs.push(layout.preview); // 1
+  inputs.push(layout.eyebrow); // 2
+  inputs.push(layout.title); // 3
+  inputs.push(layout.intro); // 4
+  inputs.push(layout.highlightLabel || ""); // 5
+  for (const s of sections) inputs.push(s.label);
+  for (const l of lists) {
+    inputs.push(l.title);
+    for (const item of l.items) inputs.push(item);
+  }
+  if (layout.primaryAction) inputs.push(layout.primaryAction.label);
+  if (layout.secondaryAction) inputs.push(layout.secondaryAction.label);
+  for (const c of closing) inputs.push(c);
+
+  let translated: string[];
+  try {
+    translated = await translator(inputs, locale);
+    if (!Array.isArray(translated) || translated.length !== inputs.length) {
+      return layout;
+    }
+  } catch {
+    return layout;
+  }
+
+  let cursor = 6;
+  const localizedSections = sections.map((s) => ({
+    label: translated[cursor++] || s.label,
+    value: s.value,
+  }));
+  const localizedLists = lists.map((l) => {
+    const title = translated[cursor++] || l.title;
+    const items = l.items.map(() => translated[cursor++] || "");
+    // Replace any empty items with originals (safety net).
+    return {
+      title,
+      items: items.map((v, i) => v || l.items[i]),
+    };
+  });
+  const localizedPrimary = layout.primaryAction
+    ? { ...layout.primaryAction, label: translated[cursor++] || layout.primaryAction.label }
+    : layout.primaryAction;
+  const localizedSecondary = layout.secondaryAction
+    ? { ...layout.secondaryAction, label: translated[cursor++] || layout.secondaryAction.label }
+    : layout.secondaryAction;
+  const localizedClosing = closing.map(() => translated[cursor++] || "").map((v, i) => v || closing[i]);
+
+  return {
+    ...layout,
+    subject: (translated[0] || subjectPrefix) + subjectSuffix,
+    preview: translated[1] || layout.preview,
+    eyebrow: translated[2] || layout.eyebrow,
+    title: translated[3] || layout.title,
+    intro: translated[4] || layout.intro,
+    highlightLabel: layout.highlightLabel ? (translated[5] || layout.highlightLabel) : layout.highlightLabel,
+    sections: localizedSections,
+    lists: localizedLists,
+    primaryAction: localizedPrimary,
+    secondaryAction: localizedSecondary,
+    closing: localizedClosing,
+  };
+}
+
+export async function renderLocalizedCareEmailTemplate(
+  template: CareEmailTemplate,
+  settings: CareSettingsRecord,
+  locale: string,
+  translator: CareEmailTranslator,
+): Promise<RenderedCareEmail> {
+  const baseLayout = buildLayout(template);
+  const layout = await localizeCareEmailLayout(baseLayout, locale, translator);
+
+  return {
+    subject: layout.subject,
+    templateKey: layout.templateKey,
+    html: renderHtml(layout, settings, locale),
     text: renderText(layout, settings),
   };
 }

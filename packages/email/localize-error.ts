@@ -5,7 +5,14 @@
  *
  * Staff/owner contexts can opt into the raw string for triage by passing
  * `audience: "staff"`.
+ *
+ * PASS 18C — `localizeEmailErrorAsync` accepts an optional translator and
+ * recipient locale so the user-safe phrase renders in their language. The
+ * sync `localizeEmailError` is preserved for callers that don't have an
+ * async context (legacy server actions, error boundaries).
  */
+
+import type { LocalizableTranslator } from "./localize-layout";
 
 export type ErrorAudience = "user" | "staff";
 
@@ -85,4 +92,24 @@ export function isOperatorOnlyEmailError(rawError: string | null | undefined): b
     QUOTA_PATTERNS.some((re) => re.test(safe)) ||
     AUTH_PATTERNS.some((re) => re.test(safe))
   );
+}
+
+/**
+ * PASS 18C — locale-aware variant. Returns the same user-safe phrase as
+ * `localizeEmailError("user")` translated into the recipient's locale via
+ * the provided translator. Falls back to English on any translator failure.
+ */
+export async function localizeEmailErrorAsync(
+  rawError: string | null | undefined,
+  locale: string,
+  translator: LocalizableTranslator | null,
+): Promise<string> {
+  const englishMessage = localizeEmailError(rawError, "user");
+  if (!locale || locale === "en" || !translator) return englishMessage;
+  try {
+    const out = await translator([englishMessage], locale);
+    return Array.isArray(out) && typeof out[0] === "string" && out[0].trim() ? out[0] : englishMessage;
+  } catch {
+    return englishMessage;
+  }
 }

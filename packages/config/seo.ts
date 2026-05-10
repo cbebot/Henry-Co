@@ -38,7 +38,58 @@ type HenryCoDivisionMetadataOptions = {
   images?: HenryCoSocialImage[];
   icon?: string | null;
   noIndex?: boolean;
+  /**
+   * PASS 18C — active locale for the request. When provided, emits
+   * `alternates.languages` (hreflang) for every public-selector locale and
+   * `openGraph.locale` / `openGraph.alternateLocale` so crawlers can
+   * discover the localized variants of the page. The HenryCo locale router
+   * resolves locale via cookie/header, so all language alternates point at
+   * the same canonical URL — Google treats this as valid when paired with
+   * `Vary: Accept-Language` (Next.js sets this automatically when middleware
+   * varies on locale headers).
+   */
+  locale?: string | null;
 };
+
+/**
+ * Public-selector locales mirror `@henryco/i18n.PUBLIC_SELECTOR_LOCALES`.
+ * Inlined here so packages/config stays free of an i18n dependency.
+ */
+const SEO_PUBLIC_LOCALES = ["en", "fr", "es", "pt", "ar", "de", "it"] as const;
+type SeoPublicLocale = (typeof SEO_PUBLIC_LOCALES)[number];
+
+/** Map locale code → OpenGraph BCP-47 (underscored) per OG spec. */
+const SEO_OPEN_GRAPH_LOCALE: Record<string, string> = {
+  en: "en_US",
+  fr: "fr_FR",
+  es: "es_ES",
+  pt: "pt_PT",
+  ar: "ar_EG",
+  de: "de_DE",
+  it: "it_IT",
+  zh: "zh_CN",
+  hi: "hi_IN",
+  ig: "ig_NG",
+  yo: "yo_NG",
+  ha: "ha_NG",
+};
+
+function normalizeSeoLocale(value?: string | null): SeoPublicLocale {
+  const trimmed = String(value || "").trim().toLowerCase();
+  const base = trimmed.split("-")[0];
+  return (SEO_PUBLIC_LOCALES as readonly string[]).includes(base)
+    ? (base as SeoPublicLocale)
+    : "en";
+}
+
+function buildLocaleAlternates(canonicalUrl: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const code of SEO_PUBLIC_LOCALES) {
+    out[code] = canonicalUrl;
+  }
+  out["x-default"] = canonicalUrl;
+  return out;
+}
 
 type DivisionSeoConfig = Pick<DivisionConfig, "name" | "tagline" | "description">;
 
@@ -133,6 +184,23 @@ export function createDivisionMetadata(
   const canonical = options.path ? getAbsoluteDivisionUrl(key, options.path) : undefined;
   const icon = options.icon?.trim() || undefined;
 
+  // PASS 18C — locale SEO. If a locale is supplied AND we have a canonical
+  // URL, emit hreflang `alternates.languages` for every public-selector
+  // locale plus `x-default`, and the OpenGraph locale + alternateLocale set.
+  const activeLocale = normalizeSeoLocale(options.locale);
+  const includeLocaleAlternates = Boolean(options.locale && canonical);
+  const languagesMap = includeLocaleAlternates
+    ? buildLocaleAlternates(canonical!)
+    : undefined;
+  const openGraphLocaleValue = options.locale
+    ? SEO_OPEN_GRAPH_LOCALE[activeLocale] || SEO_OPEN_GRAPH_LOCALE.en
+    : undefined;
+  const openGraphAlternateLocaleValue = includeLocaleAlternates
+    ? SEO_PUBLIC_LOCALES
+        .filter((l) => l !== activeLocale)
+        .map((l) => SEO_OPEN_GRAPH_LOCALE[l] || SEO_OPEN_GRAPH_LOCALE.en)
+    : undefined;
+
   return {
     title,
     description,
@@ -140,6 +208,7 @@ export function createDivisionMetadata(
     alternates: canonical
       ? {
           canonical,
+          ...(languagesMap ? { languages: languagesMap } : {}),
         }
       : undefined,
     openGraph: {
@@ -149,6 +218,8 @@ export function createDivisionMetadata(
       type: options.type || "website",
       url: canonical,
       images: options.images?.length ? options.images : undefined,
+      ...(openGraphLocaleValue ? { locale: openGraphLocaleValue } : {}),
+      ...(openGraphAlternateLocaleValue ? { alternateLocale: openGraphAlternateLocaleValue } : {}),
     },
     twitter: {
       card: options.images?.length ? "summary_large_image" : "summary",

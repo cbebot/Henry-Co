@@ -1,12 +1,13 @@
 import "server-only";
 
 import { getDivisionConfig } from "@henryco/config";
-import { sendTransactionalEmail } from "@henryco/email";
+import { resolveRecipientLocale, sendTransactionalEmail } from "@henryco/email";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getCareSettings } from "@/lib/care-data";
 import { buildCarePublicUrl } from "@/lib/care-links";
+import { autoTranslateMany } from "@/lib/i18n/auto-translate";
 import {
-  renderCareEmailTemplate,
+  renderLocalizedCareEmailTemplate,
   type AdminNotificationEmailProps,
   type BookingConfirmationEmailProps,
   type BookingStatusUpdateEmailProps,
@@ -45,6 +46,20 @@ type SendCareEmailInput = {
   paymentRequestId?: string | null;
   dedupeKey?: string | null;
   replyTo?: string | null;
+  /**
+   * Recipient locale override. When omitted, `sendCareEmail` looks up the
+   * recipient's preferred language from `customer_profiles.language` via the
+   * recipient email and falls back to "en" when no profile match is found.
+   * Pass an explicit value (e.g. from a server-component context) to skip
+   * the lookup roundtrip when locale is already known.
+   */
+  locale?: string | null;
+  /**
+   * Optional user UUID — used by the recipient-locale resolver as a more
+   * precise key than the email lookup. Pass when the calling code already
+   * knows the user (booking, payment request, etc.).
+   */
+  userId?: string | null;
 };
 
 const care = getDivisionConfig("care");
@@ -210,7 +225,19 @@ async function logEmailDispatch(input: {
 export async function sendCareEmail(input: SendCareEmailInput): Promise<EmailDispatchResult> {
   const recipients = cleanEmails(input.to);
   const settings = await getCareSettings();
-  const rendered = renderCareEmailTemplate(input.template, settings);
+  const adminClient = createAdminSupabase();
+  const recipientForLookup = recipients[0] ?? null;
+  const recipientLocale = await resolveRecipientLocale(adminClient as never, {
+    hint: input.locale,
+    userId: input.userId,
+    email: recipientForLookup,
+  });
+  const rendered = await renderLocalizedCareEmailTemplate(
+    input.template,
+    settings,
+    recipientLocale,
+    autoTranslateMany,
+  );
 
   if (recipients.length === 0) {
     return {

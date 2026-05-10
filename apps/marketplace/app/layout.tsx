@@ -30,12 +30,15 @@ export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   const marketplace = getDivisionConfig("marketplace");
+  // PASS 18C — pass active locale so hreflang + og:locale render dynamically.
+  const locale = await getMarketplacePublicLocale();
   return {
     ...createDivisionMetadata("marketplace", {
       title: marketplace.name,
       description: marketplace.description,
       openGraphDescription: marketplace.tagline,
       path: "/",
+      locale,
     }),
     verification: getVerificationMeta("marketplace"),
   };

@@ -356,91 +356,368 @@ export function walletFundedEmail(
   };
 }
 
-export function paymentConfirmationEmail(name: string, amountNaira: number, description: string, division: string) {
+// PASS 18C — extended copy for the previously English-only templates. Each
+// locale provides production-tier translations for fr/es/pt/ar/de/it; zh/hi/
+// ig/yo/ha fall back to the English source via the runtime autoTranslate
+// cache when the recipient's `customer_profiles.language` resolves to one.
+function getExtendedEmailCopy(locale: AppLocale) {
+  if (locale === "fr") {
+    return {
+      paymentSubject: (amountFmt: string) => `Paiement confirmé — NGN ${amountFmt}`,
+      paymentTitle: "Paiement confirmé",
+      paymentIntro: (name: string) => `Bonjour ${name || "vous"}, votre paiement a été traité.`,
+      paymentAmountLabel: "Montant",
+      paymentServiceLabel: "Service",
+      paymentReceiptCta: "Voir le reçu",
+      supportSubject: (subj: string) => `Mise à jour : ${subj}`,
+      supportTitle: "Mise à jour du support",
+      supportIntro: (name: string) => `Bonjour ${name || "vous"}, une nouvelle mise à jour est disponible pour votre demande :`,
+      supportRequestLabel: "Demande",
+      supportConversationCta: "Voir la conversation",
+      subscriptionSubjectActivated: (plan: string) => `Abonnement activé : ${plan}`,
+      subscriptionSubjectCancelled: (plan: string) => `Abonnement annulé : ${plan}`,
+      subscriptionSubjectRenewed: (plan: string) => `Abonnement renouvelé : ${plan}`,
+      subscriptionSubjectPaused: (plan: string) => `Abonnement suspendu : ${plan}`,
+      subscriptionTitle: (action: string) => `Abonnement ${action}`,
+      subscriptionBody: (name: string, plan: string, actionPhrase: string) =>
+        `Bonjour ${name || "vous"}, votre abonnement <strong>${plan}</strong> ${actionPhrase}.`,
+      subscriptionPhraseActivated: "a été activé",
+      subscriptionPhraseCancelled: "a été annulé",
+      subscriptionPhraseRenewed: "a été renouvelé",
+      subscriptionPhrasePaused: "a été suspendu",
+      subscriptionManageCta: "Gérer les abonnements",
+      digestSubject: "Votre récapitulatif HenryCo de la semaine",
+      digestTitle: "Votre semaine chez HenryCo",
+      digestIntro: (name: string) => `Bonjour ${name || "vous"}, voici un aperçu de votre compte cette semaine.`,
+      digestActivityLabel: "Activités",
+      digestNotificationsLabel: "Notifications",
+      digestWalletLabel: "Portefeuille",
+      digestDashboardCta: "Aller au tableau de bord",
+    };
+  }
+
+  if (locale === "es") {
+    return {
+      paymentSubject: (amountFmt: string) => `Pago confirmado — NGN ${amountFmt}`,
+      paymentTitle: "Pago confirmado",
+      paymentIntro: (name: string) => `Hola ${name || "allí"}, tu pago ha sido procesado.`,
+      paymentAmountLabel: "Importe",
+      paymentServiceLabel: "Servicio",
+      paymentReceiptCta: "Ver recibo",
+      supportSubject: (subj: string) => `Actualización: ${subj}`,
+      supportTitle: "Actualización de soporte",
+      supportIntro: (name: string) => `Hola ${name || "allí"}, hay una nueva actualización en tu solicitud de soporte:`,
+      supportRequestLabel: "Solicitud",
+      supportConversationCta: "Ver conversación",
+      subscriptionSubjectActivated: (plan: string) => `Suscripción activada: ${plan}`,
+      subscriptionSubjectCancelled: (plan: string) => `Suscripción cancelada: ${plan}`,
+      subscriptionSubjectRenewed: (plan: string) => `Suscripción renovada: ${plan}`,
+      subscriptionSubjectPaused: (plan: string) => `Suscripción pausada: ${plan}`,
+      subscriptionTitle: (action: string) => `Suscripción ${action}`,
+      subscriptionBody: (name: string, plan: string, actionPhrase: string) =>
+        `Hola ${name || "allí"}, tu suscripción <strong>${plan}</strong> ${actionPhrase}.`,
+      subscriptionPhraseActivated: "se ha activado",
+      subscriptionPhraseCancelled: "se ha cancelado",
+      subscriptionPhraseRenewed: "se ha renovado",
+      subscriptionPhrasePaused: "se ha pausado",
+      subscriptionManageCta: "Gestionar suscripciones",
+      digestSubject: "Tu resumen semanal de HenryCo",
+      digestTitle: "Tu semana en HenryCo",
+      digestIntro: (name: string) => `Hola ${name || "allí"}, aquí va un vistazo rápido a tu cuenta esta semana.`,
+      digestActivityLabel: "Actividades",
+      digestNotificationsLabel: "Notificaciones",
+      digestWalletLabel: "Billetera",
+      digestDashboardCta: "Ir al panel",
+    };
+  }
+
+  if (locale === "pt") {
+    return {
+      paymentSubject: (amountFmt: string) => `Pagamento confirmado — NGN ${amountFmt}`,
+      paymentTitle: "Pagamento confirmado",
+      paymentIntro: (name: string) => `Olá ${name || "você"}, o seu pagamento foi processado.`,
+      paymentAmountLabel: "Valor",
+      paymentServiceLabel: "Serviço",
+      paymentReceiptCta: "Ver recibo",
+      supportSubject: (subj: string) => `Atualização: ${subj}`,
+      supportTitle: "Atualização do suporte",
+      supportIntro: (name: string) => `Olá ${name || "você"}, há uma nova atualização no seu pedido de suporte:`,
+      supportRequestLabel: "Pedido",
+      supportConversationCta: "Ver conversa",
+      subscriptionSubjectActivated: (plan: string) => `Subscrição ativada: ${plan}`,
+      subscriptionSubjectCancelled: (plan: string) => `Subscrição cancelada: ${plan}`,
+      subscriptionSubjectRenewed: (plan: string) => `Subscrição renovada: ${plan}`,
+      subscriptionSubjectPaused: (plan: string) => `Subscrição pausada: ${plan}`,
+      subscriptionTitle: (action: string) => `Subscrição ${action}`,
+      subscriptionBody: (name: string, plan: string, actionPhrase: string) =>
+        `Olá ${name || "você"}, a sua subscrição <strong>${plan}</strong> ${actionPhrase}.`,
+      subscriptionPhraseActivated: "foi ativada",
+      subscriptionPhraseCancelled: "foi cancelada",
+      subscriptionPhraseRenewed: "foi renovada",
+      subscriptionPhrasePaused: "foi pausada",
+      subscriptionManageCta: "Gerir subscrições",
+      digestSubject: "O seu resumo semanal HenryCo",
+      digestTitle: "A sua semana na HenryCo",
+      digestIntro: (name: string) => `Olá ${name || "você"}, aqui fica um olhar rápido sobre a sua conta esta semana.`,
+      digestActivityLabel: "Atividades",
+      digestNotificationsLabel: "Notificações",
+      digestWalletLabel: "Carteira",
+      digestDashboardCta: "Ir para o painel",
+    };
+  }
+
+  if (locale === "ar") {
+    return {
+      paymentSubject: (amountFmt: string) => `تم تأكيد الدفع — NGN ${amountFmt}`,
+      paymentTitle: "تم تأكيد الدفع",
+      paymentIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت معالجة دفعتك.`,
+      paymentAmountLabel: "المبلغ",
+      paymentServiceLabel: "الخدمة",
+      paymentReceiptCta: "عرض الإيصال",
+      supportSubject: (subj: string) => `تحديث: ${subj}`,
+      supportTitle: "تحديث من الدعم",
+      supportIntro: (name: string) => `مرحبًا ${name || "هناك"}، هناك تحديث جديد على طلب الدعم الخاص بك:`,
+      supportRequestLabel: "الطلب",
+      supportConversationCta: "عرض المحادثة",
+      subscriptionSubjectActivated: (plan: string) => `تم تفعيل الاشتراك: ${plan}`,
+      subscriptionSubjectCancelled: (plan: string) => `تم إلغاء الاشتراك: ${plan}`,
+      subscriptionSubjectRenewed: (plan: string) => `تم تجديد الاشتراك: ${plan}`,
+      subscriptionSubjectPaused: (plan: string) => `تم إيقاف الاشتراك: ${plan}`,
+      subscriptionTitle: (action: string) => `الاشتراك ${action}`,
+      subscriptionBody: (name: string, plan: string, actionPhrase: string) =>
+        `مرحبًا ${name || "هناك"}، اشتراكك <strong>${plan}</strong> ${actionPhrase}.`,
+      subscriptionPhraseActivated: "تم تفعيله",
+      subscriptionPhraseCancelled: "تم إلغاؤه",
+      subscriptionPhraseRenewed: "تم تجديده",
+      subscriptionPhrasePaused: "تم إيقافه",
+      subscriptionManageCta: "إدارة الاشتراكات",
+      digestSubject: "ملخصك الأسبوعي من HenryCo",
+      digestTitle: "أسبوعك في HenryCo",
+      digestIntro: (name: string) => `مرحبًا ${name || "هناك"}، إليك لمحة سريعة عن حسابك هذا الأسبوع.`,
+      digestActivityLabel: "الأنشطة",
+      digestNotificationsLabel: "الإشعارات",
+      digestWalletLabel: "المحفظة",
+      digestDashboardCta: "اذهب إلى لوحة التحكم",
+    };
+  }
+
+  if (locale === "de") {
+    return {
+      paymentSubject: (amountFmt: string) => `Zahlung bestätigt — NGN ${amountFmt}`,
+      paymentTitle: "Zahlung bestätigt",
+      paymentIntro: (name: string) => `Hallo ${name || "da"}, Ihre Zahlung wurde verarbeitet.`,
+      paymentAmountLabel: "Betrag",
+      paymentServiceLabel: "Service",
+      paymentReceiptCta: "Beleg ansehen",
+      supportSubject: (subj: string) => `Update: ${subj}`,
+      supportTitle: "Support-Update",
+      supportIntro: (name: string) => `Hallo ${name || "da"}, es gibt ein neues Update zu Ihrer Supportanfrage:`,
+      supportRequestLabel: "Anfrage",
+      supportConversationCta: "Konversation öffnen",
+      subscriptionSubjectActivated: (plan: string) => `Abonnement aktiviert: ${plan}`,
+      subscriptionSubjectCancelled: (plan: string) => `Abonnement gekündigt: ${plan}`,
+      subscriptionSubjectRenewed: (plan: string) => `Abonnement verlängert: ${plan}`,
+      subscriptionSubjectPaused: (plan: string) => `Abonnement pausiert: ${plan}`,
+      subscriptionTitle: (action: string) => `Abonnement ${action}`,
+      subscriptionBody: (name: string, plan: string, actionPhrase: string) =>
+        `Hallo ${name || "da"}, Ihr Abonnement <strong>${plan}</strong> ${actionPhrase}.`,
+      subscriptionPhraseActivated: "wurde aktiviert",
+      subscriptionPhraseCancelled: "wurde gekündigt",
+      subscriptionPhraseRenewed: "wurde verlängert",
+      subscriptionPhrasePaused: "wurde pausiert",
+      subscriptionManageCta: "Abonnements verwalten",
+      digestSubject: "Ihre HenryCo-Wochenzusammenfassung",
+      digestTitle: "Ihre Woche bei HenryCo",
+      digestIntro: (name: string) => `Hallo ${name || "da"}, hier ist ein schneller Blick auf Ihr Konto diese Woche.`,
+      digestActivityLabel: "Aktivitäten",
+      digestNotificationsLabel: "Benachrichtigungen",
+      digestWalletLabel: "Wallet",
+      digestDashboardCta: "Zum Dashboard",
+    };
+  }
+
+  if (locale === "it") {
+    return {
+      paymentSubject: (amountFmt: string) => `Pagamento confermato — NGN ${amountFmt}`,
+      paymentTitle: "Pagamento confermato",
+      paymentIntro: (name: string) => `Ciao ${name || "lì"}, il tuo pagamento è stato elaborato.`,
+      paymentAmountLabel: "Importo",
+      paymentServiceLabel: "Servizio",
+      paymentReceiptCta: "Vedi ricevuta",
+      supportSubject: (subj: string) => `Aggiornamento: ${subj}`,
+      supportTitle: "Aggiornamento supporto",
+      supportIntro: (name: string) => `Ciao ${name || "lì"}, c'è un nuovo aggiornamento sulla tua richiesta di supporto:`,
+      supportRequestLabel: "Richiesta",
+      supportConversationCta: "Vedi conversazione",
+      subscriptionSubjectActivated: (plan: string) => `Abbonamento attivato: ${plan}`,
+      subscriptionSubjectCancelled: (plan: string) => `Abbonamento annullato: ${plan}`,
+      subscriptionSubjectRenewed: (plan: string) => `Abbonamento rinnovato: ${plan}`,
+      subscriptionSubjectPaused: (plan: string) => `Abbonamento sospeso: ${plan}`,
+      subscriptionTitle: (action: string) => `Abbonamento ${action}`,
+      subscriptionBody: (name: string, plan: string, actionPhrase: string) =>
+        `Ciao ${name || "lì"}, il tuo abbonamento <strong>${plan}</strong> ${actionPhrase}.`,
+      subscriptionPhraseActivated: "è stato attivato",
+      subscriptionPhraseCancelled: "è stato annullato",
+      subscriptionPhraseRenewed: "è stato rinnovato",
+      subscriptionPhrasePaused: "è stato sospeso",
+      subscriptionManageCta: "Gestisci abbonamenti",
+      digestSubject: "Il tuo riepilogo settimanale HenryCo",
+      digestTitle: "La tua settimana in HenryCo",
+      digestIntro: (name: string) => `Ciao ${name || "lì"}, ecco uno sguardo rapido al tuo account questa settimana.`,
+      digestActivityLabel: "Attività",
+      digestNotificationsLabel: "Notifiche",
+      digestWalletLabel: "Wallet",
+      digestDashboardCta: "Vai alla dashboard",
+    };
+  }
+
   return {
-    subject: `Payment confirmed — NGN ${amountNaira.toLocaleString()}`,
+    paymentSubject: (amountFmt: string) => `Payment confirmed — NGN ${amountFmt}`,
+    paymentTitle: "Payment confirmed",
+    paymentIntro: (name: string) => `Hi ${name || "there"}, your payment has been processed.`,
+    paymentAmountLabel: "Amount",
+    paymentServiceLabel: "Service",
+    paymentReceiptCta: "View receipt",
+    supportSubject: (subj: string) => `Update on: ${subj}`,
+    supportTitle: "Support update",
+    supportIntro: (name: string) => `Hi ${name || "there"}, there's a new update on your support request:`,
+    supportRequestLabel: "Request",
+    supportConversationCta: "View conversation",
+    subscriptionSubjectActivated: (plan: string) => `Subscription activated: ${plan}`,
+    subscriptionSubjectCancelled: (plan: string) => `Subscription cancelled: ${plan}`,
+    subscriptionSubjectRenewed: (plan: string) => `Subscription renewed: ${plan}`,
+    subscriptionSubjectPaused: (plan: string) => `Subscription paused: ${plan}`,
+    subscriptionTitle: (action: string) => `Subscription ${action}`,
+    subscriptionBody: (name: string, plan: string, actionPhrase: string) =>
+      `Hi ${name || "there"}, your subscription <strong>${plan}</strong> ${actionPhrase}.`,
+    subscriptionPhraseActivated: "has been activated",
+    subscriptionPhraseCancelled: "has been cancelled",
+    subscriptionPhraseRenewed: "has been renewed",
+    subscriptionPhrasePaused: "has been paused",
+    subscriptionManageCta: "Manage subscriptions",
+    digestSubject: "Your weekly HenryCo summary",
+    digestTitle: "Your week at HenryCo",
+    digestIntro: (name: string) => `Hi ${name || "there"}, here's a quick look at your account this week.`,
+    digestActivityLabel: "Activities",
+    digestNotificationsLabel: "Notifications",
+    digestWalletLabel: "Wallet",
+    digestDashboardCta: "Go to dashboard",
+  };
+}
+
+export function paymentConfirmationEmail(
+  name: string,
+  amountNaira: number,
+  description: string,
+  division: string,
+  locale: AppLocale = "en",
+) {
+  const copy = getExtendedEmailCopy(locale);
+  const amountFmt = formatNaira(amountNaira, locale);
+  return {
+    subject: copy.paymentSubject(amountFmt),
     html: layout(`
-      <h1>Payment confirmed</h1>
-      <p>Hi ${name || "there"}, your payment has been processed.</p>
+      <h1>${copy.paymentTitle}</h1>
+      <p>${copy.paymentIntro(name)}</p>
       <div class="metric">
-        <div class="metric-label">Amount</div>
-        <div class="metric-value">NGN ${amountNaira.toLocaleString()}</div>
+        <div class="metric-label">${copy.paymentAmountLabel}</div>
+        <div class="metric-value">NGN ${amountFmt}</div>
       </div>
       <div class="metric">
-        <div class="metric-label">Service</div>
+        <div class="metric-label">${copy.paymentServiceLabel}</div>
         <div class="metric-value" style="font-size:16px;">${division}</div>
       </div>
       <p>${description}</p>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/invoices" class="btn">View receipt</a>
+        <a href="https://account.henrycogroup.com/invoices" class="btn">${copy.paymentReceiptCta}</a>
       </p>
-    `),
+    `, locale),
   };
 }
 
-export function supportUpdateEmail(name: string, subject: string, threadId: string) {
+export function supportUpdateEmail(
+  name: string,
+  subject: string,
+  threadId: string,
+  locale: AppLocale = "en",
+) {
+  const copy = getExtendedEmailCopy(locale);
   return {
-    subject: `Update on: ${subject}`,
+    subject: copy.supportSubject(subject),
     html: layout(`
-      <h1>Support update</h1>
-      <p>Hi ${name || "there"}, there's a new update on your support request:</p>
+      <h1>${copy.supportTitle}</h1>
+      <p>${copy.supportIntro(name)}</p>
       <div class="metric">
-        <div class="metric-label">Request</div>
+        <div class="metric-label">${copy.supportRequestLabel}</div>
         <div class="metric-value" style="font-size:16px;">${subject}</div>
       </div>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/support/${threadId}" class="btn">View conversation</a>
+        <a href="https://account.henrycogroup.com/support/${threadId}" class="btn">${copy.supportConversationCta}</a>
       </p>
-    `),
+    `, locale),
   };
 }
 
-export function subscriptionChangeEmail(name: string, planName: string, action: "activated" | "cancelled" | "renewed" | "paused") {
-  const actionText: Record<string, string> = {
-    activated: "has been activated",
-    cancelled: "has been cancelled",
-    renewed: "has been renewed",
-    paused: "has been paused",
+export function subscriptionChangeEmail(
+  name: string,
+  planName: string,
+  action: "activated" | "cancelled" | "renewed" | "paused",
+  locale: AppLocale = "en",
+) {
+  const copy = getExtendedEmailCopy(locale);
+  const subjectByAction: Record<typeof action, (plan: string) => string> = {
+    activated: copy.subscriptionSubjectActivated,
+    cancelled: copy.subscriptionSubjectCancelled,
+    renewed: copy.subscriptionSubjectRenewed,
+    paused: copy.subscriptionSubjectPaused,
+  };
+  const phraseByAction: Record<typeof action, string> = {
+    activated: copy.subscriptionPhraseActivated,
+    cancelled: copy.subscriptionPhraseCancelled,
+    renewed: copy.subscriptionPhraseRenewed,
+    paused: copy.subscriptionPhrasePaused,
   };
 
   return {
-    subject: `Subscription ${action}: ${planName}`,
+    subject: subjectByAction[action](planName),
     html: layout(`
-      <h1>Subscription ${action}</h1>
-      <p>Hi ${name || "there"}, your subscription <strong>${planName}</strong> ${actionText[action]}.</p>
+      <h1>${copy.subscriptionTitle(action)}</h1>
+      <p>${copy.subscriptionBody(name, planName, phraseByAction[action])}</p>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com/subscriptions" class="btn">Manage subscriptions</a>
+        <a href="https://account.henrycogroup.com/subscriptions" class="btn">${copy.subscriptionManageCta}</a>
       </p>
-    `),
+    `, locale),
   };
 }
 
 export function weeklyDigestEmail(
   name: string,
-  stats: { activity: number; notifications: number; walletBalance: number }
+  stats: { activity: number; notifications: number; walletBalance: number },
+  locale: AppLocale = "en",
 ) {
+  const copy = getExtendedEmailCopy(locale);
   return {
-    subject: "Your weekly HenryCo summary",
+    subject: copy.digestSubject,
     html: layout(`
-      <h1>Your week at HenryCo</h1>
-      <p>Hi ${name || "there"}, here's a quick look at your account this week.</p>
+      <h1>${copy.digestTitle}</h1>
+      <p>${copy.digestIntro(name)}</p>
       <div style="display:flex;gap:12px;">
         <div class="metric" style="flex:1;text-align:center;">
-          <div class="metric-label">Activities</div>
+          <div class="metric-label">${copy.digestActivityLabel}</div>
           <div class="metric-value">${stats.activity}</div>
         </div>
         <div class="metric" style="flex:1;text-align:center;">
-          <div class="metric-label">Notifications</div>
+          <div class="metric-label">${copy.digestNotificationsLabel}</div>
           <div class="metric-value">${stats.notifications}</div>
         </div>
         <div class="metric" style="flex:1;text-align:center;">
-          <div class="metric-label">Wallet</div>
-          <div class="metric-value">NGN ${stats.walletBalance.toLocaleString()}</div>
+          <div class="metric-label">${copy.digestWalletLabel}</div>
+          <div class="metric-value">NGN ${formatNaira(stats.walletBalance, locale)}</div>
         </div>
       </div>
       <p style="text-align:center;margin-top:24px;">
-        <a href="https://account.henrycogroup.com" class="btn">Go to dashboard</a>
+        <a href="https://account.henrycogroup.com" class="btn">${copy.digestDashboardCta}</a>
       </p>
-    `),
+    `, locale),
   };
 }

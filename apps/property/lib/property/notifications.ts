@@ -1,9 +1,11 @@
 import "server-only";
 
 import { getDivisionConfig } from "@henryco/config";
-import { sendTransactionalEmail } from "@henryco/email";
+import { resolveRecipientLocale, sendTransactionalEmail } from "@henryco/email";
 import "@/lib/server-env";
 import { normalizeEmail, normalizePhone } from "@/lib/env";
+import { autoTranslateMany } from "@/lib/i18n/auto-translate";
+import { createAdminSupabase } from "@/lib/supabase";
 import {
   getPropertyUrl,
   getPropertyWorkspaceUrl,
@@ -13,7 +15,7 @@ import {
 import { appendPropertyNotification } from "@/lib/property/store";
 import { appendCustomerNotification } from "@/lib/property/shared-account";
 import {
-  renderPropertyEmailTemplate,
+  renderLocalizedPropertyEmailTemplate,
   type PropertyTemplateInput,
   type PropertyTemplateKey,
 } from "@/lib/property/email/templates";
@@ -230,7 +232,16 @@ async function sendEmail(
   }
 
   const property = getDivisionConfig("property");
-  const rendered = renderPropertyEmailTemplate(notification.email);
+  // PASS 18C: render in recipient's preferred locale.
+  const recipientLocale = await resolveRecipientLocale(createAdminSupabase() as never, {
+    userId: notification.userId,
+    email: recipient,
+  });
+  const rendered = await renderLocalizedPropertyEmailTemplate(
+    notification.email,
+    recipientLocale,
+    autoTranslateMany,
+  );
 
   const dispatch = await sendTransactionalEmail({
     to: recipient,
