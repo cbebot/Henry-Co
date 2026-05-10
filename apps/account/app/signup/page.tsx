@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getAuthCopy } from "@henryco/i18n";
 import SignupForm from "@/components/auth/SignupForm";
 import Logo from "@/components/brand/Logo";
@@ -36,9 +37,9 @@ export default async function SignupPage({
 
         <p className="mt-6 text-center text-xs text-[var(--acct-muted)]">
           {copy.signup.loginPrompt}{" "}
-          <a href={loginHref} className="font-medium text-[var(--acct-gold)] hover:underline">
+          <Link href={loginHref} className="font-medium text-[var(--acct-gold)] hover:underline">
             {copy.signup.loginCta}
-          </a>
+          </Link>
         </p>
       </div>
     </div>

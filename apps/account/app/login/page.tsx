@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isRecoverableSupabaseAuthError } from "@henryco/config";
@@ -77,9 +78,9 @@ export default async function LoginPage({
 
         <p className="mt-6 text-center text-xs text-[var(--acct-muted)]">
           {copy.login.signupPrompt}{" "}
-          <a href={signupHref} className="font-medium text-[var(--acct-gold)] hover:underline">
+          <Link href={signupHref} className="font-medium text-[var(--acct-gold)] hover:underline">
             {copy.login.signupCta}
-          </a>
+          </Link>
         </p>
       </div>
     </div>

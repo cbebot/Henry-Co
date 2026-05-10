@@ -21,9 +21,12 @@ type Props = { params: Promise<{ threadId: string }> };
 
 function localizeSupportStatus(
   t: (text: string) => string,
-  status: string,
+  status: string | null | undefined,
 ) {
-  const raw = status.replaceAll("_", " ");
+  // PASS 22 issue #4 — empty/null status from legacy threads previously
+  // threw .replaceAll() and surfaced the account error boundary.
+  const safe = typeof status === "string" && status.length > 0 ? status : "open";
+  const raw = safe.replaceAll("_", " ");
   const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1);
   const capitalizedTranslation = t(capitalized);
 
@@ -37,9 +40,11 @@ function localizeSupportStatus(
 
 function supportCategoryLabel(
   t: (text: string) => string,
-  category: string,
+  category: string | null | undefined,
 ) {
-  switch (category.trim().toLowerCase()) {
+  // PASS 22 issue #4 — same defensive normalization for the category pill.
+  const safe = typeof category === "string" ? category : "";
+  switch (safe.trim().toLowerCase()) {
     case "billing":
       return t("Billing & Payments");
     case "care":
