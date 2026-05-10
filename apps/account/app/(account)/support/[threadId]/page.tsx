@@ -11,18 +11,14 @@ import {
   markSupportThreadRead,
 } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
+import SupportThreadHeader from "@/components/support/SupportThreadHeader";
 import SupportThreadRoom from "@/components/support/SupportThreadRoom";
-import { DownloadDocumentButton } from "@/components/branded-documents/DownloadDocumentButton";
 
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ threadId: string }> };
 
-function localizeSupportStatus(
-  t: (text: string) => string,
-  status: string,
-) {
+function localizeSupportStatus(t: (text: string) => string, status: string) {
   const raw = status.replaceAll("_", " ");
   const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1);
   const capitalizedTranslation = t(capitalized);
@@ -35,10 +31,7 @@ function localizeSupportStatus(
   return rawTranslation !== raw ? rawTranslation : capitalized;
 }
 
-function supportCategoryLabel(
-  t: (text: string) => string,
-  category: string,
-) {
+function supportCategoryLabel(t: (text: string) => string, category: string) {
   switch (category.trim().toLowerCase()) {
     case "billing":
       return t("Billing & Payments");
@@ -64,11 +57,33 @@ function supportCategoryLabel(
   }
 }
 
+function divisionLabel(t: (text: string) => string, division: string) {
+  const norm = (division || "").trim().toLowerCase();
+  if (!norm || norm === "support") return t("Support");
+  const map: Record<string, string> = {
+    care: "Care",
+    studio: "Studio",
+    jobs: "Jobs",
+    learn: "Learn",
+    property: "Property",
+    logistics: "Logistics",
+    marketplace: "Marketplace",
+    account: "Account",
+  };
+  const display = map[norm] || norm.charAt(0).toUpperCase() + norm.slice(1);
+  return t(display);
+}
+
 export default async function SupportThreadPage({ params }: Props) {
   const { threadId } = await params;
-  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const [locale, user] = await Promise.all([
+    getAccountAppLocale(),
+    requireAccountUser(),
+  ]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const thread = (await getSupportThreadById(user.id, threadId)) as Record<string, unknown> | null;
+  const thread = (await getSupportThreadById(user.id, threadId)) as
+    | Record<string, unknown>
+    | null;
 
   if (!thread) {
     return (
@@ -85,13 +100,16 @@ export default async function SupportThreadPage({ params }: Props) {
     markNotificationsReadByActionUrl(user.id, `/support/${threadId}`),
     markSupportThreadRead(user.id, threadId),
   ]);
-  const messages = await getSupportMessages(threadId);
+  const messages = (await getSupportMessages(threadId)) as Array<
+    Record<string, unknown>
+  >;
   const status = String(thread.status || "open");
   const subject = String(thread.subject || t("Support conversation"));
   const category = String(thread.category || "general");
-  const isOpen = status !== "resolved" && status !== "closed";
+  const division = String(thread.division || "support");
   const statusLabel = localizeSupportStatus(t, status);
-  const categoryLabel = supportCategoryLabel(t, category);
+  const categoryLabelText = supportCategoryLabel(t, category);
+  const divisionLabelText = divisionLabel(t, division);
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -105,35 +123,34 @@ export default async function SupportThreadPage({ params }: Props) {
         >
           <ArrowLeft size={16} />
         </Link>
-        <PageHeader
-          title={subject}
-          description={`${categoryLabel} · ${statusLabel}`}
-          actions={
-            <DownloadDocumentButton
-              endpoint={`/api/documents/support-thread/${threadId}`}
-              suggestedFilename={`HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`}
-              shareTitle={`HenryCo Support Thread — ${subject}`}
-              variant="secondary"
-              label={t("Download thread")}
-            />
-          }
-        />
+        <span className="hc-body-sm text-[var(--acct-muted)]">
+          {t("Back to support")}
+        </span>
       </div>
-      <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-4 py-3">
-        <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-          {t("What happens next")}
-        </p>
-        <p className="mt-1 text-sm text-[var(--acct-muted)]">
-          {isOpen
-            ? t(
-                "Your thread is active. New replies move this queue forward and staff triage handles urgency automatically."
-              )
-            : t(
-                "This thread is closed. If your issue returns, open a new request so it can be triaged and tracked cleanly."
-              )}
-        </p>
-      </div>
-      <SupportThreadRoom threadId={threadId} messages={messages} threadStatus={status} />
+      <SupportThreadHeader
+        threadId={threadId}
+        subject={subject}
+        divisionLabel={divisionLabelText}
+        categoryLabel={categoryLabelText}
+        status={status}
+        statusLabel={statusLabel}
+        download={{
+          endpoint: `/api/documents/support-thread/${threadId}`,
+          filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
+          shareTitle: `HenryCo Support Thread — ${subject}`,
+          label: t("Download thread"),
+        }}
+      />
+      <SupportThreadRoom
+        threadId={threadId}
+        messages={messages}
+        threadStatus={status}
+        viewer={{
+          userId: user.id,
+          fullName: user.fullName || user.email || "You",
+          email: user.email,
+        }}
+      />
     </div>
   );
 }

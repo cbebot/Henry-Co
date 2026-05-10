@@ -330,6 +330,130 @@
   color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   Markdown subset (gated by renderMarkdown prop)
+   ────────────────────────────────────────────────────────────────── */
+
+.mt-bubble-body-rich {
+  font-size: 13.5px;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.mt-bubble-body-rich > * + * {
+  margin-top: 0.45rem;
+}
+
+.mt-bubble-body-rich .mt-bubble-body {
+  margin: 0;
+  white-space: normal;
+}
+
+.mt-md-strong {
+  font-weight: 700;
+  color: inherit;
+}
+
+.mt-md-em {
+  font-style: italic;
+  color: inherit;
+}
+
+.mt-md-code {
+  font-family: var(--hc-font-mono, ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace);
+  font-size: 0.92em;
+  padding: 0.08em 0.34em;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--ws-line, rgba(245, 244, 238, 0.08));
+  color: var(--ws-ink, #f5f4ee);
+}
+
+.mt-md-link {
+  color: var(--ws-signal, #97f4f3);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+.mt-md-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.mt-md-link:focus-visible {
+  outline: 2px solid var(--ws-accent, #97f4f3);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.mt-bubble-blockquote {
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  border-left: 3px solid color-mix(in srgb, var(--ws-accent, #97f4f3) 50%, transparent);
+  background: color-mix(in srgb, var(--ws-accent, #97f4f3) 6%, transparent);
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.78));
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.mt-bubble-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.mt-bubble-list > li + li {
+  margin-top: 0.2rem;
+}
+
+.mt-bubble-list-ordered {
+  list-style: decimal;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Live-status banner (shown on Realtime drop / reconnect attempt)
+   ────────────────────────────────────────────────────────────────── */
+
+.mt-live-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ws-warning, #f5d27a);
+  background: color-mix(in srgb, var(--ws-warning, #f5d27a) 8%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--ws-warning, #f5d27a) 24%, transparent);
+}
+
+.mt-live-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background: var(--ws-warning, #f5d27a);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ws-warning, #f5d27a) 40%, transparent);
+  animation: mt-live-pulse 1400ms ease-in-out infinite;
+}
+
+@keyframes mt-live-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ws-warning, #f5d27a) 40%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 0.4rem color-mix(in srgb, var(--ws-warning, #f5d27a) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-live-dot {
+    animation: none;
+  }
+}
+
 /* Visually hidden — screen-reader-only announcer node. */
 .mt-sr-only {
   position: absolute;

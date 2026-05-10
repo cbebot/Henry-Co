@@ -14,6 +14,7 @@ import type {
   ThreadAttachment,
   ThreadMessage,
 } from "./types";
+import { renderBody as renderMarkdownBody } from "./markdown";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -77,7 +78,13 @@ function ownStatusLabel(message: ThreadMessage, isPending: boolean): string {
   return "Sent";
 }
 
-function MessageBubble({ message }: { message: ThreadMessage }) {
+function MessageBubble({
+  message,
+  renderMarkdown,
+}: {
+  message: ThreadMessage;
+  renderMarkdown: boolean;
+}) {
   const isOwn = Boolean(message.isOwnMessage);
   const isSystem = message.senderRole === "system";
   const side = isSystem ? "system" : isOwn ? "own" : "team";
@@ -104,7 +111,15 @@ function MessageBubble({ message }: { message: ThreadMessage }) {
             {message.editedAt ? <span className="mt-bubble-edited">(edited)</span> : null}
           </div>
         ) : null}
-        {message.body ? <p className="mt-bubble-body">{message.body}</p> : null}
+        {message.body ? (
+          renderMarkdown && !isSystem ? (
+            <div className="mt-bubble-body mt-bubble-body-rich">
+              {renderMarkdownBody(message.body, `m-${message.id}`)}
+            </div>
+          ) : (
+            <p className="mt-bubble-body">{message.body}</p>
+          )
+        ) : null}
         {images.length > 0 ? (
           <div
             className="mt-bubble-images"
@@ -225,6 +240,8 @@ export function MessageThread({
   placeholder = "Write a message…",
   emptyTitle = "Start the conversation",
   emptyBody = "Ask a question, share feedback, or attach a reference. Replies arrive here in real time.",
+  renderMarkdown = false,
+  disableComposer = false,
   composerExtras,
 }: MessageThreadProps) {
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
@@ -234,6 +251,12 @@ export function MessageThread({
   // update"), so SR users hear new messages without the engine
   // shouting on every state mutation.
   const [announcement, setAnnouncement] = useState<string>("");
+  // Realtime channel state. "live" once SUBSCRIBED, "reconnecting"
+  // when the channel ERRORs / TIMES_OUT / CLOSES (engine auto-resubs).
+  // "idle" when getSupabase returned null (SSR / disabled host).
+  const [liveStatus, setLiveStatus] = useState<
+    "idle" | "connecting" | "live" | "reconnecting"
+  >("idle");
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   // Autoscroll to bottom when message count changes.
@@ -251,60 +274,119 @@ export function MessageThread({
     adapter.markReadAction(formData).catch(() => null);
   }, [threadId, adapter]);
 
-  // Realtime INSERT subscription.
+  // Realtime INSERT subscription with explicit reconnect-on-drop.
+  // Supabase Realtime auto-recovers most transient drops, but on
+  // channel CLOSED / CHANNEL_ERROR / TIMED_OUT we tear down + recreate
+  // the channel so the host doesn't have to refresh the route to
+  // restore live updates.
   useEffect(() => {
-    if (!getSupabase) return;
+    if (!getSupabase) {
+      setLiveStatus("idle");
+      return;
+    }
     const supabase = getSupabase();
-    if (!supabase) return;
+    if (!supabase) {
+      setLiveStatus("idle");
+      return;
+    }
+    setLiveStatus("connecting");
 
     const schema = adapter.schema ?? "public";
-    const channel = supabase
-      .channel(adapter.channelName(threadId))
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema,
-          table: adapter.table,
-          filter: adapter.subscriptionFilter(threadId),
-        },
-        (payload: { new?: Record<string, unknown> }) => {
-          if (!payload.new) return;
-          const incoming = adapter.rowToMessage(payload.new, viewer.userId);
-          if (!incoming) return;
-          if (incoming.senderId === viewer.userId) return;
-          setMessages((prev) => {
-            if (prev.find((m) => m.id === incoming.id)) return prev;
-            return [...prev, incoming];
-          });
-          // Announce incoming-only (skip own messages, skip system).
-          if (incoming.senderRole !== "system") {
-            const preview = incoming.body
-              ? incoming.body.length > 140
-                ? `${incoming.body.slice(0, 140)}…`
-                : incoming.body
-              : incoming.attachments && incoming.attachments.length > 0
-                ? `sent ${incoming.attachments.length} attachment${
-                    incoming.attachments.length === 1 ? "" : "s"
-                  }`
-                : "";
-            setAnnouncement(
-              preview
-                ? `${incoming.senderName} said: ${preview}`
-                : `${incoming.senderName} sent a message`,
-            );
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+    let retryHandle: ReturnType<typeof setTimeout> | null = null;
+    let retryDelay = 1500;
+
+    const handleInsert = (payload: { new?: Record<string, unknown> }) => {
+      if (!payload.new) return;
+      const incoming = adapter.rowToMessage(payload.new, viewer.userId);
+      if (!incoming) return;
+      if (incoming.senderId === viewer.userId) return;
+      setMessages((prev) => {
+        if (prev.find((m) => m.id === incoming.id)) return prev;
+        return [...prev, incoming];
+      });
+      if (incoming.senderRole !== "system") {
+        const preview = incoming.body
+          ? incoming.body.length > 140
+            ? `${incoming.body.slice(0, 140)}…`
+            : incoming.body
+          : incoming.attachments && incoming.attachments.length > 0
+            ? `sent ${incoming.attachments.length} attachment${
+                incoming.attachments.length === 1 ? "" : "s"
+              }`
+            : "";
+        setAnnouncement(
+          preview
+            ? `${incoming.senderName} said: ${preview}`
+            : `${incoming.senderName} sent a message`,
+        );
+      }
+      if (adapter.markReadAction) {
+        const formData = new FormData();
+        formData.set("threadId", threadId);
+        adapter.markReadAction(formData).catch(() => null);
+      }
+    };
+
+    const connect = () => {
+      if (cancelled) return;
+      channel = supabase
+        .channel(adapter.channelName(threadId))
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema,
+            table: adapter.table,
+            filter: adapter.subscriptionFilter(threadId),
+          },
+          handleInsert,
+        )
+        .subscribe((status: string) => {
+          if (cancelled) return;
+          if (status === "SUBSCRIBED") {
+            setLiveStatus("live");
+            retryDelay = 1500; // reset back-off on a clean connection
+            return;
           }
-          if (adapter.markReadAction) {
-            const formData = new FormData();
-            formData.set("threadId", threadId);
-            adapter.markReadAction(formData).catch(() => null);
+          if (
+            status === "CHANNEL_ERROR" ||
+            status === "TIMED_OUT" ||
+            status === "CLOSED"
+          ) {
+            setLiveStatus("reconnecting");
+            if (channel) {
+              try {
+                supabase.removeChannel(channel);
+              } catch {
+                // ignore — channel was already torn down
+              }
+              channel = null;
+            }
+            // Capped exponential back-off, max 15s. The retry handle is
+            // tracked so the cleanup function can clear it on unmount.
+            retryHandle = setTimeout(connect, retryDelay);
+            retryDelay = Math.min(retryDelay * 2, 15000);
           }
-        },
-      )
-      .subscribe();
+        });
+    };
+
+    connect();
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+      if (retryHandle) {
+        clearTimeout(retryHandle);
+        retryHandle = null;
+      }
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch {
+          // ignore
+        }
+      }
     };
   }, [threadId, viewer.userId, adapter, getSupabase]);
 
@@ -391,7 +473,13 @@ export function MessageThread({
   const tone = useMemo(() => pickComposerTone(threadId), [threadId]);
 
   return (
-    <div className="mt-thread">
+    <div className="mt-thread" data-live={liveStatus}>
+      {liveStatus === "reconnecting" ? (
+        <div className="mt-live-banner" role="status">
+          <span className="mt-live-dot" aria-hidden />
+          <span>Reconnecting…</span>
+        </div>
+      ) : null}
       {messages.length === 0 ? (
         <div className="mt-thread-empty">
           <span className="mt-thread-empty-icon" aria-hidden>
@@ -404,7 +492,11 @@ export function MessageThread({
         <div ref={scrollRef} className="mt-thread-list">
           <ul className="mt-thread-list-inner">
             {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
+              <MessageBubble
+                key={message.id}
+                message={message}
+                renderMarkdown={renderMarkdown}
+              />
             ))}
           </ul>
         </div>
@@ -422,30 +514,32 @@ export function MessageThread({
         {announcement}
       </div>
 
-      <div className="mt-composer-host">
-        <ChatComposer
-          threadId={threadId}
-          tone={tone}
-          placeholder={placeholder}
-          enableAttachments={Boolean(adapter.attachAction)}
-          enableDraft
-          enableFullScreenOnMobile
-          uploadAttachment={uploader}
-          onSend={handleSend}
-          onSendError={(error) => setComposerError(error.message)}
-          onSendSuccess={() => setComposerError(null)}
-          composerExtras={
-            composerExtras
-              ? ({ text, setText }) => composerExtras({ draft: text, setDraft: setText })
-              : undefined
-          }
-        />
-        {composerError ? (
-          <p className="mt-composer-error" role="alert">
-            {composerError}
-          </p>
-        ) : null}
-      </div>
+      {disableComposer ? null : (
+        <div className="mt-composer-host">
+          <ChatComposer
+            threadId={threadId}
+            tone={tone}
+            placeholder={placeholder}
+            enableAttachments={Boolean(adapter.attachAction)}
+            enableDraft
+            enableFullScreenOnMobile
+            uploadAttachment={uploader}
+            onSend={handleSend}
+            onSendError={(error) => setComposerError(error.message)}
+            onSendSuccess={() => setComposerError(null)}
+            composerExtras={
+              composerExtras
+                ? ({ text, setText }) => composerExtras({ draft: text, setDraft: setText })
+                : undefined
+            }
+          />
+          {composerError ? (
+            <p className="mt-composer-error" role="alert">
+              {composerError}
+            </p>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

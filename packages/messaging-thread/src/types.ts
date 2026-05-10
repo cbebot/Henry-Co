@@ -158,6 +158,15 @@ export type MessageThreadProps = {
   /** Render markdown in the body. Defaults to false (plain text). */
   renderMarkdown?: boolean;
   /**
+   * Hide the composer entirely. Hosts use this for read-only states —
+   * eg. resolved/closed support threads where staff has signed the
+   * thread off and replying should funnel into a fresh ticket.
+   *
+   * The engine still renders the bubble list + SR announcer + live
+   * banner, so the host doesn't need a separate read-only branch.
+   */
+  disableComposer?: boolean;
+  /**
    * Extra controls rendered in the composer's actions row, before Send.
    *
    * Receives the live `draft` and a `setDraft` callback so the extras
