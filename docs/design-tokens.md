@@ -191,6 +191,118 @@ A scripted contrast audit lives at `scripts/a11y/contrast-matrix.mjs` (run via `
 
 PRs that introduce new hardcoded values should be flagged in review. The audit script `scripts/a11y/headers-scan.mjs` and the next theme-audit pass will catch leakage.
 
+## 8. Elevation
+
+PASS 20. The dashboard speaks in four elevation steps. Restraint is the standard — cards barely lift, overlays read as another sheet of paper, not a billboard. In dark mode a heavy outset shadow over a near-black surface reads as a smudge, so the pattern flips to a 1px inset top highlight ("light from above") plus a calibrated drop shadow.
+
+| Token              | Use                                | Light                                                                 | Dark                                                                                                                              |
+|--------------------|------------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `--hc-elevation-0` | Page background — no decoration    | `none`                                                                | `none`                                                                                                                            |
+| `--hc-elevation-1` | Card on page — default surface     | `0 1px 2px 0 rgba(15,23,42,0.04)`                                     | `inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 2px 0 rgba(0,0,0,0.30)`                                                              |
+| `--hc-elevation-2` | Popover, dropdown, modal           | `0 12px 32px -8px rgba(15,23,42,0.12), 0 4px 12px -4px rgba(15,23,42,0.06)` | `inset 0 1px 0 rgba(255,255,255,0.06), 0 24px 56px -8px rgba(0,0,0,0.48), 0 8px 16px -4px rgba(0,0,0,0.32)`                       |
+| `--hc-elevation-3` | Toast, command bar — highest layer | `0 20px 48px -8px rgba(15,23,42,0.16), 0 8px 20px -4px rgba(15,23,42,0.08)` | `inset 0 1px 0 rgba(255,255,255,0.08), 0 32px 72px -12px rgba(0,0,0,0.56), 0 12px 24px -6px rgba(0,0,0,0.40)`                     |
+
+Rules:
+- A card hover-lift bumps from `e1` to `e2` over `--hc-duration-base`. Pressed: drop back to `e1`. Never use raw color shifts to indicate hover on a card.
+- The legacy `--hc-shadow` / `--hc-shadow-soft` pair stays for back-compat. New code uses `--hc-elevation-{0,1,2,3}`.
+- A surface that locks itself to a single theme (e.g., a brand-fixed dark hero panel inside a light dashboard) may use the literal values from `ELEVATION_LIGHT` (`packages/dashboard-shell/src/tokens/elevation.ts`) at an inline call site, but must declare the choice in a comment.
+
+## 9. Motion + easing
+
+### Duration scale
+
+| Token                | Value | Use                                                              |
+|----------------------|-------|------------------------------------------------------------------|
+| `--hc-duration-fast` | 120ms | Taps, hovers, focus-visible — single beat, no animation feel     |
+| `--hc-duration-base` | 180ms | Most state transitions: button press, switch flip, tab slide     |
+| `--hc-duration-slow` | 260ms | Surface arrival: modal enter, bottom sheet, drawer               |
+
+The PASS 17/18 `FADE_MS` (200ms) and the 120ms `MOTION_PRESET.buttonPress` map onto `base` and `fast` respectively and stay wired for back-compat.
+
+### Easing curves
+
+| Token                  | Curve                                          | Use                                                                                  |
+|------------------------|------------------------------------------------|--------------------------------------------------------------------------------------|
+| `--hc-ease-standard`   | `cubic-bezier(0.22, 1, 0.36, 1)`               | Most entrances. The dashboard's primary curve. Mirrors `EASE_OUT` in shell tokens.   |
+| `--hc-ease-in-out`     | `cubic-bezier(0.4, 0, 0.2, 1)`                 | State changes that "settle on both sides" — toggle flips, tab switches.              |
+| `--hc-ease-emphasized` | `cubic-bezier(0.34, 1.40, 0.64, 1)`            | **Celebration only** — success-lock, confirm tick, payment-land. NEVER on chrome.    |
+| `--hc-ease-linear`     | `linear`                                       | Opacity-only crossfades on micro-interactions where any easing over-emphasises.      |
+
+### Reduced motion
+
+Components consuming the duration tokens directly via inline `transition` MUST wrap themselves:
+
+```css
+.my-component { transition: transform var(--hc-duration-base) var(--hc-ease-standard); }
+@media (prefers-reduced-motion: reduce) {
+  .my-component { transition: none; }
+}
+```
+
+`MOTION_KEYFRAMES_CSS` (`packages/dashboard-shell/src/tokens/motion.ts`) already collapses each keyframe to opacity-only when `prefers-reduced-motion: reduce`. New components should follow the same pattern.
+
+### Approved micro-interactions
+
+Only the patterns below earn their place. Bouncy springs on productivity controls, confetti, sparkles, and continuous animation are forbidden.
+
+- Button press: 98% scale + slight color depth shift, `fast` / `ease-standard`
+- Tab indicator slide between tabs, `base` / `ease-standard`
+- Toggle switch: light spring, `base` / `ease-emphasized` (this is the rare productivity-side use of emphasized)
+- Checkbox check stroke draw, ~200ms / `ease-standard`
+- Number counter morph on amount changes, ~300ms / `ease-standard` — no bounce
+- Card hover lift: `e1` → `e2`, 1–2px translateY, `base` / `ease-standard`
+- Modal/sheet enter: slide+fade, `slow` / `ease-standard`
+- Skeleton shimmer: slow, calm, ~1.6s loop / `linear`
+- Toast slide-in from edge with fade, `slow` / `ease-standard`
+- Notification badge pulse on new arrival: one pulse only, `slow` / `ease-standard`
+
+## 10. Interaction states
+
+Every interactive element MUST design all six states. A component review that cannot answer all six is incomplete.
+
+| State            | Pattern                                                                                                  |
+|------------------|----------------------------------------------------------------------------------------------------------|
+| default          | Surface + text + border at their declared tokens                                                         |
+| hover            | Layer `var(--hc-state-hover-overlay)` over the fill, transition over `--hc-duration-base`                |
+| pressed (active) | Layer `var(--hc-state-pressed-overlay)` over the fill, transition over `--hc-duration-fast`              |
+| focus-visible    | Inset 2px `var(--hc-border-focus)` ring (`focusVisibleStyle()` from `tokens/focus.ts`)                   |
+| disabled         | Apply `opacity: var(--hc-state-disabled-opacity)` + `pointer-events: none` + `aria-disabled="true"`      |
+| loading          | Inline spinner; button width does not shift — reserve label space with the static glyph in place         |
+
+### Overlay tokens
+
+| Token                          | Light                  | Dark                           |
+|--------------------------------|------------------------|--------------------------------|
+| `--hc-state-hover-overlay`     | `rgba(24,24,27,0.04)`  | `rgba(255,255,255,0.05)`       |
+| `--hc-state-pressed-overlay`   | `rgba(24,24,27,0.08)`  | `rgba(255,255,255,0.10)`       |
+| `--hc-state-disabled-opacity`  | `0.55`                 | `0.50`                         |
+
+### Application pattern
+
+```css
+.hc-actionable {
+  position: relative;
+  transition: box-shadow var(--hc-duration-base) var(--hc-ease-standard);
+}
+.hc-actionable:hover {
+  box-shadow:
+    var(--hc-elevation-2),
+    inset 0 0 0 9999px var(--hc-state-hover-overlay);
+}
+.hc-actionable:active {
+  box-shadow:
+    var(--hc-elevation-1),
+    inset 0 0 0 9999px var(--hc-state-pressed-overlay);
+  transition-duration: var(--hc-duration-fast);
+}
+.hc-actionable[aria-disabled="true"] {
+  opacity: var(--hc-state-disabled-opacity);
+  pointer-events: none;
+}
+```
+
+Focus-visible composes ON TOP of any hover state — both rings can render simultaneously without conflict because focus is inset and overlays are scoped to fill.
+
 ---
 
-This document supersedes all earlier per-pass tone descriptions. When a downstream doc disagrees, this one wins.
+This document supersedes all earlier per-pass tone descriptions. When a downstream doc disagrees, this one wins. PASS 20 closes the furnishing-system tokens (elevation, motion duration scale, emphasized easing, interaction-state overlays); component-level application of these tokens is the next pass.

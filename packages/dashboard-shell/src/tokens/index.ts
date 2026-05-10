@@ -6,3 +6,5 @@ export * from "./color";
 export * from "./type";
 export * from "./spacing";
 export * from "./focus";
+export * from "./elevation";
+export * from "./interaction";

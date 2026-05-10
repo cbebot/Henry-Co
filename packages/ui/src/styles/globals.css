@@ -235,6 +235,55 @@
   --hc-shadow: 0 32px 100px rgba(15, 23, 42, 0.10);
   --hc-shadow-soft: 0 16px 44px rgba(15, 23, 42, 0.08);
 
+  /* PASS 20 — Elevation scale (the furnishing system).
+     A four-step ladder. Restraint, not weight. Cards barely lift,
+     overlays read as "another sheet of paper" not "a billboard".
+     elevation-0 is the page itself; elevation-1 is a card on the
+     page; elevation-2 is a popover/dropdown/modal; elevation-3 is
+     toasts and command bars (the highest layer). The legacy
+     --hc-shadow / --hc-shadow-soft pair is preserved for back-compat
+     but new code references --hc-elevation-{0,1,2,3}. */
+  --hc-elevation-0: none;
+  --hc-elevation-1: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --hc-elevation-2:
+    0 12px 32px -8px rgba(15, 23, 42, 0.12),
+    0 4px 12px -4px rgba(15, 23, 42, 0.06);
+  --hc-elevation-3:
+    0 20px 48px -8px rgba(15, 23, 42, 0.16),
+    0 8px 20px -4px rgba(15, 23, 42, 0.08);
+
+  /* PASS 20 — Motion duration scale.
+     Three steps. fast = a single beat (taps, hovers, focus changes).
+     base = most transitions (buttons, switches, popover open).
+     slow = surface-arrival moments (modal/sheet enter). 200ms FADE_MS
+     and 120ms button-press from PASS 17/18 map onto base/fast and
+     remain wired through MOTION_PRESET in @henryco/dashboard-shell. */
+  --hc-duration-fast: 120ms;
+  --hc-duration-base: 180ms;
+  --hc-duration-slow: 260ms;
+
+  /* PASS 20 — Easing curves.
+     standard: decelerating cubic — most entrances. The dashboard's
+       primary curve. Mirrors EASE_OUT in shell motion tokens.
+     in-out: symmetric ease — for state changes that "settle on both
+       sides" (toggle flips, tab switches).
+     emphasized: gentle overshoot — celebration only (success-lock,
+       confirm tick, payment land). Not for productivity controls.
+     linear: only for opacity-only crossfades on micro-interactions. */
+  --hc-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --hc-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --hc-ease-emphasized: cubic-bezier(0.34, 1.40, 0.64, 1);
+  --hc-ease-linear: linear;
+
+  /* PASS 20 — Interaction-state overlays.
+     A surface or fill layers one of these to express hover/pressed
+     without re-declaring per-component. Apply via inset box-shadow
+     or as a child layer with mix-blend. Disabled is opacity, not
+     overlay, because both text and bg need to fade together. */
+  --hc-state-hover-overlay: rgba(24, 24, 27, 0.04);
+  --hc-state-pressed-overlay: rgba(24, 24, 27, 0.08);
+  --hc-state-disabled-opacity: 0.55;
+
   /* PASS 19 — semantic aliases (single source of truth).
      Components should reference these names; apps may continue
      overriding the role tokens above. */
@@ -291,6 +340,34 @@
 
   --hc-shadow: 0 44px 120px rgba(0, 0, 0, 0.40);
   --hc-shadow-soft: 0 22px 72px rgba(0, 0, 0, 0.24);
+
+  /* PASS 20 — Elevation scale (dark theme).
+     In dark mode a heavy outset shadow over a near-black surface
+     reads as a smudge, not depth. The pattern is a 1px inset top
+     highlight (light from above) plus a calibrated drop shadow
+     for the lift. Result: surfaces feel layered, not painted on.
+     elevation-0 is no decoration; -1 is a card lift; -2 is an
+     overlay (modal/popover); -3 is the highest layer. */
+  --hc-elevation-1:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --hc-elevation-2:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 24px 56px -8px rgba(0, 0, 0, 0.48),
+    0 8px 16px -4px rgba(0, 0, 0, 0.32);
+  --hc-elevation-3:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 32px 72px -12px rgba(0, 0, 0, 0.56),
+    0 12px 24px -6px rgba(0, 0, 0, 0.40);
+
+  /* PASS 20 — Interaction-state overlays (dark theme).
+     Hover/pressed reveal as a translucent white wash; on dark
+     surfaces an ink overlay would only deepen the canvas and read
+     as nothing changed. Disabled opacity is slightly lower to
+     preserve legibility against the darker base. */
+  --hc-state-hover-overlay: rgba(255, 255, 255, 0.05);
+  --hc-state-pressed-overlay: rgba(255, 255, 255, 0.10);
+  --hc-state-disabled-opacity: 0.50;
 
   /* PASS 19 — semantic alias overrides for dark mode. */
   --hc-text-quaternary: rgba(250, 250, 249, 0.36);

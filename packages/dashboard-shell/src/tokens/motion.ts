@@ -46,6 +46,48 @@ export const EASE_IN_OUT = "cubic-bezier(0.4, 0, 0.2, 1)" as const;
 export const LINEAR = "linear" as const;
 
 /**
+ * PASS 20 — emphasized easing.
+ *
+ * A gentle overshoot for *celebration* moments only — the success
+ * tick on a payment confirm, the lock animation when a verification
+ * lands, the brief beat when a long-running queue task finishes.
+ *
+ * Productivity controls (buttons, toggles, popovers, tabs) MUST
+ * NOT use this curve. Bouncy springs on day-to-day chrome read as
+ * cheap; the dashboard standard is calm. Use `EASE_OUT` (or
+ * `EASE_IN_OUT` for state changes) for everything else.
+ */
+export const EASE_EMPHASIZED = "cubic-bezier(0.34, 1.40, 0.64, 1)" as const;
+
+/**
+ * PASS 20 — duration scale.
+ *
+ * Three steps. The shell's existing `FADE_MS` (200ms) and the 120ms
+ * button-press inside `MOTION_PRESET` map onto `DURATION.base` and
+ * `DURATION.fast` respectively and remain wired for back-compat.
+ *
+ * - `DURATION.fast` (120ms) — taps, hovers, focus changes. Single
+ *   beat: the user feels acknowledgement, not animation.
+ * - `DURATION.base` (180ms) — most state transitions: button
+ *   presses, switch flips, popover open, tab indicator slide.
+ * - `DURATION.slow` (260ms) — surface arrival: modal enter, bottom
+ *   sheet rise, drawer slide. Just long enough to read as "a thing
+ *   landed" without dragging.
+ *
+ * Reduced-motion: components consuming these durations directly via
+ * inline `transition` should wrap themselves in
+ * `@media (prefers-reduced-motion: reduce) { transition: none; }`.
+ * The keyframes inside `MOTION_KEYFRAMES_CSS` already do this.
+ */
+export const DURATION = {
+  fast: 120,
+  base: 180,
+  slow: 260,
+} as const;
+
+export type DurationStep = keyof typeof DURATION;
+
+/**
  * Soft-scale entry: 0.985 → 1.000. Subtle enough that motion-sensitive
  * users don't notice; just enough to make the surface feel like it
  * lands rather than appears.
