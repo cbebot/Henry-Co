@@ -3,6 +3,12 @@
 @source "../../../packages/ui/src";
 
 /* ─── HenryCo Account Platform Tokens ─── */
+/*
+ * PASS 19 — every --acct-* role below is mirrored onto a canonical
+ * --hc-* role at the bottom of this :root block, so dashboard-shell
+ * primitives (badges, chips, buttons) inherit the same brand language
+ * as the app-local components.
+ */
 :root {
   --acct-bg: #FAFAF8;
   --acct-bg-soft: #FFFFFF;
@@ -11,7 +17,10 @@
   --acct-line: #E8E4DD;
   --acct-ink: #1A1814;
   --acct-muted: #6B6560;
+  /* PASS 19 — premium HenryCo gold (brand anchor). */
   --acct-gold: #C9A227;
+  --acct-gold-strong: #A88718;
+  --acct-gold-text: #8A6F00;
   --acct-gold-soft: #F7F0D8;
   --acct-green: #10B981;
   --acct-green-soft: #D1FAE5;
@@ -77,6 +86,31 @@
   --acct-div-studio: #B45309;     /* Bronze */
   --acct-div-security: #B27A00;   /* Amber (matches severity for visual sync) */
   --acct-div-system: #6B6560;     /* Stone */
+
+  /* ─── PASS 19 — canonical --hc-* mapping ─────────────────────
+     Every dashboard-shell primitive reads from --hc-* tokens. We
+     remap them here so the shell speaks the account app's brand
+     language (cream surfaces, premium gold, warm ink) automatically.
+     Light-mode values; dark counterparts live in the .dark block. */
+  --hc-bg: var(--acct-bg);
+  --hc-bg-soft: var(--acct-bg-soft);
+  --hc-surface: var(--acct-bg-soft);
+  --hc-surface-strong: var(--acct-bg-elevated);
+  --hc-surface-elevated: var(--acct-bg-elevated);
+  --hc-paper: var(--acct-surface);
+  --hc-ink: var(--acct-ink);
+  --hc-ink-soft: rgba(26, 24, 20, 0.72);
+  --hc-ink-muted: var(--acct-muted);
+  --hc-line: var(--acct-line);
+  --hc-line-strong: rgba(26, 24, 20, 0.16);
+  --hc-hairline: var(--acct-line);
+  --hc-accent: var(--acct-gold);
+  --hc-accent-strong: var(--acct-gold-strong);
+  --hc-accent-pressed: var(--acct-gold-text);
+  --hc-accent-soft: var(--acct-gold-soft);
+  --hc-accent-text: var(--acct-gold-text);
+  --hc-accent-on-surface: var(--acct-gold-text);
+  --hc-focus-ring: var(--acct-gold);
 }
 
 .dark {
@@ -88,7 +122,9 @@
   --acct-ink: #F0EDE8;
   --acct-muted: #8E8A84;
   --acct-gold: #D4AF37;
-  --acct-gold-soft: rgba(212,175,55,0.12);
+  --acct-gold-strong: #E5C870;
+  --acct-gold-text: #E5C870;
+  --acct-gold-soft: rgba(212,175,55,0.16);
   --acct-green: #34D399;
   --acct-green-soft: rgba(52,211,153,0.12);
   --acct-red: #F87171;
@@ -128,6 +164,30 @@
   --acct-div-studio: #FB923C;
   --acct-div-security: #D4AF37;
   --acct-div-system: #9CA3AF;
+
+  /* ─── PASS 19 — canonical --hc-* mapping (dark) ──────────────
+     Mirror the light-mode mapping but using the dark-mode --acct-*
+     values, so dashboard-shell adapts cleanly on theme switch. */
+  --hc-bg: var(--acct-bg);
+  --hc-bg-soft: var(--acct-bg-soft);
+  --hc-surface: var(--acct-bg-soft);
+  --hc-surface-strong: var(--acct-bg-elevated);
+  --hc-surface-elevated: var(--acct-bg-elevated);
+  --hc-paper: var(--acct-surface);
+  --hc-ink: var(--acct-ink);
+  --hc-ink-soft: rgba(240, 237, 232, 0.78);
+  --hc-ink-muted: var(--acct-muted);
+  --hc-line: var(--acct-line);
+  --hc-line-strong: rgba(255, 255, 255, 0.20);
+  --hc-hairline: var(--acct-line);
+  --hc-accent: var(--acct-gold);
+  --hc-accent-strong: var(--acct-gold-strong);
+  --hc-accent-pressed: #B89425;
+  --hc-accent-soft: var(--acct-gold-soft);
+  --hc-accent-text: var(--acct-gold-text);
+  --hc-accent-on-surface: var(--acct-gold-text);
+  --hc-ink-on-accent: #1A1814;
+  --hc-focus-ring: var(--acct-gold);
 }
 
 /* ─── Base ─── */

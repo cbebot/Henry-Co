@@ -41,7 +41,7 @@ export function PageHeader({ kicker, title, description, action }: PageHeaderPro
           <p
             style={{
               ...typeStyle("kicker"),
-              color: `var(${CSS_VARS.inkMuted})`,
+              color: `var(${CSS_VARS.accentText})`,
               marginBottom: "0.5rem",
             }}
           >
@@ -50,8 +50,8 @@ export function PageHeader({ kicker, title, description, action }: PageHeaderPro
         ) : null}
         <h1
           style={{
-            ...typeStyle("title"),
-            color: `var(${CSS_VARS.ink})`,
+            ...typeStyle("h1"),
+            color: `var(${CSS_VARS.textPrimary})`,
             margin: 0,
           }}
         >
@@ -60,10 +60,10 @@ export function PageHeader({ kicker, title, description, action }: PageHeaderPro
         {description ? (
           <p
             style={{
-              ...typeStyle("body"),
-              color: `var(${CSS_VARS.inkSoft})`,
-              marginTop: "0.5rem",
-              maxWidth: "60ch",
+              ...typeStyle("bodyLg"),
+              color: `var(${CSS_VARS.textSecondary})`,
+              marginTop: "0.625rem",
+              maxWidth: "65ch",
             }}
           >
             {description}

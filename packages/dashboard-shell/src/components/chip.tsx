@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { typeStyle } from "../tokens/type";
-import { CSS_VARS } from "../tokens/color";
+import { CSS_VARS, STATUS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
 
 /**
@@ -26,14 +26,31 @@ const TONE_STYLES: Record<NonNullable<ChipProps["tone"]>, CSSProperties> = {
   accent: {
     backgroundColor: `var(${CSS_VARS.accentSoft})`,
     color: `var(${CSS_VARS.accentText})`,
+    boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(${CSS_VARS.accent}) 20%, transparent)`,
   },
-  success: { backgroundColor: "#E6F4EC", color: "#1F8B4C" },
-  warning: { backgroundColor: "#FFF4D6", color: "#8A6F00" },
-  urgent: { backgroundColor: "#FCE8E0", color: "#A33B14" },
-  neutral: { backgroundColor: "rgba(10,10,10,0.06)", color: `var(${CSS_VARS.ink})` },
+  success: {
+    backgroundColor: `var(${STATUS_VARS.success.bg})`,
+    color: `var(${STATUS_VARS.success.text})`,
+    boxShadow: `inset 0 0 0 1px var(${STATUS_VARS.success.border})`,
+  },
+  warning: {
+    backgroundColor: `var(${STATUS_VARS.warning.bg})`,
+    color: `var(${STATUS_VARS.warning.text})`,
+    boxShadow: `inset 0 0 0 1px var(${STATUS_VARS.warning.border})`,
+  },
+  urgent: {
+    backgroundColor: `var(${STATUS_VARS.danger.bg})`,
+    color: `var(${STATUS_VARS.danger.text})`,
+    boxShadow: `inset 0 0 0 1px var(${STATUS_VARS.danger.border})`,
+  },
+  neutral: {
+    backgroundColor: `var(${CSS_VARS.surfaceSunken})`,
+    color: `var(${CSS_VARS.textSecondary})`,
+    boxShadow: `inset 0 0 0 1px var(${CSS_VARS.borderSubtle})`,
+  },
   outline: {
     backgroundColor: "transparent",
-    color: `var(${CSS_VARS.ink})`,
+    color: `var(${CSS_VARS.textSecondary})`,
     border: `1px solid var(${CSS_VARS.hairline})`,
   },
 };

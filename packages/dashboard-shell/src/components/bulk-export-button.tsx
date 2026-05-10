@@ -3,7 +3,7 @@
 import { useState, type CSSProperties } from "react";
 
 import { typeStyle } from "../tokens/type";
-import { CSS_VARS } from "../tokens/color";
+import { CSS_VARS, STATUS_VARS } from "../tokens/color";
 import { RADIUS } from "../tokens/spacing";
 
 /**
@@ -194,7 +194,7 @@ export function BulkExportButton({
               role="alert"
               style={{
                 ...typeStyle("small"),
-                color: "#B91C1C",
+                color: `var(${STATUS_VARS.danger.text})`,
                 margin: "0.375rem 0 0",
                 padding: "0 0.5rem",
               }}

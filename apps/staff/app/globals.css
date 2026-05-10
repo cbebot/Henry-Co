@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
 
+/*
+ * PASS 19 — Staff workspace tokens.
+ *
+ * The staff dashboard runs dark-first by default (operators stare at
+ * a queue all day; bright surfaces fatigue), but supports a `.light`
+ * counterpart for daylight admin work. The brand gold is the primary
+ * accent across both themes; a cobalt --staff-accent provides the
+ * secondary "selection" color so a staff queue can highlight a row
+ * without competing with gold call-to-action chrome.
+ */
 :root {
   --staff-bg: #050810;
   --staff-bg-soft: #0a0e18;
@@ -9,8 +19,11 @@
   --staff-line: rgba(255, 255, 255, 0.08);
   --staff-ink: #e8e8ec;
   --staff-muted: rgba(255, 255, 255, 0.55);
-  --staff-gold: #c9a227;
-  --staff-gold-soft: rgba(201, 162, 39, 0.14);
+  /* PASS 19 — premium gold pair (dark-first default). */
+  --staff-gold: #D4AF37;
+  --staff-gold-strong: #E5C870;
+  --staff-gold-text: #E5C870;
+  --staff-gold-soft: rgba(212, 175, 55, 0.16);
   --staff-accent: #6b7cff;
   --staff-accent-soft: rgba(107, 124, 255, 0.12);
   --staff-success: #34d399;
@@ -27,6 +40,79 @@
   --staff-radius-lg: 1.25rem;
   --staff-radius-xl: 1.5rem;
   color-scheme: dark;
+
+  /* ─── PASS 19 — canonical --hc-* mapping (dark default) ───── */
+  --hc-bg: var(--staff-bg);
+  --hc-bg-soft: var(--staff-bg-soft);
+  --hc-surface: var(--staff-bg-elevated);
+  --hc-surface-strong: var(--staff-bg-elevated);
+  --hc-surface-elevated: var(--staff-bg-elevated);
+  --hc-paper: var(--staff-bg-soft);
+  --hc-ink: var(--staff-ink);
+  --hc-ink-soft: rgba(232, 232, 236, 0.78);
+  --hc-ink-muted: var(--staff-muted);
+  --hc-line: var(--staff-line);
+  --hc-line-strong: rgba(255, 255, 255, 0.18);
+  --hc-hairline: var(--staff-line);
+  --hc-accent: var(--staff-gold);
+  --hc-accent-strong: var(--staff-gold-strong);
+  --hc-accent-pressed: #B89425;
+  --hc-accent-soft: var(--staff-gold-soft);
+  --hc-accent-text: var(--staff-gold-text);
+  --hc-accent-on-surface: var(--staff-gold-text);
+  --hc-ink-on-accent: #050810;
+  --hc-focus-ring: var(--staff-gold);
+}
+
+/*
+ * PASS 19 — light-mode parity for the staff dashboard.
+ * Some daytime workflows (audit, finance reconciliation) need a
+ * light surface. The .light block replaces the dark-first --staff-*
+ * tokens with a calmer, paper-white palette, then re-maps the
+ * canonical --hc-* tokens to match.
+ */
+.light {
+  --staff-bg: #FAFAF8;
+  --staff-bg-soft: #FFFFFF;
+  --staff-bg-elevated: #FFFFFF;
+  --staff-surface: #F5F3EF;
+  --staff-line: #E8E4DD;
+  --staff-ink: #1A1814;
+  --staff-muted: #6B6560;
+  --staff-gold: #C9A227;
+  --staff-gold-strong: #A88718;
+  --staff-gold-text: #8A6F00;
+  --staff-gold-soft: #F7F0D8;
+  --staff-success: #15803d;
+  --staff-success-soft: rgba(22, 163, 74, 0.10);
+  --staff-warning: #B45309;
+  --staff-warning-soft: rgba(217, 119, 6, 0.10);
+  --staff-critical: #B91C1C;
+  --staff-critical-soft: rgba(220, 38, 38, 0.10);
+  --staff-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --staff-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.06);
+  color-scheme: light;
+
+  --hc-bg: var(--staff-bg);
+  --hc-bg-soft: var(--staff-bg-soft);
+  --hc-surface: var(--staff-bg-soft);
+  --hc-surface-strong: var(--staff-bg-elevated);
+  --hc-surface-elevated: var(--staff-bg-elevated);
+  --hc-paper: var(--staff-surface);
+  --hc-ink: var(--staff-ink);
+  --hc-ink-soft: rgba(26, 24, 20, 0.72);
+  --hc-ink-muted: var(--staff-muted);
+  --hc-line: var(--staff-line);
+  --hc-line-strong: rgba(26, 24, 20, 0.16);
+  --hc-hairline: var(--staff-line);
+  --hc-accent: var(--staff-gold);
+  --hc-accent-strong: var(--staff-gold-strong);
+  --hc-accent-pressed: var(--staff-gold-text);
+  --hc-accent-soft: var(--staff-gold-soft);
+  --hc-accent-text: var(--staff-gold-text);
+  --hc-accent-on-surface: var(--staff-gold-text);
+  --hc-ink-on-accent: #FFFFFF;
+  --hc-focus-ring: var(--staff-gold);
 }
 
 body {

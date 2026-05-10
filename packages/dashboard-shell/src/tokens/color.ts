@@ -63,6 +63,13 @@ export const BRAND = {
  *
  * NOT to be used as primary CTA fills. Primary is brand gold; status
  * accents are visual states, not affordances.
+ *
+ * PASS 19 — these constants are kept for legacy callers. NEW code
+ * should reference the CSS variables (`--hc-status-{intent}-{slot}`)
+ * declared in `packages/ui/src/styles/globals.css`, which adapt
+ * per-theme. The constants below are the LIGHT-mode values and will
+ * NOT swap on theme change — only use them where the surface itself
+ * is locked to a single theme (e.g. brand-fixed dark hero panels).
  */
 export const STATUS = {
   success: "#1F8B4C",
@@ -70,6 +77,35 @@ export const STATUS = {
   urgent: "#C04A1F",
   security: "#B91C1C",
   info: "#4B5563",
+} as const;
+
+/**
+ * Theme-adaptive status CSS variables — every dashboard chip, badge,
+ * toast, and inline alert reads from these so the same component
+ * adapts to light + dark without a re-render. Defined in
+ * `packages/ui/src/styles/globals.css` under PASS 19.
+ */
+export const STATUS_VARS = {
+  success: {
+    bg: "--hc-status-success-bg",
+    text: "--hc-status-success-text",
+    border: "--hc-status-success-border",
+  },
+  warning: {
+    bg: "--hc-status-warning-bg",
+    text: "--hc-status-warning-text",
+    border: "--hc-status-warning-border",
+  },
+  danger: {
+    bg: "--hc-status-danger-bg",
+    text: "--hc-status-danger-text",
+    border: "--hc-status-danger-border",
+  },
+  info: {
+    bg: "--hc-status-info-bg",
+    text: "--hc-status-info-text",
+    border: "--hc-status-info-border",
+  },
 } as const;
 
 /**
@@ -89,9 +125,27 @@ export const CSS_VARS = {
   hairline: "--hc-hairline",
   accent: "--hc-accent",
   accentStrong: "--hc-accent-strong",
+  accentPressed: "--hc-accent-pressed",
   accentText: "--hc-accent-text",
   accentSoft: "--hc-accent-soft",
+  accentOnSurface: "--hc-accent-on-surface",
   focusRing: "--hc-focus-ring",
+  /** PASS 19 — semantic aliases. Prefer these in new code. */
+  surfaceBase: "--hc-surface-base",
+  surfaceRaised: "--hc-surface-raised",
+  surfaceOverlay: "--hc-surface-overlay",
+  surfaceSunken: "--hc-surface-sunken",
+  textPrimary: "--hc-text-primary",
+  textSecondary: "--hc-text-secondary",
+  textTertiary: "--hc-text-tertiary",
+  textQuaternary: "--hc-text-quaternary",
+  textInverse: "--hc-text-inverse",
+  textOnAccent: "--hc-text-on-accent",
+  textDisabled: "--hc-text-disabled",
+  borderSubtle: "--hc-border-subtle",
+  borderDefault: "--hc-border-default",
+  borderStrong: "--hc-border-strong",
+  borderFocus: "--hc-border-focus",
 } as const;
 
 /**
@@ -108,7 +162,9 @@ export const DEFAULT_CSS_VAR_VALUES = {
   [CSS_VARS.hairline]: BRAND.hairlineLight,
   [CSS_VARS.accent]: BRAND.gold,
   [CSS_VARS.accentStrong]: BRAND.goldStrong,
+  [CSS_VARS.accentPressed]: BRAND.goldText,
   [CSS_VARS.accentText]: BRAND.goldText,
   [CSS_VARS.accentSoft]: BRAND.goldSoft,
+  [CSS_VARS.accentOnSurface]: BRAND.goldText,
   [CSS_VARS.focusRing]: BRAND.gold,
 } as const;

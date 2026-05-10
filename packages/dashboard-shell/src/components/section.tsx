@@ -72,7 +72,7 @@ export function Section({
               <p
                 style={{
                   ...typeStyle("kicker"),
-                  color: `var(${CSS_VARS.inkMuted})`,
+                  color: `var(${CSS_VARS.textTertiary})`,
                 }}
               >
                 {kicker}
@@ -81,8 +81,8 @@ export function Section({
             {headline ? (
               <h2
                 style={{
-                  ...typeStyle("headline"),
-                  color: `var(${CSS_VARS.ink})`,
+                  ...typeStyle("h2"),
+                  color: `var(${CSS_VARS.textPrimary})`,
                   margin: 0,
                   marginTop: kicker ? "0.25rem" : 0,
                 }}
@@ -94,8 +94,9 @@ export function Section({
               <p
                 style={{
                   ...typeStyle("body"),
-                  color: `var(${CSS_VARS.inkSoft})`,
-                  marginTop: "0.25rem",
+                  color: `var(${CSS_VARS.textSecondary})`,
+                  marginTop: "0.375rem",
+                  maxWidth: "65ch",
                 }}
               >
                 {description}
