@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MessageSquare, Paperclip } from "lucide-react";
 import {
-  Loader2,
-  MessageSquare,
-  Paperclip,
-  Send,
-  X as XIcon,
-} from "lucide-react";
-import { useViewportKeyboard } from "@henryco/chat-composer";
+  ChatComposer,
+  type AttachmentUploader,
+  type ComposerSendPayload,
+  type ComposerTone,
+  type RemoteAttachment,
+} from "@henryco/chat-composer";
 import type {
   MessageThreadProps,
   ThreadAttachment,
@@ -78,16 +78,32 @@ function MessageBubble({ message }: { message: ThreadMessage }) {
   );
 }
 
+function pickComposerTone(threadId: string): ComposerTone {
+  // Heuristic: division-prefixed thread IDs (`studio-thread-…`,
+  // `account-…`) tint the composer accent. Defaults to neutral when the
+  // host hasn't encoded a division — the workspace-shell --ws-* tokens
+  // still carry the division in CSS.
+  if (threadId.startsWith("studio")) return "studio";
+  if (threadId.startsWith("account")) return "account";
+  if (threadId.startsWith("care")) return "care";
+  if (threadId.startsWith("jobs")) return "jobs";
+  if (threadId.startsWith("marketplace")) return "marketplace";
+  return "neutral";
+}
+
 /**
  * Audience-agnostic thread renderer. Owns:
  *   - render of bubble list
  *   - autoscroll on new message
- *   - composer with attachment chips
  *   - optimistic send (pending bubble appears immediately, replaced
  *     with persisted ID on success or removed + error shown on failure)
  *   - mark-read fire-and-forget on mount + after each incoming message
  *   - realtime INSERT subscription (Supabase postgres_changes), with
  *     graceful no-op fallback when getSupabase returns null
+ *
+ * Composer concerns (autosize, drag-drop, paste, multi-attach, draft
+ * persistence, full-screen mobile, send-button states, keyboard shortcuts,
+ * reduced-motion) are delivered by `@henryco/chat-composer`'s ChatComposer.
  *
  * Does NOT own:
  *   - data fetching of initial messages (host passes initialMessages)
@@ -107,35 +123,8 @@ export function MessageThread({
   composerExtras,
 }: MessageThreadProps) {
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
-  const [draft, setDraft] = useState("");
-  const [attachments, setAttachments] = useState<ThreadAttachment[]>([]);
-  const [pending, startTransition] = useTransition();
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [textareaFocused, setTextareaFocused] = useState(false);
+  const [composerError, setComposerError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const composerRef = useRef<HTMLFormElement | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  // Mobile keyboard handling — when the on-screen keyboard opens, the
-  // composer must stay visible above it. Hook is only "active" while the
-  // textarea is focused so we don't burn visualViewport listeners on
-  // pages that aren't actively typing. iOS Safari needs the explicit
-  // scrollIntoView because its auto-scroll-on-focus doesn't account for
-  // the inner thread scroll container.
-  const { bottomInset, isKeyboardOpen } = useViewportKeyboard(textareaFocused);
-
-  useEffect(() => {
-    if (!textareaFocused || !isKeyboardOpen) return;
-    // Defer one frame so the keyboard animation has started — without
-    // this, scrollIntoView fires before the visualViewport reports the
-    // new height and the composer ends up clipped.
-    const id = requestAnimationFrame(() => {
-      composerRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
-    });
-    return () => cancelAnimationFrame(id);
-  }, [textareaFocused, isKeyboardOpen, bottomInset]);
 
   // Autoscroll to bottom when message count changes.
   useEffect(() => {
@@ -191,74 +180,87 @@ export function MessageThread({
     };
   }, [threadId, viewer.userId, adapter, getSupabase]);
 
-  async function handleAttachment(file: File) {
-    if (!file || !adapter.attachAction) return;
-    setUploading(true);
-    setError(null);
-    const formData = new FormData();
-    formData.set("file", file);
-    const result = await adapter.attachAction(formData);
-    setUploading(false);
-    if (!result.ok) {
-      setError("We couldn't upload that file. Try again.");
-      return;
-    }
-    setAttachments((prev) => [
-      ...prev,
-      { url: result.url, name: result.name, type: result.type, size: result.size },
-    ]);
-  }
-
-  function handleSend(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const body = draft.trim();
-    if (!body) return;
-
-    const optimisticId = `optimistic-${Date.now()}`;
-    const optimistic: ThreadMessage = {
-      id: optimisticId,
-      threadId,
-      senderId: viewer.userId,
-      senderName: viewer.fullName,
-      senderRole: "viewer",
-      body,
-      attachments,
-      createdAt: new Date().toISOString(),
-      editedAt: null,
-      isOwnMessage: true,
+  // Bridge the engine's per-file `attachAction` (FormData → upload result)
+  // to ChatComposer's `AttachmentUploader` (file + onProgress → remote).
+  // Server actions don't expose granular upload progress, so we surface a
+  // mid-tick + final tick to keep the chip animated.
+  const uploader: AttachmentUploader | undefined = useMemo(() => {
+    const attach = adapter.attachAction;
+    if (!attach) return undefined;
+    return async (file, onProgress) => {
+      onProgress(15);
+      const formData = new FormData();
+      formData.set("file", file, file.name);
+      const result = await attach(formData);
+      onProgress(100);
+      if (!result.ok) {
+        throw new Error(result.reason || "Upload failed");
+      }
+      const remote: RemoteAttachment = {
+        url: result.url,
+        bytes: result.size ?? undefined,
+        format: result.type,
+        resourceType: result.type.startsWith("image/") ? "image" : "raw",
+      };
+      return remote;
     };
-    setMessages((prev) => [...prev, optimistic]);
-    setDraft("");
-    const sentAttachments = attachments;
-    setAttachments([]);
-    setError(null);
+  }, [adapter]);
 
-    startTransition(async () => {
+  const handleSend = useCallback(
+    async (payload: ComposerSendPayload) => {
+      const body = payload.text.trim();
+      const uploadedAttachments: ThreadAttachment[] = payload.attachments
+        .filter((a) => a.status === "uploaded" && a.remote?.url)
+        .map((a) => ({
+          url: a.remote!.url,
+          name: a.name,
+          type: a.mimeType,
+          size: a.size,
+        }));
+
+      if (!body && uploadedAttachments.length === 0) return;
+
+      const optimisticId = `optimistic-${Date.now()}`;
+      const optimistic: ThreadMessage = {
+        id: optimisticId,
+        threadId,
+        senderId: viewer.userId,
+        senderName: viewer.fullName,
+        senderRole: "viewer",
+        body,
+        attachments: uploadedAttachments,
+        createdAt: new Date().toISOString(),
+        editedAt: null,
+        isOwnMessage: true,
+      };
+      setMessages((prev) => [...prev, optimistic]);
+      setComposerError(null);
+
       const formData = new FormData();
       formData.set("threadId", threadId);
       formData.set("body", body);
-      if (sentAttachments.length > 0) {
-        formData.set("attachments", JSON.stringify(sentAttachments));
+      if (uploadedAttachments.length > 0) {
+        formData.set("attachments", JSON.stringify(uploadedAttachments));
       }
       const result = await adapter.sendAction(formData);
       if (!result.ok) {
         setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
-        setError("We couldn't send the message. Try again.");
-      } else {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === optimisticId
-              ? { ...m, id: result.messageId, ...(result.message ?? {}) }
-              : m,
-          ),
-        );
+        // Throwing here lets ChatComposer drive its own send-failed UX
+        // (shake + error region) — host doesn't have to wire it.
+        throw new Error(result.reason || "We couldn't send the message. Try again.");
       }
-    });
-  }
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === optimisticId
+            ? { ...m, id: result.messageId, ...(result.message ?? {}) }
+            : m,
+        ),
+      );
+    },
+    [adapter, threadId, viewer.userId, viewer.fullName],
+  );
 
-  function removeAttachment(idx: number) {
-    setAttachments((prev) => prev.filter((_, i) => i !== idx));
-  }
+  const tone = useMemo(() => pickComposerTone(threadId), [threadId]);
 
   return (
     <div className="mt-thread">
@@ -280,94 +282,30 @@ export function MessageThread({
         </div>
       )}
 
-      <form ref={composerRef} className="mt-composer" onSubmit={handleSend}>
-        {attachments.length > 0 ? (
-          <div className="mt-composer-attachments">
-            {attachments.map((attachment, idx) => (
-              <span key={`${attachment.url}-${idx}`} className="mt-composer-attachment">
-                <Paperclip className="h-3 w-3" aria-hidden />
-                <span>{attachment.name}</span>
-                <button
-                  type="button"
-                  onClick={() => removeAttachment(idx)}
-                  aria-label={`Remove ${attachment.name}`}
-                  className="mt-composer-attachment-remove"
-                >
-                  <XIcon className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
-          </div>
+      <div className="mt-composer-host">
+        <ChatComposer
+          threadId={threadId}
+          tone={tone}
+          placeholder={placeholder}
+          enableAttachments={Boolean(adapter.attachAction)}
+          enableDraft
+          enableFullScreenOnMobile
+          uploadAttachment={uploader}
+          onSend={handleSend}
+          onSendError={(error) => setComposerError(error.message)}
+          onSendSuccess={() => setComposerError(null)}
+          composerExtras={
+            composerExtras
+              ? ({ text, setText }) => composerExtras({ draft: text, setDraft: setText })
+              : undefined
+          }
+        />
+        {composerError ? (
+          <p className="mt-composer-error" role="alert">
+            {composerError}
+          </p>
         ) : null}
-
-        {/* Field wrapper owns the focus-within state so the border + halo
-         * + soft inner shadow swap as one element on textarea focus —
-         * one transition surface, no jarring border snap on the textarea
-         * alone. */}
-        <div className="mt-composer-field">
-          <textarea
-            ref={textareaRef}
-            className="mt-composer-textarea"
-            placeholder={placeholder}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onFocus={() => setTextareaFocused(true)}
-            onBlur={() => setTextareaFocused(false)}
-            onKeyDown={(e) => {
-              // Cmd/Ctrl+Enter sends. Bare Enter is a newline (default).
-              // Power-user expectation: do NOT flip this — many users
-              // compose multi-paragraph replies.
-              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault();
-                e.currentTarget.form?.requestSubmit();
-              }
-            }}
-            rows={1}
-          />
-
-          <div className="mt-composer-actions">
-            {composerExtras ? composerExtras({ draft, setDraft }) : null}
-            {adapter.attachAction ? (
-              <>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  hidden
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleAttachment(file);
-                    if (fileInputRef.current) fileInputRef.current.value = "";
-                  }}
-                />
-                <button
-                  type="button"
-                  className="mt-composer-icon-btn"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  aria-label="Attach file"
-                >
-                  {uploading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Paperclip className="h-4 w-4" />
-                  )}
-                </button>
-              </>
-            ) : null}
-            <button
-              type="submit"
-              className="mt-composer-send"
-              disabled={pending || draft.trim().length === 0}
-            >
-              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              {pending ? "Sending" : "Send"}
-            </button>
-          </div>
-        </div>
-
-        {error ? <p className="mt-composer-error">{error}</p> : null}
-        <p className="mt-composer-hint">⌘/Ctrl + Enter to send</p>
-      </form>
+      </div>
     </div>
   );
 }

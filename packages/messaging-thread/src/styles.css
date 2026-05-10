@@ -205,238 +205,31 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Composer
+   Composer host
+   ──────────────────────────────────────────────────────────────────
+   The composer surface itself is delivered by @henryco/chat-composer
+   (autosize, drag-drop, paste, multi-attachment, draft persistence,
+   full-screen mobile, send-button states, keyboard shortcuts, reduced
+   motion). This wrapper just docks it under the bubble list and pins
+   the engine's send-error message to the composer surface.
    ────────────────────────────────────────────────────────────────── */
 
-/* Composer surface — distinct from the thread above via --ws-bg-soft. */
-.mt-composer {
+.mt-composer-host {
   border-top: 1px solid var(--ws-line, rgba(245, 244, 238, 0.08));
   background: var(--ws-bg-soft, rgba(255, 255, 255, 0.025));
   padding: 0.75rem;
 }
 
 @media (min-width: 640px) {
-  .mt-composer {
+  .mt-composer-host {
     padding: 1rem;
   }
 }
 
-.mt-composer-attachments {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 0.5rem;
-}
-
-.mt-composer-attachment {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: 9999px;
-  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
-  background: var(--ws-bg-elev, rgba(255, 255, 255, 0.04));
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--ws-ink, #f5f4ee);
-}
-
-.mt-composer-attachment-remove {
-  display: grid;
-  place-items: center;
-  width: 1.1rem;
-  height: 1.1rem;
-  border: none;
-  background: transparent;
-  color: inherit;
-  border-radius: 9999px;
-  cursor: pointer;
-  padding: 0;
-}
-
-.mt-composer-attachment-remove:hover {
-  background: rgba(0, 0, 0, 0.18);
-}
-
-/*
- * Composer field wrapper. The textarea + actions live INSIDE this
- * element so :focus-within can swap the border + halo + inner shadow as
- * a single surface — no jarring border snap on the textarea alone.
- *
- * Layout is grid (textarea | actions). align-items: end keeps actions
- * pinned to the bottom when the textarea grows multi-line — buttons
- * never jump up as you type. When the textarea is single-line, both
- * columns are 2.5rem tall so everything reads centered.
- */
-.mt-composer-field {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 0.5rem;
-  padding: 0.4rem 0.5rem;
-  background: var(--ws-bg-elev, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--ws-line-strong, rgba(245, 244, 238, 0.18));
-  border-radius: 1rem;
-  transition:
-    border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.mt-composer-field:focus-within {
-  border-color: var(--ws-accent, #97f4f3);
-  /* Outer halo (matches the focus halo we use on .ws-button) +
-     soft inner shadow to draw the eye to the active surface. */
-  box-shadow:
-    0 0 0 4px color-mix(in srgb, var(--ws-accent, #97f4f3) 22%, transparent),
-    inset 0 0 0 1px color-mix(in srgb, var(--ws-accent, #97f4f3) 32%, transparent),
-    inset 0 1px 6px 0 color-mix(in srgb, var(--ws-accent, #97f4f3) 14%, transparent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mt-composer-field {
-    transition: none;
-  }
-}
-
-.mt-composer-textarea {
-  resize: none;
-  min-height: 2.5rem;
-  max-height: 12rem;
-  padding: 0.55rem 0.6rem;
-  border: none;
-  background: transparent;
-  color: var(--ws-ink, #f5f4ee);
-  font-size: 14px;
-  line-height: 1.5;
-  font-family: inherit;
-  outline: none;
-}
-
-.mt-composer-textarea::placeholder {
-  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
-}
-
-/* The textarea inherits focus from the field wrapper — no per-input
-   ring needed. Keep :focus-visible neutral so the wrapper owns the
-   visual state. */
-.mt-composer-textarea:focus,
-.mt-composer-textarea:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
-/* Actions column. Centered vertically relative to the textarea row when
-   single-line; when multi-line, align-items:end on the parent grid
-   keeps these pinned to the bottom so they don't jump as the user
-   types. */
-.mt-composer-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  /* Match the textarea's effective single-row height so single-line
-     composers read with all controls vertically centered. */
-  min-height: 2.5rem;
-}
-
-.mt-composer-icon-btn {
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 9999px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
-  cursor: pointer;
-  transition:
-    color 160ms ease,
-    border-color 160ms ease,
-    background-color 160ms ease;
-}
-
-.mt-composer-icon-btn:hover:not(:disabled) {
-  color: var(--ws-ink, #f5f4ee);
-  background: var(--ws-bg-elev, rgba(255, 255, 255, 0.06));
-}
-
-.mt-composer-icon-btn:focus-visible {
-  outline: 2px solid var(--ws-accent, #97f4f3);
-  outline-offset: 2px;
-}
-
-.mt-composer-icon-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.mt-composer-send {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  height: 2.25rem;
-  padding: 0 1rem;
-  border-radius: 9999px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--ws-accent, #97f4f3) 30%, white),
-    color-mix(in srgb, var(--ws-accent, #97f4f3) 70%, white) 42%,
-    color-mix(in srgb, var(--ws-accent, #97f4f3) 95%, var(--ws-bg, #060a10)) 100%
-  );
-  color: color-mix(in srgb, var(--ws-bg, #060a10) 95%, black);
-  font-size: 13px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 14px 32px -22px color-mix(in srgb, var(--ws-accent, #97f4f3) 60%, transparent);
-  transition:
-    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.mt-composer-send:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 18px 40px -22px color-mix(in srgb, var(--ws-accent, #97f4f3) 70%, transparent);
-}
-
-.mt-composer-send:active:not(:disabled) {
-  transform: translateY(0);
-  transition-duration: 80ms;
-}
-
-.mt-composer-send:focus-visible {
-  outline: 2px solid var(--ws-accent, #97f4f3);
-  outline-offset: 3px;
-}
-
-.mt-composer-send:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  filter: grayscale(0.2);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mt-composer-icon-btn,
-  .mt-composer-send {
-    transition: none;
-  }
-  .mt-composer-send:hover:not(:disabled),
-  .mt-composer-send:active:not(:disabled) {
-    transform: none;
-  }
-}
-
 .mt-composer-error {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
   font-size: 11.5px;
   color: var(--ws-danger, #ffb8b8);
-}
-
-.mt-composer-hint {
-  margin-top: 0.4rem;
-  font-size: 11px;
-  color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
 }
 
 /* ──────────────────────────────────────────────────────────────────

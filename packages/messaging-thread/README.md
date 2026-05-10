@@ -152,13 +152,15 @@ Claude to polish the draft:
 
 1. **Engine owns rendering, optimistic state, scroll, subscription, mark-read.** Hosts own data fetching, persistence, Supabase client choice.
 
-2. **`@supabase/supabase-js` is NEVER imported by the package.** Hosts pass their own factory via `getSupabase`. Returns `null` in environments without realtime — the engine gracefully degrades to "no live updates" with no errors.
+2. **Composer chrome lives in `@henryco/chat-composer`.** Auto-grow textarea, drag-drop, paste-to-attach, multi-attachment with progress, draft persistence (IndexedDB → localStorage fallback), full-screen on mobile/desktop, send-button states, Cmd/Ctrl+Enter, reduced-motion — all of it is delivered by `ChatComposer`. The thread engine owns the bubble list + realtime; the composer package owns the composer.
 
-3. **Inherits `--ws-*` tokens from `@henryco/workspace-shell`.** When mounted inside a workspace tree, themes per-division automatically. When mounted standalone, the shell's stylesheet defaults still apply.
+3. **`@supabase/supabase-js` is NEVER imported by the package.** Hosts pass their own factory via `getSupabase`. Returns `null` in environments without realtime — the engine gracefully degrades to "no live updates" with no errors.
 
-4. **Optimistic state is explicit.** Pending bubble appears instantly with `id: optimistic-${Date.now()}`. On success the temp ID is replaced with the persisted ID. On failure the bubble is removed and an error toast appears under the composer.
+4. **Inherits `--ws-*` tokens from `@henryco/workspace-shell`.** When mounted inside a workspace tree, themes per-division automatically. When mounted standalone, the shell's stylesheet defaults still apply.
 
-5. **Realtime subscription is single-channel per thread.** The engine manages its own channel lifecycle (subscribe on mount, unsubscribe on unmount). Multiple `MessageThread` instances on the same page each open their own channel — Supabase Realtime de-duplicates server-side.
+5. **Optimistic state is explicit.** Pending bubble appears instantly with `id: optimistic-${Date.now()}`. On success the temp ID is replaced with the persisted ID. On failure the bubble is removed and the engine throws — ChatComposer's send-failed UX (shake + error region) takes over.
+
+6. **Realtime subscription is single-channel per thread.** The engine manages its own channel lifecycle (subscribe on mount, unsubscribe on unmount). Multiple `MessageThread` instances on the same page each open their own channel — Supabase Realtime de-duplicates server-side.
 
 ## Components
 
@@ -175,10 +177,9 @@ Claude to polish the draft:
 | `.mt-bubble` | Bubble surface |
 | `.mt-bubble-meta` | Sender + timestamp row |
 | `.mt-attachment-chip` | Attachment chips inside bubbles |
-| `.mt-composer` | Composer surface (form) |
-| `.mt-composer-textarea` | Auto-growing textarea |
-| `.mt-composer-send` | Send button |
-| `.mt-composer-icon-btn` | Attach + extras button base |
+| `.mt-composer-host` | Wrapper docking the ChatComposer under the bubbles |
+| `.mt-composer-error` | Send-error region under the composer |
+| `.henryco-composer-*` | Composer surface — owned by `@henryco/chat-composer` |
 | `.ws-refine-ai-*` | Studio's ✨ Refine button (if you copy the pattern, namespace your own `.ws-${slot}-*` classes) |
 
 ## Roadmap

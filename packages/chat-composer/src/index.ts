@@ -41,6 +41,7 @@ export type {
   AttachmentStatus,
   AttachmentUploader,
   ComposerAttachment,
+  ComposerExtrasContext,
   ComposerLabels,
   ComposerProps,
   ComposerSendHandler,
