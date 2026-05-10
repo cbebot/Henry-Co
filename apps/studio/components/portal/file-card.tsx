@@ -114,12 +114,14 @@ export function FileCard({
           ) : null}
           {deliverable.fileUrl ? (
             <a
-              href={deliverable.fileUrl}
-              target="_blank"
-              rel="noreferrer"
+              // Cross-origin URLs ignore the `download` attribute, so we
+              // route the file through the studio's own proxy which
+              // re-streams with Content-Disposition: attachment. Cloudinary
+              // + Supabase storage hosts are allowlisted in the route.
+              href={`/api/portal/download?u=${encodeURIComponent(deliverable.fileUrl)}&n=${encodeURIComponent(deliverable.title || "deliverable")}`}
               className="portal-button portal-button-secondary"
               style={{ padding: "0.55rem 0.95rem", minHeight: 36 }}
-              download
+              download={deliverable.title || true}
             >
               <Download className="h-3.5 w-3.5" />
               Download
