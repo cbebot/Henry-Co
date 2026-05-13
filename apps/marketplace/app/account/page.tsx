@@ -524,7 +524,7 @@ function FollowedStoreRow({ vendor }: { vendor: MarketplaceVendor }) {
       href={`/store/${vendor.slug}`}
       className="group flex items-center gap-4 transition outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d]"
     >
-      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-xs font-bold tracking-tight text-[var(--market-paper-white)]">
+      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-xs font-semibold tracking-tight text-[var(--market-paper-white)]">
         {initials}
       </div>
       <div className="min-w-0 flex-1">

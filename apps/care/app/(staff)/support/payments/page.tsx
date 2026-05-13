@@ -225,7 +225,7 @@ export default async function SupportPaymentsPage({
                 <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
                   Queue rail
                 </div>
-                <h3 className="mt-1 text-2xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+                <h3 className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
                   Payment proofs
                 </h3>
               </div>
@@ -313,7 +313,7 @@ export default async function SupportPaymentsPage({
                     <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
                       Selected proof
                     </div>
-                    <h3 className="mt-1 text-2xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+                    <h3 className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
                       {selectedPayment.customerName}
                     </h3>
                     <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/64">

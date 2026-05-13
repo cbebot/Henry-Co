@@ -30,7 +30,7 @@ export default function AdminLayout({
       <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
         <aside className="border-r border-white/10 bg-white/[0.03] px-5 py-6">
           <Link href="/" className="block">
-            <div className="text-lg font-black tracking-[0.02em]">{care.name}</div>
+            <div className="text-lg font-semibold tracking-[0.02em]">{care.name}</div>
             <div className="mt-1 text-xs uppercase tracking-[0.18em] text-white/45">
               Admin Console
             </div>
@@ -60,7 +60,7 @@ export default function AdminLayout({
                 <div className="text-sm uppercase tracking-[0.16em] text-white/45">
                   Henry & Co. Admin
                 </div>
-                <div className="mt-1 text-2xl font-black tracking-[-0.02em]">
+                <div className="mt-1 text-2xl font-semibold tracking-[-0.02em]">
                   {care.shortName} Dashboard
                 </div>
               </div>

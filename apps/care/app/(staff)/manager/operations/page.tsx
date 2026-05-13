@@ -196,7 +196,7 @@ export default async function ManagerOperationsPage({
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent)]">
           Manager operations room
         </div>
-        <h1 className="mt-2 text-4xl font-black text-zinc-950 dark:text-white sm:text-5xl">
+        <h1 className="mt-2 text-4xl font-semibold text-zinc-950 dark:text-white sm:text-5xl">
           Register every item. Leave no cloth outside the system.
         </h1>
         <p className="mt-4 max-w-3xl text-zinc-600 dark:text-white/65">
@@ -294,7 +294,7 @@ export default async function ManagerOperationsPage({
                     }`}
                   >
                     <div className="flex flex-wrap items-center gap-3">
-                      <div className="font-mono text-sm font-bold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
+                      <div className="font-mono text-sm font-semibold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                         {booking.tracking_code}
                       </div>
                       <span
@@ -351,7 +351,7 @@ export default async function ManagerOperationsPage({
             <div className="space-y-6">
               <div className="rounded-3xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/5">
                 <div className="flex flex-wrap items-center gap-3">
-                  <div className="font-mono text-sm font-bold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
+                  <div className="font-mono text-sm font-semibold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                     {selectedBooking.tracking_code}
                   </div>
                   <span
@@ -652,7 +652,7 @@ export default async function ManagerOperationsPage({
                         className="rounded-3xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/5"
                       >
                         <div className="flex flex-wrap items-center gap-3">
-                          <div className="font-mono text-xs font-bold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
+                          <div className="font-mono text-xs font-semibold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                             {item.item_tag}
                           </div>
 
@@ -728,7 +728,7 @@ export default async function ManagerOperationsPage({
                   className="rounded-3xl border border-red-300/30 bg-red-500/10 p-5 text-red-700 dark:text-red-100"
                 >
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="font-mono text-sm font-bold">{booking.tracking_code}</div>
+                    <div className="font-mono text-sm font-semibold">{booking.tracking_code}</div>
                     <span className="rounded-full border border-red-300/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]">
                       no items recorded
                     </span>
@@ -774,7 +774,7 @@ export default async function ManagerOperationsPage({
                     <span className="relative inline-flex h-4 w-4 rounded-full bg-red-500" />
                   </span>
 
-                  <div className="font-mono text-sm font-bold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
+                  <div className="font-mono text-sm font-semibold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                     {booking.tracking_code}
                   </div>
                   <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
@@ -849,7 +849,7 @@ function Metric({
       <div className="mt-5 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
         {label}
       </div>
-      <div className="mt-2 text-4xl font-black text-zinc-950 dark:text-white">{value}</div>
+      <div className="mt-2 text-4xl font-semibold tabular-nums text-zinc-950 dark:text-white">{value}</div>
       <div className="mt-2 text-sm text-zinc-600 dark:text-white/60">{note}</div>
     </div>
   );
@@ -871,7 +871,7 @@ function Panel({
       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent)]">
         {eyebrow}
       </div>
-      <h2 className="mt-2 text-3xl font-bold text-zinc-950 dark:text-white">{title}</h2>
+      <h2 className="mt-2 text-3xl font-semibold text-zinc-950 dark:text-white">{title}</h2>
       <p className="mt-2 text-zinc-600 dark:text-white/65">{subtitle}</p>
       <div className="mt-6">{children}</div>
     </section>

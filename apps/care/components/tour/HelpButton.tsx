@@ -43,7 +43,7 @@ export default function HelpButton({
                     <BookOpen className="h-3.5 w-3.5" />
                     Help & Guidance
                   </div>
-                  <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-zinc-950 dark:text-white">
+                  <h3 className="mt-1 text-lg font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white">
                     {help?.title || "Help"}
                   </h3>
                 </div>

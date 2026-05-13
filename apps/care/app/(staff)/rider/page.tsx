@@ -114,7 +114,7 @@ export default async function RiderOverviewPage() {
                 href={`/rider/pickups?booking=${encodeURIComponent(booking.tracking_code)}`}
                 className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-4 transition hover:border-[color:var(--accent)]/28 hover:bg-[color:var(--accent)]/8 dark:border-white/10 dark:bg-white/[0.04]"
               >
-                <div className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--accent)]">
+                <div className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
                   {booking.tracking_code}
                 </div>
                 <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
@@ -141,7 +141,7 @@ export default async function RiderOverviewPage() {
                 href={`/rider/deliveries?booking=${encodeURIComponent(booking.tracking_code)}`}
                 className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-4 transition hover:border-[color:var(--accent)]/28 hover:bg-[color:var(--accent)]/8 dark:border-white/10 dark:bg-white/[0.04]"
               >
-                <div className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--accent)]">
+                <div className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
                   {booking.tracking_code}
                 </div>
                 <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
@@ -168,7 +168,7 @@ export default async function RiderOverviewPage() {
               href={`/rider/history?booking=${encodeURIComponent(booking.tracking_code)}`}
               className="rounded-[1.6rem] border border-black/10 bg-black/[0.03] p-4 transition hover:border-[color:var(--accent)]/28 hover:bg-[color:var(--accent)]/8 dark:border-white/10 dark:bg-white/[0.04]"
             >
-              <div className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--accent)]">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
                 {booking.tracking_code}
               </div>
               <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">

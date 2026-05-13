@@ -321,7 +321,7 @@ export default async function OwnerSecurityPage({
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent)]">
           Owner security center
         </div>
-        <h1 className="mt-2 text-4xl font-black text-zinc-950 dark:text-white sm:text-5xl">
+        <h1 className="mt-2 text-4xl font-semibold text-zinc-950 dark:text-white sm:text-5xl">
           Audit real access, transport, and account state.
         </h1>
         <p className="mt-4 max-w-3xl text-zinc-600 dark:text-white/65">
@@ -910,7 +910,7 @@ function Metric({
       <div className="mt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45 sm:text-xs">
         {label}
       </div>
-      <div className="mt-1 text-3xl font-black text-zinc-950 dark:text-white sm:text-4xl">{value}</div>
+      <div className="mt-1 text-3xl font-semibold tabular-nums text-zinc-950 dark:text-white sm:text-4xl">{value}</div>
       <div className="mt-1 text-xs text-zinc-600 dark:text-white/60 sm:text-sm">{note}</div>
     </div>
   );
@@ -932,7 +932,7 @@ function Panel({
       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent)]">
         {eyebrow}
       </div>
-      <h2 className="mt-2 text-3xl font-bold text-zinc-950 dark:text-white">{title}</h2>
+      <h2 className="mt-2 text-3xl font-semibold text-zinc-950 dark:text-white">{title}</h2>
       <p className="mt-2 text-zinc-600 dark:text-white/65">{subtitle}</p>
       <div className="mt-6">{children}</div>
     </section>

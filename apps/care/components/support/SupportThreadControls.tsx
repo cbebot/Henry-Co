@@ -91,7 +91,7 @@ export default function SupportThreadControls({
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           Reply composer
         </div>
-        <h3 className="mt-1 text-2xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+        <h3 className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
           Send the next step clearly.
         </h3>
         <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/65">

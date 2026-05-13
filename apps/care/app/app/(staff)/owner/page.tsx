@@ -13,7 +13,7 @@ export default function OwnerPage() {
     <main className="space-y-8">
       <div className="care-card rounded-[36px] p-10">
         <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">Owner</div>
-        <h1 className="mt-4 text-5xl font-black tracking-tight">Care Division Command</h1>
+        <h1 className="mt-4 text-5xl font-semibold tracking-tight">Care Division Command</h1>
         <p className="mt-4 max-w-3xl text-white/68">
           This is your control layer. The best long-term structure is **one staff foundation + role gates**,
           not duplicated dashboards everywhere.

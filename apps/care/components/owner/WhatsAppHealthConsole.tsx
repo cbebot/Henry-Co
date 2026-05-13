@@ -261,7 +261,7 @@ export default function WhatsAppHealthConsole({
           <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
             Delivery receipts
           </div>
-          <div className="mt-2 text-lg font-black tracking-[-0.03em] text-zinc-950 dark:text-white">
+          <div className="mt-2 text-lg font-semibold tabular-nums tracking-[-0.03em] text-zinc-950 dark:text-white">
             {deliverySnapshot.delivered + deliverySnapshot.read}
           </div>
           <div className="mt-1 text-xs text-zinc-500 dark:text-white/48">
@@ -272,7 +272,7 @@ export default function WhatsAppHealthConsole({
           <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
             Awaiting receipts
           </div>
-          <div className="mt-2 text-lg font-black tracking-[-0.03em] text-zinc-950 dark:text-white">
+          <div className="mt-2 text-lg font-semibold tabular-nums tracking-[-0.03em] text-zinc-950 dark:text-white">
             {deliverySnapshot.accepted}
           </div>
           <div className="mt-1 text-xs text-zinc-500 dark:text-white/48">
@@ -283,7 +283,7 @@ export default function WhatsAppHealthConsole({
           <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
             Failed deliveries
           </div>
-          <div className="mt-2 text-lg font-black tracking-[-0.03em] text-zinc-950 dark:text-white">
+          <div className="mt-2 text-lg font-semibold tabular-nums tracking-[-0.03em] text-zinc-950 dark:text-white">
             {deliverySnapshot.failed}
           </div>
           <div className="mt-1 text-xs text-zinc-500 dark:text-white/48">
@@ -294,7 +294,7 @@ export default function WhatsAppHealthConsole({
           <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
             Approved templates
           </div>
-          <div className="mt-2 text-lg font-black tracking-[-0.03em] text-zinc-950 dark:text-white">
+          <div className="mt-2 text-lg font-semibold tabular-nums tracking-[-0.03em] text-zinc-950 dark:text-white">
             {approvedTemplates.length}
           </div>
           <div className="mt-1 text-xs text-zinc-500 dark:text-white/48">
@@ -414,7 +414,7 @@ export default function WhatsAppHealthConsole({
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
               Delivery diagnostics
             </div>
-            <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+            <h3 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
               Real message lifecycle
             </h3>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-zinc-600 dark:text-white/65">

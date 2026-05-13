@@ -103,7 +103,7 @@ export default async function OwnerImpersonatePage() {
       <div>
         <div className="flex items-center gap-3">
           <ShieldCheck className="h-7 w-7 text-[color:var(--accent)]" />
-          <h1 className="text-2xl font-bold tracking-tight text-[color:var(--accent)]">
+          <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--accent)]">
             Staff Impersonation
           </h1>
         </div>
