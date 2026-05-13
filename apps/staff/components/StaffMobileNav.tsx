@@ -56,12 +56,12 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
     <div className="lg:hidden">
       <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-[var(--staff-line)] bg-[var(--staff-bg-soft)]/95 px-4 backdrop-blur-md">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--staff-gold)] text-xs font-bold text-[var(--staff-bg)]">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--staff-gold)] text-xs font-semibold text-[var(--staff-bg)]">
             H
           </div>
           <div>
             <span className="text-sm font-semibold">Henry & Co.</span>
-            <span className="ml-1.5 text-[0.6rem] font-bold uppercase tracking-wider text-[var(--staff-gold)]">
+            <span className="ml-1.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--staff-gold)]">
               Staff
             </span>
           </div>
@@ -91,7 +91,7 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
           />
           <div className="fixed inset-y-0 right-0 z-50 w-[300px] overflow-y-auto staff-sidebar-bg shadow-2xl staff-scrollbar">
             <div className="flex items-center gap-3 border-b border-[var(--staff-line)] p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--staff-gold-soft)] text-sm font-bold text-[var(--staff-gold)]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--staff-gold-soft)] text-sm font-semibold text-[var(--staff-gold)]">
                 {initials(viewer.fullName)}
               </div>
               <div className="min-w-0 flex-1">

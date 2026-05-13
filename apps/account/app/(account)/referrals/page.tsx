@@ -87,7 +87,7 @@ export default async function ReferralsPage() {
           <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
             Total Referred
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--acct-ink)]">
+          <p className="hc-mono mt-1 text-2xl font-semibold text-[var(--acct-ink)]">
             {stats.totalReferred}
           </p>
         </div>
@@ -95,7 +95,7 @@ export default async function ReferralsPage() {
           <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
             Signed Up
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--acct-ink)]">
+          <p className="hc-mono mt-1 text-2xl font-semibold text-[var(--acct-ink)]">
             {stats.converted}
           </p>
         </div>
@@ -103,7 +103,7 @@ export default async function ReferralsPage() {
           <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
             Qualified
           </p>
-          <p className="mt-1 text-2xl font-bold text-emerald-600">
+          <p className="hc-mono mt-1 text-2xl font-semibold text-emerald-600">
             {stats.qualified}
           </p>
         </div>
@@ -111,7 +111,7 @@ export default async function ReferralsPage() {
           <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
             Flagged
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--acct-alert,#E85858)]">
+          <p className="hc-mono mt-1 text-2xl font-semibold text-[var(--acct-alert,#E85858)]">
             {stats.flagged}
           </p>
         </div>
@@ -141,7 +141,7 @@ export default async function ReferralsPage() {
         <p className="acct-kicker mb-3">How It Works</p>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-xl bg-[var(--acct-surface)] p-4">
-            <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--acct-gold-soft)] text-sm font-bold text-[var(--acct-gold)]">
+            <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--acct-gold-soft)] text-sm font-semibold text-[var(--acct-gold)]">
               1
             </div>
             <p className="text-sm font-semibold text-[var(--acct-ink)]">
@@ -153,7 +153,7 @@ export default async function ReferralsPage() {
             </p>
           </div>
           <div className="rounded-xl bg-[var(--acct-surface)] p-4">
-            <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--acct-gold-soft)] text-sm font-bold text-[var(--acct-gold)]">
+            <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--acct-gold-soft)] text-sm font-semibold text-[var(--acct-gold)]">
               2
             </div>
             <p className="text-sm font-semibold text-[var(--acct-ink)]">
@@ -166,7 +166,7 @@ export default async function ReferralsPage() {
             </p>
           </div>
           <div className="rounded-xl bg-[var(--acct-surface)] p-4">
-            <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--acct-gold-soft)] text-sm font-bold text-[var(--acct-gold)]">
+            <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--acct-gold-soft)] text-sm font-semibold text-[var(--acct-gold)]">
               3
             </div>
             <p className="text-sm font-semibold text-[var(--acct-ink)]">

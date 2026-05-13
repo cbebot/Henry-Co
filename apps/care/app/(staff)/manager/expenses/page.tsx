@@ -101,7 +101,7 @@ export default async function ManagerExpensesPage() {
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           Manager expense room
         </div>
-        <h2 className="mt-2 text-4xl font-black text-white sm:text-5xl">
+        <h2 className="mt-2 text-4xl font-semibold text-white sm:text-5xl">
           Record every operational cost immediately.
         </h2>
         <p className="mt-4 max-w-3xl text-white/65">
@@ -381,7 +381,7 @@ function Panel({
       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
         {eyebrow}
       </div>
-      <h2 className="mt-2 text-3xl font-bold text-white">{title}</h2>
+      <h2 className="mt-2 text-3xl font-semibold text-white">{title}</h2>
       <p className="mt-2 text-white/65">{subtitle}</p>
       <div className="mt-6">{children}</div>
     </section>

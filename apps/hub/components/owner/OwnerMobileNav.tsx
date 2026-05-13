@@ -61,7 +61,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
           <Logo size={28} />
           <div>
             <span className="text-sm font-semibold">Henry & Co.</span>
-            <span className="ml-1.5 text-[0.6rem] font-bold uppercase tracking-wider text-[var(--owner-accent)]">
+            <span className="ml-1.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--owner-accent)]">
               CMD
             </span>
           </div>
@@ -94,7 +94,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
                   className="h-10 w-10 rounded-full object-cover ring-2 ring-[var(--owner-accent)]/30"
                 />
               ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--owner-accent-soft)] text-sm font-bold text-[var(--owner-accent)]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--owner-accent-soft)] text-sm font-semibold text-[var(--owner-accent)]">
                   {initials(user.fullName)}
                 </div>
               )}

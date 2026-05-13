@@ -91,7 +91,7 @@ export default function NotificationCenterPanel({
             <BellRing className="h-4 w-4" />
             {title}
           </div>
-          <h2 className="mt-4 text-3xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+          <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
             {center.unreadCount > 0
               ? `${center.unreadCount} unread operational alert${center.unreadCount === 1 ? "" : "s"}`
               : "No unread operational alerts"}

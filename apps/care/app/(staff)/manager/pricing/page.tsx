@@ -71,7 +71,7 @@ export default async function ManagerPricingPage() {
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           Manager pricing desk
         </div>
-        <h1 className="mt-2 text-4xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-5xl">
+        <h1 className="mt-2 text-4xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-5xl">
           Draft pricing confidently, then hand final authority to the owner.
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-zinc-600 dark:text-white/65">
@@ -108,7 +108,7 @@ export default async function ManagerPricingPage() {
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
             Proposal composer
           </div>
-          <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+          <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
             Draft a new price or adjustment
           </h2>
           <form action={savePricingProposalAction} className="mt-6 grid gap-4 rounded-[1.9rem] border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/[0.04] md:grid-cols-2 xl:grid-cols-4">
@@ -160,7 +160,7 @@ export default async function ManagerPricingPage() {
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
             Proposal queue
           </div>
-          <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+          <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
             Track every proposed change
           </h2>
           <div className="mt-6 grid gap-4">
@@ -175,7 +175,7 @@ export default async function ManagerPricingPage() {
                       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
                         {proposal.payload.category}
                       </div>
-                      <h3 className="mt-1 text-xl font-bold text-zinc-950 dark:text-white">
+                      <h3 className="mt-1 text-xl font-semibold text-zinc-950 dark:text-white">
                         {proposal.payload.itemName}
                       </h3>
                       <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
@@ -218,7 +218,7 @@ export default async function ManagerPricingPage() {
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           Published reference
         </div>
-        <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+        <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
           Current live pricing
         </h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -230,7 +230,7 @@ export default async function ManagerPricingPage() {
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
                 {item.category}
               </div>
-              <div className="mt-1 text-xl font-bold text-zinc-950 dark:text-white">{item.item_name}</div>
+              <div className="mt-1 text-xl font-semibold text-zinc-950 dark:text-white">{item.item_name}</div>
               <div className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
                 {item.description || "No public description on this line."}
               </div>
@@ -274,7 +274,7 @@ function MetricCard({
       <div className="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
         {label}
       </div>
-      <div className="mt-2 text-4xl font-black text-zinc-950 dark:text-white">{value}</div>
+      <div className="mt-2 text-4xl font-semibold text-zinc-950 dark:text-white">{value}</div>
       <div className="mt-2 text-sm text-zinc-600 dark:text-white/60">{note}</div>
     </article>
   );

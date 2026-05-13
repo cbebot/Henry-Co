@@ -80,7 +80,7 @@ function SourceMark({
 
   return (
     <div
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-[0.7rem] font-bold text-white"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-[0.7rem] font-semibold text-white"
       style={{ backgroundColor: notification.source.accent }}
       aria-hidden
     >
@@ -300,7 +300,7 @@ export default function NotificationBell({
         {unreadCount > 0 ? (
           <span
             key={pulseKey}
-            className="acct-bell-badge absolute -right-0.5 -top-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-[5px] text-[0.62rem] font-bold leading-none text-white tabular-nums shadow-[0_0_0_2px_var(--acct-bg-elevated)]"
+            className="acct-bell-badge absolute -right-0.5 -top-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-[5px] text-[0.62rem] font-semibold leading-none text-white tabular-nums shadow-[0_0_0_2px_var(--acct-bg-elevated)]"
             style={{ backgroundColor: `var(${badgeColor})` }}
             aria-hidden
           >

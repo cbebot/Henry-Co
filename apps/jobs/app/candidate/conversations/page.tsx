@@ -51,7 +51,7 @@ export default async function CandidateConversationsPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-semibold">{conv.subject || "Hiring conversation"}</span>
                       {conv.unreadCount > 0 && (
-                        <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[var(--jobs-accent)] px-1.5 text-xs font-bold text-white">
+                        <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[var(--jobs-accent)] px-1.5 text-xs font-semibold tabular-nums text-white">
                           {conv.unreadCount}
                         </span>
                       )}

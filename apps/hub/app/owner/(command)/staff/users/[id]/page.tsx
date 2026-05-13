@@ -52,27 +52,27 @@ export default async function StaffUserIntelligencePage({ params }: { params: Pr
       >
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
-            <div className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Display name</div>
+            <div className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Display name</div>
             <div className="mt-1 text-lg font-semibold text-[var(--acct-ink)]">{member.fullName}</div>
           </div>
           <div className="rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
-            <div className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Email</div>
+            <div className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Email</div>
             <div className="mt-1 text-sm font-medium text-[var(--acct-ink)]">{member.email || "—"}</div>
           </div>
           <div className="rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
-            <div className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Division</div>
+            <div className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Division</div>
             <div className="mt-1 text-sm text-[var(--acct-ink)]">
               {member.division ? divisionLabel(member.division) : "Unassigned"}
             </div>
           </div>
           <div className="rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
-            <div className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Activity</div>
+            <div className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Activity</div>
             <div className="mt-1 text-sm text-[var(--acct-ink)]">
               {member.lastSeen ? `Last seen ${timeAgo(String(member.lastSeen))}` : "No sign-in yet"}
             </div>
           </div>
           <div className="md:col-span-2 rounded-[1.25rem] border border-dashed border-[var(--acct-line)] bg-[var(--acct-bg)] p-4">
-            <div className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Technical user id</div>
+            <div className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Technical user id</div>
             <code className="mt-1 block break-all text-xs text-[var(--acct-muted)]">{member.id}</code>
           </div>
         </div>

@@ -51,12 +51,12 @@ function NavLink({
         {createElement(icon, { size: 18, strokeWidth: isActive ? 2.2 : 1.8 })}
         <span className="flex-1 truncate">{item.label}</span>
         {isDivision && (
-          <span className="rounded-md bg-[var(--staff-accent-soft)] px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-[var(--staff-accent)]">
+          <span className="rounded-md bg-[var(--staff-accent-soft)] px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--staff-accent)]">
             div
           </span>
         )}
         {item.badge != null && item.badge > 0 && (
-          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--staff-gold)] px-1.5 text-[0.65rem] font-bold text-[var(--staff-bg)]">
+          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--staff-gold)] px-1.5 text-[0.65rem] font-semibold tabular-nums text-[var(--staff-bg)]">
             {item.badge}
           </span>
         )}
@@ -136,14 +136,14 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-[var(--staff-sidebar-width)] lg:fixed lg:inset-y-0 lg:left-0 lg:border-r lg:border-[var(--staff-line)] staff-sidebar-bg">
       <div className="flex h-16 items-center gap-3 border-b border-[var(--staff-line)] px-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--staff-gold)] text-sm font-bold text-[var(--staff-bg)]">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--staff-gold)] text-sm font-semibold text-[var(--staff-bg)]">
           H
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-[var(--staff-ink)]">
             Henry & Co.
           </p>
-          <p className="text-[0.6rem] font-bold uppercase tracking-wider text-[var(--staff-gold)]">
+          <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--staff-gold)]">
             Staff HQ
           </p>
         </div>
@@ -186,7 +186,7 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
 
       <div className="border-t border-[var(--staff-line)] p-3">
         <div className="flex items-center gap-3 rounded-xl p-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--staff-gold-soft)] text-xs font-bold text-[var(--staff-gold)] ring-2 ring-[var(--staff-gold)]/30">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--staff-gold-soft)] text-xs font-semibold text-[var(--staff-gold)] ring-2 ring-[var(--staff-gold)]/30">
             {initials(viewer.fullName)}
           </div>
           <div className="min-w-0 flex-1">

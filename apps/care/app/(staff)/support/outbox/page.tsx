@@ -77,7 +77,7 @@ export default async function SupportOutboxPage() {
             <Send className="h-3.5 w-3.5" />
             Sent messages
           </div>
-          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-3xl">
             Outbox
           </h2>
           <p className="mt-1 hidden text-sm text-zinc-500 dark:text-white/50 sm:block">
@@ -110,7 +110,7 @@ export default async function SupportOutboxPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[color:var(--accent)]">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
                         {msg.threadRef}
                       </span>
                       {msg.emailStatus ? (

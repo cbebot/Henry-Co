@@ -89,7 +89,7 @@ export default async function ManagerPage() {
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           Manager operations room
         </div>
-        <h2 className="mt-2 text-4xl font-black text-white sm:text-5xl">
+        <h2 className="mt-2 text-4xl font-semibold text-white sm:text-5xl">
           Run the day. Keep the records truthful.
         </h2>
         <p className="mt-4 max-w-3xl text-white/65">
@@ -152,7 +152,7 @@ export default async function ManagerPage() {
                   key={booking.id}
                   className="rounded-3xl border border-white/10 bg-white/[0.04] p-5"
                 >
-                  <div className="font-mono text-sm font-bold text-[color:var(--accent-strong)]">
+                  <div className="font-mono text-sm font-semibold text-[color:var(--accent-strong)]">
                     {booking.tracking_code}
                   </div>
                   <div className="mt-2 text-lg font-semibold text-white">
@@ -276,7 +276,7 @@ function Panel({
       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
         {eyebrow}
       </div>
-      <h2 className="mt-2 text-3xl font-bold text-white">{title}</h2>
+      <h2 className="mt-2 text-3xl font-semibold text-white">{title}</h2>
       <p className="mt-2 text-white/65">{subtitle}</p>
       <div className="mt-6">{children}</div>
     </section>

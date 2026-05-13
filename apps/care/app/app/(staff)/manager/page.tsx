@@ -12,7 +12,7 @@ export default function ManagerPage() {
     <main className="space-y-8">
       <div className="care-card rounded-[36px] p-10">
         <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">Manager</div>
-        <h1 className="mt-4 text-5xl font-black tracking-tight">Operations & Execution</h1>
+        <h1 className="mt-4 text-5xl font-semibold tracking-tight">Operations & Execution</h1>
         <p className="mt-4 max-w-3xl text-white/68">
           Your manager dashboard stays focused: execution, coordination, quality. That’s what keeps your permissions clean.
         </p>

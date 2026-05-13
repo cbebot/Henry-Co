@@ -40,7 +40,7 @@ export default function UserAvatar({
   if (name) {
     return (
       <div
-        className={`flex items-center justify-center bg-[var(--acct-gold-soft)] text-sm font-bold text-[var(--acct-gold)] ${roundedClassName} ${className}`}
+        className={`flex items-center justify-center bg-[var(--acct-gold-soft)] text-sm font-semibold text-[var(--acct-gold)] ${roundedClassName} ${className}`}
         style={{ width: size, height: size }}
       >
         {initials(name)}

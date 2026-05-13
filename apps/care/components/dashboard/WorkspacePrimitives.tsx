@@ -33,7 +33,7 @@ export function WorkspaceHero({
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           {eyebrow}
         </div>
-        <h1 className="mt-3 text-4xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-5xl">
+        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-5xl">
           {title}
         </h1>
         <p className="mt-4 max-w-4xl text-sm leading-8 text-zinc-600 dark:text-white/66 sm:text-base">
@@ -89,7 +89,7 @@ export function WorkspacePanel({
       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
         {eyebrow}
       </div>
-      <h2 className="mt-2 text-3xl font-bold tracking-[-0.04em] text-zinc-950 dark:text-white">
+      <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
         {title}
       </h2>
       <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/64">{subtitle}</p>

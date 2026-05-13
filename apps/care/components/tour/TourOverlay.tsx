@@ -70,7 +70,7 @@ export default function TourOverlay() {
 
           {/* Content */}
           <div className="px-8 pb-2 pt-4">
-            <h3 className="text-xl font-black tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-2xl">
+            <h3 className="text-xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-2xl">
               {step.title}
             </h3>
             <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/65">

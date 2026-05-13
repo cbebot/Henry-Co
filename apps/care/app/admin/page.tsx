@@ -55,7 +55,7 @@ export default async function CareAdminPage() {
             Admin shell ready
           </div>
 
-          <h1 className="mt-4 text-4xl font-black tracking-[-0.03em]">
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.03em]">
             Control center for Fabric Care
           </h1>
 
@@ -79,7 +79,7 @@ export default async function CareAdminPage() {
                 <Icon className="h-6 w-6 text-[#F2D77A]" />
               </div>
 
-              <h2 className="mt-5 text-2xl font-bold tracking-[-0.02em]">{card.title}</h2>
+              <h2 className="mt-5 text-2xl font-semibold tracking-[-0.02em]">{card.title}</h2>
               <p className="mt-3 text-sm leading-7 text-white/65">{card.text}</p>
 
               <div className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/55">

@@ -44,7 +44,7 @@ export default function BookingRailWorkspace({
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
               Active queue
             </div>
-            <div className="mt-1 text-2xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white">
+            <div className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white">
               Operational rails
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function BookingRailWorkspace({
                           }`}
                         >
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--accent)]">
+                            <span className="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--accent)]">
                               {booking.tracking_code}
                             </span>
                             <span className="rounded-full border border-black/10 bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-white/70">

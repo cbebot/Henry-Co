@@ -29,7 +29,7 @@ export default async function RiderExpensesPage() {
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent)]">
           Rider expenses
         </div>
-        <h1 className="mt-2 text-4xl font-black text-zinc-950 dark:text-white">
+        <h1 className="mt-2 text-4xl font-semibold text-zinc-950 dark:text-white">
           Record movement costs clearly.
         </h1>
         <p className="mt-3 max-w-3xl text-zinc-600 dark:text-white/65">
