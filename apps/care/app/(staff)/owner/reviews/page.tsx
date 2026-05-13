@@ -25,7 +25,7 @@ export default async function OwnerReviewsPage() {
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           Reviews
         </div>
-        <h2 className="mt-2 text-4xl font-black text-white">Approve customer stories</h2>
+        <h2 className="mt-2 text-4xl font-semibold text-white">Approve customer stories</h2>
         <p className="mt-3 max-w-2xl text-white/65">
           Reviews only appear publicly after approval. Optional customer photos are shown here
           before you decide whether the story is ready for the brand.
@@ -41,7 +41,7 @@ export default async function OwnerReviewsPage() {
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="text-lg font-bold text-white">{review.customer_name}</div>
+                  <div className="text-lg font-semibold text-white">{review.customer_name}</div>
                   <div className="text-sm text-white/50">
                     {review.city || "No city"} • {formatDate(review.created_at)}
                   </div>

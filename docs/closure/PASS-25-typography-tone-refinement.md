@@ -234,3 +234,225 @@ The Pass 25 in-scope dashboards (`account` + `hub` + `staff`) plus the
 divisions other than care now carry zero stray heavy-weight Tailwind
 classes — the only `font-bold` left in the in-scope surface are the
 four currency anchors that the prompt asked us to preserve.
+
+---
+
+## 8. Care division — completion sweep (2026-05-13)
+
+The original PASS 25 deferred `apps/care/app/(staff)/**` because rebalancing
+care without explicit owner sign-off would have changed the felt identity of
+that division. The owner gave the sign-off and asked for a maximum-effort
+completion. This section documents that follow-up sweep.
+
+### 8.1 Weight occurrence map (before — Care dashboards only)
+
+**`apps/care/app/(staff)/**` — 81 occurrences across 24 files**
+
+| Pattern | Count | Locations |
+|---|---|---|
+| h1 hero `text-4xl/5xl font-black` | 12 | every owner/manager/support/rider page hero |
+| h2 section `text-3xl/4xl font-black` and `font-bold` | 23 | every Panel/StatCard helper title + inline section headers |
+| h3 card titles `font-bold`/`font-black` | 11 | pricing item rows, review/payment customer-name cards, inbox empty-states |
+| Eyebrow / chip / threadRef `font-bold` uppercase | 11 | staff/rider eyebrows, support outbox threadRef, manager mono codes |
+| Mono tracking codes `font-bold` | 9 | operations / records / owner urgency lists, manager queue rails |
+| MetricCard / InfoTile / StatCard `value` divs `font-black` (counts-only) | 4 | pricing page metric helpers (owner + manager), support queue card values, owner staff metric helper, owner security stat helper |
+| MetricCard / InfoTile / StatCard `value` divs `font-black` (mixed counts + currency) | 7 | owner/finance MetricCard helper, owner/page MetricCard helper, manager/page MetricCard + InfoTile helpers, manager/expenses MetricCard helper, manager/operations Metric helper, owner/records StatCard helper |
+| Inline currency display divs `font-black` | 5 | owner/finance payments + expense amounts (×3), owner/page payments + expense amounts (×2), manager/expenses recent amount, support/expenses + rider/expenses amounts |
+| Inline button `font-bold` | 0 | (zero in `(staff)`) |
+
+**`apps/care/components/**` that flow into the staff shells — 25 occurrences across 11 files**
+
+| File | Lines | Pattern |
+|---|---|---|
+| `components/staff/staff-shell.tsx` | 149, 247, 437, 467, 552, 574 | brand initials, "X unread alerts" drawer header, brand-name truncate, roleLabel chip, page-meta `<h1>` (rendered on every staff page), notification-count pill |
+| `components/staff/NotificationCenterPanel.tsx` | 94 | unread-alert h2 |
+| `components/staff/ImpersonationBanner.tsx` | 27 | "Exit impersonation" button `font-bold` |
+| `components/support/SupportThreadWorkspace.tsx` | 335, 591, 689 | workflow h2, threadRef eyebrow, selected-thread h3 |
+| `components/support/SupportThreadControls.tsx` | 94 | reply-composer h3 |
+| `components/dashboard/BookingRailWorkspace.tsx` | 47, 93 | "Operational rails" eyebrow, mono tracking_code chip |
+| `components/dashboard/WorkspacePrimitives.tsx` | 36, 68, 92 | WorkspaceHero h1, WorkspaceMetricCard value, WorkspacePanel h2 |
+| `components/owner/WhatsAppHealthConsole.tsx` | 264, 275, 286, 297, 417 | 4× delivery-metric count divs (delivered/accepted/failed/approved), diagnostics h3 |
+| `components/tour/HelpButton.tsx` | 46 | help-drawer h3 |
+| `components/tour/TourOverlay.tsx` | 73 | tour-step h3 |
+| `components/tour/TourWelcomePrompt.tsx` | 35 | "would you like a quick guided tour" h3 |
+
+**Total Care in-scope: 106 heavy-weight occurrences.**
+
+### 8.2 Pattern analysis — why each got refined
+
+Apply the same Pass 25 principles the original commit used, plus one Care-specific
+adjustment:
+
+| Principle | Care application |
+|---|---|
+| Page titles (h1) → regular/medium; size carries the authority | All `text-4xl/5xl font-black` h1 hero titles dropped to `font-semibold`. Size + tracking + accent kicker still carry Care's identity. |
+| Section headers (h2) → medium, never bold | All `text-3xl font-black`/`font-bold` h2s → `font-semibold`. Pass 19 `h2` token = 600. |
+| Card titles (h3) → medium or semibold, never bold | All `text-xl font-bold` and `text-2xl font-black` h3s → `font-semibold`. |
+| Labels with uppercase letter-spacing → medium | Eyebrows, threadRefs, "Reviewing" / "Selected proof" / "Operational rails" → `font-semibold`. |
+| Status pills / chips / counts → medium | Notification count chip moved to `font-semibold tabular-nums`; staff-shell brand initials and role-label chip dropped to `font-semibold`. |
+| Mono tracking codes → semibold (mono + tracking-wider already carry it) | All `font-mono text-xs/sm font-bold` tracking-code displays → `font-semibold`. |
+| Currency rendering → preserved verbatim | Every inline `formatMoney(...)` line and every shared `MetricCard.value` whose callers pass currency was left at `font-black`. |
+| Care-specific: keep Care's accent + size as identity, not weight | `tracking-[-0.04em]`, `text-4xl`, accent-coloured eyebrows, and Care's distinctive backdrop blurs all retained — only the weight class moved. |
+
+### 8.3 Replacements applied
+
+**Components flowing into every staff page (highest leverage)**:
+
+- `components/dashboard/WorkspacePrimitives.tsx`: `WorkspaceHero.h1` 4xl/5xl → `font-semibold`; `WorkspacePanel.h2` 3xl → `font-semibold`. `WorkspaceMetricCard.value` at L68 **preserved at `font-black`** because the helper is consumed by several Care pages that pass currency through it (mirrors the precedent set by `apps/hub/components/owner/MetricCard.tsx` in the original PASS 25).
+- `components/staff/staff-shell.tsx`: every `font-black` on the shell (brand initials, "X unread alerts" drawer headline, brand-name truncate, role-label chip, the page-meta `<h1>` that wraps every staff page, and the notification count pill) → `font-semibold` (count pill picks up `tabular-nums`). This single change calms the chrome on every Care staff route.
+- `components/staff/NotificationCenterPanel.tsx`: h2 → `font-semibold`.
+- `components/staff/ImpersonationBanner.tsx`: "Exit impersonation" button → `font-semibold`.
+- `components/support/SupportThreadWorkspace.tsx`: workflow h2 + threadRef eyebrow + selected-thread h3 → `font-semibold`.
+- `components/support/SupportThreadControls.tsx`: reply-composer h3 → `font-semibold`.
+- `components/dashboard/BookingRailWorkspace.tsx`: "Operational rails" + mono tracking_code → `font-semibold`.
+- `components/owner/WhatsAppHealthConsole.tsx`: 4× delivery-count divs → `font-semibold tabular-nums` (these are counts, not currency); diagnostics h3 → `font-semibold`.
+- `components/tour/HelpButton.tsx` + `TourOverlay.tsx` + `TourWelcomePrompt.tsx`: 3× h3 → `font-semibold`.
+
+**Per-page surfaces (`apps/care/app/(staff)/**`)**:
+
+- `owner/page.tsx`: h1 hero + mono `booking.tracking_code` + Panel h2-helper → `font-semibold`. **Preserved**: L403 payment amount, L441 expense amount, L613 MetricCard helper (callers mix counts + currency: balance line passes `formatMoney(summary.balance)`).
+- `owner/finance/page.tsx`: h1 hero + "Where expense weight is concentrating" h2 + Panel h2-helper → `font-semibold`. **Preserved**: L351 payment amount, L389 expense amount, L440 expense amount, L590 MetricCard helper (3 of 4 callers pass currency).
+- `owner/pricing/page.tsx`: h1 hero + 3× h2s + h3 itemName + MetricCard helper value → `font-semibold` (no caller passes currency on the pricing-governance page; all 4 metric callers pass counts or strings).
+- `owner/records/page.tsx`: h1 hero + h2 + mono `row.item_tag` → `font-semibold`. **Preserved**: L298 StatCard helper (1 of 3 callers passes `formatMoney(totalTrackedValue)`).
+- `owner/reviews/page.tsx`: h2 hero + customer-name → `font-semibold`.
+- `owner/settings/page.tsx`: h1 hero + section h2-helper → `font-semibold`.
+- `owner/staff/page.tsx`: h1 hero + h2 form intro + MetricCard helper → `font-semibold` (all 4 metric callers pass counts: managers/missing-profiles/auth-drift/archived).
+- `owner/security/page.tsx`: h1 hero + StatCard helper + Panel h2-helper → `font-semibold` (with `tabular-nums` added to the count div).
+- `owner/insights/page.tsx`: mono booking.tracking_code eyebrow → `font-semibold`.
+- `owner/impersonate/page.tsx`: page h1 → `font-semibold`.
+- `manager/page.tsx`: h2 hero + mono tracking_code + Panel h2-helper → `font-semibold`. **Preserved**: L257 MetricCard helper (1 of 5 callers passes currency: Recorded inflow), L305 InfoTile helper (1 of 3 callers passes currency: Overall balance).
+- `manager/operations/page.tsx`: h1 hero + 5× mono tracking_code displays + Panel h2-helper → `font-semibold`; Metric helper L852 → `font-semibold tabular-nums` (all 4 callers pass counts; this helper is operations-specific and never receives currency).
+- `manager/expenses/page.tsx`: h2 hero + Panel h2-helper → `font-semibold`. **Preserved**: L272 expense amount, L362 MetricCard helper (3 of 4 callers pass currency: Total expenses / Approved expenses / Recorded inflow).
+- `manager/pricing/page.tsx`: h1 hero + 4× h2s + 2× h3 itemName/item_name + MetricCard helper → `font-semibold` (all 4 metric callers pass counts or strings on this governance surface).
+- `support/page.tsx`: queue-card value div → `font-semibold tabular-nums` (these are counts, not currency).
+- `support/reviews/page.tsx`: queue-rail h3 + selected-review h3 → `font-semibold`.
+- `support/payments/page.tsx`: queue-rail h3 + selected-payment h3 → `font-semibold` (the `due {formatMoney(item.amountDue)}` pill stays — it was already at `font-semibold`).
+- `support/outbox/page.tsx`: h2 + threadRef eyebrow → `font-semibold`.
+- `support/expenses/page.tsx`: h1 hero → `font-semibold`. **Preserved**: L100 expense amount.
+- `support/inbox/reply/page.tsx` + `support/inbox/assign/page.tsx`: 3× "No thread selected" / "Thread not found" / customer-name h2s → `font-semibold`.
+- `staff/page.tsx` + `rider/page.tsx`: mono tracking_code eyebrows → `font-semibold`.
+- `rider/expenses/page.tsx`: h1 hero → `font-semibold`. **Preserved**: L99 expense amount.
+
+### 8.4 Preserved currency anchors (Care) — 15 lines total
+
+These lines were intentionally left at `font-black` (or unchanged) because each
+one directly renders a currency value via `formatMoney(...)` or is a shared
+helper whose callers can pass currency through it:
+
+| File | Line | Why |
+|---|---|---|
+| `apps/care/components/dashboard/WorkspacePrimitives.tsx` | 68 | `WorkspaceMetricCard.value` — shared, callers may pass `formatMoney(...)` |
+| `apps/care/app/(staff)/owner/finance/page.tsx` | 351 | inline `formatMoney(payment.amount)` |
+| `apps/care/app/(staff)/owner/finance/page.tsx` | 389 | inline `formatMoney(expense.amount)` |
+| `apps/care/app/(staff)/owner/finance/page.tsx` | 440 | inline `formatMoney(expense.amount)` |
+| `apps/care/app/(staff)/owner/finance/page.tsx` | 590 | finance MetricCard helper (3 of 4 callers pass currency) |
+| `apps/care/app/(staff)/owner/page.tsx` | 403 | inline `formatMoney(payment.amount)` |
+| `apps/care/app/(staff)/owner/page.tsx` | 441 | inline `formatMoney(expense.amount)` |
+| `apps/care/app/(staff)/owner/page.tsx` | 613 | owner-home MetricCard helper (balance caller passes currency) |
+| `apps/care/app/(staff)/owner/records/page.tsx` | 298 | StatCard helper (Tracked value caller passes currency) |
+| `apps/care/app/(staff)/manager/page.tsx` | 257 | manager-home MetricCard helper (Recorded inflow caller passes currency) |
+| `apps/care/app/(staff)/manager/page.tsx` | 305 | manager-home InfoTile helper (Overall balance caller passes currency) |
+| `apps/care/app/(staff)/manager/expenses/page.tsx` | 272 | inline `formatMoney(expense.amount)` |
+| `apps/care/app/(staff)/manager/expenses/page.tsx` | 362 | manager-expenses MetricCard helper (3 of 4 callers pass currency) |
+| `apps/care/app/(staff)/support/expenses/page.tsx` | 100 | inline `formatMoney(expense.amount)` |
+| `apps/care/app/(staff)/rider/expenses/page.tsx` | 99 | inline `formatMoney(expense.amount)` |
+
+**Refined: 91 of 106 in-scope occurrences (15 currency anchors preserved verbatim).**
+
+### 8.5 Rhythm check — Care dashboards
+
+Walked each Care staff route mentally against the same Pass 25 reading-priority
+test the original pass used (page h1 → section h2 → body → currency anchor):
+
+- **Care owner home** (`/owner`): kicker → h1 at `text-4xl font-semibold` (Care identity now lives in the kicker + tracking + size, not the weight) → Panel h2s `font-semibold` → currency lines still anchored as the heaviest type on the page. Money speaks loudest, just like the rest of the dashboards.
+- **Care finance** (`/owner/finance`): the heaviest type on the page is now exclusively `formatMoney(...)` — inflow / outflow / balance MetricCards, payment / expense amount columns, category-pressure InfoTiles. The h1 / h2 ladder reads as a calm climb, no longer screaming.
+- **Care pricing desks** (`/manager/pricing` + `/owner/pricing`): governance surfaces (no live currency in the metric cards — only counts + strings), so every metric value dropped to `font-semibold`. The published-pricing list rows still anchor their `currency(item.price)` strings via the `font-semibold` pill, matching the Pass 25 "pills: medium" rule.
+- **Care operations** (`/manager/operations`): h1 dropped; the operations Metric helper, which only receives counts (active bookings / urgent queue / registered pieces / intake risk), dropped to `font-semibold tabular-nums`. Every mono tracking_code chip is now `font-semibold` — the mono family + tracking-wider does the readability work.
+- **Care expenses surfaces** (manager / rider / support): h1 / h2 dropped; the per-expense `formatMoney(expense.amount)` lines are preserved as the heaviest anchor on each card.
+- **Care support workflow** (`/support/inbox` + reply + assign + outbox + payments + reviews): every customer-name h2/h3 and queue-rail title dropped to `font-semibold`; threadRef eyebrows dropped too. The reading hierarchy now goes "kicker → customer name (semibold) → subject (regular) → body", which finally reads like a support inbox instead of a settings panel.
+- **Care WhatsApp health console** (`/owner/security`): the four delivery-state count tiles (delivered / accepted / failed / approved templates) dropped to `font-semibold tabular-nums`. These are counts, not currency, so the Pass 25 "money speaks loudest" principle keeps holding: no count on this page competes with the currency lines elsewhere in the division.
+- **Care staff shell chrome** (every staff route): the page-meta `<h1>` rendered by `staff-shell.tsx` for every Care staff route dropped from `font-black` to `font-semibold`. This single change calms the topmost element on every Care staff page in one stroke.
+- **Care tour overlays / help drawer / welcome prompt**: 3× h3 dropped. These are short-lived contextual surfaces but they were rendering at the same weight as a page hero — calmer now.
+
+The Care division still feels distinctly itself: large hero sizes, accent-coloured kickers, the soft-blur backdrop, the `tracking-[-0.04em]` letter tightening. What changed is exactly the thing the prompt named — the weight stack no longer shouts.
+
+### 8.6 Untouched by design (Care)
+
+- **Pass 19 type scale**: unchanged. No edits to `packages/ui/src/styles/globals.css` or `packages/dashboard-shell/src/tokens/type.ts`.
+- **Care `formatMoney(...)` rendering**: preserved verbatim on every line that renders a currency string.
+- **Font family**: no change to `--font-inter`, `--font-source-serif`, or `--hc-font-mono`. Care still loads its own font stack from its layout file.
+- **Care accent palette / motion / shadow tokens**: unchanged.
+- **`apps/care/app/(public)/**` and `apps/care/components/care/**`, `components/auth/**`, `components/public/**`, `components/ui/CareLoading.tsx`, `apps/care/app/admin/**`, `apps/care/app/workspace/access/**`**: out of dashboard scope. These are public-facing booking flows, login surfaces, and customer-facing marketing — the heavy-weight aesthetic on those is the intentional brand voice and is *not* part of the Pass 25 "dashboards" remit. The prompt scope was "user dashboard, owner dashboard, staff dashboards"; this completion respected that exactly.
+
+### 8.7 Validation (Care)
+
+| Check | Result |
+|---|---|
+| `pnpm --filter @henryco/care run lint` | ✓ Passes (no warnings introduced) |
+| `pnpm --filter @henryco/care run typecheck` | ✓ Passes (zero TS errors) |
+| `pnpm --filter @henryco/care run build` | ✓ Builds clean — 33 static pages generated, no compile errors |
+| Post-edit grep for `font-bold\|font-extrabold\|font-black` in `apps/care/app/(staff)/**` | ✓ Only the 14 currency-touching lines remain (3 in owner/finance, 3 in owner/page, 2 in manager/expenses, 2 in manager/page, 1 each in owner/records, support/expenses, rider/expenses) |
+| Post-edit grep across the 11 in-scope Care component files | ✓ Only `WorkspacePrimitives.tsx:68` remains (shared MetricCard `value`, preserved per precedent) |
+| Original PASS 25 in-scope dashboards (`apps/account`, `apps/hub`, `apps/staff`) | ✓ Untouched — no regressions possible |
+| Pass 19 type scale + token files | ✓ Untouched |
+| Currency formatter behaviour (`formatMoney`, `formatCurrencyAmount`) | ✓ Untouched (only weight classes around their call sites were preserved) |
+
+### 8.8 Files changed in the Care completion sweep
+
+24 files touched. Components first (highest leverage), then per-page surfaces:
+
+**Components (11 files)**
+```
+apps/care/components/dashboard/WorkspacePrimitives.tsx       (h1 + h2; value preserved)
+apps/care/components/dashboard/BookingRailWorkspace.tsx       (eyebrow + mono code)
+apps/care/components/staff/staff-shell.tsx                    (initials + drawer + brand + role + meta h1 + count pill)
+apps/care/components/staff/NotificationCenterPanel.tsx        (h2)
+apps/care/components/staff/ImpersonationBanner.tsx            (button)
+apps/care/components/support/SupportThreadWorkspace.tsx       (h2 + eyebrow + h3)
+apps/care/components/support/SupportThreadControls.tsx        (h3)
+apps/care/components/owner/WhatsAppHealthConsole.tsx          (4× count + h3)
+apps/care/components/tour/HelpButton.tsx                      (h3)
+apps/care/components/tour/TourOverlay.tsx                     (h3)
+apps/care/components/tour/TourWelcomePrompt.tsx               (h3)
+```
+
+**Pages (13 files)**
+```
+apps/care/app/(staff)/owner/page.tsx                          (h1 + mono code + helper h2; 2 currency anchors + 1 helper preserved)
+apps/care/app/(staff)/owner/finance/page.tsx                  (h1 + inline h2 + helper h2; 3 currency anchors + 1 helper preserved)
+apps/care/app/(staff)/owner/pricing/page.tsx                  (h1 + 3× h2 + h3 + helper value)
+apps/care/app/(staff)/owner/records/page.tsx                  (h1 + h2 + mono code; StatCard helper preserved)
+apps/care/app/(staff)/owner/reviews/page.tsx                  (h2 + customer name)
+apps/care/app/(staff)/owner/settings/page.tsx                 (h1 + helper h2)
+apps/care/app/(staff)/owner/staff/page.tsx                    (h1 + h2 + helper value)
+apps/care/app/(staff)/owner/security/page.tsx                 (h1 + helper count + helper h2)
+apps/care/app/(staff)/owner/insights/page.tsx                 (mono code eyebrow)
+apps/care/app/(staff)/owner/impersonate/page.tsx              (h1)
+apps/care/app/(staff)/manager/page.tsx                        (h2 + mono code + helper h2; MetricCard + InfoTile helpers preserved)
+apps/care/app/(staff)/manager/operations/page.tsx             (h1 + 5× mono code + Metric helper + helper h2)
+apps/care/app/(staff)/manager/expenses/page.tsx               (h2 + helper h2; 1 currency anchor + MetricCard helper preserved)
+apps/care/app/(staff)/manager/pricing/page.tsx                (h1 + 4× h2 + 2× h3/item-name + helper value)
+apps/care/app/(staff)/support/page.tsx                        (queue card value)
+apps/care/app/(staff)/support/reviews/page.tsx                (2× h3)
+apps/care/app/(staff)/support/payments/page.tsx               (2× h3)
+apps/care/app/(staff)/support/outbox/page.tsx                 (h2 + threadRef eyebrow)
+apps/care/app/(staff)/support/expenses/page.tsx               (h1; 1 currency anchor preserved)
+apps/care/app/(staff)/support/inbox/reply/page.tsx            (3× h2)
+apps/care/app/(staff)/support/inbox/assign/page.tsx           (3× h2)
+apps/care/app/(staff)/staff/page.tsx                          (2× mono code eyebrow)
+apps/care/app/(staff)/rider/page.tsx                          (3× mono code eyebrow)
+apps/care/app/(staff)/rider/expenses/page.tsx                 (h1; 1 currency anchor preserved)
+```
+
+### 8.9 Pass 25 — overall completion
+
+With this Care sweep, every HenryCo dashboard surface (user / owner / staff,
+including the Care division's owner / manager / support / rider / staff
+roles) carries the same calm editorial weight ladder:
+
+- Page titles read through size, not weight
+- Section headers sit at `font-semibold`
+- Labels and chips whisper at `font-semibold`
+- Currency anchors are the only heavyweight type on every page — *money speaks loudest, everything else converses*
+
+The Pass 25 promise is now whole.

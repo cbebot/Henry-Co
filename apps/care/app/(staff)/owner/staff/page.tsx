@@ -254,7 +254,7 @@ export default async function OwnerStaffPage({
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           Staff command
         </div>
-        <h1 className="mt-2 text-4xl font-black tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-5xl">
+        <h1 className="mt-2 text-4xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-5xl">
           Control every staff account from one command surface.
         </h1>
         <p className="mt-4 max-w-3xl text-zinc-600 dark:text-white/65">
@@ -294,7 +294,7 @@ export default async function OwnerStaffPage({
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
               Staff provisioning
             </div>
-            <h2 className="mt-2 text-3xl font-black tracking-[-0.03em] text-zinc-950 dark:text-white">
+            <h2 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white">
               Create staff, assign role, and send setup access from one place.
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/65">
@@ -905,7 +905,7 @@ function MetricCard({
       <div className="mt-5 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
         {label}
       </div>
-      <div className="mt-2 text-4xl font-black text-zinc-950 dark:text-white">{value}</div>
+      <div className="mt-2 text-4xl font-semibold text-zinc-950 dark:text-white">{value}</div>
       <div className="mt-2 text-sm text-zinc-600 dark:text-white/60">{note}</div>
     </div>
   );

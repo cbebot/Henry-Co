@@ -24,7 +24,7 @@ export default function ImpersonationBanner({
         <button
           onClick={() => startTransition(() => endImpersonationAction())}
           disabled={pending}
-          className="ml-4 inline-flex items-center gap-1.5 rounded-full bg-amber-950/20 px-4 py-1.5 text-xs font-bold text-amber-950 transition hover:bg-amber-950/30"
+          className="ml-4 inline-flex items-center gap-1.5 rounded-full bg-amber-950/20 px-4 py-1.5 text-xs font-semibold text-amber-950 transition hover:bg-amber-950/30"
         >
           <X className="h-3 w-3" />
           {pending ? "Restoring..." : "Exit impersonation"}

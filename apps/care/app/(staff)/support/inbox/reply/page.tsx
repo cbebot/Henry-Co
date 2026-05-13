@@ -34,7 +34,7 @@ export default async function ReplyPage({
   if (!threadId) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h2 className="text-xl font-black text-zinc-950 dark:text-white">No thread selected</h2>
+        <h2 className="text-xl font-semibold text-zinc-950 dark:text-white">No thread selected</h2>
         <p className="mt-2 text-sm text-zinc-500 dark:text-white/50">
           Return to the inbox and select a thread to reply to.
         </p>
@@ -61,7 +61,7 @@ export default async function ReplyPage({
   if (!thread) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h2 className="text-xl font-black text-zinc-950 dark:text-white">Thread not found</h2>
+        <h2 className="text-xl font-semibold text-zinc-950 dark:text-white">Thread not found</h2>
         <p className="mt-2 text-sm text-zinc-500 dark:text-white/50">
           This thread may have been removed or is no longer accessible.
         </p>
@@ -94,7 +94,7 @@ export default async function ReplyPage({
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
           Replying to {thread.threadRef}
         </div>
-        <h2 className="mt-1 text-xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-2xl">
+        <h2 className="mt-1 text-xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-2xl">
           {thread.customerName}
         </h2>
         <p className="mt-1 text-sm text-zinc-600 dark:text-white/64">{thread.subject}</p>

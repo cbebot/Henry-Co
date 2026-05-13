@@ -227,7 +227,7 @@ export default async function SupportOverviewPage() {
                       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
                         {card.label}
                       </div>
-                      <div className="mt-2 text-3xl font-black tracking-[-0.05em] text-zinc-950 dark:text-white">
+                      <div className="mt-2 text-3xl font-semibold tabular-nums tracking-[-0.05em] text-zinc-950 dark:text-white">
                         {card.value}
                       </div>
                     </div>

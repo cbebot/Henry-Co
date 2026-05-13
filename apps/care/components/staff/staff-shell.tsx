@@ -146,7 +146,7 @@ function BrandMark({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={cleanSrc} alt={name} className="h-full w-full object-contain p-1.5" />
       ) : (
-        <span className="text-base font-black tracking-tight text-white">{initials(name) || "HC"}</span>
+        <span className="text-base font-semibold tracking-tight text-white">{initials(name) || "HC"}</span>
       )}
     </div>
   );
@@ -244,7 +244,7 @@ function NotificationDrawer({
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
               Notification center
             </div>
-            <div className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">
+            <div className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">
               {center.unreadCount > 0
                 ? `${center.unreadCount} unread alert${center.unreadCount === 1 ? "" : "s"}`
                 : "Everything is up to date"}
@@ -434,7 +434,7 @@ export default function StaffShell({
               <BrandMark name={brandName} logoUrl={logoUrl} />
               {!railCollapsed ? (
                 <div className="min-w-0">
-                  <div className="truncate text-base font-black tracking-tight text-white">{brandName}</div>
+                  <div className="truncate text-base font-semibold tracking-tight text-white">{brandName}</div>
                   <div className="truncate text-xs text-white/48">{roleLabel(role)} workspace</div>
                 </div>
               ) : null}
@@ -464,7 +464,7 @@ export default function StaffShell({
             <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
               Active role
             </div>
-            <div className="mt-2 text-2xl font-black tracking-[-0.05em] text-white">
+            <div className="mt-2 text-2xl font-semibold tracking-[-0.05em] text-white">
               {railCollapsed ? roleLabel(role).slice(0, 1) : roleLabel(role)}
             </div>
             {!railCollapsed ? (
@@ -549,7 +549,7 @@ export default function StaffShell({
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">
                     {meta.sectionLabel}
                   </div>
-                  <h1 className="mt-2 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
+                  <h1 className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">
                     {meta.title}
                   </h1>
                   <p className="mt-2 max-w-3xl text-sm leading-7 text-white/58">
@@ -571,7 +571,7 @@ export default function StaffShell({
                   <BellRing className="h-4 w-4 text-[color:var(--accent)]" />
                   Alerts
                   {center.unreadCount > 0 ? (
-                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-1.5 text-[11px] font-black text-[color:var(--accent-deep)]">
+                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-1.5 text-[11px] font-semibold tabular-nums text-[color:var(--accent-deep)]">
                       {center.unreadCount}
                     </span>
                   ) : null}
