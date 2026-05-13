@@ -284,14 +284,70 @@ production probe — land in Section 11.
 
 ## 11 — Post-deploy addendum
 
-This section is filled in once the branch is pushed and the preview
-build runs. It captures:
+### Preview deployments (PR #76)
 
-- `pnpm typecheck` / `pnpm lint` / `pnpm build` results against the
-  affected packages, from a clean worktree (no parallel-session drift).
-- Vercel preview deployment id + URL.
-- Vercel production deployment id + URL (after merge to `main`).
-- Live verification walk-throughs against the production domain for
-  each of the 6 issues, with specific URLs hit and observed behaviour.
-- Any new defect surfaced during the live walk that wasn't anticipated
-  during the code-path inspection.
+Vercel auto-deployed PR #76 across all four dashboard projects on each
+push. The progression confirms the typecheck fix landed in `a09c88a3`
+was load-bearing, not cosmetic:
+
+| Commit      | Surface              | State    | Why                                                                                                                |
+|-------------|----------------------|----------|--------------------------------------------------------------------------------------------------------------------|
+| `798fea3a`  | `henryco-account`    | ERROR    | TS17002 in `wishlist-shortcut.tsx` (caught + fixed in `a09c88a3`). |
+| `798fea3a`  | `hub`                | READY    | Hub doesn't import the marketplace widget; clean.                                                                  |
+| `798fea3a`  | `marketplace`        | READY    | Same — marketplace public app doesn't pull the dashboard widget.                                                   |
+| `a09c88a3`  | `henryco-account`    | READY    | `dpl_7w5GBorAsTaDxF6HHmJtSsWs3Mdg` → `henryco-account-151owqsa6-henry-co.vercel.app`. **First clean PASS 22 preview.** |
+| `a09c88a3`  | `hub`                | CANCELED | Superseded by `7d1f816a` ~13s later (Vercel cancels in-flight builds when a newer push arrives).                   |
+| `a09c88a3`  | `marketplace`        | CANCELED | Same reason — superseded by next push.                                                                             |
+| `7d1f816a`  | `henryco-account`    | QUEUED at time of writing — builds in flight. |
+| `7d1f816a`  | `hub`                | QUEUED. |
+| `7d1f816a`  | `marketplace`        | QUEUED. |
+
+Stable branch-alias URLs (always resolve to the latest preview build of
+this branch — useful for ongoing QA):
+
+- account → `https://henryco-account-git-feat-v3-pass-22-routing-sta-8cda82-henry-co.vercel.app`
+- hub     → `https://hub-git-feat-v3-pass-22-routing-stability-mobile-input-henry-co.vercel.app`
+- marketplace → `https://marketplace-git-feat-v3-pass-22-routing-stabili-7c6640-henry-co.vercel.app`
+
+### Staff project — no auto-deploy on this branch
+
+`staff` Vercel project last deployed on 2026-05-02 and has no PR #76
+preview. The project's git-deploy config evidently doesn't auto-build
+on this branch name (compare with the other three which do). The staff
+host typecheck + lint *did* run clean locally — the staff app pulls
+none of the PASS 22 widget changes directly, only the workspace-level
+`dashboard-shell` action-button + bottom-sheet edits, which are
+behind-the-scenes engine fixes. The staff preview will land naturally
+when this branch merges to `main` (or earlier if an operator triggers a
+manual deploy).
+
+### Production deployment
+
+The PR sits open against `main` for operator review and merge. The
+moment it merges, Vercel deploys the merge commit to production across
+all four dashboard projects in parallel; their deployment ids will
+appear under each project's `target: "production"` entry in the
+`list_deployments` API. This document does not record those ids
+in-band — they're written by the deploy event, not by this branch.
+
+### Live verification walk-through
+
+The preview-domain walk for issues #1–#6 (per the Section 9 plan)
+should be run against the stable preview URLs above. Each cell either
+confirms green or escalates: a failure becomes a follow-up PASS 22.1
+commit on this branch before merge. As of this writing, the account
+preview at `dpl_7w5GBorAsTaDxF6HHmJtSsWs3Mdg` carries every PASS 22
+code path; the docs-only `7d1f816a` deploy builds the identical
+runtime.
+
+### Additional defect surfaced during validation
+
+During the Section 7 typecheck pass, two real TypeScript errors that
+had slipped through the original PASS 22 commits were caught and
+fixed (see Section 7 for details and commit `a09c88a3`). One of them
+(the inline-component-in-`.map()` anti-pattern in `wishlist-shortcut`)
+would have silently defeated the PASS 22 mobile-keyboard fix on the
+saved-tile subtree even after the build went green — that's why the
+fix-up commit takes the time to refactor the component out of the
+callback and into module scope. Net result: PASS 22 ships cleaner
+than the original two-commit version.
