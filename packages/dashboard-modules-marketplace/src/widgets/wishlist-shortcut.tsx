@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties, ReactNode } from "react";
 import { Panel, Section, ActionButton, DivisionImage } from "@henryco/dashboard-shell/components";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
 import { Bookmark, ArrowRight } from "lucide-react";
@@ -43,6 +44,37 @@ function resolveItemHref(href: string | null | undefined): {
     href: `${MARKETPLACE_ORIGIN}${href.startsWith("/") ? href : `/${href}`}`,
     external: true,
   };
+}
+
+// PASS 22 — the previous draft defined this component inside the .map()
+// callback, which gave every saved item a fresh component type on each
+// parent re-render. React reacts to a new component type by unmounting
+// and remounting the subtree, which broke focus/keyboard state on
+// touch devices and made the list feel laggy. The module-scoped
+// component preserves identity across renders.
+function TileLink({
+  href,
+  external,
+  style,
+  children,
+}: {
+  href: string;
+  external: boolean;
+  style: CSSProperties;
+  children: ReactNode;
+}) {
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" style={style}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} style={style}>
+      {children}
+    </Link>
+  );
 }
 export function WishlistShortcut({
   snapshot,
@@ -99,7 +131,7 @@ export function WishlistShortcut({
               const title = (snapshot.title as string | undefined) ?? "Saved item";
               const price = snapshot.priceKobo as number | undefined;
               const currency = (snapshot.currency as string | undefined) ?? "NGN";
-              const tileStyle = {
+              const tileStyle: CSSProperties = {
                 display: "flex",
                 alignItems: "center",
                 gap: "0.75rem",
@@ -109,22 +141,11 @@ export function WishlistShortcut({
                 backgroundColor: `var(${CSS_VARS.surfaceElevated})`,
                 color: `var(${CSS_VARS.ink})`,
                 textDecoration: "none",
-              } as const;
-              const TileLink = resolved.external
-                ? ({ children, ...rest }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-                    <a {...rest} target="_blank" rel="noopener noreferrer">
-                      {children}
-                    </a>
-                  )
-                : ({ children, href, ...rest }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-                    <Link href={href ?? "/saved-items"} {...rest}>
-                      {children}
-                    </Link>
-                  );
+              };
 
               return (
                 <li key={item.id}>
-                  <TileLink href={resolved.href} style={tileStyle}>
+                  <TileLink href={resolved.href} external={resolved.external} style={tileStyle}>
                     {image ? (
                       <DivisionImage
                         src={image}
@@ -180,7 +201,7 @@ export function WishlistShortcut({
                         </span>
                       ) : null}
                     </span>
-                  </a>
+                  </TileLink>
                 </li>
               );
             })}

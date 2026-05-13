@@ -60,7 +60,7 @@ function supportCategoryLabel(
     case "general":
       return t("General");
     default: {
-      const normalized = category.trim().replace(/[_-]+/g, " ");
+      const normalized = safe.trim().replace(/[_-]+/g, " ");
       if (!normalized) return t("General");
       const capitalized = normalized.charAt(0).toUpperCase() + normalized.slice(1);
       const translated = t(capitalized);
