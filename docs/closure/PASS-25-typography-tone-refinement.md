@@ -456,3 +456,127 @@ roles) carries the same calm editorial weight ladder:
 - Currency anchors are the only heavyweight type on every page — *money speaks loudest, everything else converses*
 
 The Pass 25 promise is now whole.
+
+---
+
+## 9. Maximum-effort completion sweep (2026-05-13)
+
+After the Care division was closed in §8, a final cross-monorepo audit ran
+against every dashboard surface — including paths the prior sweeps did not
+walk because they sit outside the canonical `app/(staff)/`,
+`app/(account)/`, `app/owner/(command)/` route groups. Seven surface files
+escaped the earlier sweeps and were brought into the same calm-editorial
+ladder.
+
+### 9.1 Files that escaped earlier sweeps
+
+| Surface | File | Occurrence | Why missed earlier |
+|---|---|---|---|
+| Care staff | `apps/care/app/app/(staff)/manager/page.tsx:15` | h1 `text-5xl font-black` | Lives at `/app/manager` (parallel route to `/manager`); §8 audit only walked `apps/care/app/(staff)/**`, not the second `app/app/(staff)/**` route group |
+| Care staff | `apps/care/app/app/(staff)/owner/page.tsx:16` | h1 `text-5xl font-black` | Same as above — duplicate route group at `/app/owner` |
+| Care admin | `apps/care/app/admin/page.tsx:58, 82` | h1 `text-4xl font-black`, h2 `text-2xl font-bold` | §8.6 had categorised `apps/care/app/admin/**` as out-of-scope, but `requireRoles(["owner","manager","support","staff"])` proves it is a staff dashboard, not a public flow |
+| Care admin chrome | `apps/care/app/admin/layout.tsx:33, 63` | sidebar brand `text-lg font-black`, header brand `text-2xl font-black` | Same scope misclassification as the admin page |
+| Jobs candidate dashboard | `apps/jobs/app/candidate/conversations/page.tsx:54` | unread-count chip `font-bold` | §5 broader-sweep grep missed it; chip is rendered on the candidate conversations dashboard surface |
+| Marketplace account dashboard | `apps/marketplace/app/account/page.tsx:527` | followed-store initials `font-bold` | §5 broader-sweep grep missed it; initials render inside the account dashboard's "Following" rail |
+| Studio portal chrome | `apps/studio/components/portal/tabs.tsx:45` | tab badge `font-bold` | §5 broader-sweep grep missed it; the badge appears on every studio portal page tab strip |
+
+### 9.2 Replacements applied
+
+| File | Before | After |
+|---|---|---|
+| `apps/care/app/app/(staff)/manager/page.tsx:15` | `text-5xl font-black tracking-tight` | `text-5xl font-semibold tracking-tight` |
+| `apps/care/app/app/(staff)/owner/page.tsx:16` | `text-5xl font-black tracking-tight` | `text-5xl font-semibold tracking-tight` |
+| `apps/care/app/admin/page.tsx:58` | `text-4xl font-black tracking-[-0.03em]` | `text-4xl font-semibold tracking-[-0.03em]` |
+| `apps/care/app/admin/page.tsx:82` | `text-2xl font-bold tracking-[-0.02em]` | `text-2xl font-semibold tracking-[-0.02em]` |
+| `apps/care/app/admin/layout.tsx:33` | `text-lg font-black tracking-[0.02em]` | `text-lg font-semibold tracking-[0.02em]` |
+| `apps/care/app/admin/layout.tsx:63` | `text-2xl font-black tracking-[-0.02em]` | `text-2xl font-semibold tracking-[-0.02em]` |
+| `apps/jobs/app/candidate/conversations/page.tsx:54` | `text-xs font-bold text-white` | `text-xs font-semibold tabular-nums text-white` |
+| `apps/marketplace/app/account/page.tsx:527` | `text-xs font-bold tracking-tight` | `text-xs font-semibold tracking-tight` |
+| `apps/studio/components/portal/tabs.tsx:45` | `text-[10px] font-bold` | `text-[10px] font-semibold tabular-nums` |
+
+The same Pass 25 principles that drove §1–§8 apply uniformly:
+- **Page titles (h1)** at `font-semibold` — size + tracking + accent kicker carry authority
+- **Section headers (h2)** at `font-semibold` — Pass 19 `h2` token = 600
+- **Brand monograms / shell chrome** at `font-semibold` — confident, not shouty
+- **Status pills / count chips** at `font-semibold tabular-nums` — counts pick up tabular-nums for column alignment
+- **Initials avatars** at `font-semibold` — identity, not attention-grab
+
+### 9.3 Currency rendering — still untouched
+
+Every previously-preserved currency anchor remains verbatim. No `formatMoney(...)`
+or `formatCurrencyAmount(...)` line was modified by this sweep. Final post-edit
+grep confirms only the **20 in-scope currency anchors** retain heavy weight
+across every HenryCo dashboard surface monorepo-wide:
+
+- 4 in `apps/account` (referrals ×2, CareBookingsDashboard metric, owner MetricCard via shared component)
+- 1 in `apps/hub` (owner MetricCard shared helper)
+- 14 in `apps/care/app/(staff)/**` (3 in owner/finance inline + 1 helper, 2 in owner/page inline + 1 helper, 1 in owner/records helper, 2 in manager/page helpers, 1 in manager/expenses inline + 1 helper, 1 in support/expenses inline, 1 in rider/expenses inline)
+- 1 in `apps/care/components/dashboard/WorkspacePrimitives.tsx:68` (shared MetricCard.value)
+
+### 9.4 Validation — final pass
+
+| Check | Result |
+|---|---|
+| `pnpm --filter @henryco/care run lint` | ✓ Passes (0 warnings) |
+| `pnpm --filter @henryco/care run typecheck` | ✓ Passes (0 errors) |
+| `pnpm --filter @henryco/care run build` | ✓ Builds clean (33 static pages generated) |
+| `pnpm --filter @henryco/jobs run lint` | ✓ Passes (0 warnings) |
+| `pnpm --filter @henryco/jobs run typecheck` | ✓ Passes (0 errors) |
+| `pnpm --filter @henryco/jobs run build` | ✓ Builds clean |
+| `pnpm --filter @henryco/marketplace run lint` | ✓ Passes (0 warnings) |
+| `pnpm --filter @henryco/marketplace run typecheck` | ✓ Passes (0 errors) |
+| `pnpm --filter @henryco/marketplace run build` | ✓ Builds clean |
+| `pnpm --filter @henryco/studio run lint` | ✓ Passes (0 warnings) |
+| `pnpm --filter @henryco/studio run typecheck` | ✓ Passes (0 errors) |
+| `pnpm --filter @henryco/studio run build` | ✓ Builds clean |
+| Cross-monorepo grep `font-bold\|font-extrabold\|font-black` in every dashboard surface | ✓ Only the 20 documented currency anchors remain |
+
+### 9.5 Out-of-scope — and why
+
+These surfaces still carry heavy weights and are intentionally untouched by
+PASS 25 because they are not dashboards:
+
+- `apps/care/app/(public)/**` — public marketing + booking flows
+- `apps/care/components/care/**` — public-facing care components (track, book, contact, review, payment-proof)
+- `apps/care/components/auth/**`, `apps/care/components/public/**`, `apps/care/components/ui/CareLoading.tsx` — login + public chrome + loading UI
+- `apps/care/app/workspace/access/**` — staff recovery flow (auth surface, not a dashboard)
+- `apps/care/app/login/**` — staff login
+- `apps/marketplace/components/marketplace/public-header-client.tsx` — public marketing header (signup CTAs)
+- `packages/ui/src/public/**`, `packages/ui/src/public-shell/**` — public-facing brand surfaces
+- `apps/company-hub/**` — Expo (React Native) mobile app on a different platform with its own tone
+
+### 9.6 Files changed in the maximum-effort sweep
+
+7 files, 9 lines edited:
+
+```
+apps/care/app/admin/layout.tsx                 (sidebar brand + header brand)
+apps/care/app/admin/page.tsx                   (h1 hero + h2 card title)
+apps/care/app/app/(staff)/manager/page.tsx     (h1 hero)
+apps/care/app/app/(staff)/owner/page.tsx       (h1 hero)
+apps/jobs/app/candidate/conversations/page.tsx (count chip + tabular-nums)
+apps/marketplace/app/account/page.tsx          (followed-store initials)
+apps/studio/components/portal/tabs.tsx         (tab badge + tabular-nums)
+```
+
+### 9.7 Coverage statement — Pass 25 monorepo-wide
+
+After this sweep, every HenryCo dashboard surface across all 9 web apps
+carries the same Pass 25 weight ladder. The audit grep for
+`font-bold|font-extrabold|font-black` returns **only the 20 currency anchors**
+across:
+
+- `apps/account` — user dashboard ✓
+- `apps/hub` — owner dashboard + user-menu surfaces ✓
+- `apps/staff` — staff dashboard ✓
+- `apps/care` — Care division (staff/owner/manager/support/rider) + admin shell ✓
+- `apps/jobs` — recruiter + candidate dashboards ✓
+- `apps/learn` — learner dashboard ✓
+- `apps/marketplace` — buyer + vendor dashboards ✓
+- `apps/property` — property dashboards ✓
+- `apps/studio` — studio portal + workspace ✓
+- `apps/logistics` — logistics dashboards ✓
+
+Pass 25's editorial calm is now the consistent grammar of the entire HenryCo
+dashboard surface area. The only intentional weight anchor is currency —
+exactly as the owner asked. Money speaks loudest. Everything else converses.
