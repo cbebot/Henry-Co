@@ -9,11 +9,9 @@ export const runtime = "nodejs";
  * PASS 24 — best-effort mark-read for the studio support surface.
  *
  * The MessageThread engine fires this on mount and after each incoming
- * realtime message so the "Read" status moment lands quickly. For studio
- * staff there's no per-staff read-state column in support_threads, so we
- * stamp the thread's `last_seen_by_staff_at` column when it exists and
- * fall through cleanly when it doesn't — the engine never blocks the UI
- * on this, and the next page mount recomputes from server-rendered data.
+ * realtime message so the "Read" status moment lands quickly. We stamp
+ * `staff_last_read_at` on the support_thread row so staff dashboards
+ * can compute unread counts; engine never blocks the UI on this.
  */
 export async function POST(request: Request) {
   try {
@@ -44,17 +42,10 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminSupabase();
-    // The optional `last_seen_by_staff_at` column lets staff dashboards
-    // surface unread counts. If it's not deployed, the update is a no-op
-    // and the engine continues to work correctly.
-    try {
-      await admin
-        .from("support_threads")
-        .update({ last_seen_by_staff_at: new Date().toISOString() } as never)
-        .eq("id", threadId);
-    } catch {
-      // Column may not exist on every environment. Best-effort.
-    }
+    await admin
+      .from("support_threads")
+      .update({ staff_last_read_at: new Date().toISOString() } as never)
+      .eq("id", threadId);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ ok: false }, { status: 500 });
