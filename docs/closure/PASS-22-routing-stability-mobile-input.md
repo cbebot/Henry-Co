@@ -209,32 +209,55 @@ Every text input across the audited surfaces now has:
 
 ## 7 — Build, typecheck, lint results
 
-Validation gates were run against the affected packages and apps in the
-PASS 22 worktree. Concrete results are appended to this closure doc in
-the post-deploy addendum (Section 11) — the typecheck/lint/build all run
-on a clean install of the worktree, not on a parallel-session-mutated
-working tree, so the results are scoped to PASS 22 alone.
+Validation gates were run against the four affected apps in a clean
+worktree (`.claude/worktrees/pass-22-closure`, freshly `pnpm install`'d)
+so the results scope to PASS 22 alone, free of parallel-session drift:
 
-Vercel's preview deploy is the authoritative build gate (it runs
-`pnpm install --frozen-lockfile` then `pnpm build` against the exact
-branch state); the same build runs again on `main` after merge. Both
-runs are referenced by deployment id in Section 8.
+| App | `pnpm typecheck` | `pnpm lint` |
+|-----|------------------|-------------|
+| `@henryco/account`     | exit 0 | exit 0 (1 pre-existing `LiveChip` unused-var warning in `SmartHomeHeader.tsx`, DASH-4 territory — outside PASS 22) |
+| `@henryco/hub`         | exit 0 | exit 0 |
+| `@henryco/staff`       | exit 0 | exit 0 |
+| `@henryco/marketplace` | exit 0 | exit 0 |
+
+Two TypeScript errors were caught and fixed during this validation pass:
+
+1. `packages/dashboard-modules-marketplace/src/widgets/wishlist-shortcut.tsx`
+   TS17002 — the saved-tile JSX opened with `<TileLink>` but closed with
+   `</a>`. The component had also been defined *inside* the `.map()`
+   callback, so every parent re-render produced a fresh component
+   reference and React unmounted+remounted every tile (which defeats
+   the PASS 22 mobile-keyboard fix). Refactored to a module-scoped
+   `TileLink` with `external` prop so identity is stable across renders
+   and the JSX type-checks.
+
+2. `apps/account/app/(account)/support/[threadId]/page.tsx`
+   TS18049 — the defensive `safe` local was added in commit `3c23f00d`
+   but the default branch of `supportCategoryLabel` still called
+   `category.trim()` instead of `safe.trim()`, re-introducing the exact
+   null-throw shape PASS 22 was fixing.
+
+Both fixes ship in commit `a09c88a3`.
+
+Full build (`pnpm build` against each app) was not exercised locally —
+that's Vercel's job per platform contract. The preview deploy
+referenced in Section 8 is the authoritative build gate.
 
 ## 8 — Deployment IDs
 
-The PASS 22 branch ships as two commits on
-`feat/v3-pass-22-routing-stability-mobile-input`:
+The PASS 22 branch ships on `feat/v3-pass-22-routing-stability-mobile-input`:
 
 - `2000cfa4` — restore PASS 22 routing/stability/mobile-input core fixes (24 files, ~448 insertions)
 - `3c23f00d` — close remaining dead links + null-throw paths (7 files, ~48 insertions)
+- `798fea3a` — closure report (this document, in its pre-validation form)
+- `a09c88a3` — typecheck-clean wishlist + support-thread (3 files, ~37 insertions)
 
-A third commit on this branch (the closure-doc finalization) lands
-together with the push so the documentation travels with the code.
-
-Branch pushed to `origin`, PR opened against `main`. Preview deployment
-IDs from Vercel land in the addendum (Section 11) once the preview build
-completes — at that point the production-after-merge deployment id lands
-there too.
+Branch pushed to `origin`. **PR [#76](https://github.com/cbebot/Henry-Co/pull/76)**
+opened against `main` with a per-issue summary and the validation table
+above in its body. Vercel's preview deploy runs against this branch as
+soon as the PR is open; the resulting deployment id + URL land in the
+post-deploy addendum (Section 11) so a future reader can replay the
+exact build artefact.
 
 ## 9 — Live verification per issue
 
