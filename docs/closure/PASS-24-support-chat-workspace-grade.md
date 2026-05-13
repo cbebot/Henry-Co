@@ -199,9 +199,56 @@ The route flags below are what to verify against the preview:
 
 1. **Care inbox not migrated to the thread-room layout.** Care's support transport is email + WhatsApp, not real-time DB-backed chat; treating those threads as Supabase Realtime channels would require backfilling every inbound email + WhatsApp message into `support_messages` and breaking the existing operator workflow (per-thread reply page with delivery state + status transition). Care benefits from Phase 1's unified ChatComposer instead. Migrating care is a follow-up that needs its own data-model design pass.
 2. **Care reply has no attachments.** The current `sendSupportReplyAction` doesn't accept attachments — adding them would require extending the email + WhatsApp delivery pipeline to embed images / PDFs in the outbound message. Out of scope for this pass; tracked as a follow-up.
-3. **Owner / mute / mark resolved / transfer / report not yet on the overflow menu.** Phase 3 + 4 shipped the IA placeholder (the menu surface is in place with Copy link + Copy ID active and Download referenced) but the destructive / state-mutating actions need their server-action contracts ratified and audited. The menu is wired so adding them in the next pass is a single-file change per action.
-4. **Reactions deferred.** Engine architecture is ready (`senderRole` decoupled from interaction); the data layer + audience-permission model needs a separate design pass. Hidden behind no feature flag — simply not wired into the bubble shell yet.
-5. **Studio mark-read column rollout deferred.** `/api/support/mark-read` is implemented but the `last_seen_by_staff_at` column may not exist on every environment; the route is graceful-no-op when the column is missing so a migration can ship independently of this pass without breaking the engine.
+3. **Reactions deferred.** Engine architecture is ready (`senderRole` decoupled from interaction); the data layer + audience-permission model needs a separate design pass. Hidden behind no feature flag — simply not wired into the bubble shell yet.
+
+(The Phase 5 work below closes the previously-deferred mark-read column, the overflow-menu placeholders, and the customization / participants gaps from the spec.)
+
+---
+
+## 11. Phase 5 — workspace-grade gap closure (PASS 24 follow-on)
+
+Three spec gaps that the original four phases marked deferred were closed in Phase 5:
+
+### Typing presence
+- New per-thread Supabase Realtime broadcast channel piggy-backs the existing INSERT subscription. Composer emits a `{ type: "broadcast", event: "typing", payload: { userId, name } }` ping at most once every 2s while a participant is composing; engine de-duplicates by userId and decays entries after 4s of silence so a participant who walks away fades naturally.
+- Indicator renders as a calm three-dot bubble (220ms ease-out bounce, reduced-motion → static).
+- New `enableTypingPresence` prop (default true) lets a host disable for a stricter privacy posture.
+
+### Customization popover
+- New `ThreadCustomizationMenu` + `ThreadAppearanceProvider` exported from `@henryco/messaging-thread`. Header trigger (gear icon) opens a popover with three segmented controls: font size (S / M / L), density (Comfortable / Compact), surface tone (Default / Soft / Warm / Cool).
+- Preferences persist to `localStorage` under `henryco:thread-appearance` so they survive refresh + device handoff (per browser).
+- Engine applies the resulting tokens via `data-font` / `data-density` / `data-surface` attrs on `.mt-thread` — no class explosion, full CSS-only re-paint.
+
+### Participants strip
+- New `ThreadParticipantsStrip` primitive in the engine package — compact horizontal row of avatar pills with name + role + optional presence indicator.
+- Hosts derive the participant list from messages (per-host helper). Overflow collapses into a `+N more` caption so very long threads keep the strip one row.
+
+### Active overflow menu actions
+- **Account** — Mute / Unmute notifications (toggles `customer_muted_at`) + Report thread (intelligence event with `supportEscalated` semantics). Copy link / Copy ID retained. Download remains a header-level affordance (the menu line is a hint).
+- **Studio** — Mark resolved / Re-open (state transitions with system-message timeline entry) + Transfer to another division (`studio_owner`-only, with a sub-panel listing destinations) + Mute / Unmute (toggles `staff_muted_at`) + Flag for review (priority bump + audit log entry).
+
+### New API surface
+
+| Route | Audience | Purpose |
+|---|---|---|
+| `POST /api/support/mute` (account) | Customer | Toggle `customer_muted_at` |
+| `POST /api/support/report` (account) | Customer | Emit `supportEscalated` intel event |
+| `POST /api/support/mute` (studio) | studio_owner, client_success, owner, support | Toggle `staff_muted_at` |
+| `POST /api/support/transitions` (studio) | studio_owner, client_success, owner, support | `{ action: "resolve" \| "reopen" }` |
+| `POST /api/support/transfer` (studio) | studio_owner only | Move thread to another division |
+| `POST /api/support/report` (studio) | studio_owner, client_success, owner, support | Flag for review + priority bump + audit log entry |
+
+### Schema migration
+
+```
+apps/hub/supabase/migrations/20260513200000_support_thread_state_pass24_phase5.sql
+  + last_seen_by_staff_at   TIMESTAMPTZ NULL   (was: deferred from PASS 24 closure)
+  + customer_muted_at       TIMESTAMPTZ NULL
+  + staff_muted_at          TIMESTAMPTZ NULL
+  + partial indexes on each, gated on NOT NULL
+```
+
+Idempotent (`ADD COLUMN IF NOT EXISTS`) so safe to re-run; the studio `mapSupportThread` row mapper now hydrates `staffMutedAt` / `customerMutedAt` onto `StudioSupportThread`, falling back to `null` on environments that haven't applied the migration.
 
 ---
 
@@ -213,3 +260,4 @@ The route flags below are what to verify against the preview:
 | 2 — rich rendering | ✓ | ✓ | ✓ | Markdown subset + read-receipt status line + polite SR announcer |
 | 3 — account migration | ✓ | ✓ | ✓ | Account /support/[threadId] migrated to engine + workspace-grade header |
 | 4 — studio migration | ✓ | ✓ | ✓ | Studio /support/[threadId] migrated to engine + workspace-grade header + branded PDF endpoint |
+| 5 — gap closure | ✓ | ✓ | ✓ | Typing presence + customization popover + participants strip + active overflow actions + schema migration |

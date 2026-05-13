@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ThreadAppearanceProvider, type ThreadParticipant } from "@henryco/messaging-thread";
 import { requireStudioRoles } from "@/lib/studio/auth";
 import { supportNav } from "@/lib/studio/navigation";
 import { getStudioSnapshot } from "@/lib/studio/store";
@@ -95,6 +96,18 @@ export default async function SupportThreadPage({
     String(viewerUser?.email || "").trim() ||
     "Studio team";
 
+  // studio_owner can move a thread to another division.
+  const canTransfer = (viewer.roles ?? []).some(
+    (role) => role === "studio_owner",
+  );
+  const initialMuted = Boolean(thread.staffMutedAt);
+  const participants = deriveStudioParticipants({
+    viewerUserId: viewerUser?.id || "",
+    viewerName: fullName,
+    messages: messageRows,
+    customerName,
+  });
+
   return (
     <StudioWorkspaceShell
       kicker="Support · Thread"
@@ -102,31 +115,83 @@ export default async function SupportThreadPage({
       description="Reply with context, capture next actions, and move the thread back into a resolved state."
       nav={supportNav("/support")}
     >
-      <StudioSupportThreadHeader
-        threadId={thread.id}
-        subject={subject}
-        divisionLabel={divisionLabel(thread.division || "studio")}
-        categoryLabel={categoryLabel(thread.category)}
-        priorityLabel={priorityLabel(thread.priority)}
-        status={status}
-        statusLabel={localizeStatus(status)}
-        download={{
-          endpoint: `/api/documents/support-thread/${thread.id}`,
-          filename: `HenryCo-SupportThread-${thread.id.slice(0, 8)}.pdf`,
-          shareTitle: `HenryCo Studio — ${subject}`,
-          label: "Download",
-        }}
-      />
-      <StudioSupportThreadRoom
-        threadId={thread.id}
-        messages={messageRows}
-        threadStatus={status}
-        viewer={{
-          userId: viewerUser?.id || "",
-          fullName,
-          email: viewerUser?.email || null,
-        }}
-      />
+      <ThreadAppearanceProvider>
+        <StudioSupportThreadHeader
+          threadId={thread.id}
+          subject={subject}
+          divisionLabel={divisionLabel(thread.division || "studio")}
+          divisionValue={String(thread.division || "studio").toLowerCase()}
+          categoryLabel={categoryLabel(thread.category)}
+          priorityLabel={priorityLabel(thread.priority)}
+          status={status}
+          statusLabel={localizeStatus(status)}
+          initialMuted={initialMuted}
+          participants={participants}
+          canTransfer={canTransfer}
+          download={{
+            endpoint: `/api/documents/support-thread/${thread.id}`,
+            filename: `HenryCo-SupportThread-${thread.id.slice(0, 8)}.pdf`,
+            shareTitle: `HenryCo Studio — ${subject}`,
+            label: "Download",
+          }}
+        />
+        <StudioSupportThreadRoom
+          threadId={thread.id}
+          messages={messageRows}
+          threadStatus={status}
+          viewer={{
+            userId: viewerUser?.id || "",
+            fullName,
+            email: viewerUser?.email || null,
+          }}
+        />
+      </ThreadAppearanceProvider>
     </StudioWorkspaceShell>
   );
+}
+
+function deriveStudioParticipants({
+  viewerUserId,
+  viewerName,
+  messages,
+  customerName,
+}: {
+  viewerUserId: string;
+  viewerName: string;
+  messages: Array<Record<string, unknown>>;
+  customerName: string;
+}): ThreadParticipant[] {
+  const seen = new Map<string, ThreadParticipant>();
+  if (viewerUserId) {
+    seen.set(viewerUserId, {
+      id: viewerUserId,
+      name: viewerName,
+      role: "Studio support",
+      isSelf: true,
+    });
+  }
+  // Always show the customer chip even on an empty thread — staff need
+  // to know who they're talking to at a glance.
+  seen.set("customer", {
+    id: "customer",
+    name: customerName,
+    role: "Customer",
+  });
+  for (const row of messages) {
+    const senderType = String(
+      (row as { sender_type?: unknown }).sender_type || "",
+    ).toLowerCase();
+    if (senderType === "system") continue;
+    if (senderType === "customer") continue;
+    const senderId =
+      String((row as { sender_id?: unknown }).sender_id || "") ||
+      `staff-${senderType || "agent"}`;
+    if (seen.has(senderId)) continue;
+    seen.set(senderId, {
+      id: senderId,
+      name: "HenryCo staff",
+      role: "Studio support",
+    });
+  }
+  return Array.from(seen.values());
 }

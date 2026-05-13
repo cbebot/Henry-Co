@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
+import { ThreadAppearanceProvider, type ThreadParticipant } from "@henryco/messaging-thread";
 import { requireAccountUser } from "@/lib/auth";
 import {
   getSupportMessages,
@@ -110,6 +111,16 @@ export default async function SupportThreadPage({ params }: Props) {
   const statusLabel = localizeSupportStatus(t, status);
   const categoryLabelText = supportCategoryLabel(t, category);
   const divisionLabelText = divisionLabel(t, division);
+  const initialMuted = Boolean(thread.customer_muted_at);
+  const participants = deriveAccountParticipants({
+    viewerUserId: user.id,
+    viewerName: user.fullName || user.email || "You",
+    divisionLabel: divisionLabelText,
+    messages,
+    teamLabel: t("HenryCo"),
+    customerLabel: t("You"),
+    teamRoleLabel: t("Support"),
+  });
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -127,30 +138,79 @@ export default async function SupportThreadPage({ params }: Props) {
           {t("Back to support")}
         </span>
       </div>
-      <SupportThreadHeader
-        threadId={threadId}
-        subject={subject}
-        divisionLabel={divisionLabelText}
-        categoryLabel={categoryLabelText}
-        status={status}
-        statusLabel={statusLabel}
-        download={{
-          endpoint: `/api/documents/support-thread/${threadId}`,
-          filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
-          shareTitle: `HenryCo Support Thread — ${subject}`,
-          label: t("Download thread"),
-        }}
-      />
-      <SupportThreadRoom
-        threadId={threadId}
-        messages={messages}
-        threadStatus={status}
-        viewer={{
-          userId: user.id,
-          fullName: user.fullName || user.email || "You",
-          email: user.email,
-        }}
-      />
+      <ThreadAppearanceProvider>
+        <SupportThreadHeader
+          threadId={threadId}
+          subject={subject}
+          divisionLabel={divisionLabelText}
+          categoryLabel={categoryLabelText}
+          status={status}
+          statusLabel={statusLabel}
+          initialMuted={initialMuted}
+          participants={participants}
+          download={{
+            endpoint: `/api/documents/support-thread/${threadId}`,
+            filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
+            shareTitle: `HenryCo Support Thread — ${subject}`,
+            label: t("Download thread"),
+          }}
+        />
+        <SupportThreadRoom
+          threadId={threadId}
+          messages={messages}
+          threadStatus={status}
+          viewer={{
+            userId: user.id,
+            fullName: user.fullName || user.email || "You",
+            email: user.email,
+          }}
+        />
+      </ThreadAppearanceProvider>
     </div>
   );
+}
+
+function deriveAccountParticipants({
+  viewerUserId,
+  viewerName,
+  divisionLabel,
+  messages,
+  teamLabel,
+  customerLabel,
+  teamRoleLabel,
+}: {
+  viewerUserId: string;
+  viewerName: string;
+  divisionLabel: string;
+  messages: Array<Record<string, unknown>>;
+  teamLabel: string;
+  customerLabel: string;
+  teamRoleLabel: string;
+}): ThreadParticipant[] {
+  const seen = new Map<string, ThreadParticipant>();
+  seen.set(viewerUserId, {
+    id: viewerUserId,
+    name: viewerName,
+    role: customerLabel,
+    isSelf: true,
+  });
+  for (const row of messages) {
+    const senderType = String(
+      (row as { sender_type?: unknown }).sender_type || "",
+    ).toLowerCase();
+    if (senderType === "system") continue;
+    const senderId =
+      String((row as { sender_id?: unknown }).sender_id || "") ||
+      `team-${senderType || "agent"}`;
+    if (seen.has(senderId)) continue;
+    if (senderType === "customer") continue; // already covered by viewer
+    seen.set(senderId, {
+      id: senderId,
+      name:
+        String((row as { sender_name?: unknown }).sender_name || "") ||
+        `${teamLabel} ${divisionLabel}`,
+      role: teamRoleLabel,
+    });
+  }
+  return Array.from(seen.values());
 }

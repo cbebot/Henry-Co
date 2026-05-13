@@ -132,11 +132,35 @@ export type ThreadSupabaseLike = {
 
 export type ThreadChannelLike = {
   on: (
+    /**
+     * The realtime event family. We use:
+     *   - "postgres_changes" → row INSERTs in adapter.table
+     *   - "broadcast"        → typing presence pings (PASS 24 phase 5)
+     */
     event: string,
-    options: { event: string; schema: string; table: string; filter?: string },
-    handler: (payload: { new?: Record<string, unknown> }) => void,
+    /**
+     * Options shape varies by event family. For `postgres_changes` the
+     * engine passes `{ event, schema, table, filter }`. For `broadcast`
+     * the engine passes `{ event }`. We use a permissive structural
+     * shape so the engine can satisfy both without TS unions getting in
+     * the way of the @supabase/ssr browser client typedef.
+     */
+    options: {
+      event?: string;
+      schema?: string;
+      table?: string;
+      filter?: string;
+    },
+    handler: (payload: Record<string, unknown>) => void,
   ) => ThreadChannelLike;
   subscribe: (callback?: (status: string) => void) => ThreadChannelLike;
+  /** Optional broadcast publish — undefined on hosts that don't support
+   * Realtime broadcast. Engine guards every call. */
+  send?: (payload: {
+    type: "broadcast";
+    event: string;
+    payload: Record<string, unknown>;
+  }) => unknown;
 };
 
 export type MessageThreadProps = {
@@ -166,6 +190,16 @@ export type MessageThreadProps = {
    * banner, so the host doesn't need a separate read-only branch.
    */
   disableComposer?: boolean;
+  /**
+   * Enable the Realtime broadcast-based typing presence indicator. When
+   * true (the default) the composer broadcasts a "typing" ping at most
+   * once every 2s while the user is composing, and the bubble list
+   * renders a calm three-dot indicator for any other participant who's
+   * actively typing. Hosts whose Supabase channel doesn't carry
+   * broadcast permission (or which want a stricter privacy posture) can
+   * disable.
+   */
+  enableTypingPresence?: boolean;
   /**
    * Extra controls rendered in the composer's actions row, before Send.
    *

@@ -11,6 +11,9 @@ import {
   type ReactNode,
 } from "react";
 import {
+  AlertTriangle,
+  BellOff,
+  BellRing,
   Check,
   CircleDot,
   Copy,
@@ -18,6 +21,11 @@ import {
   Link2,
   MoreVertical,
 } from "lucide-react";
+import {
+  ThreadCustomizationMenu,
+  ThreadParticipantsStrip,
+  type ThreadParticipant,
+} from "@henryco/messaging-thread";
 import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { DownloadDocumentButton } from "@/components/branded-documents/DownloadDocumentButton";
 
@@ -48,6 +56,12 @@ export type SupportThreadHeaderProps = {
   status: string;
   /** Localized human-readable status label, eg. "Awaiting reply". */
   statusLabel: string;
+  /** Initially muted state — server reads `customer_muted_at IS NOT NULL`
+   * and passes through. Header treats it as the seed for the optimistic
+   * toggle. */
+  initialMuted?: boolean;
+  /** Participants rendered as the persistent strip below the pills. */
+  participants: ThreadParticipant[];
   /** Owner of the secondary action: PDF download endpoint and label. */
   download: {
     endpoint: string;
@@ -61,13 +75,10 @@ export type SupportThreadHeaderProps = {
  * Workspace-grade thread header for /support/[threadId].
  *
  * Renders subject, division/category pills, status pill (with tone),
- * and an action menu (download thread, copy thread link). Designed to
- * sit above the SupportThreadRoom on desktop and stack cleanly on
- * mobile.
- *
- * The download is delegated to the existing DownloadDocumentButton —
- * which handles Web Share API on touch devices and a direct download
- * fallback on desktop — so no new PDF surface is introduced.
+ * a persistent participants strip with avatars + roles, a download
+ * action (Web Share on touch / direct on desktop), a customization
+ * popover (font / density / surface), and an overflow menu with the
+ * customer-side actions (mute, report, copy link, copy ID).
  */
 export default function SupportThreadHeader({
   threadId,
@@ -76,6 +87,8 @@ export default function SupportThreadHeader({
   categoryLabel,
   status,
   statusLabel,
+  initialMuted,
+  participants,
   download,
 }: SupportThreadHeaderProps) {
   const locale = useHenryCoLocale();
@@ -84,6 +97,28 @@ export default function SupportThreadHeader({
     [locale],
   );
   const tone = statusTone(status);
+
+  const customizationLabels = useMemo(
+    () => ({
+      trigger: t("Customize thread"),
+      title: t("Customize"),
+      fontSize: t("Font size"),
+      fontSizeSm: t("Small"),
+      fontSizeMd: t("Medium"),
+      fontSizeLg: t("Large"),
+      density: t("Density"),
+      densityComfortable: t("Comfortable"),
+      densityCompact: t("Compact"),
+      surfaceTone: t("Surface tone"),
+      surfaceToneDefault: t("Default"),
+      surfaceToneSoft: t("Soft"),
+      surfaceToneWarm: t("Warm"),
+      surfaceToneCool: t("Cool"),
+      reset: t("Reset to defaults"),
+      hint: t("Preferences save to this device."),
+    }),
+    [t],
+  );
 
   return (
     <header
@@ -117,6 +152,12 @@ export default function SupportThreadHeader({
         <p className="acct-thread-header__meta hc-body-sm">
           {t("Thread")} #{threadId.slice(0, 8)}
         </p>
+        {participants.length > 0 ? (
+          <ThreadParticipantsStrip
+            participants={participants}
+            ariaLabel={t("Thread participants")}
+          />
+        ) : null}
       </div>
       <div className="acct-thread-header__actions">
         <DownloadDocumentButton
@@ -126,26 +167,35 @@ export default function SupportThreadHeader({
           variant="secondary"
           label={download.label}
         />
-        <ActionMenu threadId={threadId} subject={subject} />
+        <ThreadCustomizationMenu labels={customizationLabels} />
+        <ActionMenu
+          threadId={threadId}
+          subject={subject}
+          initialMuted={Boolean(initialMuted)}
+        />
       </div>
     </header>
   );
 }
 
 /**
- * Minimal accessible popover with the thread overflow actions.
+ * Accessible popover with the customer-side overflow actions.
  *
- * Actions today: copy thread link, copy thread ID. Mute / Mark resolved /
- * Transfer / Report are surfaced as disabled placeholders so the IA is
- * present even before the database routes ship — keeps the design
- * stable and tells the user "we know about this; coming soon".
+ * Actions:
+ *   - Mute / Unmute notifications for this thread
+ *   - Report thread (flag for human review)
+ *   - Copy thread link
+ *   - Copy thread ID
+ *   - Download (the affordance lives on the header — disabled placeholder here)
  */
 function ActionMenu({
   threadId,
   subject,
+  initialMuted,
 }: {
   threadId: string;
   subject: string;
+  initialMuted: boolean;
 }) {
   const locale = useHenryCoLocale();
   const t = useCallback(
@@ -154,6 +204,9 @@ function ActionMenu({
   );
   const [open, setOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [muted, setMuted] = useState(initialMuted);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const firstItemRef = useRef<HTMLButtonElement | null>(null);
@@ -183,7 +236,6 @@ function ActionMenu({
     };
     document.addEventListener("mousedown", onDocClick);
     document.addEventListener("keydown", onKey);
-    // First menu item gets focus when the panel opens.
     requestAnimationFrame(() => firstItemRef.current?.focus());
     return () => {
       document.removeEventListener("mousedown", onDocClick);
@@ -196,33 +248,68 @@ function ActionMenu({
     return `${window.location.origin}/support/${threadId}`;
   }, [threadId]);
 
-  const copy = useCallback(
-    async (key: string, value: string) => {
-      try {
-        if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(value);
-        } else {
-          // Fallback for older browsers / restricted contexts.
-          const ta = document.createElement("textarea");
-          ta.value = value;
-          ta.style.position = "fixed";
-          ta.style.opacity = "0";
-          document.body.appendChild(ta);
-          ta.select();
-          try {
-            document.execCommand("copy");
-          } finally {
-            document.body.removeChild(ta);
-          }
+  const copy = useCallback(async (key: string, value: string) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = value;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand("copy");
+        } finally {
+          document.body.removeChild(ta);
         }
-        setCopiedKey(key);
-        setTimeout(() => setCopiedKey((k) => (k === key ? null : k)), 1600);
-      } catch {
-        // Silent — the user can try again from the menu.
       }
-    },
-    [],
-  );
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey((k) => (k === key ? null : k)), 1600);
+    } catch {
+      // Silent — the user can try again from the menu.
+    }
+  }, []);
+
+  const toggleMute = useCallback(async () => {
+    const nextMuted = !muted;
+    setMuted(nextMuted); // optimistic
+    setBusyKey("mute");
+    try {
+      const response = await fetch("/api/support/mute", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ threadId, muted: nextMuted }),
+      });
+      if (!response.ok) throw new Error("mute_failed");
+      setFeedback(nextMuted ? t("Notifications muted") : t("Notifications on"));
+      setTimeout(() => setFeedback((f) => (f && f.length > 0 ? null : f)), 2000);
+    } catch {
+      setMuted(!nextMuted); // rollback
+      setFeedback(t("Couldn't update mute. Try again."));
+    } finally {
+      setBusyKey(null);
+    }
+  }, [muted, threadId, t]);
+
+  const reportThread = useCallback(async () => {
+    setBusyKey("report");
+    try {
+      const response = await fetch("/api/support/report", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ threadId }),
+      });
+      if (!response.ok) throw new Error("report_failed");
+      setFeedback(t("Thank you — operations will review this."));
+      setTimeout(() => setFeedback((f) => (f && f.length > 0 ? null : f)), 3000);
+    } catch {
+      setFeedback(t("Couldn't submit the report. Try again."));
+    } finally {
+      setBusyKey(null);
+    }
+  }, [threadId, t]);
 
   const onTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
@@ -254,6 +341,31 @@ function ActionMenu({
         >
           <ActionItem
             ref={firstItemRef}
+            icon={
+              muted ? (
+                <BellRing size={14} aria-hidden />
+              ) : (
+                <BellOff size={14} aria-hidden />
+              )
+            }
+            label={muted ? t("Unmute notifications") : t("Mute notifications")}
+            description={
+              muted
+                ? t("Notifications are paused for this thread.")
+                : t("Pause email and push for this thread.")
+            }
+            onSelect={toggleMute}
+            disabled={busyKey === "mute"}
+          />
+          <ActionItem
+            icon={<AlertTriangle size={14} aria-hidden />}
+            label={t("Report thread")}
+            description={t("Send to operations for human review.")}
+            onSelect={reportThread}
+            disabled={busyKey === "report"}
+          />
+          <div className="acct-thread-header__menu-divider" role="separator" />
+          <ActionItem
             icon={<Link2 size={14} aria-hidden />}
             label={
               copiedKey === "link" ? t("Link copied") : t("Copy thread link")
@@ -263,9 +375,7 @@ function ActionMenu({
           />
           <ActionItem
             icon={<Copy size={14} aria-hidden />}
-            label={
-              copiedKey === "id" ? t("ID copied") : t("Copy thread ID")
-            }
+            label={copiedKey === "id" ? t("ID copied") : t("Copy thread ID")}
             confirmed={copiedKey === "id"}
             onSelect={() => copy("id", threadId)}
           />
@@ -279,6 +389,11 @@ function ActionMenu({
             disabled
             onSelect={() => null}
           />
+          {feedback ? (
+            <p className="acct-thread-header__menu-feedback" role="status">
+              {feedback}
+            </p>
+          ) : null}
           <p className="acct-thread-header__menu-foot">
             {t("Thread")} · {subject}
           </p>

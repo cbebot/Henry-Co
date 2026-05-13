@@ -6,6 +6,9 @@ import {
   type ThreadMessage,
   type ThreadSupabaseLike,
 } from "@henryco/messaging-thread";
+// The studio page wraps both the header and room in ThreadAppearanceProvider
+// so the customization popover (which lives in the header) drives the
+// appearance attrs the engine reads (data-font / data-density / data-surface).
 
 import { getBrowserSupabase } from "@/lib/supabase/browser";
 import {

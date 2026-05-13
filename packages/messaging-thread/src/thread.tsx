@@ -12,9 +12,17 @@ import {
 import type {
   MessageThreadProps,
   ThreadAttachment,
+  ThreadChannelLike,
   ThreadMessage,
 } from "./types";
 import { renderBody as renderMarkdownBody } from "./markdown";
+import { useThreadAppearance } from "./appearance";
+
+/** Typing-presence cadence — broadcasts at most once per 2s while a
+ * participant is actively typing; the indicator decays after 4s with no
+ * fresh ping so a participant who walks away fades out naturally. */
+const TYPING_BROADCAST_INTERVAL_MS = 2_000;
+const TYPING_TTL_MS = 4_000;
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -242,8 +250,10 @@ export function MessageThread({
   emptyBody = "Ask a question, share feedback, or attach a reference. Replies arrive here in real time.",
   renderMarkdown = false,
   disableComposer = false,
+  enableTypingPresence = true,
   composerExtras,
 }: MessageThreadProps) {
+  const appearance = useThreadAppearance();
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
   const [composerError, setComposerError] = useState<string | null>(null);
   // Hidden polite announcer for screen readers — gets the latest
@@ -257,6 +267,18 @@ export function MessageThread({
   const [liveStatus, setLiveStatus] = useState<
     "idle" | "connecting" | "live" | "reconnecting"
   >("idle");
+  // PASS 24 phase 5 — typing presence. Map from sender userId to the
+  // last "typing" broadcast timestamp + display name. The render loop
+  // shows a calm three-dot indicator whenever at least one entry is
+  // newer than TYPING_TTL ms; the cleanup interval prunes stale entries
+  // so a user who stops typing without sending fades out naturally.
+  const [typingUsers, setTypingUsers] = useState<
+    Map<string, { name: string; lastAt: number }>
+  >(() => new Map());
+  // Ref to the current channel so the composer's onTyping callback can
+  // broadcast through it without re-mounting the realtime effect.
+  const channelRef = useRef<ThreadChannelLike | null>(null);
+  const lastTypingSentRef = useRef<number>(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   // Autoscroll to bottom when message count changes.
@@ -292,20 +314,32 @@ export function MessageThread({
     setLiveStatus("connecting");
 
     const schema = adapter.schema ?? "public";
-    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let channel: ThreadChannelLike | null = null;
     let cancelled = false;
     let retryHandle: ReturnType<typeof setTimeout> | null = null;
     let retryDelay = 1500;
 
-    const handleInsert = (payload: { new?: Record<string, unknown> }) => {
-      if (!payload.new) return;
-      const incoming = adapter.rowToMessage(payload.new, viewer.userId);
+    const handleInsert = (payload: Record<string, unknown>) => {
+      const newRow = (payload as { new?: Record<string, unknown> }).new;
+      if (!newRow) return;
+      const incoming = adapter.rowToMessage(newRow, viewer.userId);
       if (!incoming) return;
       if (incoming.senderId === viewer.userId) return;
       setMessages((prev) => {
         if (prev.find((m) => m.id === incoming.id)) return prev;
         return [...prev, incoming];
       });
+      // A new INSERT means the typing burst from that sender just
+      // resolved — clear their indicator immediately so the bubble
+      // doesn't render alongside a stale "typing…" row.
+      if (incoming.senderId) {
+        setTypingUsers((prev) => {
+          if (!prev.has(incoming.senderId!)) return prev;
+          const next = new Map(prev);
+          next.delete(incoming.senderId!);
+          return next;
+        });
+      }
       if (incoming.senderRole !== "system") {
         const preview = incoming.body
           ? incoming.body.length > 140
@@ -329,53 +363,71 @@ export function MessageThread({
       }
     };
 
+    const handleTyping = (payload: Record<string, unknown>) => {
+      const data = (payload as { payload?: Record<string, unknown> }).payload;
+      if (!data) return;
+      const senderId = typeof data.userId === "string" ? data.userId : null;
+      const name = typeof data.name === "string" ? data.name : "";
+      if (!senderId || senderId === viewer.userId) return;
+      setTypingUsers((prev) => {
+        const next = new Map(prev);
+        next.set(senderId, { name: name || "Someone", lastAt: Date.now() });
+        return next;
+      });
+    };
+
     const connect = () => {
       if (cancelled) return;
-      channel = supabase
-        .channel(adapter.channelName(threadId))
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema,
-            table: adapter.table,
-            filter: adapter.subscriptionFilter(threadId),
-          },
-          handleInsert,
-        )
-        .subscribe((status: string) => {
-          if (cancelled) return;
-          if (status === "SUBSCRIBED") {
-            setLiveStatus("live");
-            retryDelay = 1500; // reset back-off on a clean connection
-            return;
-          }
-          if (
-            status === "CHANNEL_ERROR" ||
-            status === "TIMED_OUT" ||
-            status === "CLOSED"
-          ) {
-            setLiveStatus("reconnecting");
-            if (channel) {
-              try {
-                supabase.removeChannel(channel);
-              } catch {
-                // ignore — channel was already torn down
-              }
-              channel = null;
+      const ch = supabase.channel(adapter.channelName(threadId));
+      const withInsert = ch.on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema,
+          table: adapter.table,
+          filter: adapter.subscriptionFilter(threadId),
+        },
+        handleInsert,
+      );
+      const withTyping = enableTypingPresence
+        ? withInsert.on("broadcast", { event: "typing" }, handleTyping)
+        : withInsert;
+      channel = withTyping.subscribe((status: string) => {
+        if (cancelled) return;
+        if (status === "SUBSCRIBED") {
+          setLiveStatus("live");
+          retryDelay = 1500;
+          return;
+        }
+        if (
+          status === "CHANNEL_ERROR" ||
+          status === "TIMED_OUT" ||
+          status === "CLOSED"
+        ) {
+          setLiveStatus("reconnecting");
+          if (channel) {
+            try {
+              supabase.removeChannel(channel);
+            } catch {
+              // ignore — channel was already torn down
             }
-            // Capped exponential back-off, max 15s. The retry handle is
-            // tracked so the cleanup function can clear it on unmount.
-            retryHandle = setTimeout(connect, retryDelay);
-            retryDelay = Math.min(retryDelay * 2, 15000);
+            channel = null;
+            channelRef.current = null;
           }
-        });
+          // Capped exponential back-off, max 15s. The retry handle is
+          // tracked so the cleanup function can clear it on unmount.
+          retryHandle = setTimeout(connect, retryDelay);
+          retryDelay = Math.min(retryDelay * 2, 15000);
+        }
+      });
+      channelRef.current = channel;
     };
 
     connect();
 
     return () => {
       cancelled = true;
+      channelRef.current = null;
       if (retryHandle) {
         clearTimeout(retryHandle);
         retryHandle = null;
@@ -388,7 +440,49 @@ export function MessageThread({
         }
       }
     };
-  }, [threadId, viewer.userId, adapter, getSupabase]);
+  }, [threadId, viewer.userId, viewer.fullName, adapter, getSupabase, enableTypingPresence]);
+
+  // Decay stale typing entries every second so a participant who stops
+  // typing without sending fades out after TYPING_TTL_MS instead of
+  // sticking forever.
+  useEffect(() => {
+    if (!enableTypingPresence) return;
+    if (typingUsers.size === 0) return;
+    const handle = window.setInterval(() => {
+      const cutoff = Date.now() - TYPING_TTL_MS;
+      setTypingUsers((prev) => {
+        let mutated = false;
+        const next = new Map(prev);
+        for (const [id, entry] of next) {
+          if (entry.lastAt < cutoff) {
+            next.delete(id);
+            mutated = true;
+          }
+        }
+        return mutated ? next : prev;
+      });
+    }, 1_000);
+    return () => window.clearInterval(handle);
+  }, [enableTypingPresence, typingUsers.size]);
+
+  const handleTyping = useCallback(() => {
+    if (!enableTypingPresence) return;
+    const channel = channelRef.current;
+    if (!channel?.send) return;
+    const now = Date.now();
+    if (now - lastTypingSentRef.current < TYPING_BROADCAST_INTERVAL_MS) return;
+    lastTypingSentRef.current = now;
+    try {
+      channel.send({
+        type: "broadcast",
+        event: "typing",
+        payload: { userId: viewer.userId, name: viewer.fullName },
+      });
+    } catch {
+      // Broadcast failed — the next keystroke will retry. Engine never
+      // surfaces typing-presence errors because they're cosmetic.
+    }
+  }, [enableTypingPresence, viewer.userId, viewer.fullName]);
 
   // Bridge the engine's per-file `attachAction` (FormData → upload result)
   // to ChatComposer's `AttachmentUploader` (file + onProgress → remote).
@@ -471,9 +565,23 @@ export function MessageThread({
   );
 
   const tone = useMemo(() => pickComposerTone(threadId), [threadId]);
+  const activeTypers = useMemo(() => {
+    const cutoff = Date.now() - TYPING_TTL_MS;
+    const out: Array<{ id: string; name: string }> = [];
+    for (const [id, entry] of typingUsers) {
+      if (entry.lastAt >= cutoff) out.push({ id, name: entry.name });
+    }
+    return out;
+  }, [typingUsers]);
 
   return (
-    <div className="mt-thread" data-live={liveStatus}>
+    <div
+      className="mt-thread"
+      data-live={liveStatus}
+      data-font={appearance.fontSize}
+      data-density={appearance.density}
+      data-surface={appearance.surfaceTone}
+    >
       {liveStatus === "reconnecting" ? (
         <div className="mt-live-banner" role="status">
           <span className="mt-live-dot" aria-hidden />
@@ -498,6 +606,9 @@ export function MessageThread({
                 renderMarkdown={renderMarkdown}
               />
             ))}
+            {activeTypers.length > 0 ? (
+              <TypingIndicator typers={activeTypers} />
+            ) : null}
           </ul>
         </div>
       )}
@@ -525,6 +636,7 @@ export function MessageThread({
             enableFullScreenOnMobile
             uploadAttachment={uploader}
             onSend={handleSend}
+            onTyping={enableTypingPresence ? handleTyping : undefined}
             onSendError={(error) => setComposerError(error.message)}
             onSendSuccess={() => setComposerError(null)}
             composerExtras={
@@ -541,5 +653,27 @@ export function MessageThread({
         </div>
       )}
     </div>
+  );
+}
+
+function TypingIndicator({ typers }: { typers: Array<{ id: string; name: string }> }) {
+  const label =
+    typers.length === 1
+      ? `${typers[0].name} is typing`
+      : typers.length === 2
+        ? `${typers[0].name} and ${typers[1].name} are typing`
+        : `${typers[0].name} and ${typers.length - 1} others are typing`;
+  return (
+    <li className="mt-bubble-row mt-bubble-row--typing" aria-live="off">
+      <span className="mt-avatar" aria-hidden>
+        {getInitials(typers[0].name)}
+      </span>
+      <div className="mt-typing-bubble" role="status" aria-label={label}>
+        <span className="mt-typing-dot" aria-hidden />
+        <span className="mt-typing-dot" aria-hidden />
+        <span className="mt-typing-dot" aria-hidden />
+        <span className="mt-sr-only">{label}</span>
+      </div>
+    </li>
   );
 }
