@@ -298,9 +298,9 @@ was load-bearing, not cosmetic:
 | `a09c88a3`  | `henryco-account`    | READY    | `dpl_7w5GBorAsTaDxF6HHmJtSsWs3Mdg` → `henryco-account-151owqsa6-henry-co.vercel.app`. **First clean PASS 22 preview.** |
 | `a09c88a3`  | `hub`                | CANCELED | Superseded by `7d1f816a` ~13s later (Vercel cancels in-flight builds when a newer push arrives).                   |
 | `a09c88a3`  | `marketplace`        | CANCELED | Same reason — superseded by next push.                                                                             |
-| `7d1f816a`  | `henryco-account`    | QUEUED at time of writing — builds in flight. |
-| `7d1f816a`  | `hub`                | QUEUED. |
-| `7d1f816a`  | `marketplace`        | QUEUED. |
+| `d14a5a95`  | `henryco-account`    | READY    | `dpl_88WaZDwWa8rarUWg1qJuf2nktr5S` → `henryco-account-1i6o5dqcf-henry-co.vercel.app` (build 69s).                      |
+| `d14a5a95`  | `hub`                | READY    | `dpl_FK8HZaJ111kDyzKhXNzi8QAL4EXT` → `hub-kkd9pyajy-henry-co.vercel.app` (build 63s).                                  |
+| `d14a5a95`  | `marketplace`        | READY    | `dpl_7ZmQWg6gc4YAmADtcyAkATMxF4Rk` → `marketplace-3nfmhtd9g-henry-co.vercel.app` (build 53s).                          |
 
 Stable branch-alias URLs (always resolve to the latest preview build of
 this branch — useful for ongoing QA):
