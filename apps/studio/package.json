@@ -18,6 +18,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.92.0",
     "@henryco/auth": "workspace:^",
+    "@henryco/branded-documents": "workspace:^",
     "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",

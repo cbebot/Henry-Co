@@ -642,10 +642,11 @@ export async function appendSupportMessage(input: {
   senderType: string;
   body: string;
   attachments?: Array<Record<string, unknown>>;
-}) {
+}): Promise<{ messageId: string }> {
   const admin = createAdminSupabase();
+  const messageId = createId();
   await admin.from("support_messages").insert({
-    id: createId(),
+    id: messageId,
     thread_id: input.threadId,
     sender_id: input.senderId,
     sender_type: input.senderType,
@@ -660,4 +661,6 @@ export async function appendSupportMessage(input: {
       status: input.senderType === "customer" ? "awaiting_reply" : "in_progress",
     } as never)
     .eq("id", input.threadId);
+
+  return { messageId };
 }
