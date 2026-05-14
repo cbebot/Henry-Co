@@ -1,11 +1,18 @@
-import Link from "next/link";
-import { Truck } from "lucide-react";
-import { getDivisionUrl } from "@henryco/config";
+import { ArrowUpRight, Truck } from "lucide-react";
+
 import { requireAccountUser } from "@/lib/auth";
-import { getDivisionActivity, getDivisionInvoices, getDivisionNotifications, getDivisionSupportThreads } from "@/lib/division-data";
-import { getLogisticsShipmentsForAccountUser, logisticsTrackUrl } from "@/lib/logistics-module";
-import DivisionModulePage from "@/components/divisions/DivisionModulePage";
-import { formatNaira } from "@/lib/format";
+import {
+  getLogisticsSnapshotForAccountUser,
+  logisticsBookUrl,
+} from "@/lib/logistics-module";
+
+import "@/components/logistics/styles.css";
+import { CompletedTimeline } from "@/components/logistics/CompletedTimeline";
+import { HeroMetrics } from "@/components/logistics/HeroMetrics";
+import { LiveShipmentMap } from "@/components/logistics/LiveShipmentMap";
+import { QuickActions } from "@/components/logistics/QuickActions";
+import { ShipmentCard } from "@/components/logistics/ShipmentCard";
+import { SpendStrip } from "@/components/logistics/SpendStrip";
 
 export const dynamic = "force-dynamic";
 
@@ -15,81 +22,109 @@ export default async function LogisticsPage() {
     typeof user.email === "string" && user.email.trim()
       ? user.email.trim().toLowerCase()
       : null;
-
-  const [activity, notifications, supportThreads, invoices, shipments] = await Promise.all([
-    getDivisionActivity(user.id, "logistics"),
-    getDivisionNotifications(user.id, "logistics"),
-    getDivisionSupportThreads(user.id, "logistics"),
-    getDivisionInvoices(user.id, "logistics"),
-    getLogisticsShipmentsForAccountUser(user.id, email),
-  ]);
-
-  const logisticsOrigin = getDivisionUrl("logistics");
+  const snapshot = await getLogisticsSnapshotForAccountUser(user.id, email);
 
   return (
-    <div className="space-y-8 acct-fade-in">
-      {shipments.length > 0 ? (
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-[var(--acct-ink)]">Your shipments</h2>
-          <p className="text-xs text-[var(--acct-muted)]">
-            Bookings tied to your account email appear here. Tracking still requires your phone on the logistics site
-            for security. Links open with your code prefilled.
-          </p>
-          <ul className="grid gap-2 sm:grid-cols-2">
-            {shipments.map((row) => (
-              <li key={row.id}>
-                <a
-                  href={logisticsTrackUrl(row.tracking_code)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="acct-card flex flex-col gap-1 p-4 transition-shadow hover:shadow-md"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-sm font-semibold text-[var(--acct-ink)]">{row.tracking_code}</span>
-                    <span className="rounded-full bg-[var(--acct-surface-2)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--acct-muted)]">
-                      {row.lifecycle_status.replaceAll("_", " ")}
-                    </span>
-                  </div>
-                  <div className="text-xs text-[var(--acct-muted)]">
-                    {row.zone_label || "Lane"} · {row.service_type.replaceAll("_", " ")} · {row.urgency}
-                  </div>
-                  <div className="text-xs font-medium text-[var(--acct-ink)]">
-                    Indicative {formatNaira(Number(row.amount_quoted) || 0)}
-                  </div>
-                </a>
-              </li>
+    <div className="acct-log acct-fade-in">
+      <section className="acct-log__hero" aria-label="Logistics overview">
+        <div className="acct-log__hero-row">
+          <div>
+            <span className="acct-log__hero-eyebrow">
+              <span className="acct-log__hero-eyebrow-dot" aria-hidden />
+              HenryCo Logistics
+            </span>
+            <h1 className="acct-log__hero-title hc-h1 acct-display">
+              Every parcel, one room.
+            </h1>
+            <p className="acct-log__hero-blurb hc-body-sm">
+              Pickups, drop-offs, ETAs and proofs of delivery — all mirrored
+              from the logistics network into your account. Book once on
+              <span style={{ whiteSpace: "nowrap" }}> logistics.henrycogroup.com</span>
+              and your shipments appear here automatically.
+            </p>
+          </div>
+          <a
+            className="acct-log__hero-cta"
+            href={logisticsBookUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Truck size={16} aria-hidden />
+            New delivery
+            <ArrowUpRight size={14} aria-hidden />
+          </a>
+        </div>
+        <HeroMetrics metrics={snapshot.metrics} />
+      </section>
+
+      <LiveShipmentMap active={snapshot.active} hasAnyShipments={snapshot.hasAnyShipments} />
+
+      {snapshot.active.length > 0 ? (
+        <section aria-labelledby="acct-log-active-head">
+          <div className="acct-log__section-head">
+            <h2 id="acct-log-active-head" className="acct-log__section-title hc-h3 acct-display">
+              In flight right now
+            </h2>
+            <span className="acct-log__section-meta">
+              {snapshot.active.length} active · auto-syncs from logistics
+            </span>
+          </div>
+          <div className="acct-log__rail" role="list" aria-label="Active shipments">
+            {snapshot.active.map((s) => (
+              <div role="listitem" key={s.id}>
+                <ShipmentCard shipment={s} />
+              </div>
             ))}
-          </ul>
+          </div>
+        </section>
+      ) : snapshot.hasAnyShipments ? (
+        <section className="acct-log__empty" aria-label="No active shipments">
+          <span className="acct-log__empty-icon" aria-hidden>
+            <Truck size={18} />
+          </span>
+          <h3 className="acct-log__empty-title">No active shipments</h3>
+          <p className="acct-log__empty-body">
+            Your past deliveries are below. Book another and it will appear
+            here as soon as the rider confirms pickup.
+          </p>
         </section>
       ) : null}
 
-      <DivisionModulePage
-        divisionKey="logistics"
-        icon={Truck}
-        description="Deliveries and shipments with milestone tracking and proof-of-delivery discipline. Book on the logistics site while signed in so requests mirror here automatically."
-        externalUrl={logisticsOrigin}
-        activity={activity}
-        notifications={notifications}
-        supportThreads={supportThreads}
-        invoices={invoices}
-        features={[
-          { label: "Book delivery", description: "Pickup & drop-off request", href: `${logisticsOrigin}/book` },
-          { label: "Track", description: "Status, map context, timeline", href: `${logisticsOrigin}/track` },
-          { label: "Quote", description: "Indicative pricing first", href: `${logisticsOrigin}/quote` },
-          { label: "Receipts", description: "Invoices & division activity", href: "/invoices" },
-          { label: "Addresses", description: "Saved addresses", href: "/addresses" },
-          { label: "Support", description: "Logistics-tagged threads", href: "/support" },
-        ]}
-      />
+      <section aria-labelledby="acct-log-actions-head">
+        <div className="acct-log__section-head">
+          <h2 id="acct-log-actions-head" className="acct-log__section-title hc-h3 acct-display">
+            Run a delivery
+          </h2>
+          <span className="acct-log__section-meta">Shortcuts to common flows</span>
+        </div>
+        <QuickActions />
+      </section>
 
-      <p className="text-center text-xs text-[var(--acct-muted)]">
-        Prefer staying in account?{" "}
-        <Link href="/support" className="font-medium text-[var(--acct-gold)] underline-offset-2 hover:underline">
-          Open support
-        </Link>
-        .
-      </p>
+      {snapshot.recent.length > 0 ? (
+        <section aria-labelledby="acct-log-recent-head">
+          <div className="acct-log__section-head">
+            <h2 id="acct-log-recent-head" className="acct-log__section-title hc-h3 acct-display">
+              Recently delivered
+            </h2>
+            <span className="acct-log__section-meta">
+              Last {snapshot.recent.length} of {snapshot.shipments.length} lifetime
+            </span>
+          </div>
+          <CompletedTimeline recent={snapshot.recent} />
+        </section>
+      ) : null}
+
+      {snapshot.metrics.totalSpendMinor > 0 ? (
+        <section aria-labelledby="acct-log-spend-head">
+          <div className="acct-log__section-head">
+            <h2 id="acct-log-spend-head" className="acct-log__section-title hc-h3 acct-display">
+              Spend · last 6 months
+            </h2>
+            <span className="acct-log__section-meta">Paid only</span>
+          </div>
+          <SpendStrip spendByMonth={snapshot.spendByMonth} />
+        </section>
+      ) : null}
     </div>
   );
 }
-
