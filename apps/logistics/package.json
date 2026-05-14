@@ -15,13 +15,18 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@henryco/branded-documents": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/notifications": "workspace:^",
+    "@henryco/notifications-ui": "workspace:^",
     "@henryco/payment-surface": "workspace:^",
+    "@henryco/search-ui": "workspace:^",
     "@henryco/seo": "workspace:^",
     "@henryco/ui": "workspace:^",
+    "@henryco/workspace-shell": "workspace:^",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.98.0",
     "clsx": "^2.1.1",
