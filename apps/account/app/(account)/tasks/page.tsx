@@ -1,15 +1,27 @@
-import Link from "next/link";
-import { ListTodo } from "lucide-react";
-import { getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
+import { getAccountCopy } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
+
 import { requireAccountUser } from "@/lib/auth";
-import { getDashboardSummary, getSupportThreads, getWalletFundingContext } from "@/lib/account-data";
+import {
+  getDashboardSummary,
+  getSupportThreads,
+  getWalletFundingContext,
+} from "@/lib/account-data";
 import { buildAccountTasks } from "@/lib/intelligence-rollout";
 import { getAccountTrustProfile } from "@/lib/trust";
-import { getLocalizedTrustRequirements, localizeAccountTask } from "@/lib/account-localization";
+import {
+  getLocalizedTrustRequirements,
+  localizeAccountTask,
+} from "@/lib/account-localization";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
-import EmptyState from "@/components/layout/EmptyState";
+
+import "@/components/tasks/styles.css";
+import { TasksHero } from "@/components/tasks/TasksHero";
+import { TasksList } from "@/components/tasks/TasksList";
+import {
+  taskStats,
+  type TaskRow,
+} from "@/components/tasks/helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -22,13 +34,15 @@ export default async function TasksPage() {
     getAccountTrustProfile(user.id),
     getSupportThreads(user.id),
   ]);
-  const openSupportCount = supportThreads.filter((thread: Record<string, unknown>) => {
-    const status = String(thread.status || "");
-    return status !== "resolved" && status !== "closed";
-  }).length;
+  const openSupportCount = (supportThreads as Array<Record<string, unknown>>).filter(
+    (thread) => {
+      const status = String(thread.status || "");
+      return status !== "resolved" && status !== "closed";
+    },
+  ).length;
   const trustRequirements = getLocalizedTrustRequirements(copy, trust);
 
-  const tasks = buildAccountTasks({
+  const rawTasks = buildAccountTasks({
     userId: user.id,
     unreadNotificationCount: data.unreadNotificationCount,
     pendingFundingKobo: funding.pending_kobo,
@@ -36,51 +50,61 @@ export default async function TasksPage() {
     trust,
   }).map((task) => localizeAccountTask(copy, task, trustRequirements));
 
+  const tasks: TaskRow[] = rawTasks.map((t) => ({
+    id: t.id,
+    title: t.title,
+    description: t.description,
+    sourceDivision: String(t.sourceDivision || "account"),
+    deeplinkTemplate: t.deeplinkTemplate,
+    priority:
+      t.priority === "urgent" || t.priority === "high" || t.priority === "normal" || t.priority === "low"
+        ? t.priority
+        : "normal",
+    blocking: Boolean(t.blocking),
+  }));
+  const stats = taskStats(tasks);
+
   return (
-    <div className="space-y-6 acct-fade-in">
+    <div className="acct-tsk acct-fade-in">
       <RouteLiveRefresh intervalMs={12000} />
-      <PageHeader
-        title={copy.tasks.title}
-        description={copy.tasks.description}
-        icon={ListTodo}
+      <TasksHero
+        stats={stats}
+        eyebrow="Action queue · live"
+        guidanceKicker={copy.tasks.queueTitle}
+        guidanceTitle="One queue, every division."
+        guidanceBody={copy.tasks.queueBody}
+        labels={{
+          blocking: copy.tasks.blocking || "Blocking",
+          urgent: copy.tasks.priorityLabels.urgent || "Urgent",
+          high: copy.tasks.priorityLabels.high || "high",
+          total: "Open total",
+        }}
       />
-      <div className="rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4">
-        <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">{copy.tasks.queueTitle}</p>
-        <p className="mt-2 text-sm text-[var(--acct-muted)]">
-          {copy.tasks.queueBody}
-        </p>
-      </div>
-      {tasks.length === 0 ? (
-        <EmptyState
-          icon={ListTodo}
-          title={copy.tasks.emptyTitle}
-          description={copy.tasks.emptyDescription}
-        />
-      ) : (
-        <div className="acct-card divide-y divide-[var(--acct-line)]">
-          {tasks.map((task) => (
-            <Link
-              key={task.id}
-              href={task.deeplinkTemplate || "/"}
-              className="block px-5 py-4 transition hover:bg-[var(--acct-bg-elevated)]"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-[var(--acct-ink)]">{task.title}</p>
-                <span className="acct-chip acct-chip-blue text-[0.65rem]">
-                  {task.blocking ? copy.tasks.blocking : copy.tasks.priorityLabels[task.priority]}
-                </span>
-              </div>
-              {task.description ? (
-                <p className="mt-1 text-sm text-[var(--acct-muted)]">{task.description}</p>
-              ) : null}
-              <p className="mt-1 text-[0.65rem] uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-                {copy.common.source}: {translateSurfaceLabel(locale, task.sourceDivision)}
-              </p>
-            </Link>
-          ))}
+      <section aria-labelledby="acct-tsk-list">
+        <div className="acct-tsk__section-head">
+          <h2 id="acct-tsk-list" className="acct-tsk__section-title">
+            {copy.tasks.queueTitle || "Open tasks"}
+          </h2>
+          <span className="acct-tsk__section-meta">
+            {tasks.length === 0
+              ? "You're clear. Anything new will appear here as it arrives."
+              : `${tasks.length} open · sorted by priority and blocking state.`}
+          </span>
         </div>
-      )}
+        {tasks.length === 0 ? (
+          <div className="acct-tsk__empty">
+            <strong>{copy.tasks.emptyTitle}</strong>
+            {copy.tasks.emptyDescription}
+          </div>
+        ) : (
+          <TasksList
+            tasks={tasks}
+            priorityLabel={(priority) => copy.tasks.priorityLabels[priority] || priority}
+            blockingLabel={copy.tasks.blocking || "Blocking"}
+            sourceLabel={copy.common.source || "Source"}
+          />
+        )}
+      </section>
     </div>
   );
 }
-
