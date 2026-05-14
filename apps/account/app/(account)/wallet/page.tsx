@@ -1,300 +1,196 @@
-import Link from "next/link";
-import {
-  Wallet,
-  Plus,
-  ArrowDownLeft,
-  ArrowUpRight,
-  RefreshCcw,
-  Gift,
-  Clock,
-  ShieldCheck,
-} from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
+
 import { requireAccountUser } from "@/lib/auth";
 import {
-  getProfile,
+  getPayoutMethods,
   getPendingWithdrawalHoldKobo,
+  getProfile,
   getWalletFundingContext,
   getWalletTransactions,
+  getWithdrawalPinConfigured,
   getWithdrawalRequests,
 } from "@/lib/account-data";
-import { formatNaira, formatDateTime, divisionLabel } from "@/lib/format";
 import { resolveAccountRegionalContext } from "@/lib/regional-context";
-import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
-import EmptyState from "@/components/layout/EmptyState";
+import { getVerificationState } from "@/lib/verification";
 import {
   isPendingWithdrawalStatus,
   LEGACY_WITHDRAWAL_REQUEST_REFERENCE_TYPE,
 } from "@/lib/wallet-storage";
 
+import "@/components/wallet/styles.css";
+import { ActivityFeed } from "@/components/wallet/ActivityFeed";
+import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
+import { HeroBalance } from "@/components/wallet/HeroBalance";
+import { PendingOpsTiles } from "@/components/wallet/PendingOpsTile";
+import { QuickActions } from "@/components/wallet/QuickActions";
+import { SpendStrip } from "@/components/wallet/SpendStrip";
+import { TrustLadder } from "@/components/wallet/TrustLadder";
+import type { WalletTransaction } from "@/components/wallet/helpers";
+
 export const dynamic = "force-dynamic";
 
-const typeIcons: Record<string, typeof ArrowDownLeft> = {
-  credit: ArrowDownLeft,
-  debit: ArrowUpRight,
-  refund: RefreshCcw,
-  bonus: Gift,
-  cashback: Gift,
-  transfer: ArrowUpRight,
-};
-
-const typeColors: Record<string, string> = {
-  credit: "var(--acct-green)",
-  debit: "var(--acct-red)",
-  refund: "var(--acct-blue)",
-  bonus: "var(--acct-purple)",
-  cashback: "var(--acct-orange)",
-  transfer: "var(--acct-muted)",
-};
-
 export default async function WalletPage() {
-  const locale = await getAccountAppLocale();
-  const t = (text: string) => translateSurfaceLabel(locale, text);
   const user = await requireAccountUser();
-  const [{ wallet, pending_kobo, requests }, withdrawalRequests, profile] = await Promise.all([
+  const [
+    { wallet, pending_kobo, requests },
+    withdrawalRequests,
+    profile,
+    rawTransactions,
+    payoutMethods,
+    pinConfigured,
+    verification,
+  ] = await Promise.all([
     getWalletFundingContext(user.id),
     getWithdrawalRequests(user.id),
     getProfile(user.id),
+    getWalletTransactions(user.id, 50),
+    getPayoutMethods(user.id),
+    getWithdrawalPinConfigured(user.id),
+    getVerificationState(user.id),
   ]);
+
   const region = resolveAccountRegionalContext({
     country: profile?.country as string | null | undefined,
     currency: profile?.currency as string | null | undefined,
     timezone: profile?.timezone as string | null | undefined,
     language: profile?.language as string | null | undefined,
   });
+
+  const balanceKobo = Number(wallet.balance_kobo) || 0;
   const pendingWithdrawalKobo = getPendingWithdrawalHoldKobo(withdrawalRequests as never);
-  const availableBalanceKobo = Math.max(0, Number(wallet.balance_kobo) - pendingWithdrawalKobo);
-  const transactions = (await getWalletTransactions(user.id, 50)).filter(
-    (transaction: Record<string, string | number>) =>
-      (
-        transaction.reference_type !== "wallet_funding_request" ||
-        transaction.status === "completed" ||
-        transaction.status === "verified"
-      ) &&
-      (
-        transaction.reference_type !== LEGACY_WITHDRAWAL_REQUEST_REFERENCE_TYPE ||
-        !isPendingWithdrawalStatus(String(transaction.status || ""))
-      )
-  );
+  const availableBalanceKobo = Math.max(0, balanceKobo - pendingWithdrawalKobo);
+  const pendingWithdrawalCount = (
+    withdrawalRequests as Array<Record<string, unknown>>
+  ).filter((r) => isPendingWithdrawalStatus(String(r.status || ""))).length;
+  const pendingFundingCount = (requests as Array<Record<string, unknown>>).filter(
+    (r) => {
+      const s = String(r.status || "");
+      return s !== "completed" && s !== "verified";
+    },
+  ).length;
+
+  const transactions: WalletTransaction[] = (rawTransactions as Array<Record<string, unknown>>)
+    .filter((t) => {
+      const refType = String(t.reference_type || "");
+      const status = String(t.status || "");
+      // Hide noisy pending funding-request entries until they settle.
+      if (
+        refType === "wallet_funding_request" &&
+        status !== "completed" &&
+        status !== "verified"
+      ) {
+        return false;
+      }
+      if (
+        refType === LEGACY_WITHDRAWAL_REQUEST_REFERENCE_TYPE &&
+        isPendingWithdrawalStatus(status)
+      ) {
+        return false;
+      }
+      return true;
+    })
+    .map((t) => ({
+      id: String(t.id ?? ""),
+      type: String(t.type ?? ""),
+      description: String(t.description ?? ""),
+      amount_kobo: Number(t.amount_kobo) || 0,
+      division: (t.division as string | null) ?? null,
+      created_at: String(t.created_at ?? ""),
+      status: String(t.status ?? ""),
+      reference_type: (t.reference_type as string | null) ?? null,
+    }));
 
   return (
-    <div className="space-y-6 acct-fade-in">
+    <div className="acct-wal acct-fade-in">
       <RouteLiveRefresh />
-      <PageHeader
-        title={t("Wallet")}
-        description={t("Your HenryCo wallet for payments across Care, Marketplace, Studio, and more.")}
-        icon={Wallet}
-        actions={
-          <div className="flex flex-wrap gap-2">
-            <Link href="/wallet/funding" className="acct-button-primary rounded-xl">
-              <Plus size={16} /> {t("Fund wallet")}
-            </Link>
-            <Link href="/wallet/withdrawals" className="acct-button-secondary rounded-xl">
-              <ArrowUpRight size={16} /> {t("Withdraw")}
-            </Link>
-          </div>
-        }
+      <HeroBalance
+        balanceKobo={balanceKobo}
+        pendingFundingKobo={pending_kobo}
+        pendingWithdrawalKobo={pendingWithdrawalKobo}
+        availableKobo={availableBalanceKobo}
+        currency={wallet.currency || "NGN"}
+        settlementNote={region.settlementNote}
       />
-
-      {/* Balance card */}
-      <div className="acct-card overflow-hidden">
-        <div className="bg-gradient-to-br from-[var(--acct-gold)] to-[#A08520] px-6 py-8 text-white">
-          <p className="hc-label uppercase tracking-[0.16em] text-white/75">{t("Available balance")}</p>
-          <p className="hc-display hc-mono mt-2 text-white">{formatNaira(availableBalanceKobo)}</p>
-          <p className="hc-body-sm mt-3 text-white/70">
-            {t("HenryCo Wallet")} &middot; {wallet.currency} &middot; {t("Available across HenryCo services")}
-          </p>
-          <p className="hc-caption mt-1.5 text-white/65">
-            {region.settlementNote}
-          </p>
-          {pendingWithdrawalKobo > 0 ? (
-            <p className="hc-micro mt-2 uppercase tracking-[0.16em] font-semibold text-white/75">
-              <span className="hc-mono">{formatNaira(pendingWithdrawalKobo)}</span>
-              {" "}{t("held in pending withdrawal review")}
-            </p>
-          ) : null}
+      <section className="acct-wal__section" aria-labelledby="acct-wal-actions-head">
+        <div className="acct-wal__section-head">
+          <h2 id="acct-wal-actions-head" className="acct-wal__section-title hc-h3 acct-display">
+            Wallet actions
+          </h2>
+          <span className="acct-wal__section-meta">Add, withdraw, pay, reconcile</span>
         </div>
-        <div className="grid grid-cols-2 divide-x divide-[var(--acct-line)] border-t border-[var(--acct-line)] sm:grid-cols-4">
-          <Link
-            href="/wallet/funding"
-            className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
-          >
-            <Plus size={18} className="text-[var(--acct-green)]" />
-            <span className="text-xs font-medium">{t("Fund wallet")}</span>
-          </Link>
-          <Link
-            href="/wallet/withdrawals"
-            className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
-          >
-            <ArrowDownLeft size={18} className="text-[var(--acct-orange)]" />
-            <span className="text-xs font-medium">{t("Withdraw")}</span>
-          </Link>
-          <Link
-            href="/payments"
-            className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
-          >
-            <ArrowUpRight size={18} className="text-[var(--acct-blue)]" />
-            <span className="text-xs font-medium">{t("Payments")}</span>
-          </Link>
-          <Link
-            href="/wallet"
-            className="flex flex-col items-center gap-1 px-4 py-4 text-center transition-colors hover:bg-[var(--acct-surface)]"
-          >
-            <Clock size={18} className="text-[var(--acct-muted)]" />
-            <span className="text-xs font-medium">{t("History")}</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* Trust cues */}
-      <div className="grid gap-3 sm:grid-cols-3">
-        {[
-          { label: t("Pending review stays separate"), desc: t("Funding only moves into available balance after confirmation.") },
-          { label: t("Works across HenryCo"), desc: t("Use the same wallet for Care, Marketplace, Studio, and more.") },
-          {
-            label: t("Settlement truth"),
-            desc:
-              region.currencyCode === "NGN"
-                ? t("Your wallet display and settlement currency are aligned.")
-                : `${t("Your profile can display")} ${region.currencyCode}, ${t("but wallet settlement still runs in NGN today.")}`,
-          },
-        ].map((cue) => (
-          <div key={cue.label} className="rounded-xl bg-[var(--acct-surface)] p-4">
-            <p className="text-sm font-semibold text-[var(--acct-ink)]">{cue.label}</p>
-            <p className="mt-0.5 text-xs text-[var(--acct-muted)]">{cue.desc}</p>
-          </div>
-        ))}
-      </div>
-
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="acct-card p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="acct-kicker">{t("Pending funding")}</p>
-              <p className="hc-h2 hc-mono mt-2 text-[var(--acct-ink)]">
-                {formatNaira(pending_kobo)}
-              </p>
-              <p className="hc-body mt-2 text-[var(--acct-muted)]">
-                {t("Money stays here until transfer proof is uploaded and the HenryCo team confirms the payment.")}
-              </p>
-            </div>
-            <ShieldCheck className="h-5 w-5 text-[var(--acct-blue)]" />
-          </div>
-          <Link href="/wallet/funding" className="acct-button-secondary mt-5 rounded-xl">
-            {t("Open funding lane")}
-          </Link>
-        </div>
-
-        <div className="acct-card p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="acct-kicker">{t("Pending withdrawals")}</p>
-              <p className="hc-h3 mt-2 text-[var(--acct-ink)]">
-                {pendingWithdrawalKobo > 0 ? (
-                  <>
-                    <span className="hc-mono">{formatNaira(pendingWithdrawalKobo)}</span>
-                    {" "}{t("awaiting finance review")}
-                  </>
-                ) : (
-                  t("No pending withdrawals")
-                )}
-              </p>
-            </div>
-            <ArrowUpRight className="h-5 w-5 text-[var(--acct-orange)]" />
-          </div>
-          <p className="mt-4 text-sm leading-6 text-[var(--acct-muted)]">
-            {t("Requests under review stay off your withdrawable balance so the wallet never promises cash twice.")}
-          </p>
-          <Link href="/wallet/withdrawals" className="acct-button-secondary mt-5 rounded-xl">
-            {t("Open withdrawal lane")}
-          </Link>
-        </div>
+        <QuickActions />
       </section>
-
-      <section className="acct-card p-5 sm:p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <p className="acct-kicker">{t("Recent funding requests")}</p>
-            <h2 className="hc-h2 mt-2 text-[var(--acct-ink)]">{t("Recent requests")}</h2>
-          </div>
+      <section className="acct-wal__section" aria-labelledby="acct-wal-pending-head">
+        <div className="acct-wal__section-head">
+          <h2 id="acct-wal-pending-head" className="acct-wal__section-title hc-h3 acct-display">
+            Pending operations
+          </h2>
+          <span className="acct-wal__section-meta">Kept separate from your available balance</span>
         </div>
-
-        <div className="space-y-3">
-          {requests.slice(0, 3).map((request) => (
-            <Link
-              key={request.id}
-              href={`/wallet/funding/${request.id}`}
-              className="block rounded-xl bg-[var(--acct-surface)] px-4 py-3 transition hover:bg-[var(--acct-bg)]"
-            >
-              <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                {formatNaira(request.amount_kobo)} · {request.reference || request.id}
-              </p>
-              <p className="mt-1 text-xs text-[var(--acct-muted)]">
-                {t((request.status ?? "unknown").replaceAll("_", " "))}
-                {request.proof_url ? ` · ${t("Proof uploaded").toLowerCase()}` : ` · ${t("Awaiting proof").toLowerCase()}`}
-              </p>
-            </Link>
-          ))}
-          {requests.length === 0 ? (
-            <p className="text-sm leading-6 text-[var(--acct-muted)]">
-              {t("Create your first funding request to unlock the bank-transfer flow.")}
-            </p>
-          ) : null}
-        </div>
+        <PendingOpsTiles
+          pendingFundingKobo={pending_kobo}
+          pendingFundingCount={pendingFundingCount}
+          pendingWithdrawalKobo={pendingWithdrawalKobo}
+          pendingWithdrawalCount={pendingWithdrawalCount}
+        />
       </section>
-
-      {/* Transactions */}
-      <section className="acct-card p-5">
-        <p className="acct-kicker mb-4">{t("Transaction history")}</p>
-        {transactions.length === 0 ? (
-          <EmptyState
-            icon={Wallet}
-            title={t("No transactions yet")}
-            description={t("Your wallet transaction history will appear here once you start using your wallet.")}
+      <section className="acct-wal__section" aria-labelledby="acct-wal-flow-head">
+        <div className="acct-wal__section-head">
+          <h2 id="acct-wal-flow-head" className="acct-wal__section-title hc-h3 acct-display">
+            How your money flows
+          </h2>
+          <span className="acct-wal__section-meta">Last 30 days · last 6 months · by division</span>
+        </div>
+        <div className="acct-wal__columns">
+          <SpendStrip transactions={transactions} />
+          <TrustLadder
+            verificationLabel={
+              verification.status === "verified"
+                ? "Identity verified"
+                : verification.status === "pending"
+                  ? "Verification in review"
+                  : verification.status === "rejected"
+                    ? "Verification needs another submission"
+                    : "Identity not yet submitted"
+            }
+            verificationDone={verification.status === "verified"}
+            payoutMethodCount={(payoutMethods as Array<unknown>).length}
+            withdrawalPinConfigured={pinConfigured}
           />
-        ) : (
-          <div className="space-y-2">
-            {transactions.map((tx: Record<string, string | number>) => {
-              const Icon = typeIcons[tx.type as string] || ArrowUpRight;
-              const color = typeColors[tx.type as string] || "var(--acct-muted)";
-              const isCredit = ["credit", "refund", "bonus", "cashback"].includes(tx.type as string);
-
-              return (
-                <div
-                  key={tx.id as string}
-                  className="flex items-center gap-3 rounded-xl bg-[var(--acct-surface)] px-4 py-3"
-                >
-                  <div
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: color + "18", color }}
-                  >
-                    <Icon size={18} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[var(--acct-ink)]">
-                      {tx.description}
-                    </p>
-                    <p className="text-xs text-[var(--acct-muted)]">
-                      {tx.division ? divisionLabel(tx.division as string) + " · " : ""}
-                      {formatDateTime(tx.created_at as string, {
-                        locale: region.locale,
-                        timezone: region.timezone,
-                      })}
-                    </p>
-                  </div>
-                  <p
-                    className="shrink-0 text-sm font-semibold"
-                    style={{ color: isCredit ? "var(--acct-green)" : "var(--acct-red)" }}
-                  >
-                    {isCredit ? "+" : "-"}{formatNaira(tx.amount_kobo as number)}
-                  </p>
-                </div>
-              );
-            })}
+        </div>
+      </section>
+      {(requests as Array<unknown>).length > 0 ? (
+        <section className="acct-wal__section" aria-labelledby="acct-wal-funding-head">
+          <div className="acct-wal__section-head">
+            <h2 id="acct-wal-funding-head" className="acct-wal__section-title hc-h3 acct-display">
+              Recent funding requests
+            </h2>
+            <span className="acct-wal__section-meta">{pendingFundingCount} in review</span>
           </div>
-        )}
+          <div className="acct-wal__funding-list">
+            {(requests as Array<{
+              id: string;
+              amount_kobo: number;
+              status: string;
+              reference: string | null;
+              proof_url?: string | null;
+              created_at: string;
+            }>)
+              .slice(0, 4)
+              .map((request) => (
+                <FundingRequestRow key={request.id} request={request} />
+              ))}
+          </div>
+        </section>
+      ) : null}
+      <section className="acct-wal__section" aria-labelledby="acct-wal-activity-head">
+        <div className="acct-wal__section-head">
+          <h2 id="acct-wal-activity-head" className="acct-wal__section-title hc-h3 acct-display">
+            Activity
+          </h2>
+          <span className="acct-wal__section-meta">Latest {Math.min(transactions.length, 50)}</span>
+        </div>
+        <ActivityFeed transactions={transactions} />
       </section>
     </div>
   );

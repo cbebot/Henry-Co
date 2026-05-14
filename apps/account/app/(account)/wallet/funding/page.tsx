@@ -1,174 +1,81 @@
-import Link from "next/link";
-import { ArrowRight, Building2, Wallet } from "lucide-react";
-import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
+
 import { requireAccountUser } from "@/lib/auth";
 import { getWalletFundingContext } from "@/lib/account-data";
-import { formatDateTime, formatNaira } from "@/lib/format";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
+
+import "@/components/wallet/styles.css";
 import FundingRequestForm from "@/components/wallet/FundingRequestForm";
-import CopyValueButton from "@/components/ui/CopyValueButton";
+import { AccountDetailsCard } from "@/components/wallet/AccountDetailsCard";
+import { BackNav } from "@/components/wallet/BackNav";
+import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
+import { HeroBalance } from "@/components/wallet/HeroBalance";
 
 export const dynamic = "force-dynamic";
-
-function localizedStatus(
-  t: (text: string) => string,
-  status: string | null | undefined,
-) {
-  // PASS 22 issue #4 — funding rows may carry NULL status during a partial
-  // migration. Defaulting to "unknown" keeps the surface alive instead of
-  // throwing on .replaceAll().
-  const safe = typeof status === "string" && status.length > 0 ? status : "unknown";
-  const statusKey = safe.replaceAll("_", " ");
-  const translated = t(statusKey);
-  return translated === statusKey
-    ? statusKey.charAt(0).toUpperCase() + statusKey.slice(1)
-    : translated;
-}
 
 export default async function WalletFundingPage() {
   const locale = await getAccountAppLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const user = await requireAccountUser();
   const data = await getWalletFundingContext(user.id);
-  const copyLabel = t("Copy");
-  const copiedLabel = t("Copied");
+  const balanceKobo = Number(data.wallet.balance_kobo) || 0;
 
   return (
-    <div className="space-y-6 acct-fade-in">
+    <div className="acct-wal acct-fade-in">
       <RouteLiveRefresh />
-      <PageHeader
-        title={t("Wallet Funding")}
-        description={t("Move funds into your HenryCo wallet through a verification-safe bank transfer flow.")}
-        icon={Wallet}
-        actions={
-          <Link href="/wallet" className="acct-button-secondary rounded-2xl">
-            {t("Back to wallet")}
-          </Link>
-        }
+      <BackNav href="/wallet" label={t("Back to wallet")} />
+      <HeroBalance
+        balanceKobo={balanceKobo}
+        pendingFundingKobo={data.pending_kobo}
+        pendingWithdrawalKobo={0}
+        availableKobo={balanceKobo}
+        currency={data.wallet.currency || "NGN"}
+        settlementNote={t(
+          "Verified balance is ready to spend across HenryCo. Pending funding sits separately until finance clears the transfer.",
+        )}
       />
-
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_22rem]">
-        <div className="acct-card overflow-hidden">
-          <div className="bg-[linear-gradient(140deg,#0F172A_0%,#21435B_58%,#C9A227_100%)] px-6 py-7 text-white">
-            <p className="hc-label uppercase tracking-[0.18em] text-white/75">
-              {t("Wallet balance")}
-            </p>
-            <p className="hc-display hc-mono mt-3 text-white">{formatNaira(data.wallet.balance_kobo)}</p>
-            <p className="hc-body-lg mt-3 max-w-xl text-white/75">
-              {t("Verified balance is ready to spend. Pending funding sits separately until finance clears the transfer.")}
-            </p>
-          </div>
-          <div className="grid gap-3 border-t border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5 sm:grid-cols-2">
-            <div className="rounded-[1.4rem] bg-[var(--acct-surface)] p-4">
-              <p className="acct-kicker">{t("Verified")}</p>
-              <p className="hc-h2 hc-mono mt-2 text-[var(--acct-ink)]">
-                {formatNaira(data.wallet.balance_kobo)}
-              </p>
-            </div>
-            <div className="rounded-[1.4rem] bg-[var(--acct-surface)] p-4">
-              <p className="acct-kicker">{t("Pending verification")}</p>
-              <p className="hc-h2 hc-mono mt-2 text-[var(--acct-ink)]">
-                {formatNaira(data.pending_kobo)}
-              </p>
-            </div>
-          </div>
+      <section className="acct-wal__section" aria-labelledby="wal-fund-rail-head">
+        <div className="acct-wal__section-head">
+          <h2 id="wal-fund-rail-head" className="acct-wal__section-title hc-h3 acct-display">
+            Transfer to HenryCo
+          </h2>
+          <span className="acct-wal__section-meta">Send your bank transfer to these details, then upload proof.</span>
         </div>
-
-        <div className="acct-card p-5">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--acct-gold-soft)] text-[var(--acct-gold)]">
-              <Building2 size={18} />
-            </div>
-            <div>
-              <p className="acct-kicker">{t("Transfer details")}</p>
-              <h2 className="hc-h2 mt-2 text-[var(--acct-ink)]">{t("HenryCo finance account")}</h2>
-            </div>
-          </div>
-          <div className="mt-4 space-y-3">
-            <div className="rounded-2xl bg-[var(--acct-surface)] p-4">
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Bank")}</p>
-                {data.rail.bankName ? (
-                  <CopyValueButton value={data.rail.bankName} label={copyLabel} copiedLabel={copiedLabel} />
-                ) : null}
-              </div>
-              <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">{t(data.rail.bankName || "Pending")}</p>
-            </div>
-            <div className="rounded-2xl bg-[var(--acct-surface)] p-4">
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Account name")}</p>
-                {data.rail.accountName ? (
-                  <CopyValueButton value={data.rail.accountName} label={copyLabel} copiedLabel={copiedLabel} />
-                ) : null}
-              </div>
-              <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">{t(data.rail.accountName || "Pending")}</p>
-            </div>
-            <div className="rounded-2xl bg-[var(--acct-surface)] p-4">
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">{t("Account number")}</p>
-                {data.rail.accountNumber ? (
-                  <CopyValueButton value={data.rail.accountNumber} label={copyLabel} copiedLabel={copiedLabel} />
-                ) : null}
-              </div>
-              <p className="mt-2 text-sm font-semibold tracking-[0.12em] text-[var(--acct-ink)]">
-                {data.rail.accountNumber || t("Pending")}
-              </p>
-            </div>
-          </div>
+        <div className="acct-wal__columns">
+          <AccountDetailsCard
+            rail={data.rail}
+            copyLabel={t("Copy")}
+            copiedLabel={t("Copied")}
+          />
+          <FundingRequestForm />
         </div>
-      </div>
-
-      <FundingRequestForm />
-
-      <section className="acct-card p-5 sm:p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <p className="acct-kicker">{t("Recent funding requests")}</p>
-            <h2 className="hc-h2 mt-2 text-[var(--acct-ink)]">{t("Recent requests")}</h2>
-          </div>
+      </section>
+      <section className="acct-wal__section" aria-labelledby="wal-fund-list-head">
+        <div className="acct-wal__section-head">
+          <h2 id="wal-fund-list-head" className="acct-wal__section-title hc-h3 acct-display">
+            Funding requests
+          </h2>
+          <span className="acct-wal__section-meta">{data.requests.length} total</span>
         </div>
-
         {data.requests.length === 0 ? (
-          <div className="rounded-[1.5rem] border border-dashed border-[var(--acct-line)] bg-[var(--acct-bg)] px-5 py-10 text-center">
-            <p className="text-sm font-semibold text-[var(--acct-ink)]">{t("No funding requests yet")}</p>
-            <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">
-              {t("The requests you create here will show proof status, reference, and finance verification state.")}
+          <div className="acct-wal__empty">
+            <span className="acct-wal__empty-icon" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <rect x="3" y="6" width="18" height="13" rx="2" />
+                <path d="M3 10h18" />
+              </svg>
+            </span>
+            <h3 className="acct-wal__empty-title">No funding requests yet</h3>
+            <p className="acct-wal__empty-body">
+              Start a funding request above. Once finance confirms the bank
+              reference, your balance moves into available funds.
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="acct-wal__funding-list">
             {data.requests.map((request) => (
-              <Link
-                key={request.id}
-                href={`/wallet/funding/${request.id}`}
-                className="flex flex-col gap-4 rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-5 py-4 transition hover:border-[var(--acct-gold)]/30 hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="acct-chip acct-chip-blue text-[0.6rem]">
-                      {localizedStatus(t, request.status)}
-                    </span>
-                    {request.proof_url ? (
-                      <span className="acct-chip acct-chip-green text-[0.6rem]">{t("Proof uploaded")}</span>
-                    ) : (
-                      <span className="acct-chip acct-chip-orange text-[0.6rem]">{t("Awaiting proof")}</span>
-                    )}
-                  </div>
-                  <p className="hc-body-lg mt-3 font-semibold text-[var(--acct-ink)]">
-                    <span className="hc-mono">{formatNaira(request.amount_kobo)}</span> · {request.reference || request.id}
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-[var(--acct-muted)]">
-                    {formatSurfaceTemplate(t("Created {date}"), {
-                      date: formatDateTime(request.created_at, locale),
-                    })}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-sm font-semibold text-[var(--acct-gold)]">
-                  {t("Open request")} <ArrowRight size={15} />
-                </div>
-              </Link>
+              <FundingRequestRow key={request.id} request={request} />
             ))}
           </div>
         )}
