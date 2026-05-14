@@ -13,3 +13,13 @@ export { PropertyListingDocument, type PropertyListingProps } from "./templates/
 export { JobsApplicationDocument, type JobsApplicationProps } from "./templates/jobs-application";
 export { LearnCertificateDocument, type LearnCertificateProps } from "./templates/learn-certificate";
 export { SupportThreadExportDocument, type SupportThreadExportProps, type SupportMessage } from "./templates/support-thread-export";
+export {
+  LogisticsShipmentReceiptDocument,
+  type LogisticsShipmentReceiptProps,
+  type LogisticsShipmentReceiptItem,
+} from "./templates/logistics-shipment-receipt";
+export {
+  LogisticsB2BStatementDocument,
+  type LogisticsB2BStatementProps,
+  type LogisticsB2BStatementRow,
+} from "./templates/logistics-b2b-statement";

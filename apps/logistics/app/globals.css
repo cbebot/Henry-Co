@@ -1,6 +1,34 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/workspace-shell/src/styles.css";
 @source "../../../packages/ui/src";
+@source "../../../packages/workspace-shell/src";
+
+/* ──────────────────────────────────────────────────────────────────
+   Workspace-shell token mapping for the logistics division.
+
+   The shared @henryco/workspace-shell engine reads its chrome from
+   --ws-* variables. This block redirects them onto the logistics
+   brand tokens (warm bronze on near-black) so the rider / dispatcher
+   / manager / owner surfaces render in division colors without a
+   single hard-coded value.
+
+   V3 PASS 21 — added during the logistics operator surface build.
+   ────────────────────────────────────────────────────────────────── */
+
+[data-workspace-division^="logistics-"] {
+  --ws-bg: var(--logistics-bg);
+  --ws-bg-soft: rgba(255, 235, 220, 0.018);
+  --ws-bg-elev: rgba(255, 235, 220, 0.04);
+  --ws-ink: var(--logistics-ink);
+  --ws-ink-soft: var(--logistics-muted);
+  --ws-ink-mute: rgba(241, 224, 213, 0.45);
+  --ws-line: var(--logistics-line);
+  --ws-line-strong: var(--logistics-line-strong);
+  --ws-accent: var(--logistics-accent);
+  --ws-accent-soft: rgba(215, 117, 57, 0.16);
+  --ws-signal: var(--logistics-accent);
+}
 
 :root {
   --logistics-bg: #09060a;

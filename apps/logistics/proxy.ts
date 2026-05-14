@@ -38,6 +38,11 @@ function clearSupabaseAuthCookies(
 export async function proxy(request: NextRequest) {
   const reqHeaders = new Headers(request.headers);
   reqHeaders.set("x-logistics-return-path", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+  // x-pathname: read by the (staff) operator workspace layout so it can
+  // light up the correct sidebar nav item. Next.js does not expose
+  // pathname in async server-component scope; the proxy is the only
+  // place we can stamp this header before the page renders.
+  reqHeaders.set("x-pathname", request.nextUrl.pathname);
   const malformedCookieNames = new Set(findMalformedSupabaseSessionCookieNames(request.cookies.getAll()));
 
   const response = NextResponse.next({
