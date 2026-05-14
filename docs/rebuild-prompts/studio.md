@@ -6,7 +6,7 @@ PROJECT: HenryCo Ecosystem · henrycogroup.com
 DIVISION: HenryCo Studio
 LIVE DOMAIN: studio.henrycogroup.com
 REPO: github.com/cbebot/Henry-Co
-branch: main (Vercel auto-deploy)
+BRANCH: main (Vercel auto-deploy)
 BACKEND: Supabase (single project, multi-app schema)
 PASS: V3 PASS 21 — DIVISION REBUILD · STUDIO
 EXPECTED DURATION: Long. Studio is the most "agency-shaped" division

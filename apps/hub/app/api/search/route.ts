@@ -43,6 +43,17 @@ function parseDivisions(raw: string | null): SearchInput["divisions_filter"] {
   return items.length > 0 ? items : undefined;
 }
 
+function emptySearchResponse(query: string) {
+  return {
+    query,
+    hits: [],
+    took_ms: 0,
+    next_cursor: null as string | null,
+    total: 0,
+    facets: {} as Record<string, number>,
+  };
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = String(url.searchParams.get("q") ?? "").trim();
@@ -68,20 +79,33 @@ export async function GET(request: Request) {
     }
   })();
 
-  const result = await searchAcrossDivisions(
-    {
-      query,
-      user_id,
-      limit,
-      cursor: cursor || undefined,
-      divisions_filter,
-    },
-    {
-      supabase: adminClient,
-      context: user_id ? "account" : "public",
-      rateLimitIdentityKey: user_id ?? deriveAnonKey(request),
-    },
-  );
+  // V3 PASS 21 H8 — gate requires /api/search to return 200 empty when
+  // Typesense env is unset. search-core's query.ts already degrades to
+  // catalog-only on missing env / index errors, but we wrap the call in
+  // a defensive try/catch here so any *unexpected* error path (rate-limit
+  // store outage, role-resolution throw, schema drift) still surfaces as
+  // a 200 empty response rather than a 500.
+  let result;
+  try {
+    result = await searchAcrossDivisions(
+      {
+        query,
+        user_id,
+        limit,
+        cursor: cursor || undefined,
+        divisions_filter,
+      },
+      {
+        supabase: adminClient,
+        context: user_id ? "account" : "public",
+        rateLimitIdentityKey: user_id ?? deriveAnonKey(request),
+      },
+    );
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn("[hub:/api/search] degraded to empty on unexpected error", error);
+    result = emptySearchResponse(query);
+  }
 
   return NextResponse.json(result, {
     headers: {

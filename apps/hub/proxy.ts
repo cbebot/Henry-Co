@@ -47,6 +47,13 @@ function isPublicLegalPath(pathname: string) {
   return pathname === "/privacy" || pathname === "/terms";
 }
 
+function appendStaffRoleParam(search: string) {
+  const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  params.delete("role");
+  params.set("role", "staff");
+  return `?${params.toString()}`;
+}
+
 export function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   const host =
@@ -67,7 +74,7 @@ export function proxy(request: NextRequest) {
   const isHqHost = host.startsWith("hq.");
   const baseDomain = COMPANY.group.baseDomain;
   const preferredHqOrigin = `https://hq.${baseDomain}`;
-  const preferredStaffHqOrigin = `https://staff.${baseDomain}`;
+  const accountStaffShellOrigin = `https://account.${baseDomain}`;
   const rewriteUrl = request.nextUrl.clone();
   const redirectUrl = request.nextUrl.clone();
 
@@ -81,31 +88,16 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(redirectUrl, 307);
   }
 
-  if (!isWorkspaceHost && request.nextUrl.pathname.startsWith("/workspace")) {
-    const p = request.nextUrl.pathname;
-    const staffPath =
-      p === "/workspace" || p === "/workspace/"
-        ? "/"
-        : p.startsWith("/workspace/")
-          ? p.slice("/workspace".length)
-          : p;
-    redirectUrl.href = `${preferredStaffHqOrigin}${staffPath === "" ? "/" : staffPath}${request.nextUrl.search}`;
-    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 308));
-  }
-
-  if (isLegacyWorkspaceHost || isStaffHqHost) {
-    redirectUrl.href = `${preferredStaffHqOrigin}${request.nextUrl.pathname}${request.nextUrl.search}`;
-    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 308));
-  }
-
+  const targetsWorkspace =
+    request.nextUrl.pathname.startsWith("/workspace") || isWorkspaceHost;
   if (
-    isStaffHqHost &&
-    !isPublicLegalPath(rewriteUrl.pathname) &&
-    !rewriteUrl.pathname.startsWith("/workspace") &&
-    !rewriteUrl.pathname.startsWith("/api/")
+    targetsWorkspace &&
+    !isPublicLegalPath(request.nextUrl.pathname) &&
+    !request.nextUrl.pathname.startsWith("/api/")
   ) {
-    rewriteUrl.pathname =
-      rewriteUrl.pathname === "/" ? "/workspace" : `/workspace${rewriteUrl.pathname}`;
+    const search = appendStaffRoleParam(request.nextUrl.search);
+    redirectUrl.href = `${accountStaffShellOrigin}/${search}`;
+    return withSecurityHeaders(NextResponse.redirect(redirectUrl, 308));
   }
 
   if (
