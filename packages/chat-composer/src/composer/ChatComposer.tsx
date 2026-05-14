@@ -83,6 +83,7 @@ export function ChatComposer(props: ComposerProps) {
     belowInputSlot,
     initialText,
     ariaLabel,
+    composerExtras,
   } = props;
 
   useEffect(() => {
@@ -383,6 +384,8 @@ export function ChatComposer(props: ComposerProps) {
         <span className="ml-auto hidden text-[11px] text-zinc-400 dark:text-white/40 sm:inline">
           {shortcutHint}
         </span>
+
+        {composerExtras ? composerExtras({ text, setText }) : null}
 
         <SendButton
           ready={ready}

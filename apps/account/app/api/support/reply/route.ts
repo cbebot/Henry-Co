@@ -37,6 +37,15 @@ export async function POST(request: Request) {
     let thread_id = "";
     let body = "";
     let attachments: File[] = [];
+    // Pre-uploaded attachments (MessageThread engine path) — when the
+    // engine uploads files via /api/support/upload first, it sends the
+    // resulting URLs here so we skip the inline Cloudinary step.
+    let preUploadedAttachments: Array<{
+      url: string;
+      name: string;
+      type: string;
+      size: number | null;
+    }> = [];
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
@@ -47,11 +56,24 @@ export async function POST(request: Request) {
         .filter((item): item is File => item instanceof File && item.size > 0);
     } else {
       const payload = await request.json();
-      thread_id = String(payload.thread_id || "");
+      thread_id = String(payload.thread_id || payload.threadId || "");
       body = String(payload.body || "");
+      if (Array.isArray(payload.attachments)) {
+        preUploadedAttachments = payload.attachments
+          .filter(
+            (a: unknown): a is Record<string, unknown> =>
+              typeof a === "object" && a !== null && typeof (a as { url?: unknown }).url === "string",
+          )
+          .map((a: Record<string, unknown>) => ({
+            url: String(a.url),
+            name: String(a.name || "attachment"),
+            type: String(a.type || "application/octet-stream"),
+            size: typeof a.size === "number" ? a.size : null,
+          }));
+      }
     }
 
-    if (!thread_id || !body) {
+    if (!thread_id || (!body && preUploadedAttachments.length === 0 && attachments.length === 0)) {
       return NextResponse.json({ error: "Thread ID and body required" }, { status: 400 });
     }
 
@@ -68,7 +90,20 @@ export async function POST(request: Request) {
     if (!thread) return NextResponse.json({ error: "Thread not found" }, { status: 404 });
 
     const uploadedAttachments: Array<Record<string, unknown>> = [];
-    for (const attachment of attachments.slice(0, 4)) {
+    // Pre-uploaded path (MessageThread engine): trust the attachment
+    // metadata since it came from /api/support/upload, which auth-gated
+    // the uploader and ran the same allowed-type / max-bytes checks.
+    for (const attachment of preUploadedAttachments.slice(0, 4)) {
+      uploadedAttachments.push({
+        name: attachment.name,
+        url: attachment.url,
+        public_id: null,
+        mime_type: attachment.type,
+        size: attachment.size,
+      });
+    }
+    // Multipart path (legacy + create-thread flow): still upload inline.
+    for (const attachment of attachments.slice(0, 4 - uploadedAttachments.length)) {
       const upload = await uploadOwnedAsset(attachment, user.id, {
         folder: "support-attachments",
         resourceType: "auto",
@@ -95,13 +130,17 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     // Insert message
-    const { error: messageErr } = await admin.from("support_messages").insert({
-      thread_id,
-      sender_id: user.id,
-      sender_type: "customer",
-      body,
-      attachments: uploadedAttachments,
-    });
+    const { data: insertedMessage, error: messageErr } = await admin
+      .from("support_messages")
+      .insert({
+        thread_id,
+        sender_id: user.id,
+        sender_type: "customer",
+        body,
+        attachments: uploadedAttachments,
+      })
+      .select("id")
+      .single();
     if (messageErr) {
       return NextResponse.json({ error: "Failed to add support reply" }, { status: 500 });
     }
@@ -191,6 +230,7 @@ export async function POST(request: Request) {
 
     const payload = {
       success: true,
+      message_id: insertedMessage?.id ?? null,
       side_effects_ok: sideEffectFailures.length === 0,
       side_effect_failures: sideEffectFailures,
     };

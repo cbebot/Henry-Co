@@ -442,6 +442,13 @@ export type StudioSupportThread = {
   closedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Optional staff-side mute state, populated when the migration
+   * `20260513200000_support_thread_state_pass24_phase5.sql` has run.
+   * NULL on environments where the column isn't yet present. */
+  staffMutedAt: string | null;
+  /** Optional customer-side mute state — surfaced to staff in case
+   * support wants to know the customer suppressed their own notifications. */
+  customerMutedAt: string | null;
 };
 
 export type StudioSupportMessage = {

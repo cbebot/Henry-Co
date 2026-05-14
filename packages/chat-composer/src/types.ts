@@ -68,6 +68,13 @@ export type ComposerLabels = {
   failedSendLabel?: string;
 };
 
+export type ComposerExtrasContext = {
+  /** Live composer text — read it to drive a slot button (e.g. "Refine"). */
+  text: string;
+  /** Replace the composer text — slot can rewrite the draft. */
+  setText: (value: string) => void;
+};
+
 export type ComposerProps = {
   threadId: string;
   onSend: ComposerSendHandler;
@@ -92,6 +99,16 @@ export type ComposerProps = {
   belowInputSlot?: ReactNode;
   initialText?: string;
   ariaLabel?: string;
+  /**
+   * Extra controls rendered in the actions row, before Send. Receives the
+   * live `text` and a `setText` callback so extras can both read AND mutate
+   * the draft. The studio ✨ Refine button uses this to call Claude on the
+   * current draft and replace it with a polished version.
+   *
+   * Render prop instead of plain ReactNode so the slot stays declarative
+   * without forcing the engine to expose its internal state via context.
+   */
+  composerExtras?: (ctx: ComposerExtrasContext) => ReactNode;
 };
 
 export const DEFAULT_MAX_ATTACHMENTS = 10;
