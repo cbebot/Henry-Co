@@ -1,0 +1,246 @@
+/*
+ * Account dashboard — Notifications module (editorial wrap)
+ *
+ * Editorial chrome around the existing realtime NotificationsFeed client.
+ * Same fewer-cards philosophy as security: one premium hero band, rule-
+ * line section dividers, and the feed itself inherits its existing
+ * polished card+swipe treatment without us double-wrapping.
+ */
+
+.acct-notif {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.acct-notif__hero {
+  position: relative;
+  border-radius: var(--acct-radius-lg);
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--acct-bg-soft);
+  background-color: var(--acct-ink);
+  background-image:
+    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--acct-gold) 26%, transparent) 0%, transparent 55%),
+    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-blue) 18%, transparent) 0%, transparent 60%);
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 22%, transparent);
+}
+
+.acct-notif__hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+  gap: 32px;
+  padding: 32px;
+  align-items: flex-start;
+}
+
+@media (max-width: 880px) {
+  .acct-notif__hero-inner { grid-template-columns: 1fr; padding: 24px; gap: 24px; }
+}
+
+.acct-notif__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 18%, transparent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--acct-gold) 70%, var(--acct-bg-soft));
+}
+
+.acct-notif__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  animation: acct-notif-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes acct-notif-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-notif__eyebrow-dot { animation: none; }
+}
+
+.acct-notif__headline {
+  font-family: var(--acct-font-display);
+  font-size: clamp(30px, 3.8vw, 44px);
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  color: var(--acct-bg-soft);
+  margin: 16px 0 0;
+}
+
+.acct-notif__blurb {
+  margin: 14px 0 0;
+  max-width: 58ch;
+  font-size: 14px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--acct-bg-soft) 78%, transparent);
+}
+
+.acct-notif__hero-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 0;
+}
+
+@media (max-width: 520px) {
+  .acct-notif__hero-tiles { grid-template-columns: 1fr; }
+}
+
+.acct-notif__hero-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: var(--acct-radius);
+  background: color-mix(in srgb, var(--acct-bg-soft) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+}
+
+.acct-notif__hero-tile-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--acct-bg-soft) 65%, transparent);
+}
+
+.acct-notif__hero-tile-value {
+  font-family: var(--acct-font-display);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--acct-bg-soft);
+}
+
+.acct-notif__hero-tile-foot {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--acct-bg-soft) 72%, transparent);
+}
+
+.acct-notif__hero-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.acct-notif__hero-divisions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border-radius: var(--acct-radius);
+  background: color-mix(in srgb, var(--acct-bg-soft) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+}
+
+.acct-notif__hero-divisions-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--acct-bg-soft) 65%, transparent);
+  margin: 0;
+}
+
+.acct-notif__hero-division-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.acct-notif__hero-division-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: color-mix(in srgb, var(--acct-bg-soft) 85%, transparent);
+}
+
+.acct-notif__hero-division-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.acct-notif__hero-division-count {
+  font-family: var(--acct-font-display);
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--acct-bg-soft);
+}
+
+/* Section heading, matches security */
+
+.acct-notif__section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--acct-line);
+  margin-bottom: 20px;
+}
+
+.acct-notif__section-title {
+  margin: 0;
+  font-family: var(--acct-font-display);
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  color: var(--acct-ink);
+}
+
+.acct-notif__section-meta {
+  font-size: 12px;
+  color: var(--acct-muted);
+  text-align: right;
+  max-width: 36ch;
+}
+
+.acct-notif__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.acct-notif__recently-deleted {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--acct-bg-soft);
+  border: 1px solid var(--acct-line);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--acct-muted);
+  text-decoration: none;
+  transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+
+.acct-notif__recently-deleted:hover {
+  color: var(--acct-ink);
+  border-color: color-mix(in srgb, var(--acct-gold) 40%, var(--acct-line));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-notif__recently-deleted { transition: none; }
+}
