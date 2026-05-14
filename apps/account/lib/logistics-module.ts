@@ -39,7 +39,22 @@ export async function getLogisticsShipmentsForAccountUser(userId: string, email:
     return [] as AccountLogisticsShipmentRow[];
   }
 
-  return (data ?? []) as AccountLogisticsShipmentRow[];
+  // PASS 22 issue #4 — the row type declares lifecycle_status / service_type
+  // as string but the underlying column allows NULL on legacy rows. The
+  // logistics page calls .replaceAll(...) directly on these fields, which
+  // throws when the value is null and bubbles into the account error
+  // boundary. Coerce here so every consumer sees a stable string.
+  return ((data ?? []) as Array<Record<string, unknown>>).map((row) => ({
+    id: String(row.id ?? ""),
+    tracking_code: String(row.tracking_code ?? ""),
+    lifecycle_status: typeof row.lifecycle_status === "string" ? row.lifecycle_status : "pending",
+    service_type: typeof row.service_type === "string" ? row.service_type : "standard",
+    urgency: typeof row.urgency === "string" ? row.urgency : "standard",
+    amount_quoted: Number(row.amount_quoted) || 0,
+    zone_label: typeof row.zone_label === "string" ? row.zone_label : null,
+    created_at: String(row.created_at ?? ""),
+    updated_at: String(row.updated_at ?? ""),
+  }));
 }
 
 export function logisticsTrackUrl(trackingCode: string) {

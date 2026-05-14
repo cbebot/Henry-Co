@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import { Loader2, Check, Lock } from "lucide-react";
 import { typeStyle } from "../tokens/type";
@@ -193,10 +194,34 @@ function ActionButtonInner({
   );
 
   if (href) {
+    // PASS 22 issue #2 — anchor mode previously used a raw <a>, which
+    // forces a full document reload for every dashboard "View all", "Open
+    // …", and similar CTA. Internal hrefs now use Next/Link so navigation
+    // is SPA-fast (prefetched, no reload). External hrefs (absolute URLs
+    // or anything explicitly opened in a new tab) keep the raw anchor.
+    const isAbsolute = /^[a-z][a-z0-9+.-]*:/i.test(href);
+    const isProtocolRelative = href.startsWith("//");
+    const isHashOrMailto = href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:");
+    const isExternal = isAbsolute || isProtocolRelative || isHashOrMailto || target === "_blank";
+    if (isExternal) {
+      return (
+        <a
+          href={href}
+          target={target}
+          rel={target === "_blank" ? "noopener noreferrer" : undefined}
+          style={{ ...baseStyle, ...focusVisibleStyle() }}
+          aria-label={ariaLabel}
+          aria-disabled={isLocked || undefined}
+        >
+          {iconPosition === "leading" ? iconNode : null}
+          {childrenNode}
+          {iconPosition === "trailing" ? iconNode : null}
+        </a>
+      );
+    }
     return (
-      <a
+      <Link
         href={href}
-        target={target}
         style={{ ...baseStyle, ...focusVisibleStyle() }}
         aria-label={ariaLabel}
         aria-disabled={isLocked || undefined}
@@ -204,7 +229,7 @@ function ActionButtonInner({
         {iconPosition === "leading" ? iconNode : null}
         {childrenNode}
         {iconPosition === "trailing" ? iconNode : null}
-      </a>
+      </Link>
     );
   }
 

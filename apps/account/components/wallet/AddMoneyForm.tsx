@@ -98,6 +98,8 @@ export default function AddMoneyForm() {
       <div className="mt-4">
         <input
           type="number"
+          name="amount"
+          inputMode="numeric"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="acct-input text-lg font-semibold"

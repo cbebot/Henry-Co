@@ -19,8 +19,13 @@ export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ threadId: string }> };
 
-function localizeSupportStatus(t: (text: string) => string, status: string) {
-  const raw = status.replaceAll("_", " ");
+function localizeSupportStatus(
+  t: (text: string) => string,
+  status: string | null | undefined,
+) {
+  const safe =
+    typeof status === "string" && status.length > 0 ? status : "open";
+  const raw = safe.replaceAll("_", " ");
   const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1);
   const capitalizedTranslation = t(capitalized);
 
@@ -32,8 +37,12 @@ function localizeSupportStatus(t: (text: string) => string, status: string) {
   return rawTranslation !== raw ? rawTranslation : capitalized;
 }
 
-function supportCategoryLabel(t: (text: string) => string, category: string) {
-  switch (category.trim().toLowerCase()) {
+function supportCategoryLabel(
+  t: (text: string) => string,
+  category: string | null | undefined,
+) {
+  const safe = typeof category === "string" ? category : "";
+  switch (safe.trim().toLowerCase()) {
     case "billing":
       return t("Billing & Payments");
     case "care":
@@ -49,7 +58,7 @@ function supportCategoryLabel(t: (text: string) => string, category: string) {
     case "general":
       return t("General");
     default: {
-      const normalized = category.trim().replace(/[_-]+/g, " ");
+      const normalized = safe.trim().replace(/[_-]+/g, " ");
       if (!normalized) return t("General");
       const capitalized = normalized.charAt(0).toUpperCase() + normalized.slice(1);
       const translated = t(capitalized);

@@ -171,7 +171,10 @@ export const walletModule: DashboardModule = {
         slug: "wallet.withdrawal",
         label: "Withdrawals",
         source: "wallet",
-        deepLinkTemplate: "/wallet/withdrawals/{{reference_id}}",
+        // PASS 22 issue #1 — `/wallet/withdrawals/[id]` was never mounted
+        // (only the index `/wallet/withdrawals/page.tsx` exists). Land
+        // notification clicks on the index until the detail surface ships.
+        deepLinkTemplate: "/wallet/withdrawals",
         urgentAccent: "#C04A1F",
       },
       {

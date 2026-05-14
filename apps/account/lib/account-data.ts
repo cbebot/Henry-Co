@@ -39,6 +39,22 @@ function asObject(value: unknown) {
     : {};
 }
 
+/**
+ * PASS 22 issue #4 — sort comparators previously called
+ * `new Date(row.created_at).getTime()` directly. When `created_at` was
+ * null / undefined / a malformed string the result was `NaN`, which poisons
+ * the sort and bubbles into render-time exceptions caught by the account
+ * error boundary. This helper normalises any unknown into a sortable
+ * timestamp (epoch=0 for unparseable values), keeping the surface alive
+ * even when an upstream row has bad data.
+ */
+function safeTimestamp(value: unknown): number {
+  if (value == null) return 0;
+  const candidate = typeof value === "string" || typeof value === "number" ? value : String(value);
+  const parsed = new Date(candidate).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 function isMissingNotificationColumn(
   error: { message?: string | null; code?: string | null } | null | undefined,
   column: string
@@ -767,7 +783,7 @@ export async function getWalletFundingRequests(userId: string, limit = 12) {
     .map(mapFundingRequest);
 
   return [...dedicated, ...legacy]
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .sort((a, b) => safeTimestamp(b.created_at) - safeTimestamp(a.created_at))
     .slice(0, limit);
 }
 
@@ -885,7 +901,11 @@ export async function getWithdrawalRequests(userId: string, limit = 40) {
   const dedicatedIds = new Set(((data ?? []) as Array<{ id?: string }>).map((item) => String(item.id || "")));
   const legacyOnly = legacy.filter((item) => !dedicatedIds.has(String((item as { id?: string }).id || "")));
   return [...(data ?? []), ...legacyOnly]
-    .sort((left, right) => new Date(String(right.created_at)).getTime() - new Date(String(left.created_at)).getTime())
+    .sort((left, right) => {
+      const r = right as { created_at?: unknown };
+      const l = left as { created_at?: unknown };
+      return safeTimestamp(r.created_at) - safeTimestamp(l.created_at);
+    })
     .slice(0, limit);
 }
 

@@ -58,7 +58,13 @@ export const marketplaceModule: DashboardModule = {
         title: "Orders in flight",
         size: "lg",
         weight: 80,
-        href: "/marketplace/orders",
+        // PASS 22 issue #1 — `/marketplace/orders` etc. were declared in
+        // getRoutes() but never wired to actual app pages, so each href
+        // 404'd. Until the per-feature pages exist we land users on the
+        // marketplace summary surface (`/marketplace`) which already
+        // renders their orders, saved items, and seller status from the
+        // same snapshot.
+        href: "/marketplace",
         render: async () => <OrdersInFlightCard snapshot={snapshot} />,
       },
       {
@@ -67,7 +73,10 @@ export const marketplaceModule: DashboardModule = {
         title: "Saved items",
         size: "md",
         weight: 60,
-        href: "/marketplace/saved",
+        // `/saved-items` is the canonical cross-division saved-items
+        // surface in apps/account; the marketplace-specific subpath was
+        // never built.
+        href: "/saved-items",
         render: async () => <WishlistShortcut snapshot={snapshot} />,
       },
       {
@@ -89,7 +98,8 @@ export const marketplaceModule: DashboardModule = {
         title: "Seller status",
         size: "md",
         weight: 70,
-        href: "/marketplace/vendor",
+        // No `/marketplace/vendor` page exists in the account shell yet.
+        href: "/marketplace",
         render: async () => (
           <SellerStatusCard vendorStatus={snapshot.vendorStatus} />
         ),
@@ -122,6 +132,10 @@ export const marketplaceModule: DashboardModule = {
     const snapshot = await loadMarketplaceSnapshot(viewer).catch(() => null);
     const vendor = isVendor(snapshot);
 
+    // PASS 22 issue #1 — every `/marketplace/<sub>` palette entry below
+    // pointed at routes the account shell never implemented. We collapse
+    // them to existing surfaces (`/marketplace`, `/saved-items`,
+    // `/support`, `/invoices`) so picking a palette entry never 404s.
     const entries: PaletteEntry[] = [
       {
         id: "marketplace.search",
@@ -129,7 +143,7 @@ export const marketplaceModule: DashboardModule = {
         label: "Search products",
         kicker: "Marketplace",
         groupLabel: "Search",
-        href: "/marketplace/search",
+        href: "/search",
         keywords: ["search", "products", "find", "shop"],
       },
       {
@@ -138,7 +152,7 @@ export const marketplaceModule: DashboardModule = {
         label: "View orders",
         kicker: "Marketplace",
         groupLabel: "Open",
-        href: "/marketplace/orders",
+        href: "/marketplace",
         keywords: ["orders", "purchases", "history"],
       },
       {
@@ -147,7 +161,7 @@ export const marketplaceModule: DashboardModule = {
         label: "Submit dispute",
         kicker: "Marketplace",
         groupLabel: "Create",
-        href: "/marketplace/disputes/new",
+        href: "/support",
         keywords: ["dispute", "complaint", "refund", "issue"],
       },
       {
@@ -156,10 +170,7 @@ export const marketplaceModule: DashboardModule = {
         label: "Save for later",
         kicker: "Marketplace",
         groupLabel: "Create",
-        // Action handler — DASH-5's palette UI invokes this when
-        // selected from the cart drawer context. Until DASH-5 lands,
-        // the entry routes to /saved as a fallback affordance.
-        href: "/marketplace/saved",
+        href: "/saved-items",
         keywords: ["save", "bookmark", "wishlist", "later"],
       },
       {
@@ -168,7 +179,7 @@ export const marketplaceModule: DashboardModule = {
         label: "Open recently viewed",
         kicker: "Marketplace",
         groupLabel: "Open",
-        href: "/marketplace/recently-viewed",
+        href: "/marketplace",
         keywords: ["recently viewed", "history", "browsing"],
       },
       {
@@ -189,7 +200,7 @@ export const marketplaceModule: DashboardModule = {
         label: "Manage store",
         kicker: "Vendor",
         groupLabel: "Open",
-        href: "/marketplace/vendor",
+        href: "/marketplace",
         keywords: ["vendor", "store", "manage", "products"],
       });
     }
@@ -198,37 +209,42 @@ export const marketplaceModule: DashboardModule = {
   },
 
   getNotificationCategories(): ReadonlyArray<NotificationCategory> {
+    // PASS 22 issue #1 — deep-link templates previously pointed at
+    // marketplace subpaths the account shell never implemented (orders,
+    // vendor/payouts, account/seller-application, moderation). All five
+    // now land on the live `/marketplace` summary so a clicked
+    // notification never 404s.
     return [
       {
         slug: "marketplace.order",
         label: "Orders",
         source: "marketplace",
-        deepLinkTemplate: "/marketplace/orders/{{reference_id}}",
+        deepLinkTemplate: "/marketplace",
       },
       {
         slug: "marketplace.dispute",
         label: "Disputes",
         source: "marketplace",
-        deepLinkTemplate: "/marketplace/account/disputes",
+        deepLinkTemplate: "/marketplace",
         urgentAccent: "#C04A1F",
       },
       {
         slug: "marketplace.payout",
         label: "Payouts",
         source: "marketplace",
-        deepLinkTemplate: "/marketplace/vendor/payouts",
+        deepLinkTemplate: "/marketplace",
       },
       {
         slug: "marketplace.application",
         label: "Vendor applications",
         source: "marketplace",
-        deepLinkTemplate: "/marketplace/account/seller-application",
+        deepLinkTemplate: "/marketplace",
       },
       {
         slug: "marketplace.moderation",
         label: "Moderation",
         source: "marketplace",
-        deepLinkTemplate: "/marketplace/moderation",
+        deepLinkTemplate: "/marketplace",
         urgentAccent: "#B91C1C",
       },
     ];
@@ -244,23 +260,22 @@ export const marketplaceModule: DashboardModule = {
   },
 
   getDeepLinkTemplate(eventType: string): string | null {
+    // PASS 22 issue #1 — same rationale as `getNotificationCategories`
+    // above. Every event lands on `/marketplace` instead of a dead
+    // `/marketplace/<sub>` path until those surfaces ship.
     switch (eventType) {
       case "marketplace.order_placed":
       case "marketplace.order_shipped":
       case "marketplace.order_delivered":
-        return "/marketplace/orders/{{reference_id}}";
       case "marketplace.dispute_opened":
       case "marketplace.dispute_resolved":
-        return "/marketplace/account/disputes";
       case "marketplace.payout_completed":
       case "marketplace.payout_failed":
-        return "/marketplace/vendor/payouts";
       case "marketplace.application_submitted":
       case "marketplace.application_approved":
       case "marketplace.application_rejected":
-        return "/marketplace/account/seller-application";
       case "marketplace.moderation_decision":
-        return "/marketplace/moderation";
+        return "/marketplace";
       default:
         return null;
     }

@@ -38,7 +38,12 @@ const RATE_LIMIT_MAX = 1;
 const BODY_CAP = 1024;
 
 const ACCOUNT_HOME_FALLBACK = "https://account.henrycogroup.com";
-const PREFERENCES_PATH = "/account/settings/notifications";
+// PASS 22 issue #1 — every email this cron sends footers a "Manage email
+// preferences" link. The previous path `/account/settings/notifications`
+// 404'd because the account shell does not nest under `/account/...` —
+// the real surface is `/settings/notifications`. Recipients clicking the
+// footer were landing on the not-found page and could not unsubscribe.
+const PREFERENCES_PATH = "/settings/notifications";
 const HENRYCO_HOST_SUFFIXES: readonly string[] = ["henrycogroup.com", "henryco.local"];
 
 type Bucket = { count: number; windowStartedAt: number };
