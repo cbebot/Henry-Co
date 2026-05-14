@@ -244,6 +244,8 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
         <label className="mb-1.5 block text-sm font-medium">{t("Full name")}</label>
         <input
           type="text"
+          name="fullName"
+          autoComplete="name"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           className="acct-input"
@@ -264,6 +266,9 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
           <label className="mb-1.5 block text-sm font-medium">{surfaceCopy.accountForms.phoneLabel}</label>
           <input
             type="tel"
+            name="phone"
+            inputMode="tel"
+            autoComplete="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="acct-input"

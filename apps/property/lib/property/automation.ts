@@ -1,5 +1,6 @@
 import "server-only";
 
+import { BRAND_EMAILS } from "@henryco/config";
 import { sendPropertyEvent } from "@/lib/property/notifications";
 import { readPropertyRuntimeSnapshot } from "@/lib/property/store";
 
@@ -20,7 +21,7 @@ export async function runPropertyAutomationSweep(now = new Date()) {
 
     await sendPropertyEvent({
       event: "owner_alert",
-      recipientEmail: process.env.RESEND_SUPPORT_INBOX || "property@henrycogroup.com",
+      recipientEmail: process.env.RESEND_SUPPORT_INBOX || BRAND_EMAILS.property,
       entityType: "property_inquiry",
       entityId: inquiry.id,
       payload: {

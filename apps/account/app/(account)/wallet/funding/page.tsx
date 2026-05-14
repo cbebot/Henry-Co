@@ -14,9 +14,13 @@ export const dynamic = "force-dynamic";
 
 function localizedStatus(
   t: (text: string) => string,
-  status: string,
+  status: string | null | undefined,
 ) {
-  const statusKey = status.replaceAll("_", " ");
+  // PASS 22 issue #4 — funding rows may carry NULL status during a partial
+  // migration. Defaulting to "unknown" keeps the surface alive instead of
+  // throwing on .replaceAll().
+  const safe = typeof status === "string" && status.length > 0 ? status : "unknown";
+  const statusKey = safe.replaceAll("_", " ");
   const translated = t(statusKey);
   return translated === statusKey
     ? statusKey.charAt(0).toUpperCase() + statusKey.slice(1)

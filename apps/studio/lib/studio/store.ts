@@ -763,6 +763,8 @@ function mapSupportThread(row: Record<string, unknown>): StudioSupportThread {
     closedAt: cleanText(row.closed_at) || null,
     createdAt: cleanText(row.created_at),
     updatedAt: cleanText(row.updated_at),
+    staffMutedAt: cleanText(row.staff_muted_at) || null,
+    customerMutedAt: cleanText(row.customer_muted_at) || null,
   };
 }
 

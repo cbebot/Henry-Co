@@ -57,7 +57,7 @@ function SourceMark({
   }
   return (
     <div
-      className="flex h-9 w-9 items-center justify-center rounded-2xl text-xs font-bold text-white"
+      className="flex h-9 w-9 items-center justify-center rounded-2xl text-xs font-semibold text-white"
       style={{ backgroundColor: source.accent }}
       aria-hidden
     >

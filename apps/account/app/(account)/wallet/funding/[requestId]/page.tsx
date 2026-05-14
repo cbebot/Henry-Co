@@ -28,9 +28,12 @@ function statusChip(status: string) {
 
 function localizedStatus(
   t: (text: string) => string,
-  status: string,
+  status: string | null | undefined,
 ) {
-  const statusKey = status.replaceAll("_", " ");
+  // PASS 22 issue #4 — defensive fallback so a null/undefined status from
+  // a legacy row doesn't throw .replaceAll() and crash the page.
+  const safe = typeof status === "string" && status.length > 0 ? status : "unknown";
+  const statusKey = safe.replaceAll("_", " ");
   const translated = t(statusKey);
   return translated === statusKey
     ? statusKey.charAt(0).toUpperCase() + statusKey.slice(1)

@@ -3,12 +3,13 @@ import * as Linking from "expo-linking";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { useHubAppearance } from "@/context/HubAppearanceContext";
+import { BRAND_EMAILS } from "@/lib/brand-emails";
 
 export default function ContactScreen() {
   const { palette } = useHubAppearance();
   const openMail = () => {
     void Linking.openURL(
-      "mailto:hello@henrycogroup.com?subject=Henry%20%26%20Co.%20Hub%20inquiry",
+      `mailto:${BRAND_EMAILS.hello}?subject=Henry%20%26%20Co.%20Hub%20inquiry`,
     );
   };
 
@@ -36,7 +37,7 @@ export default function ContactScreen() {
         <Pressable
           onPress={openMail}
           className="rounded-2xl border border-[#C9A227]/40 bg-[#C9A227]/10 p-5 active:opacity-80"
-          accessibilityLabel="Send email to hello@henrycogroup.com"
+          accessibilityLabel={`Send email to ${BRAND_EMAILS.hello}`}
           accessibilityRole="button"
         >
           <View className="flex-row items-center gap-3">
@@ -55,7 +56,7 @@ export default function ContactScreen() {
                 className="mt-1 text-lg font-semibold"
                 style={{ color: palette.textPrimary }}
               >
-                hello@henrycogroup.com
+                {BRAND_EMAILS.hello}
               </Text>
             </View>
           </View>

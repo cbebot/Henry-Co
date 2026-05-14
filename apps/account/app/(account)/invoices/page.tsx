@@ -77,7 +77,7 @@ export default async function InvoicesPage() {
           {invoices.map((inv: Record<string, string | number>) => (
             <div key={inv.id as string} className="flex items-center gap-4 px-5 py-4">
               <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xs font-semibold text-white"
                 style={{ backgroundColor: divisionColor(inv.division as string) }}
               >
                 {divisionLabel(inv.division as string).charAt(0)}

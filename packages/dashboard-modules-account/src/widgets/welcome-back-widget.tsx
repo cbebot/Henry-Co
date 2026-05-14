@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Panel, Section, ActionButton } from "@henryco/dashboard-shell/components";
 import { Bookmark, Eye, ShoppingCart } from "lucide-react";
 import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
@@ -43,7 +44,9 @@ export function WelcomeBackWidget({
         headline={greeting}
         description={hint}
         action={
-          <ActionButton href="/saved" tone="ghost" icon={<Bookmark size={14} />}>
+          // PASS 22 issue #1 — `/saved` was a dead route; the canonical
+          // saved-items surface in the account shell is `/saved-items`.
+          <ActionButton href="/saved-items" tone="ghost" icon={<Bookmark size={14} />}>
             View saved
           </ActionButton>
         }
@@ -56,7 +59,7 @@ export function WelcomeBackWidget({
           }}
         >
           <ResumeTile
-            href="/saved"
+            href="/saved-items"
             label="Saved for later"
             kicker={
               savedItemsCount > 0
@@ -66,7 +69,11 @@ export function WelcomeBackWidget({
             icon={<Bookmark size={18} aria-hidden />}
           />
           <ResumeTile
-            href="/marketplace/recently-viewed"
+            // PASS 22 issue #1 — `/marketplace/recently-viewed` was never
+            // mounted in the account shell. The recently-viewed strip
+            // lives inside the saved-items surface; route there until a
+            // dedicated page ships.
+            href="/saved-items"
             label="Recently viewed"
             kicker="Keep browsing"
             icon={<Eye size={18} aria-hidden />}
@@ -96,8 +103,12 @@ function ResumeTile({
   kicker: string;
   icon: React.ReactNode;
 }) {
+  // PASS 22 issue #2 — internal hrefs use Next/Link so the tile navigates
+  // through the SPA router (prefetched, no full reload). The previous raw
+  // <a> forced a document reload on every click and caused the dashboard
+  // shell to re-mount.
   return (
-    <a
+    <Link
       href={href}
       style={{
         display: "flex",
@@ -137,6 +148,6 @@ function ResumeTile({
           {kicker}
         </span>
       </span>
-    </a>
+    </Link>
   );
 }

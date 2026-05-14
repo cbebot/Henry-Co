@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { FormPendingButton } from "@henryco/ui";
+import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
 import {
   OWNER_DIVISION_SLUGS,
   WORKFORCE_PERMISSION_OPTIONS,
@@ -39,7 +40,7 @@ export default function InviteStaffForm() {
       </div>
       <div>
         <label className="text-xs font-semibold uppercase tracking-wide text-[var(--acct-muted)]">Email</label>
-        <input name="email" type="email" className="acct-input mt-2" placeholder="lead@henrycogroup.com" required />
+        <input name="email" type="email" className="acct-input mt-2" placeholder={BRAND_EMAIL_PLACEHOLDERS.lead} required />
       </div>
       <div>
         <label className="text-xs font-semibold uppercase tracking-wide text-[var(--acct-muted)]">Phone</label>

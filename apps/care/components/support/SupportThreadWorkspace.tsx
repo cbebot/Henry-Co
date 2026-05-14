@@ -332,7 +332,7 @@ export default function SupportThreadWorkspace({
             <Inbox className="h-3.5 w-3.5" />
             Support workflow
           </div>
-          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-3xl">
             {title}
           </h2>
           <p className="mt-1 hidden text-sm text-zinc-500 dark:text-white/50 sm:block">{subtitle}</p>
@@ -588,7 +588,7 @@ export default function SupportThreadWorkspace({
                             {!thread.isRead ? (
                               <Circle className="h-2.5 w-2.5 fill-[color:var(--accent)] text-[color:var(--accent)]" />
                             ) : null}
-                            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[color:var(--accent)]">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
                               {thread.threadRef}
                             </span>
                             <span
@@ -686,7 +686,7 @@ export default function SupportThreadWorkspace({
                     <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
                       Thread detail
                     </div>
-                    <h3 className="mt-1 text-xl font-black tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-2xl">
+                    <h3 className="mt-1 text-xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-white sm:text-2xl">
                       {selectedThread.customerName}
                     </h3>
                     <p className="mt-1.5 text-sm leading-7 text-zinc-600 dark:text-white/64">

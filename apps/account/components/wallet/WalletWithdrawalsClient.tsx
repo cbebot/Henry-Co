@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatMoney, formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
@@ -292,6 +293,8 @@ export default function WalletWithdrawalsClient({
           {hasPin ? (
             <input
               type="password"
+              name="currentPin"
+              autoComplete="current-password"
               inputMode="numeric"
               className="acct-input rounded-xl sm:col-span-2"
               placeholder={t("Current PIN")}
@@ -302,6 +305,8 @@ export default function WalletWithdrawalsClient({
           ) : null}
           <input
             type="password"
+            name="newPin"
+            autoComplete="new-password"
             inputMode="numeric"
             className="acct-input rounded-xl"
             placeholder={t("New PIN")}
@@ -311,6 +316,8 @@ export default function WalletWithdrawalsClient({
           />
           <input
             type="password"
+            name="confirmPin"
+            autoComplete="new-password"
             inputMode="numeric"
             className="acct-input rounded-xl"
             placeholder={t("Confirm PIN")}
@@ -345,18 +352,20 @@ export default function WalletWithdrawalsClient({
           <div className="mt-4 rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-4 py-4">
             <p className="text-sm font-semibold text-[var(--acct-ink)]">{verificationGate.headline}</p>
             <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">{verificationGate.detail}</p>
-            <a
+            <Link
               href="/verification"
               className="mt-3 inline-flex rounded-full bg-[var(--acct-gold)] px-4 py-2 text-xs font-semibold text-white"
             >
               {t("Open verification")}
-            </a>
+            </Link>
           </div>
         ) : null}
         <form onSubmit={submitWithdrawal} className="mt-4 grid gap-3">
           <input
             className="acct-input rounded-xl"
             type="number"
+            name="amount"
+            inputMode="numeric"
             min={100}
             step={1}
             placeholder={t("Amount (NGN)")}
@@ -366,6 +375,7 @@ export default function WalletWithdrawalsClient({
           />
           <select
             className="acct-select rounded-xl"
+            name="payoutId"
             value={payoutId}
             onChange={(e) => setPayoutId(e.target.value)}
             required
@@ -379,6 +389,8 @@ export default function WalletWithdrawalsClient({
           </select>
           <input
             type="password"
+            name="withdrawPin"
+            autoComplete="current-password"
             inputMode="numeric"
             className="acct-input rounded-xl"
             placeholder={t("Withdrawal PIN")}

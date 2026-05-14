@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/messaging-thread/src/styles.css";
 @source "../../../packages/ui/src";
 
 /* ─── HenryCo Account Platform Tokens ─── */
@@ -1046,4 +1047,290 @@ html, body { overflow-x: clip; max-width: 100vw; }
 .hc-smart-home-saved-rail:focus-visible {
   outline: 2px solid var(--hc-accent, #C9A227);
   outline-offset: 2px;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   PASS 24 — support thread room
+   --------------------------------------------------------------------
+   Bridges the workspace-shell --ws-* token vocabulary used by
+   @henryco/messaging-thread onto the account dashboard's --acct-*
+   palette so the engine renders cleanly inside the light theme.
+   ────────────────────────────────────────────────────────────────── */
+.acct-support-room {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  /* Token bridge — scoped so the rest of the account app keeps its
+     own visual language, but the engine bubbles + composer adopt
+     the brand light palette automatically. */
+  --ws-bg: var(--acct-bg);
+  --ws-bg-soft: var(--acct-bg-elevated);
+  --ws-bg-elev: var(--acct-bg-elevated);
+  --ws-ink: var(--acct-ink);
+  --ws-ink-soft: var(--acct-muted);
+  --ws-ink-mute: color-mix(in srgb, var(--acct-muted) 70%, transparent);
+  --ws-line: var(--acct-line);
+  --ws-line-strong: color-mix(in srgb, var(--acct-line) 88%, var(--acct-ink));
+  --ws-accent: var(--acct-gold);
+  --ws-accent-soft: var(--acct-gold-soft);
+  --ws-signal: var(--acct-gold-strong);
+  --ws-good: var(--acct-green);
+  --ws-good-soft: var(--acct-green-soft);
+  --ws-warn: #d99a13;
+  --ws-warn-soft: var(--acct-gold-soft);
+  --ws-danger: var(--acct-red);
+  --ws-danger-soft: var(--acct-red-soft);
+  --ws-warning: #b78700;
+  --ws-radius-sm: 0.85rem;
+  --ws-radius-md: 1rem;
+  --ws-radius-lg: 1.25rem;
+  --ws-radius-pill: 9999px;
+}
+
+/* Code spans / link contrast — the messaging-thread defaults assume a
+   dark surface; override the few that don't read well on light. */
+.acct-support-room .mt-md-code {
+  background: var(--acct-surface);
+  color: var(--acct-ink);
+  border-color: var(--acct-line);
+}
+.acct-support-room .mt-md-link {
+  color: var(--acct-gold-text, #8A6F00);
+}
+
+/* Live-banner colour on light surfaces */
+.acct-support-room .mt-live-banner {
+  color: #b78700;
+  background: var(--acct-gold-soft);
+  border-bottom-color: color-mix(in srgb, var(--acct-gold) 28%, transparent);
+}
+.acct-support-room .mt-live-dot {
+  background: var(--acct-gold-strong);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-gold) 35%, transparent);
+}
+
+/* Closed / resolved hint panels */
+.acct-support-room__closed-note,
+.acct-support-room__resolved-note {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--acct-muted);
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+}
+.acct-support-room__closed-note {
+  background: var(--acct-surface);
+}
+.acct-support-room[data-closed] {
+  /* Slightly mute the bubble container when the thread is closed so
+     the read-only state is felt without losing legibility. */
+  opacity: 0.985;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   PASS 24 — workspace-grade thread header (subject, pills, actions)
+   ────────────────────────────────────────────────────────────────── */
+.acct-thread-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem 1.5rem 1.25rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--acct-gold-soft) 70%, transparent) 0%,
+    var(--acct-bg-elevated) 60%
+  );
+  border: 1px solid var(--acct-line);
+  box-shadow: 0 16px 48px -28px rgba(15, 23, 42, 0.18);
+}
+@media (min-width: 768px) {
+  .acct-thread-header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.75rem 2rem;
+  }
+}
+
+.acct-thread-header__primary {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1 1 auto;
+}
+
+.acct-thread-header__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.acct-thread-header__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--acct-surface);
+  color: var(--acct-muted);
+  white-space: nowrap;
+}
+
+.acct-thread-header__pill--division {
+  background: var(--acct-gold-soft);
+  color: var(--acct-gold-text, #8a6f00);
+}
+
+.acct-thread-header__pill--status {
+  /* Tone classes (TONE_CLASS) override the bg + text. */
+}
+
+.acct-thread-header__pill-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.85;
+}
+.acct-thread-header__pill-dot[data-tone="open"] {
+  animation: acctThreadPillPulse 2200ms ease-in-out infinite;
+}
+@keyframes acctThreadPillPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.18); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .acct-thread-header__pill-dot[data-tone="open"] { animation: none; }
+}
+
+.acct-thread-header__subject {
+  margin: 0;
+  color: var(--acct-ink);
+  /* Two-line clamp so very long subjects don't break the layout. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.acct-thread-header__meta {
+  margin: 0;
+  color: var(--acct-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.acct-thread-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Overflow menu ─── */
+.acct-thread-header__menu {
+  position: relative;
+}
+.acct-thread-header__menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.45rem);
+  min-width: 16rem;
+  padding: 0.4rem;
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+  border-radius: 1rem;
+  box-shadow: 0 22px 52px -22px rgba(15, 23, 42, 0.28);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  animation: acctThreadMenuIn 140ms ease-out;
+}
+@keyframes acctThreadMenuIn {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .acct-thread-header__menu-panel { animation: none; }
+}
+
+.acct-thread-header__menu-divider {
+  height: 1px;
+  background: var(--acct-line);
+  margin: 0.25rem 0.4rem;
+}
+
+.acct-thread-header__menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.7rem;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--acct-ink);
+  transition: background 120ms ease;
+}
+.acct-thread-header__menu-item:hover:not(:disabled),
+.acct-thread-header__menu-item:focus-visible {
+  background: var(--acct-surface);
+  outline: none;
+}
+.acct-thread-header__menu-item:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+.acct-thread-header__menu-item-icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.45rem;
+  background: var(--acct-surface);
+  color: var(--acct-muted);
+}
+.acct-thread-header__menu-item:hover:not(:disabled) .acct-thread-header__menu-item-icon {
+  background: var(--acct-gold-soft);
+  color: var(--acct-gold-text, #8a6f00);
+}
+.acct-thread-header__menu-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.acct-thread-header__menu-item-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: inherit;
+}
+.acct-thread-header__menu-item-desc {
+  font-size: 0.72rem;
+  color: var(--acct-muted);
+  line-height: 1.45;
+}
+.acct-thread-header__menu-foot {
+  margin: 0.25rem 0.7rem 0.4rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--acct-line);
+  font-size: 0.7rem;
+  color: var(--acct-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

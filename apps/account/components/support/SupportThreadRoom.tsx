@@ -1,221 +1,115 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { formatSurfaceTemplate, translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
-import { Bot, Headphones, User } from "lucide-react";
-import { formatDateTime } from "@/lib/format";
-import SupportReplyForm from "@/components/support/SupportReplyForm";
+import { useCallback, useMemo } from "react";
+import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
+import {
+  MessageThread,
+  type ThreadMessage,
+  type ThreadSupabaseLike,
+} from "@henryco/messaging-thread";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import {
+  accountSupportThreadAdapter,
+  mapRowToMessage,
+} from "./AccountSupportThreadAdapter";
 
-type SupportMessage = Record<string, string | Array<Record<string, unknown>>>;
+type SupportMessageRow = Record<string, unknown>;
 
-function SenderIcon({ senderType }: { senderType: string }) {
-  if (senderType === "agent") return <Headphones size={15} />;
-  if (senderType === "system") return <Bot size={15} />;
-  return <User size={15} />;
-}
-
-function messageTone(senderType: string) {
-  if (senderType === "customer") {
-    return {
-      bubble: "bg-[var(--acct-gold)] text-white",
-      meta: "text-white/65",
-      badge: "bg-[var(--acct-gold-soft)] text-[var(--acct-gold)]",
-    };
-  }
-
-  if (senderType === "system") {
-    return {
-      bubble: "border border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-ink)]",
-      meta: "text-[var(--acct-muted)]",
-      badge: "bg-[var(--acct-purple-soft)] text-[var(--acct-purple)]",
-    };
-  }
-
-  return {
-    bubble: "bg-[var(--acct-surface)] text-[var(--acct-ink)]",
-    meta: "text-[var(--acct-muted)]",
-    badge: "bg-[var(--acct-blue-soft)] text-[var(--acct-blue)]",
-  };
-}
-
-function localizeSupportStatus(
-  t: (text: string) => string,
-  status: string,
-) {
-  const raw = status.replaceAll("_", " ");
-  const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1);
-  const capitalizedTranslation = t(capitalized);
-
-  if (capitalizedTranslation !== capitalized) {
-    return capitalizedTranslation;
-  }
-
-  const rawTranslation = t(raw);
-  return rawTranslation !== raw ? rawTranslation : capitalized;
-}
-
+/**
+ * Workspace-grade support thread surface for /support/[threadId].
+ *
+ * Delegates the entire conversation surface — bubble list with rich
+ * attachments, optimistic send, draft persistence, mobile-stable
+ * composer, full-screen mobile, drag-and-drop, paste-to-attach,
+ * Supabase Realtime subscription with auto-reconnect, polite SR
+ * announcer, message-arrival fade-in — to @henryco/messaging-thread.
+ *
+ * Host-specific concerns kept here:
+ *   - viewer identity injection (account user)
+ *   - row → ThreadMessage mapping for the server-rendered initial set
+ *   - composer locale + closed-thread copy
+ *   - browser Supabase factory (engine never imports the SDK directly)
+ */
 export default function SupportThreadRoom({
   threadId,
   messages,
   threadStatus,
+  viewer,
 }: {
   threadId: string;
-  messages: SupportMessage[];
+  messages: SupportMessageRow[];
   threadStatus: string;
+  viewer: { userId: string; fullName: string; email?: string | null };
 }) {
   const locale = useHenryCoLocale();
-  const t = (text: string) => translateSurfaceLabel(locale, text);
-  const numberLocale = locale === "en" ? "en-NG" : locale;
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [roomHeight, setRoomHeight] = useState<number | null>(null);
-  const viewportRaf = useRef<number | null>(null);
-  const statusLabel = localizeSupportStatus(t, threadStatus);
+  const t = useCallback(
+    (text: string) => translateSurfaceLabel(locale, text),
+    [locale],
+  );
 
-  const scrollToLatest = (behavior: ScrollBehavior) => {
-    if (!scrollRef.current) return;
-    scrollRef.current.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior,
-    });
-  };
+  const adapter = useMemo(() => accountSupportThreadAdapter(), []);
 
-  useEffect(() => {
-    scrollToLatest("smooth");
-  }, [messages.length]);
+  const initial = useMemo<ThreadMessage[]>(() => {
+    const out: ThreadMessage[] = [];
+    for (const row of messages) {
+      const mapped = mapRowToMessage(row, viewer.userId);
+      if (mapped) out.push(mapped);
+    }
+    return out;
+  }, [messages, viewer.userId]);
 
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.visualViewport) return;
-
-    const viewport = window.visualViewport;
-    const syncViewport = () => {
-      if (viewportRaf.current !== null) {
-        window.cancelAnimationFrame(viewportRaf.current);
-      }
-      viewportRaf.current = window.requestAnimationFrame(() => {
-        const nextHeight = Math.max(Math.round(viewport.height), 420);
-        setRoomHeight((prev) => (prev === nextHeight ? prev : nextHeight));
-      });
-    };
-
-    syncViewport();
-    viewport.addEventListener("resize", syncViewport);
-
-    return () => {
-      viewport.removeEventListener("resize", syncViewport);
-      if (viewportRaf.current !== null) {
-        window.cancelAnimationFrame(viewportRaf.current);
-      }
-    };
+  const getSupabase = useCallback((): ThreadSupabaseLike | null => {
+    if (typeof window === "undefined") return null;
+    try {
+      // Cast through unknown — the engine declares a structural minimum
+      // (channel + removeChannel) which the @supabase/ssr browser client
+      // satisfies but doesn't typedef as compatibly.
+      return createSupabaseBrowser() as unknown as ThreadSupabaseLike;
+    } catch {
+      return null;
+    }
   }, []);
+
+  // Closed = staff signed the thread off; replying funnels into a new
+  // ticket. Resolved = staff marked done but the thread is still re-
+  // openable, so we keep the composer live (matches legacy behavior).
+  const isClosed = threadStatus === "closed";
+  const isResolved = threadStatus === "resolved";
 
   return (
     <div
-      className="flex min-h-[calc(100dvh-9.5rem)] flex-col overflow-hidden rounded-[2rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] shadow-[0_14px_50px_rgba(15,23,42,0.08)]"
-      style={
-        roomHeight
-          ? {
-              minHeight: `${Math.max(roomHeight - 152, 420)}px`,
-            }
-          : undefined
-      }
+      className="acct-support-room"
+      data-status={threadStatus}
+      data-closed={isClosed || undefined}
     >
-      <div className="border-b border-[var(--acct-line)] bg-[linear-gradient(135deg,rgba(201,162,39,0.14),rgba(255,255,255,0.9))] px-5 py-4 sm:px-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="rounded-full bg-[var(--acct-blue-soft)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-blue)]">
-            {t("Support room")}
-          </span>
-          <span className="rounded-full bg-[var(--acct-surface)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--acct-muted)]">
-            {statusLabel}
-          </span>
-        </div>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--acct-muted)]">
+      <MessageThread
+        threadId={threadId}
+        initialMessages={initial}
+        viewer={{ userId: viewer.userId, fullName: viewer.fullName }}
+        adapter={adapter}
+        getSupabase={getSupabase}
+        renderMarkdown
+        disableComposer={isClosed}
+        placeholder={t(
+          "Reply with context, screenshots, or next steps. Drafts stay here while you type.",
+        )}
+        emptyTitle={t("Start the conversation")}
+        emptyBody={t(
+          "Ask a question, share feedback, or attach a reference. Replies arrive here in real time.",
+        )}
+      />
+      {isClosed ? (
+        <p className="acct-support-room__closed-note" role="status">
           {t(
-            "This room keeps your support conversation attached to the correct account, service context, and attachment history across devices."
+            "This thread is closed. To continue this conversation, open a new support request — staff triage will route it cleanly.",
           )}
         </p>
-      </div>
-
-      <div
-        ref={scrollRef}
-        className="acct-scrollbar flex-1 overflow-y-auto px-4 py-5 sm:px-6"
-        style={{ scrollPaddingBottom: "8rem" }}
-      >
-        <div className="space-y-4">
-          {messages.map((msg) => {
-            const senderType = String(msg.sender_type || "customer");
-            const isCustomer = senderType === "customer";
-            const tone = messageTone(senderType);
-            const attachments = Array.isArray(msg.attachments)
-              ? (msg.attachments as Array<Record<string, unknown>>)
-              : [];
-
-            return (
-              <div key={String(msg.id)} className={`flex gap-3 ${isCustomer ? "justify-end" : "justify-start"}`}>
-                {!isCustomer ? (
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-2xl ${tone.badge}`}>
-                    <SenderIcon senderType={senderType} />
-                  </div>
-                ) : null}
-                <div className={`max-w-[min(100%,42rem)] ${isCustomer ? "items-end" : "items-start"} flex flex-col`}>
-                  <div className={`rounded-[1.5rem] px-4 py-3 ${tone.bubble}`}>
-                    <p className="text-sm leading-7">{String(msg.body || "")}</p>
-                    {attachments.length > 0 ? (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {attachments.map((attachment, index) => {
-                          const url =
-                            typeof attachment.url === "string" ? attachment.url : null;
-                          const name = String(
-                            attachment.name ||
-                              formatSurfaceTemplate(t("Attachment {number}"), {
-                                number: new Intl.NumberFormat(numberLocale).format(index + 1),
-                              })
-                          );
-                          // Cross-origin attachment URLs (Cloudinary,
-                          // Supabase storage) ignore the `download` attr,
-                          // so route through the same-origin proxy that
-                          // re-streams with Content-Disposition: attachment.
-                          // The proxy auth-gates + host-allowlists.
-                          const proxied = url
-                            ? `/api/proxy/download?u=${encodeURIComponent(url)}&n=${encodeURIComponent(name)}`
-                            : "#";
-                          return (
-                            <a
-                              key={`${msg.id}-${index}`}
-                              href={proxied}
-                              download={name}
-                              rel="noreferrer"
-                              className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                                isCustomer
-                                  ? "bg-white/12 text-white"
-                                  : "bg-[var(--acct-bg)] text-[var(--acct-ink)]"
-                              }`}
-                            >
-                              {name}
-                            </a>
-                          );
-                        })}
-                      </div>
-                    ) : null}
-                  </div>
-                  <p className={`mt-2 px-1 text-[0.7rem] font-medium ${tone.meta}`}>
-                    {formatDateTime(String(msg.created_at || ""), numberLocale)}
-                  </p>
-                </div>
-                {isCustomer ? (
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-2xl ${tone.badge}`}>
-                    <SenderIcon senderType={senderType} />
-                  </div>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {threadStatus !== "closed" ? (
-        <div className="border-t border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-3 py-3 pb-[calc(env(safe-area-inset-bottom)+0.85rem)] sm:px-4">
-          <SupportReplyForm threadId={threadId} />
-        </div>
+      ) : isResolved ? (
+        <p className="acct-support-room__resolved-note" role="status">
+          {t(
+            "This thread is marked resolved. Reply here to re-open it, or start a fresh request for unrelated issues.",
+          )}
+        </p>
       ) : null}
     </div>
   );

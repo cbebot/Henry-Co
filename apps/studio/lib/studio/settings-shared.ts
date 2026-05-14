@@ -7,11 +7,25 @@ import { hasAdminSupabaseEnv, createAdminSupabase } from "@/lib/supabase";
  * of truth in `packages/config/company.ts`). Used as the *first* fallback
  * before reading the shared company-wide settings table — without this guard
  * the Studio contact page picked up the Care division support email
- * (care@henrycogroup.com) because the shared settings table is the Care
+ * (BRAND_EMAILS.care) because the shared settings table is the Care
  * settings table. CHROME-01A. */
 const studioDivision = getDivisionConfig("studio");
 const STUDIO_DIVISION_SUPPORT_EMAIL = studioDivision.supportEmail || null;
 const STUDIO_DIVISION_SUPPORT_PHONE = studioDivision.supportPhone || null;
+
+/** Reject support emails belonging to another division. Without this guard,
+ * the studio payment-proof page rendered BRAND_EMAILS.care because the
+ * `payment_support_email` fallback chain leaked into Care's shared settings
+ * table. PASS 23 — same rule as the studio /contact page. */
+function rejectForeignDivisionEmail(value: string | null): string | null {
+  const trimmed = String(value || "").trim().toLowerCase();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("studio@")) return value;
+  if (/^(care|building|hotel|marketplace|property|logistics|jobs|learn)@/.test(trimmed)) {
+    return null;
+  }
+  return value;
+}
 
 export type StudioPlatformSettings = {
   currency: string;
@@ -50,7 +64,9 @@ export function normalizeStudioPlatformSettings(
   const source = (input ?? {}) as Record<string, unknown>;
   const shared = (sharedCompanySource ?? {}) as Record<string, unknown>;
 
-  const sharedSupportEmail = asNullableText(shared.support_email) ?? asNullableText(shared.payment_support_email);
+  const sharedSupportEmail = rejectForeignDivisionEmail(
+    asNullableText(shared.support_email) ?? asNullableText(shared.payment_support_email)
+  );
   const sharedSupportPhone = asNullableText(shared.support_phone) ?? asNullableText(shared.payment_support_whatsapp);
   const sharedBankName =
     asNullableText(shared.payment_bank_name) ?? asNullableText(shared.company_bank_name);
@@ -74,8 +90,9 @@ export function normalizeStudioPlatformSettings(
     asNullableText(source.company_account_number) ??
     sharedAccountNumber;
   const paymentSupportEmail =
-    asNullableText(source.payment_support_email) ??
-    asNullableText(source.support_email) ??
+    rejectForeignDivisionEmail(asNullableText(source.payment_support_email)) ??
+    rejectForeignDivisionEmail(asNullableText(source.support_email)) ??
+    STUDIO_DIVISION_SUPPORT_EMAIL ??
     sharedSupportEmail;
   const paymentSupportWhatsApp =
     asNullableText(source.payment_support_whatsapp) ??
@@ -87,7 +104,7 @@ export function normalizeStudioPlatformSettings(
   return {
     currency: asText(source.currency, "NGN"),
     supportEmail:
-      asNullableText(source.support_email) ??
+      rejectForeignDivisionEmail(asNullableText(source.support_email)) ??
       STUDIO_DIVISION_SUPPORT_EMAIL ??
       sharedSupportEmail,
     supportPhone:

@@ -137,22 +137,41 @@ export function formatPercent(value: number, maximumFractionDigits = 1): string 
   }).format(value / 100);
 }
 
+// PASS 22 issue #4 — every account surface that renders a transaction,
+// notification, or activity row passes a `created_at` here. When the
+// upstream column is null/undefined/malformed (legacy rows, partial
+// migrations, stale caches) the previous code produced "Invalid Date" and
+// triggered the account-runtime error boundary. We now return an em-dash
+// placeholder instead of throwing, so the surrounding surface keeps
+// rendering even when one row's date is unusable.
+const INVALID_DATE_PLACEHOLDER = "—";
+
+function safeDate(dateStr: string | null | undefined): Date | null {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
 export function formatDate(
-  dateStr: string,
+  dateStr: string | null | undefined,
   options?: string | { locale?: string; timezone?: string }
 ): string {
+  const d = safeDate(dateStr);
+  if (!d) return INVALID_DATE_PLACEHOLDER;
   return new Intl.DateTimeFormat(resolveLocale(options), {
     day: "numeric",
     month: "short",
     year: "numeric",
     ...(resolveTimezone(options) ? { timeZone: resolveTimezone(options) } : {}),
-  }).format(new Date(dateStr));
+  }).format(d);
 }
 
 export function formatDateTime(
-  dateStr: string,
+  dateStr: string | null | undefined,
   options?: string | { locale?: string; timezone?: string }
 ): string {
+  const d = safeDate(dateStr);
+  if (!d) return INVALID_DATE_PLACEHOLDER;
   return new Intl.DateTimeFormat(resolveLocale(options), {
     day: "numeric",
     month: "short",
@@ -160,12 +179,14 @@ export function formatDateTime(
     hour: "2-digit",
     minute: "2-digit",
     ...(resolveTimezone(options) ? { timeZone: resolveTimezone(options) } : {}),
-  }).format(new Date(dateStr));
+  }).format(d);
 }
 
-export function timeAgo(dateStr: string): string {
+export function timeAgo(dateStr: string | null | undefined): string {
+  const d = safeDate(dateStr);
+  if (!d) return INVALID_DATE_PLACEHOLDER;
   const now = Date.now();
-  const then = new Date(dateStr).getTime();
+  const then = d.getTime();
   const diff = now - then;
   const locale = "en-NG";
 
@@ -183,11 +204,13 @@ export function timeAgo(dateStr: string): string {
 }
 
 export function timeAgoLocalized(
-  dateStr: string,
+  dateStr: string | null | undefined,
   options?: string | { locale?: string; timezone?: string }
 ): string {
+  const d = safeDate(dateStr);
+  if (!d) return INVALID_DATE_PLACEHOLDER;
   const now = Date.now();
-  const then = new Date(dateStr).getTime();
+  const then = d.getTime();
   const diff = now - then;
   const locale = resolveAppLocale(options);
 

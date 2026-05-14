@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { BRAND_EMAILS } from "@henryco/config";
 import { getOptionalEnv } from "@/lib/env";
 import {
   computePayoutBalance,
@@ -226,7 +227,7 @@ function buildPlaceholderVendor(scopeId?: string | null): MarketplaceVendor {
       "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
     badges: ["Setup in progress"],
     ownerType: "vendor",
-    supportEmail: "marketplace@henrycogroup.com",
+    supportEmail: BRAND_EMAILS.marketplace,
     supportPhone: "+2349133957084",
   };
 }
@@ -330,7 +331,7 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
       heroImage: String(row.hero_image_url || ""),
       badges: Array.isArray(row.badges) ? row.badges.map(String) : [],
       ownerType: String(row.owner_type || "vendor") as MarketplaceVendor["ownerType"],
-      supportEmail: String(row.support_email || "marketplace@henrycogroup.com"),
+      supportEmail: String(row.support_email || BRAND_EMAILS.marketplace),
       supportPhone: String(row.support_phone || "+2349133957084"),
     }));
 

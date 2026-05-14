@@ -11,7 +11,21 @@
  */
 
 export { MessageThread } from "./thread";
+export {
+  ThreadAppearanceProvider,
+  useThreadAppearance,
+} from "./appearance";
+export { ThreadCustomizationMenu } from "./customization";
+export type { ThreadCustomizationMenuLabels } from "./customization";
+export { ThreadParticipantsStrip } from "./participants";
+export type { ThreadParticipant } from "./participants";
 
+export type {
+  ThreadAppearance,
+  ThreadFontSize,
+  ThreadDensity,
+  ThreadSurfaceTone,
+} from "./appearance";
 export type {
   ThreadMessage,
   ThreadAttachment,

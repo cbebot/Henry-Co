@@ -38,7 +38,7 @@ export default function CopyReferralCode({ code }: CopyReferralCodeProps) {
           Your Referral Code
         </p>
         <div className="mt-1.5 flex items-center gap-2">
-          <span className="rounded-lg bg-[var(--acct-surface)] px-4 py-2 font-mono text-base font-bold tracking-wider text-[var(--acct-ink)]">
+          <span className="rounded-lg bg-[var(--acct-surface)] px-4 py-2 font-mono text-base font-semibold tracking-wider text-[var(--acct-ink)]">
             {code}
           </span>
           <button

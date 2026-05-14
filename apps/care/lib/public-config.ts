@@ -10,6 +10,6 @@ export const BRAND = {
   accent: CARE_ACCENT,
   dark: "#07111F",
   timezone: "Africa/Lagos",
-  supportEmail: "care@henrycogroup.com",
+  supportEmail: careDivision.supportEmail,
   supportPhone: careDivision.supportPhone,
 } as const;

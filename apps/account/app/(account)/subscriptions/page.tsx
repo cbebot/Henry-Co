@@ -30,7 +30,7 @@ export default async function SubscriptionsPage() {
             <Link key={subscription.id as string} href={`/subscriptions/${subscription.id}`} className="acct-card block p-5 transition-colors hover:bg-[var(--acct-surface)]">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-white" style={{ backgroundColor: divisionColor(subscription.division as string) }}>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: divisionColor(subscription.division as string) }}>
                     {divisionLabel(subscription.division as string).charAt(0)}
                   </div>
                   <div>

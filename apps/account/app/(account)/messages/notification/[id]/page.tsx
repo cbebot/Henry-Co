@@ -113,7 +113,7 @@ export default async function NotificationMessageBoardPage({
               />
             ) : (
               <div
-                className="flex h-13 w-13 items-center justify-center rounded-[1.25rem] text-sm font-bold text-white"
+                className="flex h-13 w-13 items-center justify-center rounded-[1.25rem] text-sm font-semibold text-white"
                 style={{ backgroundColor: data.source.accent }}
               >
                 {sourceLabel.charAt(0)}

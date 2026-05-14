@@ -977,7 +977,7 @@ export default function InternalTeamCommsClient() {
                     <span className="truncate">{t.title}</span>
                   </span>
                   {t.unread_count > 0 ? (
-                    <span className="mt-1 inline-flex rounded-full bg-[var(--acct-gold)] px-2 py-0.5 text-[10px] font-bold text-[var(--market-noir,#1a1814)]">
+                    <span className="mt-1 inline-flex rounded-full bg-[var(--acct-gold)] px-2 py-0.5 text-[10px] font-semibold tabular-nums text-[var(--market-noir,#1a1814)]">
                       {t.unread_count > 99 ? "99+" : t.unread_count} new
                     </span>
                   ) : null}

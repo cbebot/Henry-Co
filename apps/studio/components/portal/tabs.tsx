@@ -42,7 +42,7 @@ export function PortalTabBar({ tabs }: { tabs: PortalTabDefinition[] }) {
             <span>{tab.label}</span>
             {tab.badge && tab.badge > 0 ? (
               <span
-                className={`grid h-4 min-w-[1rem] place-items-center rounded-full px-1 text-[10px] font-bold ${
+                className={`grid h-4 min-w-[1rem] place-items-center rounded-full px-1 text-[10px] font-semibold tabular-nums ${
                   active
                     ? "bg-[rgba(2,16,22,0.4)] text-[var(--studio-signal)]"
                     : "bg-[rgba(151,244,243,0.18)] text-[var(--studio-signal)]"

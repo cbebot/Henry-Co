@@ -65,7 +65,7 @@ export default async function OwnerRecordsPage({
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent)]">
           Owner record intelligence
         </div>
-        <h1 className="mt-2 text-4xl font-black text-zinc-950 dark:text-white sm:text-5xl">
+        <h1 className="mt-2 text-4xl font-semibold text-zinc-950 dark:text-white sm:text-5xl">
           Every cloth should exist in the system.
         </h1>
         <p className="mt-4 max-w-3xl text-zinc-600 dark:text-white/65">
@@ -85,7 +85,7 @@ export default async function OwnerRecordsPage({
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent)]">
             Manual intake
           </div>
-          <h2 className="mt-2 text-3xl font-bold text-zinc-950 dark:text-white">
+          <h2 className="mt-2 text-3xl font-semibold text-zinc-950 dark:text-white">
             Register an item quickly
           </h2>
           <p className="mt-2 text-zinc-600 dark:text-white/65">
@@ -228,7 +228,7 @@ export default async function OwnerRecordsPage({
               className="rounded-[34px] border border-black/10 bg-white/80 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04]"
             >
               <div className="flex flex-wrap items-center gap-3">
-                <span className="font-mono text-sm font-bold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
+                <span className="font-mono text-sm font-semibold text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                   {row.item_tag}
                 </span>
                 {row.urgent ? (

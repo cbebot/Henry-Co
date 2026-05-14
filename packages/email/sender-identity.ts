@@ -1,6 +1,8 @@
+import { BRAND_EMAILS } from "@henryco/config";
+
 import type { EmailPurpose, ResolvedSender } from "./types";
 
-const NOREPLY_FALLBACK_EMAIL = "noreply@henrycogroup.com";
+const NOREPLY_FALLBACK_EMAIL = BRAND_EMAILS.noreply;
 const NOREPLY_FALLBACK_NAME = "HenryCo";
 
 function readEnv(name: string): string | null {
@@ -106,7 +108,7 @@ const RULES: Record<EmailPurpose, IdentityRule> = {
  *      using the purpose's branded name (e.g., "HenryCo Studio") so the
  *      message is still labelled correctly even if individual aliases
  *      are not yet DNS/Brevo-verified.
- *   3. Hard fallback to noreply@henrycogroup.com / "HenryCo".
+ *   3. Hard fallback to BRAND_EMAILS.noreply / "HenryCo".
  *
  * Critical invariant: nothing here ever falls back to the Care identity.
  * The Care sender is reachable only when `purpose === "care"`.

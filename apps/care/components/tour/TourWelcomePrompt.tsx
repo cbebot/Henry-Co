@@ -32,7 +32,7 @@ export default function TourWelcomePrompt({
             <Sparkles className="h-6 w-6 text-[color:var(--accent)]" />
           </div>
 
-          <h3 className="mt-5 text-xl font-black tracking-[-0.03em] text-zinc-950 dark:text-white">
+          <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white">
             {machine.name}
           </h3>
           <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">

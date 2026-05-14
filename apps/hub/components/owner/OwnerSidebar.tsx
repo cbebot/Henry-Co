@@ -148,7 +148,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
           <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">
             Henry & Co.
           </p>
-          <p className="text-[0.6rem] font-bold uppercase tracking-wider text-[var(--owner-accent)]">
+          <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--owner-accent)]">
             Command Center
           </p>
         </div>
@@ -196,7 +196,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
               className="h-9 w-9 rounded-full object-cover ring-2 ring-[var(--owner-accent)]/30"
             />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--owner-accent-soft)] text-xs font-bold text-[var(--owner-accent)] ring-2 ring-[var(--owner-accent)]/30">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--owner-accent-soft)] text-xs font-semibold text-[var(--owner-accent)] ring-2 ring-[var(--owner-accent)]/30">
               {initials(user.fullName)}
             </div>
           )}

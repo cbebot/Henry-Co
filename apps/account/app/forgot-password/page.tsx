@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getAuthCopy } from "@henryco/i18n";
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import Logo from "@/components/brand/Logo";
@@ -30,9 +31,9 @@ export default async function ForgotPasswordPage() {
 
         <p className="mt-6 text-center text-xs text-[var(--acct-muted)]">
           {copy.signup.loginPrompt}{" "}
-          <a href="/login" className="font-medium text-[var(--acct-gold)] hover:underline">
+          <Link href="/login" className="font-medium text-[var(--acct-gold)] hover:underline">
             {copy.signup.loginCta}
-          </a>
+          </Link>
         </p>
       </div>
     </div>

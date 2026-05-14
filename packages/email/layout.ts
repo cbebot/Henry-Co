@@ -22,6 +22,8 @@
  * brand strap above and below their own hero blocks (V2-EMAIL-BRAND-01).
  */
 
+import { BRAND_EMAILS } from "@henryco/config";
+
 import type { EmailPurpose } from "./types";
 
 /**
@@ -302,7 +304,7 @@ export function renderHenryCoEmailHeader(
 export type HenryCoEmailFooterOptions = {
   /** Sender division for the kicker line ("HenryCo Care", etc.). */
   purpose?: EmailPurpose;
-  /** Optional support contact line (e.g. "support@henrycogroup.com"). */
+  /** Optional support contact line — defaults to `BRAND_EMAILS.support`. */
   supportEmail?: string | null;
   /** Optional one-click unsubscribe URL. Required for marketing
    *  templates per RFC 8058; transactional templates may omit. */
@@ -323,9 +325,8 @@ export function renderHenryCoEmailFooter(opts: HenryCoEmailFooterOptions = {}): 
   const t = HENRYCO_EMAIL_TOKENS;
   const palette = paletteFor(opts.purpose || "generic");
   const eyebrow = opts.purpose ? PURPOSE_KICKER[opts.purpose] : PURPOSE_KICKER.generic;
-  const supportLink = opts.supportEmail
-    ? `<a href="mailto:${escapeHtml(opts.supportEmail)}" style="color:${palette.accent}; text-decoration:none;">${escapeHtml(opts.supportEmail)}</a>`
-    : `<a href="mailto:support@henrycogroup.com" style="color:${palette.accent}; text-decoration:none;">support@henrycogroup.com</a>`;
+  const resolvedSupport = opts.supportEmail || BRAND_EMAILS.support;
+  const supportLink = `<a href="mailto:${escapeHtml(resolvedSupport)}" style="color:${palette.accent}; text-decoration:none;">${escapeHtml(resolvedSupport)}</a>`;
   const unsubscribeBlock = opts.unsubscribeUrl
     ? ` &middot; <a href="${escapeHtml(opts.unsubscribeUrl)}" style="color:${t.footerText}; text-decoration:underline;">Unsubscribe</a>`
     : "";
@@ -382,7 +383,7 @@ export function renderHenryCoEmail(layout: HenryCoEmailLayout): string {
     ? `<p style="margin:8px 0 0 0; font-size:12.5px; line-height:1.7; color:${t.mutedText};">${escapeHtml(layout.supportLine)}</p>`
     : "";
 
-  const footerSupportEmail = layout.purpose === "auth" ? "accounts@henrycogroup.com" : null;
+  const footerSupportEmail = layout.purpose === "auth" ? BRAND_EMAILS.accounts : null;
   const footer = renderHenryCoEmailFooter({
     purpose: layout.purpose,
     supportEmail: footerSupportEmail,

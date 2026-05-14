@@ -20,6 +20,30 @@ export default function AccountError({
       message: error.message,
       digest: error.digest,
     });
+    // PASS 22 issue #4 — persist the digest server-side so support can
+    // trace a ref id back to the underlying error message + stack. The
+    // browser-only console.error path was an observability dead-end (the
+    // user's "ref 3280500486" report had no server-side trail).
+    try {
+      void fetch("/api/runtime-error", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify({
+          surface: "account",
+          digest: error.digest ?? null,
+          message: error.message ?? null,
+          stack: error.stack ?? null,
+          path: typeof window !== "undefined" ? window.location.pathname : null,
+          userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+          at: new Date().toISOString(),
+        }),
+      }).catch(() => {
+        // best-effort — never let logging swallow a second error.
+      });
+    } catch {
+      // noop
+    }
   }, [error]);
 
   return (
