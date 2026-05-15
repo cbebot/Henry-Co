@@ -1,0 +1,398 @@
+/*
+ * V3 follow-up — /support/[threadId] editorial chat surface.
+ *
+ * Layered on top of the existing `.acct-thread-header` + `.acct-support-room`
+ * styles in apps/account/app/globals.css (PASS 24). Since /support/[threadId]
+ * is the only mount-site for these classes the rules apply unconditionally —
+ * no opt-in modifier needed.
+ *
+ * Goals:
+ *   1. Full-viewport chat on mobile (above the global bottom action bar).
+ *   2. Refined two-tone bubble palette — viewer's own messages render on ink
+ *      with a soft gold accent, agent messages on cream with a gold-soft
+ *      border. Tail asymmetry (top-left vs top-right corner) signals sender.
+ *   3. Composer pinned at the bottom of the chat container with
+ *      safe-area-inset padding for iOS home indicator + bottom action bar.
+ *   4. Compact action row on mobile, full chrome on desktop.
+ *   5. Honest shadows + tabular-num timestamps + sticky composer with a
+ *      subtle frosted-glass surface when the message list scrolls.
+ *
+ * Token discipline: zero raw hex (one exception — the legacy --acct-gold-text
+ * fallback already documented in PASS 24). All paint via existing --acct-* or
+ * color-mix() derivations. No new tokens introduced.
+ */
+
+/* ──────────────────────────────────────────────────────────────────
+   Layout — full-viewport chat surface
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-stage {
+  /* Container the page uses. Makes the chat occupy the available
+     viewport below the page's "Back to support" affordance. The fallback
+     when 100dvh is unsupported is the existing 32rem default — still
+     usable, just not full-screen. */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* 7rem leaves room for: identity-bar + back affordance on mobile.
+     The global bottom action bar overlap is handled by composer
+     padding-bottom below, not by this calc, since the bar is fixed. */
+  min-height: calc(100dvh - 7rem);
+}
+
+@media (min-width: 768px) {
+  .acct-support-stage {
+    min-height: calc(100dvh - 8rem);
+    gap: 1.25rem;
+  }
+}
+
+.acct-support-room {
+  /* The room flex-grows to take the remainder of the stage. */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.acct-support-room .mt-thread {
+  /* Override the engine's default 28rem/32rem height. The wrapper now
+     drives the height; the thread fills it. */
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 24rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--acct-bg-elevated) 100%, transparent) 0%,
+    color-mix(in srgb, var(--acct-surface) 60%, var(--acct-bg-elevated)) 100%
+  );
+  border-color: color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  box-shadow:
+    0 24px 60px -32px rgba(15, 17, 24, 0.32),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+
+@media (min-width: 768px) {
+  .acct-support-room .mt-thread {
+    min-height: 32rem;
+    border-radius: 1.75rem;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Compact header on mobile, refined on desktop
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-thread-header {
+  /* Tighter on mobile so the chat gets more screen space. */
+  padding: 1rem 1.1rem 0.9rem;
+  border-radius: 1.25rem;
+  gap: 0.75rem;
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--acct-gold-soft) 85%, transparent) 0%,
+    var(--acct-bg-elevated) 65%
+  );
+  box-shadow: 0 18px 48px -32px rgba(15, 17, 24, 0.22);
+}
+
+@media (min-width: 768px) {
+  .acct-thread-header {
+    padding: 1.5rem 1.75rem;
+    border-radius: 1.75rem;
+    gap: 1.25rem;
+  }
+}
+
+.acct-thread-header .acct-thread-header__pills {
+  gap: 0.35rem;
+}
+
+.acct-thread-header .acct-thread-header__pill {
+  font-size: 0.62rem;
+  padding: 0.2rem 0.55rem;
+  letter-spacing: 0.08em;
+}
+
+@media (min-width: 768px) {
+  .acct-thread-header .acct-thread-header__pill {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.65rem;
+  }
+}
+
+.acct-thread-header .acct-thread-header__subject {
+  /* Smaller, tighter — the chat is the hero, not the title. */
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  -webkit-line-clamp: 1;
+}
+
+@media (min-width: 768px) {
+  .acct-thread-header .acct-thread-header__subject {
+    -webkit-line-clamp: 2;
+  }
+}
+
+.acct-thread-header .acct-thread-header__meta {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--acct-muted) 90%, transparent);
+  letter-spacing: 0.04em;
+}
+
+.acct-thread-header .acct-thread-header__actions {
+  gap: 0.4rem;
+  margin-left: auto;
+  flex-wrap: nowrap;
+  align-self: flex-start;
+}
+
+/* Hide the download button label text on mobile to fit the action row;
+   the icon still renders. */
+@media (max-width: 640px) {
+  .acct-thread-header .acct-thread-header__actions [data-download-label] {
+    display: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Premium bubbles — own (viewer) bubbles use ink + gold accent,
+   agent bubbles use soft cream with subtle border.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .mt-thread-list {
+  padding: 1.1rem 1rem 1.2rem;
+}
+
+@media (min-width: 768px) {
+  .acct-support-room .mt-thread-list {
+    padding: 1.4rem 1.5rem 1.6rem;
+  }
+}
+
+.acct-support-room .mt-thread-list-inner {
+  gap: 0.85rem;
+}
+
+.acct-support-room .mt-bubble {
+  max-width: min(34rem, 86%);
+  padding: 0.7rem 0.95rem 0.85rem;
+  border-radius: 1.1rem;
+  border-width: 1px;
+  font-size: 14px;
+  line-height: 1.55;
+  box-shadow: 0 6px 14px -10px rgba(15, 17, 24, 0.22);
+  background: var(--acct-bg-elevated);
+  border-color: color-mix(in srgb, var(--acct-line) 92%, var(--acct-ink));
+  color: var(--acct-ink);
+}
+
+/* Agent / staff bubble — soft cream with serif-ish lift. */
+.acct-support-room .mt-bubble-row[data-side="other"] .mt-bubble {
+  background: color-mix(in srgb, var(--acct-surface) 70%, var(--acct-bg-elevated));
+  border-color: color-mix(in srgb, var(--acct-gold-soft) 60%, var(--acct-line));
+  border-top-left-radius: 0.35rem;
+}
+
+/* Own bubble — ink background with gold accent border + cream type. */
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble {
+  background: linear-gradient(
+    138deg,
+    var(--acct-ink) 0%,
+    color-mix(in srgb, var(--acct-ink) 88%, var(--acct-gold-strong)) 100%
+  );
+  border-color: color-mix(in srgb, var(--acct-gold) 38%, transparent);
+  color: var(--acct-bg-soft);
+  border-top-right-radius: 0.35rem;
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-meta {
+  color: color-mix(in srgb, var(--acct-bg-soft) 70%, transparent);
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-name {
+  color: color-mix(in srgb, var(--acct-gold) 78%, var(--acct-bg-soft));
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status {
+  color: color-mix(in srgb, var(--acct-gold) 70%, var(--acct-bg-soft));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"] {
+  color: var(--acct-gold-soft);
+}
+
+/* System bubbles — centered, dashed, muted. */
+.acct-support-room .mt-bubble-row[data-side="system"] .mt-bubble {
+  background: color-mix(in srgb, var(--acct-surface) 50%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--acct-line) 100%, var(--acct-ink));
+  color: var(--acct-muted);
+  font-size: 12.5px;
+}
+
+/* Avatar treatment — softly emphasised, gold ring on the viewer's own side. */
+.acct-support-room .mt-avatar {
+  width: 2rem;
+  height: 2rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-color: color-mix(in srgb, var(--acct-gold) 30%, var(--acct-line));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--acct-gold-soft) 85%, transparent) 0%,
+    color-mix(in srgb, var(--acct-surface) 80%, transparent) 100%
+  );
+  color: var(--acct-gold-text, #8a6f00);
+  box-shadow: 0 4px 10px -6px color-mix(in srgb, var(--acct-gold) 50%, transparent);
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-avatar {
+  background: linear-gradient(
+    135deg,
+    var(--acct-gold) 0%,
+    color-mix(in srgb, var(--acct-gold) 70%, var(--acct-gold-strong)) 100%
+  );
+  color: var(--acct-ink);
+  border-color: color-mix(in srgb, var(--acct-gold) 70%, var(--acct-ink));
+}
+
+/* Body type — comfortable reading. */
+.acct-support-room .mt-bubble-body,
+.acct-support-room .mt-bubble-body-rich {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Meta line — tabular numerics for stable-width timestamps. */
+.acct-support-room .mt-bubble-meta {
+  font-size: 11.5px;
+  font-feature-settings: "tnum";
+  letter-spacing: 0.01em;
+}
+
+/* Date dividers between message clusters (if the engine emits them). */
+.acct-support-room .mt-bubble-row[data-side="system"] .mt-bubble {
+  text-transform: none;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Composer surface — refined chrome, well-placed action buttons.
+   The composer markup is owned by @henryco/chat-composer; these are
+   surface-level lifts via the cc-* / data-composer hooks. Additive only.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room [class*="cc-composer"],
+.acct-support-room [data-composer] {
+  background: linear-gradient(
+    180deg,
+    var(--acct-bg-elevated) 0%,
+    color-mix(in srgb, var(--acct-bg-elevated) 100%, transparent) 100%
+  );
+  border-top: 1px solid color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  /* Account for the bottom action bar (Home / Modules / Inbox / More)
+     plus the iOS home indicator. Safe-area-inset-bottom protects
+     against the URL bar on iOS Safari. */
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.4rem);
+}
+
+/* Pin the composer to the bottom of the chat container instead of
+   the bottom of the viewport — the wrapper is already height-locked. */
+.acct-support-room .mt-thread > :last-child {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  backdrop-filter: blur(8px) saturate(1.05);
+  background-color: color-mix(in srgb, var(--acct-bg-elevated) 92%, transparent);
+}
+
+/* Send button — Henry gold when armed, neutral when empty. */
+.acct-support-room button[type="submit"],
+.acct-support-room [data-composer-send] {
+  background: linear-gradient(
+    135deg,
+    var(--acct-gold) 0%,
+    var(--acct-gold-strong) 100%
+  );
+  color: var(--acct-ink);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 0;
+  box-shadow:
+    0 8px 18px -10px color-mix(in srgb, var(--acct-gold) 70%, transparent),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+  transition: transform 140ms ease, box-shadow 200ms ease, filter 200ms ease;
+}
+
+.acct-support-room button[type="submit"]:hover,
+.acct-support-room [data-composer-send]:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+.acct-support-room button[type="submit"]:disabled,
+.acct-support-room [data-composer-send]:disabled {
+  background: color-mix(in srgb, var(--acct-gold) 32%, var(--acct-surface));
+  color: color-mix(in srgb, var(--acct-ink) 50%, var(--acct-muted));
+  box-shadow: none;
+  transform: none;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Back-affordance row — refined link, tactile target
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem 0.5rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-elevated);
+  color: var(--acct-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+  width: fit-content;
+}
+
+.acct-support-back:hover {
+  color: var(--acct-ink);
+  border-color: color-mix(in srgb, var(--acct-gold) 38%, var(--acct-line));
+  background: color-mix(in srgb, var(--acct-gold-soft) 40%, var(--acct-bg-elevated));
+}
+
+.acct-support-back:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+/* Live-banner contrast on the editorial light surface */
+.acct-support-room .mt-live-banner {
+  color: var(--acct-gold-text, #8a6f00);
+  background: color-mix(in srgb, var(--acct-gold-soft) 80%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--acct-gold) 32%, transparent);
+}
+
+.acct-support-room .mt-live-dot {
+  background: var(--acct-gold-strong);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-gold) 45%, transparent);
+}
+
+/* Closed-state pinned message — editorial chrome */
+.acct-support-room .acct-support-room__closed-note,
+.acct-support-room .acct-support-room__resolved-note {
+  border-radius: 1rem;
+  padding: 0.85rem 1.1rem;
+  font-size: 13px;
+  background: color-mix(in srgb, var(--acct-gold-soft) 55%, var(--acct-bg-elevated));
+  border-color: color-mix(in srgb, var(--acct-gold) 26%, var(--acct-line));
+  color: var(--acct-ink);
+}

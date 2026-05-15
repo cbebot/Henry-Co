@@ -12,6 +12,7 @@ import {
   markSupportThreadRead,
 } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
+import "@/components/support/editorial.css";
 import SupportThreadHeader from "@/components/support/SupportThreadHeader";
 import SupportThreadRoom from "@/components/support/SupportThreadRoom";
 
@@ -132,21 +133,16 @@ export default async function SupportThreadPage({ params }: Props) {
   });
 
   return (
-    <div className="space-y-6 acct-fade-in">
+    <div className="acct-support-stage acct-fade-in">
       <RouteLiveRefresh intervalMs={10000} />
-      <div className="flex items-center gap-3">
-        <Link
-          href="/support"
-          className="acct-button-ghost rounded-xl"
-          aria-label={t("Back to support")}
-          title={t("Back to support")}
-        >
-          <ArrowLeft size={16} />
-        </Link>
-        <span className="hc-body-sm text-[var(--acct-muted)]">
-          {t("Back to support")}
-        </span>
-      </div>
+      <Link
+        href="/support"
+        className="acct-support-back"
+        aria-label={t("Back to support")}
+      >
+        <ArrowLeft size={14} aria-hidden />
+        {t("Back to support")}
+      </Link>
       <ThreadAppearanceProvider>
         <SupportThreadHeader
           threadId={threadId}

@@ -14,7 +14,8 @@ import {
   normalizeLocale,
   type AppLocale,
 } from "@henryco/i18n";
-import { Camera } from "lucide-react";
+import Link from "next/link";
+import { Camera, LifeBuoy, Lock } from "lucide-react";
 import UserAvatar from "@/components/layout/UserAvatar";
 
 const COUNTRIES = getActiveCountries().map((country) => ({
@@ -236,8 +237,41 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
 
       <div>
         <label className="mb-1.5 block text-sm font-medium">{t("Email")}</label>
-        <input type="email" value={email || ""} disabled className="acct-input opacity-60" />
-        <p className="mt-1 text-xs text-[var(--acct-muted)]">{t("Contact support to change your email")}</p>
+        <div className="relative">
+          <input
+            type="email"
+            value={email || ""}
+            disabled
+            className="acct-input pr-10 opacity-70"
+            aria-describedby="acct-profile-email-help"
+          />
+          <Lock
+            size={14}
+            aria-hidden
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
+          />
+        </div>
+        <div
+          id="acct-profile-email-help"
+          className="mt-2 flex flex-col gap-2 rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-surface)] p-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p className="text-xs leading-5 text-[var(--acct-muted)]">
+            {t(
+              "Email changes go through identity-verified support so trust, KYC and wallet records stay aligned.",
+            )}
+          </p>
+          <Link
+            href={`/support/new?category=account&subject=${encodeURIComponent(
+              "Email change request",
+            )}&message=${encodeURIComponent(
+              `Hi HenryCo Support,\n\nI'd like to change the email on my account.\n\nCurrent email: ${email || ""}\nNew email: \n\nReason: \n\nThanks.`,
+            )}`}
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--acct-ink)] px-4 py-2 text-xs font-semibold text-[var(--acct-bg-soft)] shadow-sm transition-colors hover:bg-[color:color-mix(in_srgb,var(--acct-ink)_88%,var(--acct-gold))] focus-visible:outline-2 focus-visible:outline-[var(--acct-gold)]"
+          >
+            <LifeBuoy size={14} aria-hidden />
+            {t("Request email change")}
+          </Link>
+        </div>
       </div>
 
       <div>
