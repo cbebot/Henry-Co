@@ -55,7 +55,9 @@ export type PropertyViewingStatus =
   | "scheduled"
   | "confirmed"
   | "completed"
-  | "cancelled";
+  | "cancelled"
+  | "waitlisted"
+  | "no_show";
 
 export type PropertyNotificationStatus = "queued" | "sent" | "skipped" | "failed";
 
@@ -254,6 +256,18 @@ export type PropertyViewingRequest = {
   backupDate: string | null;
   scheduledFor: string | null;
   reminderAt: string | null;
+  /** V3 PASS 21 — reminder cycle (24h + 1h before scheduledFor). */
+  reminder24hAt: string | null;
+  reminder24hSentAt: string | null;
+  reminder1hAt: string | null;
+  reminder1hSentAt: string | null;
+  /** V3 PASS 21 — confirmation event. */
+  confirmedAt: string | null;
+  /** V3 PASS 21 — waitlist position. `null` for scheduled/confirmed
+   *  viewings; integer rank ≥1 for waitlisted viewings (rank 1 is
+   *  next-in-line). */
+  waitlistPosition: number | null;
+  cancellationReason: string | null;
   notes: string;
   status: PropertyViewingStatus;
   assignedAgentId: string | null;
@@ -351,6 +365,108 @@ export type PropertySavedListing = {
   createdAt: string;
 };
 
+export type PropertySavedSearchCadence = "instant" | "daily" | "weekly" | "off";
+
+export type PropertySavedSearchCriteria = {
+  q?: string | null;
+  kind?: string | null;
+  area?: string | null;
+  managed?: "1" | null;
+  furnished?: "1" | null;
+  minBeds?: number | null;
+  maxBeds?: number | null;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  verifiedOnly?: boolean | null;
+};
+
+export type PropertySavedSearch = {
+  id: string;
+  userId: string;
+  normalizedEmail: string | null;
+  name: string;
+  criteria: PropertySavedSearchCriteria;
+  alertCadence: PropertySavedSearchCadence;
+  lastAlertAt: string | null;
+  lastAlertCount: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PropertyRentPaymentStatus =
+  | "scheduled"
+  | "invoiced"
+  | "collected"
+  | "overdue"
+  | "waived"
+  | "refunded";
+
+export type PropertyRentPayment = {
+  id: string;
+  listingId: string;
+  managedRecordId: string | null;
+  ownerUserId: string | null;
+  normalizedEmail: string | null;
+  periodLabel: string;
+  periodStartsAt: string;
+  periodEndsAt: string;
+  amountKobo: number;
+  currency: string;
+  status: PropertyRentPaymentStatus;
+  collectedAt: string | null;
+  notes: string;
+  externalReference: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PropertyMaintenanceTicketStatus =
+  | "open"
+  | "triaged"
+  | "in_progress"
+  | "scheduled"
+  | "completed"
+  | "closed"
+  | "cancelled";
+
+export type PropertyMaintenanceTicketCategory =
+  | "plumbing"
+  | "electrical"
+  | "hvac"
+  | "pest"
+  | "structural"
+  | "security"
+  | "appliance"
+  | "general";
+
+export type PropertyMaintenanceTicketSeverity = "low" | "medium" | "high" | "critical";
+
+export type PropertyMaintenanceTicket = {
+  id: string;
+  listingId: string;
+  managedRecordId: string | null;
+  reportedByUserId: string | null;
+  normalizedEmail: string | null;
+  reporterName: string;
+  reporterEmail: string;
+  reporterPhone: string | null;
+  category: PropertyMaintenanceTicketCategory;
+  severity: PropertyMaintenanceTicketSeverity;
+  summary: string;
+  body: string;
+  status: PropertyMaintenanceTicketStatus;
+  attachments: Array<{ name: string; url: string; kind?: string }>;
+  scheduledFor: string | null;
+  resolvedAt: string | null;
+  assignedAgentId: string | null;
+  resolutionNotes: string;
+  slaDueAt: string | null;
+  slaBreach: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type PropertySnapshot = {
   metrics: PropertyMetric[];
   areas: PropertyArea[];
@@ -365,6 +481,9 @@ export type PropertySnapshot = {
   campaigns: PropertyFeaturedCampaign[];
   notifications: PropertyNotificationRecord[];
   savedListings: PropertySavedListing[];
+  savedSearches: PropertySavedSearch[];
+  rentPayments: PropertyRentPayment[];
+  maintenanceTickets: PropertyMaintenanceTicket[];
   services: PropertyService[];
   faqs: PropertyFaq[];
   differentiators: PropertyDifferentiator[];

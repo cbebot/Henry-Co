@@ -10,6 +10,12 @@ export { ReceiptDocument, type ReceiptProps, type ReceiptLineItem } from "./temp
 export { KycSummaryDocument, type KycSummaryProps, type KycSubmissionRow } from "./templates/kyc-summary";
 export { CareBookingDocument, type CareBookingProps } from "./templates/care-booking";
 export { PropertyListingDocument, type PropertyListingProps } from "./templates/property-listing";
+export {
+  PropertyManagedStatementDocument,
+  type PropertyManagedStatementProps,
+  type PropertyManagedRentRow,
+  type PropertyManagedMaintenanceRow,
+} from "./templates/property-managed-statement";
 export { JobsApplicationDocument, type JobsApplicationProps } from "./templates/jobs-application";
 export { LearnCertificateDocument, type LearnCertificateProps } from "./templates/learn-certificate";
 export { SupportThreadExportDocument, type SupportThreadExportProps, type SupportMessage } from "./templates/support-thread-export";

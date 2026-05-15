@@ -8,6 +8,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { JsonLd, buildRealEstateListingLd } from "@henryco/seo";
+import {
+  ComparablePricingRail,
+  selectComparableListings,
+} from "@/components/property/comparable-pricing";
 import { PropertyPendingButton } from "@/components/property/form-status";
 import {
   PropertyAgentCard,
@@ -17,6 +21,7 @@ import {
   PropertyStatusBadge,
 } from "@/components/property/ui";
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
+import { PropertyVerificationBadge } from "@/components/property/verification-badge";
 import { getPropertyDashboardData, getPropertyBySlug } from "@/lib/property/data";
 import { getPropertyViewer } from "@/lib/property/auth";
 import {
@@ -216,6 +221,11 @@ export default async function PropertyDetailPage({
           />
 
           <PropertyQuickFacts listing={data.listing} />
+
+          {/* V3 PASS 21 — verification posture surfaced from the
+              documented state model (/docs/property-verification-state-model.md).
+              Editorial pill + summary, links to /trust. */}
+          <PropertyVerificationBadge listing={data.listing} />
 
           {/* Highlights + Verification + Amenities — editorial 2-col, no panel */}
           <div>
@@ -639,6 +649,18 @@ export default async function PropertyDetailPage({
           </section>
         </div>
       </section>
+
+      {/* V3 PASS 21 — comparable pricing rail. Same-kind, near-area
+          listings ranked by closeness; helps the visitor anchor the
+          price posture without leaving the page. */}
+      {data.related.length > 0 ? (
+        <section className="mt-16">
+          <ComparablePricingRail
+            target={data.listing}
+            comparables={selectComparableListings(data.listing, data.related, 4)}
+          />
+        </section>
+      ) : null}
 
       {data.related.length ? (
         <section className="mt-16">

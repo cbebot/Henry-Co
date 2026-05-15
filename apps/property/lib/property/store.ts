@@ -14,10 +14,13 @@ import type {
   PropertyListing,
   PropertyListingApplication,
   PropertyListingInspection,
+  PropertyMaintenanceTicket,
   PropertyManagedRecord,
   PropertyNotificationRecord,
   PropertyPolicyEvent,
+  PropertyRentPayment,
   PropertySavedListing,
+  PropertySavedSearch,
   PropertyService,
   PropertySnapshot,
   PropertyViewingRequest,
@@ -263,6 +266,9 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     campaigns,
     notifications,
     savedListings,
+    savedSearches,
+    rentPayments,
+    maintenanceTickets,
     services,
     faqs,
     differentiators,
@@ -279,17 +285,37 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     listJsonCollection<PropertyFeaturedCampaign>("campaigns"),
     listJsonCollection<PropertyNotificationRecord>("notifications"),
     listJsonCollection<PropertySavedListing>("saved-listings"),
+    listJsonCollection<PropertySavedSearch>("saved-searches"),
+    listJsonCollection<PropertyRentPayment>("rent-payments"),
+    listJsonCollection<PropertyMaintenanceTicket>("maintenance-tickets"),
     listJsonCollection<PropertyService>("services"),
     listJsonCollection<PropertyFaq>("faqs"),
     listJsonCollection<PropertyDifferentiator>("differentiators"),
   ]);
+
+  // Hydrate legacy viewing rows with the V3 PASS 21 reminder/waitlist
+  // fields. JSON records written before the schema bump won't carry
+  // these keys; the rest of the system reads them via PropertyViewingRequest.
+  const hydratedViewings: PropertyViewingRequest[] = viewingRequests.map((viewing) => {
+    const row = viewing as Partial<PropertyViewingRequest> & PropertyViewingRequest;
+    return {
+      ...row,
+      reminder24hAt: row.reminder24hAt ?? null,
+      reminder24hSentAt: row.reminder24hSentAt ?? null,
+      reminder1hAt: row.reminder1hAt ?? null,
+      reminder1hSentAt: row.reminder1hSentAt ?? null,
+      confirmedAt: row.confirmedAt ?? null,
+      waitlistPosition: row.waitlistPosition ?? null,
+      cancellationReason: row.cancellationReason ?? null,
+    };
+  });
 
   const snapshot = {
     areas: dedupeById(areas),
     agents: dedupeById(agents),
     listings: dedupeById(listings),
     inquiries,
-    viewingRequests,
+    viewingRequests: hydratedViewings,
     applications,
     inspections,
     policyEvents,
@@ -297,6 +323,9 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     campaigns: dedupeById(campaigns),
     notifications,
     savedListings,
+    savedSearches,
+    rentPayments,
+    maintenanceTickets,
     services: services.length ? services : demoPropertySnapshot.services,
     faqs: faqs.length ? faqs : demoPropertySnapshot.faqs,
     differentiators: differentiators.length ? differentiators : demoPropertySnapshot.differentiators,
@@ -430,6 +459,54 @@ export async function savePropertyForUser(userId: string, listingId: string) {
 
 export async function removeSavedPropertyForUser(userId: string, listingId: string) {
   await removeJsonRecord("saved-listings", `${userId}--${listingId}`);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+ * V3 PASS 21 — saved-search storage helpers.
+ * The `property-saved-searches` bucket subfolder mirrors the SQL
+ * `property_saved_searches` table for environments running on JSON
+ * runtime storage. Migrating to direct Supabase queries is a
+ * follow-on once the storage runtime is retired.
+ * ────────────────────────────────────────────────────────────────── */
+export async function upsertPropertySavedSearch(saved: PropertySavedSearch) {
+  await writeJsonRecord("saved-searches", saved.id, {
+    ...saved,
+    normalizedEmail: normalizeEmail(saved.normalizedEmail),
+    updatedAt: new Date().toISOString(),
+  } satisfies PropertySavedSearch);
+}
+
+export async function removePropertySavedSearch(id: string) {
+  await removeJsonRecord("saved-searches", id);
+}
+
+export async function listPropertySavedSearchesForUser(userId: string) {
+  const snapshot = await readPropertyRuntimeSnapshot();
+  return snapshot.savedSearches.filter((row) => row.userId === userId);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+ * V3 PASS 21 — managed rent payment storage helpers.
+ * Tracks the rent ledger for managed-property statements.
+ * ────────────────────────────────────────────────────────────────── */
+export async function upsertPropertyRentPayment(payment: PropertyRentPayment) {
+  await writeJsonRecord("rent-payments", payment.id, {
+    ...payment,
+    normalizedEmail: normalizeEmail(payment.normalizedEmail),
+    updatedAt: new Date().toISOString(),
+  } satisfies PropertyRentPayment);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+ * V3 PASS 21 — managed maintenance ticket helpers.
+ * Tracks tickets reported by managed-property owners.
+ * ────────────────────────────────────────────────────────────────── */
+export async function upsertPropertyMaintenanceTicket(ticket: PropertyMaintenanceTicket) {
+  await writeJsonRecord("maintenance-tickets", ticket.id, {
+    ...ticket,
+    normalizedEmail: normalizeEmail(ticket.normalizedEmail),
+    updatedAt: new Date().toISOString(),
+  } satisfies PropertyMaintenanceTicket);
 }
 
 export async function createListingFromSubmission(input: {
