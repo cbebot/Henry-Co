@@ -110,8 +110,22 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+}
+
+/* ---------------------------------------------------------------- */
+/* PERF-01 — W3C-gated smooth-scroll                                */
+/* ---------------------------------------------------------------- */
+/*
+ * Memory: project_henryco_perf01_loading.md — owner-validated
+ * canonical PERF-01 pattern. Smooth-scroll only when the user has
+ * not asked the OS to reduce motion. Pairs with PublicRouteLoader
+ * for the route-transition story.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
