@@ -92,6 +92,98 @@ export async function GET(req: NextRequest) {
 
     const payment = await getPaymentVerificationSnapshotForBooking(resolvedBooking.id);
 
+    // V3 PASS 21 — stage photos: garment intake + completion, plus
+    // per-leg POD captures. Best-effort: tables may not exist on
+    // older environments, so we tolerate query failures.
+    const stagePhotos: Array<{
+      id: string;
+      url: string;
+      caption: string;
+      stage: "intake" | "completion" | "pickup_pod" | "delivery_pod";
+      captured_at: string;
+      recipient_name: string | null;
+      gps_lat: number | null;
+      gps_lng: number | null;
+    }> = [];
+
+    try {
+      const { data: garments } = await supabase
+        .from("care_booking_garments")
+        .select(
+          "id, garment_label, intake_photo_url, completion_photo_url, updated_at",
+        )
+        .eq("booking_id", resolvedBooking.id);
+
+      for (const garment of garments ?? []) {
+        const label = (garment as { garment_label?: string }).garment_label || "Garment";
+        const intakeUrl = (garment as { intake_photo_url?: string }).intake_photo_url;
+        const completionUrl = (garment as { completion_photo_url?: string }).completion_photo_url;
+        const updatedAt =
+          (garment as { updated_at?: string }).updated_at || resolvedBooking.created_at;
+        if (intakeUrl) {
+          stagePhotos.push({
+            id: `${(garment as { id: string }).id}-intake`,
+            url: intakeUrl,
+            caption: `${label} — intake`,
+            stage: "intake",
+            captured_at: updatedAt,
+            recipient_name: null,
+            gps_lat: null,
+            gps_lng: null,
+          });
+        }
+        if (completionUrl) {
+          stagePhotos.push({
+            id: `${(garment as { id: string }).id}-completion`,
+            url: completionUrl,
+            caption: `${label} — completion`,
+            stage: "completion",
+            captured_at: updatedAt,
+            recipient_name: null,
+            gps_lat: null,
+            gps_lng: null,
+          });
+        }
+      }
+    } catch {
+      // care_booking_garments table absent — leave aggregate empty
+    }
+
+    try {
+      const { data: pods } = await supabase
+        .from("care_pod_records")
+        .select(
+          "id, leg, photo_url, captured_at, recipient_name, gps_lat, gps_lng",
+        )
+        .eq("booking_id", resolvedBooking.id)
+        .not("photo_url", "is", null);
+
+      for (const pod of pods ?? []) {
+        const podRow = pod as {
+          id: string;
+          leg: string;
+          photo_url: string;
+          captured_at: string;
+          recipient_name: string | null;
+          gps_lat: number | null;
+          gps_lng: number | null;
+        };
+        const isPickup = podRow.leg === "pickup";
+        stagePhotos.push({
+          id: `${podRow.id}-pod`,
+          url: podRow.photo_url,
+          caption: isPickup ? "Pickup confirmation" : "Delivery confirmation",
+          stage: isPickup ? "pickup_pod" : "delivery_pod",
+          captured_at: podRow.captured_at,
+          recipient_name: podRow.recipient_name,
+          gps_lat: podRow.gps_lat,
+          gps_lng: podRow.gps_lng,
+        });
+      }
+    } catch {
+      // care_pod_records table absent
+    }
+
     return NextResponse.json({
       ok: true,
       booking: {
@@ -99,6 +191,7 @@ export async function GET(req: NextRequest) {
         family: inferCareServiceFamily(resolvedBooking),
         service_summary: parseServiceBookingSummary(resolvedBooking.item_summary),
         payment,
+        stage_photos: stagePhotos,
       },
     });
   } catch (error) {
