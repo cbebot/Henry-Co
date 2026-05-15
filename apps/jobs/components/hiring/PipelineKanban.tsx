@@ -34,7 +34,12 @@ export type PipelineApplicantCard = {
 };
 
 type PipelineKanbanProps = {
-  pipelineId: string;
+  /**
+   * Pipeline id is captured so future analytics + per-pipeline
+   * customizations can pass it to the move API; the current move API
+   * resolves the pipeline from the application id.
+   */
+  pipelineId?: string;
   stages: string[];
   applicants: PipelineApplicantCard[];
 };
@@ -56,7 +61,6 @@ function bucketByStage(
 }
 
 export function PipelineKanban({
-  pipelineId: _pipelineId,
   stages,
   applicants,
 }: PipelineKanbanProps) {

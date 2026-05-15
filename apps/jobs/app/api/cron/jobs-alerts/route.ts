@@ -52,7 +52,6 @@ type AdminClient = ReturnType<typeof createAdminSupabase>;
 async function runInterviewReminders(admin: AdminClient) {
   const now = Date.now();
   const horizonHigh = new Date(now + 25 * 60 * 60 * 1000).toISOString();
-  const horizonLow = new Date(now + 30 * 60 * 1000).toISOString();
 
   const { data: rooms } = await admin
     .from("jobs_interview_rooms")

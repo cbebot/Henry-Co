@@ -27,7 +27,11 @@ type Role = "candidate" | "employer";
 
 type InterviewRoomProps = {
   roomId: string;
-  applicationId: string;
+  /**
+   * The linked application id. Reserved for future analytics + linkable
+   * detail-route enhancements; not consumed by the iframe today.
+   */
+  applicationId?: string;
   scheduledAt: string;
   durationMinutes: number;
   joinUrl: string | null;
@@ -43,7 +47,6 @@ const NOTES_AUTOSAVE_INTERVAL_MS = 30_000;
 
 export function InterviewRoom({
   roomId,
-  applicationId: _applicationId,
   scheduledAt,
   durationMinutes,
   joinUrl,

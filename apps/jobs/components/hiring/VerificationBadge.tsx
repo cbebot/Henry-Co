@@ -20,14 +20,17 @@ export type VerificationState =
   | "unverified";
 
 type VerificationBadgeProps = {
-  kind: VerificationKind;
+  /**
+   * Optional badge type for future surface-specific styling (icon swap
+   * by kind). Reserved; not consumed today.
+   */
+  kind?: VerificationKind;
   state: VerificationState;
   locale: AppLocale;
   label?: string;
 };
 
 export function VerificationBadge({
-  kind: _kind,
   state,
   locale,
   label,
