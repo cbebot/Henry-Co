@@ -1,6 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 import {
-  BRAND_EMAILS,
   COMPANY,
   DATA_CATEGORIES,
   INTERNATIONAL_AUTHORITIES,
