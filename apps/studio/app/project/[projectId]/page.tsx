@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { formatCurrency } from "@/lib/env";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { StudioFileField } from "@/components/studio/studio-file-field";
 import { ProjectCollapsiblePanel } from "@/components/studio/project-collapsible-panel";
 import { ProjectPaymentsStack } from "@/components/studio/project-payments-stack";
@@ -39,6 +41,8 @@ export default async function ProjectDetailPage({
   searchParams: Promise<{ access?: string }>;
 }) {
   const viewer = await getStudioViewer();
+  const locale = await getStudioPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const { projectId } = await params;
   const { access } = await searchParams;
   const workspace = await getProjectWorkspace({
@@ -99,9 +103,9 @@ export default async function ProjectDetailPage({
       })
     : [
         {
-          label: "Active project scope",
+          label: t("Active project scope"),
           amount: paymentOverview.total,
-          detail: "Commercial total derived from the current project payment record.",
+          detail: t("Commercial total derived from the current project payment record."),
         },
       ];
   const isFinance = viewerHasRole(viewer, ["studio_owner", "finance"]);
@@ -126,20 +130,22 @@ export default async function ProjectDetailPage({
     if (openInvoice) {
       clientCta = {
         href: primaryPaymentHref,
-        label: "Pay & upload proof",
-        sub: "This secures your slot so we can start onboarding and schedule build work with confidence.",
+        label: t("Pay & upload proof"),
+        sub: t(
+          "This secures your slot so we can start onboarding and schedule build work with confidence.",
+        ),
       };
     } else if (verifying) {
       clientCta = {
         href: primaryPaymentHref,
-        label: "View payment status",
-        sub: "Finance is verifying your proof—this workspace updates as soon as it clears.",
+        label: t("View payment status"),
+        sub: t("Finance is verifying your proof—this workspace updates as soon as it clears."),
       };
     } else {
       clientCta = {
         href: "#studio-payment-checkpoint",
-        label: "Open payment checkpoint",
-        sub: "Complete the step below to move from planning into active delivery.",
+        label: t("Open payment checkpoint"),
+        sub: t("Complete the step below to move from planning into active delivery."),
       };
     }
   }
@@ -148,7 +154,9 @@ export default async function ProjectDetailPage({
     <>
       {!useCollapsibleSecondary ? (
         <p className="mb-5 max-w-2xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-          Your project is divided into clear milestones. Each one maps to a deliverable and a payment checkpoint.
+          {t(
+            "Your project is divided into clear milestones. Each one maps to a deliverable and a payment checkpoint.",
+          )}
         </p>
       ) : null}
       <div className="space-y-4">
@@ -192,7 +200,7 @@ export default async function ProjectDetailPage({
                     type="submit"
                     className="rounded-full border border-[var(--studio-line)] px-4 py-1.5 text-xs font-semibold text-[var(--studio-ink)] transition hover:border-[rgba(151,244,243,0.28)]"
                   >
-                    Advance milestone
+                    {t("Advance milestone")}
                   </button>
                 </form>
               ) : null}
@@ -207,11 +215,11 @@ export default async function ProjectDetailPage({
     <>
       <div className="grid gap-4 md:grid-cols-2">
         {[
-          ["Project type", customRequest.projectType],
-          ["Platform", customRequest.platformPreference],
-          ["Design direction", customRequest.designDirection],
-          ["Pages and interfaces", customRequest.pageRequirements.join(", ") || "Refined during scope review"],
-          ["Add-ons", customRequest.addonServices.join(", ") || "None selected"],
+          [t("Project type"), customRequest.projectType],
+          [t("Platform"), customRequest.platformPreference],
+          [t("Design direction"), customRequest.designDirection],
+          [t("Pages and interfaces"), customRequest.pageRequirements.join(", ") || t("Refined during scope review")],
+          [t("Add-ons"), customRequest.addonServices.join(", ") || t("None selected")],
         ].map(([label, value]) => (
           <div key={label} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
             <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{label}</div>
@@ -221,7 +229,7 @@ export default async function ProjectDetailPage({
       </div>
       {customRequest.inspirationSummary ? (
         <div className="mt-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
-          <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">References and direction</div>
+          <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{t("References and direction")}</div>
           <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{customRequest.inspirationSummary}</p>
         </div>
       ) : null}
@@ -275,14 +283,18 @@ export default async function ProjectDetailPage({
 
           <section className="overflow-hidden rounded-[1.85rem] border border-[rgba(151,244,243,0.12)] bg-[color-mix(in_srgb,var(--studio-surface)_92%,transparent)]">
             <div className="border-b border-[var(--studio-line)] px-6 py-7 sm:px-8">
-              <div className="studio-kicker">Progress</div>
+              <div className="studio-kicker">{t("Progress")}</div>
               <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--studio-ink)] sm:text-[1.65rem]">
-                Your project timeline
+                {t("Your project timeline")}
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--studio-ink-soft)]">
                 {onboardingGateActive && !isStaff
-                  ? "Updates from your team will appear here once onboarding begins. Complete your payment above to get started."
-                  : "A clear log of milestones, decisions, and progress from your team — everything in one place."}
+                  ? t(
+                      "Updates from your team will appear here once onboarding begins. Complete your payment above to get started.",
+                    )
+                  : t(
+                      "A clear log of milestones, decisions, and progress from your team — everything in one place.",
+                    )}
               </p>
             </div>
             <div className="px-6 pb-8 pt-2 sm:px-8">
@@ -292,12 +304,12 @@ export default async function ProjectDetailPage({
 
           <ProjectCollapsiblePanel
             defaultOpen={messages.length > 0}
-            badge="Conversation"
-            title="Project messages"
+            badge={t("Conversation")}
+            title={t("Project messages")}
             subtitle={
               messages.length > 0
-                ? `${messages.length} message${messages.length === 1 ? "" : "s"} in the thread.`
-                : "Send your first message to your project team."
+                ? `${messages.length} ${messages.length === 1 ? t("message in the thread.") : t("messages in the thread.")}`
+                : t("Send your first message to your project team.")
             }
           >
             <div className="space-y-4">
@@ -316,8 +328,8 @@ export default async function ProjectDetailPage({
                 ))
               ) : (
                 <div className="rounded-[1.4rem] border border-dashed border-[var(--studio-line)] bg-black/5 px-6 py-10 text-center">
-                  <p className="text-sm font-medium text-[var(--studio-ink)]">No messages yet</p>
-                  <p className="mt-1 text-sm text-[var(--studio-ink-soft)]">Send a message to start the conversation with your project team.</p>
+                  <p className="text-sm font-medium text-[var(--studio-ink)]">{t("No messages yet")}</p>
+                  <p className="mt-1 text-sm text-[var(--studio-ink-soft)]">{t("Send a message to start the conversation with your project team.")}</p>
                 </div>
               )}
             </div>
@@ -331,10 +343,10 @@ export default async function ProjectDetailPage({
                 required
                 rows={4}
                 className="studio-textarea min-h-28 w-full rounded-[1.5rem] px-4 py-4"
-                placeholder="Write your message…"
+                placeholder={t("Write your message…")}
               />
               {isStaff ? <input type="hidden" name="isInternal" value="" /> : null}
-              <StudioSubmitButton label="Send message" pendingLabel="Sending…" />
+              <StudioSubmitButton label={t("Send message")} pendingLabel={t("Sending…")} />
             </form>
           </ProjectCollapsiblePanel>
 
@@ -343,15 +355,15 @@ export default async function ProjectDetailPage({
           {useCollapsibleSecondary ? (
             <ProjectCollapsiblePanel
               defaultOpen={false}
-              badge="Delivery plan"
-              title="Milestones & checkpoints"
-              subtitle="Expand to view your full project roadmap and delivery checkpoints."
+              badge={t("Delivery plan")}
+              title={t("Milestones & checkpoints")}
+              subtitle={t("Expand to view your full project roadmap and delivery checkpoints.")}
             >
               {milestoneSectionInner}
             </ProjectCollapsiblePanel>
           ) : (
             <article className="studio-panel rounded-[1.85rem] border border-[var(--studio-line)] p-6 sm:p-8">
-              <div className="studio-kicker">Milestones</div>
+              <div className="studio-kicker">{t("Milestones")}</div>
               {milestoneSectionInner}
             </article>
           )}
@@ -360,15 +372,15 @@ export default async function ProjectDetailPage({
             useCollapsibleSecondary ? (
               <ProjectCollapsiblePanel
                 defaultOpen={false}
-                badge="Scope"
-                title="What you asked us to build"
-                subtitle="A summary of your original project requirements."
+                badge={t("Scope")}
+                title={t("What you asked us to build")}
+                subtitle={t("A summary of your original project requirements.")}
               >
                 {customSectionInner}
               </ProjectCollapsiblePanel>
             ) : (
               <section className="studio-panel rounded-[1.85rem] border border-[var(--studio-line)] p-6 sm:p-8">
-                <div className="studio-kicker">What you asked us to build</div>
+                <div className="studio-kicker">{t("What you asked us to build")}</div>
                 <div className="mt-6">{customSectionInner}</div>
               </section>
             )
@@ -391,8 +403,8 @@ export default async function ProjectDetailPage({
 
           <section className="grid gap-6 lg:grid-cols-2">
             <article className="studio-panel rounded-[1.75rem] p-6">
-              <div className="studio-kicker">Revisions</div>
-              <p className="mt-2 text-sm text-[var(--studio-ink-soft)]">Change requests are tracked here so nothing is lost.</p>
+              <div className="studio-kicker">{t("Revisions")}</div>
+              <p className="mt-2 text-sm text-[var(--studio-ink-soft)]">{t("Change requests are tracked here so nothing is lost.")}</p>
               <div className="mt-5 space-y-4">
                 {revisions.length > 0 ? (
                   revisions.map((revision) => (
@@ -409,7 +421,7 @@ export default async function ProjectDetailPage({
                             type="submit"
                             className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs font-semibold text-[var(--studio-ink)]"
                           >
-                            Mark complete
+                            {t("Mark complete")}
                           </button>
                         </form>
                       ) : null}
@@ -417,8 +429,8 @@ export default async function ProjectDetailPage({
                   ))
                 ) : (
                   <div className="rounded-[1.4rem] border border-dashed border-[var(--studio-line)] bg-black/5 p-6 text-center">
-                    <p className="text-sm font-medium text-[var(--studio-ink)]">No revisions requested</p>
-                    <p className="mt-1 text-sm text-[var(--studio-ink-soft)]">If you need something changed, describe it below.</p>
+                    <p className="text-sm font-medium text-[var(--studio-ink)]">{t("No revisions requested")}</p>
+                    <p className="mt-1 text-sm text-[var(--studio-ink-soft)]">{t("If you need something changed, describe it below.")}</p>
                   </div>
                 )}
               </div>
@@ -432,17 +444,17 @@ export default async function ProjectDetailPage({
                     required
                     rows={4}
                     className="studio-textarea min-h-28 w-full rounded-[1.5rem] px-4 py-4"
-                    placeholder="Describe what you'd like changed — one request per submission keeps things clear."
+                    placeholder={t("Describe what you'd like changed — one request per submission keeps things clear.")}
                   />
-                  <StudioSubmitButton label="Open revision ticket" pendingLabel="Saving…" />
+                  <StudioSubmitButton label={t("Open revision ticket")} pendingLabel={t("Saving…")} />
                 </form>
               ) : null}
             </article>
 
             <article className="studio-panel rounded-[1.75rem] p-6">
-              <div className="studio-kicker">Files and delivery</div>
+              <div className="studio-kicker">{t("Files and delivery")}</div>
               <p className="mt-2 text-sm text-[var(--studio-ink-soft)]">
-                Deliverables, assets, and handoff files attached to your project.
+                {t("Deliverables, assets, and handoff files attached to your project.")}
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {files.length > 0 ? (
@@ -458,7 +470,7 @@ export default async function ProjectDetailPage({
                     </span>
                   ))
                 ) : (
-                  <span className="text-sm text-[var(--studio-ink-soft)]">No files attached yet.</span>
+                  <span className="text-sm text-[var(--studio-ink-soft)]">{t("No files attached yet.")}</span>
                 )}
               </div>
               <div className="mt-6 space-y-4">
@@ -473,23 +485,23 @@ export default async function ProjectDetailPage({
                 <form action={addDeliverableAction} className="mt-6 space-y-3">
                   <input type="hidden" name="projectId" value={project.id} />
                   <input type="hidden" name="redirectPath" value={redirectPath} />
-                  <input name="label" required placeholder="Package label" className="studio-input w-full rounded-full px-4 py-3" />
+                  <input name="label" required placeholder={t("Package label")} className="studio-input w-full rounded-full px-4 py-3" />
                   <textarea
                     name="summary"
                     required
                     rows={3}
                     className="studio-textarea min-h-24 w-full rounded-[1.5rem] px-4 py-4"
-                    placeholder="What is inside this delivery?"
+                    placeholder={t("What is inside this delivery?")}
                   />
                   <StudioFileField
                     name="deliverableFiles"
                     multiple
                     required
-                    title="Delivery package"
-                    description="Zip, PDF, images, or source exports—attach everything for this milestone in one go."
-                    footerHint="Remove any row before sharing if you picked the wrong file; you can upload again if needed."
+                    title={t("Delivery package")}
+                    description={t("Zip, PDF, images, or source exports—attach everything for this milestone in one go.")}
+                    footerHint={t("Remove any row before sharing if you picked the wrong file; you can upload again if needed.")}
                   />
-                  <StudioSubmitButton label="Share deliverable" pendingLabel="Sharing…" />
+                  <StudioSubmitButton label={t("Share deliverable")} pendingLabel={t("Sharing…")} />
                 </form>
               ) : null}
               {!isStaff && project.status === "delivered" && reviews.length === 0 ? (
@@ -501,19 +513,19 @@ export default async function ProjectDetailPage({
                     name="customerName"
                     required
                     defaultValue={workspace.lead?.customerName || viewer.user?.fullName || ""}
-                    placeholder="Your name"
+                    placeholder={t("Your name")}
                     className="studio-input w-full rounded-full px-4 py-3"
                   />
-                  <input name="company" placeholder="Company name" className="studio-input w-full rounded-full px-4 py-3" />
+                  <input name="company" placeholder={t("Company name")} className="studio-input w-full rounded-full px-4 py-3" />
                   <input name="rating" type="number" min="1" max="5" defaultValue="5" className="studio-input w-full rounded-full px-4 py-3" />
                   <textarea
                     name="quote"
                     required
                     rows={4}
                     className="studio-textarea min-h-28 w-full rounded-[1.5rem] px-4 py-4"
-                    placeholder="How was the experience working with HenryCo Studio?"
+                    placeholder={t("How was the experience working with HenryCo Studio?")}
                   />
-                  <StudioSubmitButton label="Publish review" pendingLabel="Publishing…" />
+                  <StudioSubmitButton label={t("Publish review")} pendingLabel={t("Publishing…")} />
                 </form>
               ) : null}
               {unpaidPayments.length > 0 && !isStaff && viewer.user ? (
@@ -529,24 +541,24 @@ export default async function ProjectDetailPage({
                     required
                     rows={3}
                     className="studio-textarea min-h-24 w-full rounded-[1.5rem] px-4 py-4"
-                    placeholder="Describe your question or concern — we'll respond in your account."
+                    placeholder={t("Describe your question or concern — we'll respond in your account.")}
                   />
-                  <StudioSubmitButton label="Open support thread" pendingLabel="Opening…" />
+                  <StudioSubmitButton label={t("Open support thread")} pendingLabel={t("Opening…")} />
                 </form>
               ) : unpaidPayments.length > 0 && !isStaff ? (
                 <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
-                  <div className="text-sm font-semibold text-[var(--studio-ink)]">Need help with your payment?</div>
+                  <div className="text-sm font-semibold text-[var(--studio-ink)]">{t("Need help with your payment?")}</div>
                   <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                    Contact our finance team directly, or sign in to your HenryCo account for full support.
+                    {t("Contact our finance team directly, or sign in to your HenryCo account for full support.")}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-3">
                     {platform.paymentSupportEmail ? (
                       <a href={`mailto:${platform.paymentSupportEmail}`} className="studio-button-secondary inline-flex rounded-full px-4 py-3 text-sm font-semibold">
-                        Email finance
+                        {t("Email finance")}
                       </a>
                     ) : null}
                     <Link href={platform.accountDashboardUrl} className="studio-button-primary inline-flex rounded-full px-4 py-3 text-sm font-semibold">
-                      Open HenryCo account
+                      {t("Open HenryCo account")}
                     </Link>
                   </div>
                 </div>
