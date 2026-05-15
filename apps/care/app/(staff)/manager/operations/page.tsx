@@ -14,8 +14,10 @@ import {
   Sparkles,
   Tags,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import PendingSubmitButton from "@/components/forms/PendingSubmitButton";
 import { requireRoles } from "@/lib/auth/server";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import {
   getAdminBookings,
   getAdminPricing,
@@ -132,6 +134,8 @@ export default async function ManagerOperationsPage({
 }) {
   await requireRoles(["owner", "manager"]);
   await logProtectedPageAccess("/manager/operations");
+  const locale = await getCarePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const params = (await searchParams) ?? {};
   const bookingLookup = String(params.booking || "").trim();
@@ -194,15 +198,15 @@ export default async function ManagerOperationsPage({
     <div className="space-y-8">
       <section className="rounded-[38px] border border-black/10 bg-white/80 p-8 shadow-[0_22px_80px_rgba(0,0,0,0.08)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04]">
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-deep)] dark:text-[color:var(--accent)]">
-          Manager operations room
+          {t("Manager operations room")}
         </div>
         <h1 className="mt-2 text-4xl font-semibold text-zinc-950 dark:text-white sm:text-5xl">
-          Register every item. Leave no cloth outside the system.
+          {t("Register every item. Leave no cloth outside the system.")}
         </h1>
         <p className="mt-4 max-w-3xl text-zinc-600 dark:text-white/65">
-          This is the intake command layer. Every customer booking should become a tracked digital
-          record, and every cloth entering the care shop should be registered under that booking.
-          Any unregistered intake creates risk.
+          {t(
+            "This is the intake command layer. Every customer booking should become a tracked digital record, and every cloth entering the care shop should be registered under that booking. Any unregistered intake creates risk.",
+          )}
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
@@ -210,7 +214,7 @@ export default async function ManagerOperationsPage({
             href="/book"
             className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent-secondary)] px-5 py-3 text-sm font-semibold text-[#07111F]"
           >
-            Create walk-in booking
+            {t("Create walk-in booking")}
             <ArrowRight className="h-4 w-4" />
           </Link>
 
@@ -218,7 +222,7 @@ export default async function ManagerOperationsPage({
             href="/manager/expenses"
             className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
           >
-            Open expenses
+            {t("Open expenses")}
             <ArrowRight className="h-4 w-4" />
           </Link>
 
@@ -226,7 +230,7 @@ export default async function ManagerOperationsPage({
             href="/track"
             className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
           >
-            Open tracking page
+            {t("Open tracking page")}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -235,35 +239,37 @@ export default async function ManagerOperationsPage({
       <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <Metric
           icon={ClipboardList}
-          label="Active bookings"
+          label={t("Active bookings")}
           value={String(bookings.length)}
-          note="Current live workload"
+          note={t("Current live workload")}
         />
         <Metric
           icon={AlertTriangle}
-          label="Urgent queue"
+          label={t("Urgent queue")}
           value={String(urgentBookings.length)}
-          note="Needs quick attention"
+          note={t("Needs quick attention")}
         />
         <Metric
           icon={Tags}
-          label="Registered pieces"
+          label={t("Registered pieces")}
           value={String(totalRegisteredPieces)}
-          note="Recorded item quantity"
+          note={t("Recorded item quantity")}
         />
         <Metric
           icon={ShieldCheck}
-          label="Bookings with zero items"
+          label={t("Bookings with zero items")}
           value={String(intakeRiskCount)}
-          note="Intake risk to fix fast"
+          note={t("Intake risk to fix fast")}
         />
       </section>
 
       <section className="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
         <Panel
-          eyebrow="Booking control"
-          title="Find the booking first"
-          subtitle="Create a walk-in booking, or search and open an existing booking before registering clothes."
+          eyebrow={t("Booking control")}
+          title={t("Find the booking first")}
+          subtitle={t(
+            "Create a walk-in booking, or search and open an existing booking before registering clothes.",
+          )}
         >
           <form className="grid gap-4">
             <div className="relative">
@@ -271,7 +277,7 @@ export default async function ManagerOperationsPage({
               <input
                 name="q"
                 defaultValue={q}
-                placeholder="Search by customer, tracking code, phone, service..."
+                placeholder={t("Search by customer, tracking code, phone, service...")}
                 className="h-12 w-full rounded-2xl border border-black/10 bg-white pl-11 pr-4 text-sm font-medium text-zinc-900 outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
               />
             </div>
@@ -325,26 +331,30 @@ export default async function ManagerOperationsPage({
                 );
               })
             ) : (
-              <EmptyState text="No bookings matched your search." />
+              <EmptyState text={t("No bookings matched your search.")} />
             )}
           </div>
         </Panel>
 
         <Panel
-          eyebrow="Selected booking"
+          eyebrow={t("Selected booking")}
           title={
             selectedBooking
               ? selectedBookingIsService
-                ? `Review service request ${selectedBooking.tracking_code}`
-                : `Register clothes under ${selectedBooking.tracking_code}`
-              : "Select a booking"
+                ? `${t("Review service request")} ${selectedBooking.tracking_code}`
+                : `${t("Register clothes under")} ${selectedBooking.tracking_code}`
+              : t("Select a booking")
           }
           subtitle={
             selectedBooking
               ? selectedBookingIsService
-                ? "Service bookings should be reviewed, dispatched, updated, and paid against the same clean booking record."
-                : "Every cloth entering the shop should be registered under the correct booking before processing."
-              : "Search or create a booking first, then open the correct booking."
+                ? t(
+                    "Service bookings should be reviewed, dispatched, updated, and paid against the same clean booking record.",
+                  )
+                : t(
+                    "Every cloth entering the shop should be registered under the correct booking before processing.",
+                  )
+              : t("Search or create a booking first, then open the correct booking.")
           }
         >
           {selectedBooking ? (
@@ -365,15 +375,15 @@ export default async function ManagerOperationsPage({
                     )}
                   </span>
                   <span className="rounded-full border border-emerald-300/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-100">
-                    estimated value {formatMoney(estimatedBookingValue)}
+                    {t("estimated value")} {formatMoney(estimatedBookingValue)}
                   </span>
                 </div>
 
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <Info label="Customer">{selectedBooking.customer_name}</Info>
-                  <Info label="Phone">{selectedBooking.phone || "—"}</Info>
-                  <Info label="Service">{selectedBooking.service_type}</Info>
-                  <Info label="Pickup">
+                  <Info label={t("Customer")}>{selectedBooking.customer_name}</Info>
+                  <Info label={t("Phone")}>{selectedBooking.phone || "—"}</Info>
+                  <Info label={t("Service")}>{selectedBooking.service_type}</Info>
+                  <Info label={t("Pickup")}>
                     {formatDate(selectedBooking.pickup_date)}
                     {selectedBooking.pickup_slot ? ` • ${selectedBooking.pickup_slot}` : ""}
                   </Info>
@@ -381,7 +391,7 @@ export default async function ManagerOperationsPage({
 
                 <div className="mt-4 rounded-2xl border border-black/10 bg-white/70 p-4 text-sm text-zinc-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/75">
                   <div className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                    Address
+                    {t("Address")}
                   </div>
                   <div className="mt-2">{selectedBooking.pickup_address}</div>
                 </div>
@@ -403,8 +413,8 @@ export default async function ManagerOperationsPage({
                   </select>
 
                   <PendingSubmitButton
-                    label="Update booking status"
-                    pendingLabel="Updating booking"
+                    label={t("Update booking status")}
+                    pendingLabel={t("Updating booking")}
                     className="rounded-2xl px-5 py-3 text-[#07111F]"
                   />
                 </form>
@@ -418,10 +428,12 @@ export default async function ManagerOperationsPage({
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-zinc-950 dark:text-white">
-                        Service request summary
+                        {t("Service request summary")}
                       </div>
                       <div className="text-sm text-zinc-600 dark:text-white/65">
-                        This booking is service-based, so it should be dispatched and status-managed rather than item-registered.
+                        {t(
+                          "This booking is service-based, so it should be dispatched and status-managed rather than item-registered.",
+                        )}
                       </div>
                     </div>
                   </div>
@@ -458,10 +470,12 @@ export default async function ManagerOperationsPage({
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-zinc-950 dark:text-white">
-                        Register garment / cloth item
+                        {t("Register garment / cloth item")}
                       </div>
                       <div className="text-sm text-zinc-600 dark:text-white/65">
-                        This is the intake registry. If it is not here, it should not enter processing.
+                        {t(
+                          "This is the intake registry. If it is not here, it should not enter processing.",
+                        )}
                       </div>
                     </div>
                   </div>
@@ -472,7 +486,7 @@ export default async function ManagerOperationsPage({
 
                     <div className="grid gap-4 md:grid-cols-2">
                       <select name="pricing_id" className={inputCls}>
-                        <option value="">Select pricing-backed item</option>
+                        <option value="">{t("Select pricing-backed item")}</option>
                         {activePricing.map((row) => (
                           <option key={row.id} value={row.id}>
                             {row.category} — {row.item_name} ({formatMoney(row.price)}/{row.unit})
@@ -482,15 +496,15 @@ export default async function ManagerOperationsPage({
 
                       <input
                         name="garment_type"
-                        placeholder="Or enter manual garment type"
+                        placeholder={t("Or enter manual garment type")}
                         className={inputCls}
                       />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-3">
-                      <input name="service_type" placeholder="Service override" className={inputCls} />
-                      <input name="brand" placeholder="Brand (optional)" className={inputCls} />
-                      <input name="color" placeholder="Color (optional)" className={inputCls} />
+                      <input name="service_type" placeholder={t("Service override")} className={inputCls} />
+                      <input name="brand" placeholder={t("Brand (optional)")} className={inputCls} />
+                      <input name="color" placeholder={t("Color (optional)")} className={inputCls} />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-3">
@@ -502,27 +516,29 @@ export default async function ManagerOperationsPage({
                         className={inputCls}
                       />
                       <select name="treatment" defaultValue="standard" className={inputCls}>
-                        <option value="standard">Standard handling</option>
-                        <option value="stain">Stain treatment</option>
-                        <option value="deep_stain">Deep stain rescue</option>
-                        <option value="delicate">Delicate handling</option>
+                        <option value="standard">{t("Standard handling")}</option>
+                        <option value="stain">{t("Stain treatment")}</option>
+                        <option value="deep_stain">{t("Deep stain rescue")}</option>
+                        <option value="delicate">{t("Delicate handling")}</option>
                       </select>
                       <label className="inline-flex items-center gap-3 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-zinc-800 dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white">
                         <input type="checkbox" name="urgent" className="h-4 w-4" />
-                        Mark this item as urgent
+                        {t("Mark this item as urgent")}
                       </label>
                     </div>
 
                     <textarea
                       name="notes"
                       rows={4}
-                      placeholder="Condition notes, stains, missing button, damage, special handling note..."
+                      placeholder={t(
+                        "Condition notes, stains, missing button, damage, special handling note...",
+                      )}
                       className={textareaCls}
                     />
 
                     <PendingSubmitButton
-                      label="Save item into registry"
-                      pendingLabel="Saving item into registry"
+                      label={t("Save item into registry")}
+                      pendingLabel={t("Saving item into registry")}
                       icon={<ArrowRight className="h-4 w-4" />}
                       className="rounded-2xl px-6 py-3 text-[#07111F]"
                     />
@@ -537,10 +553,10 @@ export default async function ManagerOperationsPage({
                   </div>
                   <div>
                     <div className="text-lg font-semibold text-zinc-950 dark:text-white">
-                      Record payment for selected booking
+                      {t("Record payment for selected booking")}
                     </div>
                     <div className="text-sm text-zinc-600 dark:text-white/65">
-                      Every inflow should be captured under the correct booking.
+                      {t("Every inflow should be captured under the correct booking.")}
                     </div>
                   </div>
                 </div>
@@ -557,35 +573,35 @@ export default async function ManagerOperationsPage({
                       step="0.01"
                       defaultValue={estimatedBookingValue || 0}
                       className={inputCls}
-                      placeholder="Amount"
+                      placeholder={t("Amount")}
                       required
                     />
 
                     <select name="payment_method" className={inputCls} required defaultValue="bank_transfer">
-                      <option value="bank_transfer">Bank transfer</option>
-                      <option value="cash">Cash</option>
-                      <option value="pos">POS</option>
-                      <option value="mobile_transfer">Mobile transfer</option>
-                      <option value="other">Other</option>
+                      <option value="bank_transfer">{t("Bank transfer")}</option>
+                      <option value="cash">{t("Cash")}</option>
+                      <option value="pos">{t("POS")}</option>
+                      <option value="mobile_transfer">{t("Mobile transfer")}</option>
+                      <option value="other">{t("Other")}</option>
                     </select>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <input
                       name="reference"
-                      placeholder="Payment reference"
+                      placeholder={t("Payment reference")}
                       className={inputCls}
                     />
                     <input
                       name="notes"
-                      placeholder="Payment note"
+                      placeholder={t("Payment note")}
                       className={inputCls}
                     />
                   </div>
 
                   <PendingSubmitButton
-                    label="Record payment"
-                    pendingLabel="Recording payment"
+                    label={t("Record payment")}
+                    pendingLabel={t("Recording payment")}
                     icon={<ArrowRight className="h-4 w-4" />}
                     className="rounded-2xl px-6 py-3 text-[#07111F]"
                   />
@@ -596,12 +612,12 @@ export default async function ManagerOperationsPage({
                 <div className="flex items-center justify-between gap-3">
                     <div>
                       <div className="text-lg font-semibold text-zinc-950 dark:text-white">
-                        {selectedBookingIsService ? "Service request details" : "Registered items for this booking"}
+                        {selectedBookingIsService ? t("Service request details") : t("Registered items for this booking")}
                       </div>
                       <div className="text-sm text-zinc-600 dark:text-white/65">
                         {selectedBookingIsService
-                          ? "Operational notes tied to the service booking."
-                          : "Live garment registry tied to the tracking code."}
+                          ? t("Operational notes tied to the service booking.")
+                          : t("Live garment registry tied to the tracking code.")}
                       </div>
                     </div>
 
@@ -614,8 +630,8 @@ export default async function ManagerOperationsPage({
                   {selectedBookingIsService ? (
                     <article className="rounded-3xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/5">
                       <div className="grid gap-3 md:grid-cols-2">
-                        <Info label="Quoted total">{formatMoney(estimatedBookingValue)}</Info>
-                        <Info label="Payment status">{selectedBooking.payment_status || "unpaid"}</Info>
+                        <Info label={t("Quoted total")}>{formatMoney(estimatedBookingValue)}</Info>
+                        <Info label={t("Payment status")}>{selectedBooking.payment_status || t("unpaid")}</Info>
                       </div>
                       <div className="mt-4 flex flex-wrap gap-2">
                         {[
@@ -658,12 +674,12 @@ export default async function ManagerOperationsPage({
 
                           {item.urgent ? (
                             <span className="rounded-full border border-red-300/30 bg-red-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-red-700 dark:text-red-100">
-                              urgent
+                              {t("urgent")}
                             </span>
                           ) : null}
 
                           <span className="rounded-full border border-black/10 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
-                            qty {item.quantity}
+                            {t("qty")} {item.quantity}
                           </span>
 
                           {item.line_total != null ? (
@@ -678,47 +694,53 @@ export default async function ManagerOperationsPage({
                         </div>
 
                         <div className="mt-2 grid gap-3 md:grid-cols-4">
-                          <Info label="Service">{item.service_type || "—"}</Info>
-                          <Info label="Brand">{item.brand || "—"}</Info>
-                          <Info label="Color">{item.color || "—"}</Info>
-                          <Info label="Unit price">
+                          <Info label={t("Service")}>{item.service_type || "—"}</Info>
+                          <Info label={t("Brand")}>{item.brand || "—"}</Info>
+                          <Info label={t("Color")}>{item.color || "—"}</Info>
+                          <Info label={t("Unit price")}>
                             {item.unit_price != null ? formatMoney(item.unit_price) : "—"}
                           </Info>
                         </div>
 
                         <div className="mt-4 text-sm text-zinc-600 dark:text-white/65">
                           <span className="font-semibold text-zinc-800 dark:text-white/80">
-                            Intake status:
+                            {t("Intake status:")}
                           </span>{" "}
                           {item.intake_status}
                         </div>
 
                         <div className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                          {item.notes || "No additional note."}
+                          {item.notes || t("No additional note.")}
                         </div>
 
                         <div className="mt-3 text-xs text-zinc-500 dark:text-white/45">
-                          Registered {formatDateTime(item.created_at)}
+                          {t("Registered")} {formatDateTime(item.created_at)}
                         </div>
                       </article>
                     ))
                   ) : (
-                    <EmptyState text="No garment items have been registered for this booking yet. Register them before processing." />
+                    <EmptyState text={t(
+                      "No garment items have been registered for this booking yet. Register them before processing.",
+                    )} />
                   )}
                 </div>
               </div>
             </div>
           ) : (
-            <EmptyState text="No booking selected yet. Search for one or create a walk-in booking first." />
+            <EmptyState text={t(
+              "No booking selected yet. Search for one or create a walk-in booking first.",
+            )} />
           )}
         </Panel>
       </section>
 
       <section className="grid gap-8 xl:grid-cols-[1fr_1fr]">
         <Panel
-          eyebrow="Intake risk"
-          title="Garment bookings with zero registered items"
-          subtitle="These are intake red flags. Service bookings are intentionally excluded from this list."
+          eyebrow={t("Intake risk")}
+          title={t("Garment bookings with zero registered items")}
+          subtitle={t(
+            "These are intake red flags. Service bookings are intentionally excluded from this list.",
+          )}
         >
           <div className="grid gap-4">
             {bookingsWithoutItems.length > 0 ? (
@@ -730,14 +752,14 @@ export default async function ManagerOperationsPage({
                   <div className="flex flex-wrap items-center gap-3">
                     <div className="font-mono text-sm font-semibold">{booking.tracking_code}</div>
                     <span className="rounded-full border border-red-300/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]">
-                      no items recorded
+                      {t("no items recorded")}
                     </span>
                   </div>
 
                   <div className="mt-3 text-lg font-semibold">{booking.customer_name}</div>
                   <div className="mt-1 text-sm opacity-90">
                     {booking.service_type} • {formatDate(booking.pickup_date)} •{" "}
-                    {booking.pickup_slot || "No slot"}
+                    {booking.pickup_slot || t("No slot")}
                   </div>
 
                   <div className="mt-4">
@@ -745,22 +767,24 @@ export default async function ManagerOperationsPage({
                       href={`/manager/operations?booking=${encodeURIComponent(booking.tracking_code)}`}
                       className="inline-flex items-center gap-2 rounded-2xl border border-red-300/30 bg-white/70 px-4 py-3 text-sm font-semibold text-red-700 dark:bg-white/10 dark:text-red-100"
                     >
-                      Open and register now
+                      {t("Open and register now")}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
                 </article>
               ))
             ) : (
-              <EmptyState text="Good. No active booking is currently missing item registration." />
+              <EmptyState text={t("Good. No active booking is currently missing item registration.")} />
             )}
           </div>
         </Panel>
 
         <Panel
-          eyebrow="Priority queue"
-          title="Urgent bookings"
-          subtitle="Use this to catch time-sensitive work before it becomes customer dissatisfaction."
+          eyebrow={t("Priority queue")}
+          title={t("Urgent bookings")}
+          subtitle={t(
+            "Use this to catch time-sensitive work before it becomes customer dissatisfaction.",
+          )}
         >
           <div className="grid gap-4">
             {urgentBookings.length > 0 ? (
@@ -801,29 +825,29 @@ export default async function ManagerOperationsPage({
                     </select>
 
                     <PendingSubmitButton
-                      label="Update status"
-                      pendingLabel="Updating status"
+                      label={t("Update status")}
+                      pendingLabel={t("Updating status")}
                       className="rounded-2xl px-5 py-3 text-[#07111F]"
                     />
                   </form>
                 </article>
               ))
             ) : (
-              <EmptyState text="No urgent bookings right now." />
+              <EmptyState text={t("No urgent bookings right now.")} />
             )}
           </div>
         </Panel>
       </section>
 
       <section className="grid gap-5 md:grid-cols-3">
-        <Feature icon={CheckCircle2} title="Digital-first intake">
-          Every cloth should enter the system before it enters processing.
+        <Feature icon={CheckCircle2} title={t("Digital-first intake")}>
+          {t("Every cloth should enter the system before it enters processing.")}
         </Feature>
-        <Feature icon={Sparkles} title="Tracking-linked registration">
-          Item registry stays tied to the customer’s booking and tracking code.
+        <Feature icon={Sparkles} title={t("Tracking-linked registration")}>
+          {t("Item registry stays tied to the customer’s booking and tracking code.")}
         </Feature>
-        <Feature icon={CalendarDays} title="Cleaner audit trail">
-          Intake time, pricing trace, and payment capture become easier to review later.
+        <Feature icon={CalendarDays} title={t("Cleaner audit trail")}>
+          {t("Intake time, pricing trace, and payment capture become easier to review later.")}
         </Feature>
       </section>
     </div>
