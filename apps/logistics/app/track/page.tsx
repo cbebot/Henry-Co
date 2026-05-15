@@ -283,7 +283,7 @@ export default async function TrackPage({ searchParams }: Props) {
         </PortalSection>
 
         {lookupAttempted && !detail ? (
-          <section className="border-l-2 border-amber-400/60 pl-5">
+          <section className="border-s-2 border-amber-400/60 ps-5">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-amber-200/85">
               No shipment found
             </p>
@@ -327,7 +327,7 @@ export default async function TrackPage({ searchParams }: Props) {
                     {detail.shipment.urgency}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/45">
                     Status
                   </p>
@@ -381,7 +381,7 @@ export default async function TrackPage({ searchParams }: Props) {
                         <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                           Recipient
                         </dt>
-                        <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                        <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                           {detail.proof.recipientName}
                         </dd>
                       </div>
@@ -389,7 +389,7 @@ export default async function TrackPage({ searchParams }: Props) {
                         <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                           Delivered
                         </dt>
-                        <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                        <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                           {new Date(detail.proof.deliveredAt).toLocaleString()}
                         </dd>
                       </div>
@@ -397,7 +397,7 @@ export default async function TrackPage({ searchParams }: Props) {
                         <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                           Type
                         </dt>
-                        <dd className="ml-auto text-right text-sm font-semibold capitalize tracking-tight text-white">
+                        <dd className="ms-auto text-end text-sm font-semibold capitalize tracking-tight text-white">
                           {detail.proof.proofType}
                         </dd>
                       </div>
@@ -419,7 +419,7 @@ export default async function TrackPage({ searchParams }: Props) {
                   )}
                 </div>
                 {detail.issues.filter((i) => i.status !== "resolved").length > 0 ? (
-                  <div className="border-l-2 border-amber-400/55 pl-5">
+                  <div className="border-s-2 border-amber-400/55 ps-5">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-amber-200/85">
                       Active exception
                     </p>
@@ -441,9 +441,9 @@ export default async function TrackPage({ searchParams }: Props) {
                     </a>
                   </div>
                 ) : null}
-                <div className="border-l-2 border-[var(--logistics-accent)]/55 pl-5">
+                <div className="border-s-2 border-[var(--logistics-accent)]/55 ps-5">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                    <MapPinned className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+                    <MapPinned className="me-1 inline h-3.5 w-3.5 align-[-2px]" />
                     Lane note
                   </p>
                   <p className="mt-2 text-sm leading-7 text-[var(--logistics-muted)]">

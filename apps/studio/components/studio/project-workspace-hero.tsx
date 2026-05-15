@@ -40,7 +40,7 @@ export function ProjectWorkspaceHero({
   return (
     <section className="relative overflow-hidden rounded-[2.6rem] border border-[rgba(151,244,243,0.2)] bg-[linear-gradient(165deg,rgba(14,52,62,0.55)_0%,rgba(5,14,20,0.92)_45%,rgba(4,10,16,0.97)_100%)] px-7 py-10 shadow-[0_28px_80px_rgba(0,0,0,0.35)] sm:px-10 sm:py-12 lg:px-14 lg:py-14">
       <div
-        className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(88,212,210,0.12),transparent_68%)]"
+        className="pointer-events-none absolute -end-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(88,212,210,0.12),transparent_68%)]"
         aria-hidden
       />
       <div className="relative grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">

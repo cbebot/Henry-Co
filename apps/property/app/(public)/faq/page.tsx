@@ -18,7 +18,7 @@ export default async function PropertyFaqPage() {
 
       <section className="mt-10">
         {snapshot.faqs.length === 0 ? (
-          <p className="border-l-2 border-[var(--property-accent-strong)]/55 pl-5 text-sm leading-7 text-[var(--property-ink-soft)]">
+          <p className="border-s-2 border-[var(--property-accent-strong)]/55 ps-5 text-sm leading-7 text-[var(--property-ink-soft)]">
             We&rsquo;re still publishing answers to the most common renter, buyer, and owner
             questions. In the meantime,{" "}
             <Link

@@ -121,7 +121,7 @@ export default async function JobDetailPage({
                   Employer trust
                 </span>
                 <span
-                  className={`ml-auto text-right text-sm font-semibold tracking-tight ${
+                  className={`ms-auto text-end text-sm font-semibold tracking-tight ${
                     job.employerVerification === "verified"
                       ? "text-[var(--jobs-accent)]"
                       : "text-[var(--jobs-ink)]"
@@ -135,7 +135,7 @@ export default async function JobDetailPage({
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                   Typical reply
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
                   {job.employerResponseSlaHours
                     ? `~${job.employerResponseSlaHours} hours`
                     : "Not specified"}
@@ -146,7 +146,7 @@ export default async function JobDetailPage({
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                   Applicants
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
                   {job.applicationCount}
                 </span>
               </li>
@@ -213,7 +213,7 @@ export default async function JobDetailPage({
                   ))}
                 </ul>
               </div>
-              <div id="requirements" className="scroll-mt-28 lg:pl-12">
+              <div id="requirements" className="scroll-mt-28 lg:ps-12">
                 <p className="jobs-kicker text-[10.5px] uppercase tracking-[0.22em]">
                   Requirements
                 </p>
@@ -265,7 +265,7 @@ export default async function JobDetailPage({
                     application — we pass them to the team with your note.
                   </p>
                 </div>
-                <div className="lg:pl-12">
+                <div className="lg:ps-12">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     Strong applications
                   </p>
@@ -294,7 +294,7 @@ export default async function JobDetailPage({
                     {job.location}
                   </p>
                 </li>
-                <li className="md:pl-10">
+                <li className="md:ps-10">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     Work mode
                   </p>
@@ -302,7 +302,7 @@ export default async function JobDetailPage({
                     {job.workMode}
                   </p>
                 </li>
-                <li className="md:pl-10">
+                <li className="md:ps-10">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     Team
                   </p>
@@ -323,7 +323,7 @@ export default async function JobDetailPage({
                   not just a PDF and a prayer. You will see verification status, how many people
                   have applied, and (when shared) how quickly they try to reply.
                 </p>
-                <div className="lg:pl-12">
+                <div className="lg:ps-12">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     Team snapshot
                   </p>
@@ -361,9 +361,9 @@ export default async function JobDetailPage({
                   </li>
                 ))}
               </ol>
-              <div className="mt-6 border-l-2 border-[var(--jobs-accent)]/55 pl-5">
+              <div className="mt-6 border-s-2 border-[var(--jobs-accent)]/55 ps-5">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
-                  <Clock3 className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> Where updates appear
+                  <Clock3 className="me-1 inline h-3.5 w-3.5 align-[-2px]" /> Where updates appear
                 </p>
                 <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
                   Shortlist moves, interview invites, and offer steps show up in{" "}
@@ -539,7 +539,7 @@ export default async function JobDetailPage({
                   </form>
                 )
               ) : (
-                <div className="mt-4 space-y-3 border-l-2 border-[var(--jobs-accent)]/55 pl-5 text-sm text-[var(--jobs-ink)]">
+                <div className="mt-4 space-y-3 border-s-2 border-[var(--jobs-accent)]/55 ps-5 text-sm text-[var(--jobs-ink)]">
                   <p>
                     <a
                       href={loginUrl}
@@ -602,7 +602,7 @@ export default async function JobDetailPage({
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     Status
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
                     {job.employerVerification === "verified" ? "Verified" : "Under review"}
                   </span>
                 </li>
@@ -610,7 +610,7 @@ export default async function JobDetailPage({
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     Applicants
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
                     {job.applicationCount}
                   </span>
                 </li>

@@ -70,7 +70,7 @@ export function ProductMediaGallery({ title, gallery }: ProductMediaGalleryProps
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="group relative block aspect-[4/4.55] w-full text-left"
+            className="group relative block aspect-[4/4.55] w-full text-start"
             aria-label={`Open ${title} viewer`}
           >
             {renderMedia(activeUrl, title, true)}
@@ -97,7 +97,7 @@ export function ProductMediaGallery({ title, gallery }: ProductMediaGalleryProps
                 aria-label={`Show image ${index + 1}`}
                 aria-current={activeIndex === index}
                 className={cn(
-                  "relative aspect-[4/3] overflow-hidden rounded-[1.2rem] border text-left transition hover:-translate-y-0.5",
+                  "relative aspect-[4/3] overflow-hidden rounded-[1.2rem] border text-start transition hover:-translate-y-0.5",
                   activeIndex === index
                     ? "border-[var(--market-brass)]"
                     : "border-[var(--market-line)] hover:border-[var(--market-brass)]/55",
@@ -108,7 +108,7 @@ export function ProductMediaGallery({ title, gallery }: ProductMediaGalleryProps
                   <span className="absolute inset-0 ring-1 ring-inset ring-[rgba(221,182,120,0.4)]" />
                 ) : null}
                 {isVideoUrl(item) ? (
-                  <span className="absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-[rgba(2,4,10,0.62)] text-white">
+                  <span className="absolute end-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-[rgba(2,4,10,0.62)] text-white">
                     <Play className="h-3.5 w-3.5" />
                   </span>
                 ) : null}
@@ -147,14 +147,14 @@ export function ProductMediaGallery({ title, gallery }: ProductMediaGalleryProps
                   <button
                     type="button"
                     onClick={() => setActiveIndex((current) => (current - 1 + media.length) % media.length)}
-                    className="absolute left-7 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(3,5,10,0.72)] text-[var(--market-paper-white)]"
+                    className="absolute start-7 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(3,5,10,0.72)] text-[var(--market-paper-white)]"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveIndex((current) => (current + 1) % media.length)}
-                    className="absolute right-7 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(3,5,10,0.72)] text-[var(--market-paper-white)]"
+                    className="absolute end-7 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(3,5,10,0.72)] text-[var(--market-paper-white)]"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>

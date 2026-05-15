@@ -143,7 +143,7 @@ export default async function StaffAccessPage({
         </section>
 
         <section className="relative overflow-hidden rounded-[38px] border border-black/10 bg-white/80 p-6 shadow-[0_25px_90px_rgba(0,0,0,0.10)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.05] sm:p-8">
-          <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[color:var(--accent)]/12 blur-3xl" />
+          <div className="pointer-events-none absolute -end-20 -top-20 h-56 w-56 rounded-full bg-[color:var(--accent)]/12 blur-3xl" />
 
           <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)] dark:border-white/10 dark:bg-white/[0.05]">

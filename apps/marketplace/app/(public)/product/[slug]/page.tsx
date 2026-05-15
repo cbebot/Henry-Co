@@ -89,7 +89,7 @@ export default async function ProductPage({
                   </p>
                 ) : null}
               </div>
-              <div className="space-y-1 text-right">
+              <div className="space-y-1 text-end">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                   Lead time
                 </p>
@@ -107,7 +107,7 @@ export default async function ProductPage({
               {fulfillmentRows.map(({ icon: Icon, label, value }, i) => (
                 <li
                   key={label}
-                  className={`${i % 2 === 1 ? "sm:pl-6" : ""} ${i >= 2 ? "sm:border-t sm:border-[var(--market-line)] sm:pt-5" : ""}`}
+                  className={`${i % 2 === 1 ? "sm:ps-6" : ""} ${i >= 2 ? "sm:border-t sm:border-[var(--market-line)] sm:pt-5" : ""}`}
                 >
                   <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-brass)]">
                     <Icon className="h-4 w-4" />
@@ -133,7 +133,7 @@ export default async function ProductPage({
                     <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                       {label}
                     </dt>
-                    <dd className="text-right text-sm font-semibold tracking-tight text-[var(--market-paper-white)]">
+                    <dd className="text-end text-sm font-semibold tracking-tight text-[var(--market-paper-white)]">
                       {value}
                     </dd>
                   </div>
@@ -147,7 +147,7 @@ export default async function ProductPage({
           </article>
 
           {/* Why this feels safer — editorial border-l ribbon */}
-          <article className="border-l-2 border-[var(--market-brass)]/55 pl-5">
+          <article className="border-s-2 border-[var(--market-brass)]/55 ps-5">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
               Why this listing feels safer
             </p>
@@ -219,7 +219,7 @@ export default async function ProductPage({
                     <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                       {label}
                     </dt>
-                    <dd className="ml-auto text-right text-sm font-semibold text-[var(--market-paper-white)]">
+                    <dd className="ms-auto text-end text-sm font-semibold text-[var(--market-paper-white)]">
                       {value}
                     </dd>
                   </div>

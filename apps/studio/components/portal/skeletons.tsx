@@ -40,7 +40,7 @@ export function PortalDashboardSkeleton() {
         </div>
       </div>
 
-      <div className="space-y-3 pl-7">
+      <div className="space-y-3 ps-7">
         {Array.from({ length: 3 }).map((_, index) => (
           <PortalSkeletonBlock key={index} className="h-20" />
         ))}

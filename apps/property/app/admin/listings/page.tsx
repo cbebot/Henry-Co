@@ -158,7 +158,7 @@ export default async function AdminListingsPage() {
                             {listing.managedByHenryCo ? <PropertyStatusBadge status="managed" /> : null}
                           </div>
                         </div>
-                        <div className="text-right text-xs text-[var(--property-ink-soft)]">
+                        <div className="text-end text-xs text-[var(--property-ink-soft)]">
                           <div>Updated {formatDate(listing.updatedAt)}</div>
                           <div className="mt-1">Owner: {listing.ownerName || listing.ownerEmail || "Unknown"}</div>
                         </div>

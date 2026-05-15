@@ -88,7 +88,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
             className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             priority
           />
-          <span className="pointer-events-none absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
+          <span className="pointer-events-none absolute end-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
             <Maximize2 className="h-3.5 w-3.5" />
             View all · {all.length}
           </span>
@@ -166,7 +166,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
                   type="button"
                   onClick={prev}
                   aria-label="Previous photo"
-                  className="absolute left-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 sm:left-6"
+                  className="absolute start-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 sm:start-6"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
@@ -174,7 +174,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
                   type="button"
                   onClick={next}
                   aria-label="Next photo"
-                  className="absolute right-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 sm:right-6"
+                  className="absolute end-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 sm:end-6"
                 >
                   <ChevronRight className="h-6 w-6" />
                 </button>

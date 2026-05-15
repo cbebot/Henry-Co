@@ -132,9 +132,9 @@ export default async function BookPage() {
               </ol>
             </div>
 
-            <div className="border-l-2 border-[var(--logistics-accent)]/55 pl-5">
+            <div className="border-s-2 border-[var(--logistics-accent)]/55 ps-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> Recipient privacy
+                <ShieldCheck className="me-1 inline h-3.5 w-3.5 align-[-2px]" /> Recipient privacy
               </p>
               <p className="mt-2 text-sm leading-7 text-[var(--logistics-muted)]">
                 Phone numbers are used to authorise tracking lookups and surface milestones — not

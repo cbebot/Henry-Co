@@ -166,7 +166,7 @@ export default async function StudioTemplateDetailPage({
             }}
           >
             <div
-              className="absolute -right-12 -top-12 h-48 w-48 rounded-full opacity-30 blur-3xl"
+              className="absolute -end-12 -top-12 h-48 w-48 rounded-full opacity-30 blur-3xl"
               style={{ background: template.preview.accent }}
             />
             <div className="absolute inset-x-6 bottom-6 space-y-2">
@@ -183,7 +183,7 @@ export default async function StudioTemplateDetailPage({
                 style={{ background: template.preview.accent, opacity: 0.35 }}
               />
             </div>
-            <div className="absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3 py-1.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/85 backdrop-blur">
+            <div className="absolute end-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3 py-1.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/85 backdrop-blur">
               <Clock className="h-3 w-3" />
               {template.readyInDays} days
             </div>

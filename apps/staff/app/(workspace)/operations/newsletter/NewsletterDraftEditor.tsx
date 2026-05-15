@@ -643,7 +643,7 @@ export default function NewsletterDraftEditor(props: Props) {
               other: "Voice guard: {count} warnings",
             })}
           </p>
-          <ul className="mt-1 list-disc pl-4">
+          <ul className="mt-1 list-disc ps-4">
             {state.voiceWarnings.map((w, idx) => (
               <li key={idx}>{w}</li>
             ))}

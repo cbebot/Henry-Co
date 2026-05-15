@@ -65,7 +65,7 @@ export default function TrustPage() {
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                   {item.label}
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                   {item.value}
                 </span>
               </li>
@@ -122,7 +122,7 @@ export default function TrustPage() {
           </ul>
         </div>
 
-        <div className="xl:pl-12">
+        <div className="xl:ps-12">
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">Policy surfaces</p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
             The standards we hold ourselves to.

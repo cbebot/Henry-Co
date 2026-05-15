@@ -216,7 +216,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
-            className="absolute -bottom-1.5 -right-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--acct-gold)] text-white shadow-lg transition-transform hover:scale-110"
+            className="absolute -bottom-1.5 -end-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--acct-gold)] text-white shadow-lg transition-transform hover:scale-110"
           >
             {uploading ? <HenryCoActivityIndicator size="sm" label={t("Uploading photo")} /> : <Camera size={14} />}
           </button>

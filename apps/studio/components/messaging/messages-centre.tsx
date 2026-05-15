@@ -71,7 +71,7 @@ export function MessagesCentre({
     <div className="flex h-full min-h-0 w-full overflow-hidden bg-[#050816]">
       {/* List column */}
       <div
-        className={`flex min-w-0 flex-col border-r border-white/[0.06] bg-[#070B14] sm:w-[320px] sm:shrink-0 ${
+        className={`flex min-w-0 flex-col border-e border-white/[0.06] bg-[#070B14] sm:w-[320px] sm:shrink-0 ${
           openOnMobile ? "hidden sm:flex" : "flex w-full"
         }`}
       >
@@ -81,7 +81,7 @@ export function MessagesCentre({
           </h1>
           <p className="mt-0.5 text-[11px] text-white/45">
             {sorted.length} project{sorted.length === 1 ? "" : "s"} ·
-            <span className="ml-1 text-[#d4b14e]">
+            <span className="ms-1 text-[#d4b14e]">
               {sorted.reduce((acc, s) => acc + s.unreadCount, 0)} unread
             </span>
           </p>
@@ -97,7 +97,7 @@ export function MessagesCentre({
                     setSelectedProjectId(summary.projectId);
                     setOpenOnMobile(true);
                   }}
-                  className={`flex w-full items-start gap-3 border-b border-white/[0.04] px-4 py-3 text-left transition-colors ${
+                  className={`flex w-full items-start gap-3 border-b border-white/[0.04] px-4 py-3 text-start transition-colors ${
                     isSelected
                       ? "bg-[#0F1524]"
                       : "hover:bg-white/[0.02]"

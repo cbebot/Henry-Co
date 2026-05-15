@@ -74,7 +74,7 @@ export default async function ManagedPropertyPage() {
           </ul>
         </div>
 
-        <div className="xl:pl-12">
+        <div className="xl:ps-12">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
             Recent managed records
           </p>

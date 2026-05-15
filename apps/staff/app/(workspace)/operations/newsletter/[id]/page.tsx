@@ -159,7 +159,7 @@ export default async function NewsletterCampaignDetailPage({
                           : "info"
                     }
                   />
-                  <span className="ml-auto text-[0.65rem] uppercase tracking-[0.14em] text-[var(--staff-muted)]">
+                  <span className="ms-auto text-[0.65rem] uppercase tracking-[0.14em] text-[var(--staff-muted)]">
                     {new Date(event.created_at).toLocaleString()}
                   </span>
                 </div>

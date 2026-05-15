@@ -1003,7 +1003,7 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
       // the launcher never overlaps a primary mobile-nav button. Desktop
       // (lg+): sidebar owns the chrome, dock returns to the OS safe-area
       // gutter at the bottom edge.
-      className="fixed bottom-20 right-0 z-[60] pointer-events-none flex flex-col items-end gap-3 lg:bottom-0"
+      className="fixed bottom-20 end-0 z-[60] pointer-events-none flex flex-col items-end gap-3 lg:bottom-0"
       style={{
         paddingBottom: "max(0.85rem, env(safe-area-inset-bottom, 0.85rem))",
         paddingRight: "max(1rem, env(safe-area-inset-right, 1rem))",

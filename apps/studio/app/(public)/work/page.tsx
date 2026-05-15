@@ -51,7 +51,7 @@ export default async function WorkPage() {
               <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-[var(--studio-ink-soft)]">
                 {item.challenge}
               </p>
-              <p className="mt-4 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm font-semibold leading-relaxed text-[var(--studio-ink)]">
+              <p className="mt-4 border-s-2 border-[var(--studio-signal)]/55 ps-3 text-sm font-semibold leading-relaxed text-[var(--studio-ink)]">
                 {item.impact}
               </p>
               {item.metrics.length ? (

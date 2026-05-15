@@ -74,7 +74,7 @@ export default async function AreaPage({
             ))}
           </ul>
         </div>
-        <div className="md:pl-12">
+        <div className="md:ps-12">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">Trust notes</p>
           <ul className="mt-5 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
             {data.area.trustNotes.map((item) => (

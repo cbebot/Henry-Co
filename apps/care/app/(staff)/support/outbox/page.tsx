@@ -132,7 +132,7 @@ export default async function SupportOutboxPage() {
                       {msg.subject}
                     </div>
                   </div>
-                  <div className="shrink-0 text-right">
+                  <div className="shrink-0 text-end">
                     <div className="text-xs text-zinc-500 dark:text-white/45">
                       {formatRelative(msg.createdAt)}
                     </div>

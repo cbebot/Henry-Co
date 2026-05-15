@@ -83,7 +83,7 @@ export default async function UnsubscribePage({
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
                   Email
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
                   {email}
                 </span>
               </li>
@@ -93,7 +93,7 @@ export default async function UnsubscribePage({
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
                   Phone
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
                   {phone}
                 </span>
               </li>
@@ -101,7 +101,7 @@ export default async function UnsubscribePage({
           </ul>
         ) : null}
 
-        <div className="mt-8 border-l-2 border-[color:var(--accent)]/55 pl-5">
+        <div className="mt-8 border-s-2 border-[color:var(--accent)]/55 ps-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
             What still sends
           </p>

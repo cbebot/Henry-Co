@@ -19,7 +19,7 @@ export function PropertyPublicAuthGate({
 }) {
   return (
     <div
-      className="border-l-2 border-[var(--property-accent-strong)]/55 pl-5 sm:pl-6"
+      className="border-s-2 border-[var(--property-accent-strong)]/55 ps-5 sm:ps-6"
       data-property-auth-gate="required"
     >
       <div className="flex items-center gap-2">

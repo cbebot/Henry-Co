@@ -84,7 +84,7 @@ export default function AboutHonestBlock({
             {figures.map((figure) => (
               <div
                 key={figure.label}
-                className="border-t border-white/10 pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:first:border-l-0 sm:first:pl-0"
+                className="border-t border-white/10 pt-5 sm:border-s sm:border-t-0 sm:ps-6 sm:first:border-s-0 sm:first:ps-0"
               >
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   {figure.label}
@@ -127,7 +127,7 @@ export default function AboutHonestBlock({
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   Reach the company
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                   /contact
                 </span>
               </li>
@@ -135,7 +135,7 @@ export default function AboutHonestBlock({
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   Browse divisions
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                   /#divisions
                 </span>
               </li>

@@ -102,7 +102,7 @@ export function BriefCopilotPanel({
     <section className="relative overflow-hidden rounded-[1.6rem] border border-[var(--studio-line-strong)] bg-[radial-gradient(120%_100%_at_0%_0%,rgba(151,244,243,0.08),transparent_55%),linear-gradient(180deg,rgba(8,19,28,0.84),rgba(8,16,22,0.96))] p-6 sm:p-8">
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-16 right-[-10%] hidden h-[20rem] w-[20rem] rounded-full opacity-50 blur-3xl md:block"
+        className="pointer-events-none absolute -top-16 end-[-10%] hidden h-[20rem] w-[20rem] rounded-full opacity-50 blur-3xl md:block"
         style={{
           background:
             "radial-gradient(circle, rgba(217,168,109,0.18) 0%, rgba(151,244,243,0.06) 40%, transparent 70%)",
@@ -164,7 +164,7 @@ export function BriefCopilotPanel({
                 key={example.label}
                 type="button"
                 onClick={() => loadExample(example.body)}
-                className="group flex flex-col items-start gap-2 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.45)]"
+                className="group flex flex-col items-start gap-2 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-start transition hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.45)]"
               >
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
                   Example
@@ -402,7 +402,7 @@ function NextActionsRail({
           <button
             type="button"
             onClick={scrollToBuilder}
-            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] px-3 py-2.5 text-left transition hover:bg-[rgba(151,244,243,0.14)]"
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] px-3 py-2.5 text-start transition hover:bg-[rgba(151,244,243,0.14)]"
           >
             <span
               aria-hidden
@@ -427,7 +427,7 @@ function NextActionsRail({
               event.preventDefault();
               scrollToBuilder();
             }}
-            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-3 py-2.5 text-left transition hover:border-[rgba(151,244,243,0.35)] hover:bg-[rgba(255,255,255,0.04)]"
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-3 py-2.5 text-start transition hover:border-[rgba(151,244,243,0.35)] hover:bg-[rgba(255,255,255,0.04)]"
           >
             <span
               aria-hidden
@@ -452,7 +452,7 @@ function NextActionsRail({
         <li>
           <a
             href={wantsTemplates ? "/pick" : "/checkout/template/portfolio-studio"}
-            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-3 py-2.5 text-left transition hover:border-[rgba(151,244,243,0.35)] hover:bg-[rgba(255,255,255,0.04)]"
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-3 py-2.5 text-start transition hover:border-[rgba(151,244,243,0.35)] hover:bg-[rgba(255,255,255,0.04)]"
           >
             <span
               aria-hidden

@@ -425,7 +425,7 @@ export function ProjectThread({
             <button
               type="button"
               onClick={() => scrollToBottom(true)}
-              className="sticky bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[#d4b14e]/40 bg-[#0F1524] px-3 py-1.5 text-[12px] font-medium text-[#d4b14e] shadow-[0_18px_48px_-18px_rgba(0,0,0,0.6)] motion-safe:animate-[studio-msg-pop-up_220ms_ease-out]"
+              className="sticky bottom-3 start-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[#d4b14e]/40 bg-[#0F1524] px-3 py-1.5 text-[12px] font-medium text-[#d4b14e] shadow-[0_18px_48px_-18px_rgba(0,0,0,0.6)] motion-safe:animate-[studio-msg-pop-up_220ms_ease-out]"
               aria-label="Jump to new message"
             >
               <ArrowDown className="h-3.5 w-3.5" aria-hidden />
@@ -514,7 +514,7 @@ function MobileContextStrip({ context }: { context: ProjectThreadContext }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 border-b border-white/[0.04] bg-[#070B14] px-3 py-2 text-left"
+        className="flex w-full items-center justify-between gap-3 border-b border-white/[0.04] bg-[#070B14] px-3 py-2 text-start"
         aria-expanded={open}
       >
         <div className="min-w-0 flex-1">

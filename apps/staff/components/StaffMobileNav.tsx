@@ -61,7 +61,7 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
           </div>
           <div>
             <span className="text-sm font-semibold">Henry & Co.</span>
-            <span className="ml-1.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--staff-gold)]">
+            <span className="ms-1.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--staff-gold)]">
               Staff
             </span>
           </div>
@@ -89,7 +89,7 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
             className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <div className="fixed inset-y-0 right-0 z-50 w-[300px] overflow-y-auto staff-sidebar-bg shadow-2xl staff-scrollbar">
+          <div className="fixed inset-y-0 end-0 z-50 w-[300px] overflow-y-auto staff-sidebar-bg shadow-2xl staff-scrollbar">
             <div className="flex items-center gap-3 border-b border-[var(--staff-line)] p-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--staff-gold-soft)] text-sm font-semibold text-[var(--staff-gold)]">
                 {initials(viewer.fullName)}
@@ -118,7 +118,7 @@ export default function StaffMobileNav({ viewer, sections }: StaffMobileNavProps
                         onClick={() => setOpen(false)}
                         className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
                           active
-                            ? "staff-nav-active rounded-l-none"
+                            ? "staff-nav-active rounded-s-none"
                             : "text-[var(--staff-muted)] hover:bg-[var(--staff-surface)]"
                         }`}
                       >

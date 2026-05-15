@@ -53,7 +53,7 @@ export default function BookingRailWorkspace({
           </div>
         </div>
 
-        <div className="max-h-[68rem] space-y-5 overflow-y-auto pr-1">
+        <div className="max-h-[68rem] space-y-5 overflow-y-auto pe-1">
           {totalVisible > 0 ? (
             groups.map((group) =>
               group.bookings.length > 0 ? (

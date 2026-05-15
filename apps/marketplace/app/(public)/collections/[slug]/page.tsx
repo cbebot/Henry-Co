@@ -50,7 +50,7 @@ export default async function CollectionPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Items in collection
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {data.products.length}
               </span>
             </li>
@@ -58,7 +58,7 @@ export default async function CollectionPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Edited by
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 Marketplace operations
               </span>
             </li>
@@ -66,7 +66,7 @@ export default async function CollectionPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Buyer protection
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 Escrowed checkout
               </span>
             </li>

@@ -73,7 +73,7 @@ export default async function StorePage({
               </li>
             ))}
           </ul>
-          <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-4">
+          <div className="mt-6 border-s-2 border-[var(--market-brass)]/55 ps-4">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
               Support
             </p>

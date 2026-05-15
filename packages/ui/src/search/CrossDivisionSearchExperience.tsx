@@ -465,7 +465,7 @@ export function CrossDivisionSearchExperience({
             <button
               type="submit"
               disabled={pending}
-              className="ml-1 inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-[var(--public-accent,#7a5a23)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--public-accent-strong,#5d4118)] disabled:cursor-wait disabled:opacity-70 dark:bg-[#d6a851] dark:text-zinc-950 dark:hover:bg-[#e3b966]"
+              className="ms-1 inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-[var(--public-accent,#7a5a23)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--public-accent-strong,#5d4118)] disabled:cursor-wait disabled:opacity-70 dark:bg-[#d6a851] dark:text-zinc-950 dark:hover:bg-[#e3b966]"
             >
               {pending ? "Searching" : "Search"}
               <ArrowUpRight className="h-4 w-4" />
@@ -488,7 +488,7 @@ export function CrossDivisionSearchExperience({
 
         {/* Auth-required hint — editorial left-rule, no amber tile */}
         {showProtectedHint ? (
-          <aside className="mt-12 border-l-2 border-[var(--public-accent,#7a5a23)]/55 pl-5 dark:border-[#d6a851]/55">
+          <aside className="mt-12 border-s-2 border-[var(--public-accent,#7a5a23)]/55 ps-5 dark:border-[#d6a851]/55">
             <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--public-foreground,#1c1612)]/65 dark:text-white/65">
               <Lock className="h-3.5 w-3.5" aria-hidden /> {protectedHintTitle}
             </p>
@@ -691,7 +691,7 @@ export function HenryCoSearchBreadcrumb({
       <span>{label}</span>
       <kbd
         aria-hidden
-        className="ml-0.5 rounded border border-[var(--public-foreground,#1c1612)]/15 bg-[var(--public-foreground,#1c1612)]/[0.03] px-1 py-0 font-mono text-[10px] tracking-tight text-[var(--public-foreground,#1c1612)]/55 dark:border-white/15 dark:bg-white/[0.05] dark:text-white/55"
+        className="ms-0.5 rounded border border-[var(--public-foreground,#1c1612)]/15 bg-[var(--public-foreground,#1c1612)]/[0.03] px-1 py-0 font-mono text-[10px] tracking-tight text-[var(--public-foreground,#1c1612)]/55 dark:border-white/15 dark:bg-white/[0.05] dark:text-white/55"
       >
         /
       </kbd>

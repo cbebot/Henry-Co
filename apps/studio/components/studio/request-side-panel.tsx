@@ -117,7 +117,7 @@ export function StudioRequestSidePanel({
               <Target className="h-3.5 w-3.5 text-[var(--studio-signal)]" />
               Team
             </dt>
-            <dd className="max-w-[58%] truncate text-right text-sm font-semibold text-[var(--studio-ink)]">
+            <dd className="max-w-[58%] truncate text-end text-sm font-semibold text-[var(--studio-ink)]">
               {recommendedTeamName}
             </dd>
           </div>
@@ -157,7 +157,7 @@ export function StudioRequestSidePanel({
         ) : null}
 
         {/* Next-step recommendation — one line, not a heading + body block. */}
-        <p className="mt-4 flex items-start gap-2 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-[13px] leading-6 text-[var(--studio-ink-soft)]">
+        <p className="mt-4 flex items-start gap-2 border-s-2 border-[var(--studio-signal)]/55 ps-3 text-[13px] leading-6 text-[var(--studio-ink-soft)]">
           <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--studio-signal)]" />
           <span className="min-w-0">{routeRecommendation(pathway, readinessScore)}</span>
         </p>

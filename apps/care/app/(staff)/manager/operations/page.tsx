@@ -267,12 +267,12 @@ export default async function ManagerOperationsPage({
         >
           <form className="grid gap-4">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
+              <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
               <input
                 name="q"
                 defaultValue={q}
                 placeholder="Search by customer, tracking code, phone, service..."
-                className="h-12 w-full rounded-2xl border border-black/10 bg-white pl-11 pr-4 text-sm font-medium text-zinc-900 outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
+                className="h-12 w-full rounded-2xl border border-black/10 bg-white ps-11 pe-4 text-sm font-medium text-zinc-900 outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
               />
             </div>
           </form>
@@ -287,7 +287,7 @@ export default async function ManagerOperationsPage({
                   <Link
                     key={booking.id}
                     href={`/manager/operations?booking=${encodeURIComponent(booking.tracking_code)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
-                    className={`rounded-3xl border p-5 text-left transition ${
+                    className={`rounded-3xl border p-5 text-start transition ${
                       selected
                         ? "border-[color:var(--accent)]/40 bg-[color:var(--accent)]/10"
                         : "border-black/10 bg-black/[0.03] dark:border-white/10 dark:bg-white/5"
@@ -769,7 +769,7 @@ export default async function ManagerOperationsPage({
                   key={booking.id}
                   className="relative rounded-3xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/5"
                 >
-                  <span className="absolute right-5 top-5 flex h-4 w-4">
+                  <span className="absolute end-5 top-5 flex h-4 w-4">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
                     <span className="relative inline-flex h-4 w-4 rounded-full bg-red-500" />
                   </span>

@@ -41,7 +41,7 @@ export default async function FinanceDashboardPage() {
                     {payment.projectId} · {payment.method.replaceAll("_", " ")}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <div className="text-2xl font-semibold text-[var(--studio-ink)]">
                     {formatCurrency(payment.amount, payment.currency)}
                   </div>

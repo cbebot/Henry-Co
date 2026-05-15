@@ -137,7 +137,7 @@ function Clause({ clause }: { clause: PolicyClause }) {
           <p key={index}>{paragraph}</p>
         ))}
         {clause.bullets && clause.bullets.length > 0 ? (
-          <ul className="mt-2 list-disc space-y-1.5 pl-5">
+          <ul className="mt-2 list-disc space-y-1.5 ps-5">
             {clause.bullets.map((bullet, index) => (
               <li key={index} className="leading-[1.7]">
                 {bullet}

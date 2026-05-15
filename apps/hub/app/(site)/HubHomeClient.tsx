@@ -671,7 +671,7 @@ export default function HubHomeClient({
                   ))}
                 </ul>
               ) : (
-                <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68">
+                <div className="border-s-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68">
                   {copy.directory.empty}
                 </div>
               )}
@@ -708,7 +708,7 @@ export default function HubHomeClient({
             </motion.dl>
 
             {hasServerError ? (
-              <p className="mt-6 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-white/72">
+              <p className="mt-6 border-s-2 border-amber-400/55 ps-4 text-sm leading-7 text-white/72">
                 {copy.standardCard.serverError}
               </p>
             ) : null}
@@ -768,18 +768,18 @@ export default function HubHomeClient({
 
               <div className="mt-7 space-y-5">
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/45" />
+                  <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/45" />
                   <input
                     ref={searchRef}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={copy.directory.searchPlaceholder}
-                    className="h-14 w-full rounded-2xl border border-white/12 bg-black/30 pl-11 pr-12 text-sm text-white outline-none placeholder:text-white/30 focus:border-[color:var(--accent)]"
+                    className="h-14 w-full rounded-2xl border border-white/12 bg-black/30 ps-11 pe-12 text-sm text-white outline-none placeholder:text-white/30 focus:border-[color:var(--accent)]"
                   />
                   {query ? (
                     <button
                       onClick={() => setQuery("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/65 hover:bg-white/10 hover:text-white"
+                      className="absolute end-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/65 hover:bg-white/10 hover:text-white"
                       aria-label={copy.directory.clearSearchAria}
                     >
                       <X className="h-4 w-4" />
@@ -942,7 +942,7 @@ export default function HubHomeClient({
                   />
                 ))
               ) : (
-                <div className="border-l-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68 sm:col-span-2">
+                <div className="border-s-2 border-[color:var(--accent)]/55 px-6 py-8 text-sm leading-7 text-white/68 sm:col-span-2">
                   {copy.directory.empty}
                 </div>
               )}
@@ -1037,7 +1037,7 @@ export default function HubHomeClient({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   {copy.access.cards[0]}
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                   {copy.access.cardValues[0]}
                 </dd>
               </div>
@@ -1046,7 +1046,7 @@ export default function HubHomeClient({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   {copy.access.cards[1]}
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                   {copy.access.cardValues[1]}
                 </dd>
               </div>
@@ -1055,7 +1055,7 @@ export default function HubHomeClient({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   {copy.access.cards[2]}
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                   {copy.access.cardValues[2]}
                 </dd>
               </div>
@@ -1679,7 +1679,7 @@ function DivisionCard({
             <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
               {copy.cards.divisionDestination}
             </dt>
-            <dd className="ml-auto truncate text-right font-mono text-[12px] tracking-tight text-white/82">
+            <dd className="ms-auto truncate text-end font-mono text-[12px] tracking-tight text-white/82">
               {host ?? copy.cards.notConfigured}
             </dd>
           </div>
@@ -1688,10 +1688,10 @@ function DivisionCard({
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
                 {copy.cards.lead}
               </dt>
-              <dd className="ml-auto truncate text-right text-sm font-semibold tracking-tight text-white">
+              <dd className="ms-auto truncate text-end text-sm font-semibold tracking-tight text-white">
                 {extra.lead.name}
                 {extra.lead.title ? (
-                  <span className="ml-1 font-normal text-white/55">· {extra.lead.title}</span>
+                  <span className="ms-1 font-normal text-white/55">· {extra.lead.title}</span>
                 ) : null}
               </dd>
             </div>
@@ -1964,7 +1964,7 @@ function DetailsModal({
           ) : null}
 
           {extra.lead?.name ? (
-            <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+            <div className="border-s-2 border-[color:var(--accent)]/55 ps-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
                 {copy.modal.leadEyebrow}
               </p>
@@ -1987,7 +1987,7 @@ function DetailsModal({
                   <li key={`${link.url}-${index}`}>
                     <button
                       onClick={() => safeOpen(link.url)}
-                      className="group flex w-full items-center justify-between gap-3 py-3 text-left transition hover:bg-white/[0.02]"
+                      className="group flex w-full items-center justify-between gap-3 py-3 text-start transition hover:bg-white/[0.02]"
                     >
                       <span className="text-sm font-semibold text-white">{link.label}</span>
                       <ExternalLink className="h-3.5 w-3.5 text-white/45 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />

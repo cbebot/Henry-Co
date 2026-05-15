@@ -68,7 +68,7 @@ export default async function ServiceDetailPage({
               <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
                 Starting from
               </dt>
-              <dd className="ml-auto text-right text-[1.45rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[1.65rem]">
+              <dd className="ms-auto text-end text-[1.45rem] font-semibold leading-tight tracking-tight text-[var(--studio-ink)] sm:text-[1.65rem]">
                 {formatCurrency(service.startingPrice)}
               </dd>
             </div>
@@ -76,7 +76,7 @@ export default async function ServiceDetailPage({
               <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
                 Delivery window
               </dt>
-              <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
+              <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
                 {service.deliveryWindow}
               </dd>
             </div>

@@ -235,7 +235,7 @@ function NotificationDrawer({
 
       <aside
         className={cn(
-          "fixed right-0 top-0 z-50 flex h-screen w-full max-w-[28rem] flex-col border-l border-white/10 bg-[#061022]/96 px-5 py-5 shadow-[0_32px_120px_rgba(0,0,0,0.42)] backdrop-blur-2xl transition md:px-6",
+          "fixed end-0 top-0 z-50 flex h-screen w-full max-w-[28rem] flex-col border-s border-white/10 bg-[#061022]/96 px-5 py-5 shadow-[0_32px_120px_rgba(0,0,0,0.42)] backdrop-blur-2xl transition md:px-6",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -291,7 +291,7 @@ function NotificationDrawer({
           </Link>
         </div>
 
-        <div className="mt-6 flex-1 space-y-3 overflow-y-auto pr-1">
+        <div className="mt-6 flex-1 space-y-3 overflow-y-auto pe-1">
           {center.items.length > 0 ? (
             center.items.map((item) => {
               const tone = toneClasses(item.tone);
@@ -403,8 +403,8 @@ export default function StaffShell({
   return (
     <div className="care-shell-bg min-h-screen text-white">
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute left-[-12rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[color:var(--accent)]/14 blur-3xl" />
-        <div className="absolute bottom-[-12rem] right-[-8rem] h-[30rem] w-[30rem] rounded-full bg-[color:var(--accent-secondary)]/10 blur-3xl" />
+        <div className="absolute start-[-12rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[color:var(--accent)]/14 blur-3xl" />
+        <div className="absolute bottom-[-12rem] end-[-8rem] h-[30rem] w-[30rem] rounded-full bg-[color:var(--accent-secondary)]/10 blur-3xl" />
       </div>
 
       <NotificationDrawer
@@ -424,7 +424,7 @@ export default function StaffShell({
 
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-50 flex w-[19rem] flex-col border-r border-white/10 bg-[#051021]/96 px-4 py-4 backdrop-blur-2xl transition xl:sticky xl:top-0 xl:z-auto xl:h-screen",
+            "fixed inset-y-0 start-0 z-50 flex w-[19rem] flex-col border-e border-white/10 bg-[#051021]/96 px-4 py-4 backdrop-blur-2xl transition xl:sticky xl:top-0 xl:z-auto xl:h-screen",
             navOpen ? "translate-x-0" : "-translate-x-full xl:translate-x-0",
             railCollapsed ? "xl:w-[6.5rem]" : "xl:w-[20rem]"
           )}
@@ -477,7 +477,7 @@ export default function StaffShell({
             ) : null}
           </div>
 
-          <div className="mt-5 flex-1 space-y-5 overflow-y-auto pr-1">
+          <div className="mt-5 flex-1 space-y-5 overflow-y-auto pe-1">
             {sections.map((section) => (
               <div key={section.label} className="space-y-2">
                 {!railCollapsed ? (

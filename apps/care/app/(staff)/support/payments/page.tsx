@@ -234,7 +234,7 @@ export default async function SupportPaymentsPage({
               </div>
             </div>
 
-            <div className="max-h-[66rem] space-y-3 overflow-y-auto pr-1">
+            <div className="max-h-[66rem] space-y-3 overflow-y-auto pe-1">
               {filtered.length > 0 ? (
                 filtered.map((item) => {
                   const active = selectedPayment?.requestId === item.requestId;

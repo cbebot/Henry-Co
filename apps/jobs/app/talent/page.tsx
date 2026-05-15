@@ -79,7 +79,7 @@ export default async function TalentPage() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     {label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
                     {value}
                   </span>
                 </li>
@@ -97,7 +97,7 @@ export default async function TalentPage() {
             {traits.map((item, i) => (
               <li
                 key={item.id}
-                className={`relative ${i % 2 === 1 ? "lg:pl-12" : ""}`}
+                className={`relative ${i % 2 === 1 ? "lg:ps-12" : ""}`}
               >
                 <Sparkles className="h-4 w-4 text-[var(--jobs-accent)]" aria-hidden />
                 <h2 className="mt-3 text-lg font-semibold tracking-tight text-zinc-950 dark:text-white">

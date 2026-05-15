@@ -145,9 +145,9 @@ export default function SignupForm() {
           </div>
         </div>
 
-        <ol className="mt-6 space-y-4 border-l border-[var(--acct-line)] pl-5 text-sm leading-relaxed text-[var(--acct-ink)]">
+        <ol className="mt-6 space-y-4 border-s border-[var(--acct-line)] ps-5 text-sm leading-relaxed text-[var(--acct-ink)]">
           <li className="flex gap-3">
-            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">1</span>
+            <span className="-ms-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">1</span>
             <span>
               <strong className="font-semibold">Check your inbox.</strong>{" "}
               <span className="text-[var(--acct-muted)]">
@@ -156,7 +156,7 @@ export default function SignupForm() {
             </span>
           </li>
           <li className="flex gap-3">
-            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">2</span>
+            <span className="-ms-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">2</span>
             <span>
               <strong className="font-semibold">Tap &ldquo;Verify my HenryCo account.&rdquo;</strong>{" "}
               <span className="text-[var(--acct-muted)]">
@@ -165,7 +165,7 @@ export default function SignupForm() {
             </span>
           </li>
           <li className="flex gap-3">
-            <span className="-ml-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">3</span>
+            <span className="-ms-[27px] mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--acct-gold-soft)] text-[10px] font-semibold text-[var(--acct-gold)]">3</span>
             <span>
               <strong className="font-semibold">Continue to your HenryCo workspace.</strong>{" "}
               <span className="text-[var(--acct-muted)]">
@@ -258,7 +258,7 @@ export default function SignupForm() {
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="acct-input pr-10"
+              className="acct-input pe-10"
               placeholder={surfaceCopy.accountForms.minPasswordPlaceholder}
               required
               minLength={8}
@@ -267,7 +267,7 @@ export default function SignupForm() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
+              className="absolute end-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
@@ -282,7 +282,7 @@ export default function SignupForm() {
               name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="acct-input pr-10"
+              className="acct-input pe-10"
               placeholder={surfaceCopy.accountForms.confirmPasswordPlaceholder}
               required
               minLength={8}
@@ -291,7 +291,7 @@ export default function SignupForm() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
+              className="absolute end-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
               aria-label={showPassword ? surfaceCopy.accountForms.hidePasswords : surfaceCopy.accountForms.showPasswords}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -317,7 +317,7 @@ export default function SignupForm() {
           <div>
             <label className="mb-1.5 block text-sm font-medium">{surfaceCopy.accountForms.phoneLabel}</label>
             <div className="flex gap-2">
-              <span className="flex items-center rounded-l-[var(--acct-radius)] border border-r-0 border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 text-sm text-[var(--acct-muted)]">
+              <span className="flex items-center rounded-s-[var(--acct-radius)] border border-e-0 border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 text-sm text-[var(--acct-muted)]">
                 {selectedCountry?.dial}
               </span>
               <input
@@ -327,7 +327,7 @@ export default function SignupForm() {
                 autoComplete="tel-national"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-                className="acct-input rounded-l-none"
+                className="acct-input rounded-s-none"
                 placeholder={surfaceCopy.accountForms.phonePlaceholder}
               />
             </div>

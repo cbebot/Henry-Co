@@ -288,7 +288,7 @@ export default async function AccountOverviewPage() {
             ))}
           </ul>
         ) : (
-          <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-5">
+          <div className="mt-6 border-s-2 border-[var(--market-brass)]/55 ps-5">
             <p className="text-sm leading-7 text-[var(--market-muted)]">
               You haven&rsquo;t placed an order yet. Browse the marketplace to find verified
               stores and curated drops.

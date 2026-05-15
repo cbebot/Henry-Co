@@ -232,7 +232,7 @@ export default async function BookPage({
                 )}
               </p>
             </div>
-            <div className="md:pl-10">
+            <div className="md:ps-10">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
                 {t("On-site service")}
               </p>
@@ -247,9 +247,9 @@ export default async function BookPage({
             </div>
           </div>
 
-          <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+          <div className="border-s-2 border-[color:var(--accent)]/55 ps-5">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
-              <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+              <ShieldCheck className="me-1 inline h-3.5 w-3.5 align-[-2px]" />
               {t("Booking truth")}
             </p>
             <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">

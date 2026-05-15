@@ -48,7 +48,7 @@ export default async function CareAdminPage() {
   return (
     <div className="space-y-8">
       <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-8">
-        <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
+        <div className="absolute -end-20 -top-20 h-56 w-56 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
         <div className="relative">
           <div className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#F2D77A]">
             <ShieldCheck className="h-4 w-4" />

@@ -601,7 +601,7 @@ export default function NotificationPreferencesForm({
                   <button
                     type="button"
                     onClick={() => updateTimezone(null)}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-[var(--acct-ink)] hover:bg-[var(--acct-surface)]"
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-start text-sm text-[var(--acct-ink)] hover:bg-[var(--acct-surface)]"
                     role="option"
                     aria-selected={prefs.quiet_hours_timezone === null}
                   >
@@ -614,7 +614,7 @@ export default function NotificationPreferencesForm({
                     <button
                       type="button"
                       onClick={() => updateTimezone(tz)}
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-[var(--acct-ink)] hover:bg-[var(--acct-surface)]"
+                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-start text-sm text-[var(--acct-ink)] hover:bg-[var(--acct-surface)]"
                       role="option"
                       aria-selected={prefs.quiet_hours_timezone === tz}
                     >
@@ -741,7 +741,7 @@ export default function NotificationPreferencesForm({
                 type="button"
                 onClick={() => toggleDivisionMute(d.key, !muted)}
                 aria-pressed={muted}
-                className={`flex items-start justify-between gap-3 rounded-xl border p-3 text-left transition-colors ${
+                className={`flex items-start justify-between gap-3 rounded-xl border p-3 text-start transition-colors ${
                   muted
                     ? "border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] opacity-70"
                     : "border-[var(--acct-line)] bg-[var(--acct-surface)] hover:border-[var(--acct-gold)]"
@@ -787,7 +787,7 @@ export default function NotificationPreferencesForm({
             <BellOff size={14} className="text-[var(--acct-muted)]" aria-hidden />
             <span>
               {t("Show event-type mute list")}
-              <span className="ml-2 rounded-full bg-[var(--acct-bg-elevated)] px-2 py-0.5 text-[0.7rem] font-semibold text-[var(--acct-muted)]">
+              <span className="ms-2 rounded-full bg-[var(--acct-bg-elevated)] px-2 py-0.5 text-[0.7rem] font-semibold text-[var(--acct-muted)]">
                 {prefs.muted_event_types.length}
               </span>
             </span>
@@ -819,7 +819,7 @@ export default function NotificationPreferencesForm({
                         type="button"
                         onClick={() => toggleEventMute(evt.value, !muted)}
                         aria-pressed={muted}
-                        className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-[var(--acct-surface)]"
+                        className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-start text-sm hover:bg-[var(--acct-surface)]"
                       >
                         <span className="flex flex-col">
                           <span className="font-medium text-[var(--acct-ink)]">{t(evt.label)}</span>
@@ -921,12 +921,12 @@ function Toggle({
         }`}
       >
         <span
-          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+          className={`absolute start-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
             checked ? "translate-x-5" : ""
           }`}
         />
         {isPending ? (
-          <span className="absolute -right-2 -top-1 flex h-3 w-3 items-center justify-center">
+          <span className="absolute -end-2 -top-1 flex h-3 w-3 items-center justify-center">
             <Loader2 size={10} className="animate-spin text-[var(--acct-muted)]" aria-hidden />
           </span>
         ) : null}

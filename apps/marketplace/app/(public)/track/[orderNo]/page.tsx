@@ -56,7 +56,7 @@ export default async function TrackOrderPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Order value
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {formatCurrency(order.grandTotal)}
               </span>
             </li>
@@ -65,7 +65,7 @@ export default async function TrackOrderPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Payment
               </span>
-              <span className="ml-auto text-right text-sm font-semibold capitalize tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold capitalize tracking-tight text-[var(--market-ink)]">
                 {order.paymentStatus}
               </span>
             </li>
@@ -74,7 +74,7 @@ export default async function TrackOrderPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Payout control
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {payoutFrozen ? "Frozen" : "Escrow active"}
               </span>
             </li>
@@ -164,7 +164,7 @@ export default async function TrackOrderPage({
           </ol>
         </div>
 
-        <div className="lg:pl-12">
+        <div className="lg:ps-12">
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
             Vendor segments
           </p>
@@ -213,7 +213,7 @@ export default async function TrackOrderPage({
       </section>
 
       {showCompletionConfirm ? (
-        <section className="border-l-2 border-[var(--market-brass)]/55 pl-5">
+        <section className="border-s-2 border-[var(--market-brass)]/55 ps-5">
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.22em]">
             Completion confirmation
           </p>

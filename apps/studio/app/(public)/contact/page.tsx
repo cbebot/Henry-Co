@@ -42,7 +42,7 @@ export default async function ContactPage() {
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
               Email
             </dt>
-            <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
+            <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
               <a
                 href={`mailto:${supportEmail}`}
                 className="hover:text-[var(--studio-signal)] hover:underline underline-offset-4"
@@ -56,7 +56,7 @@ export default async function ContactPage() {
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
               Phone / WhatsApp
             </dt>
-            <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
+            <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
               <a
                 href={`tel:${String(supportPhone).replace(/\s+/g, "")}`}
                 className="hover:text-[var(--studio-signal)] hover:underline underline-offset-4"

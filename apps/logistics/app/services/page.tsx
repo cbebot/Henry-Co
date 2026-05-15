@@ -47,7 +47,7 @@ export default async function ServicesPage() {
                   {s.highlights.map((h) => (
                     <li
                       key={h}
-                      className="flex items-baseline gap-2 border-l border-[var(--logistics-line)] pl-3 text-xs leading-relaxed text-[var(--logistics-muted)]"
+                      className="flex items-baseline gap-2 border-s border-[var(--logistics-line)] ps-3 text-xs leading-relaxed text-[var(--logistics-muted)]"
                     >
                       <span className="text-[var(--logistics-accent-soft)]">·</span>
                       <span>{h}</span>

@@ -14,7 +14,7 @@ export default function ImpersonationBanner({
   const [pending, startTransition] = useTransition();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-amber-400/30 bg-amber-500/95 px-4 py-3 text-center text-sm font-semibold text-amber-950 backdrop-blur-md">
+    <div className="fixed bottom-0 start-0 end-0 z-50 border-t border-amber-400/30 bg-amber-500/95 px-4 py-3 text-center text-sm font-semibold text-amber-950 backdrop-blur-md">
       <div className="mx-auto flex max-w-4xl items-center justify-center gap-3">
         <Shield className="h-4 w-4" />
         <span>
@@ -24,7 +24,7 @@ export default function ImpersonationBanner({
         <button
           onClick={() => startTransition(() => endImpersonationAction())}
           disabled={pending}
-          className="ml-4 inline-flex items-center gap-1.5 rounded-full bg-amber-950/20 px-4 py-1.5 text-xs font-semibold text-amber-950 transition hover:bg-amber-950/30"
+          className="ms-4 inline-flex items-center gap-1.5 rounded-full bg-amber-950/20 px-4 py-1.5 text-xs font-semibold text-amber-950 transition hover:bg-amber-950/30"
         >
           <X className="h-3 w-3" />
           {pending ? "Restoring..." : "Exit impersonation"}

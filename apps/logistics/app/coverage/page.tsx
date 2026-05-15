@@ -79,7 +79,7 @@ export default async function CoveragePage() {
                       <p className="text-sm leading-7 text-[var(--logistics-muted)]">
                         {zone.summary}
                       </p>
-                      <div className="text-right text-sm">
+                      <div className="text-end text-sm">
                         <p className="font-semibold text-white">{naira.format(zone.baseFee)}</p>
                         <p className="mt-1 text-xs text-[var(--logistics-muted)]">
                           {zone.etaHoursMin}–{zone.etaHoursMax}h ETA

@@ -187,7 +187,7 @@ export default async function OwnerImpersonatePage() {
         ) : (
           <div className="care-card rounded-[2rem] overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-start text-sm">
                 <thead>
                   <tr className="border-b border-zinc-200/60 dark:border-zinc-700/60">
                     <th className="px-6 py-3 font-medium text-zinc-500">When</th>

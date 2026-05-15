@@ -127,19 +127,19 @@ export default async function HomePage() {
           )}
           aside={
             <ul className="space-y-5">
-              <li className="border-l border-white/15 pl-4">
+              <li className="border-s border-white/15 ps-4">
                 <p className="text-sm font-semibold text-white">{t("Teams & assignments")}</p>
                 <p className="mt-1 text-sm leading-relaxed text-white/75">
                   {t("Some courses are assigned inside HenryCo. Team programs appear in your account alongside anything you chose yourself.")}
                 </p>
               </li>
-              <li className="border-l border-white/15 pl-4">
+              <li className="border-s border-white/15 ps-4">
                 <p className="text-sm font-semibold text-white">{t("What “done” means")}</p>
                 <p className="mt-1 text-sm leading-relaxed text-white/75">
                   {t("Completion follows each course’s rules — usually all lessons, then a passing quiz where applicable. Status shows plainly in the learning room.")}
                 </p>
               </li>
-              <li className="border-l border-white/15 pl-4">
+              <li className="border-s border-white/15 ps-4">
                 <p className="text-sm font-semibold text-white">{t("Verification anyone can check")}</p>
                 <p className="mt-1 text-sm leading-relaxed text-white/75">
                   {t("Eligible courses issue a certificate with a code anyone can verify online — useful for employers, partners, or your own records.")}

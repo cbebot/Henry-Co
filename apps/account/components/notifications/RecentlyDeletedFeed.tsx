@@ -134,7 +134,7 @@ function RecentlyDeletedRow({
             >
               {sourceLabel}
             </span>
-            <span className="ml-auto text-[0.7rem] font-medium text-[var(--acct-muted)]">
+            <span className="ms-auto text-[0.7rem] font-medium text-[var(--acct-muted)]">
               {deletedAt
                 ? formatSurfaceTemplate(t("Deleted {when}"), {
                     when: timeAgoLocalized(deletedAt, locale),
@@ -178,7 +178,7 @@ function RecentlyDeletedRow({
               <p className="text-xs font-semibold text-[var(--acct-red)]">
                 {t("Permanently delete this notification? This cannot be undone.")}
               </p>
-              <div className="ml-auto flex gap-2">
+              <div className="ms-auto flex gap-2">
                 <button
                   type="button"
                   onClick={() => onCancelPurge()}

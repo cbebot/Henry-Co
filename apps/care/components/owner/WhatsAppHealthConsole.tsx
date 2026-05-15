@@ -461,7 +461,7 @@ export default function WhatsAppHealthConsole({
                     </div>
                   </div>
 
-                  <div className="text-right text-xs text-zinc-500 dark:text-white/45">
+                  <div className="text-end text-xs text-zinc-500 dark:text-white/45">
                     <div>{formatDateTime(item.statusUpdatedAt || item.sendTime)}</div>
                     <div className="mt-1">
                       {item.receiptsObserved > 0

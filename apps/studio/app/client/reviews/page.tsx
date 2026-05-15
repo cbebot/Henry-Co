@@ -50,7 +50,7 @@ export default async function ClientReviewsPage() {
             className="portal-card relative flex flex-col gap-4 px-5 py-5"
           >
             <Quote
-              className="absolute right-4 top-4 h-5 w-5 text-[var(--studio-line-strong)]"
+              className="absolute end-4 top-4 h-5 w-5 text-[var(--studio-line-strong)]"
               aria-hidden
             />
             <div className="flex items-center gap-1 text-[var(--studio-signal)]">
@@ -63,7 +63,7 @@ export default async function ClientReviewsPage() {
                   aria-hidden
                 />
               ))}
-              <span className="ml-1.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+              <span className="ms-1.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
                 {review.rating}/5
               </span>
             </div>

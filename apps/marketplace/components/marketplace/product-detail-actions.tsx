@@ -103,7 +103,7 @@ export function ProductDetailActions({
             Compare more
           </Link>
         </div>
-        <p className="border-l-2 border-[var(--market-brass)]/55 pl-4 text-sm leading-7 text-[var(--market-muted)]">
+        <p className="border-s-2 border-[var(--market-brass)]/55 ps-4 text-sm leading-7 text-[var(--market-muted)]">
           Quick-add updates the mini-cart instantly. Saved items, follows, notifications, and future payment events stay attached to the same HenryCo account identity.
         </p>
       </div>

@@ -113,7 +113,7 @@ export default async function CourseDetailPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                   {t("Average rating")}
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                   {averageRating || t("New")}
                 </dd>
               </div>
@@ -122,7 +122,7 @@ export default async function CourseDetailPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                   {t("Modules")}
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                   {modules.length}
                 </dd>
               </div>
@@ -130,7 +130,7 @@ export default async function CourseDetailPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                   {t("Duration")}
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                   {course.durationText}
                 </dd>
               </div>
@@ -138,7 +138,7 @@ export default async function CourseDetailPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                   {t("Difficulty")}
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                   {t(humanizeLabel(course.difficulty))}
                 </dd>
               </div>
@@ -146,7 +146,7 @@ export default async function CourseDetailPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                   {t("Pass score")}
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                   {tf("{score}%", { score: course.passingScore })}
                 </dd>
               </div>
@@ -200,7 +200,7 @@ export default async function CourseDetailPage({
               ) : null}
             </div>
             {enrollment?.status === "awaiting_payment" ? (
-              <p className="mt-4 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-amber-200">
+              <p className="mt-4 border-s-2 border-amber-400/55 ps-4 text-sm leading-7 text-amber-200">
                 {t(
                   "We're confirming your payment. Your seat is held—this page will unlock fully as soon as your HenryCo account shows a completed payment.",
                 )}
@@ -312,7 +312,7 @@ export default async function CourseDetailPage({
                           />
                         </div>
                         {!locked ? (
-                          <div className="mt-4 max-w-3xl border-l border-[var(--learn-line)] pl-4">
+                          <div className="mt-4 max-w-3xl border-s border-[var(--learn-line)] ps-4">
                             <LearnMarkdown value={lesson.bodyMarkdown} />
                           </div>
                         ) : null}
@@ -325,7 +325,7 @@ export default async function CourseDetailPage({
           </div>
 
           {quiz ? (
-            <div className="mt-12 border-l-2 border-[var(--learn-copper)]/55 pl-5">
+            <div className="mt-12 border-s-2 border-[var(--learn-copper)]/55 ps-5">
               <div className="flex items-center gap-2">
                 <Layers3 className="h-4 w-4 text-[var(--learn-copper)]" />
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-copper)]">
@@ -364,7 +364,7 @@ export default async function CourseDetailPage({
               <p className="mt-4 text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {instructor.bio}
               </p>
-              <p className="mt-5 border-l-2 border-[var(--learn-copper)]/55 pl-4 text-sm italic leading-7 text-[var(--learn-ink)]">
+              <p className="mt-5 border-s-2 border-[var(--learn-copper)]/55 ps-4 text-sm italic leading-7 text-[var(--learn-ink)]">
                 &ldquo;{instructor.spotlightQuote}&rdquo;
               </p>
             </div>

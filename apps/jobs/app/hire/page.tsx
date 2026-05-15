@@ -116,7 +116,7 @@ export default async function HirePage() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     {label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
                     {value}
                   </span>
                 </li>
@@ -166,7 +166,7 @@ export default async function HirePage() {
               unlock once you are verified.
             </p>
           </div>
-          <div className="lg:pl-12">
+          <div className="lg:ps-12">
             <p className="jobs-kicker">After you submit a post</p>
             <h2 className="mt-3 jobs-heading max-w-xl text-balance">
               Moderation explains itself, then gets out of the way.

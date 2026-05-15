@@ -52,11 +52,11 @@ function OwnerNavLink({
       <div className="flex items-center">
         <Link
           href={item.href}
-          className={`group flex flex-1 items-center gap-3 rounded-r-xl px-4 py-2.5 text-sm transition-all ${
+          className={`group flex flex-1 items-center gap-3 rounded-e-xl px-4 py-2.5 text-sm transition-all ${
             isParentActive && !hasChildren
               ? "owner-nav-active"
               : isParentActive
-                ? "text-[var(--owner-accent)] font-semibold bg-[var(--owner-accent-soft)] border-l-3 border-[var(--owner-accent)]"
+                ? "text-[var(--owner-accent)] font-semibold bg-[var(--owner-accent-soft)] border-s-3 border-[var(--owner-accent)]"
                 : "text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
           }`}
         >
@@ -66,7 +66,7 @@ function OwnerNavLink({
         {hasChildren && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="mr-2 rounded-lg p-1.5 text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] transition-colors"
+            className="me-2 rounded-lg p-1.5 text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] transition-colors"
           >
             {expanded ? (
               <ChevronDown size={14} />
@@ -78,7 +78,7 @@ function OwnerNavLink({
       </div>
 
       {hasChildren && expanded && (
-        <div className="ml-8 mt-0.5 space-y-0.5 border-l border-[var(--acct-line)] pl-3">
+        <div className="ms-8 mt-0.5 space-y-0.5 border-s border-[var(--acct-line)] ps-3">
           {item.children!.map((child) => {
             const childActive = pathname === child.href;
             const ChildIcon = child.icon;
@@ -137,7 +137,7 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
 
   return (
     <aside
-      className="hidden lg:flex lg:flex-col lg:w-[var(--owner-sidebar-width)] lg:fixed lg:inset-y-0 lg:left-0 lg:border-r lg:border-[var(--acct-line)] owner-sidebar-bg"
+      className="hidden lg:flex lg:flex-col lg:w-[var(--owner-sidebar-width)] lg:fixed lg:inset-y-0 lg:start-0 lg:border-e lg:border-[var(--acct-line)] owner-sidebar-bg"
       data-owner-rail-source={ownerRailEntries ? "registry" : "legacy-nav"}
       data-owner-rail-slugs={ownerRailEntries?.map((entry) => entry.slug).join(",") ?? ""}
     >

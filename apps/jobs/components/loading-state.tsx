@@ -40,7 +40,7 @@ export function JobsPageLoading({
             className="text-[var(--jobs-accent)] dark:text-[var(--jobs-accent)]"
             label="Loading"
           />
-          <div className="min-w-0 flex-1 text-center sm:text-left">
+          <div className="min-w-0 flex-1 text-center sm:text-start">
             <p className="jobs-kicker">{kicker}</p>
             <h1 className="mt-4 jobs-heading max-w-3xl">{title}</h1>
             <p className="mt-4 max-w-3xl text-sm leading-8 text-[var(--jobs-muted)]">{body}</p>

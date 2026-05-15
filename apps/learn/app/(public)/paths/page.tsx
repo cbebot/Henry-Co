@@ -61,7 +61,7 @@ export default async function PathsPage() {
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                   {item.label}
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                   {item.value}
                 </span>
               </li>

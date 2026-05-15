@@ -115,7 +115,7 @@ export default async function HomePage() {
               accent: "text-[var(--jobs-brass)]",
             },
           ].map(({ icon: Icon, title, body, accent }, i) => (
-            <li key={title} className={`${i > 0 ? "lg:pl-8" : ""}`}>
+            <li key={title} className={`${i > 0 ? "lg:ps-8" : ""}`}>
               <Icon className={`h-5 w-5 ${accent}`} aria-hidden />
               <h3 className="mt-4 text-base font-semibold tracking-tight">{title}</h3>
               <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">{body}</p>
@@ -135,7 +135,7 @@ export default async function HomePage() {
             href="/hire"
             className="text-sm font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
           >
-            How hiring works <ArrowRight className="ml-1 inline-block h-4 w-4" />
+            How hiring works <ArrowRight className="ms-1 inline-block h-4 w-4" />
           </Link>
         </div>
         <ol className="grid gap-8 md:grid-cols-3">
@@ -162,7 +162,7 @@ export default async function HomePage() {
             <li
               key={step}
               className={`border-t border-black/10 pt-6 dark:border-white/10 ${
-                i > 0 ? "md:border-l md:border-t-0 md:pl-6 md:pt-0" : ""
+                i > 0 ? "md:border-s md:border-t-0 md:ps-6 md:pt-0" : ""
               }`}
             >
               <div className="flex items-center gap-3">
@@ -189,7 +189,7 @@ export default async function HomePage() {
             href="/jobs"
             className="text-sm font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
           >
-            {copy.home.featuredRolesLink} <ArrowRight className="ml-1 inline-block h-4 w-4" />
+            {copy.home.featuredRolesLink} <ArrowRight className="ms-1 inline-block h-4 w-4" />
           </Link>
         </div>
         <div className="grid gap-5 lg:grid-cols-3">

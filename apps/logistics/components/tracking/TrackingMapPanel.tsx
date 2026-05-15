@@ -178,7 +178,7 @@ export default function TrackingMapPanel({
           </span>
           <span className="font-semibold text-white">
             {promiseWindow[0]}–{promiseWindow[1]}h window
-            <span className="ml-2 text-[12px] font-normal text-[var(--logistics-muted)]">
+            <span className="ms-2 text-[12px] font-normal text-[var(--logistics-muted)]">
               {shipment?.pricingBreakdown.promiseConfidence ?? 0}% confidence
             </span>
           </span>
@@ -226,7 +226,7 @@ function RouteRow({
           </div>
         ) : null}
       </div>
-      <div className="flex-shrink-0 text-right">
+      <div className="flex-shrink-0 text-end">
         <div className="text-[10.5px] font-medium tabular-nums text-[var(--logistics-muted)]">
           {status}
         </div>

@@ -64,9 +64,9 @@ export default async function PricingPage() {
               </p>
             </div>
             {settings.pricing_note ? (
-              <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+              <div className="border-s-2 border-[color:var(--accent)]/55 ps-5">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
-                  <BadgeCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> Pricing note
+                  <BadgeCheck className="me-1 inline h-3.5 w-3.5 align-[-2px]" /> Pricing note
                 </p>
                 <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
                   {settings.pricing_note}
@@ -79,7 +79,7 @@ export default async function PricingPage() {
         <section>
           <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-black/10 dark:xl:divide-white/10">
             <PackageList title="Home cleaning packages" items={homePackages} layout="home" />
-            <div className="xl:pl-12">
+            <div className="xl:ps-12">
               <PackageList title="Office cleaning packages" items={officePackages} layout="office" />
             </div>
           </div>
@@ -96,7 +96,7 @@ export default async function PricingPage() {
                 amount: item.amount,
               }))}
             />
-            <div className="xl:pl-12">
+            <div className="xl:ps-12">
               <ModifierList
                 title="Quote modifiers"
                 items={catalog.priceRules
@@ -146,7 +146,7 @@ export default async function PricingPage() {
                         </p>
                       ) : null}
                     </div>
-                    <div className="text-left sm:text-right">
+                    <div className="text-start sm:text-end">
                       <span className="text-2xl font-semibold tracking-[-0.02em] text-[color:var(--accent)]">
                         {formatMoney(item.price)}
                       </span>
@@ -227,7 +227,7 @@ function PackageList({
                 {item.summary}
               </p>
             </div>
-            <div className="text-left sm:text-right">
+            <div className="text-start sm:text-end">
               <span className="text-2xl font-semibold tracking-[-0.02em] text-[color:var(--accent)]">
                 {formatMoney(item.base_price)}
               </span>
@@ -273,7 +273,7 @@ function ModifierList({
                 {item.description}
               </p>
             </div>
-            <span className="text-left text-lg font-semibold tracking-[-0.02em] text-[color:var(--accent)] sm:text-right">
+            <span className="text-start text-lg font-semibold tracking-[-0.02em] text-[color:var(--accent)] sm:text-end">
               {formatMoney(item.amount)}
             </span>
           </li>

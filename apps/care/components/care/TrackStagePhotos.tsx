@@ -111,7 +111,7 @@ export default function TrackStagePhotos({ locale, photos }: TrackStagePhotosPro
             <button
               type="button"
               onClick={() => setActiveId(photo.id)}
-              className="group block w-full text-left"
+              className="group block w-full text-start"
               aria-label={`${t("Open photo")} — ${t(STAGE_LABEL[photo.stage])}`}
             >
               <div className="relative aspect-square bg-black/5 dark:bg-white/5">
@@ -123,7 +123,7 @@ export default function TrackStagePhotos({ locale, photos }: TrackStagePhotosPro
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
-                <div className="absolute bottom-2 left-2 right-2 text-xs font-semibold uppercase tracking-[0.14em] text-white">
+                <div className="absolute bottom-2 start-2 end-2 text-xs font-semibold uppercase tracking-[0.14em] text-white">
                   {t(STAGE_LABEL[photo.stage])}
                 </div>
               </div>
@@ -147,7 +147,7 @@ export default function TrackStagePhotos({ locale, photos }: TrackStagePhotosPro
               type="button"
               onClick={() => setActiveId(null)}
               aria-label={t("Close")}
-              className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-white"
+              className="absolute end-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-white"
             >
               <ImageIcon className="h-4 w-4" />
             </button>

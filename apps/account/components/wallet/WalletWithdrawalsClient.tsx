@@ -277,7 +277,7 @@ export default function WalletWithdrawalsClient({
               <li key={m.id} className="rounded-xl bg-[var(--acct-surface)] px-4 py-3">
                 <span className="font-semibold">{m.bank_name}</span> · {m.account_name} · ****
                 {String(m.account_number || "").slice(-4)}
-                {m.is_default ? <span className="ml-2 text-xs text-[var(--acct-muted)]">{t("Default")}</span> : null}
+                {m.is_default ? <span className="ms-2 text-xs text-[var(--acct-muted)]">{t("Default")}</span> : null}
               </li>
             ))}
           </ul>

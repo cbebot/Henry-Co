@@ -207,19 +207,19 @@ export default async function LogisticsHomePage() {
           body="Governed rate cards, immutable milestones, and one shared account remove the operational debt that quietly erodes premium experiences."
           aside={
             <ul className="space-y-4">
-              <li className="border-l border-white/15 pl-4">
+              <li className="border-s border-white/15 ps-4">
                 <p className="text-sm font-semibold text-white">Honest ETAs</p>
                 <p className="mt-1 text-sm leading-relaxed text-white/72">
                   Promise windows come from real lane data, not optimistic guesses. Slippage gets logged and explained.
                 </p>
               </li>
-              <li className="border-l border-white/15 pl-4">
+              <li className="border-s border-white/15 ps-4">
                 <p className="text-sm font-semibold text-white">Proof, not promises</p>
                 <p className="mt-1 text-sm leading-relaxed text-white/72">
                   Every handoff writes to an immutable event log. Proof-of-delivery is a product feature, not a ticket attachment.
                 </p>
               </li>
-              <li className="border-l border-white/15 pl-4">
+              <li className="border-s border-white/15 ps-4">
                 <p className="text-sm font-semibold text-white">One account, one bill</p>
                 <p className="mt-1 text-sm leading-relaxed text-white/72">
                   Customers reuse the HenryCo account they already trust. Operators reconcile in one place across every division.

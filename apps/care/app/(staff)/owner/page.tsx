@@ -328,7 +328,7 @@ export default async function OwnerDashboardPage() {
                   key={booking.id}
                   className="relative rounded-3xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/5"
                 >
-                  <span className="absolute right-5 top-5 flex h-4 w-4">
+                  <span className="absolute end-5 top-5 flex h-4 w-4">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
                     <span className="relative inline-flex h-4 w-4 rounded-full bg-red-500" />
                   </span>
@@ -399,7 +399,7 @@ export default async function OwnerDashboardPage() {
                         {payment.payment_no} • {payment.payment_method}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <div className="font-black text-[color:var(--accent)]">
                         {formatMoney(payment.amount)}
                       </div>
@@ -437,7 +437,7 @@ export default async function OwnerDashboardPage() {
                         {expense.expense_no} • {expense.approval_status}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <div className="font-black text-red-600 dark:text-red-300">
                         {formatMoney(expense.amount)}
                       </div>

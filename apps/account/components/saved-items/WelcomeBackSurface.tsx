@@ -160,7 +160,7 @@ export function WelcomeBackSurface({
                   <li key={item.id} className="flex items-center gap-2 text-xs">
                     <span className="block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--acct-gold)]" />
                     <span className="truncate text-[var(--acct-ink)]">{snap?.title || item.itemType}</span>
-                    <span className="ml-auto shrink-0 text-[var(--acct-muted)]">
+                    <span className="ms-auto shrink-0 text-[var(--acct-muted)]">
                       {days <= 1 ? "today" : `${days}d`}
                     </span>
                   </li>
@@ -198,7 +198,7 @@ export function WelcomeBackSurface({
                   >
                     {item.title || `${item.item_type} #${item.item_id.slice(0, 6)}`}
                   </Link>
-                  <span className="ml-auto shrink-0 text-[var(--acct-muted)]">
+                  <span className="ms-auto shrink-0 text-[var(--acct-muted)]">
                     {DIVISION_LABEL[item.division as SavedItemDivision] || item.division}
                   </span>
                 </li>

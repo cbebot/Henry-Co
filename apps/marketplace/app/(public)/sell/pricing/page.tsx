@@ -71,7 +71,7 @@ export default function SellerPricingPage() {
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                   {item.label}
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                   {item.value}
                 </span>
               </li>
@@ -97,25 +97,25 @@ export default function SellerPricingPage() {
               <dl className="mt-4 space-y-2 text-sm leading-7 text-[var(--market-muted)]">
                 <div className="flex items-baseline justify-between gap-3 border-b border-[var(--market-line)] py-2">
                   <dt>Fee</dt>
-                  <dd className="text-right text-[var(--market-ink)]">{plan.marketplaceFeeLabel}</dd>
+                  <dd className="text-end text-[var(--market-ink)]">{plan.marketplaceFeeLabel}</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-3 border-b border-[var(--market-line)] py-2">
                   <dt>Payout</dt>
-                  <dd className="text-right text-[var(--market-ink)]">{plan.payoutFeeLabel}</dd>
+                  <dd className="text-end text-[var(--market-ink)]">{plan.payoutFeeLabel}</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-3 border-b border-[var(--market-line)] py-2">
                   <dt>Included</dt>
-                  <dd className="text-right text-[var(--market-ink)]">{plan.includedListings} listings</dd>
+                  <dd className="text-end text-[var(--market-ink)]">{plan.includedListings} listings</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-3 border-b border-[var(--market-line)] py-2">
                   <dt>Extra listing</dt>
-                  <dd className="text-right text-[var(--market-ink)]">
+                  <dd className="text-end text-[var(--market-ink)]">
                     NGN {plan.postingFee.toLocaleString()}
                   </dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-3 py-2">
                   <dt>Featured slot</dt>
-                  <dd className="text-right text-[var(--market-ink)]">
+                  <dd className="text-end text-[var(--market-ink)]">
                     NGN {plan.featuredSlotFee.toLocaleString()}
                   </dd>
                 </div>
@@ -152,7 +152,7 @@ export default function SellerPricingPage() {
           </ul>
         </div>
 
-        <div className="xl:pl-12">
+        <div className="xl:ps-12">
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
             Trust-tier payout timing
           </p>

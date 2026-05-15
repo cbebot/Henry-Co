@@ -189,7 +189,7 @@ export default function ContactForm() {
 
           <Field label="Email" required>
             <div className="relative">
-              <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
+              <Mail className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
               <input
                 type="email"
                 value={form.email}
@@ -206,7 +206,7 @@ export default function ContactForm() {
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Phone number">
             <div className="relative">
-              <PhoneCall className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
+              <PhoneCall className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
               <input
                 value={form.phone}
                 onChange={(event) => updateField("phone", event.target.value)}
@@ -284,7 +284,7 @@ export default function ContactForm() {
 
         <Field label="Message" required>
           <div className="relative">
-            <MessageSquareText className="pointer-events-none absolute left-4 top-4 h-4 w-4 text-zinc-400 dark:text-white/35" />
+            <MessageSquareText className="pointer-events-none absolute start-4 top-4 h-4 w-4 text-zinc-400 dark:text-white/35" />
             <textarea
               value={form.message}
               onChange={(event) => updateField("message", event.target.value)}

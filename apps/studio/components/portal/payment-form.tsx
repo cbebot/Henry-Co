@@ -169,7 +169,7 @@ export function PaymentForm({
 
       <div>
         <label htmlFor="payment-reference" className="block text-[13px] font-semibold text-[var(--studio-ink)]">
-          Bank reference number<span className="ml-1 text-[#ff8f8f]">*</span>
+          Bank reference number<span className="ms-1 text-[#ff8f8f]">*</span>
         </label>
         <input
           id="payment-reference"
@@ -193,7 +193,7 @@ export function PaymentForm({
 
       <div>
         <label className="block text-[13px] font-semibold text-[var(--studio-ink)]">
-          Proof of payment<span className="ml-1 text-[#ff8f8f]">*</span>
+          Proof of payment<span className="ms-1 text-[#ff8f8f]">*</span>
         </label>
 
         {file ? (

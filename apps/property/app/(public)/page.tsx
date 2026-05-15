@@ -279,7 +279,7 @@ export default async function PropertyHomePage() {
 
               <div className="mt-6">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-soft)]">
-                  <Search className="mr-1.5 inline h-3 w-3 align-[-1px] text-[var(--property-accent-strong)]" />
+                  <Search className="me-1.5 inline h-3 w-3 align-[-1px] text-[var(--property-accent-strong)]" />
                   Refine the search
                 </p>
                 <div className="mt-3">
@@ -378,16 +378,16 @@ export default async function PropertyHomePage() {
               <table className="w-full table-fixed border-collapse">
                 <thead>
                   <tr className="bg-black/15 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-                    <th scope="col" className="w-[44%] px-4 py-3 text-left sm:w-[42%] sm:px-6">
+                    <th scope="col" className="w-[44%] px-4 py-3 text-start sm:w-[42%] sm:px-6">
                       Area
                     </th>
-                    <th scope="col" className="hidden px-4 py-3 text-right sm:table-cell sm:px-6">
+                    <th scope="col" className="hidden px-4 py-3 text-end sm:table-cell sm:px-6">
                       Avg rent · year
                     </th>
-                    <th scope="col" className="hidden px-4 py-3 text-right md:table-cell md:px-6">
+                    <th scope="col" className="hidden px-4 py-3 text-end md:table-cell md:px-6">
                       Avg sale
                     </th>
-                    <th scope="col" className="px-4 py-3 text-right sm:px-6">
+                    <th scope="col" className="px-4 py-3 text-end sm:px-6">
                       Live
                     </th>
                   </tr>
@@ -416,17 +416,17 @@ export default async function PropertyHomePage() {
                           ) : null}
                         </Link>
                       </td>
-                      <td className="hidden px-4 py-4 text-right align-top tabular-nums sm:table-cell sm:px-6">
+                      <td className="hidden px-4 py-4 text-end align-top tabular-nums sm:table-cell sm:px-6">
                         <span className="text-[14px] font-semibold tracking-tight text-[var(--property-ink)]">
                           {area.averageRent > 0 ? NGN(area.averageRent) : "—"}
                         </span>
                       </td>
-                      <td className="hidden px-4 py-4 text-right align-top tabular-nums md:table-cell md:px-6">
+                      <td className="hidden px-4 py-4 text-end align-top tabular-nums md:table-cell md:px-6">
                         <span className="text-[14px] font-semibold tracking-tight text-[var(--property-ink)]">
                           {area.averageSale > 0 ? NGN(area.averageSale) : "—"}
                         </span>
                       </td>
-                      <td className="px-4 py-4 text-right align-top tabular-nums sm:px-6">
+                      <td className="px-4 py-4 text-end align-top tabular-nums sm:px-6">
                         <span
                           className={`
                             text-[14px] font-semibold tracking-tight
@@ -541,7 +541,7 @@ export default async function PropertyHomePage() {
                 ))}
               </ul>
             ) : (
-              <div className="mt-8 border-l-2 border-[var(--property-sage-soft)]/55 pl-5 py-2">
+              <div className="mt-8 border-s-2 border-[var(--property-sage-soft)]/55 ps-5 py-2">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--property-sage-soft)]">
                   Managed lane warming up
                 </p>
@@ -719,7 +719,7 @@ function Stat({
           </p>
         ) : null}
       </div>
-      <dd className="shrink-0 text-right text-[1.4rem] font-semibold leading-none tracking-tight tabular-nums text-[var(--property-ink)]">
+      <dd className="shrink-0 text-end text-[1.4rem] font-semibold leading-none tracking-tight tabular-nums text-[var(--property-ink)]">
         {value}
       </dd>
     </div>

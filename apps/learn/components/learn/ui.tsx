@@ -114,7 +114,7 @@ export function LearnEmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <section className="border-l-2 border-[var(--learn-copper)]/55 px-5 py-4">
+    <section className="border-s-2 border-[var(--learn-copper)]/55 px-5 py-4">
       <h3 className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.65rem]">
         {title}
       </h3>

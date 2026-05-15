@@ -69,7 +69,7 @@ export default async function MarketplaceHomePage() {
     <div className="mx-auto max-w-[1480px] space-y-10 px-4 py-6 sm:px-6 sm:py-8 xl:px-8">
       <section className="grid gap-6 xl:grid-cols-[1.18fr,0.82fr]">
         <article className="market-panel relative overflow-hidden rounded-[2rem] p-5 sm:rounded-[2.4rem] sm:p-7 xl:rounded-[2.8rem] xl:p-9">
-          <div className="absolute inset-y-0 right-0 hidden w-[42%] bg-[radial-gradient(circle_at_center,rgba(154,174,164,0.18),transparent_64%)] xl:block" />
+          <div className="absolute inset-y-0 end-0 hidden w-[42%] bg-[radial-gradient(circle_at_center,rgba(154,174,164,0.18),transparent_64%)] xl:block" />
           <div className="relative max-w-4xl space-y-5 sm:space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] sm:px-4 sm:py-2 sm:text-xs">
               <Sparkles className="h-3.5 w-3.5 text-[var(--market-brass)]" />
@@ -357,7 +357,7 @@ export default async function MarketplaceHomePage() {
             {copy.home.standardsBullets.map((item) => (
               <li
                 key={item}
-                className="border-l border-white/15 pl-3 text-sm leading-relaxed text-white/80"
+                className="border-s border-white/15 ps-3 text-sm leading-relaxed text-white/80"
               >
                 {item}
               </li>

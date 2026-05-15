@@ -93,7 +93,7 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
             {candidate.serviceType.replaceAll("_", " ")} · {candidate.urgency}
           </p>
         </div>
-        <div className="text-right">
+        <div className="text-end">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
             Quoted total
           </p>

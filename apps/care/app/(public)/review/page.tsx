@@ -65,7 +65,7 @@ export default async function ReviewPage({
             </ul>
           </div>
 
-          <div className="mt-8 border-l-2 border-[color:var(--accent)]/55 pl-5">
+          <div className="mt-8 border-s-2 border-[color:var(--accent)]/55 ps-5">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
               Why we ask for the code
             </p>

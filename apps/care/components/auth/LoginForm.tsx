@@ -26,13 +26,13 @@ export default function LoginForm() {
             Email
           </span>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
+            <Mail className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
             <input
               type="email"
               placeholder={BRAND_EMAIL_PLACEHOLDERS.user}
               autoComplete="email"
               required
-              className="h-14 w-full rounded-2xl border border-black/10 bg-white px-12 pr-4 text-sm font-medium text-zinc-900 outline-none transition focus:border-[color:var(--accent)]/50 dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
+              className="h-14 w-full rounded-2xl border border-black/10 bg-white px-12 pe-4 text-sm font-medium text-zinc-900 outline-none transition focus:border-[color:var(--accent)]/50 dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
             />
           </div>
         </label>
@@ -42,13 +42,13 @@ export default function LoginForm() {
             Password
           </span>
           <div className="relative">
-            <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
+            <LockKeyhole className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
             <input
               type="password"
               placeholder="Enter your password"
               autoComplete="current-password"
               required
-              className="h-14 w-full rounded-2xl border border-black/10 bg-white px-12 pr-4 text-sm font-medium text-zinc-900 outline-none transition focus:border-[color:var(--accent)]/50 dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
+              className="h-14 w-full rounded-2xl border border-black/10 bg-white px-12 pe-4 text-sm font-medium text-zinc-900 outline-none transition focus:border-[color:var(--accent)]/50 dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
             />
           </div>
         </label>

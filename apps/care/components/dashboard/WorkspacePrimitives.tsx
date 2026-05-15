@@ -26,8 +26,8 @@ export function WorkspaceHero({
           : "border-black/10 bg-white/80 dark:border-white/10 dark:bg-white/[0.04]"
       )}
     >
-      <div className="pointer-events-none absolute -left-12 top-0 h-56 w-56 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-7rem] right-[-6rem] h-60 w-60 rounded-full bg-[color:var(--accent-secondary)]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -start-12 top-0 h-56 w-56 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-7rem] end-[-6rem] h-60 w-60 rounded-full bg-[color:var(--accent-secondary)]/10 blur-3xl" />
 
       <div className="relative">
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">

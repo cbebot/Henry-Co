@@ -58,7 +58,7 @@ export default async function CertificationsPage() {
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                   {item.label}
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                   {item.value}
                 </span>
               </li>
@@ -131,7 +131,7 @@ export default async function CertificationsPage() {
         />
 
         {certifications.length === 0 ? (
-          <p className="mt-8 max-w-2xl border-l-2 border-[var(--learn-mint-soft)]/55 pl-5 text-sm leading-7 text-[var(--learn-ink-soft)]">
+          <p className="mt-8 max-w-2xl border-s-2 border-[var(--learn-mint-soft)]/55 ps-5 text-sm leading-7 text-[var(--learn-ink-soft)]">
             No certificate-track courses are published in the catalog yet. Browse all programs on
             the{" "}
             <Link

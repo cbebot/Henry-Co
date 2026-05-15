@@ -78,7 +78,7 @@ export default async function ClientProposalsPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em]" style={{ color: tone }}>
-                    <ScrollText className="mr-1.5 inline h-3 w-3 -translate-y-px" />
+                    <ScrollText className="me-1.5 inline h-3 w-3 -translate-y-px" />
                     {friendlyProposalStatus(proposal.status)}
                   </div>
                   <h2 className="mt-1.5 truncate text-[15px] font-semibold tracking-[-0.005em] text-[var(--studio-ink)]">
@@ -103,7 +103,7 @@ export default async function ClientProposalsPage() {
                   </div>
                 </div>
                 {proposal.validUntil ? (
-                  <div className="text-right">
+                  <div className="text-end">
                     <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
                       {expired ? "Expired" : "Valid until"}
                     </div>

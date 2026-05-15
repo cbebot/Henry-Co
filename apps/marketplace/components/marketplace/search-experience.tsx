@@ -217,7 +217,7 @@ export function SearchExperience({
             <ul
               id="marketplace-search-suggestions"
               role="listbox"
-              className="absolute left-0 right-0 top-full z-30 mt-2 max-h-72 overflow-auto rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(6,10,20,0.98)] py-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+              className="absolute start-0 end-0 top-full z-30 mt-2 max-h-72 overflow-auto rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(6,10,20,0.98)] py-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl"
             >
               {suggestions.map((item) => (
                 <li key={item.slug} role="option" aria-selected="false">
@@ -446,7 +446,7 @@ export function SearchExperience({
               ) : null}
             </>
           ) : (
-            <div className="border-l-2 border-[var(--market-brass)]/55 pl-5 py-3">
+            <div className="border-s-2 border-[var(--market-brass)]/55 ps-5 py-3">
               <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
                 Nothing matched that exact combination.
               </p>

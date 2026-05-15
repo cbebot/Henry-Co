@@ -124,7 +124,7 @@ export default function BusinessPage() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                     {label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                     {value}
                   </span>
                 </li>
@@ -205,7 +205,7 @@ export default function BusinessPage() {
               </li>
             </ul>
           </div>
-          <div className="lg:pl-12">
+          <div className="lg:ps-12">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
               Not a fit yet
             </p>

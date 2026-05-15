@@ -87,7 +87,7 @@ export default async function PaymentsPage() {
                 <p className="text-xs text-[var(--acct-muted)]">
                   {m.type === "card" ? `•••• ${m.last_four}` : m.bank_name || m.type}
                   {m.is_default && (
-                    <span className="ml-2 acct-chip acct-chip-green text-[0.6rem]">{accountCopy.common.defaultBadge}</span>
+                    <span className="ms-2 acct-chip acct-chip-green text-[0.6rem]">{accountCopy.common.defaultBadge}</span>
                   )}
                 </p>
               </div>
@@ -101,7 +101,7 @@ export default async function PaymentsPage() {
         <p className="acct-kicker mb-2">{copy.walletKicker}</p>
         <p className="text-sm text-[var(--acct-muted)]">
           {copy.walletBody}
-          <Link href="/wallet" className="ml-1 font-medium text-[var(--acct-gold)] hover:underline">
+          <Link href="/wallet" className="ms-1 font-medium text-[var(--acct-gold)] hover:underline">
             {copy.manageWallet}
           </Link>
         </p>

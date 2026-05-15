@@ -16,7 +16,7 @@ export default function LogisticsTimeline({
         <li key={step.key} className="relative flex gap-4 pb-8 last:pb-0">
           {index < steps.length - 1 ? (
             <div
-              className="absolute left-[11px] top-6 h-[calc(100%-8px)] w-px bg-[var(--logistics-line)]"
+              className="absolute start-[11px] top-6 h-[calc(100%-8px)] w-px bg-[var(--logistics-line)]"
               aria-hidden
             />
           ) : null}

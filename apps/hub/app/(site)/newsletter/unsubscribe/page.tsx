@@ -69,7 +69,7 @@ export default async function NewsletterUnsubscribePage({
         <p className="mt-4 max-w-xl text-pretty text-base leading-[1.7] text-[color:var(--muted-foreground)]">
           {result.message}
         </p>
-        <div className="mt-6 border-l-2 border-[color:var(--border)] pl-5 text-sm leading-7 text-[color:var(--muted-foreground)]">
+        <div className="mt-6 border-s-2 border-[color:var(--border)] ps-5 text-sm leading-7 text-[color:var(--muted-foreground)]">
           If this keeps happening, reply &ldquo;unsubscribe&rdquo; to any HenryCo email and our team
           will honor it manually.
         </div>

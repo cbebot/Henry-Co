@@ -25,7 +25,7 @@ export function CareLoadingGlyph({
       className={cn("relative inline-flex items-center justify-center", shellSize, className)}
     >
       <span className="absolute inset-0 rounded-full border border-current/18" />
-      <span className="absolute inset-[2px] rounded-full border border-transparent border-t-current/80 border-r-current/35 animate-spin" />
+      <span className="absolute inset-[2px] rounded-full border border-transparent border-t-current/80 border-e-current/35 animate-spin" />
       <span className={cn("rounded-full bg-current/80 shadow-[0_0_18px_currentColor]", dotSize)} />
     </span>
   );
@@ -101,8 +101,8 @@ export function CareLoadingStage({
       className={cn("relative overflow-hidden text-white", shellClass, className)}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(93,188,255,0.12),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(116,96,255,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0))]" />
-      <div className="pointer-events-none absolute -left-14 top-8 h-40 w-40 rounded-full bg-[color:var(--accent)]/14 blur-3xl" />
-      <div className="pointer-events-none absolute -right-10 bottom-0 h-44 w-44 rounded-full bg-cyan-300/10 blur-3xl" />
+      <div className="pointer-events-none absolute -start-14 top-8 h-40 w-40 rounded-full bg-[color:var(--accent)]/14 blur-3xl" />
+      <div className="pointer-events-none absolute -end-10 bottom-0 h-44 w-44 rounded-full bg-cyan-300/10 blur-3xl" />
 
       <div className="relative mx-auto flex max-w-4xl flex-col gap-8">
         <div className="inline-flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/62">

@@ -40,19 +40,19 @@ function TemplateGradient({
       }}
     >
       <div
-        className="absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-30 blur-2xl"
+        className="absolute -end-6 -top-6 h-24 w-24 rounded-full opacity-30 blur-2xl"
         style={{ background: accent }}
       />
       <div
-        className="absolute bottom-3 left-4 h-1 w-12 rounded-full"
+        className="absolute bottom-3 start-4 h-1 w-12 rounded-full"
         style={{ background: accent, opacity: 0.7 }}
       />
       <div
-        className="absolute bottom-7 left-4 h-1 w-20 rounded-full"
+        className="absolute bottom-7 start-4 h-1 w-20 rounded-full"
         style={{ background: accent, opacity: 0.45 }}
       />
       <div
-        className="absolute bottom-11 left-4 h-1 w-8 rounded-full"
+        className="absolute bottom-11 start-4 h-1 w-8 rounded-full"
         style={{ background: accent, opacity: 0.3 }}
       />
     </div>
@@ -233,7 +233,7 @@ export default function StudioPickPage() {
         );
       })}
 
-      <section className="mt-16 border-l-2 border-[var(--studio-signal)]/55 pl-5 sm:pl-6">
+      <section className="mt-16 border-s-2 border-[var(--studio-signal)]/55 ps-5 sm:ps-6">
         <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--studio-signal)]">
           <Sparkles className="h-3.5 w-3.5" />
           None of these fit? Describe what you actually need.

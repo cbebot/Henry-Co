@@ -146,7 +146,7 @@ export function PropertyListingCard({
             loading={priority ? "eager" : "lazy"}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(16,10,8,0.78)] via-[rgba(16,10,8,0.14)] to-transparent" />
-          <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">
+          <div className="absolute start-4 top-4 flex flex-wrap gap-1.5">
             {listing.trustBadges.slice(0, 2).map((badge) => (
               <span
                 key={badge}
@@ -157,7 +157,7 @@ export function PropertyListingCard({
             ))}
           </div>
           {saved ? (
-            <span className="absolute right-4 top-4 rounded-full border border-white/15 bg-[rgba(16,10,8,0.65)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white backdrop-blur-md">
+            <span className="absolute end-4 top-4 rounded-full border border-white/15 bg-[rgba(16,10,8,0.65)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white backdrop-blur-md">
               {listingCopy?.saved ?? "Saved"}
             </span>
           ) : null}
@@ -351,7 +351,7 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
               <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
                 Email
               </dt>
-              <dd className="ml-auto truncate text-right text-sm font-medium text-[var(--property-ink)]">
+              <dd className="ms-auto truncate text-end text-sm font-medium text-[var(--property-ink)]">
                 {agent.email}
               </dd>
             </div>
@@ -359,7 +359,7 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
               <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
                 Phone
               </dt>
-              <dd className="ml-auto truncate text-right text-sm font-medium text-[var(--property-ink)]">
+              <dd className="ms-auto truncate text-end text-sm font-medium text-[var(--property-ink)]">
                 {agent.phone}
               </dd>
             </div>
@@ -397,7 +397,7 @@ export function PropertyManagedRecordCard({
         {record.narrative}
       </p>
       <dl className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)] text-sm sm:grid sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:border-y">
-        <div className="py-3 sm:px-4 sm:py-4 sm:first:pl-0">
+        <div className="py-3 sm:px-4 sm:py-4 sm:first:ps-0">
           <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
             Owner
           </dt>
@@ -413,7 +413,7 @@ export function PropertyManagedRecordCard({
             {formatCurrency(record.portfolioValue)}
           </dd>
         </div>
-        <div className="py-3 sm:px-4 sm:py-4 sm:last:pr-0">
+        <div className="py-3 sm:px-4 sm:py-4 sm:last:pe-0">
           <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
             Service lines
           </dt>
@@ -457,7 +457,7 @@ export function PropertyDifferentiatorCard({
         {item.description}
       </p>
       <div className="mt-5 grid gap-6 border-y border-[var(--property-line)] py-5 md:grid-cols-2 md:divide-x md:divide-[var(--property-line)] md:py-4">
-        <div className="md:pr-5">
+        <div className="md:pe-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--property-sage)]">
             Pros
           </p>
@@ -473,7 +473,7 @@ export function PropertyDifferentiatorCard({
             ))}
           </ul>
         </div>
-        <div className="md:pl-5">
+        <div className="md:ps-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--property-accent-strong)]">
             Trade-offs
           </p>
@@ -599,7 +599,7 @@ export function PropertyEmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <section className="border-l-2 border-[var(--property-accent-strong)]/55 px-5 py-4">
+    <section className="border-s-2 border-[var(--property-accent-strong)]/55 px-5 py-4">
       <h3 className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.65rem]">
         {title}
       </h3>
@@ -701,7 +701,7 @@ export function PropertyPortfolioStats({
             "Listings currently running through HenryCo managed-property rails."}
         </p>
       </li>
-      <li className="md:pl-8">
+      <li className="md:ps-8">
         <p className="property-kicker">{statsCopy?.featuredSurfaces ?? "Featured surfaces"}</p>
         <p className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[2.4rem]">
           {featured}
@@ -711,7 +711,7 @@ export function PropertyPortfolioStats({
             "Listings currently elevated across editorial and campaign surfaces."}
         </p>
       </li>
-      <li className="md:pl-8">
+      <li className="md:ps-8">
         <p className="property-kicker">{statsCopy?.managedValue ?? "Managed value"}</p>
         <p className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[2.4rem]">
           {formatCompactNumber(portfolioValue)}
@@ -735,7 +735,7 @@ export function PropertyTrustPill({
   body: string;
 }) {
   return (
-    <div className="border-l border-[var(--property-line)] pl-5">
+    <div className="border-s border-[var(--property-line)] ps-5">
       <div className="text-[var(--property-accent-strong)]">
         {icon || <Sparkles className="h-4 w-4" />}
       </div>

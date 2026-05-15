@@ -22,7 +22,7 @@ export default function TourWelcomePrompt({
         <div className="overflow-hidden rounded-[2rem] border border-white/20 bg-white p-8 shadow-2xl dark:bg-[#0F1A2C]">
           <button
             onClick={skipTour}
-            className="absolute right-4 top-4 rounded-full p-2 text-zinc-400 transition hover:bg-black/5 hover:text-zinc-600 dark:text-white/40 dark:hover:bg-white/10"
+            className="absolute end-4 top-4 rounded-full p-2 text-zinc-400 transition hover:bg-black/5 hover:text-zinc-600 dark:text-white/40 dark:hover:bg-white/10"
             aria-label="Dismiss"
           >
             <X className="h-4 w-4" />

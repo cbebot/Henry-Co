@@ -47,10 +47,10 @@ export function EmptyThreadState({ projectName, teamLabel }: Props) {
         <FeatureLabel icon={MessageCircle} label="Direct team access" />
       </div>
 
-      <div className="mt-10 w-full max-w-[420px] rounded-[16px] rounded-bl-[4px] border border-white/[0.06] bg-[#0F1524] p-4 text-left">
+      <div className="mt-10 w-full max-w-[420px] rounded-[16px] rounded-bs-[4px] border border-white/[0.06] bg-[#0F1524] p-4 text-start">
         <div className="text-[12px] font-medium uppercase tracking-[0.10em] text-[#d4b14e]">
           HenryCo Studio
-          <span className="ml-2 text-[10px] font-medium tracking-[0.10em] text-white/35">
+          <span className="ms-2 text-[10px] font-medium tracking-[0.10em] text-white/35">
             Opening note
           </span>
         </div>

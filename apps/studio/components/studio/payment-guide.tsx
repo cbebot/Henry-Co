@@ -101,7 +101,7 @@ export function StudioPaymentGuide({
                 {item.label}
               </dt>
               <dd className="flex min-w-0 flex-1 items-center justify-between gap-3 sm:justify-end">
-                <span className="min-w-0 flex-1 truncate font-mono text-sm font-semibold text-[var(--studio-ink)] sm:flex-initial sm:text-right">
+                <span className="min-w-0 flex-1 truncate font-mono text-sm font-semibold text-[var(--studio-ink)] sm:flex-initial sm:text-end">
                   {item.value || "Awaiting finance configuration"}
                 </span>
                 {item.value ? (

@@ -132,7 +132,7 @@ export default async function AboutPage() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
-                <Sparkles className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+                <Sparkles className="me-1 inline h-3.5 w-3.5 align-[-2px]" />
                 About HenryCo Care
               </p>
               <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
@@ -170,7 +170,7 @@ export default async function AboutPage() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
                     {label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
                     {value}
                   </span>
                 </li>
@@ -219,7 +219,7 @@ export default async function AboutPage() {
                 ))}
               </ul>
             </div>
-            <div className="xl:pl-12">
+            <div className="xl:ps-12">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
                 How the experience works
               </p>

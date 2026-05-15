@@ -73,7 +73,7 @@ export function PublicSpotlight({
                 ? points.map((p, i) => (
                     <div
                       key={i}
-                      className="border-l border-white/15 pl-4 py-1"
+                      className="border-s border-white/15 ps-4 py-1"
                     >
                       <p className="text-sm font-semibold tracking-tight">{p.label}</p>
                       {p.detail ? (

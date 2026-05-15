@@ -210,7 +210,7 @@ export function StudioDomainLaunchSection() {
               setPath(p);
               if (p !== "new") setLastResult(null);
             }}
-            className={`rounded-[1.4rem] border px-4 py-4 text-left transition ${
+            className={`rounded-[1.4rem] border px-4 py-4 text-start transition ${
               path === p
                 ? "border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.1)]"
                 : "border-[var(--studio-line)] bg-black/10 hover:border-[rgba(151,244,243,0.22)]"
@@ -233,7 +233,7 @@ export function StudioDomainLaunchSection() {
         </button>
         {helpOpen ? (
           <div className="mt-3 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]">
-            <ul className="list-disc space-y-2 pl-5">
+            <ul className="list-disc space-y-2 ps-5">
               <li>Shorter is usually easier to say on the phone and type on a phone screen.</li>
               <li>Avoid hyphens if you can—they are easy to forget when people hear the name aloud.</li>
               <li>

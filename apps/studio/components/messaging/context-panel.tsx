@@ -41,10 +41,10 @@ export function ContextPanel({
 
   return (
     <aside
-      className={`flex flex-col gap-3 overflow-y-auto border-l border-white/[0.06] bg-[#070B14] p-4 ${
+      className={`flex flex-col gap-3 overflow-y-auto border-s border-white/[0.06] bg-[#070B14] p-4 ${
         variant === "fixed"
           ? "hidden w-[260px] shrink-0 lg:flex"
-          : "fixed inset-y-0 right-0 z-40 w-[88vw] max-w-[320px] shadow-[0_24px_64px_rgba(0,0,0,0.5)] motion-safe:animate-[studio-msg-slide-in-right_240ms_ease-out] sm:w-[320px]"
+          : "fixed inset-y-0 end-0 z-40 w-[88vw] max-w-[320px] shadow-[0_24px_64px_rgba(0,0,0,0.5)] motion-safe:animate-[studio-msg-slide-in-right_240ms_ease-out] sm:w-[320px]"
       }`}
       aria-label="Project context"
     >
@@ -89,7 +89,7 @@ function Section({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
+        className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-start"
         aria-expanded={open}
       >
         <span className="inline-flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.10em] text-white/55">
@@ -244,19 +244,19 @@ function TimelineSection({ context }: { context: ProjectThreadContext }) {
 
   return (
     <Section title="Project timeline" icon={CalendarClock} defaultOpen={false}>
-      <ol className="relative flex flex-col gap-3 pl-4">
+      <ol className="relative flex flex-col gap-3 ps-4">
         <span
           aria-hidden
-          className="absolute left-1.5 top-1.5 bottom-1.5 w-px bg-white/[0.08]"
+          className="absolute start-1.5 top-1.5 bottom-1.5 w-px bg-white/[0.08]"
         />
         {visible.map((stage) => {
           const isComplete = stage.status === "approved";
           const isCurrent = stage.status === "in_progress";
           return (
-            <li key={stage.id} className="relative pl-3">
+            <li key={stage.id} className="relative ps-3">
               <span
                 aria-hidden
-                className={`absolute -left-[2px] top-1 flex h-3 w-3 items-center justify-center rounded-full border ${
+                className={`absolute -start-[2px] top-1 flex h-3 w-3 items-center justify-center rounded-full border ${
                   isComplete
                     ? "border-emerald-400 bg-emerald-400 text-[#070B14]"
                     : isCurrent
@@ -309,7 +309,7 @@ function TeamSection({ context }: { context: ProjectThreadContext }) {
                 {initials}
                 {member.isOnline ? (
                   <span
-                    className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#070B14] bg-[#d4b14e]"
+                    className="absolute -bottom-0.5 -end-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#070B14] bg-[#d4b14e]"
                     aria-label="Active"
                   />
                 ) : null}
