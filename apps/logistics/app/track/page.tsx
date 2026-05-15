@@ -3,16 +3,30 @@ import type { Metadata } from "next";
 import { ArrowRight, Clock3, Eye, MapPinned, ShieldCheck } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
 import { buildLogisticsMapViewport } from "@/lib/logistics/map-provider";
-import { getPublicLogisticsSnapshot, getShipmentByTrackingLookup, getShipmentDetail } from "@/lib/logistics/data";
+import {
+  getPublicLogisticsSnapshot,
+  getShipmentByTrackingLookup,
+  getShipmentDetail,
+} from "@/lib/logistics/data";
 import { getRecentLogisticsShipmentsForViewer } from "@/lib/logistics/recent-shipments";
 import { formatCurrency } from "@/lib/env";
 import LogisticsTimeline from "@/components/tracking/LogisticsTimeline";
 import RecentShipmentCards from "@/components/tracking/RecentShipmentCards";
 import TrackingMapPanel from "@/components/tracking/TrackingMapPanel";
+import {
+  PortalHero,
+  PortalLiveStrip,
+  PortalSection,
+  PortalDividedList,
+  type PortalCapabilityMetric,
+  type PortalDividedListItem,
+} from "@/components/portal";
+import "@/components/portal/styles.css";
 
 export const metadata: Metadata = {
   title: "Track shipment | HenryCo Logistics",
-  description: "Track your HenryCo Logistics shipment with milestone visibility and honest map context.",
+  description:
+    "Track your HenryCo Logistics shipment with milestone visibility and honest map context.",
 };
 
 export const dynamic = "force-dynamic";
@@ -21,13 +35,31 @@ type Props = {
   searchParams: Promise<{ code?: string; phone?: string }>;
 };
 
+const LIFECYCLE_LABELS: Record<string, { label: string; tone: "active" | "good" | "warn" | "neutral" }> = {
+  quote_requested: { label: "Quote requested", tone: "neutral" },
+  quoted: { label: "Quoted", tone: "neutral" },
+  awaiting_payment: { label: "Awaiting payment", tone: "neutral" },
+  booked: { label: "Booked", tone: "neutral" },
+  assigned: { label: "Rider assigned", tone: "active" },
+  pickup_confirmed: { label: "Pickup confirmed", tone: "active" },
+  in_transit: { label: "In transit", tone: "active" },
+  delayed: { label: "Delayed", tone: "warn" },
+  attempted_delivery: { label: "Attempted delivery", tone: "warn" },
+  delivered: { label: "Delivered", tone: "good" },
+  failed_delivery: { label: "Delivery failed", tone: "warn" },
+  return_initiated: { label: "Return initiated", tone: "warn" },
+  returned: { label: "Returned", tone: "neutral" },
+  cancelled: { label: "Cancelled", tone: "neutral" },
+};
+
 export default async function TrackPage({ searchParams }: Props) {
   const { code, phone } = await searchParams;
   const [snapshot, recentShipments] = await Promise.all([
     getPublicLogisticsSnapshot(),
     getRecentLogisticsShipmentsForViewer().catch(() => []),
   ]);
-  const shipment = code && phone ? await getShipmentByTrackingLookup({ trackingCode: code, phone }) : null;
+  const shipment =
+    code && phone ? await getShipmentByTrackingLookup({ trackingCode: code, phone }) : null;
   const detail = shipment ? await getShipmentDetail(shipment.id) : null;
   const map = detail
     ? buildLogisticsMapViewport({
@@ -38,66 +70,166 @@ export default async function TrackPage({ searchParams }: Props) {
       })
     : null;
   const lookupAttempted = Boolean(code && phone);
+  const status = detail ? LIFECYCLE_LABELS[detail.shipment.lifecycleStatus] : null;
+  const isLive = status?.tone === "active" || status?.tone === "warn";
+  const isDelivered = detail?.shipment.lifecycleStatus === "delivered";
+  const promiseWindow = detail?.shipment.pricingBreakdown.promiseWindowHours;
+
+  /*
+   * Capability evidence for the tracking hero. When no lookup is in
+   * play we surface platform-level numbers; once a shipment is loaded
+   * we shift to shipment-level evidence (status, ETA, lane, promise
+   * confidence). Every metric ships with a trend (anti-pattern #18).
+   */
+  const heroCapability: PortalCapabilityMetric[] = detail
+    ? [
+        {
+          label: "Status",
+          value: status?.label ?? "Unknown",
+          trend: detail.shipment.zoneLabel ?? "Lane TBD",
+          trendDirection: status?.tone === "good" ? "pos" : "neutral",
+          pulse: Boolean(isLive),
+          emphasis: true,
+        },
+        {
+          label: "Promise window",
+          value: promiseWindow ? `${promiseWindow[0]}–${promiseWindow[1]}h` : "—",
+          trend: `${detail.shipment.pricingBreakdown.promiseConfidence ?? 0}% confidence`,
+        },
+        {
+          label: "Service tier",
+          value: detail.shipment.serviceType.replaceAll("_", " "),
+          trend: `Urgency · ${detail.shipment.urgency}`,
+        },
+        {
+          label: "Indicative total",
+          value: new Intl.NumberFormat("en-NG", { maximumFractionDigits: 0 }).format(
+            detail.shipment.amountQuoted,
+          ),
+          currencyGlyph: detail.shipment.pricingBreakdown.currency === "NGN" ? "₦" : "",
+          trend: isDelivered ? "Delivered" : "Quoted at booking",
+        },
+      ]
+    : [
+        {
+          label: "Active zones",
+          value: String(snapshot.zones.filter((z) => z.active).length),
+          trend: "Live coverage today",
+          trendDirection: "pos",
+          pulse: snapshot.zones.some((z) => z.active),
+          emphasis: true,
+        },
+        {
+          label: "Lookup security",
+          value: "Phone-bound",
+          trend: "Code + phone, never code alone",
+        },
+        {
+          label: "Visibility",
+          value: "Customer-only events",
+          trend: "Internal dispatch noise hidden",
+        },
+        {
+          label: "Proof model",
+          value: "Recipient + time",
+          trend: snapshot.settings.timezone,
+        },
+      ];
+
+  const promiseGuardrails: PortalDividedListItem[] = [
+    {
+      icon: Eye,
+      title: "Customer-visible milestones only",
+      body: "We never show internal dispatch noise — only the events both sides can act on.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Lookup is phone-bound",
+      body: "The recipient or sender phone authorises the read, so codes alone do not leak shipment data.",
+    },
+    {
+      icon: MapPinned,
+      title: "Live position when shared",
+      body: "Map updates when dispatch shares a rider GPS pin. Until then, pickup and dropoff pins anchor the route.",
+    },
+  ];
 
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-[88rem] space-y-12">
-        <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
-            <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
-                Visibility &middot; Milestones &middot; Proof
-              </p>
-              <h1 className="mt-5 max-w-2xl text-balance text-[2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
-                Track a shipment.
-              </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)]">
-                {snapshot.settings.trackingLookupHelp} Signed-in customers also see logistics
-                activity inside their shared HenryCo account.
-              </p>
-            </div>
-            <ul className="grid gap-3 text-sm">
-              {[
-                {
-                  icon: Eye,
-                  title: "Customer-visible milestones only",
-                  body: "We never show internal dispatch noise — only the events both sides can act on.",
-                },
-                {
-                  icon: ShieldCheck,
-                  title: "Lookup is phone-bound",
-                  body: "The recipient or sender phone authorises the read, so codes alone do not leak shipment data.",
-                },
-              ].map(({ icon: Icon, title, body }) => (
-                <li
-                  key={title}
-                  className="flex gap-4 border-b border-[var(--logistics-line)] py-4 last:border-b-0"
-                >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--logistics-line)] bg-white/[0.03] text-[var(--logistics-accent)]">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <h2 className="text-sm font-semibold tracking-tight text-white">{title}</h2>
-                    <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">{body}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+      <div className="mx-auto max-w-[88rem] log-pf">
+        <PortalHero
+          eyebrow="Visibility · Milestones · Proof"
+          title={
+            detail
+              ? `Tracking ${detail.shipment.trackingCode}.`
+              : "Track a shipment."
+          }
+          blurb={
+            detail
+              ? `${detail.shipment.zoneLabel ?? "Lane pending"} · ${detail.shipment.serviceType.replaceAll(
+                  "_",
+                  " ",
+                )} · ${detail.shipment.urgency}. Milestones update as dispatch progresses; signed-in customers see logistics activity inside their shared HenryCo account.`
+              : `${snapshot.settings.trackingLookupHelp} Signed-in customers also see logistics activity inside their shared HenryCo account.`
+          }
+          capabilityMetrics={heroCapability}
+          ctas={
+            detail
+              ? [
+                  { href: "/support", label: "Open a support thread", variant: "secondary" },
+                  {
+                    href: getAccountUrl("/logistics"),
+                    label: "Account logistics hub",
+                    variant: "ghost",
+                    external: true,
+                  },
+                ]
+              : [
+                  { href: "/book", label: "Book a delivery", variant: "primary" },
+                  { href: "/quote", label: "Request a quote", variant: "secondary" },
+                  {
+                    href: getAccountUrl("/logistics"),
+                    label: "Account logistics hub",
+                    variant: "ghost",
+                    external: true,
+                  },
+                ]
+          }
+        />
 
-        {recentShipments.length ? (
-          <RecentShipmentCards shipments={recentShipments} />
+        {detail && isLive ? (
+          <PortalLiveStrip
+            eyebrow="Live · last update tracked"
+            title={status?.label ?? "In motion"}
+            meta={
+              detail.shipment.pickupAddress?.line1 && detail.shipment.dropoffAddress?.line1
+                ? `${detail.shipment.pickupAddress.line1} → ${detail.shipment.dropoffAddress.line1}`
+                : "Awaiting pinned route"
+            }
+            etaLabel="ETA window"
+            etaValue={
+              promiseWindow ? `${promiseWindow[0]}–${promiseWindow[1]}h` : "—"
+            }
+            etaMeta={
+              `${detail.shipment.pricingBreakdown.promiseConfidence ?? 0}% confidence`
+            }
+          />
         ) : null}
 
-        <section>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-            {recentShipments.length
+        {recentShipments.length ? <RecentShipmentCards shipments={recentShipments} /> : null}
+
+        <PortalSection
+          id="log-pf-track-lookup"
+          kicker={
+            recentShipments.length
               ? "Or enter a tracking code manually"
-              : "Look up a shipment"}
-          </p>
+              : "Look up a shipment"
+          }
+          title="Tracking code + phone."
+          meta="Both fields required for secure lookup"
+        >
           <form
-            className="mt-5 grid gap-4 border-y border-[var(--logistics-line)] py-6 sm:grid-cols-[1fr,1fr,auto] sm:items-end"
+            className="mt-2 grid gap-4 border-y border-[var(--logistics-line)] py-6 sm:grid-cols-[1fr,1fr,auto] sm:items-end"
             method="get"
             action="/track"
           >
@@ -127,12 +259,9 @@ export default async function TrackPage({ searchParams }: Props) {
               />
             </label>
             <div className="flex flex-wrap gap-3 sm:justify-end">
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
-              >
+              <button type="submit" className="log-pf__cta log-pf__cta-primary">
                 View status
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" aria-hidden />
               </button>
             </div>
           </form>
@@ -151,7 +280,7 @@ export default async function TrackPage({ searchParams }: Props) {
               Contact dispatch
             </Link>
           </div>
-        </section>
+        </PortalSection>
 
         {lookupAttempted && !detail ? (
           <section className="border-l-2 border-amber-400/60 pl-5">
@@ -194,7 +323,8 @@ export default async function TrackPage({ searchParams }: Props) {
                   </h2>
                   <p className="mt-1 text-sm text-[var(--logistics-muted)]">
                     {detail.shipment.zoneLabel || "Lane TBD"} ·{" "}
-                    {detail.shipment.serviceType.replaceAll("_", " ")} · {detail.shipment.urgency}
+                    {detail.shipment.serviceType.replaceAll("_", " ")} ·{" "}
+                    {detail.shipment.urgency}
                   </p>
                 </div>
                 <div className="text-right">
@@ -206,7 +336,10 @@ export default async function TrackPage({ searchParams }: Props) {
                   </p>
                   <p className="mt-2 text-sm text-[var(--logistics-muted)]">
                     Indicative total{" "}
-                    {formatCurrency(detail.shipment.amountQuoted, detail.shipment.pricingBreakdown.currency)}
+                    {formatCurrency(
+                      detail.shipment.amountQuoted,
+                      detail.shipment.pricingBreakdown.currency,
+                    )}
                   </p>
                   <p className="mt-1 text-xs text-[var(--logistics-muted)]">
                     Typical window {detail.shipment.pricingBreakdown.promiseWindowHours[0]}–
@@ -223,7 +356,9 @@ export default async function TrackPage({ searchParams }: Props) {
               <div>
                 <div className="flex items-baseline gap-3">
                   <Clock3 className="h-4 w-4 text-[var(--logistics-accent)]" aria-hidden />
-                  <h3 className="text-base font-semibold tracking-tight text-white">Timeline</h3>
+                  <h3 className="text-base font-semibold tracking-tight text-white">
+                    Timeline
+                  </h3>
                   <span className="text-[11px] uppercase tracking-[0.2em] text-white/45">
                     Customer-visible milestones
                   </span>
@@ -321,6 +456,16 @@ export default async function TrackPage({ searchParams }: Props) {
               </div>
             </section>
           </div>
+        ) : null}
+
+        {!detail ? (
+          <PortalSection
+            id="log-pf-track-promise"
+            kicker="The tracking contract"
+            title="What you see, and why we built it this way."
+          >
+            <PortalDividedList items={promiseGuardrails} />
+          </PortalSection>
         ) : null}
       </div>
     </main>

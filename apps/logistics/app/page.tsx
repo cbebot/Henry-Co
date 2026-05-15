@@ -1,15 +1,27 @@
-import Link from "next/link";
 import {
   ArrowRight,
   CheckCircle2,
+  ClipboardCheck,
+  Clock3,
   MapPin,
   Radio,
   Shield,
+  TruckIcon,
 } from "lucide-react";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
-import { PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
+import { PublicSpotlight } from "@henryco/ui/public-shell";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { LOGISTICS_FAQS } from "@/lib/logistics/content";
+import {
+  PortalHero,
+  PortalSection,
+  PortalDividedList,
+  PortalLaneGrid,
+  type PortalCapabilityMetric,
+  type PortalDividedListItem,
+  type PortalLaneCard,
+} from "@/components/portal";
+import "@/components/portal/styles.css";
 
 export const dynamic = "force-dynamic";
 
@@ -17,203 +29,173 @@ export default async function LogisticsHomePage() {
   const logistics = getDivisionConfig("logistics");
   const snapshot = await getPublicLogisticsSnapshot();
 
-  const heroMetrics = snapshot.metrics.map((m) => ({
-    label: m.label,
-    value: m.value,
-    hint: m.note,
-  }));
-
   /*
-   * CHROME-01B FIX 6: surface coverage at the top of the hero so a visitor
-   * never books a delivery before discovering they are outside the service
-   * area. We pull the live zone names from the data layer (one line, not
-   * a map) — a map is a future enhancement.
+   * Capability evidence — V3 PASS 21 / Wave B3 editorial bar.
+   *
+   * Pulls real numbers from the snapshot so the hero proves capacity
+   * before headline copy proves anything. Every metric carries a trend
+   * (anti-pattern #18 enforced at the type level).
    */
   const activeZones = snapshot.zones.filter((zone) => zone.active);
-  const coverageNames = Array.from(
+  const zoneNames = Array.from(
     new Set(activeZones.map((zone) => zone.name.trim()).filter(Boolean))
   );
-  const coverageLine = coverageNames.length
-    ? `Currently serving ${
-        coverageNames.length === 1
-          ? coverageNames[0]
-          : coverageNames.length === 2
-            ? `${coverageNames[0]} and ${coverageNames[1]}`
-            : `${coverageNames.slice(0, -1).join(", ")}, and ${coverageNames.at(-1)}`
-      }.`
+  const coverageLine = zoneNames.length
+    ? `Live in ${
+        zoneNames.length === 1
+          ? zoneNames[0]
+          : zoneNames.length === 2
+            ? `${zoneNames[0]} and ${zoneNames[1]}`
+            : `${zoneNames.slice(0, -1).join(", ")}, and ${zoneNames.at(-1)}`
+      }`
     : null;
+  const services = snapshot.services;
+  const fastestEtaZone = activeZones.reduce<{ low: number; high: number } | null>(
+    (acc, zone) => {
+      if (!Number.isFinite(zone.etaHoursMin) || !Number.isFinite(zone.etaHoursMax)) return acc;
+      if (!acc) return { low: zone.etaHoursMin, high: zone.etaHoursMax };
+      return zone.etaHoursMin < acc.low ? { low: zone.etaHoursMin, high: zone.etaHoursMax } : acc;
+    },
+    null,
+  );
+
+  const capabilityMetrics: PortalCapabilityMetric[] = [
+    {
+      label: "Active lanes",
+      value: String(activeZones.length || 0),
+      trend:
+        activeZones.length === 0
+          ? "Awaiting first lane"
+          : zoneNames.length === activeZones.length
+            ? `Across ${zoneNames.length} ${zoneNames.length === 1 ? "zone" : "zones"}`
+            : `${zoneNames.length} named today`,
+      trendDirection: "pos",
+      pulse: activeZones.length > 0,
+      emphasis: true,
+    },
+    {
+      label: "Service tiers",
+      value: String(services.length),
+      trend: "Same-day, scheduled, dispatch, inter-city",
+    },
+    {
+      label: "Fastest window",
+      value: fastestEtaZone ? `${fastestEtaZone.low}–${fastestEtaZone.high}h` : "—",
+      trend: fastestEtaZone ? "Governed by lane confidence" : "Awaiting zone activation",
+    },
+    {
+      label: "Operating hours",
+      value: snapshot.settings.pickupHours.includes("•")
+        ? (snapshot.settings.pickupHours.split("•")[1]?.trim() ?? snapshot.settings.pickupHours)
+        : snapshot.settings.pickupHours,
+      trend: snapshot.settings.pickupHours.includes("•")
+        ? (snapshot.settings.pickupHours.split("•")[0]?.trim() ?? "Daily")
+        : "Daily",
+    },
+  ];
+
+  const trustItems: PortalDividedListItem[] = [
+    {
+      icon: MapPin,
+      title: "Who it is for",
+      body: "Retail replenishment, founder-led brands, professional services, and HenryCo divisions that need predictable pickup and delivery at scale.",
+    },
+    {
+      icon: Radio,
+      title: "How tracking works",
+      body: snapshot.settings.trackingLookupHelp,
+    },
+    {
+      icon: Shield,
+      title: "Proof and accountability",
+      body: "Milestones write to an immutable event log. Proof-of-delivery is part of the product, not an afterthought.",
+    },
+  ];
+
+  const laneCards: PortalLaneCard[] = services.slice(0, 4).map((service) => ({
+    badge: service.badge,
+    title: service.name,
+    body: service.summary,
+    promise: service.promise,
+    href: "/services",
+  }));
+
+  const processItems: PortalDividedListItem[] = [
+    {
+      icon: ClipboardCheck,
+      title: "Submit a quote or booking",
+      body: "Two addresses, a parcel profile, and a service tier. Governed pricing returns inline before you commit.",
+      status: { label: "Step 01", tone: "active" },
+    },
+    {
+      icon: TruckIcon,
+      title: "Dispatch assigns the lane",
+      body: "Routing assigns within the operating window; pickup milestone writes live to your timeline.",
+      status: { label: "Step 02", tone: "neutral" },
+    },
+    {
+      icon: Clock3,
+      title: "Live milestones, both sides",
+      body: "Sender and recipient see the same events. Updates land via your HenryCo account thread.",
+      status: { label: "Step 03", tone: "neutral" },
+    },
+    {
+      icon: CheckCircle2,
+      title: "Proof of delivery, captured",
+      body: "Recipient name, time, and capture method save to the shipment record — visible on the track page.",
+      status: { label: "Step 04", tone: "good" },
+    },
+  ];
 
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-[92rem] space-y-16">
-        {/* Editorial hero — eyebrow + display + CTAs, then a separate ProofRail below */}
-        <section>
-          <div className="grid gap-10 lg:grid-cols-[1.18fr,0.82fr] lg:items-end">
-            <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
-                Pickup &middot; Dispatch &middot; Proof
-              </p>
-              <h1 className="mt-5 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-white sm:text-[2.9rem] md:text-[3.4rem]">
-                Calm last-mile, visible end to end.
-              </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
-                Built for people and businesses that need honest ETAs, clean handoffs,
-                and a customer experience that stays premium when operations get noisy.
-              </p>
-              {coverageLine ? (
-                <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-3.5 py-2 text-[12.5px] font-medium text-white/82">
-                  <MapPin className="h-3.5 w-3.5 text-[var(--logistics-accent)]" aria-hidden />
-                  {coverageLine}
-                </p>
-              ) : null}
-              <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
-                <Link
-                  href="/book"
-                  className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-5 py-3 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.24)] transition outline-none hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[var(--logistics-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09060a] active:translate-y-[0.5px] motion-reduce:hover:translate-y-0 sm:px-6 sm:py-3.5"
-                >
-                  Book a delivery
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="/quote"
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white/90 transition outline-none hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-[var(--logistics-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09060a] active:translate-y-[0.5px] sm:px-6 sm:py-3.5"
-                >
-                  Request a quote
-                </Link>
-                <Link
-                  href="/track"
-                  className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[var(--logistics-accent-soft)] underline-offset-4 transition outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[var(--logistics-accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09060a] sm:py-3.5"
-                >
-                  Track a shipment
-                </Link>
-              </div>
-              <p className="mt-7 text-[11px] font-medium uppercase tracking-[0.22em] text-white/40">
-                {snapshot.settings.pickupHours}
-              </p>
-            </div>
+      <div className="mx-auto max-w-[92rem] log-pf">
+        <PortalHero
+          eyebrow="Pickup · Dispatch · Proof"
+          title="Calm last-mile, visible end to end."
+          blurb="Built for people and businesses that need honest ETAs, clean handoffs, and a customer experience that stays premium when operations get noisy."
+          coverage={coverageLine}
+          pickupHours={snapshot.settings.pickupHours}
+          capabilityMetrics={capabilityMetrics}
+          ctas={[
+            { href: "/book", label: "Book a delivery", variant: "primary" },
+            { href: "/quote", label: "Request a quote", variant: "secondary" },
+            { href: "/track", label: "Track a shipment", variant: "ghost" },
+          ]}
+        />
 
-            {/* Why it's different — divided icon list, no inner panels */}
-            <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                Why teams switch
-              </p>
-              <ul className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-                {[
-                  {
-                    icon: MapPin,
-                    title: "Who it is for",
-                    body: "Retail replenishment, founder-led brands, professional services, and HenryCo divisions that need predictable pickup and delivery at scale.",
-                  },
-                  {
-                    icon: Radio,
-                    title: "How tracking works",
-                    body: snapshot.settings.trackingLookupHelp,
-                  },
-                  {
-                    icon: Shield,
-                    title: "Proof and accountability",
-                    body: "Milestones write to an immutable event log. Proof-of-delivery is part of the product, not an afterthought.",
-                  },
-                ].map(({ icon: Icon, title, body }) => (
-                  <li key={title} className="flex gap-4 py-5">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--logistics-line)] bg-white/[0.03] text-[var(--logistics-accent)]">
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <h2 className="text-base font-semibold tracking-tight text-white">
-                        {title}
-                      </h2>
-                      <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">
-                        {body}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-10">
-            <PublicProofRail density="default" variant="rail" items={heroMetrics} />
-          </div>
-        </section>
-
-        {/* Process — single horizontal timeline with hairlines, no circle tiles */}
-        <section>
-          <div className="flex items-baseline gap-4">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-              From request to doorstep
+        <PortalSection
+          id="log-pf-why"
+          kicker="Why teams switch"
+          title="One operating model. Honest by design."
+        >
+          <div className="log-pf__section-grid">
+            <p className="log-pf__section-body">
+              Governed rate cards, immutable milestones, and one shared account remove the
+              operational debt that quietly erodes premium experiences. Same dispatcher logic
+              for same-day, scheduled, dispatch, and inter-city — same calm proof trail.
             </p>
-            <span className="h-px flex-1 bg-[var(--logistics-line)]" />
+            <PortalDividedList items={trustItems} />
           </div>
-          <ol className="mt-7 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {[
-              "Submit a quote or booking with addresses, parcel profile, and lane.",
-              "Receive an indicative price and promise window from governed rate cards.",
-              "Dispatch assigns a rider; milestones appear on your tracking page.",
-              "Delivery closes with proof and visibility inside your HenryCo account.",
-            ].map((text, i) => (
-              <li
-                key={text}
-                className="border-t border-[var(--logistics-line)] pt-5 lg:border-t-0 lg:border-l lg:pl-5 lg:pt-0"
-              >
-                <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                  Step {String(i + 1).padStart(2, "0")}
-                </span>
-                <p className="mt-2 text-[15px] leading-[1.7] text-white/85">{text}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
+        </PortalSection>
 
-        {/* Operating lanes — divided list, no card tiles */}
-        <section className="grid gap-12 lg:grid-cols-[0.95fr,1.05fr]">
-          <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-              Operating lanes
-            </p>
-            <h2 className="mt-4 max-w-md text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[2rem]">
-              One operating model, four lane shapes.
-            </h2>
-            <p className="mt-4 max-w-md text-sm leading-7 text-[var(--logistics-muted)]">
-              Same-day, scheduled, dispatch, and inter-city readiness share the same
-              dispatcher logic, the same rate card discipline, and the same proof trail.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href="/services"
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-5 py-2.5 text-sm font-semibold text-white/90 transition hover:bg-white/[0.07]"
-              >
-                See all services
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-[var(--logistics-accent-soft)] underline-offset-4 hover:underline"
-              >
-                Pricing posture
-              </Link>
-            </div>
-          </div>
+        <PortalSection
+          id="log-pf-lanes"
+          kicker="Operating lanes"
+          title="Four lane shapes. One promise discipline."
+          meta={`${services.length} tiers · governed pricing`}
+        >
+          <PortalLaneGrid lanes={laneCards} />
+        </PortalSection>
 
-          <ul className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-            {snapshot.services.slice(0, 4).map((service) => (
-              <li key={service.slug} className="flex gap-4 py-5">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--logistics-accent)]" />
-                <div className="min-w-0">
-                  <h3 className="text-base font-semibold tracking-tight text-white">
-                    {service.name}
-                  </h3>
-                  <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">
-                    {service.summary}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <PortalSection
+          id="log-pf-flow"
+          kicker="From request to doorstep"
+          title="Every step is visible, every milestone is timestamped."
+        >
+          <PortalDividedList items={processItems} />
+        </PortalSection>
 
-        {/* Trust narrative — Spotlight contrast band, no panel-on-panel */}
         <PublicSpotlight
           tone="contrast"
           eyebrow="The HenryCo posture"
@@ -243,45 +225,50 @@ export default async function LogisticsHomePage() {
           }
         />
 
-        {/* FAQ — kept as a list, but with hairline rule + trim panel chrome */}
-        <section className="grid gap-10 lg:grid-cols-[0.85fr,1.15fr]">
-          <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-              Questions before you book
-            </p>
-            <h2 className="mt-4 max-w-sm text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
-              The honest answers, before the order.
-            </h2>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={`mailto:${logistics.supportEmail}`}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-5 py-2.5 text-sm font-semibold text-white/90 transition hover:bg-white/[0.07]"
-              >
-                Email {logistics.shortName}
-              </a>
-              <Link
-                href={getAccountUrl("/logistics")}
-                className="inline-flex items-center gap-2 rounded-full bg-white/12 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/18"
-              >
-                Open account hub
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          <dl className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-            {LOGISTICS_FAQS.map((faq) => (
-              <div key={faq.q} className="py-5">
-                <dt className="text-base font-semibold tracking-tight text-white">
-                  {faq.q}
-                </dt>
-                <dd className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-                  {faq.a}
-                </dd>
+        <PortalSection
+          id="log-pf-faq"
+          kicker="Questions before you book"
+          title="The honest answers, before the order."
+          meta={`Contact ${logistics.shortName}`}
+        >
+          <div className="log-pf__section-grid">
+            <div>
+              <p className="log-pf__section-body">
+                If a lane, parcel profile, or contract pricing falls outside the FAQ, the
+                business desk picks it up. Quotes that need a human are not a different product —
+                they live on the same shipment record once they convert.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a
+                  className="log-pf__cta log-pf__cta-secondary"
+                  href={`mailto:${logistics.supportEmail}`}
+                >
+                  Email {logistics.shortName}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </a>
+                <a
+                  className="log-pf__cta log-pf__cta-ghost"
+                  href={getAccountUrl("/logistics")}
+                >
+                  Open account hub
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </a>
               </div>
-            ))}
-          </dl>
-        </section>
+            </div>
+            <dl className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
+              {LOGISTICS_FAQS.map((faq) => (
+                <div key={faq.q} className="py-5">
+                  <dt className="text-base font-semibold tracking-tight text-white">
+                    {faq.q}
+                  </dt>
+                  <dd className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
+                    {faq.a}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </PortalSection>
       </div>
     </main>
   );
