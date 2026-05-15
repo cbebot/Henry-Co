@@ -50,3 +50,20 @@ export {
   getSupportSummary,
   type SupportSummary,
 } from "./support-summary";
+
+export {
+  getInboxAggregate,
+  type InboxAggregate,
+  type InboxThread,
+  type InboxDivision,
+} from "./inbox-aggregate";
+
+export {
+  getCalendarAggregate,
+  defaultCalendarRange,
+  groupEventsByDay,
+  type CalendarAggregate,
+  type CalendarEvent,
+  type CalendarKind,
+  type CalendarRange,
+} from "./calendar-aggregate";
