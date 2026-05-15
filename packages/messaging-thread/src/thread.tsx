@@ -239,6 +239,30 @@ function pickComposerTone(threadId: string): ComposerTone {
  *   - upload — adapter.attachAction does the upload
  *   - which Supabase client to use — host passes getSupabase
  */
+/** Calendar-day key for a date in the viewer's local timezone. The
+ *  divider walk compares these so two messages sent on the same day
+ *  cluster, two messages a minute apart but across midnight don't. */
+function localDayKey(iso: string): string {
+  const d = new Date(iso);
+  if (!Number.isFinite(d.getTime())) return "invalid";
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+/** Classify a calendar day relative to the viewer's local today. */
+function dayPosition(iso: string): "today" | "yesterday" | "earlier" {
+  const d = new Date(iso);
+  if (!Number.isFinite(d.getTime())) return "earlier";
+  const today = new Date();
+  const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+  const msgKey = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  if (msgKey === todayKey) return "today";
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const yKey = `${yesterday.getFullYear()}-${yesterday.getMonth()}-${yesterday.getDate()}`;
+  if (msgKey === yKey) return "yesterday";
+  return "earlier";
+}
+
 export function MessageThread({
   threadId,
   initialMessages,
@@ -252,6 +276,7 @@ export function MessageThread({
   disableComposer = false,
   enableTypingPresence = true,
   composerExtras,
+  dayDividerLabel,
 }: MessageThreadProps) {
   const appearance = useThreadAppearance();
   const [messages, setMessages] = useState<ThreadMessage[]>(initialMessages);
@@ -599,13 +624,42 @@ export function MessageThread({
       ) : (
         <div ref={scrollRef} className="mt-thread-list">
           <ul className="mt-thread-list-inner">
-            {messages.map((message) => (
-              <MessageBubble
-                key={message.id}
-                message={message}
-                renderMarkdown={renderMarkdown}
-              />
-            ))}
+            {(() => {
+              const out: import("react").ReactNode[] = [];
+              let prevDayKey: string | null = null;
+              for (const message of messages) {
+                if (dayDividerLabel) {
+                  const key = localDayKey(message.createdAt);
+                  if (key !== prevDayKey) {
+                    const date = new Date(message.createdAt);
+                    if (Number.isFinite(date.getTime())) {
+                      const label = dayDividerLabel(date, dayPosition(message.createdAt));
+                      if (label) {
+                        out.push(
+                          <li
+                            key={`day-${key}-${message.id}`}
+                            className="mt-day-divider"
+                            role="separator"
+                            aria-label={label}
+                          >
+                            <span>{label}</span>
+                          </li>,
+                        );
+                      }
+                    }
+                    prevDayKey = key;
+                  }
+                }
+                out.push(
+                  <MessageBubble
+                    key={message.id}
+                    message={message}
+                    renderMarkdown={renderMarkdown}
+                  />,
+                );
+              }
+              return out;
+            })()}
             {activeTypers.length > 0 ? (
               <TypingIndicator typers={activeTypers} />
             ) : null}

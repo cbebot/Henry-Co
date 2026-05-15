@@ -253,20 +253,31 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
         </div>
         <div
           id="acct-profile-email-help"
-          className="mt-2 flex flex-col gap-2 rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-surface)] p-3 sm:flex-row sm:items-center sm:justify-between"
+          className="mt-2 flex flex-col gap-3 rounded-2xl border border-[color:color-mix(in_srgb,var(--acct-line)_90%,var(--acct-ink))] bg-[color:color-mix(in_srgb,var(--acct-gold-soft)_28%,var(--acct-surface))] p-3 shadow-[inset_0_1px_0_color-mix(in_srgb,var(--acct-bg-soft)_55%,transparent)] sm:flex-row sm:items-center sm:justify-between"
         >
-          <p className="text-xs leading-5 text-[var(--acct-muted)]">
+          <p className="text-xs leading-5 text-[var(--acct-muted)] sm:flex-1">
             {t(
               "Email changes go through identity-verified support so trust, KYC and wallet records stay aligned.",
             )}
           </p>
           <Link
             href={`/support/new?category=account&subject=${encodeURIComponent(
-              "Email change request",
+              t("Email change request"),
             )}&message=${encodeURIComponent(
-              `Hi HenryCo Support,\n\nI'd like to change the email on my account.\n\nCurrent email: ${email || ""}\nNew email: \n\nReason: \n\nThanks.`,
+              [
+                t("Hi HenryCo Support,"),
+                "",
+                t("I'd like to change the email on my account."),
+                "",
+                `${t("Current email")}: ${email || ""}`,
+                `${t("New email")}: `,
+                "",
+                `${t("Reason")}: `,
+                "",
+                t("Thanks."),
+              ].join("\n"),
             )}`}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--acct-ink)] px-4 py-2 text-xs font-semibold text-[var(--acct-bg-soft)] shadow-sm transition-colors hover:bg-[color:color-mix(in_srgb,var(--acct-ink)_88%,var(--acct-gold))] focus-visible:outline-2 focus-visible:outline-[var(--acct-gold)]"
+            className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-[var(--acct-ink)] px-4 py-2 text-xs font-bold tracking-wide text-[var(--acct-bg-soft)] shadow-[0_10px_22px_-14px_color-mix(in_srgb,var(--acct-ink)_75%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--acct-gold)_32%,transparent)] transition-[transform,box-shadow,background,filter] duration-200 ease-out hover:-translate-y-px hover:bg-[color:color-mix(in_srgb,var(--acct-ink)_85%,var(--acct-gold))] hover:shadow-[0_16px_30px_-14px_color-mix(in_srgb,var(--acct-gold)_85%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--acct-gold)_40%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acct-gold)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           >
             <LifeBuoy size={14} aria-hidden />
             {t("Request email change")}

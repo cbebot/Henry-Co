@@ -70,6 +70,33 @@ export default function SupportThreadRoom({
     }
   }, []);
 
+  /* Day-divider labeller — Today / Yesterday / Mon, May 12. Pattern B
+     i18n for the two relative tokens (DeepL-fallback friendly) and
+     `Intl.DateTimeFormat` with the active locale for older dates so
+     month / weekday names land in the viewer's language without us
+     needing a per-locale month table. */
+  const dayDividerLabel = useCallback(
+    (date: Date, position: "today" | "yesterday" | "earlier"): string => {
+      if (position === "today") return t("Today");
+      if (position === "yesterday") return t("Yesterday");
+      try {
+        return new Intl.DateTimeFormat(locale, {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        }).format(date);
+      } catch {
+        // Locale unsupported by the runtime — fall back to a numeric
+        // form that's always defined.
+        return new Intl.DateTimeFormat(undefined, {
+          month: "short",
+          day: "numeric",
+        }).format(date);
+      }
+    },
+    [t, locale],
+  );
+
   // Closed = staff signed the thread off; replying funnels into a new
   // ticket. Resolved = staff marked done but the thread is still re-
   // openable, so we keep the composer live (matches legacy behavior).
@@ -90,12 +117,13 @@ export default function SupportThreadRoom({
         getSupabase={getSupabase}
         renderMarkdown
         disableComposer={isClosed}
+        dayDividerLabel={dayDividerLabel}
         placeholder={t(
           "Reply with context, screenshots, or next steps. Drafts stay here while you type.",
         )}
         emptyTitle={t("Start the conversation")}
         emptyBody={t(
-          "Ask a question, share feedback, or attach a reference. Replies arrive here in real time.",
+          "Share what's on your mind — context, screenshots, or the outcome you're after. A teammate will pick it up here and you'll see replies arrive live.",
         )}
       />
       {isClosed ? (
