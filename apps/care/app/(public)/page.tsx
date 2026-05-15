@@ -1,47 +1,35 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import {
-  ArrowRight,
-  Building2,
+  Calendar,
   CheckCircle2,
+  ClipboardCheck,
   Clock3,
-  PhoneCall,
-  Repeat,
+  Phone,
+  Shirt,
   ShieldCheck,
-  Star,
+  Sparkles,
+  Truck,
 } from "lucide-react";
 import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
-import { resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
-import {
-  HenryCoHeroCard,
-  HenryCoTactileCard,
-  PublicSpotlight,
-} from "@henryco/ui/public-shell";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 
-import CareFlow from "@/components/care/CareFlow";
 import {
-  getApprovedReviews,
-  getCareBookingCatalog,
-  getCarePricing,
-  getCareSettings,
-} from "@/lib/care-data";
-import { getCarePublicChipUser } from "@/lib/care-public-viewer";
+  PortalCapabilityStrip,
+  PortalDividedList,
+  PortalHero,
+  PortalLaneGrid,
+  PortalSection,
+  type PortalCapabilityMetric,
+  type PortalDividedListItem,
+  type PortalLaneCard,
+} from "@/components/portal";
+import "@/components/portal/styles.css";
+import { getCarePublicSnapshot } from "@/lib/care-public-snapshot";
 import { getCarePublicLocale } from "@/lib/locale-server";
-import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
 export const revalidate = 60;
 
 const care = getDivisionConfig("care");
-const HERO_TITLE_FALLBACKS: Partial<Record<string, string>> = {
-  fr: "Un service de confiance pour les vetements, les maisons et les lieux de travail.",
-  es: "Cuida prendas, hogares y espacios de trabajo con un solo equipo de servicio de confianza.",
-  pt: "Cuide de roupas, casas e locais de trabalho com uma unica equipa de servico de confianca.",
-  ar: "اعتنِ بالملابس والمنازل وأماكن العمل مع فريق خدمة موثوق واحد.",
-  de: "Pflege fuer Kleidung, Zuhause und Arbeitsorte mit einem einzigen verlaesslichen Serviceteam.",
-  it: "Cura capi, case e luoghi di lavoro con un solo team di servizio affidabile.",
-};
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getCarePublicLocale();
@@ -55,623 +43,278 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const nairaFormatter = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  maximumFractionDigits: 0,
-});
-
-function formatMoney(value: number | string) {
-  return nairaFormatter.format(Number(value || 0));
-}
-
-function stars(count: number) {
-  return Array.from({ length: Math.max(0, Math.min(5, Number(count) || 0)) });
-}
-
 export default async function CareHomePage() {
-  const [locale, settings, pricing, reviews, catalog, chipUser] = await Promise.all([
+  const [locale, snapshot] = await Promise.all([
     getCarePublicLocale(),
-    getCareSettings(),
-    getCarePricing(),
-    getApprovedReviews(6),
-    getCareBookingCatalog(),
-    getCarePublicChipUser(),
+    getCarePublicSnapshot(),
   ]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const [heroBadge, heroTitle, heroSubtitle] = await Promise.all([
-    resolveLocalizedDynamicField({
-      record: settings as unknown as Record<string, unknown>,
-      field: "hero_badge",
-      locale,
-      fallback: t("Garment care, home cleaning, and office cleaning"),
-      machineTranslate: locale !== "en",
-    }),
-    resolveLocalizedDynamicField({
-      record: settings as unknown as Record<string, unknown>,
-      field: "hero_title",
-      locale,
-      fallback:
-        HERO_TITLE_FALLBACKS[locale] ||
-        t("Care for garments, homes, and workplaces with one trusted service team."),
-      machineTranslate: locale !== "en",
-    }),
-    resolveLocalizedDynamicField({
-      record: settings as unknown as Record<string, unknown>,
-      field: "hero_subtitle",
-      locale,
-      fallback: t(
-        "Book garment pickup and return delivery, recurring home cleaning, or office cleaning through one calmer service flow with clear timing, payment follow-up, and live updates.",
+
+  const { settings, catalog, stats } = snapshot;
+  const supportEmail = settings.support_email || care.supportEmail || BRAND_EMAILS.care;
+  const supportPhone = settings.support_phone || care.supportPhone || null;
+  const pickupHours = settings.pickup_hours?.trim() || t("Mon – Sat • 8:00 AM to 7:00 PM");
+
+  /*
+   * Capability evidence — V3 Wave B1 editorial bar.
+   *
+   * Each metric pulls a real number from the snapshot so the hero proves
+   * service capacity before headline copy proves anything. Every metric
+   * carries a trend (anti-pattern #18 enforced at the type level).
+   */
+  const capabilityMetrics: PortalCapabilityMetric[] = [
+    {
+      label: t("Active service lanes"),
+      value: String(stats.activeLanes || 3),
+      trend:
+        stats.activeLanes > 0
+          ? t("Wash & fold, dry clean, linen + home + office")
+          : t("Three signature lanes ready"),
+      trendDirection: "pos",
+      pulse: stats.activeLanes > 0,
+      emphasis: true,
+    },
+    {
+      label: t("Pricing transparency"),
+      value: String(stats.pricingRows || 0),
+      trend:
+        stats.pricingRows > 0
+          ? t("Live rows, all reviewable before booking")
+          : t("Published before you commit"),
+    },
+    {
+      label: t("Pickup window"),
+      value: pickupHours.includes("•")
+        ? (pickupHours.split("•")[1]?.trim() ?? pickupHours)
+        : pickupHours,
+      trend: pickupHours.includes("•")
+        ? (pickupHours.split("•")[0]?.trim() ?? t("Six days a week"))
+        : t("Six days a week"),
+    },
+    {
+      label: t("Coverage zones"),
+      value: String(stats.zones || 0),
+      trend:
+        stats.zones > 0
+          ? t("Active routing across served areas")
+          : t("Citywide on request"),
+    },
+  ];
+
+  /*
+   * Lane cards — three signature service families. Care's lanes are NOT
+   * 12 tiles. They are wash & fold, dry clean, linen — plus the two
+   * cleaning surfaces — each with one promise statement.
+   */
+  const garmentCount = catalog.serviceTypes.filter(
+    (s) => s.category_key === "garment" && s.is_active,
+  ).length;
+  const homePackages = catalog.packages.filter(
+    (p) => p.category_key === "home" && p.is_active,
+  );
+  const officePackages = catalog.packages.filter(
+    (p) => p.category_key === "office" && p.is_active,
+  );
+
+  const laneCards: PortalLaneCard[] = [
+    {
+      badge: t("Wardrobe"),
+      title: t("Garments — pickup and return delivery"),
+      body: t(
+        "Dry cleaning, laundry, pressing, and treatments handled with one tracking code from pickup to return.",
       ),
-      machineTranslate: locale !== "en",
-    }),
-  ]);
+      promise: t("Returned to you"),
+      href: "/book?service=garments",
+    },
+    {
+      badge: t("Residential"),
+      title: t("Home cleaning — recurring or deep"),
+      body: t(
+        "Move-in, deep, and recurring home care planned around property and schedule, with completed sign-off on the way out.",
+      ),
+      promise: homePackages.length > 0 ? t("On-site completion") : t("On-site completion"),
+      href: "/book?service=home",
+    },
+    {
+      badge: t("Commercial"),
+      title: t("Office cleaning — after-hours coverage"),
+      body: t(
+        "Reliable after-hours and recurring workplace cleaning with access coordination and clean sign-off.",
+      ),
+      promise: officePackages.length > 0 ? t("Sign-off, captured") : t("Sign-off, captured"),
+      href: "/book?service=office",
+    },
+  ];
 
-  const careHeroFirstName = chipUser
-    ? chipUser.displayName.trim().split(/\s+/)[0] || null
-    : null;
-
-  const featuredPricing = pricing.filter((item) => item.is_featured).slice(0, 4);
-  const garmentPreview = featuredPricing.length > 0 ? featuredPricing : pricing.slice(0, 4);
-  const homePackages = catalog.packages.filter((item) => item.category_key === "home").slice(0, 2);
-  const officePackages = catalog.packages.filter((item) => item.category_key === "office").slice(0, 2);
-  const supportEmail = settings.support_email || care.supportEmail;
-  const supportPhone = settings.support_phone || care.supportPhone;
-  const heroImageUrl = settings.hero_image_url?.trim() || null;
-  const hasReviews = reviews.length > 0;
-
-  const clientProfiles = [
+  /*
+   * Process — hairline-divided steps, no card wall.
+   */
+  const processItems: PortalDividedListItem[] = [
+    {
+      icon: ClipboardCheck,
+      title: t("Choose your service"),
+      body: t(
+        "Garment pickup, home cleaning, or office cleaning. The form keeps the request small and clear before you submit.",
+      ),
+      status: { label: t("Step 01"), tone: "active" },
+    },
+    {
+      icon: Calendar,
+      title: t("Add the details"),
+      body: t(
+        "Address, schedule windows, access notes, and anything that affects delivery or on-site completion.",
+      ),
+      status: { label: t("Step 02"), tone: "neutral" },
+    },
+    {
+      icon: Truck,
+      title: t("Receive a tracking code"),
+      body: t(
+        "Garments move through pickup, treatment, finishing, and return. Cleaning visits move through arrival, work, and sign-off.",
+      ),
+      status: { label: t("Step 03"), tone: "neutral" },
+    },
     {
       icon: CheckCircle2,
-      title: t("Private households"),
+      title: t("Finish on the right note"),
       body: t(
-        "Recurring home care, one-off intensive cleans, and wardrobe support from one calmer account experience.",
+        "Garments come back to you. Homes and offices end in completed work with a captured sign-off on record.",
       ),
+      status: { label: t("Step 04"), tone: "good" },
     },
-    {
-      icon: Repeat,
-      title: t("Managed estates"),
-      body: t(
-        "Saved schedules, property notes, and steady follow-through for estates, apartments, and multi-unit residences.",
-      ),
-    },
-    {
-      icon: Building2,
-      title: t("Commercial operators"),
-      body: t(
-        "Routine office cleaning with dependable scheduling, clear communication, and accountability from visit to sign-off.",
-      ),
-    },
-  ] as const;
+  ];
 
-  const serviceJourneys = [
+  /*
+   * Trust + contact rails — denser than a card wall.
+   */
+  const trustItems: PortalDividedListItem[] = [
     {
-      title: t("Garments end in delivery"),
+      icon: ShieldCheck,
+      title: t("Pricing reviewed before booking"),
       body: t(
-        "Garment care moves through pickup, treatment, finishing, packing, and return delivery back to you.",
+        "Dry-clean, laundry, pressing, and treatment prices stay visible up front so the estimate you review feels grounded.",
       ),
     },
     {
-      title: t("Homes end in completion quality"),
+      icon: Sparkles,
+      title: t("Recurring care, steady follow-through"),
       body: t(
-        "Home cleaning is centred on arrival timing, on-site work, final checks, and a result you can walk back into confidently.",
+        "Saved schedules and property notes mean recurring cleaning does not start from scratch every week.",
       ),
     },
     {
-      title: t("Offices end in sign-off"),
+      icon: Phone,
+      title: t("A real human on the line"),
       body: t(
-        "Office cleaning is built around schedule readiness, site access, completed tasks, and a confident final handover.",
+        "A direct support channel covers payment questions, schedule edits, and anything the form did not catch.",
       ),
     },
-  ] as const;
+  ];
+
+  const contactItems: PortalDividedListItem[] = [
+    {
+      icon: Clock3,
+      title: t("Service hours"),
+      body: pickupHours,
+      status: { label: t("Live"), tone: "active" },
+    },
+    {
+      icon: Phone,
+      title: t("Talk to the desk"),
+      body: supportPhone || supportEmail || BRAND_EMAILS.care,
+      status: supportPhone
+        ? { label: t("Phone"), tone: "good" }
+        : { label: t("Email"), tone: "neutral" },
+    },
+    {
+      icon: Shirt,
+      title: t("Wardrobe pickup"),
+      body: t(
+        "Schedule a pickup window when you book — return delivery is part of the same tracking code.",
+      ),
+      status: { label: t("End-to-end"), tone: "neutral" },
+    },
+  ];
+
+  const coverageLine =
+    stats.zones > 0 ? t("Active across served service zones") : null;
 
   return (
-    <main
-      id="henryco-main"
-      tabIndex={-1}
-      className="overflow-hidden bg-transparent pb-24"
-      style={
-        {
-          "--accent": CARE_ACCENT,
-          "--accent-secondary": CARE_ACCENT_SECONDARY,
-        } as CSSProperties
-      }
-    >
-      {/* Premium editorial hero — pinned to a deliberate dark "stage"
-          surface that does not depend on the visitor's system theme. Above
-          the fold reads consistently in both light and dark, while below-
-          the-fold content continues to swap via care's theme tokens. This
-          is the editorial pattern owner asked for: the hero is the same
-          premium first impression on every device. */}
-      <div className="dark relative isolate overflow-hidden bg-[#06101e] text-white">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [background:radial-gradient(900px_440px_at_20%_-10%,rgba(107,124,255,0.18),transparent_55%),radial-gradient(720px_360px_at_80%_8%,rgba(51,211,199,0.10),transparent_55%),radial-gradient(900px_520px_at_50%_110%,rgba(38,22,82,0.65),transparent_60%)]"
-        />
-      <section className="relative mx-auto max-w-[92rem] px-5 pt-8 sm:px-8 sm:pt-12 lg:px-10 lg:pt-16">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-px max-w-[92rem] bg-gradient-to-r from-transparent via-[color:var(--accent)]/45 to-transparent"
-        />
-
-        {/* Top trust strip — 3 micro signals + the always-available track link.
-            Sets the operating-company tone before the headline lands. */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-white/60">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span className="inline-flex items-center gap-1.5 text-[color:var(--accent)]">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              {heroBadge}
-            </span>
-            <span aria-hidden className="hidden h-1 w-1 rounded-full bg-white/15 sm:inline-block" />
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/85" />
-              {settings.pickup_hours || t("Mon – Sat • 8:00 AM to 7:00 PM")}
-            </span>
-            <span aria-hidden className="hidden h-1 w-1 rounded-full bg-white/15 sm:inline-block" />
-            <span className="inline-flex items-center gap-1.5">
-              <Star className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-              {t("Reviewed by clients across homes, offices, and wardrobes")}
-            </span>
-          </div>
-          <Link
-            href="/track"
-            className="inline-flex items-center gap-1.5 text-white/70 transition hover:text-white"
-          >
-            {t("Track a booking")}
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-
-        <div className="mt-8 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
-          <div>
-            {chipUser ? (
-              <p className="text-sm font-semibold tracking-tight text-white/72">
-                {t("Welcome back")}
-                {careHeroFirstName ? `, ${careHeroFirstName}` : ""}.{" "}
-                <Link
-                  href="/track"
-                  className="text-[color:var(--accent)] underline-offset-4 transition hover:underline"
-                >
-                  {t("Continue tracking your last request")}
-                </Link>
-              </p>
-            ) : null}
-
-            <h1
-              className={`max-w-3xl text-balance care-display text-white ${chipUser ? "mt-5" : ""}`}
-            >
-              {heroTitle}
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-white/72 sm:text-lg">
-              {heroSubtitle}
-            </p>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                href="/book"
-                className="care-button-primary inline-flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]"
-              >
-                {t("Book a service")}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-transparent px-6 py-3.5 text-sm font-semibold text-white transition outline-none hover:border-white/30 hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]"
-              >
-                {t("Review pricing")}
-              </Link>
-            </div>
-
-            {/* Three concierge service paths — clear next step for every
-                kind of visitor. HenryCoTactileCard scopes hover lift to fine
-                pointers only so touch devices never see the stuck-hover
-                state the owner flagged. Each card lands directly in the
-                booking flow with the right service preselected. */}
-            <div className="mt-9 grid gap-3 sm:grid-cols-3">
-              {[
-                {
-                  href: "/book?service=garments",
-                  eyebrow: t("Garments"),
-                  title: t("Pickup, treatment, and return delivery."),
-                },
-                {
-                  href: "/book?service=home",
-                  eyebrow: t("Homes"),
-                  title: t("Move-out, deep, and recurring home care."),
-                },
-                {
-                  href: "/book?service=office",
-                  eyebrow: t("Offices"),
-                  title: t("After-hours and recurring workplace cleaning."),
-                },
-              ].map((path) => (
-                <HenryCoTactileCard key={path.href} href={path.href} ariaLabel={`${path.eyebrow}: ${path.title}`}>
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                      {path.eyebrow}
-                    </p>
-                    <p className="mt-2 text-[15px] font-semibold leading-snug tracking-[-0.005em] text-white">
-                      {path.title}
-                    </p>
-                  </div>
-                  <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65 transition [@media(hover:hover)]:group-hover:text-white">
-                    {t("Start booking")}
-                    <ArrowRight className="h-3 w-3 transition [@media(hover:hover)]:group-hover:translate-x-0.5" />
-                  </div>
-                </HenryCoTactileCard>
-              ))}
-            </div>
-          </div>
-
-          {/* Aside — when imagery configured, full-bleed photographic spread
-              with a single editorial caption. When not configured, the
-              HenryCoHeroCard primitive renders the calm service-desk dial
-              (hours + phone + recurring care) with mobile-safe typography
-              and consistent motion across every HenryCo public surface. */}
-          <aside>
-            {heroImageUrl ? (
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.65)]">
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${heroImageUrl})` }}
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,31,0.06)_0%,rgba(7,17,31,0.20)_55%,rgba(7,17,31,0.85)_100%)]" />
-                <div className="relative flex min-h-[22rem] flex-col justify-end p-6 sm:p-8">
-                  <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-black/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/85 backdrop-blur-sm">
-                    <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />
-                    {t("Signature service")}
-                  </div>
-                  <p
-                    className="mt-4 max-w-md text-balance font-semibold text-white"
-                    style={{
-                      fontSize: "clamp(1.4rem, 3.4vw + 0.5rem, 1.85rem)",
-                      lineHeight: 1.12,
-                      letterSpacing: "-0.015em",
-                      overflowWrap: "break-word",
-                      hyphens: "auto",
-                    }}
-                  >
-                    {t("Hand off the work — see it move, finish, and come back to you.")}
-                  </p>
-                  <p className="mt-3 max-w-md text-sm leading-relaxed text-white/72">
-                    {t("Every booking gets one tracking code, one calm service flow, and a real human on the line if the day asks for it.")}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <HenryCoHeroCard
-                tone="spotlight"
-                accentVar="var(--accent, #6b7cff)"
-                eyebrow={t("At your service")}
-                title={t("Hand off the work — we keep it moving.")}
-                body={t("One tracking code per request, one calm service flow, and a real human on the line whenever the day asks for it.")}
-                rows={[
-                  {
-                    key: "hours",
-                    icon: <Clock3 className="h-4 w-4" />,
-                    label: t("Service hours"),
-                    value: settings.pickup_hours || "Mon–Sat · 8:00 AM – 7:00 PM",
-                  },
-                  {
-                    key: "desk",
-                    icon: <PhoneCall className="h-4 w-4" />,
-                    label: t("Talk to the desk"),
-                    value: supportPhone || supportEmail || BRAND_EMAILS.care,
-                  },
-                  {
-                    key: "recurring",
-                    icon: <Repeat className="h-4 w-4" />,
-                    label: t("Recurring care"),
-                    value: t("Saved schedules · steady follow-through"),
-                  },
-                ]}
-              />
-            )}
-          </aside>
-        </div>
-
-        {/* Editorial "what happens next" rail — sets expectations before the
-            visitor scrolls into product detail. Three steps, hairline only. */}
-        <div className="mt-12 grid gap-6 border-y border-white/10 py-6 sm:grid-cols-3">
-          {[
-            {
-              step: "01",
-              title: t("Tell us what you need"),
-              body: t("Pick a service, add the details, and review the current estimate."),
-            },
-            {
-              step: "02",
-              title: t("Receive one tracking code"),
-              body: t("One code per request keeps pickup, treatment, and delivery visible."),
-            },
-            {
-              step: "03",
-              title: t("Finish on the right note"),
-              body: t("Garments come back to you. Homes and offices end in completed work."),
-            },
-          ].map((item, index) => (
-            <div
-              key={item.step}
-              className={index > 0 ? "sm:border-l sm:border-white/10 sm:pl-6" : ""}
-            >
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                {t("Step")} {item.step}
-              </p>
-              <p className="mt-3 text-base font-semibold tracking-[-0.005em] text-white">
-                {item.title}
-              </p>
-              <p className="mt-1.5 text-sm leading-relaxed text-white/68">{item.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-      </div>
-
-      {/* CareFlow — real product, kept untouched */}
-      <section id="services" className="mx-auto mt-16 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <CareFlow />
-      </section>
-
-      {/* Service journeys + Client profiles — editorial 2-col split, divided lists, no inner panels */}
-      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-12 xl:grid-cols-[0.9fr,1.1fr]">
-          <div>
-            <p className="care-kicker">{t("Service journeys")}</p>
-            <h2 className="mt-4 max-w-md text-balance care-section-title text-zinc-950 dark:text-white">
-              {t("Service timelines that match the work being done.")}
-            </h2>
-            <p className="mt-4 max-w-md text-sm leading-7 text-zinc-600 dark:text-white/72">
-              {t(
-                "A garment order should feel different from a home clean or an office visit. HenryCo Care keeps each service clear so customers always understand what stage comes next.",
-              )}
-            </p>
-            <ul className="mt-7 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
-              {serviceJourneys.map((item) => (
-                <li key={item.title} className="py-5">
-                  <h3 className="text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
-                    {item.title}
-                  </h3>
-                  <p className="mt-1.5 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-                    {item.body}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <p className="care-kicker">{t("Who Care fits")}</p>
-            <h2 className="mt-4 max-w-md text-balance care-section-title text-zinc-950 dark:text-white">
-              {t("Three audiences. One operating standard.")}
-            </h2>
-            <ul className="mt-7 grid gap-8 sm:grid-cols-3 sm:divide-x sm:divide-black/10 dark:sm:divide-white/10">
-              {clientProfiles.map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <li key={item.title} className={i > 0 ? "sm:pl-6" : ""}>
-                    <Icon className="h-5 w-5 text-[color:var(--accent)]" aria-hidden />
-                    <h3 className="mt-4 text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
-                      {item.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
-                      {item.body}
-                    </p>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* Residential + Commercial packages — kept as 2-col, but flatter chrome */}
-      <section id="pickup" className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-6 xl:grid-cols-2">
-          <div className="care-card rounded-[2.2rem] p-7 sm:p-8">
-            <p className="care-kicker">{t("Residential care")}</p>
-            <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
-              {t("Home care planned around your property and your schedule.")}
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-              {t(
-                "Move from a one-time clean into recurring home care without losing clarity around scope, timing, staffing, or access notes.",
-              )}
-            </p>
-            <div className="mt-6 grid gap-4">
-              {homePackages.map((item) => (
-                <PackageCard
-                  key={item.id}
-                  title={item.name}
-                  body={item.summary}
-                  value={formatMoney(item.base_price)}
-                  meta={item.default_frequency.replaceAll("_", " ")}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="care-card rounded-[2.2rem] p-7 sm:p-8">
-            <p className="care-kicker">{t("Commercial coverage")}</p>
-            <h2 className="mt-3 care-section-title text-zinc-950 dark:text-white">
-              {t("Office cleaning built for reliable business continuity.")}
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-              {t(
-                "After-hours cleaning, site access coordination, and recurring workplace care are handled with the same reliability clients expect from any serious service partner.",
-              )}
-            </p>
-            <div className="mt-6 grid gap-4">
-              {officePackages.map((item) => (
-                <PackageCard
-                  key={item.id}
-                  title={item.name}
-                  body={item.summary}
-                  value={formatMoney(item.base_price)}
-                  meta={`${item.staff_count} staff`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing + Reviews — editorial 2-col, divided pricing rows, divided reviews */}
-      <section id="pricing" className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-12 xl:grid-cols-[1.05fr,0.95fr]">
-          <div>
-            <p className="care-kicker">{t("Current garment pricing")}</p>
-            <h2 className="mt-4 max-w-md text-balance care-section-title text-zinc-950 dark:text-white">
-              {t("Garment pricing stays transparent and current.")}
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-              {t(
-                "Dry cleaning, laundry, pressing, and treatment prices stay clear before you book, so the estimate you review feels grounded and believable.",
-              )}
-            </p>
-            <ul className="mt-7 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
-              {garmentPreview.map((item) => (
-                <li key={item.id} className="flex items-baseline justify-between gap-6 py-4">
-                  <div className="min-w-0">
-                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/45">
-                      {item.category}
-                    </p>
-                    <p className="mt-1 text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
-                      {item.item_name}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[1.5rem] font-semibold leading-tight tracking-tight text-[color:var(--accent)]">
-                      {formatMoney(item.price)}
-                    </p>
-                    <p className="mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/45">
-                      /{item.unit}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <p className="care-kicker">
-              {hasReviews ? t("Client reviews") : t("Service trust")}
-            </p>
-            <h2 className="mt-4 max-w-md text-balance care-section-title text-zinc-950 dark:text-white">
-              {hasReviews
-                ? t("Real feedback from clients who have experienced the service.")
-                : t("Trust signals that make the service feel credible before the first booking.")}
-            </h2>
-            <div className="mt-7">
-              {hasReviews ? (
-                <ul className="divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
-                  {reviews.slice(0, 3).map((review) => (
-                    <li key={review.id} className="py-5">
-                      <div className="flex items-center gap-1 text-[color:var(--accent)]">
-                        {stars(review.rating).map((_, index) => (
-                          <Star key={index} className="h-3.5 w-3.5 fill-current" />
-                        ))}
-                      </div>
-                      <p className="mt-3 text-sm leading-7 text-zinc-700 dark:text-white/72">
-                        “{review.review_text}”
-                      </p>
-                      {review.photo_url ? (
-                        <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-black/10 dark:border-white/10">
-                          <Image
-                            src={review.photo_url}
-                            alt={`Review image from ${review.customer_name}`}
-                            width={960}
-                            height={704}
-                            unoptimized
-                            className="h-44 w-full object-cover"
-                          />
-                        </div>
-                      ) : null}
-                      <p className="mt-3 text-sm font-semibold text-zinc-950 dark:text-white">
-                        {review.customer_name}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
-                  <p className="text-[1.15rem] font-semibold leading-snug tracking-tight text-zinc-950 dark:text-white">
-                    {t("Clear pricing, tracked handoffs, and direct support stay visible from the start.")}
-                  </p>
-                  <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/68">
-                    {t(
-                      "HenryCo Care shows the service path, pickup logic, and support channels up front so customers do not have to guess what happens after they book.",
-                    )}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Closing band — Spotlight contrast, no panel-on-panel */}
-      <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <PublicSpotlight
-          tone="contrast"
-          eyebrow={t("Ready when you are")}
-          title={t("Book with clarity, then follow the service with confidence.")}
-          body={t(
-            "From pickup windows to on-site visits and return delivery, HenryCo Care keeps every service update visible enough that you are not left guessing.",
+    <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[92rem] care-pf">
+        <PortalHero
+          eyebrow={t("Garments · Homes · Offices")}
+          title={t("Calm service for what you wear and where you live.")}
+          blurb={t(
+            "One tracking code per request, one calm service flow, and a real human on the line whenever the day asks for it. Garments come back delivered. Homes and offices end in completed work.",
           )}
-          aside={
-            <div className="flex flex-col gap-3">
-              <Link
-                href="/book"
-                className="care-button-primary inline-flex items-center justify-between gap-2 rounded-full px-6 py-3.5 text-sm font-semibold"
-              >
-                {t("Plan service")}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/services"
-                className="inline-flex items-center justify-between gap-2 rounded-full border border-white/20 px-6 py-3.5 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/[0.04]"
-              >
-                {t("Explore service families")}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          }
+          coverage={coverageLine}
+          pickupHours={pickupHours}
+          capabilityMetrics={capabilityMetrics}
+          ctas={[
+            { href: "/book", label: t("Book a service"), variant: "primary" },
+            { href: "/pricing", label: t("Review pricing"), variant: "secondary" },
+            { href: "/track", label: t("Track a booking"), variant: "ghost" },
+          ]}
         />
-      </section>
-    </main>
-  );
-}
 
-function PackageCard({
-  title,
-  body,
-  value,
-  meta,
-}: {
-  title: string;
-  body: string;
-  value: string;
-  meta: string;
-}) {
-  return (
-    <div className="rounded-[1.4rem] border border-black/10 bg-black/[0.02] p-5 dark:border-white/10 dark:bg-white/[0.03]">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h3 className="text-base font-semibold tracking-tight text-zinc-950 dark:text-white">
-            {title}
-          </h3>
-          <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">{body}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[color:var(--accent)]">
-            {value}
-          </p>
-          <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/45">
-            {meta}
-          </p>
-        </div>
+        <PortalSection
+          id="care-pf-lanes"
+          kicker={t("Premium care services")}
+          title={t("Three signature lanes. One operating standard.")}
+          meta={
+            garmentCount > 0
+              ? `${garmentCount} ${t("garment item types")} · ${stats.activeLanes} ${t("active packages")}`
+              : `${stats.activeLanes} ${t("active packages")}`
+          }
+        >
+          <PortalLaneGrid lanes={laneCards} />
+        </PortalSection>
+
+        <PortalSection
+          id="care-pf-flow"
+          kicker={t("How it works")}
+          title={t("Every step is visible, every milestone is timestamped.")}
+        >
+          <PortalDividedList items={processItems} />
+        </PortalSection>
+
+        <PortalSection
+          id="care-pf-trust"
+          kicker={t("Why customers stay")}
+          title={t("Service truth that earns the second booking.")}
+        >
+          <div className="care-pf__section-grid">
+            <p className="care-pf__section-body">
+              {t(
+                "Pricing transparency, real human support, and saved schedules are the operating standard. Garments end in return delivery. Cleaning visits end in completed work — captured, not promised.",
+              )}
+            </p>
+            <PortalDividedList items={trustItems} />
+          </div>
+        </PortalSection>
+
+        <PortalSection
+          id="care-pf-contact"
+          kicker={t("Reach the desk")}
+          title={t("Service hours, support channels, and pickup logistics.")}
+          meta={
+            stats.approvedReviews > 0
+              ? `${stats.approvedReviews} ${t("approved reviews")}`
+              : undefined
+          }
+        >
+          <PortalDividedList items={contactItems} />
+          <div className="care-pf__hero-ctas">
+            <a className="care-pf__cta care-pf__cta-primary" href="/book">
+              {t("Plan service")}
+            </a>
+            <a className="care-pf__cta care-pf__cta-secondary" href="/services">
+              {t("Explore service families")}
+            </a>
+          </div>
+        </PortalSection>
       </div>
-    </div>
+    </main>
   );
 }
