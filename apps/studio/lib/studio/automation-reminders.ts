@@ -41,14 +41,6 @@ function emptyResult(): SweepResult {
   return { sent: 0, skipped: 0, errors: 0 };
 }
 
-function withinDays(target: string | null | undefined, now: Date, daysAhead: number): boolean {
-  if (!target) return false;
-  const t = new Date(target).getTime();
-  if (Number.isNaN(t)) return false;
-  const horizon = now.getTime() + daysAhead * 24 * 60 * 60 * 1000;
-  return t > now.getTime() && t <= horizon;
-}
-
 function pastDueByDays(target: string | null | undefined, now: Date, daysPast: number, tolerance = 1): boolean {
   if (!target) return false;
   const t = new Date(target).getTime();

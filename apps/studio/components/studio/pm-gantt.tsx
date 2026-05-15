@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { getStudioCopy } from "@henryco/i18n";
 import type { AppLocale } from "@henryco/i18n";
@@ -62,9 +62,12 @@ export function PMGantt({
   locale = "en",
 }: PMGanttProps) {
   const copy = getStudioCopy(locale);
+  // Stable "now" pinned at first mount so render is pure: subsequent
+  // re-renders for the same component instance use the same anchor.
+  const [defaultNowMs] = useState<number>(() => Date.now());
   const windowStart = useMemo(
-    () => (windowStartIso ? new Date(windowStartIso).getTime() : Date.now()),
-    [windowStartIso]
+    () => (windowStartIso ? new Date(windowStartIso).getTime() : defaultNowMs),
+    [windowStartIso, defaultNowMs]
   );
   const windowEnd = useMemo(
     () => windowStart + windowDays * 24 * 60 * 60 * 1000,
