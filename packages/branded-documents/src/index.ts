@@ -39,3 +39,19 @@ export {
   type VendorTaxDocumentProps,
   type VendorTaxMonthlyRow,
 } from "./templates/vendor-tax-document";
+export {
+  StudioProposalDocument,
+  type StudioProposalProps,
+  type StudioProposalMilestone,
+} from "./templates/studio-proposal";
+export {
+  StudioInvoiceDocument,
+  type StudioInvoiceProps,
+  type StudioInvoiceLineItem,
+} from "./templates/studio-invoice";
+export {
+  StudioBrandGuidelinesDocument,
+  type StudioBrandGuidelinesProps,
+  type StudioBrandColour,
+  type StudioBrandType,
+} from "./templates/studio-brand-guidelines";
