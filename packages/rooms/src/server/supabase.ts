@@ -92,6 +92,7 @@ export type RoomsSupabaseInsertBuilder = {
 export type RoomsSupabaseUpdateBuilder = {
   eq: (column: string, value: unknown) => RoomsSupabaseUpdateBuilder;
   in: (column: string, values: ReadonlyArray<unknown>) => RoomsSupabaseUpdateBuilder;
+  is: (column: string, value: unknown) => RoomsSupabaseUpdateBuilder;
   select: (cols?: string) => RoomsSupabaseSelectBuilder;
   then: (
     onfulfilled?: (value: {

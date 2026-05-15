@@ -10,14 +10,18 @@
 import type { ParticipantRole, RoomError, RoomProvider, RoomStatus } from "./types";
 
 export function roomsUnavailable(retryAfter?: number): RoomError {
-  return { error: "rooms_unavailable", retryAfter };
+  return retryAfter === undefined
+    ? { error: "rooms_unavailable" }
+    : { error: "rooms_unavailable", retryAfter };
 }
 
 export function providerUnavailable(
   provider: RoomProvider,
   retryAfter?: number,
 ): RoomError {
-  return { error: "provider_unavailable", provider, retryAfter };
+  return retryAfter === undefined
+    ? { error: "provider_unavailable", provider }
+    : { error: "provider_unavailable", provider, retryAfter };
 }
 
 export function unauthorized(

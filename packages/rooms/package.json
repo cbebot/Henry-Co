@@ -18,7 +18,7 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --test src/__tests__/provider-selector.test.ts src/__tests__/server-actions.test.ts"
+    "test": "tsx --import ./src/__tests__/setup.mjs --test src/__tests__/provider-selector.test.ts src/__tests__/server-actions.test.ts"
   },
   "peerDependencies": {
     "@supabase/supabase-js": "^2.0.0",
@@ -39,6 +39,7 @@
     "@types/react-dom": "^19.2.3",
     "lucide-react": "^0.577.0",
     "next": "^16.1.6",
+    "server-only": "^0.0.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

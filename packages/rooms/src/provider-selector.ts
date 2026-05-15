@@ -73,7 +73,9 @@ export type ProviderSelectorEnv = {
  * The test override takes precedence — if a test has installed a stub
  * driver, this returns it regardless of env.
  */
-export function selectProvider(env: ProviderSelectorEnv = process.env): ProviderDriver | null {
+export function selectProvider(
+  env: ProviderSelectorEnv = process.env as ProviderSelectorEnv,
+): ProviderDriver | null {
   if (testOverride) return testOverride;
 
   const requested = normalizeRequested(env.ROOMS_PROVIDER);
@@ -119,7 +121,7 @@ export function selectProvider(env: ProviderSelectorEnv = process.env): Provider
  * field eagerly without a roundtrip.
  */
 export function selectProviderName(
-  env: ProviderSelectorEnv = process.env,
+  env: ProviderSelectorEnv = process.env as ProviderSelectorEnv,
 ): RoomProvider | null {
   if (testOverride) return testOverride.provider;
   const requested = normalizeRequested(env.ROOMS_PROVIDER);
