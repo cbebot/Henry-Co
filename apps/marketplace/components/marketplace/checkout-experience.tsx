@@ -17,6 +17,8 @@ import {
   UploadCloud,
   Wallet,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import type { UserAddressRecord } from "@henryco/address-selector";
 import { useMarketplaceCart } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
@@ -463,6 +465,8 @@ export function CheckoutExperience({
 }
 
 function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const currentIndex = STEPS.findIndex((s) => s.id === currentStep);
   const progressPct = ((currentIndex + 0.5) / STEPS.length) * 100;
 
@@ -510,13 +514,13 @@ function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
                       status === "upcoming" ? "text-[var(--market-muted)]" : "text-[var(--market-brass)]"
                     }`}
                   >
-                    Step {index + 1}
+                    {t("Step")} {index + 1}
                   </span>
                   <span className="mt-1 block text-sm font-semibold text-[var(--market-paper-white)] sm:text-base">
-                    {stepDef.label}
+                    {t(stepDef.label)}
                   </span>
                   <span className="hidden text-xs text-[var(--market-muted)] sm:block">
-                    {stepDef.description}
+                    {t(stepDef.description)}
                   </span>
                 </span>
               </li>
@@ -761,6 +765,8 @@ function PaymentStep({
   proofName: string;
   setProofName: (value: string) => void;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   // COD eligibility is enforced server-side at /api/marketplace; the UI offers
   // both methods and the server rejects ineligible carts with a clear message.
   const codEligible = true;
@@ -768,9 +774,9 @@ function PaymentStep({
   const available = wallet.availableKobo / 100;
   const shortfall = Math.max(0, totalKobo - wallet.availableKobo) / 100;
   const bankDetails: Array<[string, string | null]> = [
-    ["Bank", paymentRail.bankName],
-    ["Account name", paymentRail.accountName],
-    ["Account number", paymentRail.accountNumber],
+    [t("Bank"), paymentRail.bankName],
+    [t("Account name"), paymentRail.accountName],
+    [t("Account number"), paymentRail.accountNumber],
   ];
 
   async function copyValue(label: string, value: string | null) {
@@ -791,16 +797,17 @@ function PaymentStep({
           <Wallet className="h-4 w-4" />
         </span>
         <div>
-          <p className="market-kicker">Step 2 of 3</p>
+          <p className="market-kicker">{t("Step 2 of 3")}</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-3xl">
-            Payment method
+            {t("Payment method")}
           </h2>
         </div>
       </header>
 
       <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-        Use cleared HenryCo balance first when it covers the total, or transfer the
-        exact amount and upload proof before the order enters finance review.
+        {t(
+          "Use cleared HenryCo balance first when it covers the total, or transfer the exact amount and upload proof before the order enters finance review.",
+        )}
       </p>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-3">
@@ -814,15 +821,15 @@ function PaymentStep({
           const detail =
             option.id === "wallet_balance"
               ? walletCanPay
-                ? `${formatCurrency(available, wallet.currency)} available`
+                ? `${formatCurrency(available, wallet.currency)} ${t("available")}`
                 : shortfall > 0
-                ? `${formatCurrency(shortfall, wallet.currency)} short`
-                : wallet.issue || "Wallet unavailable"
+                ? `${formatCurrency(shortfall, wallet.currency)} ${t("short")}`
+                : wallet.issue || t("Wallet unavailable")
               : option.id === "bank_transfer"
               ? paymentRail.ready
-                ? `${paymentRail.bankName} ready`
-                : "Payment rail unavailable"
-              : "Seller acceptance still applies";
+                ? `${paymentRail.bankName} ${t("ready")}`
+                : t("Payment rail unavailable")
+              : t("Seller acceptance still applies");
           return (
             <label
               key={option.id}
@@ -846,7 +853,7 @@ function PaymentStep({
                   <Icon className="h-4 w-4" />
                 </span>
                 <span className="text-base font-semibold text-[var(--market-paper-white)]">
-                  {option.label}
+                  {t(option.label)}
                 </span>
                 {active ? (
                   <span className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--market-brass)] text-[#101114]">
@@ -855,7 +862,7 @@ function PaymentStep({
                 ) : null}
               </div>
               <p className="text-sm leading-6 text-[var(--market-muted)]">
-                {option.description}
+                {t(option.description)}
               </p>
               <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--market-brass)]">
                 {detail}
@@ -868,33 +875,33 @@ function PaymentStep({
       {method === "wallet_balance" ? (
         <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
           <div className="grid gap-3 text-sm sm:grid-cols-3">
-            <Metric label="Available balance" value={formatCurrency(available, wallet.currency)} />
-            <Metric label="Order total" value={formatCurrency(total, currency)} />
+            <Metric label={t("Available balance")} value={formatCurrency(available, wallet.currency)} />
+            <Metric label={t("Order total")} value={formatCurrency(total, currency)} />
             <Metric
-              label="After payment"
+              label={t("After payment")}
               value={formatCurrency(Math.max(0, wallet.availableKobo - totalKobo) / 100, wallet.currency)}
             />
           </div>
           {walletCanPay ? (
             <p className="mt-4 flex items-start gap-2 text-sm leading-7 text-[var(--market-muted)]">
               <Check className="mt-1 h-4 w-4 text-[var(--market-brass)]" />
-              Balance payment will debit your wallet and create the order as paid-held for
-              fulfillment and escrow controls.
+              {t(
+                "Balance payment will debit your wallet and create the order as paid-held for fulfillment and escrow controls.",
+              )}
             </p>
           ) : (
             <div className="mt-4 rounded-[1.2rem] border border-amber-400/30 bg-amber-400/10 p-4 text-sm leading-7 text-amber-100">
               <div className="flex items-start gap-2">
                 <AlertCircle className="mt-1 h-4 w-4 shrink-0" />
                 <p>
-                  Balance cannot cover this checkout. Fund your wallet or use bank
-                  transfer with proof.
+                  {t("Balance cannot cover this checkout. Fund your wallet or use bank transfer with proof.")}
                 </p>
               </div>
               <Link
                 href={walletTopUpHref}
                 className="mt-3 inline-flex font-semibold text-[var(--market-paper-white)]"
               >
-                Top up wallet
+                {t("Top up wallet")}
               </Link>
             </div>
           )}
@@ -906,7 +913,7 @@ function PaymentStep({
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
-                Transfer exactly
+                {t("Transfer exactly")}
               </p>
               <p className="mt-1 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">
                 {formatCurrency(total, currency)}
@@ -914,7 +921,7 @@ function PaymentStep({
             </div>
             <div className="rounded-[1.1rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.18)] px-4 py-3 text-sm">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                Payment reference
+                {t("Payment reference")}
               </p>
               <div className="mt-1 flex items-center gap-2">
                 <code className="text-base font-semibold text-[var(--market-paper-white)]">
