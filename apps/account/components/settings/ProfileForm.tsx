@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatSurfaceTemplate, getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
@@ -59,6 +60,13 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
   const router = useRouter();
   const selectedCountry = getCountry(country) || getCountry("NG")!;
   const selectedAvailability = selectedCountry.availability;
+  const emailSupportHref = `/support/new?${new URLSearchParams({
+    division: "account",
+    category: "account",
+    context: "email-change",
+    subject: t("Change account email"),
+    message: t("I need help changing the email address on my HenryCo account."),
+  }).toString()}`;
   const languageOptions = getUserSelectableLocales(currentLanguage, profileLanguage).map((localeOption) => ({
     value: localeOption,
     label: isPublicSelectorLocale(localeOption)
@@ -237,7 +245,14 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
       <div>
         <label className="mb-1.5 block text-sm font-medium">{t("Email")}</label>
         <input type="email" value={email || ""} disabled className="acct-input opacity-60" />
-        <p className="mt-1 text-xs text-[var(--acct-muted)]">{t("Contact support to change your email")}</p>
+        <p className="mt-1 text-xs text-[var(--acct-muted)]">
+          <Link
+            href={emailSupportHref}
+            className="font-medium text-[var(--acct-gold-text,#8A6F00)] underline-offset-4 transition-colors hover:text-[var(--acct-gold-strong)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acct-gold)]"
+          >
+            {t("Contact support to change your email")}
+          </Link>
+        </p>
       </div>
 
       <div>

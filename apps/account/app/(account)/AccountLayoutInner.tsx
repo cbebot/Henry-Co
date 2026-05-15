@@ -41,7 +41,7 @@ export default async function AccountLayoutInner({ children }: { children: React
       <AccountStudioToastRoot />
       <Sidebar user={userInfo} />
       <main id="hc-main" className="hc-shell-main lg:pl-[var(--acct-sidebar-width)]">
-        <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
+        <div className="hc-shell-content mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
       </main>
     </div>
   );

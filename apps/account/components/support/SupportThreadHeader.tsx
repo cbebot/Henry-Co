@@ -75,9 +75,8 @@ export type SupportThreadHeaderProps = {
  * Workspace-grade thread header for /support/[threadId].
  *
  * Renders subject, division/category pills, status pill (with tone),
- * a persistent participants strip with avatars + roles, a download
- * action (Web Share on touch / direct on desktop), a customization
- * popover (font / density / surface), and an overflow menu with the
+ * a persistent participants strip with avatars + roles, desktop download
+ * + customization actions, and an overflow menu with mobile download plus
  * customer-side actions (mute, report, copy link, copy ID).
  */
 export default function SupportThreadHeader({
@@ -160,18 +159,21 @@ export default function SupportThreadHeader({
         ) : null}
       </div>
       <div className="acct-thread-header__actions">
-        <DownloadDocumentButton
-          endpoint={download.endpoint}
-          suggestedFilename={download.filename}
-          shareTitle={download.shareTitle}
-          variant="secondary"
-          label={download.label}
-        />
-        <ThreadCustomizationMenu labels={customizationLabels} />
+        <div className="acct-thread-header__actions-primary">
+          <DownloadDocumentButton
+            endpoint={download.endpoint}
+            suggestedFilename={download.filename}
+            shareTitle={download.shareTitle}
+            variant="secondary"
+            label={download.label}
+          />
+          <ThreadCustomizationMenu labels={customizationLabels} />
+        </div>
         <ActionMenu
           threadId={threadId}
           subject={subject}
           initialMuted={Boolean(initialMuted)}
+          download={download}
         />
       </div>
     </header>
@@ -182,20 +184,22 @@ export default function SupportThreadHeader({
  * Accessible popover with the customer-side overflow actions.
  *
  * Actions:
+ *   - Download thread (included here for compact/mobile layouts)
  *   - Mute / Unmute notifications for this thread
  *   - Report thread (flag for human review)
  *   - Copy thread link
  *   - Copy thread ID
- *   - Download (the affordance lives on the header — disabled placeholder here)
  */
 function ActionMenu({
   threadId,
   subject,
   initialMuted,
+  download,
 }: {
   threadId: string;
   subject: string;
   initialMuted: boolean;
+  download: SupportThreadHeaderProps["download"];
 }) {
   const locale = useHenryCoLocale();
   const t = useCallback(
@@ -209,7 +213,7 @@ function ActionMenu({
   const [feedback, setFeedback] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const firstItemRef = useRef<HTMLButtonElement | null>(null);
+  const firstItemRef = useRef<HTMLAnchorElement | null>(null);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -247,6 +251,10 @@ function ActionMenu({
     if (typeof window === "undefined") return "";
     return `${window.location.origin}/support/${threadId}`;
   }, [threadId]);
+  const downloadHref = useMemo(() => {
+    const separator = download.endpoint.includes("?") ? "&" : "?";
+    return `${download.endpoint}${separator}download=1`;
+  }, [download.endpoint]);
 
   const copy = useCallback(async (key: string, value: string) => {
     try {
@@ -332,6 +340,9 @@ function ActionMenu({
         onKeyDown={onTriggerKeyDown}
       >
         <MoreVertical size={16} />
+        <span className="acct-thread-header__menu-trigger-label">
+          {t("Actions")}
+        </span>
       </button>
       {open ? (
         <div
@@ -339,8 +350,15 @@ function ActionMenu({
           role="menu"
           aria-label={t("Thread actions")}
         >
-          <ActionItem
+          <ActionLink
             ref={firstItemRef}
+            href={downloadHref}
+            icon={<Download size={14} aria-hidden />}
+            label={download.label}
+            description={t("Save a branded PDF copy of this conversation.")}
+          />
+          <div className="acct-thread-header__menu-divider" role="separator" />
+          <ActionItem
             icon={
               muted ? (
                 <BellRing size={14} aria-hidden />
@@ -379,16 +397,6 @@ function ActionMenu({
             confirmed={copiedKey === "id"}
             onSelect={() => copy("id", threadId)}
           />
-          <div className="acct-thread-header__menu-divider" role="separator" />
-          <ActionItem
-            icon={<Download size={14} aria-hidden />}
-            label={t("Download (use the action above)")}
-            description={t(
-              "Use the Download button to grab a branded PDF copy.",
-            )}
-            disabled
-            onSelect={() => null}
-          />
           {feedback ? (
             <p className="acct-thread-header__menu-feedback" role="status">
               {feedback}
@@ -411,6 +419,37 @@ type ActionItemProps = {
   confirmed?: boolean;
   disabled?: boolean;
 };
+
+type ActionLinkProps = {
+  href: string;
+  icon: ReactNode;
+  label: string;
+  description?: string;
+};
+
+const ActionLink = forwardRef<HTMLAnchorElement, ActionLinkProps>(
+  function ActionLink({ href, icon, label, description }, ref) {
+    return (
+      <a
+        ref={ref}
+        className="acct-thread-header__menu-item"
+        role="menuitem"
+        href={href}
+        download
+      >
+        <span className="acct-thread-header__menu-item-icon" aria-hidden>
+          {icon}
+        </span>
+        <span className="acct-thread-header__menu-item-text">
+          <span className="acct-thread-header__menu-item-label">{label}</span>
+          {description ? (
+            <span className="acct-thread-header__menu-item-desc">{description}</span>
+          ) : null}
+        </span>
+      </a>
+    );
+  },
+);
 
 const ActionItem = forwardRef<HTMLButtonElement, ActionItemProps>(
   function ActionItem(

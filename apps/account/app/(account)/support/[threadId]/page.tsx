@@ -132,48 +132,48 @@ export default async function SupportThreadPage({ params }: Props) {
   });
 
   return (
-    <div className="space-y-6 acct-fade-in">
+    <div className="acct-thread-workspace acct-fade-in">
       <RouteLiveRefresh intervalMs={10000} />
-      <div className="flex items-center gap-3">
+      <div className="acct-thread-workspace__backbar">
         <Link
           href="/support"
-          className="acct-button-ghost rounded-xl"
+          className="acct-thread-workspace__backlink"
           aria-label={t("Back to support")}
           title={t("Back to support")}
         >
           <ArrowLeft size={16} />
+          <span>{t("Back to support")}</span>
         </Link>
-        <span className="hc-body-sm text-[var(--acct-muted)]">
-          {t("Back to support")}
-        </span>
       </div>
       <ThreadAppearanceProvider>
-        <SupportThreadHeader
-          threadId={threadId}
-          subject={subject}
-          divisionLabel={divisionLabelText}
-          categoryLabel={categoryLabelText}
-          status={status}
-          statusLabel={statusLabel}
-          initialMuted={initialMuted}
-          participants={participants}
-          download={{
-            endpoint: `/api/documents/support-thread/${threadId}`,
-            filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
-            shareTitle: `HenryCo Support Thread — ${subject}`,
-            label: t("Download thread"),
-          }}
-        />
-        <SupportThreadRoom
-          threadId={threadId}
-          messages={messages}
-          threadStatus={status}
-          viewer={{
-            userId: user.id,
-            fullName: user.fullName || user.email || "You",
-            email: user.email,
-          }}
-        />
+        <div className="acct-thread-workspace__grid">
+          <SupportThreadHeader
+            threadId={threadId}
+            subject={subject}
+            divisionLabel={divisionLabelText}
+            categoryLabel={categoryLabelText}
+            status={status}
+            statusLabel={statusLabel}
+            initialMuted={initialMuted}
+            participants={participants}
+            download={{
+              endpoint: `/api/documents/support-thread/${threadId}`,
+              filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
+              shareTitle: `HenryCo Support Thread — ${subject}`,
+              label: t("Download thread"),
+            }}
+          />
+          <SupportThreadRoom
+            threadId={threadId}
+            messages={messages}
+            threadStatus={status}
+            viewer={{
+              userId: user.id,
+              fullName: user.fullName || user.email || "You",
+              email: user.email,
+            }}
+          />
+        </div>
       </ThreadAppearanceProvider>
     </div>
   );
