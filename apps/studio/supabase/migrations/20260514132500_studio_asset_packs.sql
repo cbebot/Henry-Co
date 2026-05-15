@@ -25,6 +25,17 @@
 --
 -- DOWN: drop policies + drop table.
 
+-- ─────────────────────────────────────────────────────────────────────
+-- Extend studio_project_files: cloudinary_public_id so the asset-pack
+-- generator can build a Cloudinary archive URL.
+-- ─────────────────────────────────────────────────────────────────────
+alter table public.studio_project_files
+  add column if not exists cloudinary_public_id text;
+
+create index if not exists studio_project_files_cloudinary_idx
+  on public.studio_project_files (cloudinary_public_id)
+  where cloudinary_public_id is not null;
+
 create table if not exists public.studio_asset_packs (
   id uuid primary key default gen_random_uuid(),
   project_id uuid not null references public.studio_projects(id) on delete cascade,

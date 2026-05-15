@@ -33,6 +33,25 @@
 --   drop policy "studio proposal signatures: staff" on public.studio_proposal_signatures;
 --   drop table public.studio_proposal_signatures;
 
+-- ─────────────────────────────────────────────────────────────────────
+-- Extend studio_proposals: accepted_at + signed_pdf_url (linked to the
+-- generated Cloudinary PDF) so the application can query "is this
+-- proposal already signed?" without joining studio_proposal_signatures.
+-- ─────────────────────────────────────────────────────────────────────
+alter table public.studio_proposals
+  add column if not exists accepted_at timestamptz,
+  add column if not exists declined_at timestamptz,
+  add column if not exists signed_pdf_url text,
+  add column if not exists signed_pdf_public_id text,
+  add column if not exists last_signature_id uuid;
+
+create index if not exists studio_proposals_status_idx
+  on public.studio_proposals (status, valid_until);
+
+create index if not exists studio_proposals_accepted_idx
+  on public.studio_proposals (accepted_at desc)
+  where accepted_at is not null;
+
 create table if not exists public.studio_proposal_signatures (
   id uuid primary key default gen_random_uuid(),
   proposal_id uuid not null references public.studio_proposals(id) on delete cascade,
