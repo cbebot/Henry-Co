@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { getDivisionUrl } from "@henryco/config";
+import { formatList } from "@henryco/i18n";
 import { normalizeEmail } from "@/lib/env";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { getAccountLearnUrl, getLearnCourseRoomUrl, getLearnUrl } from "@/lib/learn/links";
@@ -1171,7 +1172,7 @@ export async function submitTeacherApplication(input: {
     email: identity.normalizedEmail,
     activityType: "learn_teacher_application_submitted",
     title: "Teaching application received",
-    description: `Applied to teach ${application.teachingTopics.join(", ") || application.expertiseArea} through HenryCo Learn.`,
+    description: `Applied to teach ${formatList("en", application.teachingTopics) || application.expertiseArea} through HenryCo Learn.`,
     status: application.status,
     referenceType: "learn_teacher_application",
     referenceId: application.id,
