@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   Check,
@@ -54,7 +54,9 @@ type RecurringSchedulerProps = {
 };
 
 export default function RecurringScheduler({ locale }: RecurringSchedulerProps) {
-  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const t = useMemo(() => {
+    return (text: string) => translateSurfaceLabel(locale, text);
+  }, [locale]);
   const [rows, setRows] = useState<ScheduleRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -67,11 +69,7 @@ export default function RecurringScheduler({ locale }: RecurringSchedulerProps) 
   });
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    void load();
-  }, []);
-
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -87,7 +85,11 @@ export default function RecurringScheduler({ locale }: RecurringSchedulerProps) 
     } finally {
       setLoading(false);
     }
-  }
+  }, [t]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   async function createSchedule() {
     setSaving(true);

@@ -28,6 +28,9 @@ import {
 import BookingSuccessNotice from "@/components/care/BookingSuccessNotice";
 import PaymentProofForm from "@/components/care/PaymentProofForm";
 import TrackTimeline from "@/components/care/TrackTimeline";
+import TrackStagePhotos, {
+  type StagePhoto,
+} from "@/components/care/TrackStagePhotos";
 import { CareLoadingGlyph, CareLoadingStage } from "@/components/ui/CareLoading";
 import {
   getServiceFamilyLabel,
@@ -69,6 +72,7 @@ type CareBookingTrackRow = {
     supportWhatsApp: string | null;
     canSubmitReceipt: boolean;
   } | null;
+  stage_photos?: StagePhoto[];
 };
 
 function toneClasses(tone: ReturnType<typeof getTrackingTone>) {
@@ -588,6 +592,9 @@ export default function TrackLookupClient({
             </div>
 
             <TrackTimeline locale={locale} family={family} status={booking.status} />
+
+            {/* V3 PASS 21 — photo timeline (intake / completion / POD) */}
+            <TrackStagePhotos locale={locale} photos={booking.stage_photos ?? []} />
 
             <div className="grid gap-6 lg:grid-cols-3">
               {experienceCards(locale, family).map((card) => {

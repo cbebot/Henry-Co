@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useId, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import { Camera, CheckCircle2, MapPin, RotateCcw, X } from "lucide-react";
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 
@@ -53,7 +53,9 @@ export function CarePODCapture({
   onSubmitted,
   endpoint = "/api/care/pod",
 }: CarePODCaptureProps) {
-  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const t = useMemo(() => {
+    return (text: string) => translateSurfaceLabel(locale, text);
+  }, [locale]);
   const fileInputId = useId();
   const [state, setState] = useState<CaptureState>({ status: "idle" });
   const [recipientName, setRecipientName] = useState("");
