@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
+import { pluralize } from "@henryco/i18n";
 import { createAdminSupabase } from "@/lib/supabase";
 import { buildCarePublicUrl } from "@/lib/care-links";
 import { getCareSettings } from "@/lib/care-data";
@@ -650,7 +651,10 @@ function projectThreads(rows: SupportLogRow[], viewerUserId?: string | null) {
             ? "Customer reply received"
             :
           attachmentCount > 0
-            ? `Customer email received • ${attachmentCount} attachment${attachmentCount === 1 ? "" : "s"}`
+            ? `Customer email received • ${pluralize("en", attachmentCount, {
+                one: "{count} attachment",
+                other: "{count} attachments",
+              })}`
             : "Customer email received",
         body,
         createdAt: row.created_at,

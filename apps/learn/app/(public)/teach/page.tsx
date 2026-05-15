@@ -1,4 +1,5 @@
 import { CheckCircle2, FileStack, Sparkles, UsersRound, BadgePercent } from "lucide-react";
+import { pluralize } from "@henryco/i18n";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitTeacherApplicationAction } from "@/lib/learn/actions";
 import { getLearnViewer } from "@/lib/learn/auth";
@@ -55,7 +56,10 @@ export default async function TeachPage({
       : "Set by operator — disclosed before any approved instructor publishes";
   const reviewWindowLabel =
     typeof reviewBusinessDays === "number" && reviewBusinessDays > 0
-      ? `Typically within ${reviewBusinessDays} business day${reviewBusinessDays === 1 ? "" : "s"}`
+      ? pluralize(locale, reviewBusinessDays, {
+          one: "Typically within {count} business day",
+          other: "Typically within {count} business days",
+        })
       : "Reviewed manually — written response, no automatic decisions";
 
   const pillars = [

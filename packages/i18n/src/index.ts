@@ -15,4 +15,6 @@ export * from "./cookie";
 export * from "./locale-route";
 export * from "./format-date";
 export * from "./format-number";
+export * from "./plurals";
+export * from "./format-list";
 // Note: deepl.ts is server-only; export it only from @henryco/i18n/server

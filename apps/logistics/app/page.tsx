@@ -9,6 +9,7 @@ import {
   TruckIcon,
 } from "lucide-react";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { pluralize } from "@henryco/i18n";
 import { PublicSpotlight } from "@henryco/ui/public-shell";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { LOGISTICS_FAQS } from "@/lib/logistics/content";
@@ -67,7 +68,10 @@ export default async function LogisticsHomePage() {
         activeZones.length === 0
           ? "Awaiting first lane"
           : zoneNames.length === activeZones.length
-            ? `Across ${zoneNames.length} ${zoneNames.length === 1 ? "zone" : "zones"}`
+            ? pluralize("en", zoneNames.length, {
+                one: "Across {count} zone",
+                other: "Across {count} zones",
+              })
             : `${zoneNames.length} named today`,
       trendDirection: "pos",
       pulse: activeZones.length > 0,

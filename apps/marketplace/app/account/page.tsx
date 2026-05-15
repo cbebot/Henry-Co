@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DivisionImage } from "@henryco/dashboard-shell/components";
+import { pluralize } from "@henryco/i18n";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -175,7 +176,10 @@ export default async function AccountOverviewPage() {
           value={String(followingCount)}
           hint={
             followingCount > 0
-              ? `${followingCount} store${followingCount === 1 ? "" : "s"} you follow for drops.`
+              ? pluralize("en", followingCount, {
+                  one: "{count} store you follow for drops.",
+                  other: "{count} stores you follow for drops.",
+                })
               : "Follow stores to catch new drops first."
           }
         />

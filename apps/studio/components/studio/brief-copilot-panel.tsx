@@ -11,6 +11,7 @@ import {
   Sparkles,
   Wand2,
 } from "lucide-react";
+import { pluralize } from "@henryco/i18n";
 import {
   generateStudioBriefDraftAction,
   type BriefCopilotResult,
@@ -347,8 +348,10 @@ function SuccessSummary({
 
       {meta.callsRemaining !== null ? (
         <p className="mt-3 text-[11px] text-[var(--studio-ink-soft)]">
-          {meta.callsRemaining} co-pilot {meta.callsRemaining === 1 ? "draft" : "drafts"} left in
-          this window.
+          {pluralize("en", meta.callsRemaining, {
+            one: "{count} co-pilot draft left in this window.",
+            other: "{count} co-pilot drafts left in this window.",
+          })}
         </p>
       ) : null}
     </div>
