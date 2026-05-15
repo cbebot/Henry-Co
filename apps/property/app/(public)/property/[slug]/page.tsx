@@ -17,6 +17,8 @@ import {
   PropertyStatusBadge,
 } from "@/components/property/ui";
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
+import { PortalLiveStrip } from "@/components/portal";
+import "@/components/portal/styles.css";
 import { getPropertyDashboardData, getPropertyBySlug } from "@/lib/property/data";
 import { getPropertyViewer } from "@/lib/property/auth";
 import {
@@ -174,9 +176,37 @@ export default async function PropertyDetailPage({
       : undefined,
   });
 
+  /*
+   * Listing-specific live strip — V3 PASS 21 / Wave B6 state-narrow
+   * hero. Post-lookup the strip carries listing context: status, price,
+   * and either managed/verified posture. Replaces the bare-detail page
+   * lead with capability evidence specific to this property.
+   */
+  const isManaged = data.listing.managedByHenryCo;
+  const liveStripEyebrow = isManaged
+    ? "Managed by HenryCo · Live listing"
+    : data.listing.trustBadges.some((badge) =>
+          ["verified", "reviewed"].some((t) => badge.toLowerCase().includes(t)),
+        )
+      ? "Verified listing · Live"
+      : "Live listing · Reviewed";
+  const liveStripMeta = data.listing.availableNow
+    ? `${data.listing.locationLabel} · Available now${data.listing.headlineMetrics[0] ? ` · ${data.listing.headlineMetrics[0]}` : ""}`
+    : `${data.listing.locationLabel}${data.listing.availableFrom ? ` · From ${formatDate(data.listing.availableFrom)}` : ""}`;
+
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 lg:px-10">
       <JsonLd id="property-listing-jsonld" data={listingJsonLd} />
+      <div className="prp-pf mb-8">
+        <PortalLiveStrip
+          eyebrow={liveStripEyebrow}
+          title={data.listing.title}
+          meta={liveStripMeta}
+          etaLabel={data.listing.priceInterval || "Price"}
+          etaValue={formatCurrency(data.listing.price, data.listing.currency)}
+          etaMeta={data.listing.availableNow ? "Available now" : "Schedule a viewing"}
+        />
+      </div>
       <PropertySectionIntro
         kicker={data.listing.locationLabel}
         title={data.listing.title}
