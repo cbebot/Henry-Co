@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { getAccountUrl } from "@henryco/config";
+import { getJobsCopy } from "@henryco/i18n";
 import { saveCandidateProfileAction } from "@/app/actions";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateDashboardData } from "@/lib/jobs/data";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { candidateNav } from "@/lib/jobs/navigation";
 import { InlineNotice } from "@/components/feedback";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
+import { ProfileBuilder } from "@/components/candidate/ProfileBuilder";
 
 export const dynamic = "force-dynamic";
 
@@ -23,12 +26,14 @@ export default async function CandidateProfilePage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const viewer = await requireJobsUser("/candidate/profile");
-  const [data, params] = await Promise.all([
+  const [data, params, locale] = await Promise.all([
     getCandidateDashboardData(viewer.user!.id),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
+    getJobsPublicLocale(),
   ]);
   const profile = data.profile;
   const saved = params.saved === "1";
+  const profileBuilderLabels = getJobsCopy(locale).profileBuilder;
 
   return (
     <WorkspaceShell
@@ -83,6 +88,27 @@ export default async function CandidateProfilePage({
             body="Your profile has been updated. Changes are visible to employers when you apply."
           />
         ) : null}
+
+        {/* J3 — auto-save profile draft. Persists every 30s + on blur. */}
+        <SectionCard
+          title="Profile draft"
+          body="Work-in-progress changes auto-save every 30 seconds and on blur. Press 'Save profile' below to publish."
+        >
+          <ProfileBuilder
+            initialDraft={{
+              basics: {
+                fullName: profile?.fullName || viewer.user!.fullName || undefined,
+                headline: profile?.headline || undefined,
+                summary: profile?.summary || undefined,
+                location: profile?.location || undefined,
+                phone: viewer.user!.phone || undefined,
+                email: viewer.user!.email || undefined,
+              },
+              skills: profile?.skills ?? [],
+            }}
+            labels={profileBuilderLabels}
+          />
+        </SectionCard>
 
         <SectionCard
           title="Edit your profile"

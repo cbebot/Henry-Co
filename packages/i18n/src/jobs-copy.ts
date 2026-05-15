@@ -66,6 +66,74 @@ export type JobsCopy = {
     noApplications: string;
     noPostings: string;
   };
+  // V3 PASS 21 — interview room + verification + offer-letter labels.
+  interviewRoom: {
+    kicker: string;
+    candidateFallback: string;
+    employerFallback: string;
+    minutes: string;
+    iframeTitle: string;
+    placeholder: string;
+    tabChat: string;
+    tabNotes: string;
+    chatHint: string;
+    notesLabel: string;
+    notesPlaceholder: string;
+    notesSaving: string;
+    notesSavedAt: string;
+    notesAutosave: string;
+    notesSaveError: string;
+  };
+  verification: {
+    skillTitle: string;
+    skillSubtitle: string;
+    experienceTitle: string;
+    experienceSubtitle: string;
+    referenceTitle: string;
+    referenceSubtitle: string;
+    badgeVerified: string;
+    badgePending: string;
+    badgeRejected: string;
+  };
+  offerLetter: {
+    title: string;
+    subtitle: string;
+    statusDraft: string;
+    statusSent: string;
+    statusSigned: string;
+    statusExpired: string;
+    statusDeclined: string;
+    signCta: string;
+    typedFallbackTitle: string;
+    typedFallbackPrompt: string;
+  };
+  salary: {
+    rangeLabel: string;
+    benchmarkLabel: string;
+    p25Label: string;
+    p50Label: string;
+    p75Label: string;
+    sampleLabel: string;
+    sourceLabel: string;
+    discloseRequiredError: string;
+  };
+  profileBuilder: {
+    sectionBasics: string;
+    sectionExperience: string;
+    sectionEducation: string;
+    sectionSkills: string;
+    sectionPortfolio: string;
+    fullName: string;
+    headline: string;
+    summary: string;
+    location: string;
+    phone: string;
+    email: string;
+    saving: string;
+    savedAt: string;
+    autosaveHint: string;
+    saveError: string;
+  };
 };
 
 const EN: JobsCopy = {
@@ -132,6 +200,78 @@ const EN: JobsCopy = {
     noJobs: "No matching jobs found. Try adjusting your filters.",
     noApplications: "No applications yet.",
     noPostings: "No active job postings.",
+  },
+  interviewRoom: {
+    kicker: "Interview room",
+    candidateFallback: "Candidate",
+    employerFallback: "Hiring team",
+    minutes: "min",
+    iframeTitle: "Video interview room",
+    placeholder:
+      "Room provisioning is pending. Your interviewer will share a meeting link in chat shortly.",
+    tabChat: "Chat",
+    tabNotes: "Notes",
+    chatHint:
+      "In-room chat is provided by the video provider. Use it to share links during the call.",
+    notesLabel: "Private notes",
+    notesPlaceholder:
+      "Capture observations. Visible to your hiring team only.",
+    notesSaving: "Saving…",
+    notesSavedAt: "Saved",
+    notesAutosave: "Auto-saves every 30s",
+    notesSaveError: "Couldn't save notes.",
+  },
+  verification: {
+    skillTitle: "Verified skills",
+    skillSubtitle: "Skills employers can trust at a glance.",
+    experienceTitle: "Verified experience",
+    experienceSubtitle: "Confirmed roles and tenure.",
+    referenceTitle: "Reference checks",
+    referenceSubtitle: "Responses captured from your professional references.",
+    badgeVerified: "Verified",
+    badgePending: "Pending",
+    badgeRejected: "Not verified",
+  },
+  offerLetter: {
+    title: "Offer letter",
+    subtitle: "Review your offer and sign when ready.",
+    statusDraft: "Draft",
+    statusSent: "Awaiting your signature",
+    statusSigned: "Signed",
+    statusExpired: "Expired",
+    statusDeclined: "Declined",
+    signCta: "Open signature room",
+    typedFallbackTitle: "Confirm acceptance",
+    typedFallbackPrompt:
+      "Type your full name to acknowledge this offer. A signed PDF is kept in your files.",
+  },
+  salary: {
+    rangeLabel: "Posted range",
+    benchmarkLabel: "Market benchmark",
+    p25Label: "25th percentile",
+    p50Label: "Median",
+    p75Label: "75th percentile",
+    sampleLabel: "Sample size",
+    sourceLabel: "Source",
+    discloseRequiredError:
+      "Salary disclosure is required. Provide a numeric range or a concrete label.",
+  },
+  profileBuilder: {
+    sectionBasics: "Basics",
+    sectionExperience: "Experience",
+    sectionEducation: "Education",
+    sectionSkills: "Skills",
+    sectionPortfolio: "Portfolio",
+    fullName: "Full name",
+    headline: "Headline",
+    summary: "Summary",
+    location: "Location",
+    phone: "Phone",
+    email: "Email",
+    saving: "Saving…",
+    savedAt: "Saved",
+    autosaveHint: "Auto-saves every 30s and on blur",
+    saveError: "Couldn't save your draft.",
   },
 };
 

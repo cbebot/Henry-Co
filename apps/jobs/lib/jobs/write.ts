@@ -1070,6 +1070,33 @@ export async function createJobPost(input: {
     throw new Error("Job title is required.");
   }
 
+  // J8 — mandatory salary disclosure validator. Reject empty/zero/
+  // placeholder ranges. Either both salaryMin and salaryMax (numeric,
+  // > 0, min <= max) OR a non-placeholder salaryLabel is required.
+  // "Competitive", "negotiable", "tbd", "DOE" and similar are
+  // explicitly rejected — that pattern destroys candidate trust on
+  // first impression and is named in the uniformity anti-patterns.
+  const salaryMinRaw = Number(asText(input.formData.get("salaryMin")) || 0);
+  const salaryMaxRaw = Number(asText(input.formData.get("salaryMax")) || 0);
+  const salaryLabelRaw = asText(input.formData.get("salaryLabel")).trim();
+  const hasNumericRange =
+    Number.isFinite(salaryMinRaw) &&
+    Number.isFinite(salaryMaxRaw) &&
+    salaryMinRaw > 0 &&
+    salaryMaxRaw > 0 &&
+    salaryMinRaw <= salaryMaxRaw;
+  const SALARY_PLACEHOLDER_BLOCKLIST =
+    /^(competitive|negotiable|tbd|doe|to be discussed|market rate|industry standard|attractive|generous|undisclosed|n\/?a)$/i;
+  const hasUsableLabel =
+    salaryLabelRaw.length > 0 && !SALARY_PLACEHOLDER_BLOCKLIST.test(salaryLabelRaw);
+  if (!hasNumericRange && !hasUsableLabel) {
+    throw new Error(
+      "Salary disclosure is required. Provide a numeric salary range " +
+        "(min and max, with max >= min) or a concrete salary label. " +
+        '"Competitive", "negotiable" and similar placeholders are not accepted.',
+    );
+  }
+
   const slug = slugify(asText(input.formData.get("slug")) || `${title}-${employer?.employerSlug || "henryco"}`);
   const employerSlug = employer?.employerSlug || "henryco-group";
   const employerName = employer?.employerName || "HenryCo Group";

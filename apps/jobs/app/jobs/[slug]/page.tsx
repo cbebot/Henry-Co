@@ -5,6 +5,7 @@ import { EmptyState, InlineNotice } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { PublicShell } from "@/components/public-shell";
+import { JobPostingJsonLd } from "@/components/seo/JobPostingJsonLd";
 import { StatusPill } from "@/components/workspace-shell";
 import { getSharedAccountLoginUrl, getSharedAccountSignupUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
@@ -81,6 +82,8 @@ export default async function JobDetailPage({
       }
       secondaryCta={{ label: "How applying works", href: "/help#apply" }}
     >
+      {/* J6 — Google for Jobs JobPosting JSON-LD on every job detail page */}
+      <JobPostingJsonLd job={job} />
       <div className="mx-auto max-w-7xl space-y-12 px-4 py-12 sm:px-6 lg:px-8">
         <section>
           <div className="flex flex-wrap gap-2">
