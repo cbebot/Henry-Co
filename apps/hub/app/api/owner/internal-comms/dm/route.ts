@@ -7,6 +7,8 @@ import {
   isInternalCommsStorageError,
   logInternalCommsError,
 } from "@/app/lib/internal-comms-errors";
+import { writeOwnerAudit } from "@/lib/owner-audit-log";
+import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
 
 export const runtime = "nodejs";
 
@@ -34,25 +36,50 @@ export async function POST(request: Request) {
     return ownerAuthDeniedResponse(auth);
   }
 
+  return withOwnerMutationContext(
+    {
+      route: "/api/owner/internal-comms/dm",
+      method: "POST",
+      actor: actorFromOwnerAuth(auth),
+    },
+    async () => {
+      return postOpenDm(request, auth);
+    },
+  );
+}
+
+async function postOpenDm(
+  request: Request,
+  auth: Extract<Awaited<ReturnType<typeof requireOwner>>, { ok: true }>,
+): Promise<import("@/lib/owner-mutation-context").OwnerMutationResult> {
   let body: { peerUserId?: string };
   try {
     body = (await request.json()) as typeof body;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+    return {
+      outcome: "validation",
+      value: NextResponse.json({ error: "Invalid JSON." }, { status: 400 }),
+    };
   }
 
   const peerUserId = String(body.peerUserId || "").trim();
   if (!peerUserId || peerUserId === auth.user.id) {
-    return NextResponse.json({ error: "A valid peer user is required." }, { status: 400 });
+    return {
+      outcome: "validation",
+      value: NextResponse.json({ error: "A valid peer user is required." }, { status: 400 }),
+    };
   }
 
   const admin = createAdminSupabase();
   const allowed = await isPeerAllowed(admin, peerUserId);
   if (!allowed) {
-    return NextResponse.json(
-      { error: "That person is not in your authorized internal directory yet." },
-      { status: 403 }
-    );
+    return {
+      outcome: "denied",
+      value: NextResponse.json(
+        { error: "That person is not in your authorized internal directory yet." },
+        { status: 403 },
+      ),
+    };
   }
 
   const ids = [auth.user.id, peerUserId].sort();
@@ -78,9 +105,15 @@ export async function POST(request: Request) {
   if (existingError) {
     logInternalCommsError("dm/select", existingError);
     if (isInternalCommsStorageError(existingError)) {
-      return NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 });
+      return {
+        outcome: "server_error",
+        value: NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 }),
+      };
     }
-    return NextResponse.json({ error: "Could not open direct chat." }, { status: 400 });
+    return {
+      outcome: "server_error",
+      value: NextResponse.json({ error: "Could not open direct chat." }, { status: 400 }),
+    };
   }
 
   if (existing) {
@@ -98,9 +131,12 @@ export async function POST(request: Request) {
           role: "member",
         },
       ],
-      { onConflict: "thread_id,user_id" }
+      { onConflict: "thread_id,user_id" },
     );
-    return NextResponse.json({ thread: existing, existing: true }, { status: 200 });
+    return {
+      outcome: "conflict",
+      value: NextResponse.json({ thread: existing, existing: true }, { status: 200 }),
+    };
   }
 
   const { data: inserted, error: insertError } = await admin
@@ -118,9 +154,15 @@ export async function POST(request: Request) {
   if (insertError || !inserted) {
     logInternalCommsError("dm/insert-thread", insertError);
     if (insertError && isInternalCommsStorageError(insertError)) {
-      return NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 });
+      return {
+        outcome: "server_error",
+        value: NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 }),
+      };
     }
-    return NextResponse.json({ error: "Could not create direct chat." }, { status: 400 });
+    return {
+      outcome: "server_error",
+      value: NextResponse.json({ error: "Could not create direct chat." }, { status: 400 }),
+    };
   }
 
   const now = new Date().toISOString();
@@ -129,13 +171,16 @@ export async function POST(request: Request) {
       { thread_id: inserted.id, user_id: auth.user.id, role: "owner", last_read_at: now },
       { thread_id: inserted.id, user_id: peerUserId, role: "member" },
     ],
-    { onConflict: "thread_id,user_id" }
+    { onConflict: "thread_id,user_id" },
   );
 
   if (memberError) {
     logInternalCommsError("dm/members", memberError);
     if (isInternalCommsStorageError(memberError)) {
-      return NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 });
+      return {
+        outcome: "server_error",
+        value: NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 }),
+      };
     }
   }
 
@@ -146,5 +191,16 @@ export async function POST(request: Request) {
     body: `Direct channel opened with ${peerLabel}. Messages here are visible to both participants.`,
   });
 
-  return NextResponse.json({ thread: inserted, existing: false }, { status: 201 });
+  await writeOwnerAudit({
+    action: "owner.messaging.dm.open",
+    entityType: "hq_internal_comm_thread",
+    entityId: inserted.id,
+    newValues: { slug: inserted.slug, peer_user_id: peerUserId },
+    division: "hub",
+  });
+
+  return {
+    outcome: "ok",
+    value: NextResponse.json({ thread: inserted, existing: false }, { status: 201 }),
+  };
 }
