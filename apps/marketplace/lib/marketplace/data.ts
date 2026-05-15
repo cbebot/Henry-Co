@@ -28,6 +28,7 @@ import type {
   MarketplacePaymentRecord,
   MarketplacePayoutRequest,
   MarketplaceProduct,
+  MarketplaceProductVariant,
   MarketplaceReview,
   MarketplaceSellerDocumentRecord,
   MarketplaceShellCartItem,
@@ -235,7 +236,7 @@ function buildPlaceholderVendor(scopeId?: string | null): MarketplaceVendor {
 async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issue: string | null }> {
   try {
     const admin = createAdminSupabase();
-    const [categoriesRes, brandsRes, vendorsRes, productsRes, mediaRes, collectionsRes, collectionItemsRes, campaignsRes, reviewsRes] =
+    const [categoriesRes, brandsRes, vendorsRes, productsRes, mediaRes, collectionsRes, collectionItemsRes, campaignsRes, reviewsRes, variantsRes] =
       await Promise.all([
         admin.from("marketplace_categories").select("*").order("sort_order", { ascending: true }),
         admin.from("marketplace_brands").select("*").order("name", { ascending: true }),
@@ -251,6 +252,14 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
         admin.from("marketplace_collection_items").select("*").order("sort_order", { ascending: true }),
         admin.from("marketplace_campaigns").select("*").eq("status", "active").order("updated_at", { ascending: false }),
         admin.from("marketplace_reviews").select("*").eq("status", "published").order("created_at", { ascending: false }),
+        // V3 PASS 21 — variant matrix join (color × size × material).
+        // Soft-fail tolerated: legacy environments without the V3 PASS 21
+        // migration row simply render the product page without <VariantMatrix>.
+        admin
+          .from("marketplace_product_variants")
+          .select("*")
+          .in("status", ["active", "out_of_stock"])
+          .order("sort_order", { ascending: true }),
       ]);
 
     if (
@@ -292,6 +301,7 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
     const collectionItemRows = collectionItemsRes.data ?? [];
     const campaignRows = campaignsRes.data ?? [];
     const reviewRows = reviewsRes.data ?? [];
+    const variantRows = variantsRes.error ? [] : (variantsRes.data ?? []);
 
     const categories: MarketplaceCategory[] = categoryRows.map((row: Record<string, unknown>) => ({
       id: String(row.id),
@@ -339,12 +349,49 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
     const brandMap = new Map(brands.map((item) => [item.id, item]));
     const vendorMap = new Map(vendors.map((item) => [item.id, item]));
     const mediaByProduct = new Map<string, string[]>();
+    const mediaUrlById = new Map<string, string>();
 
     for (const row of mediaRows as Array<Record<string, unknown>>) {
       const key = String(row.product_id);
       const existing = mediaByProduct.get(key) ?? [];
       if (row.url) existing.push(String(row.url));
       mediaByProduct.set(key, existing);
+      if (row.id && row.url) mediaUrlById.set(String(row.id), String(row.url));
+    }
+
+    // V3 PASS 21 — variant matrix lookup. Pre-bucket the variants by
+    // product_id so the products .map below can attach without re-walking.
+    const variantsByProduct = new Map<string, MarketplaceProductVariant[]>();
+    for (const row of variantRows as Array<Record<string, unknown>>) {
+      const key = String(row.product_id);
+      const existing = variantsByProduct.get(key) ?? [];
+      const rawOptions =
+        row.options && typeof row.options === "object" && !Array.isArray(row.options)
+          ? (row.options as Record<string, unknown>)
+          : {};
+      const options = Object.entries(rawOptions).reduce<Record<string, string>>(
+        (accumulator, [optionKey, optionValue]) => {
+          if (typeof optionValue === "string" && optionValue.trim()) {
+            accumulator[optionKey] = optionValue.trim();
+          }
+          return accumulator;
+        },
+        {}
+      );
+      existing.push({
+        id: String(row.id),
+        sku: String(row.sku || ""),
+        options,
+        price: Number(row.price || 0),
+        compareAtPrice: row.compare_at_price == null ? null : Number(row.compare_at_price),
+        currency: String(row.currency || "NGN"),
+        stock: Number(row.stock || 0),
+        status: String(row.status || "active") as MarketplaceProductVariant["status"],
+        imageUrl: row.media_id ? mediaUrlById.get(String(row.media_id)) ?? null : null,
+        lowStockThreshold: Number(row.low_stock_threshold || 0),
+        sortOrder: Number(row.sort_order || 0),
+      });
+      variantsByProduct.set(key, existing);
     }
 
     const products: MarketplaceProduct[] = productRows.map((row: Record<string, unknown>) => ({
@@ -379,6 +426,7 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
       deliveryNote: String(row.delivery_note || ""),
       leadTime: String(row.lead_time || ""),
       codEligible: Boolean(row.cod_eligible),
+      variants: variantsByProduct.get(String(row.id)) ?? undefined,
     }));
 
     const productMap = new Map(products.map((item) => [item.id, item]));

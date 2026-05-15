@@ -20,9 +20,112 @@ type AutomationSummary = {
   notificationRetries: number;
   notificationRetryFailures: number;
   notificationRetrySkips: number;
+  recommendationSignalsRecomputed: number;
+  recommendationSignalsSkipped: boolean;
   blocked: boolean;
   errors: string[];
 };
+
+/**
+ * V3 PASS 21 — recommendation signal recompute stub.
+ *
+ * Walks `marketplace_order_items` paired within the same order to seed
+ * a directional `co_purchase` signal between two distinct products, and
+ * upserts into `marketplace_recommendation_signals` so the home + product
+ * detail rails can begin populating.
+ *
+ * The implementation is intentionally small (one-shot, in-memory map,
+ * normalises score to support_count / max(support_count)). A future pass
+ * should replace this with a windowed query against `marketplace_behavior_events`
+ * for co_view + similar_category + trending_in_region kinds, and a windowed
+ * Postgres aggregation rather than client-side map-reduce.
+ */
+async function recomputeRecommendationSignals(
+  admin: ReturnType<typeof createAdminSupabase>
+): Promise<{ recomputed: number; skipped: boolean; error?: string }> {
+  try {
+    // Pull the last 90 days of order items, paired by order_id.
+    const since = new Date();
+    since.setUTCDate(since.getUTCDate() - 90);
+
+    const { data: orderItems, error: itemsError } = await admin
+      .from("marketplace_order_items")
+      .select("order_group_id, product_id, created_at")
+      .gte("created_at", since.toISOString())
+      .limit(5000);
+
+    if (itemsError) {
+      return { recomputed: 0, skipped: true, error: itemsError.message };
+    }
+
+    type Row = { order_group_id: string; product_id: string };
+    const itemsByGroup = new Map<string, Set<string>>();
+    for (const raw of (orderItems ?? []) as Row[]) {
+      if (!raw.order_group_id || !raw.product_id) continue;
+      const groupKey = String(raw.order_group_id);
+      const existing = itemsByGroup.get(groupKey) ?? new Set<string>();
+      existing.add(String(raw.product_id));
+      itemsByGroup.set(groupKey, existing);
+    }
+
+    // Build the (source → related) co_purchase support_count map.
+    const supportByPair = new Map<string, number>();
+    for (const productIds of itemsByGroup.values()) {
+      const ids = Array.from(productIds);
+      for (let i = 0; i < ids.length; i += 1) {
+        for (let j = 0; j < ids.length; j += 1) {
+          if (i === j) continue;
+          const key = `${ids[i]}|${ids[j]}`;
+          supportByPair.set(key, (supportByPair.get(key) ?? 0) + 1);
+        }
+      }
+    }
+
+    if (supportByPair.size === 0) {
+      // TODO: implement co_view + similar_category + trending_in_region
+      // signal compute once `marketplace_behavior_events` is wired into
+      // the consent-aware buyer journey on the public surface.
+      return { recomputed: 0, skipped: false };
+    }
+
+    const maxSupport = Math.max(1, ...Array.from(supportByPair.values()));
+    const upsertRows = Array.from(supportByPair.entries()).map(([key, count]) => {
+      const [source, related] = key.split("|");
+      return {
+        source_product_id: source,
+        related_product_id: related,
+        signal_kind: "co_purchase",
+        score: Math.max(0, Math.min(1, count / maxSupport)),
+        support_count: count,
+        last_observed_at: new Date().toISOString(),
+        metadata: { window_days: 90, computed_by: "marketplace-automation-sweep" },
+      };
+    });
+
+    // Batch upserts in chunks of 500 to stay within Postgres parameter limits.
+    let recomputed = 0;
+    for (let i = 0; i < upsertRows.length; i += 500) {
+      const chunk = upsertRows.slice(i, i + 500);
+      const { error: upsertError } = await admin
+        .from("marketplace_recommendation_signals")
+        .upsert(chunk as never, {
+          onConflict: "source_product_id,related_product_id,signal_kind",
+        });
+      if (upsertError) {
+        return { recomputed, skipped: false, error: upsertError.message };
+      }
+      recomputed += chunk.length;
+    }
+
+    return { recomputed, skipped: false };
+  } catch (error) {
+    return {
+      recomputed: 0,
+      skipped: true,
+      error: error instanceof Error ? error.message : "Recommendation signal recompute failed.",
+    };
+  }
+}
 
 function hoursBetween(now: Date, value?: string | null) {
   if (!value) return 0;
@@ -42,6 +145,8 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
     notificationRetries: 0,
     notificationRetryFailures: 0,
     notificationRetrySkips: 0,
+    recommendationSignalsRecomputed: 0,
+    recommendationSignalsSkipped: false,
     blocked: false,
     errors: [],
   };
@@ -297,6 +402,17 @@ export async function runMarketplaceAutomationSweep(now = new Date()): Promise<A
         },
       });
       summary.pendingPayouts += 1;
+    }
+
+    // V3 PASS 21 — recommendation signal recompute. Runs once per sweep
+    // (idempotent upsert keyed on source_product_id, related_product_id,
+    // signal_kind). Soft-fails: errors are captured but don't block the
+    // rest of the sweep, so notification + payout + cart flows keep moving.
+    const recommendationResult = await recomputeRecommendationSignals(admin);
+    summary.recommendationSignalsRecomputed = recommendationResult.recomputed;
+    summary.recommendationSignalsSkipped = recommendationResult.skipped;
+    if (recommendationResult.error) {
+      summary.errors.push(`recommendation-signals: ${recommendationResult.error}`);
     }
 
     await logMarketplaceAction({
