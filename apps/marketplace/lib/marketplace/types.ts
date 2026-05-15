@@ -121,6 +121,22 @@ export type MarketplaceVendor = {
   supportPhone: string;
 };
 
+export type MarketplaceProductVariant = {
+  id: string;
+  sku: string;
+  /** Free-form option keys → values, e.g. { color: "Cobalt", size: "M", material: "Linen" } */
+  options: Record<string, string>;
+  price: number;
+  compareAtPrice: number | null;
+  currency: string;
+  stock: number;
+  status: "active" | "draft" | "archived" | "out_of_stock";
+  /** Optional override image URL — falls back to product.gallery[0]. */
+  imageUrl: string | null;
+  lowStockThreshold: number;
+  sortOrder: number;
+};
+
 export type MarketplaceProduct = {
   id: string;
   slug: string;
@@ -147,6 +163,8 @@ export type MarketplaceProduct = {
   deliveryNote: string;
   leadTime: string;
   codEligible: boolean;
+  /** V3 PASS 21 — variant matrix (color × size × material…). */
+  variants?: MarketplaceProductVariant[];
 };
 
 export type MarketplaceCollection = {

@@ -29,3 +29,13 @@ export {
   type LogisticsB2BStatementProps,
   type LogisticsB2BStatementRow,
 } from "./templates/logistics-b2b-statement";
+export {
+  VendorPayoutStatementDocument,
+  type VendorPayoutStatementProps,
+  type VendorPayoutStatementRow,
+} from "./templates/vendor-payout-statement";
+export {
+  VendorTaxDocumentDocument,
+  type VendorTaxDocumentProps,
+  type VendorTaxMonthlyRow,
+} from "./templates/vendor-tax-document";

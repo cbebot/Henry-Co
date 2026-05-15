@@ -17,7 +17,11 @@
     "./templates/property-listing": "./src/templates/property-listing.tsx",
     "./templates/jobs-application": "./src/templates/jobs-application.tsx",
     "./templates/learn-certificate": "./src/templates/learn-certificate.tsx",
-    "./templates/support-thread-export": "./src/templates/support-thread-export.tsx"
+    "./templates/support-thread-export": "./src/templates/support-thread-export.tsx",
+    "./templates/logistics-shipment-receipt": "./src/templates/logistics-shipment-receipt.tsx",
+    "./templates/logistics-b2b-statement": "./src/templates/logistics-b2b-statement.tsx",
+    "./templates/vendor-payout-statement": "./src/templates/vendor-payout-statement.tsx",
+    "./templates/vendor-tax-document": "./src/templates/vendor-tax-document.tsx"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
+import { JsonLd, buildProductLd } from "@henryco/seo";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
-import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
+import { TrustPassport } from "@/components/marketplace/shell";
+import { RecommendationRail } from "@/components/marketplace/recommendation-rail";
+import { VariantMatrix } from "@/components/marketplace/variant-matrix";
 import { getMarketplaceProductBySlug } from "@/lib/marketplace/data";
 import { formatCurrency } from "@/lib/utils";
 
@@ -17,6 +20,31 @@ export default async function ProductPage({
   const { slug } = await params;
   const data = await getMarketplaceProductBySlug(slug);
   if (!data) notFound();
+
+  // V3 PASS 21 — Product + Offer + AggregateRating JSON-LD (M9)
+  const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
+  const productUrl = `https://marketplace.${baseDomain}/product/${data.product.slug}`;
+  const productLd = buildProductLd({
+    name: data.product.title,
+    description: data.product.summary || data.product.description,
+    sku: data.product.sku,
+    brand: data.brand?.name,
+    imageUrls: data.product.gallery,
+    url: productUrl,
+    offers: {
+      priceCurrency: data.product.currency,
+      price: (data.product.basePrice / 100).toFixed(2),
+      availability: data.product.stock > 0 ? "InStock" : "OutOfStock",
+      url: productUrl,
+    },
+    aggregateRating:
+      data.product.reviewCount > 0
+        ? {
+            ratingValue: Number(data.product.rating.toFixed(1)),
+            reviewCount: data.product.reviewCount,
+          }
+        : undefined,
+  });
 
   const fulfillmentRows: Array<{
     icon: typeof BadgeCheck;
@@ -51,6 +79,7 @@ export default async function ProductPage({
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-16 px-4 py-10 pb-28 sm:px-6 xl:px-8">
+      <JsonLd id={`marketplace-product-${data.product.slug}-jsonld`} data={productLd} />
       {/* Editorial product hero — gallery + sticky detail aside, no panel-on-panel */}
       <section className="grid gap-12 xl:grid-cols-[1.06fr,0.94fr]">
         <ProductMediaGallery title={data.product.title} gallery={data.product.gallery} />
@@ -139,6 +168,15 @@ export default async function ProductPage({
                   </div>
                 ))}
               </dl>
+            ) : null}
+
+            {data.product.variants && data.product.variants.length > 0 ? (
+              <div className="mt-7">
+                <VariantMatrix
+                  product={data.product}
+                  variants={data.product.variants}
+                />
+              </div>
             ) : null}
 
             <div className="mt-8">
@@ -331,28 +369,13 @@ export default async function ProductPage({
         </section>
       ) : null}
 
-      <section className="space-y-6">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="market-kicker">More to discover</p>
-            <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[2.1rem]">
-              Continue browsing without losing your place.
-            </h2>
-          </div>
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)] underline-offset-4 hover:underline"
-          >
-            Open search
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-        <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-4">
-          {data.related.map((product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
-        </div>
-      </section>
+      <RecommendationRail
+        kicker="Customers also bought"
+        headline="Continue browsing without losing your place."
+        caption="Co-purchase + similar-category signals surface the next obvious step, never noisy upsell clutter."
+        products={data.related}
+        cta={{ label: "Open search", href: "/search" }}
+      />
     </div>
   );
 }

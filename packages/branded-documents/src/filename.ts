@@ -10,7 +10,11 @@ export type DocumentType =
   | "JobsApplication"
   | "Certificate"
   | "WalletStatement"
-  | "SupportThread";
+  | "SupportThread"
+  | "LogisticsShipmentReceipt"
+  | "LogisticsB2BStatement"
+  | "VendorPayoutStatement"
+  | "VendorTaxSummary";
 
 export function buildDocumentFilename(type: DocumentType, id: string, date: Date = new Date()) {
   const stem = String(id || "doc").replace(NON_SLUG, "").slice(0, 32) || "doc";
