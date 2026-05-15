@@ -33,7 +33,7 @@ function slugify(text: string): string {
     .replace(/\s+/g, "-");
 }
 
-function extractHeadings(html: string): Array<{ id: string; text: string; level: number }> {
+function extractHeadingsFromHtml(html: string): Array<{ id: string; text: string; level: number }> {
   if (typeof window === "undefined") return [];
   const wrapper = document.createElement("div");
   wrapper.innerHTML = html;
@@ -47,7 +47,7 @@ function extractHeadings(html: string): Array<{ id: string; text: string; level:
   return headings;
 }
 
-function estimateReadingMinutes(html: string): number {
+function estimateReadingMinutesFromHtml(html: string): number {
   if (typeof window === "undefined") return 1;
   const wrapper = document.createElement("div");
   wrapper.innerHTML = html;
@@ -56,42 +56,43 @@ function estimateReadingMinutes(html: string): number {
   return Math.max(1, Math.round(wordCount / 200));
 }
 
+function readStoredScroll(key: string): number | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = window.localStorage.getItem(key);
+    if (!stored) return null;
+    const value = Number(stored);
+    if (Number.isFinite(value) && value > 200) return value;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export function ReadingMode({ lessonId, html, labels }: ReadingModeProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const storageKey = `learn:reading-scroll:${lessonId}`;
-  const [resumeFrom, setResumeFrom] = useState<number | null>(null);
-  const [readingMinutes, setReadingMinutes] = useState(1);
-  const [headings, setHeadings] = useState<
-    Array<{ id: string; text: string; level: number }>
-  >([]);
 
-  // Add anchor IDs to h2/h3 elements and compute TOC
+  // Derive headings + reading time lazily from html — pure, no effects.
+  const headings = useMemo(() => extractHeadingsFromHtml(html), [html]);
+  const readingMinutes = useMemo(() => estimateReadingMinutesFromHtml(html), [html]);
+
+  // Lazy state initialiser reads stored scroll once on mount — no setState in effect.
+  const [resumeFrom, setResumeFrom] = useState<number | null>(() => readStoredScroll(storageKey));
+
+  // Anchor IDs are written to DOM imperatively (DOM sync, not React state).
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    container
-      .querySelectorAll("h2, h3")
-      .forEach((heading) => {
-        const text = heading.textContent?.trim() ?? "";
-        if (!text || heading.id) return;
-        heading.id = slugify(text);
-      });
-    setHeadings(extractHeadings(html));
-    setReadingMinutes(estimateReadingMinutes(html));
+    container.querySelectorAll("h2, h3").forEach((heading) => {
+      const text = heading.textContent?.trim() ?? "";
+      if (!text || heading.id) return;
+      heading.id = slugify(text);
+    });
   }, [html]);
 
-  // Read stored scroll position; persist on scroll
+  // Persist scroll position to localStorage on scroll.
   useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(storageKey);
-      if (stored) {
-        const value = Number(stored);
-        if (Number.isFinite(value) && value > 200) setResumeFrom(value);
-      }
-    } catch {
-      // localStorage may be unavailable (private mode, SSR)
-    }
-
     let raf = 0;
     function handleScroll() {
       if (raf) return;
@@ -117,8 +118,6 @@ export function ReadingMode({ lessonId, html, labels }: ReadingModeProps) {
     setResumeFrom(null);
   };
 
-  const tocItems = useMemo(() => headings, [headings]);
-
   return (
     <div className="grid gap-8 lg:grid-cols-[0.85fr,1.15fr] xl:grid-cols-[0.7fr,1.3fr]">
       {/* TOC sidebar */}
@@ -138,9 +137,9 @@ export function ReadingMode({ lessonId, html, labels }: ReadingModeProps) {
             {labels.resumeAt}
           </button>
         ) : null}
-        {tocItems.length > 0 ? (
+        {headings.length > 0 ? (
           <ul className="mt-4 space-y-2 border-l border-[var(--learn-line)] pl-3 text-sm">
-            {tocItems.map((heading) => (
+            {headings.map((heading) => (
               <li key={heading.id} className={heading.level === 3 ? "ml-3" : ""}>
                 <a
                   href={`#${heading.id}`}
@@ -154,11 +153,10 @@ export function ReadingMode({ lessonId, html, labels }: ReadingModeProps) {
         ) : null}
       </aside>
 
-      {/* Body */}
+      {/* Body — markdown is pre-sanitised at the data layer (LearnMarkdown). */}
       <article
         ref={containerRef}
         className="order-1 max-w-[68ch] font-serif text-[17px] leading-[1.7] text-[var(--learn-ink)] lg:order-2"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>
