@@ -1,0 +1,424 @@
+/*
+ * V3 Wave A1 D4 — Calendar aggregator (editorial)
+ *
+ * Cross-portal agenda for /calendar. Editorial premium bar matching
+ * tasks/notifications/wallet rebuilds. Day-grouped, dense, deep-links
+ * to each originating portal.
+ */
+
+.acct-cal {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ─── Hero ─────────────────────────────────────────────────────── */
+
+.acct-cal__hero {
+  position: relative;
+  border-radius: var(--acct-radius-lg);
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--acct-bg-soft);
+  background-color: var(--acct-ink);
+  background-image:
+    radial-gradient(110% 90% at 100% 0%, color-mix(in srgb, var(--acct-gold) 26%, transparent) 0%, transparent 55%),
+    radial-gradient(80% 90% at 0% 100%, color-mix(in srgb, var(--acct-div-property) 16%, transparent) 0%, transparent 60%);
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 22%, transparent);
+}
+
+.acct-cal__hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+  gap: 32px;
+  padding: 32px;
+  align-items: flex-start;
+}
+
+@media (max-width: 880px) {
+  .acct-cal__hero-inner { grid-template-columns: 1fr; padding: 24px; gap: 24px; }
+}
+
+.acct-cal__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 18%, transparent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--acct-gold) 70%, var(--acct-bg-soft));
+}
+
+.acct-cal__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  animation: acct-cal-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes acct-cal-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-cal__eyebrow-dot { animation: none; }
+}
+
+.acct-cal__headline {
+  font-family: var(--acct-font-display);
+  font-size: clamp(26px, 3.4vw, 38px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  color: var(--acct-bg-soft);
+  margin: 16px 0 12px;
+}
+
+.acct-cal__blurb {
+  color: color-mix(in srgb, var(--acct-bg-soft) 78%, transparent);
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 56ch;
+  margin: 0;
+}
+
+.acct-cal__hero-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+@media (max-width: 540px) {
+  .acct-cal__hero-tiles { grid-template-columns: 1fr; }
+}
+
+.acct-cal__hero-tile {
+  background: color-mix(in srgb, var(--acct-bg-soft) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.acct-cal__hero-tile-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--acct-bg-soft) 60%, transparent);
+}
+
+.acct-cal__hero-tile-value {
+  font-family: var(--acct-font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--acct-bg-soft);
+  line-height: 1;
+}
+
+.acct-cal__hero-tile-foot {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--acct-bg-soft) 58%, transparent);
+}
+
+.acct-cal__hero-side {
+  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  border-radius: 22px;
+  padding: 18px 18px;
+}
+
+.acct-cal__hero-side-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--acct-gold) 72%, var(--acct-bg-soft));
+  margin: 0 0 6px;
+}
+
+.acct-cal__hero-side-title {
+  font-family: var(--acct-font-display);
+  color: var(--acct-bg-soft);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin: 0 0 6px;
+}
+
+.acct-cal__hero-side-body {
+  color: color-mix(in srgb, var(--acct-bg-soft) 70%, transparent);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0 0 12px;
+}
+
+.acct-cal__mix-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 12px;
+}
+
+.acct-cal__mix-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: color-mix(in srgb, var(--acct-bg-soft) 78%, transparent);
+}
+
+.acct-cal__mix-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.acct-cal__mix-value {
+  color: var(--acct-bg-soft);
+  font-feature-settings: "tnum";
+  font-weight: 600;
+}
+
+/* ─── Agenda layout ────────────────────────────────────────────── */
+
+.acct-cal__section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.acct-cal__section-title {
+  font-family: var(--acct-font-display);
+  font-size: 22px;
+  letter-spacing: -0.005em;
+  color: var(--acct-ink);
+  font-weight: 600;
+  margin: 0;
+}
+
+.acct-cal__section-meta {
+  font-size: 12px;
+  color: var(--acct-muted);
+}
+
+.acct-cal__agenda {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.acct-cal__day {
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius-lg);
+  background: var(--acct-bg-soft);
+  overflow: hidden;
+}
+
+.acct-cal__day-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--acct-line);
+  background: var(--acct-surface);
+}
+
+.acct-cal__day-title {
+  font-family: var(--acct-font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--acct-ink);
+  margin: 0;
+}
+
+.acct-cal__day-meta {
+  font-size: 12px;
+  color: var(--acct-muted);
+  font-feature-settings: "tnum";
+}
+
+.acct-cal__events {
+  display: flex;
+  flex-direction: column;
+}
+
+.acct-cal__event {
+  display: grid;
+  grid-template-columns: 4px 64px minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--acct-line);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 180ms ease;
+}
+
+.acct-cal__event:last-child {
+  border-bottom: none;
+}
+
+.acct-cal__event:hover {
+  background: color-mix(in srgb, var(--acct-gold) 6%, var(--acct-bg-soft));
+}
+
+.acct-cal__event-accent {
+  border-radius: 2px;
+}
+
+.acct-cal__event-time {
+  font-feature-settings: "tnum";
+  font-size: 13px;
+  color: var(--acct-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.acct-cal__event-time-start {
+  color: var(--acct-ink);
+  font-weight: 600;
+}
+
+.acct-cal__event-body {
+  min-width: 0;
+}
+
+.acct-cal__event-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.acct-cal__event-kind {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acct-muted);
+}
+
+.acct-cal__event-status {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--acct-surface);
+  color: var(--acct-muted);
+}
+
+.acct-cal__event-status[data-tone="warn"] {
+  background: var(--acct-orange-soft);
+  color: var(--acct-orange);
+}
+
+.acct-cal__event-status[data-tone="good"] {
+  background: var(--acct-green-soft);
+  color: var(--acct-green);
+}
+
+.acct-cal__event-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--acct-ink);
+  margin: 0 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acct-cal__event-subtitle {
+  font-size: 13px;
+  color: var(--acct-muted);
+  line-height: 1.5;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.acct-cal__event-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  color: var(--acct-muted);
+}
+
+.acct-cal__event-cta {
+  color: var(--acct-gold);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ─── Empty state ──────────────────────────────────────────────── */
+
+.acct-cal__empty {
+  text-align: left;
+  padding: 28px 0;
+}
+
+.acct-cal__empty-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acct-muted);
+  margin: 0 0 8px;
+}
+
+.acct-cal__empty-title {
+  font-family: var(--acct-font-display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--acct-ink);
+  margin: 0 0 6px;
+}
+
+.acct-cal__empty-body {
+  font-size: 14px;
+  color: var(--acct-muted);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 56ch;
+}
+
+@media (max-width: 600px) {
+  .acct-cal__event {
+    grid-template-columns: 4px minmax(0, 1fr);
+    padding: 14px 16px;
+  }
+  .acct-cal__event-time {
+    grid-column: 2 / 3;
+    flex-direction: row;
+    gap: 6px;
+    align-items: baseline;
+  }
+  .acct-cal__event-meta {
+    display: none;
+  }
+}
