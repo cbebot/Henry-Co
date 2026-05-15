@@ -5,6 +5,7 @@ import { requireJobsRoles } from "@/lib/auth";
 import { getPipelineById, getApplications } from "@/lib/jobs/hiring";
 import { employerNav } from "@/lib/jobs/navigation";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
+import { PipelineKanban } from "@/components/hiring/PipelineKanban";
 
 export const dynamic = "force-dynamic";
 
@@ -58,10 +59,10 @@ export default async function PipelineDetailPage({
           </div>
         </SectionCard>
 
-        {/* Applicant list */}
+        {/* J4 — Pipeline kanban with drag-to-move + optimistic UI rollback */}
         <SectionCard
-          title="Applicants"
-          body="All candidates who applied to this role."
+          title="Pipeline kanban"
+          body="Drag applicants between stages. Changes save immediately and roll back if the server rejects the move."
           actions={
             <Link
               href="/employer/hiring"
@@ -78,6 +79,28 @@ export default async function PipelineDetailPage({
               </p>
             </div>
           ) : (
+            <PipelineKanban
+              pipelineId={pipelineId}
+              stages={pipeline.stages}
+              applicants={applications.map((app) => ({
+                applicationId: app.id,
+                candidateName: app.candidateName,
+                candidateAvatarUrl: app.candidateAvatarUrl,
+                stage: app.stage,
+                jobTitle: app.jobTitle,
+                status: app.status,
+                createdAt: app.createdAt,
+              }))}
+            />
+          )}
+        </SectionCard>
+
+        {/* Applicant list — legacy linkable detail entry */}
+        <SectionCard
+          title="Applicant index"
+          body="Click any applicant to open the full review surface."
+        >
+          {applications.length === 0 ? null : (
             <div className="space-y-3">
               {applications.map((app) => (
                 <Link
