@@ -1,4 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
+import {
+  COMPANY,
+  DATA_CATEGORIES,
+  INTERNATIONAL_AUTHORITIES,
+  LEGAL,
+  NDPA_LAWFUL_BASES,
+  RETENTION_POLICIES,
+  SUB_PROCESSORS,
+} from "@henryco/config";
 import { fetchNoStore } from "./no-store-fetch";
 
 export type CompanyPageStat = {
@@ -217,48 +226,162 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
     case "about":
       return {
         ...base,
-        title: "About Henry & Co.",
-        subtitle: "Who we are",
-        hero_badge: "Company overview",
+        title: `About ${COMPANY.group.name}`,
+        subtitle: "Who we are, what we run, and how we operate",
+        hero_badge: `Company overview \u00b7 v${LEGAL.policy.version}`,
         intro:
-          "Henry & Co. is a multi-division operating group. Each division runs its own market, under one shared standard of execution, presentation, and trust.",
+          `${COMPANY.group.name} is a multi-division operating group founded by ${LEGAL.entity.founder}. Each division \u2014 Logistics, Fabric Care, Property, Marketplace, Studio, Jobs, and Learn \u2014 runs an independent market under one shared operating standard for KYC, payments, support response, and audit logging. We build the same way across every surface: a single account, one trust signal taxonomy, one settlement currency at checkout, one audit trail per action.`,
+        primary_cta_label: "Contact the company",
+        primary_cta_href: "/contact",
+        secondary_cta_label: "Browse divisions",
+        secondary_cta_href: "/#divisions",
+        stats: [
+          { id: "stat-divisions", label: "Divisions live", value: "7" },
+          { id: "stat-account", label: "Accounts", value: "One per customer, all divisions" },
+          { id: "stat-founder", label: "Founder", value: LEGAL.entity.founder },
+        ],
         sections: [
           {
-            id: "about-profile",
-            eyebrow: "What this is",
-            title: "Focused businesses, one operating standard",
+            id: "about-identity",
+            eyebrow: "Identity",
+            title: `${COMPANY.group.name} is a Nigerian operating group`,
             body:
-              "Specialised business capability combined with disciplined corporate identity. Divisions grow on their own terms while contributing to a stronger, more credible group presence.",
+              `Registered in Nigeria as ${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}). Headquartered in ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}. Founded in ${LEGAL.entity.yearFounded} by ${LEGAL.entity.founder}. We operate seven divisions on one platform, one auth surface, one audit log, one settlement currency at checkout \u2014 Nigeria first, with cross-border commerce supported through multi-currency display and named processor regions.`,
+            layout: "default",
+            items: [
+              { id: "about-identity-trading", label: "Trading name", value: LEGAL.entity.tradingName },
+              { id: "about-identity-legal", label: "Registered name", value: LEGAL.entity.name },
+              { id: "about-identity-rc", label: "CAC RC number", value: LEGAL.entity.rcNumber },
+              { id: "about-identity-tin", label: "FIRS TIN", value: LEGAL.entity.tin },
+              { id: "about-identity-office", label: "Registered office", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country}` },
+              { id: "about-identity-founded", label: "Year founded", value: LEGAL.entity.yearFounded },
+            ],
+          },
+          {
+            id: "about-divisions",
+            eyebrow: "What the divisions do",
+            title: "Seven divisions, one operating standard",
+            body:
+              "Each division has a defined market and a defined contract \u2014 not a bundle. Sourced directly from packages/config/company.ts so this page cannot drift from the platform.",
+            layout: "cards",
+            items: [
+              { id: "about-div-logistics", title: COMPANY.divisions.logistics.name, body: COMPANY.divisions.logistics.description, href: "/#divisions" },
+              { id: "about-div-care", title: COMPANY.divisions.care.name, body: COMPANY.divisions.care.description, href: "/#divisions" },
+              { id: "about-div-property", title: COMPANY.divisions.property.name, body: COMPANY.divisions.property.description, href: "/#divisions" },
+              { id: "about-div-marketplace", title: COMPANY.divisions.marketplace.name, body: COMPANY.divisions.marketplace.description, href: "/#divisions" },
+              { id: "about-div-jobs", title: COMPANY.divisions.jobs.name, body: COMPANY.divisions.jobs.description, href: "/#divisions" },
+              { id: "about-div-learn", title: COMPANY.divisions.learn.name, body: COMPANY.divisions.learn.description, href: "/#divisions" },
+              { id: "about-div-studio", title: COMPANY.divisions.studio.name, body: COMPANY.divisions.studio.description, href: "/#divisions" },
+            ],
+          },
+          {
+            id: "about-standard",
+            eyebrow: "The operating standard",
+            title: "Measurable, not adjectival",
+            body:
+              "We avoid words like \u201cpremium\u201d, \u201crespected\u201d, or \u201cdisciplined\u201d without a measurable referent. Here is what the standard means in practice across every division.",
             layout: "cards",
             items: [
               {
-                id: "about-profile-1",
-                title: "Focused divisions",
-                body: "Each division serves a defined market, service line, or operating need \u2014 not a bundle of everything.",
+                id: "about-standard-kyc",
+                title: "KYC verified before payout",
+                body: "Vendors and operators complete NIN + BVN verification (where applicable) and bank-account verification before any payout is released. KYC documents are retained for 5 years under CBN AML/CFT Regulations 2022.",
               },
               {
-                id: "about-profile-2",
-                title: "Shared quality standard",
-                body: "One standard for presentation, trust signals, and professionalism holds across every public surface.",
+                id: "about-standard-audit",
+                title: "Every mutation written to audit_log",
+                body: "Owner, staff, and operator actions across the platform write to a structured audit_log retained for 7 years. Sentry breadcrumbs and structured logger entries accompany every server action.",
               },
               {
-                id: "about-profile-3",
-                title: "Expansion-ready",
-                body: "New divisions, new company pages, new markets \u2014 introduced inside the same premium framework.",
+                id: "about-standard-support",
+                title: "Support response target: 24h",
+                body: "First-response target for non-emergency support is 24 hours during operating days. Time-critical disputes (delivery failure, refund window) route through Freshdesk with explicit priority queues.",
+              },
+              {
+                id: "about-standard-currency",
+                title: "Settlement currency at checkout",
+                body: "Prices display in the customer's locale currency via FX snapshot at checkout; settlement is recorded in NGN with the displayed currency archived alongside per the multi-currency foundation.",
+              },
+              {
+                id: "about-standard-trust",
+                title: "FingerprintJS + trust_flags for fraud",
+                body: "Device-risk signals from FingerprintJS combine with platform trust_flags to suppress abusive sign-ups and flag suspicious order patterns. Trust signals reduce but do not eliminate risk.",
+              },
+              {
+                id: "about-standard-i18n",
+                title: "11 supported locales via @henryco/i18n",
+                body: "Customer-facing surfaces flow through @henryco/i18n with DeepL-primed translation cache. English is the canonical version in case of conflict.",
               },
             ],
           },
           {
-            id: "about-leadership",
-            eyebrow: "Direction",
-            title: "How the group is led",
+            id: "about-personas",
+            eyebrow: "Who it serves",
+            title: "Three customer types we are built for",
             body:
-              "Ownership, leadership philosophy, and long-term direction are held explicit so the group behaves predictably for customers, partners, investors, and talent.",
+              "We do not target everyone. The platform is shaped around three groups whose problems the operating standard is designed to solve.",
+            layout: "cards",
+            items: [
+              {
+                id: "about-persona-customer",
+                title: "End customers",
+                body: "Buyers, tenants, learners, and service requesters who want one account, predictable response times, and verified vendors.",
+              },
+              {
+                id: "about-persona-vendor",
+                title: "Vendors and operators",
+                body: "Sellers, landlords, instructors, employers, riders, and care providers who want a clean payout path, verified KYC, and dispute support that resolves rather than stalls.",
+              },
+              {
+                id: "about-persona-business",
+                title: "Business and institutional buyers",
+                body: "Companies that need recurring logistics, employee learning, office care, or studio engagements with documented SLAs and signed contracts.",
+              },
+            ],
+          },
+          {
+            id: "about-not-promised",
+            eyebrow: "Scope honesty",
+            title: "What we do not promise",
+            body:
+              "Honest about scope so the operating standard stays credible. The premium-bar rubric calls for this \u2014 silence is not a substitute for clarity.",
+            layout: "cards",
+            items: [
+              {
+                id: "about-not-payments",
+                title: "We are not a bank",
+                body: "We process payments through Stripe and route payouts to verified bank accounts. We do not hold deposits, issue credit, or run regulated financial products.",
+              },
+              {
+                id: "about-not-tenancy",
+                title: "Property: agent, not party to tenancy",
+                body: "HenryCo Property coordinates discovery, viewings, and (where engaged) managed-property operations. The tenancy contract is between landlord and tenant unless explicitly signed by HenryCo Property in a managed-property capacity.",
+              },
+              {
+                id: "about-not-employer",
+                title: "Jobs: platform, not employer",
+                body: "HenryCo Jobs hosts listings and verifies candidate profiles. The employment contract is between employer and candidate; HenryCo is not party to the employment relationship.",
+              },
+              {
+                id: "about-not-instant",
+                title: "Service availability is operating-hours bound",
+                body: "Logistics same-day windows and care booking windows depend on operating-hours and rider coverage in the customer's city. Coverage is named, not implied.",
+              },
+            ],
+          },
+          {
+            id: "about-reach",
+            eyebrow: "How to reach the company",
+            title: "Group-level contact",
+            body:
+              "For division-specific issues, the division support inbox is faster. Group enquiries (partnership, media, investor) come here.",
             layout: "default",
             items: [
-              { id: "about-leadership-1", label: "Vision", value: "A respected, premium operating group." },
-              { id: "about-leadership-2", label: "Direction", value: "Expand with discipline. Preserve quality." },
-              { id: "about-leadership-3", label: "Commitment", value: "Operate with clarity, seriousness, and trust." },
+              { id: "about-reach-hello", label: "General", value: LEGAL.contacts.hello },
+              { id: "about-reach-legal", label: "Legal correspondence", value: LEGAL.contacts.legal },
+              { id: "about-reach-privacy", label: "Privacy and data-subject rights", value: LEGAL.contacts.privacy },
+              { id: "about-reach-dpo", label: "Data Protection Officer", value: LEGAL.contacts.dpo },
+              { id: "about-reach-phone", label: "Phone", value: LEGAL.contacts.supportPhone },
             ],
           },
         ],
