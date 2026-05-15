@@ -479,15 +479,20 @@ The cross-portal `/calendar` aggregator (Wave A1) primarily reads from Supabase 
 
 #### 6.1.14 Rooms (Wave A2 ships)
 
+Updated 2026-05-14 by Wave A2 (`rebuild/dashboard-rooms`).
+
 | Var | Prod | Preview | Dev | Purpose | Used in | Owner |
 |---|---|---|---|---|---|---|
-| `DAILY_API_KEY` (S) | R | R | O | Daily.co provider — server-side room creation | `packages/rooms/src/providers/daily.ts` | **Wave A2** |
-| `DAILY_DOMAIN` (S) | R | R | O | Daily.co subdomain | same | **Wave A2** |
-| `NEXT_PUBLIC_DAILY_DOMAIN` (C) | R | R | O | Browser-side embed config | same | **Wave A2** |
-| `NEXT_PUBLIC_JITSI_DOMAIN` (C) | O (fallback) | O | O | Jitsi self-hosted or public instance | `packages/rooms/src/providers/jitsi.ts` | **Wave A2** |
-| `ROOMS_PROVIDER` (S) | O (defaults to daily if creds present, else jitsi) | O | O | Provider override | `packages/rooms/src/provider-selector.ts` | **Wave A2** |
+| `DAILY_API_KEY` (S) | R | R | O | Daily.co provider — server-side room creation, meeting-token issuance, recording start/stop | `packages/rooms/src/providers/daily.ts`, `packages/rooms/src/provider-selector.ts` | **Wave A2** |
+| `DAILY_DOMAIN` (S) | R | R | O | Daily.co subdomain (e.g. `henrycotest`) | same | **Wave A2** |
+| `NEXT_PUBLIC_DAILY_DOMAIN` (C) | R | R | O | Browser-side embed config (iframe src host); same value as `DAILY_DOMAIN` | consumer iframe srcs | **Wave A2** |
+| `NEXT_PUBLIC_JITSI_DOMAIN` (C) | O (fallback) | O | O | Jitsi instance hostname. Default `meet.jit.si` when absent. | `packages/rooms/src/providers/jitsi.ts` | **Wave A2** |
+| `JITSI_APP_ID` (S) | O | O | O | Optional JWT issuer for Jitsi self-hosted | `packages/rooms/src/providers/jitsi.ts` | **Wave A2** |
+| `JITSI_APP_SECRET` (S) | O | O | O | Optional HS256 signing secret for Jitsi JWTs | same | **Wave A2** |
+| `ROOMS_PROVIDER` (S) | O (default: daily if creds present, else jitsi) | O | O | Provider override (`daily` or `jitsi`) | `packages/rooms/src/provider-selector.ts` | **Wave A2** |
+| `ROOMS_RECORDING_BUCKET` (S) | R if recording enabled | R | O | Supabase Storage bucket name for recording exports (webhook handler — wired in Wave B/C consumer) | consumer-side webhook receiver | **Wave A2** declared, consumer-side wired |
 
-`UNVERIFIED — REQUIRES OWNER CONFIRMATION`: Daily.co vs Jitsi default per `docs/rebuild-prompts/README.md:194-196` is `Daily.co primary, Jitsi fallback`. Owner can override at Wave A2 spawn time.
+`UNVERIFIED — REQUIRES OWNER CONFIRMATION`: Daily.co vs Jitsi default per `docs/rebuild-prompts/README.md:194-196` is `Daily.co primary, Jitsi fallback`. Owner can override at runtime by setting `ROOMS_PROVIDER=jitsi`. Degrade-gracefully contract: when neither provider's env is present, `selectProvider()` returns `null` and the server actions return `{ error: "rooms_unavailable" }` — never 500.
 
 #### 6.1.15 E-signature (Studio + Jobs offers/proposals)
 
