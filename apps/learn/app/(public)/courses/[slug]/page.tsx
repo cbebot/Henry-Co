@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { Layers3, Quote, Star } from "lucide-react";
+import { JsonLd, buildCourseLd } from "@henryco/seo";
+import { getDivisionUrl } from "@henryco/config";
 import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
 import { getCourseBySlug } from "@/lib/learn/data";
 import { getLearnViewer } from "@/lib/learn/auth";
@@ -53,8 +55,32 @@ export default async function CourseDetailPage({
         ? t("Assigned access")
         : t("Private access");
 
+  const learnUrl = getDivisionUrl("learn");
+  const courseLd = buildCourseLd({
+    name: course.title,
+    description: course.summary || course.description,
+    url: `${learnUrl}/courses/${course.slug}`,
+    inLanguage: locale,
+    educationalLevel: course.difficulty,
+    offers:
+      course.accessModel === "free"
+        ? { price: "0", priceCurrency: course.currency || "NGN", category: "Free" }
+        : course.price != null
+          ? {
+              price: String(course.price),
+              priceCurrency: course.currency || "NGN",
+              category: "Paid",
+            }
+          : undefined,
+    hasCourseInstance: {
+      courseMode: "Online",
+      courseWorkload: course.durationText,
+    },
+  });
+
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-14 sm:px-8 xl:px-10">
+      <JsonLd id={`learn-course-${course.id}-jsonld`} data={courseLd} />
       {/* Editorial course hero — no big rounded panel */}
       <section>
         <div className="flex flex-wrap items-center gap-2">

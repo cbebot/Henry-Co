@@ -59,9 +59,10 @@ export function adminNav(active: string): LearnNavItem[] {
 export function instructorNav(active: string): LearnNavItem[] {
   return [
     { href: "/instructor", label: "Overview", active: active === "/instructor" },
-    { href: "/owner/courses", label: "Courses", active: active === "/owner/courses" },
-    { href: "/owner/learners", label: "Learners", active: active === "/owner/learners" },
-    { href: "/owner/certificates", label: "Certificates", active: active === "/owner/certificates" },
+    { href: "/instructor/courses", label: "Courses", active: active === "/instructor/courses" },
+    { href: "/instructor/grading", label: "Grading", active: active === "/instructor/grading" },
+    { href: "/instructor/payouts", label: "Payouts", active: active === "/instructor/payouts" },
+    { href: "/instructor/analytics", label: "Analytics", active: active === "/instructor/analytics" },
   ];
 }
 

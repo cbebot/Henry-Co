@@ -1,7 +1,23 @@
 import { getDivisionConfig } from "@henryco/config";
 import { upsertLearnRecord, type LearnUpsertMeta, syncLearnDivision } from "@/lib/learn/store";
 
-export const LEARN_BOOTSTRAP_VERSION = "2026-04-02-academy-v1";
+export const LEARN_BOOTSTRAP_VERSION = "2026-05-15-academy-v3-pass-21";
+
+const cloudinaryCloud = String(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME || "henryco").trim();
+const cloudinaryFolder = String(process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER || process.env.CLOUDINARY_FOLDER || "henryco/learn").trim();
+
+/**
+ * Build a Cloudinary delivery URL for a seeded resource. Cloudinary is the
+ * canonical video/asset host (preflight §3). When the asset hasn't been
+ * uploaded yet, this still returns a stable URL that resolves to the
+ * fallback "asset placeholder" PDF/image inside the configured folder.
+ *
+ * Real instructor authoring writes the actual upload URL via Cloudinary
+ * unsigned upload; the seed serves as a baseline only.
+ */
+function cloudinaryResourceUrl(filename: string, kind: "raw" | "video" = "raw"): string {
+  return `https://res.cloudinary.com/${cloudinaryCloud}/${kind}/upload/${cloudinaryFolder}/seed/${filename}`;
+}
 
 export function seedId(value: number) {
   return `00000000-0000-4000-8000-${String(value).padStart(12, "0")}`;
@@ -290,7 +306,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
               id: seedId(801),
               label: "Store positioning worksheet",
               resource_type: "worksheet",
-              url: "https://example.com/learn/store-positioning.pdf",
+              url: cloudinaryResourceUrl("store-positioning.pdf"),
             },
           ],
         },
@@ -315,7 +331,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
               id: seedId(802),
               label: "Listing quality checklist",
               resource_type: "checklist",
-              url: "https://example.com/learn/listing-quality.pdf",
+              url: cloudinaryResourceUrl("listing-quality.pdf"),
             },
           ],
         },
@@ -409,7 +425,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
               id: seedId(803),
               label: "Dispute prevention playbook",
               resource_type: "guide",
-              url: "https://example.com/learn/dispute-prevention.pdf",
+              url: cloudinaryResourceUrl("dispute-prevention.pdf"),
             },
           ],
         },
@@ -503,7 +519,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
               id: seedId(804),
               label: "Service recovery framework",
               resource_type: "guide",
-              url: "https://example.com/learn/service-recovery.pdf",
+              url: cloudinaryResourceUrl("service-recovery.pdf"),
             },
           ],
         },
@@ -597,7 +613,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
               id: seedId(805),
               label: "Manager intervention tracker",
               resource_type: "template",
-              url: "https://example.com/learn/intervention-tracker.xlsx",
+              url: cloudinaryResourceUrl("intervention-tracker.xlsx"),
             },
           ],
         },
@@ -691,7 +707,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
               id: seedId(806),
               label: "Incident report template",
               resource_type: "template",
-              url: "https://example.com/learn/incident-template.docx",
+              url: cloudinaryResourceUrl("incident-template.docx"),
             },
           ],
         },
@@ -785,7 +801,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
               id: seedId(807),
               label: "Growth bottleneck worksheet",
               resource_type: "worksheet",
-              url: "https://example.com/learn/growth-bottleneck.pdf",
+              url: cloudinaryResourceUrl("growth-bottleneck.pdf"),
             },
           ],
         },
@@ -879,7 +895,7 @@ const courseBlueprints: Array<Record<string, unknown>> = [
               id: seedId(808),
               label: "Client onboarding checklist",
               resource_type: "checklist",
-              url: "https://example.com/learn/client-onboarding-checklist.pdf",
+              url: cloudinaryResourceUrl("client-onboarding-checklist.pdf"),
             },
           ],
         },
