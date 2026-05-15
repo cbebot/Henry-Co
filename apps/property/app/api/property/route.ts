@@ -728,6 +728,16 @@ export async function POST(request: Request) {
           backupDate,
           scheduledFor: null,
           reminderAt: null,
+          // V3 PASS 21 — reminder cycle + waitlist columns. The cron
+          // populates reminder_24h_at + reminder_1h_at when the viewing
+          // moves into `scheduled` / `confirmed`.
+          reminder24hAt: null,
+          reminder24hSentAt: null,
+          reminder1hAt: null,
+          reminder1hSentAt: null,
+          confirmedAt: null,
+          waitlistPosition: null,
+          cancellationReason: null,
           notes,
           status: "requested",
           assignedAgentId: listing.agentId,
