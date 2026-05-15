@@ -12,6 +12,7 @@
   "dependencies": {
     "@henryco/chat-composer": "workspace:^",
     "@henryco/config": "workspace:^",
+    "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
     "@henryco/notifications": "workspace:^",

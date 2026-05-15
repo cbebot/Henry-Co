@@ -21,6 +21,7 @@ import {
   sendWhatsAppText,
 } from "@/lib/support/whatsapp";
 import { getOperationsIntelligenceSnapshot } from "@/lib/operations-intelligence";
+import { runRecurringAutoBookSweep } from "@/lib/automation/recurring-auto-book";
 
 type BookingAutomationRow = {
   id: string;
@@ -66,6 +67,10 @@ type AutomationRunSummary = {
   reengagementSent: number;
   whatsappSent: number;
   skipped: number;
+  recurringRunsConsidered: number;
+  recurringBookingsCreated: number;
+  recurringSkippedDuplicates: number;
+  recurringSkippedInvalid: number;
 };
 
 const LAGOS_TIME_ZONE = "Africa/Lagos";
@@ -880,11 +885,24 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
     const settings = await getCareSettings();
     const dataset = await getAutomationDataset();
 
-    const [ownerSummariesSent, ownerAlerts, paymentRemindersSent, nurture] = await Promise.all([
+    const [
+      ownerSummariesSent,
+      ownerAlerts,
+      paymentRemindersSent,
+      nurture,
+      recurring,
+    ] = await Promise.all([
       sendOwnerMonthlySummary(now, dataset),
       sendOwnerOperationalAlerts(now),
       sendPaymentReminders(now, settings, dataset),
       sendMarketingNurture(now, dataset),
+      // V3 PASS 21 — recurring auto-book sweep (24h lookahead).
+      runRecurringAutoBookSweep(now).catch(() => ({
+        scheduledRunsConsidered: 0,
+        bookingsCreated: 0,
+        skippedDuplicates: 0,
+        skippedInvalid: 0,
+      })),
     ]);
 
     const summary = {
@@ -897,6 +915,10 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
       reengagementSent: nurture.reengagementSent,
       whatsappSent: nurture.whatsappSent,
       skipped: nurture.skipped,
+      recurringRunsConsidered: recurring.scheduledRunsConsidered,
+      recurringBookingsCreated: recurring.bookingsCreated,
+      recurringSkippedDuplicates: recurring.skippedDuplicates,
+      recurringSkippedInvalid: recurring.skippedInvalid,
     } satisfies AutomationRunSummary;
 
     await writeAutomationLog({
