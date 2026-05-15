@@ -117,6 +117,23 @@ export type JobsCopy = {
     sourceLabel: string;
     discloseRequiredError: string;
   };
+  profileBuilder: {
+    sectionBasics: string;
+    sectionExperience: string;
+    sectionEducation: string;
+    sectionSkills: string;
+    sectionPortfolio: string;
+    fullName: string;
+    headline: string;
+    summary: string;
+    location: string;
+    phone: string;
+    email: string;
+    saving: string;
+    savedAt: string;
+    autosaveHint: string;
+    saveError: string;
+  };
 };
 
 const EN: JobsCopy = {
@@ -238,6 +255,23 @@ const EN: JobsCopy = {
     sourceLabel: "Source",
     discloseRequiredError:
       "Salary disclosure is required. Provide a numeric range or a concrete label.",
+  },
+  profileBuilder: {
+    sectionBasics: "Basics",
+    sectionExperience: "Experience",
+    sectionEducation: "Education",
+    sectionSkills: "Skills",
+    sectionPortfolio: "Portfolio",
+    fullName: "Full name",
+    headline: "Headline",
+    summary: "Summary",
+    location: "Location",
+    phone: "Phone",
+    email: "Email",
+    saving: "Saving…",
+    savedAt: "Saved",
+    autosaveHint: "Auto-saves every 30s and on blur",
+    saveError: "Couldn't save your draft.",
   },
 };
 
