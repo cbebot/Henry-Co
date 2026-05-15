@@ -183,7 +183,7 @@ export function AccountDropdown({
     );
     if (isAction(item)) {
       return (
-        <button key={item.label} type="button" role="menuitem" tabIndex={0} className={cn(rowBase, "w-[calc(100%-0.75rem)] justify-between text-left")} onClick={() => { close(); item.onClick(); }}>
+        <button key={item.label} type="button" role="menuitem" tabIndex={0} className={cn(rowBase, "w-[calc(100%-0.75rem)] justify-between text-start")} onClick={() => { close(); item.onClick(); }}>
           {content}
         </button>
       );
@@ -212,7 +212,7 @@ export function AccountDropdown({
       aria-label={surfaceCopy.publicAccount.accountMenu}
       onKeyDown={handleKeyDown}
       className={cn(
-        "absolute right-0 z-[60] mt-2.5 w-[min(280px,calc(100vw-1.5rem))] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
+        "absolute end-0 z-[60] mt-2.5 w-[min(280px,calc(100vw-1.5rem))] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
         toneShell(tone),
         className
       )}
@@ -275,7 +275,7 @@ export function AccountDropdown({
               tabIndex={0}
               disabled={signingOut}
               className={cn(
-                "mx-1.5 flex w-[calc(100%-0.75rem)] min-h-[40px] items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 outline-none transition-colors hover:bg-red-50 focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-500/40 dark:text-red-400 dark:hover:bg-red-500/12 dark:focus-visible:bg-red-500/12 dark:focus-visible:ring-red-400/35",
+                "mx-1.5 flex w-[calc(100%-0.75rem)] min-h-[40px] items-center gap-2.5 rounded-lg px-3 py-2 text-start text-sm font-semibold text-red-600 outline-none transition-colors hover:bg-red-50 focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-500/40 dark:text-red-400 dark:hover:bg-red-500/12 dark:focus-visible:bg-red-500/12 dark:focus-visible:ring-red-400/35",
                 tone === "solidDark" && "text-red-400 hover:bg-red-500/12 focus-visible:bg-red-500/12"
               )}
               onClick={() => { close(); void handleSignOut(); }}

@@ -82,7 +82,7 @@ export default async function MarketplacePolicyPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Coverage
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {meta.coverage}
               </span>
             </li>
@@ -90,7 +90,7 @@ export default async function MarketplacePolicyPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Enforcement
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {meta.enforcement}
               </span>
             </li>
@@ -98,7 +98,7 @@ export default async function MarketplacePolicyPage({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 Updated
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {meta.updated}
               </span>
             </li>

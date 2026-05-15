@@ -53,7 +53,7 @@ export default function MarketplaceHelpCentre({
     <div className="space-y-8">
       <div className="relative">
         <Search
-          className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--market-muted)]"
+          className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--market-muted)]"
           aria-hidden
         />
         <input
@@ -61,7 +61,7 @@ export default function MarketplaceHelpCentre({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search help — e.g. refund, missing item, payout"
-          className="h-14 w-full rounded-2xl border border-[var(--market-line)] bg-black/30 pl-11 pr-4 text-base text-[var(--market-paper-white)] outline-none placeholder:text-[var(--market-muted)]/70 focus:border-[var(--market-brass)]"
+          className="h-14 w-full rounded-2xl border border-[var(--market-line)] bg-black/30 ps-11 pe-4 text-base text-[var(--market-paper-white)] outline-none placeholder:text-[var(--market-muted)]/70 focus:border-[var(--market-brass)]"
           aria-label="Search the help centre"
         />
       </div>
@@ -70,7 +70,7 @@ export default function MarketplaceHelpCentre({
         <section>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-muted)]">
             {searchMatches.length} match{searchMatches.length === 1 ? "" : "es"} for
-            <span className="ml-1.5 text-[var(--market-paper-white)]">{query}</span>
+            <span className="ms-1.5 text-[var(--market-paper-white)]">{query}</span>
           </p>
           {searchMatches.length ? (
             <ul className="mt-4 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
@@ -139,7 +139,7 @@ export default function MarketplaceHelpCentre({
                           setExpandedItemId(isOpen ? null : item.id)
                         }
                         aria-expanded={isOpen}
-                        className="flex w-full items-center justify-between gap-4 py-4 text-left"
+                        className="flex w-full items-center justify-between gap-4 py-4 text-start"
                       >
                         <span className="text-base font-semibold tracking-tight text-[var(--market-paper-white)]">
                           {item.question}
@@ -154,7 +154,7 @@ export default function MarketplaceHelpCentre({
                         />
                       </button>
                       {isOpen ? (
-                        <p className="pb-5 pr-8 text-sm leading-7 text-[var(--market-muted)]">
+                        <p className="pb-5 pe-8 text-sm leading-7 text-[var(--market-muted)]">
                           {item.answer}
                         </p>
                       ) : null}

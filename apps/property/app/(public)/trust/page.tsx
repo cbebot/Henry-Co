@@ -174,7 +174,7 @@ export default async function TrustPage() {
           </ul>
         </div>
 
-        <div className="xl:pl-12">
+        <div className="xl:ps-12">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
             Two-sided expectations
           </p>
@@ -223,9 +223,9 @@ export default async function TrustPage() {
         </ul>
       </section>
 
-      <section className="mt-14 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
+      <section className="mt-14 border-s-2 border-[var(--property-accent-strong)]/55 ps-5">
         <p className="property-kicker text-[10.5px] uppercase tracking-[0.22em]">
-          <Sparkles className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+          <Sparkles className="me-1 inline h-3.5 w-3.5 align-[-2px]" />
           What happens next after submission
         </p>
         <ol className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">

@@ -572,7 +572,7 @@ export default function BookPickupForm({
           onClick={() => setMode("garment")}
           aria-pressed={mode === "garment"}
           className={cn(
-            "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
+            "rounded-[28px] border p-5 text-start transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
             mode === "garment"
               ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-lg shadow-[color:var(--accent)]/10"
               : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
@@ -604,7 +604,7 @@ export default function BookPickupForm({
           onClick={() => setMode("service")}
           aria-pressed={mode === "service"}
           className={cn(
-            "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
+            "rounded-[28px] border p-5 text-start transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
             mode === "service"
               ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-lg shadow-[color:var(--accent)]/10"
               : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
@@ -1095,7 +1095,7 @@ export default function BookPickupForm({
                           </div>
                         </div>
 
-                        <div className="text-right">
+                        <div className="text-end">
                           <div className="text-sm text-zinc-500 dark:text-white/55">{t("Line total")}</div>
                           <div className="text-2xl font-black tracking-tight text-[color:var(--accent)]">
                             {formatMoney(lineTotal)}
@@ -1164,7 +1164,7 @@ export default function BookPickupForm({
                               updateGarmentItem(item.pricing_id, { urgent: !item.urgent })
                             }
                             className={cn(
-                              "h-13 rounded-2xl border px-4 text-left text-sm font-semibold transition",
+                              "h-13 rounded-2xl border px-4 text-start text-sm font-semibold transition",
                               item.urgent
                                 ? "border-red-300/30 bg-red-500/10 text-red-700 dark:text-red-100"
                                 : "border-black/10 bg-white/80 text-zinc-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/70"
@@ -1209,7 +1209,7 @@ export default function BookPickupForm({
                     onClick={() => setServiceCategory(category.key)}
                     aria-pressed={active}
                     className={cn(
-                      "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
+                      "rounded-[28px] border p-5 text-start transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                       active
                         ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
                         : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
@@ -1277,7 +1277,7 @@ export default function BookPickupForm({
                       onClick={() => setPackageSlug(item.slug)}
                       aria-pressed={active}
                       className={cn(
-                        "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
+                        "rounded-[28px] border p-5 text-start transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                         active
                           ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
                           : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
@@ -1311,7 +1311,7 @@ export default function BookPickupForm({
                         <div className="text-2xl font-black tracking-tight text-[color:var(--accent)]">
                           {formatMoney(item.base_price)}
                         </div>
-                        <div className="text-right text-xs uppercase tracking-[0.14em] text-zinc-400 dark:text-white/45">
+                        <div className="text-end text-xs uppercase tracking-[0.14em] text-zinc-400 dark:text-white/45">
                           {t(formatFrequencyLabel(item.default_frequency))} •{" "}
                           {tf("{count} staff", { count: item.staff_count })}
                         </div>
@@ -1610,7 +1610,7 @@ export default function BookPickupForm({
                         onClick={() => toggleAddon(item.key)}
                         aria-pressed={active}
                         className={cn(
-                          "rounded-[24px] border p-4 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
+                          "rounded-[24px] border p-4 text-start transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                           active
                             ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-sm shadow-[color:var(--accent)]/10"
                             : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
@@ -1750,7 +1750,7 @@ export default function BookPickupForm({
               onClick={() => setPaymentPlan("book_first")}
               aria-pressed={paymentPlan === "book_first"}
               className={cn(
-                "rounded-[1.8rem] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
+                "rounded-[1.8rem] border p-5 text-start transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                 paymentPlan === "book_first"
                   ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
                   : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
@@ -1783,7 +1783,7 @@ export default function BookPickupForm({
               onClick={() => setPaymentPlan("pay_now")}
               aria-pressed={paymentPlan === "pay_now"}
               className={cn(
-                "rounded-[1.8rem] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
+                "rounded-[1.8rem] border p-5 text-start transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
                 paymentPlan === "pay_now"
                   ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
                   : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
@@ -1926,7 +1926,7 @@ function ServiceTypeCard({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "rounded-[28px] border p-5 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
+        "rounded-[28px] border p-5 text-start transition outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#071020] active:translate-y-[0.5px]",
         active
           ? "border-[color:var(--accent)]/45 bg-[color:var(--accent)]/10 shadow-md shadow-[color:var(--accent)]/10"
           : "border-black/10 bg-black/[0.02] hover:border-[color:var(--accent)]/30 hover:bg-[color:var(--accent)]/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]"
@@ -1952,7 +1952,7 @@ function ServiceTypeCard({
         <div className="text-2xl font-black tracking-tight text-[color:var(--accent)]">
           {formatMoney(item.base_price)}
         </div>
-        <div className="text-right text-xs uppercase tracking-[0.14em] text-zinc-400 dark:text-white/45">
+        <div className="text-end text-xs uppercase tracking-[0.14em] text-zinc-400 dark:text-white/45">
           {tf("{count} staff", { count: item.default_staff_count })} •{" "}
           {tf("{hours}h", { hours: Math.round(item.default_duration_min / 60) })}
         </div>

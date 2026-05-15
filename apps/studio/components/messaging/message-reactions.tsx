@@ -150,7 +150,7 @@ export function ReactionPicker({
           <span aria-hidden className="text-[18px] leading-none">
             {reaction.emoji}
           </span>
-          <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-[#0F1524] px-2 py-0.5 text-[10px] font-medium text-white/85 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+          <span className="pointer-events-none absolute -bottom-7 start-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-[#0F1524] px-2 py-0.5 text-[10px] font-medium text-white/85 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
             {reaction.label}
           </span>
         </button>

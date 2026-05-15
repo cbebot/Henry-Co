@@ -381,7 +381,7 @@ export function ChatComposer(props: ComposerProps) {
           />
         ) : null}
 
-        <span className="ml-auto hidden text-[11px] text-zinc-400 dark:text-white/40 sm:inline">
+        <span className="ms-auto hidden text-[11px] text-zinc-400 dark:text-white/40 sm:inline">
           {shortcutHint}
         </span>
 

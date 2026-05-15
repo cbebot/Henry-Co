@@ -109,7 +109,7 @@ export function StaffDirectoryClient({
                 <td className="text-sm">{m.division ? divisionLabels[m.division] || m.division : "—"}</td>
                 <td className="text-sm capitalize text-[var(--acct-muted)]">{m.role.replace(/_/g, " ")}</td>
                 <td className="text-sm capitalize">{m.status}</td>
-                <td className="text-right">
+                <td className="text-end">
                   <Link href={`/owner/staff/users/${m.id}`} className="acct-button-secondary inline-flex rounded-lg px-3 py-1.5 text-xs font-semibold">
                     Profile
                   </Link>

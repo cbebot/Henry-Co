@@ -93,7 +93,7 @@ export default async function SubmitListingPage({
                   <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
                     Reference
                   </dt>
-                  <dd className="break-all text-right text-[13px] font-semibold tracking-[-0.005em] tabular-nums text-[var(--property-accent-strong)]">
+                  <dd className="break-all text-end text-[13px] font-semibold tracking-[-0.005em] tabular-nums text-[var(--property-accent-strong)]">
                     {params.ref}
                   </dd>
                 </div>
@@ -102,7 +102,7 @@ export default async function SubmitListingPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
                   Stage
                 </dt>
-                <dd className="text-right text-[13px] font-semibold tracking-tight text-[var(--property-ink)]">
+                <dd className="text-end text-[13px] font-semibold tracking-tight text-[var(--property-ink)]">
                   {params.policy ? params.policy.replaceAll("_", " ") : "Queued for review"}
                 </dd>
               </div>
@@ -110,7 +110,7 @@ export default async function SubmitListingPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
                   Expected response
                 </dt>
-                <dd className="text-right text-[13px] font-semibold tracking-tight text-[var(--property-ink)]">
+                <dd className="text-end text-[13px] font-semibold tracking-tight text-[var(--property-ink)]">
                   Within 2 business days
                 </dd>
               </div>
@@ -137,7 +137,7 @@ export default async function SubmitListingPage({
         </div>
       ) : null}
       {params.verification && params.verification !== "verified" ? (
-        <div className="mt-4 border-l-2 border-[rgba(190,131,58,0.6)] pl-5">
+        <div className="mt-4 border-s-2 border-[rgba(190,131,58,0.6)] ps-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
             Verification pending
           </p>
@@ -184,7 +184,7 @@ export default async function SubmitListingPage({
             Account context
           </p>
           {viewer.user ? (
-            <div className="mt-5 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
+            <div className="mt-5 border-s-2 border-[var(--property-accent-strong)]/55 ps-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
                 Signed in
               </p>
@@ -208,7 +208,7 @@ export default async function SubmitListingPage({
             </div>
           )}
 
-          <div className="mt-8 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
+          <div className="mt-8 border-s-2 border-[var(--property-accent-strong)]/55 ps-5">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
               What happens next
             </p>
@@ -221,7 +221,7 @@ export default async function SubmitListingPage({
           </div>
         </div>
 
-        <div className="xl:pl-12">
+        <div className="xl:ps-12">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
             Listing form
           </p>
@@ -240,7 +240,7 @@ export default async function SubmitListingPage({
               />
             </div>
           ) : (
-            <p className="mt-6 border-l-2 border-[var(--property-line)] pl-5 text-sm leading-7 text-[var(--property-ink-soft)]">
+            <p className="mt-6 border-s-2 border-[var(--property-line)] ps-5 text-sm leading-7 text-[var(--property-ink-soft)]">
               The listing form unlocks after you sign in. Use the panel on the left, or{" "}
               <Link
                 href={submitLoginHref}

@@ -54,7 +54,7 @@ export default function RecentBookingCards({
         {bookings.map((booking, index) => {
           const date = formatDate(booking.pickupDate) ?? formatDate(booking.createdAt);
           const card = (
-            <article className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-left transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05]">
+            <article className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-start transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05]">
               <div className="flex items-start gap-3">
                 <span
                   aria-hidden

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { getAccountUrl } from "@henryco/config";
+import { pluralize } from "@henryco/i18n";
 import { LoaderCircle, ShieldCheck, UploadCloud } from "lucide-react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { getSharedAccountPropertyUrl } from "@/lib/property/links";
@@ -164,7 +165,10 @@ function UploadField({
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--property-ink-soft)]">
         <span>
           {count > 0
-            ? `${count} file${count === 1 ? "" : "s"} selected`
+            ? pluralize("en", count, {
+                one: "{count} file selected",
+                other: "{count} files selected",
+              })
             : "No files selected yet"}
         </span>
         <span>{formatFileLimit(PROPERTY_MAX_DOCUMENT_FILE_BYTES)}</span>

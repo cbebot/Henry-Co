@@ -67,8 +67,8 @@ export default function ResetPasswordForm() {
           <label className="mb-1.5 block text-sm font-medium">{t("New password")}</label>
           <div className="relative">
             <input type={show ? "text" : "password"} name="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)}
-              className="acct-input pr-10" placeholder={surfaceCopy.accountForms.minPasswordPlaceholder} required minLength={8} />
-            <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]">
+              className="acct-input pe-10" placeholder={surfaceCopy.accountForms.minPasswordPlaceholder} required minLength={8} />
+            <button type="button" onClick={() => setShow(!show)} className="absolute end-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]">
               {show ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>

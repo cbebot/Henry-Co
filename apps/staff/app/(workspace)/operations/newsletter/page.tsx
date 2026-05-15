@@ -155,7 +155,7 @@ export default async function StaffNewsletterIndexPage() {
                   <span className="text-[0.65rem] uppercase tracking-[0.14em] text-[var(--staff-muted)]">
                     {row.division}
                   </span>
-                  <span className="ml-auto text-[0.65rem] uppercase tracking-[0.14em] text-[var(--staff-muted)]">
+                  <span className="ms-auto text-[0.65rem] uppercase tracking-[0.14em] text-[var(--staff-muted)]">
                     {formatScheduled(row)}
                   </span>
                 </div>
@@ -210,7 +210,7 @@ export default async function StaffNewsletterIndexPage() {
                       division: {row.division}
                     </span>
                   ) : null}
-                  <span className="ml-auto text-[0.65rem] uppercase tracking-[0.14em] text-[var(--staff-muted)]">
+                  <span className="ms-auto text-[0.65rem] uppercase tracking-[0.14em] text-[var(--staff-muted)]">
                     {new Date(row.recorded_at).toLocaleString()}
                   </span>
                 </div>

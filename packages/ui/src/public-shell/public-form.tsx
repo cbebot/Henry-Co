@@ -75,12 +75,12 @@ export function PublicField({
             >
               {label}
               {required ? (
-                <span aria-hidden className="ml-1 text-rose-500 dark:text-rose-400">
+                <span aria-hidden className="ms-1 text-rose-500 dark:text-rose-400">
                   *
                 </span>
               ) : null}
               {optionalHint && !required ? (
-                <span className="ml-2 text-xs font-normal text-zinc-400 dark:text-white/45">
+                <span className="ms-2 text-xs font-normal text-zinc-400 dark:text-white/45">
                   {optionalHint}
                 </span>
               ) : null}
@@ -134,7 +134,7 @@ export function PublicLabel({
     >
       {children}
       {required ? (
-        <span aria-hidden className="ml-1 text-rose-500 dark:text-rose-400">
+        <span aria-hidden className="ms-1 text-rose-500 dark:text-rose-400">
           *
         </span>
       ) : null}
@@ -173,13 +173,13 @@ export const PublicInput = forwardRef<HTMLInputElement, InputProps>(function Pub
   return (
     <div className="relative">
       {leadingIcon ? (
-        <span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-zinc-400 dark:text-white/50">
+        <span className="pointer-events-none absolute inset-y-0 start-3.5 flex items-center text-zinc-400 dark:text-white/50">
           {leadingIcon}
         </span>
       ) : null}
       {control}
       {trailingIcon ? (
-        <span className="absolute inset-y-0 right-3.5 flex items-center text-zinc-400 dark:text-white/50">
+        <span className="absolute inset-y-0 end-3.5 flex items-center text-zinc-400 dark:text-white/50">
           {trailingIcon}
         </span>
       ) : null}
@@ -228,7 +228,7 @@ export const PublicSelect = forwardRef<HTMLSelectElement, SelectProps>(function 
           CONTROL_BASE,
           FOCUS_RING,
           CONTROL_DISABLED,
-          "appearance-none pr-10",
+          "appearance-none pe-10",
           size === "lg" ? SIZE_LG : SIZE_MD,
           Boolean(invalid) && CONTROL_ERROR,
           className
@@ -240,7 +240,7 @@ export const PublicSelect = forwardRef<HTMLSelectElement, SelectProps>(function 
       <svg
         aria-hidden
         viewBox="0 0 20 20"
-        className="pointer-events-none absolute right-3.5 top-1/2 -mt-2 h-4 w-4 text-zinc-400 dark:text-white/45"
+        className="pointer-events-none absolute end-3.5 top-1/2 -mt-2 h-4 w-4 text-zinc-400 dark:text-white/45"
       >
         <path
           d="M5.5 8 10 12.5 14.5 8"

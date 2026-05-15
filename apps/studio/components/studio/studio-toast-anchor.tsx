@@ -72,7 +72,7 @@ export function StudioToastAnchor() {
   return (
     <div
       role="status"
-      className="fixed bottom-6 left-1/2 z-[100] w-[min(100%-2rem,28rem)] -translate-x-1/2"
+      className="fixed bottom-6 start-1/2 z-[100] w-[min(100%-2rem,28rem)] -translate-x-1/2"
     >
       <div className="rounded-[1.35rem] border border-[rgba(151,244,243,0.35)] bg-[linear-gradient(180deg,rgba(11,42,52,0.97),rgba(6,18,26,0.99))] p-4 shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
         <div className="flex gap-3">

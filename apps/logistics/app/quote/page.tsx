@@ -127,7 +127,7 @@ export default async function QuotePage() {
               </ol>
             </div>
 
-            <div className="border-l-2 border-[var(--logistics-accent)]/55 pl-5">
+            <div className="border-s-2 border-[var(--logistics-accent)]/55 ps-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
                 Need volume pricing?
               </p>

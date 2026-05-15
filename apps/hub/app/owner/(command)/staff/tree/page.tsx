@@ -27,8 +27,8 @@ export default async function StaffTreePage() {
       />
 
       <div className="acct-card relative overflow-hidden p-6 sm:p-8">
-        <div className="pointer-events-none absolute left-8 top-0 h-full w-px bg-[var(--acct-line)] sm:left-10" aria-hidden />
-        <div className="relative pl-8 sm:pl-12">
+        <div className="pointer-events-none absolute start-8 top-0 h-full w-px bg-[var(--acct-line)] sm:start-10" aria-hidden />
+        <div className="relative ps-8 sm:ps-12">
           <div className="rounded-[1.25rem] border border-[var(--acct-gold)]/35 bg-[var(--acct-gold-soft)] px-4 py-3">
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">Root</div>
             <div className="mt-1 text-lg font-semibold text-[var(--acct-ink)]">Henry &amp; Co. Group</div>
@@ -40,7 +40,7 @@ export default async function StaffTreePage() {
               const members = byDivision.get(slug) ?? [];
               return (
                 <section key={slug} className="relative">
-                  <div className="absolute -left-8 top-6 h-px w-6 bg-[var(--acct-line)] sm:-left-10 sm:w-10" aria-hidden />
+                  <div className="absolute -start-8 top-6 h-px w-6 bg-[var(--acct-line)] sm:-start-10 sm:w-10" aria-hidden />
                   <div className="rounded-[1.35rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4 sm:p-5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
@@ -65,7 +65,7 @@ export default async function StaffTreePage() {
                           <li key={m.id}>
                             <Link
                               href={`/owner/staff/users/${m.id}`}
-                              className="flex flex-col rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-3 text-left transition hover:border-[var(--owner-accent)]/35"
+                              className="flex flex-col rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-3 text-start transition hover:border-[var(--owner-accent)]/35"
                             >
                               <span className="font-medium text-[var(--acct-ink)]">{m.fullName}</span>
                               <span className="text-xs text-[var(--acct-muted)]">{m.email || "No email"}</span>
@@ -84,7 +84,7 @@ export default async function StaffTreePage() {
 
             {unassigned.length > 0 ? (
               <section className="relative">
-                <div className="absolute -left-8 top-6 h-px w-6 bg-[var(--acct-line)] sm:-left-10 sm:w-10" aria-hidden />
+                <div className="absolute -start-8 top-6 h-px w-6 bg-[var(--acct-line)] sm:-start-10 sm:w-10" aria-hidden />
                 <div className="rounded-[1.35rem] border border-dashed border-[var(--acct-line)] bg-[var(--acct-bg)] p-4 sm:p-5">
                   <h2 className="text-lg font-semibold text-[var(--acct-ink)]">Unassigned</h2>
                   <p className="text-sm text-[var(--acct-muted)]">

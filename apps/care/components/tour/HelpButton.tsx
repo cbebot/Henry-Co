@@ -24,7 +24,7 @@ export default function HelpButton({
       {/* Floating help button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-5 z-[60] flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent)] text-[#07111F] shadow-lg transition hover:scale-105 hover:shadow-xl active:scale-95 sm:bottom-6 sm:right-6"
+        className="fixed bottom-24 end-5 z-[60] flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent)] text-[#07111F] shadow-lg transition hover:scale-105 hover:shadow-xl active:scale-95 sm:bottom-6 sm:end-6"
         aria-label="Help"
       >
         <HelpCircle className="h-5 w-5" />
@@ -35,7 +35,7 @@ export default function HelpButton({
         <div className="fixed inset-0 z-[9997] flex justify-end">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
           <div className="relative h-full w-full max-w-md animate-in slide-in-from-right duration-200">
-            <div className="flex h-full flex-col overflow-hidden border-l border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0F1A2C]">
+            <div className="flex h-full flex-col overflow-hidden border-s border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0F1A2C]">
               {/* Header */}
               <div className="flex items-center justify-between border-b border-black/[0.06] px-6 py-5 dark:border-white/[0.06]">
                 <div>

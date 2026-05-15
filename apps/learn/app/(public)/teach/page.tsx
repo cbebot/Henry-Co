@@ -1,4 +1,5 @@
 import { CheckCircle2, FileStack, Sparkles, UsersRound, BadgePercent } from "lucide-react";
+import { pluralize } from "@henryco/i18n";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitTeacherApplicationAction } from "@/lib/learn/actions";
 import { getLearnViewer } from "@/lib/learn/auth";
@@ -55,7 +56,10 @@ export default async function TeachPage({
       : "Set by operator — disclosed before any approved instructor publishes";
   const reviewWindowLabel =
     typeof reviewBusinessDays === "number" && reviewBusinessDays > 0
-      ? `Typically within ${reviewBusinessDays} business day${reviewBusinessDays === 1 ? "" : "s"}`
+      ? pluralize(locale, reviewBusinessDays, {
+          one: "Typically within {count} business day",
+          other: "Typically within {count} business days",
+        })
       : "Reviewed manually — written response, no automatic decisions";
 
   const pillars = [
@@ -236,9 +240,9 @@ export default async function TeachPage({
           </ul>
         </div>
 
-        <div className="space-y-12 xl:pl-12">
+        <div className="space-y-12 xl:ps-12">
           {params.submitted ? (
-            <div className="border-l-2 border-[var(--learn-mint-soft)]/55 pl-5">
+            <div className="border-s-2 border-[var(--learn-mint-soft)]/55 ps-5">
               <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {t("Submitted")}
@@ -282,7 +286,7 @@ export default async function TeachPage({
                   <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                     {t("Topics")}
                   </dt>
-                  <dd className="ml-auto max-w-md text-right text-sm leading-7 text-[var(--learn-ink)]">
+                  <dd className="ms-auto max-w-md text-end text-sm leading-7 text-[var(--learn-ink)]">
                     {application.teachingTopics.join(", ") || t("No topics supplied yet")}
                   </dd>
                 </div>
@@ -290,7 +294,7 @@ export default async function TeachPage({
                   <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
                     {t("Updated")}
                   </dt>
-                  <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
+                  <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                     {new Date(application.updatedAt).toLocaleDateString("en-NG", {
                       day: "numeric",
                       month: "short",
@@ -300,7 +304,7 @@ export default async function TeachPage({
                 </div>
               </dl>
               {application.reviewNotes ? (
-                <div className="mt-5 border-l-2 border-[var(--learn-mint-soft)]/55 pl-5">
+                <div className="mt-5 border-s-2 border-[var(--learn-mint-soft)]/55 ps-5">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
                     {t("Academy notes")}
                   </p>
@@ -540,7 +544,7 @@ export default async function TeachPage({
                     name="supportingFiles"
                     multiple
                     accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
-                    className="learn-input mt-2 w-full rounded-2xl px-4 py-3 file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--learn-ink)]"
+                    className="learn-input mt-2 w-full rounded-2xl px-4 py-3 file:me-3 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--learn-ink)]"
                   />
                   <p className="mt-2 text-xs leading-6 text-[var(--learn-ink-soft)]">
                     {t(
@@ -573,7 +577,7 @@ export default async function TeachPage({
               </form>
             </div>
           ) : (
-            <div className="border-l-2 border-[var(--learn-mint-soft)]/55 pl-5">
+            <div className="border-s-2 border-[var(--learn-mint-soft)]/55 ps-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
                 {t("Application in progress")}
               </p>

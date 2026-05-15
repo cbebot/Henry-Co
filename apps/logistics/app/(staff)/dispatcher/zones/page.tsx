@@ -42,7 +42,7 @@ export default async function DispatcherZonesPage() {
                       {zone.city}, {zone.region} · {zone.summary}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                       Base fee
                     </p>

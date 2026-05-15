@@ -170,7 +170,7 @@ export default async function StudioProjectRoomPage({
                         {formatCurrencyAmount(payment.amount, payment.currency)}
                       </p>
                     </div>
-                    <div className="text-right text-xs text-[var(--acct-muted)]">
+                    <div className="text-end text-xs text-[var(--acct-muted)]">
                       {payment.dueDate ? tf("Due {date}", { date: formatDate(payment.dueDate) }) : formatDateTime(payment.updatedAt)}
                     </div>
                   </div>

@@ -42,7 +42,7 @@ function NavLink({
     <div className="mb-0.5">
       <Link
         href={item.href}
-        className={`group flex items-center gap-3 rounded-r-xl px-4 py-2.5 text-sm transition-all ${
+        className={`group flex items-center gap-3 rounded-e-xl px-4 py-2.5 text-sm transition-all ${
           isActive
             ? "staff-nav-active"
             : "text-[var(--staff-muted)] hover:bg-[var(--staff-surface)] hover:text-[var(--staff-ink)]"
@@ -134,7 +134,7 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
   };
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-[var(--staff-sidebar-width)] lg:fixed lg:inset-y-0 lg:left-0 lg:border-r lg:border-[var(--staff-line)] staff-sidebar-bg">
+    <aside className="hidden lg:flex lg:flex-col lg:w-[var(--staff-sidebar-width)] lg:fixed lg:inset-y-0 lg:start-0 lg:border-e lg:border-[var(--staff-line)] staff-sidebar-bg">
       <div className="flex h-16 items-center gap-3 border-b border-[var(--staff-line)] px-5">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--staff-gold)] text-sm font-semibold text-[var(--staff-bg)]">
           H

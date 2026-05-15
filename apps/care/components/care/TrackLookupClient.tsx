@@ -296,8 +296,8 @@ export default function TrackLookupClient({
     <main id="henryco-main" tabIndex={-1} className="overflow-hidden bg-transparent pb-24 pt-6">
       <section className="mx-auto max-w-7xl px-3 sm:px-8 lg:px-10">
         <div className="relative overflow-hidden rounded-[1.6rem] border border-black/10 bg-white/85 px-5 py-7 shadow-[0_14px_34px_rgba(0,0,0,0.08)] backdrop-blur-0 sm:rounded-[2rem] sm:px-8 sm:py-10 md:rounded-[44px] md:shadow-[0_24px_80px_rgba(0,0,0,0.08)] md:backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_24px_100px_rgba(0,0,0,0.28)] lg:px-14 lg:py-12">
-          <div className="pointer-events-none absolute -left-20 top-0 h-72 w-72 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
-          <div className="pointer-events-none absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-zinc-300/30 blur-3xl dark:bg-white/5" />
+          <div className="pointer-events-none absolute -start-20 top-0 h-72 w-72 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
+          <div className="pointer-events-none absolute -end-16 bottom-0 h-72 w-72 rounded-full bg-zinc-300/30 blur-3xl dark:bg-white/5" />
 
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-3 rounded-3xl border border-black/10 bg-white/75 px-5 py-2.5 text-sm font-medium text-zinc-700 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.05] dark:text-white/72">
@@ -321,7 +321,7 @@ export default function TrackLookupClient({
           >
             <div className="relative grid gap-3 md:grid-cols-[2fr_1.5fr_auto]">
               <div className="relative">
-                <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[color:var(--accent)] sm:left-6">
+                <div className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-[color:var(--accent)] sm:start-6">
                   <Search className="h-5 w-5" />
                 </div>
                 <input
@@ -329,7 +329,7 @@ export default function TrackLookupClient({
                   value={code}
                   onChange={(event) => setCode(event.target.value.toUpperCase())}
                   placeholder="TRK-XXXXXXXXXX"
-                  className="h-14 w-full rounded-2xl border border-black/10 bg-white/80 pl-11 pr-4 text-base font-medium uppercase text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--accent)]/50 focus:outline-none sm:h-16 sm:rounded-3xl sm:pl-14 sm:pr-6 sm:text-lg dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:placeholder:text-white/35"
+                  className="h-14 w-full rounded-2xl border border-black/10 bg-white/80 ps-11 pe-4 text-base font-medium uppercase text-zinc-900 placeholder:text-zinc-400 focus:border-[color:var(--accent)]/50 focus:outline-none sm:h-16 sm:rounded-3xl sm:ps-14 sm:pe-6 sm:text-lg dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:placeholder:text-white/35"
                   required
                 />
               </div>

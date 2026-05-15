@@ -23,7 +23,7 @@ export default async function CaseStudyDetailPage({
           {caseStudy.challenge}
         </p>
 
-        <div className="mt-10 border-l-2 border-[var(--studio-signal)]/55 pl-5">
+        <div className="mt-10 border-s-2 border-[var(--studio-signal)]/55 ps-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--studio-signal)]">
             Impact
           </p>

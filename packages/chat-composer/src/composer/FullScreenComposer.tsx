@@ -201,7 +201,7 @@ export function FullScreenComposer(props: Props) {
         style={headerInnerStyle}
       >
         <span
-          className="absolute left-1/2 top-1.5 h-1 w-9 -translate-x-1/2 rounded-full bg-black/15 dark:bg-white/20 sm:hidden"
+          className="absolute start-1/2 top-1.5 h-1 w-9 -translate-x-1/2 rounded-full bg-black/15 dark:bg-white/20 sm:hidden"
           aria-hidden
         />
         <button
@@ -311,7 +311,7 @@ export function FullScreenComposer(props: Props) {
             </button>
           </>
         ) : null}
-        <div className="ml-auto">
+        <div className="ms-auto">
           <SendButton
             ready={ready}
             busy={busy}

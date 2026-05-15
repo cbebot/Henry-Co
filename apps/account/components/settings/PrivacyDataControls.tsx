@@ -52,7 +52,7 @@ function Toggle({
         } ${disabled ? "opacity-60" : ""}`}
       >
         <span
-          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+          className={`absolute start-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
             checked ? "translate-x-5" : ""
           }`}
         />

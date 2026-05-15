@@ -121,7 +121,7 @@ export default function PaymentProofForm({
           </p>
         </div>
 
-        <div className="rounded-[1.6rem] border border-black/10 bg-zinc-50/90 px-5 py-4 text-right dark:border-white/10 dark:bg-white/[0.05]">
+        <div className="rounded-[1.6rem] border border-black/10 bg-zinc-50/90 px-5 py-4 text-end dark:border-white/10 dark:bg-white/[0.05]">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
             {t("Amount due")}
           </div>
@@ -192,7 +192,7 @@ export default function PaymentProofForm({
               type="file"
               name="receipt"
               accept="image/jpeg,image/png,image/webp,application/pdf"
-              className="mt-3 block w-full text-sm text-zinc-600 file:mr-3 file:rounded-full file:border-0 file:bg-[color:var(--accent)]/12 file:px-4 file:py-2 file:font-semibold file:text-[color:var(--accent)] dark:text-white/60"
+              className="mt-3 block w-full text-sm text-zinc-600 file:me-3 file:rounded-full file:border-0 file:bg-[color:var(--accent)]/12 file:px-4 file:py-2 file:font-semibold file:text-[color:var(--accent)] dark:text-white/60"
               disabled={!canSubmit || loading}
             />
           </label>

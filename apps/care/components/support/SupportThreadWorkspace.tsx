@@ -230,7 +230,7 @@ function TimelineEntryCard({ entry }: { entry: SupportTimelineEntry }) {
                     />
                   ) : (
                     <div className="flex h-36 items-center justify-center rounded-[1rem] border border-dashed border-black/10 bg-black/[0.03] text-sm font-semibold text-zinc-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/55">
-                      <Paperclip className="mr-2 h-4 w-4" />
+                      <Paperclip className="me-2 h-4 w-4" />
                       {attachment.mimeType === "application/pdf" ? "PDF attachment" : "Attachment"}
                     </div>
                   )}
@@ -482,12 +482,12 @@ export default function SupportThreadWorkspace({
                   Search
                 </span>
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
+                  <Search className="pointer-events-none absolute start-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
                   <input
                     name="q"
                     defaultValue={q}
                     placeholder="Customer, subject, code..."
-                    className={cn(inputCls, "pl-9")}
+                    className={cn(inputCls, "ps-9")}
                   />
                 </div>
               </label>
@@ -605,11 +605,11 @@ export default function SupportThreadWorkspace({
                             {thread.customerEmail ? ` — ${thread.customerEmail}` : ""}
                           </div>
                         </div>
-                        <div className="shrink-0 text-right">
+                        <div className="shrink-0 text-end">
                           <div className="text-xs text-zinc-500 dark:text-white/45">
                             {formatRelative(thread.lastActivityAt)}
                           </div>
-                          <ArrowRight className="mt-1 ml-auto h-3.5 w-3.5 text-zinc-400 dark:text-white/30" />
+                          <ArrowRight className="mt-1 ms-auto h-3.5 w-3.5 text-zinc-400 dark:text-white/30" />
                         </div>
                       </div>
 
@@ -852,7 +852,7 @@ export default function SupportThreadWorkspace({
                     Conversation timeline ({selectedThread.timeline.length})
                   </div>
 
-                  <div className="max-h-[42rem] space-y-3 overflow-y-auto pr-1">
+                  <div className="max-h-[42rem] space-y-3 overflow-y-auto pe-1">
                     {selectedThread.timeline.length > 0 ? (
                       selectedThread.timeline.map((entry) => (
                         <TimelineEntryCard key={entry.id} entry={entry} />

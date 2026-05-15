@@ -144,7 +144,7 @@ export function StudioRequestPathStep({
                 {isActive ? (
                   <span
                     aria-hidden
-                    className="absolute inset-y-0 left-0 w-[2px] bg-[var(--studio-signal)]"
+                    className="absolute inset-y-0 start-0 w-[2px] bg-[var(--studio-signal)]"
                   />
                 ) : null}
                 {/* Mobile: kicker on its own line, headline below.
@@ -205,7 +205,7 @@ export function StudioRequestPathStep({
                     {isActive ? (
                       <span
                         aria-hidden
-                        className="absolute inset-y-0 left-0 w-[2px] bg-[var(--studio-signal)]"
+                        className="absolute inset-y-0 start-0 w-[2px] bg-[var(--studio-signal)]"
                       />
                     ) : null}
                     <div className="min-w-0 flex-1">
@@ -216,7 +216,7 @@ export function StudioRequestPathStep({
                         {pkg.summary}
                       </p>
                     </div>
-                    <div className="shrink-0 text-right">
+                    <div className="shrink-0 text-end">
                       <div className="text-sm font-semibold tabular-nums text-[var(--studio-ink)]">
                         ₦{pkg.price.toLocaleString("en-NG")}
                       </div>
@@ -259,7 +259,7 @@ export function StudioRequestPathStep({
               const current = projectTypeOptions.find((option) => option.label === selectedProjectType);
               if (!current) return null;
               return (
-                <p className="mt-3 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                <p className="mt-3 border-s-2 border-[var(--studio-signal)]/55 ps-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
                   {current.description}
                 </p>
               );
@@ -293,7 +293,7 @@ export function StudioRequestPathStep({
               const current = platformOptions.find((option) => option.label === selectedPlatform);
               if (!current) return null;
               return (
-                <p className="mt-3 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+                <p className="mt-3 border-s-2 border-[var(--studio-signal)]/55 ps-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
                   {current.description}
                 </p>
               );

@@ -191,19 +191,19 @@ export default async function PropertyDetailPage({
       {/* Notification rail — editorial left-rule ribbons, no panels */}
       <div className="mt-6 space-y-3">
         {messages.inquiry === "sent" ? (
-          <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
+          <p className="border-s-2 border-[var(--property-sage-soft)]/55 ps-4 text-sm leading-7 text-[var(--property-sage-soft)]">
             Inquiry submitted. HenryCo Property has placed it in the follow-up queue and the next
             response will stay tied to your account.
           </p>
         ) : null}
         {messages.viewing === "requested" ? (
-          <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
+          <p className="border-s-2 border-[var(--property-sage-soft)]/55 ps-4 text-sm leading-7 text-[var(--property-sage-soft)]">
             Viewing request submitted. Scheduling, reminders, and any verification follow-up are
             now attached to a recorded workflow.
           </p>
         ) : null}
         {messages.saved === "1" || messages.removed === "1" ? (
-          <p className="border-l-2 border-[var(--property-line)] pl-4 text-sm leading-7 text-[var(--property-ink-soft)]">
+          <p className="border-s-2 border-[var(--property-line)] ps-4 text-sm leading-7 text-[var(--property-ink-soft)]">
             {messages.saved === "1"
               ? "Property saved to your HenryCo account history."
               : "Property removed from saved listings."}
@@ -341,7 +341,7 @@ export default async function PropertyDetailPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
                   Location
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--property-ink)]">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--property-ink)]">
                   {data.listing.locationLabel}
                 </dd>
               </div>
@@ -350,7 +350,7 @@ export default async function PropertyDetailPage({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
                   Availability
                 </dt>
-                <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--property-ink)]">
+                <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--property-ink)]">
                   {data.listing.availableNow
                     ? "Available now"
                     : `From ${formatDate(data.listing.availableFrom)}`}
@@ -439,7 +439,7 @@ export default async function PropertyDetailPage({
                 <li
                   key={step.title}
                   className={`border-t border-[var(--property-line)] pt-5 ${
-                    i > 0 ? "md:border-l md:border-t-0 md:pl-5 md:pt-0" : ""
+                    i > 0 ? "md:border-s md:border-t-0 md:ps-5 md:pt-0" : ""
                   }`}
                 >
                   <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
@@ -617,7 +617,7 @@ export default async function PropertyDetailPage({
                   />
                 </label>
 
-                <div className="border-l-2 border-[var(--property-accent-strong)]/55 pl-4 py-2">
+                <div className="border-s-2 border-[var(--property-accent-strong)]/55 ps-4 py-2">
                   <div className="flex items-center gap-2">
                     <FileCheck2 className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
                     <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink)]">

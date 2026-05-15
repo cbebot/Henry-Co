@@ -268,7 +268,7 @@ export default function DamageClaimForm({
                   type="button"
                   onClick={() => removeSlot(slot.id)}
                   aria-label={t("Remove image")}
-                  className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-white"
+                  className="absolute end-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-white"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>

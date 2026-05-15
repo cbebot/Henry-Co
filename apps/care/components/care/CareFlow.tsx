@@ -81,7 +81,7 @@ export default function CareFlow() {
         }}
       />
       <div
-        className="pointer-events-none absolute inset-y-0 right-0 w-1/2"
+        className="pointer-events-none absolute inset-y-0 end-0 w-1/2"
         style={{
           background:
             "radial-gradient(circle at center, color-mix(in srgb, var(--accent-secondary) 16%, transparent), transparent 42%)",
@@ -126,7 +126,7 @@ export default function CareFlow() {
                   type="button"
                   onClick={() => setActive(index)}
                   className={cn(
-                    "rounded-[1.6rem] border px-5 py-4 text-left transition",
+                    "rounded-[1.6rem] border px-5 py-4 text-start transition",
                     selected
                       ? "border-[color:var(--accent)]/25 bg-white/[0.08] text-white shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
                       : "border-white/10 bg-white/[0.03] text-white/72 hover:bg-white/[0.05]"

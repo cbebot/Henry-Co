@@ -323,7 +323,7 @@ export function CollectionCard({
           {collection.description}
         </p>
         {collection.highlight ? (
-          <p className="mt-5 border-l-2 border-[var(--market-brass)]/55 pl-4 text-sm font-semibold leading-relaxed text-[var(--market-paper-white)]">
+          <p className="mt-5 border-s-2 border-[var(--market-brass)]/55 ps-4 text-sm font-semibold leading-relaxed text-[var(--market-paper-white)]">
             {collection.highlight}
           </p>
         ) : null}
@@ -547,7 +547,7 @@ export function EmptyState({
   ctaLabel?: string;
 }) {
   return (
-    <section className="border-l-2 border-[var(--market-brass)]/55 px-5 py-4">
+    <section className="border-s-2 border-[var(--market-brass)]/55 px-5 py-4">
       <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
         {title}
       </p>

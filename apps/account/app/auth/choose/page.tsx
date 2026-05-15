@@ -193,7 +193,7 @@ export default async function ChoosePage({
               />
               <span>
                 Remember my choice on this browser
-                <span className="ml-2 text-xs text-[var(--acct-muted)]">
+                <span className="ms-2 text-xs text-[var(--acct-muted)]">
                   (you can change this from your account settings)
                 </span>
               </span>

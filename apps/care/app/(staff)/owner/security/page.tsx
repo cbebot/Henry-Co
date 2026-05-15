@@ -517,7 +517,7 @@ export default async function OwnerSecurityPage({
             </div>
           </div>
 
-          <div className="mt-5 grid max-h-[28rem] gap-3 overflow-y-auto pr-1">
+          <div className="mt-5 grid max-h-[28rem] gap-3 overflow-y-auto pe-1">
             {notifications.length > 0 ? (
               notifications.slice(0, 18).map((row) => (
                 <article
@@ -608,7 +608,7 @@ export default async function OwnerSecurityPage({
           title="Priority security signals"
           subtitle="The events that deserve owner attention first."
         >
-          <div className="grid max-h-[min(52rem,65vh)] gap-4 overflow-y-auto pr-1">
+          <div className="grid max-h-[min(52rem,65vh)] gap-4 overflow-y-auto pe-1">
             {suspicious.length > 0 ? (
               suspicious.slice(0, 24).map((row) => (
                 <article
@@ -658,7 +658,7 @@ export default async function OwnerSecurityPage({
           title="Freeze, archive, or force reauth"
           subtitle="Live account controls backed by the same role/auth model the dashboards use."
         >
-          <div className="grid max-h-[min(52rem,65vh)] gap-4 overflow-y-auto pr-1">
+          <div className="grid max-h-[min(52rem,65vh)] gap-4 overflow-y-auto pe-1">
             {filteredStaff.length > 0 ? (
               filteredStaff.map((member) => {
                 const isSelf = member.id === auth.profile.id;
@@ -798,7 +798,7 @@ export default async function OwnerSecurityPage({
           title="Recent access and sensitive actions"
           subtitle="A denser stream for scanning actor, route, target, and device context."
         >
-          <div className="grid max-h-[min(56rem,70vh)] gap-4 overflow-y-auto pr-1">
+          <div className="grid max-h-[min(56rem,70vh)] gap-4 overflow-y-auto pe-1">
             {filteredLogs.length > 0 ? (
               filteredLogs.map((row) => (
                 <article
@@ -847,7 +847,7 @@ export default async function OwnerSecurityPage({
             <InfoTile label="Failed" value={String(emailFailed)} />
           </div>
 
-          <div className="mt-5 grid max-h-[min(44rem,55vh)] gap-4 overflow-y-auto pr-1">
+          <div className="mt-5 grid max-h-[min(44rem,55vh)] gap-4 overflow-y-auto pe-1">
             {notifications.length > 0 ? (
               notifications.map((row) => {
                 const payload = (row.payload || {}) as Record<string, unknown>;

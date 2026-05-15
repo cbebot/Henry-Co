@@ -115,7 +115,7 @@ export function SwipeableNotificationCard({
       {leftTrayWidth > 0 ? (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 flex items-center justify-end gap-3 pr-4 text-white"
+          className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-end gap-3 pe-4 text-white"
           style={{
             width: leftTrayWidth + 24,
             background:
@@ -137,7 +137,7 @@ export function SwipeableNotificationCard({
       {rightTrayWidth > 0 ? (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 flex items-center justify-start gap-3 pl-4 text-white"
+          className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-start gap-3 ps-4 text-white"
           style={{
             width: rightTrayWidth + 24,
             background:

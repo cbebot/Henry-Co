@@ -94,7 +94,7 @@ export function JobCard({
           <li>{job.employmentType}</li>
           <li>{job.seniority}</li>
           {job.team ? <li className="text-[var(--jobs-muted)]">{job.team}</li> : null}
-          <li className="ml-auto inline-flex items-center gap-1.5">
+          <li className="ms-auto inline-flex items-center gap-1.5">
             <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
               {copy.applicants}
             </span>

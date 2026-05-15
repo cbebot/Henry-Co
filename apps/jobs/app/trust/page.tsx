@@ -72,7 +72,7 @@ export default async function TrustPage() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     {item.label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
                     {item.value}
                   </span>
                 </li>

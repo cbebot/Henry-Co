@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileCheck2, ShieldCheck, UploadCloud } from "lucide-react";
+import { formatList } from "@henryco/i18n";
 import { HenryCoActivityIndicator } from "@henryco/ui";
 import { ActionButton } from "@henryco/dashboard-shell/components";
 import { useMarketplaceRuntime } from "@/components/marketplace/runtime-provider";
@@ -576,7 +577,7 @@ export function SellerApplicationWizard({
 
             {missingCriticalDocuments.length > 0 ? (
               <div className="rounded-[1.5rem] border border-[rgba(255,171,151,0.24)] bg-[rgba(126,33,18,0.08)] p-5 text-sm leading-7 text-[var(--market-alert)]">
-                Submission is still blocked until the required proof set is complete: {missingCriticalDocuments.join(", ")}.
+                Submission is still blocked until the required proof set is complete: {formatList("en", missingCriticalDocuments)}.
               </div>
             ) : null}
 

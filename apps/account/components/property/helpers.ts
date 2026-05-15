@@ -1,3 +1,5 @@
+import { pluralize, type AppLocale } from "@henryco/i18n";
+
 const SHORT_MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -20,10 +22,19 @@ export function formatMoney(amount: number | null | undefined, currency = "NGN")
   return `${currency} ${NF.format(n)}`;
 }
 
-export function formatRoomCount(bedrooms: number | null, bathrooms: number | null, sizeSqm: number | null): string {
+export function formatRoomCount(
+  bedrooms: number | null,
+  bathrooms: number | null,
+  sizeSqm: number | null,
+  locale: AppLocale = "en",
+): string {
   const parts: string[] = [];
-  if (bedrooms != null && bedrooms > 0) parts.push(`${bedrooms} bed${bedrooms === 1 ? "" : "s"}`);
-  if (bathrooms != null && bathrooms > 0) parts.push(`${bathrooms} bath${bathrooms === 1 ? "" : "s"}`);
+  if (bedrooms != null && bedrooms > 0) {
+    parts.push(pluralize(locale, bedrooms, { one: "{count} bed", other: "{count} beds" }));
+  }
+  if (bathrooms != null && bathrooms > 0) {
+    parts.push(pluralize(locale, bathrooms, { one: "{count} bath", other: "{count} baths" }));
+  }
   if (sizeSqm != null && sizeSqm > 0) parts.push(`${sizeSqm} sqm`);
   return parts.join(" · ");
 }
@@ -100,15 +111,28 @@ export function heroState(stats: PropertyStats): HeroState {
   return "discover";
 }
 
-export function buildHeadline(state: HeroState, stats: PropertyStats): string {
+export function buildHeadline(
+  state: HeroState,
+  stats: PropertyStats,
+  locale: AppLocale = "en",
+): string {
   if (state === "empty") return "Start exploring HenryCo Property.";
   if (state === "active") {
     if (stats.viewings > 0) {
-      return `${stats.viewings} viewing${stats.viewings === 1 ? "" : "s"} scheduled.`;
+      return pluralize(locale, stats.viewings, {
+        one: "{count} viewing scheduled.",
+        other: "{count} viewings scheduled.",
+      });
     }
-    return `${stats.inquiries} inquir${stats.inquiries === 1 ? "y" : "ies"} live.`;
+    return pluralize(locale, stats.inquiries, {
+      one: "{count} inquiry live.",
+      other: "{count} inquiries live.",
+    });
   }
-  return `${stats.saved} shortlisted home${stats.saved === 1 ? "" : "s"}.`;
+  return pluralize(locale, stats.saved, {
+    one: "{count} shortlisted home.",
+    other: "{count} shortlisted homes.",
+  });
 }
 
 export function buildBlurb(state: HeroState): string {

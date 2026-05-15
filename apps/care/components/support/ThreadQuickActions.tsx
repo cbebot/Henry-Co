@@ -66,7 +66,7 @@ export default function ThreadQuickActions({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-20 mt-2 w-72 rounded-2xl border border-black/10 bg-white p-4 shadow-lg dark:border-white/10 dark:bg-[#0F1A2C]">
+        <div className="absolute end-0 top-full z-20 mt-2 w-72 rounded-2xl border border-black/10 bg-white p-4 shadow-lg dark:border-white/10 dark:bg-[#0F1A2C]">
           <div className="space-y-3">
             <label className="grid gap-1">
               <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">

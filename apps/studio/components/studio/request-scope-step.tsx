@@ -96,7 +96,7 @@ function PricedCheckboxList({
               {isSelected ? (
                 <span
                   aria-hidden
-                  className="absolute inset-y-0 left-0 w-[2px] bg-[var(--studio-signal)]"
+                  className="absolute inset-y-0 start-0 w-[2px] bg-[var(--studio-signal)]"
                 />
               ) : null}
               <input

@@ -540,7 +540,7 @@ export default async function CareHomePage() {
                       {item.item_name}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <p className="text-[1.5rem] font-semibold leading-tight tracking-tight text-[color:var(--accent)]">
                       {formatMoney(item.price)}
                     </p>
@@ -594,7 +594,7 @@ export default async function CareHomePage() {
                   ))}
                 </ul>
               ) : (
-                <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+                <div className="border-s-2 border-[color:var(--accent)]/55 ps-5">
                   <p className="text-[1.15rem] font-semibold leading-snug tracking-tight text-zinc-950 dark:text-white">
                     {t("Clear pricing, tracked handoffs, and direct support stay visible from the start.")}
                   </p>
@@ -663,7 +663,7 @@ function PackageCard({
           </h3>
           <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">{body}</p>
         </div>
-        <div className="text-right">
+        <div className="text-end">
           <p className="text-[1.4rem] font-semibold leading-tight tracking-tight text-[color:var(--accent)]">
             {value}
           </p>

@@ -24,8 +24,8 @@ export function ProjectCollapsiblePanel({
       onToggle={(e) => setOpen(e.currentTarget.open)}
       className="group rounded-[1.85rem] border border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-surface)_88%,transparent)] open:border-[rgba(151,244,243,0.22)]"
     >
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-6 pr-5 [&::-webkit-details-marker]:hidden">
-        <div className="min-w-0 text-left">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-6 pe-5 [&::-webkit-details-marker]:hidden">
+        <div className="min-w-0 text-start">
           <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">{badge}</div>
           <h2 className="mt-2 text-lg font-semibold tracking-[-0.02em] text-[var(--studio-ink)]">{title}</h2>
           {subtitle ? <p className="mt-1 text-sm leading-6 text-[var(--studio-ink-soft)]">{subtitle}</p> : null}

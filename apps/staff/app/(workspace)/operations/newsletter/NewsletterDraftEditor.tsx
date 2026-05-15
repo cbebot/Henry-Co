@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
+import { pluralize } from "@henryco/i18n";
 import type {
   NewsletterCampaignClass,
   NewsletterCampaignContent,
@@ -637,10 +638,12 @@ export default function NewsletterDraftEditor(props: Props) {
       {state.voiceWarnings.length > 0 ? (
         <div className="rounded-md border border-[var(--staff-warning)] bg-[var(--staff-warning-soft)] p-3 text-xs text-[var(--staff-warning)]">
           <p className="font-semibold">
-            Voice guard: {state.voiceWarnings.length} warning
-            {state.voiceWarnings.length === 1 ? "" : "s"}
+            {pluralize("en", state.voiceWarnings.length, {
+              one: "Voice guard: {count} warning",
+              other: "Voice guard: {count} warnings",
+            })}
           </p>
-          <ul className="mt-1 list-disc pl-4">
+          <ul className="mt-1 list-disc ps-4">
             {state.voiceWarnings.map((w, idx) => (
               <li key={idx}>{w}</li>
             ))}

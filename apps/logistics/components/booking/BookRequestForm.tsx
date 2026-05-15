@@ -133,7 +133,7 @@ export default function BookRequestForm({
                     <input type="radio" name="serviceType" value={s.value} required defaultChecked={s.value === "scheduled"} />
                     <span className="font-medium text-white">{s.label}</span>
                   </span>
-                  <span className="pl-6 text-xs text-[var(--logistics-muted)]">{s.hint}</span>
+                  <span className="ps-6 text-xs text-[var(--logistics-muted)]">{s.hint}</span>
                 </label>
               ))}
             </div>

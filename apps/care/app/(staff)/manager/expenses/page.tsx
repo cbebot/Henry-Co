@@ -268,7 +268,7 @@ export default async function ManagerExpensesPage() {
                       </div>
                     </div>
 
-                    <div className="text-right">
+                    <div className="text-end">
                       <div className="text-xl font-black text-red-200">
                         {formatMoney(expense.amount)}
                       </div>

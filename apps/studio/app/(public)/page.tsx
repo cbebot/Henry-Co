@@ -135,7 +135,7 @@ export default async function StudioHomePage() {
                 }}
               >
                 <div
-                  className="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-30 blur-2xl"
+                  className="absolute -end-6 -top-6 h-20 w-20 rounded-full opacity-30 blur-2xl"
                   style={{ background: tpl.preview.accent }}
                 />
               </div>
@@ -275,7 +275,7 @@ export default async function StudioHomePage() {
                 <Link
                   key={item.id}
                   href={`/work#${item.id}`}
-                  className="studio-row-tactile group block border-l-2 border-[var(--studio-signal)]/40 pl-5 outline-none"
+                  className="studio-row-tactile group block border-s-2 border-[var(--studio-signal)]/40 ps-5 outline-none"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="text-lg font-semibold text-[var(--studio-ink)] transition motion-safe:group-hover:text-[var(--studio-signal)]">
@@ -345,7 +345,7 @@ export default async function StudioHomePage() {
           aside={
             <div className="space-y-5">
               {featuredTestimonials.map((item) => (
-                <figure key={item.id} className="border-l border-white/20 pl-5">
+                <figure key={item.id} className="border-s border-white/20 ps-5">
                   <blockquote className="text-sm leading-7 text-white/90">&ldquo;{item.quote}&rdquo;</blockquote>
                   <figcaption className="mt-2 text-xs uppercase tracking-[0.18em] text-white/60">{item.name}</figcaption>
                 </figure>

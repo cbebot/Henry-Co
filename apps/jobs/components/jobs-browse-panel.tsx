@@ -156,7 +156,7 @@ export function JobsBrowsePanel({
           <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
             <SlidersHorizontal className="h-4 w-4 text-[var(--jobs-accent)]" />
             Filters
-            <span className="ml-auto text-xs font-medium text-[var(--jobs-muted)]">Tap to expand</span>
+            <span className="ms-auto text-xs font-medium text-[var(--jobs-muted)]">Tap to expand</span>
           </summary>
           <div className="mt-4 space-y-4 border-t border-[var(--jobs-line)] pt-4">{filterFields}</div>
         </details>

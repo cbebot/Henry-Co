@@ -285,7 +285,7 @@ export function PublicHeaderClient() {
             </button>
           </form>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ms-auto flex items-center gap-2">
             {/* Guests see no bell — there is nothing to notify them about until
              * they sign in. CHROME-01A audit caught a "99" badge rendering on
              * an unauthenticated marketplace homepage. */}
@@ -296,7 +296,7 @@ export function PublicHeaderClient() {
               >
                 <Bell className="h-4 w-4" />
                 {runtime.shell.unreadNotificationCount ? (
-                  <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-alert)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
+                  <span className="absolute -end-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--market-alert)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--market-noir)]">
                     {Math.min(runtime.shell.unreadNotificationCount, 99)}
                   </span>
                 ) : null}
@@ -507,7 +507,7 @@ export function PublicHeaderClient() {
                       runtime.openCart();
                       setMobileOpenPath(null);
                     }}
-                    className="flex w-full items-center justify-between gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-left text-sm font-semibold text-[var(--market-paper-white)]"
+                    className="flex w-full items-center justify-between gap-2 rounded-[1.35rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-start text-sm font-semibold text-[var(--market-paper-white)]"
                   >
                     <span className="flex items-center gap-2">
                       <ShoppingBag className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />

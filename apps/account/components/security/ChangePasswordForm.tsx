@@ -69,7 +69,7 @@ export default function ChangePasswordForm() {
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="acct-input pr-10"
+            className="acct-input pe-10"
             placeholder={copy.changePassword.minPlaceholder}
             required
             minLength={8}
@@ -77,7 +77,7 @@ export default function ChangePasswordForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
+            className="absolute end-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
           >
             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>

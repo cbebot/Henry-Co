@@ -149,7 +149,7 @@ export function AttachmentPreview({
                   ) : null}
                 </div>
                 {uploading ? (
-                  <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5 dark:bg-white/10">
+                  <div className="absolute bottom-0 start-0 end-0 h-[3px] bg-black/5 dark:bg-white/10">
                     <div
                       className="h-full bg-[color:var(--composer-accent,#0E7C86)] transition-[width] duration-200 ease-out"
                       style={{ width: `${Math.min(100, att.progress)}%` }}
@@ -159,7 +159,7 @@ export function AttachmentPreview({
               </div>
             )}
 
-            <div className="absolute right-1.5 top-1.5 flex gap-1 opacity-100 transition-opacity duration-150 [@media(hover:hover)]:opacity-0 group-hover:[@media(hover:hover)]:opacity-100 group-focus-within:[@media(hover:hover)]:opacity-100">
+            <div className="absolute end-1.5 top-1.5 flex gap-1 opacity-100 transition-opacity duration-150 [@media(hover:hover)]:opacity-0 group-hover:[@media(hover:hover)]:opacity-100 group-focus-within:[@media(hover:hover)]:opacity-100">
               {failed ? (
                 <button
                   type="button"

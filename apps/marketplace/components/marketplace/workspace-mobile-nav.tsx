@@ -137,7 +137,7 @@ export function WorkspaceMobileNav({ title, description, groups, currentLabel }:
                         setExpanded((prev) => ({ ...prev, [group.label]: !isExpanded }))
                       }
                       aria-expanded={isExpanded}
-                      className="flex w-full items-center justify-between gap-3 px-3 py-3.5 text-left text-[12px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]"
+                      className="flex w-full items-center justify-between gap-3 px-3 py-3.5 text-start text-[12px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]"
                     >
                       <span>{group.label}</span>
                       <ChevronDown

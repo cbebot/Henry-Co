@@ -347,7 +347,7 @@ export default async function OwnerFinancePage() {
                         {payment.payment_no} • {payment.payment_method}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <div className="font-black text-[color:var(--accent-deep)] dark:text-[color:var(--accent-strong)]">
                         {formatMoney(payment.amount)}
                       </div>
@@ -385,7 +385,7 @@ export default async function OwnerFinancePage() {
                         {expense.expense_no} • {expense.approval_status}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <div className="font-black text-red-600 dark:text-red-300">
                         {formatMoney(expense.amount)}
                       </div>
@@ -436,7 +436,7 @@ export default async function OwnerFinancePage() {
                       </div>
                     </div>
 
-                    <div className="text-right">
+                    <div className="text-end">
                       <div className="font-black text-red-600 dark:text-red-300">
                         {formatMoney(expense.amount)}
                       </div>

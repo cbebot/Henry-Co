@@ -491,7 +491,7 @@ function Field({
     <label className="block">
       <span className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
         {label}
-        {required ? <span className="ml-1 text-[#ff8f8f]">*</span> : null}
+        {required ? <span className="ms-1 text-[#ff8f8f]">*</span> : null}
       </span>
       <div className="mt-2">{input}</div>
       {hint ? (

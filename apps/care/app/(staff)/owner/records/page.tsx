@@ -176,12 +176,12 @@ export default async function OwnerRecordsPage({
         <div className="rounded-[34px] border border-black/10 bg-white/80 p-6 shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
           <form className="grid gap-3 xl:grid-cols-[1.2fr_0.7fr_auto_auto]">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
+              <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/35" />
               <input
                 name="q"
                 defaultValue={q}
                 placeholder="Search by item tag, customer, garment, color, booking..."
-                className="h-12 w-full rounded-2xl border border-black/10 bg-white pl-11 pr-4 text-sm font-medium text-zinc-900 shadow-sm outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
+                className="h-12 w-full rounded-2xl border border-black/10 bg-white ps-11 pe-4 text-sm font-medium text-zinc-900 shadow-sm outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
               />
             </div>
 

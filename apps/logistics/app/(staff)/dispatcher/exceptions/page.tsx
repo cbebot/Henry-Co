@@ -45,7 +45,7 @@ export default async function DispatcherExceptionsPage() {
                       {issue.details}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                       Opened
                     </p>

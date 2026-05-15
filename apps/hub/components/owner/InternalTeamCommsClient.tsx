@@ -815,7 +815,7 @@ export default function InternalTeamCommsClient() {
           </p>
           <div className="relative mt-3">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--acct-muted)]"
+              className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--acct-muted)]"
               aria-hidden
             />
             <input
@@ -823,7 +823,7 @@ export default function InternalTeamCommsClient() {
               value={memberQuery}
               onChange={(e) => setMemberQuery(e.target.value)}
               placeholder="Search people…"
-              className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] py-2.5 pl-9 pr-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
+              className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] py-2.5 ps-9 pe-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
               aria-label="Search people for direct chat"
             />
           </div>
@@ -842,7 +842,7 @@ export default function InternalTeamCommsClient() {
                         : undefined
                     }
                     onClick={() => void startDirectChat(m.user_id)}
-                    className="flex w-full flex-col rounded-lg px-2 py-2 text-left text-sm hover:bg-[var(--acct-surface)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full flex-col rounded-lg px-2 py-2 text-start text-sm hover:bg-[var(--acct-surface)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span className="font-semibold text-[var(--acct-ink)]">{m.label}</span>
                     <span className="text-[11px] text-[var(--acct-muted)]">
@@ -940,7 +940,7 @@ export default function InternalTeamCommsClient() {
         </p>
         <div className="relative px-1">
           <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--acct-muted)]"
+            className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--acct-muted)]"
             aria-hidden
           />
           <input
@@ -948,7 +948,7 @@ export default function InternalTeamCommsClient() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Search channels…"
-            className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] py-2.5 pl-9 pr-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
+            className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] py-2.5 ps-9 pe-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
             aria-label="Search channels"
           />
         </div>
@@ -964,7 +964,7 @@ export default function InternalTeamCommsClient() {
                 <button
                   type="button"
                   onClick={() => setActiveId(t.id)}
-                  className={`min-w-0 flex-1 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition ${
+                  className={`min-w-0 flex-1 rounded-xl px-3 py-2.5 text-start text-sm font-semibold transition ${
                     t.id === activeId
                       ? "bg-[var(--acct-gold-soft)] text-[var(--acct-ink)]"
                       : "text-[var(--acct-muted)] hover:bg-[var(--acct-surface)]"
@@ -1012,7 +1012,7 @@ export default function InternalTeamCommsClient() {
           ) : null}
           <div className="relative mt-3">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--acct-muted)]"
+              className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--acct-muted)]"
               aria-hidden
             />
             <input
@@ -1020,7 +1020,7 @@ export default function InternalTeamCommsClient() {
               value={messageSearch}
               onChange={(e) => setMessageSearch(e.target.value)}
               placeholder="Search in this thread…"
-              className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] py-2.5 pl-9 pr-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
+              className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] py-2.5 ps-9 pe-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
               aria-label="Search messages in thread"
             />
           </div>
@@ -1032,7 +1032,7 @@ export default function InternalTeamCommsClient() {
                 <li key={h.id}>
                   <button
                     type="button"
-                    className="w-full rounded-lg px-2 py-1.5 text-left hover:bg-[var(--acct-surface)]"
+                    className="w-full rounded-lg px-2 py-1.5 text-start hover:bg-[var(--acct-surface)]"
                     onClick={() => {
                       document.getElementById(`msg-${h.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
                     }}
@@ -1071,7 +1071,7 @@ export default function InternalTeamCommsClient() {
                     <span className="text-sm font-semibold text-[var(--acct-ink)]">
                       {m.author_label || "Team"}
                       {m.author_id && m.author_id === selfUserId ? (
-                        <span className="ml-2 text-[10px] font-normal uppercase tracking-wider text-[var(--acct-muted)]">
+                        <span className="ms-2 text-[10px] font-normal uppercase tracking-wider text-[var(--acct-muted)]">
                           You
                         </span>
                       ) : null}

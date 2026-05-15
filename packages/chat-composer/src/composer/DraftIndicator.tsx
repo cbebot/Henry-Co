@@ -75,7 +75,7 @@ export function DraftIndicator({
           type="button"
           onClick={onDiscard}
           className={cn(
-            "ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1",
+            "ms-auto inline-flex items-center gap-1 rounded-full px-2 py-1",
             "text-[11px] font-medium uppercase tracking-[0.14em]",
             "text-zinc-500 transition hover:text-zinc-800",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--composer-accent,#0E7C86)]/40",

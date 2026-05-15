@@ -174,7 +174,7 @@ export default async function ProposalDetailPage({
                   <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                     {label}
                   </div>
-                  <div className="max-w-[28rem] text-sm leading-7 text-[var(--studio-ink-soft)] sm:text-right">
+                  <div className="max-w-[28rem] text-sm leading-7 text-[var(--studio-ink-soft)] sm:text-end">
                     {value}
                   </div>
                 </div>
@@ -337,7 +337,7 @@ export default async function ProposalDetailPage({
                   {totalInvestment}
                 </div>
               </div>
-              <div className="text-sm leading-7 text-[var(--studio-ink-soft)] sm:max-w-sm sm:text-right">
+              <div className="text-sm leading-7 text-[var(--studio-ink-soft)] sm:max-w-sm sm:text-end">
                 Deposit due now: {depositAmount}. Remaining payments stay attached to milestones, not
                 a vague follow-up invoice trail.
               </div>

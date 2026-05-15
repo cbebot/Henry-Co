@@ -170,7 +170,7 @@ export function SavedItemsClient({
                 key={key}
                 type="button"
                 onClick={() => setFilterDivision(key)}
-                className={`rounded-xl border px-3 py-2 text-left text-xs transition ${
+                className={`rounded-xl border px-3 py-2 text-start text-xs transition ${
                   filterDivision === key
                     ? "border-[var(--acct-gold)] bg-[var(--acct-gold-soft)] text-[var(--acct-ink)]"
                     : "border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] text-[var(--acct-muted)] hover:border-[var(--acct-gold)]/40"
@@ -224,7 +224,7 @@ export function SavedItemsClient({
           </select>
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ms-auto flex items-center gap-2">
           {selected.size > 0 ? (
             <>
               <span className="text-xs text-[var(--acct-muted)]">
@@ -278,7 +278,7 @@ export function SavedItemsClient({
                 <Link
                   key={division}
                   href={DIVISION_HOME[division]}
-                  className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-3 py-3 text-left text-xs transition hover:border-[var(--acct-gold)]/40"
+                  className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-3 py-3 text-start text-xs transition hover:border-[var(--acct-gold)]/40"
                 >
                   <p className="text-sm font-semibold text-[var(--acct-ink)]">
                     {DIVISION_LABEL[division]}
@@ -380,7 +380,7 @@ function SavedItemCard({
           type="button"
           onClick={onToggle}
           aria-label={selected ? "Deselect item" : "Select item"}
-          className="absolute left-3 top-3 z-10 inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)] hover:text-[var(--acct-gold)]"
+          className="absolute start-3 top-3 z-10 inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)] hover:text-[var(--acct-gold)]"
         >
           {selected ? <CheckSquare size={14} /> : <Square size={14} />}
         </button>

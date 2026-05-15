@@ -54,7 +54,7 @@ export default async function RiderHistoryPage() {
                       {shipment.serviceType.replaceAll("_", " ")}
                     </p>
                   </div>
-                  <div className="text-right text-sm">
+                  <div className="text-end text-sm">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                       Closed
                     </p>

@@ -44,7 +44,7 @@ export function ActivityFeed({
   if (updates.length === 0) return null;
 
   return (
-    <ol className="portal-step-rail relative space-y-4 pl-7">
+    <ol className="portal-step-rail relative space-y-4 ps-7">
       {updates.map((update) => {
         const Icon = updateIcons[update.updateType] ?? Sparkles;
         const accent = updateAccents[update.updateType] ?? "text-[var(--studio-signal)]";
@@ -53,7 +53,7 @@ export function ActivityFeed({
         return (
           <li key={update.id} className="relative">
             <span
-              className={`absolute left-[-1.65rem] top-1 grid h-7 w-7 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-bg)] ${accent}`}
+              className={`absolute start-[-1.65rem] top-1 grid h-7 w-7 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-bg)] ${accent}`}
             >
               <Icon className="h-3.5 w-3.5" />
             </span>

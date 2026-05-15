@@ -102,7 +102,7 @@ export default function AuthCallbackClient() {
             : "bg-[var(--jobs-success-soft)] text-[var(--jobs-success)]",
         ].join(" ")}
       >
-        {state.error ? "!" : <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-r-transparent" />}
+        {state.error ? "!" : <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-e-transparent" />}
       </div>
       <h1 className="mt-5 text-2xl font-semibold tracking-[-0.02em]">{state.title}</h1>
       <p className="mt-3 text-sm leading-7 text-[var(--jobs-muted)]">{state.body}</p>

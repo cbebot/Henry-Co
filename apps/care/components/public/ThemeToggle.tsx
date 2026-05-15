@@ -55,7 +55,7 @@ export default function ThemeToggle() {
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-2 w-[220px] overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-2 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#0B1220]/95">
+        <div className="absolute end-0 z-50 mt-2 w-[220px] overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-2 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#0B1220]/95">
           {item("system", "System")}
           {item("light", "Light")}
           {item("dark", "Dark")}

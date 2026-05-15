@@ -59,7 +59,7 @@ export default function Sidebar({ user }: SidebarProps) {
   };
 
   return (
-    <aside className="hc-sidebar hidden lg:flex lg:flex-col lg:w-[var(--acct-sidebar-width)] lg:fixed lg:inset-y-0 lg:left-0 lg:border-r lg:border-[var(--acct-line)] lg:bg-[var(--acct-bg-soft)]">
+    <aside className="hc-sidebar hidden lg:flex lg:flex-col lg:w-[var(--acct-sidebar-width)] lg:fixed lg:inset-y-0 lg:start-0 lg:border-e lg:border-[var(--acct-line)] lg:bg-[var(--acct-bg-soft)]">
       {/* Brand header */}
       <div className="flex h-16 items-center gap-3 border-b border-[var(--acct-line)] px-5">
         <Logo size={32} />

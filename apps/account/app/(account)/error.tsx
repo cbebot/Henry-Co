@@ -67,7 +67,7 @@ export default function AccountError({
               <code className="rounded bg-[var(--acct-surface)] px-1.5 py-0.5 text-[var(--acct-ink)]">
                 {error.digest}
               </code>
-              <span className="ml-2 opacity-70">(share with support)</span>
+              <span className="ms-2 opacity-70">(share with support)</span>
             </p>
           ) : null}
           <div className="mt-5 flex flex-wrap gap-3">

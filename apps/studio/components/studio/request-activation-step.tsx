@@ -56,7 +56,7 @@ export function StudioRequestActivationStep({
                 </p>
               </div>
             ) : (
-              <p className="mt-3 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
+              <p className="mt-3 border-s-2 border-[var(--studio-signal)]/55 ps-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
                 We will match the strongest team to your brief based on scope, urgency, and your industry signals.
               </p>
             )}

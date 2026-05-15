@@ -75,7 +75,7 @@ export default async function SupportPage() {
                   </span>
                   <a
                     href={`mailto:${logistics.supportEmail}`}
-                    className="ml-auto text-right text-sm font-semibold tracking-tight text-white underline-offset-4 hover:underline"
+                    className="ms-auto text-end text-sm font-semibold tracking-tight text-white underline-offset-4 hover:underline"
                   >
                     {logistics.supportEmail}
                   </a>
@@ -87,7 +87,7 @@ export default async function SupportPage() {
                   </span>
                   <a
                     href={`tel:${logistics.supportPhone}`}
-                    className="ml-auto text-right text-sm font-semibold tracking-tight text-white underline-offset-4 hover:underline"
+                    className="ms-auto text-end text-sm font-semibold tracking-tight text-white underline-offset-4 hover:underline"
                   >
                     {logistics.supportPhone}
                   </a>
@@ -97,7 +97,7 @@ export default async function SupportPage() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                     Hours
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                     {settings.pickupHours}
                   </span>
                 </li>
@@ -106,7 +106,7 @@ export default async function SupportPage() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                     Operations
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                     {settings.operationsCity}, {settings.operationsRegion}
                   </span>
                 </li>

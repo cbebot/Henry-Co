@@ -45,7 +45,7 @@ export function AccountStudioToastAnchor() {
   return (
     <div
       role="status"
-      className="pointer-events-none fixed bottom-6 left-1/2 z-[100] w-[min(100%-2rem,28rem)] -translate-x-1/2 px-0"
+      className="pointer-events-none fixed bottom-6 start-1/2 z-[100] w-[min(100%-2rem,28rem)] -translate-x-1/2 px-0"
     >
       <div className="pointer-events-auto rounded-2xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-4 shadow-[var(--acct-shadow-lg)]">
         <div className="flex gap-3">

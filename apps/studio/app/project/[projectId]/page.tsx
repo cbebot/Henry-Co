@@ -162,7 +162,7 @@ export default async function ProjectDetailPage({
                 <div className="font-semibold text-[var(--studio-ink)]">{milestone.name}</div>
                 <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{milestone.description}</p>
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 <div className="text-sm font-semibold text-[var(--studio-signal)]">
                   {formatCurrency(milestone.amount, proposalCurrency)}
                 </div>

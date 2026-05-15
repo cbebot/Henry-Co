@@ -105,7 +105,7 @@ export function StudioListbox({
           setOpen(true);
         }}
         onKeyDown={onKeyDown}
-        className="flex min-h-[48px] w-full items-center justify-between gap-2 rounded-[1.2rem] border border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-surface-strong)_88%,transparent)] px-4 py-3 text-left text-[var(--studio-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition hover:border-[rgba(151,244,243,0.28)] focus:border-[rgba(151,244,243,0.45)] focus:outline-none focus:ring-2 focus:ring-[rgba(88,212,210,0.25)]"
+        className="flex min-h-[48px] w-full items-center justify-between gap-2 rounded-[1.2rem] border border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-surface-strong)_88%,transparent)] px-4 py-3 text-start text-[var(--studio-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition hover:border-[rgba(151,244,243,0.28)] focus:border-[rgba(151,244,243,0.45)] focus:outline-none focus:ring-2 focus:ring-[rgba(88,212,210,0.25)]"
       >
         <span className={value ? "font-medium" : "text-[var(--studio-ink-soft)]"}>{display}</span>
         <ChevronDown
@@ -118,7 +118,7 @@ export function StudioListbox({
         <ul
           role="listbox"
           aria-label={label}
-          className="studio-listbox-dropdown absolute left-0 right-0 z-[80] mt-2 max-h-64 overflow-auto rounded-[1.2rem] border border-[var(--studio-line-strong)] bg-[var(--studio-surface-strong)] py-1 backdrop-blur-xl"
+          className="studio-listbox-dropdown absolute start-0 end-0 z-[80] mt-2 max-h-64 overflow-auto rounded-[1.2rem] border border-[var(--studio-line-strong)] bg-[var(--studio-surface-strong)] py-1 backdrop-blur-xl"
         >
           {!required ? (
             <li role="presentation">
@@ -126,7 +126,7 @@ export function StudioListbox({
                 type="button"
                 role="option"
                 aria-selected={value === ""}
-                className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-[var(--studio-ink-soft)] hover:bg-[rgba(151,244,243,0.1)]"
+                className="flex w-full items-center gap-2 px-4 py-3 text-start text-sm text-[var(--studio-ink-soft)] hover:bg-[rgba(151,244,243,0.1)]"
                 onClick={() => {
                   onChange("");
                   setOpen(false);
@@ -145,7 +145,7 @@ export function StudioListbox({
                   type="button"
                   role="option"
                   aria-selected={isSel}
-                  className={`flex w-full items-center gap-2 px-4 py-3 text-left text-sm transition ${
+                  className={`flex w-full items-center gap-2 px-4 py-3 text-start text-sm transition ${
                     isActive ? "bg-[rgba(151,244,243,0.12)]" : ""
                   } text-[var(--studio-ink)] hover:bg-[rgba(151,244,243,0.1)]`}
                   onClick={() => {

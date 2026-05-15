@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, ShieldCheck, Sparkles, Timer } from "lucide-react";
+import { pluralize } from "@henryco/i18n";
 import { EmptyState } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { JobsBrowsePanel } from "@/components/jobs-browse-panel";
@@ -202,7 +203,9 @@ export default async function JobsPage({
                 <h2 className="mt-2 text-xl font-semibold tracking-tight text-[var(--jobs-ink)] sm:text-2xl">
                   {jobs.length === 0
                     ? "Nothing matched yet"
-                    : `${jobs.length} role${jobs.length === 1 ? "" : "s"} ${hasQuery ? "match your search" : "are live"}`}
+                    : pluralize("en", jobs.length, hasQuery
+                        ? { one: "{count} role matches your search", other: "{count} roles match your search" }
+                        : { one: "{count} role is live", other: "{count} roles are live" })}
                 </h2>
                 <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--jobs-muted)]">
                   <span>{verifiedOnly ? "Verified employers only" : "All employers"}</span>

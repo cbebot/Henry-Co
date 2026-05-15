@@ -24,7 +24,7 @@ export function ReplyComposerPreview({ preview, onCancel }: ComposerPreviewProps
       >
         <CornerUpLeft className="h-3.5 w-3.5" />
       </span>
-      <div className="min-w-0 flex-1 border-l-2 border-[#d4b14e] pl-3">
+      <div className="min-w-0 flex-1 border-s-2 border-[#d4b14e] ps-3">
         <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#d4b14e]">
           Replying to {preview.senderName}
         </div>
@@ -64,7 +64,7 @@ export function ReplyBubblePreview({
     <button
       type="button"
       onClick={() => onJump?.(preview.id)}
-      className={`block w-full rounded-lg border-l-2 px-2.5 py-1.5 text-left transition-opacity hover:opacity-90 ${tone}`}
+      className={`block w-full rounded-lg border-s-2 px-2.5 py-1.5 text-start transition-opacity hover:opacity-90 ${tone}`}
       aria-label={`Jump to original message from ${preview.senderName}`}
     >
       <div

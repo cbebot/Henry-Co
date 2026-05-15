@@ -194,7 +194,7 @@ function PublicToastCard({
     <div
       role={toast.tone === "error" ? "alert" : "status"}
       className={cn(
-        "pointer-events-auto relative flex gap-3 overflow-hidden rounded-2xl border px-4 py-3 pr-10 backdrop-blur-xl",
+        "pointer-events-auto relative flex gap-3 overflow-hidden rounded-2xl border px-4 py-3 pe-10 backdrop-blur-xl",
         TONE_STYLE[toast.tone]
       )}
     >
@@ -230,7 +230,7 @@ function PublicToastCard({
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss notification"
-        className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-900 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
+        className="absolute end-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-900 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
       >
         <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
           <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />

@@ -349,7 +349,7 @@ export default function CareBookingsDashboard({
             </Link>
           );
         })}
-        <span className="ml-auto text-xs text-[var(--acct-muted)]">
+        <span className="ms-auto text-xs text-[var(--acct-muted)]">
           {totalFiltered} {totalFiltered === 1 ? copy.bookingSingular : copy.bookingPlural}
           {activeFilter !== "all" ? ` · ${copy.filtered}` : ""}
         </span>

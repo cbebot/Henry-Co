@@ -154,7 +154,7 @@ export default function SavedPropertiesBoard({
                     <Building2 size={36} className="text-[var(--acct-muted)]" />
                   </div>
                 )}
-                <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                <div className="absolute start-4 top-4 flex flex-wrap gap-2">
                   <span className="rounded-full bg-[rgba(255,255,255,0.94)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-ink)]">
                     {prettifyStatus(property.status)}
                   </span>
@@ -181,7 +181,7 @@ export default function SavedPropertiesBoard({
                       <span>{property.district}</span>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <p className="text-lg font-semibold text-[var(--acct-ink)]">
                       {formatPrice(property.price, property.currency, property.priceInterval)}
                     </p>
@@ -248,7 +248,7 @@ export default function SavedPropertiesBoard({
                         : "border-[var(--acct-line)] bg-white text-[var(--acct-ink)] hover:border-[var(--acct-blue)]/30"
                     }`}
                   >
-                    <Scale size={14} className="mr-2 inline-flex" />
+                    <Scale size={14} className="me-2 inline-flex" />
                     {selected ? "In compare" : "Compare"}
                   </button>
                   <button
@@ -257,7 +257,7 @@ export default function SavedPropertiesBoard({
                     disabled={removing || isPending}
                     className="rounded-xl border border-[var(--acct-red)]/20 bg-[var(--acct-red-soft)] px-4 py-2 text-sm font-semibold text-[var(--acct-red)] transition hover:border-[var(--acct-red)]/40 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    <HeartOff size={14} className="mr-2 inline-flex" />
+                    <HeartOff size={14} className="me-2 inline-flex" />
                     {removing ? "Removing..." : "Remove from saved"}
                   </button>
                 </div>

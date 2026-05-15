@@ -162,7 +162,7 @@ export default function StaffMemberCard({
       <form action={toggleAction} className="flex flex-col items-stretch gap-2 border-t border-[var(--acct-line)] pt-3 sm:flex-row sm:items-center sm:justify-end">
         <input type="hidden" name="userId" value={member.id} />
         <input type="hidden" name="intent" value={member.status === "suspended" ? "reactivate" : "suspend"} />
-        <div className="min-w-0 flex-1 sm:mr-auto">
+        <div className="min-w-0 flex-1 sm:me-auto">
           <OwnerFormFeedback state={toggleState} />
         </div>
         <ToggleButton suspended={member.status === "suspended"} />

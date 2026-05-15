@@ -321,7 +321,7 @@ function ProfileModal({
         <div className="absolute inset-x-0 top-0 h-28 bg-[radial-gradient(900px_160px_at_18%_0%,rgba(201,162,39,0.22),transparent_60%),radial-gradient(900px_180px_at_82%_0%,rgba(255,255,255,0.08),transparent_58%)]" />
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 rounded-full border border-white/10 bg-white/[0.06] p-2 text-white/80 transition hover:bg-white/10"
+          className="absolute end-4 top-4 z-10 rounded-full border border-white/10 bg-white/[0.06] p-2 text-white/80 transition hover:bg-white/10"
           aria-label="Close profile"
         >
           <X className="h-5 w-5" />

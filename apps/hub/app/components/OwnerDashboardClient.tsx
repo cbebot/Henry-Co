@@ -955,7 +955,7 @@ export default function OwnerDashboardClient() {
                   <button
                     key={key}
                     onClick={() => setSelectedPageKey(key)}
-                    className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm transition ${
+                    className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-start text-sm transition ${
                       selectedPageKey === key
                         ? "border-[#C9A227] bg-[#C9A227] text-black"
                         : "border-white/10 bg-black/25 text-white/84 hover:bg-white/10"
@@ -1112,7 +1112,7 @@ export default function OwnerDashboardClient() {
               <div className="space-y-3">
                 <button
                   onClick={() => setSelectedPersonId("new")}
-                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm transition ${
+                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-start text-sm transition ${
                     selectedPersonId === "new"
                       ? "border-[#C9A227] bg-[#C9A227] text-black"
                       : "border-white/10 bg-black/25 text-white/84 hover:bg-white/10"
@@ -1332,7 +1332,7 @@ export default function OwnerDashboardClient() {
               <div className="space-y-3">
                 <button
                   onClick={() => setSelectedDivisionSlug("new")}
-                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm transition ${
+                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-start text-sm transition ${
                     selectedDivisionSlug === "new"
                       ? "border-[#C9A227] bg-[#C9A227] text-black"
                       : "border-white/10 bg-black/25 text-white/84 hover:bg-white/10"
@@ -1769,7 +1769,7 @@ function PersonListButton({
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-[24px] border p-3 text-left transition ${
+      className={`w-full rounded-[24px] border p-3 text-start transition ${
         active
           ? "border-[#C9A227] bg-[#C9A227]/14"
           : "border-white/10 bg-black/25 hover:bg-white/10"
@@ -1860,7 +1860,7 @@ function DivisionListButton({
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-[24px] border p-3 text-left transition ${
+      className={`w-full rounded-[24px] border p-3 text-start transition ${
         active
           ? "border-[#C9A227] bg-[#C9A227]/14"
           : "border-white/10 bg-black/25 hover:bg-white/10"

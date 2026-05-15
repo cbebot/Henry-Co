@@ -167,7 +167,7 @@ export function FloatingSupport({
         aria-label={open ? surfaceCopy.floatingSupport.closeHelp : surfaceCopy.floatingSupport.openHelp}
         // Mobile/tablet: lift above any portal bottom-nav (~64-72px high). Desktop:
         // sit at bottom-5 since the sidebar consumes the chrome instead.
-        className="fixed bottom-24 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 lg:bottom-5"
+        className="fixed bottom-24 end-5 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 lg:bottom-5"
         style={{ backgroundColor: accent }}
       >
         {open ? (
@@ -189,7 +189,7 @@ export function FloatingSupport({
       </button>
 
       {open && (
-        <div className="fixed bottom-40 right-5 z-50 flex h-[28rem] w-[22rem] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900 lg:bottom-20">
+        <div className="fixed bottom-40 end-5 z-50 flex h-[28rem] w-[22rem] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900 lg:bottom-20">
           <div className="flex items-center gap-3 px-4 py-3" style={{ backgroundColor: accent }}>
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
               H

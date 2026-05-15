@@ -38,7 +38,7 @@ export function PublicCTA({
       <div className="relative overflow-hidden rounded-[2.25rem] border border-zinc-200/80 bg-white px-6 py-12 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.32)] dark:border-white/10 dark:bg-[#0b1018]/85 dark:shadow-[0_34px_94px_rgba(0,0,0,0.6)] sm:px-10 sm:py-14 lg:px-14">
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-24 right-0 h-56 w-56 rounded-full bg-amber-400/15 blur-3xl dark:bg-amber-300/10"
+          className="pointer-events-none absolute -top-24 end-0 h-56 w-56 rounded-full bg-amber-400/15 blur-3xl dark:bg-amber-300/10"
         />
 
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">

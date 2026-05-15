@@ -170,7 +170,7 @@ export function NotificationToast({
 
   return (
     <div
-      className="pointer-events-none fixed inset-x-3 bottom-3 z-50 flex flex-col gap-2 sm:left-auto sm:right-4 sm:bottom-4 sm:max-w-[360px]"
+      className="pointer-events-none fixed inset-x-3 bottom-3 z-50 flex flex-col gap-2 sm:start-auto sm:end-4 sm:bottom-4 sm:max-w-[360px]"
       role="region"
       aria-label="Project notifications"
       aria-live="polite"

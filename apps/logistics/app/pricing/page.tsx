@@ -83,13 +83,13 @@ export default async function PricingPage() {
             Amounts are combined with zone base fees during booking. Values shown in NGN.
           </p>
           <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
+            <table className="w-full min-w-[640px] text-start text-sm">
               <thead>
                 <tr className="border-b border-[var(--logistics-line)] text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-muted)]">
-                  <th className="pb-3 pr-4 font-semibold">Service</th>
-                  <th className="pb-3 pr-4 font-semibold">Urgency</th>
-                  <th className="pb-3 pr-4 font-semibold">Base add-on</th>
-                  <th className="pb-3 pr-4 font-semibold">Per kg</th>
+                  <th className="pb-3 pe-4 font-semibold">Service</th>
+                  <th className="pb-3 pe-4 font-semibold">Urgency</th>
+                  <th className="pb-3 pe-4 font-semibold">Base add-on</th>
+                  <th className="pb-3 pe-4 font-semibold">Per kg</th>
                   <th className="pb-3 font-semibold">Fragile</th>
                 </tr>
               </thead>
@@ -99,14 +99,14 @@ export default async function PricingPage() {
                     key={c.id}
                     className="border-b border-[var(--logistics-line)]/60 transition hover:bg-white/[0.02]"
                   >
-                    <td className="py-4 pr-4 font-semibold capitalize text-white">
+                    <td className="py-4 pe-4 font-semibold capitalize text-white">
                       {c.serviceType.replaceAll("_", " ")}
                     </td>
-                    <td className="py-4 pr-4 capitalize text-[var(--logistics-muted)]">
+                    <td className="py-4 pe-4 capitalize text-[var(--logistics-muted)]">
                       {c.urgency}
                     </td>
-                    <td className="py-4 pr-4 text-white">{formatCurrency(c.baseAmount)}</td>
-                    <td className="py-4 pr-4 text-[var(--logistics-muted)]">
+                    <td className="py-4 pe-4 text-white">{formatCurrency(c.baseAmount)}</td>
+                    <td className="py-4 pe-4 text-[var(--logistics-muted)]">
                       {formatCurrency(c.weightFeePerKg)}
                     </td>
                     <td className="py-4 text-[var(--logistics-muted)]">

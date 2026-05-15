@@ -383,9 +383,9 @@ export function StudioRequestBuilder({
          * pushing the actual brief fields below the fold). */}
         <nav aria-label="Brief steps" className="mt-7">
           <div className="relative">
-            <div className="absolute left-0 right-0 top-[18px] h-px bg-[var(--studio-line)]" />
+            <div className="absolute start-0 end-0 top-[18px] h-px bg-[var(--studio-line)]" />
             <div
-              className="absolute left-0 top-[18px] h-px bg-[var(--studio-signal)] transition-all duration-500"
+              className="absolute start-0 top-[18px] h-px bg-[var(--studio-signal)] transition-all duration-500"
               style={{ width: `${progressPct}%` }}
               aria-hidden
             />
@@ -399,7 +399,7 @@ export function StudioRequestBuilder({
                       type="button"
                       onClick={() => goToStep(index)}
                       aria-current={isActive ? "step" : undefined}
-                      className="group block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 rounded-lg"
+                      className="group block w-full text-start outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 rounded-lg"
                     >
                       <span
                         className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-[11px] font-mono font-semibold tracking-tight transition ${
@@ -432,7 +432,7 @@ export function StudioRequestBuilder({
         {progressHint ? (
           <p
             role="status"
-            className="mt-6 flex items-start gap-2 border-l-2 border-[var(--studio-signal)]/55 pl-3 text-sm leading-7 text-[var(--studio-ink-soft)]"
+            className="mt-6 flex items-start gap-2 border-s-2 border-[var(--studio-signal)]/55 ps-3 text-sm leading-7 text-[var(--studio-ink-soft)]"
           >
             <Check
               className="mt-1 h-3.5 w-3.5 shrink-0 text-[var(--studio-signal)]"

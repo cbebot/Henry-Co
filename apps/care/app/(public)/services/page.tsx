@@ -130,7 +130,7 @@ export default async function ServicesPage() {
             <li
               key={step.title}
               className={`border-t border-black/10 pt-6 dark:border-white/10 ${
-                i > 0 ? "md:border-l md:border-t-0 md:pl-6 md:pt-0" : ""
+                i > 0 ? "md:border-s md:border-t-0 md:ps-6 md:pt-0" : ""
               }`}
             >
               <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
@@ -200,7 +200,7 @@ function PackageCollection({
                 {item.summary}
               </p>
             </div>
-            <div className="text-right">
+            <div className="text-end">
               <p className="text-[1.45rem] font-semibold leading-tight tracking-tight text-[color:var(--accent)]">
                 {formatMoney(item.base_price)}
               </p>

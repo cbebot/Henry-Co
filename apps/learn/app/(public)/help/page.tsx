@@ -38,7 +38,7 @@ export default async function HelpPage({
       </section>
 
       {params.sent ? (
-        <section className="mt-10 border-l-2 border-[var(--learn-mint-soft)]/55 pl-5">
+        <section className="mt-10 border-s-2 border-[var(--learn-mint-soft)]/55 ps-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
             {t("Sent")}
           </p>
@@ -85,7 +85,7 @@ export default async function HelpPage({
           </form>
         </div>
 
-        <div className="lg:pl-12">
+        <div className="lg:ps-12">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Quick answers")}
           </p>

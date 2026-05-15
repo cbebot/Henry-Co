@@ -43,7 +43,7 @@ export default async function ContactPage() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
-                <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+                <ShieldCheck className="me-1 inline h-3.5 w-3.5 align-[-2px]" />
                 Contact and support
               </p>
               <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
@@ -81,7 +81,7 @@ export default async function ContactPage() {
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
                     {label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
                     {value}
                   </span>
                 </li>
@@ -133,7 +133,7 @@ export default async function ContactPage() {
               </ul>
             </div>
 
-            <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
+            <div className="border-s-2 border-[color:var(--accent)]/55 ps-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
                 Already have a tracking code?
               </p>

@@ -163,7 +163,7 @@ export function AccountReviewsClient({ products, initialReviews }: AccountReview
       </form>
 
       {!reviews.length ? (
-        <section className="border-l-2 border-[var(--market-brass)]/55 px-5 py-4">
+        <section className="border-s-2 border-[var(--market-brass)]/55 px-5 py-4">
           <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
             No reviews submitted yet.
           </p>

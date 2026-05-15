@@ -181,10 +181,10 @@ export function HenryCoHeroCard({
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                   {row.label}
                 </dt>
-                <dd className="ml-auto min-w-0 max-w-[60%] text-right text-sm font-semibold tracking-tight text-white [overflow-wrap:anywhere]">
+                <dd className="ms-auto min-w-0 max-w-[60%] text-end text-sm font-semibold tracking-tight text-white [overflow-wrap:anywhere]">
                   {row.value}
                   {row.detail ? (
-                    <span className="ml-2 text-[11px] font-medium text-white/55">
+                    <span className="ms-2 text-[11px] font-medium text-white/55">
                       {row.detail}
                     </span>
                   ) : null}

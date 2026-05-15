@@ -54,7 +54,7 @@ export default async function DealsPage() {
           <div className="mt-4 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {allDeals.map(({ product, discount }) => (
               <div key={product.slug} className="relative">
-                <span className="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-[var(--market-brass)] px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-black shadow">
+                <span className="pointer-events-none absolute start-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-[var(--market-brass)] px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-black shadow">
                   −{discount}%
                 </span>
                 <ProductCard product={product} />

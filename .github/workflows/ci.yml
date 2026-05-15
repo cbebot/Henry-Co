@@ -46,6 +46,9 @@ jobs:
       - name: Typecheck (all apps)
         run: pnpm run typecheck:all
 
+      - name: i18n coverage gate
+        run: pnpm run i18n:check
+
       - name: Test (super-app)
         run: pnpm run test:workspace
 

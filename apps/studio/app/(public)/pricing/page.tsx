@@ -180,7 +180,7 @@ export default async function PricingPage() {
       </section>
 
       {/* Enterprise band — editorial border-l ribbon */}
-      <section className="mt-16 border-l-2 border-[var(--studio-signal)]/55 pl-5">
+      <section className="mt-16 border-s-2 border-[var(--studio-signal)]/55 ps-5">
         <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--studio-signal)]">
           <Sparkles className="h-3.5 w-3.5" />
           Enterprise or non-standard scope

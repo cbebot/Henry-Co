@@ -430,14 +430,14 @@ export function CheckoutExperience({
               </ActionButton>
             ) : null}
 
-            <p className="ml-auto inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">
+            <p className="ms-auto inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">
               <Lock className="h-3 w-3" />
               Encrypted · session bound · audit-logged
             </p>
           </div>
 
           {step === "confirm" ? (
-            <p className="border-l-2 border-[var(--market-brass)]/55 pl-4 text-xs leading-6 text-[var(--market-muted)]">
+            <p className="border-s-2 border-[var(--market-brass)]/55 ps-4 text-xs leading-6 text-[var(--market-muted)]">
               {paymentMethod === "wallet_balance"
                 ? "On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches."
                 : paymentMethod === "bank_transfer"
@@ -470,7 +470,7 @@ function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
     <nav aria-label="Checkout progress" className="market-paper rounded-[2rem] p-5 sm:p-6">
       <div className="relative">
         {/* Progress rail */}
-        <div className="absolute left-[2.5%] right-[2.5%] top-[1.25rem] hidden h-px sm:block">
+        <div className="absolute start-[2.5%] end-[2.5%] top-[1.25rem] hidden h-px sm:block">
           <div className="h-full w-full overflow-hidden rounded-full bg-[var(--market-line)]">
             <div
               className="h-full bg-gradient-to-r from-[#f7edd9] via-[var(--market-brass)] to-[var(--market-aurora)] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -490,7 +490,7 @@ function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
             return (
               <li
                 key={stepDef.id}
-                className="flex flex-col items-center text-center sm:flex-row sm:items-start sm:gap-3 sm:text-left"
+                className="flex flex-col items-center text-center sm:flex-row sm:items-start sm:gap-3 sm:text-start"
               >
                 <span
                   aria-hidden="true"
@@ -849,7 +849,7 @@ function PaymentStep({
                   {option.label}
                 </span>
                 {active ? (
-                  <span className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--market-brass)] text-[#101114]">
+                  <span className="ms-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--market-brass)] text-[#101114]">
                     <Check className="h-3.5 w-3.5" />
                   </span>
                 ) : null}

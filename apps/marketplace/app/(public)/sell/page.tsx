@@ -98,7 +98,7 @@ export default function SellPage() {
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                   {item.label}
                 </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
+                <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                   {item.value}
                 </span>
               </li>
@@ -151,9 +151,9 @@ export default function SellPage() {
             </li>
           ))}
         </ol>
-        <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-5">
+        <div className="mt-6 border-s-2 border-[var(--market-brass)]/55 ps-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-            <FileCheck2 className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+            <FileCheck2 className="me-1 inline h-3.5 w-3.5 align-[-2px]" />
             A cleaner seller application
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
@@ -214,7 +214,7 @@ export default function SellPage() {
           </ul>
         </div>
 
-        <div className="xl:pl-12">
+        <div className="xl:ps-12">
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
             Trust tiers change privileges
           </p>

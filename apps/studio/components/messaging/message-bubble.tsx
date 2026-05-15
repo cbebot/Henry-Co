@@ -118,7 +118,7 @@ export function MessageBubble({
     >
       {/* Avatar column for team messages, only on the first message of a sequence. */}
       {!isOwn ? (
-        <div className="mr-2 flex w-8 shrink-0 flex-col items-center">
+        <div className="me-2 flex w-8 shrink-0 flex-col items-center">
           {isFirstInSequence ? (
             <Avatar name={message.senderName} role={message.senderRole} />
           ) : (
@@ -134,10 +134,10 @@ export function MessageBubble({
       >
         {/* Sender name above first-in-sequence team bubble. */}
         {!isOwn && isFirstInSequence ? (
-          <div className="mb-1 ml-1 text-[12px] font-medium tracking-[0.005em] text-[#d4b14e]">
+          <div className="mb-1 ms-1 text-[12px] font-medium tracking-[0.005em] text-[#d4b14e]">
             {message.senderName}
             {message.senderRole === "team" ? (
-              <span className="ml-2 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.10em] text-white/35">
+              <span className="ms-2 inline-flex items-center text-[10px] font-medium uppercase tracking-[0.10em] text-white/35">
                 Studio
               </span>
             ) : null}
@@ -149,7 +149,7 @@ export function MessageBubble({
             pending === "sending" || pending === "queued" ? "opacity-80" : ""
           } ${
             pending === "failed"
-              ? "border-l-[3px] border-l-red-400/80"
+              ? "border-l-[3px] border-s-red-400/80"
               : ""
           }`}
         >
@@ -313,7 +313,7 @@ function DeletedBubble({
         }`}
       >
         This message was removed
-        <time className="ml-2 not-italic text-white/30" dateTime={createdAt}>
+        <time className="ms-2 not-italic text-white/30" dateTime={createdAt}>
           {formatMessageTimestamp(createdAt)}
         </time>
       </div>

@@ -27,7 +27,7 @@ export function PortalLiveStrip({
     <div className="log-pf__live-strip" role="status" aria-live="polite">
       <div>
         <span className="log-pf__live-strip-eyebrow">
-          <span className="log-pf__pulse mr-2 inline-block align-[-1px]" aria-hidden />
+          <span className="log-pf__pulse me-2 inline-block align-[-1px]" aria-hidden />
           {eyebrow}
         </span>
         <p className="log-pf__live-strip-title">{title}</p>

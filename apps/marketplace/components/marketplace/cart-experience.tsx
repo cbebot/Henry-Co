@@ -109,7 +109,7 @@ export function CartExperience() {
                             {cartBusy ? <HenryCoActivityIndicator size="sm" className="text-[var(--market-paper-white)]" label="Updating cart" /> : "+"}
                           </button>
                         </div>
-                        <div className="text-right">
+                        <div className="text-end">
                           <p className="text-xl font-semibold text-[var(--market-paper-white)]">
                             {formatCurrency(item.price * item.quantity, item.currency)}
                           </p>
@@ -153,7 +153,7 @@ export function CartExperience() {
                         </ActionButton>
                         <Link
                           href={`/product/${item.productSlug}`}
-                          className="ml-auto text-sm font-semibold text-[var(--market-brass)]"
+                          className="ms-auto text-sm font-semibold text-[var(--market-brass)]"
                         >
                           Open product
                         </Link>

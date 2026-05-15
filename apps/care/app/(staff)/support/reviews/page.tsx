@@ -221,7 +221,7 @@ export default async function SupportReviewsPage({
               </div>
             </div>
 
-            <div className="max-h-[66rem] space-y-3 overflow-y-auto pr-1">
+            <div className="max-h-[66rem] space-y-3 overflow-y-auto pe-1">
               {filtered.length > 0 ? (
                 filtered.map((review) => {
                   const active = selectedReview?.id === review.id;

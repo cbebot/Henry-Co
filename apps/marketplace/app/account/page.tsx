@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DivisionImage } from "@henryco/dashboard-shell/components";
+import { pluralize } from "@henryco/i18n";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -175,7 +176,10 @@ export default async function AccountOverviewPage() {
           value={String(followingCount)}
           hint={
             followingCount > 0
-              ? `${followingCount} store${followingCount === 1 ? "" : "s"} you follow for drops.`
+              ? pluralize("en", followingCount, {
+                  one: "{count} store you follow for drops.",
+                  other: "{count} stores you follow for drops.",
+                })
               : "Follow stores to catch new drops first."
           }
         />
@@ -284,7 +288,7 @@ export default async function AccountOverviewPage() {
             ))}
           </ul>
         ) : (
-          <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-5">
+          <div className="mt-6 border-s-2 border-[var(--market-brass)]/55 ps-5">
             <p className="text-sm leading-7 text-[var(--market-muted)]">
               You haven&rsquo;t placed an order yet. Browse the marketplace to find verified
               stores and curated drops.

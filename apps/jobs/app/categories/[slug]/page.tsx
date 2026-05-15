@@ -82,7 +82,7 @@ export default async function CategoryPage({
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
                     {item.label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
+                  <span className="ms-auto text-end text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
                     {item.value}
                   </span>
                 </li>

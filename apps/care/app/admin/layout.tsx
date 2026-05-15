@@ -28,7 +28,7 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-[#050914] text-white">
       <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
-        <aside className="border-r border-white/10 bg-white/[0.03] px-5 py-6">
+        <aside className="border-e border-white/10 bg-white/[0.03] px-5 py-6">
           <Link href="/" className="block">
             <div className="text-lg font-semibold tracking-[0.02em]">{care.name}</div>
             <div className="mt-1 text-xs uppercase tracking-[0.18em] text-white/45">

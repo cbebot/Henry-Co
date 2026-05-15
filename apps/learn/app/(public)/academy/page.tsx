@@ -153,7 +153,7 @@ export default async function AcademyPage() {
           </a>
         </div>
 
-        <div className="xl:pl-12">
+        <div className="xl:ps-12">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Want to teach?")}
           </p>

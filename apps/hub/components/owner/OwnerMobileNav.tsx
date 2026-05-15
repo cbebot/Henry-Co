@@ -61,7 +61,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
           <Logo size={28} />
           <div>
             <span className="text-sm font-semibold">Henry & Co.</span>
-            <span className="ml-1.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--owner-accent)]">
+            <span className="ms-1.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--owner-accent)]">
               CMD
             </span>
           </div>
@@ -81,7 +81,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
             className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <div className="fixed inset-y-0 right-0 z-50 w-[300px] overflow-y-auto owner-sidebar-bg shadow-2xl acct-scrollbar">
+          <div className="fixed inset-y-0 end-0 z-50 w-[300px] overflow-y-auto owner-sidebar-bg shadow-2xl acct-scrollbar">
             {/* User header */}
             <div className="flex items-center gap-3 border-b border-[var(--acct-line)] p-4">
               {user.avatarUrl ? (
@@ -133,7 +133,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
                           onClick={() => setOpen(false)}
                           className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
                             active
-                              ? "owner-nav-active rounded-l-none"
+                              ? "owner-nav-active rounded-s-none"
                               : "text-[var(--acct-muted)] hover:bg-[var(--acct-surface)]"
                           }`}
                         >
@@ -141,7 +141,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
                           <span className="flex-1">{item.label}</span>
                         </Link>
                         {item.children && active && (
-                          <div className="ml-8 mt-0.5 space-y-0.5 border-l border-[var(--acct-line)] pl-3">
+                          <div className="ms-8 mt-0.5 space-y-0.5 border-s border-[var(--acct-line)] ps-3">
                             {item.children.map((child) => {
                               const ChildIcon = child.icon;
                               const childActive = pathname === child.href;

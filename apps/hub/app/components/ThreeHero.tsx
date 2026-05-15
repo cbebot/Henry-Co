@@ -23,13 +23,13 @@ export default function ThreeHero({
         initial={reduceMotion ? false : { rotate: 0, scale: 0.98 }}
         animate={reduceMotion ? {} : { rotate: 6, scale: 1.02 }}
         transition={{ duration: 7, repeat: Infinity, repeatType: "reverse" }}
-        className="pointer-events-none absolute -right-20 top-10 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(201,162,39,0.30),transparent_65%)] blur-3xl"
+        className="pointer-events-none absolute -end-20 top-10 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(201,162,39,0.30),transparent_65%)] blur-3xl"
       />
       <motion.div
         initial={reduceMotion ? false : { rotate: 0, scale: 1 }}
         animate={reduceMotion ? {} : { rotate: -8, scale: 1.03 }}
         transition={{ duration: 9, repeat: Infinity, repeatType: "reverse" }}
-        className="pointer-events-none absolute -left-16 bottom-0 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.22),transparent_65%)] blur-3xl"
+        className="pointer-events-none absolute -start-16 bottom-0 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.22),transparent_65%)] blur-3xl"
       />
 
       <div className="relative grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">

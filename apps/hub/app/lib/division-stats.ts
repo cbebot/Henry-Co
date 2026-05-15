@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { pluralize } from "@henryco/i18n";
 import { fetchNoStore } from "./no-store-fetch";
 
 export type DivisionLiveStat = {
@@ -102,7 +103,10 @@ export async function getDivisionLiveStats(
     if (n !== null) {
       out.marketplace = shapeStat(
         "marketplace",
-        `${n} ${n === 1 ? "product" : "products"} live`
+        pluralize("en", n, {
+          one: "{count} product live",
+          other: "{count} products live",
+        })
       );
     }
   }
@@ -112,7 +116,10 @@ export async function getDivisionLiveStats(
     if (n !== null) {
       out.property = shapeStat(
         "property",
-        `${n} curated ${n === 1 ? "listing" : "listings"}`
+        pluralize("en", n, {
+          one: "{count} curated listing",
+          other: "{count} curated listings",
+        })
       );
     }
   }
@@ -122,7 +129,10 @@ export async function getDivisionLiveStats(
     if (n !== null) {
       out.learn = shapeStat(
         "learn",
-        `${n} ${n === 1 ? "program" : "programs"} open`
+        pluralize("en", n, {
+          one: "{count} program open",
+          other: "{count} programs open",
+        })
       );
     }
   }
@@ -139,7 +149,10 @@ export async function getDivisionLiveStats(
     if (n !== null && n > 0) {
       out.logistics = shapeStat(
         "logistics",
-        `Serving ${n} ${n === 1 ? "region" : "regions"}`
+        pluralize("en", n, {
+          one: "Serving {count} region",
+          other: "Serving {count} regions",
+        })
       );
     }
   }
@@ -149,7 +162,10 @@ export async function getDivisionLiveStats(
     if (n !== null) {
       out.studio = shapeStat(
         "studio",
-        `${n} ${n === 1 ? "capability" : "capabilities"} live`
+        pluralize("en", n, {
+          one: "{count} capability live",
+          other: "{count} capabilities live",
+        })
       );
     }
   }

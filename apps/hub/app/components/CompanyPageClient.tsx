@@ -301,7 +301,7 @@ export default function CompanyPageClient({
                     <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                       {meta.label}
                     </dt>
-                    <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+                    <dd className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                       {meta.value}
                     </dd>
                   </div>
@@ -310,7 +310,7 @@ export default function CompanyPageClient({
             )}
 
             {serverWarning ? (
-              <p className="mt-4 border-l-2 border-[#d6a851]/55 pl-4 text-sm leading-7 text-white/72">
+              <p className="mt-4 border-s-2 border-[#d6a851]/55 ps-4 text-sm leading-7 text-white/72">
                 Some content may still be refreshing.
               </p>
             ) : null}
@@ -377,7 +377,7 @@ export default function CompanyPageClient({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                 Use case
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                 Customers · Partners · Media
               </span>
             </li>
@@ -388,7 +388,7 @@ export default function CompanyPageClient({
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
                 Standard
               </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
+              <span className="ms-auto text-end text-sm font-semibold tracking-tight text-white">
                 Structured &middot; Verified
               </span>
             </li>
