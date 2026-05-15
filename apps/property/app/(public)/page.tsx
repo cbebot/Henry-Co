@@ -12,6 +12,11 @@ import {
 import { PropertyListingCard } from "@/components/property/ui";
 import { PropertyRecommendedForYou } from "@/components/property/property-recommended-for-you";
 import { PropertySearchBar } from "@/components/property/property-search-bar";
+import {
+  PortalHero,
+  type PortalCapabilityMetric,
+} from "@/components/portal";
+import "@/components/portal/styles.css";
 import { getPropertyHomeData } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getPropertyPublicCopy } from "@/lib/public-copy";
@@ -86,8 +91,108 @@ export default async function PropertyHomePage() {
   const viewerFirstName = viewer.user?.fullName?.split(/\s+/)[0]?.trim() || null;
   const inventoryYear = new Date().getFullYear();
 
+  /*
+   * Capability evidence — V3 PASS 21 / Wave B6 editorial bar.
+   *
+   * Real numbers prove capability before the headline proves anything.
+   * Mirrors the Wave B3 logistics pattern (PR #106) and the audit's
+   * §11 anti-pattern #18 (no bare numbers — every metric carries a
+   * trend or comparison).
+   */
+  const verifiedCount = approvedListings.filter((listing) =>
+    listing.trustBadges.some((badge) =>
+      ["verified", "managed", "reviewed"].some((token) =>
+        badge.toLowerCase().includes(token),
+      ),
+    ),
+  ).length;
+  const verifiedRate = liveListingCount > 0
+    ? Math.round((verifiedCount / liveListingCount) * 100)
+    : 0;
+  const namedAreas = areaIndex.filter((area) => area.liveCount > 0);
+  const capabilityMetrics: PortalCapabilityMetric[] = [
+    {
+      label: "Listings live",
+      value: String(liveListingCount),
+      trend:
+        liveListingCount === 0
+          ? "Awaiting first publish"
+          : namedAreas.length === 1
+            ? `Across ${namedAreas[0].name}`
+            : `Across ${namedAreas.length} ${namedAreas.length === 1 ? "area" : "areas"}`,
+      trendDirection: "pos",
+      pulse: liveListingCount > 0,
+      emphasis: true,
+    },
+    {
+      label: "Verified rate",
+      value: liveListingCount > 0 ? `${verifiedRate}%` : "—",
+      trend:
+        liveListingCount === 0
+          ? "Trust posture sets in on publish"
+          : verifiedRate >= 80
+            ? "Reviewed before public surface"
+            : "Verification expanding with inventory",
+      trendDirection: verifiedRate >= 80 ? "pos" : "neutral",
+    },
+    {
+      label: "Managed lane",
+      value: String(managedActive),
+      trend:
+        managedActive === 0 && managedPipeline === 0
+          ? "Managed layer warming up"
+          : managedPipeline > 0
+            ? `${managedPipeline} in pipeline`
+            : "Active engagements only",
+      trendDirection: managedActive > 0 ? "pos" : "neutral",
+    },
+    {
+      label: "Areas covered",
+      value: String(areaIndex.length),
+      trend:
+        namedAreas.length === 0
+          ? "Areas open as inventory clears"
+          : `${namedAreas.length} live today`,
+      trendDirection: namedAreas.length > 0 ? "pos" : "neutral",
+    },
+  ];
+
   return (
     <main id="henryco-main" tabIndex={-1} className="pb-24">
+      {/* CAPABILITY BAND ─────────────────────────────────────────────
+          Wave B6 editorial premium hero. Capability evidence — listings
+          live, verified rate, managed lane, areas covered — proves the
+          surface before any editorial copy proves anything. Anti-pattern
+          #18 enforced via PortalCapabilityMetric.trend (no bare numbers).
+          Owner-validated: feedback_no_giant_hero_text.md.
+       */}
+      <section className="mx-auto max-w-[92rem] px-5 pt-10 sm:px-8 sm:pt-14 lg:px-10 lg:pt-16">
+        <div className="prp-pf">
+          <PortalHero
+            eyebrow="HenryCo Property · Live inventory"
+            title="A property platform that respects your time, the listing, and the work that comes after move-in."
+            blurb="Curated rentals, sale inventory, commercial spaces, and HenryCo-managed homes — every listing carries trust notes, a verified owner path, and a structured viewing flow. Intent first, paperwork when you need it."
+            coverage={
+              namedAreas.length > 0
+                ? `Live in ${
+                    namedAreas.length === 1
+                      ? namedAreas[0].name
+                      : namedAreas.length === 2
+                        ? `${namedAreas[0].name} and ${namedAreas[1].name}`
+                        : `${namedAreas.slice(0, -1).map((a) => a.name).join(", ")}, and ${namedAreas.at(-1)?.name}`
+                  }`
+                : null
+            }
+            capabilityMetrics={capabilityMetrics}
+            ctas={[
+              { href: "/search", label: "Browse listings", variant: "primary" },
+              { href: "/submit", label: "Submit a property", variant: "secondary" },
+              { href: "/managed", label: "Managed property", variant: "ghost" },
+            ]}
+          />
+        </div>
+      </section>
+
       {/* HERO ──────────────────────────────────────────────────────── */}
       <section className="relative mx-auto max-w-[92rem] px-5 pt-10 sm:px-8 sm:pt-14 lg:px-10 lg:pt-20">
         {/* Top trust strip — three calm signals, anchored by a tiny live
