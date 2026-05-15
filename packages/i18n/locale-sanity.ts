@@ -95,14 +95,16 @@ console.log("\ngetUserSelectableLocales:");
 
 const publicLocales = getUserSelectableLocales();
 assert(
-  "no args returns exactly the 7 public locales",
+  "no args returns exactly the registered public locales (now ALL 12)",
   [...publicLocales].sort(),
   [...PUBLIC_SELECTOR_LOCALES].sort(),
 );
 
-const scaffoldLocales = ["ig", "yo", "ha", "zh", "hi"] as const;
-for (const loc of scaffoldLocales) {
-  assertExcludes(`new user selector excludes scaffold locale '${loc}'`, publicLocales, loc);
+// Post Wave A2: the "scaffold" concept dissolved. Every locale is now in
+// PUBLIC_SELECTOR_LOCALES. We keep the assertion below to lock that in.
+const previouslyScaffoldLocales = ["ig", "yo", "ha", "zh", "hi"] as const;
+for (const loc of previouslyScaffoldLocales) {
+  assertIncludes(`selector exposes previously-scaffold locale '${loc}'`, publicLocales, loc);
 }
 
 assertIncludes("new user selector includes 'it' (Italian)", publicLocales, "it");
@@ -110,20 +112,25 @@ assertIncludes("new user selector includes 'ar' (Arabic)", publicLocales, "ar");
 
 const zhUserLocales = getUserSelectableLocales("zh");
 assertIncludes("existing zh user: zh appears in selector", zhUserLocales, "zh");
-for (const loc of scaffoldLocales.filter((l) => l !== "zh")) {
-  assertExcludes(`existing zh user: other scaffold '${loc}' is still hidden`, zhUserLocales, loc);
+for (const loc of previouslyScaffoldLocales.filter((l) => l !== "zh")) {
+  assertIncludes(
+    `existing zh user: other previously-scaffold '${loc}' is now also exposed`,
+    zhUserLocales,
+    loc,
+  );
 }
 
 const itZhMixed = getUserSelectableLocales("it", "zh");
-assertIncludes("it+zh preserved: zh appears as scaffold option", itZhMixed, "zh");
-assertIncludes("it+zh preserved: it appears as public option", itZhMixed, "it");
-assertExcludes("it+zh preserved: ig not exposed", itZhMixed, "ig");
+assertIncludes("it+zh preserved: zh appears as selector option", itZhMixed, "zh");
+assertIncludes("it+zh preserved: it appears as selector option", itZhMixed, "it");
+assertIncludes("it+zh preserved: ig is now exposed too (promoted)", itZhMixed, "ig");
 
 // ── scaffold label check ────────────────────────────────────────────────────
 
 console.log("\nScaffold labels:");
-for (const loc of scaffoldLocales) {
-  assert(`isScaffoldLocale('${loc}') === true`, isScaffoldLocale(loc), true);
+for (const loc of previouslyScaffoldLocales) {
+  // After Wave A2 the scaffold list is empty; every locale is non-scaffold.
+  assert(`isScaffoldLocale('${loc}') === false (promoted)`, isScaffoldLocale(loc), false);
 }
 assert("isScaffoldLocale('it') === false", isScaffoldLocale("it"), false);
 assert("isScaffoldLocale('en') === false", isScaffoldLocale("en"), false);

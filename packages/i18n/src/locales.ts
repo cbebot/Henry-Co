@@ -12,35 +12,54 @@ export const PRIMARY_LOCALES = ["en", "fr"] as const;
  * Extended locale registry aligned with persisted language preferences.
  *
  * `ALL_LOCALES` is the full architecture/registry list.
- * User-facing selectors must stay narrower until copy coverage survives
- * shared-cookie persistence across public surfaces and account surfaces.
+ *
+ * As of the i18n FINAL COMPLETION pass (Wave A2), the public selector
+ * exposes ALL 12 registered locales. The previous tiered split between
+ * `PUBLIC_SELECTOR_LOCALES` and `INTERNAL_SCAFFOLD_LOCALES` dissolves:
+ * every locale meets the same quality bar (translation coverage is filled
+ * by Wave B). The `INTERNAL_SCAFFOLD_LOCALES` export is retained as an
+ * empty array for backward compatibility with any caller still importing
+ * the symbol.
  */
 export const ALL_LOCALES = ["en", "fr", "ig", "yo", "ha", "ar", "es", "pt", "de", "it", "zh", "hi"] as const;
 
 export type AppLocale = (typeof ALL_LOCALES)[number];
 
+/**
+ * Locale tiering metadata. Now that the scaffold concept has dissolved,
+ * every registered locale is treated as production-ready for selector
+ * purposes; the type definition is preserved for any diagnostic script
+ * that still walks the tier values.
+ */
 export const LOCALE_TIERS: Record<AppLocale, LocaleTier> = {
   en: "production-ready",
   fr: "production-ready",
-  es: "native-ui-ready",
-  pt: "native-ui-ready",
-  ar: "native-ui-ready",
-  de: "native-ui-ready",
-  it: "native-ui-ready",
-  ig: "scaffold",
-  yo: "scaffold",
-  ha: "scaffold",
-  zh: "scaffold",
-  hi: "scaffold",
+  es: "production-ready",
+  pt: "production-ready",
+  ar: "production-ready",
+  de: "production-ready",
+  it: "production-ready",
+  ig: "production-ready",
+  yo: "production-ready",
+  ha: "production-ready",
+  zh: "production-ready",
+  hi: "production-ready",
 };
 
-/** Fully user-visible selector locales. */
-export const PUBLIC_SELECTOR_LOCALES: readonly AppLocale[] = ["en", "fr", "es", "pt", "ar", "de", "it"];
+/**
+ * Fully user-visible selector locales.
+ *
+ * Post Wave A2: equal to `ALL_LOCALES`. All 12 locales are exposed.
+ */
+export const PUBLIC_SELECTOR_LOCALES: readonly AppLocale[] = [...ALL_LOCALES];
 
-/** Internal registry locales that remain detectable/persistable but are not yet public selector options. */
-export const INTERNAL_SCAFFOLD_LOCALES: readonly AppLocale[] = ALL_LOCALES.filter(
-  (locale) => !PUBLIC_SELECTOR_LOCALES.includes(locale),
-);
+/**
+ * Internal scaffold locales — kept as an empty array for backward
+ * compatibility (Wave A2 promoted every scaffold locale into the public
+ * selector). Callers should treat presence in this list as "explicitly
+ * hidden from selectors", which no locale now is.
+ */
+export const INTERNAL_SCAFFOLD_LOCALES: readonly AppLocale[] = [];
 
 export const RTL_LOCALES: readonly AppLocale[] = ["ar"];
 

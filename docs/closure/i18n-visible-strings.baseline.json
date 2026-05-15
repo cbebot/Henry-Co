@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-05-15T00:00:00.000Z",
+  "totalFindings": 10139,
+  "fileCount": 970,
+  "byApp": {
+    "apps/account": 1356,
+    "apps/care": 1738,
+    "apps/hub": 1198,
+    "apps/jobs": 778,
+    "apps/learn": 536,
+    "apps/logistics": 580,
+    "apps/marketplace": 1147,
+    "apps/property": 615,
+    "apps/staff": 192,
+    "apps/studio": 1688,
+    "packages/ui": 311
+  },
+  "notes": [
+    "Captured by Wave A2 of the HenryCo i18n FINAL COMPLETION pass against current main as the floor.",
+    "Combined output of `node scripts/i18n-audit-visible-strings.mjs` plus `node scripts/i18n-audit-visible-strings.mjs apps/hub apps/staff`, deduplicated by file.",
+    "This is intentionally a maximum the gate refuses to regress past. Subsequent passes (Wave A1 extraction, Wave B locale fills) decrease this number; the conductor regenerates the baseline in the Wave D closure step.",
+    "`pnpm i18n:check:visible-strings` reproduces the same scan; `pnpm i18n:check` enforces it."
+  ]
+}

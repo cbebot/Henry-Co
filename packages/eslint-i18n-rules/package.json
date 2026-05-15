@@ -1,0 +1,14 @@
+{
+  "name": "@henryco/eslint-i18n-rules",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Custom ESLint rules that catch hardcoded user-facing strings before they regress the HenryCo i18n closure.",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  }
+}
