@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PropertyEmptyState, PropertyListingCard, PropertySearchBar, PropertySectionIntro } from "@/components/property/ui";
+import { PortalLiveStrip } from "@/components/portal";
+import "@/components/portal/styles.css";
 import { getPropertySnapshot, searchProperties } from "@/lib/property/data";
 
 export const dynamic = "force-dynamic";
@@ -74,8 +76,66 @@ export default async function PropertySearchPage({
   const pageStart = (currentPage - 1) * PAGE_SIZE;
   const pageResults = results.slice(pageStart, pageStart + PAGE_SIZE);
 
+  /*
+   * State-narrowed hero band — V3 PASS 21 / Wave B6.
+   *
+   * Pre-search (no active filters): a platform-metrics live strip
+   * surfaces total inventory and named areas, so an empty-handed
+   * visitor still sees capability evidence above the fold.
+   *
+   * Post-search (one or more filters): the same strip shifts to a
+   * results summary — count, page, and the strongest filter. Layout-
+   * shift-free because the band geometry is identical in both states.
+   *
+   * Anti-pattern guard: never blank numbers. Always carry an
+   * accompanying trend / context line.
+   */
+  const liveInventoryCount = snapshot.listings.filter((listing) =>
+    ["approved", "published"].includes(listing.status),
+  ).length;
+  const liveAreaCount = snapshot.areas.length;
+  const filterEntries = Object.entries(params).filter(
+    ([key, value]) => key !== "page" && Boolean(value),
+  );
+
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
+      <div className="prp-pf mb-8">
+        {filterEntries.length === 0 ? (
+          <PortalLiveStrip
+            eyebrow="Search · Live inventory"
+            title={`${liveInventoryCount} ${
+              liveInventoryCount === 1 ? "listing" : "listings"
+            } live across HenryCo Property`}
+            meta={`Across ${liveAreaCount} ${
+              liveAreaCount === 1 ? "area" : "areas"
+            }. Filter by area, listing kind, managed status, or furnishing — the URL stays shareable.`}
+            etaLabel="Inventory"
+            etaValue={`${liveInventoryCount}`}
+            etaMeta="vetted before public"
+          />
+        ) : (
+          <PortalLiveStrip
+            eyebrow="Search · Active filter"
+            title={`${totalResults} ${
+              totalResults === 1 ? "listing" : "listings"
+            } match this combination`}
+            meta={
+              totalPages > 1
+                ? `Page ${currentPage} of ${totalPages} · ${filterEntries.length} active ${
+                    filterEntries.length === 1 ? "filter" : "filters"
+                  }`
+                : `${filterEntries.length} active ${
+                    filterEntries.length === 1 ? "filter" : "filters"
+                  } · clear to widen the search`
+            }
+            etaLabel="Filters"
+            etaValue={String(filterEntries.length)}
+            etaMeta={totalResults > 0 ? "narrowing helps" : "try widening"}
+          />
+        )}
+      </div>
+
       <PropertySectionIntro
         kicker="Search"
         title="Find the right place. Keep your filters."
