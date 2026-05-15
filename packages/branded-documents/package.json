@@ -21,7 +21,8 @@
     "./templates/logistics-shipment-receipt": "./src/templates/logistics-shipment-receipt.tsx",
     "./templates/logistics-b2b-statement": "./src/templates/logistics-b2b-statement.tsx",
     "./templates/vendor-payout-statement": "./src/templates/vendor-payout-statement.tsx",
-    "./templates/vendor-tax-document": "./src/templates/vendor-tax-document.tsx"
+    "./templates/vendor-tax-document": "./src/templates/vendor-tax-document.tsx",
+    "./templates/owner-report": "./src/templates/owner-report.tsx"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

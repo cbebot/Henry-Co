@@ -14,6 +14,7 @@
   "dependencies": {
     "@henryco/auth": "workspace:^",
     "@henryco/brand": "workspace:^",
+    "@henryco/branded-documents": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/dashboard-modules-owner": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",

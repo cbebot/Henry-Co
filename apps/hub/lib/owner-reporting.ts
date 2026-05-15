@@ -1,10 +1,19 @@
 import "server-only";
 
+import React from "react";
 import { getHqUrl } from "@henryco/config";
 import { sendTransactionalEmail } from "@henryco/email";
+import {
+  OwnerReportDocument,
+  renderDocumentToBuffer,
+  buildDocumentFilename,
+  type OwnerReportProps,
+} from "@henryco/branded-documents";
 import { getFinanceCenterData, getMessagingCenterData, getOperationsCenterData, getOwnerOverviewData } from "@/lib/owner-data";
 import { divisionLabel, formatCurrencyAmount } from "@/lib/format";
 import { createAdminSupabase } from "@/lib/supabase";
+
+const OWNER_REPORT_STORAGE_BUCKET = "owner-reports";
 
 const LAGOS_TIME_ZONE = "Africa/Lagos";
 const OWNER_REPORT_ENTITY_TYPE = "owner_report";
@@ -482,6 +491,161 @@ function renderOwnerReportEmail(input: {
   };
 }
 
+/**
+ * V3 PASS 21 / H6 — assemble the OwnerReportDocument props from the
+ * canonical overview/finance/operations/messaging snapshot.
+ */
+function buildOwnerReportProps(input: {
+  kind: OwnerReportKind;
+  periodKey: string;
+  periodLabel: string;
+  recipientName: string;
+  overview: Awaited<ReturnType<typeof getOwnerOverviewData>>;
+  finance: Awaited<ReturnType<typeof getFinanceCenterData>>;
+  operations: Awaited<ReturnType<typeof getOperationsCenterData>>;
+  messaging: Awaited<ReturnType<typeof getMessagingCenterData>>;
+  generatedAt: Date;
+}): OwnerReportProps {
+  const moneyVisibilityLines = [
+    `Recognized revenue: ${formatCurrencyAmount(input.finance.moneyMovement.recognizedRevenueNaira)}`,
+    `Recorded outflow: ${formatCurrencyAmount(input.finance.moneyMovement.recordedOutflowNaira)}`,
+    `Wallet funding awaiting verification: ${formatCurrencyAmount(input.finance.moneyMovement.walletFundingPendingNaira)}`,
+    `Wallet withdrawals awaiting payout: ${formatCurrencyAmount(input.finance.moneyMovement.walletWithdrawalPendingNaira)}`,
+    `Pending shared invoices: ${input.finance.pendingInvoices.length}`,
+    `Pending marketplace payouts: ${input.finance.pendingPayouts.length}`,
+  ];
+  const messagingLines = [
+    `${input.messaging.metrics.failed} delivery failure(s) are still open in the notification queues.`,
+    `${input.messaging.metrics.skipped} queue item(s) were skipped.`,
+    `${input.operations.metrics.openSupport} support thread(s) are still open across divisions.`,
+    `${input.operations.metrics.staleSupport} support thread(s) are stale beyond the live update window.`,
+  ];
+  const divisionPressure = [...input.overview.divisions]
+    .sort((left, right) => left.healthScore - right.healthScore)
+    .slice(0, 4)
+    .map((division) => ({
+      slug: division.slug,
+      displayName: division.displayName,
+      healthLabel: division.healthLabel,
+      alertCount: division.alertCount,
+      revenueLabel: formatCurrencyAmount(division.revenueNaira),
+    }));
+  const signals = input.overview.signals.slice(0, 5).map((signal) => ({
+    id: signal.id,
+    title: signal.title,
+    body: signal.body,
+    division: signal.division ?? null,
+  }));
+  const recommendations = input.overview.helperInsights.slice(0, 4).map((insight) => ({
+    id: insight.id,
+    title: insight.title,
+    body: insight.body,
+    division: null,
+  }));
+  const recentPayments = input.finance.recentPayments
+    .slice(0, input.kind === "monthly" ? 8 : 5)
+    .map((item) => ({
+      id: item.id,
+      division: divisionLabel(item.division),
+      label: item.label,
+      status: item.status,
+      amountLabel: formatCurrencyAmount(item.amountNaira),
+    }));
+
+  return {
+    kind: input.kind,
+    periodKey: input.periodKey,
+    periodLabel: input.periodLabel,
+    recipientName: input.recipientName,
+    executiveDigest: input.overview.executiveDigest,
+    metrics: [
+      {
+        label: "Recognized revenue",
+        value: formatCurrencyAmount(input.finance.moneyMovement.recognizedRevenueNaira),
+        detail: "Live revenue across Care, Marketplace, and shared invoices.",
+      },
+      {
+        label: "Recorded outflow",
+        value: formatCurrencyAmount(input.finance.moneyMovement.recordedOutflowNaira),
+        detail: "Care expense ledger plus wallet payouts already marked complete.",
+      },
+      {
+        label: "Critical signals",
+        value: String(input.overview.metrics.criticalSignals),
+        detail: "Items currently demanding owner attention.",
+      },
+      {
+        label: "Open support",
+        value: String(input.operations.metrics.openSupport),
+        detail: "Cross-division customer and operational threads still open.",
+      },
+    ],
+    signals,
+    moneyVisibilityLines,
+    messagingLines,
+    divisionPressure,
+    recentPayments,
+    recommendations,
+    generatedAt: input.generatedAt.toISOString(),
+    hqUrl: getHqUrl("/owner"),
+  };
+}
+
+/**
+ * Render the premium owner-report PDF and upload it to the
+ * `owner-reports` Supabase storage bucket. Returns the storage path
+ * and a signed URL valid for 7 days for inclusion in the email.
+ *
+ * Failures are non-fatal: callers degrade to the existing HTML email
+ * if the PDF cannot be produced (bucket missing, fonts not registered,
+ * etc.) so the operator still receives the report.
+ */
+async function uploadOwnerReportPdf(props: OwnerReportProps): Promise<{
+  path: string;
+  signedUrl: string | null;
+} | null> {
+  try {
+    // React-PDF's renderToBuffer typing wants ReactElement<DocumentProps>;
+    // every BrandedDocument template returns one structurally. The cast
+    // is the standard interop shape across the package.
+    const element = React.createElement(OwnerReportDocument, props) as unknown as Parameters<
+      typeof renderDocumentToBuffer
+    >[0];
+    const buffer = await renderDocumentToBuffer(element);
+    const filename = buildDocumentFilename(
+      props.kind === "monthly" ? "OwnerReportMonthly" : "OwnerReportWeekly",
+      props.periodKey,
+      new Date(props.generatedAt),
+    );
+    const storagePath = `${props.kind}/${props.periodKey}/${filename}`;
+    const admin = createAdminSupabase();
+
+    const { error: uploadError } = await admin.storage
+      .from(OWNER_REPORT_STORAGE_BUCKET)
+      .upload(storagePath, buffer, {
+        contentType: "application/pdf",
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.warn("[owner-reporting] PDF upload failed:", uploadError.message);
+      return null;
+    }
+
+    const { data: signed } = await admin.storage
+      .from(OWNER_REPORT_STORAGE_BUCKET)
+      .createSignedUrl(storagePath, 60 * 60 * 24 * 7);
+
+    return {
+      path: storagePath,
+      signedUrl: signed?.signedUrl ?? null,
+    };
+  } catch (err) {
+    console.warn("[owner-reporting] PDF render threw:", err);
+    return null;
+  }
+}
+
 export async function runOwnerReport(
   kind: OwnerReportKind,
   options?: {
@@ -545,6 +709,22 @@ export async function runOwnerReport(
       continue;
     }
 
+    const pdfProps = buildOwnerReportProps({
+      kind,
+      periodKey: period.key,
+      periodLabel: period.label,
+      recipientName: recipient.fullName,
+      overview,
+      finance,
+      operations,
+      messaging,
+      generatedAt: now,
+    });
+
+    // V3 PASS 21 / H6 — render the premium PDF and upload to storage.
+    // Falls back gracefully if the bucket is missing or fonts fail.
+    const pdfUpload = await uploadOwnerReportPdf(pdfProps);
+
     const emailTemplate = renderOwnerReportEmail({
       kind,
       periodLabel: period.label,
@@ -554,11 +734,23 @@ export async function runOwnerReport(
       operations,
       messaging,
     });
+    const pdfHtml = pdfUpload?.signedUrl
+      ? `\n<div style="margin-top:24px;padding:18px;border:1px solid rgba(23,18,15,0.08);border-radius:18px;background:#fffdfa;">
+           <p style="margin:0 0 8px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#867f74;">Premium PDF</p>
+           <p style="margin:0 0 8px;font-size:14px;color:#5d5b55;">The full owner report has been rendered as a branded PDF and stored in the owner-reports bucket. The signed link below is valid for 7 days.</p>
+           <a href="${escapeHtml(pdfUpload.signedUrl)}" style="display:inline-block;padding:12px 20px;border-radius:999px;background:#c9a227;color:#17120f;text-decoration:none;font-weight:700;">Download branded PDF</a>
+         </div>`
+      : "";
+    const pdfText = pdfUpload?.signedUrl
+      ? `\nPremium PDF download (signed, 7-day expiry): ${pdfUpload.signedUrl}`
+      : "";
+    const enrichedHtml = emailTemplate.html.replace(/<\/div>\s*$/, `${pdfHtml}\n</div>`);
+    const enrichedText = `${emailTemplate.text}${pdfText}`;
     const dispatch = await sendOwnerReportEmail({
       to: recipient.email,
       subject: emailTemplate.subject,
-      html: emailTemplate.html,
-      text: emailTemplate.text,
+      html: enrichedHtml,
+      text: enrichedText,
     });
 
     const action = dispatch.status === "sent" ? sentAction : failedAction;
@@ -575,6 +767,8 @@ export async function runOwnerReport(
         messageId: dispatch.messageId,
         metrics: overview.metrics,
         finance: finance.moneyMovement,
+        pdfPath: pdfUpload?.path ?? null,
+        pdfSigned: Boolean(pdfUpload?.signedUrl),
       },
     });
 
