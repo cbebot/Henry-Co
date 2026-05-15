@@ -24,10 +24,16 @@ import {
   upsertPropertyInspection,
   appendPropertyPolicyEvent,
   upsertPropertyManagedRecord,
+  upsertPropertyMaintenanceTicket,
   upsertPropertyViewingRequest,
   uploadPropertyDocument,
   uploadPropertyMedia,
 } from "@/lib/property/store";
+import {
+  createSavedSearch,
+  deleteSavedSearch,
+  setSavedSearchCadence,
+} from "@/lib/property/saved-searches";
 import {
   PROPERTY_POLICY_VERSION,
   evaluatePropertySubmissionPolicy,
@@ -1790,6 +1796,151 @@ export async function POST(request: Request) {
 
         revalidatePropertyRoutes();
         return redirectTo(request, withQuery(returnTo, "updated", "1"));
+      }
+
+      /* V3 PASS 21 — saved-search intents. */
+      case "saved_search_create": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+        const minBedsRaw = numberValue(formData, "min_beds");
+        const maxBedsRaw = numberValue(formData, "max_beds");
+        const minPriceRaw = numberValue(formData, "min_price");
+        const maxPriceRaw = numberValue(formData, "max_price");
+        const cadenceRaw = text(formData, "alert_cadence");
+        const cadence: "instant" | "daily" | "weekly" | "off" =
+          cadenceRaw === "instant" || cadenceRaw === "weekly" || cadenceRaw === "off"
+            ? cadenceRaw
+            : "daily";
+
+        await createSavedSearch({
+          userId: viewer.user.id,
+          email: viewer.user.email,
+          name: text(formData, "name"),
+          criteria: {
+            q: text(formData, "q") || null,
+            kind: text(formData, "kind") || null,
+            area: text(formData, "area") || null,
+            managed: bool(formData, "managed") ? "1" : null,
+            furnished: bool(formData, "furnished") ? "1" : null,
+            minBeds: minBedsRaw !== null && minBedsRaw > 0 ? minBedsRaw : null,
+            maxBeds: maxBedsRaw !== null && maxBedsRaw > 0 ? maxBedsRaw : null,
+            minPrice: minPriceRaw !== null && minPriceRaw > 0 ? minPriceRaw : null,
+            maxPrice: maxPriceRaw !== null && maxPriceRaw > 0 ? maxPriceRaw : null,
+            verifiedOnly: bool(formData, "verified_only") || null,
+          },
+          alertCadence: cadence,
+        });
+
+        return redirectTo(request, withQuery(returnTo, "saved_search", "created"));
+      }
+
+      case "saved_search_delete": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+        const id = text(formData, "saved_search_id");
+        if (!id) return redirectTo(request, withQuery(returnTo, "error", "missing-id"));
+        await deleteSavedSearch(id);
+        return redirectTo(request, withQuery(returnTo, "saved_search", "deleted"));
+      }
+
+      case "saved_search_cadence": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+        const id = text(formData, "saved_search_id");
+        const cadenceRaw = text(formData, "alert_cadence");
+        const cadence: "instant" | "daily" | "weekly" | "off" =
+          cadenceRaw === "instant" ||
+          cadenceRaw === "weekly" ||
+          cadenceRaw === "off" ||
+          cadenceRaw === "daily"
+            ? cadenceRaw
+            : "daily";
+        if (!id) return redirectTo(request, withQuery(returnTo, "error", "missing-id"));
+        await setSavedSearchCadence(id, cadence);
+        return redirectTo(request, withQuery(returnTo, "saved_search", "updated"));
+      }
+
+      /* V3 PASS 21 — maintenance ticket submission (managed-property
+       * owner-side filing). */
+      case "maintenance_ticket_submit": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+        const listingId = text(formData, "listing_id");
+        const listing = snapshot.listings.find((item) => item.id === listingId);
+        if (!listing) {
+          return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
+        }
+        const summary = text(formData, "summary");
+        const body = text(formData, "body");
+        if (!summary) return redirectTo(request, withQuery(returnTo, "error", "missing-summary"));
+
+        const categoryRaw = text(formData, "category") || "general";
+        const category =
+          (
+            [
+              "plumbing",
+              "electrical",
+              "hvac",
+              "pest",
+              "structural",
+              "security",
+              "appliance",
+              "general",
+            ] as const
+          ).find((entry) => entry === categoryRaw) ?? "general";
+
+        const severityRaw = text(formData, "severity") || "medium";
+        const severity =
+          (["low", "medium", "high", "critical"] as const).find(
+            (entry) => entry === severityRaw,
+          ) ?? "medium";
+
+        const ticketId = randomUUID();
+        const now = new Date().toISOString();
+        const slaHours = severity === "critical" ? 4 : severity === "high" ? 12 : severity === "medium" ? 48 : 168;
+        const slaDueAt = new Date(Date.now() + slaHours * 60 * 60 * 1000).toISOString();
+
+        await upsertPropertyMaintenanceTicket({
+          id: ticketId,
+          listingId,
+          managedRecordId: null,
+          reportedByUserId: viewer.user.id,
+          normalizedEmail: normalizeEmail(viewer.user.email),
+          reporterName: viewer.user.fullName || "Managed owner",
+          reporterEmail: viewer.user.email || "",
+          reporterPhone: text(formData, "phone") || null,
+          category,
+          severity,
+          summary,
+          body,
+          status: "open",
+          attachments: [],
+          scheduledFor: null,
+          resolvedAt: null,
+          assignedAgentId: listing.agentId,
+          resolutionNotes: "",
+          slaDueAt,
+          slaBreach: false,
+          createdAt: now,
+          updatedAt: now,
+        });
+
+        await sendPropertyEvent({
+          event: "owner_alert",
+          recipientEmail: operatorInbox,
+          entityType: "property_maintenance_ticket",
+          entityId: ticketId,
+          payload: {
+            listingTitle: listing.title,
+            note: `Maintenance ticket filed (${severity}): ${summary}`,
+          },
+        });
+
+        return redirectTo(request, withQuery(returnTo, "maintenance", "submitted"));
       }
 
       default:

@@ -1,8 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Bell, BellOff } from "lucide-react";
 import { PropertyEmptyState, PropertyListingCard, PropertySearchBar, PropertySectionIntro } from "@/components/property/ui";
 import { PropertyMapView } from "@/components/property/property-map-view";
+import { PropertyPendingButton } from "@/components/property/form-status";
+import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertySnapshot, searchProperties } from "@/lib/property/data";
+import { getSharedAccountLoginUrl } from "@/lib/property/links";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -75,10 +79,16 @@ export default async function PropertySearchPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const snapshot = await getPropertySnapshot();
-  const results = await searchProperties(params);
+  const [snapshot, results, viewer] = await Promise.all([
+    getPropertySnapshot(),
+    searchProperties(params),
+    getPropertyViewer(),
+  ]);
   const view: "list" | "map" = params.view === "map" ? "map" : "list";
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || null;
+  const hasAnyCriteria = Boolean(
+    params.q || params.kind || params.area || params.managed || params.furnished
+  );
   const active = Object.entries(params)
     .filter(([key]) => key !== "page" && key !== "view")
     .filter(([, value]) => Boolean(value));
@@ -111,6 +121,49 @@ export default async function PropertySearchPage({
           }}
         />
       </div>
+
+      {/* V3 PASS 21 — save this search. Visible whenever a filter is
+          active and the visitor is signed in. The form posts to the
+          shared /api/property endpoint with intent=saved_search_create. */}
+      {hasAnyCriteria ? (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-l-2 border-[var(--property-line)] pl-4">
+          <p className="max-w-md text-[13px] leading-6 text-[var(--property-ink-soft)]">
+            Save this search and HenryCo Property will notify you when a new
+            listing matches. Cadence is daily by default — change it later in
+            your account.
+          </p>
+          {viewer.user ? (
+            <form action="/api/property" method="POST" className="flex flex-wrap items-center gap-3">
+              <input type="hidden" name="intent" value="saved_search_create" />
+              <input type="hidden" name="return_to" value={`/search?${new URLSearchParams(Object.entries(params).filter(([, v]) => Boolean(v)) as Array<[string, string]>).toString()}`} />
+              <input type="hidden" name="q" value={params.q || ""} />
+              <input type="hidden" name="kind" value={params.kind || ""} />
+              <input type="hidden" name="area" value={params.area || ""} />
+              <input type="hidden" name="managed" value={params.managed || ""} />
+              <input type="hidden" name="furnished" value={params.furnished || ""} />
+              <input type="hidden" name="alert_cadence" value="daily" />
+              <PropertyPendingButton
+                idleLabel="Save this search"
+                pendingLabel="Saving search"
+                variant="secondary"
+                idleIcon={<Bell className="h-4 w-4" />}
+                className="px-4 py-2 text-[12.5px]"
+              />
+            </form>
+          ) : (
+            <Link
+              href={getSharedAccountLoginUrl({
+                nextPath: "/search",
+                propertyOrigin: process.env.NEXT_PUBLIC_PROPERTY_ORIGIN || "https://property.henrycogroup.com",
+              })}
+              className="property-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-[12.5px] font-semibold"
+            >
+              <BellOff className="h-4 w-4" />
+              Sign in to save this search
+            </Link>
+          )}
+        </div>
+      ) : null}
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
         <div
