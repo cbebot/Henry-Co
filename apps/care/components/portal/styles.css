@@ -1,0 +1,664 @@
+/*
+ * HenryCo Care — portal-flavoured editorial CSS module.
+ *
+ * V3 Wave B1 mirror of apps/logistics/components/portal/styles.css
+ * (just-merged Wave B3). Scoped to .care-pf so the portal-side
+ * surfaces (home + track + book) can adopt the V3 editorial premium
+ * bar without touching the global token surface or any shared
+ * primitive.
+ *
+ * Paint sits on existing Care division tokens (--care-*) for the
+ * paper / ink language + HenryCo gold (--hc-*) for the accent rail
+ * (anti-pattern #14: no primary blue, brand uses black/gold/cream).
+ * ZERO hex literals, ZERO new tokens, ZERO new env vars.
+ */
+
+.care-pf {
+  /* Module-local aliases over division + HenryCo tokens.
+     Anything the portal needs locally is named off the canonical token
+     so there is exactly one place to retune the brand. Care leans on
+     HenryCo gold for the accent rail (anti-pattern #14). */
+  --care-pf-accent: var(--hc-accent);
+  --care-pf-accent-strong: var(--hc-accent-strong);
+  --care-pf-accent-pressed: var(--hc-accent-pressed);
+  --care-pf-accent-soft: var(--hc-accent-soft);
+  --care-pf-accent-text: var(--hc-accent-text);
+  --care-pf-rule: var(--care-border);
+  --care-pf-rule-strong: var(--hc-line-strong);
+  --care-pf-ink: var(--care-text);
+  --care-pf-muted: var(--care-muted);
+  --care-pf-paper: var(--care-card);
+  --care-pf-paper-soft: var(--care-bg-soft);
+
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Hero — capability evidence above the fold, NOT giant headline text.
+   Owner-validated pattern: feedback_no_giant_hero_text.md.
+   ───────────────────────────────────────────────────────────────────── */
+
+.care-pf__hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid var(--care-pf-rule);
+  background:
+    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--care-pf-accent) 12%, transparent) 0%, transparent 55%),
+    radial-gradient(70% 70% at 100% 100%, color-mix(in srgb, var(--care-pf-accent-soft) 22%, transparent) 0%, transparent 60%),
+    var(--care-pf-paper);
+  box-shadow: var(--care-shadow);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.care-pf__hero::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--care-pf-accent) 16%, transparent), transparent 50%);
+  border-radius: inherit;
+  z-index: 0;
+}
+
+.care-pf__hero > * { position: relative; z-index: 1; }
+
+.care-pf__hero-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+  align-items: flex-end;
+  gap: 40px;
+}
+
+@media (max-width: 880px) {
+  .care-pf__hero { padding: 24px; gap: 24px; }
+  .care-pf__hero-row { grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: flex-start; }
+}
+
+.care-pf__hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--care-pf-accent) 10%, transparent);
+  color: var(--care-pf-accent-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid color-mix(in srgb, var(--care-pf-accent) 22%, transparent);
+}
+
+.care-pf__hero-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--care-pf-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--care-pf-accent) 24%, transparent);
+}
+
+.care-pf__hero-title {
+  margin: 16px 0 0;
+  font-family: var(--hc-font-display, var(--font-display), "Iowan Old Style", "Palatino Linotype", Georgia, serif);
+  font-size: clamp(2rem, 4.2vw, 2.95rem);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  color: var(--care-pf-ink);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+.care-pf__hero-blurb {
+  margin: 16px 0 0;
+  max-width: 56ch;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--care-pf-muted);
+  text-wrap: pretty;
+}
+
+.care-pf__hero-coverage {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--care-pf-ink) 4%, transparent);
+  border: 1px solid var(--care-pf-rule);
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--care-pf-ink) 82%, transparent);
+}
+
+.care-pf__hero-coverage svg { color: var(--care-pf-accent); }
+
+.care-pf__hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.care-pf__hero-pickup {
+  margin-top: 22px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--care-pf-ink) 45%, transparent);
+}
+
+/* Capability evidence — primary metric strip with serif numerals.
+   Density-first, four columns, NEVER decorative tiles. */
+
+.care-pf__capability {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 880px) {
+  .care-pf__capability { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.care-pf__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--care-pf-ink) 4%, transparent);
+  border: 1px solid var(--care-pf-rule);
+  min-width: 0;
+}
+
+.care-pf__metric--gold {
+  border-color: color-mix(in srgb, var(--care-pf-accent) 36%, var(--care-pf-rule));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--care-pf-accent) 10%, transparent) 0%, color-mix(in srgb, var(--care-pf-ink) 4%, transparent) 100%);
+}
+
+.care-pf__metric-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--care-pf-ink) 55%, transparent);
+}
+
+.care-pf__metric-value {
+  font-family: var(--hc-font-display, var(--font-display), "Iowan Old Style", "Palatino Linotype", Georgia, serif);
+  font-size: clamp(1.85rem, 3.2vw, 2.4rem);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--care-pf-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.care-pf__metric-value-currency {
+  font-size: 0.58em;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--care-pf-ink) 55%, transparent);
+  margin-right: 3px;
+  font-variant-numeric: normal;
+}
+
+.care-pf__metric-trend {
+  font-size: 12px;
+  color: var(--care-pf-muted);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.care-pf__metric-trend-pos { color: color-mix(in srgb, var(--care-pf-accent-text) 84%, var(--care-pf-ink)); }
+.care-pf__metric-trend-neg { color: color-mix(in srgb, var(--care-pf-accent-pressed) 70%, var(--care-pf-ink)); }
+
+/* ─────────────────────────────────────────────────────────────────────
+   Sections — kicker + headline + meta rail (NOT a card wall).
+   ───────────────────────────────────────────────────────────────────── */
+
+.care-pf__section { display: flex; flex-direction: column; gap: 20px; }
+
+.care-pf__section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.care-pf__section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--care-pf-accent-text);
+}
+
+.care-pf__section-kicker::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--care-pf-rule);
+  min-width: 80px;
+}
+
+.care-pf__section-title {
+  margin: 0;
+  font-family: var(--hc-font-display, var(--font-display), "Iowan Old Style", "Palatino Linotype", Georgia, serif);
+  font-size: clamp(1.55rem, 2.4vw, 1.85rem);
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  color: var(--care-pf-ink);
+  text-wrap: balance;
+}
+
+.care-pf__section-meta {
+  font-size: 12.5px;
+  color: var(--care-pf-muted);
+}
+
+/* Two-column body for sections that hold a description + list. */
+
+.care-pf__section-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 880px) {
+  .care-pf__section-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+}
+
+.care-pf__section-body {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--care-pf-muted);
+  max-width: 56ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* Divided list — hairline-ruled rows, no individual card outlines. */
+
+.care-pf__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--care-pf-rule);
+  border-bottom: 1px solid var(--care-pf-rule);
+}
+
+.care-pf__list > li {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--care-pf-rule);
+  align-items: start;
+}
+
+.care-pf__list > li:last-child { border-bottom: 0; }
+
+.care-pf__list-icon {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--care-pf-rule);
+  background: color-mix(in srgb, var(--care-pf-ink) 4%, transparent);
+  color: var(--care-pf-accent-text);
+  flex-shrink: 0;
+}
+
+.care-pf__list-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--care-pf-ink);
+}
+
+.care-pf__list-body {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--care-pf-muted);
+}
+
+.care-pf__list-status {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--care-pf-ink) 55%, transparent);
+  white-space: nowrap;
+}
+
+.care-pf__list-status[data-tone="active"] { color: var(--care-pf-accent-text); }
+.care-pf__list-status[data-tone="good"] { color: color-mix(in srgb, var(--care-pf-accent) 60%, var(--care-pf-ink)); }
+.care-pf__list-status[data-tone="warn"] { color: color-mix(in srgb, var(--care-pf-accent-pressed) 75%, var(--care-pf-ink)); }
+
+/* ─────────────────────────────────────────────────────────────────────
+   Tracking-flavoured surfaces — used on /track for the premium polish.
+   ───────────────────────────────────────────────────────────────────── */
+
+.care-pf__live-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--care-pf-accent) 9%, transparent) 0%, color-mix(in srgb, var(--care-pf-ink) 3%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--care-pf-accent) 24%, var(--care-pf-rule));
+}
+
+.care-pf__live-strip-eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--care-pf-accent-text);
+}
+
+.care-pf__live-strip-title {
+  margin: 6px 0 0;
+  font-family: var(--hc-font-display, var(--font-display), "Iowan Old Style", "Palatino Linotype", Georgia, serif);
+  font-size: clamp(1.45rem, 2.4vw, 1.75rem);
+  line-height: 1.18;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--care-pf-ink);
+}
+
+.care-pf__live-strip-meta {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--care-pf-muted);
+}
+
+.care-pf__live-strip-eta {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.care-pf__live-strip-eta-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--care-pf-ink) 50%, transparent);
+}
+
+.care-pf__live-strip-eta-value {
+  font-family: var(--hc-font-display, var(--font-display), "Iowan Old Style", "Palatino Linotype", Georgia, serif);
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  line-height: 1;
+  font-weight: 600;
+  color: var(--care-pf-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.care-pf__live-strip-eta-meta {
+  font-size: 12px;
+  color: var(--care-pf-muted);
+}
+
+@media (max-width: 600px) {
+  .care-pf__live-strip {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .care-pf__live-strip-eta { text-align: left; }
+}
+
+/* Pulsing live dot — paired with capability strip "Active" rows. */
+
+.care-pf__pulse {
+  position: relative;
+  display: inline-flex;
+  width: 8px;
+  height: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.care-pf__pulse::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--care-pf-accent);
+  opacity: 0.6;
+  animation: care-pf-pulse 2s ease-in-out infinite;
+}
+
+.care-pf__pulse::after {
+  content: "";
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--care-pf-accent);
+}
+
+@keyframes care-pf-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  50% { transform: scale(2); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .care-pf__pulse::before { animation: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   CTA primitives — three flavours (primary / secondary / ghost).
+   All five interaction states are honoured (idle / hover / pressed /
+   focus-visible / disabled). HenryCo gold gradient on primary so the
+   public surface owns one premium accent across the brand.
+   ───────────────────────────────────────────────────────────────────── */
+
+.care-pf__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  transition: transform 180ms var(--hc-ease-standard, ease-out), box-shadow 180ms var(--hc-ease-standard, ease-out);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.care-pf__cta-primary {
+  background:
+    linear-gradient(
+      135deg,
+      var(--care-pf-accent-strong) 0%,
+      var(--care-pf-accent) 52%,
+      var(--care-pf-accent-pressed) 100%
+    );
+  color: var(--hc-ink-on-accent, #0a0a0a);
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--care-pf-accent) 24%, transparent);
+}
+
+.care-pf__cta-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 56px color-mix(in srgb, var(--care-pf-accent) 32%, transparent);
+}
+
+.care-pf__cta-primary:active { transform: translateY(0.5px); }
+
+.care-pf__cta-primary:focus-visible {
+  outline: 2px solid var(--care-pf-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--care-pf-accent) 28%, transparent);
+}
+
+.care-pf__cta-secondary {
+  background: color-mix(in srgb, var(--care-pf-ink) 5%, transparent);
+  color: color-mix(in srgb, var(--care-pf-ink) 92%, transparent);
+  border-color: var(--care-pf-rule-strong);
+}
+
+.care-pf__cta-secondary:hover {
+  background: color-mix(in srgb, var(--care-pf-ink) 8%, transparent);
+  transform: translateY(-1px);
+}
+
+.care-pf__cta-secondary:active { transform: translateY(0.5px); }
+
+.care-pf__cta-secondary:focus-visible {
+  outline: 2px solid var(--care-pf-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--care-pf-accent) 22%, transparent);
+}
+
+.care-pf__cta-ghost {
+  background: transparent;
+  color: var(--care-pf-accent-text);
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.care-pf__cta-ghost:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.care-pf__cta-ghost:focus-visible {
+  outline: 2px solid var(--care-pf-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.care-pf__cta:disabled,
+.care-pf__cta[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .care-pf__cta { transition: none; }
+  .care-pf__cta:hover { transform: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Lane card — premium service tile used for the home services rail.
+   Single, denser tile per service. NEVER more than 4 in a row.
+   ───────────────────────────────────────────────────────────────────── */
+
+.care-pf__lanes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 14px;
+}
+
+.care-pf__lane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border-radius: 22px;
+  background: var(--care-pf-paper);
+  border: 1px solid var(--care-pf-rule);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 180ms var(--hc-ease-standard, ease-out), transform 180ms var(--hc-ease-standard, ease-out);
+}
+
+.care-pf__lane:hover {
+  border-color: color-mix(in srgb, var(--care-pf-accent) 38%, var(--care-pf-rule));
+  transform: translateY(-2px);
+}
+
+.care-pf__lane:focus-visible {
+  outline: 2px solid var(--care-pf-accent);
+  outline-offset: 3px;
+}
+
+.care-pf__lane::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--care-pf-accent) 0%, transparent 70%);
+  opacity: 0.65;
+}
+
+.care-pf__lane-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--care-pf-accent-text);
+  align-self: flex-start;
+}
+
+.care-pf__lane-title {
+  margin: 4px 0 0;
+  font-family: var(--hc-font-display, var(--font-display), "Iowan Old Style", "Palatino Linotype", Georgia, serif);
+  font-size: 18px;
+  line-height: 1.22;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--care-pf-ink);
+}
+
+.care-pf__lane-body {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--care-pf-muted);
+}
+
+.care-pf__lane-foot {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed var(--care-pf-rule);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--care-pf-muted);
+}
+
+.care-pf__lane-promise {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--care-pf-ink) 85%, transparent);
+  letter-spacing: -0.005em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .care-pf__lane { transition: none; }
+  .care-pf__lane:hover { transform: none; }
+}
