@@ -662,3 +662,165 @@
   .care-pf__lane { transition: none; }
   .care-pf__lane:hover { transform: none; }
 }
+
+/* ─────────────────────────────────────────────────────────────────────
+   Garment picker tile — used inside <TypeaheadGrid> on /book.
+   Compact, density-first card replaces the prior long-scroll picker
+   (anti-pattern #1 — audit §B.care-7).
+   ───────────────────────────────────────────────────────────────────── */
+
+.care-pf-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--care-pf-rule);
+  background: var(--care-pf-paper);
+  transition: border-color 180ms ease-out, transform 180ms ease-out;
+  text-align: left;
+}
+
+.care-pf-pick:hover {
+  border-color: color-mix(in srgb, var(--care-pf-accent) 30%, var(--care-pf-rule));
+  transform: translateY(-1px);
+}
+
+.care-pf-pick--selected {
+  border-color: color-mix(in srgb, var(--care-pf-accent) 40%, var(--care-pf-rule));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--care-pf-accent) 8%, transparent) 0%, var(--care-pf-paper) 100%);
+}
+
+.care-pf-pick__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.care-pf-pick__category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--care-pf-ink) 55%, transparent);
+}
+
+.care-pf-pick__featured {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--care-pf-accent) 12%, transparent);
+  color: var(--care-pf-accent-text);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.care-pf-pick__title {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--care-pf-ink);
+}
+
+.care-pf-pick__body {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--care-pf-muted);
+}
+
+.care-pf-pick__foot {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed var(--care-pf-rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.care-pf-pick__rate-label {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--care-pf-ink) 55%, transparent);
+}
+
+.care-pf-pick__rate-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--hc-font-display, var(--font-display), "Iowan Old Style", "Palatino Linotype", Georgia, serif);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--care-pf-accent-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.care-pf-pick__unit {
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--care-pf-ink) 50%, transparent);
+}
+
+.care-pf-pick__qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--care-pf-rule);
+  background: color-mix(in srgb, var(--care-pf-ink) 3%, transparent);
+}
+
+.care-pf-pick__qty-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--care-pf-paper);
+  color: var(--care-pf-ink);
+  cursor: pointer;
+  transition: background 120ms ease-out;
+}
+
+.care-pf-pick__qty-btn:hover {
+  background: color-mix(in srgb, var(--care-pf-accent) 12%, var(--care-pf-paper));
+}
+
+.care-pf-pick__qty-btn:focus-visible {
+  outline: 2px solid var(--care-pf-accent);
+  outline-offset: 2px;
+}
+
+.care-pf-pick__qty-value {
+  min-width: 18px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--care-pf-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .care-pf-pick { transition: none; }
+  .care-pf-pick:hover { transform: none; }
+}
