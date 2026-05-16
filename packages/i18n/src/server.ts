@@ -19,6 +19,7 @@ export { getCarePricingCopy, type CarePricingCopy } from "./care-pricing-copy";
 export { getCareServicesCopy, type CareServicesCopy } from "./care-services-copy";
 export { getCareAboutCopy, type CareAboutCopy } from "./care-about-copy";
 export { getLearnTrustCopy, type LearnTrustCopy } from "./learn-trust-copy";
+export { getLearnPathsCopy, type LearnPathsCopy } from "./learn-paths-copy";
 export { getAccountCopy, formatAccountTemplate, type AccountCopy } from "./account-copy";
 export {
   getSurfaceCopy,
