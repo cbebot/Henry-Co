@@ -864,6 +864,68 @@ export type AccountCopy = {
       body: string;
     };
   };
+  subscriptions: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      title: string;
+      description: string;
+    };
+    empty: {
+      title: string;
+      description: string;
+    };
+    card: {
+      planFallback: string;
+      tierSeparator: string;
+      amountLabel: string;
+      cycleLabel: string;
+      renewsLabel: string;
+      renewsFallback: string;
+    };
+    statusLabels: {
+      active: string;
+      paused: string;
+      cancelled: string;
+      expired: string;
+      past_due: string;
+      trialing: string;
+      grace: string;
+      pending: string;
+      unknown: string;
+    };
+    cycleLabels: {
+      monthly: string;
+      yearly: string;
+      annual: string;
+      quarterly: string;
+      weekly: string;
+      biweekly: string;
+      daily: string;
+      one_time: string;
+      notSet: string;
+    };
+    cta: {
+      upgrade: string;
+      downgrade: string;
+      cancel: string;
+      manage: string;
+      resume: string;
+    };
+    paymentIssue: {
+      title: string;
+      description: string;
+      updatePaymentCta: string;
+    };
+    summary: {
+      activeTemplate: string;
+      pausedTemplate: string;
+      totalTemplate: string;
+    };
+  };
 };
 
 const EN: AccountCopy = {
@@ -1789,6 +1851,73 @@ const EN: AccountCopy = {
       body: "Documents are encrypted at rest, visible only to you, and retained for the lifetime of your HenryCo account unless you remove them.",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "Subscriptions",
+      description:
+        "Read-only summary of active plans synced from divisions across HenryCo.",
+    },
+    hero: {
+      eyebrow: "Active plans",
+      title: "Subscriptions",
+      description:
+        "Read-only plan summary from divisions that currently sync subscription records into the shared account hub.",
+    },
+    empty: {
+      title: "No synced subscriptions yet",
+      description:
+        "This can mean you have no active plan, or that the division has not published subscription records into the shared account ledger yet.",
+    },
+    card: {
+      planFallback: "Subscription plan",
+      tierSeparator: " · ",
+      amountLabel: "Amount",
+      cycleLabel: "Cycle",
+      renewsLabel: "Renews",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "Active",
+      paused: "Paused",
+      cancelled: "Cancelled",
+      expired: "Expired",
+      past_due: "Past due",
+      trialing: "Trialing",
+      grace: "Grace period",
+      pending: "Pending",
+      unknown: "Unknown",
+    },
+    cycleLabels: {
+      monthly: "Monthly",
+      yearly: "Yearly",
+      annual: "Annual",
+      quarterly: "Quarterly",
+      weekly: "Weekly",
+      biweekly: "Every 2 weeks",
+      daily: "Daily",
+      one_time: "One-time",
+      notSet: "Not set",
+    },
+    cta: {
+      upgrade: "Upgrade plan",
+      downgrade: "Downgrade plan",
+      cancel: "Cancel subscription",
+      manage: "Manage in division",
+      resume: "Resume subscription",
+    },
+    paymentIssue: {
+      title: "Payment needs attention",
+      description:
+        "We could not collect the most recent renewal. Update your payment method to keep this subscription active.",
+      updatePaymentCta: "Update payment method",
+    },
+    summary: {
+      activeTemplate: "{count} active",
+      pausedTemplate: "{count} paused",
+      totalTemplate: "{count} plan{plural}",
+    },
+  },
+
 };
 
 const FR: DeepPartial<AccountCopy> = {
@@ -2732,6 +2861,73 @@ const FR: DeepPartial<AccountCopy> = {
       body: "Les documents sont chiffrés au repos, visibles uniquement par vous et conservés pendant toute la durée de vie de votre compte HenryCo sauf si vous les supprimez.",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "Abonnements",
+      description:
+        "Récapitulatif en lecture seule des forfaits actifs synchronisés depuis les divisions HenryCo.",
+    },
+    hero: {
+      eyebrow: "Forfaits actifs",
+      title: "Abonnements",
+      description:
+        "Récapitulatif en lecture seule des forfaits, transmis par les divisions qui synchronisent leurs abonnements vers le hub de compte partagé.",
+    },
+    empty: {
+      title: "Aucun abonnement synchronisé pour le moment",
+      description:
+        "Cela peut signifier que vous n’avez aucun forfait actif, ou que la division n’a pas encore publié ses abonnements dans le registre partagé du compte.",
+    },
+    card: {
+      planFallback: "Forfait d’abonnement",
+      tierSeparator: " · ",
+      amountLabel: "Montant",
+      cycleLabel: "Fréquence",
+      renewsLabel: "Renouvelle",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "Actif",
+      paused: "En pause",
+      cancelled: "Annulé",
+      expired: "Expiré",
+      past_due: "Échu",
+      trialing: "Période d’essai",
+      grace: "Délai de grâce",
+      pending: "En attente",
+      unknown: "Inconnu",
+    },
+    cycleLabels: {
+      monthly: "Mensuel",
+      yearly: "Annuel",
+      annual: "Annuel",
+      quarterly: "Trimestriel",
+      weekly: "Hebdomadaire",
+      biweekly: "Toutes les 2 semaines",
+      daily: "Quotidien",
+      one_time: "Paiement unique",
+      notSet: "Non défini",
+    },
+    cta: {
+      upgrade: "Passer à un forfait supérieur",
+      downgrade: "Passer à un forfait inférieur",
+      cancel: "Annuler l’abonnement",
+      manage: "Gérer dans la division",
+      resume: "Reprendre l’abonnement",
+    },
+    paymentIssue: {
+      title: "Paiement à régulariser",
+      description:
+        "Nous n’avons pas pu prélever le dernier renouvellement. Mettez à jour votre moyen de paiement pour garder cet abonnement actif.",
+      updatePaymentCta: "Mettre à jour le moyen de paiement",
+    },
+    summary: {
+      activeTemplate: "{count} actif·s",
+      pausedTemplate: "{count} en pause",
+      totalTemplate: "{count} forfait·s",
+    },
+  },
+
 };
 
 const DE: DeepPartial<AccountCopy> = {
@@ -3607,6 +3803,73 @@ const DE: DeepPartial<AccountCopy> = {
       body: "Dokumente werden ruhend verschlüsselt, sind nur für Sie sichtbar und bleiben für die Laufzeit Ihres HenryCo-Kontos erhalten, sofern Sie sie nicht entfernen.",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "Abonnements",
+      description:
+        "Schreibgeschützte Übersicht aller aktiven Pläne, synchronisiert aus den HenryCo-Bereichen.",
+    },
+    hero: {
+      eyebrow: "Aktive Pläne",
+      title: "Abonnements",
+      description:
+        "Schreibgeschützte Plan-Übersicht aus den Bereichen, die ihre Abonnements derzeit in den gemeinsamen Konto-Hub synchronisieren.",
+    },
+    empty: {
+      title: "Noch keine synchronisierten Abonnements",
+      description:
+        "Das kann bedeuten, dass Sie keinen aktiven Plan haben oder dass der Bereich seine Abonnements noch nicht in das gemeinsame Konto-Register übertragen hat.",
+    },
+    card: {
+      planFallback: "Abonnement-Plan",
+      tierSeparator: " · ",
+      amountLabel: "Betrag",
+      cycleLabel: "Zyklus",
+      renewsLabel: "Erneuert",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "Aktiv",
+      paused: "Pausiert",
+      cancelled: "Gekündigt",
+      expired: "Abgelaufen",
+      past_due: "Überfällig",
+      trialing: "Testphase",
+      grace: "Kulanzfrist",
+      pending: "Ausstehend",
+      unknown: "Unbekannt",
+    },
+    cycleLabels: {
+      monthly: "Monatlich",
+      yearly: "Jährlich",
+      annual: "Jährlich",
+      quarterly: "Vierteljährlich",
+      weekly: "Wöchentlich",
+      biweekly: "Alle 2 Wochen",
+      daily: "Täglich",
+      one_time: "Einmalig",
+      notSet: "Nicht festgelegt",
+    },
+    cta: {
+      upgrade: "Plan upgraden",
+      downgrade: "Plan herabstufen",
+      cancel: "Abonnement kündigen",
+      manage: "Im Bereich verwalten",
+      resume: "Abonnement fortsetzen",
+    },
+    paymentIssue: {
+      title: "Zahlung erfordert Aufmerksamkeit",
+      description:
+        "Die letzte Verlängerung konnte nicht eingezogen werden. Aktualisieren Sie Ihre Zahlungsmethode, um dieses Abonnement aktiv zu halten.",
+      updatePaymentCta: "Zahlungsmethode aktualisieren",
+    },
+    summary: {
+      activeTemplate: "{count} aktiv",
+      pausedTemplate: "{count} pausiert",
+      totalTemplate: "{count} Plan{plural}",
+    },
+  },
+
 };
 
 const IT: DeepPartial<AccountCopy> = {
@@ -4484,6 +4747,73 @@ const IT: DeepPartial<AccountCopy> = {
       body: "I documenti sono cifrati a riposo, visibili solo a te e conservati per tutta la durata del tuo account HenryCo, salvo eliminazione.",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "Abbonamenti",
+      description:
+        "Riepilogo in sola lettura dei piani attivi sincronizzati dalle divisioni HenryCo.",
+    },
+    hero: {
+      eyebrow: "Piani attivi",
+      title: "Abbonamenti",
+      description:
+        "Riepilogo in sola lettura dei piani, fornito dalle divisioni che attualmente sincronizzano i propri abbonamenti nell’hub di account condiviso.",
+    },
+    empty: {
+      title: "Nessun abbonamento sincronizzato",
+      description:
+        "Potrebbe significare che non hai piani attivi, oppure che la divisione non ha ancora pubblicato i propri abbonamenti nel registro condiviso del tuo account.",
+    },
+    card: {
+      planFallback: "Piano di abbonamento",
+      tierSeparator: " · ",
+      amountLabel: "Importo",
+      cycleLabel: "Ciclo",
+      renewsLabel: "Rinnova",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "Attivo",
+      paused: "In pausa",
+      cancelled: "Annullato",
+      expired: "Scaduto",
+      past_due: "Insoluto",
+      trialing: "In prova",
+      grace: "Periodo di tolleranza",
+      pending: "In attesa",
+      unknown: "Sconosciuto",
+    },
+    cycleLabels: {
+      monthly: "Mensile",
+      yearly: "Annuale",
+      annual: "Annuale",
+      quarterly: "Trimestrale",
+      weekly: "Settimanale",
+      biweekly: "Ogni 2 settimane",
+      daily: "Quotidiano",
+      one_time: "Una tantum",
+      notSet: "Non impostato",
+    },
+    cta: {
+      upgrade: "Passa a un piano superiore",
+      downgrade: "Passa a un piano inferiore",
+      cancel: "Annulla abbonamento",
+      manage: "Gestisci nella divisione",
+      resume: "Riprendi abbonamento",
+    },
+    paymentIssue: {
+      title: "Pagamento da sistemare",
+      description:
+        "Non siamo riusciti a incassare l’ultimo rinnovo. Aggiorna il metodo di pagamento per mantenere attivo l’abbonamento.",
+      updatePaymentCta: "Aggiorna metodo di pagamento",
+    },
+    summary: {
+      activeTemplate: "{count} attivo·i",
+      pausedTemplate: "{count} in pausa",
+      totalTemplate: "{count} piano·i",
+    },
+  },
+
 };
 
 const IG: DeepPartial<AccountCopy> = {
@@ -5363,6 +5693,73 @@ const IG: DeepPartial<AccountCopy> = {
       body: "A na-ezo akwụkwọ niile mgbe ezubeghị ọrụ, naanị gị ka ọ na-egosi, anyị na-edebe ha ruo mgbe akaụntụ HenryCo gị dị ndụ ma ọ bụrụ na i wepụghị ha.",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "Ndenye aha",
+      description:
+        "Nchịkọta naanị-agụ nke atụmatụ na-arụ ọrụ, ndị si na ngalaba HenryCo dị iche iche bịa.",
+    },
+    hero: {
+      eyebrow: "Atụmatụ na-arụ ọrụ",
+      title: "Ndenye aha",
+      description:
+        "Nchịkọta naanị-agụ nke atụmatụ, sitere na ngalaba ndị na-ezite ndenye aha ha n’ime ebe nchịkọta akaụntụ ahụ.",
+    },
+    empty: {
+      title: "Enwebeghi ndenye aha echekwara",
+      description:
+        "Nke a nwere ike pụta na i nweghị atụmatụ na-arụ ọrụ, ma ọ bụ na ngalaba ahụ ebipụtabeghị ndenye aha ya n’ime ebe nchịkọta akaụntụ.",
+    },
+    card: {
+      planFallback: "Atụmatụ ndenye aha",
+      tierSeparator: " · ",
+      amountLabel: "Ego",
+      cycleLabel: "Mgbe ọ bụla",
+      renewsLabel: "Ọ ga-emelite",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "Na-arụ ọrụ",
+      paused: "Akwụsịtụrụ",
+      cancelled: "Akagbuola",
+      expired: "Agwụla",
+      past_due: "Kwesịrị ịkwụ ụgwọ",
+      trialing: "N’oge ọnwale",
+      grace: "Oge amara",
+      pending: "Na-eche",
+      unknown: "Amaghị",
+    },
+    cycleLabels: {
+      monthly: "Kwa ọnwa",
+      yearly: "Kwa afọ",
+      annual: "Kwa afọ",
+      quarterly: "Kwa ọnwa atọ",
+      weekly: "Kwa izu",
+      biweekly: "Kwa izu abụọ",
+      daily: "Kwa ụbọchị",
+      one_time: "Otu mgbe",
+      notSet: "Edobeghị",
+    },
+    cta: {
+      upgrade: "Bulie atụmatụ",
+      downgrade: "Wedata atụmatụ",
+      cancel: "Kagbuo ndenye aha",
+      manage: "Jikwaa na ngalaba",
+      resume: "Maliteghachi ndenye aha",
+    },
+    paymentIssue: {
+      title: "Ịkwụ ụgwọ chọrọ nlebara anya",
+      description:
+        "Anyị enweghị ike ịnata mmelite ikpeazụ ahụ. Melite ụzọ ịkwụ ụgwọ gị iji mee ka ndenye aha a nọgide na-arụ ọrụ.",
+      updatePaymentCta: "Melite ụzọ ịkwụ ụgwọ",
+    },
+    summary: {
+      activeTemplate: "{count} na-arụ ọrụ",
+      pausedTemplate: "{count} kwụsịtụrụ",
+      totalTemplate: "{count} atụmatụ",
+    },
+  },
+
 };
 
 const YO: DeepPartial<AccountCopy> = {
@@ -6242,6 +6639,73 @@ const YO: DeepPartial<AccountCopy> = {
       body: "A fi àwọn àkọsílẹ̀ pamọ́ pẹ̀lú ààbò, ìwọ nìkan ló lè rí wọn, a ó sì tọ́jú wọn ní gbogbo àkókò tí àkáǹtì HenryCo rẹ bá wà, àyàfi tí o bá yọ wọn kúrò.",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "Àwọn ìforúkọsílẹ̀",
+      description:
+        "Àkójọpọ̀ kíkà-nìkan ti àwọn ètò tí ó ń ṣiṣẹ́, tí a kó wá láti àwọn ìpín HenryCo.",
+    },
+    hero: {
+      eyebrow: "Àwọn ètò tí ó ń ṣiṣẹ́",
+      title: "Àwọn ìforúkọsílẹ̀",
+      description:
+        "Àkójọpọ̀ kíkà-nìkan ti àwọn ètò, láti ọ̀dọ̀ àwọn ìpín tí ń kó àwọn ìforúkọsílẹ̀ wọn sí ibùdó àkáǹtì pínpín lọ́wọ́lọ́wọ́.",
+    },
+    empty: {
+      title: "Kò sí ìforúkọsílẹ̀ tí a kó síbẹ̀",
+      description:
+        "Èyí lè túmọ̀ sí pé o kò ní ètò tí ó ń ṣiṣẹ́, tàbí pé ìpín náà kò tíì gbé àwọn ìforúkọsílẹ̀ rẹ̀ jáde sí ìwé àkáǹtì pínpín.",
+    },
+    card: {
+      planFallback: "Ètò ìforúkọsílẹ̀",
+      tierSeparator: " · ",
+      amountLabel: "Iye owó",
+      cycleLabel: "Yíyípo",
+      renewsLabel: "Yóò túnṣe",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "Ń ṣiṣẹ́",
+      paused: "Ti dúró",
+      cancelled: "Ti fagilé",
+      expired: "Ti parí",
+      past_due: "Ó ti pẹ́ jù",
+      trialing: "Ní àkókò ìdánwò",
+      grace: "Àkókò àánú",
+      pending: "Ń dúró",
+      unknown: "Aimọ̀",
+    },
+    cycleLabels: {
+      monthly: "Lóṣooṣù",
+      yearly: "Lódoodún",
+      annual: "Lódoodún",
+      quarterly: "Ní gbogbo oṣù mẹ́ta",
+      weekly: "Lọ́sọ̀sẹ̀",
+      biweekly: "Ní gbogbo ọ̀sẹ̀ méjì",
+      daily: "Lójoojúmọ́",
+      one_time: "Ẹyọkan",
+      notSet: "Kò ṣetán",
+    },
+    cta: {
+      upgrade: "Gbé ètò sókè",
+      downgrade: "Sọ ètò sílẹ̀",
+      cancel: "Fagilé ìforúkọsílẹ̀",
+      manage: "Ṣàkóso nínú ìpín",
+      resume: "Tún ìforúkọsílẹ̀ bẹ̀rẹ̀",
+    },
+    paymentIssue: {
+      title: "Ìsanwó nílò àfiyèsí",
+      description:
+        "A kò lè kó ìsanwó ìtúnṣe tuntun. Sọ ọ̀nà ìsanwó rẹ di tuntun láti pa ìforúkọsílẹ̀ yìí mọ́ tí ń ṣiṣẹ́.",
+      updatePaymentCta: "Sọ ọ̀nà ìsanwó di tuntun",
+    },
+    summary: {
+      activeTemplate: "{count} ń ṣiṣẹ́",
+      pausedTemplate: "{count} ti dúró",
+      totalTemplate: "{count} ètò",
+    },
+  },
+
 };
 
 const HA: DeepPartial<AccountCopy> = {
@@ -7121,6 +7585,73 @@ const HA: DeepPartial<AccountCopy> = {
       body: "Ana ɓoye takardu yayin da suke ajiye, kai kaɗai za ka iya ganinsu, kuma za mu ajiye su yayin da asusunka na HenryCo yake aiki sai dai idan ka cire su.",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "Rajistar biyan kuɗi",
+      description:
+        "Taƙaitaccen karatu-kawai na tsare-tsaren da ke aiki, da aka kawo daga sassan HenryCo.",
+    },
+    hero: {
+      eyebrow: "Tsare-tsaren da ke aiki",
+      title: "Rajistar biyan kuɗi",
+      description:
+        "Taƙaitaccen tsare-tsare na karatu-kawai daga sassan da a halin yanzu suke daidaita bayanan rajistar biyan kuɗinsu zuwa cibiyar asusu mai raba.",
+    },
+    empty: {
+      title: "Babu rajistar biyan kuɗi da aka daidaita tukuna",
+      description:
+        "Wannan na iya nufin ba ka da wani tsari mai aiki, ko kuma sashen bai riga ya buga bayanan rajistar biyan kuɗinsa a cikin rikodin asusu mai raba ba.",
+    },
+    card: {
+      planFallback: "Tsarin rajista",
+      tierSeparator: " · ",
+      amountLabel: "Adadi",
+      cycleLabel: "Zagaye",
+      renewsLabel: "Za a sabunta",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "Mai aiki",
+      paused: "An dakatar",
+      cancelled: "An soke",
+      expired: "Ya ƙare",
+      past_due: "Ya wuce lokacin biya",
+      trialing: "A cikin gwaji",
+      grace: "Lokacin alheri",
+      pending: "Yana jira",
+      unknown: "Ba a sani ba",
+    },
+    cycleLabels: {
+      monthly: "Kowane wata",
+      yearly: "Kowace shekara",
+      annual: "Na shekara",
+      quarterly: "Kowane wata uku",
+      weekly: "Kowace mako",
+      biweekly: "Kowane mako biyu",
+      daily: "Kowace rana",
+      one_time: "Sau ɗaya",
+      notSet: "Ba a saita ba",
+    },
+    cta: {
+      upgrade: "Haɓaka tsari",
+      downgrade: "Saukar da tsari",
+      cancel: "Soke rajista",
+      manage: "Sarrafa a sashe",
+      resume: "Ci gaba da rajista",
+    },
+    paymentIssue: {
+      title: "Biyan kuɗi yana buƙatar kulawa",
+      description:
+        "Ba mu iya karɓar sabuntawar baya-bayan nan ba. Sabunta hanyar biyan kuɗinka don kiyaye wannan rajistar a aiki.",
+      updatePaymentCta: "Sabunta hanyar biyan kuɗi",
+    },
+    summary: {
+      activeTemplate: "{count} mai aiki",
+      pausedTemplate: "{count} a dakatarwa",
+      totalTemplate: "{count} tsari",
+    },
+  },
+
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -7992,6 +8523,73 @@ const ZH: DeepPartial<AccountCopy> = {
       body: "文档在静态时加密,仅您可见,且在 HenryCo 账户存续期间一直保留,除非您将其删除。",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "订阅",
+      description:
+        "来自各 HenryCo 部门、已同步至共享账户中心的活动订阅的只读摘要。",
+    },
+    hero: {
+      eyebrow: "活动订阅",
+      title: "订阅",
+      description:
+        "只读的订阅摘要，来自当前将订阅记录同步至共享账户中心的各个部门。",
+    },
+    empty: {
+      title: "暂无已同步的订阅",
+      description:
+        "这可能表示您没有任何活动套餐，或该部门尚未将其订阅记录发布到共享账户账本中。",
+    },
+    card: {
+      planFallback: "订阅套餐",
+      tierSeparator: " · ",
+      amountLabel: "金额",
+      cycleLabel: "周期",
+      renewsLabel: "续订",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "活动中",
+      paused: "已暂停",
+      cancelled: "已取消",
+      expired: "已过期",
+      past_due: "已逾期",
+      trialing: "试用中",
+      grace: "宽限期",
+      pending: "待处理",
+      unknown: "未知",
+    },
+    cycleLabels: {
+      monthly: "每月",
+      yearly: "每年",
+      annual: "年度",
+      quarterly: "每季度",
+      weekly: "每周",
+      biweekly: "每两周",
+      daily: "每天",
+      one_time: "一次性",
+      notSet: "未设置",
+    },
+    cta: {
+      upgrade: "升级套餐",
+      downgrade: "降级套餐",
+      cancel: "取消订阅",
+      manage: "在所属部门管理",
+      resume: "恢复订阅",
+    },
+    paymentIssue: {
+      title: "支付需要处理",
+      description:
+        "我们未能扣款最近一次续订。请更新您的支付方式以保持此订阅处于活动状态。",
+      updatePaymentCta: "更新支付方式",
+    },
+    summary: {
+      activeTemplate: "{count} 项活动中",
+      pausedTemplate: "{count} 项已暂停",
+      totalTemplate: "{count} 项套餐",
+    },
+  },
+
 };
 
 const HI: DeepPartial<AccountCopy> = {
@@ -8870,6 +9468,73 @@ const HI: DeepPartial<AccountCopy> = {
       body: "दस्तावेज़ विश्राम में एन्क्रिप्ट किए जाते हैं, केवल आपको दिखाई देते हैं और जब तक आप उन्हें न हटाएँ, आपके HenryCo खाते के पूरे जीवनकाल तक संग्रहीत रहते हैं।",
     },
   },
+  subscriptions: {
+    metadata: {
+      title: "सदस्यताएँ",
+      description:
+        "साझा खाता हब में सिंक की गई सक्रिय योजनाओं का केवल-पठन सारांश, HenryCo की विभिन्न डिवीज़न से।",
+    },
+    hero: {
+      eyebrow: "सक्रिय योजनाएँ",
+      title: "सदस्यताएँ",
+      description:
+        "उन डिवीज़न से योजनाओं का केवल-पठन सारांश, जो वर्तमान में अपनी सदस्यता रिकॉर्ड साझा खाता हब में सिंक कर रही हैं।",
+    },
+    empty: {
+      title: "अभी तक कोई सिंक की गई सदस्यता नहीं",
+      description:
+        "इसका मतलब हो सकता है कि आपके पास कोई सक्रिय योजना नहीं है, या उस डिवीज़न ने अभी तक सदस्यता रिकॉर्ड साझा खाता बहीखाते में प्रकाशित नहीं किए हैं।",
+    },
+    card: {
+      planFallback: "सदस्यता योजना",
+      tierSeparator: " · ",
+      amountLabel: "राशि",
+      cycleLabel: "चक्र",
+      renewsLabel: "नवीनीकरण",
+      renewsFallback: "—",
+    },
+    statusLabels: {
+      active: "सक्रिय",
+      paused: "रोकी गई",
+      cancelled: "रद्द",
+      expired: "समाप्त",
+      past_due: "बकाया",
+      trialing: "ट्रायल में",
+      grace: "ग्रेस अवधि",
+      pending: "लंबित",
+      unknown: "अज्ञात",
+    },
+    cycleLabels: {
+      monthly: "मासिक",
+      yearly: "वार्षिक",
+      annual: "वार्षिक",
+      quarterly: "त्रैमासिक",
+      weekly: "साप्ताहिक",
+      biweekly: "हर 2 सप्ताह",
+      daily: "दैनिक",
+      one_time: "एक बार",
+      notSet: "सेट नहीं",
+    },
+    cta: {
+      upgrade: "योजना अपग्रेड करें",
+      downgrade: "योजना डाउनग्रेड करें",
+      cancel: "सदस्यता रद्द करें",
+      manage: "डिवीज़न में प्रबंधित करें",
+      resume: "सदस्यता फिर से शुरू करें",
+    },
+    paymentIssue: {
+      title: "भुगतान पर ध्यान दें",
+      description:
+        "हम हाल का नवीनीकरण भुगतान एकत्र नहीं कर सके। इस सदस्यता को सक्रिय रखने के लिए अपनी भुगतान विधि अपडेट करें।",
+      updatePaymentCta: "भुगतान विधि अपडेट करें",
+    },
+    summary: {
+      activeTemplate: "{count} सक्रिय",
+      pausedTemplate: "{count} रोकी गई",
+      totalTemplate: "{count} योजना{plural}",
+    },
+  },
+
 };
 
 const LOCALE_OVERRIDES: Partial<Record<AppLocale, DeepPartial<AccountCopy>>> = {

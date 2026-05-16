@@ -860,6 +860,68 @@ export const ACCOUNT_COPY_ES = {
       "title": "Tus archivos siguen siendo privados",
       "body": "Los documentos se cifran en reposo, solo tú los ves y se conservan durante toda la vida de tu cuenta HenryCo a menos que los elimines."
     }
+  },
+  "subscriptions": {
+    "metadata": {
+      "title": "Suscripciones",
+      "description": "Resumen en solo lectura de los planes activos sincronizados desde las divisiones HenryCo."
+    },
+    "hero": {
+      "eyebrow": "Planes activos",
+      "title": "Suscripciones",
+      "description": "Resumen de planes en solo lectura desde las divisiones que sincronizan actualmente sus suscripciones con el centro de cuenta compartido."
+    },
+    "empty": {
+      "title": "Aún no hay suscripciones sincronizadas",
+      "description": "Esto puede significar que no tienes ningún plan activo, o que la división aún no ha publicado sus suscripciones en el libro mayor compartido de tu cuenta."
+    },
+    "card": {
+      "planFallback": "Plan de suscripción",
+      "tierSeparator": " · ",
+      "amountLabel": "Importe",
+      "cycleLabel": "Ciclo",
+      "renewsLabel": "Se renueva",
+      "renewsFallback": "—"
+    },
+    "statusLabels": {
+      "active": "Activo",
+      "paused": "En pausa",
+      "cancelled": "Cancelado",
+      "expired": "Caducado",
+      "past_due": "Vencido",
+      "trialing": "En prueba",
+      "grace": "Periodo de gracia",
+      "pending": "Pendiente",
+      "unknown": "Desconocido"
+    },
+    "cycleLabels": {
+      "monthly": "Mensual",
+      "yearly": "Anual",
+      "annual": "Anual",
+      "quarterly": "Trimestral",
+      "weekly": "Semanal",
+      "biweekly": "Cada 2 semanas",
+      "daily": "Diario",
+      "one_time": "Único pago",
+      "notSet": "Sin definir"
+    },
+    "cta": {
+      "upgrade": "Mejorar plan",
+      "downgrade": "Bajar de plan",
+      "cancel": "Cancelar suscripción",
+      "manage": "Gestionar en la división",
+      "resume": "Reanudar suscripción"
+    },
+    "paymentIssue": {
+      "title": "El pago necesita atención",
+      "description": "No pudimos cobrar la última renovación. Actualiza tu método de pago para mantener esta suscripción activa.",
+      "updatePaymentCta": "Actualizar método de pago"
+    },
+    "summary": {
+      "activeTemplate": "{count} activa·s",
+      "pausedTemplate": "{count} en pausa",
+      "totalTemplate": "{count} plan{plural}"
+    }
   }
 };
 
@@ -1722,6 +1784,68 @@ export const ACCOUNT_COPY_PT = {
       "title": "Seus arquivos permanecem privados",
       "body": "Os documentos são criptografados em repouso, visíveis apenas para você e mantidos por toda a vida útil da sua conta HenryCo, a menos que você os remova."
     }
+  },
+  "subscriptions": {
+    "metadata": {
+      "title": "Assinaturas",
+      "description": "Resumo somente leitura dos planos ativos sincronizados a partir das divisões HenryCo."
+    },
+    "hero": {
+      "eyebrow": "Planos ativos",
+      "title": "Assinaturas",
+      "description": "Resumo somente leitura dos planos, vindos das divisões que atualmente sincronizam suas assinaturas com a central de conta compartilhada."
+    },
+    "empty": {
+      "title": "Ainda não há assinaturas sincronizadas",
+      "description": "Isso pode significar que você não tem nenhum plano ativo, ou que a divisão ainda não publicou suas assinaturas no livro-razão compartilhado da conta."
+    },
+    "card": {
+      "planFallback": "Plano de assinatura",
+      "tierSeparator": " · ",
+      "amountLabel": "Valor",
+      "cycleLabel": "Ciclo",
+      "renewsLabel": "Renova",
+      "renewsFallback": "—"
+    },
+    "statusLabels": {
+      "active": "Ativa",
+      "paused": "Pausada",
+      "cancelled": "Cancelada",
+      "expired": "Expirada",
+      "past_due": "Em atraso",
+      "trialing": "Em avaliação",
+      "grace": "Período de tolerância",
+      "pending": "Pendente",
+      "unknown": "Desconhecido"
+    },
+    "cycleLabels": {
+      "monthly": "Mensal",
+      "yearly": "Anual",
+      "annual": "Anual",
+      "quarterly": "Trimestral",
+      "weekly": "Semanal",
+      "biweekly": "A cada 2 semanas",
+      "daily": "Diário",
+      "one_time": "Pagamento único",
+      "notSet": "Não definido"
+    },
+    "cta": {
+      "upgrade": "Fazer upgrade do plano",
+      "downgrade": "Reduzir plano",
+      "cancel": "Cancelar assinatura",
+      "manage": "Gerenciar na divisão",
+      "resume": "Retomar assinatura"
+    },
+    "paymentIssue": {
+      "title": "Pagamento precisa de atenção",
+      "description": "Não conseguimos cobrar a última renovação. Atualize o método de pagamento para manter esta assinatura ativa.",
+      "updatePaymentCta": "Atualizar método de pagamento"
+    },
+    "summary": {
+      "activeTemplate": "{count} ativa·s",
+      "pausedTemplate": "{count} pausada·s",
+      "totalTemplate": "{count} plano·s"
+    }
   }
 };
 
@@ -2583,6 +2707,68 @@ export const ACCOUNT_COPY_AR = {
       "eyebrow": "الخصوصية والاحتفاظ",
       "title": "تبقى ملفاتك خاصة",
       "body": "تُشفَّر المستندات أثناء التخزين، ولا يراها سواك، وتُحفظ طوال مدة حسابك في HenryCo ما لم تقم بإزالتها."
+    }
+  },
+  "subscriptions": {
+    "metadata": {
+      "title": "الاشتراكات",
+      "description": "ملخّص للقراءة فقط للخطط النشطة التي تُزامَن من مختلف أقسام HenryCo."
+    },
+    "hero": {
+      "eyebrow": "الخطط النشطة",
+      "title": "الاشتراكات",
+      "description": "ملخّص للقراءة فقط للخطط من الأقسام التي تُزامِن حاليًا سجلات اشتراكاتها مع مركز الحساب المشترك."
+    },
+    "empty": {
+      "title": "لا توجد اشتراكات مُزامَنة بعد",
+      "description": "قد يعني ذلك أنه ليست لديك خطة نشطة، أو أن القسم لم ينشر بعد سجلات اشتراكاته في دفتر الحساب المشترك."
+    },
+    "card": {
+      "planFallback": "خطة اشتراك",
+      "tierSeparator": " · ",
+      "amountLabel": "المبلغ",
+      "cycleLabel": "الدورة",
+      "renewsLabel": "تجديد في",
+      "renewsFallback": "—"
+    },
+    "statusLabels": {
+      "active": "نشط",
+      "paused": "متوقّف مؤقّتًا",
+      "cancelled": "ملغى",
+      "expired": "منتهٍ",
+      "past_due": "متأخّر السداد",
+      "trialing": "تجريبي",
+      "grace": "فترة سماح",
+      "pending": "قيد الانتظار",
+      "unknown": "غير معروف"
+    },
+    "cycleLabels": {
+      "monthly": "شهري",
+      "yearly": "سنوي",
+      "annual": "سنوي",
+      "quarterly": "ربع سنوي",
+      "weekly": "أسبوعي",
+      "biweekly": "كل أسبوعين",
+      "daily": "يومي",
+      "one_time": "دفعة واحدة",
+      "notSet": "غير مُحدَّد"
+    },
+    "cta": {
+      "upgrade": "ترقية الخطة",
+      "downgrade": "خفض الخطة",
+      "cancel": "إلغاء الاشتراك",
+      "manage": "إدارة في القسم",
+      "resume": "استئناف الاشتراك"
+    },
+    "paymentIssue": {
+      "title": "الدفع يحتاج إلى انتباه",
+      "description": "تعذّر علينا تحصيل التجديد الأخير. حدِّث وسيلة الدفع للحفاظ على هذا الاشتراك نشطًا.",
+      "updatePaymentCta": "تحديث وسيلة الدفع"
+    },
+    "summary": {
+      "activeTemplate": "{count} نشط",
+      "pausedTemplate": "{count} متوقّف",
+      "totalTemplate": "{count} خطة"
     }
   }
 };
