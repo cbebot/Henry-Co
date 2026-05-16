@@ -1847,6 +1847,130 @@ export const ACCOUNT_COPY_ES = {
       "listAriaLabel": "Actividad Studio",
       "rowAriaLabelTemplate": "{title} · {stamp}"
     }
+  },
+  "divisionLogistics": {
+    "metadata": {
+      "title": "Logística · entregas y envíos",
+      "description": "Cada recogida, entrega, ETA y prueba de entrega de HenryCo Logistics vinculados a esta cuenta — reflejados desde la red logística en una sola sala tranquila."
+    },
+    "hero": {
+      "ariaLabel": "Resumen de logística",
+      "eyebrow": "HenryCo Logística",
+      "brand": "HenryCo Logística",
+      "title": "Cada paquete, una sola sala.",
+      "body": "Recogidas, entregas, ETA y pruebas de entrega: todo reflejado desde la red logística en tu cuenta. Reserva una vez en",
+      "bodyDomain": " logistics.henrycogroup.com",
+      "ctaNewDelivery": "Nueva entrega"
+    },
+    "metrics": {
+      "ariaLabel": "Rendimiento logístico",
+      "activeNowLabel": "Activas ahora",
+      "activeFootSingular": "envío en ruta",
+      "activeFootPlural": "envíos en ruta",
+      "deliveredMonthLabel": "Entregadas · este mes",
+      "deliveredMonthFootTemplate": "{count} totales",
+      "onTimeRateLabel": "Tasa de puntualidad",
+      "onTimeRateFootEmpty": "Esperando tu primera entrega programada",
+      "onTimeRateFootHasValue": "De las entregas programadas",
+      "totalSpendLabel": "Gasto total",
+      "totalSpendFoot": "Pagado de por vida"
+    },
+    "map": {
+      "noShipmentsAriaLabel": "Aún no hay envíos",
+      "noShipmentsTitle": "Tu mapa se encenderá cuando reserves tu primera entrega",
+      "noShipmentsBody": "Cada recogida y entrega activa se fija aquí automáticamente. Reserva una vez y tus envíos se reflejan desde el sitio logístico.",
+      "noShipmentsCta": "Reservar entrega",
+      "pendingAriaLabel": "Vista previa del mapa",
+      "pendingTitle": "Geocodificación en curso",
+      "pendingBody": "Tus envíos activos se fijarán al mapa en cuanto las direcciones de recogida y entrega sean geocodificadas por el centro de despacho.",
+      "activeAriaLabel": "Mapa de envíos activos",
+      "altTemplateSingular": "Mapa con {count} marcador activo de recogida y entrega",
+      "altTemplatePlural": "Mapa con {count} marcadores activos de recogida y entrega",
+      "liveBadgeTemplateSingular": "En vivo · {count} envío activo",
+      "liveBadgeTemplatePlural": "En vivo · {count} envíos activos"
+    },
+    "sections": {
+      "activeTitle": "En ruta ahora",
+      "activeMetaTemplate": "{count} activas · sincronización automática desde logística",
+      "activeRailAriaLabel": "Envíos activos",
+      "emptyAriaLabel": "Sin envíos activos",
+      "emptyTitle": "Sin envíos activos",
+      "emptyBody": "Tus entregas pasadas están abajo. Reserva otra y aparecerá aquí en cuanto el repartidor confirme la recogida.",
+      "actionsTitle": "Lanzar una entrega",
+      "actionsMeta": "Atajos para flujos comunes",
+      "actionsAriaLabel": "Acciones rápidas de logística",
+      "recentTitle": "Entregadas recientemente",
+      "recentMetaTemplate": "Últimas {recent} de {lifetime} totales",
+      "recentAriaLabel": "Entregas recientes",
+      "spendTitle": "Gasto · últimos 6 meses",
+      "spendMeta": "Solo pagado",
+      "spendFigureAriaLabelTemplate": "Gasto logístico de los últimos 6 meses"
+    },
+    "statusLabels": {
+      "quoteRequested": "Cotización pendiente",
+      "quoteSent": "Cotización lista",
+      "pendingPayment": "Pago pendiente",
+      "scheduled": "Programada",
+      "assigned": "Repartidor asignado",
+      "pickupConfirmed": "Recogida",
+      "inTransit": "En tránsito",
+      "delayed": "Retrasada",
+      "attemptedDelivery": "Intento de entrega",
+      "delivered": "Entregada",
+      "completed": "Completada",
+      "closed": "Cerrada",
+      "cancelled": "Cancelada",
+      "refunded": "Reembolsada"
+    },
+    "urgencyLabels": {
+      "standard": "Estándar",
+      "sameDay": "El mismo día",
+      "express": "Express",
+      "nextDay": "Día siguiente"
+    },
+    "serviceLabels": {
+      "scheduled": "Programado",
+      "sameDay": "El mismo día",
+      "interCity": "Interurbano",
+      "bulk": "Granel"
+    },
+    "shipment": {
+      "trackingCodeAriaTemplate": "Código de seguimiento {code}",
+      "addressPending": "Dirección pendiente",
+      "etaPending": "ETA pendiente",
+      "trackCta": "Seguir envío",
+      "openTrackingAriaTemplate": "Abrir seguimiento de {code}",
+      "etaAriaTemplate": "ETA {eta}",
+      "etaMinutesInTemplate": "en {minutes} min",
+      "etaMinutesOverdueTemplate": "{minutes} min de retraso",
+      "etaHoursInTemplate": "en {hours} h",
+      "etaHoursOverdueTemplate": "{hours} h de retraso",
+      "detailSeparator": " · "
+    },
+    "timeline": {
+      "ariaLabel": "Entregas recientes",
+      "deliveredToTemplate": "Entregado a {name}",
+      "receiptCta": "Recibo"
+    },
+    "quickActions": {
+      "ariaLabel": "Acciones rápidas de logística",
+      "bookLabel": "Reservar entrega",
+      "bookDesc": "Recogida y entrega en un único flujo guiado.",
+      "trackLabel": "Seguir por código",
+      "trackDesc": "Estado en vivo, ETA y contexto del repartidor.",
+      "quoteLabel": "Primero, cotizar",
+      "quoteDesc": "Precio indicativo antes de comprometerte.",
+      "addressesLabel": "Direcciones guardadas",
+      "addressesDesc": "Contactos de recogida y entrega.",
+      "invoicesLabel": "Recibos y facturas",
+      "invoicesDesc": "PDFs con marca para cada envío.",
+      "supportLabel": "Soporte de logística",
+      "supportDesc": "Abrir una conversación etiquetada a tu cuenta."
+    },
+    "spend": {
+      "figureAriaLabel": "Gasto logístico de los últimos 6 meses",
+      "emptyTick": "—"
+    }
   }
 
 };
@@ -3697,6 +3821,130 @@ export const ACCOUNT_COPY_PT = {
       "listAriaLabel": "Atividade Studio",
       "rowAriaLabelTemplate": "{title} · {stamp}"
     }
+  },
+  "divisionLogistics": {
+    "metadata": {
+      "title": "Logística · entregas e envios",
+      "description": "Cada recolha, entrega, ETA e prova de entrega da HenryCo Logistics ligada a esta conta — espelhados da rede logística numa única sala calma."
+    },
+    "hero": {
+      "ariaLabel": "Visão geral de logística",
+      "eyebrow": "HenryCo Logística",
+      "brand": "HenryCo Logística",
+      "title": "Cada encomenda, uma sala.",
+      "body": "Recolhas, entregas, ETA e provas de entrega — tudo espelhado da rede logística para a sua conta. Reserve uma vez em",
+      "bodyDomain": " logistics.henrycogroup.com",
+      "ctaNewDelivery": "Nova entrega"
+    },
+    "metrics": {
+      "ariaLabel": "Desempenho logístico",
+      "activeNowLabel": "Ativas agora",
+      "activeFootSingular": "envio em rota",
+      "activeFootPlural": "envios em rota",
+      "deliveredMonthLabel": "Entregues · este mês",
+      "deliveredMonthFootTemplate": "{count} totais",
+      "onTimeRateLabel": "Taxa de pontualidade",
+      "onTimeRateFootEmpty": "À espera da primeira entrega programada",
+      "onTimeRateFootHasValue": "Das entregas programadas",
+      "totalSpendLabel": "Gasto total",
+      "totalSpendFoot": "Pago em toda a vida"
+    },
+    "map": {
+      "noShipmentsAriaLabel": "Ainda sem envios",
+      "noShipmentsTitle": "O seu mapa acenderá quando reservar a primeira entrega",
+      "noShipmentsBody": "Cada recolha e entrega ativa fixa-se aqui automaticamente. Reserve uma vez e os seus envios espelham-se do site logístico.",
+      "noShipmentsCta": "Reservar entrega",
+      "pendingAriaLabel": "Pré-visualização do mapa",
+      "pendingTitle": "Geocodificação em curso",
+      "pendingBody": "Os seus envios ativos serão fixados no mapa assim que os endereços de recolha e entrega forem geocodificados pelo despacho.",
+      "activeAriaLabel": "Mapa de envios ativos",
+      "altTemplateSingular": "Mapa com {count} marcador ativo de recolha e entrega",
+      "altTemplatePlural": "Mapa com {count} marcadores ativos de recolha e entrega",
+      "liveBadgeTemplateSingular": "Em direto · {count} envio ativo",
+      "liveBadgeTemplatePlural": "Em direto · {count} envios ativos"
+    },
+    "sections": {
+      "activeTitle": "Em rota agora",
+      "activeMetaTemplate": "{count} ativas · sincronização automática a partir da logística",
+      "activeRailAriaLabel": "Envios ativos",
+      "emptyAriaLabel": "Sem envios ativos",
+      "emptyTitle": "Sem envios ativos",
+      "emptyBody": "As suas entregas anteriores estão abaixo. Reserve outra e aparecerá aqui assim que o estafeta confirmar a recolha.",
+      "actionsTitle": "Lançar uma entrega",
+      "actionsMeta": "Atalhos para fluxos comuns",
+      "actionsAriaLabel": "Ações rápidas de logística",
+      "recentTitle": "Entregues recentemente",
+      "recentMetaTemplate": "Últimas {recent} de {lifetime} totais",
+      "recentAriaLabel": "Entregas recentes",
+      "spendTitle": "Gasto · últimos 6 meses",
+      "spendMeta": "Apenas pago",
+      "spendFigureAriaLabelTemplate": "Gasto logístico dos últimos 6 meses"
+    },
+    "statusLabels": {
+      "quoteRequested": "Orçamento pendente",
+      "quoteSent": "Orçamento pronto",
+      "pendingPayment": "À espera de pagamento",
+      "scheduled": "Programada",
+      "assigned": "Estafeta atribuído",
+      "pickupConfirmed": "Recolhida",
+      "inTransit": "Em trânsito",
+      "delayed": "Atrasada",
+      "attemptedDelivery": "Tentativa de entrega",
+      "delivered": "Entregue",
+      "completed": "Concluída",
+      "closed": "Fechada",
+      "cancelled": "Cancelada",
+      "refunded": "Reembolsada"
+    },
+    "urgencyLabels": {
+      "standard": "Padrão",
+      "sameDay": "No próprio dia",
+      "express": "Expresso",
+      "nextDay": "No dia seguinte"
+    },
+    "serviceLabels": {
+      "scheduled": "Programado",
+      "sameDay": "No próprio dia",
+      "interCity": "Intercidades",
+      "bulk": "Granel"
+    },
+    "shipment": {
+      "trackingCodeAriaTemplate": "Código de seguimento {code}",
+      "addressPending": "Endereço pendente",
+      "etaPending": "ETA pendente",
+      "trackCta": "Seguir envio",
+      "openTrackingAriaTemplate": "Abrir seguimento de {code}",
+      "etaAriaTemplate": "ETA {eta}",
+      "etaMinutesInTemplate": "em {minutes} min",
+      "etaMinutesOverdueTemplate": "{minutes} min de atraso",
+      "etaHoursInTemplate": "em {hours} h",
+      "etaHoursOverdueTemplate": "{hours} h de atraso",
+      "detailSeparator": " · "
+    },
+    "timeline": {
+      "ariaLabel": "Entregas recentes",
+      "deliveredToTemplate": "Entregue a {name}",
+      "receiptCta": "Recibo"
+    },
+    "quickActions": {
+      "ariaLabel": "Ações rápidas de logística",
+      "bookLabel": "Reservar entrega",
+      "bookDesc": "Recolha e entrega num único fluxo guiado.",
+      "trackLabel": "Seguir por código",
+      "trackDesc": "Estado em direto, ETA e contexto do estafeta.",
+      "quoteLabel": "Primeiro, orçamentar",
+      "quoteDesc": "Preço indicativo antes de se comprometer.",
+      "addressesLabel": "Endereços guardados",
+      "addressesDesc": "Contactos de recolha e entrega.",
+      "invoicesLabel": "Recibos e faturas",
+      "invoicesDesc": "PDFs com marca para cada envio.",
+      "supportLabel": "Suporte de logística",
+      "supportDesc": "Abrir uma conversa associada à sua conta."
+    },
+    "spend": {
+      "figureAriaLabel": "Gasto logístico dos últimos 6 meses",
+      "emptyTick": "—"
+    }
   }
 
 };
@@ -5546,6 +5794,130 @@ export const ACCOUNT_COPY_AR = {
     "activity": {
       "listAriaLabel": "نشاط Studio",
       "rowAriaLabelTemplate": "{title} · {stamp}"
+    }
+  },
+  "divisionLogistics": {
+    "metadata": {
+      "title": "الخدمات اللوجستية · عمليات التسليم والشحنات",
+      "description": "كل استلام وتسليم ووقت وصول متوقّع وإثبات تسليم من HenryCo Logistics مرتبط بهذا الحساب — منعكسًا من شبكة الخدمات اللوجستية إلى غرفة واحدة هادئة."
+    },
+    "hero": {
+      "ariaLabel": "نظرة عامة على الخدمات اللوجستية",
+      "eyebrow": "HenryCo اللوجستية",
+      "brand": "HenryCo اللوجستية",
+      "title": "كل طرد، غرفة واحدة.",
+      "body": "عمليات الاستلام والتسليم وأوقات الوصول المتوقعة وإثباتات التسليم — كلها منعكسة من شبكة الخدمات اللوجستية إلى حسابك. احجز مرة واحدة على",
+      "bodyDomain": " logistics.henrycogroup.com",
+      "ctaNewDelivery": "تسليم جديد"
+    },
+    "metrics": {
+      "ariaLabel": "أداء الخدمات اللوجستية",
+      "activeNowLabel": "نشِطة الآن",
+      "activeFootSingular": "شحنة في الطريق",
+      "activeFootPlural": "شحنات في الطريق",
+      "deliveredMonthLabel": "تم التسليم · هذا الشهر",
+      "deliveredMonthFootTemplate": "{count} إجماليًا",
+      "onTimeRateLabel": "نسبة الالتزام بالموعد",
+      "onTimeRateFootEmpty": "بانتظار أول تسليم مجدول",
+      "onTimeRateFootHasValue": "من عمليات التسليم المجدولة",
+      "totalSpendLabel": "إجمالي الإنفاق",
+      "totalSpendFoot": "مدفوع على مدى الحياة"
+    },
+    "map": {
+      "noShipmentsAriaLabel": "لا توجد شحنات بعد",
+      "noShipmentsTitle": "ستضيء خريطتك عند حجز أول تسليم",
+      "noShipmentsBody": "كل عملية استلام وتسليم نشِطة تُثبَّت هنا تلقائيًا. احجز مرة واحدة وستنعكس شحناتك من موقع الخدمات اللوجستية.",
+      "noShipmentsCta": "احجز تسليمًا",
+      "pendingAriaLabel": "معاينة الخريطة",
+      "pendingTitle": "تحديد الإحداثيات قيد التنفيذ",
+      "pendingBody": "ستُثبَّت شحناتك النشِطة على الخريطة حالما يُجري قسم التوزيع تحديد إحداثيات عناوين الاستلام والتسليم.",
+      "activeAriaLabel": "خريطة الشحنات النشِطة",
+      "altTemplateSingular": "خريطة تعرض {count} علامة استلام وتسليم نشِطة",
+      "altTemplatePlural": "خريطة تعرض {count} علامات استلام وتسليم نشِطة",
+      "liveBadgeTemplateSingular": "مباشر · {count} شحنة نشِطة",
+      "liveBadgeTemplatePlural": "مباشر · {count} شحنات نشِطة"
+    },
+    "sections": {
+      "activeTitle": "في الطريق الآن",
+      "activeMetaTemplate": "{count} نشِطة · مزامنة تلقائية من الخدمات اللوجستية",
+      "activeRailAriaLabel": "الشحنات النشِطة",
+      "emptyAriaLabel": "لا توجد شحنات نشِطة",
+      "emptyTitle": "لا توجد شحنات نشِطة",
+      "emptyBody": "عمليات التسليم السابقة في الأسفل. احجز أخرى وستظهر هنا بمجرد تأكيد المندوب للاستلام.",
+      "actionsTitle": "ابدأ تسليمًا",
+      "actionsMeta": "اختصارات للتدفقات الشائعة",
+      "actionsAriaLabel": "إجراءات لوجستية سريعة",
+      "recentTitle": "تم التسليم مؤخرًا",
+      "recentMetaTemplate": "آخر {recent} من أصل {lifetime}",
+      "recentAriaLabel": "عمليات التسليم الأخيرة",
+      "spendTitle": "الإنفاق · آخر 6 أشهر",
+      "spendMeta": "المدفوع فقط",
+      "spendFigureAriaLabelTemplate": "الإنفاق اللوجستي خلال آخر 6 أشهر"
+    },
+    "statusLabels": {
+      "quoteRequested": "عرض السعر معلّق",
+      "quoteSent": "عرض السعر جاهز",
+      "pendingPayment": "بانتظار الدفع",
+      "scheduled": "مجدولة",
+      "assigned": "تم تعيين مندوب",
+      "pickupConfirmed": "تم الاستلام",
+      "inTransit": "في الطريق",
+      "delayed": "متأخّرة",
+      "attemptedDelivery": "محاولة تسليم",
+      "delivered": "تم التسليم",
+      "completed": "مكتملة",
+      "closed": "مغلقة",
+      "cancelled": "ملغاة",
+      "refunded": "مُسترَدّة"
+    },
+    "urgencyLabels": {
+      "standard": "عادية",
+      "sameDay": "نفس اليوم",
+      "express": "سريعة",
+      "nextDay": "اليوم التالي"
+    },
+    "serviceLabels": {
+      "scheduled": "مجدولة",
+      "sameDay": "نفس اليوم",
+      "interCity": "بين المدن",
+      "bulk": "كميات كبيرة"
+    },
+    "shipment": {
+      "trackingCodeAriaTemplate": "رمز التتبّع {code}",
+      "addressPending": "العنوان معلّق",
+      "etaPending": "وقت الوصول المتوقّع معلّق",
+      "trackCta": "تتبّع الشحنة",
+      "openTrackingAriaTemplate": "افتح تتبّع {code}",
+      "etaAriaTemplate": "وقت الوصول {eta}",
+      "etaMinutesInTemplate": "خلال {minutes} د",
+      "etaMinutesOverdueTemplate": "تأخّر {minutes} د",
+      "etaHoursInTemplate": "خلال {hours} س",
+      "etaHoursOverdueTemplate": "تأخّر {hours} س",
+      "detailSeparator": " · "
+    },
+    "timeline": {
+      "ariaLabel": "عمليات التسليم الأخيرة",
+      "deliveredToTemplate": "تم التسليم إلى {name}",
+      "receiptCta": "إيصال"
+    },
+    "quickActions": {
+      "ariaLabel": "إجراءات لوجستية سريعة",
+      "bookLabel": "احجز تسليمًا",
+      "bookDesc": "الاستلام والتسليم في تدفّق موجَّه واحد.",
+      "trackLabel": "تتبَّع برمز",
+      "trackDesc": "الحالة المباشرة، وقت الوصول، وسياق المندوب.",
+      "quoteLabel": "اطلب عرض سعر أولًا",
+      "quoteDesc": "تسعير إرشادي قبل الالتزام.",
+      "addressesLabel": "العناوين المحفوظة",
+      "addressesDesc": "جهات اتصال الاستلام والتسليم.",
+      "invoicesLabel": "الإيصالات والفواتير",
+      "invoicesDesc": "ملفات PDF مُعلَّمة بالعلامة لكل شحنة.",
+      "supportLabel": "دعم الخدمات اللوجستية",
+      "supportDesc": "افتح محادثة مرتبطة بحسابك."
+    },
+    "spend": {
+      "figureAriaLabel": "الإنفاق اللوجستي خلال آخر 6 أشهر",
+      "emptyTick": "—"
     }
   }
 
