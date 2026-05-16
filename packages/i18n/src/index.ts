@@ -2,6 +2,7 @@ export * from "./locales";
 export * from "./merge-messages";
 export * from "./hub-home-copy";
 export * from "./hub-public-copy";
+export * from "./logistics-book-copy";
 export * from "./consent-copy";
 export * from "./auth-copy";
 export * from "./state-copy";

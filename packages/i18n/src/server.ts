@@ -8,6 +8,7 @@ export {
 export { buildLocaleCookieOptions, localeCookieName } from "./cookie";
 export { getHubHomeCopy, getFaqFallbackForLocale, type HubHomeCopy } from "./hub-home-copy";
 export { getHubPublicCopy, type HubPublicCopy } from "./hub-public-copy";
+export { getLogisticsBookCopy, type LogisticsBookCopy } from "./logistics-book-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
