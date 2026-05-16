@@ -804,6 +804,62 @@ export const ACCOUNT_COPY_ES = {
       "sectionKicker": "Caducados recientemente",
       "sectionNote": "Restaurar reinicia el periodo de 90 días."
     }
+  },
+  "documents": {
+    "metadata": {
+      "title": "Documentos",
+      "description": "Tus recibos, certificados, contratos y archivos importantes — guardados de forma privada y accesibles en todas las divisiones de HenryCo."
+    },
+    "hero": {
+      "eyebrow": "Caja personal",
+      "title": "Documentos",
+      "body": "Tus recibos, certificados, contratos y archivos importantes."
+    },
+    "toolbar": {
+      "uploadCta": "Subir documento",
+      "filterLabel": "Filtrar",
+      "allCategories": "Todas las categorías",
+      "sortLabel": "Ordenar",
+      "sortNewest": "Más recientes primero",
+      "sortOldest": "Más antiguos primero"
+    },
+    "types": {
+      "document": "Documento",
+      "receipt": "Recibo",
+      "certificate": "Certificado",
+      "id_document": "Documento de identidad",
+      "contract": "Contrato",
+      "other": "Otro"
+    },
+    "categories": {
+      "all": "Todos",
+      "document": "Documentos",
+      "receipt": "Recibos",
+      "certificate": "Certificados",
+      "id_document": "Documentos de identidad",
+      "contract": "Contratos",
+      "other": "Otros"
+    },
+    "card": {
+      "uploadedOnTemplate": "Subido el {date}",
+      "sizeTemplate": "{size}",
+      "downloadLabel": "Descargar",
+      "noFileAttached": "Sin archivo adjunto",
+      "openOriginal": "Abrir documento"
+    },
+    "empty": {
+      "title": "Aún no hay documentos",
+      "description": "Tus documentos, recibos y certificados de los servicios HenryCo se guardarán aquí."
+    },
+    "summary": {
+      "countTemplate": "{count} documento{plural}",
+      "filteredTemplate": "{count} de {total} mostrados"
+    },
+    "retention": {
+      "eyebrow": "Privacidad y conservación",
+      "title": "Tus archivos siguen siendo privados",
+      "body": "Los documentos se cifran en reposo, solo tú los ves y se conservan durante toda la vida de tu cuenta HenryCo a menos que los elimines."
+    }
   }
 };
 
@@ -1610,6 +1666,62 @@ export const ACCOUNT_COPY_PT = {
       "sectionKicker": "Expirados recentemente",
       "sectionNote": "Restaurar redefine o período de 90 dias."
     }
+  },
+  "documents": {
+    "metadata": {
+      "title": "Documentos",
+      "description": "Seus recibos, certificados, contratos e arquivos importantes — guardados em privacidade e acessíveis em todas as divisões da HenryCo."
+    },
+    "hero": {
+      "eyebrow": "Cofre pessoal",
+      "title": "Documentos",
+      "body": "Seus recibos, certificados, contratos e arquivos importantes."
+    },
+    "toolbar": {
+      "uploadCta": "Enviar documento",
+      "filterLabel": "Filtrar",
+      "allCategories": "Todas as categorias",
+      "sortLabel": "Ordenar",
+      "sortNewest": "Mais recentes primeiro",
+      "sortOldest": "Mais antigos primeiro"
+    },
+    "types": {
+      "document": "Documento",
+      "receipt": "Recibo",
+      "certificate": "Certificado",
+      "id_document": "Documento de identidade",
+      "contract": "Contrato",
+      "other": "Outro"
+    },
+    "categories": {
+      "all": "Todos",
+      "document": "Documentos",
+      "receipt": "Recibos",
+      "certificate": "Certificados",
+      "id_document": "Documentos de identidade",
+      "contract": "Contratos",
+      "other": "Outros"
+    },
+    "card": {
+      "uploadedOnTemplate": "Enviado em {date}",
+      "sizeTemplate": "{size}",
+      "downloadLabel": "Baixar",
+      "noFileAttached": "Sem arquivo anexado",
+      "openOriginal": "Abrir documento"
+    },
+    "empty": {
+      "title": "Ainda não há documentos",
+      "description": "Seus documentos, recibos e certificados dos serviços da HenryCo ficarão armazenados aqui."
+    },
+    "summary": {
+      "countTemplate": "{count} documento{plural}",
+      "filteredTemplate": "{count} de {total} exibidos"
+    },
+    "retention": {
+      "eyebrow": "Privacidade e retenção",
+      "title": "Seus arquivos permanecem privados",
+      "body": "Os documentos são criptografados em repouso, visíveis apenas para você e mantidos por toda a vida útil da sua conta HenryCo, a menos que você os remova."
+    }
   }
 };
 
@@ -2415,6 +2527,62 @@ export const ACCOUNT_COPY_AR = {
     "expired": {
       "sectionKicker": "انتهت صلاحيتها مؤخرًا",
       "sectionNote": "الاستعادة تُعيد ضبط مهلة 90 يومًا."
+    }
+  },
+  "documents": {
+    "metadata": {
+      "title": "المستندات",
+      "description": "إيصالاتك وشهاداتك وعقودك وملفاتك المهمة — محفوظة بسرية ومتاحة في جميع أقسام HenryCo."
+    },
+    "hero": {
+      "eyebrow": "خزينتك الشخصية",
+      "title": "المستندات",
+      "body": "إيصالاتك وشهاداتك وعقودك وملفاتك المهمة."
+    },
+    "toolbar": {
+      "uploadCta": "رفع مستند",
+      "filterLabel": "تصفية",
+      "allCategories": "كل الفئات",
+      "sortLabel": "ترتيب",
+      "sortNewest": "الأحدث أولاً",
+      "sortOldest": "الأقدم أولاً"
+    },
+    "types": {
+      "document": "مستند",
+      "receipt": "إيصال",
+      "certificate": "شهادة",
+      "id_document": "وثيقة هوية",
+      "contract": "عقد",
+      "other": "أخرى"
+    },
+    "categories": {
+      "all": "الكل",
+      "document": "المستندات",
+      "receipt": "الإيصالات",
+      "certificate": "الشهادات",
+      "id_document": "وثائق الهوية",
+      "contract": "العقود",
+      "other": "أخرى"
+    },
+    "card": {
+      "uploadedOnTemplate": "تم رفعه في {date}",
+      "sizeTemplate": "{size}",
+      "downloadLabel": "تحميل",
+      "noFileAttached": "لا يوجد ملف مرفق",
+      "openOriginal": "فتح المستند"
+    },
+    "empty": {
+      "title": "لا توجد مستندات بعد",
+      "description": "ستُحفظ هنا مستنداتك وإيصالاتك وشهاداتك الصادرة عن خدمات HenryCo."
+    },
+    "summary": {
+      "countTemplate": "{count} مستند{plural}",
+      "filteredTemplate": "{count} من أصل {total} معروضة"
+    },
+    "retention": {
+      "eyebrow": "الخصوصية والاحتفاظ",
+      "title": "تبقى ملفاتك خاصة",
+      "body": "تُشفَّر المستندات أثناء التخزين، ولا يراها سواك، وتُحفظ طوال مدة حسابك في HenryCo ما لم تقم بإزالتها."
     }
   }
 };

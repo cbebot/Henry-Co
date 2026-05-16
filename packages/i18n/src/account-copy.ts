@@ -808,6 +808,62 @@ export type AccountCopy = {
       sectionNote: string;
     };
   };
+  documents: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      title: string;
+      body: string;
+    };
+    toolbar: {
+      uploadCta: string;
+      filterLabel: string;
+      allCategories: string;
+      sortLabel: string;
+      sortNewest: string;
+      sortOldest: string;
+    };
+    types: {
+      document: string;
+      receipt: string;
+      certificate: string;
+      id_document: string;
+      contract: string;
+      other: string;
+    };
+    categories: {
+      all: string;
+      document: string;
+      receipt: string;
+      certificate: string;
+      id_document: string;
+      contract: string;
+      other: string;
+    };
+    card: {
+      uploadedOnTemplate: string;
+      sizeTemplate: string;
+      downloadLabel: string;
+      noFileAttached: string;
+      openOriginal: string;
+    };
+    empty: {
+      title: string;
+      description: string;
+    };
+    summary: {
+      countTemplate: string;
+      filteredTemplate: string;
+    };
+    retention: {
+      eyebrow: string;
+      title: string;
+      body: string;
+    };
+  };
 };
 
 const EN: AccountCopy = {
@@ -1673,6 +1729,64 @@ const EN: AccountCopy = {
     expired: {
       sectionKicker: "Recently expired",
       sectionNote: "Restoring resets the 90-day window.",
+    },
+  },
+  documents: {
+    metadata: {
+      title: "Documents",
+      description:
+        "Your receipts, certificates, contracts, and important files — kept private and accessible across every HenryCo division.",
+    },
+    hero: {
+      eyebrow: "Personal Vault",
+      title: "Documents",
+      body: "Your receipts, certificates, contracts, and important files.",
+    },
+    toolbar: {
+      uploadCta: "Upload document",
+      filterLabel: "Filter",
+      allCategories: "All categories",
+      sortLabel: "Sort",
+      sortNewest: "Newest first",
+      sortOldest: "Oldest first",
+    },
+    types: {
+      document: "Document",
+      receipt: "Receipt",
+      certificate: "Certificate",
+      id_document: "ID document",
+      contract: "Contract",
+      other: "Other",
+    },
+    categories: {
+      all: "All",
+      document: "Documents",
+      receipt: "Receipts",
+      certificate: "Certificates",
+      id_document: "ID documents",
+      contract: "Contracts",
+      other: "Other",
+    },
+    card: {
+      uploadedOnTemplate: "Uploaded {date}",
+      sizeTemplate: "{size}",
+      downloadLabel: "Download",
+      noFileAttached: "No file attached",
+      openOriginal: "Open document",
+    },
+    empty: {
+      title: "No documents yet",
+      description:
+        "Your documents, receipts, and certificates from HenryCo services will be stored here.",
+    },
+    summary: {
+      countTemplate: "{count} document{plural}",
+      filteredTemplate: "{count} of {total} shown",
+    },
+    retention: {
+      eyebrow: "Privacy & retention",
+      title: "Your files stay private",
+      body: "Documents are encrypted at rest, visible only to you, and retained for the lifetime of your HenryCo account unless you remove them.",
     },
   },
 };
@@ -2560,6 +2674,64 @@ const FR: DeepPartial<AccountCopy> = {
       sectionNote: "Restaurer réinitialise la fenêtre de 90 jours.",
     },
   },
+  documents: {
+    metadata: {
+      title: "Documents",
+      description:
+        "Vos reçus, certificats, contrats et fichiers importants — conservés en privé et accessibles dans toutes les divisions HenryCo.",
+    },
+    hero: {
+      eyebrow: "Coffre personnel",
+      title: "Documents",
+      body: "Vos reçus, certificats, contrats et fichiers importants.",
+    },
+    toolbar: {
+      uploadCta: "Téléverser un document",
+      filterLabel: "Filtrer",
+      allCategories: "Toutes les catégories",
+      sortLabel: "Trier",
+      sortNewest: "Plus récents d’abord",
+      sortOldest: "Plus anciens d’abord",
+    },
+    types: {
+      document: "Document",
+      receipt: "Reçu",
+      certificate: "Certificat",
+      id_document: "Pièce d’identité",
+      contract: "Contrat",
+      other: "Autre",
+    },
+    categories: {
+      all: "Tous",
+      document: "Documents",
+      receipt: "Reçus",
+      certificate: "Certificats",
+      id_document: "Pièces d’identité",
+      contract: "Contrats",
+      other: "Autres",
+    },
+    card: {
+      uploadedOnTemplate: "Téléversé le {date}",
+      sizeTemplate: "{size}",
+      downloadLabel: "Télécharger",
+      noFileAttached: "Aucun fichier joint",
+      openOriginal: "Ouvrir le document",
+    },
+    empty: {
+      title: "Aucun document pour le moment",
+      description:
+        "Vos documents, reçus et certificats issus des services HenryCo seront stockés ici.",
+    },
+    summary: {
+      countTemplate: "{count} document{plural}",
+      filteredTemplate: "{count} sur {total} affichés",
+    },
+    retention: {
+      eyebrow: "Confidentialité et conservation",
+      title: "Vos fichiers restent privés",
+      body: "Les documents sont chiffrés au repos, visibles uniquement par vous et conservés pendant toute la durée de vie de votre compte HenryCo sauf si vous les supprimez.",
+    },
+  },
 };
 
 const DE: DeepPartial<AccountCopy> = {
@@ -3375,6 +3547,64 @@ const DE: DeepPartial<AccountCopy> = {
     expired: {
       sectionKicker: "Kürzlich abgelaufen",
       sectionNote: "Wiederherstellen setzt die 90-Tage-Frist zurück.",
+    },
+  },
+  documents: {
+    metadata: {
+      title: "Dokumente",
+      description:
+        "Ihre Quittungen, Zertifikate, Verträge und wichtigen Dateien — privat aufbewahrt und in jedem HenryCo-Bereich abrufbar.",
+    },
+    hero: {
+      eyebrow: "Persönlicher Tresor",
+      title: "Dokumente",
+      body: "Ihre Quittungen, Zertifikate, Verträge und wichtigen Dateien.",
+    },
+    toolbar: {
+      uploadCta: "Dokument hochladen",
+      filterLabel: "Filtern",
+      allCategories: "Alle Kategorien",
+      sortLabel: "Sortieren",
+      sortNewest: "Neueste zuerst",
+      sortOldest: "Älteste zuerst",
+    },
+    types: {
+      document: "Dokument",
+      receipt: "Quittung",
+      certificate: "Zertifikat",
+      id_document: "Ausweisdokument",
+      contract: "Vertrag",
+      other: "Sonstiges",
+    },
+    categories: {
+      all: "Alle",
+      document: "Dokumente",
+      receipt: "Quittungen",
+      certificate: "Zertifikate",
+      id_document: "Ausweisdokumente",
+      contract: "Verträge",
+      other: "Sonstige",
+    },
+    card: {
+      uploadedOnTemplate: "Hochgeladen am {date}",
+      sizeTemplate: "{size}",
+      downloadLabel: "Herunterladen",
+      noFileAttached: "Keine Datei angehängt",
+      openOriginal: "Dokument öffnen",
+    },
+    empty: {
+      title: "Noch keine Dokumente",
+      description:
+        "Ihre Dokumente, Quittungen und Zertifikate aus HenryCo-Diensten werden hier gespeichert.",
+    },
+    summary: {
+      countTemplate: "{count} Dokument{plural}",
+      filteredTemplate: "{count} von {total} angezeigt",
+    },
+    retention: {
+      eyebrow: "Datenschutz & Aufbewahrung",
+      title: "Ihre Dateien bleiben privat",
+      body: "Dokumente werden ruhend verschlüsselt, sind nur für Sie sichtbar und bleiben für die Laufzeit Ihres HenryCo-Kontos erhalten, sofern Sie sie nicht entfernen.",
     },
   },
 };
@@ -4194,6 +4424,64 @@ const IT: DeepPartial<AccountCopy> = {
     expired: {
       sectionKicker: "Scaduti di recente",
       sectionNote: "Il ripristino reimposta la finestra di 90 giorni.",
+    },
+  },
+  documents: {
+    metadata: {
+      title: "Documenti",
+      description:
+        "Le tue ricevute, certificati, contratti e file importanti — custoditi privatamente e accessibili in ogni divisione HenryCo.",
+    },
+    hero: {
+      eyebrow: "Cassaforte personale",
+      title: "Documenti",
+      body: "Le tue ricevute, certificati, contratti e file importanti.",
+    },
+    toolbar: {
+      uploadCta: "Carica documento",
+      filterLabel: "Filtra",
+      allCategories: "Tutte le categorie",
+      sortLabel: "Ordina",
+      sortNewest: "Più recenti prima",
+      sortOldest: "Più vecchi prima",
+    },
+    types: {
+      document: "Documento",
+      receipt: "Ricevuta",
+      certificate: "Certificato",
+      id_document: "Documento d’identità",
+      contract: "Contratto",
+      other: "Altro",
+    },
+    categories: {
+      all: "Tutti",
+      document: "Documenti",
+      receipt: "Ricevute",
+      certificate: "Certificati",
+      id_document: "Documenti d’identità",
+      contract: "Contratti",
+      other: "Altri",
+    },
+    card: {
+      uploadedOnTemplate: "Caricato il {date}",
+      sizeTemplate: "{size}",
+      downloadLabel: "Scarica",
+      noFileAttached: "Nessun file allegato",
+      openOriginal: "Apri documento",
+    },
+    empty: {
+      title: "Ancora nessun documento",
+      description:
+        "I tuoi documenti, ricevute e certificati dei servizi HenryCo saranno conservati qui.",
+    },
+    summary: {
+      countTemplate: "{count} documento{plural}",
+      filteredTemplate: "{count} su {total} mostrati",
+    },
+    retention: {
+      eyebrow: "Privacy e conservazione",
+      title: "I tuoi file restano privati",
+      body: "I documenti sono cifrati a riposo, visibili solo a te e conservati per tutta la durata del tuo account HenryCo, salvo eliminazione.",
     },
   },
 };
@@ -5017,6 +5305,64 @@ const IG: DeepPartial<AccountCopy> = {
       sectionNote: "Iweghachi na-eweghachi oge ụbọchị iri itoolu.",
     },
   },
+  documents: {
+    metadata: {
+      title: "Akwụkwọ",
+      description:
+        "Akwụkwọ nnata gị, asambodo, nkwekọrịta na faịlụ ndị dị mkpa — e debere ha na nzuzo ma na-enweta ha n’ime ngalaba HenryCo niile.",
+    },
+    hero: {
+      eyebrow: "Igbe nchekwa onwe gị",
+      title: "Akwụkwọ",
+      body: "Akwụkwọ nnata gị, asambodo, nkwekọrịta na faịlụ ndị dị mkpa.",
+    },
+    toolbar: {
+      uploadCta: "Bulite akwụkwọ",
+      filterLabel: "Nzacha",
+      allCategories: "Ụdị niile",
+      sortLabel: "Hazie",
+      sortNewest: "Nke ọhụrụ buru ụzọ",
+      sortOldest: "Nke ochie buru ụzọ",
+    },
+    types: {
+      document: "Akwụkwọ",
+      receipt: "Akwụkwọ nnata",
+      certificate: "Asambodo",
+      id_document: "Akwụkwọ njirimara",
+      contract: "Nkwekọrịta",
+      other: "Ọzọ",
+    },
+    categories: {
+      all: "Niile",
+      document: "Akwụkwọ",
+      receipt: "Akwụkwọ nnata",
+      certificate: "Asambodo",
+      id_document: "Akwụkwọ njirimara",
+      contract: "Nkwekọrịta",
+      other: "Ọzọ",
+    },
+    card: {
+      uploadedOnTemplate: "E bulitere na {date}",
+      sizeTemplate: "{size}",
+      downloadLabel: "Budata",
+      noFileAttached: "Enweghị faịlụ etinyere",
+      openOriginal: "Mepee akwụkwọ",
+    },
+    empty: {
+      title: "Enwebeghị akwụkwọ",
+      description:
+        "Akwụkwọ gị, akwụkwọ nnata na asambodo sitere na ọrụ HenryCo ga-anọ ebe a.",
+    },
+    summary: {
+      countTemplate: "{count} akwụkwọ{plural}",
+      filteredTemplate: "{count} n’ime {total} egosiri",
+    },
+    retention: {
+      eyebrow: "Nzuzo na nchekwa",
+      title: "Faịlụ gị ga-anọ na nzuzo",
+      body: "A na-ezo akwụkwọ niile mgbe ezubeghị ọrụ, naanị gị ka ọ na-egosi, anyị na-edebe ha ruo mgbe akaụntụ HenryCo gị dị ndụ ma ọ bụrụ na i wepụghị ha.",
+    },
+  },
 };
 
 const YO: DeepPartial<AccountCopy> = {
@@ -5836,6 +6182,64 @@ const YO: DeepPartial<AccountCopy> = {
     expired: {
       sectionKicker: "Tí parí láìpẹ́",
       sectionNote: "Ìmúpadàbọ̀sípò ń tún àkókò ọjọ́ àádọ́rùnún ṣe.",
+    },
+  },
+  documents: {
+    metadata: {
+      title: "Àwọn Àkọsílẹ̀",
+      description:
+        "Àwọn risiisi rẹ, ìjẹ́rìí, àdéhùn àti fáìlì pàtàkì — a fi pamọ́ ní ìkọ̀kọ̀ tí ó sì wà fún ọ ní gbogbo ẹ̀ka HenryCo.",
+    },
+    hero: {
+      eyebrow: "Àpótí ìpamọ́ ti ara ẹni",
+      title: "Àwọn Àkọsílẹ̀",
+      body: "Àwọn risiisi rẹ, ìjẹ́rìí, àdéhùn àti fáìlì pàtàkì.",
+    },
+    toolbar: {
+      uploadCta: "Gbé àkọsílẹ̀ wọlé",
+      filterLabel: "Yan",
+      allCategories: "Gbogbo ẹ̀ka",
+      sortLabel: "Tò",
+      sortNewest: "Tuntun ní àkọ́kọ́",
+      sortOldest: "Àtijọ́ ní àkọ́kọ́",
+    },
+    types: {
+      document: "Àkọsílẹ̀",
+      receipt: "Risiisi",
+      certificate: "Ìjẹ́rìí",
+      id_document: "Ìwé ìdánimọ̀",
+      contract: "Àdéhùn",
+      other: "Òmíràn",
+    },
+    categories: {
+      all: "Gbogbo",
+      document: "Àwọn Àkọsílẹ̀",
+      receipt: "Àwọn Risiisi",
+      certificate: "Àwọn Ìjẹ́rìí",
+      id_document: "Àwọn ìwé ìdánimọ̀",
+      contract: "Àwọn àdéhùn",
+      other: "Àwọn òmíràn",
+    },
+    card: {
+      uploadedOnTemplate: "A gbé wọlé ní {date}",
+      sizeTemplate: "{size}",
+      downloadLabel: "Gbà sílẹ̀",
+      noFileAttached: "Kò sí fáìlì tí a fi kún",
+      openOriginal: "Ṣí àkọsílẹ̀",
+    },
+    empty: {
+      title: "Kò sí àkọsílẹ̀ síbẹ̀",
+      description:
+        "Àwọn àkọsílẹ̀ rẹ, risiisi àti ìjẹ́rìí láti ọ̀dọ̀ àwọn ìpèsè HenryCo ni a ó tọ́jú síbí.",
+    },
+    summary: {
+      countTemplate: "{count} àkọsílẹ̀{plural}",
+      filteredTemplate: "{count} nínú {total} tí a fi hàn",
+    },
+    retention: {
+      eyebrow: "Ìkọ̀kọ̀ àti ìtọ́jú",
+      title: "Fáìlì rẹ wà ní ìkọ̀kọ̀",
+      body: "A fi àwọn àkọsílẹ̀ pamọ́ pẹ̀lú ààbò, ìwọ nìkan ló lè rí wọn, a ó sì tọ́jú wọn ní gbogbo àkókò tí àkáǹtì HenryCo rẹ bá wà, àyàfi tí o bá yọ wọn kúrò.",
     },
   },
 };
@@ -6659,6 +7063,64 @@ const HA: DeepPartial<AccountCopy> = {
       sectionNote: "Maido yana sake saita lokacin kwana 90.",
     },
   },
+  documents: {
+    metadata: {
+      title: "Takardu",
+      description:
+        "Rasit ɗinka, takaddun shaida, kwangiloli da fayilolin muhimmai — ana ajiyewa cikin sirri kuma ana iya samun su a kowace ɓangare ta HenryCo.",
+    },
+    hero: {
+      eyebrow: "Ma’ajin kanka",
+      title: "Takardu",
+      body: "Rasit ɗinka, takaddun shaida, kwangiloli da fayilolin muhimmai.",
+    },
+    toolbar: {
+      uploadCta: "Loda takarda",
+      filterLabel: "Tace",
+      allCategories: "Dukkan rukunoni",
+      sortLabel: "Tsara",
+      sortNewest: "Sabbi farko",
+      sortOldest: "Tsofaffi farko",
+    },
+    types: {
+      document: "Takarda",
+      receipt: "Rasit",
+      certificate: "Takardar shaida",
+      id_document: "Takardar shaida ta sirri",
+      contract: "Kwangila",
+      other: "Sauran",
+    },
+    categories: {
+      all: "Duka",
+      document: "Takardu",
+      receipt: "Rasit",
+      certificate: "Takaddun shaida",
+      id_document: "Takaddun shaida na sirri",
+      contract: "Kwangiloli",
+      other: "Sauran",
+    },
+    card: {
+      uploadedOnTemplate: "An loda a {date}",
+      sizeTemplate: "{size}",
+      downloadLabel: "Sauke",
+      noFileAttached: "Babu fayil da aka haɗa",
+      openOriginal: "Buɗe takarda",
+    },
+    empty: {
+      title: "Babu takardu tukuna",
+      description:
+        "Takarduka, rasit da takaddun shaida daga sabis ɗin HenryCo za a adana su a nan.",
+    },
+    summary: {
+      countTemplate: "{count} takarda{plural}",
+      filteredTemplate: "{count} daga {total} aka nuna",
+    },
+    retention: {
+      eyebrow: "Sirri da ajiya",
+      title: "Fayilolinka sun zauna a sirri",
+      body: "Ana ɓoye takardu yayin da suke ajiye, kai kaɗai za ka iya ganinsu, kuma za mu ajiye su yayin da asusunka na HenryCo yake aiki sai dai idan ka cire su.",
+    },
+  },
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -7472,6 +7934,62 @@ const ZH: DeepPartial<AccountCopy> = {
     expired: {
       sectionKicker: "最近过期",
       sectionNote: "恢复将重置 90 天有效期。",
+    },
+  },
+  documents: {
+    metadata: {
+      title: "文档",
+      description: "您的收据、证书、合同和重要文件——私密保存,可在所有 HenryCo 板块中访问。",
+    },
+    hero: {
+      eyebrow: "个人保险库",
+      title: "文档",
+      body: "您的收据、证书、合同和重要文件。",
+    },
+    toolbar: {
+      uploadCta: "上传文档",
+      filterLabel: "筛选",
+      allCategories: "所有类别",
+      sortLabel: "排序",
+      sortNewest: "最新优先",
+      sortOldest: "最早优先",
+    },
+    types: {
+      document: "文档",
+      receipt: "收据",
+      certificate: "证书",
+      id_document: "身份证件",
+      contract: "合同",
+      other: "其他",
+    },
+    categories: {
+      all: "全部",
+      document: "文档",
+      receipt: "收据",
+      certificate: "证书",
+      id_document: "身份证件",
+      contract: "合同",
+      other: "其他",
+    },
+    card: {
+      uploadedOnTemplate: "上传于 {date}",
+      sizeTemplate: "{size}",
+      downloadLabel: "下载",
+      noFileAttached: "未附加文件",
+      openOriginal: "打开文档",
+    },
+    empty: {
+      title: "暂无文档",
+      description: "来自 HenryCo 服务的文档、收据和证书将保存在此处。",
+    },
+    summary: {
+      countTemplate: "{count} 份文档{plural}",
+      filteredTemplate: "显示 {total} 份中的 {count} 份",
+    },
+    retention: {
+      eyebrow: "隐私与保留",
+      title: "您的文件保持私密",
+      body: "文档在静态时加密,仅您可见,且在 HenryCo 账户存续期间一直保留,除非您将其删除。",
     },
   },
 };
@@ -8292,6 +8810,64 @@ const HI: DeepPartial<AccountCopy> = {
     expired: {
       sectionKicker: "हाल ही में समाप्त",
       sectionNote: "पुनर्स्थापना 90-दिनों की अवधि को रीसेट करती है।",
+    },
+  },
+  documents: {
+    metadata: {
+      title: "दस्तावेज़",
+      description:
+        "आपकी रसीदें, प्रमाणपत्र, अनुबंध और महत्वपूर्ण फ़ाइलें — निजी रूप से सुरक्षित और हर HenryCo डिवीज़न में उपलब्ध।",
+    },
+    hero: {
+      eyebrow: "व्यक्तिगत तिजोरी",
+      title: "दस्तावेज़",
+      body: "आपकी रसीदें, प्रमाणपत्र, अनुबंध और महत्वपूर्ण फ़ाइलें।",
+    },
+    toolbar: {
+      uploadCta: "दस्तावेज़ अपलोड करें",
+      filterLabel: "फ़िल्टर",
+      allCategories: "सभी श्रेणियाँ",
+      sortLabel: "क्रमबद्ध करें",
+      sortNewest: "नवीनतम पहले",
+      sortOldest: "पुराने पहले",
+    },
+    types: {
+      document: "दस्तावेज़",
+      receipt: "रसीद",
+      certificate: "प्रमाणपत्र",
+      id_document: "पहचान दस्तावेज़",
+      contract: "अनुबंध",
+      other: "अन्य",
+    },
+    categories: {
+      all: "सभी",
+      document: "दस्तावेज़",
+      receipt: "रसीदें",
+      certificate: "प्रमाणपत्र",
+      id_document: "पहचान दस्तावेज़",
+      contract: "अनुबंध",
+      other: "अन्य",
+    },
+    card: {
+      uploadedOnTemplate: "{date} को अपलोड किया गया",
+      sizeTemplate: "{size}",
+      downloadLabel: "डाउनलोड",
+      noFileAttached: "कोई फ़ाइल संलग्न नहीं",
+      openOriginal: "दस्तावेज़ खोलें",
+    },
+    empty: {
+      title: "अभी कोई दस्तावेज़ नहीं",
+      description:
+        "HenryCo सेवाओं के आपके दस्तावेज़, रसीदें और प्रमाणपत्र यहाँ संग्रहीत होंगे।",
+    },
+    summary: {
+      countTemplate: "{count} दस्तावेज़{plural}",
+      filteredTemplate: "{total} में से {count} दिखाए गए",
+    },
+    retention: {
+      eyebrow: "गोपनीयता और प्रतिधारण",
+      title: "आपकी फ़ाइलें निजी रहती हैं",
+      body: "दस्तावेज़ विश्राम में एन्क्रिप्ट किए जाते हैं, केवल आपको दिखाई देते हैं और जब तक आप उन्हें न हटाएँ, आपके HenryCo खाते के पूरे जीवनकाल तक संग्रहीत रहते हैं।",
     },
   },
 };
