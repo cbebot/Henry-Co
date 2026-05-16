@@ -1,5 +1,5 @@
 import { getVerificationGateCopy } from "@henryco/trust";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 
 import { requireAccountUser } from "@/lib/auth";
@@ -24,6 +24,8 @@ export const dynamic = "force-dynamic";
 export default async function WalletWithdrawalsPage() {
   const locale = await getAccountAppLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const accountCopy = getAccountCopy(locale);
+  const copy = accountCopy.wallet;
   const user = await requireAccountUser();
   const [wallet, methods, requests, pinConfigured, verification] = await Promise.all([
     getWalletSummary(user.id),
@@ -51,6 +53,7 @@ export default async function WalletWithdrawalsPage() {
         settlementNote={t(
           "Available balance funds the next withdrawal. Pending withdrawals stay held until finance approves the payout.",
         )}
+        copy={copy.hero}
       />
       <section className="acct-wal__section" aria-labelledby="wal-withdrawals-head">
         <div className="acct-wal__section-head">

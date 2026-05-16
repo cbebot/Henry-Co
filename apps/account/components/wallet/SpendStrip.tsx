@@ -1,4 +1,5 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
+import type { AccountCopy } from "@henryco/i18n/server";
 import {
   divisionBreakdown,
   formatKoboCompact,
@@ -10,9 +11,17 @@ import {
 
 type Props = {
   transactions: ReadonlyArray<WalletTransaction>;
+  copy: AccountCopy["wallet"]["spend"];
 };
 
-export function SpendStrip({ transactions }: Props) {
+function format(template: string, values: Record<string, string | number>): string {
+  return Object.entries(values).reduce(
+    (acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v)),
+    template,
+  );
+}
+
+export function SpendStrip({ transactions, copy }: Props) {
   const monthly = spendByMonth(transactions, 6);
   const slices = divisionBreakdown(transactions);
   const window = windowedSpend(transactions);
@@ -20,8 +29,15 @@ export function SpendStrip({ transactions }: Props) {
   const trend = window.trend;
   const deltaPct = window.deltaPct;
 
+  const trendLabel =
+    trend === "flat"
+      ? copy.trendFlat
+      : format(trend === "down" ? copy.trendBelowTemplate : copy.trendAboveTemplate, {
+          pct: Math.abs(deltaPct),
+        });
+
   return (
-    <div className="acct-wal__spend" role="figure" aria-label="Spend over the last 6 months">
+    <div className="acct-wal__spend" role="figure" aria-label={copy.figureAriaLabel}>
       <div className="acct-wal__spend-head">
         <div>
           <p
@@ -34,7 +50,7 @@ export function SpendStrip({ transactions }: Props) {
               margin: 0,
             }}
           >
-            Spend · last 30 days
+            {copy.last30Eyebrow}
           </p>
           <p className="acct-wal__spend-total" style={{ marginTop: 8 }}>
             ₦{formatKoboMajor(window.last30Kobo)}
@@ -44,16 +60,16 @@ export function SpendStrip({ transactions }: Props) {
           <span
             className="acct-wal__chip"
             data-tone={trend === "down" ? "success" : trend === "up" ? "warn" : "neutral"}
-            title={`vs prior 30 days (₦${formatKoboCompact(window.prior30Kobo)})`}
+            title={format(copy.trendTitleTemplate, {
+              amount: formatKoboCompact(window.prior30Kobo),
+            })}
           >
             {trend === "down" ? (
               <TrendingDown size={11} aria-hidden />
             ) : trend === "up" ? (
               <TrendingUp size={11} aria-hidden />
             ) : null}
-            {trend === "flat"
-              ? "Flat"
-              : `${Math.abs(deltaPct)}% ${trend === "down" ? "below" : "above"} prior 30d`}
+            {trendLabel}
           </span>
         ) : null}
       </div>
@@ -88,9 +104,13 @@ export function SpendStrip({ transactions }: Props) {
               margin: "0 0 8px",
             }}
           >
-            By division
+            {copy.byDivisionEyebrow}
           </p>
-          <div className="acct-wal__division-bar" role="img" aria-label="Spend distribution by division">
+          <div
+            className="acct-wal__division-bar"
+            role="img"
+            aria-label={copy.distributionAriaLabel}
+          >
             {slices.map((s) => (
               <span
                 key={s.key}

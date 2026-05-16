@@ -1,9 +1,9 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import type { AccountCopy } from "@henryco/i18n/server";
 import {
   formatKoboMajor,
   fundingStatusTone,
-  statusReadable,
 } from "./helpers";
 
 type FundingRequest = {
@@ -17,7 +17,16 @@ type FundingRequest = {
 
 type Props = {
   request: FundingRequest;
+  copy: AccountCopy["wallet"]["funding"];
+  statusLabels: AccountCopy["wallet"]["statusLabels"];
 };
+
+function format(template: string, values: Record<string, string | number>): string {
+  return Object.entries(values).reduce(
+    (acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v)),
+    template,
+  );
+}
 
 function formatCreated(iso: string): string {
   const ms = Date.parse(iso);
@@ -29,16 +38,26 @@ function formatCreated(iso: string): string {
   });
 }
 
-export function FundingRequestRow({ request }: Props) {
+function localizedStatus(
+  statusLabels: AccountCopy["wallet"]["statusLabels"],
+  status: string | null | undefined,
+): string {
+  const key = typeof status === "string" && status.length > 0 ? status : "pending";
+  const labels = statusLabels as Record<string, string | undefined>;
+  return labels[key] ?? key.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
+}
+
+export function FundingRequestRow({ request, copy, statusLabels }: Props) {
   const tone = fundingStatusTone(request.status);
-  const label = statusReadable(request.status);
+  const label = localizedStatus(statusLabels, request.status);
   return (
     <Link
       href={`/wallet/funding/${request.id}`}
       className="acct-wal__funding-row"
-      aria-label={`Funding request ${request.reference || request.id.slice(0, 8)} for ₦${formatKoboMajor(
-        request.amount_kobo,
-      )}`}
+      aria-label={format(copy.ariaLabelTemplate, {
+        reference: request.reference || request.id.slice(0, 8),
+        amount: formatKoboMajor(request.amount_kobo),
+      })}
     >
       <div className="acct-wal__funding-meta">
         <div className="acct-wal__chip-row">
@@ -47,11 +66,11 @@ export function FundingRequestRow({ request }: Props) {
           </span>
           {request.proof_url ? (
             <span className="acct-wal__chip" data-tone="success">
-              Proof uploaded
+              {copy.proofUploaded}
             </span>
           ) : (
             <span className="acct-wal__chip" data-tone="warn">
-              Awaiting proof
+              {copy.awaitingProof}
             </span>
           )}
         </div>

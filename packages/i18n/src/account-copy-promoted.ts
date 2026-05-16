@@ -501,6 +501,117 @@ export const ACCOUNT_COPY_ES = {
       "fallback": "Cuenta"
     },
     "footerNote": "Los recibos se descargan como PDFs de marca."
+  },
+  "wallet": {
+    "hero": {
+      "ariaLabel": "Saldo de la cartera",
+      "eyebrow": "Cartera HenryCo · en vivo",
+      "availableLabel": "Saldo disponible",
+      "balanceAriaTemplate": "Saldo disponible {amount} {currency}",
+      "settlementFallback": "Liquidado en tu moneda local al tipo de cambio HenryCo del día.",
+      "ctas": { "fund": "Recargar cartera", "withdraw": "Retirar" },
+      "tiles": {
+        "verifiedLabel": "Saldo verificado",
+        "verifiedFoot": "Utilizable en todos los servicios HenryCo",
+        "pendingFundingLabel": "Recarga pendiente",
+        "pendingFundingFoot": "Permanece aparte hasta que finanzas confirme",
+        "pendingWithdrawalLabel": "Retenido para retiro",
+        "pendingWithdrawalFoot": "Reservado hasta completar el pago"
+      }
+    },
+    "sections": {
+      "actionsTitle": "Acciones de la cartera",
+      "actionsMeta": "Añadir, retirar, pagar, conciliar",
+      "pendingTitle": "Operaciones pendientes",
+      "pendingMeta": "Separadas de tu saldo disponible",
+      "flowTitle": "Cómo fluye tu dinero",
+      "flowMeta": "Últimos 30 días · últimos 6 meses · por división",
+      "fundingTitle": "Solicitudes de recarga recientes",
+      "fundingMetaTemplate": "{count} en revisión",
+      "activityTitle": "Actividad",
+      "activityMetaTemplate": "Últimas {count}"
+    },
+    "quickActions": {
+      "ariaLabel": "Acciones rápidas de la cartera",
+      "addFundsLabel": "Añadir fondos",
+      "addFundsDesc": "Transferencia bancaria con comprobante y confirmación inmediata.",
+      "withdrawLabel": "Retirar",
+      "withdrawDesc": "Mueve el saldo disponible a una cuenta bancaria verificada.",
+      "paymentsLabel": "Pagos",
+      "paymentsDesc": "Cargos recientes, reembolsos y métodos guardados.",
+      "receiptsLabel": "Recibos y facturas",
+      "receiptsDesc": "PDFs de marca en todas las divisiones."
+    },
+    "pendingOps": {
+      "fundingKicker": "Recarga pendiente",
+      "fundingDescEmpty": "Los fondos que transfieres permanecen aquí hasta que finanzas confirme la referencia bancaria.",
+      "fundingDescSingular": "{count} solicitud en revisión — el comprobante hace avanzar la cola.",
+      "fundingDescPlural": "{count} solicitudes en revisión — el comprobante hace avanzar la cola.",
+      "fundingCta": "Abrir vía de recarga",
+      "withdrawalKicker": "Retiros pendientes",
+      "withdrawalDescEmpty": "Los retiros esperan aquí mientras finanzas los revisa — tu saldo disponible nunca se promete dos veces.",
+      "withdrawalDescSingular": "{count} retiro a la espera del pago. Reservado de tu saldo disponible.",
+      "withdrawalDescPlural": "{count} retiros a la espera del pago. Reservados de tu saldo disponible.",
+      "withdrawalCta": "Abrir vía de retiro"
+    },
+    "spend": {
+      "figureAriaLabel": "Gasto en los últimos 6 meses",
+      "last30Eyebrow": "Gasto · últimos 30 días",
+      "byDivisionEyebrow": "Por división",
+      "distributionAriaLabel": "Distribución del gasto por división",
+      "trendFlat": "Estable",
+      "trendBelowTemplate": "{pct}% por debajo de los 30d anteriores",
+      "trendAboveTemplate": "{pct}% por encima de los 30d anteriores",
+      "trendTitleTemplate": "vs 30 días anteriores (₦{amount})"
+    },
+    "trust": {
+      "ariaLabel": "Preparación para retiro",
+      "heading": "Preparación para retiro",
+      "identityTitle": "Identidad verificada",
+      "identityDescDoneTemplate": "{label}. Requerido para los pagos de retiro.",
+      "identityDescTodoTemplate": "{label}. Complétalo una vez para desbloquear los retiros.",
+      "identityCta": "Continuar →",
+      "pinTitle": "PIN de retiro",
+      "pinDescDone": "Tu PIN de retiro está configurado.",
+      "pinDescTodo": "Configura un PIN de 4 dígitos para autorizar cada retiro.",
+      "pinCta": "Configurar PIN →",
+      "payoutTitle": "Método de pago",
+      "payoutDescSingular": "1 método verificado registrado.",
+      "payoutDescPluralTemplate": "{count} métodos verificados registrados.",
+      "payoutDescEmpty": "Añade una cuenta bancaria para recibir retiros.",
+      "payoutCtaManage": "Gestionar →",
+      "payoutCtaAdd": "Añadir método →",
+      "verificationLabels": {
+        "verified": "Identidad verificada",
+        "pending": "Verificación en revisión",
+        "rejected": "La verificación requiere un nuevo envío",
+        "notSubmitted": "Identidad aún no enviada"
+      }
+    },
+    "activity": {
+      "ariaLabel": "Transacciones de la cartera",
+      "emptyTitle": "Aún no hay transacciones",
+      "emptyBody": "Recarga tu cartera y tu feed de actividad se llenará aquí con cada crédito, débito, reembolso y bono en los servicios HenryCo.",
+      "fallbackTitle": "Transacción de la cartera"
+    },
+    "funding": {
+      "proofUploaded": "Comprobante cargado",
+      "awaitingProof": "Esperando comprobante",
+      "ariaLabelTemplate": "Solicitud de recarga {reference} por ₦{amount}"
+    },
+    "statusLabels": {
+      "pending": "Esperando revisión",
+      "awaiting_proof": "Esperando comprobante",
+      "awaiting_review": "Esperando revisión",
+      "in_review": "En revisión",
+      "rejected": "Rechazado",
+      "cancelled": "Cancelado",
+      "expired": "Caducado",
+      "completed": "Confirmado",
+      "verified": "Confirmado",
+      "approved": "Aprobado",
+      "paid": "Pagado"
+    }
   }
 };
 
@@ -1004,6 +1115,117 @@ export const ACCOUNT_COPY_PT = {
       "fallback": "Conta"
     },
     "footerNote": "Os recibos são transferidos como PDFs de marca."
+  },
+  "wallet": {
+    "hero": {
+      "ariaLabel": "Saldo da carteira",
+      "eyebrow": "Carteira HenryCo · ao vivo",
+      "availableLabel": "Saldo disponível",
+      "balanceAriaTemplate": "Saldo disponível {amount} {currency}",
+      "settlementFallback": "Liquidado na sua moeda local à taxa HenryCo do dia.",
+      "ctas": { "fund": "Carregar carteira", "withdraw": "Levantar" },
+      "tiles": {
+        "verifiedLabel": "Saldo verificado",
+        "verifiedFoot": "Utilizável em todos os serviços HenryCo",
+        "pendingFundingLabel": "Carregamento pendente",
+        "pendingFundingFoot": "Permanece à parte até a área financeira confirmar",
+        "pendingWithdrawalLabel": "Retido para levantamento",
+        "pendingWithdrawalFoot": "Reservado até o pagamento concluir"
+      }
+    },
+    "sections": {
+      "actionsTitle": "Ações da carteira",
+      "actionsMeta": "Adicionar, levantar, pagar, reconciliar",
+      "pendingTitle": "Operações pendentes",
+      "pendingMeta": "Separadas do seu saldo disponível",
+      "flowTitle": "Como o seu dinheiro flui",
+      "flowMeta": "Últimos 30 dias · últimos 6 meses · por divisão",
+      "fundingTitle": "Pedidos de carregamento recentes",
+      "fundingMetaTemplate": "{count} em revisão",
+      "activityTitle": "Atividade",
+      "activityMetaTemplate": "Últimas {count}"
+    },
+    "quickActions": {
+      "ariaLabel": "Ações rápidas da carteira",
+      "addFundsLabel": "Adicionar fundos",
+      "addFundsDesc": "Transferência bancária com comprovativo e confirmação imediata.",
+      "withdrawLabel": "Levantar",
+      "withdrawDesc": "Move o saldo disponível para uma conta bancária verificada.",
+      "paymentsLabel": "Pagamentos",
+      "paymentsDesc": "Débitos recentes, reembolsos e métodos guardados.",
+      "receiptsLabel": "Recibos e faturas",
+      "receiptsDesc": "PDFs de marca em todas as divisões."
+    },
+    "pendingOps": {
+      "fundingKicker": "Carregamento pendente",
+      "fundingDescEmpty": "Os fundos que transfere permanecem aqui até a área financeira confirmar a referência bancária.",
+      "fundingDescSingular": "{count} pedido em revisão — o comprovativo faz a fila avançar.",
+      "fundingDescPlural": "{count} pedidos em revisão — o comprovativo faz a fila avançar.",
+      "fundingCta": "Abrir via de carregamento",
+      "withdrawalKicker": "Levantamentos pendentes",
+      "withdrawalDescEmpty": "Os levantamentos aguardam aqui durante a revisão — o seu saldo disponível nunca é prometido duas vezes.",
+      "withdrawalDescSingular": "{count} levantamento a aguardar pagamento. Reservado do seu saldo disponível.",
+      "withdrawalDescPlural": "{count} levantamentos a aguardar pagamento. Reservados do seu saldo disponível.",
+      "withdrawalCta": "Abrir via de levantamento"
+    },
+    "spend": {
+      "figureAriaLabel": "Gastos nos últimos 6 meses",
+      "last30Eyebrow": "Gastos · últimos 30 dias",
+      "byDivisionEyebrow": "Por divisão",
+      "distributionAriaLabel": "Distribuição de gastos por divisão",
+      "trendFlat": "Estável",
+      "trendBelowTemplate": "{pct}% abaixo dos 30d anteriores",
+      "trendAboveTemplate": "{pct}% acima dos 30d anteriores",
+      "trendTitleTemplate": "vs 30 dias anteriores (₦{amount})"
+    },
+    "trust": {
+      "ariaLabel": "Preparação para levantamento",
+      "heading": "Preparação para levantamento",
+      "identityTitle": "Identidade verificada",
+      "identityDescDoneTemplate": "{label}. Necessário para os pagamentos de levantamento.",
+      "identityDescTodoTemplate": "{label}. Complete uma vez para desbloquear os levantamentos.",
+      "identityCta": "Continuar →",
+      "pinTitle": "PIN de levantamento",
+      "pinDescDone": "O seu PIN de levantamento está configurado.",
+      "pinDescTodo": "Defina um PIN de 4 dígitos para autorizar cada levantamento.",
+      "pinCta": "Definir PIN →",
+      "payoutTitle": "Método de pagamento",
+      "payoutDescSingular": "1 método verificado em arquivo.",
+      "payoutDescPluralTemplate": "{count} métodos verificados em arquivo.",
+      "payoutDescEmpty": "Adicione uma conta bancária para receber levantamentos.",
+      "payoutCtaManage": "Gerir →",
+      "payoutCtaAdd": "Adicionar método →",
+      "verificationLabels": {
+        "verified": "Identidade verificada",
+        "pending": "Verificação em revisão",
+        "rejected": "A verificação precisa de novo envio",
+        "notSubmitted": "Identidade ainda não enviada"
+      }
+    },
+    "activity": {
+      "ariaLabel": "Transações da carteira",
+      "emptyTitle": "Ainda sem transações",
+      "emptyBody": "Carregue a sua carteira e o feed de atividade aparecerá aqui com cada crédito, débito, reembolso e bónus nos serviços HenryCo.",
+      "fallbackTitle": "Transação da carteira"
+    },
+    "funding": {
+      "proofUploaded": "Comprovativo carregado",
+      "awaitingProof": "À espera de comprovativo",
+      "ariaLabelTemplate": "Pedido de carregamento {reference} por ₦{amount}"
+    },
+    "statusLabels": {
+      "pending": "À espera de revisão",
+      "awaiting_proof": "À espera de comprovativo",
+      "awaiting_review": "À espera de revisão",
+      "in_review": "Em revisão",
+      "rejected": "Rejeitado",
+      "cancelled": "Cancelado",
+      "expired": "Expirado",
+      "completed": "Confirmado",
+      "verified": "Confirmado",
+      "approved": "Aprovado",
+      "paid": "Pago"
+    }
   }
 };
 
@@ -1507,5 +1729,116 @@ export const ACCOUNT_COPY_AR = {
       "fallback": "الحساب"
     },
     "footerNote": "يتم تنزيل الإيصالات كملفات PDF تحمل العلامة."
+  },
+  "wallet": {
+    "hero": {
+      "ariaLabel": "رصيد المحفظة",
+      "eyebrow": "محفظة HenryCo · مباشر",
+      "availableLabel": "الرصيد المتاح",
+      "balanceAriaTemplate": "الرصيد المتاح {amount} {currency}",
+      "settlementFallback": "تتم التسوية بعملتك المحلية وفقًا لسعر HenryCo اليومي.",
+      "ctas": { "fund": "تعبئة المحفظة", "withdraw": "سحب" },
+      "tiles": {
+        "verifiedLabel": "الرصيد الموثق",
+        "verifiedFoot": "قابل للإنفاق عبر خدمات HenryCo",
+        "pendingFundingLabel": "تعبئة معلّقة",
+        "pendingFundingFoot": "تبقى منفصلة حتى تؤكد الإدارة المالية",
+        "pendingWithdrawalLabel": "محجوز للسحب",
+        "pendingWithdrawalFoot": "محجوز حتى يكتمل الدفع"
+      }
+    },
+    "sections": {
+      "actionsTitle": "إجراءات المحفظة",
+      "actionsMeta": "إضافة، سحب، دفع، تسوية",
+      "pendingTitle": "العمليات المعلّقة",
+      "pendingMeta": "تُحفظ منفصلة عن رصيدك المتاح",
+      "flowTitle": "كيف تتدفق أموالك",
+      "flowMeta": "آخر 30 يومًا · آخر 6 أشهر · حسب القسم",
+      "fundingTitle": "طلبات التعبئة الأخيرة",
+      "fundingMetaTemplate": "{count} قيد المراجعة",
+      "activityTitle": "النشاط",
+      "activityMetaTemplate": "آخر {count}"
+    },
+    "quickActions": {
+      "ariaLabel": "إجراءات سريعة للمحفظة",
+      "addFundsLabel": "إضافة أموال",
+      "addFundsDesc": "تحويل مصرفي مع رفع إثبات وتأكيد فوري.",
+      "withdrawLabel": "سحب",
+      "withdrawDesc": "نقل الرصيد المتاح إلى حساب مصرفي موثق.",
+      "paymentsLabel": "المدفوعات",
+      "paymentsDesc": "المصروفات الأخيرة والاستردادات والطرق المحفوظة.",
+      "receiptsLabel": "الإيصالات والفواتير",
+      "receiptsDesc": "ملفات PDF تحمل العلامة عبر كل الأقسام."
+    },
+    "pendingOps": {
+      "fundingKicker": "تعبئة معلّقة",
+      "fundingDescEmpty": "تبقى الأموال التي تحوّلها هنا حتى تؤكد الإدارة المالية المرجع المصرفي.",
+      "fundingDescSingular": "{count} طلب قيد المراجعة — يدفع الإثبات الطابور للأمام.",
+      "fundingDescPlural": "{count} طلبات قيد المراجعة — يدفع الإثبات الطابور للأمام.",
+      "fundingCta": "فتح مسار التعبئة",
+      "withdrawalKicker": "عمليات سحب معلّقة",
+      "withdrawalDescEmpty": "تنتظر عمليات السحب هنا أثناء المراجعة — لا يُوعد رصيدك المتاح مرتين أبدًا.",
+      "withdrawalDescSingular": "{count} عملية سحب تنتظر الدفع. محجوزة من رصيدك المتاح.",
+      "withdrawalDescPlural": "{count} عمليات سحب تنتظر الدفع. محجوزة من رصيدك المتاح.",
+      "withdrawalCta": "فتح مسار السحب"
+    },
+    "spend": {
+      "figureAriaLabel": "الإنفاق خلال آخر 6 أشهر",
+      "last30Eyebrow": "الإنفاق · آخر 30 يومًا",
+      "byDivisionEyebrow": "حسب القسم",
+      "distributionAriaLabel": "توزيع الإنفاق حسب القسم",
+      "trendFlat": "ثابت",
+      "trendBelowTemplate": "{pct}% أقل من الـ 30 يومًا السابقة",
+      "trendAboveTemplate": "{pct}% أعلى من الـ 30 يومًا السابقة",
+      "trendTitleTemplate": "مقارنة بآخر 30 يومًا (₦{amount})"
+    },
+    "trust": {
+      "ariaLabel": "الجاهزية للسحب",
+      "heading": "الجاهزية للسحب",
+      "identityTitle": "تم توثيق الهوية",
+      "identityDescDoneTemplate": "{label}. مطلوب لمدفوعات السحب.",
+      "identityDescTodoTemplate": "{label}. أكملها مرة واحدة لفتح السحوبات.",
+      "identityCta": "متابعة ←",
+      "pinTitle": "رقم سرّي للسحب",
+      "pinDescDone": "تم ضبط رقمك السرّي للسحب.",
+      "pinDescTodo": "اضبط رقمًا سريًا من 4 أرقام للسماح بكل عملية سحب.",
+      "pinCta": "ضبط الرقم السرّي ←",
+      "payoutTitle": "طريقة الدفع",
+      "payoutDescSingular": "طريقة واحدة موثقة مسجلة.",
+      "payoutDescPluralTemplate": "{count} طرق موثقة مسجلة.",
+      "payoutDescEmpty": "أضف حسابًا مصرفيًا لتلقي السحوبات.",
+      "payoutCtaManage": "إدارة ←",
+      "payoutCtaAdd": "إضافة طريقة ←",
+      "verificationLabels": {
+        "verified": "تم توثيق الهوية",
+        "pending": "التحقق قيد المراجعة",
+        "rejected": "يتطلب التحقق إعادة إرسال",
+        "notSubmitted": "لم تُقدَّم الهوية بعد"
+      }
+    },
+    "activity": {
+      "ariaLabel": "معاملات المحفظة",
+      "emptyTitle": "لا توجد معاملات بعد",
+      "emptyBody": "اشحن محفظتك وستظهر هنا جميع المعاملات من إيداعات وخصومات واستردادات ومكافآت عبر خدمات HenryCo.",
+      "fallbackTitle": "معاملة المحفظة"
+    },
+    "funding": {
+      "proofUploaded": "تم رفع الإثبات",
+      "awaitingProof": "في انتظار الإثبات",
+      "ariaLabelTemplate": "طلب تعبئة {reference} بقيمة ₦{amount}"
+    },
+    "statusLabels": {
+      "pending": "في انتظار المراجعة",
+      "awaiting_proof": "في انتظار الإثبات",
+      "awaiting_review": "في انتظار المراجعة",
+      "in_review": "قيد المراجعة",
+      "rejected": "مرفوض",
+      "cancelled": "ملغى",
+      "expired": "منتهي الصلاحية",
+      "completed": "مؤكَّد",
+      "verified": "مؤكَّد",
+      "approved": "موافَق عليه",
+      "paid": "مدفوع"
+    }
   }
 };

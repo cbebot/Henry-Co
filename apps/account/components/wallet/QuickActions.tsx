@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowDownLeft, ArrowUpRight, Plus, Receipt } from "lucide-react";
+import type { AccountCopy } from "@henryco/i18n/server";
 
 type Action = {
   href: string;
@@ -9,40 +10,43 @@ type Action = {
   icon: React.ComponentType<{ size?: number; "aria-hidden"?: boolean }>;
 };
 
-const ACTIONS: Action[] = [
-  {
-    href: "/wallet/funding",
-    label: "Add funds",
-    desc: "Bank transfer with proof upload and instant confirmation.",
-    tone: "green",
-    icon: Plus,
-  },
-  {
-    href: "/wallet/withdrawals",
-    label: "Withdraw",
-    desc: "Move available balance to a verified bank account.",
-    tone: "orange",
-    icon: ArrowUpRight,
-  },
-  {
-    href: "/payments",
-    label: "Payments",
-    desc: "Recent charges, refunds and saved methods.",
-    tone: "blue",
-    icon: ArrowDownLeft,
-  },
-  {
-    href: "/invoices",
-    label: "Receipts & invoices",
-    desc: "Branded PDFs across every division.",
-    icon: Receipt,
-  },
-];
+type Props = {
+  copy: AccountCopy["wallet"]["quickActions"];
+};
 
-export function QuickActions() {
+export function QuickActions({ copy }: Props) {
+  const actions: Action[] = [
+    {
+      href: "/wallet/funding",
+      label: copy.addFundsLabel,
+      desc: copy.addFundsDesc,
+      tone: "green",
+      icon: Plus,
+    },
+    {
+      href: "/wallet/withdrawals",
+      label: copy.withdrawLabel,
+      desc: copy.withdrawDesc,
+      tone: "orange",
+      icon: ArrowUpRight,
+    },
+    {
+      href: "/payments",
+      label: copy.paymentsLabel,
+      desc: copy.paymentsDesc,
+      tone: "blue",
+      icon: ArrowDownLeft,
+    },
+    {
+      href: "/invoices",
+      label: copy.receiptsLabel,
+      desc: copy.receiptsDesc,
+      icon: Receipt,
+    },
+  ];
   return (
-    <div className="acct-wal__actions" role="list" aria-label="Wallet quick actions">
-      {ACTIONS.map((a) => {
+    <div className="acct-wal__actions" role="list" aria-label={copy.ariaLabel}>
+      {actions.map((a) => {
         const Icon = a.icon;
         return (
           <Link key={a.label} href={a.href} className="acct-wal__action" role="listitem">
