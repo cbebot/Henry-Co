@@ -133,6 +133,99 @@ export type MarketplacePublicCopy = {
     metadataTitle: string;
     metadataDescription: string;
   };
+  sell: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      body: string;
+      primaryCta: string;
+      secondaryCta: string;
+      signInCta: string;
+      highlights: Array<{ label: string; value: string }>;
+    };
+    advantages: {
+      kicker: string;
+      items: Array<{ title: string; body: string }>;
+    };
+    onboarding: {
+      kicker: string;
+      stepLabel: string;
+      steps: Array<{ step: string; title: string; body: string }>;
+      callout: {
+        eyebrow: string;
+        body: string;
+      };
+    };
+    plans: {
+      kicker: string;
+      title: string;
+      feeLabel: string;
+      payoutLabel: string;
+      includedLabel: string;
+      includedSuffix: string;
+      featuredLabel: string;
+      featuredCurrencyPrefix: string;
+    };
+    trustTiers: {
+      kicker: string;
+      title: string;
+    };
+    closing: {
+      kicker: string;
+      title: string;
+      body: string;
+      primaryCta: string;
+      secondaryCta: string;
+    };
+  };
+  help: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      body: string;
+    };
+    stillNeedHelp: {
+      kicker: string;
+      title: string;
+      body: string;
+      ctaLabel: string;
+    };
+  };
+  trust: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      body: string;
+      pillars: Array<{ label: string; value: string }>;
+    };
+    guardrails: {
+      kicker: string;
+      items: Array<{ title: string; body: string }>;
+    };
+    sellerLadder: {
+      kicker: string;
+      title: string;
+    };
+    policySurfaces: {
+      kicker: string;
+      title: string;
+    };
+    ecosystem: {
+      kicker: string;
+    };
+  };
 };
 
 const EN: MarketplacePublicCopy = {
@@ -320,6 +413,136 @@ const EN: MarketplacePublicCopy = {
     metadataDescription:
       "Explore verified products from {brand} on HenryCo Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout.",
   },
+  sell: {
+    metadata: {
+      title: "Sell on HenryCo — selective marketplace for trust-led sellers",
+      description:
+        "Apply to sell on HenryCo Marketplace: trust-led positioning, premium storefronts, and a unified workspace for orders, payouts, and support.",
+    },
+    hero: {
+      kicker: "Sell on HenryCo",
+      title: "Selective by design. Built for sellers who lead on trust.",
+      body: "HenryCo Marketplace favours sellers who care about presentation, reliable fulfillment, and honest buyer protection. The bar is explicit on this page; the seller application continues inside your HenryCo account.",
+      primaryCta: "Open seller application",
+      secondaryCta: "See seller pricing",
+      signInCta: "Sign in with HenryCo account",
+      highlights: [
+        { label: "Selection", value: "Manual review, not pay-to-list" },
+        { label: "Storefront", value: "Trust passport visible to buyers" },
+        { label: "Workspace", value: "Orders, payouts, support unified" },
+      ],
+    },
+    advantages: {
+      kicker: "Why stronger sellers win here",
+      items: [
+        { title: "Trust-led positioning", body: "Your store gets a visible trust passport instead of being buried in low-quality marketplace clutter." },
+        { title: "Better storefront quality", body: "Editorial rails, calmer search, and cleaner product cards help quality stores convert faster." },
+        { title: "Sharper operations", body: "Payouts, orders, support, moderation, and stock alerts stay visible in one cleaner workspace." },
+      ],
+    },
+    onboarding: {
+      kicker: "How onboarding works",
+      stepLabel: "Step",
+      steps: [
+        { step: "01", title: "Start the seller application", body: "Open the application from inside your HenryCo account — drafts save automatically while you assemble details." },
+        { step: "02", title: "Add business details", body: "Business name, store profile, product focus, and any verification documents that explain how you fulfil orders." },
+        { step: "03", title: "Application review", body: "The HenryCo team reviews documents, trust signals, and store readiness — not just a paid badge." },
+        { step: "04", title: "Vendor onboarding", body: "Approved sellers continue into vendor onboarding where pricing, posting fees, payout windows, and policy rules stay visible before publishing opens." },
+      ],
+      callout: {
+        eyebrow: "A cleaner seller application",
+        body: "Seller registration stays inside your account so business details, review status, and approval updates remain private and easy to follow.",
+      },
+    },
+    plans: {
+      kicker: "Plan economics",
+      title: "Tiers stated up front, not after publishing.",
+      feeLabel: "Fee",
+      payoutLabel: "Payout",
+      includedLabel: "Included",
+      includedSuffix: "listings",
+      featuredLabel: "Featured",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Trust tiers change privileges",
+      title: "Earn faster payouts, larger storefronts, and policy advantages.",
+    },
+    closing: {
+      kicker: "Move forward",
+      title: "Apply, then watch the application status from your account.",
+      body: "Approval unlocks vendor onboarding. Pricing, posting fees, and payout windows are visible before you publish — no contract surprises later.",
+      primaryCta: "Start application",
+      secondaryCta: "Visit vendor workspace",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Help centre — HenryCo Marketplace",
+      description:
+        "Browse the answers buyers and sellers ask most. If you do not find what you need, open a support ticket and a person on the team will read it.",
+    },
+    hero: {
+      kicker: "Help centre",
+      title: "Find an answer in seconds — or talk to a person.",
+      body: "Search the topics most buyers and sellers ask about. If you do not find what you need, open a support ticket from the bottom of this page and a person on the team will read it.",
+    },
+    stillNeedHelp: {
+      kicker: "Still need help",
+      title: "Open a support ticket and a person will read it.",
+      body: "Tickets keep the full context attached — the order, the vendor, the dispute history — so the team works through the issue without you re-typing it on every reply.",
+      ctaLabel: "Open a support ticket",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Trust & safety — HenryCo Marketplace",
+      description:
+        "Trust governs what a seller can do, how money moves, and how moderation responds. Seller tiers, escrow holds, disputes, and payout release all leave a server-side paper trail.",
+    },
+    hero: {
+      kicker: "Trust & safety",
+      title: "Visible before checkout. Enforced after it.",
+      body: "Trust governs what a seller can do, how money moves, and how moderation responds. Seller tiers, buyer risk, listing scoring, escrow holds, disputes, and payout release all leave a server-side paper trail.",
+      pillars: [
+        { label: "Money movement", value: "Escrowed, released after checks" },
+        { label: "Reviews", value: "Server-logged, dispute-traceable" },
+        { label: "Tiers", value: "Earned, revocable" },
+      ],
+    },
+    guardrails: {
+      kicker: "Four guardrails",
+      items: [
+        {
+          title: "Trust passports",
+          body: "Every store and product surfaces verification level, SLA, dispute rate, payout readiness, and fulfillment posture.",
+        },
+        {
+          title: "Escrow control",
+          body: "Buyer funds are held by HenryCo first, then move into releasable payout only after delivery and trust checks clear.",
+        },
+        {
+          title: "Anti-fraud review",
+          body: "Off-platform payment steering, duplicate media, listing velocity spikes, and risky payout patterns route into queue visibility.",
+        },
+        {
+          title: "Audit trails",
+          body: "Approvals, rejections, payout actions, dispute decisions, and automation sweeps are logged server-side.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Seller trust ladder",
+      title: "Tiers earned through behaviour, not paid for.",
+    },
+    policySurfaces: {
+      kicker: "Policy surfaces",
+      title: "The standards we hold ourselves to.",
+    },
+    ecosystem: {
+      kicker: "Ecosystem trust reinforcement",
+    },
+  },
 };
 
 const FR: DeepPartial<MarketplacePublicCopy> = {
@@ -491,6 +714,136 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
     metadataDescription:
       "Explorez les produits vérifiés de {brand} sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et des passeports vendeurs visibles avant le paiement.",
   },
+  help: {
+    metadata: {
+      title: "Centre d’aide — Marketplace HenryCo",
+      description:
+        "Parcourez les questions les plus posées par les acheteurs et vendeurs. Si vous ne trouvez pas ce qu’il vous faut, ouvrez un ticket et un membre de l’équipe le lira.",
+    },
+    hero: {
+      kicker: "Centre d’aide",
+      title: "Trouvez une réponse en quelques secondes — ou parlez à une personne.",
+      body: "Cherchez les sujets que les acheteurs et les vendeurs posent le plus. Si vous ne trouvez pas ce qu’il vous faut, ouvrez un ticket en bas de page et un membre de l’équipe le lira.",
+    },
+    stillNeedHelp: {
+      kicker: "Encore besoin d’aide",
+      title: "Ouvrez un ticket et une personne le lira.",
+      body: "Les tickets gardent tout le contexte rattaché — la commande, le vendeur, l’historique du litige — pour que l’équipe traite le sujet sans que vous ayez à le réécrire à chaque réponse.",
+      ctaLabel: "Ouvrir un ticket de support",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Vendre sur HenryCo — marketplace sélective pour des vendeurs de confiance",
+      description:
+        "Postulez pour vendre sur HenryCo Marketplace : positionnement axé sur la confiance, vitrines premium et un espace unifié pour commandes, paiements et support.",
+    },
+    hero: {
+      kicker: "Vendre sur HenryCo",
+      title: "Sélective par essence. Conçue pour les vendeurs qui misent sur la confiance.",
+      body: "HenryCo Marketplace privilégie les vendeurs soigneux dans leur présentation, fiables dans l’exécution et honnêtes sur la protection des acheteurs. Le niveau attendu est explicité sur cette page ; la candidature vendeur se poursuit dans votre compte HenryCo.",
+      primaryCta: "Ouvrir la candidature vendeur",
+      secondaryCta: "Voir les tarifs vendeur",
+      signInCta: "Se connecter avec un compte HenryCo",
+      highlights: [
+        { label: "Sélection", value: "Revue manuelle, pas de mise en ligne payante" },
+        { label: "Vitrine", value: "Passeport de confiance visible par les acheteurs" },
+        { label: "Espace", value: "Commandes, paiements et support unifiés" },
+      ],
+    },
+    advantages: {
+      kicker: "Pourquoi les meilleurs vendeurs réussissent ici",
+      items: [
+        { title: "Positionnement basé sur la confiance", body: "Votre boutique reçoit un passeport de confiance visible, au lieu d’être noyée dans le bruit d’un marketplace bas de gamme." },
+        { title: "Une meilleure qualité de vitrine", body: "Des rails éditoriaux, une recherche plus calme et des fiches produits plus nettes aident les boutiques exigeantes à mieux convertir." },
+        { title: "Une exploitation plus nette", body: "Paiements, commandes, support, modération et alertes stock restent visibles dans un espace de travail plus clair." },
+      ],
+    },
+    onboarding: {
+      kicker: "Comment se passe l’onboarding",
+      stepLabel: "Étape",
+      steps: [
+        { step: "01", title: "Lancer la candidature vendeur", body: "Ouvrez la candidature depuis votre compte HenryCo — les brouillons s’enregistrent automatiquement pendant que vous rassemblez les informations." },
+        { step: "02", title: "Ajouter les détails de l’activité", body: "Nom d’entreprise, profil de boutique, axe produit et tout document de vérification expliquant comment vous honorez vos commandes." },
+        { step: "03", title: "Revue de la candidature", body: "L’équipe HenryCo examine les documents, les signaux de confiance et la solidité de la boutique — pas seulement un badge payant." },
+        { step: "04", title: "Onboarding vendeur", body: "Les vendeurs approuvés continuent l’onboarding où tarifs, frais de publication, fenêtres de paiement et règles restent visibles avant la mise en ligne." },
+      ],
+      callout: {
+        eyebrow: "Une candidature vendeur plus propre",
+        body: "L’inscription vendeur reste dans votre compte pour que les détails de l’activité, l’état de la revue et les mises à jour d’approbation restent privés et faciles à suivre.",
+      },
+    },
+    plans: {
+      kicker: "Économie des plans",
+      title: "Des paliers annoncés en amont, pas après la mise en ligne.",
+      feeLabel: "Commission",
+      payoutLabel: "Versement",
+      includedLabel: "Inclus",
+      includedSuffix: "annonces",
+      featuredLabel: "Mise en avant",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Les paliers de confiance changent les privilèges",
+      title: "Obtenez des versements plus rapides, des vitrines plus larges et des avantages côté politique.",
+    },
+    closing: {
+      kicker: "Avancer",
+      title: "Postulez, puis suivez le statut de la candidature depuis votre compte.",
+      body: "L’approbation ouvre l’onboarding vendeur. Tarifs, frais de publication et fenêtres de paiement restent visibles avant la mise en ligne — pas de mauvaises surprises contractuelles ensuite.",
+      primaryCta: "Démarrer la candidature",
+      secondaryCta: "Voir l’espace vendeur",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Confiance & sécurité — HenryCo Marketplace",
+      description:
+        "La confiance définit ce qu’un vendeur peut faire, comment l’argent circule et comment la modération réagit. Niveaux vendeurs, séquestre, litiges et libération des paiements laissent une trace serveur complète.",
+    },
+    hero: {
+      kicker: "Confiance & sécurité",
+      title: "Visible avant le paiement. Appliquée après.",
+      body: "La confiance gouverne ce que peut faire un vendeur, la circulation de l’argent et la réponse de la modération. Niveaux vendeurs, risque acheteur, notation des annonces, séquestre, litiges et libération des paiements laissent une trace serveur.",
+      pillars: [
+        { label: "Flux d’argent", value: "Sous séquestre, libéré après contrôles" },
+        { label: "Avis", value: "Journalisés côté serveur, traçables en litige" },
+        { label: "Niveaux", value: "Gagnés, révocables" },
+      ],
+    },
+    guardrails: {
+      kicker: "Quatre garde-fous",
+      items: [
+        {
+          title: "Passeports de confiance",
+          body: "Chaque boutique et chaque produit expose son niveau de vérification, son SLA, son taux de litige, sa disponibilité au paiement et sa posture d’exécution.",
+        },
+        {
+          title: "Contrôle du séquestre",
+          body: "Les fonds de l’acheteur sont d’abord détenus par HenryCo, puis libérés au paiement seulement après livraison et contrôles validés.",
+        },
+        {
+          title: "Revue anti-fraude",
+          body: "Détours de paiement hors plateforme, médias dupliqués, pics de mise en ligne et schémas de paiement à risque entrent dans la visibilité des files de revue.",
+        },
+        {
+          title: "Pistes d’audit",
+          body: "Approbations, refus, actions de paiement, décisions de litige et balayages automatisés sont journalisés côté serveur.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Échelle de confiance vendeur",
+      title: "Des niveaux gagnés par le comportement, pas achetés.",
+    },
+    policySurfaces: {
+      kicker: "Surfaces des politiques",
+      title: "Les standards que nous nous imposons.",
+    },
+    ecosystem: {
+      kicker: "Renforcement de la confiance dans l’écosystème",
+    },
+  },
 };
 
 const ES: DeepPartial<MarketplacePublicCopy> = {
@@ -525,6 +878,136 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "Explora productos verificados de {brand} en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaportes de vendedor visibles antes del pago.",
+  },
+  help: {
+    metadata: {
+      title: "Centro de ayuda — HenryCo Marketplace",
+      description:
+        "Consulta las dudas más frecuentes de compradores y vendedores. Si no encuentras lo que buscas, abre un ticket y una persona del equipo lo leerá.",
+    },
+    hero: {
+      kicker: "Centro de ayuda",
+      title: "Encuentra una respuesta en segundos — o habla con una persona.",
+      body: "Busca los temas que más consultan compradores y vendedores. Si no encuentras lo que necesitas, abre un ticket al final de la página y una persona del equipo lo leerá.",
+    },
+    stillNeedHelp: {
+      kicker: "Aún necesitas ayuda",
+      title: "Abre un ticket y una persona lo leerá.",
+      body: "Los tickets conservan todo el contexto adjunto — el pedido, el vendedor, el historial de la disputa — para que el equipo resuelva sin que tengas que reescribirlo en cada respuesta.",
+      ctaLabel: "Abrir un ticket de soporte",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Vender en HenryCo — marketplace selectivo para vendedores de confianza",
+      description:
+        "Solicita vender en HenryCo Marketplace: posicionamiento basado en la confianza, escaparates premium y un espacio unificado para pedidos, pagos y soporte.",
+    },
+    hero: {
+      kicker: "Vender en HenryCo",
+      title: "Selectivo por diseño. Pensado para vendedores que priorizan la confianza.",
+      body: "HenryCo Marketplace favorece a vendedores cuidadosos en la presentación, fiables en el cumplimiento y honestos con la protección al comprador. El nivel exigido se explica en esta página; la solicitud de vendedor continúa dentro de tu cuenta HenryCo.",
+      primaryCta: "Abrir solicitud de vendedor",
+      secondaryCta: "Ver tarifas de vendedor",
+      signInCta: "Iniciar sesión con cuenta HenryCo",
+      highlights: [
+        { label: "Selección", value: "Revisión manual, no pago por listar" },
+        { label: "Escaparate", value: "Pasaporte de confianza visible para compradores" },
+        { label: "Espacio", value: "Pedidos, pagos y soporte unificados" },
+      ],
+    },
+    advantages: {
+      kicker: "Por qué triunfan aquí los vendedores más sólidos",
+      items: [
+        { title: "Posicionamiento basado en la confianza", body: "Tu tienda recibe un pasaporte de confianza visible, en lugar de quedar sepultada en el ruido de un marketplace de baja calidad." },
+        { title: "Mejor calidad de escaparate", body: "Carriles editoriales, una búsqueda más calmada y fichas de producto más limpias ayudan a convertir mejor a las tiendas exigentes." },
+        { title: "Operativa más nítida", body: "Pagos, pedidos, soporte, moderación y avisos de stock se mantienen visibles en un mismo espacio más claro." },
+      ],
+    },
+    onboarding: {
+      kicker: "Cómo funciona el onboarding",
+      stepLabel: "Paso",
+      steps: [
+        { step: "01", title: "Iniciar la solicitud de vendedor", body: "Abre la solicitud desde tu cuenta HenryCo — los borradores se guardan automáticamente mientras reúnes la información." },
+        { step: "02", title: "Añadir los datos del negocio", body: "Nombre de la empresa, perfil de tienda, enfoque de producto y los documentos de verificación que explican cómo cumples los pedidos." },
+        { step: "03", title: "Revisión de la solicitud", body: "El equipo de HenryCo revisa documentos, señales de confianza y la solidez de la tienda — no solo una insignia de pago." },
+        { step: "04", title: "Onboarding del vendedor", body: "Los vendedores aprobados continúan con el onboarding, donde tarifas, comisiones de publicación, ventanas de cobro y políticas son visibles antes de publicar." },
+      ],
+      callout: {
+        eyebrow: "Una solicitud de vendedor más limpia",
+        body: "El registro de vendedor permanece dentro de tu cuenta para que los datos del negocio, el estado de la revisión y las actualizaciones de aprobación queden privados y fáciles de seguir.",
+      },
+    },
+    plans: {
+      kicker: "Economía de los planes",
+      title: "Tarifas claras desde el inicio, no después de publicar.",
+      feeLabel: "Comisión",
+      payoutLabel: "Cobro",
+      includedLabel: "Incluido",
+      includedSuffix: "anuncios",
+      featuredLabel: "Destacado",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Los niveles de confianza cambian los privilegios",
+      title: "Consigue cobros más rápidos, escaparates más amplios y ventajas en políticas.",
+    },
+    closing: {
+      kicker: "Avanzar",
+      title: "Solicita y sigue el estado desde tu cuenta.",
+      body: "La aprobación desbloquea el onboarding de vendedor. Tarifas, comisiones de publicación y ventanas de cobro se ven antes de publicar — sin sorpresas contractuales después.",
+      primaryCta: "Iniciar solicitud",
+      secondaryCta: "Ir al espacio de vendedor",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Confianza y seguridad — HenryCo Marketplace",
+      description:
+        "La confianza define lo que puede hacer un vendedor, cómo se mueve el dinero y cómo responde la moderación. Niveles de vendedor, custodia, disputas y liberación de pagos dejan rastro en el servidor.",
+    },
+    hero: {
+      kicker: "Confianza y seguridad",
+      title: "Visible antes del pago. Aplicada después.",
+      body: "La confianza rige lo que puede hacer un vendedor, cómo circula el dinero y cómo reacciona la moderación. Niveles de vendedor, riesgo del comprador, puntuación de anuncios, custodia, disputas y liberación de pagos dejan registro en el servidor.",
+      pillars: [
+        { label: "Movimiento de dinero", value: "En custodia, liberado tras controles" },
+        { label: "Reseñas", value: "Registradas en servidor, rastreables en disputa" },
+        { label: "Niveles", value: "Ganados, revocables" },
+      ],
+    },
+    guardrails: {
+      kicker: "Cuatro salvaguardas",
+      items: [
+        {
+          title: "Pasaportes de confianza",
+          body: "Cada tienda y producto expone el nivel de verificación, el SLA, la tasa de disputas, la preparación para el pago y la postura de cumplimiento.",
+        },
+        {
+          title: "Control de custodia",
+          body: "Los fondos del comprador los retiene HenryCo primero y solo se liberan al pago cuando la entrega y los controles de confianza están validados.",
+        },
+        {
+          title: "Revisión antifraude",
+          body: "Desvíos de pago fuera de la plataforma, medios duplicados, picos de publicación y patrones de pago de riesgo entran en la visibilidad de la cola.",
+        },
+        {
+          title: "Pistas de auditoría",
+          body: "Aprobaciones, rechazos, acciones de pago, decisiones de disputa y barridos automatizados quedan registrados en el servidor.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Escala de confianza del vendedor",
+      title: "Niveles ganados con el comportamiento, no comprados.",
+    },
+    policySurfaces: {
+      kicker: "Superficies de políticas",
+      title: "Los estándares a los que nos comprometemos.",
+    },
+    ecosystem: {
+      kicker: "Refuerzo de confianza en el ecosistema",
+    },
   },
 };
 
@@ -586,6 +1069,136 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
         "Explora produtos verificados em {category} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento.",
       fallbackDescription:
         "Percorre uma categoria curada da HenryCo Marketplace com sinais de confiança, clareza de entrega e passaportes de vendedor antes do pagamento.",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Centro de ajuda — HenryCo Marketplace",
+      description:
+        "Consulta as dúvidas mais comuns de compradores e vendedores. Se não encontrares o que precisas, abre um pedido de apoio e alguém da equipa lê-o.",
+    },
+    hero: {
+      kicker: "Centro de ajuda",
+      title: "Encontra uma resposta em segundos — ou fala com uma pessoa.",
+      body: "Pesquisa os temas que compradores e vendedores mais perguntam. Se não encontrares o que precisas, abre um pedido de apoio no fim desta página e alguém da equipa lê-o.",
+    },
+    stillNeedHelp: {
+      kicker: "Continuas a precisar de ajuda",
+      title: "Abre um pedido de apoio e uma pessoa lê-o.",
+      body: "Os pedidos mantêm todo o contexto ligado — a encomenda, o vendedor, o histórico do litígio — para que a equipa trate do assunto sem precisares de reescrever a cada resposta.",
+      ctaLabel: "Abrir um pedido de apoio",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Vender na HenryCo — marketplace seletivo para vendedores de confiança",
+      description:
+        "Candidata-te para vender na HenryCo Marketplace: posicionamento de confiança, montras premium e um espaço unificado para encomendas, pagamentos e apoio.",
+    },
+    hero: {
+      kicker: "Vender na HenryCo",
+      title: "Seletiva por natureza. Pensada para vendedores que apostam na confiança.",
+      body: "A HenryCo Marketplace prefere vendedores cuidadosos na apresentação, fiáveis no cumprimento e honestos na proteção ao comprador. O nível exigido fica explícito nesta página; a candidatura de vendedor continua dentro da tua conta HenryCo.",
+      primaryCta: "Abrir candidatura de vendedor",
+      secondaryCta: "Ver preços de vendedor",
+      signInCta: "Iniciar sessão com a conta HenryCo",
+      highlights: [
+        { label: "Seleção", value: "Análise manual, sem listagem paga" },
+        { label: "Montra", value: "Passaporte de confiança visível para compradores" },
+        { label: "Espaço", value: "Encomendas, pagamentos e apoio unificados" },
+      ],
+    },
+    advantages: {
+      kicker: "Porque vencem aqui os vendedores mais fortes",
+      items: [
+        { title: "Posicionamento de confiança", body: "A tua loja recebe um passaporte de confiança visível, em vez de se perder no ruído de um marketplace de baixa qualidade." },
+        { title: "Melhor qualidade de montra", body: "Carris editoriais, uma pesquisa mais calma e cartões de produto mais limpos ajudam lojas exigentes a converter melhor." },
+        { title: "Operação mais nítida", body: "Pagamentos, encomendas, apoio, moderação e alertas de stock ficam visíveis num espaço de trabalho mais claro." },
+      ],
+    },
+    onboarding: {
+      kicker: "Como funciona o onboarding",
+      stepLabel: "Passo",
+      steps: [
+        { step: "01", title: "Iniciar a candidatura de vendedor", body: "Abre a candidatura a partir da tua conta HenryCo — os rascunhos são guardados automaticamente enquanto reúnes os detalhes." },
+        { step: "02", title: "Adicionar dados do negócio", body: "Nome da empresa, perfil da loja, foco de produto e quaisquer documentos de verificação que expliquem como cumpres encomendas." },
+        { step: "03", title: "Análise da candidatura", body: "A equipa HenryCo analisa documentos, sinais de confiança e a robustez da loja — não apenas um emblema pago." },
+        { step: "04", title: "Onboarding de vendedor", body: "Os vendedores aprovados seguem para o onboarding onde preços, taxas de publicação, janelas de pagamento e regras ficam visíveis antes de publicares." },
+      ],
+      callout: {
+        eyebrow: "Uma candidatura de vendedor mais limpa",
+        body: "O registo de vendedor mantém-se dentro da tua conta para que os dados do negócio, o estado da análise e as atualizações de aprovação fiquem privados e fáceis de seguir.",
+      },
+    },
+    plans: {
+      kicker: "Economia dos planos",
+      title: "Patamares anunciados à partida, não depois de publicar.",
+      feeLabel: "Comissão",
+      payoutLabel: "Pagamento",
+      includedLabel: "Incluído",
+      includedSuffix: "anúncios",
+      featuredLabel: "Em destaque",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Os patamares de confiança mudam os privilégios",
+      title: "Conquista pagamentos mais rápidos, montras maiores e vantagens nas políticas.",
+    },
+    closing: {
+      kicker: "Avançar",
+      title: "Candidata-te e acompanha o estado a partir da tua conta.",
+      body: "A aprovação desbloqueia o onboarding de vendedor. Preços, taxas de publicação e janelas de pagamento são visíveis antes de publicares — sem surpresas contratuais depois.",
+      primaryCta: "Iniciar candidatura",
+      secondaryCta: "Ir ao espaço de vendedor",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Confiança e segurança — HenryCo Marketplace",
+      description:
+        "A confiança define o que um vendedor pode fazer, como o dinheiro se move e como a moderação responde. Níveis de vendedor, custódia, disputas e libertação de pagamentos deixam rasto no servidor.",
+    },
+    hero: {
+      kicker: "Confiança e segurança",
+      title: "Visível antes do pagamento. Aplicada depois.",
+      body: "A confiança rege o que um vendedor pode fazer, como o dinheiro circula e como a moderação responde. Níveis de vendedor, risco do comprador, pontuação de anúncios, custódia, disputas e libertação de pagamentos deixam registo no servidor.",
+      pillars: [
+        { label: "Movimento de dinheiro", value: "Em custódia, libertado após verificações" },
+        { label: "Avaliações", value: "Registadas no servidor, rastreáveis em disputa" },
+        { label: "Níveis", value: "Conquistados, revogáveis" },
+      ],
+    },
+    guardrails: {
+      kicker: "Quatro salvaguardas",
+      items: [
+        {
+          title: "Passaportes de confiança",
+          body: "Cada loja e produto mostra o nível de verificação, SLA, taxa de disputas, prontidão para pagamento e postura de cumprimento.",
+        },
+        {
+          title: "Controlo da custódia",
+          body: "Os fundos do comprador ficam primeiro retidos pela HenryCo e só são libertados após confirmação da entrega e das verificações de confiança.",
+        },
+        {
+          title: "Revisão antifraude",
+          body: "Desvios de pagamento fora da plataforma, mídias duplicadas, picos de publicação e padrões de pagamento de risco entram na visibilidade da fila.",
+        },
+        {
+          title: "Trilhas de auditoria",
+          body: "Aprovações, recusas, ações de pagamento, decisões de disputa e varreduras automatizadas ficam registadas no servidor.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Escala de confiança do vendedor",
+      title: "Níveis conquistados pelo comportamento, não comprados.",
+    },
+    policySurfaces: {
+      kicker: "Superfícies das políticas",
+      title: "Os padrões que assumimos.",
+    },
+    ecosystem: {
+      kicker: "Reforço de confiança no ecossistema",
     },
   },
 };
@@ -650,6 +1263,136 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
         "Stöbere durch eine kuratierte Kategorie im HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout.",
     },
   },
+  help: {
+    metadata: {
+      title: "Hilfe-Center — HenryCo Marketplace",
+      description:
+        "Sieh dir die häufigsten Fragen von Käufer:innen und Verkäufer:innen an. Wenn du nicht fündig wirst, öffne ein Support-Ticket – ein Mensch aus dem Team liest es.",
+    },
+    hero: {
+      kicker: "Hilfe-Center",
+      title: "Finde in Sekunden eine Antwort – oder sprich mit einer Person.",
+      body: "Such die Themen, die Käufer:innen und Verkäufer:innen am häufigsten stellen. Wenn du nicht fündig wirst, öffne unten auf der Seite ein Support-Ticket – ein Mensch aus dem Team liest es.",
+    },
+    stillNeedHelp: {
+      kicker: "Brauchst du weiter Hilfe",
+      title: "Öffne ein Support-Ticket – ein Mensch liest es.",
+      body: "Tickets halten den vollen Kontext beisammen — Bestellung, Händler, Verlauf des Streitfalls — damit das Team die Sache bearbeitet, ohne dass du sie bei jeder Antwort neu tippst.",
+      ctaLabel: "Support-Ticket öffnen",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Auf HenryCo verkaufen — selektiver Marketplace für Vertrauens-Händler:innen",
+      description:
+        "Bewirb dich für den Verkauf auf HenryCo Marketplace: vertrauensorientierte Positionierung, Premium-Storefronts und ein einheitlicher Workspace für Bestellungen, Auszahlungen und Support.",
+    },
+    hero: {
+      kicker: "Auf HenryCo verkaufen",
+      title: "Selektiv von Grund auf. Gemacht für Händler:innen, die Vertrauen führen.",
+      body: "HenryCo Marketplace bevorzugt Händler:innen, die auf Präsentation achten, verlässlich liefern und Käuferschutz ernst nehmen. Die Anforderungen sind auf dieser Seite klar; die Händler-Bewerbung läuft in deinem HenryCo-Konto weiter.",
+      primaryCta: "Händler-Bewerbung öffnen",
+      secondaryCta: "Händler-Preise ansehen",
+      signInCta: "Mit HenryCo-Konto anmelden",
+      highlights: [
+        { label: "Auswahl", value: "Manuelle Prüfung statt Bezahllisting" },
+        { label: "Storefront", value: "Trust-Passport für Käufer:innen sichtbar" },
+        { label: "Workspace", value: "Bestellungen, Auszahlungen, Support vereint" },
+      ],
+    },
+    advantages: {
+      kicker: "Warum stärkere Händler:innen hier gewinnen",
+      items: [
+        { title: "Vertrauensorientierte Positionierung", body: "Dein Shop erhält einen sichtbaren Trust-Passport, statt im Rauschen eines Massen-Marketplaces unterzugehen." },
+        { title: "Bessere Storefront-Qualität", body: "Editoriale Schienen, eine ruhigere Suche und sauberere Produktkarten helfen anspruchsvollen Shops, besser zu konvertieren." },
+        { title: "Klarere Operations", body: "Auszahlungen, Bestellungen, Support, Moderation und Bestandsalarme bleiben in einem klareren Workspace sichtbar." },
+      ],
+    },
+    onboarding: {
+      kicker: "So läuft das Onboarding",
+      stepLabel: "Schritt",
+      steps: [
+        { step: "01", title: "Händler-Bewerbung starten", body: "Öffne die Bewerbung aus deinem HenryCo-Konto heraus — Entwürfe werden automatisch gespeichert, während du die Details zusammenstellst." },
+        { step: "02", title: "Geschäftsdaten ergänzen", body: "Firmenname, Shop-Profil, Produkt-Fokus und alle Verifizierungsdokumente, die zeigen, wie du Bestellungen erfüllst." },
+        { step: "03", title: "Prüfung der Bewerbung", body: "Das HenryCo-Team prüft Dokumente, Vertrauenssignale und Shop-Reife — nicht nur ein bezahltes Abzeichen." },
+        { step: "04", title: "Vendor-Onboarding", body: "Freigegebene Händler:innen gehen ins Vendor-Onboarding, wo Preise, Listing-Gebühren, Auszahlungsfenster und Richtlinien vor der Veröffentlichung sichtbar bleiben." },
+      ],
+      callout: {
+        eyebrow: "Eine sauberere Händler-Bewerbung",
+        body: "Die Händler-Registrierung bleibt in deinem Konto, damit Geschäftsdaten, Prüfstatus und Freigabe-Updates privat und leicht nachvollziehbar bleiben.",
+      },
+    },
+    plans: {
+      kicker: "Plan-Ökonomie",
+      title: "Stufen vorab benannt, nicht erst nach der Veröffentlichung.",
+      feeLabel: "Gebühr",
+      payoutLabel: "Auszahlung",
+      includedLabel: "Inklusive",
+      includedSuffix: "Inserate",
+      featuredLabel: "Hervorgehoben",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Trust-Stufen verändern Privilegien",
+      title: "Hol dir schnellere Auszahlungen, größere Storefronts und Richtlinien-Vorteile.",
+    },
+    closing: {
+      kicker: "Weitergehen",
+      title: "Bewirb dich und verfolge den Status aus deinem Konto.",
+      body: "Mit der Freigabe öffnet sich das Vendor-Onboarding. Preise, Listing-Gebühren und Auszahlungsfenster sind vor der Veröffentlichung sichtbar — keine vertraglichen Überraschungen später.",
+      primaryCta: "Bewerbung starten",
+      secondaryCta: "Zum Vendor-Workspace",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Vertrauen & Sicherheit — HenryCo Marketplace",
+      description:
+        "Vertrauen bestimmt, was ein Verkäufer darf, wie Geld fließt und wie die Moderation reagiert. Verkäuferstufen, Treuhand, Streitfälle und Auszahlungsfreigaben hinterlassen einen serverseitigen Audit-Trail.",
+    },
+    hero: {
+      kicker: "Vertrauen & Sicherheit",
+      title: "Sichtbar vor dem Checkout. Durchgesetzt danach.",
+      body: "Vertrauen steuert, was ein Verkäufer tun darf, wie Geld fließt und wie die Moderation reagiert. Verkäuferstufen, Käufer-Risiko, Listing-Bewertung, Treuhand, Streitfälle und Auszahlungsfreigaben hinterlassen alle eine serverseitige Spur.",
+      pillars: [
+        { label: "Geldfluss", value: "Treuhand, Freigabe nach Prüfung" },
+        { label: "Bewertungen", value: "Serverseitig protokolliert, in Disputen nachvollziehbar" },
+        { label: "Stufen", value: "Verdient, widerrufbar" },
+      ],
+    },
+    guardrails: {
+      kicker: "Vier Leitplanken",
+      items: [
+        {
+          title: "Vertrauens-Passports",
+          body: "Jeder Shop und jedes Produkt zeigt Verifizierungsstufe, SLA, Streitquote, Auszahlungsstatus und Versandbereitschaft.",
+        },
+        {
+          title: "Treuhand-Kontrolle",
+          body: "Käufergelder werden zuerst von HenryCo gehalten und erst nach Lieferung und Vertrauensprüfung zur Auszahlung freigegeben.",
+        },
+        {
+          title: "Anti-Betrugs-Prüfung",
+          body: "Zahlungs-Umlenkungen außerhalb der Plattform, doppelte Medien, Listing-Spitzen und riskante Auszahlungsmuster werden in der Queue sichtbar gemacht.",
+        },
+        {
+          title: "Audit-Trails",
+          body: "Freigaben, Ablehnungen, Auszahlungsaktionen, Streitentscheidungen und Automations-Durchläufe werden serverseitig protokolliert.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Verkäufer-Vertrauensleiter",
+      title: "Stufen, die durch Verhalten verdient, nicht gekauft werden.",
+    },
+    policySurfaces: {
+      kicker: "Richtlinien-Oberflächen",
+      title: "Die Standards, an die wir uns selbst halten.",
+    },
+    ecosystem: {
+      kicker: "Vertrauensverstärkung im Ökosystem",
+    },
+  },
 };
 
 const IT: DeepPartial<MarketplacePublicCopy> = {
@@ -710,6 +1453,136 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
         "Esplora prodotti verificati in {category} su HenryCo Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporti venditore visibili prima del pagamento.",
       fallbackDescription:
         "Sfoglia una categoria curata di HenryCo Marketplace con segnali di fiducia, chiarezza sulla consegna e passaporti venditore prima del pagamento.",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Centro assistenza — HenryCo Marketplace",
+      description:
+        "Sfoglia le domande più frequenti di chi compra e di chi vende. Se non trovi quello che cerchi, apri un ticket di assistenza e una persona del team lo leggerà.",
+    },
+    hero: {
+      kicker: "Centro assistenza",
+      title: "Trova una risposta in pochi secondi — o parla con una persona.",
+      body: "Cerca i temi che acquirenti e venditori chiedono più spesso. Se non trovi quello che ti serve, apri un ticket in fondo a questa pagina e una persona del team lo leggerà.",
+    },
+    stillNeedHelp: {
+      kicker: "Serve ancora aiuto",
+      title: "Apri un ticket di assistenza e una persona lo leggerà.",
+      body: "I ticket mantengono tutto il contesto allegato — l’ordine, il venditore, lo storico della disputa — così il team lavora al caso senza che tu debba riscrivere tutto a ogni risposta.",
+      ctaLabel: "Apri un ticket di assistenza",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Vendere su HenryCo — marketplace selettivo per venditori di fiducia",
+      description:
+        "Candidati per vendere su HenryCo Marketplace: posizionamento fondato sulla fiducia, vetrine premium e uno spazio unico per ordini, pagamenti e supporto.",
+    },
+    hero: {
+      kicker: "Vendere su HenryCo",
+      title: "Selettivo per scelta. Pensato per venditori che mettono la fiducia al primo posto.",
+      body: "HenryCo Marketplace privilegia venditori attenti alla presentazione, affidabili nelle consegne e onesti sulla protezione dell’acquirente. Il livello richiesto è esplicitato qui; la candidatura venditore prosegue dentro il tuo account HenryCo.",
+      primaryCta: "Apri candidatura venditore",
+      secondaryCta: "Vedi i prezzi venditore",
+      signInCta: "Accedi con account HenryCo",
+      highlights: [
+        { label: "Selezione", value: "Revisione manuale, non listing a pagamento" },
+        { label: "Vetrina", value: "Passaporto di fiducia visibile agli acquirenti" },
+        { label: "Spazio", value: "Ordini, pagamenti e supporto in un solo posto" },
+      ],
+    },
+    advantages: {
+      kicker: "Perché qui vincono i venditori più solidi",
+      items: [
+        { title: "Posizionamento basato sulla fiducia", body: "Il tuo store riceve un passaporto di fiducia visibile, invece di perdersi nel rumore di un marketplace di bassa qualità." },
+        { title: "Vetrine di qualità migliore", body: "Carrelli editoriali, una ricerca più calma e schede prodotto più pulite aiutano gli store esigenti a convertire meglio." },
+        { title: "Operatività più nitida", body: "Pagamenti, ordini, supporto, moderazione e avvisi di stock restano visibili in uno spazio di lavoro più chiaro." },
+      ],
+    },
+    onboarding: {
+      kicker: "Come funziona l’onboarding",
+      stepLabel: "Passo",
+      steps: [
+        { step: "01", title: "Avviare la candidatura venditore", body: "Apri la candidatura dal tuo account HenryCo — le bozze si salvano automaticamente mentre raccogli i dettagli." },
+        { step: "02", title: "Aggiungere i dati aziendali", body: "Ragione sociale, profilo store, focus prodotto e ogni documento di verifica che spiega come gestisci gli ordini." },
+        { step: "03", title: "Revisione della candidatura", body: "Il team HenryCo esamina documenti, segnali di fiducia e maturità dello store — non solo un badge a pagamento." },
+        { step: "04", title: "Onboarding venditore", body: "I venditori approvati proseguono con l’onboarding, dove prezzi, commissioni di pubblicazione, finestre di pagamento e regole sono visibili prima della pubblicazione." },
+      ],
+      callout: {
+        eyebrow: "Una candidatura venditore più pulita",
+        body: "La registrazione venditore resta dentro il tuo account, così dati aziendali, stato della revisione e aggiornamenti di approvazione rimangono privati e facili da seguire.",
+      },
+    },
+    plans: {
+      kicker: "Economia dei piani",
+      title: "Livelli dichiarati in anticipo, non dopo la pubblicazione.",
+      feeLabel: "Commissione",
+      payoutLabel: "Pagamento",
+      includedLabel: "Inclusi",
+      includedSuffix: "annunci",
+      featuredLabel: "In evidenza",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "I livelli di fiducia cambiano i privilegi",
+      title: "Ottieni pagamenti più rapidi, vetrine più ampie e vantaggi sulle policy.",
+    },
+    closing: {
+      kicker: "Andare avanti",
+      title: "Candidati e segui lo stato dal tuo account.",
+      body: "L’approvazione sblocca l’onboarding venditore. Prezzi, commissioni di pubblicazione e finestre di pagamento sono visibili prima di pubblicare — niente sorprese contrattuali dopo.",
+      primaryCta: "Avvia candidatura",
+      secondaryCta: "Vai allo spazio venditore",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Affidabilità e sicurezza — HenryCo Marketplace",
+      description:
+        "La fiducia regola cosa può fare un venditore, come si muove il denaro e come reagisce la moderazione. Livelli del venditore, deposito, dispute e rilascio dei pagamenti lasciano una traccia lato server.",
+    },
+    hero: {
+      kicker: "Affidabilità e sicurezza",
+      title: "Visibile prima del checkout. Applicata dopo.",
+      body: "La fiducia governa cosa può fare un venditore, come si muove il denaro e come reagisce la moderazione. Livelli del venditore, rischio dell’acquirente, punteggio degli annunci, deposito, dispute e rilascio dei pagamenti lasciano tutti una traccia lato server.",
+      pillars: [
+        { label: "Movimenti di denaro", value: "In deposito, rilasciati dopo i controlli" },
+        { label: "Recensioni", value: "Registrate lato server, tracciabili nelle dispute" },
+        { label: "Livelli", value: "Guadagnati, revocabili" },
+      ],
+    },
+    guardrails: {
+      kicker: "Quattro garanzie",
+      items: [
+        {
+          title: "Trust Passport",
+          body: "Ogni negozio e prodotto mostra livello di verifica, SLA, tasso di dispute, prontezza al pagamento e postura di evasione.",
+        },
+        {
+          title: "Controllo del deposito",
+          body: "I fondi dell’acquirente vengono prima trattenuti da HenryCo e poi spostati in pagamento rilasciabile solo dopo consegna e controlli di fiducia superati.",
+        },
+        {
+          title: "Revisione antifrode",
+          body: "Deviazioni di pagamento fuori piattaforma, media duplicati, picchi di pubblicazione e schemi di pagamento rischiosi finiscono nella visibilità delle code di revisione.",
+        },
+        {
+          title: "Tracciati di audit",
+          body: "Approvazioni, rifiuti, azioni di pagamento, decisioni sulle dispute e passaggi automatici sono registrati lato server.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Scala di fiducia del venditore",
+      title: "Livelli guadagnati con il comportamento, non comprati.",
+    },
+    policySurfaces: {
+      kicker: "Superfici delle politiche",
+      title: "Gli standard che ci imponiamo.",
+    },
+    ecosystem: {
+      kicker: "Rafforzamento della fiducia nell’ecosistema",
     },
   },
 };
@@ -774,6 +1647,136 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
         "تصفّح فئة منتقاة على HenryCo Marketplace مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين قبل الدفع.",
     },
   },
+  help: {
+    metadata: {
+      title: "مركز المساعدة — HenryCo Marketplace",
+      description:
+        "تصفّح الأسئلة الأكثر تكرارًا بين المشترين والبائعين. إن لم تجد ما تبحث عنه، افتح تذكرة دعم وسيقرؤها شخص من الفريق.",
+    },
+    hero: {
+      kicker: "مركز المساعدة",
+      title: "اعثر على إجابة في ثوانٍ — أو تحدّث مع شخص حقيقي.",
+      body: "ابحث في المواضيع التي يطرحها المشترون والبائعون أكثر من غيرها. إن لم تجد ما تحتاج إليه، افتح تذكرة دعم من أسفل هذه الصفحة وسيقرؤها شخص من الفريق.",
+    },
+    stillNeedHelp: {
+      kicker: "ما زلت تحتاج إلى المساعدة",
+      title: "افتح تذكرة دعم وسيقرؤها شخص حقيقي.",
+      body: "تحتفظ التذاكر بكامل السياق — الطلب، البائع، سجل النزاع — حتى يعمل الفريق على القضية دون أن تعيد كتابتها مع كل رد.",
+      ctaLabel: "افتح تذكرة دعم",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "بِع على HenryCo — سوق انتقائي للبائعين الذين يقودون بالثقة",
+      description:
+        "قدِّم طلبًا للبيع على HenryCo Marketplace: تموضع يقوده مبدأ الثقة، واجهات متاجر فاخرة، ومساحة عمل موحَّدة للطلبات والمدفوعات والدعم.",
+    },
+    hero: {
+      kicker: "بِع على HenryCo",
+      title: "انتقائيٌّ بطبيعته. مصمَّم للبائعين الذين يقودون بالثقة.",
+      body: "تُفضّل HenryCo Marketplace البائعين الذين يهتمّون بالعرض، ويُنفّذون الطلبات بموثوقية، ويحترمون حماية المشتري بصدق. تجد المعايير صريحةً في هذه الصفحة، ثم يستمرّ طلب البيع داخل حساب HenryCo الخاص بك.",
+      primaryCta: "فتح طلب البيع",
+      secondaryCta: "الاطّلاع على أسعار البائعين",
+      signInCta: "تسجيل الدخول بحساب HenryCo",
+      highlights: [
+        { label: "الانتقاء", value: "مراجعة يدوية، لا إدراج مدفوع" },
+        { label: "الواجهة", value: "جواز ثقة ظاهر للمشترين" },
+        { label: "المساحة", value: "طلبات ومدفوعات ودعم في مكان واحد" },
+      ],
+    },
+    advantages: {
+      kicker: "لماذا ينجح البائعون الأقوى هنا",
+      items: [
+        { title: "تموضع يقوده مبدأ الثقة", body: "يحصل متجرك على جواز ثقة ظاهر، بدل أن يضيع في ضوضاء سوق منخفض الجودة." },
+        { title: "جودة أعلى لواجهة المتجر", body: "ممرّات تحريرية، وبحث أهدأ، وبطاقات منتج أنظف، تساعد المتاجر الجادّة على تحقيق تحويل أفضل." },
+        { title: "تشغيل أكثر وضوحًا", body: "المدفوعات والطلبات والدعم والمراقبة وتنبيهات المخزون تبقى ظاهرة في مساحة عمل واحدة أوضح." },
+      ],
+    },
+    onboarding: {
+      kicker: "كيف يسير الانضمام",
+      stepLabel: "خطوة",
+      steps: [
+        { step: "01", title: "بدء طلب البيع", body: "افتح الطلب من داخل حساب HenryCo — تُحفَظ المسوّدات تلقائيًا أثناء تجميع التفاصيل." },
+        { step: "02", title: "إضافة بيانات النشاط", body: "اسم النشاط، ملف المتجر، تركيز المنتجات، وأي مستندات تحقُّق توضّح كيف تُلبّي الطلبات." },
+        { step: "03", title: "مراجعة الطلب", body: "يراجع فريق HenryCo المستندات وإشارات الثقة وجاهزية المتجر — لا مجرد شارة مدفوعة." },
+        { step: "04", title: "انضمام البائع", body: "يواصل البائعون الموافَق عليهم خطوات الانضمام، حيث تظهر الأسعار ورسوم النشر ونوافذ التحويل وقواعد السياسات قبل النشر." },
+      ],
+      callout: {
+        eyebrow: "طلب بيع أوضح",
+        body: "يبقى تسجيل البائع داخل حسابك، فتظلّ بيانات النشاط وحالة المراجعة وتحديثات الموافقة خاصّة وسهلة المتابعة.",
+      },
+    },
+    plans: {
+      kicker: "اقتصاديات الخطط",
+      title: "المستويات معروفة مسبقًا، لا بعد النشر.",
+      feeLabel: "العمولة",
+      payoutLabel: "التحويل",
+      includedLabel: "المتضمَّن",
+      includedSuffix: "إعلانًا",
+      featuredLabel: "إبراز",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "مستويات الثقة تغيّر الامتيازات",
+      title: "احصل على تحويلات أسرع، وواجهات أوسع، ومزايا في السياسات.",
+    },
+    closing: {
+      kicker: "للمضيّ قدمًا",
+      title: "قدِّم طلبك ثم تابع حالته من حسابك.",
+      body: "تفتح الموافقة بابَ انضمام البائع. الأسعار ورسوم النشر ونوافذ التحويل ظاهرة قبل النشر — دون مفاجآت تعاقدية لاحقًا.",
+      primaryCta: "ابدأ الطلب",
+      secondaryCta: "زيارة مساحة البائع",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "الثقة والسلامة — HenryCo Marketplace",
+      description:
+        "تحكم الثقة ما يمكن للبائع فعله، وكيف يتحرّك المال، وكيف تستجيب المراجعة. مستويات البائع، الإيداع الوسيط، النزاعات وتحرير الدفعات تترك أثرًا كاملًا على الخادم.",
+    },
+    hero: {
+      kicker: "الثقة والسلامة",
+      title: "ظاهرة قبل الدفع، ومُطبَّقة بعده.",
+      body: "تتحكّم الثقة في ما يستطيع البائع فعله، وفي حركة المال، وفي طريقة استجابة المراجعة. مستويات البائع ومخاطر المشتري وتقييم الإعلانات والإيداع الوسيط والنزاعات وتحرير الدفعات تترك جميعها أثرًا موثّقًا على الخادم.",
+      pillars: [
+        { label: "حركة المال", value: "إيداع وسيط ويُفرَج عنه بعد الفحوصات" },
+        { label: "المراجعات", value: "مسجّلة على الخادم وقابلة للتتبّع في النزاعات" },
+        { label: "المستويات", value: "تُكتسب وقابلة للسحب" },
+      ],
+    },
+    guardrails: {
+      kicker: "أربعة حواجز للحماية",
+      items: [
+        {
+          title: "جوازات الثقة",
+          body: "كل متجر ومنتج يُظهر مستوى التحقق، واتفاقية الخدمة، ونسبة النزاعات، وجاهزية التحويل، ووضع التنفيذ.",
+        },
+        {
+          title: "التحكّم بالإيداع الوسيط",
+          body: "تحتجز HenryCo أموال المشتري أولًا، ولا تتحوّل إلى تحويل قابل للإفراج إلا بعد تسليم ناجح واجتياز فحوصات الثقة.",
+        },
+        {
+          title: "مراجعة مكافحة الاحتيال",
+          body: "محاولات الدفع خارج المنصة، والوسائط المكرّرة، وقفزات سرعة النشر، وأنماط التحويل عالية المخاطر تظهر في صفوف المراجعة.",
+        },
+        {
+          title: "سجلات تدقيق",
+          body: "الموافقات والرفض وإجراءات التحويل وقرارات النزاعات وعمليات الفحص الآلية كلّها مسجّلة على الخادم.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "سلّم ثقة البائع",
+      title: "مستويات تُكتسب بالسلوك، لا تُشترى.",
+    },
+    policySurfaces: {
+      kicker: "أسطح السياسات",
+      title: "المعايير التي نُلزم بها أنفسنا.",
+    },
+    ecosystem: {
+      kicker: "تعزيز الثقة على مستوى المنظومة",
+    },
+  },
 };
 
 const ZH: DeepPartial<MarketplacePublicCopy> = {
@@ -834,6 +1837,73 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
         "在 HenryCo Marketplace 探索 {category} 中已验证的商品,结算前即可看到信任信号、清晰的配送说明与商家信任护照。",
       fallbackDescription:
         "在 HenryCo Marketplace 浏览一个精选品类,结算前即可看到信任信号、清晰的配送说明与商家信任护照。",
+    },
+  },
+  help: {
+    metadata: {
+      title: "帮助中心 — HenryCo Marketplace",
+      description:
+        "浏览买家和卖家最常问的问题。如果没找到所需答案,提交一张工单,团队会有专人查看。",
+    },
+    hero: {
+      kicker: "帮助中心",
+      title: "几秒内找到答案 — 或与真人沟通。",
+      body: "搜索买家与卖家最常问的话题。如果未找到所需内容,可在页面底部提交工单,团队会有专人查看。",
+    },
+    stillNeedHelp: {
+      kicker: "仍需要帮助",
+      title: "提交工单,会有专人查看。",
+      body: "工单会保留完整上下文 — 订单、商家、纠纷历史 — 这样团队能直接跟进,不需要你在每次回复时重新描述。",
+      ctaLabel: "提交支持工单",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "信任与安全 — HenryCo Marketplace",
+      description:
+        "信任决定了卖家可以做什么、资金如何流动以及审核如何响应。卖家等级、托管、争议与放款释放都会在服务器留下完整记录。",
+    },
+    hero: {
+      kicker: "信任与安全",
+      title: "结算前可见,结算后强制执行。",
+      body: "信任决定了卖家可以做什么、资金如何流动,以及审核如何响应。卖家等级、买家风险、商品评分、托管、争议与放款释放都会在服务器留下记录。",
+      pillars: [
+        { label: "资金流动", value: "托管中,审核通过后释放" },
+        { label: "评价", value: "服务器记录,争议可追溯" },
+        { label: "等级", value: "凭表现获得,可撤销" },
+      ],
+    },
+    guardrails: {
+      kicker: "四道防线",
+      items: [
+        {
+          title: "信任护照",
+          body: "每家店铺与每件商品都展示其验证等级、SLA、争议率、放款状态与履约能力。",
+        },
+        {
+          title: "托管控制",
+          body: "买家资金先由 HenryCo 托管,通过交付与信任审核后才进入可释放的放款。",
+        },
+        {
+          title: "反欺诈审查",
+          body: "脱离平台的支付引导、重复素材、上架激增以及高风险的放款行为都会进入审核队列。",
+        },
+        {
+          title: "审计轨迹",
+          body: "批准、拒绝、放款操作、争议裁决与自动化巡检都会在服务器侧记录。",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "卖家信任阶梯",
+      title: "凭表现获得,而非花钱购买的等级。",
+    },
+    policySurfaces: {
+      kicker: "政策呈现面",
+      title: "我们对自己设定的标准。",
+    },
+    ecosystem: {
+      kicker: "生态系统的信任强化",
     },
   },
 };
@@ -898,6 +1968,73 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
         "HenryCo Marketplace की एक क्यूरेटेड कैटेगरी देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।",
     },
   },
+  help: {
+    metadata: {
+      title: "मदद केंद्र — HenryCo Marketplace",
+      description:
+        "ख़रीदार और विक्रेता जो सवाल सबसे ज़्यादा पूछते हैं, उन्हें देखें। ज़रूरत की जानकारी न मिले, तो सपोर्ट टिकट खोलें — टीम का कोई व्यक्ति उसे पढ़ेगा।",
+    },
+    hero: {
+      kicker: "मदद केंद्र",
+      title: "सेकंडों में जवाब पाएँ — या किसी व्यक्ति से बात करें।",
+      body: "ख़रीदारों और विक्रेताओं के सबसे आम विषय खोजें। अगर ज़रूरत की चीज़ न मिले, तो इस पेज के नीचे से एक सपोर्ट टिकट खोलें और टीम का कोई व्यक्ति उसे पढ़ेगा।",
+    },
+    stillNeedHelp: {
+      kicker: "अब भी मदद चाहिए",
+      title: "टिकट खोलें — कोई व्यक्ति उसे पढ़ेगा।",
+      body: "टिकट पूरा संदर्भ जोड़े रखते हैं — ऑर्डर, विक्रेता, विवाद का इतिहास — ताकि टीम बिना आपको हर जवाब में दोहराए मुद्दे पर काम कर सके।",
+      ctaLabel: "सपोर्ट टिकट खोलें",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "ट्रस्ट और सुरक्षा — HenryCo Marketplace",
+      description:
+        "ट्रस्ट यह तय करता है कि सेलर क्या कर सकता है, पैसा कैसे चलता है और मॉडरेशन कैसे जवाब देती है। सेलर टियर, एस्क्रो, विवाद और पेआउट रिलीज़ — सबका सर्वर-साइड रिकॉर्ड बनता है।",
+    },
+    hero: {
+      kicker: "ट्रस्ट और सुरक्षा",
+      title: "चेकआउट से पहले दिखती है। उसके बाद लागू होती है।",
+      body: "ट्रस्ट तय करता है कि सेलर क्या कर सकता है, पैसा कैसे चलता है और मॉडरेशन कैसे प्रतिक्रिया देती है। सेलर टियर, बायर रिस्क, लिस्टिंग स्कोरिंग, एस्क्रो, विवाद और पेआउट रिलीज़ — सबका सर्वर-साइड रिकॉर्ड बनता है।",
+      pillars: [
+        { label: "पैसा कैसे चलता है", value: "एस्क्रो में, जाँच के बाद रिलीज़" },
+        { label: "रिव्यू", value: "सर्वर-लॉग, विवाद में ट्रेस होने योग्य" },
+        { label: "टियर", value: "अर्जित, और वापस लिए जा सकने वाले" },
+      ],
+    },
+    guardrails: {
+      kicker: "चार सुरक्षा रेखाएँ",
+      items: [
+        {
+          title: "ट्रस्ट पासपोर्ट",
+          body: "हर स्टोर और प्रोडक्ट पर वेरिफ़िकेशन स्तर, SLA, विवाद दर, पेआउट तत्परता और फ़ुलफ़िलमेंट स्थिति सामने रहती है।",
+        },
+        {
+          title: "एस्क्रो कंट्रोल",
+          body: "बायर का पैसा पहले HenryCo के पास रहता है — डिलीवरी और ट्रस्ट चेक पास होने पर ही पेआउट में जाता है।",
+        },
+        {
+          title: "एंटी-फ्रॉड समीक्षा",
+          body: "प्लेटफ़ॉर्म से बाहर भुगतान की कोशिश, डुप्लिकेट मीडिया, अचानक लिस्टिंग का उछाल और जोखिम भरे पेआउट पैटर्न रिव्यू क्यू में आते हैं।",
+        },
+        {
+          title: "ऑडिट ट्रेल",
+          body: "मंज़ूरी, अस्वीकृति, पेआउट क्रियाएँ, विवाद निर्णय और ऑटोमेशन स्वीप सब सर्वर-साइड लॉग होते हैं।",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "सेलर ट्रस्ट लैडर",
+      title: "टियर बर्ताव से अर्जित होते हैं, ख़रीदे नहीं जाते।",
+    },
+    policySurfaces: {
+      kicker: "पॉलिसी सरफ़ेस",
+      title: "जिन मानकों पर हम ख़ुद को परखते हैं।",
+    },
+    ecosystem: {
+      kicker: "इकोसिस्टम-व्यापी ट्रस्ट सुदृढ़ीकरण",
+    },
+  },
 };
 
 const IG: DeepPartial<MarketplacePublicCopy> = {
@@ -958,6 +2095,73 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
         "Chọpụta ngwa ahịa enyochara n'ime {category} na HenryCo Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa nke pụtara tupu ịkwụ ụgwọ.",
       fallbackDescription:
         "Tụgharịa n'ime ụdị a họpụtara na HenryCo Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ.",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Ntụkwasị obi & nchekwa — HenryCo Marketplace",
+      description:
+        "Ntụkwasị obi na-achịkwa ihe onye na-ere ahịa nwere ike ime, otú ego si agagharị, na otú nlekota si aza. Ọkwa ndị na-ere ahịa, nchekwa ego site n'aka onye nnọchi anya, esemokwu, na ntọhapụ ego niile na-ahapụ ndekọ na sava.",
+    },
+    hero: {
+      kicker: "Ntụkwasị obi & nchekwa",
+      title: "Pụta ìhè tupu ịkwụ ụgwọ. Manye ya mgbe ọ gachara.",
+      body: "Ntụkwasị obi na-achịkwa ihe onye na-ere ahịa nwere ike ime, otú ego si agagharị, na otú nlekota si meghachi. Ọkwa ndị na-ere ahịa, ihe egwu nke onye na-azụ ahịa, akara nke edemede, nchekwa ego, esemokwu, na ntọhapụ ego niile na-ahapụ ndekọ na sava.",
+      pillars: [
+        { label: "Ngagharị ego", value: "Nọ n'aka onye nnọchi, ahapụ mgbe nyochaa" },
+        { label: "Ntule", value: "Edebere na sava, enwere ike ịchọta n'esemokwu" },
+        { label: "Ọkwa", value: "A na-enweta ya, enwere ike iwepụ ya" },
+      ],
+    },
+    guardrails: {
+      kicker: "Ihe nchebe anọ",
+      items: [
+        {
+          title: "Paspọtụ ntụkwasị obi",
+          body: "Ụlọ ahịa na ngwa ahịa ọ bụla na-egosi ọkwa nyocha, SLA, ọnụego esemokwu, njikere ịnata ego, na ọnọdụ mmezu.",
+        },
+        {
+          title: "Njikwa nchekwa ego",
+          body: "Ego onye na-azụ ahịa na-anọ buru ụzọ n'aka HenryCo, ma na-aga naanị na ntọhapụ mgbe nyefere agachara nyochaa.",
+        },
+        {
+          title: "Nyocha mgbochi aghụghọ",
+          body: "Ịkpalite ịkwụ ụgwọ na mpụga elu ikuku, mídia eberebe, mwube ngwa ahịa na-eri eri, na ụzọ ntọhapụ ego dị egwu na-abata na ahịrị nyocha.",
+        },
+        {
+          title: "Ụzọ nlebanya",
+          body: "Nkwado, ajụ, mmemme ntọhapụ ego, mkpebi esemokwu, na nyocha akpaaka niile bụ ndị edebere na sava.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Mgbago ntụkwasị obi ndị na-ere ahịa",
+      title: "Ọkwa enwetara site n'omume, ọ bụghị nke a zụrụ ego.",
+    },
+    policySurfaces: {
+      kicker: "Ebe iwu na-egosi",
+      title: "Ụkpụrụ anyị na-eji eche onwe anyị.",
+    },
+    ecosystem: {
+      kicker: "Mmemme ntụkwasị obi nke gbasaa n'ụlọ niile",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Ebe enyemaka — HenryCo Marketplace",
+      description:
+        "Lelee ajụjụ ndị ndị na-azụ ahịa na ndị na-ere ahịa na-ajụkarị. Ọ bụrụ na ị chọtaghị ihe ị chọrọ, mepee tiketi nkwado — mmadụ n'ime otu ga-agụ ya.",
+    },
+    hero: {
+      kicker: "Ebe enyemaka",
+      title: "Chọta azịza n'ime sekọnd ole na ole — ma ọ bụ kparịta okwu na mmadụ.",
+      body: "Chọọ isiokwu ndị ndị na-azụ ahịa na ndị na-ere ahịa na-ajụkarị. Ọ bụrụ na ị chọtaghị ihe ị chọrọ, mepee tiketi nkwado n'okpuru ibe a, mmadụ n'otu ga-agụ ya.",
+    },
+    stillNeedHelp: {
+      kicker: "Ka chọrọ enyemaka",
+      title: "Mepee tiketi nkwado — mmadụ ga-agụ ya.",
+      body: "Tiketi na-edobe ihe niile gbasara ya — iwu ahịa, onye na-ere, akụkọ esemokwu — ka otu na-arụ ọrụ na ya n'agbanyeghị ka ị deghachi ya na nzaghachi ọ bụla.",
+      ctaLabel: "Mepee tiketi nkwado",
     },
   },
 };
@@ -1022,6 +2226,73 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
         "Ṣàwárí ẹka tí a yàn pẹ̀lú àmọ̀ lórí HenryCo Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà kí o tó san owó.",
     },
   },
+  trust: {
+    metadata: {
+      title: "Ìgbẹ́kẹ̀lé àti ààbò — HenryCo Marketplace",
+      description:
+        "Ìgbẹ́kẹ̀lé ló ń pinnu ohun tí olùtà lè ṣe, bí owó ṣe ń gbé, àti bí ìtọ́jú ṣe ń dáhùn. Ìpele olùtà, owó tí a fi pamọ́, àríyànjiyàn, àti ìtúsílẹ̀ owó gbogbo ń fi àkọsílẹ̀ silẹ̀ lórí sáfà.",
+    },
+    hero: {
+      kicker: "Ìgbẹ́kẹ̀lé àti ààbò",
+      title: "Ó hàn ṣáájú ìsanwó. A ó sì gbé e ṣiṣẹ́ lẹ́yìn náà.",
+      body: "Ìgbẹ́kẹ̀lé ń darí ohun tí olùtà lè ṣe, bí owó ṣe ń gbé, àti bí ìtọ́jú ṣe ń dáhùn. Ìpele olùtà, ewu olùra, ìdíwọ̀n àkójọ ìpolówó, owó tí a fi pamọ́, àríyànjiyàn àti ìtúsílẹ̀ owó gbogbo ń fi àpapọ̀ àkọsílẹ̀ silẹ̀ lórí sáfà.",
+      pillars: [
+        { label: "Ìgbé owó", value: "Pamọ́, a ó tú u silẹ̀ lẹ́yìn àyẹ̀wò" },
+        { label: "Àwọn ìṣọ́ra", value: "Tí a tì silẹ̀ lórí sáfà, a sì lè tọ́ wọn nínú àríyànjiyàn" },
+        { label: "Ìpele", value: "Tí a jẹ́ pé bí a ti pa á, a sì lè gba á padà" },
+      ],
+    },
+    guardrails: {
+      kicker: "Awọn ààbò mẹ́rin",
+      items: [
+        {
+          title: "Ìwé-ìrìnnà ìgbẹ́kẹ̀lé",
+          body: "Gbogbo ilé-ìtajà àti gbogbo ọjà ń fihàn ìpele ìmúdájú, SLA, ìpín àríyànjiyàn, ìmúrasílẹ̀ ìsanwó, àti ìṣe ìfijíṣẹ́.",
+        },
+        {
+          title: "Ìṣàkóso owó tí a fi pamọ́",
+          body: "HenryCo ló ń kọ́kọ́ di owó olùra mu, lẹ́yìn náà ni a ó tú u silẹ̀ fún ìsanwó lẹ́yìn ìfijíṣẹ́ àti àyẹ̀wò ìgbẹ́kẹ̀lé.",
+        },
+        {
+          title: "Ìwádìí ìpaniyàn àyíká",
+          body: "Ìjì ìsanwó lójú òde, àwòran tí a tún ṣe, àfilọ́lẹ̀ ìpolówó tí ó pọ̀ jù àti àwòṣe ìsanwó tó léwu wọ̀ inú ìrí ipele ìwádìí.",
+        },
+        {
+          title: "Ìtàn àwọn ohun tí a ṣe",
+          body: "Ìfọwọ́sí, ìkọsílẹ̀, ìṣe ìtúsílẹ̀ owó, ìpinnu àríyànjiyàn àti àyẹ̀wò aládàá gbogbo ni a ó kọ́ silẹ̀ lórí sáfà.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Àkàbà ìgbẹ́kẹ̀lé olùtà",
+      title: "Ìpele tí a jẹ́ pé pẹ̀lú ìṣe, kì í ṣe pẹ̀lú owó.",
+    },
+    policySurfaces: {
+      kicker: "Àwọn ojú-ìlànà",
+      title: "Àwọn ìlànà tí àwa náà ń mú àra wa mọ́.",
+    },
+    ecosystem: {
+      kicker: "Ìmúgbóòrò ìgbẹ́kẹ̀lé jákèjádò àwọn ìpèsè",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Ibùdó ìrànlọ́wọ́ — HenryCo Marketplace",
+      description:
+        "Ṣàwárí àwọn ìbéèrè tí àwọn olùra àti àwọn olùtà sábà máa ń bi. Tí o kò bá rí ohun tí o nílò, ṣí ìwé ìbéèrè ìrànlọ́wọ́, ẹnìkan láti inú ẹgbẹ́ yóò kà á.",
+    },
+    hero: {
+      kicker: "Ibùdó ìrànlọ́wọ́",
+      title: "Ríbi ìdáhùn ní ìsẹ̀jú àáyá díẹ̀ — tàbí sọ̀rọ̀ pẹ̀lú ènìyàn.",
+      body: "Wá àwọn kókó tí àwọn olùra àti olùtà ń bi jù. Tí o kò bá rí ohun tí o nílò, ṣí ìwé ìbéèrè ìrànlọ́wọ́ ní ìsàlẹ̀ ojú-ìwé yìí, ẹnìkan láti inú ẹgbẹ́ yóò kà á.",
+    },
+    stillNeedHelp: {
+      kicker: "Ṣì nílò ìrànlọ́wọ́",
+      title: "Ṣí ìwé ìbéèrè ìrànlọ́wọ́, ènìyàn yóò kà á.",
+      body: "Ìwé ìbéèrè máa ń di gbogbo àlàyé pọ̀ — ìpàṣẹ, olùtà, ìtàn àríyànjiyàn — kí ẹgbẹ́ lè ṣiṣẹ́ lórí ọ̀ràn náà láìjẹ́ kí o tún kọ ọ́ ní gbogbo ìdáhùn.",
+      ctaLabel: "Ṣí ìwé ìbéèrè ìrànlọ́wọ́",
+    },
+  },
 };
 
 const HA: DeepPartial<MarketplacePublicCopy> = {
@@ -1063,6 +2334,73 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
         "Bincika tabbatattun kayayyaki a cikin {category} a HenryCo Marketplace, tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya.",
       fallbackDescription:
         "Bincika zaɓaɓɓen nau'i a HenryCo Marketplace tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya.",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Aminci da tsaro — HenryCo Marketplace",
+      description:
+        "Amincin shi ke tantance abin da mai sayarwa zai iya yi, yadda kuɗi suke gudana, da kuma yadda kulawa take amsawa. Matakan mai sayarwa, ajiyar amana, jayayya da sakin kuɗaɗen biya duk suna barin tarihi a sabar.",
+    },
+    hero: {
+      kicker: "Aminci da tsaro",
+      title: "A bayyane kafin biya. A tabbatar bayan biya.",
+      body: "Amincin yana sarrafa abin da mai sayarwa zai iya yi, yadda kuɗi suke gudana, da kuma yadda kulawa take amsawa. Matakan mai sayarwa, haɗarin mai siye, kimar tallace-tallace, ajiyar amana, jayayya da sakin kuɗaɗen biya duk suna barin tarihin sabar.",
+      pillars: [
+        { label: "Hannukan kuɗi", value: "Ajiye a amana, a saki bayan binciken aminci" },
+        { label: "Ra'ayoyi", value: "An ajiye su a sabar, kuma za a iya bin diddiginsu a jayayya" },
+        { label: "Matakai", value: "An samu su ne saboda hali, ana iya soke su" },
+      ],
+    },
+    guardrails: {
+      kicker: "Garkuwoyi huɗu",
+      items: [
+        {
+          title: "Fasfo na aminci",
+          body: "Kowane kanti da kowane kayan suna nuna matakin tabbatarwa, SLA, adadin jayayya, shirin biya, da matsayin isarwa.",
+        },
+        {
+          title: "Sarrafa ajiyar amana",
+          body: "Kuɗin mai siye yana farkon zama a hannun HenryCo, sannan kawai ya zama mai saki bayan an tabbatar da isarwa da bincike na aminci.",
+        },
+        {
+          title: "Bincike kan zamba",
+          body: "Sake biyan kuɗi a wajen dandalin, kafofin watsa labarai masu maimaitawa, hauhawar tallace-tallace, da samfuran biya masu haɗari duk suna shiga layin bincike.",
+        },
+        {
+          title: "Hanyoyin gwajin tarihi",
+          body: "Yardar, ƙin yarda, ayyukan biya, hukunce-hukuncen jayayya da binciken ta atomatik duk an rubuta su a sabar.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Tsani na amincin mai sayarwa",
+      title: "Matakai da aka samu ta hanyar hali, ba ta hanyar kuɗi ba.",
+    },
+    policySurfaces: {
+      kicker: "Mahallin manufofin",
+      title: "Ƙa'idodin da muka ɗora wa kanmu.",
+    },
+    ecosystem: {
+      kicker: "Ƙarfafa aminci a duk muhalli",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Cibiyar taimako — HenryCo Marketplace",
+      description:
+        "Karanta tambayoyin da masu siye da masu sayarwa suka fi yawan yi. Idan ba ka samu abin da kake nema ba, buɗe tikitin tallafi, wani daga ƙungiyar zai karanta shi.",
+    },
+    hero: {
+      kicker: "Cibiyar taimako",
+      title: "Samu amsa cikin daƙiƙa kaɗan — ko yi magana da mutum.",
+      body: "Nemo batutuwan da masu siye da masu sayarwa suka fi yawan tambaya. Idan ba ka samu abin da kake bukata ba, buɗe tikitin tallafi a ƙarshen wannan shafin, wani daga ƙungiyar zai karanta shi.",
+    },
+    stillNeedHelp: {
+      kicker: "Har yanzu kana bukatar taimako",
+      title: "Buɗe tikitin tallafi — mutum zai karanta shi.",
+      body: "Tikiti yana ajiye dukkan mahallin tare — odar, mai sayarwa, tarihin sabani — domin ƙungiyar ta yi aiki a kan al'amarin ba tare da ka sake rubuta shi a kowane amsa ba.",
+      ctaLabel: "Buɗe tikitin tallafi",
     },
   },
 };
