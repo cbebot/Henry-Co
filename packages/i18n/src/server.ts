@@ -11,6 +11,7 @@ export { getHubPublicCopy, type HubPublicCopy } from "./hub-public-copy";
 export { getLogisticsBookCopy, type LogisticsBookCopy } from "./logistics-book-copy";
 export { getLogisticsServicesCopy, type LogisticsServicesCopy } from "./logistics-services-copy";
 export { getLogisticsBusinessCopy, type LogisticsBusinessCopy } from "./logistics-business-copy";
+export { getLogisticsHomeCopy, type LogisticsHomeCopy } from "./logistics-home-copy";
 export { getLogisticsCoverageCopy, type LogisticsCoverageCopy } from "./logistics-coverage-copy";
 export { getLogisticsPricingCopy, type LogisticsPricingCopy } from "./logistics-pricing-copy";
 export { getLogisticsQuoteCopy, type LogisticsQuoteCopy } from "./logistics-quote-copy";

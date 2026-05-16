@@ -152,6 +152,43 @@ export type MarketplacePublicCopy = {
     metadataTitle: string;
     metadataDescription: string;
   };
+  store: {
+    metadataTitle: string;
+    metadataDescription: string;
+    metadataDescriptionFallback: string;
+    hero: {
+      eyebrow: string;
+      bodyFallback: string;
+    };
+    stats: {
+      trustScore: string;
+      responseSla: string;
+      responseSlaSuffix: string;
+      followers: string;
+    };
+    standards: {
+      eyebrow: string;
+    };
+    support: {
+      eyebrow: string;
+      contactLinkLabel: string;
+      contactBodySuffix: string;
+      ctaLabel: string;
+      subjectTemplate: string;
+    };
+    reviews: {
+      eyebrow: string;
+      verifiedPurchase: string;
+      review: string;
+    };
+    catalog: {
+      kicker: string;
+      title: string;
+      exploreLink: string;
+      emptyTitle: string;
+      emptyBody: string;
+    };
+  };
   sell: {
     metadata: {
       title: string;
@@ -312,6 +349,45 @@ export type MarketplacePublicCopy = {
     rail: {
       kicker: string;
       itemsSuffix: string;
+    };
+  };
+  policies: {
+    metadata: {
+      titleTemplate: string;
+      descriptionTemplate: string;
+      fallbackTitle: string;
+      fallbackDescription: string;
+    };
+    hero: {
+      backToTrust: string;
+      openSupport: string;
+    };
+    details: {
+      coverageLabel: string;
+      enforcementLabel: string;
+      updatedLabel: string;
+    };
+    coverageBySlug: {
+      buyerProtection: string;
+      sellerPolicy: string;
+      fallback: string;
+    };
+    enforcementBySlug: {
+      buyerProtection: string;
+      sellerPolicy: string;
+      fallback: string;
+    };
+    updatedBySlug: {
+      buyerProtection: string;
+      sellerPolicy: string;
+      fallback: string;
+    };
+    provisions: {
+      kicker: string;
+    };
+    ecosystem: {
+      kicker: string;
+      openLabel: string;
     };
   };
 };
@@ -522,6 +598,47 @@ const EN: MarketplacePublicCopy = {
     metadataDescription:
       "Explore verified products from {brand} on HenryCo Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout.",
   },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Browse verified products from {store} on HenryCo Marketplace, with trust signals, delivery clarity, and the seller passport surfaced before checkout.",
+    metadataDescriptionFallback:
+      "A verified store on HenryCo Marketplace with trust signals, delivery clarity, and a seller passport surfaced before checkout.",
+    hero: {
+      eyebrow: "Store passport",
+      bodyFallback:
+        "A verified seller on HenryCo Marketplace with trust signals, delivery clarity, and a transparent passport surfaced before every checkout.",
+    },
+    stats: {
+      trustScore: "Trust score",
+      responseSla: "Response SLA",
+      responseSlaSuffix: "h",
+      followers: "Followers",
+    },
+    standards: {
+      eyebrow: "Store standards",
+    },
+    support: {
+      eyebrow: "Support",
+      contactLinkLabel: "Use HenryCo Marketplace to contact this store",
+      contactBodySuffix:
+        " — messages are logged and tied to your order reference so every update stays in one place.",
+      ctaLabel: "Contact this store",
+      subjectTemplate: "Question for {store}",
+    },
+    reviews: {
+      eyebrow: "Recent reviews",
+      verifiedPurchase: "Verified purchase",
+      review: "Review",
+    },
+    catalog: {
+      kicker: "Store catalog",
+      title: "Everything currently live from this store.",
+      exploreLink: "Explore more verified listings",
+      emptyTitle: "No live listings just yet",
+      emptyBody: "Approved products from this store will appear here as they go live.",
+    },
+  },
   sell: {
     metadata: {
       title: "Sell on HenryCo — selective marketplace for trust-led sellers",
@@ -731,6 +848,47 @@ const EN: MarketplacePublicCopy = {
       itemsSuffix: "items",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} on HenryCo Marketplace — server-logged enforcement, escrow controls, and trust posture surfaced before checkout.",
+      fallbackTitle: "Marketplace policy — HenryCo Marketplace",
+      fallbackDescription:
+        "A HenryCo Marketplace policy — server-logged enforcement, escrow controls, and trust posture surfaced before checkout.",
+    },
+    hero: {
+      backToTrust: "Back to trust standards",
+      openSupport: "Open support thread",
+    },
+    details: {
+      coverageLabel: "Coverage",
+      enforcementLabel: "Enforcement",
+      updatedLabel: "Updated",
+    },
+    coverageBySlug: {
+      buyerProtection: "Buyers",
+      sellerPolicy: "Sellers",
+      fallback: "Marketplace participants",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Server-held payments + dispute freeze",
+      sellerPolicy: "Trust-tier review + payout reserve",
+      fallback: "Server-logged trail",
+    },
+    updatedBySlug: {
+      buyerProtection: "On payment + dispute revisions",
+      sellerPolicy: "On seller standards revisions",
+      fallback: "On policy revisions",
+    },
+    provisions: {
+      kicker: "Policy provisions",
+    },
+    ecosystem: {
+      kicker: "Connected marketplace controls",
+      openLabel: "Open",
+    },
+  },
 };
 
 const FR: DeepPartial<MarketplacePublicCopy> = {
@@ -922,6 +1080,47 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — Marketplace HenryCo",
     metadataDescription:
       "Explorez les produits vérifiés de {brand} sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et des passeports vendeurs visibles avant le paiement.",
+  },
+  store: {
+    metadataTitle: "{store} — Marketplace HenryCo",
+    metadataDescription:
+      "Parcourez les produits vérifiés de {store} sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et le passeport vendeur visibles avant le paiement.",
+    metadataDescriptionFallback:
+      "Une boutique vérifiée sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport vendeur visibles avant chaque paiement.",
+    hero: {
+      eyebrow: "Passeport boutique",
+      bodyFallback:
+        "Un vendeur vérifié sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport transparent affiché avant chaque paiement.",
+    },
+    stats: {
+      trustScore: "Score de confiance",
+      responseSla: "Délai de réponse",
+      responseSlaSuffix: " h",
+      followers: "Abonnés",
+    },
+    standards: {
+      eyebrow: "Standards de la boutique",
+    },
+    support: {
+      eyebrow: "Support",
+      contactLinkLabel: "Utilisez HenryCo Marketplace pour contacter cette boutique",
+      contactBodySuffix:
+        " — les messages sont enregistrés et rattachés à la référence de votre commande pour que chaque mise à jour reste au même endroit.",
+      ctaLabel: "Contacter cette boutique",
+      subjectTemplate: "Question pour {store}",
+    },
+    reviews: {
+      eyebrow: "Avis récents",
+      verifiedPurchase: "Achat vérifié",
+      review: "Avis",
+    },
+    catalog: {
+      kicker: "Catalogue de la boutique",
+      title: "Tout ce qui est actuellement en ligne dans cette boutique.",
+      exploreLink: "Explorer plus d’annonces vérifiées",
+      emptyTitle: "Pas encore d’annonces en ligne",
+      emptyBody: "Les produits approuvés de cette boutique apparaîtront ici dès leur mise en ligne.",
+    },
   },
   help: {
     metadata: {
@@ -1132,6 +1331,47 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "articles",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — Marketplace HenryCo",
+      descriptionTemplate:
+        "{policy} sur HenryCo Marketplace — application journalisée côté serveur, contrôles d’entiercement et posture de confiance affichés avant le paiement.",
+      fallbackTitle: "Politique du marché — Marketplace HenryCo",
+      fallbackDescription:
+        "Une politique de HenryCo Marketplace — application journalisée côté serveur, contrôles d’entiercement et posture de confiance affichés avant le paiement.",
+    },
+    hero: {
+      backToTrust: "Retour aux standards de confiance",
+      openSupport: "Ouvrir un fil d’assistance",
+    },
+    details: {
+      coverageLabel: "Couverture",
+      enforcementLabel: "Application",
+      updatedLabel: "Mise à jour",
+    },
+    coverageBySlug: {
+      buyerProtection: "Acheteurs",
+      sellerPolicy: "Vendeurs",
+      fallback: "Participants du marché",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Paiements sous séquestre + gel des litiges",
+      sellerPolicy: "Revue par palier de confiance + réserve de paiement",
+      fallback: "Traçabilité serveur",
+    },
+    updatedBySlug: {
+      buyerProtection: "Lors de révisions des paiements et des litiges",
+      sellerPolicy: "Lors de révisions des standards vendeurs",
+      fallback: "Lors des révisions de politique",
+    },
+    provisions: {
+      kicker: "Dispositions de la politique",
+    },
+    ecosystem: {
+      kicker: "Contrôles du marché connectés",
+      openLabel: "Ouvrir",
+    },
+  },
 };
 
 const ES: DeepPartial<MarketplacePublicCopy> = {
@@ -1187,6 +1427,47 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "Explora productos verificados de {brand} en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaportes de vendedor visibles antes del pago.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Explora los productos verificados de {store} en HenryCo Marketplace, con señales de confianza, claridad de entrega y el pasaporte del vendedor visibles antes del pago.",
+    metadataDescriptionFallback:
+      "Una tienda verificada en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes de cada pago.",
+    hero: {
+      eyebrow: "Pasaporte de la tienda",
+      bodyFallback:
+        "Un vendedor verificado en HenryCo Marketplace, con señales de confianza, claridad de entrega y un pasaporte transparente visible antes de cada pago.",
+    },
+    stats: {
+      trustScore: "Puntuación de confianza",
+      responseSla: "Plazo de respuesta",
+      responseSlaSuffix: " h",
+      followers: "Seguidores",
+    },
+    standards: {
+      eyebrow: "Estándares de la tienda",
+    },
+    support: {
+      eyebrow: "Soporte",
+      contactLinkLabel: "Usa HenryCo Marketplace para contactar con esta tienda",
+      contactBodySuffix:
+        " — los mensajes quedan registrados y vinculados a la referencia de tu pedido para que cada actualización se mantenga en un solo lugar.",
+      ctaLabel: "Contactar con esta tienda",
+      subjectTemplate: "Pregunta para {store}",
+    },
+    reviews: {
+      eyebrow: "Reseñas recientes",
+      verifiedPurchase: "Compra verificada",
+      review: "Reseña",
+    },
+    catalog: {
+      kicker: "Catálogo de la tienda",
+      title: "Todo lo que esta tienda tiene en directo ahora mismo.",
+      exploreLink: "Explorar más anuncios verificados",
+      emptyTitle: "Aún no hay anuncios en directo",
+      emptyBody: "Los productos aprobados de esta tienda aparecerán aquí en cuanto se publiquen.",
+    },
   },
   help: {
     metadata: {
@@ -1397,6 +1678,47 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "artículos",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} en HenryCo Marketplace — control de cumplimiento registrado en servidor, custodia de pagos y postura de confianza visibles antes del pago.",
+      fallbackTitle: "Política del marketplace — HenryCo Marketplace",
+      fallbackDescription:
+        "Una política de HenryCo Marketplace — control de cumplimiento registrado en servidor, custodia de pagos y postura de confianza visibles antes del pago.",
+    },
+    hero: {
+      backToTrust: "Volver a los estándares de confianza",
+      openSupport: "Abrir hilo de soporte",
+    },
+    details: {
+      coverageLabel: "Cobertura",
+      enforcementLabel: "Aplicación",
+      updatedLabel: "Actualizado",
+    },
+    coverageBySlug: {
+      buyerProtection: "Compradores",
+      sellerPolicy: "Vendedores",
+      fallback: "Participantes del marketplace",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Pagos en custodia + congelación por disputa",
+      sellerPolicy: "Revisión por nivel de confianza + reserva de pago",
+      fallback: "Registro auditable en servidor",
+    },
+    updatedBySlug: {
+      buyerProtection: "Al revisar pagos y disputas",
+      sellerPolicy: "Al revisar los estándares del vendedor",
+      fallback: "Al revisar la política",
+    },
+    provisions: {
+      kicker: "Disposiciones de la política",
+    },
+    ecosystem: {
+      kicker: "Controles conectados del marketplace",
+      openLabel: "Abrir",
+    },
+  },
 };
 
 const PT: DeepPartial<MarketplacePublicCopy> = {
@@ -1452,6 +1774,47 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "Explora produtos verificados de {brand} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Explora os produtos verificados de {store} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e o passaporte do vendedor visíveis antes do pagamento.",
+    metadataDescriptionFallback:
+      "Uma loja verificada na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes de cada pagamento.",
+    hero: {
+      eyebrow: "Passaporte da loja",
+      bodyFallback:
+        "Um vendedor verificado na HenryCo Marketplace, com sinais de confiança, clareza de entrega e um passaporte transparente visível antes de cada pagamento.",
+    },
+    stats: {
+      trustScore: "Pontuação de confiança",
+      responseSla: "Prazo de resposta",
+      responseSlaSuffix: " h",
+      followers: "Seguidores",
+    },
+    standards: {
+      eyebrow: "Padrões da loja",
+    },
+    support: {
+      eyebrow: "Suporte",
+      contactLinkLabel: "Usa a HenryCo Marketplace para contactar esta loja",
+      contactBodySuffix:
+        " — as mensagens ficam registadas e ligadas à referência do teu pedido para que cada atualização permaneça num só lugar.",
+      ctaLabel: "Contactar esta loja",
+      subjectTemplate: "Pergunta para {store}",
+    },
+    reviews: {
+      eyebrow: "Avaliações recentes",
+      verifiedPurchase: "Compra verificada",
+      review: "Avaliação",
+    },
+    catalog: {
+      kicker: "Catálogo da loja",
+      title: "Tudo o que esta loja tem em direto neste momento.",
+      exploreLink: "Explorar mais anúncios verificados",
+      emptyTitle: "Ainda sem anúncios em direto",
+      emptyBody: "Os produtos aprovados desta loja aparecerão aqui assim que entrarem em direto.",
+    },
   },
   category: {
     hero: {
@@ -1689,6 +2052,47 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "itens",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} no HenryCo Marketplace — fiscalização registada no servidor, custódia de pagamentos e postura de confiança visíveis antes do checkout.",
+      fallbackTitle: "Política do marketplace — HenryCo Marketplace",
+      fallbackDescription:
+        "Uma política do HenryCo Marketplace — fiscalização registada no servidor, custódia de pagamentos e postura de confiança visíveis antes do checkout.",
+    },
+    hero: {
+      backToTrust: "Voltar aos padrões de confiança",
+      openSupport: "Abrir conversa de suporte",
+    },
+    details: {
+      coverageLabel: "Cobertura",
+      enforcementLabel: "Fiscalização",
+      updatedLabel: "Atualizado",
+    },
+    coverageBySlug: {
+      buyerProtection: "Compradores",
+      sellerPolicy: "Vendedores",
+      fallback: "Participantes do marketplace",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Pagamentos sob custódia + congelamento por disputa",
+      sellerPolicy: "Revisão por nível de confiança + reserva de payout",
+      fallback: "Registo auditável no servidor",
+    },
+    updatedBySlug: {
+      buyerProtection: "Em revisões de pagamento e disputa",
+      sellerPolicy: "Em revisões dos padrões do vendedor",
+      fallback: "Em revisões de política",
+    },
+    provisions: {
+      kicker: "Disposições da política",
+    },
+    ecosystem: {
+      kicker: "Controlos conectados do marketplace",
+      openLabel: "Abrir",
+    },
+  },
 };
 
 const DE: DeepPartial<MarketplacePublicCopy> = {
@@ -1744,6 +2148,47 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "Entdecke verifizierte Produkte von {brand} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Entdecke verifizierte Produkte von {store} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor dem Checkout.",
+    metadataDescriptionFallback:
+      "Ein verifizierter Shop auf HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor jedem Checkout.",
+    hero: {
+      eyebrow: "Shop-Passport",
+      bodyFallback:
+        "Eine verifizierte Verkäufer:in auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und einem transparenten Passport schon vor jedem Checkout.",
+    },
+    stats: {
+      trustScore: "Vertrauensscore",
+      responseSla: "Reaktionszeit",
+      responseSlaSuffix: " Std.",
+      followers: "Follower:innen",
+    },
+    standards: {
+      eyebrow: "Shop-Standards",
+    },
+    support: {
+      eyebrow: "Support",
+      contactLinkLabel: "Nutze HenryCo Marketplace, um diesen Shop zu kontaktieren",
+      contactBodySuffix:
+        " — Nachrichten werden protokolliert und an deine Bestellreferenz gebunden, damit jede Aktualisierung an einem Ort bleibt.",
+      ctaLabel: "Diesen Shop kontaktieren",
+      subjectTemplate: "Frage an {store}",
+    },
+    reviews: {
+      eyebrow: "Neueste Bewertungen",
+      verifiedPurchase: "Verifizierter Kauf",
+      review: "Bewertung",
+    },
+    catalog: {
+      kicker: "Shop-Katalog",
+      title: "Alles, was dieser Shop gerade live hat.",
+      exploreLink: "Mehr verifizierte Angebote entdecken",
+      emptyTitle: "Noch keine Live-Angebote",
+      emptyBody: "Genehmigte Produkte dieses Shops erscheinen hier, sobald sie live geschaltet werden.",
+    },
   },
   category: {
     hero: {
@@ -1981,6 +2426,47 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "Artikel",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} im HenryCo Marketplace — serverseitig protokollierte Durchsetzung, Treuhandkontrollen und Vertrauenslage vor dem Checkout sichtbar.",
+      fallbackTitle: "Marketplace-Richtlinie — HenryCo Marketplace",
+      fallbackDescription:
+        "Eine Richtlinie des HenryCo Marketplace — serverseitig protokollierte Durchsetzung, Treuhandkontrollen und Vertrauenslage vor dem Checkout sichtbar.",
+    },
+    hero: {
+      backToTrust: "Zurück zu den Vertrauensstandards",
+      openSupport: "Support-Thread öffnen",
+    },
+    details: {
+      coverageLabel: "Geltungsbereich",
+      enforcementLabel: "Durchsetzung",
+      updatedLabel: "Aktualisiert",
+    },
+    coverageBySlug: {
+      buyerProtection: "Käufer",
+      sellerPolicy: "Verkäufer",
+      fallback: "Marketplace-Teilnehmer",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Treuhand-Zahlungen + Auszahlungssperre bei Streit",
+      sellerPolicy: "Prüfung nach Vertrauensstufe + Auszahlungsreserve",
+      fallback: "Serverseitig protokollierte Spur",
+    },
+    updatedBySlug: {
+      buyerProtection: "Bei Änderungen zu Zahlung und Streitfällen",
+      sellerPolicy: "Bei Änderungen der Verkäuferstandards",
+      fallback: "Bei Richtlinienänderungen",
+    },
+    provisions: {
+      kicker: "Bestimmungen der Richtlinie",
+    },
+    ecosystem: {
+      kicker: "Verbundene Marketplace-Kontrollen",
+      openLabel: "Öffnen",
+    },
+  },
 };
 
 const IT: DeepPartial<MarketplacePublicCopy> = {
@@ -2036,6 +2522,47 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "Esplora i prodotti verificati di {brand} su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporti dei venditori visibili prima del pagamento.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Esplora i prodotti verificati di {store} su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e il passaporto del venditore visibili prima del pagamento.",
+    metadataDescriptionFallback:
+      "Un negozio verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporto del venditore visibili prima di ogni pagamento.",
+    hero: {
+      eyebrow: "Passaporto del negozio",
+      bodyFallback:
+        "Un venditore verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e un passaporto trasparente visibile prima di ogni pagamento.",
+    },
+    stats: {
+      trustScore: "Punteggio di fiducia",
+      responseSla: "Tempo di risposta",
+      responseSlaSuffix: " h",
+      followers: "Follower",
+    },
+    standards: {
+      eyebrow: "Standard del negozio",
+    },
+    support: {
+      eyebrow: "Supporto",
+      contactLinkLabel: "Usa HenryCo Marketplace per contattare questo negozio",
+      contactBodySuffix:
+        " — i messaggi vengono registrati e collegati al riferimento del tuo ordine, così ogni aggiornamento resta in un unico posto.",
+      ctaLabel: "Contatta questo negozio",
+      subjectTemplate: "Domanda per {store}",
+    },
+    reviews: {
+      eyebrow: "Recensioni recenti",
+      verifiedPurchase: "Acquisto verificato",
+      review: "Recensione",
+    },
+    catalog: {
+      kicker: "Catalogo del negozio",
+      title: "Tutto ciò che questo negozio ha attualmente online.",
+      exploreLink: "Esplora altri annunci verificati",
+      emptyTitle: "Ancora nessun annuncio online",
+      emptyBody: "I prodotti approvati di questo negozio appariranno qui non appena saranno online.",
+    },
   },
   category: {
     hero: {
@@ -2273,6 +2800,47 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "articoli",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} su HenryCo Marketplace — applicazione registrata lato server, controlli di deposito a garanzia e postura di fiducia visibili prima del checkout.",
+      fallbackTitle: "Politica del marketplace — HenryCo Marketplace",
+      fallbackDescription:
+        "Una politica di HenryCo Marketplace — applicazione registrata lato server, controlli di deposito a garanzia e postura di fiducia visibili prima del checkout.",
+    },
+    hero: {
+      backToTrust: "Torna agli standard di fiducia",
+      openSupport: "Apri un thread di assistenza",
+    },
+    details: {
+      coverageLabel: "Copertura",
+      enforcementLabel: "Applicazione",
+      updatedLabel: "Aggiornato",
+    },
+    coverageBySlug: {
+      buyerProtection: "Acquirenti",
+      sellerPolicy: "Venditori",
+      fallback: "Partecipanti al marketplace",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Pagamenti in deposito a garanzia + blocco controversia",
+      sellerPolicy: "Revisione per livello di fiducia + riserva di payout",
+      fallback: "Traccia registrata lato server",
+    },
+    updatedBySlug: {
+      buyerProtection: "A ogni revisione su pagamenti e controversie",
+      sellerPolicy: "A ogni revisione degli standard venditore",
+      fallback: "A ogni revisione della politica",
+    },
+    provisions: {
+      kicker: "Disposizioni della politica",
+    },
+    ecosystem: {
+      kicker: "Controlli connessi del marketplace",
+      openLabel: "Apri",
+    },
+  },
 };
 
 const AR: DeepPartial<MarketplacePublicCopy> = {
@@ -2328,6 +2896,47 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "استكشف المنتجات الموثّقة من {brand} على HenryCo Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل إتمام الدفع.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "تصفّح المنتجات الموثّقة من {store} على HenryCo Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل إتمام الدفع.",
+    metadataDescriptionFallback:
+      "متجر موثّق على HenryCo Marketplace، تظهر فيه إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل كل عملية دفع.",
+    hero: {
+      eyebrow: "جواز المتجر",
+      bodyFallback:
+        "بائع موثّق على HenryCo Marketplace، مع إشارات ثقة، ووضوح في التوصيل، وجواز سفر شفّاف يظهر قبل كل عملية دفع.",
+    },
+    stats: {
+      trustScore: "درجة الثقة",
+      responseSla: "مدة الردّ",
+      responseSlaSuffix: " س",
+      followers: "المتابعون",
+    },
+    standards: {
+      eyebrow: "معايير المتجر",
+    },
+    support: {
+      eyebrow: "الدعم",
+      contactLinkLabel: "استخدم HenryCo Marketplace للتواصل مع هذا المتجر",
+      contactBodySuffix:
+        " — تُسجَّل الرسائل وتُربط بمرجع طلبك، حتى يبقى كل تحديث في مكان واحد.",
+      ctaLabel: "تواصل مع هذا المتجر",
+      subjectTemplate: "سؤال إلى {store}",
+    },
+    reviews: {
+      eyebrow: "أحدث التقييمات",
+      verifiedPurchase: "شراء موثّق",
+      review: "تقييم",
+    },
+    catalog: {
+      kicker: "كتالوج المتجر",
+      title: "كل ما يعرضه هذا المتجر مباشرةً الآن.",
+      exploreLink: "استكشف المزيد من الإعلانات الموثّقة",
+      emptyTitle: "لا توجد إعلانات مباشرة بعد",
+      emptyBody: "ستظهر هنا المنتجات المعتمدة من هذا المتجر فور إتاحتها مباشرةً.",
+    },
   },
   category: {
     hero: {
@@ -2565,6 +3174,47 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "عنصرًا",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — متجر HenryCo",
+      descriptionTemplate:
+        "{policy} على متجر HenryCo — تطبيق مُسجَّل على الخادم، وضوابط ضمان للمدفوعات، وموقف ثقة ظاهر قبل الدفع.",
+      fallbackTitle: "سياسة المتجر — متجر HenryCo",
+      fallbackDescription:
+        "سياسة من متجر HenryCo — تطبيق مُسجَّل على الخادم، وضوابط ضمان للمدفوعات، وموقف ثقة ظاهر قبل الدفع.",
+    },
+    hero: {
+      backToTrust: "عودة إلى معايير الثقة",
+      openSupport: "افتح محادثة الدعم",
+    },
+    details: {
+      coverageLabel: "نطاق التغطية",
+      enforcementLabel: "التطبيق",
+      updatedLabel: "آخر تحديث",
+    },
+    coverageBySlug: {
+      buyerProtection: "المشترون",
+      sellerPolicy: "البائعون",
+      fallback: "المشاركون في المتجر",
+    },
+    enforcementBySlug: {
+      buyerProtection: "مدفوعات مُحتجزة في الضمان + تجميد عند النزاع",
+      sellerPolicy: "مراجعة حسب درجة الثقة + احتياطي صرف",
+      fallback: "أثر مُسجَّل على الخادم",
+    },
+    updatedBySlug: {
+      buyerProtection: "عند مراجعات المدفوعات والنزاعات",
+      sellerPolicy: "عند مراجعات معايير البائع",
+      fallback: "عند مراجعات السياسة",
+    },
+    provisions: {
+      kicker: "أحكام السياسة",
+    },
+    ecosystem: {
+      kicker: "ضوابط متصلة بالمتجر",
+      openLabel: "فتح",
+    },
+  },
 };
 
 const ZH: DeepPartial<MarketplacePublicCopy> = {
@@ -2620,6 +3270,47 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "在 HenryCo Marketplace 浏览 {brand} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "在 HenryCo Marketplace 浏览 {store} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。",
+    metadataDescriptionFallback:
+      "HenryCo Marketplace 上经过认证的店铺,每次结账前都能查看信任信号、配送清晰度与卖家护照。",
+    hero: {
+      eyebrow: "店铺护照",
+      bodyFallback:
+        "HenryCo Marketplace 上经过认证的卖家,信任信号、配送清晰度与透明护照在每次结账前都可清楚查看。",
+    },
+    stats: {
+      trustScore: "信任评分",
+      responseSla: "响应时效",
+      responseSlaSuffix: " 小时",
+      followers: "关注者",
+    },
+    standards: {
+      eyebrow: "店铺标准",
+    },
+    support: {
+      eyebrow: "客户支持",
+      contactLinkLabel: "通过 HenryCo Marketplace 联系该店铺",
+      contactBodySuffix:
+        " —— 消息会被记录并与你的订单编号关联,所有更新都集中在同一处。",
+      ctaLabel: "联系该店铺",
+      subjectTemplate: "向 {store} 咨询",
+    },
+    reviews: {
+      eyebrow: "最新评价",
+      verifiedPurchase: "认证购买",
+      review: "评价",
+    },
+    catalog: {
+      kicker: "店铺目录",
+      title: "该店铺目前在售的全部商品。",
+      exploreLink: "查看更多认证商品",
+      emptyTitle: "暂无在售商品",
+      emptyBody: "经审核的商品上线后将在此显示。",
+    },
   },
   category: {
     hero: {
@@ -2857,6 +3548,47 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "件商品",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo 商城",
+      descriptionTemplate:
+        "HenryCo 商城的 {policy} — 服务器侧记录的执行轨迹、托管支付控制以及在结账前可见的信任态势。",
+      fallbackTitle: "商城政策 — HenryCo 商城",
+      fallbackDescription:
+        "HenryCo 商城的一项政策 — 服务器侧记录的执行轨迹、托管支付控制以及在结账前可见的信任态势。",
+    },
+    hero: {
+      backToTrust: "返回信任标准",
+      openSupport: "打开支持工单",
+    },
+    details: {
+      coverageLabel: "适用范围",
+      enforcementLabel: "执行机制",
+      updatedLabel: "更新时机",
+    },
+    coverageBySlug: {
+      buyerProtection: "买家",
+      sellerPolicy: "卖家",
+      fallback: "商城参与者",
+    },
+    enforcementBySlug: {
+      buyerProtection: "款项托管 + 争议时冻结结算",
+      sellerPolicy: "信任等级审核 + 结算储备",
+      fallback: "服务器侧记录的审计轨迹",
+    },
+    updatedBySlug: {
+      buyerProtection: "在支付与争议规则更新时",
+      sellerPolicy: "在卖家标准更新时",
+      fallback: "在政策更新时",
+    },
+    provisions: {
+      kicker: "政策条款",
+    },
+    ecosystem: {
+      kicker: "联通的商城控制项",
+      openLabel: "打开",
+    },
+  },
 };
 
 const HI: DeepPartial<MarketplacePublicCopy> = {
@@ -2912,6 +3644,47 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "HenryCo Marketplace पर {brand} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "HenryCo Marketplace पर {store} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।",
+    metadataDescriptionFallback:
+      "HenryCo Marketplace पर एक सत्यापित स्टोर — हर चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट दिखाई देते हैं।",
+    hero: {
+      eyebrow: "स्टोर पासपोर्ट",
+      bodyFallback:
+        "HenryCo Marketplace पर एक सत्यापित विक्रेता — हर चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और पारदर्शी पासपोर्ट सामने रहते हैं।",
+    },
+    stats: {
+      trustScore: "ट्रस्ट स्कोर",
+      responseSla: "जवाब का समय",
+      responseSlaSuffix: " घं.",
+      followers: "फ़ॉलोअर",
+    },
+    standards: {
+      eyebrow: "स्टोर मानक",
+    },
+    support: {
+      eyebrow: "सहायता",
+      contactLinkLabel: "इस स्टोर से बात करने के लिए HenryCo Marketplace का उपयोग करें",
+      contactBodySuffix:
+        " — संदेश रिकॉर्ड होते हैं और आपके ऑर्डर रेफ़रेंस से जुड़े रहते हैं, ताकि हर अपडेट एक ही जगह बना रहे।",
+      ctaLabel: "इस स्टोर से संपर्क करें",
+      subjectTemplate: "{store} के लिए सवाल",
+    },
+    reviews: {
+      eyebrow: "हाल की समीक्षाएँ",
+      verifiedPurchase: "सत्यापित ख़रीद",
+      review: "समीक्षा",
+    },
+    catalog: {
+      kicker: "स्टोर कैटलॉग",
+      title: "इस स्टोर पर अभी जो भी लाइव है।",
+      exploreLink: "और सत्यापित लिस्टिंग देखें",
+      emptyTitle: "अभी कोई लाइव लिस्टिंग नहीं है",
+      emptyBody: "इस स्टोर के अनुमोदित उत्पाद लाइव होते ही यहाँ दिखाई देंगे।",
+    },
   },
   category: {
     hero: {
@@ -3149,6 +3922,47 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "आइटम",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo मार्केटप्लेस",
+      descriptionTemplate:
+        "HenryCo मार्केटप्लेस पर {policy} — सर्वर पर लॉग की गई एनफोर्समेंट, एस्क्रो पेमेंट कंट्रोल और चेकआउट से पहले दिखता ट्रस्ट रुख।",
+      fallbackTitle: "मार्केटप्लेस नीति — HenryCo मार्केटप्लेस",
+      fallbackDescription:
+        "HenryCo मार्केटप्लेस की एक नीति — सर्वर पर लॉग की गई एनफोर्समेंट, एस्क्रो पेमेंट कंट्रोल और चेकआउट से पहले दिखता ट्रस्ट रुख।",
+    },
+    hero: {
+      backToTrust: "ट्रस्ट मानकों पर लौटें",
+      openSupport: "सपोर्ट थ्रेड खोलें",
+    },
+    details: {
+      coverageLabel: "कवरेज",
+      enforcementLabel: "एनफोर्समेंट",
+      updatedLabel: "अपडेट",
+    },
+    coverageBySlug: {
+      buyerProtection: "बायर्स",
+      sellerPolicy: "सेलर्स",
+      fallback: "मार्केटप्लेस के प्रतिभागी",
+    },
+    enforcementBySlug: {
+      buyerProtection: "एस्क्रो में रोके गए पेमेंट + विवाद पर पेआउट फ्रीज़",
+      sellerPolicy: "ट्रस्ट-टियर समीक्षा + पेआउट रिज़र्व",
+      fallback: "सर्वर पर लॉग किया गया ट्रेल",
+    },
+    updatedBySlug: {
+      buyerProtection: "पेमेंट और विवाद रिविज़न पर",
+      sellerPolicy: "सेलर मानकों के रिविज़न पर",
+      fallback: "नीति रिविज़न पर",
+    },
+    provisions: {
+      kicker: "नीति प्रावधान",
+    },
+    ecosystem: {
+      kicker: "जुड़े हुए मार्केटप्लेस कंट्रोल",
+      openLabel: "खोलें",
+    },
+  },
 };
 
 const IG: DeepPartial<MarketplacePublicCopy> = {
@@ -3204,6 +4018,47 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "Lelee ngwa ahịa enyochara nke {brand} na HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ ndị na-ere ahịa na-egosi tupu ịkwụ ụgwọ.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Lelee ngwa ahịa enyochara nke {store} na HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ.",
+    metadataDescriptionFallback:
+      "Ụlọ ahịa enyochara n'elu HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ ọ bụla.",
+    hero: {
+      eyebrow: "Paspọtụ ụlọ ahịa",
+      bodyFallback:
+        "Onye na-ere ahịa enyochara n'elu HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ doro anya na-egosi tupu ịkwụ ụgwọ ọ bụla.",
+    },
+    stats: {
+      trustScore: "Akara ntụkwasị obi",
+      responseSla: "Oge nzaghachi",
+      responseSlaSuffix: " awa",
+      followers: "Ndị na-eso",
+    },
+    standards: {
+      eyebrow: "Ọkwa ụlọ ahịa",
+    },
+    support: {
+      eyebrow: "Nkwado",
+      contactLinkLabel: "Jiri HenryCo Marketplace kpọtụrụ ụlọ ahịa a",
+      contactBodySuffix:
+        " — a na-edekọ ozi ma jikọta ya na nrụtụaka iwu gị ka mmelite ọ bụla na-anọgide n'otu ebe.",
+      ctaLabel: "Kpọtụrụ ụlọ ahịa a",
+      subjectTemplate: "Ajụjụ maka {store}",
+    },
+    reviews: {
+      eyebrow: "Nyocha ọhụrụ",
+      verifiedPurchase: "Ịzụta enyochara",
+      review: "Nyocha",
+    },
+    catalog: {
+      kicker: "Katalọgụ ụlọ ahịa",
+      title: "Ihe niile ụlọ ahịa a nwere ugbu a na-arụ ọrụ.",
+      exploreLink: "Chọpụta ọzọ edemede enyochara",
+      emptyTitle: "Enwebeghị edemede dị ndụ",
+      emptyBody: "Ngwa ahịa akwadoro nke ụlọ ahịa a ga-apụta ebe a ozugbo ha bidoro ịrụ ọrụ.",
+    },
   },
   category: {
     hero: {
@@ -3441,6 +4296,47 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "ihe",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — Ahịa HenryCo",
+      descriptionTemplate:
+        "{policy} n'elu Ahịa HenryCo — nzụlite e dekọtara na sava, njikwa ego nke akwụ́ ụgwọ, na ọnọdụ ntụkwasị obi pụta ìhè tupu ịkwụ ụgwọ.",
+      fallbackTitle: "Iwu ahịa — Ahịa HenryCo",
+      fallbackDescription:
+        "Otu iwu Ahịa HenryCo — nzụlite e dekọtara na sava, njikwa ego nke akwụ́ ụgwọ, na ọnọdụ ntụkwasị obi pụta ìhè tupu ịkwụ ụgwọ.",
+    },
+    hero: {
+      backToTrust: "Laghachi n'ụkpụrụ ntụkwasị obi",
+      openSupport: "Mepee mkparịta ụka nkwado",
+    },
+    details: {
+      coverageLabel: "Nchekwa",
+      enforcementLabel: "Nzụlite",
+      updatedLabel: "Emelitere",
+    },
+    coverageBySlug: {
+      buyerProtection: "Ndị na-azụ ahịa",
+      sellerPolicy: "Ndị na-ere ahịa",
+      fallback: "Ndị sonye na ahịa",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Ego e ji n'aka HenryCo + mgbochi ụgwọ na esemokwu",
+      sellerPolicy: "Nyochaa site n'ọkwa ntụkwasị obi + ego e debere",
+      fallback: "Aka e dekọtara na sava",
+    },
+    updatedBySlug: {
+      buyerProtection: "Mgbe mgbanwe a na-eme n'ụgwọ na esemokwu",
+      sellerPolicy: "Mgbe mgbanwe a na-eme n'ụkpụrụ ndị na-ere",
+      fallback: "Mgbe mgbanwe a na-eme n'iwu",
+    },
+    provisions: {
+      kicker: "Akwụkwọ iwu",
+    },
+    ecosystem: {
+      kicker: "Njikwa ahịa ejikọtara",
+      openLabel: "Mepee",
+    },
+  },
 };
 
 const YO: DeepPartial<MarketplacePublicCopy> = {
@@ -3496,6 +4392,47 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
     metadataTitle: "{brand} — HenryCo Marketplace",
     metadataDescription:
       "Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {brand} lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà ṣáájú ìsanwó.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {store} lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tó hàn ṣáájú ìsanwó.",
+    metadataDescriptionFallback:
+      "Ilé-ìtajà tí a ti fọwọ́sí lórí HenryCo Marketplace — àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tí ó hàn ṣáájú gbogbo ìsanwó.",
+    hero: {
+      eyebrow: "Ìwé-ìrìnnà ilé-ìtajà",
+      bodyFallback:
+        "Olùtà tí a ti fọwọ́sí lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà tí ó hàn kedere ṣáájú gbogbo ìsanwó.",
+    },
+    stats: {
+      trustScore: "Ìkà ìgbẹ́kẹ̀lé",
+      responseSla: "Àkókò ìdáhùn",
+      responseSlaSuffix: " wákàtí",
+      followers: "Àwọn olùtẹ̀lé",
+    },
+    standards: {
+      eyebrow: "Ìlànà ilé-ìtajà",
+    },
+    support: {
+      eyebrow: "Ìrànlọ́wọ́",
+      contactLinkLabel: "Lo HenryCo Marketplace láti bá ilé-ìtajà yìí sọ̀rọ̀",
+      contactBodySuffix:
+        " — a ń kọ àwọn ìfọ̀rọ̀wérọ̀ sílẹ̀, a sì ń so wọ́n mọ́ ìtọ́kasí àṣẹ rẹ kí gbogbo àfikún ìmúdójúìwọ̀n máa wà ní ibìkan ṣoṣo.",
+      ctaLabel: "Bá ilé-ìtajà yìí sọ̀rọ̀",
+      subjectTemplate: "Ìbéèrè fún {store}",
+    },
+    reviews: {
+      eyebrow: "Àwọn àbẹ̀wò tuntun",
+      verifiedPurchase: "Rírà tí a fọwọ́sí",
+      review: "Àbẹ̀wò",
+    },
+    catalog: {
+      kicker: "Àkójọ-ọjà ilé-ìtajà",
+      title: "Gbogbo ohun tí ilé-ìtajà yìí ní lórí ètò báyìí.",
+      exploreLink: "Ṣàwárí àwọn ìpolówó tí a ti fọwọ́sí sí i",
+      emptyTitle: "Kò sí ìpolówó tó wà lórí ètò ní àkókò yìí",
+      emptyBody: "Àwọn ọjà tí a ti fọwọ́sí láti ilé-ìtajà yìí yóò fara hàn níbí níwájú bí wọ́n bá ti wà lórí ètò.",
+    },
   },
   category: {
     hero: {
@@ -3733,9 +4670,91 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
       itemsSuffix: "nǹkan",
     },
   },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — Ọjà HenryCo",
+      descriptionTemplate:
+        "{policy} lórí Ọjà HenryCo — ìmúse tí a kọ sílẹ̀ lórí olùsìn, ìṣàkóso owó nínú àbò, àti ìdúró ìgbẹ́kẹ̀lé tí ó hàn ṣáájú ìsanwó.",
+      fallbackTitle: "Ìlànà ọjà — Ọjà HenryCo",
+      fallbackDescription:
+        "Ìlànà kan ti Ọjà HenryCo — ìmúse tí a kọ sílẹ̀ lórí olùsìn, ìṣàkóso owó nínú àbò, àti ìdúró ìgbẹ́kẹ̀lé tí ó hàn ṣáájú ìsanwó.",
+    },
+    hero: {
+      backToTrust: "Padà sí àwọn ìlànà ìgbẹ́kẹ̀lé",
+      openSupport: "Ṣí ìbáraẹnisọ̀rọ̀ ìrànlọ́wọ́",
+    },
+    details: {
+      coverageLabel: "Àgbègbè ààbò",
+      enforcementLabel: "Ìmúse",
+      updatedLabel: "Ìmúdójúìwọ̀n",
+    },
+    coverageBySlug: {
+      buyerProtection: "Àwọn olùrà",
+      sellerPolicy: "Àwọn olùtà",
+      fallback: "Àwọn alábàápín ọjà",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Owó nínú àbò + dídìnà ìsanwó nígbà àríyànjiyàn",
+      sellerPolicy: "Àyẹ̀wò gẹ́gẹ́ bí ipele ìgbẹ́kẹ̀lé + ìfowó-padà",
+      fallback: "Ipa-ọ̀nà tí a kọ sílẹ̀ lórí olùsìn",
+    },
+    updatedBySlug: {
+      buyerProtection: "Lójú ìṣàtúnṣe ìsanwó àti àríyànjiyàn",
+      sellerPolicy: "Lójú ìṣàtúnṣe àwọn ìlànà olùtà",
+      fallback: "Lójú ìṣàtúnṣe ìlànà",
+    },
+    provisions: {
+      kicker: "Àwọn àbáwí ìlànà",
+    },
+    ecosystem: {
+      kicker: "Àwọn ìṣàkóso ọjà tí ó sopọ̀",
+      openLabel: "Ṣí",
+    },
+  },
 };
 
 const HA: DeepPartial<MarketplacePublicCopy> = {
+  store: {
+    metadataTitle: "{store} — Kasuwar HenryCo",
+    metadataDescription:
+      "Bincika kayayyaki da aka tantance na {store} a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo na mai sayarwa kafin biyan kuɗi.",
+    metadataDescriptionFallback:
+      "Kantin da aka tantance a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo na mai sayarwa kafin kowane biyan kuɗi.",
+    hero: {
+      eyebrow: "Fasfo na kanti",
+      bodyFallback:
+        "Mai sayarwa da aka tantance a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo bayyananne da ake gani kafin kowane biyan kuɗi.",
+    },
+    stats: {
+      trustScore: "Maki na amincewa",
+      responseSla: "Lokacin amsa",
+      responseSlaSuffix: " awa",
+      followers: "Masu bibiya",
+    },
+    standards: {
+      eyebrow: "Ƙa'idodin kanti",
+    },
+    support: {
+      eyebrow: "Tallafi",
+      contactLinkLabel: "Yi amfani da Kasuwar HenryCo don tuntuɓar wannan kanti",
+      contactBodySuffix:
+        " — ana adana saƙonni kuma a haɗa su da lambar odar ka don kowane sabuntawa ya kasance a wuri ɗaya.",
+      ctaLabel: "Tuntuɓi wannan kanti",
+      subjectTemplate: "Tambaya ga {store}",
+    },
+    reviews: {
+      eyebrow: "Sabbin sharhi",
+      verifiedPurchase: "Saye da aka tantance",
+      review: "Sharhi",
+    },
+    catalog: {
+      kicker: "Kataloji na kanti",
+      title: "Duk abin da wannan kanti ke da shi a kan layi a yanzu.",
+      exploreLink: "Bincika ƙarin jeren da aka tantance",
+      emptyTitle: "Babu jeren da yake aiki yanzu",
+      emptyBody: "Kayan da aka amince da su daga wannan kanti za su fito a nan da zaran sun shiga aiki.",
+    },
+  },
   cart: {
     pageIntro: {
       kicker: "Kanti",
@@ -4004,6 +5023,47 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
     rail: {
       kicker: "Abin da ke cikin wannan zaɓi",
       itemsSuffix: "abubuwa",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — Kasuwar HenryCo",
+      descriptionTemplate:
+        "{policy} a Kasuwar HenryCo — aikatawa da aka rubuta a sabar, kula da kuɗi ta hannun amintacce, da matsayin amincewa da ake gani kafin biyan kuɗi.",
+      fallbackTitle: "Manufar kasuwa — Kasuwar HenryCo",
+      fallbackDescription:
+        "Wata manufa ta Kasuwar HenryCo — aikatawa da aka rubuta a sabar, kula da kuɗi ta hannun amintacce, da matsayin amincewa da ake gani kafin biyan kuɗi.",
+    },
+    hero: {
+      backToTrust: "Komawa zuwa matakan amincewa",
+      openSupport: "Buɗe zauren tallafi",
+    },
+    details: {
+      coverageLabel: "Yankin ɗauka",
+      enforcementLabel: "Aikatawa",
+      updatedLabel: "An sabunta",
+    },
+    coverageBySlug: {
+      buyerProtection: "Masu siye",
+      sellerPolicy: "Masu sayarwa",
+      fallback: "Mahalarta kasuwa",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Kuɗaɗen biyan ta hannun amintacce + daskarewa lokacin gardama",
+      sellerPolicy: "Bita bisa matakin amana + riƙewar biya",
+      fallback: "Tarihi a sabar",
+    },
+    updatedBySlug: {
+      buyerProtection: "Lokacin sabunta tsarin biya da gardama",
+      sellerPolicy: "Lokacin sabunta matakan mai sayarwa",
+      fallback: "Lokacin sabunta manufa",
+    },
+    provisions: {
+      kicker: "Sharuɗɗan manufa",
+    },
+    ecosystem: {
+      kicker: "Sarrafa kasuwa masu haɗuwa",
+      openLabel: "Buɗe",
     },
   },
 };
