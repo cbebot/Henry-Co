@@ -10,8 +10,10 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
+  ArrowLeft,
   BellOff,
   BellRing,
   Check,
@@ -125,6 +127,16 @@ export default function SupportThreadHeader({
       className="acct-thread-header"
       aria-label={t("Support thread header")}
     >
+      {/* Mobile-only back affordance — sits at the head of the thin
+          mobile top bar. CSS hides this on tablet+ where the page
+          renders the full `.acct-support-back` pill above the header. */}
+      <Link
+        href="/support"
+        className="acct-thread-header__mobile-back"
+        aria-label={t("Back to support")}
+      >
+        <ArrowLeft size={18} aria-hidden />
+      </Link>
       <div className="acct-thread-header__primary">
         <div className="acct-thread-header__pills">
           <span className="acct-thread-header__pill acct-thread-header__pill--division">
@@ -149,6 +161,22 @@ export default function SupportThreadHeader({
         <h1 className="acct-thread-header__subject hc-h1 acct-display">
           {subject}
         </h1>
+        {/* Mobile-only subtitle — replaces the verbose meta line +
+            pill row with a single calm subtitle that mirrors the
+            iOS/WhatsApp pattern (name on top, status underneath). */}
+        <p
+          className="acct-thread-header__mobile-subtitle"
+          aria-label={`${t("Status")}: ${statusLabel}`}
+        >
+          <span
+            className="acct-thread-header__mobile-subtitle-dot"
+            data-tone={tone}
+            aria-hidden
+          />
+          <span>{statusLabel}</span>
+          <span aria-hidden>·</span>
+          <span>{divisionLabel}</span>
+        </p>
         <p className="acct-thread-header__meta hc-body-sm">
           {t("Thread")} #{threadId.slice(0, 8)}
         </p>

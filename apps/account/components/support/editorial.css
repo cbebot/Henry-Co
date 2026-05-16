@@ -227,78 +227,190 @@
     0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
 }
 
-/* Mobile: collapse the header so it reads as a thin context strip,
-   not a hero card. The chat is the hero on mobile. We hide every
-   secondary detail (meta line, participants strip, download +
-   customize action buttons) — the overflow menu still surfaces them
-   for users who need them. Pills + subject + back affordance + the
-   single overflow control are all that show. */
+/* Default: the mobile-only back affordance + mobile-only subtitle
+   are hidden on tablet/desktop. They light up under the mobile media
+   query below to form a WhatsApp-style thin app bar. */
+.acct-thread-header__mobile-back,
+.acct-thread-header__mobile-subtitle {
+  display: none;
+}
+
+/* Mobile: rebuild the entire header as a true thin app bar. Reference
+   pattern: WhatsApp / iMessage / Telegram thread top-bar — a single
+   row with [back] [title + subtitle] [overflow]. No card chrome, no
+   pills, no big bold display title, no separate "Back to support"
+   pill floating above. The chat below owns the rest of the screen.
+
+   Hard structural moves on < 768px:
+     1. Stage padding goes to ZERO so the bar touches both edges.
+     2. The outer `.acct-support-back` link is hidden — the back
+        affordance lives INSIDE the header bar now.
+     3. Header becomes a single row, ~3rem tall, sticky top, with a
+        subtle bottom hairline instead of a full card border.
+     4. Pill row (CARE · APPLICATION · AWAITING REPLY) is hidden —
+        the status is folded into a single inline subtitle line.
+     5. Subject renders at 1rem normal weight (not the giant
+        display headline) and clamps to a single line.
+     6. A subtitle row (status dot + status label + division) sits
+        under the subject — calm, monochrome, WhatsApp-style.
+     7. The thread # meta + participants strip + download +
+        customize buttons all hide — every action remains reachable
+        through the overflow menu. */
 @media (max-width: 767px) {
+  /* Stage edge-to-edge. The aurora still drifts behind the chat.
+     gap: 0 closes the band between the thin bar and the chat so the
+     surface reads as one continuous app shell, not a stack of cards. */
+  .acct-support-stage {
+    padding: 0;
+    gap: 0;
+  }
+
+  /* The outer back pill no longer exists on mobile — the in-header
+     back chevron replaces it. Hide entirely so it doesn't double up. */
+  .acct-support-stage > .acct-support-back {
+    display: none;
+  }
+
+  /* Thin top bar — single row, no card frame. */
   .acct-thread-header {
-    padding: 0.55rem 0.75rem 0.55rem 0.85rem;
-    border-radius: 0.95rem;
-    gap: 0.45rem;
+    padding: 0.4rem 0.55rem 0.4rem 0.4rem;
+    border-radius: 0;
+    gap: 0.5rem;
     flex-wrap: nowrap;
     align-items: center;
+    /* Replace the full card border with just a bottom hairline so
+       the bar reads as a continuation of the page, not a card. */
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+    box-shadow: none;
+    /* Slightly heavier blur so content scrolling underneath reads
+       as frosted, not raw. */
+    backdrop-filter: blur(16px) saturate(1.15);
+    -webkit-backdrop-filter: blur(16px) saturate(1.15);
+    /* Stronger frosted tint so it stays legible over the aurora. */
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--acct-bg-elevated) 95%, transparent) 0%,
+        color-mix(in srgb, var(--acct-bg-elevated) 88%, transparent) 100%
+      );
   }
 
+  /* The in-bar back chevron — circular tap target, gold-on-hover. */
+  .acct-thread-header__mobile-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 9999px;
+    color: var(--acct-ink);
+    text-decoration: none;
+    transition: background 160ms ease, color 160ms ease;
+  }
+
+  .acct-thread-header__mobile-back:hover,
+  .acct-thread-header__mobile-back:active {
+    background: color-mix(in srgb, var(--acct-gold-soft) 60%, transparent);
+    color: var(--acct-gold-text, #8a6f00);
+  }
+
+  .acct-thread-header__mobile-back:focus-visible {
+    outline: 2px solid var(--acct-gold);
+    outline-offset: 2px;
+  }
+
+  /* Primary column = subject + subtitle stacked vertically. */
   .acct-thread-header__primary {
-    gap: 0.3rem;
+    gap: 0.05rem;
     flex: 1 1 auto;
     min-width: 0;
+    padding-right: 0.25rem;
   }
 
-  /* Pills compact, scrolls horizontally if too many. */
+  /* Hide the desktop pills row entirely — status moves into subtitle. */
   .acct-thread-header__pills {
-    gap: 0.25rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .acct-thread-header__pills::-webkit-scrollbar {
     display: none;
   }
 
-  .acct-thread-header__pill {
-    font-size: 0.56rem;
-    padding: 0.14rem 0.48rem;
-    letter-spacing: 0.08em;
-    flex-shrink: 0;
-  }
-
-  /* Single-line subject, tight. */
+  /* Subject becomes the title — normal weight, single line. */
   .acct-thread-header__subject {
-    font-size: 1rem !important;
-    line-height: 1.15;
+    font-size: 0.95rem !important;
+    line-height: 1.2;
     margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.003em;
+    color: var(--acct-ink);
+    font-family: var(--acct-font-sans, system-ui, sans-serif) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     -webkit-line-clamp: 1;
     line-clamp: 1;
+    display: block;
   }
 
-  /* Hide the thread # meta — it's still reachable via "Copy thread ID"
-     in the overflow menu. Don't waste vertical space on it. */
-  .acct-thread-header__meta {
-    display: none;
+  /* Subtitle — status dot + label + division on one line. */
+  .acct-thread-header__mobile-subtitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.34rem;
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--acct-muted);
+    letter-spacing: 0;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  /* Hide the participants strip — viewer already knows who's in the
-     thread. Premium feature for desktop only. */
+  .acct-thread-header__mobile-subtitle-dot {
+    flex-shrink: 0;
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 9999px;
+    background: var(--acct-muted);
+  }
+
+  /* Tone the subtitle dot per status. */
+  .acct-thread-header__mobile-subtitle-dot[data-tone="open"] {
+    background: var(--acct-blue);
+  }
+  .acct-thread-header__mobile-subtitle-dot[data-tone="awaiting"] {
+    background: var(--acct-gold);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-gold) 50%, transparent);
+    animation: acct-mobile-subtitle-pulse 2.4s ease-in-out infinite;
+  }
+  .acct-thread-header__mobile-subtitle-dot[data-tone="resolved"] {
+    background: var(--acct-green);
+  }
+  .acct-thread-header__mobile-subtitle-dot[data-tone="closed"],
+  .acct-thread-header__mobile-subtitle-dot[data-tone="neutral"] {
+    background: var(--acct-muted);
+  }
+
+  @keyframes acct-mobile-subtitle-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-gold) 50%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 0.28rem color-mix(in srgb, var(--acct-gold) 0%, transparent);
+    }
+  }
+
+  /* Hide the thread # meta + participants strip on mobile — both
+     still reachable in the overflow menu. */
+  .acct-thread-header__meta,
   .acct-thread-header .mt-participants {
     display: none;
   }
 
-  /* Hide the Download button + ThreadCustomizationMenu trigger on
-     mobile. The overflow menu's existing "Download" item still points
-     the user to the action, and customization (font size / density /
-     surface tone) is a desktop-grade refinement. Keeping mobile to
-     overflow-only puts the chat in charge of the surface.
-
-     DownloadDocumentButton renders a wrapper div without a stable
-     class hook, so we target it by exclusion — any direct child of
-     `.acct-thread-header__actions` that is NOT the customize menu
-     and NOT the overflow menu is the download wrapper. */
+  /* Hide the Download wrapper + ThreadCustomizationMenu trigger on
+     mobile. Overflow handles them. Targeting by exclusion since the
+     DownloadDocumentButton wrapper has no stable class hook. */
   .acct-thread-header__actions > :not(.mt-customize):not(.acct-thread-header__menu) {
     display: none;
   }
@@ -307,17 +419,38 @@
   }
 
   .acct-thread-header__actions {
-    gap: 0.2rem;
+    gap: 0;
     margin-left: auto;
     align-self: center;
   }
 
-  /* Make the overflow trigger a comfortable thumb target without
-     hijacking real estate. */
+  /* Overflow trigger — comfortable 2.4rem thumb target, transparent
+     bg so it doesn't compete with the bar's frosted surface. */
   .acct-thread-header__menu > button {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.4rem;
+    height: 2.4rem;
     padding: 0;
+    border-radius: 9999px;
+    border: 0;
+    background: transparent;
+  }
+
+  /* The chat surface immediately follows the thin bar — no card
+     border-radius, fills the rest of the screen. */
+  .acct-support-room .mt-thread {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    box-shadow: none;
+    min-height: 0;
+  }
+
+  /* Tile / live pill positions adjust slightly since the bar has
+     no padding anymore. */
+  .acct-support-room .mt-live-pill {
+    top: 0.5rem;
+    right: 0.55rem;
   }
 }
 
