@@ -288,6 +288,61 @@ export type JobsCopy = {
     activityEmptyTitle: string;
     activityEmptyBody: string;
   };
+  employerJobNew: {
+    pageTitle: string;
+    pageSubtitle: string;
+    rightRailCompanyTitle: string;
+    rightRailEmployerKicker: string;
+    rightRailVerificationFallback: string;
+    rightRailRoleCountSingular: string;
+    rightRailRoleCountPlural: string;
+    rightRailTipsTitle: string;
+    rightRailTipSummaries: string;
+    rightRailTipSalaryBenefits: string;
+    rightRailReadinessTitle: string;
+    rightRailAccountTierKicker: string;
+    rightRailAccountTierBody: string;
+    rightRailChecklistReady: string;
+    rightRailChecklistOpen: string;
+    noMembershipSectionTitle: string;
+    noMembershipSectionBody: string;
+    noMembershipEmptyKicker: string;
+    noMembershipEmptyTitle: string;
+    noMembershipEmptyBody: string;
+    noMembershipEmptyCta: string;
+    formSectionTitle: string;
+    formSectionBody: string;
+    subscriptionRequiredTitle: string;
+    subscriptionRequiredBodyTemplate: string;
+    subscriptionPendingTitle: string;
+    subscriptionPendingBody: string;
+    verificationGateBodySuffix: string;
+    directPublishingTitle: string;
+    directPublishingBody: string;
+    reviewRequiredTitle: string;
+    reviewRequiredBody: string;
+    draftOnlyTitle: string;
+    draftOnlyBody: string;
+    fieldTitlePlaceholder: string;
+    fieldSlugPlaceholder: string;
+    fieldSubtitlePlaceholder: string;
+    fieldSummaryPlaceholder: string;
+    fieldDescriptionPlaceholder: string;
+    fieldLocationPlaceholder: string;
+    fieldCategoryPlaceholder: string;
+    fieldWorkModePlaceholder: string;
+    fieldEmploymentTypePlaceholder: string;
+    fieldSeniorityPlaceholder: string;
+    fieldTeamPlaceholder: string;
+    fieldSkillsPlaceholder: string;
+    fieldResponsibilitiesPlaceholder: string;
+    fieldRequirementsPlaceholder: string;
+    fieldBenefitsPlaceholder: string;
+    fieldSalaryMinPlaceholder: string;
+    fieldSalaryMaxPlaceholder: string;
+    submitPending: string;
+    submitLabel: string;
+  };
 };
 
 const EN: JobsCopy = {
@@ -596,6 +651,71 @@ const EN: JobsCopy = {
     activityEmptyTitle: "No events recorded for this application.",
     activityEmptyBody:
       "Stage changes, notes, and key updates will appear here as you work through the hiring process.",
+  },
+  employerJobNew: {
+    pageTitle: "Post a Role",
+    pageSubtitle: "Create a new job posting for your company.",
+    rightRailCompanyTitle: "Your company",
+    rightRailEmployerKicker: "Employer",
+    rightRailVerificationFallback: "pending",
+    rightRailRoleCountSingular: "{count} role currently posted under this company.",
+    rightRailRoleCountPlural: "{count} roles currently posted under this company.",
+    rightRailTipsTitle: "Tips for better posts",
+    rightRailTipSummaries:
+      "Clear summaries and structured responsibilities attract stronger candidates.",
+    rightRailTipSalaryBenefits:
+      "Sharing salary ranges and benefits increases application quality.",
+    rightRailReadinessTitle: "Posting readiness",
+    rightRailAccountTierKicker: "Account tier",
+    rightRailAccountTierBody:
+      "Your posting privileges are based on your company's verification status and account history.",
+    rightRailChecklistReady: "ready",
+    rightRailChecklistOpen: "open",
+    noMembershipSectionTitle: "Company profile required",
+    noMembershipSectionBody: "Set up your company profile before posting roles.",
+    noMembershipEmptyKicker: "One more step",
+    noMembershipEmptyTitle: "Create your company profile first.",
+    noMembershipEmptyBody:
+      "Your company profile is needed so candidates can learn about your team and your roles appear under the right employer.",
+    noMembershipEmptyCta: "Open company setup",
+    formSectionTitle: "Create a new role",
+    formSectionBody:
+      "Fill in the details below. New posts may go through a brief review before going live.",
+    subscriptionRequiredTitle: "Subscription required to publish",
+    subscriptionRequiredBodyTemplate:
+      "Your employer subscription is \"{status}\". Posting is blocked until a live subscription is in place. Contact the HenryCo team to renew before publishing.",
+    subscriptionPendingTitle: "Subscription pending",
+    subscriptionPendingBody:
+      "Posting roles will require an active employer subscription once billing rolls out. You can publish today; expect a follow-up from the HenryCo team about plan selection.",
+    verificationGateBodySuffix: "Jobs posting stays blocked until that review is approved.",
+    directPublishingTitle: "Direct publishing available",
+    directPublishingBody:
+      "Your account can publish roles directly. They'll go live as soon as you submit.",
+    reviewRequiredTitle: "Review required",
+    reviewRequiredBody:
+      "New roles will be reviewed by our team before going live. This typically takes a few hours.",
+    draftOnlyTitle: "Draft only",
+    draftOnlyBody:
+      "You can prepare your job posting now, but it will be saved as a draft until your company profile meets our posting requirements.",
+    fieldTitlePlaceholder: "Role title",
+    fieldSlugPlaceholder: "Optional custom slug",
+    fieldSubtitlePlaceholder: "Subtitle",
+    fieldSummaryPlaceholder: "Short role summary",
+    fieldDescriptionPlaceholder: "Full description",
+    fieldLocationPlaceholder: "Location",
+    fieldCategoryPlaceholder: "Category",
+    fieldWorkModePlaceholder: "remote / hybrid / onsite",
+    fieldEmploymentTypePlaceholder: "Full-time / Contract",
+    fieldSeniorityPlaceholder: "Seniority",
+    fieldTeamPlaceholder: "Team",
+    fieldSkillsPlaceholder: "Skills",
+    fieldResponsibilitiesPlaceholder: "Responsibilities, one per line",
+    fieldRequirementsPlaceholder: "Requirements, one per line",
+    fieldBenefitsPlaceholder: "Benefits, one per line",
+    fieldSalaryMinPlaceholder: "Salary min",
+    fieldSalaryMaxPlaceholder: "Salary max",
+    submitPending: "Creating role...",
+    submitLabel: "Create role",
   },
 };
 

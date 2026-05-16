@@ -112,6 +112,127 @@ export type CareCopy = {
     };
     dash: string;
   };
+  staffOwner: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      title: string;
+      body: string;
+    };
+    quickLinks: {
+      bookings: string;
+      finance: string;
+      records: string;
+      security: string;
+      settings: string;
+      reviews: string;
+      staff: string;
+      fieldStaff: string;
+      managerExpenses: string;
+      riderExpenses: string;
+      supportExpenses: string;
+    };
+    metrics: {
+      activeBookings: { label: string; note: string };
+      archivedBookings: { label: string; note: string };
+      balance: { label: string; flowTemplate: string };
+      reviews: { label: string; pendingTemplate: string };
+    };
+    alertsPanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      empty: string;
+      expensePressure: { title: string; text: string };
+      awaitingDecision: { title: string; textTemplate: string };
+      refundActivity: { title: string; textTemplate: string };
+      delayRisk: { title: string; textTemplate: string };
+      strongFlow: { title: string; textTemplate: string };
+    };
+    forecastPanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      monthInflow: string;
+      monthOutflow: string;
+      projectedNet: string;
+      flowGrowth: string;
+      positiveTemplate: string;
+      negativeTemplate: string;
+    };
+    urgencyPanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      noPickup: string;
+      empty: string;
+    };
+    brandPanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      heroBadge: string;
+      supportEmail: string;
+      supportPhone: string;
+      pickupHours: string;
+      careDomain: string;
+      hubDomain: string;
+      notConfigured: string;
+      openSettings: string;
+    };
+    paymentsPanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      generalPayment: string;
+      empty: string;
+    };
+    expensesPanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      viewProof: string;
+      empty: string;
+    };
+    reviewsPanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      approved: string;
+      pending: string;
+      photoAltTemplate: string;
+      empty: string;
+    };
+    intelligencePanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      expenseFlags: {
+        title: string;
+        topTemplate: string;
+        emptyText: string;
+      };
+      delayAlerts: {
+        title: string;
+        textTemplate: string;
+      };
+      forecasting: {
+        title: string;
+      };
+      approvalDiscipline: {
+        title: string;
+        textTemplate: string;
+      };
+    };
+    archivePanel: {
+      eyebrow: string;
+      cta: string;
+    };
+    dash: string;
+  };
 };
 
 const EN: CareCopy = {
@@ -229,6 +350,143 @@ const EN: CareCopy = {
         label: "Overall balance",
         flowTemplate: "{inflow} in • {outflow} out",
       },
+    },
+    dash: "—",
+  },
+  staffOwner: {
+    metadata: {
+      title: "Owner Dashboard | Henry & Co. Fabric Care",
+      description:
+        "Owner control room for bookings, finance, security, reviews, and company-wide operations.",
+    },
+    hero: {
+      eyebrow: "Owner command center",
+      title: "Master control for the entire care operation.",
+      body: "This is the highest layer. You see the real state of the company here: urgency, income, expense pressure, records quality, review health, and security.",
+    },
+    quickLinks: {
+      bookings: "Bookings",
+      finance: "Finance",
+      records: "Records",
+      security: "Security",
+      settings: "Settings",
+      reviews: "Reviews",
+      staff: "Staff",
+      fieldStaff: "Field staff",
+      managerExpenses: "Manager expenses",
+      riderExpenses: "Rider expenses",
+      supportExpenses: "Support expenses",
+    },
+    metrics: {
+      activeBookings: { label: "Active bookings", note: "Current operational queue" },
+      archivedBookings: { label: "Archived bookings", note: "Older than 30 days" },
+      balance: { label: "Balance", flowTemplate: "{inflow} in • {outflow} out" },
+      reviews: { label: "Reviews", pendingTemplate: "{count} pending approval" },
+    },
+    alertsPanel: {
+      eyebrow: "Smart alerts",
+      title: "Finance and operations anomaly watch",
+      subtitle: "This is where the owner catches unusual pressure before it becomes damage.",
+      empty: "No major anomalies are visible right now.",
+      expensePressure: {
+        title: "Expense pressure is above inflow",
+        text: "Total outflow is already higher than inflow. The owner should check approvals, high-cost activity, and recoverable revenue immediately.",
+      },
+      awaitingDecision: {
+        title: "Expenses awaiting owner decision",
+        textTemplate: "{count} expense entries are still recorded and waiting for approval or voiding.",
+      },
+      refundActivity: {
+        title: "Unusual refund activity detected",
+        textTemplate: "Recent refund-linked expenses are visible in the system. Refund pressure is currently {amount} from {count} item(s).",
+      },
+      delayRisk: {
+        title: "Booking delay risk is rising",
+        textTemplate: "{overdue} overdue booking(s) and {urgent} urgent booking(s) are currently visible. This can damage service trust if not handled fast.",
+      },
+      strongFlow: {
+        title: "Recent flow looks strong",
+        textTemplate: "Live current-month inflow is outpacing outflow by {percent} on recent tracked activity. Keep the system disciplined so growth stays clean.",
+      },
+    },
+    forecastPanel: {
+      eyebrow: "Forecast",
+      title: "Short-range operational projection",
+      subtitle: "A live run-rate estimate based on current month tracked activity.",
+      monthInflow: "Month inflow (live)",
+      monthOutflow: "Month outflow (live)",
+      projectedNet: "Projected month-end net",
+      flowGrowth: "Flow growth signal",
+      positiveTemplate: "If the current live run-rate holds, care could close the month around {amount} net.",
+      negativeTemplate: "If the current live run-rate holds, care may close the month under pressure at about {amount} net.",
+    },
+    urgencyPanel: {
+      eyebrow: "Urgency",
+      title: "Orders demanding attention",
+      subtitle: "The owner should notice pressure instantly, even if the manager is running the day.",
+      noPickup: "No pickup date",
+      empty: "No urgent bookings at the moment.",
+    },
+    brandPanel: {
+      eyebrow: "Brand state",
+      title: "Live company presentation",
+      subtitle: "What the public side is currently pulling from settings.",
+      heroBadge: "Hero badge",
+      supportEmail: "Support email",
+      supportPhone: "Support phone",
+      pickupHours: "Pickup hours",
+      careDomain: "Care domain",
+      hubDomain: "Hub domain",
+      notConfigured: "Not configured yet",
+      openSettings: "Open settings",
+    },
+    paymentsPanel: {
+      eyebrow: "Cash movement",
+      title: "Recent payments",
+      subtitle: "Quick read on inflow.",
+      generalPayment: "General payment",
+      empty: "No recent payments yet.",
+    },
+    expensesPanel: {
+      eyebrow: "Cost pressure",
+      title: "Recent expenses",
+      subtitle: "Owner should always understand where money is going.",
+      viewProof: "View proof",
+      empty: "No recent expenses yet.",
+    },
+    reviewsPanel: {
+      eyebrow: "Review health",
+      title: "Recent customer voice",
+      subtitle: "Strong service brands protect trust, not just workflow.",
+      approved: "approved",
+      pending: "pending",
+      photoAltTemplate: "Review photo from {name}",
+      empty: "No reviews available yet.",
+    },
+    intelligencePanel: {
+      eyebrow: "Intelligence",
+      title: "What the owner should track next",
+      subtitle: "The company becomes more productive when insight is turned into action.",
+      expenseFlags: {
+        title: "Smart expense red flags",
+        topTemplate: "Top recent expense category is {category} at {amount}.",
+        emptyText: "No major category pressure is visible yet.",
+      },
+      delayAlerts: {
+        title: "Booking delay alerts",
+        textTemplate: "{count} overdue booking(s) are visible in the active care queue.",
+      },
+      forecasting: {
+        title: "Operational forecasting",
+      },
+      approvalDiscipline: {
+        title: "Approval discipline",
+        textTemplate: "{count} expense record(s) are currently waiting for owner action.",
+      },
+    },
+    archivePanel: {
+      eyebrow: "Archive policy",
+      cta: "Open archive-aware records",
     },
     dash: "—",
   },
