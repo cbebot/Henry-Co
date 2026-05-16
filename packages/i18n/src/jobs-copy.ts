@@ -183,6 +183,23 @@ export type JobsCopy = {
     submitSaving: string;
     submitLabel: string;
   };
+  employerJobs: {
+    pageTitle: string;
+    pageSubtitle: string;
+    sectionTitle: string;
+    postRoleCta: string;
+    emptyKicker: string;
+    emptyTitle: string;
+    emptyBody: string;
+    emptyAction: string;
+    applicantSingular: string;
+    applicantPlural: string;
+    roleLineTemplate: string;
+    statusApproved: string;
+    statusPendingReview: string;
+    statusFlagged: string;
+    statusDraft: string;
+  };
 };
 
 const EN: JobsCopy = {
@@ -378,6 +395,24 @@ const EN: JobsCopy = {
     submitSaving: "Saving company...",
     submitLabel: "Save employer profile",
   },
+  employerJobs: {
+    pageTitle: "Employer Jobs",
+    pageSubtitle: "Manage your job postings and track applicants.",
+    sectionTitle: "Posted roles",
+    postRoleCta: "Post role",
+    emptyKicker: "No live roles",
+    emptyTitle: "Post the first role for this employer.",
+    emptyBody:
+      "Once a role is created, this list will track moderation state, visibility, and applicant volume.",
+    emptyAction: "Open job builder",
+    applicantSingular: "applicant",
+    applicantPlural: "applicants",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "Approved",
+    statusPendingReview: "Pending review",
+    statusFlagged: "Flagged",
+    statusDraft: "Draft",
+  },
 };
 
 const FR: DeepPartial<JobsCopy> = {
@@ -505,6 +540,24 @@ const FR: DeepPartial<JobsCopy> = {
     employerTypeInternal: "Recrutement interne HenryCo",
     submitSaving: "Enregistrement de l'entreprise...",
     submitLabel: "Enregistrer le profil employeur",
+  },
+  employerJobs: {
+    pageTitle: "Offres employeur",
+    pageSubtitle: "Gérez vos offres d'emploi et suivez les candidatures.",
+    sectionTitle: "Offres publiées",
+    postRoleCta: "Publier un poste",
+    emptyKicker: "Aucun poste actif",
+    emptyTitle: "Publiez le premier poste pour cet employeur.",
+    emptyBody:
+      "Dès qu'un poste est créé, cette liste suit son état de modération, sa visibilité et le volume de candidatures.",
+    emptyAction: "Ouvrir l'éditeur d'offre",
+    applicantSingular: "candidat",
+    applicantPlural: "candidats",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "Approuvé",
+    statusPendingReview: "En cours d'examen",
+    statusFlagged: "Signalé",
+    statusDraft: "Brouillon",
   },
 };
 
@@ -634,6 +687,24 @@ const ES: DeepPartial<JobsCopy> = {
     submitSaving: "Guardando empresa...",
     submitLabel: "Guardar perfil del empleador",
   },
+  employerJobs: {
+    pageTitle: "Empleos del empleador",
+    pageSubtitle: "Gestiona tus ofertas de empleo y sigue a los candidatos.",
+    sectionTitle: "Puestos publicados",
+    postRoleCta: "Publicar puesto",
+    emptyKicker: "Sin puestos activos",
+    emptyTitle: "Publica el primer puesto para este empleador.",
+    emptyBody:
+      "Una vez creado un puesto, esta lista registrará su estado de moderación, visibilidad y volumen de candidaturas.",
+    emptyAction: "Abrir editor de puestos",
+    applicantSingular: "candidato",
+    applicantPlural: "candidatos",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "Aprobado",
+    statusPendingReview: "En revisión",
+    statusFlagged: "Marcado",
+    statusDraft: "Borrador",
+  },
 };
 
 const PT: DeepPartial<JobsCopy> = {
@@ -762,6 +833,24 @@ const PT: DeepPartial<JobsCopy> = {
     submitSaving: "A guardar empresa...",
     submitLabel: "Guardar perfil do empregador",
   },
+  employerJobs: {
+    pageTitle: "Vagas do empregador",
+    pageSubtitle: "Gerencie suas vagas publicadas e acompanhe os candidatos.",
+    sectionTitle: "Vagas publicadas",
+    postRoleCta: "Publicar vaga",
+    emptyKicker: "Sem vagas ativas",
+    emptyTitle: "Publique a primeira vaga para este empregador.",
+    emptyBody:
+      "Após criar uma vaga, esta lista mostrará o estado de moderação, visibilidade e volume de candidaturas.",
+    emptyAction: "Abrir editor de vagas",
+    applicantSingular: "candidato",
+    applicantPlural: "candidatos",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "Aprovada",
+    statusPendingReview: "Em análise",
+    statusFlagged: "Sinalizada",
+    statusDraft: "Rascunho",
+  },
 };
 
 const AR: DeepPartial<JobsCopy> = {
@@ -885,6 +974,24 @@ const AR: DeepPartial<JobsCopy> = {
     employerTypeInternal: "توظيف داخلي في HenryCo",
     submitSaving: "جارٍ حفظ الشركة...",
     submitLabel: "حفظ ملف صاحب العمل",
+  },
+  employerJobs: {
+    pageTitle: "وظائف صاحب العمل",
+    pageSubtitle: "أدِر إعلانات الوظائف لديك وتابع المتقدمين.",
+    sectionTitle: "الوظائف المنشورة",
+    postRoleCta: "نشر وظيفة",
+    emptyKicker: "لا توجد وظائف نشطة",
+    emptyTitle: "انشر أول وظيفة لصاحب العمل هذا.",
+    emptyBody:
+      "بمجرد إنشاء وظيفة، ستعرض هذه القائمة حالة المراجعة والظهور وعدد المتقدمين.",
+    emptyAction: "فتح أداة إنشاء الوظائف",
+    applicantSingular: "متقدم",
+    applicantPlural: "متقدمين",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "معتمدة",
+    statusPendingReview: "قيد المراجعة",
+    statusFlagged: "مُعلَّمة",
+    statusDraft: "مسودة",
   },
 };
 
@@ -1014,6 +1121,24 @@ const IG: DeepPartial<JobsCopy> = {
     submitSaving: "Na-edebe ụlọ ọrụ...",
     submitLabel: "Debe profaịlụ ọchịchị",
   },
+  employerJobs: {
+    pageTitle: "Ọrụ Ọchịchị",
+    pageSubtitle: "Jikwaa ọrụ ị bipụtara ma soro ndị na-achọ ọrụ.",
+    sectionTitle: "Ọrụ ndị e bipụtara",
+    postRoleCta: "Bipụta ọrụ",
+    emptyKicker: "Enweghị ọrụ na-arụ ọrụ",
+    emptyTitle: "Bipụta ọrụ mbụ maka onye ọrụ a.",
+    emptyBody:
+      "Mgbe e mepụtara ọrụ, ndepụta a ga-egosi ọnọdụ nlele, ọhụụ na ọnụọgụ ndị tinyere akwụkwọ.",
+    emptyAction: "Mepee ihe nrụzi ọrụ",
+    applicantSingular: "onye tinyere akwụkwọ",
+    applicantPlural: "ndị tinyere akwụkwọ",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "Akwadoro",
+    statusPendingReview: "Na-eche nlele",
+    statusFlagged: "Akpọrọ aha",
+    statusDraft: "Ihe edeturu",
+  },
 };
 
 const YO: DeepPartial<JobsCopy> = {
@@ -1141,6 +1266,24 @@ const YO: DeepPartial<JobsCopy> = {
     employerTypeInternal: "Ìgbaniṣiṣẹ́ inú HenryCo",
     submitSaving: "Ńfi ile-iṣẹ pamọ...",
     submitLabel: "Fi profaili agbanisiṣẹ pamọ",
+  },
+  employerJobs: {
+    pageTitle: "Awọn iṣẹ agbanisiṣẹ",
+    pageSubtitle: "Ṣakoso awọn ipolongo iṣẹ rẹ ki o ṣe ìtọpinpin awọn olubẹwẹ.",
+    sectionTitle: "Awọn ipa tí a tẹjáde",
+    postRoleCta: "Tẹ iṣẹ tuntun jáde",
+    emptyKicker: "Kò sí ipa tó ń ṣiṣẹ́",
+    emptyTitle: "Tẹ ipa àkọ́kọ́ jáde fún agbanisiṣẹ yìí.",
+    emptyBody:
+      "Lẹ́yìn tí a bá dá ipa kan sílẹ̀, àkọsílẹ̀ yìí á ṣàfihàn ipò àtúnyẹ̀wò, hiho, àti iye olubẹwẹ.",
+    emptyAction: "Ṣí olùtọ́ ipa",
+    applicantSingular: "olubẹwẹ",
+    applicantPlural: "olubẹwẹ",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "Fọwọsi",
+    statusPendingReview: "N duro de àtúnyẹ̀wò",
+    statusFlagged: "Tí a sàmì sí",
+    statusDraft: "Àkọpamọ́",
   },
 };
 
@@ -1270,6 +1413,24 @@ const HA: DeepPartial<JobsCopy> = {
     submitSaving: "Ana adana kamfani...",
     submitLabel: "Adana bayanan ma'aikaci",
   },
+  employerJobs: {
+    pageTitle: "Ayyukan ma'aikaci",
+    pageSubtitle: "Sarrafa tallace-tallacen ayyukanka kuma ka bibiyi masu nema.",
+    sectionTitle: "Ayyukan da aka wallafa",
+    postRoleCta: "Wallafa aiki",
+    emptyKicker: "Babu ayyukan aiki",
+    emptyTitle: "Wallafa aiki na farko don wannan ma'aikaci.",
+    emptyBody:
+      "Da zarar an ƙirƙira aiki, wannan jeri zai bibiyi yanayin tantancewa, ganuwa, da yawan masu nema.",
+    emptyAction: "Buɗe mai gina aiki",
+    applicantSingular: "mai nema",
+    applicantPlural: "masu nema",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "An amince",
+    statusPendingReview: "Ana jiran tantancewa",
+    statusFlagged: "An yiwa alama",
+    statusDraft: "Zane",
+  },
 };
 
 const DE: DeepPartial<JobsCopy> = {
@@ -1398,6 +1559,24 @@ const DE: DeepPartial<JobsCopy> = {
     submitSaving: "Unternehmen wird gespeichert...",
     submitLabel: "Arbeitgeberprofil speichern",
   },
+  employerJobs: {
+    pageTitle: "Arbeitgeber-Stellen",
+    pageSubtitle: "Verwalten Sie Ihre Stellenausschreibungen und behalten Sie Bewerbungen im Blick.",
+    sectionTitle: "Veröffentlichte Stellen",
+    postRoleCta: "Stelle veröffentlichen",
+    emptyKicker: "Keine aktiven Stellen",
+    emptyTitle: "Veröffentlichen Sie die erste Stelle für diesen Arbeitgeber.",
+    emptyBody:
+      "Sobald eine Stelle erstellt ist, zeigt diese Liste Moderationsstatus, Sichtbarkeit und Bewerberaufkommen.",
+    emptyAction: "Stellenbaukasten öffnen",
+    applicantSingular: "Bewerber",
+    applicantPlural: "Bewerber",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "Genehmigt",
+    statusPendingReview: "In Prüfung",
+    statusFlagged: "Markiert",
+    statusDraft: "Entwurf",
+  },
 };
 
 const ZH: DeepPartial<JobsCopy> = {
@@ -1514,6 +1693,23 @@ const ZH: DeepPartial<JobsCopy> = {
     employerTypeInternal: "HenryCo 内部招聘",
     submitSaving: "正在保存公司...",
     submitLabel: "保存雇主资料",
+  },
+  employerJobs: {
+    pageTitle: "雇主职位",
+    pageSubtitle: "管理你发布的职位并跟踪候选人。",
+    sectionTitle: "已发布的职位",
+    postRoleCta: "发布职位",
+    emptyKicker: "暂无在招职位",
+    emptyTitle: "为此雇主发布第一个职位。",
+    emptyBody: "创建职位后，此列表将显示审核状态、可见性以及候选人数量。",
+    emptyAction: "打开职位编辑器",
+    applicantSingular: "候选人",
+    applicantPlural: "候选人",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "已批准",
+    statusPendingReview: "审核中",
+    statusFlagged: "已标记",
+    statusDraft: "草稿",
   },
 };
 
@@ -1643,6 +1839,24 @@ const HI: DeepPartial<JobsCopy> = {
     submitSaving: "कंपनी सहेजी जा रही है...",
     submitLabel: "नियोक्ता प्रोफ़ाइल सहेजें",
   },
+  employerJobs: {
+    pageTitle: "नियोक्ता की नौकरियाँ",
+    pageSubtitle: "अपनी नौकरी पोस्टिंग प्रबंधित करें और आवेदकों पर नज़र रखें.",
+    sectionTitle: "प्रकाशित भूमिकाएँ",
+    postRoleCta: "भूमिका पोस्ट करें",
+    emptyKicker: "कोई सक्रिय भूमिका नहीं",
+    emptyTitle: "इस नियोक्ता के लिए पहली भूमिका पोस्ट करें.",
+    emptyBody:
+      "एक बार भूमिका बनाने के बाद, यह सूची मॉडरेशन स्थिति, दृश्यता और आवेदकों की संख्या दिखाएगी.",
+    emptyAction: "नौकरी बिल्डर खोलें",
+    applicantSingular: "आवेदक",
+    applicantPlural: "आवेदक",
+    roleLineTemplate: "{location} · {count} {applicantLabel}",
+    statusApproved: "स्वीकृत",
+    statusPendingReview: "समीक्षाधीन",
+    statusFlagged: "चिह्नित",
+    statusDraft: "मसौदा",
+  },
 };
 
 const IT: DeepPartial<JobsCopy> = {
@@ -1770,6 +1984,24 @@ const IT: DeepPartial<JobsCopy> = {
     "employerTypeInternal": "Assunzione interna HenryCo",
     "submitSaving": "Salvataggio azienda...",
     "submitLabel": "Salva profilo datore di lavoro"
+  },
+  "employerJobs": {
+    "pageTitle": "Lavori del datore di lavoro",
+    "pageSubtitle": "Gestisci le tue offerte di lavoro e tieni traccia dei candidati.",
+    "sectionTitle": "Ruoli pubblicati",
+    "postRoleCta": "Pubblica ruolo",
+    "emptyKicker": "Nessun ruolo attivo",
+    "emptyTitle": "Pubblica il primo ruolo per questo datore di lavoro.",
+    "emptyBody":
+      "Una volta creato un ruolo, questo elenco mostrerà stato di moderazione, visibilità e volume di candidati.",
+    "emptyAction": "Apri il costruttore di ruoli",
+    "applicantSingular": "candidato",
+    "applicantPlural": "candidati",
+    "roleLineTemplate": "{location} · {count} {applicantLabel}",
+    "statusApproved": "Approvato",
+    "statusPendingReview": "In revisione",
+    "statusFlagged": "Segnalato",
+    "statusDraft": "Bozza"
   }
 };
 
