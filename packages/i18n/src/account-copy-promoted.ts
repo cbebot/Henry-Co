@@ -998,6 +998,183 @@ export const ACCOUNT_COPY_ES = {
         "cancelled": "Cancelado"
       }
     }
+  },
+  "divisionCare": {
+    "metadata": {
+      "title": "Care · reservas vinculadas",
+      "description": "Sigue cada reserva de HenryCo Care vinculada a esta cuenta: estado, verificación de pago y la próxima acción operativa, todo en un solo lugar."
+    },
+    "hero": {
+      "eyebrow": "Care · en vivo",
+      "sideKicker": "Cómo funciona esta sala",
+      "sideTitle": "Reserva en Care, haz seguimiento aquí.",
+      "sideBody": "Cada reserva realizada en HenryCo Care se refleja en esta sala: código de seguimiento, estado del pago y la próxima acción operativa llegan aquí automáticamente. El panel se mantiene sincronizado mientras avanza el servicio.",
+      "breakdownLabel": "Por estado",
+      "tilesAriaLabel": "Resumen de reservas Care",
+      "tileLabels": {
+        "total": "Reservas",
+        "inFlight": "En servicio",
+        "payment": "Pago pendiente",
+        "completed": "Completadas"
+      },
+      "tileFoot": {
+        "totalEmpty": "Reserva tu primer servicio Care para empezar",
+        "totalWithTemplate": "{count} vinculadas a esta cuenta",
+        "inFlightEmpty": "Nada activo en este momento",
+        "inFlightWith": "Estado en vivo reflejado abajo",
+        "paymentEmpty": "Sin verificaciones de pago pendientes",
+        "paymentWith": "Envía o revisa el recibo abajo",
+        "completedEmpty": "Aún no hay servicios completados",
+        "completedWith": "Marcados como hechos por el equipo Care"
+      },
+      "breakdownLabels": {
+        "inFlight": "En servicio",
+        "scheduled": "Programadas",
+        "payment": "Pago pendiente",
+        "completed": "Completadas"
+      },
+      "state": {
+        "empty": {
+          "headline": "Reserva tu primer servicio Care.",
+          "blurb": "Los servicios Care que reserves aquí se sincronizan automáticamente con esta sala: código de seguimiento, estado del pago y la próxima acción operativa.",
+          "ctaPrimary": "Reservar un servicio",
+          "ctaSecondary": "Abrir seguimiento"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} acción por hacer.",
+          "headlineTemplatePlural": "{count} acciones por hacer.",
+          "blurb": "Una o más reservas esperan verificación de pago o un seguimiento. Abre la reserva abajo para resolverlo.",
+          "ctaPrimary": "Revisar reservas",
+          "ctaSecondary": "Abrir seguimiento"
+        },
+        "active": {
+          "headlineTemplateSingular": "{count} servicio en marcha.",
+          "headlineTemplatePlural": "{count} servicios en marcha.",
+          "blurb": "Seguimiento en vivo, verificación de pago y la próxima acción operativa se reflejan desde HenryCo Care hacia esta sala.",
+          "ctaPrimary": "Abrir seguimiento",
+          "ctaSecondary": "Reservar un servicio"
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} reserva registrada.",
+          "headlineTemplatePlural": "{count} reservas registradas.",
+          "blurb": "Tus reservas Care, códigos de seguimiento, recibos y próximas acciones, todo en un solo lugar, sincronizado en tiempo real.",
+          "ctaPrimary": "Reservar un servicio",
+          "ctaSecondary": "Abrir seguimiento"
+        }
+      }
+    },
+    "sections": {
+      "glance": "Próxima acción",
+      "glanceMeta": "Aquí destaca la reserva más urgente.",
+      "bookings": "Todas las reservas",
+      "bookingsEmpty": "Las reservas hechas con sesión iniciada aparecen aquí en tiempo real.",
+      "bookingsMetaTemplateSingular": "{count} reserva · filtra, pagina y abre cualquiera para ver el detalle en vivo.",
+      "bookingsMetaTemplatePlural": "{count} reservas · filtra, pagina y abre cualquiera para ver el detalle en vivo.",
+      "activity": "Actividad reciente",
+      "activityEmpty": "Las actualizaciones de estado, recibos y reseñas aparecen aquí en el momento.",
+      "activityMetaTemplateSingular": "{count} actualización · más reciente primero",
+      "activityMetaTemplatePlural": "{count} actualizaciones · más recientes primero"
+    },
+    "empty": {
+      "title": "Aún no hay reservas Care vinculadas",
+      "body": "Las reservas que hagas en Care con sesión iniciada aparecerán aquí de inmediato. Las reservas antiguas también aparecerán cuando su correo o teléfono coincida con tu perfil compartido."
+    },
+    "glance": {
+      "nextActionLabel": "Próxima acción",
+      "serviceLabel": "Servicio",
+      "pickupLabel": "Recogida",
+      "balanceLabel": "Saldo pendiente",
+      "trackingLabel": "Seguimiento",
+      "serviceFallback": "Servicio Care"
+    },
+    "activityAriaLabel": "Actividad Care",
+    "status": {
+      "live": "En servicio",
+      "scheduled": "Programada",
+      "completed": "Completada",
+      "issue": "Acción necesaria",
+      "payment": "Revisión de pago"
+    },
+    "statusValueLabels": {
+      "booked": "Reservada",
+      "awaiting_payment": "Pago pendiente",
+      "receipt_submitted": "Recibo enviado",
+      "under_review": "En revisión",
+      "delivered": "Entregada",
+      "customer_confirmed": "Confirmada por el cliente",
+      "inspection_completed": "Inspección terminada",
+      "service_completed": "Servicio completado",
+      "cancelled": "Cancelada",
+      "issue": "Incidencia",
+      "exception": "Excepción",
+      "rejected": "Rechazada"
+    },
+    "formatLabels": {
+      "toBeScheduled": "Por programar",
+      "shortMonths": ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sept", "oct", "nov", "dic"]
+    },
+    "dashboard": {
+      "filters": {
+        "all": "Todas",
+        "unpaid": "Saldo pendiente",
+        "receipt": "Recibo / reseña",
+        "active": "En curso",
+        "completed": "Completadas",
+        "issue": "Incidencias"
+      },
+      "filtered": "filtrado",
+      "bookingSingular": "reserva",
+      "bookingPlural": "reservas",
+      "metrics": {
+        "visible": "Reservas visibles",
+        "visibleHint": "Reservas Care reales vinculadas a esta cuenta.",
+        "balance": "Saldo pendiente",
+        "balanceHintSomeTemplate": "{count} reserva(s) aún necesitan seguimiento de pago.",
+        "balanceHintNone": "No hay saldo Care pendiente abierto en este momento.",
+        "receiptQueue": "Cola de recibos",
+        "receiptQueueHintSome": "Reservas con recibos enviados aún en espera de verificación.",
+        "receiptQueueHintNone": "Sin retraso en verificación de recibos vinculado a esta cuenta.",
+        "completed": "Completadas",
+        "completedHintSome": "Reservas completadas que pueden pasar al seguimiento de reseñas.",
+        "completedHintNone": "Las reservas Care completadas aparecerán aquí al cerrar el servicio."
+      },
+      "linkedBookings": "Reservas Care vinculadas",
+      "linkedBookingsDescription": "Tus reservas Care, su estado de pago y las próximas acciones.",
+      "onThisPage": "en esta página",
+      "selectedBooking": "Reserva seleccionada",
+      "paymentSnapshot": "Resumen de pago",
+      "receiptVisibility": "Visibilidad del recibo",
+      "nextBestAction": "Mejor próxima acción",
+      "serviceSummary": "Resumen del servicio",
+      "serviceFallback": "Servicio Care",
+      "addressPending": "Dirección pendiente",
+      "updated": "Actualizado",
+      "balanceDue": "Saldo pendiente",
+      "nextMove": "Próximo paso",
+      "paginationLabel": "Paginación de reservas Care",
+      "pageLabel": "Página",
+      "of": "de",
+      "perPage": "por página",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "customerFallback": "Cliente",
+      "scheduledDate": "Fecha programada",
+      "notScheduled": "Aún no programada",
+      "timeWindow": "Ventana horaria",
+      "windowPending": "Ventana pendiente",
+      "pickupAddress": "Dirección de recogida",
+      "returnAddress": "Dirección de devolución / entrega",
+      "returnAddressFallback": "Usa la dirección de recogida salvo cambio en la reserva",
+      "trackingCode": "Código de seguimiento",
+      "quotedTotal": "Total cotizado",
+      "amountRecorded": "Importe registrado",
+      "receiptState": "Estado del recibo",
+      "receiptsSubmitted": "Recibos enviados",
+      "lastSubmission": "Último envío",
+      "noReceiptYet": "Aún no hay recibo",
+      "openLiveBooking": "Abrir reserva en vivo",
+      "leaveReview": "Dejar reseña"
+    }
   }
 };
 
@@ -1998,6 +2175,183 @@ export const ACCOUNT_COPY_PT = {
         "cancelled": "Cancelado"
       }
     }
+  },
+  "divisionCare": {
+    "metadata": {
+      "title": "Care · reservas vinculadas",
+      "description": "Acompanhe cada reserva HenryCo Care vinculada a esta conta — status, verificação de pagamento e o próximo passo operacional num só lugar."
+    },
+    "hero": {
+      "eyebrow": "Care · ao vivo",
+      "sideKicker": "Como esta sala funciona",
+      "sideTitle": "Reserve no Care, acompanhe aqui.",
+      "sideBody": "Toda reserva feita no HenryCo Care é espelhada nesta sala — código de rastreio, status de pagamento e o próximo passo operacional chegam aqui automaticamente. O painel abaixo permanece sincronizado enquanto o serviço avança.",
+      "breakdownLabel": "Por status",
+      "tilesAriaLabel": "Resumo das reservas Care",
+      "tileLabels": {
+        "total": "Reservas",
+        "inFlight": "Em serviço",
+        "payment": "Pagamento pendente",
+        "completed": "Concluídas"
+      },
+      "tileFoot": {
+        "totalEmpty": "Reserve seu primeiro serviço Care para começar",
+        "totalWithTemplate": "{count} vinculadas a esta conta",
+        "inFlightEmpty": "Nada em movimento no momento",
+        "inFlightWith": "Status ao vivo espelhado abaixo",
+        "paymentEmpty": "Sem verificação de pagamento em aberto",
+        "paymentWith": "Envie ou confira o comprovante abaixo",
+        "completedEmpty": "Nenhum serviço concluído ainda",
+        "completedWith": "Marcadas como concluídas pelo time Care"
+      },
+      "breakdownLabels": {
+        "inFlight": "Em serviço",
+        "scheduled": "Agendadas",
+        "payment": "Pagamento pendente",
+        "completed": "Concluídas"
+      },
+      "state": {
+        "empty": {
+          "headline": "Reserve seu primeiro serviço Care.",
+          "blurb": "Os serviços Care que você reservar aqui sincronizam automaticamente com esta sala — código de rastreio, status de pagamento e próximo passo operacional.",
+          "ctaPrimary": "Reservar um serviço",
+          "ctaSecondary": "Abrir rastreio"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} ação a tomar.",
+          "headlineTemplatePlural": "{count} ações a tomar.",
+          "blurb": "Uma ou mais reservas aguardam verificação de pagamento ou acompanhamento. Abra a reserva abaixo para resolver.",
+          "ctaPrimary": "Ver reservas",
+          "ctaSecondary": "Abrir rastreio"
+        },
+        "active": {
+          "headlineTemplateSingular": "{count} serviço em andamento.",
+          "headlineTemplatePlural": "{count} serviços em andamento.",
+          "blurb": "Rastreio ao vivo, verificação de pagamento e próximo passo operacional espelhados do HenryCo Care para esta sala.",
+          "ctaPrimary": "Abrir rastreio",
+          "ctaSecondary": "Reservar um serviço"
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} reserva registrada.",
+          "headlineTemplatePlural": "{count} reservas registradas.",
+          "blurb": "Suas reservas Care, códigos de rastreio, recibos e próximas ações — tudo em um só lugar, sincronizado em tempo real.",
+          "ctaPrimary": "Reservar um serviço",
+          "ctaSecondary": "Abrir rastreio"
+        }
+      }
+    },
+    "sections": {
+      "glance": "Próxima ação",
+      "glanceMeta": "A reserva mais urgente aparece em destaque aqui.",
+      "bookings": "Todas as reservas",
+      "bookingsEmpty": "Reservas feitas com sessão iniciada aparecem aqui em tempo real.",
+      "bookingsMetaTemplateSingular": "{count} reserva · filtre, pagine e abra qualquer uma para ver o detalhe ao vivo.",
+      "bookingsMetaTemplatePlural": "{count} reservas · filtre, pagine e abra qualquer uma para ver o detalhe ao vivo.",
+      "activity": "Atividade recente",
+      "activityEmpty": "Atualizações de status, comprovantes e avaliações aparecem aqui no momento em que acontecem.",
+      "activityMetaTemplateSingular": "{count} atualização · mais recente primeiro",
+      "activityMetaTemplatePlural": "{count} atualizações · mais recentes primeiro"
+    },
+    "empty": {
+      "title": "Ainda não há reservas Care vinculadas",
+      "body": "As reservas que você fizer no Care com sessão iniciada aparecerão aqui imediatamente. Reservas antigas também aparecem quando o e-mail ou telefone coincidir com seu perfil compartilhado."
+    },
+    "glance": {
+      "nextActionLabel": "Próxima ação",
+      "serviceLabel": "Serviço",
+      "pickupLabel": "Retirada",
+      "balanceLabel": "Saldo devedor",
+      "trackingLabel": "Rastreio",
+      "serviceFallback": "Serviço Care"
+    },
+    "activityAriaLabel": "Atividade Care",
+    "status": {
+      "live": "Em serviço",
+      "scheduled": "Agendada",
+      "completed": "Concluída",
+      "issue": "Ação necessária",
+      "payment": "Revisão de pagamento"
+    },
+    "statusValueLabels": {
+      "booked": "Reservada",
+      "awaiting_payment": "Pagamento pendente",
+      "receipt_submitted": "Comprovante enviado",
+      "under_review": "Em análise",
+      "delivered": "Entregue",
+      "customer_confirmed": "Confirmada pelo cliente",
+      "inspection_completed": "Inspeção concluída",
+      "service_completed": "Serviço concluído",
+      "cancelled": "Cancelada",
+      "issue": "Incidente",
+      "exception": "Exceção",
+      "rejected": "Rejeitada"
+    },
+    "formatLabels": {
+      "toBeScheduled": "A agendar",
+      "shortMonths": ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+    },
+    "dashboard": {
+      "filters": {
+        "all": "Todas",
+        "unpaid": "Saldo devedor",
+        "receipt": "Comprovante / avaliação",
+        "active": "Em andamento",
+        "completed": "Concluídas",
+        "issue": "Incidentes"
+      },
+      "filtered": "filtrado",
+      "bookingSingular": "reserva",
+      "bookingPlural": "reservas",
+      "metrics": {
+        "visible": "Reservas visíveis",
+        "visibleHint": "Reservas Care reais vinculadas a esta conta.",
+        "balance": "Saldo em aberto",
+        "balanceHintSomeTemplate": "{count} reserva(s) ainda precisam de acompanhamento de pagamento.",
+        "balanceHintNone": "Não há saldo Care em aberto neste momento.",
+        "receiptQueue": "Fila de comprovantes",
+        "receiptQueueHintSome": "Reservas com comprovantes enviados aguardando verificação.",
+        "receiptQueueHintNone": "Nenhum atraso de verificação de comprovante vinculado a esta conta.",
+        "completed": "Concluídas",
+        "completedHintSome": "Reservas concluídas que podem seguir para o acompanhamento de avaliação.",
+        "completedHintNone": "Reservas Care concluídas aparecerão aqui quando o serviço fechar."
+      },
+      "linkedBookings": "Reservas Care vinculadas",
+      "linkedBookingsDescription": "Suas reservas Care, status de pagamento e próximas ações.",
+      "onThisPage": "nesta página",
+      "selectedBooking": "Reserva selecionada",
+      "paymentSnapshot": "Resumo de pagamento",
+      "receiptVisibility": "Visibilidade do comprovante",
+      "nextBestAction": "Melhor próxima ação",
+      "serviceSummary": "Resumo do serviço",
+      "serviceFallback": "Serviço Care",
+      "addressPending": "Endereço pendente",
+      "updated": "Atualizado",
+      "balanceDue": "Saldo devedor",
+      "nextMove": "Próximo passo",
+      "paginationLabel": "Paginação de reservas Care",
+      "pageLabel": "Página",
+      "of": "de",
+      "perPage": "por página",
+      "previous": "Anterior",
+      "next": "Próximo",
+      "customerFallback": "Cliente",
+      "scheduledDate": "Data agendada",
+      "notScheduled": "Ainda não agendada",
+      "timeWindow": "Janela de horário",
+      "windowPending": "Janela pendente",
+      "pickupAddress": "Endereço de retirada",
+      "returnAddress": "Endereço de retorno / entrega",
+      "returnAddressFallback": "Usa o endereço de retirada salvo alteração na reserva",
+      "trackingCode": "Código de rastreio",
+      "quotedTotal": "Total cotado",
+      "amountRecorded": "Valor registrado",
+      "receiptState": "Estado do comprovante",
+      "receiptsSubmitted": "Comprovantes enviados",
+      "lastSubmission": "Último envio",
+      "noReceiptYet": "Ainda não há comprovante",
+      "openLiveBooking": "Abrir reserva ao vivo",
+      "leaveReview": "Deixar avaliação"
+    }
   }
 };
 
@@ -2997,6 +3351,183 @@ export const ACCOUNT_COPY_AR = {
         "paid": "مدفوع",
         "cancelled": "ملغى"
       }
+    }
+  },
+  "divisionCare": {
+    "metadata": {
+      "title": "Care · الحجوزات المرتبطة",
+      "description": "تابع كل حجز HenryCo Care مرتبط بهذا الحساب — الحالة، التحقق من الدفع، والخطوة التشغيلية التالية في مكان واحد."
+    },
+    "hero": {
+      "eyebrow": "Care · مباشر",
+      "sideKicker": "كيف تعمل هذه الغرفة",
+      "sideTitle": "احجز في Care، وتابع هنا.",
+      "sideBody": "كل حجز يتم في HenryCo Care يُعكس في هذه الغرفة — رمز التتبع وحالة الدفع والخطوة التشغيلية التالية تصل تلقائيًا. لوحة المعلومات تبقى متزامنة مع تقدّم الخدمة.",
+      "breakdownLabel": "حسب الحالة",
+      "tilesAriaLabel": "ملخص حجوزات Care",
+      "tileLabels": {
+        "total": "الحجوزات",
+        "inFlight": "قيد الخدمة",
+        "payment": "بانتظار الدفع",
+        "completed": "مكتملة"
+      },
+      "tileFoot": {
+        "totalEmpty": "احجز خدمة Care الأولى للبدء",
+        "totalWithTemplate": "{count} مرتبطة بهذا الحساب",
+        "inFlightEmpty": "لا شيء قيد التحرك الآن",
+        "inFlightWith": "الحالة المباشرة معكوسة أدناه",
+        "paymentEmpty": "لا توجد عمليات تحقق دفع معلقة",
+        "paymentWith": "أرسل أو تحقق من الإيصال أدناه",
+        "completedEmpty": "لا توجد خدمات مكتملة بعد",
+        "completedWith": "وُسمت كمكتملة من فريق Care"
+      },
+      "breakdownLabels": {
+        "inFlight": "قيد الخدمة",
+        "scheduled": "مجدولة",
+        "payment": "بانتظار الدفع",
+        "completed": "مكتملة"
+      },
+      "state": {
+        "empty": {
+          "headline": "احجز خدمة Care الأولى.",
+          "blurb": "تتم مزامنة خدمات Care التي تحجزها هنا تلقائيًا مع هذه الغرفة — رمز التتبع، حالة الدفع، والخطوة التشغيلية التالية.",
+          "ctaPrimary": "احجز خدمة",
+          "ctaSecondary": "فتح التتبع"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} إجراء للقيام به.",
+          "headlineTemplatePlural": "{count} إجراءات للقيام بها.",
+          "blurb": "حجز أو أكثر بانتظار التحقق من الدفع أو متابعة. افتح الحجز أدناه لإنجازه.",
+          "ctaPrimary": "مراجعة الحجوزات",
+          "ctaSecondary": "فتح التتبع"
+        },
+        "active": {
+          "headlineTemplateSingular": "{count} خدمة قيد التنفيذ.",
+          "headlineTemplatePlural": "{count} خدمات قيد التنفيذ.",
+          "blurb": "التتبع المباشر، والتحقق من الدفع، والخطوة التشغيلية التالية تنعكس من HenryCo Care إلى هذه الغرفة.",
+          "ctaPrimary": "فتح التتبع",
+          "ctaSecondary": "احجز خدمة"
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} حجز مسجَّل.",
+          "headlineTemplatePlural": "{count} حجوزات مسجَّلة.",
+          "blurb": "حجوزاتك Care، ورموز التتبع، والإيصالات، والإجراءات القادمة — جميعها في مكان واحد، متزامنة في الوقت الفعلي.",
+          "ctaPrimary": "احجز خدمة",
+          "ctaSecondary": "فتح التتبع"
+        }
+      }
+    },
+    "sections": {
+      "glance": "الإجراء التالي",
+      "glanceMeta": "يظهر هنا الحجز الأكثر إلحاحًا.",
+      "bookings": "كل الحجوزات",
+      "bookingsEmpty": "تظهر الحجوزات التي تتم أثناء تسجيل الدخول هنا في الوقت الفعلي.",
+      "bookingsMetaTemplateSingular": "{count} حجز · صَفّي، تصفّح بالصفحات، وافتح أيًا منها لعرض التفاصيل المباشرة.",
+      "bookingsMetaTemplatePlural": "{count} حجوزات · صَفّي، تصفّح بالصفحات، وافتح أيًا منها لعرض التفاصيل المباشرة.",
+      "activity": "النشاط الأخير",
+      "activityEmpty": "تحديثات الحالة والإيصالات والمراجعات تظهر هنا فور حدوثها.",
+      "activityMetaTemplateSingular": "{count} تحديث · الأحدث أولاً",
+      "activityMetaTemplatePlural": "{count} تحديثات · الأحدث أولاً"
+    },
+    "empty": {
+      "title": "لا توجد حجوزات Care مرتبطة بعد",
+      "body": "ستظهر هنا فور قيامك بالحجز في Care أثناء تسجيل الدخول. كما تظهر الحجوزات السابقة عندما يتطابق البريد الإلكتروني أو الهاتف مع ملفك الشخصي المشترك."
+    },
+    "glance": {
+      "nextActionLabel": "الإجراء التالي",
+      "serviceLabel": "الخدمة",
+      "pickupLabel": "الاستلام",
+      "balanceLabel": "الرصيد المستحق",
+      "trackingLabel": "التتبع",
+      "serviceFallback": "خدمة Care"
+    },
+    "activityAriaLabel": "نشاط Care",
+    "status": {
+      "live": "قيد الخدمة",
+      "scheduled": "مجدولة",
+      "completed": "مكتملة",
+      "issue": "يلزم اتخاذ إجراء",
+      "payment": "مراجعة الدفع"
+    },
+    "statusValueLabels": {
+      "booked": "محجوز",
+      "awaiting_payment": "بانتظار الدفع",
+      "receipt_submitted": "تم إرسال الإيصال",
+      "under_review": "قيد المراجعة",
+      "delivered": "تم التسليم",
+      "customer_confirmed": "أكَّده العميل",
+      "inspection_completed": "اكتمل الفحص",
+      "service_completed": "اكتملت الخدمة",
+      "cancelled": "ملغى",
+      "issue": "مشكلة",
+      "exception": "استثناء",
+      "rejected": "مرفوض"
+    },
+    "formatLabels": {
+      "toBeScheduled": "بانتظار الجدولة",
+      "shortMonths": ["ينا", "فبر", "مار", "أبر", "ماي", "يون", "يول", "أغس", "سبت", "أكت", "نوف", "ديس"]
+    },
+    "dashboard": {
+      "filters": {
+        "all": "الكل",
+        "unpaid": "الرصيد المستحق",
+        "receipt": "إيصال / مراجعة",
+        "active": "قيد التنفيذ",
+        "completed": "مكتملة",
+        "issue": "مشاكل"
+      },
+      "filtered": "مُصفّى",
+      "bookingSingular": "حجز",
+      "bookingPlural": "حجوزات",
+      "metrics": {
+        "visible": "الحجوزات الظاهرة",
+        "visibleHint": "حجوزات Care حقيقية مرتبطة بهذا الحساب.",
+        "balance": "الرصيد المتبقي",
+        "balanceHintSomeTemplate": "{count} حجز/حجوزات لا تزال تحتاج متابعة دفع.",
+        "balanceHintNone": "لا يوجد رصيد Care غير مدفوع مفتوح حاليًا.",
+        "receiptQueue": "قائمة انتظار الإيصالات",
+        "receiptQueueHintSome": "حجوزات بإيصالات مُرسَلة لا تزال بانتظار التحقق.",
+        "receiptQueueHintNone": "لا يوجد تأخر في التحقق من الإيصالات مرتبط بهذا الحساب.",
+        "completed": "مكتملة",
+        "completedHintSome": "حجوزات مكتملة يمكنها الانتقال إلى متابعة المراجعة.",
+        "completedHintNone": "ستظهر هنا حجوزات Care المكتملة بعد إغلاق الخدمة."
+      },
+      "linkedBookings": "حجوزات Care المرتبطة",
+      "linkedBookingsDescription": "حجوزاتك Care وحالة الدفع والإجراءات القادمة.",
+      "onThisPage": "في هذه الصفحة",
+      "selectedBooking": "الحجز المحدد",
+      "paymentSnapshot": "ملخص الدفع",
+      "receiptVisibility": "ظهور الإيصال",
+      "nextBestAction": "أفضل خطوة تالية",
+      "serviceSummary": "ملخص الخدمة",
+      "serviceFallback": "خدمة Care",
+      "addressPending": "العنوان قيد الانتظار",
+      "updated": "تم التحديث",
+      "balanceDue": "الرصيد المستحق",
+      "nextMove": "الخطوة التالية",
+      "paginationLabel": "ترقيم صفحات حجوزات Care",
+      "pageLabel": "صفحة",
+      "of": "من",
+      "perPage": "لكل صفحة",
+      "previous": "السابق",
+      "next": "التالي",
+      "customerFallback": "عميل",
+      "scheduledDate": "التاريخ المجدول",
+      "notScheduled": "لم يُجدول بعد",
+      "timeWindow": "نافذة الوقت",
+      "windowPending": "النافذة قيد الانتظار",
+      "pickupAddress": "عنوان الاستلام",
+      "returnAddress": "عنوان الإرجاع / التسليم",
+      "returnAddressFallback": "يستخدم عنوان الاستلام ما لم يتم تعديله أثناء الحجز",
+      "trackingCode": "رمز التتبع",
+      "quotedTotal": "الإجمالي المُسعَّر",
+      "amountRecorded": "المبلغ المسجَّل",
+      "receiptState": "حالة الإيصال",
+      "receiptsSubmitted": "الإيصالات المُرسلة",
+      "lastSubmission": "آخر إرسال",
+      "noReceiptYet": "لا يوجد إيصال بعد",
+      "openLiveBooking": "فتح الحجز المباشر",
+      "leaveReview": "اترك مراجعة"
     }
   }
 };

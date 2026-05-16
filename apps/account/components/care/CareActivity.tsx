@@ -1,10 +1,10 @@
 import { CalendarCheck, ClipboardCheck, FileText, LifeBuoy, Truck } from "lucide-react";
 
-import { formatStamp, type CareActivityRow, type CareLocale } from "./helpers";
+import { formatStamp, type CareActivityRow, type ShortMonths } from "./helpers";
 
 type Props = {
   activity: ReadonlyArray<CareActivityRow>;
-  locale: CareLocale;
+  shortMonths: ShortMonths;
   ariaLabel: string;
   limit?: number;
 };
@@ -28,7 +28,7 @@ function iconKindForActivity(type: string | null): IconKind {
   return "generic";
 }
 
-export function CareActivity({ activity, locale, ariaLabel, limit = 8 }: Props) {
+export function CareActivity({ activity, shortMonths, ariaLabel, limit = 8 }: Props) {
   const rows = activity.slice(0, limit);
   if (rows.length === 0) return null;
 
@@ -40,7 +40,7 @@ export function CareActivity({ activity, locale, ariaLabel, limit = 8 }: Props) 
         const title = row.title?.trim() || (row.activityType ? row.activityType.replace(/_/g, " ") : ariaLabel);
         const sub = row.description?.trim() ?? null;
         const href = row.actionUrl?.trim() || null;
-        const stamp = formatStamp(row.occurredAt, locale);
+        const stamp = formatStamp(row.occurredAt, shortMonths);
 
         const inner = (
           <>
