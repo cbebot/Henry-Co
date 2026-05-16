@@ -10,6 +10,7 @@ export { getHubHomeCopy, getFaqFallbackForLocale, type HubHomeCopy } from "./hub
 export { getHubPublicCopy, type HubPublicCopy } from "./hub-public-copy";
 export { getLogisticsBookCopy, type LogisticsBookCopy } from "./logistics-book-copy";
 export { getLogisticsServicesCopy, type LogisticsServicesCopy } from "./logistics-services-copy";
+export { getLogisticsBusinessCopy, type LogisticsBusinessCopy } from "./logistics-business-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";

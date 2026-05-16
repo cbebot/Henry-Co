@@ -10,51 +10,60 @@ import {
   Workflow,
 } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
+import { getLogisticsBusinessCopy } from "@henryco/i18n/server";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
-export const metadata: Metadata = {
-  title: "Business logistics | HenryCo Logistics",
-  description: "Repeat routes, governed pricing, and account-level visibility for business shippers.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsBusinessCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
 
-export default function BusinessPage() {
+export default async function BusinessPage() {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsBusinessCopy(locale);
+
   const standards = [
     {
       icon: Repeat2,
-      title: "Repeat lanes without rebuilding paperwork",
-      body: "Saved pickup and delivery pairs, common contacts, and parcel profiles carry forward — drivers see the same instructions across every booking.",
+      title: copy.standards.repeatLanesTitle,
+      body: copy.standards.repeatLanesBody,
     },
     {
       icon: Workflow,
-      title: "Escalations with audit-friendly history",
-      body: "Issues become structured records: who reported, what changed, when dispatch acted. Finance and operations read from the same trail.",
+      title: copy.standards.escalationsTitle,
+      body: copy.standards.escalationsBody,
     },
     {
       icon: ShieldCheck,
-      title: "Premium experience under operational stress",
-      body: "Difficult lanes, partial deliveries, and rerouting still surface clean milestones to the recipient — quality holds even when routing gets noisy.",
+      title: copy.standards.premiumTitle,
+      body: copy.standards.premiumBody,
     },
   ] as const;
 
   const path = [
     {
       step: "01",
-      title: "Quote a representative lane",
-      body: "Use the public quote to get a real number for your most common origin–destination pair, then we calibrate from there.",
+      title: copy.path.step01Title,
+      body: copy.path.step01Body,
     },
     {
       step: "02",
-      title: "Open the account hub",
-      body: "Inside your HenryCo account, the logistics workspace stores receipts, milestone history, and notification routing for finance/ops.",
+      title: copy.path.step02Title,
+      body: copy.path.step02Body,
     },
     {
       step: "03",
-      title: "Run the volume",
-      body: "Repeat bookings reuse saved profiles. Tracking codes are issued instantly; proof-of-delivery records attach to the right invoice.",
+      title: copy.path.step03Title,
+      body: copy.path.step03Body,
     },
     {
       step: "04",
-      title: "Reconcile cleanly",
-      body: "Each shipment carries to one statement with the lane, service tier, and any handling line items — no “misc” surprises.",
+      title: copy.path.step04Title,
+      body: copy.path.step04Body,
     },
   ] as const;
 
@@ -65,36 +74,33 @@ export default function BusinessPage() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
-                For operators
+                {copy.hero.eyebrow}
               </p>
               <h1 className="mt-5 max-w-2xl text-balance text-[2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
-                Built for operators.
+                {copy.hero.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)]">
-                Public booking and tracking run on the same shipment model used internally. Business
-                shippers get predictable pricing, milestone visibility, proof-of-delivery
-                discipline, and the shared HenryCo account for receipts, notifications, and support
-                history.
+                {copy.hero.body}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/quote"
                   className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
                 >
-                  Quote a real lane
+                  {copy.hero.quoteCta}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href={getAccountUrl("/logistics")}
                   className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.04]"
                 >
-                  Open logistics in account
+                  {copy.hero.accountCta}
                 </Link>
                 <Link
                   href="/services"
                   className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[var(--logistics-accent-soft)] underline-offset-4 hover:underline"
                 >
-                  Compare service tiers
+                  {copy.hero.compareCta}
                 </Link>
               </div>
             </div>
@@ -102,18 +108,18 @@ export default function BusinessPage() {
               {[
                 {
                   icon: Receipt,
-                  label: "Pricing",
-                  value: "Governed, traceable per lane",
+                  label: copy.credibility.pricingLabel,
+                  value: copy.credibility.pricingValue,
                 },
                 {
                   icon: ClipboardList,
-                  label: "Visibility",
-                  value: "Milestones + POD per shipment",
+                  label: copy.credibility.visibilityLabel,
+                  value: copy.credibility.visibilityValue,
                 },
                 {
                   icon: Sparkles,
-                  label: "Continuity",
-                  value: "Saved lanes, contacts, profiles",
+                  label: copy.credibility.continuityLabel,
+                  value: copy.credibility.continuityValue,
                 },
               ].map(({ icon: Icon, label, value }) => (
                 <li
@@ -135,7 +141,7 @@ export default function BusinessPage() {
 
         <section>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-            Three operating standards
+            {copy.standards.eyebrow}
           </p>
           <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[var(--logistics-line)]">
             {standards.map((item, i) => {
@@ -155,7 +161,7 @@ export default function BusinessPage() {
 
         <section>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-            How it scales after the first lane
+            {copy.path.eyebrow}
           </p>
           <ol className="mt-6 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
             {path.map((item) => (
@@ -164,7 +170,7 @@ export default function BusinessPage() {
                 className="grid gap-3 py-5 sm:grid-cols-[auto,1fr] sm:gap-6"
               >
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                  Step {item.step}
+                  {copy.path.stepLabel} {item.step}
                 </span>
                 <div>
                   <h3 className="text-sm font-semibold tracking-tight text-white">{item.title}</h3>
@@ -180,56 +186,39 @@ export default function BusinessPage() {
         <section className="grid gap-12 lg:grid-cols-2 lg:divide-x lg:divide-[var(--logistics-line)]">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-              Best for
+              {copy.fit.bestForEyebrow}
             </p>
             <ul className="mt-5 space-y-3 text-sm leading-7 text-[var(--logistics-muted)]">
               <li className="flex gap-3">
                 <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--logistics-accent)]" />
-                <span>
-                  Retail and DTC brands replenishing stock or fulfilling repeat orders across the
-                  same metro lanes.
-                </span>
+                <span>{copy.fit.bestForRetail}</span>
               </li>
               <li className="flex gap-3">
                 <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--logistics-accent)]" />
-                <span>
-                  Professional services moving documents, samples, or kit on a predictable rhythm.
-                </span>
+                <span>{copy.fit.bestForServices}</span>
               </li>
               <li className="flex gap-3">
                 <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--logistics-accent)]" />
-                <span>
-                  HenryCo divisions and partners coordinating internal handoffs without ad-hoc
-                  paperwork.
-                </span>
+                <span>{copy.fit.bestForDivisions}</span>
               </li>
             </ul>
           </div>
           <div className="lg:pl-12">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-              Not a fit yet
+              {copy.fit.notYetEyebrow}
             </p>
             <ul className="mt-5 space-y-3 text-sm leading-7 text-[var(--logistics-muted)]">
               <li className="flex gap-3">
                 <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--logistics-accent)]" />
-                <span>
-                  Cold-chain or temperature-controlled freight requiring specialised containers — let
-                  us know in advance and we’ll route accordingly.
-                </span>
+                <span>{copy.fit.notYetColdChain}</span>
               </li>
               <li className="flex gap-3">
                 <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--logistics-accent)]" />
-                <span>
-                  International cross-border movements — domestic lanes are the published service
-                  surface today.
-                </span>
+                <span>{copy.fit.notYetCrossBorder}</span>
               </li>
               <li className="flex gap-3">
                 <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--logistics-accent)]" />
-                <span>
-                  Hazardous-materials shipments — handled separately under direct ops contact, not
-                  via public booking.
-                </span>
+                <span>{copy.fit.notYetHazmat}</span>
               </li>
             </ul>
           </div>
@@ -239,14 +228,13 @@ export default function BusinessPage() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                Ready to talk volume?
+                {copy.closing.eyebrow}
               </p>
               <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
-                Send a representative quote — we’ll respond with a realistic operating picture.
+                {copy.closing.title}
               </h2>
               <p className="mt-3 text-sm leading-7 text-[var(--logistics-muted)]">
-                Quote → confirm the lanes → open the account hub. No sales theatre, no paperwork
-                wall.
+                {copy.closing.body}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -254,14 +242,14 @@ export default function BusinessPage() {
                 href="/quote"
                 className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
               >
-                Quote a lane
+                {copy.closing.quoteCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/support"
                 className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.04]"
               >
-                Talk to dispatch
+                {copy.closing.dispatchCta}
               </Link>
             </div>
           </div>
