@@ -91,6 +91,25 @@ export type MarketplacePublicCopy = {
       ctaLabel: string;
     };
   };
+  deals: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    pageIntro: {
+      kicker: string;
+      title: string;
+      description: string;
+    };
+    sectionLabel: string;
+    listEyebrow: string;
+    refreshNote: string;
+    discountBadgePrefix: string;
+    emptyState: {
+      title: string;
+      body: string;
+    };
+  };
   category: {
     hero: {
       kicker: string;
@@ -366,6 +385,27 @@ const EN: MarketplacePublicCopy = {
       title: "Your cart is still empty.",
       body: "Quick-add from product cards, save items for later, and the basket will stay updated in the mini-cart drawer and the full cart without a hard refresh.",
       ctaLabel: "Browse products",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Verified deals — HenryCo Marketplace",
+      description:
+        "Discounts filtered for trust, stock certainty, and seller accountability. Only verified listings with clean trust signals appear on the HenryCo deals page.",
+    },
+    pageIntro: {
+      kicker: "Verified Deals",
+      title: "Discounts filtered for trust, stock certainty, and seller accountability.",
+      description:
+        "Deals are only surfaced when the listing quality, seller trust passport, and stock status are clean enough to protect conversion and reduce buyer regret.",
+    },
+    sectionLabel: "Verified deals",
+    listEyebrow: "Verified deals",
+    refreshNote: "Updated regularly",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "No verified deals right now",
+      body: "Verified discounts roll in as sellers list them. Check back soon.",
     },
   },
   category: {
@@ -668,6 +708,27 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Parcourir les produits",
     },
   },
+  deals: {
+    metadata: {
+      title: "Offres vérifiées — Marketplace HenryCo",
+      description:
+        "Des remises filtrées sur la confiance, la disponibilité réelle des stocks et la responsabilité des vendeurs. Seules les annonces vérifiées aux signaux propres apparaissent sur la page des offres HenryCo.",
+    },
+    pageIntro: {
+      kicker: "Offres vérifiées",
+      title: "Des remises filtrées sur la confiance, la disponibilité des stocks et la responsabilité des vendeurs.",
+      description:
+        "Les offres ne sont mises en avant que lorsque la qualité de l’annonce, le passeport de confiance du vendeur et l’état du stock sont assez propres pour protéger la conversion et éviter le regret après achat.",
+    },
+    sectionLabel: "Offres vérifiées",
+    listEyebrow: "Offres vérifiées",
+    refreshNote: "Mises à jour régulièrement",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Aucune offre vérifiée pour le moment",
+      body: "Les remises vérifiées apparaissent dès que les vendeurs les publient. Repassez bientôt.",
+    },
+  },
   category: {
     hero: {
       kicker: "Édition catégorie",
@@ -860,6 +921,27 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Explorar productos",
     },
   },
+  deals: {
+    metadata: {
+      title: "Ofertas verificadas — HenryCo Marketplace",
+      description:
+        "Descuentos filtrados por confianza, certeza de stock y responsabilidad del vendedor. En la página de ofertas de HenryCo solo aparecen listados verificados con señales limpias.",
+    },
+    pageIntro: {
+      kicker: "Ofertas verificadas",
+      title: "Descuentos filtrados por confianza, certeza de stock y responsabilidad del vendedor.",
+      description:
+        "Solo destacamos ofertas cuando la calidad del anuncio, el pasaporte de confianza del vendedor y el estado del stock están lo bastante limpios para proteger la conversión y reducir el arrepentimiento del comprador.",
+    },
+    sectionLabel: "Ofertas verificadas",
+    listEyebrow: "Ofertas verificadas",
+    refreshNote: "Actualizadas con regularidad",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "No hay ofertas verificadas ahora mismo",
+      body: "Los descuentos verificados aparecen a medida que los vendedores los publican. Vuelve pronto.",
+    },
+  },
   brand: {
     eyebrow: "Marca",
     bodyFallback:
@@ -1023,6 +1105,27 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
       title: "O teu carrinho ainda está vazio.",
       body: "Adiciona rapidamente a partir dos cartões de produto, guarda itens para depois, e o carrinho mantém-se atualizado no mini-carrinho e no carrinho completo sem precisares de recarregar.",
       ctaLabel: "Explorar produtos",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Ofertas verificadas — HenryCo Marketplace",
+      description:
+        "Descontos filtrados por confiança, certeza de stock e responsabilidade do vendedor. Na página de ofertas da HenryCo só aparecem anúncios verificados com sinais limpos.",
+    },
+    pageIntro: {
+      kicker: "Ofertas verificadas",
+      title: "Descontos filtrados por confiança, certeza de stock e responsabilidade do vendedor.",
+      description:
+        "Só destacamos ofertas quando a qualidade do anúncio, o passaporte de confiança do vendedor e o estado do stock estão limpos o suficiente para proteger a conversão e reduzir o arrependimento de quem compra.",
+    },
+    sectionLabel: "Ofertas verificadas",
+    listEyebrow: "Ofertas verificadas",
+    refreshNote: "Atualizadas com regularidade",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Sem ofertas verificadas neste momento",
+      body: "Os descontos verificados surgem à medida que os vendedores os publicam. Volta em breve.",
     },
   },
   brand: {
@@ -1217,6 +1320,27 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Produkte entdecken",
     },
   },
+  deals: {
+    metadata: {
+      title: "Geprüfte Angebote — HenryCo Marketplace",
+      description:
+        "Rabatte gefiltert nach Vertrauen, verlässlicher Bestandslage und Händlerverantwortung. Auf der HenryCo-Deals-Seite erscheinen nur verifizierte Listings mit sauberen Vertrauenssignalen.",
+    },
+    pageIntro: {
+      kicker: "Geprüfte Angebote",
+      title: "Rabatte gefiltert nach Vertrauen, verlässlicher Bestandslage und Händlerverantwortung.",
+      description:
+        "Angebote zeigen wir erst, wenn Listing-Qualität, Vertrauens-Passport des Händlers und Bestandsstatus sauber genug sind, um die Conversion zu schützen und Kaufreue zu vermeiden.",
+    },
+    sectionLabel: "Geprüfte Angebote",
+    listEyebrow: "Geprüfte Angebote",
+    refreshNote: "Regelmäßig aktualisiert",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Aktuell keine geprüften Angebote",
+      body: "Geprüfte Rabatte erscheinen, sobald Händler sie einstellen. Schau bald wieder vorbei.",
+    },
+  },
   brand: {
     eyebrow: "Marke",
     bodyFallback:
@@ -1407,6 +1531,27 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
       title: "Il tuo carrello è ancora vuoto.",
       body: "Aggiungi al volo dalle schede prodotto, salva articoli per dopo, e il carrello resta aggiornato sia nel mini-carrello sia nella vista completa, senza ricaricare la pagina.",
       ctaLabel: "Esplora i prodotti",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Offerte verificate — HenryCo Marketplace",
+      description:
+        "Sconti filtrati per affidabilità, disponibilità reale di magazzino e responsabilità del venditore. Nella pagina offerte di HenryCo appaiono solo annunci verificati con segnali puliti.",
+    },
+    pageIntro: {
+      kicker: "Offerte verificate",
+      title: "Sconti filtrati per affidabilità, disponibilità di magazzino e responsabilità del venditore.",
+      description:
+        "Mettiamo in evidenza le offerte solo quando qualità dell’annuncio, passaporto di fiducia del venditore e stato delle scorte sono abbastanza puliti da proteggere la conversione e ridurre il rimpianto di chi compra.",
+    },
+    sectionLabel: "Offerte verificate",
+    listEyebrow: "Offerte verificate",
+    refreshNote: "Aggiornate regolarmente",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Nessuna offerta verificata in questo momento",
+      body: "Gli sconti verificati arrivano man mano che i venditori li pubblicano. Torna a dare un’occhiata.",
     },
   },
   brand: {
@@ -1601,6 +1746,27 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "تصفّح المنتجات",
     },
   },
+  deals: {
+    metadata: {
+      title: "عروض موثّقة — HenryCo Marketplace",
+      description:
+        "تخفيضات مفلترة وفق الثقة، ووضوح توافر المخزون، ومسؤولية البائع. على صفحة العروض في HenryCo لا تظهر سوى المنتجات الموثّقة التي تحمل إشارات ثقة نظيفة.",
+    },
+    pageIntro: {
+      kicker: "عروض موثّقة",
+      title: "تخفيضات مفلترة وفق الثقة، ووضوح توافر المخزون، ومسؤولية البائع.",
+      description:
+        "لا نُبرز العرض إلا عندما تكون جودة الإعلان، وجواز ثقة البائع، وحالة المخزون نظيفة بما يكفي لحماية إتمام الشراء وتقليل الندم بعد الطلب.",
+    },
+    sectionLabel: "عروض موثّقة",
+    listEyebrow: "عروض موثّقة",
+    refreshNote: "تُحدَّث بانتظام",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "لا توجد عروض موثّقة الآن",
+      body: "تظهر التخفيضات الموثّقة عندما يُدرجها البائعون. تابِعنا قريبًا.",
+    },
+  },
   brand: {
     eyebrow: "العلامة التجارية",
     bodyFallback:
@@ -1791,6 +1957,27 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
       title: "你的购物车还是空的。",
       body: "可从产品卡片快速加入,把心仪商品收藏稍后再看,迷你购物车与完整购物车都会即时同步,无需刷新页面。",
       ctaLabel: "浏览商品",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "已核验优惠 — HenryCo Marketplace",
+      description:
+        "依据信任、库存可靠度与卖家责任筛选的折扣。HenryCo 优惠页只显示信任信号干净、已通过核验的商品。",
+    },
+    pageIntro: {
+      kicker: "已核验优惠",
+      title: "依据信任、库存可靠度与卖家责任筛选的折扣。",
+      description:
+        "只有当商品质量、卖家信任护照与库存状态都足够干净时,我们才会把它放上优惠位,以保护转化、减少购后遗憾。",
+    },
+    sectionLabel: "已核验优惠",
+    listEyebrow: "已核验优惠",
+    refreshNote: "定期更新",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "暂无已核验的优惠",
+      body: "已核验的折扣会随着卖家陆续上架出现。稍后再来看看。",
     },
   },
   brand: {
@@ -1985,6 +2172,27 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "प्रोडक्ट देखें",
     },
   },
+  deals: {
+    metadata: {
+      title: "सत्यापित डील्स — HenryCo Marketplace",
+      description:
+        "भरोसे, स्टॉक की पक्की उपलब्धता और विक्रेता ज़िम्मेदारी के आधार पर छँटी हुई छूट। HenryCo डील्स पेज पर सिर्फ़ साफ़ ट्रस्ट संकेतों वाले सत्यापित प्रोडक्ट ही दिखते हैं।",
+    },
+    pageIntro: {
+      kicker: "सत्यापित डील्स",
+      title: "भरोसे, स्टॉक की पक्की उपलब्धता और विक्रेता ज़िम्मेदारी के आधार पर छँटी छूट।",
+      description:
+        "डील तभी सामने लाई जाती है जब लिस्टिंग की गुणवत्ता, विक्रेता का ट्रस्ट पासपोर्ट और स्टॉक की स्थिति इतनी साफ़ हो कि कन्वर्ज़न सुरक्षित रहे और ख़रीदार को बाद में पछतावा न हो।",
+    },
+    sectionLabel: "सत्यापित डील्स",
+    listEyebrow: "सत्यापित डील्स",
+    refreshNote: "नियमित रूप से अपडेट होती हैं",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "अभी कोई सत्यापित डील नहीं है",
+      body: "जैसे-जैसे विक्रेता लिस्ट करते जाएँगे, सत्यापित छूट भी आती जाएँगी। थोड़ी देर बाद फिर देखें।",
+    },
+  },
   brand: {
     eyebrow: "ब्रांड",
     bodyFallback:
@@ -2175,6 +2383,27 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
       title: "Nkata gị ka tọgbọrọ chakoo.",
       body: "Tinye ihe ọsọ ọsọ site na kaadị ngwa ahịa, debe ihe maka mgbe ọzọ — nkata ga-anọgide na-emelite n'ime drawer mini na nkata zuru oke n'enweghị nlọghachi azụ.",
       ctaLabel: "Lelee ngwa ahịa",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Mbelata ọnụahịa enyochara — HenryCo Marketplace",
+      description:
+        "Mbelata ọnụahịa esiwo nzọcha ntụkwasị obi, nkwado ngwongwo dị n'ụlọ ahịa, na ọrụ onye na-ere ahịa. Naanị ndepụta enyochara nke nwere akara ntụkwasị obi dị ọcha na-apụta na peeji deals nke HenryCo.",
+    },
+    pageIntro: {
+      kicker: "Mbelata ọnụahịa enyochara",
+      title: "Mbelata ọnụahịa esiwo nzọcha ntụkwasị obi, nkwado ngwongwo dị, na ọrụ onye na-ere ahịa.",
+      description:
+        "Anyị na-egosi naanị mbelata ọnụahịa mgbe ịdị mma ndepụta, paspọtụ ntụkwasị obi nke onye na-ere ahịa, na ọnọdụ ngwongwo dị ọcha nke ọma iji chebe ịgbanwe ahịa ma belata mwute mgbe e zụsịrị.",
+    },
+    sectionLabel: "Mbelata ọnụahịa enyochara",
+    listEyebrow: "Mbelata ọnụahịa enyochara",
+    refreshNote: "Na-emelite oge niile",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "O nweghị mbelata ọnụahịa enyochara ugbu a",
+      body: "Mbelata enyochara na-abata ka ndị na-ere ahịa na-edepụta ha. Lọghachi ọzọ obere oge.",
     },
   },
   brand: {
@@ -2369,6 +2598,27 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Ṣàwárí àwọn ọjà",
     },
   },
+  deals: {
+    metadata: {
+      title: "Àwọn àdínkù tí a fọwọ́sí — HenryCo Marketplace",
+      description:
+        "Àdínkù tí a yan nípasẹ̀ ìgbẹ́kẹ̀lé, dájúdájú ohun-ọjà tó wà ní ìpamọ́, àti ojúṣe olùtà. Lórí ojú-ìwé deals HenryCo, kìkì àwọn àkọsílẹ̀ tó a ti fọwọ́sí pẹ̀lú àmì ìgbẹ́kẹ̀lé mímọ́ ló máa farahàn.",
+    },
+    pageIntro: {
+      kicker: "Àwọn àdínkù tí a fọwọ́sí",
+      title: "Àdínkù tí a yan nípasẹ̀ ìgbẹ́kẹ̀lé, dájúdájú ohun-ọjà tó wà ní ìpamọ́, àti ojúṣe olùtà.",
+      description:
+        "A ò ní gbé àdínkù síwájú àfi tí ìbígbónijú àkọsílẹ̀, ìwé-ìrìnnà ìgbẹ́kẹ̀lé olùtà, àti ipò ohun-ọjà bá mọ́ tó láti dáàbò bo àṣeyọrí ìrajà àti láti dín ìbàjẹ́-ọkàn olùra kù.",
+    },
+    sectionLabel: "Àwọn àdínkù tí a fọwọ́sí",
+    listEyebrow: "Àwọn àdínkù tí a fọwọ́sí",
+    refreshNote: "A ń ṣàtúnṣe rẹ̀ déédéé",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Kò sí àdínkù tí a ti fọwọ́sí nísinsìnyí",
+      body: "Àwọn àdínkù tí a fọwọ́sí máa farahàn bí àwọn olùtà ṣe ń kọ wọ́n sílẹ̀. Padà wo wọ́n láìpẹ́.",
+    },
+  },
   brand: {
     eyebrow: "Àmì-ọjà",
     bodyFallback:
@@ -2559,6 +2809,27 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
       title: "Kanti ɗinka har yanzu fanko ne.",
       body: "Ƙara cikin sauri daga katunan kaya, ajiye abubuwa don baya, kuma kanti zai ci gaba da sabuntawa a cikin ƙaramin kanti da kanti cikakke ba tare da sake loda shafi ba.",
       ctaLabel: "Bincika kayayyaki",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Tayin da aka tabbatar — HenryCo Marketplace",
+      description:
+        "Ragi da aka tace bisa amincewa, tabbacin kayan a cikin ɗakin ajiya, da ɗawainiyar mai sayarwa. A shafin tayin HenryCo, sai jeren da aka tabbatar wanda yake da alamomin amincewa masu tsabta ne kawai suke fitowa.",
+    },
+    pageIntro: {
+      kicker: "Tayin da aka tabbatar",
+      title: "Ragi da aka tace bisa amincewa, tabbacin kayan a cikin ɗakin ajiya, da ɗawainiyar mai sayarwa.",
+      description:
+        "Muna nuna tayi ne kawai lokacin da ingancin jeren, fasfo na amincewar mai sayarwa, da yanayin kayan suke da tsabta isa don kāre cikakken siye da rage damuwar mai siye daga baya.",
+    },
+    sectionLabel: "Tayin da aka tabbatar",
+    listEyebrow: "Tayin da aka tabbatar",
+    refreshNote: "Ana sabuntawa akai-akai",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Babu tayin da aka tabbatar a yanzu",
+      body: "Ragi da aka tabbatar suna shigowa yayin da masu sayarwa suke jera su. Dawo nan ba da daɗewa ba.",
     },
   },
   category: {
