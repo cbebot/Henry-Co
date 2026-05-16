@@ -1274,6 +1274,342 @@ export const ACCOUNT_COPY_ES = {
       "bathPlural": "baños",
       "sizeSqmTemplate": "{size} m²"
     }
+  },
+  "divisionJobs": {
+    "metadata": {
+      "title": "Empleos · panel de candidato",
+      "description": "Sigue cada solicitud de HenryCo Jobs, puesto guardado, actualización de reclutadores y señal de preparación de perfil vinculada a esta cuenta."
+    },
+    "header": {
+      "title": "Empleos",
+      "description": "Tus solicitudes, puestos guardados, actualizaciones de reclutadores y solidez de perfil — todo en un mismo lugar.",
+      "candidateModuleCta": "Módulo de candidato",
+      "interviewRoomsCta": "Salas de entrevista",
+      "browseLiveRolesCta": "Explorar puestos activos"
+    },
+    "hero": {
+      "eyebrow": "Tu cuenta",
+      "headline": "Tu actividad de empleos, todo en un mismo lugar.",
+      "body": "Solicitudes, puestos guardados, actualizaciones de reclutadores y preparación de perfil están vinculados a tu cuenta HenryCo.",
+      "statsAriaLabel": "Resumen de actividad de empleos",
+      "statLabels": {
+        "applications": "Solicitudes activas",
+        "saved": "Puestos guardados",
+        "readiness": "Preparación del perfil",
+        "updates": "Actualizaciones de reclutadores"
+      },
+      "statDetails": {
+        "applicationsLeadingTemplate": "{stage} es tu etapa activa principal.",
+        "applicationsEmpty": "Aún no hay solicitudes activas.",
+        "savedSome": "Tu lista está lista para otra revisión.",
+        "savedEmpty": "Construye una lista para reencontrar buenos puestos con facilidad.",
+        "updatesLatestTemplate": "{relative} último movimiento.",
+        "updatesEmpty": "Aún no hay actualizaciones de reclutadores."
+      }
+    },
+    "sections": {
+      "nextActionsKicker": "Próximas acciones",
+      "nextActionsTitle": "Lo que merece tu atención ahora",
+      "openTimelineCta": "Abrir cronología",
+      "applicationsKicker": "Solicitudes",
+      "applicationsTitle": "Movimiento de contratación en vivo",
+      "savedKicker": "Puestos guardados",
+      "savedTitle": "Lista con más contexto",
+      "openSavedRolesCta": "Abrir puestos guardados",
+      "recommendedKicker": "Puestos recomendados",
+      "recommendedTitle": "Lo que encaja con tu señal actual",
+      "browseCatalogCta": "Explorar catálogo",
+      "recruiterFeedKicker": "Feed de reclutadores",
+      "recruiterFeedTitle": "Mensajes, cambios de etapa y avisos",
+      "candidateInboxCta": "Bandeja del candidato",
+      "profileKicker": "Solidez del perfil",
+      "profileTitle": "Preparación del candidato y calidad del CV",
+      "sharedInboxKicker": "Bandeja compartida",
+      "sharedInboxTitle": "Notificaciones de Jobs vinculadas a tu cuenta",
+      "alertsKicker": "Alertas",
+      "alertsTitle": "Intención de búsqueda guardada"
+    },
+    "empty": {
+      "applicationsTitle": "Aún no hay solicitudes activas",
+      "applicationsBody": "Los puestos guardados, las actualizaciones de reclutadores y las cronologías aparecerán aquí en cuanto pases de explorar a una solicitud activa.",
+      "exploreJobsCta": "Explorar empleos",
+      "savedJobsTitle": "Aún no hay puestos guardados",
+      "savedJobsBody": "Guarda puestos prometedores para mantenerlos en tu lista entre Jobs y tu cuenta.",
+      "recommendedTitle": "Las recomendaciones se afinarán con el uso de Jobs",
+      "recommendedBody": "A medida que tu perfil, lista y solicitudes se profundicen, las sugerencias aquí serán más específicas.",
+      "recruiterFeedTitle": "Aún no hay movimiento de reclutadores",
+      "recruiterFeedBody": "Los cambios de etapa de solicitudes, notas compartidas de reclutadores y notificaciones Jobs in-app se reunirán aquí.",
+      "notificationsTitle": "Aún no hay notificaciones de Jobs",
+      "notificationsBody": "Los próximos movimientos de lista, actualizaciones de empleadores y cambios de solicitudes llegarán aquí y al módulo Jobs.",
+      "alertsTitle": "No hay alertas de Jobs activas",
+      "alertsBody": "Crea una alerta para que los nuevos puestos que coincidan con tus criterios aparezcan en tu feed de Jobs.",
+      "browseRolesCta": "Explorar puestos"
+    },
+    "application": {
+      "progressPercentTemplate": "{percent}% completado",
+      "appliedAtTemplate": "Postulado el {date}",
+      "candidateReadiness": "Preparación del candidato",
+      "recruiterConfidence": "Confianza del reclutador",
+      "latestMovement": "Último movimiento del reclutador",
+      "nextBestMove": "Próximo mejor movimiento",
+      "openTimelineCta": "Abrir cronología",
+      "interviewRoomCta": "Sala de entrevista",
+      "viewRoleCta": "Ver puesto"
+    },
+    "savedJob": {
+      "trustTemplate": "Confianza {score}",
+      "savedAtTemplate": "Guardado el {date}"
+    },
+    "recommended": {
+      "compFallback": "Compensación abordada en el proceso"
+    },
+    "stageLabels": {
+      "applied": "Postulado",
+      "reviewing": "En revisión",
+      "shortlisted": "Preseleccionado",
+      "interview": "Entrevista",
+      "offer": "Oferta",
+      "hired": "Contratado",
+      "rejected": "Rechazado"
+    },
+    "nextStep": {
+      "labels": {
+        "applied": "Mantén tu perfil y CV al día",
+        "shortlisted": "Ten listo el contexto de portfolio y pruebas",
+        "interview": "Prepara ejemplos y franjas horarias",
+        "offer": "Revisa alcance, tiempos y compensación",
+        "rejected": "Fortalece el próximo paquete de solicitud"
+      },
+      "bodies": {
+        "applied": "En las etapas iniciales ayudan pruebas más nítidas, contacto limpio y un CV actualizado.",
+        "shortlisted": "Estar preseleccionado significa que pasaste la primera criba. Ahora cuentan las pruebas precisas.",
+        "interview": "Las entrevistas avanzan más rápido cuando tus mejores pruebas de trabajo y disponibilidad se ven con facilidad.",
+        "offer": "Usa la fase de oferta para despejar ambigüedades, no para suponer responsabilidades.",
+        "rejected": "Toma el rechazo como señal. Aprieta resumen, ejemplos y ajuste antes de volver a postular."
+      }
+    },
+    "readinessLabels": {
+      "interviewReady": "Listo para entrevista",
+      "strongProfile": "Perfil sólido",
+      "needsProof": "Faltan pruebas",
+      "needsStructure": "Falta estructura"
+    },
+    "workModeLabels": {
+      "remote": "Remoto",
+      "hybrid": "Híbrido",
+      "onsite": "Presencial"
+    },
+    "employmentTypeLabels": {
+      "fullTime": "Tiempo completo",
+      "partTime": "Tiempo parcial",
+      "contract": "Contrato",
+      "internship": "Pasantía",
+      "temporary": "Temporal"
+    },
+    "profile": {
+      "readinessLabel": "Preparación",
+      "skillsMappedLabel": "Habilidades mapeadas",
+      "filesLabel": "Archivos",
+      "improveProfileCta": "Mejorar perfil",
+      "openCandidateModuleCta": "Abrir módulo de candidato",
+      "checklist": {
+        "identityLabel": "Bases del perfil",
+        "identityDetail": "Nombre completo, teléfono y ubicación presentes para el seguimiento del reclutador.",
+        "storyLabel": "Relato del rol",
+        "storyDetail": "Titular y resumen explican lo que haces más allá de un registro vacío.",
+        "verificationLabel": "Verificación de identidad",
+        "verificationDetail": "La confianza de Jobs queda limitada hasta que tu cuenta HenryCo supere la verificación de identidad.",
+        "proofLabel": "Pruebas de trabajo",
+        "proofDetail": "CV más pruebas de portfolio facilitan el avance en la preselección.",
+        "skillsLabel": "Habilidades mapeadas",
+        "skillsDetail": "Al menos cuatro habilidades y funciones preferidas mejoran las recomendaciones."
+      }
+    },
+    "nextActions": {
+      "gapTemplate": "Cierra la brecha de {label}",
+      "interviewLabel": "Prepárate para una fase de entrevista",
+      "offerLabel": "Responde a una oferta activa",
+      "attentionTemplate": "{title} en {employer} necesita tu atención ahora.",
+      "convertSavedLabel": "Convierte un puesto guardado en una solicitud activa",
+      "convertSavedTemplate": "{title} ya está en tu lista y listo para una revisión más profunda.",
+      "restartLabel": "Reinicia tu búsqueda con filtros más estrictos",
+      "restartDetail": "Usa filtros de empleadores verificados y puestos internos para construir una lista más limpia con rapidez."
+    },
+    "alertStatus": {
+      "active": "Activo",
+      "paused": "En pausa"
+    },
+    "recruiterUpdateTitleTemplate": "Actualización de {stage}"
+  },
+  "divisionMarketplace": {
+    "metadata": {
+      "title": "Marketplace · pedidos y actividad de vendedor",
+      "description": "Sigue cada pedido de HenryCo Marketplace, disputa y pago a vendedor vinculado a esta cuenta — actividad del comprador y espacio del vendedor, reflejados en una sola sala en tiempo real."
+    },
+    "hero": {
+      "eyebrow": "Marketplace · en vivo",
+      "ariaLabel": "Resumen de Marketplace",
+      "sideAriaLabel": "Cómo funciona esta sala",
+      "sideKicker": "Cómo funciona esta sala",
+      "sideTitle": "Comprar y vender — una sola sala.",
+      "sideBody": "Cada pedido, disputa y solicitud de pago que crees en Marketplace se refleja en esta sala. La actividad del espacio del vendedor se entrelaza con los pedidos del comprador, para que ambos lados del marketplace queden visibles de un vistazo.",
+      "breakdownLabel": "Por estado",
+      "breakdownAriaLabel": "Desglose de actividad",
+      "tilesAriaLabel": "Actividad de Marketplace",
+      "tileLabels": {
+        "orders": "Pedidos",
+        "disputes": "Disputas",
+        "store": "Tienda",
+        "payouts": "Pagos"
+      },
+      "tileFoot": {
+        "ordersEmpty": "El primer pedido aparecerá aquí",
+        "ordersInMotionTemplate": "{inFlight} en curso · {delivered} entregados",
+        "ordersDeliveredTemplate": "{delivered} entregados hasta hoy",
+        "disputesClear": "Todo en orden",
+        "disputesActiveTemplate": "{open} abiertas · {resolving} en resolución",
+        "storeActiveNoName": "Membresía de vendedor activa",
+        "storeActiveWithNameTemplate": "Tienda: {name}",
+        "storeApplicationTemplate": "Solicitud: {status}",
+        "storeIdle": "Aún no vendes — postula cuando estés listo",
+        "payoutsEmptyNoneSettled": "Sin solicitudes de pago",
+        "payoutsSettledTemplate": "{count} liquidados hasta hoy",
+        "payoutsPendingTemplate": "{amount} pendiente"
+      },
+      "breakdownLabels": {
+        "inMotion": "En curso",
+        "openDisputes": "Disputas abiertas",
+        "delivered": "Entregados",
+        "pendingPayouts": "Pagos pendientes"
+      },
+      "state": {
+        "empty": {
+          "headline": "Empieza a comprar en HenryCo Marketplace.",
+          "blurb": "Pedidos, disputas, actividad de vendedor y pagos se reflejan en esta sala apenas hagas una transacción. Explora el marketplace para empezar.",
+          "ctaPrimary": "Abrir Marketplace",
+          "ctaSecondary": "Postular como vendedor"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} asunto requiere atención.",
+          "headlineTemplatePlural": "{count} asuntos requieren atención.",
+          "blurb": "Las disputas y pedidos con incidencias suben al inicio de la cola. Abre el caso para añadir evidencia o aceptar la resolución.",
+          "ctaPrimary": "Revisar asuntos",
+          "ctaSecondary": "Abrir Marketplace"
+        },
+        "activeOrders": {
+          "headlineTemplateSingular": "{count} pedido en curso.",
+          "headlineTemplatePlural": "{count} pedidos en curso.",
+          "blurb": "Estado en vivo del pedido, estado de pago y seguimiento del vendedor se reflejan en esta sala desde HenryCo Marketplace en tiempo real.",
+          "ctaPrimary": "Abrir Marketplace",
+          "ctaSecondary": "Postular como vendedor"
+        },
+        "activePayouts": {
+          "headlineTemplateSingular": "{count} pago en revisión.",
+          "headlineTemplatePlural": "{count} pagos en revisión.",
+          "blurb": "Las solicitudes de pago al vendedor pasan por la verificación de finanzas. Los cambios de estado aparecen aquí a medida que el equipo avanza.",
+          "ctaPrimary": "Abrir espacio del vendedor",
+          "ctaSecondary": "Abrir Marketplace"
+        },
+        "calmBuyer": {
+          "headlineTemplateSingular": "{count} pedido registrado.",
+          "headlineTemplatePlural": "{count} pedidos registrados.",
+          "blurb": "Toda tu actividad de marketplace en una sola sala — pedidos del comprador, pagos del vendedor, resultados de disputas y el último estado de cada tienda.",
+          "ctaPrimary": "Abrir Marketplace",
+          "ctaSecondary": "Postular como vendedor"
+        },
+        "calmSeller": {
+          "headlineTemplateSingular": "{count} pedido · vendedor activo.",
+          "headlineTemplatePlural": "{count} pedidos · vendedor activo.",
+          "blurb": "Toda tu actividad de marketplace en una sola sala — pedidos del comprador, pagos del vendedor, resultados de disputas y el último estado de cada tienda.",
+          "ctaPrimary": "Abrir Marketplace",
+          "ctaSecondary": "Abrir espacio del vendedor"
+        }
+      }
+    },
+    "sections": {
+      "matters": {
+        "title": "Asuntos activos",
+        "meta": "Las disputas, el estado de la solicitud de vendedor y los pagos pendientes aparecen aquí cuando se requiere acción.",
+        "ariaLabel": "Asuntos activos de Marketplace",
+        "emptyTitle": "Nada requiere acción",
+        "emptyBody": "Toda tu actividad de marketplace avanza con normalidad — sin disputas abiertas, sin pagos en revisión, y (si aplica) tu solicitud de vendedor está aprobada."
+      },
+      "orders": {
+        "title": "Pedidos recientes",
+        "empty": "Los pedidos hechos en Marketplace aparecen aquí en tiempo real.",
+        "metaTemplateSingular": "{count} pedido · más reciente primero",
+        "metaTemplatePlural": "{count} pedidos · más recientes primero",
+        "emptyTitle": "Aún no hay pedidos",
+        "emptyBody": "Haz tu primer pedido en HenryCo Marketplace — estado del pedido, estado de pago y cualquier seguimiento llegan aquí automáticamente.",
+        "ariaLabel": "Pedidos recientes"
+      },
+      "activity": {
+        "title": "Actividad reciente",
+        "empty": "Cambios de estado, pagos y reseñas se reflejan aquí en tiempo real.",
+        "metaTemplateSingular": "{count} actualización · más reciente primero",
+        "metaTemplatePlural": "{count} actualizaciones · más recientes primero",
+        "emptyTitle": "Aún no hay actividad de marketplace",
+        "emptyBody": "Confirmaciones de pedido, novedades de disputas y resultados de pagos al vendedor aparecerán aquí en tiempo real.",
+        "ariaLabel": "Actividad de Marketplace"
+      }
+    },
+    "matters": {
+      "disputes": {
+        "kicker": "Disputas",
+        "titleTemplateSingular": "{count} caso requiere acción",
+        "titleTemplatePlural": "{count} casos requieren acción",
+        "bodyLatestTemplate": "Último: {ref} · actualizado {stamp}",
+        "bodyFallback": "Abre la cola para añadir evidencia.",
+        "cta": "Revisar casos"
+      },
+      "application": {
+        "kicker": "Solicitud de vendedor",
+        "bodyWithStoreTemplate": "Tienda: {name}",
+        "bodyDefault": "Solicitud en la cola de revisión de HenryCo.",
+        "bodyReviewSuffixTemplate": " · {note}",
+        "cta": "Ver estado",
+        "defaultStatus": "enviada"
+      },
+      "payouts": {
+        "kicker": "Pagos en revisión",
+        "titleTemplate": "{amount} pendiente",
+        "bodyTemplateSingular": "{count} solicitud a la espera de verificación financiera.",
+        "bodyTemplatePlural": "{count} solicitudes a la espera de verificación financiera.",
+        "cta": "Abrir espacio del vendedor"
+      }
+    },
+    "orders": {
+      "rowTitleTemplate": "Pedido {orderNo}",
+      "rowSubTemplate": "{amount} · realizado {stamp}",
+      "rowAriaLabelTemplate": "Pedido {orderNo} · {status}",
+      "statusFallbackDraft": "Borrador"
+    },
+    "statusValueLabels": {
+      "delivered": "Entregado",
+      "completed": "Completado",
+      "customer_confirmed": "Confirmado por el cliente",
+      "fulfilled": "Cumplido",
+      "cancelled": "Cancelado",
+      "refunded": "Reembolsado",
+      "disputed": "En disputa",
+      "exception": "Excepción",
+      "placed": "Realizado",
+      "paid": "Pagado",
+      "awaiting_fulfilment": "En espera de envío",
+      "confirmed": "Confirmado",
+      "queued": "En cola"
+    },
+    "applicationStatusLabels": {
+      "submitted": "enviada",
+      "under_review": "en revisión",
+      "approved": "aprobada",
+      "rejected": "rechazada",
+      "pending_documents": "documentos pendientes",
+      "changes_requested": "cambios solicitados"
+    },
+    "formatLabels": {
+      "dash": "—"
+    }
   }
 };
 
@@ -2549,6 +2885,342 @@ export const ACCOUNT_COPY_PT = {
       "bathSingular": "banheiro",
       "bathPlural": "banheiros",
       "sizeSqmTemplate": "{size} m²"
+    }
+  },
+  "divisionJobs": {
+    "metadata": {
+      "title": "Vagas · painel do candidato",
+      "description": "Acompanhe cada candidatura HenryCo Jobs, vaga salva, atualização de recrutador e sinal de prontidão do perfil vinculado a esta conta."
+    },
+    "header": {
+      "title": "Vagas",
+      "description": "Suas candidaturas, vagas salvas, atualizações de recrutadores e força do perfil — tudo em um só lugar.",
+      "candidateModuleCta": "Módulo do candidato",
+      "interviewRoomsCta": "Salas de entrevista",
+      "browseLiveRolesCta": "Explorar vagas ativas"
+    },
+    "hero": {
+      "eyebrow": "Sua conta",
+      "headline": "Sua atividade de vagas, tudo em um só lugar.",
+      "body": "Candidaturas, vagas salvas, atualizações de recrutadores e prontidão de perfil estão vinculados à sua conta HenryCo.",
+      "statsAriaLabel": "Resumo da atividade de vagas",
+      "statLabels": {
+        "applications": "Candidaturas ativas",
+        "saved": "Vagas salvas",
+        "readiness": "Prontidão do perfil",
+        "updates": "Atualizações de recrutadores"
+      },
+      "statDetails": {
+        "applicationsLeadingTemplate": "{stage} é a sua etapa ativa principal.",
+        "applicationsEmpty": "Ainda não há candidaturas ativas.",
+        "savedSome": "Sua seleção está pronta para outra revisão.",
+        "savedEmpty": "Monte uma seleção para reencontrar boas vagas com mais facilidade.",
+        "updatesLatestTemplate": "{relative} último movimento.",
+        "updatesEmpty": "Ainda não há atualizações de recrutadores."
+      }
+    },
+    "sections": {
+      "nextActionsKicker": "Próximas ações",
+      "nextActionsTitle": "O que merece sua atenção agora",
+      "openTimelineCta": "Abrir linha do tempo",
+      "applicationsKicker": "Candidaturas",
+      "applicationsTitle": "Movimento de contratação ao vivo",
+      "savedKicker": "Vagas salvas",
+      "savedTitle": "Seleção com mais contexto",
+      "openSavedRolesCta": "Abrir vagas salvas",
+      "recommendedKicker": "Vagas recomendadas",
+      "recommendedTitle": "O que se encaixa no seu sinal atual",
+      "browseCatalogCta": "Explorar catálogo",
+      "recruiterFeedKicker": "Feed do recrutador",
+      "recruiterFeedTitle": "Mensagens, mudanças de etapa e avisos",
+      "candidateInboxCta": "Caixa do candidato",
+      "profileKicker": "Força do perfil",
+      "profileTitle": "Prontidão do candidato e qualidade do CV",
+      "sharedInboxKicker": "Caixa compartilhada",
+      "sharedInboxTitle": "Notificações de Jobs vinculadas à sua conta",
+      "alertsKicker": "Alertas",
+      "alertsTitle": "Intenção de busca salva"
+    },
+    "empty": {
+      "applicationsTitle": "Ainda não há candidaturas ativas",
+      "applicationsBody": "Vagas salvas, atualizações de recrutadores e linhas do tempo aparecerão aqui assim que você passar da navegação para uma candidatura ativa.",
+      "exploreJobsCta": "Explorar vagas",
+      "savedJobsTitle": "Ainda não há vagas salvas",
+      "savedJobsBody": "Salve vagas promissoras para mantê-las na sua seleção entre Jobs e sua conta.",
+      "recommendedTitle": "As recomendações vão afinar com o uso de Jobs",
+      "recommendedBody": "Conforme seu perfil, seleção e candidaturas se aprofundarem, as sugestões aqui serão mais direcionadas.",
+      "recruiterFeedTitle": "Ainda não há movimento de recrutadores",
+      "recruiterFeedBody": "Mudanças de etapa, notas compartilhadas de recrutadores e notificações de Jobs in-app vão se reunir aqui.",
+      "notificationsTitle": "Ainda não há notificações de Jobs",
+      "notificationsBody": "Próximos movimentos de seleção, atualizações de empregadores e mudanças de candidaturas chegarão aqui e ao módulo Jobs.",
+      "alertsTitle": "Nenhum alerta de Jobs ativo",
+      "alertsBody": "Crie um alerta para que novas vagas que combinem com seus critérios apareçam no seu feed de Jobs.",
+      "browseRolesCta": "Explorar vagas"
+    },
+    "application": {
+      "progressPercentTemplate": "{percent}% concluído",
+      "appliedAtTemplate": "Candidatado em {date}",
+      "candidateReadiness": "Prontidão do candidato",
+      "recruiterConfidence": "Confiança do recrutador",
+      "latestMovement": "Último movimento do recrutador",
+      "nextBestMove": "Próximo melhor passo",
+      "openTimelineCta": "Abrir linha do tempo",
+      "interviewRoomCta": "Sala de entrevista",
+      "viewRoleCta": "Ver vaga"
+    },
+    "savedJob": {
+      "trustTemplate": "Confiança {score}",
+      "savedAtTemplate": "Salvo em {date}"
+    },
+    "recommended": {
+      "compFallback": "Remuneração discutida no processo"
+    },
+    "stageLabels": {
+      "applied": "Candidatado",
+      "reviewing": "Em análise",
+      "shortlisted": "Pré-selecionado",
+      "interview": "Entrevista",
+      "offer": "Oferta",
+      "hired": "Contratado",
+      "rejected": "Recusado"
+    },
+    "nextStep": {
+      "labels": {
+        "applied": "Mantenha seu perfil e CV atualizados",
+        "shortlisted": "Tenha pronto o contexto do portfólio e provas",
+        "interview": "Prepare exemplos e janelas de horário",
+        "offer": "Revise escopo, prazo e remuneração",
+        "rejected": "Fortaleça o próximo pacote de candidatura"
+      },
+      "bodies": {
+        "applied": "Nas fases iniciais, provas mais nítidas, contatos limpos e um CV atualizado ajudam.",
+        "shortlisted": "Estar pré-selecionado significa que você passou pelo primeiro filtro. Agora contam provas precisas.",
+        "interview": "As entrevistas andam mais rápido quando suas melhores provas de trabalho e disponibilidade são fáceis de ver.",
+        "offer": "Use a fase de oferta para tirar ambiguidades, não para supor responsabilidades.",
+        "rejected": "Use a rejeição como sinal. Aperte resumo, exemplos e aderência antes de se candidatar de novo."
+      }
+    },
+    "readinessLabels": {
+      "interviewReady": "Pronto para entrevista",
+      "strongProfile": "Perfil sólido",
+      "needsProof": "Falta prova",
+      "needsStructure": "Falta estrutura"
+    },
+    "workModeLabels": {
+      "remote": "Remoto",
+      "hybrid": "Híbrido",
+      "onsite": "Presencial"
+    },
+    "employmentTypeLabels": {
+      "fullTime": "Tempo integral",
+      "partTime": "Tempo parcial",
+      "contract": "Contrato",
+      "internship": "Estágio",
+      "temporary": "Temporário"
+    },
+    "profile": {
+      "readinessLabel": "Prontidão",
+      "skillsMappedLabel": "Competências mapeadas",
+      "filesLabel": "Arquivos",
+      "improveProfileCta": "Melhorar perfil",
+      "openCandidateModuleCta": "Abrir módulo do candidato",
+      "checklist": {
+        "identityLabel": "Bases do perfil",
+        "identityDetail": "Nome completo, telefone e localização presentes para o acompanhamento do recrutador.",
+        "storyLabel": "História do papel",
+        "storyDetail": "Headline e resumo explicam o que você faz, além de um registro vazio.",
+        "verificationLabel": "Verificação de identidade",
+        "verificationDetail": "A confiança em Jobs fica limitada até sua conta HenryCo passar pela revisão de identidade.",
+        "proofLabel": "Provas de trabalho",
+        "proofDetail": "CV mais provas de portfólio facilitam o avanço na pré-seleção.",
+        "skillsLabel": "Competências mapeadas",
+        "skillsDetail": "Pelo menos quatro competências e funções preferidas melhoram as recomendações."
+      }
+    },
+    "nextActions": {
+      "gapTemplate": "Feche a lacuna de {label}",
+      "interviewLabel": "Prepare-se para uma fase de entrevista",
+      "offerLabel": "Responda a uma oferta ativa",
+      "attentionTemplate": "{title} em {employer} precisa da sua atenção agora.",
+      "convertSavedLabel": "Converta uma vaga salva em candidatura ativa",
+      "convertSavedTemplate": "{title} já está na sua seleção e pronta para uma análise mais profunda.",
+      "restartLabel": "Reinicie sua busca com filtros mais rígidos",
+      "restartDetail": "Use filtros de empregadores verificados e vagas internas para montar uma seleção mais limpa, mais rápido."
+    },
+    "alertStatus": {
+      "active": "Ativo",
+      "paused": "Em pausa"
+    },
+    "recruiterUpdateTitleTemplate": "Atualização de {stage}"
+  },
+  "divisionMarketplace": {
+    "metadata": {
+      "title": "Marketplace · pedidos e atividade do vendedor",
+      "description": "Acompanhe cada pedido HenryCo Marketplace, disputa e repasse ao vendedor vinculado a esta conta — atividade do comprador e espaço do vendedor, refletidos em uma única sala em tempo real."
+    },
+    "hero": {
+      "eyebrow": "Marketplace · ao vivo",
+      "ariaLabel": "Visão geral do Marketplace",
+      "sideAriaLabel": "Como esta sala funciona",
+      "sideKicker": "Como esta sala funciona",
+      "sideTitle": "Comprar e vender — uma só sala.",
+      "sideBody": "Cada pedido, disputa e solicitação de repasse que você criar no Marketplace é refletido nesta sala. A atividade do espaço do vendedor entra ao lado dos pedidos do comprador, deixando os dois lados do marketplace visíveis em um olhar.",
+      "breakdownLabel": "Por status",
+      "breakdownAriaLabel": "Detalhamento de atividade",
+      "tilesAriaLabel": "Atividade do Marketplace",
+      "tileLabels": {
+        "orders": "Pedidos",
+        "disputes": "Disputas",
+        "store": "Loja",
+        "payouts": "Repasses"
+      },
+      "tileFoot": {
+        "ordersEmpty": "O primeiro pedido aparecerá aqui",
+        "ordersInMotionTemplate": "{inFlight} em andamento · {delivered} entregues",
+        "ordersDeliveredTemplate": "{delivered} entregues até hoje",
+        "disputesClear": "Tudo em ordem",
+        "disputesActiveTemplate": "{open} em aberto · {resolving} em resolução",
+        "storeActiveNoName": "Adesão de vendedor ativa",
+        "storeActiveWithNameTemplate": "Loja: {name}",
+        "storeApplicationTemplate": "Solicitação: {status}",
+        "storeIdle": "Ainda não vende — candidate-se quando estiver pronto",
+        "payoutsEmptyNoneSettled": "Sem solicitações de repasse",
+        "payoutsSettledTemplate": "{count} liquidados até hoje",
+        "payoutsPendingTemplate": "{amount} pendente"
+      },
+      "breakdownLabels": {
+        "inMotion": "Em andamento",
+        "openDisputes": "Disputas em aberto",
+        "delivered": "Entregues",
+        "pendingPayouts": "Repasses pendentes"
+      },
+      "state": {
+        "empty": {
+          "headline": "Comece a comprar no HenryCo Marketplace.",
+          "blurb": "Pedidos, disputas, atividade do vendedor e repasses são refletidos nesta sala assim que houver transação. Explore o marketplace para começar.",
+          "ctaPrimary": "Abrir Marketplace",
+          "ctaSecondary": "Candidatar-se a vendedor"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} assunto requer atenção.",
+          "headlineTemplatePlural": "{count} assuntos requerem atenção.",
+          "blurb": "Disputas e pedidos com exceções sobem ao topo da fila. Abra o caso para adicionar evidências ou aceitar a resolução.",
+          "ctaPrimary": "Revisar assuntos",
+          "ctaSecondary": "Abrir Marketplace"
+        },
+        "activeOrders": {
+          "headlineTemplateSingular": "{count} pedido em andamento.",
+          "headlineTemplatePlural": "{count} pedidos em andamento.",
+          "blurb": "Status do pedido ao vivo, status de pagamento e follow-up do vendedor são refletidos nesta sala a partir do HenryCo Marketplace em tempo real.",
+          "ctaPrimary": "Abrir Marketplace",
+          "ctaSecondary": "Candidatar-se a vendedor"
+        },
+        "activePayouts": {
+          "headlineTemplateSingular": "{count} repasse em análise.",
+          "headlineTemplatePlural": "{count} repasses em análise.",
+          "blurb": "Pedidos de repasse ao vendedor passam pela verificação financeira. As atualizações de status aparecem aqui à medida que a equipe avança.",
+          "ctaPrimary": "Abrir espaço do vendedor",
+          "ctaSecondary": "Abrir Marketplace"
+        },
+        "calmBuyer": {
+          "headlineTemplateSingular": "{count} pedido registrado.",
+          "headlineTemplatePlural": "{count} pedidos registrados.",
+          "blurb": "Toda a sua atividade de marketplace em uma só sala — pedidos do comprador, repasses ao vendedor, desfechos de disputas e o último status de cada loja.",
+          "ctaPrimary": "Abrir Marketplace",
+          "ctaSecondary": "Candidatar-se a vendedor"
+        },
+        "calmSeller": {
+          "headlineTemplateSingular": "{count} pedido · vendedor ativo.",
+          "headlineTemplatePlural": "{count} pedidos · vendedor ativo.",
+          "blurb": "Toda a sua atividade de marketplace em uma só sala — pedidos do comprador, repasses ao vendedor, desfechos de disputas e o último status de cada loja.",
+          "ctaPrimary": "Abrir Marketplace",
+          "ctaSecondary": "Abrir espaço do vendedor"
+        }
+      }
+    },
+    "sections": {
+      "matters": {
+        "title": "Assuntos ativos",
+        "meta": "Disputas, status da solicitação do vendedor e repasses pendentes aparecem aqui quando há ação a tomar.",
+        "ariaLabel": "Assuntos ativos do Marketplace",
+        "emptyTitle": "Nada requer ação",
+        "emptyBody": "Toda a sua atividade de marketplace está fluindo normalmente — sem disputas em aberto, sem repasses em análise, e (se aplicável) sua solicitação de vendedor está aprovada."
+      },
+      "orders": {
+        "title": "Pedidos recentes",
+        "empty": "Pedidos feitos no Marketplace aparecem aqui em tempo real.",
+        "metaTemplateSingular": "{count} pedido · mais recente primeiro",
+        "metaTemplatePlural": "{count} pedidos · mais recentes primeiro",
+        "emptyTitle": "Ainda sem pedidos",
+        "emptyBody": "Faça seu primeiro pedido no HenryCo Marketplace — status do pedido, status de pagamento e qualquer follow-up chegam aqui automaticamente.",
+        "ariaLabel": "Pedidos recentes"
+      },
+      "activity": {
+        "title": "Atividade recente",
+        "empty": "Atualizações de status, pagamentos e avaliações são refletidos aqui em tempo real.",
+        "metaTemplateSingular": "{count} atualização · mais recente primeiro",
+        "metaTemplatePlural": "{count} atualizações · mais recentes primeiro",
+        "emptyTitle": "Ainda sem atividade de marketplace",
+        "emptyBody": "Confirmações de pedido, novidades de disputas e resultados de repasses ao vendedor aparecerão aqui em tempo real.",
+        "ariaLabel": "Atividade do Marketplace"
+      }
+    },
+    "matters": {
+      "disputes": {
+        "kicker": "Disputas",
+        "titleTemplateSingular": "{count} caso requer ação",
+        "titleTemplatePlural": "{count} casos requerem ação",
+        "bodyLatestTemplate": "Último: {ref} · atualizado {stamp}",
+        "bodyFallback": "Abra a fila para adicionar evidências.",
+        "cta": "Revisar casos"
+      },
+      "application": {
+        "kicker": "Solicitação de vendedor",
+        "bodyWithStoreTemplate": "Loja: {name}",
+        "bodyDefault": "Solicitação na fila de análise do HenryCo.",
+        "bodyReviewSuffixTemplate": " · {note}",
+        "cta": "Ver status",
+        "defaultStatus": "enviada"
+      },
+      "payouts": {
+        "kicker": "Repasses em análise",
+        "titleTemplate": "{amount} pendente",
+        "bodyTemplateSingular": "{count} solicitação aguardando verificação financeira.",
+        "bodyTemplatePlural": "{count} solicitações aguardando verificação financeira.",
+        "cta": "Abrir espaço do vendedor"
+      }
+    },
+    "orders": {
+      "rowTitleTemplate": "Pedido {orderNo}",
+      "rowSubTemplate": "{amount} · feito {stamp}",
+      "rowAriaLabelTemplate": "Pedido {orderNo} · {status}",
+      "statusFallbackDraft": "Rascunho"
+    },
+    "statusValueLabels": {
+      "delivered": "Entregue",
+      "completed": "Concluído",
+      "customer_confirmed": "Confirmado pelo cliente",
+      "fulfilled": "Cumprido",
+      "cancelled": "Cancelado",
+      "refunded": "Reembolsado",
+      "disputed": "Em disputa",
+      "exception": "Exceção",
+      "placed": "Feito",
+      "paid": "Pago",
+      "awaiting_fulfilment": "Aguardando envio",
+      "confirmed": "Confirmado",
+      "queued": "Na fila"
+    },
+    "applicationStatusLabels": {
+      "submitted": "enviada",
+      "under_review": "em análise",
+      "approved": "aprovada",
+      "rejected": "rejeitada",
+      "pending_documents": "documentos pendentes",
+      "changes_requested": "alterações solicitadas"
+    },
+    "formatLabels": {
+      "dash": "—"
     }
   }
 };
@@ -3826,5 +4498,171 @@ export const ACCOUNT_COPY_AR = {
       "bathPlural": "حمامات",
       "sizeSqmTemplate": "{size} م²"
     }
+  },
+  "divisionJobs": {
+    "metadata": {
+      "title": "الوظائف · لوحة المرشح",
+      "description": "تابع كل طلب توظيف عبر HenryCo Jobs ووظيفة محفوظة وتحديث من المسؤول عن التوظيف ومؤشر جاهزية ملف مرتبط بهذا الحساب."
+    },
+    "header": {
+      "title": "الوظائف",
+      "description": "طلباتك ووظائفك المحفوظة وتحديثات المسؤولين عن التوظيف وقوة ملفك — كلها في مكان واحد.",
+      "candidateModuleCta": "وحدة المرشح",
+      "interviewRoomsCta": "غرف المقابلات",
+      "browseLiveRolesCta": "تصفح الوظائف النشطة"
+    },
+    "hero": {
+      "eyebrow": "حسابك",
+      "headline": "نشاطك الوظيفي، كله في مكان واحد.",
+      "body": "الطلبات والوظائف المحفوظة وتحديثات المسؤولين عن التوظيف وجاهزية الملف مرتبطة بحسابك في HenryCo.",
+      "statsAriaLabel": "ملخص نشاط الوظائف",
+      "statLabels": {
+        "applications": "الطلبات النشطة",
+        "saved": "الوظائف المحفوظة",
+        "readiness": "جاهزية الملف",
+        "updates": "تحديثات المسؤولين عن التوظيف"
+      },
+      "statDetails": {
+        "applicationsLeadingTemplate": "{stage} هي مرحلتك النشطة الرئيسية.",
+        "applicationsEmpty": "لا توجد طلبات نشطة بعد.",
+        "savedSome": "قائمتك جاهزة لمراجعة إضافية.",
+        "savedEmpty": "ابنِ قائمة لتسهيل العثور على الوظائف الجيدة مرة أخرى.",
+        "updatesLatestTemplate": "{relative} آخر حركة.",
+        "updatesEmpty": "لا توجد تحديثات من المسؤولين عن التوظيف بعد."
+      }
+    },
+    "sections": {
+      "nextActionsKicker": "الإجراءات التالية",
+      "nextActionsTitle": "ما يستحق اهتمامك الآن",
+      "openTimelineCta": "فتح الجدول الزمني",
+      "applicationsKicker": "الطلبات",
+      "applicationsTitle": "حركة التوظيف المباشرة",
+      "savedKicker": "الوظائف المحفوظة",
+      "savedTitle": "قائمة بسياق أوضح",
+      "openSavedRolesCta": "فتح الوظائف المحفوظة",
+      "recommendedKicker": "الوظائف المُقترحة",
+      "recommendedTitle": "ما يلائم إشارتك الحالية",
+      "browseCatalogCta": "تصفح الفهرس",
+      "recruiterFeedKicker": "موجز المسؤولين عن التوظيف",
+      "recruiterFeedTitle": "الرسائل وتغييرات المراحل والتنبيهات",
+      "candidateInboxCta": "صندوق المرشح",
+      "profileKicker": "قوة الملف",
+      "profileTitle": "جاهزية المرشح وجودة السيرة الذاتية",
+      "sharedInboxKicker": "الصندوق المشترك",
+      "sharedInboxTitle": "إشعارات Jobs المرتبطة بحسابك",
+      "alertsKicker": "التنبيهات",
+      "alertsTitle": "نية البحث المحفوظة"
+    },
+    "empty": {
+      "applicationsTitle": "لا توجد طلبات نشطة بعد",
+      "applicationsBody": "ستظهر الوظائف المحفوظة وتحديثات المسؤولين عن التوظيف والجداول الزمنية هنا فور انتقالك من التصفح إلى طلب نشط.",
+      "exploreJobsCta": "استكشاف الوظائف",
+      "savedJobsTitle": "لا توجد وظائف محفوظة بعد",
+      "savedJobsBody": "احفظ الوظائف الواعدة لإبقائها في قائمتك بين Jobs وحسابك.",
+      "recommendedTitle": "ستصبح التوصيات أدق مع استخدام Jobs",
+      "recommendedBody": "كلما تعمّق ملفك وقائمتك وطلباتك، أصبحت اقتراحات الوظائف هنا أكثر استهدافًا.",
+      "recruiterFeedTitle": "لا توجد حركة من المسؤولين عن التوظيف بعد",
+      "recruiterFeedBody": "ستتجمع هنا تغييرات مراحل الطلبات وملاحظات المسؤولين عن التوظيف المشتركة وإشعارات Jobs داخل التطبيق.",
+      "notificationsTitle": "لا توجد إشعارات Jobs بعد",
+      "notificationsBody": "ستصل هنا وفي وحدة Jobs الحركات القادمة في القائمة وتحديثات أصحاب العمل وتغييرات الطلبات.",
+      "alertsTitle": "لا توجد تنبيهات Jobs نشطة",
+      "alertsBody": "أنشئ تنبيهًا لتظهر الوظائف الجديدة المطابقة لمعاييرك في موجز Jobs الخاص بك.",
+      "browseRolesCta": "تصفح الوظائف"
+    },
+    "application": {
+      "progressPercentTemplate": "اكتمل {percent}%",
+      "appliedAtTemplate": "قُدّم في {date}",
+      "candidateReadiness": "جاهزية المرشح",
+      "recruiterConfidence": "ثقة المسؤول عن التوظيف",
+      "latestMovement": "آخر حركة من المسؤول عن التوظيف",
+      "nextBestMove": "الخطوة المثلى التالية",
+      "openTimelineCta": "فتح الجدول الزمني",
+      "interviewRoomCta": "غرفة المقابلة",
+      "viewRoleCta": "عرض الوظيفة"
+    },
+    "savedJob": {
+      "trustTemplate": "ثقة {score}",
+      "savedAtTemplate": "حُفظ في {date}"
+    },
+    "recommended": {
+      "compFallback": "يُناقش الأجر خلال العملية"
+    },
+    "stageLabels": {
+      "applied": "قُدّم",
+      "reviewing": "قيد المراجعة",
+      "shortlisted": "مُختار في القائمة القصيرة",
+      "interview": "مقابلة",
+      "offer": "عرض",
+      "hired": "تم التعيين",
+      "rejected": "مرفوض"
+    },
+    "nextStep": {
+      "labels": {
+        "applied": "حافظ على ملفك وسيرتك الذاتية محدّثَين",
+        "shortlisted": "جهّز الأدلة وسياق ملف الأعمال",
+        "interview": "جهّز الأمثلة ونوافذ الجدولة",
+        "offer": "راجع النطاق والتوقيت والأجر",
+        "rejected": "عزّز حزمة الطلب التالية"
+      },
+      "bodies": {
+        "applied": "في المراحل المبكرة تساعد الأدلة الأوضح ومعلومات الاتصال النظيفة والسيرة الذاتية الحديثة.",
+        "shortlisted": "الاختيار في القائمة القصيرة يعني أنك تجاوزت أول فحص للإشارات. الأدلة الدقيقة هي ما يهم الآن.",
+        "interview": "تتقدم مراحل المقابلة أسرع عندما تكون أفضل أدلة عملك وتوافرك سهلة المعاينة.",
+        "offer": "استخدم مرحلة العرض لإزالة الغموض، لا للتخمين في المسؤوليات.",
+        "rejected": "تعامل مع الرفض كإشارة. ادعم الملخص والأمثلة وملاءمة الدور قبل التقديم مجددًا."
+      }
+    },
+    "readinessLabels": {
+      "interviewReady": "جاهز للمقابلة",
+      "strongProfile": "ملف قوي",
+      "needsProof": "يحتاج أدلة",
+      "needsStructure": "يحتاج بنية"
+    },
+    "workModeLabels": {
+      "remote": "عن بُعد",
+      "hybrid": "هجين",
+      "onsite": "في الموقع"
+    },
+    "employmentTypeLabels": {
+      "fullTime": "دوام كامل",
+      "partTime": "دوام جزئي",
+      "contract": "عقد",
+      "internship": "تدريب",
+      "temporary": "مؤقت"
+    },
+    "profile": {
+      "readinessLabel": "الجاهزية",
+      "skillsMappedLabel": "المهارات المُرسَّمة",
+      "filesLabel": "الملفات",
+      "improveProfileCta": "تحسين الملف",
+      "openCandidateModuleCta": "فتح وحدة المرشح",
+      "checklist": {
+        "identityLabel": "أساسيات الملف",
+        "identityDetail": "الاسم الكامل والهاتف والموقع متوفرة لمتابعة المسؤول عن التوظيف.",
+        "storyLabel": "قصة الدور",
+        "storyDetail": "العنوان والملخص يوضحان ما تفعله أبعد من سجل فارغ.",
+        "verificationLabel": "التحقق من الهوية",
+        "verificationDetail": "تبقى ثقة Jobs محدودة إلى أن يجتاز حساب HenryCo مراجعة الهوية.",
+        "proofLabel": "أدلة العمل",
+        "proofDetail": "السيرة الذاتية مع أدلة ملف الأعمال تسهّل التقدم في الاختيار للقائمة القصيرة.",
+        "skillsLabel": "المهارات المُرسَّمة",
+        "skillsDetail": "أربع مهارات على الأقل والوظائف المفضّلة تُحسّن التوصيات."
+      }
+    },
+    "nextActions": {
+      "gapTemplate": "أغلق فجوة {label}",
+      "interviewLabel": "تحضّر لمسار مقابلة",
+      "offerLabel": "ردّ على عرض نشط",
+      "attentionTemplate": "{title} لدى {employer} يحتاج اهتمامك الآن.",
+      "convertSavedLabel": "حوّل وظيفة محفوظة إلى طلب نشط",
+      "convertSavedTemplate": "{title} موجود فعلًا في قائمتك وجاهز لمراجعة أعمق.",
+      "restartLabel": "أعد تشغيل بحثك بفلاتر أكثر صرامة",
+      "restartDetail": "استخدم فلاتر أصحاب العمل الموثّقين والوظائف الداخلية لبناء قائمة أنظف بسرعة."
+    },
+    "alertStatus": {
+      "active": "نشط",
+      "paused": "متوقف"
+    },
+    "recruiterUpdateTitleTemplate": "تحديث {stage}"
   }
 };
