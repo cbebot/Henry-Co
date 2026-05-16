@@ -1141,6 +1141,57 @@ const DE: DeepPartial<CareCopy> = {
     homeCleaning: "Hausreinigung",
     officeCleaning: "Büroreinigung",
   },
+  staffManager: {
+    metadata: {
+      title: "Manager-Dashboard | Henry & Co. Fabric Care",
+      description:
+        "Manager-Befehlsdashboard für Annahme, Live-Betrieb, Eingänge und Ausgabenkontrolle.",
+    },
+    hero: {
+      eyebrow: "Manager-Operationsraum",
+      title: "Den Tag steuern. Die Aufzeichnungen wahrheitsgetreu halten.",
+      body: "Dies ist die Live-Steuerungsebene des Managers. Annahme, preisgestützte Registrierung, Statusbewegungen, Zahlungserfassung und tägliche Ausgaben sollten von hier aus ohne Verwirrung gehandhabt werden.",
+    },
+    quickLinks: {
+      openOperations: "Betrieb öffnen",
+      openExpenses: "Ausgaben öffnen",
+      trackingPage: "Tracking-Seite",
+      createWalkIn: "Laufkundschafts-Buchung erstellen",
+    },
+    metrics: {
+      activeBookings: { label: "Aktive Buchungen", note: "Aktuelle Live-Arbeitslast" },
+      urgentQueue: { label: "Dringende Warteschlange", note: "Benötigt schnelle Aufmerksamkeit" },
+      registeredPieces: { label: "Registrierte Stücke", note: "Preisgestützte Artikel-Aufzeichnungen" },
+      recordedInflow: { label: "Erfasster Zufluss", note: "Geld zu Buchungen erfasst" },
+      pendingExpenses: { label: "Ausstehende Ausgaben", note: "Wartet auf Inhaber-Prüfung" },
+    },
+    urgentPanel: {
+      eyebrow: "Priorität",
+      title: "Dringende Buchungen",
+      subtitle: "Dies sind die Aufträge, die der Manager nicht ignorieren sollte.",
+      noSlot: "Kein Slot",
+      openBooking: "Buchung öffnen",
+      empty: "Im Moment keine dringenden Buchungen.",
+    },
+    pressurePanel: {
+      eyebrow: "Manager-Wahrheitschecks",
+      title: "Operative Druckpunkte",
+      subtitle: "Diese Indikatoren helfen dem Manager, verborgene Fehler zu stoppen, bevor sie zu Unternehmensproblemen werden.",
+      missingIntake: {
+        label: "Kleidungsstückbuchungen ohne Annahme",
+        note: "Nur Kleidungsstückbuchungen sollten hier gekennzeichnet werden. Servicebuchungen werden separat verfolgt.",
+      },
+      approvedExpenses: {
+        label: "Genehmigte Ausgaben",
+        note: "Diese Kosten wurden bereits in der Inhaber-Prüfung akzeptiert.",
+      },
+      overallBalance: {
+        label: "Gesamtsaldo",
+        flowTemplate: "{inflow} ein • {outflow} aus",
+      },
+    },
+    dash: "—",
+  },
 };
 
 const ZH: DeepPartial<CareCopy> = {
@@ -1209,6 +1260,56 @@ const ZH: DeepPartial<CareCopy> = {
     alterations: "修改",
     homeCleaning: "家庭清洁",
     officeCleaning: "办公室清洁",
+  },
+  staffManager: {
+    metadata: {
+      title: "经理仪表板 | Henry & Co. Fabric Care",
+      description: "经理指挥仪表板，用于收件、实时运营、收入和支出管理。",
+    },
+    hero: {
+      eyebrow: "经理运营室",
+      title: "管好每一天。如实记录数据。",
+      body: "这是经理的实时控制层。收件、价格支撑的登记、状态推进、付款记录和日常支出都应在此处毫不混乱地处理。",
+    },
+    quickLinks: {
+      openOperations: "打开运营",
+      openExpenses: "打开支出",
+      trackingPage: "追踪页面",
+      createWalkIn: "创建临时预订",
+    },
+    metrics: {
+      activeBookings: { label: "活跃预订", note: "当前实时工作量" },
+      urgentQueue: { label: "紧急队列", note: "需要立即关注" },
+      registeredPieces: { label: "已登记件数", note: "价格支撑的物品记录" },
+      recordedInflow: { label: "已记录收入", note: "已对应预订记账的款项" },
+      pendingExpenses: { label: "待处理支出", note: "等待业主审核" },
+    },
+    urgentPanel: {
+      eyebrow: "优先级",
+      title: "紧急预订",
+      subtitle: "这些是经理不能忽视的工作。",
+      noSlot: "无时段",
+      openBooking: "打开预订",
+      empty: "目前没有紧急预订。",
+    },
+    pressurePanel: {
+      eyebrow: "经理真相检查",
+      title: "运营压力点",
+      subtitle: "这些指标帮助经理在隐藏错误演变为公司问题之前及时阻止。",
+      missingIntake: {
+        label: "缺少收件的衣物预订",
+        note: "此处只应标记衣物预订。服务预订单独追踪。",
+      },
+      approvedExpenses: {
+        label: "已批准支出",
+        note: "这些费用已在业主审核中获得批准。",
+      },
+      overallBalance: {
+        label: "总体余额",
+        flowTemplate: "{inflow} 入 • {outflow} 出",
+      },
+    },
+    dash: "—",
   },
 };
 
@@ -1279,6 +1380,57 @@ const HI: DeepPartial<CareCopy> = {
     homeCleaning: "घर की सफाई",
     officeCleaning: "कार्यालय सफाई",
   },
+  staffManager: {
+    metadata: {
+      title: "मैनेजर डैशबोर्ड | Henry & Co. Fabric Care",
+      description:
+        "इनटेक, लाइव संचालन, आवक और व्यय नियंत्रण के लिए मैनेजर कमांड डैशबोर्ड।",
+    },
+    hero: {
+      eyebrow: "मैनेजर संचालन कक्ष",
+      title: "दिन को संभालें। रिकॉर्ड को सच्चा रखें।",
+      body: "यह मैनेजर की लाइव नियंत्रण परत है। इनटेक, मूल्य-समर्थित पंजीकरण, स्थिति परिवर्तन, भुगतान कैप्चर और दैनिक व्यय सब कुछ यहीं से बिना भ्रम के संभाला जाना चाहिए।",
+    },
+    quickLinks: {
+      openOperations: "संचालन खोलें",
+      openExpenses: "व्यय खोलें",
+      trackingPage: "ट्रैकिंग पृष्ठ",
+      createWalkIn: "वॉक-इन बुकिंग बनाएँ",
+    },
+    metrics: {
+      activeBookings: { label: "सक्रिय बुकिंग", note: "वर्तमान लाइव कार्यभार" },
+      urgentQueue: { label: "अत्यावश्यक कतार", note: "त्वरित ध्यान की आवश्यकता" },
+      registeredPieces: { label: "पंजीकृत वस्तुएँ", note: "मूल्य-समर्थित आइटम रिकॉर्ड" },
+      recordedInflow: { label: "दर्ज आवक", note: "बुकिंग के विरुद्ध दर्ज धन" },
+      pendingExpenses: { label: "लंबित व्यय", note: "मालिक की समीक्षा का इंतज़ार" },
+    },
+    urgentPanel: {
+      eyebrow: "प्राथमिकता",
+      title: "अत्यावश्यक बुकिंग",
+      subtitle: "ये वे काम हैं जिन्हें मैनेजर को नज़रअंदाज़ नहीं करना चाहिए।",
+      noSlot: "कोई स्लॉट नहीं",
+      openBooking: "बुकिंग खोलें",
+      empty: "अभी कोई अत्यावश्यक बुकिंग नहीं।",
+    },
+    pressurePanel: {
+      eyebrow: "मैनेजर सत्यता जाँच",
+      title: "संचालन दबाव बिंदु",
+      subtitle: "ये संकेतक मैनेजर को छिपी हुई गलतियों को कंपनी की समस्याओं में बदलने से पहले रोकने में मदद करते हैं।",
+      missingIntake: {
+        label: "इनटेक से वंचित वस्त्र बुकिंग",
+        note: "केवल वस्त्र बुकिंग को यहाँ चिह्नित किया जाना चाहिए। सेवा बुकिंग अलग से ट्रैक की जाती है।",
+      },
+      approvedExpenses: {
+        label: "स्वीकृत व्यय",
+        note: "इन लागतों को मालिक की समीक्षा द्वारा पहले ही स्वीकार किया जा चुका है।",
+      },
+      overallBalance: {
+        label: "कुल शेष",
+        flowTemplate: "{inflow} आवक • {outflow} जावक",
+      },
+    },
+    dash: "—",
+  },
 };
 
 const IT: DeepPartial<CareCopy> = {
@@ -1347,7 +1499,58 @@ const IT: DeepPartial<CareCopy> = {
     "alterations": "Alterazioni",
     "homeCleaning": "Pulizia della casa",
     "officeCleaning": "Pulizia dell'ufficio"
-  }
+  },
+  staffManager: {
+    metadata: {
+      title: "Dashboard del Manager | Henry & Co. Fabric Care",
+      description:
+        "Dashboard di comando del manager per accettazione, operazioni in tempo reale, entrate e controllo delle spese.",
+    },
+    hero: {
+      eyebrow: "Sala operativa del manager",
+      title: "Gestisci la giornata. Mantieni i registri veritieri.",
+      body: "Questo è il livello di controllo in tempo reale del manager. Accettazione, registrazione supportata dai prezzi, avanzamento dello stato, registrazione dei pagamenti e spese quotidiane devono essere gestiti tutti da qui senza confusione.",
+    },
+    quickLinks: {
+      openOperations: "Apri operazioni",
+      openExpenses: "Apri spese",
+      trackingPage: "Pagina di monitoraggio",
+      createWalkIn: "Crea prenotazione walk-in",
+    },
+    metrics: {
+      activeBookings: { label: "Prenotazioni attive", note: "Carico di lavoro attuale in tempo reale" },
+      urgentQueue: { label: "Coda urgente", note: "Richiede attenzione rapida" },
+      registeredPieces: { label: "Pezzi registrati", note: "Registrazioni di articoli supportate dai prezzi" },
+      recordedInflow: { label: "Entrate registrate", note: "Denaro registrato sulle prenotazioni" },
+      pendingExpenses: { label: "Spese in sospeso", note: "In attesa della revisione del proprietario" },
+    },
+    urgentPanel: {
+      eyebrow: "Priorità",
+      title: "Prenotazioni urgenti",
+      subtitle: "Questi sono i lavori che il manager non deve ignorare.",
+      noSlot: "Nessuno slot",
+      openBooking: "Apri prenotazione",
+      empty: "Nessuna prenotazione urgente al momento.",
+    },
+    pressurePanel: {
+      eyebrow: "Verifiche di verità del manager",
+      title: "Punti di pressione operativi",
+      subtitle: "Questi indicatori aiutano il manager a fermare errori nascosti prima che diventino problemi aziendali.",
+      missingIntake: {
+        label: "Prenotazioni di capi senza accettazione",
+        note: "Solo le prenotazioni di capi devono essere segnalate qui. Le prenotazioni di servizio sono tracciate separatamente.",
+      },
+      approvedExpenses: {
+        label: "Spese approvate",
+        note: "Questi costi sono già stati accettati nella revisione del proprietario.",
+      },
+      overallBalance: {
+        label: "Saldo complessivo",
+        flowTemplate: "{inflow} in entrata • {outflow} in uscita",
+      },
+    },
+    dash: "—",
+  },
 };
 
 const LOCALE_OVERRIDES: Partial<Record<AppLocale, DeepPartial<CareCopy>>> = {
