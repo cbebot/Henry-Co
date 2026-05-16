@@ -1,26 +1,41 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, KeySquare, ShieldCheck } from "lucide-react";
+import { getLearnTrustCopy } from "@henryco/i18n/server";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 
-export const metadata = { title: "Trust - HenryCo Learn" };
+export async function generateMetadata() {
+  const locale = await getLearnPublicLocale();
+  const copy = getLearnTrustCopy(locale);
+  return { title: copy.meta.title };
+}
 
-export default function TrustPage() {
+export default async function TrustPage() {
+  const locale = await getLearnPublicLocale();
+  const copy = getLearnTrustCopy(locale);
+
   const pillars = [
     {
       icon: ShieldCheck,
-      title: "Enrollment & access",
-      body: "Starting a course, paying where required, and unlocking lessons happen through secure workflows. You can’t “fake” completion from the client side.",
+      title: copy.pillars.enrollmentTitle,
+      body: copy.pillars.enrollmentBody,
     },
     {
       icon: KeySquare,
-      title: "Internal & assigned training",
-      body: "Some programs are visible only to invited staff or partners. Those rules are enforced the same way as the rest of the academy — not by hoping people stay on the right URL.",
+      title: copy.pillars.internalTitle,
+      body: copy.pillars.internalBody,
     },
     {
       icon: BadgeCheck,
-      title: "Certificates & verification",
-      body: "When you earn a credential, we issue a record you can download and a code third parties can check. That’s the difference between decoration and proof.",
+      title: copy.pillars.certificatesTitle,
+      body: copy.pillars.certificatesBody,
     },
   ] as const;
+
+  const asideItems = [
+    { label: copy.hero.asideRecordsLabel, value: copy.hero.asideRecordsValue },
+    { label: copy.hero.asideAccessLabel, value: copy.hero.asideAccessValue },
+    { label: copy.hero.asideCredentialsLabel, value: copy.hero.asideCredentialsValue },
+  ];
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
@@ -28,38 +43,32 @@ export default function TrustPage() {
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
-              Trust &amp; safety
+              {copy.hero.eyebrow}
             </p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-              Learning records you can rely on.
+              {copy.hero.title}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
-              Enrollments, progress, quizzes, and certificates are handled on the server &mdash;
-              not hidden in a browser. Internal courses stay restricted to the right people;
-              certificates carry a verification code anyone can check.
+              {copy.hero.body}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/courses"
                 className="learn-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Browse the catalog
+                {copy.hero.ctaPrimary}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/certifications/verify"
                 className="learn-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Verify a certificate
+                {copy.hero.ctaSecondary}
               </Link>
             </div>
           </div>
           <ul className="grid gap-3 text-sm">
-            {[
-              { label: "Records", value: "Server-side, not browser-side" },
-              { label: "Access control", value: "Public · staff · partners" },
-              { label: "Credentials", value: "Downloadable + publicly verifiable" },
-            ].map((item) => (
+            {asideItems.map((item) => (
               <li
                 key={item.label}
                 className="flex items-baseline gap-3 border-b border-[var(--learn-line)] py-3 last:border-b-0"
@@ -78,7 +87,7 @@ export default function TrustPage() {
 
       <section className="mt-16">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
-          Three operating standards
+          {copy.pillars.sectionEyebrow}
         </p>
         <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[var(--learn-line)]">
           {pillars.map((item, i) => {
@@ -100,15 +109,13 @@ export default function TrustPage() {
         <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
-              Where to next
+              {copy.footer.eyebrow}
             </p>
             <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.85rem]">
-              Verify a credential, or start a program built to be checkable.
+              {copy.footer.title}
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--learn-ink-soft)]">
-              Anyone can verify a HenryCo certificate from its code &mdash; no account required.
-              Learners get the same standard of proof whether the program is public, assigned, or
-              partner-only.
+              {copy.footer.body}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
@@ -116,14 +123,14 @@ export default function TrustPage() {
               href="/certifications/verify"
               className="learn-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Verify a certificate
+              {copy.footer.ctaPrimary}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/certifications"
               className="learn-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Certificate programs
+              {copy.footer.ctaSecondary}
             </Link>
           </div>
         </div>
