@@ -82,6 +82,7 @@ export type AccountCopy = {
     viewTaskQueue: string;
     smartRecommendations: string;
     smartRecommendationsEmpty: string;
+    smartHomeEmptyFallback: string;
     recommendationReason: string;
     recentActivity: string;
     noRecentActivity: string;
@@ -122,6 +123,12 @@ export type AccountCopy = {
       high: string;
       urgent: string;
     };
+    priorityFallback: {
+      low: string;
+      normal: string;
+      high: string;
+      urgent: string;
+    };
     taskTitles: {
       trust: string;
       walletFunding: string;
@@ -134,10 +141,75 @@ export type AccountCopy = {
       support: string;
       notifications: string;
     };
+    eyebrow: string;
+    guidanceTitle: string;
+    overviewAria: string;
+    volumeAria: string;
+    pendingAria: string;
+    sideAria: string;
+    bySource: string;
+    openTotalLabel: string;
+    nothingBlocking: string;
+    resolveBlockers: string;
+    routine: string;
+    divisionRepresentedSingular: string;
+    divisionRepresentedPlural: string;
+    headlineEmpty: string;
+    headlineBlockerSingular: string;
+    headlineBlockerPlural: string;
+    headlineUrgentSingular: string;
+    headlineUrgentPlural: string;
+    headlineActiveSingular: string;
+    headlineActivePlural: string;
+    headlineCalmSingular: string;
+    headlineCalmPlural: string;
+    blurbEmpty: string;
+    blurbRisk: string;
+    blurbActive: string;
+    metaEmpty: string;
+    metaCount: string;
   };
   security: {
     title: string;
     description: string;
+    heroAriaLabel: string;
+    hero: {
+      trustScoreLabel: string;
+      nextTierPrefix: string;
+      nextTierAriaTemplate: string;
+      accountActiveSingularTemplate: string;
+      accountActivePluralTemplate: string;
+      flaggedEventsSingularTemplate: string;
+      flaggedEventsPluralTemplate: string;
+      statusEyebrow: {
+        secure: string;
+        watch: string;
+        risk: string;
+      };
+      statusHeadline: {
+        secure: string;
+        watch: string;
+        risk: string;
+      };
+      statusBlurb: {
+        secure: string;
+        watch: string;
+        risk: string;
+      };
+    };
+    signalsTitle: string;
+    signalsMeta: string;
+    signalsAriaLabel: string;
+    guideTitle: string;
+    guideMetaTemplate: string;
+    allLanesOpen: string;
+    accountActionsTitle: string;
+    accountActionsMeta: string;
+    changePasswordTitle: string;
+    signOutEverywhereTitle: string;
+    suspiciousEventFoot: string;
+    noSuspiciousEventFoot: string;
+    activityAriaLabel: string;
     trustProfile: string;
     trustDescription: string;
     trustScore: string;
@@ -1975,6 +2047,37 @@ export type AccountCopy = {
       fallbackTitle: string;
     };
   };
+  settings: {
+    pageTitle: string;
+    pageDescription: string;
+    profileSectionKicker: string;
+    notificationsSectionKicker: string;
+  };
+  addresses: {
+    metadata: { title: string; description: string };
+    hero: { title: string; description: string };
+    card: {
+      defaultBadge: string;
+      kycVerifiedBadge: string;
+      setDefaultCta: string;
+      editCta: string;
+      deleteCta: string;
+      addressSeparator: string;
+    };
+    deleteConfirm: { prompt: string; confirmCta: string; cancelCta: string };
+    empty: { body: string };
+    add: {
+      cta: string;
+      formTitle: string;
+      editFormTitleTemplate: string;
+      maxedNoticeTemplate: string;
+    };
+  };
+  search: {
+    metadata: { title: string; description: string };
+    hero: { title: string; description: string };
+    placeholder: string;
+  };
 };
 
 const EN: AccountCopy = {
@@ -2059,6 +2162,8 @@ const EN: AccountCopy = {
     smartRecommendations: "Smart Recommendations",
     smartRecommendationsEmpty:
       "Keep using HenryCo services and recommendations will adapt to your activity.",
+    smartHomeEmptyFallback:
+      "Welcome — start with a small first step. Your live signals will appear here as soon as activity lands.",
     recommendationReason:
       "Suggested from your account activity and trust state ({confidence} confidence)",
     recentActivity: "Recent Activity",
@@ -2116,11 +2221,91 @@ const EN: AccountCopy = {
       support: "Open support conversations still need your attention.",
       notifications: "Unread updates are waiting for review.",
     },
+    priorityFallback: {
+      low: "Quiet",
+      normal: "Routine",
+      high: "High",
+      urgent: "Urgent",
+    },
+    eyebrow: "Action queue · live",
+    guidanceTitle: "One queue, every division.",
+    overviewAria: "Tasks overview",
+    volumeAria: "Task volume",
+    pendingAria: "Pending tasks",
+    sideAria: "How the queue works",
+    bySource: "By source",
+    openTotalLabel: "Open total",
+    nothingBlocking: "Nothing blocking right now",
+    resolveBlockers: "Resolve to unblock other lanes",
+    routine: "routine",
+    divisionRepresentedSingular: "{count} division represented",
+    divisionRepresentedPlural: "{count} divisions represented",
+    headlineEmpty: "Nothing in the queue.",
+    headlineBlockerSingular: "{count} blocker needs clearing.",
+    headlineBlockerPlural: "{count} blockers need clearing.",
+    headlineUrgentSingular: "{count} urgent task to clear.",
+    headlineUrgentPlural: "{count} urgent tasks to clear.",
+    headlineActiveSingular: "{count} task to work through.",
+    headlineActivePlural: "{count} tasks to work through.",
+    headlineCalmSingular: "{count} item on your queue.",
+    headlineCalmPlural: "{count} items on your queue.",
+    blurbEmpty:
+      "Your account is in order — verification, payouts, and review-sensitive lanes are all clear. We'll surface the next move here automatically when it shows up.",
+    blurbRisk:
+      "These items gate higher-trust actions across HenryCo — wallet withdrawals, marketplace seller approval, employer verification. Clearing them unblocks each lane.",
+    blurbActive:
+      "Each row routes you to the next action with one tap. Filters, priority chips, and deeplinks are kept consistent across every HenryCo division.",
+    metaEmpty: "You're clear. Anything new will appear here as it arrives.",
+    metaCount: "{count} open · sorted by priority and blocking state.",
   },
   security: {
     title: "Security",
     description:
       "Review recent security activity, change your password, and end HenryCo sessions when needed.",
+    heroAriaLabel: "Security overview",
+    hero: {
+      trustScoreLabel: "Trust score",
+      nextTierPrefix: "Next ·",
+      nextTierAriaTemplate: "Next tier {tier}",
+      accountActiveSingularTemplate: "Account active {days} day",
+      accountActivePluralTemplate: "Account active {days} days",
+      flaggedEventsSingularTemplate:
+        "{count} flagged event on file · review below",
+      flaggedEventsPluralTemplate:
+        "{count} flagged events on file · review below",
+      statusEyebrow: {
+        secure: "Security & access · secure",
+        watch: "Security & access · action recommended",
+        risk: "Security & access · risk flagged",
+      },
+      statusHeadline: {
+        secure: "Your account is secure.",
+        watch: "A couple of moves will tighten your account.",
+        risk: "We've flagged activity that needs your eyes.",
+      },
+      statusBlurb: {
+        secure:
+          "No suspicious events, verification is healthy, and every higher-trust action HenryCo offers is open to you.",
+        watch:
+          "Nothing is broken — but a few signals (email confirmation, identity review, duplicate contact match) would lift your trust score and unlock more lanes.",
+        risk:
+          "Recent events were classified as elevated risk. Review the activity stream below and rotate your password if anything looks unfamiliar.",
+      },
+    },
+    signalsTitle: "Signals",
+    signalsMeta:
+      "What our verification + scoring engines see on your account right now.",
+    signalsAriaLabel: "Security signals",
+    guideTitle: "Where you are · what advances you",
+    guideMetaTemplate: "Honest scoring, not a marketing number. {tier}.",
+    allLanesOpen: "All lanes open",
+    accountActionsTitle: "Account actions",
+    accountActionsMeta: "Routine controls you own directly.",
+    changePasswordTitle: "Change your password",
+    signOutEverywhereTitle: "Sign out everywhere",
+    suspiciousEventFoot: "Review the activity stream below.",
+    noSuspiciousEventFoot: "Nothing flagged in the last review window.",
+    activityAriaLabel: "Recent security events",
     trustProfile: "Trust Profile",
     trustDescription:
       "Trust is operational across the account. It now controls higher-value business actions, moderation posture, and stronger eligibility across HenryCo modules.",
@@ -4033,6 +4218,61 @@ const EN: AccountCopy = {
       fallbackTitle: "Learn activity",
     },
   },
+  settings: {
+    pageTitle: "Settings & Preferences",
+    pageDescription:
+      "Manage your profile, communication preferences, privacy controls, and manual data request paths.",
+    profileSectionKicker: "Profile Information",
+    notificationsSectionKicker: "Notification Preferences",
+  },
+  addresses: {
+    metadata: {
+      title: "Addresses",
+      description:
+        "Manage your saved addresses (home, office, shop…) — used across delivery, bookings, and KYC verification.",
+    },
+    hero: {
+      title: "Addresses",
+      description:
+        "Manage your saved addresses (home, office, shop…) — used across delivery, bookings, and KYC verification.",
+    },
+    card: {
+      defaultBadge: "Default",
+      kycVerifiedBadge: "KYC verified",
+      setDefaultCta: "Set default",
+      editCta: "Edit",
+      deleteCta: "Delete",
+      addressSeparator: ", ",
+    },
+    deleteConfirm: {
+      prompt: "Delete this address? This cannot be undone.",
+      confirmCta: "Delete",
+      cancelCta: "Cancel",
+    },
+    empty: {
+      body:
+        "You haven't added any addresses yet. Add your first one to enable faster checkout across HenryCo.",
+    },
+    add: {
+      cta: "Add address",
+      formTitle: "Add a new address",
+      editFormTitleTemplate: "Edit {label}",
+      maxedNoticeTemplate:
+        "You've added the maximum of {count} address types (home, office, shop, warehouse, alternative 1, alternative 2). Edit or delete one to add a different address.",
+    },
+  },
+  search: {
+    metadata: {
+      title: "Search Account",
+      description: "Search HenryCo account workflows and connected division routes.",
+    },
+    hero: {
+      title: "Search your HenryCo workflows.",
+      description:
+        "Jump directly to exact account actions and connected division routes without falling back to generic dashboards.",
+    },
+    placeholder: "Search account: notifications, wallet, invoices, support, jobs applications...",
+  },
 };
 
 const FR: DeepPartial<AccountCopy> = {
@@ -4120,6 +4360,8 @@ const FR: DeepPartial<AccountCopy> = {
     smartRecommendations: "Recommandations intelligentes",
     smartRecommendationsEmpty:
       "Continuez à utiliser les services HenryCo et les recommandations s’adapteront à votre activité.",
+    smartHomeEmptyFallback:
+      "Bienvenue — commencez par un petit premier pas. Vos signaux en direct apparaîtront ici dès qu’une activité sera enregistrée.",
     recommendationReason:
       "Suggéré à partir de votre activité de compte et de votre état de confiance ({confidence} de confiance)",
     recentActivity: "Activité récente",
@@ -4184,11 +4426,88 @@ const FR: DeepPartial<AccountCopy> = {
       notifications:
         "Des mises à jour non lues attendent encore une revue.",
     },
+    priorityFallback: { low: "Calme", normal: "Routine", high: "Élevée", urgent: "Urgente" },
+    eyebrow: "File d’action · en direct",
+    guidanceTitle: "Une file unique, toutes les divisions.",
+    overviewAria: "Aperçu des tâches",
+    volumeAria: "Volume de tâches",
+    pendingAria: "Tâches en attente",
+    sideAria: "Fonctionnement de la file",
+    bySource: "Par source",
+    openTotalLabel: "Total ouvert",
+    nothingBlocking: "Rien ne bloque pour le moment",
+    resolveBlockers: "Résolvez pour débloquer les autres voies",
+    routine: "courantes",
+    divisionRepresentedSingular: "{count} division représentée",
+    divisionRepresentedPlural: "{count} divisions représentées",
+    headlineEmpty: "Rien dans la file.",
+    headlineBlockerSingular: "{count} blocage à lever.",
+    headlineBlockerPlural: "{count} blocages à lever.",
+    headlineUrgentSingular: "{count} tâche urgente à traiter.",
+    headlineUrgentPlural: "{count} tâches urgentes à traiter.",
+    headlineActiveSingular: "{count} tâche à traiter.",
+    headlineActivePlural: "{count} tâches à traiter.",
+    headlineCalmSingular: "{count} élément dans votre file.",
+    headlineCalmPlural: "{count} éléments dans votre file.",
+    blurbEmpty: "Votre compte est en ordre — vérification, paiements et voies sensibles aux revues sont tous clairs. Nous afficherons automatiquement la prochaine action ici dès qu’elle se présentera.",
+    blurbRisk: "Ces éléments verrouillent les actions à haute confiance sur HenryCo — retraits du portefeuille, validation vendeur marketplace, vérification employeur. Les résoudre débloque chaque voie.",
+    blurbActive: "Chaque ligne vous mène à la prochaine action en un seul geste. Filtres, étiquettes de priorité et liens profonds restent cohérents dans toutes les divisions HenryCo.",
+    metaEmpty: "Tout est clair. Toute nouveauté apparaîtra ici dès son arrivée.",
+    metaCount: "{count} en cours · triés par priorité et état bloquant.",
   },
   security: {
     title: "Sécurité",
     description:
       "Examinez l’activité de sécurité récente, modifiez votre mot de passe et terminez les sessions HenryCo si nécessaire.",
+    heroAriaLabel: "Aperçu de la sécurité",
+    hero: {
+      trustScoreLabel: "Score de confiance",
+      nextTierPrefix: "Suivant ·",
+      nextTierAriaTemplate: "Palier suivant {tier}",
+      accountActiveSingularTemplate: "Compte actif depuis {days} jour",
+      accountActivePluralTemplate: "Compte actif depuis {days} jours",
+      flaggedEventsSingularTemplate:
+        "{count} événement signalé enregistré · à examiner ci-dessous",
+      flaggedEventsPluralTemplate:
+        "{count} événements signalés enregistrés · à examiner ci-dessous",
+      statusEyebrow: {
+        secure: "Sécurité et accès · sécurisé",
+        watch: "Sécurité et accès · action recommandée",
+        risk: "Sécurité et accès · risque signalé",
+      },
+      statusHeadline: {
+        secure: "Votre compte est sécurisé.",
+        watch:
+          "Quelques actions suffiront à renforcer votre compte.",
+        risk:
+          "Nous avons signalé une activité qui mérite votre attention.",
+      },
+      statusBlurb: {
+        secure:
+          "Aucun événement suspect, la vérification est saine, et chaque action à plus forte confiance proposée par HenryCo vous est ouverte.",
+        watch:
+          "Rien n’est cassé — mais quelques signaux (confirmation d’e-mail, revue d’identité, contact en doublon) augmenteraient votre score de confiance et débloqueraient plus de voies.",
+        risk:
+          "Des événements récents ont été classés à risque élevé. Examinez le flux d’activité ci-dessous et changez votre mot de passe si quelque chose vous semble inhabituel.",
+      },
+    },
+    signalsTitle: "Signaux",
+    signalsMeta:
+      "Ce que nos moteurs de vérification et de scoring voient actuellement sur votre compte.",
+    signalsAriaLabel: "Signaux de sécurité",
+    guideTitle: "Où vous en êtes · ce qui vous fait avancer",
+    guideMetaTemplate:
+      "Scoring honnête, pas un chiffre marketing. {tier}.",
+    allLanesOpen: "Toutes les voies ouvertes",
+    accountActionsTitle: "Actions du compte",
+    accountActionsMeta: "Contrôles courants que vous maîtrisez directement.",
+    changePasswordTitle: "Changer votre mot de passe",
+    signOutEverywhereTitle: "Se déconnecter partout",
+    suspiciousEventFoot:
+      "Examinez le flux d’activité ci-dessous.",
+    noSuspiciousEventFoot:
+      "Rien de signalé sur la dernière fenêtre de revue.",
+    activityAriaLabel: "Événements de sécurité récents",
     trustProfile: "Profil de confiance",
     trustDescription:
       "La confiance est opérationnelle sur tout le compte. Elle contrôle maintenant des actions business à plus forte valeur, la posture de modération et l’éligibilité renforcée dans les modules HenryCo.",
@@ -6110,6 +6429,13 @@ const FR: DeepPartial<AccountCopy> = {
       rowAriaLabelTemplate: "{title} · {stamp}",
     },
   },
+  settings: {
+    pageTitle: "Paramètres et préférences",
+    pageDescription:
+      "Gérez votre profil, vos préférences de communication, vos contrôles de confidentialité et les demandes manuelles de données.",
+    profileSectionKicker: "Informations de profil",
+    notificationsSectionKicker: "Préférences de notification",
+  },
 };
 
 const DE: DeepPartial<AccountCopy> = {
@@ -6188,6 +6514,7 @@ const DE: DeepPartial<AccountCopy> = {
     "viewTaskQueue": "Vollständige Aufgabenwarteschlange anzeigen",
     "smartRecommendations": "Intelligente Empfehlungen",
     "smartRecommendationsEmpty": "Nutzen Sie weiterhin die Dienste von HenryCo und die Empfehlungen passen sich Ihrer Aktivität an.",
+    "smartHomeEmptyFallback": "Willkommen — beginnen Sie mit einem kleinen ersten Schritt. Ihre Live-Signale erscheinen hier, sobald Aktivität eingeht.",
     "recommendationReason": "Empfohlen aus Ihrer Kontoaktivität und Ihrem Vertrauensstatus ({confidence} Vertrauen)",
     "recentActivity": "Letzte Aktivität",
     "noRecentActivity": "Noch keine aktuelle Aktivität",
@@ -8118,6 +8445,13 @@ const DE: DeepPartial<AccountCopy> = {
       rowAriaLabelTemplate: "{title} · {stamp}",
     },
   },
+  settings: {
+    pageTitle: "Einstellungen und Präferenzen",
+    pageDescription:
+      "Verwalten Sie Ihr Profil, Ihre Kommunikationspräferenzen, Datenschutzeinstellungen und manuelle Datenanfragen.",
+    profileSectionKicker: "Profilinformationen",
+    notificationsSectionKicker: "Benachrichtigungseinstellungen",
+  },
 };
 
 const IT: DeepPartial<AccountCopy> = {
@@ -8196,6 +8530,7 @@ const IT: DeepPartial<AccountCopy> = {
     "viewTaskQueue": "Visualizza la coda completa delle attività",
     "smartRecommendations": "Raccomandazioni intelligenti",
     "smartRecommendationsEmpty": "Continua a utilizzare i servizi HenryCo e i consigli si adatteranno alla tua attività.",
+    "smartHomeEmptyFallback": "Benvenuto — inizia con un piccolo primo passo. I tuoi segnali dal vivo appariranno qui non appena ci sarà attività.",
     "recommendationReason": "Suggerito dall'attività del tuo account e dallo stato di attendibilità ({confidence} confidenza)",
     "recentActivity": "Attività recente",
     "noRecentActivity": "Nessuna attività recente ancora",
@@ -10129,6 +10464,13 @@ const IT: DeepPartial<AccountCopy> = {
       rowAriaLabelTemplate: "{title} · {stamp}",
     },
   },
+  settings: {
+    pageTitle: "Impostazioni e preferenze",
+    pageDescription:
+      "Gestisci il tuo profilo, le preferenze di comunicazione, i controlli sulla privacy e le richieste manuali di dati.",
+    profileSectionKicker: "Informazioni del profilo",
+    notificationsSectionKicker: "Preferenze di notifica",
+  },
 };
 
 const IG: DeepPartial<AccountCopy> = {
@@ -10207,6 +10549,8 @@ const IG: DeepPartial<AccountCopy> = {
     viewTaskQueue: "Lelee ahịrị ọrụ zuru oke",
     smartRecommendations: "Ndụmọdụ nzụlite",
     smartRecommendationsEmpty: "Nọgide na-eji ọrụ HenryCo ma ndụmọdụ ga-atọ dị na arụmọrụ gị.",
+    smartHomeEmptyFallback:
+      "Nnọọ — bido site na obere nzọụkwụ mbụ. Ihe ịrịba ama ndụ gị ga-apụta ebe a ozugbo arụmọrụ rutere.",
     recommendationReason: "A tụrụ aro site na arụmọrụ akaụntụ gị na ọnọdụ ntụkwasị obi ({confidence} ntụkwasị obi)",
     recentActivity: "Omume ọgbọ ọhụrụ",
     noRecentActivity: "Ọ dịghị omume ọgbọ ọhụrụ ka",
@@ -12142,6 +12486,13 @@ const IG: DeepPartial<AccountCopy> = {
       rowAriaLabelTemplate: "{title} · {stamp}",
     },
   },
+  settings: {
+    pageTitle: "Ntọala na Mmasị",
+    pageDescription:
+      "Jikwaa profaịlụ gị, mmasị nkwurịta okwu, njikwa nzuzo, na ụzọ arịrịọ data aka.",
+    profileSectionKicker: "Ozi Profaịlụ",
+    notificationsSectionKicker: "Mmasị Ọkwa",
+  },
 };
 
 const YO: DeepPartial<AccountCopy> = {
@@ -12220,6 +12571,8 @@ const YO: DeepPartial<AccountCopy> = {
     viewTaskQueue: "Wo ila-duro iṣẹ ni kikun",
     smartRecommendations: "Awọn iṣeduro ọlọgbọn",
     smartRecommendationsEmpty: "Tẹsiwaju lilo awọn iṣẹ HenryCo ati awọn iṣeduro yoo ṣe deede si iṣẹ rẹ.",
+    smartHomeEmptyFallback:
+      "Káàbọ̀ — bẹ̀rẹ̀ pẹ̀lú ìgbésẹ̀ kékeré àkọ́kọ́. Àwọn àmì ìfìhàn rẹ̀ tààrà yóò farahàn níbí gan-an tí iṣẹ́ kankan bá wáyé.",
     recommendationReason: "Ti daba lati iṣẹ akọọlẹ rẹ ati ipo igbẹkẹle ({confidence} igbẹkẹle)",
     recentActivity: "Iṣẹ Aipẹ",
     noRecentActivity: "Ko si iṣẹ aipẹ sibẹ",
@@ -14155,6 +14508,13 @@ const YO: DeepPartial<AccountCopy> = {
       emptyTick: "—",
     },
   },
+  settings: {
+    pageTitle: "Àwọn Ètò àti Àyàn",
+    pageDescription:
+      "Ṣàkóso profáìlì rẹ, àyàn ìbáraẹnisọ̀rọ̀, àkóso àṣírí, àti àwọn ọ̀nà ìbéèrè data ọwọ́.",
+    profileSectionKicker: "Ìwífún Profáìlì",
+    notificationsSectionKicker: "Àyàn Ìfitónilétí",
+  },
 };
 
 const HA: DeepPartial<AccountCopy> = {
@@ -14233,6 +14593,8 @@ const HA: DeepPartial<AccountCopy> = {
     viewTaskQueue: "Duba layin jiran aikin cikakke",
     smartRecommendations: "Shawarwari masu wayo",
     smartRecommendationsEmpty: "Ci gaba da amfani da sabis na HenryCo kuma shawarwari za su daidaita da ayyukanku.",
+    smartHomeEmptyFallback:
+      "Barka da zuwa — fara da ƙaramin mataki na farko. Sigina kai tsaye naka za su bayyana a nan da zarar wani aiki ya zo.",
     recommendationReason: "An ba da shawarar daga ayyukan asusunka da yanayin amana ({confidence} amana)",
     recentActivity: "Ayyuka na Kwanan Nan",
     noRecentActivity: "Babu ayyuka na kwanan nan har yanzu",
@@ -16168,6 +16530,13 @@ const HA: DeepPartial<AccountCopy> = {
       emptyTick: "—",
     },
   },
+  settings: {
+    pageTitle: "Saituna da Zaɓuɓɓuka",
+    pageDescription:
+      "Sarrafa bayanan martabar ka, zaɓuɓɓukan sadarwa, ikon sirri, da hanyoyin neman bayanai da hannu.",
+    profileSectionKicker: "Bayanan Martaba",
+    notificationsSectionKicker: "Zaɓuɓɓukan Sanarwa",
+  },
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -16246,6 +16615,7 @@ const ZH: DeepPartial<AccountCopy> = {
     viewTaskQueue: "查看完整任务队列",
     smartRecommendations: "智能推荐",
     smartRecommendationsEmpty: "继续使用 HenryCo 服务，推荐将根据您的活动进行调整。",
+    smartHomeEmptyFallback: "欢迎 — 从一个小小的第一步开始。一旦有动态，您的实时信号就会显示在这里。",
     recommendationReason: "根据您的账户活动和信任状态建议（{confidence} 置信度）",
     recentActivity: "最近活动",
     noRecentActivity: "暂无最近活动",
@@ -18166,6 +18536,12 @@ const ZH: DeepPartial<AccountCopy> = {
       emptyTick: "—",
     },
   },
+  settings: {
+    pageTitle: "设置与偏好",
+    pageDescription: "管理您的个人资料、通讯偏好、隐私控制以及手动数据请求路径。",
+    profileSectionKicker: "个人资料信息",
+    notificationsSectionKicker: "通知偏好",
+  },
 };
 
 const HI: DeepPartial<AccountCopy> = {
@@ -18244,6 +18620,8 @@ const HI: DeepPartial<AccountCopy> = {
     viewTaskQueue: "पूर्ण कार्य कतार देखें",
     smartRecommendations: "स्मार्ट अनुशंसाएं",
     smartRecommendationsEmpty: "HenryCo सेवाओं का उपयोग करते रहें और अनुशंसाएं आपकी गतिविधि के अनुसार अनुकूलित होंगी।",
+    smartHomeEmptyFallback:
+      "स्वागत है — एक छोटे पहले कदम से शुरुआत करें। गतिविधि आते ही आपके लाइव संकेत यहाँ दिखाई देंगे।",
     recommendationReason: "आपकी खाता गतिविधि और विश्वास स्थिति ({confidence} विश्वास) से सुझाया गया",
     recentActivity: "हाल की गतिविधि",
     noRecentActivity: "अभी तक कोई हाल की गतिविधि नहीं",
@@ -20176,6 +20554,13 @@ const HI: DeepPartial<AccountCopy> = {
       figureAriaLabel: "पिछले 6 महीनों का लॉजिस्टिक्स खर्च",
       emptyTick: "—",
     },
+  },
+  settings: {
+    pageTitle: "सेटिंग्स और प्राथमिकताएँ",
+    pageDescription:
+      "अपनी प्रोफ़ाइल, संचार प्राथमिकताएँ, गोपनीयता नियंत्रण और मैन्युअल डेटा अनुरोध प्रबंधित करें।",
+    profileSectionKicker: "प्रोफ़ाइल जानकारी",
+    notificationsSectionKicker: "अधिसूचना प्राथमिकताएँ",
   },
 };
 

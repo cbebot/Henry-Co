@@ -3,9 +3,11 @@ import "server-only";
 import { countActiveSavedItems } from "@henryco/cart-saved-items/server";
 import { getEligibleModules } from "@henryco/dashboard-shell";
 import type { SignalFeedCursor, SignalFeedItem } from "@henryco/data";
+import { getAccountCopy } from "@henryco/i18n/server";
 import { logger } from "@henryco/observability";
 import { getCachedSignalFeed } from "@/lib/smart-home/signal-feed-cache";
 import type { UnifiedViewer } from "@henryco/auth";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import {
   collectAndPersistLifecycleSnapshot,
 } from "@/lib/lifecycle/collector";
@@ -63,12 +65,14 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
   // collector persists its snapshot, the home-widget walk is fault-
   // tolerant per module. The saved-items count is a head-only `select
   // exact` — no rows transferred.
-  const [signalFeed, lifecycle, widgets, savedItemsCount] = await Promise.all([
+  const [signalFeed, lifecycle, widgets, savedItemsCount, locale] = await Promise.all([
     getCachedSignalFeed(viewer, cursor ? { cursor, limit: 50 } : { limit: 50 }),
     collectAndPersistLifecycleSnapshot(viewer.user.id).catch(() => null),
     collectHomeWidgets(modules, viewer),
     countActiveSavedItems(createAdminSupabase(), viewer.user.id).catch(() => 0),
+    getAccountAppLocale(),
   ]);
+  const copy = getAccountCopy(locale).overview;
 
   const attentionSignals = signalFeed.items.filter(
     (s) => s.priority === "security" || s.priority === "urgent",
@@ -147,7 +151,7 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
           attentionCount={0}
           lastActivityIso={null}
           savedItemsCount={0}
-          fallbackBody="Welcome — start with a small first step. Your live signals will appear here as soon as activity lands."
+          fallbackBody={copy.smartHomeEmptyFallback}
         />
         <SmartHomeEmpty
           firstName={firstName}
