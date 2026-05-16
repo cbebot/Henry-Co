@@ -7,6 +7,7 @@ export * from "./logistics-services-copy";
 export * from "./logistics-business-copy";
 export * from "./logistics-coverage-copy";
 export * from "./logistics-pricing-copy";
+export * from "./logistics-quote-copy";
 export * from "./consent-copy";
 export * from "./auth-copy";
 export * from "./state-copy";
