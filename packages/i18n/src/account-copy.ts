@@ -6603,6 +6603,62 @@ const HA: DeepPartial<AccountCopy> = {
       manageCta: "Sarrafa walat",
     },
   },
+  savedItems: {
+    metadata: {
+      title: "Abubuwan da aka adana",
+      description:
+        "Abubuwan da ka ajiye daga kowace kwandon HenryCo, ana adana su na kwana 90 tare da gargaɗi mako guda kafin su ƙare.",
+    },
+    hero: {
+      title: "An adana don baya",
+      description:
+        "Abubuwan da ka ajiye daga kowace kwandon HenryCo. Za mu ajiye su na kwana 90 kuma za mu gargaɗe ka mako guda kafin su ƙare.",
+    },
+    summary: {
+      activeTemplate: "{count} masu aiki",
+      expiredTemplate: "{count} sun ƙare",
+      expiryNote:
+        "Abubuwa suna ƙarewa kwana 90 bayan an adana su. Muna gargaɗi mako guda da wuri.",
+      savedTemplate: "{count} an adana",
+    },
+    toolbar: {
+      showLabel: "Nuna",
+      allDivisions: "Duk sassan",
+      sortLabel: "Tsara",
+      sortNewest: "Sabbi farko",
+      sortOldest: "Tsofaffi farko",
+      sortExpiring: "Suna ƙarewa nan ba da daɗewa ba",
+    },
+    selection: {
+      selectedTemplate: "An zaɓi {count}",
+      clear: "Share",
+      moving: "Ana matsawa…",
+      moveSelectedToCart: "Matsa zaɓaɓɓun zuwa kwando",
+      selectAllOnPage: "Zaɓi duka a wannan shafin",
+    },
+    empty: {
+      title: "Babu abin da aka adana don baya tukuna",
+      description:
+        "Lokacin da ka samu wani abu da ba ka shirye saya ba, adana shi don baya daga kwando. Za mu kiyaye farashin da ka gani kuma za mu gargaɗe ka mako guda kafin ya ƙare.",
+      browseCta: "Bincika",
+    },
+    card: {
+      deselectItem: "Cire zaɓin abu",
+      selectItem: "Zaɓi abu",
+      savedItemFallback: "Abin da aka adana",
+      expiresToday: "Yana ƙarewa yau",
+      expiresInTemplate: "Yana ƙarewa cikin kwana {days}{plural}",
+      expiredNotice: "Ya ƙare — maido yana sake saita lokacin kwana 90",
+      moveToCart: "Matsa zuwa kwando",
+      moving: "Ana matsawa…",
+      removeFromSaved: "Cire daga abubuwan da aka adana",
+      openOriginal: "Buɗe asalin lissafin",
+    },
+    expired: {
+      sectionKicker: "Sun ƙare kwanan nan",
+      sectionNote: "Maido yana sake saita lokacin kwana 90.",
+    },
+  },
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -7364,6 +7420,58 @@ const ZH: DeepPartial<AccountCopy> = {
       eyebrow: "HenryCo 钱包",
       body: "您的 HenryCo 钱包始终可作为支付选项使用。",
       manageCta: "管理钱包",
+    },
+  },
+  savedItems: {
+    metadata: {
+      title: "稍后保存",
+      description: "您从任何 HenryCo 购物车中暂存的商品,我们会为您保留 90 天,并在到期前一周提醒。",
+    },
+    hero: {
+      title: "稍后保存",
+      description: "您从任何 HenryCo 购物车中暂存的商品。我们会为您保留 90 天,并在到期前一周提醒您。",
+    },
+    summary: {
+      activeTemplate: "{count} 件有效",
+      expiredTemplate: "{count} 件已过期",
+      expiryNote: "商品自保存之日起 90 天后过期。我们会提前一周提醒您。",
+      savedTemplate: "已保存 {count} 件",
+    },
+    toolbar: {
+      showLabel: "显示",
+      allDivisions: "所有版块",
+      sortLabel: "排序",
+      sortNewest: "最新优先",
+      sortOldest: "最早优先",
+      sortExpiring: "即将过期",
+    },
+    selection: {
+      selectedTemplate: "已选择 {count} 件",
+      clear: "清除",
+      moving: "正在移动…",
+      moveSelectedToCart: "将所选移至购物车",
+      selectAllOnPage: "选择本页全部",
+    },
+    empty: {
+      title: "尚未保存任何商品",
+      description: "当您发现暂时不想购买的商品时,可从购物车将其保存以备稍后。我们会保留您当时看到的价格,并在到期前一周提醒您。",
+      browseCta: "浏览",
+    },
+    card: {
+      deselectItem: "取消选择",
+      selectItem: "选择商品",
+      savedItemFallback: "已保存商品",
+      expiresToday: "今天过期",
+      expiresInTemplate: "{days} 天{plural}后过期",
+      expiredNotice: "已过期 — 恢复将重置 90 天有效期",
+      moveToCart: "移至购物车",
+      moving: "正在移动…",
+      removeFromSaved: "从保存项移除",
+      openOriginal: "打开原始商品",
+    },
+    expired: {
+      sectionKicker: "最近过期",
+      sectionNote: "恢复将重置 90 天有效期。",
     },
   },
 };
@@ -8129,6 +8237,61 @@ const HI: DeepPartial<AccountCopy> = {
       eyebrow: "HenryCo वॉलेट",
       body: "आपका HenryCo वॉलेट हमेशा भुगतान विकल्प के रूप में उपलब्ध है।",
       manageCta: "वॉलेट प्रबंधित करें",
+    },
+  },
+  savedItems: {
+    metadata: {
+      title: "बाद के लिए सहेजे गए",
+      description:
+        "जो वस्तुएँ आपने किसी भी HenryCo कार्ट से अलग रखी हैं — हम उन्हें 90 दिन तक रखते हैं और समाप्ति से एक सप्ताह पहले सूचित करते हैं।",
+    },
+    hero: {
+      title: "बाद के लिए सहेजें",
+      description:
+        "जो वस्तुएँ आपने किसी भी HenryCo कार्ट से अलग रखी हैं। हम उन्हें 90 दिन तक रखेंगे और समाप्ति से एक सप्ताह पहले आपको चेताएँगे।",
+    },
+    summary: {
+      activeTemplate: "{count} सक्रिय",
+      expiredTemplate: "{count} समाप्त",
+      expiryNote: "वस्तुएँ सहेजे जाने के 90 दिन बाद समाप्त होती हैं। हम एक सप्ताह पहले चेतावनी देते हैं।",
+      savedTemplate: "{count} सहेजे गए",
+    },
+    toolbar: {
+      showLabel: "दिखाएँ",
+      allDivisions: "सभी विभाग",
+      sortLabel: "क्रमबद्ध करें",
+      sortNewest: "सबसे नए पहले",
+      sortOldest: "सबसे पुराने पहले",
+      sortExpiring: "जल्द समाप्त होने वाले",
+    },
+    selection: {
+      selectedTemplate: "{count} चयनित",
+      clear: "साफ़ करें",
+      moving: "स्थानांतरण…",
+      moveSelectedToCart: "चयनित को कार्ट में ले जाएँ",
+      selectAllOnPage: "इस पृष्ठ पर सभी चुनें",
+    },
+    empty: {
+      title: "अभी तक बाद के लिए कुछ नहीं सहेजा",
+      description:
+        "जब आपको कोई ऐसी चीज़ मिले जिसे आप अभी खरीदने को तैयार नहीं हैं, उसे कार्ट से बाद के लिए सहेजें। हम वह कीमत बनाए रखेंगे जो आपने देखी थी और समाप्ति से एक सप्ताह पहले चेतावनी देंगे।",
+      browseCta: "ब्राउज़ करें",
+    },
+    card: {
+      deselectItem: "वस्तु अचयनित करें",
+      selectItem: "वस्तु चुनें",
+      savedItemFallback: "सहेजी गई वस्तु",
+      expiresToday: "आज समाप्त हो रही है",
+      expiresInTemplate: "{days} दिन{plural} में समाप्त",
+      expiredNotice: "समाप्त — पुनर्स्थापना 90-दिनों की अवधि को रीसेट करती है",
+      moveToCart: "कार्ट में ले जाएँ",
+      moving: "स्थानांतरण…",
+      removeFromSaved: "सहेजी गई वस्तुओं से हटाएँ",
+      openOriginal: "मूल लिस्टिंग खोलें",
+    },
+    expired: {
+      sectionKicker: "हाल ही में समाप्त",
+      sectionNote: "पुनर्स्थापना 90-दिनों की अवधि को रीसेट करती है।",
     },
   },
 };

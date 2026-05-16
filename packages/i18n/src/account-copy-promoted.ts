@@ -752,6 +752,58 @@ export const ACCOUNT_COPY_ES = {
       "body": "Tu Cartera HenryCo siempre está disponible como opción de pago.",
       "manageCta": "Gestionar cartera"
     }
+  },
+  "savedItems": {
+    "metadata": {
+      "title": "Guardado para más tarde",
+      "description": "Artículos que apartaste desde cualquier carrito de HenryCo: los conservamos 90 días y te avisamos una semana antes de que caduquen."
+    },
+    "hero": {
+      "title": "Guardado para más tarde",
+      "description": "Artículos que apartaste desde cualquier carrito de HenryCo. Los conservamos 90 días y te avisamos una semana antes de que caduquen."
+    },
+    "summary": {
+      "activeTemplate": "{count} activo(s)",
+      "expiredTemplate": "{count} caducado(s)",
+      "expiryNote": "Los artículos caducan 90 días después de guardarlos. Te avisamos con una semana de antelación.",
+      "savedTemplate": "{count} guardado(s)"
+    },
+    "toolbar": {
+      "showLabel": "Mostrar",
+      "allDivisions": "Todas las divisiones",
+      "sortLabel": "Ordenar",
+      "sortNewest": "Más recientes primero",
+      "sortOldest": "Más antiguos primero",
+      "sortExpiring": "Próximos a caducar"
+    },
+    "selection": {
+      "selectedTemplate": "{count} seleccionado(s)",
+      "clear": "Quitar",
+      "moving": "Moviendo…",
+      "moveSelectedToCart": "Mover seleccionados al carrito",
+      "selectAllOnPage": "Seleccionar todo en la página"
+    },
+    "empty": {
+      "title": "Aún no has guardado nada para más tarde",
+      "description": "Cuando encuentres algo que aún no quieras comprar, guárdalo para más tarde desde el carrito. Conservaremos el precio que viste y te avisaremos una semana antes de que caduque.",
+      "browseCta": "Explorar"
+    },
+    "card": {
+      "deselectItem": "Deseleccionar artículo",
+      "selectItem": "Seleccionar artículo",
+      "savedItemFallback": "Artículo guardado",
+      "expiresToday": "Caduca hoy",
+      "expiresInTemplate": "Caduca en {days} día{plural}",
+      "expiredNotice": "Caducado — restaurar reinicia el periodo de 90 días",
+      "moveToCart": "Mover al carrito",
+      "moving": "Moviendo…",
+      "removeFromSaved": "Eliminar de los guardados",
+      "openOriginal": "Abrir publicación original"
+    },
+    "expired": {
+      "sectionKicker": "Caducados recientemente",
+      "sectionNote": "Restaurar reinicia el periodo de 90 días."
+    }
   }
 };
 
@@ -1506,6 +1558,58 @@ export const ACCOUNT_COPY_PT = {
       "body": "Sua Carteira HenryCo está sempre disponível como opção de pagamento.",
       "manageCta": "Gerenciar carteira"
     }
+  },
+  "savedItems": {
+    "metadata": {
+      "title": "Guardados para depois",
+      "description": "Itens que você reservou de qualquer carrinho HenryCo, guardados por 90 dias com aviso uma semana antes do vencimento."
+    },
+    "hero": {
+      "title": "Guardados para depois",
+      "description": "Itens que você reservou de qualquer carrinho HenryCo. Vamos guardá-los por 90 dias e avisaremos uma semana antes de expirarem."
+    },
+    "summary": {
+      "activeTemplate": "{count} ativo(s)",
+      "expiredTemplate": "{count} expirado(s)",
+      "expiryNote": "Os itens expiram 90 dias depois de salvos. Avisamos uma semana antes.",
+      "savedTemplate": "{count} salvo(s)"
+    },
+    "toolbar": {
+      "showLabel": "Mostrar",
+      "allDivisions": "Todas as divisões",
+      "sortLabel": "Ordenar",
+      "sortNewest": "Mais recentes primeiro",
+      "sortOldest": "Mais antigos primeiro",
+      "sortExpiring": "Prestes a expirar"
+    },
+    "selection": {
+      "selectedTemplate": "{count} selecionado(s)",
+      "clear": "Limpar",
+      "moving": "Movendo…",
+      "moveSelectedToCart": "Mover selecionados para o carrinho",
+      "selectAllOnPage": "Selecionar todos nesta página"
+    },
+    "empty": {
+      "title": "Ainda não há nada salvo para depois",
+      "description": "Quando você encontrar algo que não está pronto para comprar, salve do carrinho para depois. Manteremos o preço que você viu e avisaremos uma semana antes de expirar.",
+      "browseCta": "Explorar"
+    },
+    "card": {
+      "deselectItem": "Desmarcar item",
+      "selectItem": "Selecionar item",
+      "savedItemFallback": "Item salvo",
+      "expiresToday": "Expira hoje",
+      "expiresInTemplate": "Expira em {days} dia{plural}",
+      "expiredNotice": "Expirado — restaurar redefine o período de 90 dias",
+      "moveToCart": "Mover para o carrinho",
+      "moving": "Movendo…",
+      "removeFromSaved": "Remover dos itens salvos",
+      "openOriginal": "Abrir anúncio original"
+    },
+    "expired": {
+      "sectionKicker": "Expirados recentemente",
+      "sectionNote": "Restaurar redefine o período de 90 dias."
+    }
   }
 };
 
@@ -2259,6 +2363,58 @@ export const ACCOUNT_COPY_AR = {
       "eyebrow": "محفظة HenryCo",
       "body": "محفظتك في HenryCo متاحة دائمًا كخيار للدفع.",
       "manageCta": "إدارة المحفظة"
+    }
+  },
+  "savedItems": {
+    "metadata": {
+      "title": "محفوظ للاحقًا",
+      "description": "عناصر وضعتها جانبًا من أي سلة HenryCo، نحتفظ بها لمدة 90 يومًا وننبهك قبل أسبوع من انتهاء صلاحيتها."
+    },
+    "hero": {
+      "title": "محفوظ للاحقًا",
+      "description": "عناصر وضعتها جانبًا من أي سلة HenryCo. سنحتفظ بها لمدة 90 يومًا وننبهك قبل أسبوع من انتهاء صلاحيتها."
+    },
+    "summary": {
+      "activeTemplate": "{count} نشط",
+      "expiredTemplate": "{count} منتهي الصلاحية",
+      "expiryNote": "تنتهي صلاحية العناصر بعد 90 يومًا من حفظها. ننبهك قبل أسبوع.",
+      "savedTemplate": "{count} محفوظ"
+    },
+    "toolbar": {
+      "showLabel": "إظهار",
+      "allDivisions": "كل الأقسام",
+      "sortLabel": "ترتيب",
+      "sortNewest": "الأحدث أولاً",
+      "sortOldest": "الأقدم أولاً",
+      "sortExpiring": "ينتهي قريبًا"
+    },
+    "selection": {
+      "selectedTemplate": "تم اختيار {count}",
+      "clear": "مسح",
+      "moving": "جارٍ النقل…",
+      "moveSelectedToCart": "نقل المحدد إلى السلة",
+      "selectAllOnPage": "تحديد الكل في هذه الصفحة"
+    },
+    "empty": {
+      "title": "لا شيء محفوظ بعد",
+      "description": "حين تجد شيئًا لست مستعدًا لشرائه بعد، احفظه للاحقًا من السلة. سنحتفظ بالسعر الذي رأيته وننبهك قبل أسبوع من انتهاء صلاحيته.",
+      "browseCta": "تصفح"
+    },
+    "card": {
+      "deselectItem": "إلغاء تحديد العنصر",
+      "selectItem": "تحديد العنصر",
+      "savedItemFallback": "عنصر محفوظ",
+      "expiresToday": "ينتهي اليوم",
+      "expiresInTemplate": "ينتهي خلال {days} يوم{plural}",
+      "expiredNotice": "منتهي الصلاحية — الاستعادة تُعيد ضبط مهلة 90 يومًا",
+      "moveToCart": "نقل إلى السلة",
+      "moving": "جارٍ النقل…",
+      "removeFromSaved": "إزالة من المحفوظات",
+      "openOriginal": "فتح القائمة الأصلية"
+    },
+    "expired": {
+      "sectionKicker": "انتهت صلاحيتها مؤخرًا",
+      "sectionNote": "الاستعادة تُعيد ضبط مهلة 90 يومًا."
     }
   }
 };
