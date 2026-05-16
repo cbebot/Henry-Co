@@ -245,6 +245,28 @@ export type MarketplacePublicCopy = {
       kicker: string;
     };
   };
+  collections: {
+    metadata: {
+      titleTemplate: string;
+      descriptionTemplate: string;
+      fallbackDescription: string;
+    };
+    hero: {
+      primaryCta: string;
+      secondaryCta: string;
+    };
+    sidebar: {
+      itemsLabel: string;
+      editedByLabel: string;
+      editedByValue: string;
+      buyerProtectionLabel: string;
+      buyerProtectionValue: string;
+    };
+    rail: {
+      kicker: string;
+      itemsSuffix: string;
+    };
+  };
 };
 
 const EN: MarketplacePublicCopy = {
@@ -583,6 +605,30 @@ const EN: MarketplacePublicCopy = {
       kicker: "Ecosystem trust reinforcement",
     },
   },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Explore {collection} on HenryCo Marketplace — a curated rail of verified products with trust signals, delivery clarity, and seller passports surfaced before checkout.",
+      fallbackDescription:
+        "A curated collection on HenryCo Marketplace with verified products, trust signals, delivery clarity, and seller passports surfaced before checkout.",
+    },
+    hero: {
+      primaryCta: "Open full search",
+      secondaryCta: "Trust standards",
+    },
+    sidebar: {
+      itemsLabel: "Items in collection",
+      editedByLabel: "Edited by",
+      editedByValue: "Marketplace operations",
+      buyerProtectionLabel: "Buyer protection",
+      buyerProtectionValue: "Escrowed checkout",
+    },
+    rail: {
+      kicker: "What’s in the rail",
+      itemsSuffix: "items",
+    },
+  },
 };
 
 const FR: DeepPartial<MarketplacePublicCopy> = {
@@ -905,6 +951,30 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
       kicker: "Renforcement de la confiance dans l’écosystème",
     },
   },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — Marketplace HenryCo",
+      descriptionTemplate:
+        "Découvrez {collection} sur HenryCo Marketplace — une sélection curatée de produits vérifiés, avec signaux de confiance, livraison plus claire et passeports vendeurs avant le paiement.",
+      fallbackDescription:
+        "Une collection curatée sur HenryCo Marketplace, avec des produits vérifiés, des signaux de confiance, une livraison plus claire et des passeports vendeurs avant le paiement.",
+    },
+    hero: {
+      primaryCta: "Ouvrir la recherche complète",
+      secondaryCta: "Standards de confiance",
+    },
+    sidebar: {
+      itemsLabel: "Articles de la collection",
+      editedByLabel: "Édité par",
+      editedByValue: "Opérations Marketplace",
+      buyerProtectionLabel: "Protection acheteur",
+      buyerProtectionValue: "Paiement sous séquestre",
+    },
+    rail: {
+      kicker: "Au programme de la sélection",
+      itemsSuffix: "articles",
+    },
+  },
 };
 
 const ES: DeepPartial<MarketplacePublicCopy> = {
@@ -1089,6 +1159,30 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
     },
     ecosystem: {
       kicker: "Refuerzo de confianza en el ecosistema",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Descubre {collection} en HenryCo Marketplace — una selección curada de productos verificados, con señales de confianza, claridad en la entrega y pasaportes de vendedor visibles antes del pago.",
+      fallbackDescription:
+        "Una colección curada en HenryCo Marketplace, con productos verificados, señales de confianza, entrega clara y pasaportes de vendedor visibles antes del pago.",
+    },
+    hero: {
+      primaryCta: "Abrir búsqueda completa",
+      secondaryCta: "Estándares de confianza",
+    },
+    sidebar: {
+      itemsLabel: "Artículos de la colección",
+      editedByLabel: "Editada por",
+      editedByValue: "Operaciones del Marketplace",
+      buyerProtectionLabel: "Protección al comprador",
+      buyerProtectionValue: "Pago en custodia",
+    },
+    rail: {
+      kicker: "Lo que trae la selección",
+      itemsSuffix: "artículos",
     },
   },
 };
@@ -1304,6 +1398,30 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
       kicker: "Reforço de confiança no ecossistema",
     },
   },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Explore {collection} no HenryCo Marketplace — uma seleção curada de produtos verificados, com sinais de confiança, entrega clara e passaportes de vendedor visíveis antes do checkout.",
+      fallbackDescription:
+        "Uma coleção curada no HenryCo Marketplace, com produtos verificados, sinais de confiança, entrega clara e passaportes de vendedor visíveis antes do checkout.",
+    },
+    hero: {
+      primaryCta: "Abrir busca completa",
+      secondaryCta: "Padrões de confiança",
+    },
+    sidebar: {
+      itemsLabel: "Itens da coleção",
+      editedByLabel: "Editada por",
+      editedByValue: "Operações do Marketplace",
+      buyerProtectionLabel: "Proteção ao comprador",
+      buyerProtectionValue: "Pagamento sob custódia",
+    },
+    rail: {
+      kicker: "O que está nesta seleção",
+      itemsSuffix: "itens",
+    },
+  },
 };
 
 const DE: DeepPartial<MarketplacePublicCopy> = {
@@ -1515,6 +1633,30 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
     },
     ecosystem: {
       kicker: "Vertrauensverstärkung im Ökosystem",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Entdecken Sie {collection} auf dem HenryCo Marketplace — eine kuratierte Auswahl geprüfter Produkte mit Vertrauenssignalen, klaren Lieferinformationen und Verkäuferpässen vor dem Checkout.",
+      fallbackDescription:
+        "Eine kuratierte Kollektion auf dem HenryCo Marketplace mit geprüften Produkten, Vertrauenssignalen, klarer Lieferung und sichtbaren Verkäuferpässen vor dem Checkout.",
+    },
+    hero: {
+      primaryCta: "Vollständige Suche öffnen",
+      secondaryCta: "Vertrauensstandards",
+    },
+    sidebar: {
+      itemsLabel: "Artikel in der Kollektion",
+      editedByLabel: "Kuratiert von",
+      editedByValue: "Marketplace-Operations",
+      buyerProtectionLabel: "Käuferschutz",
+      buyerProtectionValue: "Treuhand-Checkout",
+    },
+    rail: {
+      kicker: "In dieser Auswahl",
+      itemsSuffix: "Artikel",
     },
   },
 };
@@ -1730,6 +1872,30 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
       kicker: "Rafforzamento della fiducia nell’ecosistema",
     },
   },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Esplora {collection} su HenryCo Marketplace — una selezione curata di prodotti verificati, con segnali di fiducia, chiarezza nella consegna e passaporti venditore visibili prima del checkout.",
+      fallbackDescription:
+        "Una collezione curata su HenryCo Marketplace, con prodotti verificati, segnali di fiducia, consegna chiara e passaporti venditore visibili prima del checkout.",
+    },
+    hero: {
+      primaryCta: "Apri ricerca completa",
+      secondaryCta: "Standard di fiducia",
+    },
+    sidebar: {
+      itemsLabel: "Articoli nella collezione",
+      editedByLabel: "Curata da",
+      editedByValue: "Operations del Marketplace",
+      buyerProtectionLabel: "Protezione acquirente",
+      buyerProtectionValue: "Checkout in deposito a garanzia",
+    },
+    rail: {
+      kicker: "Cosa contiene la selezione",
+      itemsSuffix: "articoli",
+    },
+  },
 };
 
 const AR: DeepPartial<MarketplacePublicCopy> = {
@@ -1941,6 +2107,30 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
     },
     ecosystem: {
       kicker: "تعزيز الثقة على مستوى المنظومة",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — متجر HenryCo",
+      descriptionTemplate:
+        "اكتشف {collection} على متجر HenryCo — مجموعة مختارة من المنتجات الموثوقة، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل الدفع.",
+      fallbackDescription:
+        "مجموعة مختارة على متجر HenryCo، تضم منتجات موثوقة وإشارات ثقة وتوصيلًا واضحًا وجوازات بائعين ظاهرة قبل الدفع.",
+    },
+    hero: {
+      primaryCta: "افتح البحث الكامل",
+      secondaryCta: "معايير الثقة",
+    },
+    sidebar: {
+      itemsLabel: "العناصر في المجموعة",
+      editedByLabel: "أعدّتها",
+      editedByValue: "عمليات المتجر",
+      buyerProtectionLabel: "حماية المشتري",
+      buyerProtectionValue: "الدفع عبر الضمان",
+    },
+    rail: {
+      kicker: "ما يضمّه هذا الاختيار",
+      itemsSuffix: "عنصرًا",
     },
   },
 };
@@ -2156,6 +2346,30 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "前往卖家工作台",
     },
   },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo 商城",
+      descriptionTemplate:
+        "在 HenryCo 商城探索 {collection} — 一组精选的可信商品,提供信任信号、清晰的配送信息,并在结账前展示卖家信任护照。",
+      fallbackDescription:
+        "HenryCo 商城上的一组精选合集,涵盖可信商品、信任信号、清晰配送以及结账前可见的卖家信任护照。",
+    },
+    hero: {
+      primaryCta: "打开完整搜索",
+      secondaryCta: "信任标准",
+    },
+    sidebar: {
+      itemsLabel: "合集中的商品",
+      editedByLabel: "编选自",
+      editedByValue: "商城运营团队",
+      buyerProtectionLabel: "买家保护",
+      buyerProtectionValue: "托管结账",
+    },
+    rail: {
+      kicker: "本选辑包含的商品",
+      itemsSuffix: "件商品",
+    },
+  },
 };
 
 const HI: DeepPartial<MarketplacePublicCopy> = {
@@ -2367,6 +2581,30 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
       body: "अनुमोदन से वेंडर ऑनबोर्डिंग खुलती है। पब्लिश करने से पहले ही कीमत, लिस्टिंग शुल्क और पेआउट विंडो दिख जाती है — बाद में कोई कॉन्ट्रैक्ट-सरप्राइज़ नहीं।",
       primaryCta: "आवेदन शुरू करें",
       secondaryCta: "वेंडर वर्कस्पेस देखें",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo मार्केटप्लेस",
+      descriptionTemplate:
+        "HenryCo मार्केटप्लेस पर {collection} देखें — सत्यापित प्रोडक्ट्स की क्यूरेटेड लाइन-अप, ट्रस्ट सिग्नल, स्पष्ट डिलीवरी और चेकआउट से पहले दिखता सेलर ट्रस्ट पासपोर्ट।",
+      fallbackDescription:
+        "HenryCo मार्केटप्लेस का एक क्यूरेटेड कलेक्शन — सत्यापित प्रोडक्ट्स, ट्रस्ट सिग्नल, साफ डिलीवरी और चेकआउट से पहले दिखता सेलर ट्रस्ट पासपोर्ट।",
+    },
+    hero: {
+      primaryCta: "पूरी सर्च खोलें",
+      secondaryCta: "ट्रस्ट मानक",
+    },
+    sidebar: {
+      itemsLabel: "कलेक्शन में आइटम",
+      editedByLabel: "क्यूरेट किया",
+      editedByValue: "मार्केटप्लेस ऑपरेशंस",
+      buyerProtectionLabel: "बायर सुरक्षा",
+      buyerProtectionValue: "एस्क्रो चेकआउट",
+    },
+    rail: {
+      kicker: "इस लाइन-अप में क्या है",
+      itemsSuffix: "आइटम",
     },
   },
 };
@@ -2582,6 +2820,30 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "Gaa n'ebe ọrụ ndị na-ere ahịa",
     },
   },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — Ahịa HenryCo",
+      descriptionTemplate:
+        "Lelee {collection} n'elu Ahịa HenryCo — usoro ngwaahịa enyochara, jiri akara ntụkwasị obi, nkọwa nbuga doro anya, na paspọtụ ndị na-ere ahịa pụta ìhè tupu ịkwụ ụgwọ.",
+      fallbackDescription:
+        "Otu nchịkọta ahọpụtara n'Ahịa HenryCo, jikọtara ngwaahịa enyochara, akara ntụkwasị obi, nbuga doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ.",
+    },
+    hero: {
+      primaryCta: "Mepee nchọcha zuru oke",
+      secondaryCta: "Ụkpụrụ ntụkwasị obi",
+    },
+    sidebar: {
+      itemsLabel: "Ihe dị na nchịkọta",
+      editedByLabel: "Onye haziri",
+      editedByValue: "Ọrụ Ahịa HenryCo",
+      buyerProtectionLabel: "Nchekwa onye azụ ahịa",
+      buyerProtectionValue: "Ịkwụ ụgwọ esinyere n'isi",
+    },
+    rail: {
+      kicker: "Ihe dị n'usoro ahụ",
+      itemsSuffix: "ihe",
+    },
+  },
 };
 
 const YO: DeepPartial<MarketplacePublicCopy> = {
@@ -2795,6 +3057,30 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "Bẹ̀ àyè olùtà wò",
     },
   },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — Ọjà HenryCo",
+      descriptionTemplate:
+        "Ṣàwárí {collection} lórí Ọjà HenryCo — ètò àtìmọ̀le ti àwọn ọjà tí a ti fọwọ́sí, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, kíkọ̀ngbé ìfijíṣẹ́, àti pásípọ̀tì olùtà tí ó hàn ṣáájú ìsanwó.",
+      fallbackDescription:
+        "Àkójọpọ̀ tí a ṣe àtìmọ̀le lórí Ọjà HenryCo, pẹ̀lú àwọn ọjà tí a ti fọwọ́sí, àmì ìgbẹ́kẹ̀lé, ìfijíṣẹ́ tó kọ̀ngbé, àti pásípọ̀tì olùtà tí ó hàn ṣáájú ìsanwó.",
+    },
+    hero: {
+      primaryCta: "Ṣí ìwákírí kíkún",
+      secondaryCta: "Àwọn ìlànà ìgbẹ́kẹ̀lé",
+    },
+    sidebar: {
+      itemsLabel: "Àwọn nǹkan nínú àkójọpọ̀",
+      editedByLabel: "Ẹni tí ó ṣàtìmọ̀le",
+      editedByValue: "Ìmọ̀ Ọjà HenryCo",
+      buyerProtectionLabel: "Ààbò olùrà",
+      buyerProtectionValue: "Ìsanwó nínú àbò",
+    },
+    rail: {
+      kicker: "Ohun tí ó wà nínú ètò yìí",
+      itemsSuffix: "nǹkan",
+    },
+  },
 };
 
 const HA: DeepPartial<MarketplacePublicCopy> = {
@@ -2987,6 +3273,30 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
       body: "Amincewa yana buɗe shirin mai sayarwa. Farashi, kudin shigarwa, da lokutan biyan kuɗi suna nan a sarari kafin ka buga — babu mamaki na kwangila daga baya.",
       primaryCta: "Fara aikace-aikacen",
       secondaryCta: "Ziyarci wurin aiki na mai sayarwa",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — Kasuwar HenryCo",
+      descriptionTemplate:
+        "Bincika {collection} a Kasuwar HenryCo — zaɓaɓɓun kayayyaki masu tantancewa, tare da alamomin amincewa, kyakkyawan bayanin isarwa, da fasfo na masu sayarwa kafin biyan kuɗi.",
+      fallbackDescription:
+        "Tarin zaɓaɓɓu a Kasuwar HenryCo, da kayayyaki masu tantancewa, alamomin amincewa, isarwa mai sarari, da fasfo na masu sayarwa da ake gani kafin biyan kuɗi.",
+    },
+    hero: {
+      primaryCta: "Buɗe cikakken bincike",
+      secondaryCta: "Matakan amincewa",
+    },
+    sidebar: {
+      itemsLabel: "Abubuwa cikin tarin",
+      editedByLabel: "Wanda ya tsara",
+      editedByValue: "Sashen aiki na Kasuwa",
+      buyerProtectionLabel: "Kariyar mai siye",
+      buyerProtectionValue: "Biyan kuɗi ta hannun amintacce",
+    },
+    rail: {
+      kicker: "Abin da ke cikin wannan zaɓi",
+      itemsSuffix: "abubuwa",
     },
   },
 };
