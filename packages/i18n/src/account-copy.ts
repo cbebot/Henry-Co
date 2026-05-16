@@ -442,6 +442,180 @@ export type AccountCopy = {
       logistics: string;
     };
   };
+  invoices: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      ariaOverview: string;
+      ariaTotals: string;
+      ariaByDivision: string;
+      headlineEmpty: string;
+      headlineWithReceipts: string;
+      blurb: string;
+      totalPaidLabel: string;
+      thisMonthLabel: string;
+      thisMonthFoot: string;
+      outstandingLabel: string;
+      paidCountUnit: string;
+      pendingCountUnit: string;
+      overdueCountUnit: string;
+      byDivision: string;
+      byDivisionEmpty: string;
+    };
+    section: {
+      title: string;
+      receiptsOnFileSingular: string;
+      receiptsOnFilePlural: string;
+    };
+    empty: {
+      title: string;
+      description: string;
+    };
+    statuses: {
+      paid: string;
+      pending: string;
+      overdue: string;
+      draft: string;
+      cancelled: string;
+      refunded: string;
+      fallback: string;
+    };
+    list: {
+      ariaLabel: string;
+      fallbackTitle: string;
+      rowAriaLabel: string;
+    };
+    divisions: {
+      account: string;
+      wallet: string;
+      marketplace: string;
+      studio: string;
+      jobs: string;
+      learn: string;
+      property: string;
+      logistics: string;
+      care: string;
+      fallback: string;
+    };
+    footerNote: string;
+  };
+  wallet: {
+    hero: {
+      ariaLabel: string;
+      eyebrow: string;
+      availableLabel: string;
+      balanceAriaTemplate: string;
+      settlementFallback: string;
+      ctas: {
+        fund: string;
+        withdraw: string;
+      };
+      tiles: {
+        verifiedLabel: string;
+        verifiedFoot: string;
+        pendingFundingLabel: string;
+        pendingFundingFoot: string;
+        pendingWithdrawalLabel: string;
+        pendingWithdrawalFoot: string;
+      };
+    };
+    sections: {
+      actionsTitle: string;
+      actionsMeta: string;
+      pendingTitle: string;
+      pendingMeta: string;
+      flowTitle: string;
+      flowMeta: string;
+      fundingTitle: string;
+      fundingMetaTemplate: string;
+      activityTitle: string;
+      activityMetaTemplate: string;
+    };
+    quickActions: {
+      ariaLabel: string;
+      addFundsLabel: string;
+      addFundsDesc: string;
+      withdrawLabel: string;
+      withdrawDesc: string;
+      paymentsLabel: string;
+      paymentsDesc: string;
+      receiptsLabel: string;
+      receiptsDesc: string;
+    };
+    pendingOps: {
+      fundingKicker: string;
+      fundingDescEmpty: string;
+      fundingDescSingular: string;
+      fundingDescPlural: string;
+      fundingCta: string;
+      withdrawalKicker: string;
+      withdrawalDescEmpty: string;
+      withdrawalDescSingular: string;
+      withdrawalDescPlural: string;
+      withdrawalCta: string;
+    };
+    spend: {
+      figureAriaLabel: string;
+      last30Eyebrow: string;
+      byDivisionEyebrow: string;
+      distributionAriaLabel: string;
+      trendFlat: string;
+      trendBelowTemplate: string;
+      trendAboveTemplate: string;
+      trendTitleTemplate: string;
+    };
+    trust: {
+      ariaLabel: string;
+      heading: string;
+      identityTitle: string;
+      identityDescDoneTemplate: string;
+      identityDescTodoTemplate: string;
+      identityCta: string;
+      pinTitle: string;
+      pinDescDone: string;
+      pinDescTodo: string;
+      pinCta: string;
+      payoutTitle: string;
+      payoutDescSingular: string;
+      payoutDescPluralTemplate: string;
+      payoutDescEmpty: string;
+      payoutCtaManage: string;
+      payoutCtaAdd: string;
+      verificationLabels: {
+        verified: string;
+        pending: string;
+        rejected: string;
+        notSubmitted: string;
+      };
+    };
+    activity: {
+      ariaLabel: string;
+      emptyTitle: string;
+      emptyBody: string;
+      fallbackTitle: string;
+    };
+    funding: {
+      proofUploaded: string;
+      awaitingProof: string;
+      ariaLabelTemplate: string;
+    };
+    statusLabels: {
+      pending: string;
+      awaiting_proof: string;
+      awaiting_review: string;
+      in_review: string;
+      rejected: string;
+      cancelled: string;
+      expired: string;
+      completed: string;
+      verified: string;
+      approved: string;
+      paid: string;
+    };
+  };
 };
 
 const EN: AccountCopy = {
@@ -931,6 +1105,179 @@ const EN: AccountCopy = {
       studio: "Studio",
       learn: "Learn",
       logistics: "Logistics",
+    },
+  },
+  invoices: {
+    metadata: {
+      title: "Invoices & Receipts",
+      description: "Your payment history and downloadable receipts.",
+    },
+    hero: {
+      eyebrow: "Invoices · receipts",
+      ariaOverview: "Invoices overview",
+      ariaTotals: "Financial totals",
+      ariaByDivision: "By division",
+      headlineEmpty: "Receipts will land here.",
+      headlineWithReceipts: "Every receipt, one place.",
+      blurb:
+        "Every payment across HenryCo arrives here as a branded, downloadable PDF — care bookings, marketplace orders, studio invoices, logistics shipments, learn certificates.",
+      totalPaidLabel: "Total paid · lifetime",
+      thisMonthLabel: "Paid · this month",
+      thisMonthFoot: "Receipts dated this calendar month",
+      outstandingLabel: "Outstanding",
+      paidCountUnit: "receipts",
+      pendingCountUnit: "pending",
+      overdueCountUnit: "overdue",
+      byDivision: "By division",
+      byDivisionEmpty: "No invoices yet.",
+    },
+    section: {
+      title: "All invoices",
+      receiptsOnFileSingular: "receipt on file",
+      receiptsOnFilePlural: "receipts on file",
+    },
+    empty: {
+      title: "No invoices yet",
+      description:
+        "Your invoices and receipts will appear here after making payments across HenryCo services.",
+    },
+    statuses: {
+      paid: "Paid",
+      pending: "Pending",
+      overdue: "Overdue",
+      draft: "Draft",
+      cancelled: "Cancelled",
+      refunded: "Refunded",
+      fallback: "Status pending",
+    },
+    list: {
+      ariaLabel: "Invoices",
+      fallbackTitle: "Invoice {number}",
+      rowAriaLabel: "Invoice {number} for ₦{amount}",
+    },
+    divisions: {
+      account: "Account",
+      wallet: "Wallet",
+      marketplace: "Marketplace",
+      studio: "Studio",
+      jobs: "Jobs",
+      learn: "Learn",
+      property: "Property",
+      logistics: "Logistics",
+      care: "Care",
+      fallback: "Account",
+    },
+    footerNote: "Receipts download as branded PDFs.",
+  },
+  wallet: {
+    hero: {
+      ariaLabel: "Wallet balance",
+      eyebrow: "HenryCo wallet · live",
+      availableLabel: "Available balance",
+      balanceAriaTemplate: "Available balance {amount} {currency}",
+      settlementFallback: "Settled into your local currency at the day's HenryCo rate.",
+      ctas: { fund: "Fund wallet", withdraw: "Withdraw" },
+      tiles: {
+        verifiedLabel: "Verified balance",
+        verifiedFoot: "Spendable across HenryCo services",
+        pendingFundingLabel: "Pending funding",
+        pendingFundingFoot: "Sits separately until finance confirms",
+        pendingWithdrawalLabel: "Held for withdrawal",
+        pendingWithdrawalFoot: "Reserved until payout clears",
+      },
+    },
+    sections: {
+      actionsTitle: "Wallet actions",
+      actionsMeta: "Add, withdraw, pay, reconcile",
+      pendingTitle: "Pending operations",
+      pendingMeta: "Kept separate from your available balance",
+      flowTitle: "How your money flows",
+      flowMeta: "Last 30 days · last 6 months · by division",
+      fundingTitle: "Recent funding requests",
+      fundingMetaTemplate: "{count} in review",
+      activityTitle: "Activity",
+      activityMetaTemplate: "Latest {count}",
+    },
+    quickActions: {
+      ariaLabel: "Wallet quick actions",
+      addFundsLabel: "Add funds",
+      addFundsDesc: "Bank transfer with proof upload and instant confirmation.",
+      withdrawLabel: "Withdraw",
+      withdrawDesc: "Move available balance to a verified bank account.",
+      paymentsLabel: "Payments",
+      paymentsDesc: "Recent charges, refunds and saved methods.",
+      receiptsLabel: "Receipts & invoices",
+      receiptsDesc: "Branded PDFs across every division.",
+    },
+    pendingOps: {
+      fundingKicker: "Pending funding",
+      fundingDescEmpty: "Funds you transfer in stay here until finance confirms the bank reference.",
+      fundingDescSingular: "{count} request sitting in review — proof keeps the queue moving.",
+      fundingDescPlural: "{count} requests sitting in review — proof keeps the queue moving.",
+      fundingCta: "Open funding lane",
+      withdrawalKicker: "Pending withdrawals",
+      withdrawalDescEmpty: "Withdrawals queue up here while finance reviews them — your available balance is never double-promised.",
+      withdrawalDescSingular: "{count} withdrawal awaiting payout. Reserved off your available balance.",
+      withdrawalDescPlural: "{count} withdrawals awaiting payout. Reserved off your available balance.",
+      withdrawalCta: "Open withdrawal lane",
+    },
+    spend: {
+      figureAriaLabel: "Spend over the last 6 months",
+      last30Eyebrow: "Spend · last 30 days",
+      byDivisionEyebrow: "By division",
+      distributionAriaLabel: "Spend distribution by division",
+      trendFlat: "Flat",
+      trendBelowTemplate: "{pct}% below prior 30d",
+      trendAboveTemplate: "{pct}% above prior 30d",
+      trendTitleTemplate: "vs prior 30 days (₦{amount})",
+    },
+    trust: {
+      ariaLabel: "Withdrawal readiness",
+      heading: "Withdrawal readiness",
+      identityTitle: "Identity verified",
+      identityDescDoneTemplate: "{label}. Required for withdrawal payouts.",
+      identityDescTodoTemplate: "{label}. Complete it once to unlock withdrawals.",
+      identityCta: "Continue →",
+      pinTitle: "Withdrawal PIN",
+      pinDescDone: "Your withdrawal PIN is set.",
+      pinDescTodo: "Set a 4-digit PIN to authorise every withdrawal.",
+      pinCta: "Set PIN →",
+      payoutTitle: "Payout method",
+      payoutDescSingular: "1 verified method on file.",
+      payoutDescPluralTemplate: "{count} verified methods on file.",
+      payoutDescEmpty: "Add a bank account to receive withdrawals.",
+      payoutCtaManage: "Manage →",
+      payoutCtaAdd: "Add method →",
+      verificationLabels: {
+        verified: "Identity verified",
+        pending: "Verification in review",
+        rejected: "Verification needs another submission",
+        notSubmitted: "Identity not yet submitted",
+      },
+    },
+    activity: {
+      ariaLabel: "Wallet transactions",
+      emptyTitle: "No transactions yet",
+      emptyBody: "Top up your wallet and your activity feed will populate here with every credit, debit, refund and bonus across HenryCo services.",
+      fallbackTitle: "Wallet transaction",
+    },
+    funding: {
+      proofUploaded: "Proof uploaded",
+      awaitingProof: "Awaiting proof",
+      ariaLabelTemplate: "Funding request {reference} for ₦{amount}",
+    },
+    statusLabels: {
+      pending: "Awaiting review",
+      awaiting_proof: "Awaiting proof",
+      awaiting_review: "Awaiting review",
+      in_review: "In review",
+      rejected: "Rejected",
+      cancelled: "Cancelled",
+      expired: "Expired",
+      completed: "Confirmed",
+      verified: "Confirmed",
+      approved: "Approved",
+      paid: "Paid out",
     },
   },
 };
@@ -1442,6 +1789,179 @@ const FR: DeepPartial<AccountCopy> = {
       recentlyDeleted: "Supprimées récemment",
     },
   },
+  invoices: {
+    metadata: {
+      title: "Factures et reçus",
+      description: "Votre historique de paiements et vos reçus téléchargeables.",
+    },
+    hero: {
+      eyebrow: "Factures · reçus",
+      ariaOverview: "Aperçu des factures",
+      ariaTotals: "Totaux financiers",
+      ariaByDivision: "Par division",
+      headlineEmpty: "Vos reçus apparaîtront ici.",
+      headlineWithReceipts: "Tous vos reçus, au même endroit.",
+      blurb:
+        "Chaque paiement effectué sur HenryCo arrive ici sous forme de PDF de marque téléchargeable — réservations Care, commandes Marketplace, factures Studio, expéditions Logistics, certificats Learn.",
+      totalPaidLabel: "Payé · à vie",
+      thisMonthLabel: "Payé · ce mois",
+      thisMonthFoot: "Reçus datés du mois en cours",
+      outstandingLabel: "En attente",
+      paidCountUnit: "reçus",
+      pendingCountUnit: "en attente",
+      overdueCountUnit: "en retard",
+      byDivision: "Par division",
+      byDivisionEmpty: "Aucune facture pour le moment.",
+    },
+    section: {
+      title: "Toutes les factures",
+      receiptsOnFileSingular: "reçu enregistré",
+      receiptsOnFilePlural: "reçus enregistrés",
+    },
+    empty: {
+      title: "Aucune facture pour le moment",
+      description:
+        "Vos factures et reçus apparaîtront ici après vos paiements dans les services HenryCo.",
+    },
+    statuses: {
+      paid: "Payée",
+      pending: "En attente",
+      overdue: "En retard",
+      draft: "Brouillon",
+      cancelled: "Annulée",
+      refunded: "Remboursée",
+      fallback: "Statut en attente",
+    },
+    list: {
+      ariaLabel: "Factures",
+      fallbackTitle: "Facture {number}",
+      rowAriaLabel: "Facture {number} pour ₦{amount}",
+    },
+    divisions: {
+      account: "Compte",
+      wallet: "Portefeuille",
+      marketplace: "Marketplace",
+      studio: "Studio",
+      jobs: "Jobs",
+      learn: "Learn",
+      property: "Property",
+      logistics: "Logistics",
+      care: "Care",
+      fallback: "Compte",
+    },
+    footerNote: "Les reçus se téléchargent en PDF de marque.",
+  },
+  wallet: {
+    hero: {
+      ariaLabel: "Solde du portefeuille",
+      eyebrow: "Portefeuille HenryCo · en direct",
+      availableLabel: "Solde disponible",
+      balanceAriaTemplate: "Solde disponible {amount} {currency}",
+      settlementFallback: "Réglé dans votre devise locale au taux HenryCo du jour.",
+      ctas: { fund: "Approvisionner", withdraw: "Retirer" },
+      tiles: {
+        verifiedLabel: "Solde vérifié",
+        verifiedFoot: "Utilisable dans tous les services HenryCo",
+        pendingFundingLabel: "Approvisionnement en attente",
+        pendingFundingFoot: "Reste isolé jusqu’à confirmation par la finance",
+        pendingWithdrawalLabel: "Retenu pour retrait",
+        pendingWithdrawalFoot: "Réservé jusqu’au paiement effectif",
+      },
+    },
+    sections: {
+      actionsTitle: "Actions du portefeuille",
+      actionsMeta: "Ajouter, retirer, payer, rapprocher",
+      pendingTitle: "Opérations en attente",
+      pendingMeta: "Séparées de votre solde disponible",
+      flowTitle: "Comment circule votre argent",
+      flowMeta: "30 derniers jours · 6 derniers mois · par division",
+      fundingTitle: "Demandes d’approvisionnement récentes",
+      fundingMetaTemplate: "{count} en cours d’examen",
+      activityTitle: "Activité",
+      activityMetaTemplate: "{count} dernières",
+    },
+    quickActions: {
+      ariaLabel: "Actions rapides du portefeuille",
+      addFundsLabel: "Ajouter des fonds",
+      addFundsDesc: "Virement bancaire avec preuve et confirmation immédiate.",
+      withdrawLabel: "Retirer",
+      withdrawDesc: "Transférer le solde disponible vers un compte vérifié.",
+      paymentsLabel: "Paiements",
+      paymentsDesc: "Débits récents, remboursements et moyens enregistrés.",
+      receiptsLabel: "Reçus et factures",
+      receiptsDesc: "PDF de marque pour toutes les divisions.",
+    },
+    pendingOps: {
+      fundingKicker: "Approvisionnement en attente",
+      fundingDescEmpty: "Les fonds que vous transférez restent ici jusqu’à confirmation de la référence bancaire par la finance.",
+      fundingDescSingular: "{count} demande en cours d’examen — la preuve fait avancer la file.",
+      fundingDescPlural: "{count} demandes en cours d’examen — la preuve fait avancer la file.",
+      fundingCta: "Ouvrir la voie d’approvisionnement",
+      withdrawalKicker: "Retraits en attente",
+      withdrawalDescEmpty: "Les retraits patientent ici pendant l’examen — votre solde disponible n’est jamais promis deux fois.",
+      withdrawalDescSingular: "{count} retrait en attente de paiement. Réservé sur votre solde disponible.",
+      withdrawalDescPlural: "{count} retraits en attente de paiement. Réservés sur votre solde disponible.",
+      withdrawalCta: "Ouvrir la voie de retrait",
+    },
+    spend: {
+      figureAriaLabel: "Dépenses sur les 6 derniers mois",
+      last30Eyebrow: "Dépenses · 30 derniers jours",
+      byDivisionEyebrow: "Par division",
+      distributionAriaLabel: "Répartition des dépenses par division",
+      trendFlat: "Stable",
+      trendBelowTemplate: "{pct}% en dessous des 30j précédents",
+      trendAboveTemplate: "{pct}% au-dessus des 30j précédents",
+      trendTitleTemplate: "vs 30 jours précédents (₦{amount})",
+    },
+    trust: {
+      ariaLabel: "Préparation au retrait",
+      heading: "Préparation au retrait",
+      identityTitle: "Identité vérifiée",
+      identityDescDoneTemplate: "{label}. Requis pour les paiements de retrait.",
+      identityDescTodoTemplate: "{label}. Complétez-la une fois pour débloquer les retraits.",
+      identityCta: "Continuer →",
+      pinTitle: "Code PIN de retrait",
+      pinDescDone: "Votre code PIN de retrait est configuré.",
+      pinDescTodo: "Définissez un PIN à 4 chiffres pour autoriser chaque retrait.",
+      pinCta: "Définir le PIN →",
+      payoutTitle: "Mode de paiement",
+      payoutDescSingular: "1 mode vérifié enregistré.",
+      payoutDescPluralTemplate: "{count} modes vérifiés enregistrés.",
+      payoutDescEmpty: "Ajoutez un compte bancaire pour recevoir les retraits.",
+      payoutCtaManage: "Gérer →",
+      payoutCtaAdd: "Ajouter un mode →",
+      verificationLabels: {
+        verified: "Identité vérifiée",
+        pending: "Vérification en cours d’examen",
+        rejected: "La vérification nécessite une nouvelle soumission",
+        notSubmitted: "Identité non encore soumise",
+      },
+    },
+    activity: {
+      ariaLabel: "Transactions du portefeuille",
+      emptyTitle: "Aucune transaction pour l’instant",
+      emptyBody: "Approvisionnez votre portefeuille et votre flux affichera ici chaque crédit, débit, remboursement et bonus dans les services HenryCo.",
+      fallbackTitle: "Transaction du portefeuille",
+    },
+    funding: {
+      proofUploaded: "Preuve téléversée",
+      awaitingProof: "En attente de preuve",
+      ariaLabelTemplate: "Demande d’approvisionnement {reference} de ₦{amount}",
+    },
+    statusLabels: {
+      pending: "En attente d’examen",
+      awaiting_proof: "En attente de preuve",
+      awaiting_review: "En attente d’examen",
+      in_review: "En cours d’examen",
+      rejected: "Refusé",
+      cancelled: "Annulé",
+      expired: "Expiré",
+      completed: "Confirmé",
+      verified: "Confirmé",
+      approved: "Approuvé",
+      paid: "Payé",
+    },
+  },
 };
 
 const DE: DeepPartial<AccountCopy> = {
@@ -1884,7 +2404,178 @@ const DE: DeepPartial<AccountCopy> = {
     footer: {
       recentlyDeleted: "Kürzlich gelöscht",
     },
-  }
+  },
+  "invoices": {
+    "metadata": {
+      "title": "Rechnungen & Belege",
+      "description": "Ihr Zahlungsverlauf und herunterladbare Belege."
+    },
+    "hero": {
+      "eyebrow": "Rechnungen · Belege",
+      "ariaOverview": "Übersicht der Rechnungen",
+      "ariaTotals": "Finanzielle Summen",
+      "ariaByDivision": "Nach Division",
+      "headlineEmpty": "Belege landen hier.",
+      "headlineWithReceipts": "Jeder Beleg, ein Ort.",
+      "blurb": "Jede Zahlung in HenryCo erscheint hier als markenbezogene, herunterladbare PDF — Care-Buchungen, Marketplace-Bestellungen, Studio-Rechnungen, Logistics-Sendungen, Learn-Zertifikate.",
+      "totalPaidLabel": "Gesamt bezahlt · lebenslang",
+      "thisMonthLabel": "Bezahlt · diesen Monat",
+      "thisMonthFoot": "Belege aus diesem Kalendermonat",
+      "outstandingLabel": "Offen",
+      "paidCountUnit": "Belege",
+      "pendingCountUnit": "ausstehend",
+      "overdueCountUnit": "überfällig",
+      "byDivision": "Nach Division",
+      "byDivisionEmpty": "Noch keine Rechnungen."
+    },
+    "section": {
+      "title": "Alle Rechnungen",
+      "receiptsOnFileSingular": "Beleg gespeichert",
+      "receiptsOnFilePlural": "Belege gespeichert"
+    },
+    "empty": {
+      "title": "Noch keine Rechnungen",
+      "description": "Ihre Rechnungen und Belege erscheinen hier, sobald Sie Zahlungen in HenryCo-Diensten tätigen."
+    },
+    "statuses": {
+      "paid": "Bezahlt",
+      "pending": "Ausstehend",
+      "overdue": "Überfällig",
+      "draft": "Entwurf",
+      "cancelled": "Storniert",
+      "refunded": "Erstattet",
+      "fallback": "Status ausstehend"
+    },
+    "list": {
+      "ariaLabel": "Rechnungen",
+      "fallbackTitle": "Rechnung {number}",
+      "rowAriaLabel": "Rechnung {number} über ₦{amount}"
+    },
+    "divisions": {
+      "account": "Konto",
+      "wallet": "Wallet",
+      "marketplace": "Marketplace",
+      "studio": "Studio",
+      "jobs": "Jobs",
+      "learn": "Learn",
+      "property": "Property",
+      "logistics": "Logistics",
+      "care": "Care",
+      "fallback": "Konto"
+    },
+    "footerNote": "Belege werden als markenbezogene PDFs heruntergeladen."
+  },
+  wallet: {
+    hero: {
+      ariaLabel: "Wallet-Saldo",
+      eyebrow: "HenryCo Wallet · live",
+      availableLabel: "Verfügbarer Saldo",
+      balanceAriaTemplate: "Verfügbarer Saldo {amount} {currency}",
+      settlementFallback: "Wird zum HenryCo-Tageskurs in Ihre Lokalwährung abgerechnet.",
+      ctas: { fund: "Wallet aufladen", withdraw: "Auszahlen" },
+      tiles: {
+        verifiedLabel: "Verifizierter Saldo",
+        verifiedFoot: "Übergreifend in HenryCo-Diensten nutzbar",
+        pendingFundingLabel: "Ausstehende Einzahlung",
+        pendingFundingFoot: "Bleibt separat, bis Finance bestätigt",
+        pendingWithdrawalLabel: "Für Auszahlung reserviert",
+        pendingWithdrawalFoot: "Bis zur Auszahlung gesperrt",
+      },
+    },
+    sections: {
+      actionsTitle: "Wallet-Aktionen",
+      actionsMeta: "Einzahlen, auszahlen, bezahlen, abgleichen",
+      pendingTitle: "Ausstehende Vorgänge",
+      pendingMeta: "Vom verfügbaren Saldo getrennt gehalten",
+      flowTitle: "So fließt Ihr Geld",
+      flowMeta: "Letzte 30 Tage · letzte 6 Monate · nach Division",
+      fundingTitle: "Aktuelle Einzahlungsanfragen",
+      fundingMetaTemplate: "{count} in Prüfung",
+      activityTitle: "Aktivität",
+      activityMetaTemplate: "Letzte {count}",
+    },
+    quickActions: {
+      ariaLabel: "Schnellaktionen Wallet",
+      addFundsLabel: "Geld einzahlen",
+      addFundsDesc: "Banküberweisung mit Beleg-Upload und sofortiger Bestätigung.",
+      withdrawLabel: "Auszahlen",
+      withdrawDesc: "Verfügbaren Saldo auf ein verifiziertes Bankkonto übertragen.",
+      paymentsLabel: "Zahlungen",
+      paymentsDesc: "Aktuelle Belastungen, Rückerstattungen und gespeicherte Methoden.",
+      receiptsLabel: "Belege & Rechnungen",
+      receiptsDesc: "Marken-PDFs über alle Divisionen.",
+    },
+    pendingOps: {
+      fundingKicker: "Ausstehende Einzahlung",
+      fundingDescEmpty: "Eingezahlte Beträge bleiben hier, bis Finance die Bankreferenz bestätigt hat.",
+      fundingDescSingular: "{count} Anfrage in Prüfung — ein Beleg hält die Warteschlange in Bewegung.",
+      fundingDescPlural: "{count} Anfragen in Prüfung — Belege halten die Warteschlange in Bewegung.",
+      fundingCta: "Einzahlungsspur öffnen",
+      withdrawalKicker: "Ausstehende Auszahlungen",
+      withdrawalDescEmpty: "Auszahlungen warten hier während der Finance-Prüfung — Ihr verfügbarer Saldo wird nie doppelt zugesagt.",
+      withdrawalDescSingular: "{count} Auszahlung wartet auf Auszahlung. Vom verfügbaren Saldo reserviert.",
+      withdrawalDescPlural: "{count} Auszahlungen warten auf Auszahlung. Vom verfügbaren Saldo reserviert.",
+      withdrawalCta: "Auszahlungsspur öffnen",
+    },
+    spend: {
+      figureAriaLabel: "Ausgaben der letzten 6 Monate",
+      last30Eyebrow: "Ausgaben · letzte 30 Tage",
+      byDivisionEyebrow: "Nach Division",
+      distributionAriaLabel: "Ausgabenverteilung nach Division",
+      trendFlat: "Unverändert",
+      trendBelowTemplate: "{pct}% unter den letzten 30 Tagen",
+      trendAboveTemplate: "{pct}% über den letzten 30 Tagen",
+      trendTitleTemplate: "vs. letzte 30 Tage (₦{amount})",
+    },
+    trust: {
+      ariaLabel: "Auszahlungsbereitschaft",
+      heading: "Auszahlungsbereitschaft",
+      identityTitle: "Identität verifiziert",
+      identityDescDoneTemplate: "{label}. Für Auszahlungen erforderlich.",
+      identityDescTodoTemplate: "{label}. Einmal abschließen, um Auszahlungen freizuschalten.",
+      identityCta: "Fortfahren →",
+      pinTitle: "Auszahlungs-PIN",
+      pinDescDone: "Ihre Auszahlungs-PIN ist eingerichtet.",
+      pinDescTodo: "Legen Sie eine 4-stellige PIN fest, um jede Auszahlung zu autorisieren.",
+      pinCta: "PIN festlegen →",
+      payoutTitle: "Auszahlungsmethode",
+      payoutDescSingular: "1 verifizierte Methode hinterlegt.",
+      payoutDescPluralTemplate: "{count} verifizierte Methoden hinterlegt.",
+      payoutDescEmpty: "Fügen Sie ein Bankkonto hinzu, um Auszahlungen zu erhalten.",
+      payoutCtaManage: "Verwalten →",
+      payoutCtaAdd: "Methode hinzufügen →",
+      verificationLabels: {
+        verified: "Identität verifiziert",
+        pending: "Verifizierung in Prüfung",
+        rejected: "Verifizierung benötigt erneute Einreichung",
+        notSubmitted: "Identität noch nicht eingereicht",
+      },
+    },
+    activity: {
+      ariaLabel: "Wallet-Transaktionen",
+      emptyTitle: "Noch keine Transaktionen",
+      emptyBody: "Laden Sie Ihre Wallet auf, und Ihr Aktivitätsfeed zeigt hier jede Gutschrift, Belastung, Rückerstattung und jeden Bonus über alle HenryCo-Dienste.",
+      fallbackTitle: "Wallet-Transaktion",
+    },
+    funding: {
+      proofUploaded: "Beleg hochgeladen",
+      awaitingProof: "Beleg ausstehend",
+      ariaLabelTemplate: "Einzahlungsanfrage {reference} über ₦{amount}",
+    },
+    statusLabels: {
+      pending: "Wartet auf Prüfung",
+      awaiting_proof: "Beleg ausstehend",
+      awaiting_review: "Wartet auf Prüfung",
+      in_review: "In Prüfung",
+      rejected: "Abgelehnt",
+      cancelled: "Storniert",
+      expired: "Abgelaufen",
+      completed: "Bestätigt",
+      verified: "Bestätigt",
+      approved: "Genehmigt",
+      paid: "Ausgezahlt",
+    },
+  },
 };
 
 const IT: DeepPartial<AccountCopy> = {
@@ -2327,7 +3018,180 @@ const IT: DeepPartial<AccountCopy> = {
       learn: "Learn",
       logistics: "Logistica",
     },
-  }
+  },
+  invoices: {
+    metadata: {
+      title: "Fatture e ricevute",
+      description: "Lo storico dei tuoi pagamenti e le ricevute scaricabili.",
+    },
+    hero: {
+      eyebrow: "Fatture · ricevute",
+      ariaOverview: "Panoramica delle fatture",
+      ariaTotals: "Totali finanziari",
+      ariaByDivision: "Per divisione",
+      headlineEmpty: "Le ricevute appariranno qui.",
+      headlineWithReceipts: "Ogni ricevuta, in un solo posto.",
+      blurb:
+        "Ogni pagamento su HenryCo atterra qui come PDF di marca scaricabile — prenotazioni Care, ordini Marketplace, fatture Studio, spedizioni Logistics, certificati Learn.",
+      totalPaidLabel: "Pagato · a vita",
+      thisMonthLabel: "Pagato · questo mese",
+      thisMonthFoot: "Ricevute datate in questo mese di calendario",
+      outstandingLabel: "In sospeso",
+      paidCountUnit: "ricevute",
+      pendingCountUnit: "in sospeso",
+      overdueCountUnit: "scadute",
+      byDivision: "Per divisione",
+      byDivisionEmpty: "Ancora nessuna fattura.",
+    },
+    section: {
+      title: "Tutte le fatture",
+      receiptsOnFileSingular: "ricevuta archiviata",
+      receiptsOnFilePlural: "ricevute archiviate",
+    },
+    empty: {
+      title: "Ancora nessuna fattura",
+      description:
+        "Le tue fatture e ricevute appariranno qui dopo aver effettuato pagamenti nei servizi HenryCo.",
+    },
+    statuses: {
+      paid: "Pagata",
+      pending: "In sospeso",
+      overdue: "Scaduta",
+      draft: "Bozza",
+      cancelled: "Annullata",
+      refunded: "Rimborsata",
+      fallback: "Stato in sospeso",
+    },
+    list: {
+      ariaLabel: "Fatture",
+      fallbackTitle: "Fattura {number}",
+      rowAriaLabel: "Fattura {number} per ₦{amount}",
+    },
+    divisions: {
+      account: "Account",
+      wallet: "Wallet",
+      marketplace: "Marketplace",
+      studio: "Studio",
+      jobs: "Jobs",
+      learn: "Learn",
+      property: "Property",
+      logistics: "Logistics",
+      care: "Care",
+      fallback: "Account",
+    },
+    footerNote: "Le ricevute si scaricano come PDF di marca.",
+  },
+  wallet: {
+    hero: {
+      ariaLabel: "Saldo del portafoglio",
+      eyebrow: "Portafoglio HenryCo · live",
+      availableLabel: "Saldo disponibile",
+      balanceAriaTemplate: "Saldo disponibile {amount} {currency}",
+      settlementFallback: "Liquidato nella tua valuta locale al tasso HenryCo del giorno.",
+      ctas: { fund: "Ricarica portafoglio", withdraw: "Preleva" },
+      tiles: {
+        verifiedLabel: "Saldo verificato",
+        verifiedFoot: "Spendibile in tutti i servizi HenryCo",
+        pendingFundingLabel: "Ricarica in attesa",
+        pendingFundingFoot: "Resta separata fino alla conferma di Finance",
+        pendingWithdrawalLabel: "Trattenuto per prelievo",
+        pendingWithdrawalFoot: "Riservato fino al completamento del pagamento",
+      },
+    },
+    sections: {
+      actionsTitle: "Azioni del portafoglio",
+      actionsMeta: "Aggiungi, preleva, paga, concilia",
+      pendingTitle: "Operazioni in sospeso",
+      pendingMeta: "Tenute separate dal tuo saldo disponibile",
+      flowTitle: "Come fluisce il tuo denaro",
+      flowMeta: "Ultimi 30 giorni · ultimi 6 mesi · per divisione",
+      fundingTitle: "Richieste di ricarica recenti",
+      fundingMetaTemplate: "{count} in revisione",
+      activityTitle: "Attività",
+      activityMetaTemplate: "Ultime {count}",
+    },
+    quickActions: {
+      ariaLabel: "Azioni rapide del portafoglio",
+      addFundsLabel: "Aggiungi fondi",
+      addFundsDesc: "Bonifico con caricamento prova e conferma immediata.",
+      withdrawLabel: "Preleva",
+      withdrawDesc: "Sposta il saldo disponibile su un conto bancario verificato.",
+      paymentsLabel: "Pagamenti",
+      paymentsDesc: "Addebiti recenti, rimborsi e metodi salvati.",
+      receiptsLabel: "Ricevute e fatture",
+      receiptsDesc: "PDF di marca per tutte le divisioni.",
+    },
+    pendingOps: {
+      fundingKicker: "Ricarica in attesa",
+      fundingDescEmpty: "I fondi che trasferisci restano qui finché Finance non conferma il riferimento bancario.",
+      fundingDescSingular: "{count} richiesta in revisione — la prova fa avanzare la coda.",
+      fundingDescPlural: "{count} richieste in revisione — la prova fa avanzare la coda.",
+      fundingCta: "Apri corsia ricarica",
+      withdrawalKicker: "Prelievi in attesa",
+      withdrawalDescEmpty: "I prelievi attendono qui durante la revisione di Finance — il tuo saldo disponibile non viene mai promesso due volte.",
+      withdrawalDescSingular: "{count} prelievo in attesa di pagamento. Riservato sul saldo disponibile.",
+      withdrawalDescPlural: "{count} prelievi in attesa di pagamento. Riservati sul saldo disponibile.",
+      withdrawalCta: "Apri corsia prelievo",
+    },
+    spend: {
+      figureAriaLabel: "Spesa degli ultimi 6 mesi",
+      last30Eyebrow: "Spesa · ultimi 30 giorni",
+      byDivisionEyebrow: "Per divisione",
+      distributionAriaLabel: "Distribuzione della spesa per divisione",
+      trendFlat: "Stabile",
+      trendBelowTemplate: "{pct}% sotto i 30g precedenti",
+      trendAboveTemplate: "{pct}% sopra i 30g precedenti",
+      trendTitleTemplate: "vs 30 giorni precedenti (₦{amount})",
+    },
+    trust: {
+      ariaLabel: "Idoneità al prelievo",
+      heading: "Idoneità al prelievo",
+      identityTitle: "Identità verificata",
+      identityDescDoneTemplate: "{label}. Richiesta per i pagamenti di prelievo.",
+      identityDescTodoTemplate: "{label}. Completala una volta per sbloccare i prelievi.",
+      identityCta: "Continua →",
+      pinTitle: "PIN di prelievo",
+      pinDescDone: "Il tuo PIN di prelievo è impostato.",
+      pinDescTodo: "Imposta un PIN a 4 cifre per autorizzare ogni prelievo.",
+      pinCta: "Imposta PIN →",
+      payoutTitle: "Metodo di pagamento",
+      payoutDescSingular: "1 metodo verificato in archivio.",
+      payoutDescPluralTemplate: "{count} metodi verificati in archivio.",
+      payoutDescEmpty: "Aggiungi un conto bancario per ricevere i prelievi.",
+      payoutCtaManage: "Gestisci →",
+      payoutCtaAdd: "Aggiungi metodo →",
+      verificationLabels: {
+        verified: "Identità verificata",
+        pending: "Verifica in revisione",
+        rejected: "La verifica richiede un altro invio",
+        notSubmitted: "Identità non ancora inviata",
+      },
+    },
+    activity: {
+      ariaLabel: "Transazioni del portafoglio",
+      emptyTitle: "Ancora nessuna transazione",
+      emptyBody: "Ricarica il tuo portafoglio e il flusso di attività mostrerà ogni accredito, addebito, rimborso e bonus tra i servizi HenryCo.",
+      fallbackTitle: "Transazione del portafoglio",
+    },
+    funding: {
+      proofUploaded: "Prova caricata",
+      awaitingProof: "In attesa di prova",
+      ariaLabelTemplate: "Richiesta di ricarica {reference} per ₦{amount}",
+    },
+    statusLabels: {
+      pending: "In attesa di revisione",
+      awaiting_proof: "In attesa di prova",
+      awaiting_review: "In attesa di revisione",
+      in_review: "In revisione",
+      rejected: "Rifiutato",
+      cancelled: "Annullato",
+      expired: "Scaduto",
+      completed: "Confermato",
+      verified: "Confermato",
+      approved: "Approvato",
+      paid: "Pagato",
+    },
+  },
 };
 
 const IG: DeepPartial<AccountCopy> = {
@@ -2771,6 +3635,179 @@ const IG: DeepPartial<AccountCopy> = {
       studio: "Studio",
       learn: "Learn",
       logistics: "Logistics",
+    },
+  },
+  invoices: {
+    metadata: {
+      title: "Ụgwọ ọrụ na akwụkwọ nnata",
+      description: "Akụkọ ịkwụ ụgwọ gị na akwụkwọ nnata e nwere ike ibudata.",
+    },
+    hero: {
+      eyebrow: "Ụgwọ ọrụ · akwụkwọ nnata",
+      ariaOverview: "Nchịkọta ụgwọ ọrụ",
+      ariaTotals: "Ngụkọta ego",
+      ariaByDivision: "Site na ngalaba",
+      headlineEmpty: "Akwụkwọ nnata ga-eru ebe a.",
+      headlineWithReceipts: "Akwụkwọ nnata ọ bụla, otu ebe.",
+      blurb:
+        "Ịkwụ ụgwọ ọ bụla na HenryCo na-arute ebe a dị ka PDF nwere akara nke a ga-ebudata — ndokwa Care, iwu Marketplace, ụgwọ Studio, mbupu Logistics, akwụkwọ Learn.",
+      totalPaidLabel: "Ego e kwụrụ · ndụ niile",
+      thisMonthLabel: "Kwụrụ · ọnwa a",
+      thisMonthFoot: "Akwụkwọ nnata nke ọnwa a",
+      outstandingLabel: "Na-akwụ",
+      paidCountUnit: "akwụkwọ nnata",
+      pendingCountUnit: "na-echere",
+      overdueCountUnit: "egbula oge",
+      byDivision: "Site na ngalaba",
+      byDivisionEmpty: "Enwebeghị ụgwọ ọrụ.",
+    },
+    section: {
+      title: "Ụgwọ ọrụ niile",
+      receiptsOnFileSingular: "akwụkwọ nnata edebere",
+      receiptsOnFilePlural: "akwụkwọ nnata edebere",
+    },
+    empty: {
+      title: "Enwebeghị ụgwọ ọrụ",
+      description:
+        "Ụgwọ ọrụ na akwụkwọ nnata gị ga-apụta ebe a mgbe ị kwụchara ụgwọ na ọrụ HenryCo.",
+    },
+    statuses: {
+      paid: "Akwụgoro",
+      pending: "Na-echere",
+      overdue: "Egbula oge",
+      draft: "Akwụkwọ mbụ",
+      cancelled: "Akagburu",
+      refunded: "Akwụghachi",
+      fallback: "Ọnọdụ na-echere",
+    },
+    list: {
+      ariaLabel: "Ụgwọ ọrụ",
+      fallbackTitle: "Ụgwọ ọrụ {number}",
+      rowAriaLabel: "Ụgwọ ọrụ {number} maka ₦{amount}",
+    },
+    divisions: {
+      account: "Akaụntụ",
+      wallet: "Obere akpa ego",
+      marketplace: "Marketplace",
+      studio: "Studio",
+      jobs: "Jobs",
+      learn: "Learn",
+      property: "Ụlọ",
+      logistics: "Logistics",
+      care: "Care",
+      fallback: "Akaụntụ",
+    },
+    footerNote: "Akwụkwọ nnata na-ebudata dị ka PDF nwere akara.",
+  },
+  wallet: {
+    hero: {
+      ariaLabel: "Ego dị n'obere akpa",
+      eyebrow: "Obere akpa ego HenryCo · na-aga",
+      availableLabel: "Ego dị nri",
+      balanceAriaTemplate: "Ego dị nri {amount} {currency}",
+      settlementFallback: "A na-akwụ ya na ego obodo gị site na ọnụego HenryCo ụbọchị.",
+      ctas: { fund: "Tinye ego", withdraw: "Wepụ" },
+      tiles: {
+        verifiedLabel: "Ego enyochara",
+        verifiedFoot: "Enwere ike iji ya na ọrụ HenryCo niile",
+        pendingFundingLabel: "Ego ana-eche",
+        pendingFundingFoot: "Ọ na-anọ iche ruo mgbe ego kwado",
+        pendingWithdrawalLabel: "Edebere maka mpụta",
+        pendingWithdrawalFoot: "Edebere ruo mgbe ịkwụ ụgwọ zuru",
+      },
+    },
+    sections: {
+      actionsTitle: "Omume obere akpa ego",
+      actionsMeta: "Tinye, wepụ, kwụọ, megharịa",
+      pendingTitle: "Arụmọrụ ana-eche",
+      pendingMeta: "Edobere iche site na ego gị dị nri",
+      flowTitle: "Otú ego gị si aga",
+      flowMeta: "Ụbọchị 30 gara aga · ọnwa 6 gara aga · site na ngalaba",
+      fundingTitle: "Arịrịọ itinye ego ọhụrụ",
+      fundingMetaTemplate: "{count} na nyocha",
+      activityTitle: "Mmemme",
+      activityMetaTemplate: "Ndị ikpeazụ {count}",
+    },
+    quickActions: {
+      ariaLabel: "Omume ngwa ngwa obere akpa ego",
+      addFundsLabel: "Tinye ego",
+      addFundsDesc: "Mbufe ụlọ akụ na nbulite ihe akaebe na nkwado ozugbo.",
+      withdrawLabel: "Wepụ",
+      withdrawDesc: "Bufee ego dị nri n'akaụntụ ụlọ akụ enyochara.",
+      paymentsLabel: "Ịkwụ ụgwọ",
+      paymentsDesc: "Ego e gbara, nlọghachi azụ na ụzọ echekwara.",
+      receiptsLabel: "Akwụkwọ nnata & invoice",
+      receiptsDesc: "PDF nwere akara n'ofe ngalaba ọ bụla.",
+    },
+    pendingOps: {
+      fundingKicker: "Ego ana-eche",
+      fundingDescEmpty: "Ego ị tinyere na-anọ ebe a ruo mgbe ego nyochara ntụaka ụlọ akụ.",
+      fundingDescSingular: "{count} arịrịọ nọ na nyocha — ihe akaebe na-eme ka kwụụ na-aga n'ihu.",
+      fundingDescPlural: "{count} arịrịọ nọ na nyocha — ihe akaebe na-eme ka kwụụ na-aga n'ihu.",
+      fundingCta: "Mepee ụzọ itinye ego",
+      withdrawalKicker: "Mpụta ana-eche",
+      withdrawalDescEmpty: "Mpụta na-eche ebe a mgbe ego na-eme nyocha — ego gị dị nri anaghị ekwe nkwa ugboro abụọ.",
+      withdrawalDescSingular: "{count} mpụta na-eche ịkwụ ụgwọ. Edebere site na ego gị dị nri.",
+      withdrawalDescPlural: "{count} mpụta na-eche ịkwụ ụgwọ. Edebere site na ego gị dị nri.",
+      withdrawalCta: "Mepee ụzọ mpụta",
+    },
+    spend: {
+      figureAriaLabel: "Mmefu n'ọnwa 6 gara aga",
+      last30Eyebrow: "Mmefu · ụbọchị 30 gara aga",
+      byDivisionEyebrow: "Site na ngalaba",
+      distributionAriaLabel: "Nkesa mmefu site na ngalaba",
+      trendFlat: "Nke a na-agbanwe",
+      trendBelowTemplate: "{pct}% n'okpuru ụbọchị 30 gara aga",
+      trendAboveTemplate: "{pct}% n'elu ụbọchị 30 gara aga",
+      trendTitleTemplate: "vs ụbọchị 30 gara aga (₦{amount})",
+    },
+    trust: {
+      ariaLabel: "Njikere mpụta",
+      heading: "Njikere mpụta",
+      identityTitle: "Enyochara njirimara",
+      identityDescDoneTemplate: "{label}. Achọrọ maka ịkwụ ụgwọ mpụta.",
+      identityDescTodoTemplate: "{label}. Mechaa ya otu ugboro iji mepee mpụta.",
+      identityCta: "Gaa n'ihu →",
+      pinTitle: "PIN mpụta",
+      pinDescDone: "Edobere PIN mpụta gị.",
+      pinDescTodo: "Debe PIN ọnụọgụ 4 iji kwado mpụta ọ bụla.",
+      pinCta: "Debe PIN →",
+      payoutTitle: "Ụzọ ịkwụ ụgwọ",
+      payoutDescSingular: "Otu ụzọ enyochara dị na fail.",
+      payoutDescPluralTemplate: "{count} ụzọ enyochara dị na fail.",
+      payoutDescEmpty: "Tinye akaụntụ ụlọ akụ iji nata mpụta.",
+      payoutCtaManage: "Jikwaa →",
+      payoutCtaAdd: "Tinye ụzọ →",
+      verificationLabels: {
+        verified: "Enyochara njirimara",
+        pending: "Nyocha nọ na nyocha",
+        rejected: "Nyocha chọrọ ntinye ọzọ",
+        notSubmitted: "A nyebeghị njirimara",
+      },
+    },
+    activity: {
+      ariaLabel: "Azụmahịa obere akpa ego",
+      emptyTitle: "Enwebeghị azụmahịa",
+      emptyBody: "Tinye ego n'obere akpa gị, ndepụta mmemme gị ga-egosi ebe a kredit, debit, nlọghachi azụ na bonus ọ bụla n'ofe ọrụ HenryCo.",
+      fallbackTitle: "Azụmahịa obere akpa ego",
+    },
+    funding: {
+      proofUploaded: "Ebugoro ihe akaebe",
+      awaitingProof: "Na-echere ihe akaebe",
+      ariaLabelTemplate: "Arịrịọ itinye ego {reference} maka ₦{amount}",
+    },
+    statusLabels: {
+      pending: "Na-eche nyocha",
+      awaiting_proof: "Na-echere ihe akaebe",
+      awaiting_review: "Na-eche nyocha",
+      in_review: "Na nyocha",
+      rejected: "Ajụrụ",
+      cancelled: "Akagburu",
+      expired: "Agwụla",
+      completed: "Akwadoro",
+      verified: "Akwadoro",
+      approved: "Akwadoro",
+      paid: "A kwụrụ",
     },
   },
 };
@@ -3218,6 +4255,179 @@ const YO: DeepPartial<AccountCopy> = {
       recentlyDeleted: "Tí a pa rẹ́ láìpẹ́",
     },
   },
+  invoices: {
+    metadata: {
+      title: "Awọn iwe-ẹri àti àwọn risiti",
+      description: "Ìtàn ìsanwó rẹ àti àwọn risiti tó ṣeé gbasilẹ.",
+    },
+    hero: {
+      eyebrow: "Awọn iwe-ẹri · risiti",
+      ariaOverview: "Akopọ àwọn iwe-ẹri",
+      ariaTotals: "Àpapọ̀ owó",
+      ariaByDivision: "Nípa ẹ̀ka",
+      headlineEmpty: "Àwọn risiti rẹ yóò han níhìn-ín.",
+      headlineWithReceipts: "Gbogbo risiti, ní ibìkan.",
+      blurb:
+        "Gbogbo ìsanwó nínú HenryCo ń dé sí ibí gẹ́gẹ́ bí PDF tí ó ní àmì-iṣòwò àti tí ó ṣeé gbasilẹ — ìwé Care, àṣẹ Marketplace, owó Studio, ìfijiṣẹ́ Logistics, ìjẹ́rìí Learn.",
+      totalPaidLabel: "Àpapọ̀ tí a sanwó · ní ìgbà ayé",
+      thisMonthLabel: "Sanwó · oṣù yìí",
+      thisMonthFoot: "Àwọn risiti ti oṣù kálẹ́ńdà yìí",
+      outstandingLabel: "Tí ó kù",
+      paidCountUnit: "risiti",
+      pendingCountUnit: "ní ìdúró",
+      overdueCountUnit: "tí ó ti pẹ́",
+      byDivision: "Nípa ẹ̀ka",
+      byDivisionEmpty: "Kò sí iwe-ẹri síbẹ̀.",
+    },
+    section: {
+      title: "Gbogbo iwe-ẹri",
+      receiptsOnFileSingular: "risiti tó wà",
+      receiptsOnFilePlural: "risiti tó wà",
+    },
+    empty: {
+      title: "Kò sí iwe-ẹri síbẹ̀",
+      description:
+        "Awọn iwe-ẹri àti risiti rẹ yóò han níhìn-ín lẹ́yìn tí o bá ṣe ìsanwó nínú àwọn iṣẹ́ HenryCo.",
+    },
+    statuses: {
+      paid: "Tí a sanwó",
+      pending: "Ní ìdúró",
+      overdue: "Tí ó ti pẹ́",
+      draft: "Àkọsílẹ̀ àkọ́kọ́",
+      cancelled: "Tí a fagilé",
+      refunded: "Tí a dá owó padà",
+      fallback: "Ipò ní ìdúró",
+    },
+    list: {
+      ariaLabel: "Awọn iwe-ẹri",
+      fallbackTitle: "Iwe-ẹri {number}",
+      rowAriaLabel: "Iwe-ẹri {number} fún ₦{amount}",
+    },
+    divisions: {
+      account: "Àkáǹtì",
+      wallet: "Àpamọ́wọ́",
+      marketplace: "Marketplace",
+      studio: "Studio",
+      jobs: "Jobs",
+      learn: "Learn",
+      property: "Ohun-ìní",
+      logistics: "Logistics",
+      care: "Care",
+      fallback: "Àkáǹtì",
+    },
+    footerNote: "Àwọn risiti ń gbasilẹ gẹ́gẹ́ bí PDF tí ó ní àmì-iṣòwò.",
+  },
+  wallet: {
+    hero: {
+      ariaLabel: "Iwọntunwọnsi àpamọ́wọ́",
+      eyebrow: "Àpamọ́wọ́ HenryCo · taara",
+      availableLabel: "Iwọntunwọnsi tó wà",
+      balanceAriaTemplate: "Iwọntunwọnsi tó wà {amount} {currency}",
+      settlementFallback: "A ti yanjú ní owó ilẹ̀ rẹ ní oṣuwọn HenryCo lójú ọjọ́.",
+      ctas: { fund: "Fi owó kún", withdraw: "Yọ owó kúrò" },
+      tiles: {
+        verifiedLabel: "Iwọntunwọnsi tí a ti jẹrisi",
+        verifiedFoot: "Lè lò ní gbogbo ọrọ̀ iṣẹ́ HenryCo",
+        pendingFundingLabel: "Ìfowóran tí ó dúró",
+        pendingFundingFoot: "Ó dúró sípá títí ìṣúná-ìnáwó yóò fi jẹrisi",
+        pendingWithdrawalLabel: "A pamọ́ fún yíyọ kúrò",
+        pendingWithdrawalFoot: "A pamọ́ títí ìsanwó yóò fi parí",
+      },
+    },
+    sections: {
+      actionsTitle: "Ìṣe àpamọ́wọ́",
+      actionsMeta: "Fikún, yọ kúrò, sanwó, ṣe àtúnṣe",
+      pendingTitle: "Iṣẹ́ tó dúró",
+      pendingMeta: "Yapa kúrò ní iwọntunwọnsi tó wà",
+      flowTitle: "Bí owó rẹ ṣe ń ṣàn",
+      flowMeta: "Ọjọ́ 30 sẹ́yìn · oṣù 6 sẹ́yìn · ní ìpín",
+      fundingTitle: "Awọn ìbéèrè ìfowóran tuntun",
+      fundingMetaTemplate: "{count} nínú àyẹ̀wò",
+      activityTitle: "Iṣẹ́",
+      activityMetaTemplate: "{count} tó ṣẹ̀ṣẹ̀",
+    },
+    quickActions: {
+      ariaLabel: "Ìṣe yara àpamọ́wọ́",
+      addFundsLabel: "Fi owó kún",
+      addFundsDesc: "Gbígbé owó báńkì pẹ̀lú ẹ̀rí àti ìjẹ́risí lẹ́sẹ̀kẹsẹ̀.",
+      withdrawLabel: "Yọ owó kúrò",
+      withdrawDesc: "Gbé iwọntunwọnsi tó wà lọ sí àkáǹtì báńkì tí a ti jẹrisi.",
+      paymentsLabel: "Ìsanwó",
+      paymentsDesc: "Iye-ní-iye láìpẹ́, ìpadàbọ̀-owó àti ọnà tí a tọju.",
+      receiptsLabel: "Risiti & infóìsì",
+      receiptsDesc: "PDF tí ó ní àmì-iṣòwò ní gbogbo ìpín.",
+    },
+    pendingOps: {
+      fundingKicker: "Ìfowóran tí ó dúró",
+      fundingDescEmpty: "Owó tí o gbé wá á dúró níbí títí ìṣúná-ìnáwó yóò fi jẹrisi ìtọ́ka báńkì.",
+      fundingDescSingular: "{count} ìbéèrè nínú àyẹ̀wò — ẹ̀rí ń jẹ́ kí ìlà náà tẹ̀síwájú.",
+      fundingDescPlural: "{count} ìbéèrè nínú àyẹ̀wò — ẹ̀rí ń jẹ́ kí ìlà náà tẹ̀síwájú.",
+      fundingCta: "Ṣí ìlà ìfowóran",
+      withdrawalKicker: "Yíyọ kúrò tó dúró",
+      withdrawalDescEmpty: "Yíyọ kúrò ń dúró níbí lákòókò àyẹ̀wò — iwọntunwọnsi rẹ tó wà kò ní fẹjọ́n méjì.",
+      withdrawalDescSingular: "{count} yíyọ kúrò tó ń dúró ìsanwó. A pamọ́ ní iwọntunwọnsi tó wà.",
+      withdrawalDescPlural: "{count} yíyọ kúrò tó ń dúró ìsanwó. A pamọ́ ní iwọntunwọnsi tó wà.",
+      withdrawalCta: "Ṣí ìlà yíyọ kúrò",
+    },
+    spend: {
+      figureAriaLabel: "Ìnáwó ní oṣù 6 sẹ́yìn",
+      last30Eyebrow: "Ìnáwó · ọjọ́ 30 sẹ́yìn",
+      byDivisionEyebrow: "Ní ìpín",
+      distributionAriaLabel: "Pínpín ìnáwó ní ìpín",
+      trendFlat: "Tẹ́ẹ́rẹ́",
+      trendBelowTemplate: "{pct}% nísàlẹ̀ ọjọ́ 30 ṣáájú",
+      trendAboveTemplate: "{pct}% lókè ọjọ́ 30 ṣáájú",
+      trendTitleTemplate: "vs ọjọ́ 30 ṣáájú (₦{amount})",
+    },
+    trust: {
+      ariaLabel: "Ìmúrasílẹ̀ fún yíyọ kúrò",
+      heading: "Ìmúrasílẹ̀ fún yíyọ kúrò",
+      identityTitle: "A ti jẹrisi ìdánimọ̀",
+      identityDescDoneTemplate: "{label}. A nílò fún ìsanwó yíyọ kúrò.",
+      identityDescTodoTemplate: "{label}. Parí rẹ̀ lẹ́ẹ̀kan láti ṣí yíyọ kúrò.",
+      identityCta: "Tẹ̀síwájú →",
+      pinTitle: "PIN yíyọ kúrò",
+      pinDescDone: "A ti gbé PIN yíyọ kúrò rẹ kalẹ̀.",
+      pinDescTodo: "Ṣètò PIN olónọ́mbà 4 láti fún àṣẹ fún yíyọ kúrò kọ̀ọ̀kan.",
+      pinCta: "Ṣètò PIN →",
+      payoutTitle: "Ọnà ìsanwó",
+      payoutDescSingular: "Ọnà 1 tí a ti jẹrisi wà ní fáìlì.",
+      payoutDescPluralTemplate: "{count} ọnà tí a ti jẹrisi wà ní fáìlì.",
+      payoutDescEmpty: "Fi àkáǹtì báńkì kún láti gba yíyọ kúrò.",
+      payoutCtaManage: "Ṣàkóso →",
+      payoutCtaAdd: "Fi ọnà kún →",
+      verificationLabels: {
+        verified: "A ti jẹrisi ìdánimọ̀",
+        pending: "Ìjẹ́risi nínú àyẹ̀wò",
+        rejected: "Ìjẹ́risi nílò ìfisùn-síle míì",
+        notSubmitted: "A kò tíì fi ìdánimọ̀ síle",
+      },
+    },
+    activity: {
+      ariaLabel: "Owó-iṣẹ́ àpamọ́wọ́",
+      emptyTitle: "Kò sí owó-iṣẹ́ síbẹ̀",
+      emptyBody: "Fi owó kún àpamọ́wọ́ rẹ, ìfunni-iṣẹ́ rẹ yóò fi gbogbo gbígba, gbígbé, ìpadàbọ̀ àti ẹ̀bùn hàn níbí ní ọrọ̀ iṣẹ́ HenryCo.",
+      fallbackTitle: "Owó-iṣẹ́ àpamọ́wọ́",
+    },
+    funding: {
+      proofUploaded: "A ti gbé ẹ̀rí sókè",
+      awaitingProof: "Ń dúró fún ẹ̀rí",
+      ariaLabelTemplate: "Ìbéèrè ìfowóran {reference} fún ₦{amount}",
+    },
+    statusLabels: {
+      pending: "Ń dúró àyẹ̀wò",
+      awaiting_proof: "Ń dúró fún ẹ̀rí",
+      awaiting_review: "Ń dúró àyẹ̀wò",
+      in_review: "Nínú àyẹ̀wò",
+      rejected: "Kọ",
+      cancelled: "Fagilé",
+      expired: "Tí pari",
+      completed: "A ti jẹrisi",
+      verified: "A ti jẹrisi",
+      approved: "A ti fàṣẹ̀sí",
+      paid: "Ti sanwó",
+    },
+  },
 };
 
 const HA: DeepPartial<AccountCopy> = {
@@ -3662,6 +4872,68 @@ const HA: DeepPartial<AccountCopy> = {
     footer: {
       recentlyDeleted: "An share kwanan nan",
     },
+  },
+  invoices: {
+    metadata: {
+      title: "Lissafin kuɗi da rasidoji",
+      description: "Tarihin biyan kuɗin ku da rasidoji da za a iya saukarwa.",
+    },
+    hero: {
+      eyebrow: "Lissafin kuɗi · rasidoji",
+      ariaOverview: "Bayanin lissafin kuɗi",
+      ariaTotals: "Jimillar kuɗi",
+      ariaByDivision: "Ta sashe",
+      headlineEmpty: "Rasidojin ku za su sauka nan.",
+      headlineWithReceipts: "Kowane rasidi, wuri ɗaya.",
+      blurb:
+        "Kowane biya a cikin HenryCo yana zuwa nan a matsayin PDF mai alama mai saukarwa — ajiyar Care, oda na Marketplace, lissafin Studio, jigilar Logistics, takaddun Learn.",
+      totalPaidLabel: "Jimillar da aka biya · rayuwa",
+      thisMonthLabel: "An biya · wannan watan",
+      thisMonthFoot: "Rasidoji daga wannan watan kalandar",
+      outstandingLabel: "Sauran",
+      paidCountUnit: "rasidoji",
+      pendingCountUnit: "ana jira",
+      overdueCountUnit: "sun ƙare",
+      byDivision: "Ta sashe",
+      byDivisionEmpty: "Babu lissafi tukuna.",
+    },
+    section: {
+      title: "Duk lissafin kuɗi",
+      receiptsOnFileSingular: "rasidi a ajiye",
+      receiptsOnFilePlural: "rasidoji a ajiye",
+    },
+    empty: {
+      title: "Babu lissafi tukuna",
+      description:
+        "Lissafin kuɗin ku da rasidoji za su bayyana nan bayan biyan kuɗi a ayyukan HenryCo.",
+    },
+    statuses: {
+      paid: "An biya",
+      pending: "Ana jira",
+      overdue: "Sun ƙare",
+      draft: "Daftarin farko",
+      cancelled: "An soke",
+      refunded: "An dawo da kuɗi",
+      fallback: "Yanayin jira",
+    },
+    list: {
+      ariaLabel: "Lissafin kuɗi",
+      fallbackTitle: "Lissafi {number}",
+      rowAriaLabel: "Lissafi {number} na ₦{amount}",
+    },
+    divisions: {
+      account: "Asusu",
+      wallet: "Walat",
+      marketplace: "Marketplace",
+      studio: "Studio",
+      jobs: "Jobs",
+      learn: "Learn",
+      property: "Kadara",
+      logistics: "Logistics",
+      care: "Care",
+      fallback: "Asusu",
+    },
+    footerNote: "Rasidoji suna saukarwa a matsayin PDF mai alama.",
   },
 };
 
@@ -4108,6 +5380,67 @@ const ZH: DeepPartial<AccountCopy> = {
       recentlyDeleted: "最近删除",
     },
   },
+  invoices: {
+    metadata: {
+      title: "发票与收据",
+      description: "您的付款历史与可下载的收据。",
+    },
+    hero: {
+      eyebrow: "发票 · 收据",
+      ariaOverview: "发票概览",
+      ariaTotals: "财务汇总",
+      ariaByDivision: "按部门",
+      headlineEmpty: "收据将到达此处。",
+      headlineWithReceipts: "每张收据，集中一处。",
+      blurb:
+        "HenryCo 中的每一笔付款都会以带品牌、可下载的 PDF 形式到达此处 — Care 预订、Marketplace 订单、Studio 发票、Logistics 货运、Learn 证书。",
+      totalPaidLabel: "总支付 · 终身",
+      thisMonthLabel: "已支付 · 本月",
+      thisMonthFoot: "本日历月内的收据",
+      outstandingLabel: "待付",
+      paidCountUnit: "张收据",
+      pendingCountUnit: "待处理",
+      overdueCountUnit: "逾期",
+      byDivision: "按部门",
+      byDivisionEmpty: "暂无发票。",
+    },
+    section: {
+      title: "全部发票",
+      receiptsOnFileSingular: "张存档收据",
+      receiptsOnFilePlural: "张存档收据",
+    },
+    empty: {
+      title: "暂无发票",
+      description: "您在 HenryCo 服务中完成付款后，发票和收据将出现在此。",
+    },
+    statuses: {
+      paid: "已支付",
+      pending: "待处理",
+      overdue: "逾期",
+      draft: "草稿",
+      cancelled: "已取消",
+      refunded: "已退款",
+      fallback: "状态待定",
+    },
+    list: {
+      ariaLabel: "发票",
+      fallbackTitle: "发票 {number}",
+      rowAriaLabel: "发票 {number} ₦{amount}",
+    },
+    divisions: {
+      account: "账户",
+      wallet: "钱包",
+      marketplace: "Marketplace",
+      studio: "Studio",
+      jobs: "Jobs",
+      learn: "Learn",
+      property: "房产",
+      logistics: "Logistics",
+      care: "Care",
+      fallback: "账户",
+    },
+    footerNote: "收据以带品牌的 PDF 形式下载。",
+  },
 };
 
 const HI: DeepPartial<AccountCopy> = {
@@ -4552,6 +5885,68 @@ const HI: DeepPartial<AccountCopy> = {
     footer: {
       recentlyDeleted: "हाल ही में हटाए गए",
     },
+  },
+  invoices: {
+    metadata: {
+      title: "चालान और रसीदें",
+      description: "आपका भुगतान इतिहास और डाउनलोड करने योग्य रसीदें।",
+    },
+    hero: {
+      eyebrow: "चालान · रसीदें",
+      ariaOverview: "चालान अवलोकन",
+      ariaTotals: "वित्तीय कुल",
+      ariaByDivision: "विभाग के अनुसार",
+      headlineEmpty: "आपकी रसीदें यहाँ पहुँचेंगी।",
+      headlineWithReceipts: "हर रसीद, एक ही जगह।",
+      blurb:
+        "HenryCo में हर भुगतान यहाँ ब्रांडेड, डाउनलोड करने योग्य PDF के रूप में पहुँचता है — Care बुकिंग, Marketplace ऑर्डर, Studio चालान, Logistics शिपमेंट, Learn प्रमाणपत्र।",
+      totalPaidLabel: "कुल भुगतान · आजीवन",
+      thisMonthLabel: "भुगतान · इस माह",
+      thisMonthFoot: "इस कैलेंडर माह की रसीदें",
+      outstandingLabel: "बकाया",
+      paidCountUnit: "रसीदें",
+      pendingCountUnit: "लंबित",
+      overdueCountUnit: "अतिदेय",
+      byDivision: "विभाग के अनुसार",
+      byDivisionEmpty: "अभी तक कोई चालान नहीं।",
+    },
+    section: {
+      title: "सभी चालान",
+      receiptsOnFileSingular: "रसीद दर्ज",
+      receiptsOnFilePlural: "रसीदें दर्ज",
+    },
+    empty: {
+      title: "अभी तक कोई चालान नहीं",
+      description:
+        "HenryCo सेवाओं में भुगतान करने के बाद आपके चालान और रसीदें यहाँ दिखेंगी।",
+    },
+    statuses: {
+      paid: "भुगतान हुआ",
+      pending: "लंबित",
+      overdue: "अतिदेय",
+      draft: "मसौदा",
+      cancelled: "रद्द",
+      refunded: "रिफंड हुआ",
+      fallback: "स्थिति लंबित",
+    },
+    list: {
+      ariaLabel: "चालान",
+      fallbackTitle: "चालान {number}",
+      rowAriaLabel: "₦{amount} का चालान {number}",
+    },
+    divisions: {
+      account: "खाता",
+      wallet: "वॉलेट",
+      marketplace: "Marketplace",
+      studio: "Studio",
+      jobs: "Jobs",
+      learn: "Learn",
+      property: "संपत्ति",
+      logistics: "Logistics",
+      care: "Care",
+      fallback: "खाता",
+    },
+    footerNote: "रसीदें ब्रांडेड PDF के रूप में डाउनलोड होती हैं।",
   },
 };
 

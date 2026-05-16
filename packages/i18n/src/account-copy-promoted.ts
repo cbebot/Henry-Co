@@ -441,6 +441,66 @@ export const ACCOUNT_COPY_ES = {
     "footer": {
       "recentlyDeleted": "Eliminadas recientemente"
     }
+  },
+  "invoices": {
+    "metadata": {
+      "title": "Facturas y recibos",
+      "description": "Tu historial de pagos y recibos descargables."
+    },
+    "hero": {
+      "eyebrow": "Facturas · recibos",
+      "ariaOverview": "Resumen de facturas",
+      "ariaTotals": "Totales financieros",
+      "ariaByDivision": "Por división",
+      "headlineEmpty": "Tus recibos aparecerán aquí.",
+      "headlineWithReceipts": "Cada recibo, un solo lugar.",
+      "blurb": "Cada pago a través de HenryCo llega aquí como un PDF de marca descargable — reservas Care, pedidos Marketplace, facturas Studio, envíos Logistics, certificados Learn.",
+      "totalPaidLabel": "Total pagado · de por vida",
+      "thisMonthLabel": "Pagado · este mes",
+      "thisMonthFoot": "Recibos fechados en este mes calendario",
+      "outstandingLabel": "Pendiente",
+      "paidCountUnit": "recibos",
+      "pendingCountUnit": "pendientes",
+      "overdueCountUnit": "vencidos",
+      "byDivision": "Por división",
+      "byDivisionEmpty": "Aún no hay facturas."
+    },
+    "section": {
+      "title": "Todas las facturas",
+      "receiptsOnFileSingular": "recibo archivado",
+      "receiptsOnFilePlural": "recibos archivados"
+    },
+    "empty": {
+      "title": "Aún no hay facturas",
+      "description": "Tus facturas y recibos aparecerán aquí después de que realices pagos en los servicios HenryCo."
+    },
+    "statuses": {
+      "paid": "Pagada",
+      "pending": "Pendiente",
+      "overdue": "Vencida",
+      "draft": "Borrador",
+      "cancelled": "Cancelada",
+      "refunded": "Reembolsada",
+      "fallback": "Estado pendiente"
+    },
+    "list": {
+      "ariaLabel": "Facturas",
+      "fallbackTitle": "Factura {number}",
+      "rowAriaLabel": "Factura {number} por ₦{amount}"
+    },
+    "divisions": {
+      "account": "Cuenta",
+      "wallet": "Cartera",
+      "marketplace": "Marketplace",
+      "studio": "Studio",
+      "jobs": "Jobs",
+      "learn": "Learn",
+      "property": "Propiedad",
+      "logistics": "Logistics",
+      "care": "Care",
+      "fallback": "Cuenta"
+    },
+    "footerNote": "Los recibos se descargan como PDFs de marca."
   }
 };
 
@@ -884,6 +944,66 @@ export const ACCOUNT_COPY_PT = {
     "footer": {
       "recentlyDeleted": "Excluídas recentemente"
     }
+  },
+  "invoices": {
+    "metadata": {
+      "title": "Faturas e recibos",
+      "description": "O seu histórico de pagamentos e recibos transferíveis."
+    },
+    "hero": {
+      "eyebrow": "Faturas · recibos",
+      "ariaOverview": "Visão geral das faturas",
+      "ariaTotals": "Totais financeiros",
+      "ariaByDivision": "Por divisão",
+      "headlineEmpty": "Os seus recibos aparecerão aqui.",
+      "headlineWithReceipts": "Cada recibo, num só lugar.",
+      "blurb": "Cada pagamento na HenryCo chega aqui como um PDF de marca transferível — reservas Care, encomendas Marketplace, faturas Studio, envios Logistics, certificados Learn.",
+      "totalPaidLabel": "Total pago · vitalício",
+      "thisMonthLabel": "Pago · este mês",
+      "thisMonthFoot": "Recibos datados deste mês de calendário",
+      "outstandingLabel": "Em aberto",
+      "paidCountUnit": "recibos",
+      "pendingCountUnit": "pendentes",
+      "overdueCountUnit": "atrasados",
+      "byDivision": "Por divisão",
+      "byDivisionEmpty": "Ainda sem faturas."
+    },
+    "section": {
+      "title": "Todas as faturas",
+      "receiptsOnFileSingular": "recibo arquivado",
+      "receiptsOnFilePlural": "recibos arquivados"
+    },
+    "empty": {
+      "title": "Ainda sem faturas",
+      "description": "As suas faturas e recibos aparecerão aqui após efetuar pagamentos nos serviços HenryCo."
+    },
+    "statuses": {
+      "paid": "Paga",
+      "pending": "Pendente",
+      "overdue": "Atrasada",
+      "draft": "Rascunho",
+      "cancelled": "Cancelada",
+      "refunded": "Reembolsada",
+      "fallback": "Estado pendente"
+    },
+    "list": {
+      "ariaLabel": "Faturas",
+      "fallbackTitle": "Fatura {number}",
+      "rowAriaLabel": "Fatura {number} de ₦{amount}"
+    },
+    "divisions": {
+      "account": "Conta",
+      "wallet": "Carteira",
+      "marketplace": "Marketplace",
+      "studio": "Studio",
+      "jobs": "Jobs",
+      "learn": "Learn",
+      "property": "Propriedade",
+      "logistics": "Logistics",
+      "care": "Care",
+      "fallback": "Conta"
+    },
+    "footerNote": "Os recibos são transferidos como PDFs de marca."
   }
 };
 
@@ -1327,5 +1447,65 @@ export const ACCOUNT_COPY_AR = {
     "footer": {
       "recentlyDeleted": "المحذوفة مؤخرًا"
     }
+  },
+  "invoices": {
+    "metadata": {
+      "title": "الفواتير والإيصالات",
+      "description": "سجل مدفوعاتك والإيصالات القابلة للتنزيل."
+    },
+    "hero": {
+      "eyebrow": "الفواتير · الإيصالات",
+      "ariaOverview": "نظرة عامة على الفواتير",
+      "ariaTotals": "الإجماليات المالية",
+      "ariaByDivision": "حسب القسم",
+      "headlineEmpty": "ستصل إيصالاتك إلى هنا.",
+      "headlineWithReceipts": "كل إيصال، في مكان واحد.",
+      "blurb": "كل دفعة عبر HenryCo تصل هنا كملف PDF يحمل العلامة وقابل للتنزيل — حجوزات Care، طلبات Marketplace، فواتير Studio، شحنات Logistics، شهادات Learn.",
+      "totalPaidLabel": "الإجمالي المدفوع · مدى الحياة",
+      "thisMonthLabel": "المدفوع · هذا الشهر",
+      "thisMonthFoot": "إيصالات هذا الشهر التقويمي",
+      "outstandingLabel": "المعلق",
+      "paidCountUnit": "إيصالات",
+      "pendingCountUnit": "قيد الانتظار",
+      "overdueCountUnit": "متأخرة",
+      "byDivision": "حسب القسم",
+      "byDivisionEmpty": "لا توجد فواتير بعد."
+    },
+    "section": {
+      "title": "جميع الفواتير",
+      "receiptsOnFileSingular": "إيصال محفوظ",
+      "receiptsOnFilePlural": "إيصالات محفوظة"
+    },
+    "empty": {
+      "title": "لا توجد فواتير بعد",
+      "description": "ستظهر فواتيرك وإيصالاتك هنا بعد إجراء مدفوعات في خدمات HenryCo."
+    },
+    "statuses": {
+      "paid": "مدفوعة",
+      "pending": "قيد الانتظار",
+      "overdue": "متأخرة",
+      "draft": "مسودة",
+      "cancelled": "ملغاة",
+      "refunded": "مستردة",
+      "fallback": "الحالة معلقة"
+    },
+    "list": {
+      "ariaLabel": "الفواتير",
+      "fallbackTitle": "فاتورة {number}",
+      "rowAriaLabel": "فاتورة {number} بقيمة ₦{amount}"
+    },
+    "divisions": {
+      "account": "الحساب",
+      "wallet": "المحفظة",
+      "marketplace": "Marketplace",
+      "studio": "Studio",
+      "jobs": "Jobs",
+      "learn": "Learn",
+      "property": "العقار",
+      "logistics": "Logistics",
+      "care": "Care",
+      "fallback": "الحساب"
+    },
+    "footerNote": "يتم تنزيل الإيصالات كملفات PDF تحمل العلامة."
   }
 };
