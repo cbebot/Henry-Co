@@ -1610,7 +1610,245 @@ export const ACCOUNT_COPY_ES = {
     "formatLabels": {
       "dash": "—"
     }
+  },
+  "divisionLearn": {
+    "metadata": {
+      "title": "Learn · panel de aprendizaje",
+      "description": "Sigue cada inscripción en HenryCo Learn, lección, resultado de cuestionario, certificado, formación asignada y solicitud de docencia vinculada a esta cuenta — catálogo en Learn, progreso reflejado aquí."
+    },
+    "hero": {
+      "ariaLabel": "Visión general de Learn",
+      "eyebrow": "Learn · en vivo",
+      "sideKicker": "Cómo funciona esta sala",
+      "sideTitle": "Catálogo en Learn, progreso aquí.",
+      "sideBody": "Cada lección, cuestionario y certificado de HenryCo Learn se sincroniza en esta sala — retoma donde lo dejaste, ve tu progreso de un vistazo y mantén tus credenciales en un mismo lugar.",
+      "breakdownLabel": "Por estado",
+      "breakdownAriaLabel": "Desglose de actividad de aprendizaje",
+      "tilesAriaLabel": "Actividad de aprendizaje",
+      "tileLabels": {
+        "active": "Activos",
+        "completed": "Completados",
+        "certificates": "Certificados",
+        "assignments": "Asignados"
+      },
+      "tileFoot": {
+        "activeEmpty": "Inscríbete para comenzar un curso",
+        "activeWith": "Progreso de lecciones y cuestionarios reflejado aquí",
+        "completedEmpty": "Los programas que finalices aparecerán aquí",
+        "completedWith": "Útil para CV e informes",
+        "certificatesEmpty": "Obtén uno completando un curso",
+        "certificatesWith": "Enlaces verificables para cada credencial",
+        "assignmentsEmpty": "Nada asignado ahora mismo",
+        "assignmentsWith": "Desde tu manager o equipo"
+      },
+      "breakdownNames": {
+        "active": "Activos",
+        "assigned": "Asignados",
+        "certificates": "Certificados",
+        "saved": "Guardados"
+      },
+      "openLearnCta": "Abrir HenryCo Learn",
+      "applyToTeachCta": "Solicitar enseñar",
+      "state": {
+        "empty": {
+          "headline": "Comienza tu recorrido en HenryCo Learn.",
+          "blurb": "Explora el catálogo, inscríbete en un curso y cada lección, cuestionario y certificado se sincronizará automáticamente en esta sala."
+        },
+        "active": {
+          "headlineTemplateSingular": "{count} curso en curso.",
+          "headlineTemplatePlural": "{count} cursos en curso.",
+          "blurb": "Retoma donde lo dejaste — lecciones, cuestionarios, certificados y formación asignada se sincronizan desde HenryCo Learn a esta sala."
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} curso completado.",
+          "headlineTemplatePlural": "{count} cursos completados.",
+          "blurb": "Tus credenciales e historial de aprendizaje permanecen aquí, útiles para CV, reportes internos o tu propio archivo."
+        }
+      }
+    },
+    "sections": {
+      "coursesTitle": "Continuar aprendiendo",
+      "coursesMetaEmpty": "Explora el catálogo de HenryCo Learn para inscribirte en tu primer curso.",
+      "coursesMetaTemplate": "{active} activos · {completed} completados",
+      "extrasTitle": "Credenciales, asignaciones y enseñanza",
+      "extrasMeta": "Certificados, formación asignada, cursos guardados y solicitud como docente viven aquí.",
+      "activityTitle": "Actividad reciente",
+      "activityMetaTemplateSingular": "{count} actualización · más reciente primero",
+      "activityMetaTemplatePlural": "{count} actualizaciones · más recientes primero",
+      "activityMetaEmpty": "Lecciones, cuestionarios, certificados y pagos se reflejan aquí en tiempo real."
+    },
+    "empty": {
+      "coursesTitle": "Aún no hay cursos vinculados",
+      "coursesBody": "Explora el catálogo en HenryCo Learn e inscríbete. Tu lugar aparecerá aquí automáticamente.",
+      "activityTitle": "Aún no hay actividad de Learn",
+      "activityBody": "El progreso de cursos, resultados de cuestionarios, emisión de certificados y recibos de pago aparecen aquí en tiempo real."
+    },
+    "courses": {
+      "ariaLabel": "Cursos",
+      "completedAtTemplate": "Completado el {date}",
+      "progressPercentTemplate": "{percent}% completado",
+      "statusDelimiter": " · "
+    },
+    "extras": {
+      "ariaLabel": "Extras de Learn",
+      "certificatesTitle": "Certificados",
+      "assignmentsTitle": "Aprendizaje asignado",
+      "savedTitle": "Cursos guardados",
+      "teachingTitle": "Enseña con HenryCo",
+      "statusLabel": "Estado",
+      "expertiseLabel": "Especialidad",
+      "topicsLabel": "Temas",
+      "openApplicationCta": "Abrir solicitud",
+      "applyToTeachCta": "Solicitar enseñar",
+      "teachingEmpty": "Revisamos las solicitudes de docencia manualmente. Postula en HenryCo Learn y el estado se sincronizará aquí."
+    },
+    "activity": {
+      "ariaLabel": "Actividad de Learn",
+      "fallbackTitle": "Actividad de Learn"
+    }
+  },
+  "divisionStudio": {
+    "metadata": {
+      "title": "Studio · salas de proyecto",
+      "description": "Sigue cada colaboración HenryCo Studio vinculada a esta cuenta — propuestas, hitos, pagos, entregables y actividad en una sola sala."
+    },
+    "hero": {
+      "eyebrowLive": "Studio · en vivo",
+      "overviewAriaLabel": "Resumen de Studio",
+      "activityAriaLabel": "Actividad de Studio",
+      "sideAriaLabel": "Cómo funciona esta sala",
+      "sideLabel": "Cómo funciona esta sala",
+      "sideTitle": "Una sala de proyecto, estado real.",
+      "sideBody": "Las propuestas, hitos, comprobantes de pago, entregables y señales de comunicación siguen conectados a la misma identidad HenryCo que usas en todas partes. El panel inferior refleja el avance real del equipo Studio, no una lista de estados.",
+      "breakdownAriaLabel": "Desglose de actividad",
+      "breakdownLabel": "Por estado",
+      "tiles": {
+        "activeLabel": "Proyectos activos",
+        "activeFootEmpty": "Sin salas activas ahora mismo",
+        "activeFootHasValue": "Salas activas con movimiento de entrega",
+        "pendingLabel": "Pagos pendientes",
+        "pendingFootEmpty": "Vía comercial despejada",
+        "pendingFootHasValue": "Puntos comerciales aún abiertos",
+        "proofLabel": "Comprobantes enviados",
+        "proofFootEmpty": "Nada en espera de revisión",
+        "proofFootHasValue": "Pagos en espera de revisión de Studio",
+        "deliverablesLabel": "Entregables",
+        "deliverablesFootEmpty": "Los archivos aparecen aquí cuando Studio los carga",
+        "deliverablesFootHasValue": "Archivos y resultados rastreados en un solo lugar"
+      },
+      "breakdown": {
+        "active": "Activo",
+        "readyReview": "Listo para revisión",
+        "pendingPayment": "Pago pendiente",
+        "proofSubmitted": "Comprobante enviado"
+      },
+      "state": {
+        "empty": {
+          "headline": "Inicia un brief de Studio.",
+          "blurb": "Cuando una propuesta o proyecto se active con tu identidad HenryCo, la sala Studio sincronizada aparecerá aquí — hitos, pagos, entregables y siguiente movimiento juntos.",
+          "ctaPrimary": "Iniciar un brief",
+          "ctaSecondary": "Abrir Studio"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} pago vencido.",
+          "headlineTemplatePlural": "{count} pagos vencidos.",
+          "blurb": "Un punto de pago está vencido. Abre la sala para subir comprobante o contactar al equipo Studio.",
+          "ctaPrimary": "Abrir pagos",
+          "ctaSecondary": "Abrir Studio"
+        },
+        "activeReady": {
+          "headlineTemplateSingular": "{count} proyecto listo para revisión.",
+          "headlineTemplatePlural": "{count} proyectos listos para revisión.",
+          "blurb": "Entregables y revisiones esperan tu aprobación. Abre la sala para revisar y desbloquear el siguiente hito.",
+          "ctaPrimary": "Abrir proyectos",
+          "ctaSecondary": "Abrir Studio"
+        },
+        "activeProjects": {
+          "headlineTemplateSingular": "{count} proyecto activo.",
+          "headlineTemplatePlural": "{count} proyectos activos.",
+          "blurb": "Salas activas con movimiento de hitos, puntos de pago y entregables — todo reflejado desde HenryCo Studio en esta sala.",
+          "ctaPrimary": "Abrir Studio",
+          "ctaSecondary": "Iniciar nuevo brief"
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} sala de proyecto registrada.",
+          "headlineTemplatePlural": "{count} salas de proyecto registradas.",
+          "blurb": "Cada colaboración Studio que hayas iniciado — propuestas, hitos, pagos, entregables — conservada en una sala para un seguimiento rápido.",
+          "ctaPrimary": "Abrir Studio",
+          "ctaSecondary": "Iniciar nuevo brief"
+        }
+      }
+    },
+    "sections": {
+      "projectsTitle": "Salas de proyecto",
+      "projectsAriaLabel": "Proyectos Studio",
+      "projectsMetaEmpty": "Las salas aparecen aquí cuando una colaboración Studio se activa.",
+      "projectsMetaTemplateSingular": "{count} proyecto · ordenado por último movimiento",
+      "projectsMetaTemplatePlural": "{count} proyectos · ordenados por último movimiento",
+      "paymentsTitle": "Puntos de pago",
+      "paymentsAriaLabel": "Pagos Studio",
+      "paymentsMetaEmpty": "Las solicitudes de pago Studio aparecen aquí cuando una propuesta o proyecto está activo.",
+      "paymentsMetaTemplateSingular": "{count} punto · subida de comprobante y estado de aprobación",
+      "paymentsMetaTemplatePlural": "{count} puntos · subida de comprobante y estado de aprobación",
+      "activityTitle": "Actividad reciente",
+      "activityAriaLabel": "Actividad Studio",
+      "activityMetaEmpty": "Las actualizaciones de proyecto, comprobantes de pago y aprobaciones de hitos se reflejan aquí.",
+      "activityMetaTemplateSingular": "{count} actualización · más reciente primero",
+      "activityMetaTemplatePlural": "{count} actualizaciones · más recientes primero"
+    },
+    "empty": {
+      "projectsTitle": "Aún no hay salas Studio vinculadas",
+      "projectsBody": "En cuanto se cree una propuesta o proyecto con tu identidad HenryCo, la sala Studio sincronizada aparecerá aquí — hitos, pagos, entregables y siguiente movimiento.",
+      "paymentsTitle": "Aún no hay puntos de pago",
+      "paymentsBody": "Los hitos comerciales — anticipo, mitad de proyecto y entrega — surgen aquí cuando una propuesta se activa contigo.",
+      "activityTitle": "Aún no hay actividad Studio",
+      "activityBody": "Las actualizaciones de proyecto, comprobantes de pago, publicaciones de entregables y aprobaciones de hitos aparecerán aquí a medida que ocurran."
+    },
+    "projects": {
+      "listAriaLabel": "Proyectos Studio",
+      "fallbackSubtitle": "Studio está preparando la siguiente actualización.",
+      "milestonesTemplate": "{approved}/{total} hitos",
+      "paymentsTemplateSingular": "{count} pago abierto",
+      "paymentsTemplatePlural": "{count} pagos abiertos",
+      "deliverablesTemplateSingular": "{count} entregable",
+      "deliverablesTemplatePlural": "{count} entregables",
+      "updatedTemplate": "Actualizado {stamp}",
+      "rowAriaLabelTemplate": "{title} · {kind}",
+      "fallbackStamp": "—"
+    },
+    "projectKindLabels": {
+      "live": "En vivo",
+      "ready_review": "Listo para revisión",
+      "scheduled": "Programado",
+      "delivered": "Entregado",
+      "issue": "Acción necesaria"
+    },
+    "payments": {
+      "listAriaLabel": "Pagos Studio",
+      "rowAriaLabelTemplate": "{label} · {status}",
+      "dueTemplate": "Vence {stamp}",
+      "updatedTemplate": "Actualizado {stamp}",
+      "subTemplate": "{amount} · {method} · {due}"
+    },
+    "paymentStatusLabels": {
+      "pending": "pendiente",
+      "paid": "pagado",
+      "approved": "aprobado",
+      "settled": "liquidado",
+      "proof_uploaded": "comprobante cargado",
+      "proof_submitted": "comprobante enviado",
+      "in_review": "en revisión",
+      "rejected": "rechazado",
+      "overdue": "vencido",
+      "failed": "fallido",
+      "pending_deposit": "anticipo pendiente"
+    },
+    "activity": {
+      "listAriaLabel": "Actividad Studio",
+      "rowAriaLabelTemplate": "{title} · {stamp}"
+    }
   }
+
 };
 
 export const ACCOUNT_COPY_PT = {
@@ -3222,7 +3460,245 @@ export const ACCOUNT_COPY_PT = {
     "formatLabels": {
       "dash": "—"
     }
+  },
+  "divisionLearn": {
+    "metadata": {
+      "title": "Learn · painel de aprendizagem",
+      "description": "Acompanhe cada inscrição no HenryCo Learn, aula, resultado de questionário, certificado, treinamento atribuído e candidatura para ensinar vinculada a esta conta — catálogo no Learn, progresso refletido aqui."
+    },
+    "hero": {
+      "ariaLabel": "Visão geral do Learn",
+      "eyebrow": "Learn · ao vivo",
+      "sideKicker": "Como esta sala funciona",
+      "sideTitle": "Catálogo no Learn, progresso aqui.",
+      "sideBody": "Cada aula, questionário e certificado do HenryCo Learn sincroniza com esta sala — retome de onde parou, veja seu progresso de relance e mantenha suas credenciais em um só lugar.",
+      "breakdownLabel": "Por estado",
+      "breakdownAriaLabel": "Detalhamento de atividade de aprendizagem",
+      "tilesAriaLabel": "Atividade de aprendizagem",
+      "tileLabels": {
+        "active": "Ativos",
+        "completed": "Concluídos",
+        "certificates": "Certificados",
+        "assignments": "Atribuídos"
+      },
+      "tileFoot": {
+        "activeEmpty": "Inscreva-se para iniciar um curso",
+        "activeWith": "Progresso de aula e questionário refletido aqui",
+        "completedEmpty": "Programas concluídos aparecerão aqui",
+        "completedWith": "Útil para CVs e relatórios",
+        "certificatesEmpty": "Conquiste um concluindo um curso",
+        "certificatesWith": "Links verificáveis para cada credencial",
+        "assignmentsEmpty": "Nada atribuído agora",
+        "assignmentsWith": "Do seu gestor ou equipe"
+      },
+      "breakdownNames": {
+        "active": "Ativos",
+        "assigned": "Atribuídos",
+        "certificates": "Certificados",
+        "saved": "Salvos"
+      },
+      "openLearnCta": "Abrir HenryCo Learn",
+      "applyToTeachCta": "Candidatar-se para ensinar",
+      "state": {
+        "empty": {
+          "headline": "Comece sua jornada no HenryCo Learn.",
+          "blurb": "Explore o catálogo, inscreva-se num curso e cada aula, questionário e certificado sincronizarão automaticamente nesta sala."
+        },
+        "active": {
+          "headlineTemplateSingular": "{count} curso em andamento.",
+          "headlineTemplatePlural": "{count} cursos em andamento.",
+          "blurb": "Retome de onde parou — aulas, questionários, certificados e treinamentos atribuídos sincronizam do HenryCo Learn para esta sala."
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} curso concluído.",
+          "headlineTemplatePlural": "{count} cursos concluídos.",
+          "blurb": "Suas credenciais e histórico de aprendizagem ficam aqui, úteis para CVs, relatórios internos ou seus próprios registros."
+        }
+      }
+    },
+    "sections": {
+      "coursesTitle": "Continuar aprendendo",
+      "coursesMetaEmpty": "Explore o catálogo do HenryCo Learn para se inscrever no seu primeiro curso.",
+      "coursesMetaTemplate": "{active} ativos · {completed} concluídos",
+      "extrasTitle": "Credenciais, atribuições e ensino",
+      "extrasMeta": "Certificados, treinamentos atribuídos, cursos salvos e candidatura como instrutor ficam aqui.",
+      "activityTitle": "Atividade recente",
+      "activityMetaTemplateSingular": "{count} atualização · mais recente primeiro",
+      "activityMetaTemplatePlural": "{count} atualizações · mais recentes primeiro",
+      "activityMetaEmpty": "Aulas, questionários, certificados e pagamentos refletem aqui em tempo real."
+    },
+    "empty": {
+      "coursesTitle": "Ainda não há cursos vinculados",
+      "coursesBody": "Explore o catálogo no HenryCo Learn e inscreva-se. Seu lugar aparecerá aqui automaticamente.",
+      "activityTitle": "Ainda não há atividade Learn",
+      "activityBody": "Progresso de cursos, resultados de questionários, emissão de certificados e recibos de pagamento aparecem aqui em tempo real."
+    },
+    "courses": {
+      "ariaLabel": "Cursos",
+      "completedAtTemplate": "Concluído em {date}",
+      "progressPercentTemplate": "{percent}% concluído",
+      "statusDelimiter": " · "
+    },
+    "extras": {
+      "ariaLabel": "Extras do Learn",
+      "certificatesTitle": "Certificados",
+      "assignmentsTitle": "Aprendizagem atribuída",
+      "savedTitle": "Cursos salvos",
+      "teachingTitle": "Ensine com a HenryCo",
+      "statusLabel": "Status",
+      "expertiseLabel": "Especialidade",
+      "topicsLabel": "Tópicos",
+      "openApplicationCta": "Abrir candidatura",
+      "applyToTeachCta": "Candidatar-se para ensinar",
+      "teachingEmpty": "Avaliamos candidaturas a docência manualmente. Candidate-se no HenryCo Learn e o status sincronizará de volta aqui."
+    },
+    "activity": {
+      "ariaLabel": "Atividade Learn",
+      "fallbackTitle": "Atividade Learn"
+    }
+  },
+  "divisionStudio": {
+    "metadata": {
+      "title": "Studio · salas de projeto",
+      "description": "Acompanhe cada colaboração HenryCo Studio ligada a esta conta — propostas, marcos, pagamentos, entregáveis e atividade numa única sala."
+    },
+    "hero": {
+      "eyebrowLive": "Studio · ao vivo",
+      "overviewAriaLabel": "Visão geral do Studio",
+      "activityAriaLabel": "Atividade do Studio",
+      "sideAriaLabel": "Como funciona esta sala",
+      "sideLabel": "Como funciona esta sala",
+      "sideTitle": "Uma sala de projeto, estado real.",
+      "sideBody": "Propostas, marcos, comprovativos de pagamento, entregáveis e sinais de comunicação permanecem ligados à mesma identidade HenryCo que utiliza em todo o lado. O painel abaixo reflete o progresso real da equipa Studio, não uma lista de estados.",
+      "breakdownAriaLabel": "Detalhe da atividade",
+      "breakdownLabel": "Por estado",
+      "tiles": {
+        "activeLabel": "Projetos ativos",
+        "activeFootEmpty": "Sem salas ativas neste momento",
+        "activeFootHasValue": "Salas ativas com movimento de entrega",
+        "pendingLabel": "Pagamentos pendentes",
+        "pendingFootEmpty": "Faixa comercial desimpedida",
+        "pendingFootHasValue": "Pontos comerciais ainda em aberto",
+        "proofLabel": "Comprovativos submetidos",
+        "proofFootEmpty": "Nada aguarda revisão",
+        "proofFootHasValue": "Pagamentos a aguardar revisão do Studio",
+        "deliverablesLabel": "Entregáveis",
+        "deliverablesFootEmpty": "Os ficheiros aparecem aqui quando o Studio os carrega",
+        "deliverablesFootHasValue": "Ficheiros e resultados acompanhados num só lugar"
+      },
+      "breakdown": {
+        "active": "Ativo",
+        "readyReview": "Pronto para revisão",
+        "pendingPayment": "Pagamento pendente",
+        "proofSubmitted": "Comprovativo submetido"
+      },
+      "state": {
+        "empty": {
+          "headline": "Inicie um brief Studio.",
+          "blurb": "Quando uma proposta ou projeto avançar com a sua identidade HenryCo, a sala Studio sincronizada surge aqui — marcos, pagamentos, entregáveis e próximo passo juntos.",
+          "ctaPrimary": "Iniciar um brief",
+          "ctaSecondary": "Abrir Studio"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} pagamento em atraso.",
+          "headlineTemplatePlural": "{count} pagamentos em atraso.",
+          "blurb": "Um ponto de pagamento está em atraso. Abra a sala para enviar comprovativo ou contactar a equipa Studio.",
+          "ctaPrimary": "Abrir pagamentos",
+          "ctaSecondary": "Abrir Studio"
+        },
+        "activeReady": {
+          "headlineTemplateSingular": "{count} projeto pronto para revisão.",
+          "headlineTemplatePlural": "{count} projetos prontos para revisão.",
+          "blurb": "Entregáveis e revisões aguardam a sua aprovação. Abra a sala para rever e desbloquear o próximo marco.",
+          "ctaPrimary": "Abrir projetos",
+          "ctaSecondary": "Abrir Studio"
+        },
+        "activeProjects": {
+          "headlineTemplateSingular": "{count} projeto ativo.",
+          "headlineTemplatePlural": "{count} projetos ativos.",
+          "blurb": "Salas ativas com movimento de marcos, pontos de pagamento e entregáveis — todos refletidos do HenryCo Studio nesta sala.",
+          "ctaPrimary": "Abrir Studio",
+          "ctaSecondary": "Iniciar novo brief"
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} sala de projeto registada.",
+          "headlineTemplatePlural": "{count} salas de projeto registadas.",
+          "blurb": "Cada colaboração Studio que iniciou — propostas, marcos, pagamentos, entregáveis — guardada numa sala para acompanhamento rápido.",
+          "ctaPrimary": "Abrir Studio",
+          "ctaSecondary": "Iniciar novo brief"
+        }
+      }
+    },
+    "sections": {
+      "projectsTitle": "Salas de projeto",
+      "projectsAriaLabel": "Projetos Studio",
+      "projectsMetaEmpty": "As salas surgem aqui quando uma colaboração Studio avança.",
+      "projectsMetaTemplateSingular": "{count} projeto · ordenado pelo último movimento",
+      "projectsMetaTemplatePlural": "{count} projetos · ordenados pelo último movimento",
+      "paymentsTitle": "Pontos de pagamento",
+      "paymentsAriaLabel": "Pagamentos Studio",
+      "paymentsMetaEmpty": "Os pedidos de pagamento do Studio surgem aqui quando uma proposta ou projeto está ativo.",
+      "paymentsMetaTemplateSingular": "{count} ponto · envio de comprovativo e estado de aprovação",
+      "paymentsMetaTemplatePlural": "{count} pontos · envio de comprovativo e estado de aprovação",
+      "activityTitle": "Atividade recente",
+      "activityAriaLabel": "Atividade Studio",
+      "activityMetaEmpty": "Atualizações de projeto, comprovativos de pagamento e aprovações de marcos refletem aqui.",
+      "activityMetaTemplateSingular": "{count} atualização · mais recente primeiro",
+      "activityMetaTemplatePlural": "{count} atualizações · mais recentes primeiro"
+    },
+    "empty": {
+      "projectsTitle": "Ainda sem salas Studio ligadas",
+      "projectsBody": "Logo que uma proposta ou projeto seja criado com a sua identidade HenryCo, a sala Studio sincronizada surge aqui — marcos, pagamentos, entregáveis e próximo passo.",
+      "paymentsTitle": "Ainda sem pontos de pagamento",
+      "paymentsBody": "Os marcos comerciais — sinal, meio de projeto e entrega — surgem aqui assim que uma proposta avança consigo.",
+      "activityTitle": "Ainda sem atividade Studio",
+      "activityBody": "Atualizações de projeto, comprovativos de pagamento, lançamentos de entregáveis e aprovações de marcos surgirão aqui à medida que acontecerem."
+    },
+    "projects": {
+      "listAriaLabel": "Projetos Studio",
+      "fallbackSubtitle": "O Studio está a preparar a próxima atualização.",
+      "milestonesTemplate": "{approved}/{total} marcos",
+      "paymentsTemplateSingular": "{count} pagamento em aberto",
+      "paymentsTemplatePlural": "{count} pagamentos em aberto",
+      "deliverablesTemplateSingular": "{count} entregável",
+      "deliverablesTemplatePlural": "{count} entregáveis",
+      "updatedTemplate": "Atualizado {stamp}",
+      "rowAriaLabelTemplate": "{title} · {kind}",
+      "fallbackStamp": "—"
+    },
+    "projectKindLabels": {
+      "live": "Em curso",
+      "ready_review": "Pronto para revisão",
+      "scheduled": "Agendado",
+      "delivered": "Entregue",
+      "issue": "Ação necessária"
+    },
+    "payments": {
+      "listAriaLabel": "Pagamentos Studio",
+      "rowAriaLabelTemplate": "{label} · {status}",
+      "dueTemplate": "Vence {stamp}",
+      "updatedTemplate": "Atualizado {stamp}",
+      "subTemplate": "{amount} · {method} · {due}"
+    },
+    "paymentStatusLabels": {
+      "pending": "pendente",
+      "paid": "pago",
+      "approved": "aprovado",
+      "settled": "liquidado",
+      "proof_uploaded": "comprovativo carregado",
+      "proof_submitted": "comprovativo submetido",
+      "in_review": "em revisão",
+      "rejected": "rejeitado",
+      "overdue": "em atraso",
+      "failed": "falhou",
+      "pending_deposit": "sinal pendente"
+    },
+    "activity": {
+      "listAriaLabel": "Atividade Studio",
+      "rowAriaLabelTemplate": "{title} · {stamp}"
+    }
   }
+
 };
 
 export const ACCOUNT_COPY_AR = {
@@ -4834,5 +5310,243 @@ export const ACCOUNT_COPY_AR = {
     "formatLabels": {
       "dash": "—"
     }
+  },
+  "divisionLearn": {
+    "metadata": {
+      "title": "Learn · لوحة التعلّم",
+      "description": "تابع كل تسجيل في HenryCo Learn، درس، نتيجة اختبار، شهادة، تدريب مُسنَد إليك، وطلب تدريس مرتبط بهذا الحساب — الكتالوج على Learn، التقدّم يُعكَس هنا."
+    },
+    "hero": {
+      "ariaLabel": "نظرة عامة على Learn",
+      "eyebrow": "Learn · مباشر",
+      "sideKicker": "كيف تعمل هذه الغرفة",
+      "sideTitle": "الكتالوج على Learn، التقدّم هنا.",
+      "sideBody": "كل درس واختبار وشهادة من HenryCo Learn يتزامن في هذه الغرفة — استأنف من حيث توقّفت، شاهد تقدّمك بلمحة، واحتفظ بشهاداتك في مكان واحد.",
+      "breakdownLabel": "حسب الحالة",
+      "breakdownAriaLabel": "تفصيل نشاط التعلّم",
+      "tilesAriaLabel": "نشاط التعلّم",
+      "tileLabels": {
+        "active": "نشطة",
+        "completed": "مكتملة",
+        "certificates": "شهادات",
+        "assignments": "مُسنَدة"
+      },
+      "tileFoot": {
+        "activeEmpty": "سجِّل لبدء دورة",
+        "activeWith": "تقدّم الدروس والاختبارات يُعكَس هنا",
+        "completedEmpty": "البرامج التي تُنهيها ستظهر هنا",
+        "completedWith": "مفيد للسير الذاتية والتقارير",
+        "certificatesEmpty": "احصل على واحدة بإكمال دورة",
+        "certificatesWith": "روابط قابلة للتحقّق لكل اعتماد",
+        "assignmentsEmpty": "لا شيء مُسنَد حاليًا",
+        "assignmentsWith": "من مديرك أو فريقك"
+      },
+      "breakdownNames": {
+        "active": "نشطة",
+        "assigned": "مُسنَدة",
+        "certificates": "شهادات",
+        "saved": "محفوظة"
+      },
+      "openLearnCta": "فتح HenryCo Learn",
+      "applyToTeachCta": "تقديم طلب للتدريس",
+      "state": {
+        "empty": {
+          "headline": "ابدأ رحلتك مع HenryCo Learn.",
+          "blurb": "تصفّح الكتالوج، سجِّل في دورة، وسيتزامن كل درس واختبار وشهادة تلقائيًا في هذه الغرفة."
+        },
+        "active": {
+          "headlineTemplateSingular": "{count} دورة قيد التقدّم.",
+          "headlineTemplatePlural": "{count} دورات قيد التقدّم.",
+          "blurb": "استأنف من حيث توقّفت — الدروس والاختبارات والشهادات والتدريبات المُسنَدة تتزامن جميعها من HenryCo Learn إلى هذه الغرفة."
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} دورة مكتملة.",
+          "headlineTemplatePlural": "{count} دورات مكتملة.",
+          "blurb": "تظل شهاداتك وسجل التعلّم هنا، مفيدة للسير الذاتية أو التقارير الداخلية أو سجلّك الخاص."
+        }
+      }
+    },
+    "sections": {
+      "coursesTitle": "تابع التعلّم",
+      "coursesMetaEmpty": "تصفّح كتالوج HenryCo Learn لتسجّل في أول دورة لك.",
+      "coursesMetaTemplate": "{active} نشطة · {completed} مكتملة",
+      "extrasTitle": "الاعتمادات والمهام والتدريس",
+      "extrasMeta": "الشهادات والتدريبات المُسنَدة والدورات المحفوظة وطلب التدريس تعيش هنا.",
+      "activityTitle": "النشاط الأخير",
+      "activityMetaTemplateSingular": "{count} تحديث · الأحدث أولًا",
+      "activityMetaTemplatePlural": "{count} تحديثًا · الأحدث أولًا",
+      "activityMetaEmpty": "الدروس والاختبارات والشهادات والمدفوعات تُعكَس هنا فوريًا."
+    },
+    "empty": {
+      "coursesTitle": "لا توجد دورات مرتبطة بعد",
+      "coursesBody": "تصفّح الكتالوج على HenryCo Learn وسجِّل. سيظهر مقعدك هنا تلقائيًا.",
+      "activityTitle": "لا يوجد نشاط Learn بعد",
+      "activityBody": "تقدّم الدورات، نتائج الاختبارات، إصدار الشهادات وإيصالات الدفع تظهر هنا فوريًا."
+    },
+    "courses": {
+      "ariaLabel": "الدورات",
+      "completedAtTemplate": "اكتُمل في {date}",
+      "progressPercentTemplate": "اكتمل {percent}٪",
+      "statusDelimiter": " · "
+    },
+    "extras": {
+      "ariaLabel": "إضافات Learn",
+      "certificatesTitle": "الشهادات",
+      "assignmentsTitle": "التعلّم المُسنَد",
+      "savedTitle": "الدورات المحفوظة",
+      "teachingTitle": "درِّس مع HenryCo",
+      "statusLabel": "الحالة",
+      "expertiseLabel": "التخصّص",
+      "topicsLabel": "الموضوعات",
+      "openApplicationCta": "فتح الطلب",
+      "applyToTeachCta": "تقديم طلب للتدريس",
+      "teachingEmpty": "نراجع طلبات التدريس يدويًا. قدِّم على HenryCo Learn وستتزامن الحالة هنا."
+    },
+    "activity": {
+      "ariaLabel": "نشاط Learn",
+      "fallbackTitle": "نشاط Learn"
+    }
+  },
+  "divisionStudio": {
+    "metadata": {
+      "title": "Studio · غرف المشاريع",
+      "description": "تتبّع كل تعاون HenryCo Studio مرتبط بهذا الحساب — العروض والمراحل والمدفوعات والتسليمات والنشاط في غرفة واحدة."
+    },
+    "hero": {
+      "eyebrowLive": "Studio · مباشر",
+      "overviewAriaLabel": "نظرة عامة على Studio",
+      "activityAriaLabel": "نشاط Studio",
+      "sideAriaLabel": "كيف تعمل هذه الغرفة",
+      "sideLabel": "كيف تعمل هذه الغرفة",
+      "sideTitle": "غرفة مشروع واحدة، حالة حقيقية.",
+      "sideBody": "تبقى العروض والمراحل وإثباتات الدفع والتسليمات وإشارات التواصل مرتبطة بنفس هوية HenryCo التي تستخدمها في كل مكان. تعكس لوحة المعلومات أدناه التقدّم الفعلي لفريق Studio، لا قائمة حالات.",
+      "breakdownAriaLabel": "تفصيل النشاط",
+      "breakdownLabel": "حسب الحالة",
+      "tiles": {
+        "activeLabel": "المشاريع النشطة",
+        "activeFootEmpty": "لا توجد غرف عمل نشطة حاليًا",
+        "activeFootHasValue": "غرف نشطة بحركة تسليم",
+        "pendingLabel": "المدفوعات المعلّقة",
+        "pendingFootEmpty": "المسار التجاري مفتوح",
+        "pendingFootHasValue": "نقاط تجارية ما زالت مفتوحة",
+        "proofLabel": "الإثباتات المُقدَّمة",
+        "proofFootEmpty": "لا شيء بانتظار المراجعة",
+        "proofFootHasValue": "مدفوعات بانتظار مراجعة Studio",
+        "deliverablesLabel": "التسليمات",
+        "deliverablesFootEmpty": "تظهر الملفات هنا عند رفعها من Studio",
+        "deliverablesFootHasValue": "ملفات ومخرجات مُتتبَّعة في مكان واحد"
+      },
+      "breakdown": {
+        "active": "نشط",
+        "readyReview": "جاهز للمراجعة",
+        "pendingPayment": "دفع معلّق",
+        "proofSubmitted": "إثبات مُقدَّم"
+      },
+      "state": {
+        "empty": {
+          "headline": "ابدأ بريف Studio.",
+          "blurb": "عندما ينطلق عرض أو مشروع بهويتك في HenryCo، تظهر غرفة Studio المتزامنة هنا — المراحل والمدفوعات والتسليمات والخطوة التالية مجمَّعة.",
+          "ctaPrimary": "ابدأ بريف",
+          "ctaSecondary": "افتح Studio"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} دفعة متأخّرة.",
+          "headlineTemplatePlural": "{count} دفعات متأخّرة.",
+          "blurb": "نقطة دفع متأخّرة. افتح الغرفة لرفع إثبات أو التواصل مع فريق Studio.",
+          "ctaPrimary": "افتح المدفوعات",
+          "ctaSecondary": "افتح Studio"
+        },
+        "activeReady": {
+          "headlineTemplateSingular": "{count} مشروع جاهز للمراجعة.",
+          "headlineTemplatePlural": "{count} مشاريع جاهزة للمراجعة.",
+          "blurb": "تنتظر التسليمات والمراجعات موافقتك. افتح الغرفة للمراجعة وفتح المرحلة التالية.",
+          "ctaPrimary": "افتح المشاريع",
+          "ctaSecondary": "افتح Studio"
+        },
+        "activeProjects": {
+          "headlineTemplateSingular": "{count} مشروع نشط.",
+          "headlineTemplatePlural": "{count} مشاريع نشطة.",
+          "blurb": "غرف نشطة بحركة مراحل ونقاط دفع وتسليمات — كلها منعكسة من HenryCo Studio في هذه الغرفة.",
+          "ctaPrimary": "افتح Studio",
+          "ctaSecondary": "ابدأ بريفًا جديدًا"
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} غرفة مشروع مسجّلة.",
+          "headlineTemplatePlural": "{count} غرف مشاريع مسجّلة.",
+          "blurb": "كل تعاون Studio بدأته يومًا — عروض ومراحل ومدفوعات وتسليمات — محفوظ في غرفة واحدة لمتابعة سريعة.",
+          "ctaPrimary": "افتح Studio",
+          "ctaSecondary": "ابدأ بريفًا جديدًا"
+        }
+      }
+    },
+    "sections": {
+      "projectsTitle": "غرف المشاريع",
+      "projectsAriaLabel": "مشاريع Studio",
+      "projectsMetaEmpty": "تظهر الغرف هنا عند انطلاق تعاون Studio.",
+      "projectsMetaTemplateSingular": "{count} مشروع · مرتّب حسب آخر حركة",
+      "projectsMetaTemplatePlural": "{count} مشاريع · مرتّبة حسب آخر حركة",
+      "paymentsTitle": "نقاط الدفع",
+      "paymentsAriaLabel": "مدفوعات Studio",
+      "paymentsMetaEmpty": "تظهر طلبات الدفع في Studio هنا عند انطلاق عرض أو مشروع.",
+      "paymentsMetaTemplateSingular": "{count} نقطة · رفع إثبات وحالة الموافقة",
+      "paymentsMetaTemplatePlural": "{count} نقاط · رفع إثبات وحالة الموافقة",
+      "activityTitle": "النشاط الأخير",
+      "activityAriaLabel": "نشاط Studio",
+      "activityMetaEmpty": "تنعكس هنا تحديثات المشاريع وإثباتات الدفع وموافقات المراحل.",
+      "activityMetaTemplateSingular": "{count} تحديث · الأحدث أولًا",
+      "activityMetaTemplatePlural": "{count} تحديثات · الأحدث أولًا"
+    },
+    "empty": {
+      "projectsTitle": "لا توجد غرف Studio مرتبطة بعد",
+      "projectsBody": "بمجرّد إنشاء عرض أو مشروع بهويتك في HenryCo، تظهر غرفة Studio المتزامنة هنا — مراحل ومدفوعات وتسليمات والخطوة التالية.",
+      "paymentsTitle": "لا توجد نقاط دفع بعد",
+      "paymentsBody": "تظهر المراحل التجارية — الدفعة المقدّمة ومنتصف المشروع والتسليم — هنا فور انطلاق عرض معك.",
+      "activityTitle": "لا يوجد نشاط Studio بعد",
+      "activityBody": "ستظهر هنا تحديثات المشاريع وإثباتات الدفع وإصدارات التسليمات وموافقات المراحل بمجرّد حدوثها."
+    },
+    "projects": {
+      "listAriaLabel": "مشاريع Studio",
+      "fallbackSubtitle": "Studio يحضّر التحديث التالي.",
+      "milestonesTemplate": "{approved}/{total} مرحلة",
+      "paymentsTemplateSingular": "{count} دفعة مفتوحة",
+      "paymentsTemplatePlural": "{count} دفعات مفتوحة",
+      "deliverablesTemplateSingular": "{count} تسليم",
+      "deliverablesTemplatePlural": "{count} تسليمات",
+      "updatedTemplate": "حُدِّث {stamp}",
+      "rowAriaLabelTemplate": "{title} · {kind}",
+      "fallbackStamp": "—"
+    },
+    "projectKindLabels": {
+      "live": "نشط",
+      "ready_review": "جاهز للمراجعة",
+      "scheduled": "مجدول",
+      "delivered": "تم التسليم",
+      "issue": "يلزم إجراء"
+    },
+    "payments": {
+      "listAriaLabel": "مدفوعات Studio",
+      "rowAriaLabelTemplate": "{label} · {status}",
+      "dueTemplate": "مستحق {stamp}",
+      "updatedTemplate": "حُدِّث {stamp}",
+      "subTemplate": "{amount} · {method} · {due}"
+    },
+    "paymentStatusLabels": {
+      "pending": "معلّق",
+      "paid": "مدفوع",
+      "approved": "مُوافَق",
+      "settled": "مُسوَّى",
+      "proof_uploaded": "تم رفع الإثبات",
+      "proof_submitted": "تم تقديم الإثبات",
+      "in_review": "قيد المراجعة",
+      "rejected": "مرفوض",
+      "overdue": "متأخّر",
+      "failed": "فشل",
+      "pending_deposit": "دفعة مقدّمة معلّقة"
+    },
+    "activity": {
+      "listAriaLabel": "نشاط Studio",
+      "rowAriaLabelTemplate": "{title} · {stamp}"
+    }
   }
+
 };

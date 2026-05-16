@@ -17,6 +17,7 @@ type Props = {
   locale: LearnLocale;
   learnOrigin: string;
   labels: {
+    ariaLabel: string;
     certificatesTitle: string;
     assignmentsTitle: string;
     savedTitle: string;
@@ -24,8 +25,8 @@ type Props = {
     statusLabel: string;
     expertiseLabel: string;
     topicsLabel: string;
-    openApplication: string;
-    applyToTeach: string;
+    openApplicationCta: string;
+    applyToTeachCta: string;
     teachingEmpty: string;
   };
 };
@@ -47,7 +48,7 @@ export function LearnExtras({
   if (!hasAnything) return null;
 
   return (
-    <div className="acct-lrn__extras" role="list" aria-label="Learn extras">
+    <div className="acct-lrn__extras" role="list" aria-label={labels.ariaLabel}>
       {certificates.length > 0 ? (
         <section className="acct-lrn__extra" role="listitem">
           <div className="acct-lrn__extra-head">
@@ -154,7 +155,7 @@ export function LearnExtras({
               rel="noopener noreferrer"
               className="acct-lrn__extra-cta"
             >
-              {labels.openApplication} <ArrowUpRight size={14} aria-hidden />
+              {labels.openApplicationCta} <ArrowUpRight size={14} aria-hidden />
             </a>
           </div>
         </section>

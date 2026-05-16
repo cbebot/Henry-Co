@@ -1614,6 +1614,367 @@ export type AccountCopy = {
     };
     recruiterUpdateTitleTemplate: string;
   };
+  divisionLogistics: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      ariaLabel: string;
+      eyebrow: string;
+      brand: string;
+      title: string;
+      body: string;
+      bodyDomain: string;
+      ctaNewDelivery: string;
+    };
+    metrics: {
+      ariaLabel: string;
+      activeNowLabel: string;
+      activeFootSingular: string;
+      activeFootPlural: string;
+      deliveredMonthLabel: string;
+      deliveredMonthFootTemplate: string;
+      onTimeRateLabel: string;
+      onTimeRateFootEmpty: string;
+      onTimeRateFootHasValue: string;
+      totalSpendLabel: string;
+      totalSpendFoot: string;
+    };
+    map: {
+      noShipmentsAriaLabel: string;
+      noShipmentsTitle: string;
+      noShipmentsBody: string;
+      noShipmentsCta: string;
+      pendingAriaLabel: string;
+      pendingTitle: string;
+      pendingBody: string;
+      activeAriaLabel: string;
+      altTemplateSingular: string;
+      altTemplatePlural: string;
+      liveBadgeTemplateSingular: string;
+      liveBadgeTemplatePlural: string;
+    };
+    sections: {
+      activeTitle: string;
+      activeMetaTemplate: string;
+      activeRailAriaLabel: string;
+      emptyAriaLabel: string;
+      emptyTitle: string;
+      emptyBody: string;
+      actionsTitle: string;
+      actionsMeta: string;
+      actionsAriaLabel: string;
+      recentTitle: string;
+      recentMetaTemplate: string;
+      recentAriaLabel: string;
+      spendTitle: string;
+      spendMeta: string;
+      spendFigureAriaLabelTemplate: string;
+    };
+    statusLabels: {
+      quoteRequested: string;
+      quoteSent: string;
+      pendingPayment: string;
+      scheduled: string;
+      assigned: string;
+      pickupConfirmed: string;
+      inTransit: string;
+      delayed: string;
+      attemptedDelivery: string;
+      delivered: string;
+      completed: string;
+      closed: string;
+      cancelled: string;
+      refunded: string;
+    };
+    urgencyLabels: {
+      standard: string;
+      sameDay: string;
+      express: string;
+      nextDay: string;
+    };
+    serviceLabels: {
+      scheduled: string;
+      sameDay: string;
+      interCity: string;
+      bulk: string;
+    };
+    shipment: {
+      trackingCodeAriaTemplate: string;
+      addressPending: string;
+      etaPending: string;
+      trackCta: string;
+      openTrackingAriaTemplate: string;
+      etaAriaTemplate: string;
+      etaMinutesInTemplate: string;
+      etaMinutesOverdueTemplate: string;
+      etaHoursInTemplate: string;
+      etaHoursOverdueTemplate: string;
+      detailSeparator: string;
+    };
+    timeline: {
+      ariaLabel: string;
+      deliveredToTemplate: string;
+      receiptCta: string;
+    };
+    quickActions: {
+      ariaLabel: string;
+      bookLabel: string;
+      bookDesc: string;
+      trackLabel: string;
+      trackDesc: string;
+      quoteLabel: string;
+      quoteDesc: string;
+      addressesLabel: string;
+      addressesDesc: string;
+      invoicesLabel: string;
+      invoicesDesc: string;
+      supportLabel: string;
+      supportDesc: string;
+    };
+    spend: {
+      figureAriaLabel: string;
+      emptyTick: string;
+    };
+  };
+  divisionStudio: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrowLive: string;
+      overviewAriaLabel: string;
+      activityAriaLabel: string;
+      sideAriaLabel: string;
+      sideLabel: string;
+      sideTitle: string;
+      sideBody: string;
+      breakdownAriaLabel: string;
+      breakdownLabel: string;
+      tiles: {
+        activeLabel: string;
+        activeFootEmpty: string;
+        activeFootHasValue: string;
+        pendingLabel: string;
+        pendingFootEmpty: string;
+        pendingFootHasValue: string;
+        proofLabel: string;
+        proofFootEmpty: string;
+        proofFootHasValue: string;
+        deliverablesLabel: string;
+        deliverablesFootEmpty: string;
+        deliverablesFootHasValue: string;
+      };
+      breakdown: {
+        active: string;
+        readyReview: string;
+        pendingPayment: string;
+        proofSubmitted: string;
+      };
+      state: {
+        empty: {
+          headline: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        attention: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        activeReady: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        activeProjects: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        calm: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+      };
+    };
+    sections: {
+      projectsTitle: string;
+      projectsAriaLabel: string;
+      projectsMetaEmpty: string;
+      projectsMetaTemplateSingular: string;
+      projectsMetaTemplatePlural: string;
+      paymentsTitle: string;
+      paymentsAriaLabel: string;
+      paymentsMetaEmpty: string;
+      paymentsMetaTemplateSingular: string;
+      paymentsMetaTemplatePlural: string;
+      activityTitle: string;
+      activityAriaLabel: string;
+      activityMetaEmpty: string;
+      activityMetaTemplateSingular: string;
+      activityMetaTemplatePlural: string;
+    };
+    empty: {
+      projectsTitle: string;
+      projectsBody: string;
+      paymentsTitle: string;
+      paymentsBody: string;
+      activityTitle: string;
+      activityBody: string;
+    };
+    projects: {
+      listAriaLabel: string;
+      fallbackSubtitle: string;
+      milestonesTemplate: string;
+      paymentsTemplateSingular: string;
+      paymentsTemplatePlural: string;
+      deliverablesTemplateSingular: string;
+      deliverablesTemplatePlural: string;
+      updatedTemplate: string;
+      rowAriaLabelTemplate: string;
+      fallbackStamp: string;
+    };
+    projectKindLabels: {
+      live: string;
+      ready_review: string;
+      scheduled: string;
+      delivered: string;
+      issue: string;
+    };
+    payments: {
+      listAriaLabel: string;
+      rowAriaLabelTemplate: string;
+      dueTemplate: string;
+      updatedTemplate: string;
+      subTemplate: string;
+    };
+    paymentStatusLabels: {
+      pending: string;
+      paid: string;
+      approved: string;
+      settled: string;
+      proof_uploaded: string;
+      proof_submitted: string;
+      in_review: string;
+      rejected: string;
+      overdue: string;
+      failed: string;
+      pending_deposit: string;
+    };
+    activity: {
+      listAriaLabel: string;
+      rowAriaLabelTemplate: string;
+    };
+  };
+  divisionLearn: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      ariaLabel: string;
+      eyebrow: string;
+      sideKicker: string;
+      sideTitle: string;
+      sideBody: string;
+      breakdownLabel: string;
+      breakdownAriaLabel: string;
+      tilesAriaLabel: string;
+      tileLabels: {
+        active: string;
+        completed: string;
+        certificates: string;
+        assignments: string;
+      };
+      tileFoot: {
+        activeEmpty: string;
+        activeWith: string;
+        completedEmpty: string;
+        completedWith: string;
+        certificatesEmpty: string;
+        certificatesWith: string;
+        assignmentsEmpty: string;
+        assignmentsWith: string;
+      };
+      breakdownNames: {
+        active: string;
+        assigned: string;
+        certificates: string;
+        saved: string;
+      };
+      openLearnCta: string;
+      applyToTeachCta: string;
+      state: {
+        empty: {
+          headline: string;
+          blurb: string;
+        };
+        active: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+        };
+        calm: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+        };
+      };
+    };
+    sections: {
+      coursesTitle: string;
+      coursesMetaEmpty: string;
+      coursesMetaTemplate: string;
+      extrasTitle: string;
+      extrasMeta: string;
+      activityTitle: string;
+      activityMetaTemplateSingular: string;
+      activityMetaTemplatePlural: string;
+      activityMetaEmpty: string;
+    };
+    empty: {
+      coursesTitle: string;
+      coursesBody: string;
+      activityTitle: string;
+      activityBody: string;
+    };
+    courses: {
+      ariaLabel: string;
+      completedAtTemplate: string;
+      progressPercentTemplate: string;
+      statusDelimiter: string;
+    };
+    extras: {
+      ariaLabel: string;
+      certificatesTitle: string;
+      assignmentsTitle: string;
+      savedTitle: string;
+      teachingTitle: string;
+      statusLabel: string;
+      expertiseLabel: string;
+      topicsLabel: string;
+      openApplicationCta: string;
+      applyToTeachCta: string;
+      teachingEmpty: string;
+    };
+    activity: {
+      ariaLabel: string;
+      fallbackTitle: string;
+    };
+  };
 };
 
 const EN: AccountCopy = {
@@ -3310,6 +3671,367 @@ const EN: AccountCopy = {
       paused: "Paused",
     },
     recruiterUpdateTitleTemplate: "{stage} update",
+  },
+  divisionLogistics: {
+    metadata: {
+      title: "Logistics · deliveries and shipments",
+      description: "Every HenryCo Logistics pickup, drop-off, ETA, and proof of delivery linked to this account — mirrored from the logistics network into one calm room.",
+    },
+    hero: {
+      ariaLabel: "Logistics overview",
+      eyebrow: "HenryCo Logistics",
+      brand: "HenryCo Logistics",
+      title: "Every parcel, one room.",
+      body: "Pickups, drop-offs, ETAs and proofs of delivery — all mirrored from the logistics network into your account. Book once on",
+      bodyDomain: " logistics.henrycogroup.com",
+      ctaNewDelivery: "New delivery",
+    },
+    metrics: {
+      ariaLabel: "Logistics performance",
+      activeNowLabel: "Active now",
+      activeFootSingular: "shipment in flight",
+      activeFootPlural: "shipments in flight",
+      deliveredMonthLabel: "Delivered · this month",
+      deliveredMonthFootTemplate: "{count} lifetime",
+      onTimeRateLabel: "On-time rate",
+      onTimeRateFootEmpty: "Awaiting first scheduled delivery",
+      onTimeRateFootHasValue: "Of scheduled deliveries",
+      totalSpendLabel: "Total spend",
+      totalSpendFoot: "Paid lifetime",
+    },
+    map: {
+      noShipmentsAriaLabel: "No shipments yet",
+      noShipmentsTitle: "Your map will light up when you book your first delivery",
+      noShipmentsBody: "Every active pickup and drop-off pins here automatically. Book once and your shipments mirror back from the logistics site.",
+      noShipmentsCta: "Book a delivery",
+      pendingAriaLabel: "Map preview",
+      pendingTitle: "Geocoding pending",
+      pendingBody: "Your active shipments will pin to the map as soon as the pickup and drop-off addresses are geocoded by dispatch.",
+      activeAriaLabel: "Active shipments map",
+      altTemplateSingular: "Map showing {count} active pickup and drop-off pin",
+      altTemplatePlural: "Map showing {count} active pickup and drop-off pins",
+      liveBadgeTemplateSingular: "Live · {count} active shipment",
+      liveBadgeTemplatePlural: "Live · {count} active shipments",
+    },
+    sections: {
+      activeTitle: "In flight right now",
+      activeMetaTemplate: "{count} active · auto-syncs from logistics",
+      activeRailAriaLabel: "Active shipments",
+      emptyAriaLabel: "No active shipments",
+      emptyTitle: "No active shipments",
+      emptyBody: "Your past deliveries are below. Book another and it will appear here as soon as the rider confirms pickup.",
+      actionsTitle: "Run a delivery",
+      actionsMeta: "Shortcuts to common flows",
+      actionsAriaLabel: "Logistics quick actions",
+      recentTitle: "Recently delivered",
+      recentMetaTemplate: "Last {recent} of {lifetime} lifetime",
+      recentAriaLabel: "Recent deliveries",
+      spendTitle: "Spend · last 6 months",
+      spendMeta: "Paid only",
+      spendFigureAriaLabelTemplate: "Logistics spend over the last 6 months",
+    },
+    statusLabels: {
+      quoteRequested: "Quote pending",
+      quoteSent: "Quote ready",
+      pendingPayment: "Awaiting payment",
+      scheduled: "Scheduled",
+      assigned: "Rider assigned",
+      pickupConfirmed: "Picked up",
+      inTransit: "In transit",
+      delayed: "Delayed",
+      attemptedDelivery: "Attempted delivery",
+      delivered: "Delivered",
+      completed: "Completed",
+      closed: "Closed",
+      cancelled: "Cancelled",
+      refunded: "Refunded",
+    },
+    urgencyLabels: {
+      standard: "Standard",
+      sameDay: "Same day",
+      express: "Express",
+      nextDay: "Next day",
+    },
+    serviceLabels: {
+      scheduled: "Scheduled",
+      sameDay: "Same-day",
+      interCity: "Inter-city",
+      bulk: "Bulk",
+    },
+    shipment: {
+      trackingCodeAriaTemplate: "Tracking code {code}",
+      addressPending: "Address pending",
+      etaPending: "ETA pending",
+      trackCta: "Track shipment",
+      openTrackingAriaTemplate: "Open tracking for {code}",
+      etaAriaTemplate: "ETA {eta}",
+      etaMinutesInTemplate: "in {minutes} min",
+      etaMinutesOverdueTemplate: "{minutes} min overdue",
+      etaHoursInTemplate: "in {hours}h",
+      etaHoursOverdueTemplate: "{hours}h overdue",
+      detailSeparator: " · ",
+    },
+    timeline: {
+      ariaLabel: "Recent deliveries",
+      deliveredToTemplate: "Delivered to {name}",
+      receiptCta: "Receipt",
+    },
+    quickActions: {
+      ariaLabel: "Logistics quick actions",
+      bookLabel: "Book a delivery",
+      bookDesc: "Pickup & drop-off in a single guided flow.",
+      trackLabel: "Track by code",
+      trackDesc: "Live status, ETA and rider context.",
+      quoteLabel: "Quote first",
+      quoteDesc: "Indicative pricing before you commit.",
+      addressesLabel: "Saved addresses",
+      addressesDesc: "Pickup and drop-off contacts.",
+      invoicesLabel: "Receipts & invoices",
+      invoicesDesc: "Branded PDFs for every shipment.",
+      supportLabel: "Logistics support",
+      supportDesc: "Open a thread tagged to your account.",
+    },
+    spend: {
+      figureAriaLabel: "Logistics spend over the last 6 months",
+      emptyTick: "—",
+    },
+  },
+  divisionStudio: {
+    metadata: {
+      title: "Studio · project rooms",
+      description: "Track every HenryCo Studio engagement linked to this account — proposals, milestones, payments, deliverables, and activity in one room.",
+    },
+    hero: {
+      eyebrowLive: "Studio · live",
+      overviewAriaLabel: "Studio overview",
+      activityAriaLabel: "Studio activity",
+      sideAriaLabel: "How this room works",
+      sideLabel: "How this room works",
+      sideTitle: "One project room, real state.",
+      sideBody: "Proposals, milestones, payment proofs, deliverables, and communication signals stay connected to the same HenryCo identity you use everywhere else. The dashboard below reflects the Studio team's actual progress, not a status list.",
+      breakdownAriaLabel: "Activity breakdown",
+      breakdownLabel: "By state",
+      tiles: {
+        activeLabel: "Active projects",
+        activeFootEmpty: "No live workspaces right now",
+        activeFootHasValue: "Live workspaces with delivery motion",
+        pendingLabel: "Pending payments",
+        pendingFootEmpty: "Commercial lane is clear",
+        pendingFootHasValue: "Commercial checkpoints still open",
+        proofLabel: "Proof submitted",
+        proofFootEmpty: "Nothing awaiting review",
+        proofFootHasValue: "Payments waiting on Studio review",
+        deliverablesLabel: "Deliverables",
+        deliverablesFootEmpty: "Files appear here as Studio uploads them",
+        deliverablesFootHasValue: "Files and outputs tracked in one place",
+      },
+      breakdown: {
+        active: "Active",
+        readyReview: "Ready for review",
+        pendingPayment: "Pending payment",
+        proofSubmitted: "Proof submitted",
+      },
+      state: {
+        empty: {
+          headline: "Start a Studio brief.",
+          blurb: "When a proposal or project goes live with your HenryCo identity, the synced Studio room appears here — milestones, payments, deliverables, and the next move all in one place.",
+          ctaPrimary: "Start a brief",
+          ctaSecondary: "Open Studio",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} overdue payment.",
+          headlineTemplatePlural: "{count} overdue payments.",
+          blurb: "A payment checkpoint is past due. Open the workspace to upload proof or contact the Studio team.",
+          ctaPrimary: "Open payments",
+          ctaSecondary: "Open Studio",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} project ready for review.",
+          headlineTemplatePlural: "{count} projects ready for review.",
+          blurb: "Deliverables and revisions are queued for your approval. Open the workspace to review and unblock the next milestone.",
+          ctaPrimary: "Open projects",
+          ctaSecondary: "Open Studio",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} active project.",
+          headlineTemplatePlural: "{count} active projects.",
+          blurb: "Live workspaces with milestone movement, payment checkpoints, and deliverables — all mirrored from HenryCo Studio into this room.",
+          ctaPrimary: "Open Studio",
+          ctaSecondary: "Start a new brief",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} project room on record.",
+          headlineTemplatePlural: "{count} project rooms on record.",
+          blurb: "Every Studio engagement you have ever started — proposals, milestones, payments, deliverables — kept in one room for fast follow-up.",
+          ctaPrimary: "Open Studio",
+          ctaSecondary: "Start a new brief",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "Project rooms",
+      projectsAriaLabel: "Studio projects",
+      projectsMetaEmpty: "Workspaces appear here when a Studio engagement goes live.",
+      projectsMetaTemplateSingular: "{count} project · sorted by latest movement",
+      projectsMetaTemplatePlural: "{count} projects · sorted by latest movement",
+      paymentsTitle: "Payment checkpoints",
+      paymentsAriaLabel: "Studio payments",
+      paymentsMetaEmpty: "Studio payment requests appear here when a proposal or project is live.",
+      paymentsMetaTemplateSingular: "{count} checkpoint · proof upload + approval status",
+      paymentsMetaTemplatePlural: "{count} checkpoints · proof upload + approval status",
+      activityTitle: "Recent activity",
+      activityAriaLabel: "Studio activity",
+      activityMetaEmpty: "Project updates, payment proofs, and milestone approvals mirror here.",
+      activityMetaTemplateSingular: "{count} update · most recent first",
+      activityMetaTemplatePlural: "{count} updates · most recent first",
+    },
+    empty: {
+      projectsTitle: "No Studio workspaces linked yet",
+      projectsBody: "As soon as a proposal or project is created with your HenryCo identity, the synced Studio room will appear here — milestones, payments, deliverables, and the next move.",
+      paymentsTitle: "No payment checkpoints yet",
+      paymentsBody: "Commercial milestones — deposit, mid-project, and delivery — surface here once a proposal goes live with you.",
+      activityTitle: "No Studio activity yet",
+      activityBody: "Project updates, payment proofs, deliverable releases, and milestone approvals will appear here as they happen.",
+    },
+    projects: {
+      listAriaLabel: "Studio projects",
+      fallbackSubtitle: "Studio is preparing the next update.",
+      milestonesTemplate: "{approved}/{total} milestones",
+      paymentsTemplateSingular: "{count} open payment",
+      paymentsTemplatePlural: "{count} open payments",
+      deliverablesTemplateSingular: "{count} deliverable",
+      deliverablesTemplatePlural: "{count} deliverables",
+      updatedTemplate: "Updated {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "Live",
+      ready_review: "Ready for review",
+      scheduled: "Scheduled",
+      delivered: "Delivered",
+      issue: "Action needed",
+    },
+    payments: {
+      listAriaLabel: "Studio payments",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "Due {stamp}",
+      updatedTemplate: "Updated {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "pending",
+      paid: "paid",
+      approved: "approved",
+      settled: "settled",
+      proof_uploaded: "proof uploaded",
+      proof_submitted: "proof submitted",
+      in_review: "in review",
+      rejected: "rejected",
+      overdue: "overdue",
+      failed: "failed",
+      pending_deposit: "pending deposit",
+    },
+    activity: {
+      listAriaLabel: "Studio activity",
+      rowAriaLabelTemplate: "{title} · {stamp}",
+    },
+  },
+  divisionLearn: {
+    metadata: {
+      title: "Learn · learning dashboard",
+      description: "Track every HenryCo Learn enrollment, lesson, quiz result, certificate, assigned training, and teaching application linked to this account — catalog on Learn, progress mirrored here.",
+    },
+    hero: {
+      ariaLabel: "Learn overview",
+      eyebrow: "Learn · live",
+      sideKicker: "How this room works",
+      sideTitle: "Catalog on Learn, progress here.",
+      sideBody: "Every lesson, quiz, and certificate from HenryCo Learn syncs into this room — pick up where you left off, see your progress at a glance, and keep credentials in one place.",
+      breakdownLabel: "By state",
+      breakdownAriaLabel: "Learning activity breakdown",
+      tilesAriaLabel: "Learning activity",
+      tileLabels: {
+        active: "Active",
+        completed: "Completed",
+        certificates: "Certificates",
+        assignments: "Assigned",
+      },
+      tileFoot: {
+        activeEmpty: "Enroll to start a course",
+        activeWith: "Lesson + quiz progress mirrors here",
+        completedEmpty: "Programs you finish appear here",
+        completedWith: "Handy for CVs and reporting",
+        certificatesEmpty: "Earn one by completing a course",
+        certificatesWith: "Verifiable links to each credential",
+        assignmentsEmpty: "Nothing assigned right now",
+        assignmentsWith: "From your manager or team",
+      },
+      breakdownNames: {
+        active: "Active",
+        assigned: "Assigned",
+        certificates: "Certificates",
+        saved: "Saved",
+      },
+      openLearnCta: "Open HenryCo Learn",
+      applyToTeachCta: "Apply to teach",
+      state: {
+        empty: {
+          headline: "Start your HenryCo Learn journey.",
+          blurb: "Browse the catalog, enroll in a course, and every lesson, quiz, and certificate will sync into this room automatically.",
+        },
+        active: {
+          headlineTemplateSingular: "{count} course in progress.",
+          headlineTemplatePlural: "{count} courses in progress.",
+          blurb: "Pick up where you left off — lessons, quizzes, certificates, and assigned training all sync from HenryCo Learn into this room.",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} course completed.",
+          headlineTemplatePlural: "{count} courses completed.",
+          blurb: "Your credentials and learning history stay here, handy for CVs, internal reporting, or your own records.",
+        },
+      },
+    },
+    sections: {
+      coursesTitle: "Continue learning",
+      coursesMetaEmpty: "Browse the HenryCo Learn catalog to enroll in your first course.",
+      coursesMetaTemplate: "{active} active · {completed} completed",
+      extrasTitle: "Credentials, assignments, and teaching",
+      extrasMeta: "Certificates, assigned training, saved courses, and instructor application live here.",
+      activityTitle: "Recent activity",
+      activityMetaTemplateSingular: "{count} update · most recent first",
+      activityMetaTemplatePlural: "{count} updates · most recent first",
+      activityMetaEmpty: "Lessons, quizzes, certificates, and payments mirror here as they happen.",
+    },
+    empty: {
+      coursesTitle: "No courses linked yet",
+      coursesBody: "Browse the catalog on HenryCo Learn and enroll. Your place will appear here automatically.",
+      activityTitle: "No Learn activity yet",
+      activityBody: "Course progress, quiz results, certificate issuance, and payment receipts surface here as they happen.",
+    },
+    courses: {
+      ariaLabel: "Courses",
+      completedAtTemplate: "Completed {date}",
+      progressPercentTemplate: "{percent}% complete",
+      statusDelimiter: " · ",
+    },
+    extras: {
+      ariaLabel: "Learn extras",
+      certificatesTitle: "Certificates",
+      assignmentsTitle: "Assigned learning",
+      savedTitle: "Saved courses",
+      teachingTitle: "Teach with HenryCo",
+      statusLabel: "Status",
+      expertiseLabel: "Expertise",
+      topicsLabel: "Topics",
+      openApplicationCta: "Open application",
+      applyToTeachCta: "Apply to teach",
+      teachingEmpty: "We review teaching applications manually. Apply on HenryCo Learn and status will sync back here.",
+    },
+    activity: {
+      ariaLabel: "Learn activity",
+      fallbackTitle: "Learn activity",
+    },
   },
 };
 
@@ -5026,6 +5748,368 @@ const FR: DeepPartial<AccountCopy> = {
     },
     recruiterUpdateTitleTemplate: "Mise à jour {stage}",
   },
+  divisionLogistics: {
+    metadata: {
+      title: "Logistique · livraisons et expéditions",
+      description: "Chaque enlèvement, dépôt, ETA et preuve de livraison HenryCo Logistics liés à ce compte — reflétés depuis le réseau logistique dans une seule pièce sereine.",
+    },
+    hero: {
+      ariaLabel: "Vue d’ensemble logistique",
+      eyebrow: "HenryCo Logistique",
+      brand: "HenryCo Logistique",
+      title: "Chaque colis, une seule pièce.",
+      body: "Enlèvements, dépôts, ETA et preuves de livraison — tout est reflété depuis le réseau logistique dans votre compte. Réservez une fois sur",
+      bodyDomain: " logistics.henrycogroup.com",
+      ctaNewDelivery: "Nouvelle livraison",
+    },
+    metrics: {
+      ariaLabel: "Performance logistique",
+      activeNowLabel: "En cours",
+      activeFootSingular: "expédition en route",
+      activeFootPlural: "expéditions en route",
+      deliveredMonthLabel: "Livré · ce mois",
+      deliveredMonthFootTemplate: "{count} au total",
+      onTimeRateLabel: "Taux de ponctualité",
+      onTimeRateFootEmpty: "En attente de votre première livraison planifiée",
+      onTimeRateFootHasValue: "Des livraisons planifiées",
+      totalSpendLabel: "Dépenses totales",
+      totalSpendFoot: "Payé à vie",
+    },
+    map: {
+      noShipmentsAriaLabel: "Aucune expédition pour l’instant",
+      noShipmentsTitle: "Votre carte s’allumera dès votre première livraison",
+      noShipmentsBody: "Chaque enlèvement et dépôt actif s’épingle ici automatiquement. Réservez une fois et vos expéditions se reflètent depuis le site logistique.",
+      noShipmentsCta: "Réserver une livraison",
+      pendingAriaLabel: "Aperçu de la carte",
+      pendingTitle: "Géocodage en cours",
+      pendingBody: "Vos expéditions actives s’épingleront sur la carte dès que les adresses d’enlèvement et de dépôt seront géocodées par le dispatch.",
+      activeAriaLabel: "Carte des expéditions actives",
+      altTemplateSingular: "Carte affichant {count} épingle d’enlèvement et de dépôt actif",
+      altTemplatePlural: "Carte affichant {count} épingles d’enlèvement et de dépôt actifs",
+      liveBadgeTemplateSingular: "En direct · {count} expédition active",
+      liveBadgeTemplatePlural: "En direct · {count} expéditions actives",
+    },
+    sections: {
+      activeTitle: "En route maintenant",
+      activeMetaTemplate: "{count} actives · synchro auto depuis la logistique",
+      activeRailAriaLabel: "Expéditions actives",
+      emptyAriaLabel: "Aucune expédition active",
+      emptyTitle: "Aucune expédition active",
+      emptyBody: "Vos livraisons passées sont en dessous. Réservez-en une autre, elle apparaîtra ici dès que le coursier confirmera l’enlèvement.",
+      actionsTitle: "Lancer une livraison",
+      actionsMeta: "Raccourcis vers les flux courants",
+      actionsAriaLabel: "Actions rapides logistique",
+      recentTitle: "Récemment livrées",
+      recentMetaTemplate: "Dernières {recent} sur {lifetime} au total",
+      recentAriaLabel: "Livraisons récentes",
+      spendTitle: "Dépenses · 6 derniers mois",
+      spendMeta: "Payé uniquement",
+      spendFigureAriaLabelTemplate: "Dépenses logistiques sur les 6 derniers mois",
+    },
+    statusLabels: {
+      quoteRequested: "Devis en attente",
+      quoteSent: "Devis prêt",
+      pendingPayment: "Paiement attendu",
+      scheduled: "Planifiée",
+      assigned: "Coursier assigné",
+      pickupConfirmed: "Enlevée",
+      inTransit: "En transit",
+      delayed: "Retardée",
+      attemptedDelivery: "Livraison tentée",
+      delivered: "Livrée",
+      completed: "Terminée",
+      closed: "Clôturée",
+      cancelled: "Annulée",
+      refunded: "Remboursée",
+    },
+    urgencyLabels: {
+      standard: "Standard",
+      sameDay: "Jour même",
+      express: "Express",
+      nextDay: "Lendemain",
+    },
+    serviceLabels: {
+      scheduled: "Planifié",
+      sameDay: "Jour même",
+      interCity: "Inter-villes",
+      bulk: "Volume",
+    },
+    shipment: {
+      trackingCodeAriaTemplate: "Code de suivi {code}",
+      addressPending: "Adresse en attente",
+      etaPending: "ETA en attente",
+      trackCta: "Suivre l’expédition",
+      openTrackingAriaTemplate: "Ouvrir le suivi pour {code}",
+      etaAriaTemplate: "ETA {eta}",
+      etaMinutesInTemplate: "dans {minutes} min",
+      etaMinutesOverdueTemplate: "{minutes} min de retard",
+      etaHoursInTemplate: "dans {hours} h",
+      etaHoursOverdueTemplate: "{hours} h de retard",
+      detailSeparator: " · ",
+    },
+    timeline: {
+      ariaLabel: "Livraisons récentes",
+      deliveredToTemplate: "Livré à {name}",
+      receiptCta: "Reçu",
+    },
+    quickActions: {
+      ariaLabel: "Actions rapides logistique",
+      bookLabel: "Réserver une livraison",
+      bookDesc: "Enlèvement et dépôt dans un flux guidé.",
+      trackLabel: "Suivre par code",
+      trackDesc: "Statut en direct, ETA et contexte coursier.",
+      quoteLabel: "Demander un devis",
+      quoteDesc: "Prix indicatif avant de vous engager.",
+      addressesLabel: "Adresses enregistrées",
+      addressesDesc: "Contacts d’enlèvement et de dépôt.",
+      invoicesLabel: "Reçus et factures",
+      invoicesDesc: "PDF de marque pour chaque expédition.",
+      supportLabel: "Support logistique",
+      supportDesc: "Ouvrir un fil rattaché à votre compte.",
+    },
+    spend: {
+      figureAriaLabel: "Dépenses logistiques sur les 6 derniers mois",
+      emptyTick: "—",
+    },
+  },
+  divisionLearn: {
+    metadata: {
+      title: "Learn · tableau de bord apprentissage",
+      description: "Suivez chaque inscription HenryCo Learn, leçon, résultat de quiz, certificat, formation assignée et candidature enseignante liés à ce compte — catalogue sur Learn, progression reflétée ici.",
+    },
+    hero: {
+      ariaLabel: "Vue d’ensemble Learn",
+      eyebrow: "Learn · en direct",
+      sideKicker: "Comment cette pièce fonctionne",
+      sideTitle: "Catalogue sur Learn, progression ici.",
+      sideBody: "Chaque leçon, quiz et certificat de HenryCo Learn se synchronise dans cette pièce — reprenez là où vous vous êtes arrêté, visualisez votre progression d’un coup d’œil et gardez vos certifications au même endroit.",
+      breakdownLabel: "Par état",
+      breakdownAriaLabel: "Répartition de l’activité d’apprentissage",
+      tilesAriaLabel: "Activité d’apprentissage",
+      tileLabels: {
+        active: "Actifs",
+        completed: "Terminés",
+        certificates: "Certificats",
+        assignments: "Assignés",
+      },
+      tileFoot: {
+        activeEmpty: "Inscrivez-vous pour commencer un cours",
+        activeWith: "Leçons et quiz reflétés ici",
+        completedEmpty: "Vos programmes terminés apparaîtront ici",
+        completedWith: "Pratique pour les CV et les rapports",
+        certificatesEmpty: "Obtenez-en un en terminant un cours",
+        certificatesWith: "Liens vérifiables vers chaque certification",
+        assignmentsEmpty: "Rien d’assigné pour l’instant",
+        assignmentsWith: "Depuis votre manager ou votre équipe",
+      },
+      breakdownNames: {
+        active: "Actifs",
+        assigned: "Assignés",
+        certificates: "Certificats",
+        saved: "Enregistrés",
+      },
+      openLearnCta: "Ouvrir HenryCo Learn",
+      applyToTeachCta: "Postuler pour enseigner",
+      state: {
+        empty: {
+          headline: "Commencez votre parcours HenryCo Learn.",
+          blurb: "Parcourez le catalogue, inscrivez-vous à un cours, et chaque leçon, quiz et certificat se synchronisera ici automatiquement.",
+        },
+        active: {
+          headlineTemplateSingular: "{count} cours en cours.",
+          headlineTemplatePlural: "{count} cours en cours.",
+          blurb: "Reprenez là où vous vous êtes arrêté — leçons, quiz, certificats et formations assignées sont synchronisés depuis HenryCo Learn dans cette pièce.",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} cours terminé.",
+          headlineTemplatePlural: "{count} cours terminés.",
+          blurb: "Vos certifications et votre historique d’apprentissage restent ici, pratiques pour les CV, le reporting interne ou vos propres archives.",
+        },
+      },
+    },
+    sections: {
+      coursesTitle: "Continuer l’apprentissage",
+      coursesMetaEmpty: "Parcourez le catalogue HenryCo Learn pour vous inscrire à votre premier cours.",
+      coursesMetaTemplate: "{active} actif(s) · {completed} terminé(s)",
+      extrasTitle: "Certifications, formations et enseignement",
+      extrasMeta: "Certificats, formations assignées, cours enregistrés et candidature enseignante regroupés ici.",
+      activityTitle: "Activité récente",
+      activityMetaTemplateSingular: "{count} mise à jour · plus récente en premier",
+      activityMetaTemplatePlural: "{count} mises à jour · plus récentes en premier",
+      activityMetaEmpty: "Leçons, quiz, certificats et paiements se reflètent ici en temps réel.",
+    },
+    empty: {
+      coursesTitle: "Aucun cours lié pour l’instant",
+      coursesBody: "Parcourez le catalogue sur HenryCo Learn et inscrivez-vous. Votre place apparaîtra ici automatiquement.",
+      activityTitle: "Aucune activité Learn pour l’instant",
+      activityBody: "Progression des cours, résultats de quiz, émission de certificats et reçus de paiement apparaissent ici en temps réel.",
+    },
+    courses: {
+      ariaLabel: "Cours",
+      completedAtTemplate: "Terminé le {date}",
+      progressPercentTemplate: "{percent}% terminé",
+      statusDelimiter: " · ",
+    },
+    extras: {
+      ariaLabel: "Compléments Learn",
+      certificatesTitle: "Certificats",
+      assignmentsTitle: "Formations assignées",
+      savedTitle: "Cours enregistrés",
+      teachingTitle: "Enseigner avec HenryCo",
+      statusLabel: "Statut",
+      expertiseLabel: "Expertise",
+      topicsLabel: "Sujets",
+      openApplicationCta: "Ouvrir la candidature",
+      applyToTeachCta: "Postuler pour enseigner",
+      teachingEmpty: "Nous examinons les candidatures d’enseignants manuellement. Postulez sur HenryCo Learn et le statut se synchronisera ici.",
+    },
+    activity: {
+      ariaLabel: "Activité Learn",
+      fallbackTitle: "Activité Learn",
+    },
+  },
+
+  divisionStudio: {
+    metadata: {
+      title: "Studio · salles de projet",
+      description: "Suivez chaque collaboration HenryCo Studio liée à ce compte — propositions, jalons, paiements, livrables et activité réunis dans une seule salle.",
+    },
+    hero: {
+      eyebrowLive: "Studio · en direct",
+      overviewAriaLabel: "Aperçu Studio",
+      activityAriaLabel: "Activité Studio",
+      sideAriaLabel: "Comment fonctionne cette salle",
+      sideLabel: "Comment fonctionne cette salle",
+      sideTitle: "Une seule salle de projet, l’état réel.",
+      sideBody: "Les propositions, jalons, justificatifs de paiement, livrables et signaux d’échange restent rattachés à l’identité HenryCo que vous utilisez partout. Le tableau ci-dessous reflète la progression réelle de l’équipe Studio, pas une simple liste d’états.",
+      breakdownAriaLabel: "Répartition de l’activité",
+      breakdownLabel: "Par état",
+      tiles: {
+        activeLabel: "Projets actifs",
+        activeFootEmpty: "Aucun espace de travail actif pour le moment",
+        activeFootHasValue: "Espaces actifs avec dynamique de livraison",
+        pendingLabel: "Paiements en attente",
+        pendingFootEmpty: "Voie commerciale dégagée",
+        pendingFootHasValue: "Points de contrôle commerciaux encore ouverts",
+        proofLabel: "Justificatifs déposés",
+        proofFootEmpty: "Rien en attente de revue",
+        proofFootHasValue: "Paiements en attente de revue Studio",
+        deliverablesLabel: "Livrables",
+        deliverablesFootEmpty: "Les fichiers apparaissent ici dès leur dépôt par Studio",
+        deliverablesFootHasValue: "Fichiers et résultats centralisés au même endroit",
+      },
+      breakdown: {
+        active: "Actif",
+        readyReview: "Prêt pour revue",
+        pendingPayment: "Paiement en attente",
+        proofSubmitted: "Justificatif déposé",
+      },
+      state: {
+        empty: {
+          headline: "Lancez un brief Studio.",
+          blurb: "Quand une proposition ou un projet démarre avec votre identité HenryCo, la salle Studio synchronisée apparaît ici — jalons, paiements, livrables et prochaine étape regroupés.",
+          ctaPrimary: "Lancer un brief",
+          ctaSecondary: "Ouvrir Studio",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} paiement en retard.",
+          headlineTemplatePlural: "{count} paiements en retard.",
+          blurb: "Un point de paiement est en retard. Ouvrez la salle pour téléverser un justificatif ou contacter l’équipe Studio.",
+          ctaPrimary: "Ouvrir les paiements",
+          ctaSecondary: "Ouvrir Studio",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} projet prêt pour revue.",
+          headlineTemplatePlural: "{count} projets prêts pour revue.",
+          blurb: "Des livrables et révisions attendent votre validation. Ouvrez la salle pour relire et débloquer le prochain jalon.",
+          ctaPrimary: "Ouvrir les projets",
+          ctaSecondary: "Ouvrir Studio",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} projet actif.",
+          headlineTemplatePlural: "{count} projets actifs.",
+          blurb: "Espaces actifs avec mouvement de jalons, points de paiement et livrables — reflétés depuis HenryCo Studio dans cette salle.",
+          ctaPrimary: "Ouvrir Studio",
+          ctaSecondary: "Lancer un nouveau brief",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} salle de projet enregistrée.",
+          headlineTemplatePlural: "{count} salles de projet enregistrées.",
+          blurb: "Chaque collaboration Studio que vous avez engagée — propositions, jalons, paiements, livrables — conservée dans une salle pour un suivi rapide.",
+          ctaPrimary: "Ouvrir Studio",
+          ctaSecondary: "Lancer un nouveau brief",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "Salles de projet",
+      projectsAriaLabel: "Projets Studio",
+      projectsMetaEmpty: "Les espaces apparaissent ici dès qu’une collaboration Studio démarre.",
+      projectsMetaTemplateSingular: "{count} projet · trié par dernier mouvement",
+      projectsMetaTemplatePlural: "{count} projets · triés par dernier mouvement",
+      paymentsTitle: "Points de paiement",
+      paymentsAriaLabel: "Paiements Studio",
+      paymentsMetaEmpty: "Les demandes de paiement Studio apparaissent ici quand une proposition ou un projet démarre.",
+      paymentsMetaTemplateSingular: "{count} point · justificatif et statut d’approbation",
+      paymentsMetaTemplatePlural: "{count} points · justificatif et statut d’approbation",
+      activityTitle: "Activité récente",
+      activityAriaLabel: "Activité Studio",
+      activityMetaEmpty: "Les mises à jour de projet, justificatifs de paiement et validations de jalons se reflètent ici.",
+      activityMetaTemplateSingular: "{count} mise à jour · plus récente en premier",
+      activityMetaTemplatePlural: "{count} mises à jour · plus récentes en premier",
+    },
+    empty: {
+      projectsTitle: "Aucune salle Studio reliée pour l’instant",
+      projectsBody: "Dès qu’une proposition ou un projet est créé avec votre identité HenryCo, la salle Studio synchronisée apparaîtra ici — jalons, paiements, livrables et prochaine étape.",
+      paymentsTitle: "Aucun point de paiement pour l’instant",
+      paymentsBody: "Les jalons commerciaux — acompte, mi-projet, livraison — apparaissent ici dès qu’une proposition démarre avec vous.",
+      activityTitle: "Aucune activité Studio pour l’instant",
+      activityBody: "Mises à jour de projet, justificatifs de paiement, publications de livrables et validations de jalons s’afficheront ici au fil de l’eau.",
+    },
+    projects: {
+      listAriaLabel: "Projets Studio",
+      fallbackSubtitle: "Studio prépare la prochaine mise à jour.",
+      milestonesTemplate: "{approved}/{total} jalons",
+      paymentsTemplateSingular: "{count} paiement ouvert",
+      paymentsTemplatePlural: "{count} paiements ouverts",
+      deliverablesTemplateSingular: "{count} livrable",
+      deliverablesTemplatePlural: "{count} livrables",
+      updatedTemplate: "Mis à jour le {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "En cours",
+      ready_review: "Prêt pour revue",
+      scheduled: "Planifié",
+      delivered: "Livré",
+      issue: "Action requise",
+    },
+    payments: {
+      listAriaLabel: "Paiements Studio",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "Échéance {stamp}",
+      updatedTemplate: "Mis à jour le {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "en attente",
+      paid: "payé",
+      approved: "approuvé",
+      settled: "réglé",
+      proof_uploaded: "justificatif déposé",
+      proof_submitted: "justificatif soumis",
+      in_review: "en revue",
+      rejected: "rejeté",
+      overdue: "en retard",
+      failed: "échec",
+      pending_deposit: "acompte en attente",
+    },
+    activity: {
+      listAriaLabel: "Activité Studio",
+      rowAriaLabelTemplate: "{title} · {stamp}",
+    },
+  },
 };
 
 const DE: DeepPartial<AccountCopy> = {
@@ -6671,6 +7755,367 @@ const DE: DeepPartial<AccountCopy> = {
     },
     formatLabels: {
       dash: "—",
+    },
+  },
+  "divisionLogistics": {
+    "metadata": {
+      "title": "Logistik · Lieferungen und Sendungen",
+      "description": "Jede Abholung, Zustellung, ETA und Liefernachweis von HenryCo Logistik, die mit diesem Konto verknüpft sind — vom Logistiknetz in einen ruhigen Raum gespiegelt."
+    },
+    "hero": {
+      "ariaLabel": "Logistik-Überblick",
+      "eyebrow": "HenryCo Logistik",
+      "brand": "HenryCo Logistik",
+      "title": "Jedes Paket, ein Raum.",
+      "body": "Abholungen, Zustellungen, ETAs und Liefernachweise — alles aus dem Logistiknetz in Ihr Konto gespiegelt. Buchen Sie einmal auf",
+      "bodyDomain": " logistics.henrycogroup.com",
+      "ctaNewDelivery": "Neue Lieferung"
+    },
+    "metrics": {
+      "ariaLabel": "Logistikleistung",
+      "activeNowLabel": "Jetzt aktiv",
+      "activeFootSingular": "Sendung unterwegs",
+      "activeFootPlural": "Sendungen unterwegs",
+      "deliveredMonthLabel": "Zugestellt · diesen Monat",
+      "deliveredMonthFootTemplate": "{count} insgesamt",
+      "onTimeRateLabel": "Pünktlichkeitsrate",
+      "onTimeRateFootEmpty": "Warten auf erste geplante Zustellung",
+      "onTimeRateFootHasValue": "Der geplanten Zustellungen",
+      "totalSpendLabel": "Gesamtausgaben",
+      "totalSpendFoot": "Lebenslang gezahlt"
+    },
+    "map": {
+      "noShipmentsAriaLabel": "Noch keine Sendungen",
+      "noShipmentsTitle": "Ihre Karte leuchtet auf, sobald Sie Ihre erste Lieferung buchen",
+      "noShipmentsBody": "Jede aktive Abholung und Zustellung wird hier automatisch angepinnt. Einmal buchen und Ihre Sendungen spiegeln sich aus der Logistik zurück.",
+      "noShipmentsCta": "Lieferung buchen",
+      "pendingAriaLabel": "Kartenvorschau",
+      "pendingTitle": "Geocodierung läuft",
+      "pendingBody": "Ihre aktiven Sendungen werden auf der Karte angepinnt, sobald die Abhol- und Zustelladressen vom Dispatch geocodiert sind.",
+      "activeAriaLabel": "Karte der aktiven Sendungen",
+      "altTemplateSingular": "Karte mit {count} aktiven Abhol- und Zustell-Pin",
+      "altTemplatePlural": "Karte mit {count} aktiven Abhol- und Zustell-Pins",
+      "liveBadgeTemplateSingular": "Live · {count} aktive Sendung",
+      "liveBadgeTemplatePlural": "Live · {count} aktive Sendungen"
+    },
+    "sections": {
+      "activeTitle": "Jetzt unterwegs",
+      "activeMetaTemplate": "{count} aktiv · automatische Synchronisation aus der Logistik",
+      "activeRailAriaLabel": "Aktive Sendungen",
+      "emptyAriaLabel": "Keine aktiven Sendungen",
+      "emptyTitle": "Keine aktiven Sendungen",
+      "emptyBody": "Ihre vergangenen Zustellungen sind unten. Buchen Sie eine weitere und sie erscheint hier, sobald der Fahrer die Abholung bestätigt.",
+      "actionsTitle": "Lieferung starten",
+      "actionsMeta": "Verknüpfungen zu häufigen Abläufen",
+      "actionsAriaLabel": "Logistik-Schnellaktionen",
+      "recentTitle": "Kürzlich zugestellt",
+      "recentMetaTemplate": "Letzte {recent} von {lifetime} insgesamt",
+      "recentAriaLabel": "Kürzliche Zustellungen",
+      "spendTitle": "Ausgaben · letzte 6 Monate",
+      "spendMeta": "Nur bezahlt",
+      "spendFigureAriaLabelTemplate": "Logistikausgaben der letzten 6 Monate"
+    },
+    "statusLabels": {
+      "quoteRequested": "Angebot ausstehend",
+      "quoteSent": "Angebot bereit",
+      "pendingPayment": "Zahlung ausstehend",
+      "scheduled": "Geplant",
+      "assigned": "Fahrer zugewiesen",
+      "pickupConfirmed": "Abgeholt",
+      "inTransit": "Unterwegs",
+      "delayed": "Verspätet",
+      "attemptedDelivery": "Zustellversuch",
+      "delivered": "Zugestellt",
+      "completed": "Abgeschlossen",
+      "closed": "Geschlossen",
+      "cancelled": "Storniert",
+      "refunded": "Erstattet"
+    },
+    "urgencyLabels": {
+      "standard": "Standard",
+      "sameDay": "Am selben Tag",
+      "express": "Express",
+      "nextDay": "Am nächsten Tag"
+    },
+    "serviceLabels": {
+      "scheduled": "Geplant",
+      "sameDay": "Am selben Tag",
+      "interCity": "Zwischen Städten",
+      "bulk": "Sammelgut"
+    },
+    "shipment": {
+      "trackingCodeAriaTemplate": "Sendungsverfolgungscode {code}",
+      "addressPending": "Adresse ausstehend",
+      "etaPending": "ETA ausstehend",
+      "trackCta": "Sendung verfolgen",
+      "openTrackingAriaTemplate": "Verfolgung für {code} öffnen",
+      "etaAriaTemplate": "ETA {eta}",
+      "etaMinutesInTemplate": "in {minutes} Min.",
+      "etaMinutesOverdueTemplate": "{minutes} Min. überfällig",
+      "etaHoursInTemplate": "in {hours} Std.",
+      "etaHoursOverdueTemplate": "{hours} Std. überfällig",
+      "detailSeparator": " · "
+    },
+    "timeline": {
+      "ariaLabel": "Kürzliche Zustellungen",
+      "deliveredToTemplate": "Zugestellt an {name}",
+      "receiptCta": "Beleg"
+    },
+    "quickActions": {
+      "ariaLabel": "Logistik-Schnellaktionen",
+      "bookLabel": "Lieferung buchen",
+      "bookDesc": "Abholung und Zustellung in einem geführten Ablauf.",
+      "trackLabel": "Per Code verfolgen",
+      "trackDesc": "Live-Status, ETA und Fahrer-Kontext.",
+      "quoteLabel": "Erst Angebot",
+      "quoteDesc": "Richtpreis, bevor Sie sich festlegen.",
+      "addressesLabel": "Gespeicherte Adressen",
+      "addressesDesc": "Abhol- und Zustellkontakte.",
+      "invoicesLabel": "Belege & Rechnungen",
+      "invoicesDesc": "Gebrandete PDFs für jede Sendung.",
+      "supportLabel": "Logistik-Support",
+      "supportDesc": "Einen Thread mit Bezug zu Ihrem Konto öffnen."
+    },
+    "spend": {
+      "figureAriaLabel": "Logistikausgaben der letzten 6 Monate",
+      "emptyTick": "—"
+    }
+  },
+  "divisionLearn": {
+    "metadata": {
+      "title": "Learn · Lern-Dashboard",
+      "description": "Verfolgen Sie jede HenryCo-Learn-Einschreibung, Lektion, Quizergebnis, Zertifizierung, zugewiesene Schulung und Lehrbewerbung, die mit diesem Konto verknüpft ist – Katalog auf Learn, Fortschritt hier gespiegelt."
+    },
+    "hero": {
+      "ariaLabel": "Learn-Übersicht",
+      "eyebrow": "Learn · live",
+      "sideKicker": "So funktioniert dieser Bereich",
+      "sideTitle": "Katalog auf Learn, Fortschritt hier.",
+      "sideBody": "Jede Lektion, jedes Quiz und jedes Zertifikat aus HenryCo Learn synchronisiert sich in diesen Bereich – nehmen Sie auf, wo Sie aufgehört haben, sehen Sie Ihren Fortschritt auf einen Blick und behalten Sie alle Nachweise an einem Ort.",
+      "breakdownLabel": "Nach Status",
+      "breakdownAriaLabel": "Aufschlüsselung der Lernaktivität",
+      "tilesAriaLabel": "Lernaktivität",
+      "tileLabels": {
+        "active": "Aktiv",
+        "completed": "Abgeschlossen",
+        "certificates": "Zertifikate",
+        "assignments": "Zugewiesen"
+      },
+      "tileFoot": {
+        "activeEmpty": "Schreiben Sie sich ein, um einen Kurs zu starten",
+        "activeWith": "Lektions- und Quiz-Fortschritt wird hier gespiegelt",
+        "completedEmpty": "Abgeschlossene Programme erscheinen hier",
+        "completedWith": "Praktisch für Lebensläufe und Berichte",
+        "certificatesEmpty": "Verdienen Sie eines durch Kursabschluss",
+        "certificatesWith": "Verifizierbare Links zu jedem Nachweis",
+        "assignmentsEmpty": "Aktuell nichts zugewiesen",
+        "assignmentsWith": "Von Ihrem Team oder Vorgesetzten"
+      },
+      "breakdownNames": {
+        "active": "Aktiv",
+        "assigned": "Zugewiesen",
+        "certificates": "Zertifikate",
+        "saved": "Gemerkt"
+      },
+      "openLearnCta": "HenryCo Learn öffnen",
+      "applyToTeachCta": "Als Lehrkraft bewerben",
+      "state": {
+        "empty": {
+          "headline": "Starten Sie Ihre HenryCo-Learn-Reise.",
+          "blurb": "Durchsuchen Sie den Katalog, schreiben Sie sich in einen Kurs ein, und jede Lektion, jedes Quiz und jedes Zertifikat synchronisieren sich automatisch in diesen Bereich."
+        },
+        "active": {
+          "headlineTemplateSingular": "{count} Kurs läuft.",
+          "headlineTemplatePlural": "{count} Kurse laufen.",
+          "blurb": "Nehmen Sie dort auf, wo Sie aufgehört haben – Lektionen, Quizze, Zertifikate und zugewiesene Schulungen synchronisieren sich aus HenryCo Learn in diesen Bereich."
+        },
+        "calm": {
+          "headlineTemplateSingular": "{count} Kurs abgeschlossen.",
+          "headlineTemplatePlural": "{count} Kurse abgeschlossen.",
+          "blurb": "Ihre Nachweise und Lernhistorie bleiben hier – praktisch für Lebensläufe, internes Reporting oder Ihre eigene Ablage."
+        }
+      }
+    },
+    "sections": {
+      "coursesTitle": "Lernen fortsetzen",
+      "coursesMetaEmpty": "Durchsuchen Sie den HenryCo-Learn-Katalog und schreiben Sie sich in Ihren ersten Kurs ein.",
+      "coursesMetaTemplate": "{active} aktiv · {completed} abgeschlossen",
+      "extrasTitle": "Nachweise, Zuweisungen und Lehre",
+      "extrasMeta": "Zertifikate, zugewiesene Schulungen, gemerkte Kurse und Lehrbewerbung leben hier.",
+      "activityTitle": "Neueste Aktivität",
+      "activityMetaTemplateSingular": "{count} Aktualisierung · neueste zuerst",
+      "activityMetaTemplatePlural": "{count} Aktualisierungen · neueste zuerst",
+      "activityMetaEmpty": "Lektionen, Quizze, Zertifikate und Zahlungen werden hier in Echtzeit gespiegelt."
+    },
+    "empty": {
+      "coursesTitle": "Noch keine Kurse verknüpft",
+      "coursesBody": "Durchsuchen Sie den Katalog auf HenryCo Learn und schreiben Sie sich ein. Ihr Platz erscheint hier automatisch.",
+      "activityTitle": "Noch keine Learn-Aktivität",
+      "activityBody": "Kursfortschritt, Quizergebnisse, Zertifikatsausstellung und Zahlungsbelege erscheinen hier in Echtzeit."
+    },
+    "courses": {
+      "ariaLabel": "Kurse",
+      "completedAtTemplate": "Abgeschlossen {date}",
+      "progressPercentTemplate": "{percent}% abgeschlossen",
+      "statusDelimiter": " · "
+    },
+    "extras": {
+      "ariaLabel": "Learn-Ergänzungen",
+      "certificatesTitle": "Zertifikate",
+      "assignmentsTitle": "Zugewiesene Lerninhalte",
+      "savedTitle": "Gemerkte Kurse",
+      "teachingTitle": "Mit HenryCo unterrichten",
+      "statusLabel": "Status",
+      "expertiseLabel": "Fachgebiet",
+      "topicsLabel": "Themen",
+      "openApplicationCta": "Bewerbung öffnen",
+      "applyToTeachCta": "Als Lehrkraft bewerben",
+      "teachingEmpty": "Wir prüfen Lehrbewerbungen manuell. Bewerben Sie sich auf HenryCo Learn, der Status wird zurück hierher synchronisiert."
+    },
+    "activity": {
+      "ariaLabel": "Learn-Aktivität",
+      "fallbackTitle": "Learn-Aktivität"
+    }
+  },
+  divisionStudio: {
+    metadata: {
+      title: "Studio · Projekträume",
+      description: "Verfolgen Sie jede HenryCo-Studio-Zusammenarbeit, die mit diesem Konto verknüpft ist — Angebote, Meilensteine, Zahlungen, Lieferobjekte und Aktivitäten in einem Raum.",
+    },
+    hero: {
+      eyebrowLive: "Studio · live",
+      overviewAriaLabel: "Studio-Übersicht",
+      activityAriaLabel: "Studio-Aktivität",
+      sideAriaLabel: "So funktioniert dieser Raum",
+      sideLabel: "So funktioniert dieser Raum",
+      sideTitle: "Ein Projektraum, echter Stand.",
+      sideBody: "Angebote, Meilensteine, Zahlungsnachweise, Lieferobjekte und Kommunikationssignale bleiben mit derselben HenryCo-Identität verbunden, die Sie überall verwenden. Das Dashboard unten zeigt den tatsächlichen Fortschritt des Studio-Teams – keine Statusliste.",
+      breakdownAriaLabel: "Aktivitätsaufschlüsselung",
+      breakdownLabel: "Nach Status",
+      tiles: {
+        activeLabel: "Aktive Projekte",
+        activeFootEmpty: "Derzeit keine aktiven Arbeitsräume",
+        activeFootHasValue: "Aktive Arbeitsräume mit Lieferbewegung",
+        pendingLabel: "Ausstehende Zahlungen",
+        pendingFootEmpty: "Kommerzieller Korridor frei",
+        pendingFootHasValue: "Kommerzielle Checkpoints noch offen",
+        proofLabel: "Nachweise eingereicht",
+        proofFootEmpty: "Nichts wartet auf Prüfung",
+        proofFootHasValue: "Zahlungen warten auf Studio-Prüfung",
+        deliverablesLabel: "Lieferobjekte",
+        deliverablesFootEmpty: "Dateien erscheinen hier, sobald Studio sie hochlädt",
+        deliverablesFootHasValue: "Dateien und Ergebnisse an einem Ort verfolgt",
+      },
+      breakdown: {
+        active: "Aktiv",
+        readyReview: "Bereit zur Prüfung",
+        pendingPayment: "Zahlung ausstehend",
+        proofSubmitted: "Nachweis eingereicht",
+      },
+      state: {
+        empty: {
+          headline: "Starten Sie ein Studio-Briefing.",
+          blurb: "Wenn ein Angebot oder Projekt mit Ihrer HenryCo-Identität live geht, erscheint hier der synchronisierte Studio-Raum — Meilensteine, Zahlungen, Lieferobjekte und der nächste Schritt zusammen.",
+          ctaPrimary: "Briefing starten",
+          ctaSecondary: "Studio öffnen",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} überfällige Zahlung.",
+          headlineTemplatePlural: "{count} überfällige Zahlungen.",
+          blurb: "Ein Zahlungscheckpoint ist überfällig. Öffnen Sie den Arbeitsraum, um einen Nachweis hochzuladen oder das Studio-Team zu kontaktieren.",
+          ctaPrimary: "Zahlungen öffnen",
+          ctaSecondary: "Studio öffnen",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} Projekt zur Prüfung bereit.",
+          headlineTemplatePlural: "{count} Projekte zur Prüfung bereit.",
+          blurb: "Lieferobjekte und Revisionen warten auf Ihre Freigabe. Öffnen Sie den Arbeitsraum, um zu prüfen und den nächsten Meilenstein freizuschalten.",
+          ctaPrimary: "Projekte öffnen",
+          ctaSecondary: "Studio öffnen",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} aktives Projekt.",
+          headlineTemplatePlural: "{count} aktive Projekte.",
+          blurb: "Aktive Arbeitsräume mit Meilensteinbewegung, Zahlungscheckpoints und Lieferobjekten — alle aus HenryCo Studio in diesem Raum gespiegelt.",
+          ctaPrimary: "Studio öffnen",
+          ctaSecondary: "Neues Briefing starten",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} Projektraum erfasst.",
+          headlineTemplatePlural: "{count} Projekträume erfasst.",
+          blurb: "Jede Studio-Zusammenarbeit, die Sie je begonnen haben — Angebote, Meilensteine, Zahlungen, Lieferobjekte — in einem Raum für schnelles Nachfassen.",
+          ctaPrimary: "Studio öffnen",
+          ctaSecondary: "Neues Briefing starten",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "Projekträume",
+      projectsAriaLabel: "Studio-Projekte",
+      projectsMetaEmpty: "Arbeitsräume erscheinen hier, sobald eine Studio-Zusammenarbeit live geht.",
+      projectsMetaTemplateSingular: "{count} Projekt · sortiert nach letzter Bewegung",
+      projectsMetaTemplatePlural: "{count} Projekte · sortiert nach letzter Bewegung",
+      paymentsTitle: "Zahlungscheckpoints",
+      paymentsAriaLabel: "Studio-Zahlungen",
+      paymentsMetaEmpty: "Studio-Zahlungsanfragen erscheinen hier, sobald ein Angebot oder Projekt live ist.",
+      paymentsMetaTemplateSingular: "{count} Checkpoint · Nachweisupload und Freigabestatus",
+      paymentsMetaTemplatePlural: "{count} Checkpoints · Nachweisupload und Freigabestatus",
+      activityTitle: "Aktuelle Aktivität",
+      activityAriaLabel: "Studio-Aktivität",
+      activityMetaEmpty: "Projektaktualisierungen, Zahlungsnachweise und Meilensteinfreigaben spiegeln hier wider.",
+      activityMetaTemplateSingular: "{count} Aktualisierung · neueste zuerst",
+      activityMetaTemplatePlural: "{count} Aktualisierungen · neueste zuerst",
+    },
+    empty: {
+      projectsTitle: "Noch keine Studio-Arbeitsräume verknüpft",
+      projectsBody: "Sobald ein Angebot oder Projekt mit Ihrer HenryCo-Identität erstellt wird, erscheint hier der synchronisierte Studio-Raum — Meilensteine, Zahlungen, Lieferobjekte und der nächste Schritt.",
+      paymentsTitle: "Noch keine Zahlungscheckpoints",
+      paymentsBody: "Kommerzielle Meilensteine — Anzahlung, Zwischenstand und Lieferung — erscheinen hier, sobald ein Angebot mit Ihnen live geht.",
+      activityTitle: "Noch keine Studio-Aktivität",
+      activityBody: "Projektaktualisierungen, Zahlungsnachweise, Lieferveröffentlichungen und Meilensteinfreigaben erscheinen hier, sobald sie eintreten.",
+    },
+    projects: {
+      listAriaLabel: "Studio-Projekte",
+      fallbackSubtitle: "Studio bereitet die nächste Aktualisierung vor.",
+      milestonesTemplate: "{approved}/{total} Meilensteine",
+      paymentsTemplateSingular: "{count} offene Zahlung",
+      paymentsTemplatePlural: "{count} offene Zahlungen",
+      deliverablesTemplateSingular: "{count} Lieferobjekt",
+      deliverablesTemplatePlural: "{count} Lieferobjekte",
+      updatedTemplate: "Aktualisiert {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "Live",
+      ready_review: "Bereit zur Prüfung",
+      scheduled: "Geplant",
+      delivered: "Geliefert",
+      issue: "Aktion erforderlich",
+    },
+    payments: {
+      listAriaLabel: "Studio-Zahlungen",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "Fällig {stamp}",
+      updatedTemplate: "Aktualisiert {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "ausstehend",
+      paid: "bezahlt",
+      approved: "freigegeben",
+      settled: "abgerechnet",
+      proof_uploaded: "Nachweis hochgeladen",
+      proof_submitted: "Nachweis eingereicht",
+      in_review: "in Prüfung",
+      rejected: "abgelehnt",
+      overdue: "überfällig",
+      failed: "fehlgeschlagen",
+      pending_deposit: "Anzahlung ausstehend",
+    },
+    activity: {
+      listAriaLabel: "Studio-Aktivität",
+      rowAriaLabelTemplate: "{title} · {stamp}",
     },
   },
 };
@@ -8320,6 +9765,368 @@ const IT: DeepPartial<AccountCopy> = {
     },
     formatLabels: {
       dash: "—",
+    },
+  },
+  divisionLearn: {
+    metadata: {
+      title: "Learn · dashboard di apprendimento",
+      description: "Tieni traccia di ogni iscrizione HenryCo Learn, lezione, esito di quiz, certificato, formazione assegnata e candidatura come docente collegata a questo account — catalogo su Learn, progressi rispecchiati qui.",
+    },
+    hero: {
+      ariaLabel: "Panoramica Learn",
+      eyebrow: "Learn · in diretta",
+      sideKicker: "Come funziona questa stanza",
+      sideTitle: "Catalogo su Learn, progressi qui.",
+      sideBody: "Ogni lezione, quiz e certificato di HenryCo Learn si sincronizza in questa stanza — riprendi da dove ti sei fermato, vedi i tuoi progressi a colpo d’occhio e tieni le tue certificazioni in un unico posto.",
+      breakdownLabel: "Per stato",
+      breakdownAriaLabel: "Suddivisione dell’attività di apprendimento",
+      tilesAriaLabel: "Attività di apprendimento",
+      tileLabels: {
+        active: "Attivi",
+        completed: "Completati",
+        certificates: "Certificati",
+        assignments: "Assegnati",
+      },
+      tileFoot: {
+        activeEmpty: "Iscriviti per iniziare un corso",
+        activeWith: "Lezioni e quiz rispecchiati qui",
+        completedEmpty: "I programmi che completerai appariranno qui",
+        completedWith: "Utile per CV e reportistica",
+        certificatesEmpty: "Ottienine uno completando un corso",
+        certificatesWith: "Link verificabili per ogni credenziale",
+        assignmentsEmpty: "Nulla di assegnato al momento",
+        assignmentsWith: "Dal tuo manager o team",
+      },
+      breakdownNames: {
+        active: "Attivi",
+        assigned: "Assegnati",
+        certificates: "Certificati",
+        saved: "Salvati",
+      },
+      openLearnCta: "Apri HenryCo Learn",
+      applyToTeachCta: "Candidati per insegnare",
+      state: {
+        empty: {
+          headline: "Inizia il tuo percorso HenryCo Learn.",
+          blurb: "Sfoglia il catalogo, iscriviti a un corso e ogni lezione, quiz e certificato si sincronizzeranno automaticamente in questa stanza.",
+        },
+        active: {
+          headlineTemplateSingular: "{count} corso in corso.",
+          headlineTemplatePlural: "{count} corsi in corso.",
+          blurb: "Riprendi da dove ti sei fermato — lezioni, quiz, certificati e formazione assegnata si sincronizzano da HenryCo Learn in questa stanza.",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} corso completato.",
+          headlineTemplatePlural: "{count} corsi completati.",
+          blurb: "Le tue credenziali e la cronologia di apprendimento restano qui, utili per CV, reportistica interna o il tuo archivio personale.",
+        },
+      },
+    },
+    sections: {
+      coursesTitle: "Continua a imparare",
+      coursesMetaEmpty: "Sfoglia il catalogo HenryCo Learn per iscriverti al tuo primo corso.",
+      coursesMetaTemplate: "{active} attivi · {completed} completati",
+      extrasTitle: "Credenziali, assegnazioni e insegnamento",
+      extrasMeta: "Certificati, formazione assegnata, corsi salvati e candidatura come docente vivono qui.",
+      activityTitle: "Attività recente",
+      activityMetaTemplateSingular: "{count} aggiornamento · più recente per primo",
+      activityMetaTemplatePlural: "{count} aggiornamenti · più recenti per primi",
+      activityMetaEmpty: "Lezioni, quiz, certificati e pagamenti si rispecchiano qui in tempo reale.",
+    },
+    empty: {
+      coursesTitle: "Nessun corso collegato ancora",
+      coursesBody: "Sfoglia il catalogo su HenryCo Learn e iscriviti. Il tuo posto apparirà qui automaticamente.",
+      activityTitle: "Nessuna attività Learn ancora",
+      activityBody: "Avanzamento dei corsi, esiti di quiz, emissione di certificati e ricevute di pagamento appaiono qui in tempo reale.",
+    },
+    courses: {
+      ariaLabel: "Corsi",
+      completedAtTemplate: "Completato il {date}",
+      progressPercentTemplate: "{percent}% completato",
+      statusDelimiter: " · ",
+    },
+    extras: {
+      ariaLabel: "Extra Learn",
+      certificatesTitle: "Certificati",
+      assignmentsTitle: "Formazione assegnata",
+      savedTitle: "Corsi salvati",
+      teachingTitle: "Insegna con HenryCo",
+      statusLabel: "Stato",
+      expertiseLabel: "Competenza",
+      topicsLabel: "Argomenti",
+      openApplicationCta: "Apri candidatura",
+      applyToTeachCta: "Candidati per insegnare",
+      teachingEmpty: "Esaminiamo manualmente le candidature come docenti. Candidati su HenryCo Learn e lo stato si sincronizzerà qui.",
+    },
+    activity: {
+      ariaLabel: "Attività Learn",
+      fallbackTitle: "Attività Learn",
+    },
+  },
+  divisionLogistics: {
+    metadata: {
+      title: "Logistica · consegne e spedizioni",
+      description: "Ogni ritiro, consegna, ETA e prova di consegna HenryCo Logistics legati a questo account — riflessi dalla rete logistica in un'unica stanza ordinata.",
+    },
+    hero: {
+      ariaLabel: "Panoramica logistica",
+      eyebrow: "HenryCo Logistica",
+      brand: "HenryCo Logistica",
+      title: "Ogni pacco, un'unica stanza.",
+      body: "Ritiri, consegne, ETA e prove di consegna — tutto riflesso dalla rete logistica nel tuo account. Prenota una volta su",
+      bodyDomain: " logistics.henrycogroup.com",
+      ctaNewDelivery: "Nuova consegna",
+    },
+    metrics: {
+      ariaLabel: "Performance logistica",
+      activeNowLabel: "Attive ora",
+      activeFootSingular: "spedizione in viaggio",
+      activeFootPlural: "spedizioni in viaggio",
+      deliveredMonthLabel: "Consegnate · questo mese",
+      deliveredMonthFootTemplate: "{count} totali",
+      onTimeRateLabel: "Puntualità",
+      onTimeRateFootEmpty: "In attesa della prima consegna programmata",
+      onTimeRateFootHasValue: "Delle consegne programmate",
+      totalSpendLabel: "Spesa totale",
+      totalSpendFoot: "Pagato a vita",
+    },
+    map: {
+      noShipmentsAriaLabel: "Nessuna spedizione ancora",
+      noShipmentsTitle: "La tua mappa si accenderà alla prima consegna",
+      noShipmentsBody: "Ogni ritiro e consegna attivi vengono fissati qui automaticamente. Prenota una volta e le tue spedizioni si riflettono dal sito logistico.",
+      noShipmentsCta: "Prenota una consegna",
+      pendingAriaLabel: "Anteprima mappa",
+      pendingTitle: "Geocodifica in corso",
+      pendingBody: "Le tue spedizioni attive verranno fissate sulla mappa non appena gli indirizzi di ritiro e consegna saranno geocodificati dal dispatch.",
+      activeAriaLabel: "Mappa delle spedizioni attive",
+      altTemplateSingular: "Mappa con {count} pin attivo di ritiro e consegna",
+      altTemplatePlural: "Mappa con {count} pin attivi di ritiro e consegna",
+      liveBadgeTemplateSingular: "Live · {count} spedizione attiva",
+      liveBadgeTemplatePlural: "Live · {count} spedizioni attive",
+    },
+    sections: {
+      activeTitle: "In viaggio ora",
+      activeMetaTemplate: "{count} attive · sincronizzazione automatica dalla logistica",
+      activeRailAriaLabel: "Spedizioni attive",
+      emptyAriaLabel: "Nessuna spedizione attiva",
+      emptyTitle: "Nessuna spedizione attiva",
+      emptyBody: "Le tue consegne passate sono qui sotto. Prenotane un'altra e apparirà qui non appena il corriere conferma il ritiro.",
+      actionsTitle: "Avvia una consegna",
+      actionsMeta: "Scorciatoie ai flussi più comuni",
+      actionsAriaLabel: "Azioni rapide logistica",
+      recentTitle: "Consegnate di recente",
+      recentMetaTemplate: "Ultime {recent} su {lifetime} totali",
+      recentAriaLabel: "Consegne recenti",
+      spendTitle: "Spesa · ultimi 6 mesi",
+      spendMeta: "Solo pagate",
+      spendFigureAriaLabelTemplate: "Spesa logistica degli ultimi 6 mesi",
+    },
+    statusLabels: {
+      quoteRequested: "Preventivo in attesa",
+      quoteSent: "Preventivo pronto",
+      pendingPayment: "Pagamento in attesa",
+      scheduled: "Programmata",
+      assigned: "Corriere assegnato",
+      pickupConfirmed: "Ritirata",
+      inTransit: "In transito",
+      delayed: "In ritardo",
+      attemptedDelivery: "Tentativo di consegna",
+      delivered: "Consegnata",
+      completed: "Completata",
+      closed: "Chiusa",
+      cancelled: "Annullata",
+      refunded: "Rimborsata",
+    },
+    urgencyLabels: {
+      standard: "Standard",
+      sameDay: "In giornata",
+      express: "Express",
+      nextDay: "Giorno successivo",
+    },
+    serviceLabels: {
+      scheduled: "Programmato",
+      sameDay: "In giornata",
+      interCity: "Tra città",
+      bulk: "Sfuso",
+    },
+    shipment: {
+      trackingCodeAriaTemplate: "Codice tracciamento {code}",
+      addressPending: "Indirizzo in attesa",
+      etaPending: "ETA in attesa",
+      trackCta: "Traccia spedizione",
+      openTrackingAriaTemplate: "Apri tracciamento per {code}",
+      etaAriaTemplate: "ETA {eta}",
+      etaMinutesInTemplate: "tra {minutes} min",
+      etaMinutesOverdueTemplate: "{minutes} min di ritardo",
+      etaHoursInTemplate: "tra {hours} h",
+      etaHoursOverdueTemplate: "{hours} h di ritardo",
+      detailSeparator: " · ",
+    },
+    timeline: {
+      ariaLabel: "Consegne recenti",
+      deliveredToTemplate: "Consegnato a {name}",
+      receiptCta: "Ricevuta",
+    },
+    quickActions: {
+      ariaLabel: "Azioni rapide logistica",
+      bookLabel: "Prenota una consegna",
+      bookDesc: "Ritiro e consegna in un unico flusso guidato.",
+      trackLabel: "Traccia con codice",
+      trackDesc: "Stato live, ETA e contesto del corriere.",
+      quoteLabel: "Preventivo prima",
+      quoteDesc: "Prezzo indicativo prima di confermare.",
+      addressesLabel: "Indirizzi salvati",
+      addressesDesc: "Contatti di ritiro e consegna.",
+      invoicesLabel: "Ricevute e fatture",
+      invoicesDesc: "PDF brandizzati per ogni spedizione.",
+      supportLabel: "Supporto logistica",
+      supportDesc: "Apri una conversazione legata al tuo account.",
+    },
+    spend: {
+      figureAriaLabel: "Spesa logistica degli ultimi 6 mesi",
+      emptyTick: "—",
+    },
+  },
+
+  divisionStudio: {
+    metadata: {
+      title: "Studio · sale di progetto",
+      description: "Segui ogni collaborazione HenryCo Studio collegata a questo account — proposte, milestone, pagamenti, deliverable e attività in un’unica sala.",
+    },
+    hero: {
+      eyebrowLive: "Studio · live",
+      overviewAriaLabel: "Panoramica Studio",
+      activityAriaLabel: "Attività Studio",
+      sideAriaLabel: "Come funziona questa sala",
+      sideLabel: "Come funziona questa sala",
+      sideTitle: "Una sala di progetto, stato reale.",
+      sideBody: "Proposte, milestone, prove di pagamento, deliverable e segnali di comunicazione restano collegati alla stessa identità HenryCo che usi ovunque. La dashboard sotto riflette l’avanzamento reale del team Studio, non una semplice lista di stati.",
+      breakdownAriaLabel: "Suddivisione attività",
+      breakdownLabel: "Per stato",
+      tiles: {
+        activeLabel: "Progetti attivi",
+        activeFootEmpty: "Nessuna sala di lavoro attiva al momento",
+        activeFootHasValue: "Sale attive con dinamica di consegna",
+        pendingLabel: "Pagamenti in sospeso",
+        pendingFootEmpty: "Corsia commerciale libera",
+        pendingFootHasValue: "Checkpoint commerciali ancora aperti",
+        proofLabel: "Prove caricate",
+        proofFootEmpty: "Nulla in attesa di revisione",
+        proofFootHasValue: "Pagamenti in attesa di revisione Studio",
+        deliverablesLabel: "Deliverable",
+        deliverablesFootEmpty: "I file compaiono qui quando Studio li carica",
+        deliverablesFootHasValue: "File e output tracciati in un unico posto",
+      },
+      breakdown: {
+        active: "Attivo",
+        readyReview: "Pronto per revisione",
+        pendingPayment: "Pagamento in sospeso",
+        proofSubmitted: "Prova caricata",
+      },
+      state: {
+        empty: {
+          headline: "Avvia un brief Studio.",
+          blurb: "Quando una proposta o un progetto parte con la tua identità HenryCo, la sala Studio sincronizzata appare qui — milestone, pagamenti, deliverable e prossima mossa insieme.",
+          ctaPrimary: "Avvia un brief",
+          ctaSecondary: "Apri Studio",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} pagamento scaduto.",
+          headlineTemplatePlural: "{count} pagamenti scaduti.",
+          blurb: "Un checkpoint di pagamento è scaduto. Apri la sala per caricare la prova o contattare il team Studio.",
+          ctaPrimary: "Apri pagamenti",
+          ctaSecondary: "Apri Studio",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} progetto pronto per revisione.",
+          headlineTemplatePlural: "{count} progetti pronti per revisione.",
+          blurb: "Deliverable e revisioni attendono la tua approvazione. Apri la sala per rivedere e sbloccare il prossimo milestone.",
+          ctaPrimary: "Apri progetti",
+          ctaSecondary: "Apri Studio",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} progetto attivo.",
+          headlineTemplatePlural: "{count} progetti attivi.",
+          blurb: "Sale attive con movimento di milestone, checkpoint di pagamento e deliverable — tutti riflessi da HenryCo Studio in questa sala.",
+          ctaPrimary: "Apri Studio",
+          ctaSecondary: "Avvia un nuovo brief",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} sala di progetto a registro.",
+          headlineTemplatePlural: "{count} sale di progetto a registro.",
+          blurb: "Ogni collaborazione Studio che hai mai avviato — proposte, milestone, pagamenti, deliverable — conservata in una sala per un follow-up rapido.",
+          ctaPrimary: "Apri Studio",
+          ctaSecondary: "Avvia un nuovo brief",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "Sale di progetto",
+      projectsAriaLabel: "Progetti Studio",
+      projectsMetaEmpty: "Le sale appaiono qui quando una collaborazione Studio diventa attiva.",
+      projectsMetaTemplateSingular: "{count} progetto · ordinato per ultimo movimento",
+      projectsMetaTemplatePlural: "{count} progetti · ordinati per ultimo movimento",
+      paymentsTitle: "Checkpoint di pagamento",
+      paymentsAriaLabel: "Pagamenti Studio",
+      paymentsMetaEmpty: "Le richieste di pagamento Studio appaiono qui quando una proposta o un progetto è attivo.",
+      paymentsMetaTemplateSingular: "{count} checkpoint · caricamento prova e stato di approvazione",
+      paymentsMetaTemplatePlural: "{count} checkpoint · caricamento prova e stato di approvazione",
+      activityTitle: "Attività recente",
+      activityAriaLabel: "Attività Studio",
+      activityMetaEmpty: "Aggiornamenti di progetto, prove di pagamento e approvazioni di milestone si riflettono qui.",
+      activityMetaTemplateSingular: "{count} aggiornamento · più recente per primo",
+      activityMetaTemplatePlural: "{count} aggiornamenti · più recenti per primo",
+    },
+    empty: {
+      projectsTitle: "Nessuna sala Studio collegata per ora",
+      projectsBody: "Appena una proposta o un progetto viene creato con la tua identità HenryCo, la sala Studio sincronizzata apparirà qui — milestone, pagamenti, deliverable e prossima mossa.",
+      paymentsTitle: "Nessun checkpoint di pagamento per ora",
+      paymentsBody: "I milestone commerciali — anticipo, metà progetto e consegna — emergono qui quando una proposta diventa attiva con te.",
+      activityTitle: "Nessuna attività Studio per ora",
+      activityBody: "Aggiornamenti di progetto, prove di pagamento, rilasci di deliverable e approvazioni di milestone appariranno qui appena avvengono.",
+    },
+    projects: {
+      listAriaLabel: "Progetti Studio",
+      fallbackSubtitle: "Studio sta preparando il prossimo aggiornamento.",
+      milestonesTemplate: "{approved}/{total} milestone",
+      paymentsTemplateSingular: "{count} pagamento aperto",
+      paymentsTemplatePlural: "{count} pagamenti aperti",
+      deliverablesTemplateSingular: "{count} deliverable",
+      deliverablesTemplatePlural: "{count} deliverable",
+      updatedTemplate: "Aggiornato {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "Live",
+      ready_review: "Pronto per revisione",
+      scheduled: "Programmato",
+      delivered: "Consegnato",
+      issue: "Azione necessaria",
+    },
+    payments: {
+      listAriaLabel: "Pagamenti Studio",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "Scadenza {stamp}",
+      updatedTemplate: "Aggiornato {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "in sospeso",
+      paid: "pagato",
+      approved: "approvato",
+      settled: "saldato",
+      proof_uploaded: "prova caricata",
+      proof_submitted: "prova inviata",
+      in_review: "in revisione",
+      rejected: "rifiutato",
+      overdue: "scaduto",
+      failed: "fallito",
+      pending_deposit: "anticipo in sospeso",
+    },
+    activity: {
+      listAriaLabel: "Attività Studio",
+      rowAriaLabelTemplate: "{title} · {stamp}",
     },
   },
 };
@@ -9973,6 +11780,368 @@ const IG: DeepPartial<AccountCopy> = {
     },
     recruiterUpdateTitleTemplate: "Nleba anya {stage}",
   },
+  divisionLearn: {
+    metadata: {
+      title: "Learn · dashboard mmụta",
+      description: "Soro nlekọta ndenye aha HenryCo Learn ọ bụla, ihe ọmụmụ, nsonaazụ ule, asambodo, ọzụzụ enyere, na arịrịọ nkuzi ejikọrọ na akaụntụ a — katalọgụ na Learn, ọganihu na-egosi ebe a.",
+    },
+    hero: {
+      ariaLabel: "Nleba anya Learn",
+      eyebrow: "Learn · ndụ",
+      sideKicker: "Otú ọnụ ụlọ a si arụ ọrụ",
+      sideTitle: "Katalọgụ na Learn, ọganihu ebe a.",
+      sideBody: "Ihe ọmụmụ, ule na asambodo ọ bụla sitere na HenryCo Learn na-emekọrịta n’ọnụ ụlọ a — bido ebe ị kwụsịrị, hụ ọganihu gị n’otu ile anya, ma debe asambodo gị n’otu ebe.",
+      breakdownLabel: "Site na ọnọdụ",
+      breakdownAriaLabel: "Nkewa nke ọrụ mmụta",
+      tilesAriaLabel: "Ọrụ mmụta",
+      tileLabels: {
+        active: "Na-arụ ọrụ",
+        completed: "Emechara",
+        certificates: "Asambodo",
+        assignments: "Enyere",
+      },
+      tileFoot: {
+        activeEmpty: "Debanye aha ka ịmalite kọsụ",
+        activeWith: "Ihe ọmụmụ na ule na-egosi ebe a",
+        completedEmpty: "Mmemme i mechara ga-egosi ebe a",
+        completedWith: "Bara uru maka CV na akụkọ",
+        certificatesEmpty: "Nweta otu site n’imecha kọsụ",
+        certificatesWith: "Njikọ enwere ike ịkwado maka asambodo ọ bụla",
+        assignmentsEmpty: "Ọ dịghị ihe enyere ugbu a",
+        assignmentsWith: "Sitere n’aka onye nlekọta ma ọ bụ ndị otu gị",
+      },
+      breakdownNames: {
+        active: "Na-arụ ọrụ",
+        assigned: "Enyere",
+        certificates: "Asambodo",
+        saved: "Edobere",
+      },
+      openLearnCta: "Mepee HenryCo Learn",
+      applyToTeachCta: "Tinye akwụkwọ ịkụzi",
+      state: {
+        empty: {
+          headline: "Bido njem HenryCo Learn gị.",
+          blurb: "Chọgharịa katalọgụ, debanye aha na kọsụ, ma ihe ọmụmụ, ule na asambodo ọ bụla ga-emekọrịta n’ọnụ ụlọ a na-akpaghị aka.",
+        },
+        active: {
+          headlineTemplateSingular: "Kọsụ {count} na-aga n’ihu.",
+          headlineTemplatePlural: "Kọsụ {count} na-aga n’ihu.",
+          blurb: "Bido ebe ị kwụsịrị — ihe ọmụmụ, ule, asambodo na ọzụzụ enyere niile na-emekọrịta site na HenryCo Learn n’ọnụ ụlọ a.",
+        },
+        calm: {
+          headlineTemplateSingular: "Kọsụ {count} emechara.",
+          headlineTemplatePlural: "Kọsụ {count} emechara.",
+          blurb: "Asambodo gị na akụkọ mmụta ga-anọ ebe a, bara uru maka CV, akụkọ ime ụlọ, ma ọ bụ ndekọ nke gị.",
+        },
+      },
+    },
+    sections: {
+      coursesTitle: "Gaa n’ihu n’ịmụta",
+      coursesMetaEmpty: "Chọgharịa katalọgụ HenryCo Learn ka idebanye aha na kọsụ mbụ gị.",
+      coursesMetaTemplate: "{active} na-arụ ọrụ · {completed} emechara",
+      extrasTitle: "Asambodo, ọzụzụ enyere na nkuzi",
+      extrasMeta: "Asambodo, ọzụzụ enyere, kọsụ edobere na arịrịọ onye nkuzi bi ebe a.",
+      activityTitle: "Ọrụ na-adịbeghị anya",
+      activityMetaTemplateSingular: "Mmelite {count} · nke kacha ọhụrụ na mbụ",
+      activityMetaTemplatePlural: "Mmelite {count} · nke kacha ọhụrụ na mbụ",
+      activityMetaEmpty: "Ihe ọmụmụ, ule, asambodo na ịkwụ ụgwọ na-egosi ebe a ozugbo ha mere.",
+    },
+    empty: {
+      coursesTitle: "Enwebeghị kọsụ ejikọrọ",
+      coursesBody: "Chọgharịa katalọgụ na HenryCo Learn ma debanye aha. Ọnọdụ gị ga-egosi ebe a na-akpaghị aka.",
+      activityTitle: "Enwebeghị ọrụ Learn",
+      activityBody: "Ọganihu kọsụ, nsonaazụ ule, inye asambodo na akwụkwọ ego ịkwụ ụgwọ na-egosi ebe a ozugbo ha mere.",
+    },
+    courses: {
+      ariaLabel: "Kọsụ",
+      completedAtTemplate: "Emechara na {date}",
+      progressPercentTemplate: "{percent}% emechara",
+      statusDelimiter: " · ",
+    },
+    extras: {
+      ariaLabel: "Mgbakwunye Learn",
+      certificatesTitle: "Asambodo",
+      assignmentsTitle: "Mmụta enyere",
+      savedTitle: "Kọsụ edobere",
+      teachingTitle: "Kụzie ya HenryCo",
+      statusLabel: "Ọnọdụ",
+      expertiseLabel: "Ọkachamara",
+      topicsLabel: "Isiokwu",
+      openApplicationCta: "Mepee arịrịọ",
+      applyToTeachCta: "Tinye akwụkwọ ịkụzi",
+      teachingEmpty: "Anyị na-enyocha arịrịọ ndị nkuzi n’aka. Tinye akwụkwọ na HenryCo Learn ma ọnọdụ ga-emekọrịta laghachi ebe a.",
+    },
+    activity: {
+      ariaLabel: "Ọrụ Learn",
+      fallbackTitle: "Ọrụ Learn",
+    },
+  },
+  divisionLogistics: {
+    metadata: {
+      title: "Mbufe · nbubata na nzipu",
+      description: "Mbubata, nnyefe, ETA na ihe akaebe nnyefe ọ bụla nke HenryCo Logistics ejikọtara na akaụntụ a — egosi site na netwọkụ mbufe n’ime otu ụlọ dị jụụ.",
+    },
+    hero: {
+      ariaLabel: "Nlebanya mbufe",
+      eyebrow: "HenryCo Mbufe",
+      brand: "HenryCo Mbufe",
+      title: "Akpa ọ bụla, otu ụlọ.",
+      body: "Nbubata, nnyefe, ETA na ihe akaebe nnyefe — niile ka egosi site na netwọkụ mbufe n’ime akaụntụ gị. Debe otu ugboro na",
+      bodyDomain: " logistics.henrycogroup.com",
+      ctaNewDelivery: "Nnyefe ọhụrụ",
+    },
+    metrics: {
+      ariaLabel: "Arụmọrụ mbufe",
+      activeNowLabel: "Na-arụ ọrụ ugbu a",
+      activeFootSingular: "nzipu nọ n’ụzọ",
+      activeFootPlural: "nzipu nọ n’ụzọ",
+      deliveredMonthLabel: "Enyefere · n’ọnwa a",
+      deliveredMonthFootTemplate: "{count} na mkpokọta",
+      onTimeRateLabel: "Ọnụ ọgụgụ oge",
+      onTimeRateFootEmpty: "Na-eche nnyefe mbụ ahaziri",
+      onTimeRateFootHasValue: "Nke nnyefe ndị ahaziri",
+      totalSpendLabel: "Mmefu mkpokọta",
+      totalSpendFoot: "Akwụrụ ndụ niile",
+    },
+    map: {
+      noShipmentsAriaLabel: "Enwebeghị nzipu",
+      noShipmentsTitle: "Maapụ gị ga-amaliwe oge i debere nnyefe mbụ",
+      noShipmentsBody: "Mbubata na nnyefe ọ bụla na-arụ ọrụ na-edenye ebe a na-akpaghị aka. Debe otu ugboro ma nzipu gị ga-egosi site na saịtị mbufe.",
+      noShipmentsCta: "Debe nnyefe",
+      pendingAriaLabel: "Nlepụta maapụ",
+      pendingTitle: "Ngụlite mpaghara na-aga",
+      pendingBody: "Nzipu gị na-arụ ọrụ ga-edenye na maapụ ozugbo ndị dispatch gụchara adres mbubata na nnyefe.",
+      activeAriaLabel: "Maapụ nzipu na-arụ ọrụ",
+      altTemplateSingular: "Maapụ na-egosi {count} mkpado mbubata na nnyefe na-arụ ọrụ",
+      altTemplatePlural: "Maapụ na-egosi {count} mkpado mbubata na nnyefe na-arụ ọrụ",
+      liveBadgeTemplateSingular: "Ndụ · {count} nzipu na-arụ ọrụ",
+      liveBadgeTemplatePlural: "Ndụ · {count} nzipu na-arụ ọrụ",
+    },
+    sections: {
+      activeTitle: "Nọ n’ụzọ ugbu a",
+      activeMetaTemplate: "{count} na-arụ ọrụ · mmekọrịta na-emezi onwe site na mbufe",
+      activeRailAriaLabel: "Nzipu na-arụ ọrụ",
+      emptyAriaLabel: "Enweghị nzipu na-arụ ọrụ",
+      emptyTitle: "Enweghị nzipu na-arụ ọrụ",
+      emptyBody: "Nnyefe gara aga gị dị n’okpuru. Debe nke ọzọ ma ọ ga-apụta ebe a ozugbo onye na-ebu mbubata kwadoro.",
+      actionsTitle: "Bido nnyefe",
+      actionsMeta: "Mkpụrụokwu nke usoro a na-emekarị",
+      actionsAriaLabel: "Omume ngwa ngwa mbufe",
+      recentTitle: "Enyefere na nso nso a",
+      recentMetaTemplate: "Ikpeazụ {recent} site na {lifetime} mkpokọta",
+      recentAriaLabel: "Nnyefe nso nso a",
+      spendTitle: "Mmefu · ọnwa 6 gara aga",
+      spendMeta: "Akwụrụ naanị",
+      spendFigureAriaLabelTemplate: "Mmefu mbufe n’ime ọnwa 6 gara aga",
+    },
+    statusLabels: {
+      quoteRequested: "Akwụkwọ ọnụ ahịa na-eche",
+      quoteSent: "Akwụkwọ ọnụ ahịa dị njikere",
+      pendingPayment: "Na-eche ụgwọ",
+      scheduled: "Ahaziri",
+      assigned: "Enyere onye nzipu",
+      pickupConfirmed: "Ebubata",
+      inTransit: "Nọ n’ụzọ",
+      delayed: "Egbu oge",
+      attemptedDelivery: "Anwara inye",
+      delivered: "Enyefere",
+      completed: "Emechara",
+      closed: "Mechiri",
+      cancelled: "Kagburu",
+      refunded: "Akwụghachiri",
+    },
+    urgencyLabels: {
+      standard: "Nke ọkọlọtọ",
+      sameDay: "Otu ụbọchị",
+      express: "Ngwa ngwa",
+      nextDay: "Echi",
+    },
+    serviceLabels: {
+      scheduled: "Ahaziri",
+      sameDay: "Otu ụbọchị",
+      interCity: "N’etiti obodo",
+      bulk: "Buru ibu",
+    },
+    shipment: {
+      trackingCodeAriaTemplate: "Koodu nleba {code}",
+      addressPending: "Adres na-eche",
+      etaPending: "ETA na-eche",
+      trackCta: "Soro nzipu",
+      openTrackingAriaTemplate: "Mepee nleba maka {code}",
+      etaAriaTemplate: "ETA {eta}",
+      etaMinutesInTemplate: "n’ime nkeji {minutes}",
+      etaMinutesOverdueTemplate: "nkeji {minutes} gafere oge",
+      etaHoursInTemplate: "n’ime awa {hours}",
+      etaHoursOverdueTemplate: "awa {hours} gafere oge",
+      detailSeparator: " · ",
+    },
+    timeline: {
+      ariaLabel: "Nnyefe nso nso a",
+      deliveredToTemplate: "Enyefere {name}",
+      receiptCta: "Nnata ego",
+    },
+    quickActions: {
+      ariaLabel: "Omume ngwa ngwa mbufe",
+      bookLabel: "Debe nnyefe",
+      bookDesc: "Mbubata na nnyefe n’otu usoro nduzi.",
+      trackLabel: "Soro site na koodu",
+      trackDesc: "Ọnọdụ ndụ, ETA na ọnọdụ onye nzipu.",
+      quoteLabel: "Buru ụzọ rịọ ọnụ ahịa",
+      quoteDesc: "Ọnụ ahịa ngosipụta tupu i kwadoo.",
+      addressesLabel: "Adres echekwara",
+      addressesDesc: "Kọntaktị mbubata na nnyefe.",
+      invoicesLabel: "Nnata ego na akwụkwọ ụgwọ",
+      invoicesDesc: "PDF nke brand maka nzipu ọ bụla.",
+      supportLabel: "Nkwado mbufe",
+      supportDesc: "Mepee eserese ejikọrọ na akaụntụ gị.",
+    },
+    spend: {
+      figureAriaLabel: "Mmefu mbufe n’ime ọnwa 6 gara aga",
+      emptyTick: "—",
+    },
+  },
+
+  divisionStudio: {
+    metadata: {
+      title: "Studio · ọnụ ụlọ ọrụ",
+      description: "Soro ọrụ Studio HenryCo ọ bụla ejikọtara na akaụntụ a — atụmatụ, isi ihe, ụgwọ, akụrụngwa nweere, na ọrụ na otu ụlọ.",
+    },
+    hero: {
+      eyebrowLive: "Studio · ndị bi",
+      overviewAriaLabel: "Nlebanya Studio",
+      activityAriaLabel: "Ọrụ Studio",
+      sideAriaLabel: "Otu ụlọ a si arụ ọrụ",
+      sideLabel: "Otu ụlọ a si arụ ọrụ",
+      sideTitle: "Otu ụlọ ọrụ, ọnọdụ ezi okwu.",
+      sideBody: "Atụmatụ, isi ihe, akwụkwọ akaebe ụgwọ, akụrụngwa nweere na ngosipụta nkwekọrịta na-anọgide ejikọtara na njirimara HenryCo ahụ ị na-eji n’ebe ọ bụla. Dashboard dị n’okpuru na-egosi ihe ndị otu Studio na-eme n’ezie, ọ bụghị ndepụta ọnọdụ.",
+      breakdownAriaLabel: "Nkewa ọrụ",
+      breakdownLabel: "Site n’ọnọdụ",
+      tiles: {
+        activeLabel: "Ọrụ ndị na-arụ",
+        activeFootEmpty: "Onweghi ụlọ ọrụ na-arụ ugbu a",
+        activeFootHasValue: "Ụlọ na-arụ na njem mbufe",
+        pendingLabel: "Ụgwọ na-echere",
+        pendingFootEmpty: "Ụzọ azụmaahịa edoziri",
+        pendingFootHasValue: "Isi ihe azụmaahịa ka mepere",
+        proofLabel: "Akaebe nyefere",
+        proofFootEmpty: "Ọ dịghị ihe na-echere nyochaa",
+        proofFootHasValue: "Ụgwọ ndị na-echere nyochaa Studio",
+        deliverablesLabel: "Ihe nweere",
+        deliverablesFootEmpty: "Faịlụ na-egosipụta ebe a mgbe Studio bulitere",
+        deliverablesFootHasValue: "Faịlụ na mmepụta ana-elekọta n’otu ebe",
+      },
+      breakdown: {
+        active: "Na-arụ",
+        readyReview: "Njikere maka nyocha",
+        pendingPayment: "Ụgwọ na-echere",
+        proofSubmitted: "Akaebe nyefere",
+      },
+      state: {
+        empty: {
+          headline: "Bido brief Studio.",
+          blurb: "Mgbe atụmatụ ma ọ bụ ọrụ malitere site na njirimara HenryCo gị, ụlọ Studio ahụ ejikọtara ga-apụta ebe a — isi ihe, ụgwọ, akụrụngwa na nzọụkwụ ọzọ na otu ebe.",
+          ctaPrimary: "Bido brief",
+          ctaSecondary: "Mepee Studio",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} ụgwọ gafere oge.",
+          headlineTemplatePlural: "{count} ụgwọ gafere oge.",
+          blurb: "Otu isi ihe ụgwọ gafere oge ya. Mepee ụlọ ọrụ ibu akaebe ma ọ bụ kpọtụrụ ndị otu Studio.",
+          ctaPrimary: "Mepee ụgwọ",
+          ctaSecondary: "Mepee Studio",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} ọrụ dị njikere maka nyocha.",
+          headlineTemplatePlural: "{count} ọrụ dị njikere maka nyocha.",
+          blurb: "Ihe nweere na ndegharị na-echere nkwado gị. Mepee ụlọ ọrụ ka ị nyochaa wee mepee isi ihe ọzọ.",
+          ctaPrimary: "Mepee ọrụ",
+          ctaSecondary: "Mepee Studio",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} ọrụ na-arụ.",
+          headlineTemplatePlural: "{count} ọrụ na-arụ.",
+          blurb: "Ụlọ ọrụ ndị na-arụ na njem isi ihe, isi ihe ụgwọ, na ihe nweere — niile site na HenryCo Studio na-egosi n’ụlọ a.",
+          ctaPrimary: "Mepee Studio",
+          ctaSecondary: "Bido brief ọhụrụ",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} ụlọ ọrụ edenyere.",
+          headlineTemplatePlural: "{count} ụlọ ọrụ edenyere.",
+          blurb: "Ọrụ Studio ọ bụla ị bidoroworo — atụmatụ, isi ihe, ụgwọ, akụrụngwa — debere n’otu ụlọ maka nsochi ngwa ngwa.",
+          ctaPrimary: "Mepee Studio",
+          ctaSecondary: "Bido brief ọhụrụ",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "Ụlọ ọrụ",
+      projectsAriaLabel: "Ọrụ Studio",
+      projectsMetaEmpty: "Ụlọ ọrụ na-egosipụta ebe a mgbe ọrụ Studio malitere.",
+      projectsMetaTemplateSingular: "{count} ọrụ · adọtara site na njem ọhụrụ",
+      projectsMetaTemplatePlural: "{count} ọrụ · adọtara site na njem ọhụrụ",
+      paymentsTitle: "Isi ihe ụgwọ",
+      paymentsAriaLabel: "Ụgwọ Studio",
+      paymentsMetaEmpty: "Arịrịọ ụgwọ Studio na-egosipụta ebe a mgbe atụmatụ ma ọ bụ ọrụ malitere.",
+      paymentsMetaTemplateSingular: "{count} isi ihe · mbutere akaebe na ọnọdụ nkwado",
+      paymentsMetaTemplatePlural: "{count} isi ihe · mbutere akaebe na ọnọdụ nkwado",
+      activityTitle: "Ọrụ na-adịbeghị anya",
+      activityAriaLabel: "Ọrụ Studio",
+      activityMetaEmpty: "Mmelite ọrụ, akaebe ụgwọ na nkwado isi ihe na-egosipụta ebe a.",
+      activityMetaTemplateSingular: "{count} mmelite · ọhụrụ ọkachasị buru ụzọ",
+      activityMetaTemplatePlural: "{count} mmelite · ọhụrụ ọkachasị buru ụzọ",
+    },
+    empty: {
+      projectsTitle: "Onweghi ụlọ Studio ejikọtara",
+      projectsBody: "Mgbe e mepụtara atụmatụ ma ọ bụ ọrụ site na njirimara HenryCo gị, ụlọ Studio ejikọtara ga-apụta ebe a — isi ihe, ụgwọ, akụrụngwa na nzọụkwụ ọzọ.",
+      paymentsTitle: "Onweghi isi ihe ụgwọ",
+      paymentsBody: "Isi ihe azụmaahịa — ego nkwụnye, ọkara ọrụ, na nnyefe — na-apụta ebe a mgbe atụmatụ malitere ya na gị.",
+      activityTitle: "Onweghi ọrụ Studio",
+      activityBody: "Mmelite ọrụ, akaebe ụgwọ, mwepụta akụrụngwa na nkwado isi ihe ga-apụta ebe a ka ha na-eme.",
+    },
+    projects: {
+      listAriaLabel: "Ọrụ Studio",
+      fallbackSubtitle: "Studio na-akwado mmelite ọzọ.",
+      milestonesTemplate: "{approved}/{total} isi ihe",
+      paymentsTemplateSingular: "{count} ụgwọ mepere",
+      paymentsTemplatePlural: "{count} ụgwọ mepere",
+      deliverablesTemplateSingular: "{count} ihe nweere",
+      deliverablesTemplatePlural: "{count} ihe nweere",
+      updatedTemplate: "Emelitere {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "Na-arụ",
+      ready_review: "Njikere maka nyocha",
+      scheduled: "Atụmatụrụ",
+      delivered: "Enyefere",
+      issue: "Achọrọ omume",
+    },
+    payments: {
+      listAriaLabel: "Ụgwọ Studio",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "Ga-akwụ {stamp}",
+      updatedTemplate: "Emelitere {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "na-echere",
+      paid: "akwụrụ",
+      approved: "akwadoro",
+      settled: "edoziri",
+      proof_uploaded: "akaebe ebuliri",
+      proof_submitted: "akaebe nyefere",
+      in_review: "na nyocha",
+      rejected: "ajụrụ",
+      overdue: "gafere oge",
+      failed: "dara",
+      pending_deposit: "ego nkwụnye na-echere",
+    },
+    activity: {
+      listAriaLabel: "Ọrụ Studio",
+      rowAriaLabelTemplate: "{title} · {stamp}",
+    },
+  },
 };
 
 const YO: DeepPartial<AccountCopy> = {
@@ -11622,6 +13791,368 @@ const YO: DeepPartial<AccountCopy> = {
     },
     formatLabels: {
       dash: "—",
+    },
+  },
+  divisionLearn: {
+    metadata: {
+      title: "Learn · pátákó ìkẹ́kọ̀ọ́",
+      description: "Tọpinpin gbogbo ìforúkọsílẹ̀ HenryCo Learn, ẹ̀kọ́, èsì ìdánwò, ìwé ẹ̀rí, ìdánilẹ́kọ̀ọ́ tí a yàn sí ọ, àti ìbéèrè ìkẹ́kọ̀ọ́ tí a so mọ́ àkáńtì yìí — kátálọ́gì lórí Learn, ìlọsíwájú máa fihàn níbí.",
+    },
+    hero: {
+      ariaLabel: "Ìwòye Learn",
+      eyebrow: "Learn · láàyè",
+      sideKicker: "Bí yàrá yìí ṣe ń ṣiṣẹ́",
+      sideTitle: "Kátálọ́gì lórí Learn, ìlọsíwájú níbí.",
+      sideBody: "Gbogbo ẹ̀kọ́, ìdánwò àti ìwé ẹ̀rí láti HenryCo Learn ń bára wọn pé sí yàrá yìí — bẹ̀rẹ̀ ibi tí o ti dúró sí, wo ìlọsíwájú rẹ ní wíwo kan, kí o sì pa àwọn ẹ̀rí rẹ mọ́ ní ibi kan ṣoṣo.",
+      breakdownLabel: "Nípa ipò",
+      breakdownAriaLabel: "Pípín ìṣẹ́ṣẹ́ ìkẹ́kọ̀ọ́",
+      tilesAriaLabel: "Ìṣẹ́ṣẹ́ ìkẹ́kọ̀ọ́",
+      tileLabels: {
+        active: "Lóorí",
+        completed: "Ti parí",
+        certificates: "Àwọn ìwé ẹ̀rí",
+        assignments: "Tí a yàn",
+      },
+      tileFoot: {
+        activeEmpty: "Forúkọsílẹ̀ kí o bẹ̀rẹ̀ ìdánilẹ́kọ̀ọ́",
+        activeWith: "Ìlọsíwájú ẹ̀kọ́ àti ìdánwò máa fihàn níbí",
+        completedEmpty: "Àwọn ètò tí o pari máa fihàn níbí",
+        completedWith: "Wúlò fún CV àti ìròyìn",
+        certificatesEmpty: "Gba ọ̀kan nípa pípari ìdánilẹ́kọ̀ọ́",
+        certificatesWith: "Àwọn ìjápọ̀ tí a lè jẹ́rìí fún ẹ̀rí kọ̀ọ̀kan",
+        assignmentsEmpty: "Kò sí ohunkóhun tí a yàn nísinsìnyí",
+        assignmentsWith: "Láti ọ̀dọ̀ alábòójútó tàbí ẹgbẹ́ rẹ",
+      },
+      breakdownNames: {
+        active: "Lóorí",
+        assigned: "Tí a yàn",
+        certificates: "Àwọn ìwé ẹ̀rí",
+        saved: "Tí a fipamọ́",
+      },
+      openLearnCta: "Ṣí HenryCo Learn",
+      applyToTeachCta: "Béèrè láti kọ́ni",
+      state: {
+        empty: {
+          headline: "Bẹ̀rẹ̀ ìrìnàjò HenryCo Learn rẹ.",
+          blurb: "Wo kátálọ́gì, forúkọsílẹ̀ fún ìdánilẹ́kọ̀ọ́, kí gbogbo ẹ̀kọ́, ìdánwò àti ìwé ẹ̀rí máa fúnra wọn bára wọn pé sí yàrá yìí.",
+        },
+        active: {
+          headlineTemplateSingular: "Ìdánilẹ́kọ̀ọ́ {count} ṣì ń lọ.",
+          headlineTemplatePlural: "Àwọn ìdánilẹ́kọ̀ọ́ {count} ṣì ń lọ.",
+          blurb: "Bẹ̀rẹ̀ ibi tí o ti dúró sí — ẹ̀kọ́, ìdánwò, ìwé ẹ̀rí àti ìdánilẹ́kọ̀ọ́ tí a yàn ń bára wọn pé láti HenryCo Learn sí yàrá yìí.",
+        },
+        calm: {
+          headlineTemplateSingular: "Ìdánilẹ́kọ̀ọ́ {count} ti parí.",
+          headlineTemplatePlural: "Àwọn ìdánilẹ́kọ̀ọ́ {count} ti parí.",
+          blurb: "Àwọn ẹ̀rí rẹ àti ìtàn ìkẹ́kọ̀ọ́ rẹ máa wà níbí, wúlò fún CV, ìròyìn inú, tàbí àkọsílẹ̀ tirẹ.",
+        },
+      },
+    },
+    sections: {
+      coursesTitle: "Tẹ̀síwájú láti kọ́",
+      coursesMetaEmpty: "Wo kátálọ́gì HenryCo Learn láti forúkọsílẹ̀ fún ìdánilẹ́kọ̀ọ́ àkọ́kọ́ rẹ.",
+      coursesMetaTemplate: "{active} lóorí · {completed} ti parí",
+      extrasTitle: "Àwọn ẹ̀rí, ìdánilẹ́kọ̀ọ́ tí a yàn àti kíkọ́ni",
+      extrasMeta: "Àwọn ìwé ẹ̀rí, ìdánilẹ́kọ̀ọ́ tí a yàn, ìdánilẹ́kọ̀ọ́ tí a fipamọ́ àti ìbéèrè olùkọ́ wà níbí.",
+      activityTitle: "Ìṣẹ́ṣẹ́ tuntun",
+      activityMetaTemplateSingular: "Ìmúdójúìwọ̀n {count} · tuntun jùlọ ní àkọ́kọ́",
+      activityMetaTemplatePlural: "Àwọn ìmúdójúìwọ̀n {count} · tuntun jùlọ ní àkọ́kọ́",
+      activityMetaEmpty: "Àwọn ẹ̀kọ́, ìdánwò, ìwé ẹ̀rí àti ìsanwó máa fihàn níbí lójú esan.",
+    },
+    empty: {
+      coursesTitle: "Kò sí ìdánilẹ́kọ̀ọ́ tí a so pọ̀ síbẹ̀",
+      coursesBody: "Wo kátálọ́gì lórí HenryCo Learn kí o sì forúkọsílẹ̀. Ipò rẹ máa fihàn níbí fúnra rẹ̀.",
+      activityTitle: "Kò sí ìṣẹ́ṣẹ́ Learn síbẹ̀",
+      activityBody: "Ìlọsíwájú ìdánilẹ́kọ̀ọ́, èsì ìdánwò, ìfúnni ní ìwé ẹ̀rí àti ìwé ẹ̀rí ìsanwó máa fihàn níbí lójú esan.",
+    },
+    courses: {
+      ariaLabel: "Àwọn ìdánilẹ́kọ̀ọ́",
+      completedAtTemplate: "Ti parí {date}",
+      progressPercentTemplate: "{percent}% ti parí",
+      statusDelimiter: " · ",
+    },
+    extras: {
+      ariaLabel: "Àfikún Learn",
+      certificatesTitle: "Àwọn ìwé ẹ̀rí",
+      assignmentsTitle: "Ìkẹ́kọ̀ọ́ tí a yàn",
+      savedTitle: "Àwọn ìdánilẹ́kọ̀ọ́ tí a fipamọ́",
+      teachingTitle: "Kọ́ni pẹ̀lú HenryCo",
+      statusLabel: "Ipò",
+      expertiseLabel: "Ìmọ̀ pàtàkì",
+      topicsLabel: "Àwọn àkọlé",
+      openApplicationCta: "Ṣí ìbéèrè",
+      applyToTeachCta: "Béèrè láti kọ́ni",
+      teachingEmpty: "A ń ṣe àyẹ̀wò àwọn ìbéèrè olùkọ́ pẹ̀lú ọwọ́. Béèrè lórí HenryCo Learn, ipò máa bára pé sí ibí.",
+    },
+    activity: {
+      ariaLabel: "Ìṣẹ́ṣẹ́ Learn",
+      fallbackTitle: "Ìṣẹ́ṣẹ́ Learn",
+    },
+  },
+
+  divisionStudio: {
+    metadata: {
+      title: "Studio · yara iṣẹ akanṣe",
+      description: "Tọpa gbogbo ifowosowopo Studio HenryCo ti o so mọ akọọlẹ yii — awọn idamọran, awọn ami iyege, awọn isanwo, awọn ohun ifijiṣẹ, ati iṣẹ ni yara kanna.",
+    },
+    hero: {
+      eyebrowLive: "Studio · n ṣiṣẹ",
+      overviewAriaLabel: "Apejuwe Studio",
+      activityAriaLabel: "Iṣẹ Studio",
+      sideAriaLabel: "Bawo ni yara yii ṣe n ṣiṣẹ",
+      sideLabel: "Bawo ni yara yii ṣe n ṣiṣẹ",
+      sideTitle: "Yara akanṣe kan, ipo gidi.",
+      sideBody: "Awọn idamọran, awọn ami iyege, awọn ẹri isanwo, awọn ohun ifijiṣẹ, ati awọn ami ibaraẹnisọrọ duro pẹlu idanimọ HenryCo kanna ti o n lo nibi gbogbo. Dasibodu ti o wa nisalẹ n ṣe afihan ilọsiwaju gidi ti ẹgbẹ Studio, kii ṣe akojọ ipo.",
+      breakdownAriaLabel: "Pinpin iṣẹ",
+      breakdownLabel: "Nipa ipo",
+      tiles: {
+        activeLabel: "Awọn iṣẹ akanṣe ti n ṣiṣẹ",
+        activeFootEmpty: "Ko si yara iṣẹ ti n ṣiṣẹ lọwọlọwọ",
+        activeFootHasValue: "Awọn yara ti n ṣiṣẹ pẹlu igbiyanju ifijiṣẹ",
+        pendingLabel: "Awọn isanwo ti n duro",
+        pendingFootEmpty: "Ọna iṣowo gba laaye",
+        pendingFootHasValue: "Awọn aaye iṣayẹwo iṣowo ṣi wa ni ṣiṣi",
+        proofLabel: "Awọn ẹri ti a fi silẹ",
+        proofFootEmpty: "Ko si ohun ti n duro de atunyẹwo",
+        proofFootHasValue: "Awọn isanwo n duro de atunyẹwo Studio",
+        deliverablesLabel: "Awọn ohun ifijiṣẹ",
+        deliverablesFootEmpty: "Awọn faili han nibi nigbati Studio ba gbe wọn soke",
+        deliverablesFootHasValue: "Awọn faili ati awọn abajade ni a tọpa ni aaye kan",
+      },
+      breakdown: {
+        active: "N ṣiṣẹ",
+        readyReview: "Ṣetan fun atunyẹwo",
+        pendingPayment: "Isanwo n duro",
+        proofSubmitted: "Ẹri fi silẹ",
+      },
+      state: {
+        empty: {
+          headline: "Bẹrẹ brief Studio kan.",
+          blurb: "Nigbati idamọran tabi iṣẹ akanṣe ba bẹrẹ pẹlu idanimọ HenryCo rẹ, yara Studio ti a muṣiṣẹpọ yoo han nibi — awọn ami iyege, isanwo, awọn ohun ifijiṣẹ, ati igbesẹ atẹle papọ.",
+          ctaPrimary: "Bẹrẹ brief",
+          ctaSecondary: "Ṣii Studio",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} isanwo ti pẹ.",
+          headlineTemplatePlural: "{count} awọn isanwo ti pẹ.",
+          blurb: "Aaye iṣayẹwo isanwo kan ti pẹ. Ṣii yara iṣẹ lati gbe ẹri soke tabi kan si ẹgbẹ Studio.",
+          ctaPrimary: "Ṣii isanwo",
+          ctaSecondary: "Ṣii Studio",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} iṣẹ akanṣe ṣetan fun atunyẹwo.",
+          headlineTemplatePlural: "{count} awọn iṣẹ akanṣe ṣetan fun atunyẹwo.",
+          blurb: "Awọn ohun ifijiṣẹ ati awọn atunṣe n duro de ifọwọsi rẹ. Ṣii yara iṣẹ lati ṣe atunyẹwo ati ṣii ami iyege t’o tẹle.",
+          ctaPrimary: "Ṣii awọn iṣẹ akanṣe",
+          ctaSecondary: "Ṣii Studio",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} iṣẹ akanṣe n ṣiṣẹ.",
+          headlineTemplatePlural: "{count} awọn iṣẹ akanṣe n ṣiṣẹ.",
+          blurb: "Awọn yara ti n ṣiṣẹ pẹlu igbiyanju ami iyege, awọn aaye iṣayẹwo isanwo, ati awọn ohun ifijiṣẹ — gbogbo wọn ni a fihan lati HenryCo Studio sinu yara yii.",
+          ctaPrimary: "Ṣii Studio",
+          ctaSecondary: "Bẹrẹ brief tuntun",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} yara iṣẹ akanṣe wa ninu igbasilẹ.",
+          headlineTemplatePlural: "{count} awọn yara iṣẹ akanṣe wa ninu igbasilẹ.",
+          blurb: "Gbogbo ifowosowopo Studio ti o ti bẹrẹ ri — awọn idamọran, awọn ami iyege, awọn isanwo, awọn ohun ifijiṣẹ — ti a tọju ni yara kan fun isale-itẹlera kiakia.",
+          ctaPrimary: "Ṣii Studio",
+          ctaSecondary: "Bẹrẹ brief tuntun",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "Awọn yara iṣẹ akanṣe",
+      projectsAriaLabel: "Awọn iṣẹ akanṣe Studio",
+      projectsMetaEmpty: "Awọn yara iṣẹ han nibi nigbati ifowosowopo Studio ba bẹrẹ.",
+      projectsMetaTemplateSingular: "{count} iṣẹ akanṣe · ṣe lẹsẹsẹ nipa iṣipopada tuntun",
+      projectsMetaTemplatePlural: "{count} awọn iṣẹ akanṣe · ṣe lẹsẹsẹ nipa iṣipopada tuntun",
+      paymentsTitle: "Awọn aaye iṣayẹwo isanwo",
+      paymentsAriaLabel: "Awọn isanwo Studio",
+      paymentsMetaEmpty: "Awọn ibeere isanwo Studio han nibi nigbati idamọran tabi iṣẹ akanṣe ba bẹrẹ.",
+      paymentsMetaTemplateSingular: "{count} aaye iṣayẹwo · ifiweranṣẹ ẹri ati ipo ifọwọsi",
+      paymentsMetaTemplatePlural: "{count} awọn aaye iṣayẹwo · ifiweranṣẹ ẹri ati ipo ifọwọsi",
+      activityTitle: "Iṣẹ aipẹ",
+      activityAriaLabel: "Iṣẹ Studio",
+      activityMetaEmpty: "Awọn imudojuiwọn iṣẹ akanṣe, awọn ẹri isanwo, ati awọn ifọwọsi ami iyege ni a fihan nibi.",
+      activityMetaTemplateSingular: "{count} imudojuiwọn · tuntun julọ ni akọkọ",
+      activityMetaTemplatePlural: "{count} awọn imudojuiwọn · tuntun julọ ni akọkọ",
+    },
+    empty: {
+      projectsTitle: "Ko si yara Studio ti a so mọ sibẹsibẹ",
+      projectsBody: "Ni kete ti a ba ṣẹda idamọran tabi iṣẹ akanṣe pẹlu idanimọ HenryCo rẹ, yara Studio ti a muṣiṣẹpọ yoo han nibi — awọn ami iyege, isanwo, awọn ohun ifijiṣẹ, ati igbesẹ atẹle.",
+      paymentsTitle: "Ko si aaye iṣayẹwo isanwo sibẹsibẹ",
+      paymentsBody: "Awọn ami iyege iṣowo — ifiranṣẹ, agbedemeji iṣẹ akanṣe, ati ifijiṣẹ — n han nibi ni kete ti idamọran ba bẹrẹ pẹlu rẹ.",
+      activityTitle: "Ko si iṣẹ Studio sibẹsibẹ",
+      activityBody: "Awọn imudojuiwọn iṣẹ akanṣe, awọn ẹri isanwo, awọn idasilẹ ohun ifijiṣẹ, ati awọn ifọwọsi ami iyege yoo han nibi bi wọn ṣe n ṣẹlẹ.",
+    },
+    projects: {
+      listAriaLabel: "Awọn iṣẹ akanṣe Studio",
+      fallbackSubtitle: "Studio n murasilẹ imudojuiwọn t’o tẹle.",
+      milestonesTemplate: "{approved}/{total} awọn ami iyege",
+      paymentsTemplateSingular: "{count} isanwo ṣiṣi",
+      paymentsTemplatePlural: "{count} awọn isanwo ṣiṣi",
+      deliverablesTemplateSingular: "{count} ohun ifijiṣẹ",
+      deliverablesTemplatePlural: "{count} awọn ohun ifijiṣẹ",
+      updatedTemplate: "Imudojuiwọn {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "N ṣiṣẹ",
+      ready_review: "Ṣetan fun atunyẹwo",
+      scheduled: "Ti ṣeto",
+      delivered: "Ti firanṣẹ",
+      issue: "Iṣe nilo",
+    },
+    payments: {
+      listAriaLabel: "Awọn isanwo Studio",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "Ọjọ ipari {stamp}",
+      updatedTemplate: "Imudojuiwọn {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "n duro",
+      paid: "ti sanwo",
+      approved: "ti fọwọsi",
+      settled: "ti yanju",
+      proof_uploaded: "ẹri ti gbejade",
+      proof_submitted: "ẹri ti fi silẹ",
+      in_review: "ninu atunyẹwo",
+      rejected: "ti kọ",
+      overdue: "ti pẹ",
+      failed: "ti kuna",
+      pending_deposit: "ifiranṣẹ n duro",
+    },
+    activity: {
+      listAriaLabel: "Iṣẹ Studio",
+      rowAriaLabelTemplate: "{title} · {stamp}",
+    },
+  },
+  divisionLogistics: {
+    metadata: {
+      title: "Èro̩ ọkọ̀ · ìfijíṣẹ́ àti àkànlò",
+      description: "Gbogbo gbígbé, ìfijíṣẹ́, ETA àti ẹ̀rí ìfijíṣẹ́ HenryCo Logistics tí a so mọ́ àkántì yìí — tó ń farahàn láti orí nẹ́tíwọ́ọ̀kì èro̩ ọkọ̀ sínú yàrá ìdákẹ́jẹ́ẹ́ ọ̀kan.",
+    },
+    hero: {
+      ariaLabel: "Àkópọ̀ èro̩ ọkọ̀",
+      eyebrow: "HenryCo Èro̩ ọkọ̀",
+      brand: "HenryCo Èro̩ ọkọ̀",
+      title: "Gbogbo ìpamọ́, yàrá kan ṣoṣo.",
+      body: "Gbígbé, ìfijíṣẹ́, ETA àti ẹ̀rí ìfijíṣẹ́ — gbogbo wọn ń farahàn láti orí nẹ́tíwọ́ọ̀kì èro̩ ọkọ̀ sínú àkántì rẹ. Búkù lẹ́ẹ̀kan ní",
+      bodyDomain: " logistics.henrycogroup.com",
+      ctaNewDelivery: "Ìfijíṣẹ́ tuntun",
+    },
+    metrics: {
+      ariaLabel: "Ìṣẹ̀ṣe èro̩ ọkọ̀",
+      activeNowLabel: "Ń ṣiṣẹ́ báyìí",
+      activeFootSingular: "àkànlò ní ọ̀nà",
+      activeFootPlural: "àkànlò ní ọ̀nà",
+      deliveredMonthLabel: "A fi jíṣẹ́ · oṣù yìí",
+      deliveredMonthFootTemplate: "{count} lápapọ̀",
+      onTimeRateLabel: "Ìwọ̀n àkókò",
+      onTimeRateFootEmpty: "Ń dúró de ìfijíṣẹ́ àkọ́kọ́ tí a ṣètò",
+      onTimeRateFootHasValue: "Lára àwọn ìfijíṣẹ́ tí a ṣètò",
+      totalSpendLabel: "Iye ìnáwó",
+      totalSpendFoot: "Tí a san láìpé",
+    },
+    map: {
+      noShipmentsAriaLabel: "Kò sí àkànlò síbẹ̀",
+      noShipmentsTitle: "Máàpù rẹ yóò tan nígbà tí o bá búkù ìfijíṣẹ́ àkọ́kọ́",
+      noShipmentsBody: "Gbígbé àti ìfijíṣẹ́ tí ń ṣiṣẹ́ kọ̀ọ̀kan máa ń kọ̀wé síhìn-ín lọ́nà ìṣẹ̀dálẹ̀. Búkù lẹ́ẹ̀kan tí àkànlò rẹ yóò farahàn láti orí ojú-ìwé èro̩ ọkọ̀.",
+      noShipmentsCta: "Búkù ìfijíṣẹ́",
+      pendingAriaLabel: "Ìfihàn máàpù",
+      pendingTitle: "Ìṣàmúrasílẹ̀ ipò ń lọ",
+      pendingBody: "Àkànlò rẹ tó ń ṣiṣẹ́ yóò farahàn lórí máàpù gbàrà tí àwọn dispatch bá ti tóójú àwọn àdírẹ́ẹ̀sì gbígbé àti ìfijíṣẹ́.",
+      activeAriaLabel: "Máàpù àkànlò tó ń ṣiṣẹ́",
+      altTemplateSingular: "Máàpù tó ń fi {count} àmì gbígbé àti ìfijíṣẹ́ hàn",
+      altTemplatePlural: "Máàpù tó ń fi {count} àmì gbígbé àti ìfijíṣẹ́ hàn",
+      liveBadgeTemplateSingular: "Láàyè · àkànlò {count} ń ṣiṣẹ́",
+      liveBadgeTemplatePlural: "Láàyè · àkànlò {count} ń ṣiṣẹ́",
+    },
+    sections: {
+      activeTitle: "Ní ọ̀nà báyìí",
+      activeMetaTemplate: "{count} ń ṣiṣẹ́ · ó ń sopọ̀ ara láti orí èro̩ ọkọ̀",
+      activeRailAriaLabel: "Àkànlò tó ń ṣiṣẹ́",
+      emptyAriaLabel: "Kò sí àkànlò tó ń ṣiṣẹ́",
+      emptyTitle: "Kò sí àkànlò tó ń ṣiṣẹ́",
+      emptyBody: "Àwọn ìfijíṣẹ́ rẹ tó ti kọjá wà nísàlẹ̀. Búkù òmíràn, yóò sì farahàn níhìn-ín gbàrà tí òṣìṣẹ́ bá ti fọwọ́ sí gbígbé.",
+      actionsTitle: "Bẹ̀rẹ̀ ìfijíṣẹ́",
+      actionsMeta: "Ọ̀nà yíyára sí ọ̀pọ̀lọpọ̀ ìṣàn",
+      actionsAriaLabel: "Ìṣe yíyára èro̩ ọkọ̀",
+      recentTitle: "Tí a fi jíṣẹ́ láìpẹ́",
+      recentMetaTemplate: "{recent} tó kẹ́yìn nínú {lifetime} lápapọ̀",
+      recentAriaLabel: "Ìfijíṣẹ́ àìpẹ́",
+      spendTitle: "Ìnáwó · oṣù 6 tó kọjá",
+      spendMeta: "Tí a san nìkan",
+      spendFigureAriaLabelTemplate: "Ìnáwó èro̩ ọkọ̀ nínú oṣù 6 tó kọjá",
+    },
+    statusLabels: {
+      quoteRequested: "Ìpèsè iye owó ń dúró",
+      quoteSent: "Ìpèsè iye owó ti ṣetán",
+      pendingPayment: "Ń dúró de ìsanwó",
+      scheduled: "Ti ṣètò",
+      assigned: "Òṣìṣẹ́ ti yàn",
+      pickupConfirmed: "Ti gbé",
+      inTransit: "Ní ọ̀nà",
+      delayed: "Pẹ́",
+      attemptedDelivery: "A gbìyànjú ìfijíṣẹ́",
+      delivered: "A fi jíṣẹ́",
+      completed: "A parí",
+      closed: "Ti pa",
+      cancelled: "A fagilé",
+      refunded: "A san padà",
+    },
+    urgencyLabels: {
+      standard: "Àpẹẹrẹ",
+      sameDay: "Ọjọ́ kan náà",
+      express: "Yíyára",
+      nextDay: "Ọjọ́ tó kàn",
+    },
+    serviceLabels: {
+      scheduled: "Ti ṣètò",
+      sameDay: "Ọjọ́ kan náà",
+      interCity: "Láàrin ìlú",
+      bulk: "Lọ́pọ̀",
+    },
+    shipment: {
+      trackingCodeAriaTemplate: "Kóòdù àfọ́nà {code}",
+      addressPending: "Àdírẹ́ẹ̀sì ń dúró",
+      etaPending: "ETA ń dúró",
+      trackCta: "Tẹ̀lé àkànlò",
+      openTrackingAriaTemplate: "Ṣí àfọ́nà fún {code}",
+      etaAriaTemplate: "ETA {eta}",
+      etaMinutesInTemplate: "ní ìṣẹ́jú {minutes}",
+      etaMinutesOverdueTemplate: "ìṣẹ́jú {minutes} ti kọjá",
+      etaHoursInTemplate: "ní wákàtí {hours}",
+      etaHoursOverdueTemplate: "wákàtí {hours} ti kọjá",
+      detailSeparator: " · ",
+    },
+    timeline: {
+      ariaLabel: "Ìfijíṣẹ́ àìpẹ́",
+      deliveredToTemplate: "A fi jíṣẹ́ {name}",
+      receiptCta: "Ìwé ìgbàwọlé",
+    },
+    quickActions: {
+      ariaLabel: "Ìṣe yíyára èro̩ ọkọ̀",
+      bookLabel: "Búkù ìfijíṣẹ́",
+      bookDesc: "Gbígbé àti ìfijíṣẹ́ nínú ìṣàn ìtọ́sọ́nà kan ṣoṣo.",
+      trackLabel: "Tẹ̀lé pẹ̀lú kóòdù",
+      trackDesc: "Ipò láàyè, ETA àti àyíká òṣìṣẹ́.",
+      quoteLabel: "Kọ́kọ́ béèrè iye owó",
+      quoteDesc: "Iye àpẹẹrẹ kí ó tó ṣèdíwọ̀.",
+      addressesLabel: "Àdírẹ́ẹ̀sì tí a fi pamọ́",
+      addressesDesc: "Ìbáraẹnisọ̀rọ̀ gbígbé àti ìfijíṣẹ́.",
+      invoicesLabel: "Ìwé ìgbàwọlé àti ìwé ìbéèrè",
+      invoicesDesc: "PDF tí a fi àmì lé fún àkànlò kọ̀ọ̀kan.",
+      supportLabel: "Ìtìlẹ́yìn èro̩ ọkọ̀",
+      supportDesc: "Ṣí ìjíròrò tí a so mọ́ àkántì rẹ.",
+    },
+    spend: {
+      figureAriaLabel: "Ìnáwó èro̩ ọkọ̀ nínú oṣù 6 tó kọjá",
+      emptyTick: "—",
     },
   },
 };
@@ -13275,6 +15806,368 @@ const HA: DeepPartial<AccountCopy> = {
       dash: "—",
     },
   },
+  divisionLearn: {
+    metadata: {
+      title: "Learn · allon koyo",
+      description: "Bi sawun kowane rajistar HenryCo Learn, darasi, sakamakon jarrabawa, takardar shaida, horon da aka ba ka, da neman koyarwa da ke da alaƙa da wannan asusun — kasida tana Learn, ci gaba yana fitowa anan.",
+    },
+    hero: {
+      ariaLabel: "Bayanin Learn",
+      eyebrow: "Learn · kai tsaye",
+      sideKicker: "Yadda wannan ɗakin ke aiki",
+      sideTitle: "Kasida tana Learn, ci gaba anan.",
+      sideBody: "Kowane darasi, jarrabawa da takardar shaida daga HenryCo Learn yana daidaitawa cikin wannan ɗakin — fara inda ka tsaya, duba ci gabanka a kallon kanɗayan, kuma ka adana shaidu a wuri ɗaya.",
+      breakdownLabel: "Ta yanayi",
+      breakdownAriaLabel: "Rabon ayyukan koyo",
+      tilesAriaLabel: "Ayyukan koyo",
+      tileLabels: {
+        active: "Mai aiki",
+        completed: "An kammala",
+        certificates: "Takardun shaida",
+        assignments: "An ba da",
+      },
+      tileFoot: {
+        activeEmpty: "Yi rajista don fara darasi",
+        activeWith: "Ci gaban darasi da jarrabawa yana fitowa anan",
+        completedEmpty: "Shirye-shiryen da ka kammala suna fitowa anan",
+        completedWith: "Yana da amfani ga CV da rahotanni",
+        certificatesEmpty: "Ka samu ɗaya ta kammala darasi",
+        certificatesWith: "Hanyoyin haɗi da ake iya tabbatarwa ga kowace shaida",
+        assignmentsEmpty: "Babu wani abu da aka ba da yanzu",
+        assignmentsWith: "Daga manaja ko ƙungiyarka",
+      },
+      breakdownNames: {
+        active: "Mai aiki",
+        assigned: "An ba da",
+        certificates: "Takardun shaida",
+        saved: "An adana",
+      },
+      openLearnCta: "Buɗe HenryCo Learn",
+      applyToTeachCta: "Nemi koyarwa",
+      state: {
+        empty: {
+          headline: "Fara tafiyarka ta HenryCo Learn.",
+          blurb: "Duba kasida, yi rajista a darasi, kuma kowane darasi, jarrabawa da takardar shaida za su daidaita anan ta atomatik.",
+        },
+        active: {
+          headlineTemplateSingular: "Darasi {count} yana ci gaba.",
+          headlineTemplatePlural: "Darussa {count} suna ci gaba.",
+          blurb: "Fara inda ka tsaya — darussa, jarrabawa, takardun shaida da horon da aka ba ka suna daidaitawa daga HenryCo Learn cikin wannan ɗakin.",
+        },
+        calm: {
+          headlineTemplateSingular: "Darasi {count} an kammala.",
+          headlineTemplatePlural: "Darussa {count} an kammala.",
+          blurb: "Takardun shaidarka da tarihin koyo na ci gaba zaune anan, mai amfani ga CV, rahoton ciki ko bayananka.",
+        },
+      },
+    },
+    sections: {
+      coursesTitle: "Ci gaba da koyo",
+      coursesMetaEmpty: "Duba kasidar HenryCo Learn don yin rajista a darasinka na farko.",
+      coursesMetaTemplate: "{active} mai aiki · {completed} an kammala",
+      extrasTitle: "Shaidu, ayyukan da aka ba da koyarwa",
+      extrasMeta: "Takardun shaida, horon da aka ba da, darussan da aka adana da neman koyarwa suna zaune anan.",
+      activityTitle: "Sabbin ayyuka",
+      activityMetaTemplateSingular: "Sabuntawa {count} · sabuwa ta farko",
+      activityMetaTemplatePlural: "Sabuntawa {count} · sabbi a farko",
+      activityMetaEmpty: "Darussa, jarrabawa, takardun shaida da biyan kuɗi suna fitowa anan a lokaci-lokaci.",
+    },
+    empty: {
+      coursesTitle: "Babu darussa da aka haɗa tukuna",
+      coursesBody: "Duba kasidar HenryCo Learn kuma ka yi rajista. Wurinka zai fito anan ta atomatik.",
+      activityTitle: "Babu wani aiki na Learn tukuna",
+      activityBody: "Ci gaban darasi, sakamakon jarrabawa, bayar da takardar shaida da rasitin biyan kuɗi suna fitowa anan a lokaci-lokaci.",
+    },
+    courses: {
+      ariaLabel: "Darussa",
+      completedAtTemplate: "An kammala {date}",
+      progressPercentTemplate: "{percent}% an kammala",
+      statusDelimiter: " · ",
+    },
+    extras: {
+      ariaLabel: "Ƙarin Learn",
+      certificatesTitle: "Takardun shaida",
+      assignmentsTitle: "Koyon da aka ba da",
+      savedTitle: "Darussan da aka adana",
+      teachingTitle: "Koyar da HenryCo",
+      statusLabel: "Yanayi",
+      expertiseLabel: "Ƙwarewa",
+      topicsLabel: "Batutuwa",
+      openApplicationCta: "Buɗe neman",
+      applyToTeachCta: "Nemi koyarwa",
+      teachingEmpty: "Muna bita neman koyarwa da hannu. Ka nema a HenryCo Learn, yanayinta zai daidaita zuwa nan.",
+    },
+    activity: {
+      ariaLabel: "Ayyukan Learn",
+      fallbackTitle: "Ayyukan Learn",
+    },
+  },
+
+  divisionStudio: {
+    metadata: {
+      title: "Studio · ɗakunan ayyukan aiki",
+      description: "Bi diddigi kowanne haɗin gwiwa na HenryCo Studio da ke da alaƙa da wannan asusu — shawarwari, maƙasudai, biyan kuɗi, abubuwan da za a kawo, da ayyuka cikin ɗaki guda.",
+    },
+    hero: {
+      eyebrowLive: "Studio · kai tsaye",
+      overviewAriaLabel: "Bayyani na Studio",
+      activityAriaLabel: "Ayyukan Studio",
+      sideAriaLabel: "Yadda wannan ɗaki ke aiki",
+      sideLabel: "Yadda wannan ɗaki ke aiki",
+      sideTitle: "Ɗakin ayyuka guda, ainihin matsayi.",
+      sideBody: "Shawarwari, maƙasudai, hujjojin biyan kuɗi, abubuwan da za a kawo, da alamomin sadarwa suna ci gaba da haɗuwa da wannan asalin HenryCo da kake amfani da shi a ko’ina. Dashboard ɗin da ke ƙasa yana nuna ainihin ci gaban ƙungiyar Studio, ba jerin matsayi ba.",
+      breakdownAriaLabel: "Rabe-raben ayyuka",
+      breakdownLabel: "Ta matsayi",
+      tiles: {
+        activeLabel: "Ayyuka masu aiki",
+        activeFootEmpty: "Babu ɗakunan aiki masu aiki yanzu",
+        activeFootHasValue: "Ɗakunan aiki masu aiki tare da motsi na bayarwa",
+        pendingLabel: "Biyan kuɗi da ke jira",
+        pendingFootEmpty: "Layin kasuwanci a sake",
+        pendingFootHasValue: "Ƙarshen kasuwanci har yanzu a buɗe",
+        proofLabel: "Hujjojin da aka miƙa",
+        proofFootEmpty: "Babu abin da ke jira a duba",
+        proofFootHasValue: "Biyan kuɗi suna jiran duba Studio",
+        deliverablesLabel: "Abubuwan da za a kawo",
+        deliverablesFootEmpty: "Fayiloli suna fitowa anan idan Studio ya tura su",
+        deliverablesFootHasValue: "Fayiloli da sakamako an bi diddigi a wuri ɗaya",
+      },
+      breakdown: {
+        active: "Mai aiki",
+        readyReview: "A shirye don dubawa",
+        pendingPayment: "Biyan kuɗi a jira",
+        proofSubmitted: "Hujja miƙe",
+      },
+      state: {
+        empty: {
+          headline: "Fara brief na Studio.",
+          blurb: "Lokacin da shawarwari ko aiki ya fara da asalin HenryCo na ka, ɗakin Studio da aka haɗa zai bayyana anan — maƙasudai, biyan kuɗi, abubuwan da za a kawo, da matakin gaba duka.",
+          ctaPrimary: "Fara brief",
+          ctaSecondary: "Buɗe Studio",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} biyan kuɗi da ya ƙare.",
+          headlineTemplatePlural: "{count} biyan kuɗi da suka ƙare.",
+          blurb: "Ƙarshen biyan kuɗi ya wuce. Buɗe ɗakin aiki don tura hujja ko tuntuɓi ƙungiyar Studio.",
+          ctaPrimary: "Buɗe biyan kuɗi",
+          ctaSecondary: "Buɗe Studio",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} aiki a shirye don dubawa.",
+          headlineTemplatePlural: "{count} ayyuka a shirye don dubawa.",
+          blurb: "Abubuwan da za a kawo da gyare-gyare suna jiran amincewar ka. Buɗe ɗakin aiki don dubawa kuma buɗe maƙasudin gaba.",
+          ctaPrimary: "Buɗe ayyuka",
+          ctaSecondary: "Buɗe Studio",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} aiki mai aiki.",
+          headlineTemplatePlural: "{count} ayyuka masu aiki.",
+          blurb: "Ɗakunan aiki masu aiki tare da motsi na maƙasudai, ƙarshen biyan kuɗi, da abubuwan da za a kawo — duk an nuna su daga HenryCo Studio cikin wannan ɗaki.",
+          ctaPrimary: "Buɗe Studio",
+          ctaSecondary: "Fara sabon brief",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} ɗakin ayyuka cikin tarihi.",
+          headlineTemplatePlural: "{count} ɗakunan ayyuka cikin tarihi.",
+          blurb: "Kowanne haɗin gwiwa na Studio da ka taɓa fara — shawarwari, maƙasudai, biyan kuɗi, abubuwan da za a kawo — an kiyaye su a ɗaki guda don bi diddigi cikin sauri.",
+          ctaPrimary: "Buɗe Studio",
+          ctaSecondary: "Fara sabon brief",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "Ɗakunan ayyuka",
+      projectsAriaLabel: "Ayyukan Studio",
+      projectsMetaEmpty: "Ɗakunan aiki suna fitowa anan idan haɗin gwiwa na Studio ya fara.",
+      projectsMetaTemplateSingular: "{count} aiki · an tsara ta sabon motsi",
+      projectsMetaTemplatePlural: "{count} ayyuka · an tsara ta sabon motsi",
+      paymentsTitle: "Ƙarshen biyan kuɗi",
+      paymentsAriaLabel: "Biyan kuɗi na Studio",
+      paymentsMetaEmpty: "Buƙatun biyan kuɗi na Studio suna fitowa anan idan shawarwari ko aiki ya fara.",
+      paymentsMetaTemplateSingular: "{count} ƙarshe · ɗora hujja da matsayin amincewa",
+      paymentsMetaTemplatePlural: "{count} ƙarshe · ɗora hujja da matsayin amincewa",
+      activityTitle: "Ayyuka na kwanan nan",
+      activityAriaLabel: "Ayyukan Studio",
+      activityMetaEmpty: "Sabuntawar ayyuka, hujjojin biyan kuɗi, da amincewar maƙasudai suna nunawa anan.",
+      activityMetaTemplateSingular: "{count} sabuntawa · sabuwar farko",
+      activityMetaTemplatePlural: "{count} sabuntawa · sabuwar farko",
+    },
+    empty: {
+      projectsTitle: "Babu ɗakunan Studio da aka haɗa har yanzu",
+      projectsBody: "Da zaran an ƙirƙira shawarwari ko aiki da asalin HenryCo na ka, ɗakin Studio da aka haɗa zai bayyana anan — maƙasudai, biyan kuɗi, abubuwan da za a kawo, da matakin gaba.",
+      paymentsTitle: "Babu ƙarshen biyan kuɗi har yanzu",
+      paymentsBody: "Maƙasudai na kasuwanci — adibas, tsakanin aiki, da bayarwa — suna fitowa anan idan shawarwari ya fara tare da kai.",
+      activityTitle: "Babu ayyukan Studio har yanzu",
+      activityBody: "Sabuntawar ayyuka, hujjojin biyan kuɗi, sakin abubuwan da za a kawo, da amincewar maƙasudai za su bayyana anan yayin da suke faruwa.",
+    },
+    projects: {
+      listAriaLabel: "Ayyukan Studio",
+      fallbackSubtitle: "Studio yana shirya sabuntawa ta gaba.",
+      milestonesTemplate: "{approved}/{total} maƙasudai",
+      paymentsTemplateSingular: "{count} biyan kuɗi a buɗe",
+      paymentsTemplatePlural: "{count} biyan kuɗi a buɗe",
+      deliverablesTemplateSingular: "{count} abin kawo",
+      deliverablesTemplatePlural: "{count} abubuwan kawo",
+      updatedTemplate: "An sabunta {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "Mai aiki",
+      ready_review: "A shirye don dubawa",
+      scheduled: "An tsara",
+      delivered: "An kawo",
+      issue: "Ana buƙatar mataki",
+    },
+    payments: {
+      listAriaLabel: "Biyan kuɗi na Studio",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "Ƙarshen {stamp}",
+      updatedTemplate: "An sabunta {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "a jira",
+      paid: "an biya",
+      approved: "an amince",
+      settled: "an sasanta",
+      proof_uploaded: "hujja an ɗora",
+      proof_submitted: "hujja an miƙa",
+      in_review: "ana dubawa",
+      rejected: "an ƙi",
+      overdue: "ya ƙare",
+      failed: "ya kasa",
+      pending_deposit: "adibas a jira",
+    },
+    activity: {
+      listAriaLabel: "Ayyukan Studio",
+      rowAriaLabelTemplate: "{title} · {stamp}",
+    },
+  },
+  divisionLogistics: {
+    metadata: {
+      title: "Sufuri · isar da kaya da jigilarwa",
+      description: "Kowane karbar kaya, isarwa, ETA da hujjar isar da kayan HenryCo Logistics da aka haɗa da wannan asusu — ana nuna su daga tashar sufuri zuwa cikin daki ɗaya mai natsuwa.",
+    },
+    hero: {
+      ariaLabel: "Bayyani na sufuri",
+      eyebrow: "HenryCo Sufuri",
+      brand: "HenryCo Sufuri",
+      title: "Kowane kunshi, daki ɗaya.",
+      body: "Karbar kaya, isarwa, ETA da hujjojin isarwa — duka ana nuna su daga tashar sufuri zuwa cikin asusunka. Yi rajista sau ɗaya a",
+      bodyDomain: " logistics.henrycogroup.com",
+      ctaNewDelivery: "Sabuwar isarwa",
+    },
+    metrics: {
+      ariaLabel: "Aikin sufuri",
+      activeNowLabel: "Mai aiki yanzu",
+      activeFootSingular: "jigilarwa a kan hanya",
+      activeFootPlural: "jigilarwa a kan hanya",
+      deliveredMonthLabel: "An kai · wannan watan",
+      deliveredMonthFootTemplate: "{count} duka",
+      onTimeRateLabel: "Adadin lokaci",
+      onTimeRateFootEmpty: "Ana jiran isarwar farko da aka tsara",
+      onTimeRateFootHasValue: "Daga isarwar da aka tsara",
+      totalSpendLabel: "Jimillar kashewa",
+      totalSpendFoot: "An biya cikin rayuwa",
+    },
+    map: {
+      noShipmentsAriaLabel: "Babu jigilarwa tukuna",
+      noShipmentsTitle: "Taswirarka za ta kunne sa'ad da ka yi rajistar isarwa ta farko",
+      noShipmentsBody: "Kowane karbar kaya da isarwa mai aiki ana sa shi a nan ta atomatik. Yi rajista sau ɗaya kuma jigilarwarka za ta nuna daga shafin sufuri.",
+      noShipmentsCta: "Yi rajistar isarwa",
+      pendingAriaLabel: "Hangen taswira",
+      pendingTitle: "Ana shirya wuri",
+      pendingBody: "Jigilarwar ka mai aiki za a sa su a taswira da zarar ɓangaren dispatch ya shirya adireshin karbar kaya da isarwa.",
+      activeAriaLabel: "Taswirar jigilarwa mai aiki",
+      altTemplateSingular: "Taswira tana nuna {count} alamar karbar kaya da isarwa mai aiki",
+      altTemplatePlural: "Taswira tana nuna {count} alamomin karbar kaya da isarwa masu aiki",
+      liveBadgeTemplateSingular: "Kai tsaye · jigilarwa {count} mai aiki",
+      liveBadgeTemplatePlural: "Kai tsaye · jigilarwa {count} masu aiki",
+    },
+    sections: {
+      activeTitle: "A kan hanya yanzu",
+      activeMetaTemplate: "{count} masu aiki · ana haɗawa ta atomatik daga sufuri",
+      activeRailAriaLabel: "Jigilarwa masu aiki",
+      emptyAriaLabel: "Babu jigilarwa mai aiki",
+      emptyTitle: "Babu jigilarwa mai aiki",
+      emptyBody: "Isarwarka da ta gabata suna ƙasa. Yi rajistar wata kuma za ta bayyana a nan da zarar mai isarwa ya tabbatar da karbar kaya.",
+      actionsTitle: "Fara isarwa",
+      actionsMeta: "Hanyoyin gajere zuwa hanyoyin gama gari",
+      actionsAriaLabel: "Ayyuka masu sauri na sufuri",
+      recentTitle: "An kai kwanan nan",
+      recentMetaTemplate: "{recent} na ƙarshe daga {lifetime} duka",
+      recentAriaLabel: "Isarwar baya-bayan nan",
+      spendTitle: "Kashewa · watanni 6 da suka gabata",
+      spendMeta: "An biya kawai",
+      spendFigureAriaLabelTemplate: "Kashewar sufuri a cikin watanni 6 da suka gabata",
+    },
+    statusLabels: {
+      quoteRequested: "Farashi yana jira",
+      quoteSent: "Farashi a shirye",
+      pendingPayment: "Ana jiran biyan kuɗi",
+      scheduled: "An tsara",
+      assigned: "An ba mai isarwa",
+      pickupConfirmed: "An ɗauke",
+      inTransit: "A kan hanya",
+      delayed: "Yana jinkiri",
+      attemptedDelivery: "An yi yunkurin isarwa",
+      delivered: "An kai",
+      completed: "An gama",
+      closed: "An rufe",
+      cancelled: "An soke",
+      refunded: "An mayar da kuɗi",
+    },
+    urgencyLabels: {
+      standard: "Na yau da kullum",
+      sameDay: "Rana ɗaya",
+      express: "Mai sauri",
+      nextDay: "Kashegari",
+    },
+    serviceLabels: {
+      scheduled: "An tsara",
+      sameDay: "Rana ɗaya",
+      interCity: "Tsakanin garuruwa",
+      bulk: "Mai yawa",
+    },
+    shipment: {
+      trackingCodeAriaTemplate: "Lambar bibiyar {code}",
+      addressPending: "Adireshi yana jira",
+      etaPending: "ETA yana jira",
+      trackCta: "Bibi jigilarwa",
+      openTrackingAriaTemplate: "Buɗe bibiyar don {code}",
+      etaAriaTemplate: "ETA {eta}",
+      etaMinutesInTemplate: "a cikin minti {minutes}",
+      etaMinutesOverdueTemplate: "minti {minutes} sun shige",
+      etaHoursInTemplate: "a cikin awa {hours}",
+      etaHoursOverdueTemplate: "awa {hours} sun shige",
+      detailSeparator: " · ",
+    },
+    timeline: {
+      ariaLabel: "Isarwar baya-bayan nan",
+      deliveredToTemplate: "An kai zuwa ga {name}",
+      receiptCta: "Risidi",
+    },
+    quickActions: {
+      ariaLabel: "Ayyuka masu sauri na sufuri",
+      bookLabel: "Yi rajistar isarwa",
+      bookDesc: "Karbar kaya da isarwa a cikin tsari ɗaya mai jagoranci.",
+      trackLabel: "Bibi da lamba",
+      trackDesc: "Matsayi kai tsaye, ETA da yanayin mai isarwa.",
+      quoteLabel: "Fara da farashi",
+      quoteDesc: "Farashin nuni kafin ka tabbatar.",
+      addressesLabel: "Adireshin da aka adana",
+      addressesDesc: "Lambobin tuntuɓa na karbar kaya da isarwa.",
+      invoicesLabel: "Risidoji da takardun biyan kuɗi",
+      invoicesDesc: "PDF mai alama don kowane jigilarwa.",
+      supportLabel: "Tallafin sufuri",
+      supportDesc: "Buɗe tattaunawa da aka haɗa da asusunka.",
+    },
+    spend: {
+      figureAriaLabel: "Kashewar sufuri a cikin watanni 6 da suka gabata",
+      emptyTick: "—",
+    },
+  },
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -14909,6 +17802,368 @@ const ZH: DeepPartial<AccountCopy> = {
     },
     formatLabels: {
       dash: "—",
+    },
+  },
+  divisionLearn: {
+    metadata: {
+      title: "Learn · 学习仪表盘",
+      description: "跟踪与本账号关联的每一次 HenryCo Learn 报名、课时、测验结果、证书、指派培训以及教师申请——目录在 Learn，进度在此映射。",
+    },
+    hero: {
+      ariaLabel: "Learn 概览",
+      eyebrow: "Learn · 实时",
+      sideKicker: "本空间运作方式",
+      sideTitle: "目录在 Learn，进度在此。",
+      sideBody: "HenryCo Learn 的每节课程、每次测验和每份证书都会同步到此空间——从上次停下的地方继续，一目了然地查看进度，并将所有凭证集中存放。",
+      breakdownLabel: "按状态",
+      breakdownAriaLabel: "学习活动分布",
+      tilesAriaLabel: "学习活动",
+      tileLabels: {
+        active: "进行中",
+        completed: "已完成",
+        certificates: "证书",
+        assignments: "已指派",
+      },
+      tileFoot: {
+        activeEmpty: "报名以开始课程",
+        activeWith: "课时和测验进度在此映射",
+        completedEmpty: "完成的项目将在此呈现",
+        completedWith: "便于简历与报告使用",
+        certificatesEmpty: "完成课程即可获得一份证书",
+        certificatesWith: "每份凭证均提供可验证链接",
+        assignmentsEmpty: "目前没有指派任务",
+        assignmentsWith: "来自你的主管或团队",
+      },
+      breakdownNames: {
+        active: "进行中",
+        assigned: "已指派",
+        certificates: "证书",
+        saved: "已收藏",
+      },
+      openLearnCta: "打开 HenryCo Learn",
+      applyToTeachCta: "申请成为讲师",
+      state: {
+        empty: {
+          headline: "开启你的 HenryCo Learn 之旅。",
+          blurb: "浏览课程目录、报名课程，每节课时、每次测验和每份证书都会自动同步到此空间。",
+        },
+        active: {
+          headlineTemplateSingular: "{count} 门课程进行中。",
+          headlineTemplatePlural: "{count} 门课程进行中。",
+          blurb: "从上次停下的地方继续——课时、测验、证书和指派培训都从 HenryCo Learn 同步到此空间。",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} 门课程已完成。",
+          headlineTemplatePlural: "{count} 门课程已完成。",
+          blurb: "你的凭证与学习记录留存于此，便于撰写简历、内部汇报或个人留档。",
+        },
+      },
+    },
+    sections: {
+      coursesTitle: "继续学习",
+      coursesMetaEmpty: "浏览 HenryCo Learn 目录，报名你的第一门课程。",
+      coursesMetaTemplate: "{active} 进行中 · {completed} 已完成",
+      extrasTitle: "凭证、指派与教学",
+      extrasMeta: "证书、指派培训、收藏课程以及讲师申请汇集于此。",
+      activityTitle: "最近动态",
+      activityMetaTemplateSingular: "{count} 条更新 · 最新优先",
+      activityMetaTemplatePlural: "{count} 条更新 · 最新优先",
+      activityMetaEmpty: "课时、测验、证书与付款将在此实时映射。",
+    },
+    empty: {
+      coursesTitle: "尚未关联课程",
+      coursesBody: "在 HenryCo Learn 浏览目录并报名，你的位置将自动出现在此处。",
+      activityTitle: "暂无 Learn 动态",
+      activityBody: "课程进度、测验结果、证书发放和付款回执将在此实时呈现。",
+    },
+    courses: {
+      ariaLabel: "课程",
+      completedAtTemplate: "{date} 完成",
+      progressPercentTemplate: "已完成 {percent}%",
+      statusDelimiter: " · ",
+    },
+    extras: {
+      ariaLabel: "Learn 扩展",
+      certificatesTitle: "证书",
+      assignmentsTitle: "指派学习",
+      savedTitle: "收藏课程",
+      teachingTitle: "在 HenryCo 教学",
+      statusLabel: "状态",
+      expertiseLabel: "专长",
+      topicsLabel: "主题",
+      openApplicationCta: "打开申请",
+      applyToTeachCta: "申请成为讲师",
+      teachingEmpty: "我们会人工审核讲师申请。请在 HenryCo Learn 提交，状态将同步回此空间。",
+    },
+    activity: {
+      ariaLabel: "Learn 活动",
+      fallbackTitle: "Learn 活动",
+    },
+  },
+
+  divisionStudio: {
+    metadata: {
+      title: "Studio · 项目工作室",
+      description: "跟踪与此账户关联的每一个 HenryCo Studio 协作 — 提案、里程碑、付款、交付物与活动，统一在一个房间内。",
+    },
+    hero: {
+      eyebrowLive: "Studio · 实时",
+      overviewAriaLabel: "Studio 概览",
+      activityAriaLabel: "Studio 活动",
+      sideAriaLabel: "这个房间如何运作",
+      sideLabel: "这个房间如何运作",
+      sideTitle: "一个项目房间,真实状态。",
+      sideBody: "提案、里程碑、付款凭证、交付物和沟通信号都与你在各处使用的同一个 HenryCo 身份相连。下方仪表盘反映 Studio 团队的实际进展,而不是一份状态清单。",
+      breakdownAriaLabel: "活动细分",
+      breakdownLabel: "按状态",
+      tiles: {
+        activeLabel: "活跃项目",
+        activeFootEmpty: "当前没有在运作的工作室",
+        activeFootHasValue: "正在交付的活跃工作室",
+        pendingLabel: "待付款项",
+        pendingFootEmpty: "商务通道畅通",
+        pendingFootHasValue: "仍有未完成的商务节点",
+        proofLabel: "已上传凭证",
+        proofFootEmpty: "没有等待审核的内容",
+        proofFootHasValue: "等待 Studio 审核的付款",
+        deliverablesLabel: "交付物",
+        deliverablesFootEmpty: "Studio 上传后文件会出现在这里",
+        deliverablesFootHasValue: "文件与产出统一追踪",
+      },
+      breakdown: {
+        active: "活跃",
+        readyReview: "可供审阅",
+        pendingPayment: "待付款",
+        proofSubmitted: "凭证已提交",
+      },
+      state: {
+        empty: {
+          headline: "启动一个 Studio 简报。",
+          blurb: "当一个提案或项目以你的 HenryCo 身份上线时,同步的 Studio 房间会出现在这里 — 里程碑、付款、交付物和下一步行动汇于一处。",
+          ctaPrimary: "启动简报",
+          ctaSecondary: "打开 Studio",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} 笔逾期付款。",
+          headlineTemplatePlural: "{count} 笔逾期付款。",
+          blurb: "一个付款节点已逾期。打开工作室上传凭证或联系 Studio 团队。",
+          ctaPrimary: "打开付款",
+          ctaSecondary: "打开 Studio",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} 个项目可供审阅。",
+          headlineTemplatePlural: "{count} 个项目可供审阅。",
+          blurb: "交付物与修订排队等待你的审批。打开工作室进行审阅并解锁下一个里程碑。",
+          ctaPrimary: "打开项目",
+          ctaSecondary: "打开 Studio",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} 个活跃项目。",
+          headlineTemplatePlural: "{count} 个活跃项目。",
+          blurb: "在运作的工作室,涵盖里程碑进度、付款节点和交付物 — 全部从 HenryCo Studio 镜像到此房间。",
+          ctaPrimary: "打开 Studio",
+          ctaSecondary: "启动新简报",
+        },
+        calm: {
+          headlineTemplateSingular: "已记录 {count} 个项目房间。",
+          headlineTemplatePlural: "已记录 {count} 个项目房间。",
+          blurb: "你启动过的每一个 Studio 协作 — 提案、里程碑、付款、交付物 — 都保留在一个房间中,便于快速跟进。",
+          ctaPrimary: "打开 Studio",
+          ctaSecondary: "启动新简报",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "项目房间",
+      projectsAriaLabel: "Studio 项目",
+      projectsMetaEmpty: "当 Studio 协作上线时,工作室会出现在这里。",
+      projectsMetaTemplateSingular: "{count} 个项目 · 按最近动向排序",
+      projectsMetaTemplatePlural: "{count} 个项目 · 按最近动向排序",
+      paymentsTitle: "付款节点",
+      paymentsAriaLabel: "Studio 付款",
+      paymentsMetaEmpty: "提案或项目上线后,Studio 付款请求会出现在这里。",
+      paymentsMetaTemplateSingular: "{count} 个节点 · 凭证上传和审批状态",
+      paymentsMetaTemplatePlural: "{count} 个节点 · 凭证上传和审批状态",
+      activityTitle: "近期活动",
+      activityAriaLabel: "Studio 活动",
+      activityMetaEmpty: "项目更新、付款凭证和里程碑审批将在这里镜像呈现。",
+      activityMetaTemplateSingular: "{count} 条更新 · 最新在前",
+      activityMetaTemplatePlural: "{count} 条更新 · 最新在前",
+    },
+    empty: {
+      projectsTitle: "尚无关联的 Studio 工作室",
+      projectsBody: "一旦以你的 HenryCo 身份创建提案或项目,同步的 Studio 房间就会出现在这里 — 里程碑、付款、交付物和下一步行动。",
+      paymentsTitle: "尚无付款节点",
+      paymentsBody: "商务里程碑 — 定金、中期与交付 — 会在提案与你上线后出现在这里。",
+      activityTitle: "尚无 Studio 活动",
+      activityBody: "项目更新、付款凭证、交付发布和里程碑审批一旦发生就会在这里出现。",
+    },
+    projects: {
+      listAriaLabel: "Studio 项目",
+      fallbackSubtitle: "Studio 正在准备下一次更新。",
+      milestonesTemplate: "{approved}/{total} 个里程碑",
+      paymentsTemplateSingular: "{count} 笔未结付款",
+      paymentsTemplatePlural: "{count} 笔未结付款",
+      deliverablesTemplateSingular: "{count} 件交付物",
+      deliverablesTemplatePlural: "{count} 件交付物",
+      updatedTemplate: "更新于 {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "进行中",
+      ready_review: "可供审阅",
+      scheduled: "已排期",
+      delivered: "已交付",
+      issue: "需要处理",
+    },
+    payments: {
+      listAriaLabel: "Studio 付款",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "截止 {stamp}",
+      updatedTemplate: "更新于 {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "待处理",
+      paid: "已付",
+      approved: "已审批",
+      settled: "已结清",
+      proof_uploaded: "凭证已上传",
+      proof_submitted: "凭证已提交",
+      in_review: "审核中",
+      rejected: "已拒绝",
+      overdue: "已逾期",
+      failed: "失败",
+      pending_deposit: "定金待付",
+    },
+    activity: {
+      listAriaLabel: "Studio 活动",
+      rowAriaLabelTemplate: "{title} · {stamp}",
+    },
+  },
+  divisionLogistics: {
+    metadata: {
+      title: "物流 · 配送与运单",
+      description: "与此账户关联的每一次 HenryCo Logistics 取件、送达、ETA 与签收凭证——从物流网络镜像同步到一个安静的工作间。",
+    },
+    hero: {
+      ariaLabel: "物流概览",
+      eyebrow: "HenryCo 物流",
+      brand: "HenryCo 物流",
+      title: "每一个包裹,一个工作间。",
+      body: "取件、送达、ETA 与签收凭证——全部从物流网络镜像同步到您的账户。只需一次在",
+      bodyDomain: " logistics.henrycogroup.com",
+      ctaNewDelivery: "新建配送",
+    },
+    metrics: {
+      ariaLabel: "物流绩效",
+      activeNowLabel: "当前活跃",
+      activeFootSingular: "运单在途",
+      activeFootPlural: "运单在途",
+      deliveredMonthLabel: "本月已送达",
+      deliveredMonthFootTemplate: "累计 {count}",
+      onTimeRateLabel: "准时率",
+      onTimeRateFootEmpty: "等待首次计划配送",
+      onTimeRateFootHasValue: "计划配送中",
+      totalSpendLabel: "总支出",
+      totalSpendFoot: "终身已付",
+    },
+    map: {
+      noShipmentsAriaLabel: "暂无运单",
+      noShipmentsTitle: "下首单后地图将亮起",
+      noShipmentsBody: "每一笔活跃的取件与送达都会自动钉在这里。下一次单,您的运单就会从物流站点镜像回来。",
+      noShipmentsCta: "下单配送",
+      pendingAriaLabel: "地图预览",
+      pendingTitle: "地理编码进行中",
+      pendingBody: "调度方完成取件与送达地址的地理编码后,您的活跃运单将立即钉在地图上。",
+      activeAriaLabel: "活跃运单地图",
+      altTemplateSingular: "地图显示 {count} 个活跃取件与送达图钉",
+      altTemplatePlural: "地图显示 {count} 个活跃取件与送达图钉",
+      liveBadgeTemplateSingular: "实时 · {count} 笔活跃运单",
+      liveBadgeTemplatePlural: "实时 · {count} 笔活跃运单",
+    },
+    sections: {
+      activeTitle: "当前在途",
+      activeMetaTemplate: "{count} 笔活跃 · 自动从物流同步",
+      activeRailAriaLabel: "活跃运单",
+      emptyAriaLabel: "暂无活跃运单",
+      emptyTitle: "暂无活跃运单",
+      emptyBody: "您过往的配送在下方。再下一单,等骑手确认取件后即在此显示。",
+      actionsTitle: "发起配送",
+      actionsMeta: "常用流程的快捷入口",
+      actionsAriaLabel: "物流快捷操作",
+      recentTitle: "近期送达",
+      recentMetaTemplate: "最近 {recent} 笔,共 {lifetime} 笔",
+      recentAriaLabel: "近期配送",
+      spendTitle: "支出 · 近 6 个月",
+      spendMeta: "仅已付",
+      spendFigureAriaLabelTemplate: "近 6 个月物流支出",
+    },
+    statusLabels: {
+      quoteRequested: "报价待出",
+      quoteSent: "报价已出",
+      pendingPayment: "等待付款",
+      scheduled: "已排期",
+      assigned: "骑手已指派",
+      pickupConfirmed: "已取件",
+      inTransit: "运输中",
+      delayed: "延误",
+      attemptedDelivery: "送达未遇",
+      delivered: "已送达",
+      completed: "已完成",
+      closed: "已关闭",
+      cancelled: "已取消",
+      refunded: "已退款",
+    },
+    urgencyLabels: {
+      standard: "标准",
+      sameDay: "当日达",
+      express: "加急",
+      nextDay: "次日达",
+    },
+    serviceLabels: {
+      scheduled: "排期",
+      sameDay: "当日",
+      interCity: "跨城",
+      bulk: "大批量",
+    },
+    shipment: {
+      trackingCodeAriaTemplate: "跟踪码 {code}",
+      addressPending: "地址待补",
+      etaPending: "ETA 待出",
+      trackCta: "跟踪运单",
+      openTrackingAriaTemplate: "打开 {code} 的跟踪",
+      etaAriaTemplate: "ETA {eta}",
+      etaMinutesInTemplate: "{minutes} 分钟后",
+      etaMinutesOverdueTemplate: "逾期 {minutes} 分钟",
+      etaHoursInTemplate: "{hours} 小时后",
+      etaHoursOverdueTemplate: "逾期 {hours} 小时",
+      detailSeparator: " · ",
+    },
+    timeline: {
+      ariaLabel: "近期配送",
+      deliveredToTemplate: "已送达 {name}",
+      receiptCta: "凭证",
+    },
+    quickActions: {
+      ariaLabel: "物流快捷操作",
+      bookLabel: "下单配送",
+      bookDesc: "在一个引导流程中完成取件与送达。",
+      trackLabel: "按编号跟踪",
+      trackDesc: "实时状态、ETA 与骑手上下文。",
+      quoteLabel: "先报价",
+      quoteDesc: "下单前先看指导价。",
+      addressesLabel: "已存地址",
+      addressesDesc: "取件与送达联系人。",
+      invoicesLabel: "凭证与发票",
+      invoicesDesc: "每笔运单的品牌 PDF。",
+      supportLabel: "物流支持",
+      supportDesc: "开启关联到您账户的对话。",
+    },
+    spend: {
+      figureAriaLabel: "近 6 个月物流支出",
+      emptyTick: "—",
     },
   },
 };
@@ -16559,6 +19814,243 @@ const HI: DeepPartial<AccountCopy> = {
     },
     formatLabels: {
       dash: "—",
+    },
+  },
+  divisionLearn: {
+    metadata: {
+      title: "Learn · सीखने का डैशबोर्ड",
+      description: "इस खाते से जुड़ी हर HenryCo Learn नामांकन, पाठ, क्विज़ परिणाम, प्रमाणपत्र, सौंपी गई ट्रेनिंग और शिक्षण आवेदन को ट्रैक करें — कैटलॉग Learn पर, प्रगति यहाँ प्रतिबिंबित।",
+    },
+    hero: {
+      ariaLabel: "Learn अवलोकन",
+      eyebrow: "Learn · लाइव",
+      sideKicker: "यह कक्ष कैसे काम करता है",
+      sideTitle: "कैटलॉग Learn पर, प्रगति यहाँ।",
+      sideBody: "HenryCo Learn का हर पाठ, क्विज़ और प्रमाणपत्र इस कक्ष में सिंक होता है — जहाँ छोड़ा था वहीं से शुरू करें, एक नज़र में प्रगति देखें, और अपने सभी प्रमाण एक ही जगह रखें।",
+      breakdownLabel: "स्थिति के अनुसार",
+      breakdownAriaLabel: "सीखने की गतिविधि का विभाजन",
+      tilesAriaLabel: "सीखने की गतिविधि",
+      tileLabels: {
+        active: "सक्रिय",
+        completed: "पूर्ण",
+        certificates: "प्रमाणपत्र",
+        assignments: "सौंपा",
+      },
+      tileFoot: {
+        activeEmpty: "कोर्स शुरू करने के लिए नामांकन करें",
+        activeWith: "पाठ और क्विज़ की प्रगति यहाँ प्रतिबिंबित होती है",
+        completedEmpty: "आपके पूर्ण किए कार्यक्रम यहाँ दिखेंगे",
+        completedWith: "CV और रिपोर्टिंग के लिए उपयोगी",
+        certificatesEmpty: "एक कोर्स पूरा करके अर्जित करें",
+        certificatesWith: "प्रत्येक प्रमाण के लिए सत्यापन योग्य लिंक",
+        assignmentsEmpty: "अभी कुछ भी सौंपा नहीं गया है",
+        assignmentsWith: "आपके प्रबंधक या टीम से",
+      },
+      breakdownNames: {
+        active: "सक्रिय",
+        assigned: "सौंपा",
+        certificates: "प्रमाणपत्र",
+        saved: "सहेजा",
+      },
+      openLearnCta: "HenryCo Learn खोलें",
+      applyToTeachCta: "पढ़ाने के लिए आवेदन करें",
+      state: {
+        empty: {
+          headline: "अपनी HenryCo Learn यात्रा शुरू करें।",
+          blurb: "कैटलॉग देखें, कोर्स में नामांकन करें, और हर पाठ, क्विज़ और प्रमाणपत्र स्वतः इस कक्ष में सिंक होगा।",
+        },
+        active: {
+          headlineTemplateSingular: "{count} कोर्स जारी।",
+          headlineTemplatePlural: "{count} कोर्स जारी।",
+          blurb: "जहाँ छोड़ा था वहीं से शुरू करें — पाठ, क्विज़, प्रमाणपत्र और सौंपी गई ट्रेनिंग सभी HenryCo Learn से इस कक्ष में सिंक होते हैं।",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} कोर्स पूर्ण।",
+          headlineTemplatePlural: "{count} कोर्स पूर्ण।",
+          blurb: "आपके प्रमाण और सीखने का इतिहास यहीं रहता है — CV, आंतरिक रिपोर्टिंग या अपने रिकॉर्ड के लिए सुविधाजनक।",
+        },
+      },
+    },
+    sections: {
+      coursesTitle: "सीखना जारी रखें",
+      coursesMetaEmpty: "अपने पहले कोर्स में नामांकन के लिए HenryCo Learn कैटलॉग देखें।",
+      coursesMetaTemplate: "{active} सक्रिय · {completed} पूर्ण",
+      extrasTitle: "प्रमाण, असाइनमेंट और शिक्षण",
+      extrasMeta: "प्रमाणपत्र, सौंपी गई ट्रेनिंग, सहेजे गए कोर्स और शिक्षक आवेदन यहाँ रहते हैं।",
+      activityTitle: "हाल की गतिविधि",
+      activityMetaTemplateSingular: "{count} अद्यतन · नवीनतम पहले",
+      activityMetaTemplatePlural: "{count} अद्यतन · नवीनतम पहले",
+      activityMetaEmpty: "पाठ, क्विज़, प्रमाणपत्र और भुगतान यहाँ वास्तविक समय में प्रतिबिंबित होते हैं।",
+    },
+    empty: {
+      coursesTitle: "अभी कोई कोर्स लिंक नहीं है",
+      coursesBody: "HenryCo Learn पर कैटलॉग देखें और नामांकन करें। आपकी जगह यहाँ स्वतः दिखाई देगी।",
+      activityTitle: "अभी तक कोई Learn गतिविधि नहीं",
+      activityBody: "कोर्स प्रगति, क्विज़ परिणाम, प्रमाणपत्र जारी होना और भुगतान रसीदें यहाँ वास्तविक समय में प्रकट होती हैं।",
+    },
+    courses: {
+      ariaLabel: "कोर्स",
+      completedAtTemplate: "{date} को पूर्ण",
+      progressPercentTemplate: "{percent}% पूर्ण",
+      statusDelimiter: " · ",
+    },
+    extras: {
+      ariaLabel: "Learn अतिरिक्त",
+      certificatesTitle: "प्रमाणपत्र",
+      assignmentsTitle: "सौंपी गई पढ़ाई",
+      savedTitle: "सहेजे गए कोर्स",
+      teachingTitle: "HenryCo के साथ पढ़ाएँ",
+      statusLabel: "स्थिति",
+      expertiseLabel: "विशेषज्ञता",
+      topicsLabel: "विषय",
+      openApplicationCta: "आवेदन खोलें",
+      applyToTeachCta: "पढ़ाने के लिए आवेदन करें",
+      teachingEmpty: "हम शिक्षण आवेदनों की समीक्षा मैन्युअल रूप से करते हैं। HenryCo Learn पर आवेदन करें, स्थिति यहाँ वापस सिंक हो जाएगी।",
+    },
+    activity: {
+      ariaLabel: "Learn गतिविधि",
+      fallbackTitle: "Learn गतिविधि",
+    },
+  },
+  divisionStudio: {
+    metadata: {
+      title: "Studio · प्रोजेक्ट कक्ष",
+      description: "इस खाते से जुड़ा हर HenryCo Studio सहयोग ट्रैक करें — प्रस्ताव, माइलस्टोन, भुगतान, डिलिवरेबल और गतिविधि एक ही कक्ष में।",
+    },
+    hero: {
+      eyebrowLive: "Studio · लाइव",
+      overviewAriaLabel: "Studio अवलोकन",
+      activityAriaLabel: "Studio गतिविधि",
+      sideAriaLabel: "यह कक्ष कैसे काम करता है",
+      sideLabel: "यह कक्ष कैसे काम करता है",
+      sideTitle: "एक प्रोजेक्ट कक्ष, असली स्थिति।",
+      sideBody: "प्रस्ताव, माइलस्टोन, भुगतान प्रमाण, डिलिवरेबल और संवाद संकेत उसी HenryCo पहचान से जुड़े रहते हैं जिसका उपयोग आप हर जगह करते हैं। नीचे का डैशबोर्ड Studio टीम की वास्तविक प्रगति दिखाता है, स्थिति सूची नहीं।",
+      breakdownAriaLabel: "गतिविधि विभाजन",
+      breakdownLabel: "स्थिति अनुसार",
+      tiles: {
+        activeLabel: "सक्रिय प्रोजेक्ट",
+        activeFootEmpty: "अभी कोई सक्रिय कार्यस्थल नहीं",
+        activeFootHasValue: "डिलिवरी गति वाले सक्रिय कार्यस्थल",
+        pendingLabel: "लंबित भुगतान",
+        pendingFootEmpty: "व्यावसायिक रेखा साफ़",
+        pendingFootHasValue: "खुले व्यावसायिक चेकपॉइंट अभी भी हैं",
+        proofLabel: "प्रमाण जमा",
+        proofFootEmpty: "कुछ भी समीक्षा प्रतीक्षा में नहीं",
+        proofFootHasValue: "Studio समीक्षा प्रतीक्षा में भुगतान",
+        deliverablesLabel: "डिलिवरेबल",
+        deliverablesFootEmpty: "जैसे ही Studio अपलोड करेगा, फ़ाइलें यहाँ आएँगी",
+        deliverablesFootHasValue: "फ़ाइलें और परिणाम एक जगह ट्रैक",
+      },
+      breakdown: {
+        active: "सक्रिय",
+        readyReview: "समीक्षा के लिए तैयार",
+        pendingPayment: "भुगतान लंबित",
+        proofSubmitted: "प्रमाण जमा",
+      },
+      state: {
+        empty: {
+          headline: "एक Studio ब्रीफ़ शुरू करें।",
+          blurb: "जब आपकी HenryCo पहचान के साथ कोई प्रस्ताव या प्रोजेक्ट सक्रिय होगा, सिंक की हुई Studio कक्ष यहाँ दिखेगी — माइलस्टोन, भुगतान, डिलिवरेबल और अगला कदम एक साथ।",
+          ctaPrimary: "ब्रीफ़ शुरू करें",
+          ctaSecondary: "Studio खोलें",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} भुगतान अतिदेय।",
+          headlineTemplatePlural: "{count} भुगतान अतिदेय।",
+          blurb: "एक भुगतान चेकपॉइंट देय तिथि पार कर चुका है। प्रमाण अपलोड करने या Studio टीम से संपर्क करने के लिए कक्ष खोलें।",
+          ctaPrimary: "भुगतान खोलें",
+          ctaSecondary: "Studio खोलें",
+        },
+        activeReady: {
+          headlineTemplateSingular: "{count} प्रोजेक्ट समीक्षा के लिए तैयार।",
+          headlineTemplatePlural: "{count} प्रोजेक्ट समीक्षा के लिए तैयार।",
+          blurb: "डिलिवरेबल और संशोधन आपके अनुमोदन की प्रतीक्षा में हैं। कक्ष खोलकर समीक्षा करें और अगला माइलस्टोन अनलॉक करें।",
+          ctaPrimary: "प्रोजेक्ट खोलें",
+          ctaSecondary: "Studio खोलें",
+        },
+        activeProjects: {
+          headlineTemplateSingular: "{count} सक्रिय प्रोजेक्ट।",
+          headlineTemplatePlural: "{count} सक्रिय प्रोजेक्ट।",
+          blurb: "माइलस्टोन गति, भुगतान चेकपॉइंट और डिलिवरेबल वाले सक्रिय कार्यस्थल — सब HenryCo Studio से इस कक्ष में प्रतिबिंबित।",
+          ctaPrimary: "Studio खोलें",
+          ctaSecondary: "नया ब्रीफ़ शुरू करें",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} प्रोजेक्ट कक्ष दर्ज।",
+          headlineTemplatePlural: "{count} प्रोजेक्ट कक्ष दर्ज।",
+          blurb: "आपने जो भी Studio सहयोग शुरू किया — प्रस्ताव, माइलस्टोन, भुगतान, डिलिवरेबल — तेज़ फ़ॉलोअप के लिए एक कक्ष में रखा गया।",
+          ctaPrimary: "Studio खोलें",
+          ctaSecondary: "नया ब्रीफ़ शुरू करें",
+        },
+      },
+    },
+    sections: {
+      projectsTitle: "प्रोजेक्ट कक्ष",
+      projectsAriaLabel: "Studio प्रोजेक्ट",
+      projectsMetaEmpty: "जब Studio सहयोग सक्रिय होगा, कार्यस्थल यहाँ दिखेंगे।",
+      projectsMetaTemplateSingular: "{count} प्रोजेक्ट · नवीनतम गति अनुसार",
+      projectsMetaTemplatePlural: "{count} प्रोजेक्ट · नवीनतम गति अनुसार",
+      paymentsTitle: "भुगतान चेकपॉइंट",
+      paymentsAriaLabel: "Studio भुगतान",
+      paymentsMetaEmpty: "जब प्रस्ताव या प्रोजेक्ट सक्रिय होगा, Studio भुगतान अनुरोध यहाँ दिखेंगे।",
+      paymentsMetaTemplateSingular: "{count} चेकपॉइंट · प्रमाण अपलोड और अनुमोदन स्थिति",
+      paymentsMetaTemplatePlural: "{count} चेकपॉइंट · प्रमाण अपलोड और अनुमोदन स्थिति",
+      activityTitle: "हाल की गतिविधि",
+      activityAriaLabel: "Studio गतिविधि",
+      activityMetaEmpty: "प्रोजेक्ट अपडेट, भुगतान प्रमाण और माइलस्टोन अनुमोदन यहाँ प्रतिबिंबित होते हैं।",
+      activityMetaTemplateSingular: "{count} अपडेट · नवीनतम पहले",
+      activityMetaTemplatePlural: "{count} अपडेट · नवीनतम पहले",
+    },
+    empty: {
+      projectsTitle: "अभी कोई Studio कार्यस्थल जुड़ा नहीं",
+      projectsBody: "जैसे ही आपकी HenryCo पहचान के साथ प्रस्ताव या प्रोजेक्ट बनेगा, सिंक की हुई Studio कक्ष यहाँ दिखेगी — माइलस्टोन, भुगतान, डिलिवरेबल और अगला कदम।",
+      paymentsTitle: "अभी कोई भुगतान चेकपॉइंट नहीं",
+      paymentsBody: "व्यावसायिक माइलस्टोन — जमा राशि, मध्य-प्रोजेक्ट और डिलिवरी — जब आपके साथ प्रस्ताव सक्रिय होगा तब यहाँ आएँगे।",
+      activityTitle: "अभी कोई Studio गतिविधि नहीं",
+      activityBody: "प्रोजेक्ट अपडेट, भुगतान प्रमाण, डिलिवरेबल रिलीज़ और माइलस्टोन अनुमोदन जैसे ही होंगे यहाँ आएँगे।",
+    },
+    projects: {
+      listAriaLabel: "Studio प्रोजेक्ट",
+      fallbackSubtitle: "Studio अगला अपडेट तैयार कर रहा है।",
+      milestonesTemplate: "{approved}/{total} माइलस्टोन",
+      paymentsTemplateSingular: "{count} खुला भुगतान",
+      paymentsTemplatePlural: "{count} खुले भुगतान",
+      deliverablesTemplateSingular: "{count} डिलिवरेबल",
+      deliverablesTemplatePlural: "{count} डिलिवरेबल",
+      updatedTemplate: "अद्यतन {stamp}",
+      rowAriaLabelTemplate: "{title} · {kind}",
+      fallbackStamp: "—",
+    },
+    projectKindLabels: {
+      live: "लाइव",
+      ready_review: "समीक्षा के लिए तैयार",
+      scheduled: "अनुसूचित",
+      delivered: "वितरित",
+      issue: "कार्रवाई आवश्यक",
+    },
+    payments: {
+      listAriaLabel: "Studio भुगतान",
+      rowAriaLabelTemplate: "{label} · {status}",
+      dueTemplate: "देय {stamp}",
+      updatedTemplate: "अद्यतन {stamp}",
+      subTemplate: "{amount} · {method} · {due}",
+    },
+    paymentStatusLabels: {
+      pending: "लंबित",
+      paid: "भुगतान हो गया",
+      approved: "स्वीकृत",
+      settled: "निपटाया",
+      proof_uploaded: "प्रमाण अपलोड",
+      proof_submitted: "प्रमाण जमा",
+      in_review: "समीक्षा में",
+      rejected: "अस्वीकृत",
+      overdue: "अतिदेय",
+      failed: "विफल",
+      pending_deposit: "जमा राशि लंबित",
+    },
+    activity: {
+      listAriaLabel: "Studio गतिविधि",
+      rowAriaLabelTemplate: "{title} · {stamp}",
     },
   },
 };
