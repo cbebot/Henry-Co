@@ -8,6 +8,8 @@ export {
 export { buildLocaleCookieOptions, localeCookieName } from "./cookie";
 export { getHubHomeCopy, getFaqFallbackForLocale, type HubHomeCopy } from "./hub-home-copy";
 export { getHubPublicCopy, type HubPublicCopy } from "./hub-public-copy";
+export { getHubWorkspaceCopy, type HubWorkspaceCopy } from "./hub-workspace-copy";
+export { getHubOwnerCopy, type HubOwnerCopy } from "./hub-owner-copy";
 export { getLogisticsBookCopy, type LogisticsBookCopy } from "./logistics-book-copy";
 export { getLogisticsServicesCopy, type LogisticsServicesCopy } from "./logistics-services-copy";
 export { getLogisticsBusinessCopy, type LogisticsBusinessCopy } from "./logistics-business-copy";

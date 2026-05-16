@@ -2,6 +2,8 @@ export * from "./locales";
 export * from "./merge-messages";
 export * from "./hub-home-copy";
 export * from "./hub-public-copy";
+export * from "./hub-workspace-copy";
+export * from "./hub-owner-copy";
 export * from "./logistics-book-copy";
 export * from "./logistics-services-copy";
 export * from "./logistics-business-copy";
