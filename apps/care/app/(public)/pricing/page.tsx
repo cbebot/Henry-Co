@@ -3,29 +3,36 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
+import { getCarePricingCopy, type CarePricingCopy } from "@henryco/i18n/server";
 import {
   getCareBookingCatalog,
   getCarePricing,
   getCareSettings,
   groupPricing,
 } from "@/lib/care-data";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
 export const revalidate = 60;
 
 const care = getDivisionConfig("care");
 
-export const metadata: Metadata = {
-  title: `Pricing | ${care.name}`,
-  description:
-    "Transparent garment pricing, home cleaning packages, office cleaning packages, and service add-ons across HenryCo Care.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getCarePublicLocale();
+  const copy = getCarePricingCopy(locale);
+  return {
+    title: `${copy.metadata.title} | ${care.name}`,
+    description: copy.metadata.description,
+  };
+}
 
 function formatMoney(value: number | string) {
   return `₦${Number(value || 0).toLocaleString()}`;
 }
 
 export default async function PricingPage() {
+  const locale = await getCarePublicLocale();
+  const copy = getCarePricingCopy(locale);
   const [settings, items, catalog] = await Promise.all([
     getCareSettings(),
     getCarePricing(),
@@ -53,20 +60,19 @@ export default async function PricingPage() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
             <div>
               <p className="care-kicker text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--accent)]">
-                Pricing clarity
+                {copy.hero.eyebrow}
               </p>
               <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
-                You see the price before you book.
+                {copy.hero.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
-                Garment pricing, home and office packages, and service add-ons &mdash; stated before
-                the request is placed, not after.
+                {copy.hero.body}
               </p>
             </div>
             {settings.pricing_note ? (
               <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
-                  <BadgeCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> Pricing note
+                  <BadgeCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> {copy.hero.pricingNoteEyebrow}
                 </p>
                 <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
                   {settings.pricing_note}
@@ -78,9 +84,21 @@ export default async function PricingPage() {
 
         <section>
           <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-black/10 dark:xl:divide-white/10">
-            <PackageList title="Home cleaning packages" items={homePackages} layout="home" />
+            <PackageList
+              title={copy.packages.homeTitle}
+              eyebrow={copy.packages.eyebrow}
+              staffSuffix={copy.packages.staffSuffix}
+              items={homePackages}
+              layout="home"
+            />
             <div className="xl:pl-12">
-              <PackageList title="Office cleaning packages" items={officePackages} layout="office" />
+              <PackageList
+                title={copy.packages.officeTitle}
+                eyebrow={copy.packages.eyebrow}
+                staffSuffix={copy.packages.staffSuffix}
+                items={officePackages}
+                layout="office"
+              />
             </div>
           </div>
         </section>
@@ -88,7 +106,8 @@ export default async function PricingPage() {
         <section>
           <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-black/10 dark:xl:divide-white/10">
             <ModifierList
-              title="Structured add-ons"
+              title={copy.modifiers.addOnsTitle}
+              eyebrow={copy.modifiers.eyebrow}
               items={catalog.addOns.map((item) => ({
                 id: item.id,
                 label: item.label,
@@ -98,7 +117,8 @@ export default async function PricingPage() {
             />
             <div className="xl:pl-12">
               <ModifierList
-                title="Quote modifiers"
+                title={copy.modifiers.quoteModifiersTitle}
+                eyebrow={copy.modifiers.eyebrow}
                 items={catalog.priceRules
                   .filter((item) => item.is_active)
                   .slice(0, 8)
@@ -119,13 +139,13 @@ export default async function PricingPage() {
               <div className="flex flex-col gap-3 border-b border-black/10 pb-5 dark:border-white/10 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                    Garment category
+                    {copy.garment.eyebrow}
                   </p>
                   <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
                     {group.category}
                   </h2>
                 </div>
-                <p className="text-sm text-zinc-500 dark:text-white/56">Current item pricing</p>
+                <p className="text-sm text-zinc-500 dark:text-white/56">{copy.garment.currentItemPricing}</p>
               </div>
               <ul className="mt-2 divide-y divide-black/10 dark:divide-white/10">
                 {group.rows.map((item) => (
@@ -151,7 +171,7 @@ export default async function PricingPage() {
                         {formatMoney(item.price)}
                       </span>
                       <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/48">
-                        per {item.unit}
+                        {copy.garment.perUnit} {item.unit}
                       </p>
                     </div>
                   </li>
@@ -165,21 +185,20 @@ export default async function PricingPage() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                Move forward
+                {copy.cta.eyebrow}
               </p>
               <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
-                Review the price structure, then book with clarity.
+                {copy.cta.title}
               </h2>
               <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
-                Garment care stays item-based. Home and office services stay grounded in package
-                scope, travel, urgency, team size, and optional extras.
+                {copy.cta.body}
               </p>
             </div>
             <Link
               href="/book"
               className="care-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Plan service
+              {copy.cta.button}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -191,10 +210,14 @@ export default async function PricingPage() {
 
 function PackageList({
   title,
+  eyebrow,
+  staffSuffix,
   items,
   layout,
 }: {
   title: string;
+  eyebrow: CarePricingCopy["packages"]["eyebrow"];
+  staffSuffix: CarePricingCopy["packages"]["staffSuffix"];
   items: Array<{
     id: string;
     name: string;
@@ -208,7 +231,7 @@ function PackageList({
   return (
     <div>
       <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-        Package pricing
+        {eyebrow}
       </p>
       <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
         {title}
@@ -233,7 +256,7 @@ function PackageList({
               </span>
               <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-white/48">
                 {layout === "office"
-                  ? `${item.staff_count} staff`
+                  ? `${item.staff_count} ${staffSuffix}`
                   : item.default_frequency.replaceAll("_", " ")}
               </p>
             </div>
@@ -246,15 +269,17 @@ function PackageList({
 
 function ModifierList({
   title,
+  eyebrow,
   items,
 }: {
   title: string;
+  eyebrow: CarePricingCopy["modifiers"]["eyebrow"];
   items: Array<{ id: string; label: string; description: string; amount: number }>;
 }) {
   return (
     <div>
       <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-        Quote structure
+        {eyebrow}
       </p>
       <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
         {title}
