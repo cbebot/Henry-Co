@@ -1383,7 +1383,9 @@ html, body { overflow-x: clip; max-width: 100vw; }
 .dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) {
   background-color: var(--acct-bg-soft);
   color: var(--acct-ink);
-  border-color: color-mix(in srgb, var(--acct-gold) 26%, transparent);
+  /* Outer hero rim — gold-tinted in dark mode. Lowered from 26% to
+     18% so the edge reads as a soft warm rim, not a stark frame. */
+  border-color: color-mix(in srgb, var(--acct-gold) 18%, transparent);
 }
 
 /* Descendant text colors set on individual elements (headline, blurb,
@@ -1413,13 +1415,60 @@ html, body { overflow-x: clip; max-width: 100vw; }
   color: color-mix(in srgb, var(--acct-ink) 78%, transparent);
 }
 
-/* Tile + side-panel surfaces inside the hero — these use a faint
-   scrim of bg-soft as their bg. In dark mode that's now (after our
-   wrapper flip) a faint dark scrim on a dark surface — barely
-   readable. Bump the contrast so tiles still feel inset. */
+/* Tile + side-panel surfaces inside the hero. The original component
+   CSS uses bg-soft@8% + bg-soft@12% which works on the dark light-
+   mode hero (white scrim + white border = subtle elevation). After
+   the wrapper flip in dark mode, those references invert: an earlier
+   pass switched to ink-based scrims which then produced a stark
+   light edge on every tile — owner-flagged as 'white highlight,
+   looks cheap'.
+
+   Fix: use a gold-tinted scrim + warm gold rim instead of ink. Gold
+   is the brand anchor and stays warm in both modes, so the tile
+   reads as a subtle ember-edged inset surface, not a white box. */
 
 .dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-tile"],
 .dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-side"] {
-  background: color-mix(in srgb, var(--acct-ink) 12%, transparent);
-  border-color: color-mix(in srgb, var(--acct-ink) 18%, transparent);
+  background: color-mix(in srgb, var(--acct-gold) 5%, transparent);
+  border-color: color-mix(in srgb, var(--acct-gold) 14%, transparent);
+}
+
+/* Hairlines inside the hero (eg. breakdown dividers in /marketplace
+   side panel). The component CSS uses bg-soft@14% which renders as a
+   visible light line on the dark hero in dark mode. Override to a
+   gold-tinted hairline at low opacity. */
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-breakdown"] {
+  border-top-color: color-mix(in srgb, var(--acct-gold) 12%, transparent);
+}
+
+/* Eyebrow pill (Henryco · Identity & Preferences, Care · Service,
+   etc.) — original styling uses bg-soft@14% as bg + bg-soft@18% as
+   border, designed against the dark light-mode hero. After our
+   wrapper flip in dark mode those references resolve to dark-on-dark
+   and the pill dissolves into the surface. Rebind to a gold-tinted
+   scrim so the eyebrow reads as a premium ember accent in dark mode. */
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__eyebrow"] {
+  background: color-mix(in srgb, var(--acct-gold) 8%, transparent);
+  border-color: color-mix(in srgb, var(--acct-gold) 16%, transparent);
+}
+
+/* CTA buttons inside the hero — the primary CTA's white-button look
+   (bg: bg-soft) flips to a dark button in dark mode that visually
+   blends into the now-dark hero. Upgrade to a gold-on-bg-soft pop:
+   bright gold surface with the natural-flipped bg-soft as a dark
+   glyph color for premium punch in dark mode. Ghost CTA: its label
+   was bg-soft which becomes near-black on the dark hero (invisible);
+   override to --acct-ink (light in dark mode) for legibility, plus a
+   subtle gold scrim so the button reads as a ghost surface and not
+   raw text. */
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__cta--primary"] {
+  background: var(--acct-gold);
+  color: var(--acct-bg-soft);
+  border-color: transparent;
+}
+
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__cta--ghost"] {
+  color: var(--acct-ink);
+  background: color-mix(in srgb, var(--acct-gold) 5%, transparent);
+  border-color: color-mix(in srgb, var(--acct-ink) 22%, transparent);
 }
