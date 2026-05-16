@@ -37,6 +37,10 @@ export { getCareServicesCopy, type CareServicesCopy } from "./care-services-copy
 export { getCareAboutCopy, type CareAboutCopy } from "./care-about-copy";
 export { getCareContactCopy, type CareContactCopy } from "./care-contact-copy";
 export { getLearnTrustCopy, type LearnTrustCopy } from "./learn-trust-copy";
+export {
+  getLearnInstructorCopy,
+  type LearnInstructorCopy,
+} from "./learn-instructor-copy";
 export { getLearnCategoriesCopy, type LearnCategoriesCopy } from "./learn-categories-copy";
 export { getLearnPathsCopy, type LearnPathsCopy } from "./learn-paths-copy";
 export { getLearnInstructorsCopy, type LearnInstructorsCopy } from "./learn-instructors-copy";

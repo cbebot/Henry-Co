@@ -1,4 +1,6 @@
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import type { Metadata } from "next";
+
+import { getLearnInstructorCopy } from "@henryco/i18n/server";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { getLearnPublicLocale } from "@/lib/locale-server";
@@ -10,10 +12,18 @@ function pct(value: number, total: number) {
   return Math.round((value / total) * 100);
 }
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLearnPublicLocale();
+  const copy = getLearnInstructorCopy(locale);
+  return {
+    title: copy.meta.title,
+  };
+}
+
 export default async function InstructorPage() {
   await requireLearnRoles(["academy_owner", "academy_admin", "instructor"], "/instructor");
   const [snapshot, locale] = await Promise.all([getLearnSnapshot(), getLearnPublicLocale()]);
-  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const copy = getLearnInstructorCopy(locale);
 
   const enrollmentsByCourse = new Map<string, number>();
   const completedByCourse = new Map<string, number>();
@@ -54,17 +64,15 @@ export default async function InstructorPage() {
 
   return (
     <LearnWorkspaceShell
-      kicker={t("Instructor")}
-      title={t("Author courses, grade work, and watch your learners progress.")}
-      description={t(
-        "Build the syllabus, attach lessons + quizzes, review submissions, and track payouts. This is your full workspace as an authorised HenryCo Learn instructor.",
-      )}
+      kicker={copy.hero.kicker}
+      title={copy.hero.title}
+      description={copy.hero.description}
       nav={instructorNav("/instructor")}
     >
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <LearnPanel className="rounded-[1.4rem] p-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-            {t("Active enrollments")}
+            {copy.stats.activeEnrollments}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-tight text-[var(--learn-ink)]">
             {totalEnrollments}
@@ -72,7 +80,7 @@ export default async function InstructorPage() {
         </LearnPanel>
         <LearnPanel className="rounded-[1.4rem] p-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-            {t("Completed")}
+            {copy.stats.completed}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-tight text-[var(--learn-ink)]">
             {totalCompleted}
@@ -81,7 +89,7 @@ export default async function InstructorPage() {
         </LearnPanel>
         <LearnPanel className="rounded-[1.4rem] p-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-            {t("Certificates issued")}
+            {copy.stats.certificatesIssued}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-tight text-[var(--learn-ink)]">
             {totalCertificates}
@@ -89,7 +97,7 @@ export default async function InstructorPage() {
         </LearnPanel>
         <LearnPanel className="rounded-[1.4rem] p-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-            {t("Courses authored")}
+            {copy.stats.coursesAuthored}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-tight text-[var(--learn-ink)]">
             {snapshot.courses.length}
@@ -99,17 +107,13 @@ export default async function InstructorPage() {
 
       <section className="mt-8">
         <LearnSectionIntro
-          kicker={t("My courses")}
-          title={t("Course performance at a glance")}
-          body={t(
-            "Each row shows live enrollment, completion, and learner sentiment. Click through to edit the syllabus or open the lesson builder.",
-          )}
+          kicker={copy.courses.sectionKicker}
+          title={copy.courses.sectionTitle}
+          body={copy.courses.sectionBody}
         />
         <div className="mt-6 space-y-3">
           {snapshot.courses.length === 0 ? (
-            <p className="text-sm text-[var(--learn-ink-soft)]">
-              {t("No courses authored yet — start one from Courses.")}
-            </p>
+            <p className="text-sm text-[var(--learn-ink-soft)]">{copy.courses.emptyState}</p>
           ) : (
             snapshot.courses.map((course) => {
               const enrolled = enrollmentsByCourse.get(course.id) ?? 0;
@@ -135,7 +139,7 @@ export default async function InstructorPage() {
                   <dl className="grid grid-cols-4 gap-3 text-center text-xs">
                     <div>
                       <dt className="font-semibold uppercase tracking-[0.16em] text-[var(--learn-ink-soft)]">
-                        {t("Enrolled")}
+                        {copy.courses.enrolledLabel}
                       </dt>
                       <dd className="mt-1 text-base font-semibold text-[var(--learn-ink)]">
                         {enrolled}
@@ -143,7 +147,7 @@ export default async function InstructorPage() {
                     </div>
                     <div>
                       <dt className="font-semibold uppercase tracking-[0.16em] text-[var(--learn-ink-soft)]">
-                        {t("Completed")}
+                        {copy.courses.completedLabel}
                       </dt>
                       <dd className="mt-1 text-base font-semibold text-[var(--learn-ink)]">
                         {completed}
@@ -151,7 +155,7 @@ export default async function InstructorPage() {
                     </div>
                     <div>
                       <dt className="font-semibold uppercase tracking-[0.16em] text-[var(--learn-ink-soft)]">
-                        {t("Certificates")}
+                        {copy.courses.certificatesLabel}
                       </dt>
                       <dd className="mt-1 text-base font-semibold text-[var(--learn-ink)]">
                         {certificates}
@@ -159,7 +163,7 @@ export default async function InstructorPage() {
                     </div>
                     <div>
                       <dt className="font-semibold uppercase tracking-[0.16em] text-[var(--learn-ink-soft)]">
-                        {t("Rating")}
+                        {copy.courses.ratingLabel}
                       </dt>
                       <dd className="mt-1 text-base font-semibold text-[var(--learn-ink)]">
                         {avgRating}
