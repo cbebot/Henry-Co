@@ -11,6 +11,7 @@ export * from "./jobs-copy";
 export * from "./care-copy";
 export * from "./care-pricing-copy";
 export * from "./care-services-copy";
+export * from "./care-about-copy";
 export * from "./studio-copy";
 export * from "./surface-copy";
 export * from "./account-copy";
