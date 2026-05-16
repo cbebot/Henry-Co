@@ -613,6 +613,16 @@ export function MessageThread({
           <span>Reconnecting…</span>
         </div>
       ) : null}
+      {liveStatus === "live" ? (
+        <div
+          className="mt-live-pill"
+          role="status"
+          aria-label="Realtime updates are live"
+        >
+          <span className="mt-live-pill-dot" aria-hidden />
+          <span className="mt-live-pill-label">Live</span>
+        </div>
+      ) : null}
       {messages.length === 0 ? (
         <div className="mt-thread-empty">
           <span className="mt-thread-empty-icon" aria-hidden>

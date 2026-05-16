@@ -1191,8 +1191,93 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Live-banner (reconnect) — gold scrim
+   Live state — positive green pill + amber reconnect banner
+
+   Two distinct affordances:
+     • `.mt-live-pill`    → shows when realtime is connected. Tiny
+                            green pulse + "Live" label. Positive
+                            confidence cue; sits top-right of the
+                            chat surface like the indicator dots on
+                            premium messaging apps.
+     • `.mt-live-banner`  → shows when the channel drops and the
+                            engine is reconnecting. Amber-toned
+                            because it's a warning state, not OK.
    ────────────────────────────────────────────────────────────────── */
+
+/* The thread needs position:relative so the live pill anchors to it. */
+.acct-support-room .mt-thread {
+  position: relative;
+}
+
+.acct-support-room .mt-live-pill {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.85rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  padding: 0.2rem 0.6rem 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  /* In light mode --acct-green is solid #10B981 and --acct-green-soft is
+     #D1FAE5 — green text on pale-green pill = high contrast.
+     In dark mode --acct-green is #34D399 and --acct-green-soft is a
+     translucent green scrim, sitting over bg-elevated #1A2028. The
+     text uses --acct-green directly (#34D399 light green on dark
+     scrim ≈ 9:1 contrast). Both modes premium + readable. */
+  color: var(--acct-green);
+  background: color-mix(in srgb, var(--acct-green-soft) 75%, var(--acct-bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--acct-green) 30%, var(--acct-line));
+  backdrop-filter: blur(10px) saturate(1.05);
+  -webkit-backdrop-filter: blur(10px) saturate(1.05);
+  box-shadow:
+    0 6px 18px -12px color-mix(in srgb, var(--acct-green) 60%, transparent),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 50%, transparent) inset;
+  animation: acct-live-pill-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes acct-live-pill-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.acct-support-room .mt-live-pill-dot {
+  width: 0.46rem;
+  height: 0.46rem;
+  border-radius: 9999px;
+  background: var(--acct-green);
+  box-shadow: 0 0 0 0 var(--acct-green);
+  animation: acct-live-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes acct-live-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-green) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 0.42rem color-mix(in srgb, var(--acct-green) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-support-room .mt-live-pill,
+  .acct-support-room .mt-live-pill-dot {
+    animation: none;
+  }
+}
+
+/* Reconnect banner — amber, semantically the warning state. Stays
+   gold/amber on purpose (yellow = caution, not green). */
 
 .acct-support-room .mt-live-banner {
   color: var(--acct-gold-text, #8a6f00);
