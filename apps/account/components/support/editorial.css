@@ -197,7 +197,8 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Header — sticky frosted on scroll, compact on mobile.
+   Header — sticky frosted on scroll, aggressively collapsed on mobile
+   so the conversation owns the screen real estate.
    ────────────────────────────────────────────────────────────────── */
 
 .acct-thread-header {
@@ -225,6 +226,103 @@
     0 18px 48px -32px rgba(15, 17, 24, 0.28),
     0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
 }
+
+/* Mobile: collapse the header so it reads as a thin context strip,
+   not a hero card. The chat is the hero on mobile. We hide every
+   secondary detail (meta line, participants strip, download +
+   customize action buttons) — the overflow menu still surfaces them
+   for users who need them. Pills + subject + back affordance + the
+   single overflow control are all that show. */
+@media (max-width: 767px) {
+  .acct-thread-header {
+    padding: 0.55rem 0.75rem 0.55rem 0.85rem;
+    border-radius: 0.95rem;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .acct-thread-header__primary {
+    gap: 0.3rem;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Pills compact, scrolls horizontally if too many. */
+  .acct-thread-header__pills {
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .acct-thread-header__pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .acct-thread-header__pill {
+    font-size: 0.56rem;
+    padding: 0.14rem 0.48rem;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  /* Single-line subject, tight. */
+  .acct-thread-header__subject {
+    font-size: 1rem !important;
+    line-height: 1.15;
+    margin: 0;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+
+  /* Hide the thread # meta — it's still reachable via "Copy thread ID"
+     in the overflow menu. Don't waste vertical space on it. */
+  .acct-thread-header__meta {
+    display: none;
+  }
+
+  /* Hide the participants strip — viewer already knows who's in the
+     thread. Premium feature for desktop only. */
+  .acct-thread-header .mt-participants {
+    display: none;
+  }
+
+  /* Hide the Download button + ThreadCustomizationMenu trigger on
+     mobile. The overflow menu's existing "Download" item still points
+     the user to the action, and customization (font size / density /
+     surface tone) is a desktop-grade refinement. Keeping mobile to
+     overflow-only puts the chat in charge of the surface.
+
+     DownloadDocumentButton renders a wrapper div without a stable
+     class hook, so we target it by exclusion — any direct child of
+     `.acct-thread-header__actions` that is NOT the customize menu
+     and NOT the overflow menu is the download wrapper. */
+  .acct-thread-header__actions > :not(.mt-customize):not(.acct-thread-header__menu) {
+    display: none;
+  }
+  .acct-thread-header__actions > .mt-customize {
+    display: none;
+  }
+
+  .acct-thread-header__actions {
+    gap: 0.2rem;
+    margin-left: auto;
+    align-self: center;
+  }
+
+  /* Make the overflow trigger a comfortable thumb target without
+     hijacking real estate. */
+  .acct-thread-header__menu > button {
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+  }
+}
+
+/* Tablet+ keeps the full chrome — the screen is wide enough to host
+   the secondary affordances inline without crowding the chat. */
 
 @media (min-width: 768px) {
   .acct-thread-header {
