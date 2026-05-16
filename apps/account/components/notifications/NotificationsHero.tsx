@@ -1,5 +1,7 @@
 import { Bell } from "lucide-react";
 
+import { formatAccountTemplate, type AccountCopy } from "@henryco/i18n";
+
 type DivisionRow = {
   key: string;
   label: string;
@@ -7,40 +9,47 @@ type DivisionRow = {
   color: string;
 };
 
+type NotificationsCopy = AccountCopy["notifications"];
+
 type Props = {
   totalUnread: number;
   totalToday: number;
   totalThisWeek: number;
   divisions: ReadonlyArray<DivisionRow>;
   lastActivity: string | null;
+  copy: NotificationsCopy;
 };
 
-function formatRelative(iso: string | null): string {
-  if (!iso) return "no recent activity";
+function formatRelative(iso: string | null, copy: NotificationsCopy["hero"]): string {
+  if (!iso) return copy.lastActivityFallback;
   const ms = Date.parse(iso);
-  if (!Number.isFinite(ms)) return "no recent activity";
+  if (!Number.isFinite(ms)) return copy.lastActivityFallback;
   const delta = Date.now() - ms;
-  if (delta < 60_000) return "just now";
-  if (delta < 3600_000) return `${Math.round(delta / 60_000)}m ago`;
-  if (delta < 86_400_000) return `${Math.round(delta / 3_600_000)}h ago`;
-  return `${Math.round(delta / 86_400_000)}d ago`;
+  if (delta < 60_000) return copy.justNow;
+  if (delta < 3600_000) {
+    return formatAccountTemplate(copy.minutesAgo, { count: Math.round(delta / 60_000) });
+  }
+  if (delta < 86_400_000) {
+    return formatAccountTemplate(copy.hoursAgo, { count: Math.round(delta / 3_600_000) });
+  }
+  return formatAccountTemplate(copy.daysAgo, { count: Math.round(delta / 86_400_000) });
 }
 
-function headlineForState(totalUnread: number): string {
-  if (totalUnread === 0) return "Inbox zero across HenryCo.";
-  if (totalUnread === 1) return "One thing wants your attention.";
-  if (totalUnread < 5) return `${totalUnread} notifications to triage.`;
-  return `${totalUnread} updates across your divisions.`;
+function headlineForState(totalUnread: number, copy: NotificationsCopy["hero"]): string {
+  if (totalUnread === 0) return copy.headlineZero;
+  if (totalUnread === 1) return copy.headlineOne;
+  if (totalUnread < 5) return formatAccountTemplate(copy.headlineFew, { count: totalUnread });
+  return formatAccountTemplate(copy.headlineMany, { count: totalUnread });
 }
 
-function blurbForState(totalUnread: number, totalToday: number): string {
-  if (totalUnread === 0) {
-    return "Anything HenryCo sends arrives here in real time — wallet, support, jobs, marketplace, care, and more.";
-  }
-  if (totalToday === 0) {
-    return "Older items have stacked up. Swipe to archive, tap to open, or jump straight to a thread.";
-  }
-  return `${totalToday} arrived today. Use the filters to focus on a single division, or sweep through unread only.`;
+function blurbForState(
+  totalUnread: number,
+  totalToday: number,
+  copy: NotificationsCopy["hero"],
+): string {
+  if (totalUnread === 0) return copy.blurbZero;
+  if (totalToday === 0) return copy.blurbStale;
+  return formatAccountTemplate(copy.blurbToday, { count: totalToday });
 }
 
 export function NotificationsHero({
@@ -49,41 +58,45 @@ export function NotificationsHero({
   totalThisWeek,
   divisions,
   lastActivity,
+  copy,
 }: Props) {
+  const heroCopy = copy.hero;
   return (
-    <section className="acct-notif__hero" aria-label="Notifications overview">
+    <section className="acct-notif__hero" aria-label={heroCopy.ariaOverview}>
       <div className="acct-notif__hero-inner">
         <div>
           <span className="acct-notif__eyebrow">
             <span className="acct-notif__eyebrow-dot" aria-hidden />
-            HenryCo · live notifications
+            {heroCopy.eyebrow}
           </span>
-          <h1 className="acct-notif__headline">{headlineForState(totalUnread)}</h1>
-          <p className="acct-notif__blurb">{blurbForState(totalUnread, totalToday)}</p>
-          <div className="acct-notif__hero-tiles" role="list" aria-label="Notification volume">
+          <h1 className="acct-notif__headline">{headlineForState(totalUnread, heroCopy)}</h1>
+          <p className="acct-notif__blurb">{blurbForState(totalUnread, totalToday, heroCopy)}</p>
+          <div className="acct-notif__hero-tiles" role="list" aria-label={heroCopy.ariaVolume}>
             <div className="acct-notif__hero-tile" role="listitem">
-              <span className="acct-notif__hero-tile-label">Unread</span>
+              <span className="acct-notif__hero-tile-label">{heroCopy.tileUnreadLabel}</span>
               <span className="acct-notif__hero-tile-value">{totalUnread}</span>
-              <span className="acct-notif__hero-tile-foot">Awaiting your eyes</span>
+              <span className="acct-notif__hero-tile-foot">{heroCopy.tileUnreadFoot}</span>
             </div>
             <div className="acct-notif__hero-tile" role="listitem">
-              <span className="acct-notif__hero-tile-label">Today</span>
+              <span className="acct-notif__hero-tile-label">{heroCopy.tileTodayLabel}</span>
               <span className="acct-notif__hero-tile-value">{totalToday}</span>
-              <span className="acct-notif__hero-tile-foot">Arrived in the last 24h</span>
+              <span className="acct-notif__hero-tile-foot">{heroCopy.tileTodayFoot}</span>
             </div>
             <div className="acct-notif__hero-tile" role="listitem">
-              <span className="acct-notif__hero-tile-label">This week</span>
+              <span className="acct-notif__hero-tile-label">{heroCopy.tileWeekLabel}</span>
               <span className="acct-notif__hero-tile-value">{totalThisWeek}</span>
               <span className="acct-notif__hero-tile-foot">
-                Last activity {formatRelative(lastActivity)}
+                {formatAccountTemplate(heroCopy.tileWeekFoot, {
+                  when: formatRelative(lastActivity, heroCopy),
+                })}
               </span>
             </div>
           </div>
         </div>
-        <aside className="acct-notif__hero-side" aria-label="By division">
+        <aside className="acct-notif__hero-side" aria-label={heroCopy.ariaByDivision}>
           {divisions.length > 0 ? (
             <div className="acct-notif__hero-divisions">
-              <p className="acct-notif__hero-divisions-label">By division</p>
+              <p className="acct-notif__hero-divisions-label">{heroCopy.byDivision}</p>
               {divisions.map((d) => (
                 <div className="acct-notif__hero-division-row" key={d.key}>
                   <span className="acct-notif__hero-division-name">
@@ -100,7 +113,7 @@ export function NotificationsHero({
             </div>
           ) : (
             <div className="acct-notif__hero-divisions">
-              <p className="acct-notif__hero-divisions-label">By division</p>
+              <p className="acct-notif__hero-divisions-label">{heroCopy.byDivision}</p>
               <span
                 style={{
                   fontSize: 13,
@@ -111,7 +124,7 @@ export function NotificationsHero({
                 }}
               >
                 <Bell size={14} aria-hidden />
-                Nothing has arrived yet.
+                {heroCopy.emptyDivisions}
               </span>
             </div>
           )}

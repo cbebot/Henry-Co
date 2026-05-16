@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { getAccountCopy } from "@henryco/i18n";
 import { RouteLiveRefresh } from "@henryco/ui";
 
 import { requireAccountUser } from "@/lib/auth";
@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 
 export default async function NotificationsPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
-  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const copy = getAccountCopy(locale);
   const notifications = await getNotificationFeed(user.id, 50, locale);
   const stats = notificationStats(notifications);
 
@@ -31,26 +31,27 @@ export default async function NotificationsPage() {
         totalThisWeek={stats.totalThisWeek}
         divisions={stats.divisions}
         lastActivity={stats.lastActivity}
+        copy={copy.notifications}
       />
       <section aria-labelledby="acct-notif-inbox">
         <div className="acct-notif__section-head">
           <h2 id="acct-notif-inbox" className="acct-notif__section-title">
-            {t("Inbox")}
+            {copy.notifications.inbox.heading}
           </h2>
           <span className="acct-notif__section-meta">
-            {t("Tap to open, swipe to archive — filters work across every division.")}
+            {copy.notifications.inbox.meta}
           </span>
         </div>
         {notifications.length === 0 ? (
-          <NotificationsFeedEmptyState variant="inbox" />
+          <NotificationsFeedEmptyState variant="inbox" copy={copy.notifications.emptyState} />
         ) : (
-          <NotificationsFeed notifications={notifications} />
+          <NotificationsFeed notifications={notifications} copy={copy.notifications} />
         )}
       </section>
       <div className="acct-notif__footer">
         <Link href="/notifications/recently-deleted" className="acct-notif__recently-deleted">
           <Trash2 size={13} aria-hidden />
-          {t("Recently deleted")}
+          {copy.notifications.footer.recentlyDeleted}
         </Link>
       </div>
     </div>
