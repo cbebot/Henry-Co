@@ -1,5 +1,5 @@
 import type { AppLocale } from "@henryco/i18n/server";
-import { translateSurfaceLabel } from "@henryco/i18n";
+import { deepMergeMessages, translateSurfaceLabel, type DeepPartial } from "@henryco/i18n";
 
 export type MarketplacePublicCopy = {
   home: {
@@ -78,6 +78,18 @@ export type MarketplacePublicCopy = {
   workspace: {
     kicker: string;
     operatorKicker: string;
+  };
+  cart: {
+    pageIntro: {
+      kicker: string;
+      title: string;
+      description: string;
+    };
+    emptyState: {
+      title: string;
+      body: string;
+      ctaLabel: string;
+    };
   };
 };
 
@@ -208,9 +220,22 @@ const EN: MarketplacePublicCopy = {
     kicker: "Workspace",
     operatorKicker: "Operator Surface",
   },
+  cart: {
+    pageIntro: {
+      kicker: "Cart",
+      title: "A premium basket with faster edits and cleaner split-order clarity.",
+      description:
+        "The cart now keeps vendor grouping visible, updates quantity quickly, and stays connected to the mini-cart drawer so buyers never lose context when they are close to checkout.",
+    },
+    emptyState: {
+      title: "Your cart is still empty.",
+      body: "Quick-add from product cards, save items for later, and the basket will stay updated in the mini-cart drawer and the full cart without a hard refresh.",
+      ctaLabel: "Browse products",
+    },
+  },
 };
 
-const FR: MarketplacePublicCopy = {
+const FR: DeepPartial<MarketplacePublicCopy> = {
   home: {
     heroKicker: "Marché premium raffiné",
     heroTitle: "Achetez auprès de boutiques vérifiées, sans bruit ni doute sur la confiance.",
@@ -320,14 +345,200 @@ const FR: MarketplacePublicCopy = {
     kicker: "Espace de travail",
     operatorKicker: "Surface opérateur",
   },
+  cart: {
+    pageIntro: {
+      kicker: "Panier",
+      title: "Un panier premium, des modifications plus rapides et des commandes fractionnées plus lisibles.",
+      description:
+        "Le panier garde le regroupement par vendeur visible, met à jour les quantités rapidement et reste connecté au tiroir mini-panier pour que les acheteurs ne perdent jamais le fil au moment de finaliser.",
+    },
+    emptyState: {
+      title: "Votre panier est encore vide.",
+      body: "Ajoutez rapidement depuis les fiches produits, sauvegardez des articles pour plus tard, et le panier reste à jour dans le tiroir mini-panier comme dans le panier complet, sans rechargement.",
+      ctaLabel: "Parcourir les produits",
+    },
+  },
 };
 
-const LOCALE_COPY: Partial<Record<AppLocale, MarketplacePublicCopy>> = {
+const ES: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Carrito",
+      title: "Una cesta premium con ediciones más rápidas y mayor claridad en pedidos divididos.",
+      description:
+        "El carrito mantiene visible la agrupación por vendedor, actualiza las cantidades con agilidad y permanece conectado al mini-carrito para que los compradores no pierdan el contexto al acercarse al pago.",
+    },
+    emptyState: {
+      title: "Tu carrito sigue vacío.",
+      body: "Añade rápido desde las fichas de producto, guarda artículos para más tarde, y la cesta se mantiene al día tanto en el mini-carrito como en el carrito completo, sin recargar.",
+      ctaLabel: "Explorar productos",
+    },
+  },
+};
+
+const PT: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Carrinho",
+      title: "Um carrinho premium com edições mais ágeis e clareza nas entregas divididas.",
+      description:
+        "O carrinho mantém o agrupamento por vendedor visível, atualiza quantidades rapidamente e permanece ligado à gaveta do mini-carrinho para que os compradores nunca percam o contexto perto da finalização.",
+    },
+    emptyState: {
+      title: "O teu carrinho ainda está vazio.",
+      body: "Adiciona rapidamente a partir dos cartões de produto, guarda itens para depois, e o carrinho mantém-se atualizado no mini-carrinho e no carrinho completo sem precisares de recarregar.",
+      ctaLabel: "Explorar produtos",
+    },
+  },
+};
+
+const DE: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Warenkorb",
+      title: "Ein Premium-Warenkorb mit schnelleren Anpassungen und klarer Übersicht bei geteilten Bestellungen.",
+      description:
+        "Der Warenkorb hält die Händler-Gruppierung sichtbar, aktualisiert Mengen zügig und bleibt mit der Mini-Warenkorb-Schublade verbunden, damit Käufer:innen kurz vor dem Checkout den Überblick behalten.",
+    },
+    emptyState: {
+      title: "Dein Warenkorb ist noch leer.",
+      body: "Füge schnell aus den Produktkarten hinzu, merke dir Artikel für später, und der Warenkorb bleibt sowohl in der Mini-Schublade als auch in der Vollansicht aktuell – ganz ohne Reload.",
+      ctaLabel: "Produkte entdecken",
+    },
+  },
+};
+
+const IT: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Carrello",
+      title: "Un carrello premium con modifiche più rapide e maggiore chiarezza sugli ordini divisi.",
+      description:
+        "Il carrello mantiene visibile il raggruppamento per venditore, aggiorna le quantità in modo fluido e resta collegato al cassetto del mini-carrello, così chi compra non perde il contesto quando è vicino al checkout.",
+    },
+    emptyState: {
+      title: "Il tuo carrello è ancora vuoto.",
+      body: "Aggiungi al volo dalle schede prodotto, salva articoli per dopo, e il carrello resta aggiornato sia nel mini-carrello sia nella vista completa, senza ricaricare la pagina.",
+      ctaLabel: "Esplora i prodotti",
+    },
+  },
+};
+
+const AR: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "السلة",
+      title: "سلة بمستوى رفيع، تعديلات أسرع، ووضوح أعلى للطلبات المقسّمة بين أكثر من بائع.",
+      description:
+        "تُبقي السلة تجميع البائعين ظاهرًا، وتُحدّث الكميات بسرعة، وتظل متصلة بدُرج السلة المصغّر، حتى لا يفقد المشتري السياق وهو يقترب من إتمام الطلب.",
+    },
+    emptyState: {
+      title: "سلتك ما زالت فارغة.",
+      body: "أضِف بسرعة من بطاقات المنتجات، واحفظ ما تودّ لاحقًا، وستبقى السلة محدّثة في الدُرج المصغّر وفي السلة الكاملة دون الحاجة إلى إعادة تحميل الصفحة.",
+      ctaLabel: "تصفّح المنتجات",
+    },
+  },
+};
+
+const ZH: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "购物车",
+      title: "更精致的购物车,编辑更快,拆单展示更清晰。",
+      description:
+        "购物车持续呈现按商家分组的视图,数量调整即时生效,并与迷你购物车抽屉保持同步,让买家在接近结算时不会失去上下文。",
+    },
+    emptyState: {
+      title: "你的购物车还是空的。",
+      body: "可从产品卡片快速加入,把心仪商品收藏稍后再看,迷你购物车与完整购物车都会即时同步,无需刷新页面。",
+      ctaLabel: "浏览商品",
+    },
+  },
+};
+
+const HI: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "कार्ट",
+      title: "एक प्रीमियम बास्केट — तेज़ बदलाव और बंटे ऑर्डर की साफ़ झलक।",
+      description:
+        "कार्ट विक्रेता-वार समूह को सामने रखता है, मात्रा तुरंत अपडेट करता है और मिनी-कार्ट ड्रॉअर से जुड़ा रहता है, ताकि चेकआउट के क़रीब पहुँचते समय ख़रीदार का संदर्भ कभी न टूटे।",
+    },
+    emptyState: {
+      title: "आपका कार्ट अभी ख़ाली है।",
+      body: "प्रोडक्ट कार्ड से झटपट जोड़ें, चीज़ें बाद के लिए सहेजें — मिनी-कार्ट और पूरे कार्ट दोनों में सब कुछ बिना रिफ़्रेश के अपडेट रहता है।",
+      ctaLabel: "प्रोडक्ट देखें",
+    },
+  },
+};
+
+const IG: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Nkata",
+      title: "Nkata mara mma — mgbanwe ngwa ngwa na nghọta doro anya maka iwepụ ibu n'otu otu.",
+      description:
+        "Nkata na-edobe nchịkọta ndị na-ere ahịa ka ọ pụta ìhè, na-emelite ọnụ ọgụgụ ngwa ngwa, ma na-eme ka njikọ na obere drawer nkata gụzosie ike, ka ndị na-azụ ahịa ghara ịtụfu echiche ha mgbe ha na-eru ebe ịkwụ ụgwọ.",
+    },
+    emptyState: {
+      title: "Nkata gị ka tọgbọrọ chakoo.",
+      body: "Tinye ihe ọsọ ọsọ site na kaadị ngwa ahịa, debe ihe maka mgbe ọzọ — nkata ga-anọgide na-emelite n'ime drawer mini na nkata zuru oke n'enweghị nlọghachi azụ.",
+      ctaLabel: "Lelee ngwa ahịa",
+    },
+  },
+};
+
+const YO: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Apo Ìrajà",
+      title: "Apo ìrajà tó tóótun — àtúnṣe yára yára àti àlàyé tó mọ́ fún àwọn àṣẹ tí ó pín sí ọ̀pọ̀.",
+      description:
+        "Apo ìrajà náà ń jẹ́ kí àkójọpọ̀ àwọn olùtà ṣàfihàn dáadáa, ó ń ṣàtúnṣe ìye lójú-ẹsẹ̀, ó sì ń bá àpótí kéékèèkè (mini-cart) sọ̀rọ̀ pọ̀, kí àwọn olùra má baà sọnù ọ̀rọ̀ wọn nígbà tí wọ́n bá súnmọ́ ìparí ìrajà.",
+    },
+    emptyState: {
+      title: "Apo ìrajà rẹ ṣì ṣófo.",
+      body: "Fi nǹkan kún kíá láti orí káàdì ọjà, fi àwọn ohun pamọ́ fún ìgbà tó ń bọ̀ — apo ìrajà yóò máa wà ní ìmúdójúìwọ̀n nínú àpótí kéékèèkè àti nínú apo kíkún láìní àtúngbà ojú-ìwé.",
+      ctaLabel: "Ṣàwárí àwọn ọjà",
+    },
+  },
+};
+
+const HA: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Kanti",
+      title: "Kanti mai inganci — gyare-gyare cikin sauri da bayyananniyar rabe-raben odar daga masu sayarwa daban-daban.",
+      description:
+        "Kanti yana nuna rukunin masu sayarwa a fili, yana sabunta yawan kayan da sauri, kuma yana ci gaba da haɗawa da ƙaramin kanti, don kada masu siye su rasa mahallin yayin kusan kammala biyan kuɗi.",
+    },
+    emptyState: {
+      title: "Kanti ɗinka har yanzu fanko ne.",
+      body: "Ƙara cikin sauri daga katunan kaya, ajiye abubuwa don baya, kuma kanti zai ci gaba da sabuntawa a cikin ƙaramin kanti da kanti cikakke ba tare da sake loda shafi ba.",
+      ctaLabel: "Bincika kayayyaki",
+    },
+  },
+};
+
+const LOCALE_PARTIALS: Partial<Record<AppLocale, DeepPartial<MarketplacePublicCopy>>> = {
   fr: FR,
+  es: ES,
+  pt: PT,
+  de: DE,
+  it: IT,
+  ar: AR,
+  zh: ZH,
+  hi: HI,
+  ig: IG,
+  yo: YO,
+  ha: HA,
 };
 
 export function getMarketplacePublicCopy(locale: AppLocale): MarketplacePublicCopy {
-  return LOCALE_COPY[locale] ?? EN;
+  if (locale === "en") return EN;
+  const partial = LOCALE_PARTIALS[locale];
+  if (!partial) return EN;
+  return deepMergeMessages(EN, partial as Partial<MarketplacePublicCopy>);
 }
 
 export function translateMarketplacePublicLabel(locale: AppLocale, label: string) {
