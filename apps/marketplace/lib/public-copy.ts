@@ -201,6 +201,53 @@ export type MarketplacePublicCopy = {
       secondaryCta: string;
     };
   };
+  sellPricing: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      body: string;
+      primaryCta: string;
+      secondaryCta: string;
+      statsLabels: {
+        planTiers: string;
+        trustTiers: string;
+        featuredSlots: string;
+      };
+      featuredSlotsValue: string;
+    };
+    plans: {
+      kicker: string;
+      feeLabel: string;
+      payoutLabel: string;
+      includedLabel: string;
+      includedSuffix: string;
+      extraListingLabel: string;
+      featuredSlotLabel: string;
+      currencyPrefix: string;
+      ctaPartner: string;
+      ctaTemplate: string;
+    };
+    economics: {
+      kicker: string;
+      title: string;
+      items: string[];
+    };
+    trustTiers: {
+      kicker: string;
+      title: string;
+    };
+    closing: {
+      kicker: string;
+      title: string;
+      body: string;
+      primaryCta: string;
+      secondaryCta: string;
+    };
+  };
   help: {
     metadata: {
       title: string;
@@ -536,6 +583,61 @@ const EN: MarketplacePublicCopy = {
       body: "Approval unlocks vendor onboarding. Pricing, posting fees, and payout windows are visible before you publish — no contract surprises later.",
       primaryCta: "Start application",
       secondaryCta: "Visit vendor workspace",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Seller pricing — HenryCo Marketplace",
+      description:
+        "Plan fees, listing fees, featured-slot fees, transaction commission, and payout processing are all stated up front — before you publish inventory, not after.",
+    },
+    hero: {
+      kicker: "Seller pricing",
+      title: "Clear economics. No hidden fees.",
+      body: "Plan fees, listing fees, featured-slot fees, transaction commission, and payout processing are all stated up front — before you publish inventory, not after.",
+      primaryCta: "Apply as seller",
+      secondaryCta: "Back to seller overview",
+      statsLabels: {
+        planTiers: "Plan tiers",
+        trustTiers: "Trust tiers",
+        featuredSlots: "Featured slots",
+      },
+      featuredSlotsValue: "Reviewed individually",
+    },
+    plans: {
+      kicker: "Plans at a glance",
+      feeLabel: "Fee",
+      payoutLabel: "Payout",
+      includedLabel: "Included",
+      includedSuffix: "listings",
+      extraListingLabel: "Extra listing",
+      featuredSlotLabel: "Featured slot",
+      currencyPrefix: "NGN",
+      ctaPartner: "Contact for partner terms",
+      ctaTemplate: "Start with {plan}",
+    },
+    economics: {
+      kicker: "How HenryCo makes money",
+      title: "Stated up front, deducted in the open.",
+      items: [
+        "Transaction commissions are deducted from each vendor order-group settlement before payout release.",
+        "Posting fees apply after the included listing allowance is exhausted for the seller's active plan.",
+        "Featured placement is a separate paid request and stays subject to quality and trust review.",
+        "Payout processing fees are deducted inside the seller settlement snapshot, not later by surprise.",
+        "Studio, Learn, and Logistics value-added services create additional seller revenue lanes.",
+        "Operator-controlled campaigns and sponsored slots remain auditable and not self-serve chaos.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Trust-tier payout timing",
+      title: "Better behaviour earns shorter holds.",
+    },
+    closing: {
+      kicker: "Ready to apply?",
+      title: "Application opens in your HenryCo account.",
+      body: "You can save the draft and return — pricing visible here applies once vendor onboarding completes.",
+      primaryCta: "Apply as seller",
+      secondaryCta: "Trust standards",
     },
   },
   help: {
@@ -902,6 +1004,61 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "Voir l’espace vendeur",
     },
   },
+  sellPricing: {
+    metadata: {
+      title: "Tarifs vendeur — HenryCo Marketplace",
+      description:
+        "Frais de plan, frais de mise en ligne, frais de mise en avant, commission de transaction et traitement des paiements sont tous annoncés en amont — avant la publication, pas après.",
+    },
+    hero: {
+      kicker: "Tarifs vendeur",
+      title: "Une économie claire. Aucun frais caché.",
+      body: "Frais de plan, frais de mise en ligne, frais de mise en avant, commission de transaction et traitement des paiements sont tous annoncés en amont — avant la publication de votre catalogue, pas après.",
+      primaryCta: "Postuler comme vendeur",
+      secondaryCta: "Retour à l’aperçu vendeur",
+      statsLabels: {
+        planTiers: "Paliers de plan",
+        trustTiers: "Paliers de confiance",
+        featuredSlots: "Mises en avant",
+      },
+      featuredSlotsValue: "Examinées au cas par cas",
+    },
+    plans: {
+      kicker: "Aperçu des plans",
+      feeLabel: "Commission",
+      payoutLabel: "Versement",
+      includedLabel: "Inclus",
+      includedSuffix: "annonces",
+      extraListingLabel: "Annonce supplémentaire",
+      featuredSlotLabel: "Mise en avant",
+      currencyPrefix: "NGN",
+      ctaPartner: "Nous contacter pour des conditions partenaires",
+      ctaTemplate: "Commencer avec {plan}",
+    },
+    economics: {
+      kicker: "Comment HenryCo gagne de l’argent",
+      title: "Annoncé en amont, déduit à la vue de tous.",
+      items: [
+        "Les commissions de transaction sont prélevées sur chaque règlement de groupe-commande vendeur avant la libération du versement.",
+        "Les frais de mise en ligne s’appliquent une fois l’allocation d’annonces incluses épuisée pour le plan actif du vendeur.",
+        "Une mise en avant est une demande payante distincte, soumise à un contrôle de qualité et de confiance.",
+        "Les frais de traitement de versement sont déduits dans le récapitulatif de règlement vendeur, pas en surprise plus tard.",
+        "Les services à valeur ajoutée Studio, Learn et Logistics ouvrent des relais de revenus supplémentaires pour les vendeurs.",
+        "Les campagnes pilotées par l’opérateur et les emplacements sponsorisés restent auditables et non livrés en libre-service.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Calendrier de versement par palier de confiance",
+      title: "Un meilleur comportement raccourcit les retenues.",
+    },
+    closing: {
+      kicker: "Prêt à candidater ?",
+      title: "La candidature s’ouvre dans votre compte HenryCo.",
+      body: "Vous pouvez enregistrer le brouillon et revenir — la tarification affichée ici s’applique une fois l’onboarding vendeur terminé.",
+      primaryCta: "Postuler comme vendeur",
+      secondaryCta: "Standards de confiance",
+    },
+  },
   trust: {
     metadata: {
       title: "Confiance & sécurité — HenryCo Marketplace",
@@ -1110,6 +1267,61 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
       body: "La aprobación desbloquea el onboarding de vendedor. Tarifas, comisiones de publicación y ventanas de cobro se ven antes de publicar — sin sorpresas contractuales después.",
       primaryCta: "Iniciar solicitud",
       secondaryCta: "Ir al espacio de vendedor",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Tarifas para vendedores — HenryCo Marketplace",
+      description:
+        "Tarifas de plan, de publicación, de destacados, comisión por transacción y procesamiento de cobros se declaran por adelantado — antes de publicar inventario, no después.",
+    },
+    hero: {
+      kicker: "Tarifas para vendedores",
+      title: "Economía clara. Sin comisiones ocultas.",
+      body: "Tarifas de plan, comisiones de publicación, slots destacados, comisión por transacción y procesamiento de cobros se declaran por adelantado — antes de publicar tu inventario, no después.",
+      primaryCta: "Postularme como vendedor",
+      secondaryCta: "Volver al resumen de vendedor",
+      statsLabels: {
+        planTiers: "Niveles de plan",
+        trustTiers: "Niveles de confianza",
+        featuredSlots: "Slots destacados",
+      },
+      featuredSlotsValue: "Revisados caso por caso",
+    },
+    plans: {
+      kicker: "Planes de un vistazo",
+      feeLabel: "Comisión",
+      payoutLabel: "Cobro",
+      includedLabel: "Incluidos",
+      includedSuffix: "anuncios",
+      extraListingLabel: "Anuncio extra",
+      featuredSlotLabel: "Slot destacado",
+      currencyPrefix: "NGN",
+      ctaPartner: "Contactar para condiciones de partner",
+      ctaTemplate: "Empezar con {plan}",
+    },
+    economics: {
+      kicker: "Cómo gana dinero HenryCo",
+      title: "Declarado por adelantado, deducido a la vista.",
+      items: [
+        "Las comisiones por transacción se descuentan en cada liquidación del grupo-pedido del vendedor antes de liberar el cobro.",
+        "Las tarifas de publicación se aplican una vez agotado el cupo de anuncios incluidos en el plan activo del vendedor.",
+        "La colocación destacada es una solicitud de pago aparte y queda sujeta a control de calidad y confianza.",
+        "Las comisiones por procesamiento de cobro se deducen en el resumen de liquidación del vendedor, no después por sorpresa.",
+        "Servicios de valor añadido Studio, Learn y Logistics abren vías adicionales de ingresos para los vendedores.",
+        "Las campañas controladas por el operador y los espacios patrocinados se mantienen auditables y no como caos autoservicio.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Cobros según nivel de confianza",
+      title: "Un mejor comportamiento acorta las retenciones.",
+    },
+    closing: {
+      kicker: "¿Listo para postularte?",
+      title: "La solicitud se abre en tu cuenta de HenryCo.",
+      body: "Puedes guardar el borrador y volver — la tarificación visible aquí se aplica una vez completado el onboarding de vendedor.",
+      primaryCta: "Postularme como vendedor",
+      secondaryCta: "Estándares de confianza",
     },
   },
   trust: {
@@ -1349,6 +1561,61 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "Ir ao espaço de vendedor",
     },
   },
+  sellPricing: {
+    metadata: {
+      title: "Preços para vendedores — HenryCo Marketplace",
+      description:
+        "Taxas de plano, taxas de publicação, taxas de destaque, comissão por transação e processamento de pagamento são todas declaradas à partida — antes de publicares inventário, não depois.",
+    },
+    hero: {
+      kicker: "Preços para vendedores",
+      title: "Economia clara. Sem taxas escondidas.",
+      body: "Taxas de plano, taxas de publicação, taxas de destaque, comissão por transação e processamento de pagamento são todas declaradas à partida — antes de publicares o teu inventário, não depois.",
+      primaryCta: "Candidatar como vendedor",
+      secondaryCta: "Voltar à visão geral de vendedor",
+      statsLabels: {
+        planTiers: "Níveis de plano",
+        trustTiers: "Níveis de confiança",
+        featuredSlots: "Slots de destaque",
+      },
+      featuredSlotsValue: "Avaliados caso a caso",
+    },
+    plans: {
+      kicker: "Planos em síntese",
+      feeLabel: "Comissão",
+      payoutLabel: "Pagamento",
+      includedLabel: "Incluídos",
+      includedSuffix: "anúncios",
+      extraListingLabel: "Anúncio extra",
+      featuredSlotLabel: "Slot de destaque",
+      currencyPrefix: "NGN",
+      ctaPartner: "Contactar para condições de parceiro",
+      ctaTemplate: "Começar com {plan}",
+    },
+    economics: {
+      kicker: "Como a HenryCo ganha dinheiro",
+      title: "Declarado à partida, deduzido à vista.",
+      items: [
+        "As comissões por transação são deduzidas em cada liquidação do grupo-encomenda do vendedor antes da libertação do pagamento.",
+        "As taxas de publicação aplicam-se depois de esgotada a quota de anúncios incluídos no plano ativo do vendedor.",
+        "A colocação em destaque é um pedido pago à parte e fica sujeita a revisão de qualidade e confiança.",
+        "As taxas de processamento de pagamento são deduzidas no resumo de liquidação do vendedor, não em surpresa depois.",
+        "Os serviços de valor acrescentado Studio, Learn e Logistics abrem vias adicionais de receita para vendedores.",
+        "As campanhas controladas pelo operador e os espaços patrocinados mantêm-se auditáveis e nunca em autosserviço caótico.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Tempos de pagamento por nível de confiança",
+      title: "Melhor comportamento encurta as retenções.",
+    },
+    closing: {
+      kicker: "Pronto para te candidatares?",
+      title: "A candidatura abre na tua conta HenryCo.",
+      body: "Podes guardar o rascunho e voltar — a tarificação visível aqui aplica-se assim que o onboarding de vendedor estiver concluído.",
+      primaryCta: "Candidatar como vendedor",
+      secondaryCta: "Padrões de confiança",
+    },
+  },
   trust: {
     metadata: {
       title: "Confiança e segurança — HenryCo Marketplace",
@@ -1584,6 +1851,61 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
       body: "Mit der Freigabe öffnet sich das Vendor-Onboarding. Preise, Listing-Gebühren und Auszahlungsfenster sind vor der Veröffentlichung sichtbar — keine vertraglichen Überraschungen später.",
       primaryCta: "Bewerbung starten",
       secondaryCta: "Zum Vendor-Workspace",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Verkäuferpreise — HenryCo Marketplace",
+      description:
+        "Plangebühren, Listing-Gebühren, Gebühren für Featured-Slots, Transaktionsprovision und Auszahlungsabwicklung werden alle vorab ausgewiesen — vor der Veröffentlichung deines Bestands, nicht danach.",
+    },
+    hero: {
+      kicker: "Verkäuferpreise",
+      title: "Klare Ökonomie. Keine versteckten Gebühren.",
+      body: "Plangebühren, Listing-Gebühren, Gebühren für Featured-Slots, Transaktionsprovision und Auszahlungsabwicklung werden alle vorab ausgewiesen — bevor du Bestand veröffentlichst, nicht danach.",
+      primaryCta: "Als Verkäufer bewerben",
+      secondaryCta: "Zurück zur Verkäuferübersicht",
+      statsLabels: {
+        planTiers: "Plan-Stufen",
+        trustTiers: "Vertrauensstufen",
+        featuredSlots: "Featured-Slots",
+      },
+      featuredSlotsValue: "Einzelfallprüfung",
+    },
+    plans: {
+      kicker: "Pläne im Überblick",
+      feeLabel: "Provision",
+      payoutLabel: "Auszahlung",
+      includedLabel: "Inklusive",
+      includedSuffix: "Inserate",
+      extraListingLabel: "Zusätzliches Inserat",
+      featuredSlotLabel: "Featured-Slot",
+      currencyPrefix: "NGN",
+      ctaPartner: "Für Partnerkonditionen Kontakt aufnehmen",
+      ctaTemplate: "Mit {plan} starten",
+    },
+    economics: {
+      kicker: "Wie HenryCo Geld verdient",
+      title: "Vorab ausgewiesen, offen abgezogen.",
+      items: [
+        "Transaktionsprovisionen werden bei jeder Vendor-Bestellgruppen-Abrechnung vor der Auszahlung abgezogen.",
+        "Listing-Gebühren fallen an, sobald das im aktiven Plan enthaltene Inserate-Kontingent ausgeschöpft ist.",
+        "Featured-Platzierung ist eine separate kostenpflichtige Anfrage und unterliegt einer Qualitäts- und Vertrauensprüfung.",
+        "Bearbeitungsgebühren für Auszahlungen werden im Verkäufer-Abrechnungsbeleg abgezogen, nicht später als Überraschung.",
+        "Mehrwertdienste von Studio, Learn und Logistics schaffen zusätzliche Ertragspfade für Verkäufer.",
+        "Vom Operator gesteuerte Kampagnen und gesponserte Slots bleiben auditierbar und sind kein Self-Service-Chaos.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Auszahlungstakt nach Vertrauensstufe",
+      title: "Besseres Verhalten verkürzt die Haltefrist.",
+    },
+    closing: {
+      kicker: "Bereit für die Bewerbung?",
+      title: "Die Bewerbung öffnet sich in deinem HenryCo-Konto.",
+      body: "Du kannst den Entwurf speichern und zurückkehren — die hier sichtbare Preisgestaltung gilt, sobald das Vendor-Onboarding abgeschlossen ist.",
+      primaryCta: "Als Verkäufer bewerben",
+      secondaryCta: "Vertrauensstandards",
     },
   },
   trust: {
@@ -1823,6 +2145,61 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "Vai allo spazio venditore",
     },
   },
+  sellPricing: {
+    metadata: {
+      title: "Prezzi per venditori — HenryCo Marketplace",
+      description:
+        "Commissioni di piano, commissioni di pubblicazione, commissioni dei posti in evidenza, commissione di transazione e processamento dei pagamenti sono tutte dichiarate in anticipo — prima di pubblicare l’inventario, non dopo.",
+    },
+    hero: {
+      kicker: "Prezzi per venditori",
+      title: "Economia chiara. Nessuna commissione nascosta.",
+      body: "Commissioni di piano, commissioni di pubblicazione, posti in evidenza, commissione di transazione e processamento dei pagamenti sono tutte dichiarate in anticipo — prima di pubblicare l’inventario, non dopo.",
+      primaryCta: "Candidati come venditore",
+      secondaryCta: "Torna alla panoramica venditore",
+      statsLabels: {
+        planTiers: "Livelli di piano",
+        trustTiers: "Livelli di fiducia",
+        featuredSlots: "Posti in evidenza",
+      },
+      featuredSlotsValue: "Valutati caso per caso",
+    },
+    plans: {
+      kicker: "Piani in sintesi",
+      feeLabel: "Commissione",
+      payoutLabel: "Pagamento",
+      includedLabel: "Inclusi",
+      includedSuffix: "annunci",
+      extraListingLabel: "Annuncio aggiuntivo",
+      featuredSlotLabel: "Posto in evidenza",
+      currencyPrefix: "NGN",
+      ctaPartner: "Contattaci per condizioni partner",
+      ctaTemplate: "Inizia con {plan}",
+    },
+    economics: {
+      kicker: "Come HenryCo guadagna",
+      title: "Dichiarato in anticipo, dedotto a vista.",
+      items: [
+        "Le commissioni di transazione vengono dedotte da ogni liquidazione del gruppo-ordine venditore prima del rilascio del pagamento.",
+        "Le commissioni di pubblicazione si applicano una volta esaurita la quota di annunci inclusi nel piano attivo del venditore.",
+        "L’evidenza è una richiesta a pagamento separata e resta soggetta a controllo qualità e fiducia.",
+        "Le commissioni di processamento del pagamento sono dedotte nel riepilogo di liquidazione del venditore, non in sorpresa più tardi.",
+        "I servizi a valore aggiunto Studio, Learn e Logistics creano nuove direttrici di ricavo per i venditori.",
+        "Le campagne governate dall’operatore e gli slot sponsorizzati restano tracciabili e mai in self-service caotico.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Tempistiche di pagamento per livello di fiducia",
+      title: "Un comportamento migliore accorcia le trattenute.",
+    },
+    closing: {
+      kicker: "Pronto a candidarti?",
+      title: "La candidatura si apre nel tuo account HenryCo.",
+      body: "Puoi salvare la bozza e tornare — i prezzi visibili qui si applicano una volta completato l’onboarding venditore.",
+      primaryCta: "Candidati come venditore",
+      secondaryCta: "Standard di fiducia",
+    },
+  },
   trust: {
     metadata: {
       title: "Affidabilità e sicurezza — HenryCo Marketplace",
@@ -2058,6 +2435,61 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
       body: "تفتح الموافقة بابَ انضمام البائع. الأسعار ورسوم النشر ونوافذ التحويل ظاهرة قبل النشر — دون مفاجآت تعاقدية لاحقًا.",
       primaryCta: "ابدأ الطلب",
       secondaryCta: "زيارة مساحة البائع",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "تسعير البائعين — HenryCo Marketplace",
+      description:
+        "رسوم الخطة، ورسوم النشر، ورسوم الإبراز، وعمولة المعاملة، ومعالجة التحويل كلّها معلنة سلفًا — قبل نشر مخزونك، لا بعده.",
+    },
+    hero: {
+      kicker: "تسعير البائعين",
+      title: "اقتصاد واضح. لا رسوم خفية.",
+      body: "رسوم الخطة ورسوم النشر ورسوم الإبراز وعمولة المعاملة ومعالجة التحويل كلّها معلنة سلفًا — قبل نشر مخزونك، لا بعده.",
+      primaryCta: "قدّم بصفتك بائعًا",
+      secondaryCta: "العودة إلى نظرة البائع",
+      statsLabels: {
+        planTiers: "مستويات الخطة",
+        trustTiers: "مستويات الثقة",
+        featuredSlots: "خانات الإبراز",
+      },
+      featuredSlotsValue: "تُراجع حالةً بحالة",
+    },
+    plans: {
+      kicker: "الخطط بنظرة سريعة",
+      feeLabel: "العمولة",
+      payoutLabel: "التحويل",
+      includedLabel: "مُضمّن",
+      includedSuffix: "إعلانًا",
+      extraListingLabel: "إعلان إضافي",
+      featuredSlotLabel: "خانة إبراز",
+      currencyPrefix: "NGN",
+      ctaPartner: "تواصل معنا لشروط الشراكة",
+      ctaTemplate: "ابدأ بـ {plan}",
+    },
+    economics: {
+      kicker: "كيف تكسب HenryCo",
+      title: "معلَن سلفًا، يُخصم على مرأى الجميع.",
+      items: [
+        "تُخصم عمولات المعاملات من كل تسوية مجموعة-طلب لدى البائع قبل تحرير التحويل.",
+        "تُطبَّق رسوم النشر بعد استنفاد حصة الإعلانات المُضمَّنة في الخطة الفعّالة للبائع.",
+        "الإبراز طلبٌ مدفوع منفصل، ويبقى خاضعًا لمراجعة الجودة والثقة.",
+        "تُخصم رسوم معالجة التحويل ضمن لقطة تسوية البائع، لا لاحقًا كمفاجأة.",
+        "خدمات القيمة المضافة في Studio و Learn و Logistics تفتح روافد دخل إضافية للبائعين.",
+        "تظل الحملات التي يديرها المشغّل والخانات المُموَّلة قابلة للتدقيق ولا تتحوّل إلى فوضى خدمة ذاتية.",
+      ],
+    },
+    trustTiers: {
+      kicker: "توقيت التحويل حسب مستوى الثقة",
+      title: "السلوك الأفضل يقلّص فترات الاحتجاز.",
+    },
+    closing: {
+      kicker: "هل أنت جاهز للتقديم؟",
+      title: "يفتح الطلب داخل حساب HenryCo الخاص بك.",
+      body: "يمكنك حفظ المسودّة والعودة لاحقًا — التسعير الظاهر هنا يُطبَّق فور اكتمال انضمام البائع.",
+      primaryCta: "قدّم بصفتك بائعًا",
+      secondaryCta: "معايير الثقة",
     },
   },
   trust: {
@@ -2346,6 +2778,61 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "前往卖家工作台",
     },
   },
+  sellPricing: {
+    metadata: {
+      title: "卖家定价 — HenryCo 商城",
+      description:
+        "套餐费、上架费、推荐位费、交易佣金与结算手续费均提前公开 — 在发布商品之前,不是之后。",
+    },
+    hero: {
+      kicker: "卖家定价",
+      title: "明晰的经济。没有隐藏费用。",
+      body: "套餐费、上架费、推荐位费、交易佣金与结算手续费均在发布商品之前提前公开 — 不是发布之后。",
+      primaryCta: "申请成为卖家",
+      secondaryCta: "返回卖家概览",
+      statsLabels: {
+        planTiers: "套餐档位",
+        trustTiers: "信任档位",
+        featuredSlots: "推荐位",
+      },
+      featuredSlotsValue: "按个案审核",
+    },
+    plans: {
+      kicker: "套餐一览",
+      feeLabel: "佣金",
+      payoutLabel: "结算",
+      includedLabel: "包含",
+      includedSuffix: "条上架",
+      extraListingLabel: "额外上架",
+      featuredSlotLabel: "推荐位",
+      currencyPrefix: "NGN",
+      ctaPartner: "联系我们了解合作条款",
+      ctaTemplate: "选择 {plan} 开始",
+    },
+    economics: {
+      kicker: "HenryCo 如何盈利",
+      title: "提前声明,公开扣除。",
+      items: [
+        "交易佣金会在卖家订单组结算释放结算款之前先行扣除。",
+        "在卖家当前套餐附带的上架额度用尽之后,即开始计收上架费。",
+        "推荐位为单独付费申请,仍需通过质量与信任评估。",
+        "结算处理费在卖家结算快照内直接扣除,不会事后再额外加收。",
+        "Studio、Learn 与 Logistics 的增值服务为卖家开辟额外收入通道。",
+        "由平台运营把关的活动与赞助位保持可审计,绝不沦为自助式失序。",
+      ],
+    },
+    trustTiers: {
+      kicker: "按信任档位的结算节奏",
+      title: "更好的行为带来更短的扣留期。",
+    },
+    closing: {
+      kicker: "准备好申请了吗?",
+      title: "申请将在你的 HenryCo 账户中打开。",
+      body: "你可以保存草稿稍后再来 — 这里展示的定价将在卖家入驻完成后即刻生效。",
+      primaryCta: "申请成为卖家",
+      secondaryCta: "信任标准",
+    },
+  },
   collections: {
     metadata: {
       titleTemplate: "{collection} — HenryCo 商城",
@@ -2581,6 +3068,61 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
       body: "अनुमोदन से वेंडर ऑनबोर्डिंग खुलती है। पब्लिश करने से पहले ही कीमत, लिस्टिंग शुल्क और पेआउट विंडो दिख जाती है — बाद में कोई कॉन्ट्रैक्ट-सरप्राइज़ नहीं।",
       primaryCta: "आवेदन शुरू करें",
       secondaryCta: "वेंडर वर्कस्पेस देखें",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "विक्रेता कीमत — HenryCo Marketplace",
+      description:
+        "प्लान शुल्क, लिस्टिंग शुल्क, फ़ीचर्ड स्लॉट शुल्क, ट्रांज़ैक्शन कमीशन और पेआउट प्रोसेसिंग — सब पहले से बताए जाते हैं, इन्वेंट्री पब्लिश करने से पहले, बाद में नहीं।",
+    },
+    hero: {
+      kicker: "विक्रेता कीमत",
+      title: "साफ़ इकोनॉमिक्स। कोई छिपा शुल्क नहीं।",
+      body: "प्लान शुल्क, लिस्टिंग शुल्क, फ़ीचर्ड स्लॉट शुल्क, ट्रांज़ैक्शन कमीशन और पेआउट प्रोसेसिंग — सब इन्वेंट्री पब्लिश करने से पहले ही बताए जाते हैं, बाद में नहीं।",
+      primaryCta: "विक्रेता के रूप में आवेदन",
+      secondaryCta: "विक्रेता ओवरव्यू पर वापस",
+      statsLabels: {
+        planTiers: "प्लान टियर",
+        trustTiers: "ट्रस्ट टियर",
+        featuredSlots: "फ़ीचर्ड स्लॉट",
+      },
+      featuredSlotsValue: "अलग-अलग समीक्षा",
+    },
+    plans: {
+      kicker: "प्लान एक नज़र में",
+      feeLabel: "शुल्क",
+      payoutLabel: "पेआउट",
+      includedLabel: "शामिल",
+      includedSuffix: "लिस्टिंग",
+      extraListingLabel: "अतिरिक्त लिस्टिंग",
+      featuredSlotLabel: "फ़ीचर्ड स्लॉट",
+      currencyPrefix: "NGN",
+      ctaPartner: "पार्टनर शर्तों के लिए संपर्क करें",
+      ctaTemplate: "{plan} से शुरू करें",
+    },
+    economics: {
+      kicker: "HenryCo कैसे कमाता है",
+      title: "पहले से बताया, खुले में काटा।",
+      items: [
+        "हर वेंडर ऑर्डर-ग्रुप सेटलमेंट से पेआउट रिलीज़ से पहले ट्रांज़ैक्शन कमीशन काटा जाता है।",
+        "विक्रेता के सक्रिय प्लान में शामिल लिस्टिंग कोटा खत्म होने के बाद ही पोस्टिंग शुल्क लागू होता है।",
+        "फ़ीचर्ड प्लेसमेंट अलग सशुल्क अनुरोध है और गुणवत्ता व ट्रस्ट समीक्षा के अधीन रहता है।",
+        "पेआउट प्रोसेसिंग शुल्क विक्रेता सेटलमेंट स्नैपशॉट में ही कट जाते हैं, बाद में अचानक नहीं।",
+        "Studio, Learn और Logistics की वैल्यू-ऐडेड सेवाएँ विक्रेताओं के लिए अतिरिक्त राजस्व-लेन खोलती हैं।",
+        "ऑपरेटर द्वारा नियंत्रित कैम्पेन और स्पॉन्सर्ड स्लॉट ऑडिटेबल रहते हैं — सेल्फ-सर्व अव्यवस्था में नहीं बदलते।",
+      ],
+    },
+    trustTiers: {
+      kicker: "ट्रस्ट-टियर पेआउट टाइमिंग",
+      title: "बेहतर व्यवहार से होल्ड छोटा होता है।",
+    },
+    closing: {
+      kicker: "आवेदन के लिए तैयार?",
+      title: "आवेदन आपके HenryCo अकाउंट में खुलेगा।",
+      body: "आप ड्राफ्ट सेव कर वापस आ सकते हैं — यहाँ दिख रही कीमत वेंडर ऑनबोर्डिंग पूरा होते ही लागू हो जाती है।",
+      primaryCta: "विक्रेता के रूप में आवेदन",
+      secondaryCta: "ट्रस्ट मानक",
     },
   },
   collections: {
@@ -2820,6 +3362,61 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "Gaa n'ebe ọrụ ndị na-ere ahịa",
     },
   },
+  sellPricing: {
+    metadata: {
+      title: "Ọnụahịa onye na-ere ahịa — HenryCo Marketplace",
+      description:
+        "Ụgwọ atụmatụ, ụgwọ idepụta, ụgwọ oghere edobere, ego nrụaka azụmaahịa na nhazi nkwụ ụgwọ — niile na-egosi mbụ, tupu ibipụta ngwaahịa, ọ bụghị emesia.",
+    },
+    hero: {
+      kicker: "Ọnụahịa onye na-ere ahịa",
+      title: "Akụnụba doro anya. Enweghị ụgwọ nzuzo.",
+      body: "Ụgwọ atụmatụ, ụgwọ idepụta, ụgwọ oghere edobere, ego nrụaka na nhazi nkwụ ụgwọ — niile na-egosi mbụ, tupu ibipụta ngwaahịa gị, ọ bụghị emesia.",
+      primaryCta: "Tinye akwụkwọ dị ka onye na-ere",
+      secondaryCta: "Laghachi na nlele onye na-ere",
+      statsLabels: {
+        planTiers: "Ọkwa atụmatụ",
+        trustTiers: "Ọkwa ntụkwasị obi",
+        featuredSlots: "Oghere edobere",
+      },
+      featuredSlotsValue: "A na-elele otu otu",
+    },
+    plans: {
+      kicker: "Atụmatụ na nlele ngwa ngwa",
+      feeLabel: "Ụgwọ",
+      payoutLabel: "Nkwụ ụgwọ",
+      includedLabel: "Tinyere",
+      includedSuffix: "ihe edepụtara",
+      extraListingLabel: "Idepụta agbakwunyere",
+      featuredSlotLabel: "Oghere edobere",
+      currencyPrefix: "NGN",
+      ctaPartner: "Kpọtụrụ maka usoro mmekọ",
+      ctaTemplate: "Jiri {plan} bido",
+    },
+    economics: {
+      kicker: "Otú HenryCo si akpata ego",
+      title: "E kwupụtara mbụ, a wepụrụ n'ihu mmadụ.",
+      items: [
+        "A na-ewepụ ego nrụaka azụmaahịa n'otu otu nkwụghachi nke ìgwè iwu onye na-ere ahịa tupu ahapụ nkwụ ụgwọ.",
+        "Ụgwọ idepụta na-amalite mgbe ọnụọgụ ihe edepụtara tinyere n'atụmatụ ọrụ nke onye na-ere ahịa kwụsịrị.",
+        "Edobere ngwaahịa bụ arịrịọ akwụ ụgwọ dị iche ma na-anọgide n'okpuru nyocha ogo na ntụkwasị obi.",
+        "A na-ewepụ ụgwọ nhazi nkwụ ụgwọ n'ime ndekọ nkwụghachi onye na-ere ahịa, ọ bụghị emesia ka ihe ijuanya.",
+        "Ọrụ uru agbakwunyere nke Studio, Learn na Logistics na-emepe ụzọ ego ọzọ maka ndị na-ere ahịa.",
+        "Mkpọsa nke onye njikwa na-elekọta na oghere a kwadoro na-anọgide ka enyochaa, ọ naghị aghọ ọgbaaghara onwe-ọrụ.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Oge nkwụ ụgwọ dabere n'ọkwa ntụkwasị obi",
+      title: "Omume ọma na-eme ka oge nkwụsị dị mkpụmkpụ.",
+    },
+    closing: {
+      kicker: "Ị dị njikere ịtinye akwụkwọ?",
+      title: "Akwụkwọ a na-emepe n'akaụntụ HenryCo gị.",
+      body: "Ị nwere ike ichekwa edemede ma laghachi — ọnụahịa a na-egosi ebe a na-arụ ọrụ ozugbo mmebata onye na-ere zuru oke.",
+      primaryCta: "Tinye akwụkwọ dị ka onye na-ere",
+      secondaryCta: "Ụkpụrụ ntụkwasị obi",
+    },
+  },
   collections: {
     metadata: {
       titleTemplate: "{collection} — Ahịa HenryCo",
@@ -3057,6 +3654,61 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
       secondaryCta: "Bẹ̀ àyè olùtà wò",
     },
   },
+  sellPricing: {
+    metadata: {
+      title: "Iye olùtà — HenryCo Marketplace",
+      description:
+        "Owó ètò, owó ìpolówó, owó àyè àkànṣe, ìpín ọjà, àti ìṣiṣẹ́ ìsanwó — gbogbo wọn ni a sọ ṣáájú, ṣáájú kí o tó tẹ ọjà jáde, kì í ṣe lẹ́yìn rẹ̀.",
+    },
+    hero: {
+      kicker: "Iye olùtà",
+      title: "Ọrọ̀-ajé ṣíṣe-kedere. Kò sí owó tó pamọ́.",
+      body: "Owó ètò, owó ìpolówó, owó àyè àkànṣe, ìpín ọjà, àti ìṣiṣẹ́ ìsanwó — gbogbo wọn hàn ṣáájú kí o tó tẹ ọjà jáde, kì í ṣe lẹ́yìn rẹ̀.",
+      primaryCta: "Forúkọsílẹ̀ gẹ́gẹ́ bí olùtà",
+      secondaryCta: "Pa dà sí àkójọ olùtà",
+      statsLabels: {
+        planTiers: "Ipele ètò",
+        trustTiers: "Ipele ìgbẹ́kẹ̀lé",
+        featuredSlots: "Àyè àkànṣe",
+      },
+      featuredSlotsValue: "A ṣàyẹ̀wò ní ọ̀kọ̀ọ̀kan",
+    },
+    plans: {
+      kicker: "Ètò ní ojú ẹyọ kan",
+      feeLabel: "Owó",
+      payoutLabel: "Ìsanwó",
+      includedLabel: "Tó wà",
+      includedSuffix: "ìpolówó",
+      extraListingLabel: "Ìpolówó àfikún",
+      featuredSlotLabel: "Àyè àkànṣe",
+      currencyPrefix: "NGN",
+      ctaPartner: "Bá wa sọ̀rọ̀ fún àdéhùn alábàápín",
+      ctaTemplate: "Bẹ̀rẹ̀ pẹ̀lú {plan}",
+    },
+    economics: {
+      kicker: "Bí HenryCo ṣe ń jèrè owó",
+      title: "À ti sọ ṣáájú, à ń yọ kúrò ní ojú gbangba.",
+      items: [
+        "A ó yọ ìpín ọjà kúrò nínú ìpòkànpò ẹgbẹ́-àṣẹ olùtà kọ̀ọ̀kan kí a tó tú ìsanwó sílẹ̀.",
+        "Owó ìpolówó máa wọ̀nà lẹ́yìn tí èdá ìpolówó tó wà nínú ètò tó ń ṣiṣẹ́ kúrò.",
+        "Àkànṣe àyè jẹ́ ìbéèrè owó dá yà, ó sì wà lábẹ́ àyẹ̀wò ìmọ̀dájú àti ìgbẹ́kẹ̀lé.",
+        "Owó ìṣiṣẹ́ ìsanwó ni a yọ kúrò nínú àpòpọ̀ ìpòkànpò olùtà, kò sí àrùn lẹ́yìn nà.",
+        "Iṣẹ́ àfikún iye Studio, Learn àti Logistics ń ṣí ọ̀nà àfikún ti owó-wíwọlé fún olùtà.",
+        "Ìpolówó tí oníṣẹ́ ń darí àti àyè tó ní onígbọ́wọ́ ń wà ní àyẹ̀wò, kì í ṣe rúdurùdu olùtìkára.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Àkókò ìsanwó gẹ́gẹ́ bí ipele ìgbẹ́kẹ̀lé",
+      title: "Ìwà tó dáadáa máa ń mú kí àkókò ìdádúró rẹlẹ̀.",
+    },
+    closing: {
+      kicker: "Ṣé o ti ṣetán láti fọ̀wọ́sí?",
+      title: "Ìfiránṣẹ́ máa ṣí nínú àkántì HenryCo rẹ.",
+      body: "O lè tọ́jú ọ̀rọ̀ ìkọ̀wé, kí o sì pa dà — iye tí ó hàn níbí ní yóò ṣiṣẹ́ ní kété tí mmebata olùtà bá parí.",
+      primaryCta: "Forúkọsílẹ̀ gẹ́gẹ́ bí olùtà",
+      secondaryCta: "Ìlànà ìgbẹ́kẹ̀lé",
+    },
+  },
   collections: {
     metadata: {
       titleTemplate: "{collection} — Ọjà HenryCo",
@@ -3273,6 +3925,61 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
       body: "Amincewa yana buɗe shirin mai sayarwa. Farashi, kudin shigarwa, da lokutan biyan kuɗi suna nan a sarari kafin ka buga — babu mamaki na kwangila daga baya.",
       primaryCta: "Fara aikace-aikacen",
       secondaryCta: "Ziyarci wurin aiki na mai sayarwa",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Farashin mai sayarwa — HenryCo Marketplace",
+      description:
+        "Kudin tsari, kudin shigarwa, kudin matsayi na musamman, kwamishan kasuwanci da sarrafa biyan kuɗi — duk ana ambata su a gaba, kafin a buga kayan, ba bayan ba.",
+    },
+    hero: {
+      kicker: "Farashin mai sayarwa",
+      title: "Tattalin arziki a sarari. Babu kuɗin ɓoye.",
+      body: "Kudin tsari, kudin shigarwa, kudin matsayi na musamman, kwamishan kasuwanci da sarrafa biyan kuɗi — duk ana ambata su a gaba kafin ka buga kayanka, ba bayan ba.",
+      primaryCta: "Nemi a matsayin mai sayarwa",
+      secondaryCta: "Koma ga taƙaitaccen mai sayarwa",
+      statsLabels: {
+        planTiers: "Matakan tsari",
+        trustTiers: "Matakan amana",
+        featuredSlots: "Wuraren musamman",
+      },
+      featuredSlotsValue: "Ana bita ɗaya-ɗaya",
+    },
+    plans: {
+      kicker: "Tsare-tsare a kallon daya",
+      feeLabel: "Kuɗi",
+      payoutLabel: "Biya",
+      includedLabel: "An haɗa",
+      includedSuffix: "shigarwa",
+      extraListingLabel: "Ƙarin shigarwa",
+      featuredSlotLabel: "Wurin musamman",
+      currencyPrefix: "NGN",
+      ctaPartner: "Tuntube mu don sharuɗɗan abokin tarayya",
+      ctaTemplate: "Fara da {plan}",
+    },
+    economics: {
+      kicker: "Yadda HenryCo ke samun kuɗi",
+      title: "An ambato a gaba, an cire a sarari.",
+      items: [
+        "Ana cire kwamishan kasuwanci daga kowane biyan ƙungiya-oda ta mai sayarwa kafin a saki biyan.",
+        "Kudin shigarwa na fara aiki bayan an gama ƙididdigar shigarwa da ke ciki na tsarin mai sayarwa.",
+        "Matsayi na musamman shi ne buƙatar biya daban, kuma yana ƙarƙashin bita na inganci da amana.",
+        "Ana cire kudin sarrafa biyan a ciki na taƙaitaccen biyan mai sayarwa, ba daga baya da mamaki ba.",
+        "Hidimomin ƙarin daraja na Studio, Learn da Logistics suna buɗe ƙarin hanyoyin kuɗi ga masu sayarwa.",
+        "Yaƙin neman wanda ma'aikaci ke gudanarwa da wuraren tallafi suna nan a buɗe don binciken, ba mai rikici na yi-da-kanka ba.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Lokacin biyan bisa matakin amana",
+      title: "Halayya mafi kyau na rage tsawon riƙewa.",
+    },
+    closing: {
+      kicker: "Shirye don nema?",
+      title: "Aikace-aikacen yana buɗewa a cikin asusun HenryCo naka.",
+      body: "Za ka iya adana zane ka dawo — farashin da yake bayyana anan zai fara aiki da zaran an gama shigar mai sayarwa.",
+      primaryCta: "Nemi a matsayin mai sayarwa",
+      secondaryCta: "Matsayin amana",
     },
   },
   collections: {
