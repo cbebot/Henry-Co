@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getHubPublicCopy } from "@henryco/i18n/server";
+import { getHubPublicLocale } from "../../../lib/locale-server";
 import CompanyPageClient from "../../components/CompanyPageClient";
 import {
   createFallbackCompanyPage,
@@ -19,13 +21,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TermsPage() {
-  const result = await getCompanyPage("terms").catch(() => ({ page: null, hasServerError: true }));
+  const [result, locale] = await Promise.all([
+    getCompanyPage("terms").catch(() => ({ page: null, hasServerError: true })),
+    getHubPublicLocale().catch(() => "en" as const),
+  ]);
+  const copy = getHubPublicCopy(locale);
 
   return (
     <CompanyPageClient
       pageKey="terms"
       initialData={result.page ?? createFallbackCompanyPage("terms")}
       serverWarning={result.hasServerError}
+      copy={copy.companyPage}
+      locale={locale}
     />
   );
 }

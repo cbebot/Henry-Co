@@ -5,10 +5,12 @@ export default function HomepageFaqBlock({
   heading,
   description,
   items,
+  eyebrow,
 }: {
   heading: string;
   description: string;
   items: HomepageFaqItem[];
+  eyebrow: string;
 }) {
   if (!items.length) return null;
 
@@ -17,7 +19,7 @@ export default function HomepageFaqBlock({
       <div className="rounded-[36px] border border-white/10 bg-white/[0.06] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-8">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/58">
-            Frequently asked
+            {eyebrow}
           </div>
 
           <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl text-white">

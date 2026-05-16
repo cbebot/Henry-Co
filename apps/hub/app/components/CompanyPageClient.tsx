@@ -5,6 +5,7 @@ import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronRight, Clock3, Globe2, Landmark, ShieldCheck } from "lucide-react";
+import type { HubPublicCopy } from "@henryco/i18n";
 import type { CompanyPageRecord } from "../lib/company-pages";
 import { normalizeCompanyPage } from "../lib/company-pages";
 import SectionBlock from "./SectionBlock";
@@ -17,13 +18,13 @@ function supabaseBrowser() {
   return createClient(url, anon);
 }
 
-function formatUpdatedAt(value?: string | null) {
-  if (!value) return "Recently updated";
+function formatUpdatedAt(value: string | null | undefined, locale: string, fallback: string) {
+  if (!value) return fallback;
 
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Recently updated";
+  if (Number.isNaN(date.getTime())) return fallback;
 
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -37,6 +38,8 @@ export default function CompanyPageClient({
   hideSections = false,
   hideFooter = false,
   hideHero = false,
+  copy,
+  locale,
 }: {
   pageKey: string;
   initialData: CompanyPageRecord;
@@ -57,6 +60,8 @@ export default function CompanyPageClient({
    * own above-the-fold layout (CHROME-01B FIX 3 contact form).
    */
   hideHero?: boolean;
+  copy: HubPublicCopy["companyPage"];
+  locale: string;
 }) {
   const reduceMotion = useReducedMotion();
   const [page, setPage] = useState<CompanyPageRecord>(initialData);
@@ -117,23 +122,23 @@ export default function CompanyPageClient({
     const items: Array<{ icon: React.ReactNode; label: string; value: string }> = [];
     items.push({
       icon: <Clock3 className="h-3.5 w-3.5" aria-hidden />,
-      label: "Updated",
-      value: formatUpdatedAt(page.updated_at),
+      label: copy.metaUpdated,
+      value: formatUpdatedAt(page.updated_at, locale, copy.recentlyUpdated),
     });
     if (page.subtitle) {
       items.push({
         icon: <Landmark className="h-3.5 w-3.5" aria-hidden />,
-        label: "Section",
+        label: copy.metaSection,
         value: page.subtitle,
       });
     }
     items.push({
       icon: <ShieldCheck className="h-3.5 w-3.5" aria-hidden />,
-      label: "Standard",
-      value: "Corporate-grade",
+      label: copy.metaStandard,
+      value: copy.metaCorporateGrade,
     });
     return items;
-  }, [page.subtitle, page.updated_at]);
+  }, [page.subtitle, page.updated_at, copy, locale]);
 
   /** Reject stats whose numeric value is zero. CMS-edited stats with
    * label="Management" value="0" otherwise survive (since "0" is non-empty)
@@ -311,7 +316,7 @@ export default function CompanyPageClient({
 
             {serverWarning ? (
               <p className="mt-4 border-l-2 border-[#d6a851]/55 pl-4 text-sm leading-7 text-white/72">
-                Some content may still be refreshing.
+                {copy.serverWarning}
               </p>
             ) : null}
           </motion.aside>
@@ -322,7 +327,7 @@ export default function CompanyPageClient({
       {/* Section navigator — hairline rule, no panel chrome */}
       {!hideSections && sectionLinks.length ? (
         <nav
-          aria-label="Page sections"
+          aria-label={copy.pageSectionsAria}
           className="mx-auto max-w-[88rem] px-5 pb-2 sm:px-8 lg:px-10"
         >
           <div className="flex gap-2 overflow-x-auto border-y border-white/10 py-3">
@@ -358,15 +363,13 @@ export default function CompanyPageClient({
         <div className="grid gap-8 border-t border-white/10 pt-10 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
-              Henry &amp; Co.
+              {copy.footerEyebrow}
             </p>
             <h2 className="mt-4 max-w-2xl text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.95rem]">
-              The same operating standard our customers, partners, and teams trust.
+              {copy.footerTitle}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
-              Every Henry &amp; Co. company surface — about, contact, governance, policy —
-              ships under one editorial standard so what you read in public matches what
-              we hold ourselves to in private.
+              {copy.footerBody}
             </p>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
@@ -375,10 +378,10 @@ export default function CompanyPageClient({
                 <Globe2 className="h-3.5 w-3.5" aria-hidden />
               </span>
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                Use case
+                {copy.footerUseCase}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                Customers · Partners · Media
+                {copy.footerUseCaseValue}
               </span>
             </li>
             <li className="flex items-baseline gap-3 border-b border-white/10 py-3">
@@ -386,10 +389,10 @@ export default function CompanyPageClient({
                 <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
               </span>
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                Standard
+                {copy.footerStandard}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                Structured &middot; Verified
+                {copy.footerStandardValue}
               </span>
             </li>
           </ul>

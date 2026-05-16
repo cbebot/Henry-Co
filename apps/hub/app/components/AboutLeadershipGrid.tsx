@@ -14,9 +14,11 @@ import {
   Users2,
   X,
 } from "lucide-react";
+import type { HubPublicCopy } from "@henryco/i18n";
 import type { CompanyPersonRecord } from "../lib/about-people";
 
 type LeadershipTone = "owner" | "manager" | "featured" | "default";
+type LeadershipCopy = HubPublicCopy["leadership"];
 
 function sortPeople(a: CompanyPersonRecord, b: CompanyPersonRecord) {
   return Number(a.sort_order ?? 100) - Number(b.sort_order ?? 100);
@@ -60,21 +62,21 @@ function getTone(person: CompanyPersonRecord): LeadershipTone {
   return "default";
 }
 
-function roleFor(person: CompanyPersonRecord) {
+function roleFor(person: CompanyPersonRecord, copy: LeadershipCopy) {
   return (
     person.role_title ||
     person.role_label ||
     person.job_title ||
     person.department ||
-    "Leadership profile"
+    copy.roleFallback
   );
 }
 
-function toneLabel(tone: LeadershipTone) {
-  if (tone === "owner") return "Owner";
-  if (tone === "manager") return "Management";
-  if (tone === "featured") return "Featured";
-  return "Leadership";
+function toneLabel(tone: LeadershipTone, copy: LeadershipCopy) {
+  if (tone === "owner") return copy.toneOwner;
+  if (tone === "manager") return copy.toneManagement;
+  if (tone === "featured") return copy.toneFeatured;
+  return copy.toneLeadership;
 }
 
 function toneClasses(tone: LeadershipTone) {
@@ -142,7 +144,15 @@ function ToneIcon({ tone }: { tone: LeadershipTone }) {
   return <BriefcaseBusiness className="h-3.5 w-3.5" />;
 }
 
-function PersonPills({ person, tone }: { person: CompanyPersonRecord; tone: LeadershipTone }) {
+function PersonPills({
+  person,
+  tone,
+  copy,
+}: {
+  person: CompanyPersonRecord;
+  tone: LeadershipTone;
+  copy: LeadershipCopy;
+}) {
   const classes = toneClasses(tone);
 
   return (
@@ -151,7 +161,7 @@ function PersonPills({ person, tone }: { person: CompanyPersonRecord; tone: Lead
         className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium ${classes.pill}`}
       >
         <ToneIcon tone={tone} />
-        {toneLabel(tone)}
+        {toneLabel(tone, copy)}
       </span>
 
       {person.division_slug ? (
@@ -166,9 +176,11 @@ function PersonPills({ person, tone }: { person: CompanyPersonRecord; tone: Lead
 function PersonCard({
   person,
   onOpen,
+  copy,
 }: {
   person: CompanyPersonRecord;
   onOpen: () => void;
+  copy: LeadershipCopy;
 }) {
   const tone = getTone(person);
   const classes = toneClasses(tone);
@@ -186,13 +198,13 @@ function PersonCard({
 
         <div className="min-w-0 flex-1">
           <h3 className="text-lg font-semibold tracking-tight text-white">{person.full_name}</h3>
-          <p className="mt-2 text-sm font-medium text-white/78">{roleFor(person)}</p>
+          <p className="mt-2 text-sm font-medium text-white/78">{roleFor(person, copy)}</p>
           {person.department ? (
             <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/42">
               {person.department}
             </p>
           ) : null}
-          <PersonPills person={person} tone={tone} />
+          <PersonPills person={person} tone={tone} copy={copy} />
         </div>
       </div>
 
@@ -210,7 +222,7 @@ function PersonCard({
               className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/82 transition hover:bg-white/10"
             >
               <Mail className="h-4 w-4" />
-              Contact
+              {copy.actionContact}
             </a>
           ) : null}
 
@@ -220,7 +232,7 @@ function PersonCard({
               className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/82 transition hover:bg-white/10"
             >
               <Phone className="h-4 w-4" />
-              Call
+              {copy.actionCall}
             </a>
           ) : null}
 
@@ -232,7 +244,7 @@ function PersonCard({
               className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-white/82 transition hover:bg-white/10"
             >
               <Linkedin className="h-4 w-4" />
-              LinkedIn
+              {copy.actionLinkedin}
             </a>
           ) : null}
 
@@ -242,7 +254,7 @@ function PersonCard({
               className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-black/25 px-3.5 py-2 text-sm text-white/86 transition hover:bg-white/10"
             >
               <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
-              Full profile
+              {copy.actionFullProfile}
             </button>
           ) : null}
         </div>
@@ -258,6 +270,7 @@ function LeadershipSection({
   icon,
   people,
   onOpen,
+  copy,
 }: {
   title: string;
   eyebrow: string;
@@ -265,6 +278,7 @@ function LeadershipSection({
   icon: React.ReactNode;
   people: CompanyPersonRecord[];
   onOpen: (person: CompanyPersonRecord) => void;
+  copy: LeadershipCopy;
 }) {
   if (!people.length) return null;
 
@@ -283,7 +297,7 @@ function LeadershipSection({
 
       <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {people.map((person) => (
-          <PersonCard key={person.id} person={person} onOpen={() => onOpen(person)} />
+          <PersonCard key={person.id} person={person} onOpen={() => onOpen(person)} copy={copy} />
         ))}
       </div>
     </section>
@@ -302,9 +316,11 @@ function MiniMetric({ label, value }: { label: string; value: string }) {
 function ProfileModal({
   person,
   onClose,
+  copy,
 }: {
   person: CompanyPersonRecord;
   onClose: () => void;
+  copy: LeadershipCopy;
 }) {
   const tone = getTone(person);
 
@@ -322,7 +338,7 @@ function ProfileModal({
         <button
           onClick={onClose}
           className="absolute right-4 top-4 z-10 rounded-full border border-white/10 bg-white/[0.06] p-2 text-white/80 transition hover:bg-white/10"
-          aria-label="Close profile"
+          aria-label={copy.modalCloseAria}
         >
           <X className="h-5 w-5" />
         </button>
@@ -333,13 +349,13 @@ function ProfileModal({
 
             <div className="min-w-0 flex-1">
               <div className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--accent)]">
-                Leadership profile
+                {copy.modalEyebrow}
               </div>
               <h3 className="mt-2 text-3xl font-semibold tracking-tight text-white">
                 {person.full_name}
               </h3>
-              <p className="mt-2 text-sm font-medium text-white/78">{roleFor(person)}</p>
-              <PersonPills person={person} tone={tone} />
+              <p className="mt-2 text-sm font-medium text-white/78">{roleFor(person, copy)}</p>
+              <PersonPills person={person} tone={tone} copy={copy} />
             </div>
           </div>
 
@@ -348,7 +364,7 @@ function ProfileModal({
               {person.long_bio ||
                 person.bio ||
                 person.short_bio ||
-                "This profile is part of the Henry & Co. public leadership board."}
+                copy.modalBioFallback}
             </p>
 
             {(person.email || person.phone || person.linkedin_url) ? (
@@ -393,8 +409,10 @@ function ProfileModal({
 
 export default function AboutLeadershipGrid({
   people,
+  copy,
 }: {
   people: CompanyPersonRecord[];
+  copy: LeadershipCopy;
 }) {
   const { owners, management, featured, others } = groupPeople(people);
   const [selected, setSelected] = useState<CompanyPersonRecord | null>(null);
@@ -425,19 +443,17 @@ export default function AboutLeadershipGrid({
             <Users2 className="h-6 w-6" />
           </div>
           <h2 className="mt-5 text-2xl font-semibold tracking-tight text-white">
-            Leadership information will appear here
+            {copy.emptyTitle}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/64">
-            Publish leadership profiles from the owner dashboard to present ownership,
-            management, and trusted company representatives in a polished public format.
+            {copy.emptyBody}
           </p>
         </div>
       </section>
     );
   }
 
-  const sharedSectionDescription =
-    "Profiles in this section reinforce the people, stewardship, and operational accountability behind the Henry & Co. group.";
+  const sharedSectionDescription = copy.sharedSectionDescription;
 
   return (
     <section className="mx-auto mt-14 max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -448,21 +464,20 @@ export default function AboutLeadershipGrid({
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/56">
                 <Users2 className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                Leadership board
+                {copy.headerEyebrow}
               </div>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                Leadership and stewardship
+                {copy.headerTitle}
               </h2>
               <p className="mt-3 max-w-3xl text-sm leading-8 text-white/64">
-                Meet the people shaping Henry & Co. across ownership, public leadership,
-                operational direction, and long-term accountability.
+                {copy.headerBody}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              <MiniMetric label="Profiles" value={String(board.length)} />
-              <MiniMetric label="Ownership" value={String(owners.length)} />
-              <MiniMetric label="Management" value={String(management.length)} />
+              <MiniMetric label={copy.metricProfiles} value={String(board.length)} />
+              <MiniMetric label={copy.metricOwnership} value={String(owners.length)} />
+              <MiniMetric label={copy.metricManagement} value={String(management.length)} />
             </div>
           </div>
         </div>
@@ -476,15 +491,15 @@ export default function AboutLeadershipGrid({
 
                   <div className="min-w-0">
                     <div className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--accent)]">
-                      Spotlight profile
+                      {copy.spotlightEyebrow}
                     </div>
                     <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">
                       {spotlight.full_name}
                     </h3>
                     <p className="mt-2 text-sm font-medium text-white/78">
-                      {roleFor(spotlight)}
+                      {roleFor(spotlight, copy)}
                     </p>
-                    <PersonPills person={spotlight} tone={getTone(spotlight)} />
+                    <PersonPills person={spotlight} tone={getTone(spotlight)} copy={copy} />
                   </div>
                 </div>
               </div>
@@ -494,7 +509,7 @@ export default function AboutLeadershipGrid({
                   {spotlight.long_bio ||
                     spotlight.short_bio ||
                     spotlight.bio ||
-                    "This leadership profile reflects the individuals responsible for direction, governance, and premium execution across the Henry & Co. group."}
+                    copy.spotlightBioFallback}
                 </p>
 
                 <div className="flex flex-wrap gap-3">
@@ -504,7 +519,7 @@ export default function AboutLeadershipGrid({
                       className="inline-flex items-center gap-2 rounded-2xl bg-[color:var(--accent)] px-4 py-3 text-sm font-semibold text-black transition hover:opacity-90"
                     >
                       <Mail className="h-4 w-4" />
-                      Contact
+                      {copy.actionContact}
                     </a>
                   ) : null}
                   {spotlight.linkedin_url ? (
@@ -515,7 +530,7 @@ export default function AboutLeadershipGrid({
                       className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/86 transition hover:bg-white/10"
                     >
                       <Linkedin className="h-4 w-4" />
-                      LinkedIn
+                      {copy.actionLinkedin}
                     </a>
                   ) : null}
                   {(spotlight.long_bio || spotlight.bio) ? (
@@ -524,7 +539,7 @@ export default function AboutLeadershipGrid({
                       className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-black/25 px-4 py-3 text-sm text-white/86 transition hover:bg-white/10"
                     >
                       <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
-                      Full profile
+                      {copy.actionFullProfile}
                     </button>
                   ) : null}
                 </div>
@@ -533,44 +548,48 @@ export default function AboutLeadershipGrid({
           ) : null}
 
           <LeadershipSection
-            title="Ownership"
-            eyebrow="Company leadership"
+            title={copy.sectionOwnershipTitle}
+            eyebrow={copy.sectionOwnershipEyebrow}
             description={sharedSectionDescription}
             icon={<Crown className="h-4 w-4" />}
             people={owners.filter((person) => person.id !== spotlight?.id)}
             onOpen={setSelected}
+            copy={copy}
           />
 
           <LeadershipSection
-            title="Management"
-            eyebrow="Operational leadership"
+            title={copy.sectionManagementTitle}
+            eyebrow={copy.sectionManagementEyebrow}
             description={sharedSectionDescription}
             icon={<ShieldCheck className="h-4 w-4" />}
             people={management.filter((person) => person.id !== spotlight?.id)}
             onOpen={setSelected}
+            copy={copy}
           />
 
           <LeadershipSection
-            title="Featured team"
-            eyebrow="Key representatives"
+            title={copy.sectionFeaturedTitle}
+            eyebrow={copy.sectionFeaturedEyebrow}
             description={sharedSectionDescription}
             icon={<Star className="h-4 w-4" />}
             people={featured.filter((person) => person.id !== spotlight?.id)}
             onOpen={setSelected}
+            copy={copy}
           />
 
           <LeadershipSection
-            title="Additional profiles"
-            eyebrow="Company representation"
+            title={copy.sectionOthersTitle}
+            eyebrow={copy.sectionOthersEyebrow}
             description={sharedSectionDescription}
             icon={<BriefcaseBusiness className="h-4 w-4" />}
             people={others.filter((person) => person.id !== spotlight?.id)}
             onOpen={setSelected}
+            copy={copy}
           />
         </div>
       </div>
 
-      {selected ? <ProfileModal person={selected} onClose={() => setSelected(null)} /> : null}
+      {selected ? <ProfileModal person={selected} onClose={() => setSelected(null)} copy={copy} /> : null}
     </section>
   );
 }

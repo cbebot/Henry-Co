@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getHubPublicCopy } from "@henryco/i18n/server";
+import { getHubPublicLocale } from "../../../lib/locale-server";
 import AboutHonestBlock from "../../components/AboutHonestBlock";
 import AboutLeadershipGrid from "../../components/AboutLeadershipGrid";
 import CompanyPageClient from "../../components/CompanyPageClient";
@@ -32,39 +34,33 @@ export default async function AboutPage() {
    * The static fallback is the source of truth when supabase is unavailable
    * (e.g., preview env without secrets) — the page still renders premium
    * content without the dynamic edits. */
-  const [pageResult, peopleResult, settingsResult, divisionsResult] =
-    await Promise.allSettled([
-      getCompanyPage("about"),
-      getPublishedPeople("about"),
-      getCompanySettings(),
-      getPublishedDivisions(),
+  const [pageResult, peopleResult, settingsResult, divisionsResult, locale] =
+    await Promise.all([
+      getCompanyPage("about").catch(() => ({ page: null, hasServerError: true })),
+      getPublishedPeople("about").catch(() => ({ people: [], hasServerError: true })),
+      getCompanySettings().catch(() => null),
+      getPublishedDivisions().catch(() => ({ divisions: [] })),
+      getHubPublicLocale().catch(() => "en" as const),
     ]);
-  const pageData = pageResult.status === "fulfilled"
-    ? pageResult.value
-    : { page: null, hasServerError: true };
-  const people = peopleResult.status === "fulfilled"
-    ? peopleResult.value
-    : { people: [], hasServerError: true };
-  const settings: CompanySettingsRecord = normalizeCompanySettings(
-    settingsResult.status === "fulfilled" ? settingsResult.value : null
-  );
-  const divisions: DivisionRow[] =
-    divisionsResult.status === "fulfilled" &&
-    Array.isArray(divisionsResult.value?.divisions)
-      ? divisionsResult.value.divisions
-      : [];
+  const settings: CompanySettingsRecord = normalizeCompanySettings(settingsResult);
+  const divisions: DivisionRow[] = Array.isArray(divisionsResult?.divisions)
+    ? divisionsResult.divisions
+    : [];
+  const copy = getHubPublicCopy(locale);
 
   return (
     <>
       <CompanyPageClient
         pageKey="about"
-        initialData={pageData.page ?? createFallbackCompanyPage("about")}
-        serverWarning={Boolean(pageData.hasServerError || people.hasServerError)}
+        initialData={pageResult.page ?? createFallbackCompanyPage("about")}
+        serverWarning={Boolean(pageResult.hasServerError || peopleResult.hasServerError)}
         hideSections
         hideFooter
+        copy={copy.companyPage}
+        locale={locale}
       />
-      <AboutHonestBlock settings={settings} divisions={divisions} />
-      <AboutLeadershipGrid people={people.people} />
+      <AboutHonestBlock settings={settings} divisions={divisions} copy={copy.aboutHonest} />
+      <AboutLeadershipGrid people={peopleResult.people} copy={copy.leadership} />
     </>
   );
 }

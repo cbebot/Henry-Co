@@ -582,7 +582,7 @@ export default function HubHomeClient({
               <span>{copy.hero.badgeBefore.replace(/\s+·\s+press\s*$/, "")}</span>
               <span className="hidden sm:inline-flex sm:items-center sm:gap-1">
                 <span aria-hidden>·</span>
-                <span>press</span>
+                <span>{copy.hero.pressHint}</span>
                 <b>/</b>
                 {copy.hero.badgeAfter}
               </span>
@@ -787,14 +787,14 @@ export default function HubHomeClient({
                   ) : null}
                 </div>
                 {query !== deferredQuery ? (
-                  <div className="text-xs text-white/55">Searching...</div>
+                  <div className="text-xs text-white/55">{copy.directory.searchingState}</div>
                 ) : null}
 
                 <Link
                   href="/search"
                   className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 text-sm text-white/88 transition hover:bg-white/10"
                 >
-                  Search HenryCo workflows and help
+                  {copy.directory.searchHelpLink}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
 
@@ -1275,29 +1275,29 @@ function PageFooter({
       <div className="border-t border-white/10 px-4 py-5 text-xs text-white/45 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>© {new Date().getFullYear()} {brandTitle}. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} {brandTitle}. {copy.footer.copyrightAllRightsReserved}</span>
             <a
               href="/privacy"
               className="text-white/55 transition hover:text-white"
             >
-              Privacy
+              {copy.footer.linkPrivacy}
             </a>
             <a
               href="/terms"
               className="text-white/55 transition hover:text-white"
             >
-              Terms
+              {copy.footer.linkTerms}
             </a>
             <a
               href="/preferences"
               className="text-white/55 transition hover:text-white"
             >
-              Preferences
+              {copy.footer.linkPreferences}
             </a>
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-amber-300/85" />
-            Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+            {copy.footer.designedBy}
           </span>
         </div>
       </div>
@@ -1404,8 +1404,9 @@ function HeroDivisionTile({
   stat: DivisionLiveStat | null;
   onOpen: () => void;
 }) {
+  const { copy } = useHubChrome();
   const accent = getAccent(division.accent);
-  const cta = stat?.cta || "Open division";
+  const cta = stat?.cta || copy.cards.openDivision;
   // Live KPI from the Supabase live_stats lookup — only shown when real.
   // The previous fallback chain duplicated the tagline/description that's
   // already rendered above, which produced the truncated "Premium d..."
@@ -1414,7 +1415,7 @@ function HeroDivisionTile({
   const purpose =
     division.tagline ||
     division.description ||
-    "A focused Henry & Co. operating business.";
+    copy.cards.divisionFallbackTile;
 
   const handleVisit = (event: React.MouseEvent) => {
     if (division.primary_url) {
