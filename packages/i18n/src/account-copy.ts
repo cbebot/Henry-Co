@@ -1,5 +1,5 @@
 import type { AppLocale } from "./locales";
-import { deepMergeMessages } from "./merge-messages";
+import { deepMergeMessages, type DeepPartial } from "./merge-messages";
 import {
   ACCOUNT_COPY_AR,
   ACCOUNT_COPY_ES,
@@ -263,6 +263,184 @@ export type AccountCopy = {
     description: string;
     reload: string;
     contactSupport: string;
+  };
+  activity: {
+    title: string;
+    description: string;
+    emptyTitle: string;
+    emptyDescription: string;
+    statusLabels: {
+      pending: string;
+      open: string;
+      updated: string;
+      completed: string;
+      resolved: string;
+      paid: string;
+      failed: string;
+      active: string;
+      refunded: string;
+    };
+    filters: {
+      heading: string;
+      reset: string;
+      fromLabel: string;
+      toLabel: string;
+      amountFromLabel: string;
+      amountToLabel: string;
+      divisionEyebrow: string;
+      typeEyebrow: string;
+      statusEyebrow: string;
+      pdfNote: string;
+      downloadLabel: string;
+      downloadFilename: string;
+      shareTitle: string;
+      typeLabels: {
+        payment: string;
+        wallet_credit: string;
+        wallet_debit: string;
+        refund: string;
+        withdrawal: string;
+        fee: string;
+      };
+    };
+  };
+  notifications: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      ariaOverview: string;
+      ariaVolume: string;
+      ariaByDivision: string;
+      headlineZero: string;
+      headlineOne: string;
+      headlineFew: string;
+      headlineMany: string;
+      blurbZero: string;
+      blurbStale: string;
+      blurbToday: string;
+      tileUnreadLabel: string;
+      tileUnreadFoot: string;
+      tileTodayLabel: string;
+      tileTodayFoot: string;
+      tileWeekLabel: string;
+      tileWeekFoot: string;
+      byDivision: string;
+      emptyDivisions: string;
+      lastActivityFallback: string;
+      justNow: string;
+      minutesAgo: string;
+      hoursAgo: string;
+      daysAgo: string;
+    };
+    inbox: {
+      heading: string;
+      meta: string;
+    };
+    filters: {
+      all: string;
+      unread: string;
+      allSources: string;
+      activeFilter: string;
+    };
+    feed: {
+      unreadSectionKicker: string;
+      unreadSectionTitle: string;
+      recentSectionKicker: string;
+      recentSectionTitle: string;
+      unreadBadge: string;
+      openMessageBoard: string;
+    };
+    swipe: {
+      archive: string;
+      delete: string;
+      markRead: string;
+      markUnread: string;
+    };
+    emptyState: {
+      inboxTitle: string;
+      inboxBody: string;
+      filterTitle: string;
+      filterBody: string;
+    };
+    markAllRead: {
+      label: string;
+      pending: string;
+      spinner: string;
+    };
+    footer: {
+      recentlyDeleted: string;
+    };
+  };
+  calendar: {
+    metaTitle: string;
+    metaDescription: string;
+    heroAriaLabel: string;
+    heroEyebrow: string;
+    tileVolumeAriaLabel: string;
+    tileEventsLabel: string;
+    tileEventsFoot: string;
+    tilePortalsLabel: string;
+    tilePortalsFootEmpty: string;
+    tilePortalsFootSingular: string;
+    tilePortalsFootPlural: string;
+    tileNextLabel: string;
+    tileNextEmpty: string;
+    sideAriaLabel: string;
+    sideLabel: string;
+    sideTitleEmpty: string;
+    sideTitleSingular: string;
+    sideTitlePlural: string;
+    sideBody: string;
+    agendaTitle: string;
+    agendaAriaLabel: string;
+    agendaMetaEmpty: string;
+    agendaMetaSingular: string;
+    agendaMetaPlural: string;
+    emptyEyebrow: string;
+    emptyTitle: string;
+    emptyBody: string;
+    dayMetaSingular: string;
+    dayMetaPlural: string;
+    eventTimeAriaLabel: string;
+    eventCta: string;
+    headline: {
+      empty: string;
+      calmOne: string;
+      calmMany: string;
+      busy: string;
+      packed: string;
+    };
+    blurb: {
+      empty: string;
+      calm: string;
+      busyOrPacked: string;
+    };
+    kindLabels: {
+      care_booking: string;
+      property_viewing: string;
+      jobs_interview: string;
+      learn_class: string;
+      studio_milestone: string;
+      logistics_pickup: string;
+      logistics_delivery: string;
+      room_session: string;
+    };
+    dayLabels: {
+      today: string;
+      tomorrow: string;
+      yesterday: string;
+    };
+    portalLabels: {
+      care: string;
+      property: string;
+      jobs: string;
+      studio: string;
+      learn: string;
+      logistics: string;
+    };
   };
 };
 
@@ -570,9 +748,194 @@ const EN: AccountCopy = {
     reload: "Reload this view",
     contactSupport: "Contact support",
   },
+  activity: {
+    title: "Activity",
+    description: "Everything you’ve done across all HenryCo divisions.",
+    emptyTitle: "No activity yet",
+    emptyDescription:
+      "Your cross-division activity will appear here as you use HenryCo services.",
+    statusLabels: {
+      pending: "Pending",
+      open: "Open",
+      updated: "Updated",
+      completed: "Completed",
+      resolved: "Resolved",
+      paid: "Paid",
+      failed: "Failed",
+      active: "Active",
+      refunded: "Refunded",
+    },
+    filters: {
+      heading: "Filter & download",
+      reset: "Reset",
+      fromLabel: "From",
+      toLabel: "To",
+      amountFromLabel: "Amount from (₦)",
+      amountToLabel: "Amount to (₦)",
+      divisionEyebrow: "Division",
+      typeEyebrow: "Type",
+      statusEyebrow: "Status",
+      pdfNote:
+        "The PDF carries every filter you set above as part of the document header — what you see is what you download.",
+      downloadLabel: "Download statement",
+      downloadFilename: "HenryCo-Transaction-History.pdf",
+      shareTitle: "HenryCo Transaction History",
+      typeLabels: {
+        payment: "payment",
+        wallet_credit: "wallet credit",
+        wallet_debit: "wallet debit",
+        refund: "refund",
+        withdrawal: "withdrawal",
+        fee: "fee",
+      },
+    },
+  },
+  notifications: {
+    metadata: {
+      title: "Notifications",
+      description: "Every HenryCo update — wallet, support, jobs, marketplace, care, and more — in one live inbox.",
+    },
+    hero: {
+      eyebrow: "HenryCo · live notifications",
+      ariaOverview: "Notifications overview",
+      ariaVolume: "Notification volume",
+      ariaByDivision: "By division",
+      headlineZero: "Inbox zero across HenryCo.",
+      headlineOne: "One thing wants your attention.",
+      headlineFew: "{count} notifications to triage.",
+      headlineMany: "{count} updates across your divisions.",
+      blurbZero: "Anything HenryCo sends arrives here in real time — wallet, support, jobs, marketplace, care, and more.",
+      blurbStale: "Older items have stacked up. Swipe to archive, tap to open, or jump straight to a thread.",
+      blurbToday: "{count} arrived today. Use the filters to focus on a single division, or sweep through unread only.",
+      tileUnreadLabel: "Unread",
+      tileUnreadFoot: "Awaiting your eyes",
+      tileTodayLabel: "Today",
+      tileTodayFoot: "Arrived in the last 24h",
+      tileWeekLabel: "This week",
+      tileWeekFoot: "Last activity {when}",
+      byDivision: "By division",
+      emptyDivisions: "Nothing has arrived yet.",
+      lastActivityFallback: "no recent activity",
+      justNow: "just now",
+      minutesAgo: "{count}m ago",
+      hoursAgo: "{count}h ago",
+      daysAgo: "{count}d ago",
+    },
+    inbox: {
+      heading: "Inbox",
+      meta: "Tap to open, swipe to archive — filters work across every division.",
+    },
+    filters: {
+      all: "All",
+      unread: "Unread",
+      allSources: "All sources",
+      activeFilter: "active filter",
+    },
+    feed: {
+      unreadSectionKicker: "Unread",
+      unreadSectionTitle: "Needs your attention",
+      recentSectionKicker: "Recent",
+      recentSectionTitle: "Cleared or reviewed activity",
+      unreadBadge: "Unread",
+      openMessageBoard: "Open message board",
+    },
+    swipe: {
+      archive: "Archive",
+      delete: "Delete",
+      markRead: "Mark as read",
+      markUnread: "Mark as unread",
+    },
+    emptyState: {
+      inboxTitle: "All caught up.",
+      inboxBody: "Activity from across HenryCo surfaces here as it happens.",
+      filterTitle: "No activity in this view.",
+      filterBody: "Try a different filter.",
+    },
+    markAllRead: {
+      label: "Mark all read",
+      pending: "Marking all read...",
+      spinner: "Marking all read",
+    },
+    footer: {
+      recentlyDeleted: "Recently deleted",
+    },
+  },
+  calendar: {
+    metaTitle: "Calendar · HenryCo",
+    metaDescription:
+      "Cross-portal agenda — care bookings, property viewings, jobs interviews, studio milestones, learn classes, logistics windows.",
+    heroAriaLabel: "Calendar overview",
+    heroEyebrow: "HenryCo · cross-portal calendar",
+    tileVolumeAriaLabel: "Calendar volume",
+    tileEventsLabel: "Events",
+    tileEventsFoot: "Next 28 days",
+    tilePortalsLabel: "Portals",
+    tilePortalsFootEmpty: "Care, property, jobs, studio, learn, logistics",
+    tilePortalsFootSingular: "One division scheduled",
+    tilePortalsFootPlural: "{count} divisions scheduled",
+    tileNextLabel: "Next up",
+    tileNextEmpty: "Nothing scheduled in the window",
+    sideAriaLabel: "By portal",
+    sideLabel: "By portal",
+    sideTitleEmpty: "No scheduling yet",
+    sideTitleSingular: "One portal active",
+    sideTitlePlural: "{count} portals in the mix",
+    sideBody:
+      "Bookings, viewings, interviews, milestones, classes and dispatch windows all surface here in chronological order.",
+    agendaTitle: "Agenda",
+    agendaAriaLabel: "Scheduled events by day",
+    agendaMetaEmpty: "Nothing scheduled in the 28-day window",
+    agendaMetaSingular: "{count} event · next 28 days",
+    agendaMetaPlural: "{count} events · next 28 days",
+    emptyEyebrow: "Calendar quiet",
+    emptyTitle: "Nothing scheduled in the next 28 days.",
+    emptyBody:
+      "Anything you book — a care pickup, a property viewing, a hiring interview, a learn class, a studio milestone, a logistics window — will land in this agenda automatically. Filter chips will appear once portals begin scheduling.",
+    dayMetaSingular: "{count} event",
+    dayMetaPlural: "{count} events",
+    eventTimeAriaLabel: "Event time",
+    eventCta: "Open",
+    headline: {
+      empty: "Nothing scheduled in the next 28 days.",
+      calmOne: "One thing on the agenda.",
+      calmMany: "{count} events in the next 28 days.",
+      busy: "{count} events scheduled across {portals} portals.",
+      packed: "{count} events queued — block focus time wisely.",
+    },
+    blurb: {
+      empty:
+        "Care bookings, property viewings, jobs interviews, studio milestones, learn classes and logistics windows all surface here.",
+      calm: "Tap a card to jump to its portal. The agenda will refresh automatically as new scheduling lands.",
+      busyOrPacked:
+        "Filter chips at the top of the agenda narrow to a single portal — useful when one division is loud.",
+    },
+    kindLabels: {
+      care_booking: "Care booking",
+      property_viewing: "Property viewing",
+      jobs_interview: "Interview",
+      learn_class: "Live class",
+      studio_milestone: "Studio milestone",
+      logistics_pickup: "Pickup window",
+      logistics_delivery: "Delivery window",
+      room_session: "Room session",
+    },
+    dayLabels: {
+      today: "Today",
+      tomorrow: "Tomorrow",
+      yesterday: "Yesterday",
+    },
+    portalLabels: {
+      care: "Care",
+      property: "Property",
+      jobs: "Jobs",
+      studio: "Studio",
+      learn: "Learn",
+      logistics: "Logistics",
+    },
+  },
 };
 
-const FR: Partial<AccountCopy> = {
+const FR: DeepPartial<AccountCopy> = {
   trustTierLabels: {
     basic: "Basique",
     verified: "Vérifié",
@@ -894,9 +1257,194 @@ const FR: Partial<AccountCopy> = {
     reload: "Recharger cette vue",
     contactSupport: "Contacter le support",
   },
+  activity: {
+    title: "Activité",
+    description: "Tout ce que vous avez fait dans les divisions HenryCo.",
+    emptyTitle: "Aucune activité pour le moment",
+    emptyDescription:
+      "Votre activité inter-division apparaîtra ici au fur et à mesure de votre utilisation des services HenryCo.",
+    statusLabels: {
+      pending: "En attente",
+      open: "Ouvert",
+      updated: "Mis à jour",
+      completed: "Terminé",
+      resolved: "Résolu",
+      paid: "Payé",
+      failed: "Échoué",
+      active: "Actif",
+      refunded: "Remboursé",
+    },
+    filters: {
+      heading: "Filtrer et télécharger",
+      reset: "Réinitialiser",
+      fromLabel: "Du",
+      toLabel: "Au",
+      amountFromLabel: "Montant minimum (₦)",
+      amountToLabel: "Montant maximum (₦)",
+      divisionEyebrow: "Division",
+      typeEyebrow: "Type",
+      statusEyebrow: "Statut",
+      pdfNote:
+        "Le PDF intègre tous les filtres définis ci-dessus dans l’en-tête du document — ce que vous voyez est ce que vous téléchargez.",
+      downloadLabel: "Télécharger le relevé",
+      downloadFilename: "HenryCo-Historique-Transactions.pdf",
+      shareTitle: "Historique des transactions HenryCo",
+      typeLabels: {
+        payment: "paiement",
+        wallet_credit: "crédit portefeuille",
+        wallet_debit: "débit portefeuille",
+        refund: "remboursement",
+        withdrawal: "retrait",
+        fee: "frais",
+      },
+    },
+  },
+  calendar: {
+    metaTitle: "Calendrier · HenryCo",
+    metaDescription:
+      "Agenda multi-portails — rendez-vous Care, visites de biens, entretiens Jobs, jalons Studio, cours Learn, créneaux logistiques.",
+    heroAriaLabel: "Aperçu du calendrier",
+    heroEyebrow: "HenryCo · calendrier multi-portails",
+    tileVolumeAriaLabel: "Volume du calendrier",
+    tileEventsLabel: "Événements",
+    tileEventsFoot: "28 prochains jours",
+    tilePortalsLabel: "Portails",
+    tilePortalsFootEmpty: "Care, immobilier, jobs, studio, learn, logistique",
+    tilePortalsFootSingular: "Une division programmée",
+    tilePortalsFootPlural: "{count} divisions programmées",
+    tileNextLabel: "Prochain",
+    tileNextEmpty: "Rien de prévu dans la fenêtre",
+    sideAriaLabel: "Par portail",
+    sideLabel: "Par portail",
+    sideTitleEmpty: "Aucune planification pour l’instant",
+    sideTitleSingular: "Un portail actif",
+    sideTitlePlural: "{count} portails en jeu",
+    sideBody:
+      "Réservations, visites, entretiens, jalons, cours et créneaux d’expédition apparaissent ici par ordre chronologique.",
+    agendaTitle: "Agenda",
+    agendaAriaLabel: "Événements programmés par jour",
+    agendaMetaEmpty: "Rien de prévu dans la fenêtre de 28 jours",
+    agendaMetaSingular: "{count} événement · 28 prochains jours",
+    agendaMetaPlural: "{count} événements · 28 prochains jours",
+    emptyEyebrow: "Calendrier calme",
+    emptyTitle: "Rien de prévu dans les 28 prochains jours.",
+    emptyBody:
+      "Tout ce que vous réservez — un retrait Care, une visite de bien, un entretien d’embauche, un cours Learn, un jalon Studio, un créneau logistique — atterrira ici automatiquement. Les filtres apparaîtront dès que les portails commenceront à planifier.",
+    dayMetaSingular: "{count} événement",
+    dayMetaPlural: "{count} événements",
+    eventTimeAriaLabel: "Heure de l’événement",
+    eventCta: "Ouvrir",
+    headline: {
+      empty: "Rien de prévu dans les 28 prochains jours.",
+      calmOne: "Un seul élément à l’agenda.",
+      calmMany: "{count} événements dans les 28 prochains jours.",
+      busy: "{count} événements programmés sur {portals} portails.",
+      packed: "{count} événements en file — bloquez votre temps de concentration.",
+    },
+    blurb: {
+      empty:
+        "Réservations Care, visites de biens, entretiens Jobs, jalons Studio, cours Learn et créneaux logistiques apparaissent tous ici.",
+      calm: "Touchez une carte pour rejoindre son portail. L’agenda se rafraîchit automatiquement quand de nouvelles planifications arrivent.",
+      busyOrPacked:
+        "Les filtres en haut de l’agenda restreignent à un portail — utile quand une division est bruyante.",
+    },
+    kindLabels: {
+      care_booking: "Réservation Care",
+      property_viewing: "Visite de bien",
+      jobs_interview: "Entretien",
+      learn_class: "Cours en direct",
+      studio_milestone: "Jalon Studio",
+      logistics_pickup: "Créneau d’enlèvement",
+      logistics_delivery: "Créneau de livraison",
+      room_session: "Session de salle",
+    },
+    dayLabels: {
+      today: "Aujourd’hui",
+      tomorrow: "Demain",
+      yesterday: "Hier",
+    },
+    portalLabels: {
+      care: "Care",
+      property: "Immobilier",
+      jobs: "Jobs",
+      studio: "Studio",
+      learn: "Learn",
+      logistics: "Logistique",
+    },
+  },
+  notifications: {
+    metadata: {
+      title: "Notifications",
+      description: "Toutes les mises à jour HenryCo — portefeuille, support, jobs, marketplace, care, et plus — dans une boîte de réception en direct.",
+    },
+    hero: {
+      eyebrow: "HenryCo · notifications en direct",
+      ariaOverview: "Aperçu des notifications",
+      ariaVolume: "Volume des notifications",
+      ariaByDivision: "Par division",
+      headlineZero: "Boîte vide à travers HenryCo.",
+      headlineOne: "Un élément attend votre attention.",
+      headlineFew: "{count} notifications à trier.",
+      headlineMany: "{count} mises à jour à travers vos divisions.",
+      blurbZero: "Tout ce que HenryCo envoie arrive ici en temps réel — portefeuille, support, jobs, marketplace, care, et plus.",
+      blurbStale: "Des éléments plus anciens se sont accumulés. Glissez pour archiver, touchez pour ouvrir, ou sautez directement vers un fil.",
+      blurbToday: "{count} sont arrivées aujourd’hui. Utilisez les filtres pour vous concentrer sur une seule division, ou balayez uniquement les non lues.",
+      tileUnreadLabel: "Non lues",
+      tileUnreadFoot: "En attente de votre regard",
+      tileTodayLabel: "Aujourd’hui",
+      tileTodayFoot: "Arrivées dans les dernières 24h",
+      tileWeekLabel: "Cette semaine",
+      tileWeekFoot: "Dernière activité {when}",
+      byDivision: "Par division",
+      emptyDivisions: "Rien n’est encore arrivé.",
+      lastActivityFallback: "aucune activité récente",
+      justNow: "à l’instant",
+      minutesAgo: "il y a {count} min",
+      hoursAgo: "il y a {count} h",
+      daysAgo: "il y a {count} j",
+    },
+    inbox: {
+      heading: "Boîte de réception",
+      meta: "Touchez pour ouvrir, glissez pour archiver — les filtres fonctionnent dans toutes les divisions.",
+    },
+    filters: {
+      all: "Tout",
+      unread: "Non lues",
+      allSources: "Toutes les sources",
+      activeFilter: "filtre actif",
+    },
+    feed: {
+      unreadSectionKicker: "Non lues",
+      unreadSectionTitle: "Demande votre attention",
+      recentSectionKicker: "Récent",
+      recentSectionTitle: "Activité effacée ou revue",
+      unreadBadge: "Non lu",
+      openMessageBoard: "Ouvrir le fil de messages",
+    },
+    swipe: {
+      archive: "Archiver",
+      delete: "Supprimer",
+      markRead: "Marquer comme lu",
+      markUnread: "Marquer comme non lu",
+    },
+    emptyState: {
+      inboxTitle: "Tout est à jour.",
+      inboxBody: "L’activité de l’ensemble de HenryCo apparaît ici en temps réel.",
+      filterTitle: "Aucune activité dans cette vue.",
+      filterBody: "Essayez un filtre différent.",
+    },
+    markAllRead: {
+      label: "Tout marquer comme lu",
+      pending: "Marquage en cours...",
+      spinner: "Marquage en cours",
+    },
+    footer: {
+      recentlyDeleted: "Supprimées récemment",
+    },
+  },
 };
 
-const DE: Partial<AccountCopy> = {
+const DE: DeepPartial<AccountCopy> = {
   "trustTierLabels": {
     "basic": "Einfach",
     "verified": "Verifiziert",
@@ -1153,10 +1701,193 @@ const DE: Partial<AccountCopy> = {
     "description": "Der Fehler wurde zur Untersuchung erfasst. Laden Sie diese Oberfläche neu und fahren Sie mit dem letzten stabilen Zustand fort.",
     "reload": "Laden Sie diese Ansicht neu",
     "contactSupport": "Kontaktieren Sie den Support"
+  },
+  "activity": {
+    "title": "Aktivität",
+    "description": "Alles, was Sie über alle HenryCo-Bereiche hinweg getan haben.",
+    "emptyTitle": "Noch keine Aktivität",
+    "emptyDescription": "Ihre bereichsübergreifende Aktivität erscheint hier, sobald Sie HenryCo-Dienste nutzen.",
+    "statusLabels": {
+      "pending": "Ausstehend",
+      "open": "Offen",
+      "updated": "Aktualisiert",
+      "completed": "Abgeschlossen",
+      "resolved": "Gelöst",
+      "paid": "Bezahlt",
+      "failed": "Fehlgeschlagen",
+      "active": "Aktiv",
+      "refunded": "Erstattet"
+    },
+    "filters": {
+      "heading": "Filtern und herunterladen",
+      "reset": "Zurücksetzen",
+      "fromLabel": "Von",
+      "toLabel": "Bis",
+      "amountFromLabel": "Betrag ab (₦)",
+      "amountToLabel": "Betrag bis (₦)",
+      "divisionEyebrow": "Bereich",
+      "typeEyebrow": "Typ",
+      "statusEyebrow": "Status",
+      "pdfNote": "Das PDF übernimmt jeden Filter aus dem Dokumentkopf — was Sie sehen, laden Sie herunter.",
+      "downloadLabel": "Auszug herunterladen",
+      "downloadFilename": "HenryCo-Transaktionsverlauf.pdf",
+      "shareTitle": "HenryCo Transaktionsverlauf",
+      "typeLabels": {
+        "payment": "Zahlung",
+        "wallet_credit": "Wallet-Gutschrift",
+        "wallet_debit": "Wallet-Belastung",
+        "refund": "Rückerstattung",
+        "withdrawal": "Auszahlung",
+        "fee": "Gebühr"
+      }
+    }
+  },
+  calendar: {
+    metaTitle: "Kalender · HenryCo",
+    metaDescription:
+      "Portalübergreifende Agenda — Care-Buchungen, Besichtigungen, Bewerbungsgespräche, Studio-Meilensteine, Learn-Kurse, Logistikfenster.",
+    heroAriaLabel: "Kalenderübersicht",
+    heroEyebrow: "HenryCo · portalübergreifender Kalender",
+    tileVolumeAriaLabel: "Kalendervolumen",
+    tileEventsLabel: "Termine",
+    tileEventsFoot: "Nächste 28 Tage",
+    tilePortalsLabel: "Portale",
+    tilePortalsFootEmpty: "Care, Immobilien, Jobs, Studio, Learn, Logistik",
+    tilePortalsFootSingular: "Eine Abteilung geplant",
+    tilePortalsFootPlural: "{count} Abteilungen geplant",
+    tileNextLabel: "Als Nächstes",
+    tileNextEmpty: "Nichts im Zeitfenster geplant",
+    sideAriaLabel: "Nach Portal",
+    sideLabel: "Nach Portal",
+    sideTitleEmpty: "Noch keine Planung",
+    sideTitleSingular: "Ein Portal aktiv",
+    sideTitlePlural: "{count} Portale im Mix",
+    sideBody:
+      "Buchungen, Besichtigungen, Gespräche, Meilensteine, Kurse und Versandfenster erscheinen hier in chronologischer Reihenfolge.",
+    agendaTitle: "Agenda",
+    agendaAriaLabel: "Geplante Termine nach Tag",
+    agendaMetaEmpty: "Nichts im 28-Tage-Fenster geplant",
+    agendaMetaSingular: "{count} Termin · nächste 28 Tage",
+    agendaMetaPlural: "{count} Termine · nächste 28 Tage",
+    emptyEyebrow: "Kalender ruhig",
+    emptyTitle: "Nichts in den nächsten 28 Tagen geplant.",
+    emptyBody:
+      "Alles was Sie buchen — eine Care-Abholung, eine Besichtigung, ein Bewerbungsgespräch, einen Learn-Kurs, einen Studio-Meilenstein, ein Logistikfenster — landet automatisch in dieser Agenda. Filter-Chips erscheinen, sobald Portale mit der Planung beginnen.",
+    dayMetaSingular: "{count} Termin",
+    dayMetaPlural: "{count} Termine",
+    eventTimeAriaLabel: "Terminzeit",
+    eventCta: "Öffnen",
+    headline: {
+      empty: "Nichts in den nächsten 28 Tagen geplant.",
+      calmOne: "Ein Eintrag auf der Agenda.",
+      calmMany: "{count} Termine in den nächsten 28 Tagen.",
+      busy: "{count} Termine geplant über {portals} Portale.",
+      packed: "{count} Termine in der Warteschlange — planen Sie Fokuszeit klug ein.",
+    },
+    blurb: {
+      empty:
+        "Care-Buchungen, Besichtigungen, Bewerbungsgespräche, Studio-Meilensteine, Learn-Kurse und Logistikfenster erscheinen alle hier.",
+      calm: "Tippen Sie auf eine Karte, um zum zugehörigen Portal zu springen. Die Agenda aktualisiert sich automatisch, sobald neue Planungen eintreffen.",
+      busyOrPacked:
+        "Filter-Chips oben in der Agenda grenzen auf ein einzelnes Portal ein — nützlich, wenn eine Abteilung laut ist.",
+    },
+    kindLabels: {
+      care_booking: "Care-Buchung",
+      property_viewing: "Besichtigung",
+      jobs_interview: "Vorstellungsgespräch",
+      learn_class: "Live-Kurs",
+      studio_milestone: "Studio-Meilenstein",
+      logistics_pickup: "Abholfenster",
+      logistics_delivery: "Lieferfenster",
+      room_session: "Raum-Sitzung",
+    },
+    dayLabels: {
+      today: "Heute",
+      tomorrow: "Morgen",
+      yesterday: "Gestern",
+    },
+    portalLabels: {
+      care: "Care",
+      property: "Immobilien",
+      jobs: "Jobs",
+      studio: "Studio",
+      learn: "Learn",
+      logistics: "Logistik",
+    },
+  },
+  notifications: {
+    metadata: {
+      title: "Benachrichtigungen",
+      description: "Jedes HenryCo-Update – Wallet, Support, Jobs, Marktplatz, Care und mehr – in einem Live-Posteingang.",
+    },
+    hero: {
+      eyebrow: "HenryCo · Live-Benachrichtigungen",
+      ariaOverview: "Benachrichtigungsübersicht",
+      ariaVolume: "Benachrichtigungsvolumen",
+      ariaByDivision: "Nach Bereich",
+      headlineZero: "Posteingang null bei HenryCo.",
+      headlineOne: "Eine Sache braucht Ihre Aufmerksamkeit.",
+      headlineFew: "{count} Benachrichtigungen zu sortieren.",
+      headlineMany: "{count} Updates aus Ihren Bereichen.",
+      blurbZero: "Alles, was HenryCo sendet, kommt hier in Echtzeit an – Wallet, Support, Jobs, Marktplatz, Care und mehr.",
+      blurbStale: "Ältere Einträge haben sich angesammelt. Wischen zum Archivieren, tippen zum Öffnen oder direkt zu einem Thread springen.",
+      blurbToday: "Heute sind {count} eingetroffen. Nutzen Sie die Filter, um sich auf einen einzelnen Bereich zu konzentrieren, oder durchlaufen Sie nur Ungelesenes.",
+      tileUnreadLabel: "Ungelesen",
+      tileUnreadFoot: "Wartet auf Ihren Blick",
+      tileTodayLabel: "Heute",
+      tileTodayFoot: "Eingetroffen in den letzten 24h",
+      tileWeekLabel: "Diese Woche",
+      tileWeekFoot: "Letzte Aktivität {when}",
+      byDivision: "Nach Bereich",
+      emptyDivisions: "Noch nichts eingetroffen.",
+      lastActivityFallback: "keine aktuelle Aktivität",
+      justNow: "gerade eben",
+      minutesAgo: "vor {count} Min.",
+      hoursAgo: "vor {count} Std.",
+      daysAgo: "vor {count} T.",
+    },
+    inbox: {
+      heading: "Posteingang",
+      meta: "Tippen zum Öffnen, wischen zum Archivieren – Filter wirken über alle Bereiche.",
+    },
+    filters: {
+      all: "Alle",
+      unread: "Ungelesen",
+      allSources: "Alle Quellen",
+      activeFilter: "aktiver Filter",
+    },
+    feed: {
+      unreadSectionKicker: "Ungelesen",
+      unreadSectionTitle: "Erfordert Ihre Aufmerksamkeit",
+      recentSectionKicker: "Aktuell",
+      recentSectionTitle: "Erledigte oder geprüfte Aktivität",
+      unreadBadge: "Ungelesen",
+      openMessageBoard: "Nachrichtenboard öffnen",
+    },
+    swipe: {
+      archive: "Archivieren",
+      delete: "Löschen",
+      markRead: "Als gelesen markieren",
+      markUnread: "Als ungelesen markieren",
+    },
+    emptyState: {
+      inboxTitle: "Alles erledigt.",
+      inboxBody: "Aktivitäten aus ganz HenryCo erscheinen hier, sobald sie eintreffen.",
+      filterTitle: "Keine Aktivität in dieser Ansicht.",
+      filterBody: "Versuchen Sie einen anderen Filter.",
+    },
+    markAllRead: {
+      label: "Alle als gelesen markieren",
+      pending: "Markiere alle als gelesen ...",
+      spinner: "Markiere alle als gelesen",
+    },
+    footer: {
+      recentlyDeleted: "Kürzlich gelöscht",
+    },
   }
 };
 
-const IT: Partial<AccountCopy> = {
+const IT: DeepPartial<AccountCopy> = {
   "trustTierLabels": {
     "basic": "Essenziale",
     "verified": "Verificato",
@@ -1413,10 +2144,193 @@ const IT: Partial<AccountCopy> = {
     "description": "Il guasto è stato catturato per le indagini. Ricarica questa superficie e continua dall'ultimo stato stabile.",
     "reload": "Ricarica questa visualizzazione",
     "contactSupport": "Contatta l'assistenza"
+  },
+  "activity": {
+    "title": "Attività",
+    "description": "Tutto ciò che hai fatto in tutte le divisioni HenryCo.",
+    "emptyTitle": "Nessuna attività al momento",
+    "emptyDescription": "La tua attività tra le divisioni apparirà qui man mano che usi i servizi HenryCo.",
+    "statusLabels": {
+      "pending": "In attesa",
+      "open": "Aperto",
+      "updated": "Aggiornato",
+      "completed": "Completato",
+      "resolved": "Risolto",
+      "paid": "Pagato",
+      "failed": "Fallito",
+      "active": "Attivo",
+      "refunded": "Rimborsato"
+    },
+    "filters": {
+      "heading": "Filtra e scarica",
+      "reset": "Ripristina",
+      "fromLabel": "Da",
+      "toLabel": "A",
+      "amountFromLabel": "Importo da (₦)",
+      "amountToLabel": "Importo a (₦)",
+      "divisionEyebrow": "Divisione",
+      "typeEyebrow": "Tipo",
+      "statusEyebrow": "Stato",
+      "pdfNote": "Il PDF riporta ogni filtro impostato sopra nell'intestazione del documento — ciò che vedi è ciò che scarichi.",
+      "downloadLabel": "Scarica l'estratto",
+      "downloadFilename": "HenryCo-Storico-Transazioni.pdf",
+      "shareTitle": "Storico transazioni HenryCo",
+      "typeLabels": {
+        "payment": "pagamento",
+        "wallet_credit": "accredito portafoglio",
+        "wallet_debit": "addebito portafoglio",
+        "refund": "rimborso",
+        "withdrawal": "prelievo",
+        "fee": "commissione"
+      }
+    }
+  },
+  notifications: {
+    metadata: {
+      title: "Notifiche",
+      description: "Ogni aggiornamento HenryCo — wallet, supporto, lavori, marketplace, care e altro — in una casella in tempo reale.",
+    },
+    hero: {
+      eyebrow: "HenryCo · notifiche in tempo reale",
+      ariaOverview: "Panoramica notifiche",
+      ariaVolume: "Volume notifiche",
+      ariaByDivision: "Per divisione",
+      headlineZero: "Casella azzerata su HenryCo.",
+      headlineOne: "Una cosa attende la tua attenzione.",
+      headlineFew: "{count} notifiche da gestire.",
+      headlineMany: "{count} aggiornamenti tra le tue divisioni.",
+      blurbZero: "Tutto ciò che HenryCo invia arriva qui in tempo reale — wallet, supporto, lavori, marketplace, care e altro.",
+      blurbStale: "Elementi più vecchi si sono accumulati. Scorri per archiviare, tocca per aprire o vai direttamente a un thread.",
+      blurbToday: "Oggi sono arrivate {count}. Usa i filtri per concentrarti su una singola divisione o sfoglia solo i non letti.",
+      tileUnreadLabel: "Non lette",
+      tileUnreadFoot: "In attesa del tuo sguardo",
+      tileTodayLabel: "Oggi",
+      tileTodayFoot: "Arrivate nelle ultime 24h",
+      tileWeekLabel: "Questa settimana",
+      tileWeekFoot: "Ultima attività {when}",
+      byDivision: "Per divisione",
+      emptyDivisions: "Nulla è ancora arrivato.",
+      lastActivityFallback: "nessuna attività recente",
+      justNow: "proprio ora",
+      minutesAgo: "{count} min fa",
+      hoursAgo: "{count} h fa",
+      daysAgo: "{count} g fa",
+    },
+    inbox: {
+      heading: "Casella",
+      meta: "Tocca per aprire, scorri per archiviare — i filtri funzionano su tutte le divisioni.",
+    },
+    filters: {
+      all: "Tutte",
+      unread: "Non lette",
+      allSources: "Tutte le fonti",
+      activeFilter: "filtro attivo",
+    },
+    feed: {
+      unreadSectionKicker: "Non lette",
+      unreadSectionTitle: "Richiede la tua attenzione",
+      recentSectionKicker: "Recente",
+      recentSectionTitle: "Attività evasa o revisionata",
+      unreadBadge: "Non letto",
+      openMessageBoard: "Apri bacheca messaggi",
+    },
+    swipe: {
+      archive: "Archivia",
+      delete: "Elimina",
+      markRead: "Segna come letto",
+      markUnread: "Segna come non letto",
+    },
+    emptyState: {
+      inboxTitle: "Tutto sotto controllo.",
+      inboxBody: "L’attività di tutto HenryCo appare qui non appena accade.",
+      filterTitle: "Nessuna attività in questa vista.",
+      filterBody: "Prova un filtro diverso.",
+    },
+    markAllRead: {
+      label: "Segna tutto come letto",
+      pending: "Segno tutto come letto...",
+      spinner: "Segno tutto come letto",
+    },
+    footer: {
+      recentlyDeleted: "Eliminate di recente",
+    },
+  },
+  calendar: {
+    metaTitle: "Calendario · HenryCo",
+    metaDescription:
+      "Agenda multi-portale — prenotazioni Care, visite immobiliari, colloqui Jobs, traguardi Studio, lezioni Learn, finestre logistiche.",
+    heroAriaLabel: "Panoramica del calendario",
+    heroEyebrow: "HenryCo · calendario multi-portale",
+    tileVolumeAriaLabel: "Volume del calendario",
+    tileEventsLabel: "Eventi",
+    tileEventsFoot: "Prossimi 28 giorni",
+    tilePortalsLabel: "Portali",
+    tilePortalsFootEmpty: "Care, immobiliare, jobs, studio, learn, logistica",
+    tilePortalsFootSingular: "Una divisione pianificata",
+    tilePortalsFootPlural: "{count} divisioni pianificate",
+    tileNextLabel: "Prossimo",
+    tileNextEmpty: "Nulla pianificato nella finestra",
+    sideAriaLabel: "Per portale",
+    sideLabel: "Per portale",
+    sideTitleEmpty: "Ancora nessuna pianificazione",
+    sideTitleSingular: "Un portale attivo",
+    sideTitlePlural: "{count} portali in gioco",
+    sideBody:
+      "Prenotazioni, visite, colloqui, traguardi, lezioni e finestre di spedizione appaiono qui in ordine cronologico.",
+    agendaTitle: "Agenda",
+    agendaAriaLabel: "Eventi pianificati per giorno",
+    agendaMetaEmpty: "Nulla pianificato nella finestra di 28 giorni",
+    agendaMetaSingular: "{count} evento · prossimi 28 giorni",
+    agendaMetaPlural: "{count} eventi · prossimi 28 giorni",
+    emptyEyebrow: "Calendario tranquillo",
+    emptyTitle: "Nulla pianificato nei prossimi 28 giorni.",
+    emptyBody:
+      "Tutto ciò che prenoti — un ritiro Care, una visita immobiliare, un colloquio, una lezione Learn, un traguardo Studio, una finestra logistica — atterrerà automaticamente in questa agenda. I filtri appariranno non appena i portali inizieranno a pianificare.",
+    dayMetaSingular: "{count} evento",
+    dayMetaPlural: "{count} eventi",
+    eventTimeAriaLabel: "Orario dell’evento",
+    eventCta: "Apri",
+    headline: {
+      empty: "Nulla pianificato nei prossimi 28 giorni.",
+      calmOne: "Un solo elemento in agenda.",
+      calmMany: "{count} eventi nei prossimi 28 giorni.",
+      busy: "{count} eventi pianificati su {portals} portali.",
+      packed: "{count} eventi in coda — pianifica saggiamente il tempo di focus.",
+    },
+    blurb: {
+      empty:
+        "Prenotazioni Care, visite immobiliari, colloqui Jobs, traguardi Studio, lezioni Learn e finestre logistiche appaiono tutti qui.",
+      calm: "Tocca una scheda per saltare al suo portale. L’agenda si aggiorna automaticamente all’arrivo di nuove pianificazioni.",
+      busyOrPacked:
+        "I filtri in cima all’agenda restringono a un singolo portale — utile quando una divisione è rumorosa.",
+    },
+    kindLabels: {
+      care_booking: "Prenotazione Care",
+      property_viewing: "Visita immobiliare",
+      jobs_interview: "Colloquio",
+      learn_class: "Lezione dal vivo",
+      studio_milestone: "Traguardo Studio",
+      logistics_pickup: "Finestra di ritiro",
+      logistics_delivery: "Finestra di consegna",
+      room_session: "Sessione in sala",
+    },
+    dayLabels: {
+      today: "Oggi",
+      tomorrow: "Domani",
+      yesterday: "Ieri",
+    },
+    portalLabels: {
+      care: "Care",
+      property: "Immobiliare",
+      jobs: "Jobs",
+      studio: "Studio",
+      learn: "Learn",
+      logistics: "Logistica",
+    },
   }
 };
 
-const IG: Partial<AccountCopy> = {
+const IG: DeepPartial<AccountCopy> = {
   trustTierLabels: {
     basic: "Ntọala",
     verified: "Emechara",
@@ -1674,9 +2588,51 @@ const IG: Partial<AccountCopy> = {
     reload: "Ọjọọ nlele a",
     contactSupport: "Kpọọ nkwado",
   },
+  activity: {
+    title: "Mmemme",
+    description: "Ihe niile ị mere n'ime ngalaba HenryCo niile.",
+    emptyTitle: "Enwebeghị mmemme",
+    emptyDescription:
+      "Mmemme gị n'etiti ngalaba ga-apụta ebe a ka ị na-eji ọrụ HenryCo.",
+    statusLabels: {
+      pending: "Na-eche",
+      open: "Mepere emepe",
+      updated: "Mwughari",
+      completed: "Emechara",
+      resolved: "Edozila",
+      paid: "Akwụ ụgwọ",
+      failed: "Daa",
+      active: "Na-arụ ọrụ",
+      refunded: "Kwụghachiri ego",
+    },
+    filters: {
+      heading: "Nyochaa ma budata",
+      reset: "Tọgharịa",
+      fromLabel: "Site",
+      toLabel: "Ruo",
+      amountFromLabel: "Ego site (₦)",
+      amountToLabel: "Ego ruo (₦)",
+      divisionEyebrow: "Ngalaba",
+      typeEyebrow: "Ụdị",
+      statusEyebrow: "Ọnọdụ",
+      pdfNote:
+        "PDF ahụ na-eburu nyocha ọ bụla ị tọrọ n'elu dị ka akụkụ nke isi okwu — ihe ị na-ahụ bụ ihe ị na-ebudata.",
+      downloadLabel: "Budata akwụkwọ",
+      downloadFilename: "HenryCo-Akụkọ-Azụmahịa.pdf",
+      shareTitle: "Akụkọ Azụmahịa HenryCo",
+      typeLabels: {
+        payment: "ịkwụ ụgwọ",
+        wallet_credit: "kredit obere akpa ego",
+        wallet_debit: "debit obere akpa ego",
+        refund: "ịkwụghachi ego",
+        withdrawal: "iwepụ ego",
+        fee: "ụgwọ",
+      },
+    },
+  },
 };
 
-const YO: Partial<AccountCopy> = {
+const YO: DeepPartial<AccountCopy> = {
   trustTierLabels: {
     basic: "Ipilẹ",
     verified: "Ti jẹrisi",
@@ -1934,9 +2890,51 @@ const YO: Partial<AccountCopy> = {
     reload: "Tun ṣe agbele iwo yii",
     contactSupport: "Kan si atilẹyin",
   },
+  activity: {
+    title: "Iṣẹ",
+    description: "Gbogbo ohun ti o ti ṣe kọja gbogbo awọn ẹka HenryCo.",
+    emptyTitle: "Ko si iṣẹ kankan sibẹsibẹ",
+    emptyDescription:
+      "Iṣẹ rẹ kọja awọn ẹka yoo han nibi bi o ṣe nlo awọn iṣẹ HenryCo.",
+    statusLabels: {
+      pending: "Ti n duro",
+      open: "Ṣii",
+      updated: "Ti tunṣe",
+      completed: "Ti pari",
+      resolved: "Ti yanju",
+      paid: "Ti san",
+      failed: "Kuna",
+      active: "Ti n ṣiṣẹ",
+      refunded: "Ti dapadabọ",
+    },
+    filters: {
+      heading: "Sẹsẹ ki o si gba lori awo",
+      reset: "Tun ṣeto",
+      fromLabel: "Lati",
+      toLabel: "Si",
+      amountFromLabel: "Owo lati (₦)",
+      amountToLabel: "Owo si (₦)",
+      divisionEyebrow: "Ẹka",
+      typeEyebrow: "Iru",
+      statusEyebrow: "Ipo",
+      pdfNote:
+        "PDF naa gbe gbogbo sẹsẹ ti o ṣeto lókè gẹgẹ bi apakan ti ori iwe-irohin — ohun ti o ri ni ohun ti o gba.",
+      downloadLabel: "Gba akọsilẹ lori awo",
+      downloadFilename: "HenryCo-Itan-Idunadura.pdf",
+      shareTitle: "Itan Idunadura HenryCo",
+      typeLabels: {
+        payment: "isanwo",
+        wallet_credit: "kirẹditi apo owo",
+        wallet_debit: "debiti apo owo",
+        refund: "ipadabọ owo",
+        withdrawal: "yiyọ owo",
+        fee: "owo iṣẹ",
+      },
+    },
+  },
 };
 
-const HA: Partial<AccountCopy> = {
+const HA: DeepPartial<AccountCopy> = {
   trustTierLabels: {
     basic: "Asali",
     verified: "An tabbatar",
@@ -2194,9 +3192,51 @@ const HA: Partial<AccountCopy> = {
     reload: "Sake loda wannan ra'ayi",
     contactSupport: "Tuntuɓi tallafi",
   },
+  activity: {
+    title: "Aiki",
+    description: "Duk abin da kuka yi a sassan HenryCo gaba ɗaya.",
+    emptyTitle: "Babu aiki tukuna",
+    emptyDescription:
+      "Aikinku tsakanin sassa zai bayyana a nan yayin da kuke amfani da ayyukan HenryCo.",
+    statusLabels: {
+      pending: "Ana jira",
+      open: "A bayyane",
+      updated: "An sabunta",
+      completed: "An kammala",
+      resolved: "An warware",
+      paid: "An biya",
+      failed: "Ya gaza",
+      active: "Mai aiki",
+      refunded: "An mayar da kuɗi",
+    },
+    filters: {
+      heading: "Tace da sauke",
+      reset: "Sake saiti",
+      fromLabel: "Daga",
+      toLabel: "Zuwa",
+      amountFromLabel: "Adadi daga (₦)",
+      amountToLabel: "Adadi zuwa (₦)",
+      divisionEyebrow: "Sashe",
+      typeEyebrow: "Nau'i",
+      statusEyebrow: "Matsayi",
+      pdfNote:
+        "PDF ɗin yana ɗauke da kowane tacewa da kuka saita a sama a matsayin sashen kan takarda — abin da kuke gani shi ne kuke saukewa.",
+      downloadLabel: "Sauke bayanin asusu",
+      downloadFilename: "HenryCo-Tarihin-Mu'amaloli.pdf",
+      shareTitle: "Tarihin Mu'amaloli na HenryCo",
+      typeLabels: {
+        payment: "biyan kuɗi",
+        wallet_credit: "ƙarin walat",
+        wallet_debit: "cire walat",
+        refund: "mayar da kuɗi",
+        withdrawal: "cire kuɗi",
+        fee: "kuɗin sabis",
+      },
+    },
+  },
 };
 
-const ZH: Partial<AccountCopy> = {
+const ZH: DeepPartial<AccountCopy> = {
   trustTierLabels: {
     basic: "基础",
     verified: "已验证",
@@ -2454,9 +3494,51 @@ const ZH: Partial<AccountCopy> = {
     reload: "重新加载此视图",
     contactSupport: "联系支持",
   },
+  activity: {
+    title: "活动",
+    description: "您在所有 HenryCo 部门所做的一切。",
+    emptyTitle: "暂无活动",
+    emptyDescription:
+      "当您使用 HenryCo 服务时,您跨部门的活动将显示在此处。",
+    statusLabels: {
+      pending: "待处理",
+      open: "未结",
+      updated: "已更新",
+      completed: "已完成",
+      resolved: "已解决",
+      paid: "已支付",
+      failed: "失败",
+      active: "进行中",
+      refunded: "已退款",
+    },
+    filters: {
+      heading: "筛选并下载",
+      reset: "重置",
+      fromLabel: "起始",
+      toLabel: "结束",
+      amountFromLabel: "金额起 (₦)",
+      amountToLabel: "金额止 (₦)",
+      divisionEyebrow: "部门",
+      typeEyebrow: "类型",
+      statusEyebrow: "状态",
+      pdfNote:
+        "PDF 将您在上方设置的每一项筛选作为文档头的一部分一并携带 — 所见即所得。",
+      downloadLabel: "下载对账单",
+      downloadFilename: "HenryCo-交易历史.pdf",
+      shareTitle: "HenryCo 交易历史",
+      typeLabels: {
+        payment: "支付",
+        wallet_credit: "钱包入账",
+        wallet_debit: "钱包扣款",
+        refund: "退款",
+        withdrawal: "提现",
+        fee: "手续费",
+      },
+    },
+  },
 };
 
-const HI: Partial<AccountCopy> = {
+const HI: DeepPartial<AccountCopy> = {
   trustTierLabels: {
     basic: "बुनियादी",
     verified: "सत्यापित",
@@ -2714,9 +3796,51 @@ const HI: Partial<AccountCopy> = {
     reload: "इस दृश्य को पुनः लोड करें",
     contactSupport: "सहायता से संपर्क करें",
   },
+  activity: {
+    title: "गतिविधि",
+    description: "HenryCo के सभी डिवीजनों में आपने जो कुछ भी किया है।",
+    emptyTitle: "अभी तक कोई गतिविधि नहीं",
+    emptyDescription:
+      "जैसे ही आप HenryCo सेवाओं का उपयोग करेंगे, आपकी क्रॉस-डिवीजन गतिविधि यहाँ दिखाई देगी।",
+    statusLabels: {
+      pending: "लंबित",
+      open: "खुला",
+      updated: "अद्यतन",
+      completed: "पूर्ण",
+      resolved: "हल किया गया",
+      paid: "भुगतान किया गया",
+      failed: "विफल",
+      active: "सक्रिय",
+      refunded: "वापस किया गया",
+    },
+    filters: {
+      heading: "फ़िल्टर करें और डाउनलोड करें",
+      reset: "रीसेट करें",
+      fromLabel: "से",
+      toLabel: "तक",
+      amountFromLabel: "राशि से (₦)",
+      amountToLabel: "राशि तक (₦)",
+      divisionEyebrow: "डिवीजन",
+      typeEyebrow: "प्रकार",
+      statusEyebrow: "स्थिति",
+      pdfNote:
+        "PDF आपके द्वारा ऊपर सेट किए गए हर फ़िल्टर को दस्तावेज़ शीर्षलेख के हिस्से के रूप में रखता है — जो आप देखते हैं वही डाउनलोड करते हैं।",
+      downloadLabel: "विवरण डाउनलोड करें",
+      downloadFilename: "HenryCo-लेन-देन-इतिहास.pdf",
+      shareTitle: "HenryCo लेन-देन इतिहास",
+      typeLabels: {
+        payment: "भुगतान",
+        wallet_credit: "वॉलेट क्रेडिट",
+        wallet_debit: "वॉलेट डेबिट",
+        refund: "धन-वापसी",
+        withdrawal: "निकासी",
+        fee: "शुल्क",
+      },
+    },
+  },
 };
 
-const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<AccountCopy>>> = {
+const LOCALE_OVERRIDES: Partial<Record<AppLocale, DeepPartial<AccountCopy>>> = {
   fr: FR,
   es: ACCOUNT_COPY_ES,
   pt: ACCOUNT_COPY_PT,

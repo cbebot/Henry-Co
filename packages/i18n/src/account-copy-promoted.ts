@@ -258,6 +258,46 @@ export const ACCOUNT_COPY_ES = {
     "description": "El fallo se registró para investigación. Recarga esta superficie y continúa desde el último estado estable.",
     "reload": "Recargar esta vista",
     "contactSupport": "Contactar con soporte"
+  },
+  "activity": {
+    "title": "Actividad",
+    "description": "Todo lo que has hecho en todas las divisiones de HenryCo.",
+    "emptyTitle": "Aún no hay actividad",
+    "emptyDescription": "Tu actividad entre divisiones aparecerá aquí a medida que uses los servicios de HenryCo.",
+    "statusLabels": {
+      "pending": "Pendiente",
+      "open": "Abierto",
+      "updated": "Actualizado",
+      "completed": "Completado",
+      "resolved": "Resuelto",
+      "paid": "Pagado",
+      "failed": "Fallido",
+      "active": "Activo",
+      "refunded": "Reembolsado"
+    },
+    "filters": {
+      "heading": "Filtrar y descargar",
+      "reset": "Restablecer",
+      "fromLabel": "Desde",
+      "toLabel": "Hasta",
+      "amountFromLabel": "Importe desde (₦)",
+      "amountToLabel": "Importe hasta (₦)",
+      "divisionEyebrow": "División",
+      "typeEyebrow": "Tipo",
+      "statusEyebrow": "Estado",
+      "pdfNote": "El PDF lleva cada filtro que has fijado arriba como parte del encabezado del documento — lo que ves es lo que descargas.",
+      "downloadLabel": "Descargar extracto",
+      "downloadFilename": "HenryCo-Historial-Transacciones.pdf",
+      "shareTitle": "Historial de transacciones HenryCo",
+      "typeLabels": {
+        "payment": "pago",
+        "wallet_credit": "abono a billetera",
+        "wallet_debit": "cargo en billetera",
+        "refund": "reembolso",
+        "withdrawal": "retiro",
+        "fee": "comisión"
+      }
+    }
   }
 };
 
@@ -518,6 +558,46 @@ export const ACCOUNT_COPY_PT = {
     "description": "A falha foi capturada para investigação. Recarregue esta superfície e continue a partir do último estado estável.",
     "reload": "Recarregar esta visualização",
     "contactSupport": "Contate o suporte"
+  },
+  "activity": {
+    "title": "Atividade",
+    "description": "Tudo o que você fez em todas as divisões HenryCo.",
+    "emptyTitle": "Ainda não há atividade",
+    "emptyDescription": "Sua atividade entre divisões aparecerá aqui à medida que usar os serviços HenryCo.",
+    "statusLabels": {
+      "pending": "Pendente",
+      "open": "Aberto",
+      "updated": "Atualizado",
+      "completed": "Concluído",
+      "resolved": "Resolvido",
+      "paid": "Pago",
+      "failed": "Falhou",
+      "active": "Ativo",
+      "refunded": "Reembolsado"
+    },
+    "filters": {
+      "heading": "Filtrar e baixar",
+      "reset": "Redefinir",
+      "fromLabel": "De",
+      "toLabel": "Até",
+      "amountFromLabel": "Valor a partir de (₦)",
+      "amountToLabel": "Valor até (₦)",
+      "divisionEyebrow": "Divisão",
+      "typeEyebrow": "Tipo",
+      "statusEyebrow": "Status",
+      "pdfNote": "O PDF carrega cada filtro que você definiu acima como parte do cabeçalho do documento — o que você vê é o que baixa.",
+      "downloadLabel": "Baixar extrato",
+      "downloadFilename": "HenryCo-Historico-Transacoes.pdf",
+      "shareTitle": "Histórico de Transações HenryCo",
+      "typeLabels": {
+        "payment": "pagamento",
+        "wallet_credit": "crédito na carteira",
+        "wallet_debit": "débito na carteira",
+        "refund": "reembolso",
+        "withdrawal": "saque",
+        "fee": "taxa"
+      }
+    }
   }
 };
 
@@ -778,5 +858,45 @@ export const ACCOUNT_COPY_AR = {
     "description": "تم تسجيل العطل للتحقيق. أعد تحميل هذه الواجهة وتابع من آخر حالة مستقرة.",
     "reload": "إعادة تحميل هذا العرض",
     "contactSupport": "اتصل بالدعم"
+  },
+  "activity": {
+    "title": "النشاط",
+    "description": "كل ما قمت به عبر جميع أقسام HenryCo.",
+    "emptyTitle": "لا يوجد نشاط بعد",
+    "emptyDescription": "سيظهر نشاطك بين الأقسام هنا أثناء استخدامك لخدمات HenryCo.",
+    "statusLabels": {
+      "pending": "قيد الانتظار",
+      "open": "مفتوح",
+      "updated": "تم التحديث",
+      "completed": "مكتمل",
+      "resolved": "تم الحل",
+      "paid": "تم الدفع",
+      "failed": "فشل",
+      "active": "نشط",
+      "refunded": "تم الاسترداد"
+    },
+    "filters": {
+      "heading": "تصفية وتنزيل",
+      "reset": "إعادة تعيين",
+      "fromLabel": "من",
+      "toLabel": "إلى",
+      "amountFromLabel": "المبلغ من (₦)",
+      "amountToLabel": "المبلغ إلى (₦)",
+      "divisionEyebrow": "القسم",
+      "typeEyebrow": "النوع",
+      "statusEyebrow": "الحالة",
+      "pdfNote": "يحمل ملف PDF كل عامل تصفية قمت بضبطه أعلاه كجزء من رأس المستند — ما تراه هو ما تنزله.",
+      "downloadLabel": "تنزيل كشف الحساب",
+      "downloadFilename": "HenryCo-سجل-المعاملات.pdf",
+      "shareTitle": "سجل معاملات HenryCo",
+      "typeLabels": {
+        "payment": "دفع",
+        "wallet_credit": "إيداع في المحفظة",
+        "wallet_debit": "خصم من المحفظة",
+        "refund": "استرداد",
+        "withdrawal": "سحب",
+        "fee": "رسوم"
+      }
+    }
   }
 };
