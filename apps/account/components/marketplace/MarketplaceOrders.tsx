@@ -9,9 +9,20 @@ import {
   type OrderRow,
 } from "./helpers";
 
+type OrdersLabels = {
+  ariaLabel: string;
+  rowTitleTemplate: string;
+  rowSubTemplate: string;
+  rowAriaLabelTemplate: string;
+  statusFallbackDraft: string;
+  statusValueLabels: Record<string, string>;
+  dash: string;
+};
+
 type Props = {
   orders: ReadonlyArray<OrderRow>;
   marketplaceOrigin: string;
+  labels: OrdersLabels;
   limit?: number;
 };
 
@@ -23,17 +34,27 @@ const ICON_BY_KIND: Record<OrderKind, typeof Package> = {
   draft: Pencil,
 };
 
-export function MarketplaceOrders({ orders, marketplaceOrigin, limit = 8 }: Props) {
+function fill(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
+    template,
+  );
+}
+
+export function MarketplaceOrders({ orders, marketplaceOrigin, labels, limit = 8 }: Props) {
   const rows = orders.slice(0, limit);
   if (rows.length === 0) return null;
 
   return (
-    <div className="acct-mkt__list" role="list" aria-label="Recent orders">
+    <div className="acct-mkt__list" role="list" aria-label={labels.ariaLabel}>
       {rows.map((order) => {
         const kind = orderKind(order);
         const Icon = ICON_BY_KIND[kind];
-        const status = orderStatusLabel(order);
-        const stamp = formatStamp(order.placedAt);
+        const status = orderStatusLabel(order, {
+          statusValueLabels: labels.statusValueLabels,
+          fallbackDraft: labels.statusFallbackDraft,
+        });
+        const stamp = formatStamp(order.placedAt, labels.dash);
         const orderNo = order.orderNo || order.id.slice(0, 8);
         const href = `${marketplaceOrigin}/orders/${encodeURIComponent(order.id)}`;
 
@@ -45,15 +66,20 @@ export function MarketplaceOrders({ orders, marketplaceOrigin, limit = 8 }: Prop
             rel="noopener noreferrer"
             className="acct-mkt__row"
             role="listitem"
-            aria-label={`Order ${orderNo} · ${status}`}
+            aria-label={fill(labels.rowAriaLabelTemplate, { orderNo, status })}
           >
             <span className="acct-mkt__row-icon" data-kind={kind} aria-hidden>
               <Icon size={16} />
             </span>
             <div className="acct-mkt__row-meta">
-              <span className="acct-mkt__row-title">Order {orderNo}</span>
+              <span className="acct-mkt__row-title">
+                {fill(labels.rowTitleTemplate, { orderNo })}
+              </span>
               <span className="acct-mkt__row-sub">
-                {formatNaira(order.grandTotal)} · placed {stamp}
+                {fill(labels.rowSubTemplate, {
+                  amount: formatNaira(order.grandTotal),
+                  stamp,
+                })}
               </span>
             </div>
             <span className="acct-mkt__chip" data-kind={kind}>

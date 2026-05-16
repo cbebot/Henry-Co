@@ -4664,5 +4664,175 @@ export const ACCOUNT_COPY_AR = {
       "paused": "متوقف"
     },
     "recruiterUpdateTitleTemplate": "تحديث {stage}"
+  },
+  "divisionMarketplace": {
+    "metadata": {
+      "title": "Marketplace · الطلبات ونشاط البائع",
+      "description": "تابع كل طلب من HenryCo Marketplace ونزاع وتحويل بائع مرتبط بهذا الحساب — نشاط المشتري ومساحة عمل البائع، يتم عكسهما في غرفة واحدة في الوقت الفعلي."
+    },
+    "hero": {
+      "eyebrow": "Marketplace · مباشر",
+      "ariaLabel": "نظرة عامة على Marketplace",
+      "sideAriaLabel": "كيف تعمل هذه الغرفة",
+      "sideKicker": "كيف تعمل هذه الغرفة",
+      "sideTitle": "اشتر وبع — غرفة واحدة.",
+      "sideBody": "كل طلب ونزاع وطلب تحويل تُنشئه في Marketplace يُعكس في هذه الغرفة. ينساب نشاط مساحة عمل البائع جنبًا إلى جنب مع طلبات المشتري، ليبقى جانبا marketplace ظاهرين في لمحة.",
+      "breakdownLabel": "حسب الحالة",
+      "breakdownAriaLabel": "تفصيل النشاط",
+      "tilesAriaLabel": "نشاط Marketplace",
+      "tileLabels": {
+        "orders": "الطلبات",
+        "disputes": "النزاعات",
+        "store": "المتجر",
+        "payouts": "التحويلات"
+      },
+      "tileFoot": {
+        "ordersEmpty": "سيظهر أول طلب هنا",
+        "ordersInMotionTemplate": "{inFlight} قيد التنفيذ · {delivered} تم التسليم",
+        "ordersDeliveredTemplate": "تم تسليم {delivered} حتى الآن",
+        "disputesClear": "كل شيء على ما يرام",
+        "disputesActiveTemplate": "{open} مفتوحة · {resolving} قيد الحل",
+        "storeActiveNoName": "عضوية البائع نشطة",
+        "storeActiveWithNameTemplate": "المتجر: {name}",
+        "storeApplicationTemplate": "الطلب: {status}",
+        "storeIdle": "لم تبدأ البيع بعد — قدّم عندما تكون جاهزًا",
+        "payoutsEmptyNoneSettled": "لا توجد طلبات تحويل",
+        "payoutsSettledTemplate": "تمت تسوية {count} حتى الآن",
+        "payoutsPendingTemplate": "{amount} في الانتظار"
+      },
+      "breakdownLabels": {
+        "inMotion": "قيد التنفيذ",
+        "openDisputes": "نزاعات مفتوحة",
+        "delivered": "تم التسليم",
+        "pendingPayouts": "تحويلات في الانتظار"
+      },
+      "state": {
+        "empty": {
+          "headline": "ابدأ التسوق في HenryCo Marketplace.",
+          "blurb": "تنعكس الطلبات والنزاعات ونشاط البائع والتحويلات في هذه الغرفة فور أول معاملة. تصفّح marketplace للبدء.",
+          "ctaPrimary": "افتح Marketplace",
+          "ctaSecondary": "تقدّم لتكون بائعًا"
+        },
+        "attention": {
+          "headlineTemplateSingular": "{count} مسألة تحتاج اهتمامًا.",
+          "headlineTemplatePlural": "{count} مسائل تحتاج اهتمامًا.",
+          "blurb": "تتصدر النزاعات والطلبات الاستثنائية الصف. افتح القضية لإضافة دليل أو قبول الحل.",
+          "ctaPrimary": "راجع المسائل",
+          "ctaSecondary": "افتح Marketplace"
+        },
+        "activeOrders": {
+          "headlineTemplateSingular": "{count} طلب قيد التنفيذ.",
+          "headlineTemplatePlural": "{count} طلبات قيد التنفيذ.",
+          "blurb": "تنعكس حالة الطلب المباشرة وحالة الدفع ومتابعة البائع في هذه الغرفة من HenryCo Marketplace في الوقت الفعلي.",
+          "ctaPrimary": "افتح Marketplace",
+          "ctaSecondary": "تقدّم لتكون بائعًا"
+        },
+        "activePayouts": {
+          "headlineTemplateSingular": "{count} تحويل قيد المراجعة.",
+          "headlineTemplatePlural": "{count} تحويلات قيد المراجعة.",
+          "blurb": "تمر طلبات تحويل البائع بالتحقق المالي. تظهر تحديثات الحالة هنا مع تقدّم الفريق.",
+          "ctaPrimary": "افتح مساحة البائع",
+          "ctaSecondary": "افتح Marketplace"
+        },
+        "calmBuyer": {
+          "headlineTemplateSingular": "{count} طلب مسجَّل.",
+          "headlineTemplatePlural": "{count} طلبات مسجَّلة.",
+          "blurb": "كل نشاطك في marketplace في غرفة واحدة — طلبات المشتري وتحويلات البائع ونتائج النزاعات وأحدث حالة لكل متجر.",
+          "ctaPrimary": "افتح Marketplace",
+          "ctaSecondary": "تقدّم لتكون بائعًا"
+        },
+        "calmSeller": {
+          "headlineTemplateSingular": "{count} طلب · البائع نشط.",
+          "headlineTemplatePlural": "{count} طلبات · البائع نشط.",
+          "blurb": "كل نشاطك في marketplace في غرفة واحدة — طلبات المشتري وتحويلات البائع ونتائج النزاعات وأحدث حالة لكل متجر.",
+          "ctaPrimary": "افتح Marketplace",
+          "ctaSecondary": "افتح مساحة البائع"
+        }
+      }
+    },
+    "sections": {
+      "matters": {
+        "title": "مسائل نشطة",
+        "meta": "تظهر النزاعات وحالة طلب البائع والتحويلات المعلَّقة هنا عند الحاجة إلى إجراء.",
+        "ariaLabel": "مسائل Marketplace النشطة",
+        "emptyTitle": "لا شيء يستدعي إجراء",
+        "emptyBody": "كل نشاطك في marketplace يسير بشكل طبيعي — لا نزاعات مفتوحة، ولا تحويلات قيد المراجعة، و(إن وُجد) طلب البائع موافَق عليه."
+      },
+      "orders": {
+        "title": "طلبات حديثة",
+        "empty": "تظهر الطلبات الموضوعة على Marketplace هنا في الوقت الفعلي.",
+        "metaTemplateSingular": "{count} طلب · الأحدث أولًا",
+        "metaTemplatePlural": "{count} طلبات · الأحدث أولًا",
+        "emptyTitle": "لا توجد طلبات بعد",
+        "emptyBody": "ضع أول طلب لك على HenryCo Marketplace — تصل هنا تلقائيًا حالة الطلب وحالة الدفع وأي متابعة.",
+        "ariaLabel": "طلبات حديثة"
+      },
+      "activity": {
+        "title": "نشاط حديث",
+        "empty": "تنعكس تحديثات الحالة والمدفوعات والتقييمات هنا في الوقت الفعلي.",
+        "metaTemplateSingular": "{count} تحديث · الأحدث أولًا",
+        "metaTemplatePlural": "{count} تحديثات · الأحدث أولًا",
+        "emptyTitle": "لا يوجد نشاط في marketplace بعد",
+        "emptyBody": "ستظهر تأكيدات الطلب وتحديثات النزاعات ونتائج تحويلات البائع هنا فور حدوثها.",
+        "ariaLabel": "نشاط Marketplace"
+      }
+    },
+    "matters": {
+      "disputes": {
+        "kicker": "النزاعات",
+        "titleTemplateSingular": "{count} قضية تحتاج إجراء",
+        "titleTemplatePlural": "{count} قضايا تحتاج إجراء",
+        "bodyLatestTemplate": "الأخيرة: {ref} · حُدِّثت {stamp}",
+        "bodyFallback": "افتح الطابور لإضافة دليل.",
+        "cta": "راجع القضايا"
+      },
+      "application": {
+        "kicker": "طلب البائع",
+        "bodyWithStoreTemplate": "المتجر: {name}",
+        "bodyDefault": "الطلب في طابور مراجعة HenryCo.",
+        "bodyReviewSuffixTemplate": " · {note}",
+        "cta": "عرض الحالة",
+        "defaultStatus": "مُقدَّم"
+      },
+      "payouts": {
+        "kicker": "تحويلات قيد المراجعة",
+        "titleTemplate": "{amount} في الانتظار",
+        "bodyTemplateSingular": "طلب {count} ينتظر التحقق المالي.",
+        "bodyTemplatePlural": "{count} طلبات تنتظر التحقق المالي.",
+        "cta": "افتح مساحة البائع"
+      }
+    },
+    "orders": {
+      "rowTitleTemplate": "الطلب {orderNo}",
+      "rowSubTemplate": "{amount} · تم {stamp}",
+      "rowAriaLabelTemplate": "الطلب {orderNo} · {status}",
+      "statusFallbackDraft": "مسودة"
+    },
+    "statusValueLabels": {
+      "delivered": "تم التسليم",
+      "completed": "مكتمل",
+      "customer_confirmed": "أكّده العميل",
+      "fulfilled": "مُنفَّذ",
+      "cancelled": "ملغى",
+      "refunded": "تم الاسترداد",
+      "disputed": "في نزاع",
+      "exception": "استثناء",
+      "placed": "تم وضعه",
+      "paid": "مدفوع",
+      "awaiting_fulfilment": "بانتظار التنفيذ",
+      "confirmed": "مؤكَّد",
+      "queued": "في الطابور"
+    },
+    "applicationStatusLabels": {
+      "submitted": "مُقدَّم",
+      "under_review": "قيد المراجعة",
+      "approved": "موافَق",
+      "rejected": "مرفوض",
+      "pending_documents": "مستندات قيد الانتظار",
+      "changes_requested": "تعديلات مطلوبة"
+    },
+    "formatLabels": {
+      "dash": "—"
+    }
   }
 };

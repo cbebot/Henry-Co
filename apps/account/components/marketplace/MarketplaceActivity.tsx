@@ -5,6 +5,7 @@ import { formatStamp, type MarketActivityRow } from "./helpers";
 type Props = {
   activity: ReadonlyArray<MarketActivityRow>;
   ariaLabel: string;
+  dash: string;
   limit?: number;
 };
 
@@ -27,7 +28,7 @@ function kindFor(type: string | null): IconKind {
   return "generic";
 }
 
-export function MarketplaceActivity({ activity, ariaLabel, limit = 8 }: Props) {
+export function MarketplaceActivity({ activity, ariaLabel, dash, limit = 8 }: Props) {
   const rows = activity.slice(0, limit);
   if (rows.length === 0) return null;
 
@@ -39,7 +40,7 @@ export function MarketplaceActivity({ activity, ariaLabel, limit = 8 }: Props) {
         const title = row.title?.trim() || (row.activityType ? row.activityType.replace(/_/g, " ") : ariaLabel);
         const sub = row.description?.trim() ?? null;
         const href = row.actionUrl?.trim() || null;
-        const stamp = formatStamp(row.occurredAt);
+        const stamp = formatStamp(row.occurredAt, dash);
 
         const inner = (
           <>
