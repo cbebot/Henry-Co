@@ -926,6 +926,82 @@ export type AccountCopy = {
       totalTemplate: string;
     };
   };
+  referrals: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      title: string;
+      description: string;
+    };
+    code: {
+      eyebrow: string;
+      shareLinkLabel: string;
+      copyCodeTitle: string;
+      copyLinkTitle: string;
+      copyLinkLabel: string;
+      copiedToast: string;
+      rewardNote: string;
+    };
+    stats: {
+      totalReferred: string;
+      signedUp: string;
+      qualified: string;
+      flagged: string;
+      pendingRewards: string;
+      releasedRewards: string;
+    };
+    howItWorks: {
+      eyebrow: string;
+      step1Title: string;
+      step1Body: string;
+      step2Title: string;
+      step2Body: string;
+      step3Title: string;
+      step3Body: string;
+    };
+    policy: {
+      eyebrow: string;
+      qualifying: string;
+      enforcement: string;
+      separation: string;
+    };
+    referralsList: {
+      eyebrow: string;
+      emptyTitle: string;
+      emptyDescription: string;
+      refereeFallback: string;
+      signedUpTemplate: string;
+      qualifiedTemplate: string;
+    };
+    statusLabels: {
+      pending: string;
+      converted: string;
+      qualified: string;
+      flagged: string;
+      expired: string;
+    };
+    flagReasons: {
+      selfReferral: string;
+      duplicateEmail: string;
+      deviceReuse: string;
+    };
+    rewards: {
+      eyebrow: string;
+      emptyTitle: string;
+      emptyDescription: string;
+      referralRewardFallback: string;
+      paidTemplate: string;
+      statusLabels: {
+        held: string;
+        pending: string;
+        released: string;
+        paid: string;
+        cancelled: string;
+      };
+    };
+  };
 };
 
 const EN: AccountCopy = {
@@ -1917,7 +1993,93 @@ const EN: AccountCopy = {
       totalTemplate: "{count} plan{plural}",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "Referrals",
+      description:
+        "Invite qualified customers to HenryCo and track rewards through pending, reviewed, and credited states.",
+    },
+    hero: {
+      title: "Referrals",
+      description:
+        "Invite qualified customers to HenryCo and track rewards through pending, reviewed, and credited states.",
+    },
+    code: {
+      eyebrow: "Your Referral Code",
+      shareLinkLabel: "Share Link",
+      copyCodeTitle: "Copy code",
+      copyLinkTitle: "Copy link",
+      copyLinkLabel: "Copy link",
+      copiedToast: "Copied!",
+      rewardNote:
+        "Reward: {amount} per qualified referral. Rewards unlock after the referee completes a paid order within the {days}-day hold window.",
+    },
+    stats: {
+      totalReferred: "Total Referred",
+      signedUp: "Signed Up",
+      qualified: "Qualified",
+      flagged: "Flagged",
+      pendingRewards: "Pending Rewards",
+      releasedRewards: "Released Rewards",
+    },
+    howItWorks: {
+      eyebrow: "How It Works",
+      step1Title: "Share your code",
+      step1Body:
+        "Share your unique code or link. Friends who visit any HenryCo subdomain with your link get tracked automatically.",
+      step2Title: "They transact",
+      step2Body:
+        "After signup, the referral enters a {days}-day hold window. We track the referred account only once — self-referrals, duplicate households, and recycled signups do not qualify.",
+      step3Title: "Rewards clear after qualification",
+      step3Body:
+        "Qualified referrals credit {amount} to your HenryCo wallet after finance review. Pending rewards are not spendable until cleared.",
+    },
+    policy: {
+      eyebrow: "Referral Policy",
+      qualifying:
+        "A qualifying conversion means the referred account completed an eligible HenryCo action that passed payment and trust verification.",
+      enforcement:
+        "HenryCo can hold, reverse, or cancel rewards for self-referrals, duplicate conversion loops, reversals, refunds, or suspicious reward patterns.",
+      separation:
+        "Your dashboard shows referral matches and reward history separately so tracked signups are not mistaken for credited wallet earnings.",
+    },
+    referralsList: {
+      eyebrow: "Your Referrals",
+      emptyTitle: "No referrals yet",
+      emptyDescription:
+        "Share your referral code to start inviting people. Referrals will appear here once someone signs up with your link.",
+      refereeFallback: "Referred signup",
+      signedUpTemplate: "Signed up {date}",
+      qualifiedTemplate: "Qualified {date}",
+    },
+    statusLabels: {
+      pending: "Awaiting signup",
+      converted: "Signed up · hold period",
+      qualified: "Qualified · reward unlocked",
+      flagged: "Flagged · fraud guard",
+      expired: "Expired",
+    },
+    flagReasons: {
+      selfReferral: "Self-referral blocked",
+      duplicateEmail: "Duplicate referee email",
+      deviceReuse: "Device reuse",
+    },
+    rewards: {
+      eyebrow: "Reward History",
+      emptyTitle: "No rewards yet",
+      emptyDescription:
+        "Credited rewards will appear here after qualifying conversions clear verification and anti-abuse review.",
+      referralRewardFallback: "Referral Reward",
+      paidTemplate: "Paid {date}",
+      statusLabels: {
+        held: "Held",
+        pending: "Pending",
+        released: "Released",
+        paid: "Paid",
+        cancelled: "Cancelled",
+      },
+    },
+  },
 };
 
 const FR: DeepPartial<AccountCopy> = {
@@ -2927,7 +3089,93 @@ const FR: DeepPartial<AccountCopy> = {
       totalTemplate: "{count} forfait·s",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "Parrainages",
+      description:
+        "Invitez des clients qualifiés sur HenryCo et suivez les récompenses à travers les états en attente, vérifiés et crédités.",
+    },
+    hero: {
+      title: "Parrainages",
+      description:
+        "Invitez des clients qualifiés sur HenryCo et suivez les récompenses à travers les états en attente, vérifiés et crédités.",
+    },
+    code: {
+      eyebrow: "Votre code de parrainage",
+      shareLinkLabel: "Lien de partage",
+      copyCodeTitle: "Copier le code",
+      copyLinkTitle: "Copier le lien",
+      copyLinkLabel: "Copier le lien",
+      copiedToast: "Copié !",
+      rewardNote:
+        "Récompense : {amount} par parrainage qualifié. Les récompenses sont débloquées après que le filleul a finalisé une commande payée dans la fenêtre de blocage de {days} jours.",
+    },
+    stats: {
+      totalReferred: "Total parrainé",
+      signedUp: "Inscrits",
+      qualified: "Qualifiés",
+      flagged: "Signalés",
+      pendingRewards: "Récompenses en attente",
+      releasedRewards: "Récompenses débloquées",
+    },
+    howItWorks: {
+      eyebrow: "Comment ça marche",
+      step1Title: "Partagez votre code",
+      step1Body:
+        "Partagez votre code ou lien unique. Les amis qui visitent un sous-domaine HenryCo avec votre lien sont suivis automatiquement.",
+      step2Title: "Ils effectuent une transaction",
+      step2Body:
+        "Après inscription, le parrainage entre dans une fenêtre de blocage de {days} jours. Nous suivons le compte parrainé une seule fois — les auto-parrainages, doublons de foyer et inscriptions recyclées ne se qualifient pas.",
+      step3Title: "Les récompenses se libèrent après qualification",
+      step3Body:
+        "Les parrainages qualifiés créditent {amount} sur votre portefeuille HenryCo après contrôle financier. Les récompenses en attente ne sont pas dépensables avant validation.",
+    },
+    policy: {
+      eyebrow: "Politique de parrainage",
+      qualifying:
+        "Une conversion qualifiante signifie que le compte parrainé a réalisé une action HenryCo éligible qui a passé la vérification de paiement et de confiance.",
+      enforcement:
+        "HenryCo peut suspendre, annuler ou révoquer les récompenses en cas d’auto-parrainages, de boucles de conversion en doublon, d’annulations, de remboursements ou de schémas de récompenses suspects.",
+      separation:
+        "Votre tableau de bord présente les parrainages et l’historique des récompenses séparément afin que les inscriptions suivies ne soient pas confondues avec les gains crédités au portefeuille.",
+    },
+    referralsList: {
+      eyebrow: "Vos parrainages",
+      emptyTitle: "Aucun parrainage pour l’instant",
+      emptyDescription:
+        "Partagez votre code de parrainage pour commencer à inviter. Les parrainages apparaîtront ici dès que quelqu’un s’inscrit avec votre lien.",
+      refereeFallback: "Inscription parrainée",
+      signedUpTemplate: "Inscrit le {date}",
+      qualifiedTemplate: "Qualifié le {date}",
+    },
+    statusLabels: {
+      pending: "En attente d’inscription",
+      converted: "Inscrit · période de blocage",
+      qualified: "Qualifié · récompense débloquée",
+      flagged: "Signalé · contrôle anti-fraude",
+      expired: "Expiré",
+    },
+    flagReasons: {
+      selfReferral: "Auto-parrainage bloqué",
+      duplicateEmail: "E-mail de filleul en doublon",
+      deviceReuse: "Réutilisation d’appareil",
+    },
+    rewards: {
+      eyebrow: "Historique des récompenses",
+      emptyTitle: "Aucune récompense pour l’instant",
+      emptyDescription:
+        "Les récompenses créditées apparaîtront ici après que les conversions qualifiées auront passé la vérification et le contrôle anti-abus.",
+      referralRewardFallback: "Récompense de parrainage",
+      paidTemplate: "Payé le {date}",
+      statusLabels: {
+        held: "Bloqué",
+        pending: "En attente",
+        released: "Débloqué",
+        paid: "Payé",
+        cancelled: "Annulé",
+      },
+    },
+  },
 };
 
 const DE: DeepPartial<AccountCopy> = {
@@ -3869,7 +4117,93 @@ const DE: DeepPartial<AccountCopy> = {
       totalTemplate: "{count} Plan{plural}",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "Empfehlungen",
+      description:
+        "Laden Sie qualifizierte Kunden zu HenryCo ein und verfolgen Sie Prämien von ausstehend über geprüft bis gutgeschrieben.",
+    },
+    hero: {
+      title: "Empfehlungen",
+      description:
+        "Laden Sie qualifizierte Kunden zu HenryCo ein und verfolgen Sie Prämien von ausstehend über geprüft bis gutgeschrieben.",
+    },
+    code: {
+      eyebrow: "Ihr Empfehlungscode",
+      shareLinkLabel: "Freigabe-Link",
+      copyCodeTitle: "Code kopieren",
+      copyLinkTitle: "Link kopieren",
+      copyLinkLabel: "Link kopieren",
+      copiedToast: "Kopiert!",
+      rewardNote:
+        "Prämie: {amount} pro qualifizierter Empfehlung. Prämien werden freigegeben, sobald die geworbene Person innerhalb des {days}-Tage-Sperrfensters eine bezahlte Bestellung abschließt.",
+    },
+    stats: {
+      totalReferred: "Insgesamt empfohlen",
+      signedUp: "Angemeldet",
+      qualified: "Qualifiziert",
+      flagged: "Markiert",
+      pendingRewards: "Ausstehende Prämien",
+      releasedRewards: "Freigegebene Prämien",
+    },
+    howItWorks: {
+      eyebrow: "So funktioniert es",
+      step1Title: "Teilen Sie Ihren Code",
+      step1Body:
+        "Teilen Sie Ihren einzigartigen Code oder Link. Freunde, die mit Ihrem Link eine HenryCo-Subdomain besuchen, werden automatisch erfasst.",
+      step2Title: "Sie tätigen einen Umsatz",
+      step2Body:
+        "Nach der Anmeldung beginnt für die Empfehlung ein Sperrfenster von {days} Tagen. Das geworbene Konto wird nur einmal gezählt — Selbstempfehlungen, Haushaltsduplikate und wiederverwendete Anmeldungen qualifizieren nicht.",
+      step3Title: "Prämien werden nach Qualifizierung freigegeben",
+      step3Body:
+        "Qualifizierte Empfehlungen schreiben nach Finanzprüfung {amount} Ihrer HenryCo-Wallet gut. Ausstehende Prämien sind erst nach Freigabe ausgabefähig.",
+    },
+    policy: {
+      eyebrow: "Empfehlungsrichtlinie",
+      qualifying:
+        "Eine qualifizierende Conversion bedeutet, dass das geworbene Konto eine berechtigte HenryCo-Aktion abgeschlossen hat, die die Zahlungs- und Vertrauensprüfung bestanden hat.",
+      enforcement:
+        "HenryCo kann Prämien für Selbstempfehlungen, doppelte Conversion-Schleifen, Stornos, Rückerstattungen oder verdächtige Prämienmuster zurückhalten, rückgängig machen oder stornieren.",
+      separation:
+        "Ihr Dashboard zeigt Empfehlungen und Prämienverlauf getrennt an, damit erfasste Anmeldungen nicht mit gutgeschriebenen Wallet-Einnahmen verwechselt werden.",
+    },
+    referralsList: {
+      eyebrow: "Ihre Empfehlungen",
+      emptyTitle: "Noch keine Empfehlungen",
+      emptyDescription:
+        "Teilen Sie Ihren Empfehlungscode, um andere einzuladen. Empfehlungen erscheinen hier, sobald sich jemand mit Ihrem Link anmeldet.",
+      refereeFallback: "Empfohlene Anmeldung",
+      signedUpTemplate: "Angemeldet am {date}",
+      qualifiedTemplate: "Qualifiziert am {date}",
+    },
+    statusLabels: {
+      pending: "Warten auf Anmeldung",
+      converted: "Angemeldet · Sperrfrist",
+      qualified: "Qualifiziert · Prämie freigegeben",
+      flagged: "Markiert · Betrugsschutz",
+      expired: "Abgelaufen",
+    },
+    flagReasons: {
+      selfReferral: "Selbstempfehlung blockiert",
+      duplicateEmail: "Doppelte Empfänger-E-Mail",
+      deviceReuse: "Gerätewiederverwendung",
+    },
+    rewards: {
+      eyebrow: "Prämienverlauf",
+      emptyTitle: "Noch keine Prämien",
+      emptyDescription:
+        "Gutgeschriebene Prämien erscheinen hier, nachdem qualifizierende Conversions die Prüfung und den Missbrauchsschutz bestanden haben.",
+      referralRewardFallback: "Empfehlungsprämie",
+      paidTemplate: "Bezahlt am {date}",
+      statusLabels: {
+        held: "Gesperrt",
+        pending: "Ausstehend",
+        released: "Freigegeben",
+        paid: "Bezahlt",
+        cancelled: "Storniert",
+      },
+    },
+  },
 };
 
 const IT: DeepPartial<AccountCopy> = {
@@ -4813,7 +5147,93 @@ const IT: DeepPartial<AccountCopy> = {
       totalTemplate: "{count} piano·i",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "Referenze",
+      description:
+        "Invita clienti qualificati su HenryCo e segui i premi attraverso gli stati in sospeso, verificati e accreditati.",
+    },
+    hero: {
+      title: "Referenze",
+      description:
+        "Invita clienti qualificati su HenryCo e segui i premi attraverso gli stati in sospeso, verificati e accreditati.",
+    },
+    code: {
+      eyebrow: "Il tuo codice referenza",
+      shareLinkLabel: "Link di condivisione",
+      copyCodeTitle: "Copia codice",
+      copyLinkTitle: "Copia link",
+      copyLinkLabel: "Copia link",
+      copiedToast: "Copiato!",
+      rewardNote:
+        "Premio: {amount} per ogni referenza qualificata. I premi vengono sbloccati dopo che la persona segnalata completa un ordine pagato entro la finestra di blocco di {days} giorni.",
+    },
+    stats: {
+      totalReferred: "Totale segnalati",
+      signedUp: "Iscritti",
+      qualified: "Qualificati",
+      flagged: "Segnalati per verifica",
+      pendingRewards: "Premi in sospeso",
+      releasedRewards: "Premi sbloccati",
+    },
+    howItWorks: {
+      eyebrow: "Come funziona",
+      step1Title: "Condividi il tuo codice",
+      step1Body:
+        "Condividi il tuo codice o link unico. Gli amici che visitano un sottodominio HenryCo con il tuo link vengono tracciati automaticamente.",
+      step2Title: "Effettuano una transazione",
+      step2Body:
+        "Dopo l’iscrizione, la referenza entra in una finestra di blocco di {days} giorni. Tracciamo l’account segnalato una sola volta — le auto-referenze, i duplicati di nucleo familiare e le iscrizioni riciclate non si qualificano.",
+      step3Title: "I premi si sbloccano dopo la qualifica",
+      step3Body:
+        "Le referenze qualificate accreditano {amount} sul tuo portafoglio HenryCo dopo la revisione finanziaria. I premi in sospeso non sono spendibili finché non vengono autorizzati.",
+    },
+    policy: {
+      eyebrow: "Politica delle referenze",
+      qualifying:
+        "Una conversione qualificante significa che l’account segnalato ha completato un’azione HenryCo idonea che ha superato la verifica di pagamento e di affidabilità.",
+      enforcement:
+        "HenryCo può sospendere, annullare o cancellare i premi in caso di auto-referenze, cicli di conversione duplicati, storni, rimborsi o schemi di premi sospetti.",
+      separation:
+        "La tua dashboard mostra separatamente le referenze e la cronologia dei premi affinché le iscrizioni tracciate non vengano confuse con guadagni accreditati al portafoglio.",
+    },
+    referralsList: {
+      eyebrow: "Le tue referenze",
+      emptyTitle: "Nessuna referenza ancora",
+      emptyDescription:
+        "Condividi il tuo codice referenza per iniziare a invitare. Le referenze appariranno qui non appena qualcuno si iscrive con il tuo link.",
+      refereeFallback: "Iscrizione segnalata",
+      signedUpTemplate: "Iscritto il {date}",
+      qualifiedTemplate: "Qualificato il {date}",
+    },
+    statusLabels: {
+      pending: "In attesa di iscrizione",
+      converted: "Iscritto · periodo di blocco",
+      qualified: "Qualificato · premio sbloccato",
+      flagged: "Segnalato · controllo antifrode",
+      expired: "Scaduto",
+    },
+    flagReasons: {
+      selfReferral: "Auto-referenza bloccata",
+      duplicateEmail: "E-mail di referente duplicata",
+      deviceReuse: "Riutilizzo del dispositivo",
+    },
+    rewards: {
+      eyebrow: "Cronologia premi",
+      emptyTitle: "Nessun premio ancora",
+      emptyDescription:
+        "I premi accreditati appariranno qui dopo che le conversioni qualificate avranno superato la verifica e il controllo antiabuso.",
+      referralRewardFallback: "Premio referenza",
+      paidTemplate: "Pagato il {date}",
+      statusLabels: {
+        held: "Trattenuto",
+        pending: "In sospeso",
+        released: "Sbloccato",
+        paid: "Pagato",
+        cancelled: "Annullato",
+      },
+    },
+  },
 };
 
 const IG: DeepPartial<AccountCopy> = {
@@ -5759,7 +6179,93 @@ const IG: DeepPartial<AccountCopy> = {
       totalTemplate: "{count} atụmatụ",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "Ndị Ezịgara",
+      description:
+        "Kpọọ ndị ahịa ruru eru gaa HenryCo ma soro ụgwọ ọrụ site na ọnọdụ na-eche, enyochara, na akwụnyere.",
+    },
+    hero: {
+      title: "Ndị Ezịgara",
+      description:
+        "Kpọọ ndị ahịa ruru eru gaa HenryCo ma soro ụgwọ ọrụ site na ọnọdụ na-eche, enyochara, na akwụnyere.",
+    },
+    code: {
+      eyebrow: "Koodu nzipu gị",
+      shareLinkLabel: "Njikọ nkesa",
+      copyCodeTitle: "Detuo koodu",
+      copyLinkTitle: "Detuo njikọ",
+      copyLinkLabel: "Detuo njikọ",
+      copiedToast: "Edetuola!",
+      rewardNote:
+        "Ụgwọ ọrụ: {amount} kwa nzipu ruru eru. A na-emepe ụgwọ ọrụ mgbe onye ezigara mechara ihe nzụta akwụrụ ụgwọ n'ime windo njide ụbọchị {days}.",
+    },
+    stats: {
+      totalReferred: "Ngụkọta Ndị Ezigara",
+      signedUp: "Ndị Debara",
+      qualified: "Ndị Ruru Eru",
+      flagged: "Ndị Akara",
+      pendingRewards: "Ụgwọ Ọrụ Na-eche",
+      releasedRewards: "Ụgwọ Ọrụ Ewepụtara",
+    },
+    howItWorks: {
+      eyebrow: "Otú Ọ Si Arụ Ọrụ",
+      step1Title: "Kekọrịta koodu gị",
+      step1Body:
+        "Kekọrịta koodu pụrụ iche gị ma ọ bụ njikọ. Ndị enyi na-eji njikọ gị aga ngalaba ọ bụla nke HenryCo ka a na-esoso ozugbo.",
+      step2Title: "Ha na-azụ ahịa",
+      step2Body:
+        "Mgbe ha debanyere aha, nzipu ahụ na-abanye n'ime windo njide nke ụbọchị {days}. Anyị na-eso akaụntụ a kpọrọ naanị otu ugboro — nzipu onwe, ndị ezinụlọ ndabara, na ndebanye aha emejiri arụghị ọrụ ruo eru.",
+      step3Title: "Ụgwọ ọrụ na-edebanye mgbe ọ ruru eru",
+      step3Body:
+        "Nzipu ndị ruru eru na-akwụnye {amount} na obere akpa HenryCo gị mgbe nyochaa ego. Ụgwọ ọrụ na-eche enweghị ike imefu tutu eweputara.",
+    },
+    policy: {
+      eyebrow: "Iwu Nzipu",
+      qualifying:
+        "Mgbanwe ruru eru pụtara na akaụntụ ezigara mechara omume HenryCo kwesịrị ekwesị nke gabigara ịkwụ ụgwọ na nyocha ntụkwasị obi.",
+      enforcement:
+        "HenryCo nwere ike ijigide, gbanwee, ma ọ bụ kagbuo ụgwọ ọrụ maka nzipu onwe, akagharị mgbanwe ndabara, mgbagharị, nkwụghachi, ma ọ bụ usoro ụgwọ ọrụ enyo.",
+      separation:
+        "Dashboard gị na-egosi nzipu na akụkọ ụgwọ ọrụ iche ka a ghara iji ndebanye aha esochiri kwekọọ na ego e debanyere n'obere akpa.",
+    },
+    referralsList: {
+      eyebrow: "Nzipu Gị",
+      emptyTitle: "Enwebeghị nzipu ọ bụla",
+      emptyDescription:
+        "Kekọrịta koodu nzipu gị ka ịmalite ịkpọ ndị mmadụ. Nzipu ga-egosipụta ebe a ozugbo mmadụ jiri njikọ gị debanye aha.",
+      refereeFallback: "Ndebanye aha ezigara",
+      signedUpTemplate: "Debara aha {date}",
+      qualifiedTemplate: "Rurupụrụ {date}",
+    },
+    statusLabels: {
+      pending: "Na-eche ndebanye aha",
+      converted: "Debanyere · oge njide",
+      qualified: "Rurupụrụ · ụgwọ ọrụ emepere",
+      flagged: "Akara · nchekwa aghụghọ",
+      expired: "Agafeela",
+    },
+    flagReasons: {
+      selfReferral: "Egbochiri nzipu onwe",
+      duplicateEmail: "Ozi-e ezigara emechaa",
+      deviceReuse: "Iji ngwaọrụ ọzọ",
+    },
+    rewards: {
+      eyebrow: "Akụkọ Ụgwọ Ọrụ",
+      emptyTitle: "Enwebeghị ụgwọ ọrụ",
+      emptyDescription:
+        "Ụgwọ ọrụ akwụnyere ga-egosipụta ebe a mgbe mgbanwe ndị ruru eru gafee nyocha na nyocha mgbochi mmebi iwu.",
+      referralRewardFallback: "Ụgwọ Ọrụ Nzipu",
+      paidTemplate: "Akwụrụ {date}",
+      statusLabels: {
+        held: "Ejigidere",
+        pending: "Na-eche",
+        released: "Ewepụtara",
+        paid: "Akwụrụ",
+        cancelled: "Akagburu",
+      },
+    },
+  },
 };
 
 const YO: DeepPartial<AccountCopy> = {
@@ -6705,7 +7211,93 @@ const YO: DeepPartial<AccountCopy> = {
       totalTemplate: "{count} ètò",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "Ìfilọ̀ Ẹnìkejì",
+      description:
+        "Pe àwọn oníbàárà tí ó dára sí HenryCo, kí o sì máa tọpinpin ẹ̀san láti ipo dídúró, sí ìwádìí, sí gbígba.",
+    },
+    hero: {
+      title: "Ìfilọ̀ Ẹnìkejì",
+      description:
+        "Pe àwọn oníbàárà tí ó dára sí HenryCo, kí o sì máa tọpinpin ẹ̀san láti ipo dídúró, sí ìwádìí, sí gbígba.",
+    },
+    code: {
+      eyebrow: "Kóòdù ìfilọ̀ rẹ",
+      shareLinkLabel: "Líńkì pínpín",
+      copyCodeTitle: "Daakọ kóòdù",
+      copyLinkTitle: "Daakọ líńkì",
+      copyLinkLabel: "Daakọ líńkì",
+      copiedToast: "A ti daakọ!",
+      rewardNote:
+        "Ẹ̀san: {amount} fún ìfilọ̀ kọ̀ọ̀kan tí ó dára. A o gba ẹ̀san wọlé lẹ́yìn tí ẹni tí a fi ránṣẹ́ sí parí ètò ìrajà ní àkókò ìpamọ́ ọjọ́ {days}.",
+    },
+    stats: {
+      totalReferred: "Àpapọ̀ Tí A Filọ̀",
+      signedUp: "Tí Ó Forúkọsílẹ̀",
+      qualified: "Tí Ó Tó",
+      flagged: "Tí A Sàmì Sí",
+      pendingRewards: "Ẹ̀san Dídúró",
+      releasedRewards: "Ẹ̀san Tí A Gbé Jáde",
+    },
+    howItWorks: {
+      eyebrow: "Bí Ó Ti Ń Ṣiṣẹ́",
+      step1Title: "Pín kóòdù rẹ",
+      step1Body:
+        "Pín kóòdù tàbí líńkì alaiẹ̀dà rẹ. A o tọpinpin àwọn ọ̀rẹ́ tí ó bẹ̀rù subdomain HenryCo èyíkéyìí pẹ̀lú líńkì rẹ lójijì.",
+      step2Title: "Wọn ń ṣe ìfowópamọ́",
+      step2Body:
+        "Lẹ́yìn ìforúkọsílẹ̀, ìfilọ̀ náà yóò wọnú àkókò ìpamọ́ ọjọ́ {days}. À ń tọ́jú ìbáṣepọ̀ ẹni tí a fi ránṣẹ́ sí lẹ́ẹ̀kanṣoṣo — ìfilọ̀ ara-ẹni, ẹbí olùpíbarbar, àti àwọn ìforúkọsílẹ̀ tí a yí padà kò tó.",
+      step3Title: "Ẹ̀san yóò gba wọlé lẹ́yìn ìjẹrísí",
+      step3Body:
+        "Ìfilọ̀ tí ó dára yóò fi {amount} sí àpamọ́wọ́ HenryCo rẹ lẹ́yìn àyẹ̀wò ètò ìnáwó. Ẹ̀san dídúró kò ṣeé ná àyàfi tí a bá tu sílẹ̀.",
+    },
+    policy: {
+      eyebrow: "Òfin Ìfilọ̀",
+      qualifying:
+        "Ìyípadà tí ó dára túmọ̀ sí pé àkáǹtì ẹni tí a fi ránṣẹ́ sí parí iṣẹ́ HenryCo tí ó yẹ tí ó gba ìmúdájú ìsanwó àti ìfọkàntán.",
+      enforcement:
+        "HenryCo lè dá, yí padà, tàbí kọsílẹ̀ ẹ̀san fún àwọn ìfilọ̀ ara-ẹni, àyípo ìyípadà àdàkọ, àyípadà tó padà, àpadàbọ̀, tàbí àwọn àpẹẹrẹ ẹ̀san tí ó fún ìfura.",
+      separation:
+        "Dásíbọ̀ọ̀dù rẹ fi àwọn ìfilọ̀ àti ìtàn ẹ̀san hàn lọ́tọ̀ọ̀tọ̀ kí a má ba à dárúkọ àwọn ìforúkọsílẹ̀ tí a tọpinpin gẹ́gẹ́ bí èrè àpamọ́wọ́ tí a ti gba wọlé.",
+    },
+    referralsList: {
+      eyebrow: "Àwọn Ìfilọ̀ Rẹ",
+      emptyTitle: "Kò sí ìfilọ̀ kankan síbẹ̀",
+      emptyDescription:
+        "Pín kóòdù ìfilọ̀ rẹ láti bẹ̀rẹ̀ pípe àwọn ènìyàn. Àwọn ìfilọ̀ yóò farahàn níbí ní kété tí ẹnìkan bá forúkọsílẹ̀ pẹ̀lú líńkì rẹ.",
+      refereeFallback: "Ìforúkọsílẹ̀ tí a fi ránṣẹ́",
+      signedUpTemplate: "Forúkọsílẹ̀ {date}",
+      qualifiedTemplate: "Tó {date}",
+    },
+    statusLabels: {
+      pending: "Ó ń dúró fún ìforúkọsílẹ̀",
+      converted: "Ó ti forúkọsílẹ̀ · àkókò ìpamọ́",
+      qualified: "Ó tó · ẹ̀san ti ṣílẹ̀",
+      flagged: "A sàmì sí · ààbò ẹ̀tàn",
+      expired: "Ti pàrẹ́",
+    },
+    flagReasons: {
+      selfReferral: "A dí ìfilọ̀ ara-ẹni",
+      duplicateEmail: "Ímeèlì àdàkọ olùpíbarbar",
+      deviceReuse: "Lílò ẹ̀rọ ní àtúntò",
+    },
+    rewards: {
+      eyebrow: "Ìtàn Ẹ̀san",
+      emptyTitle: "Kò sí ẹ̀san kankan síbẹ̀",
+      emptyDescription:
+        "Àwọn ẹ̀san tí a gbà yóò farahàn níbí lẹ́yìn tí àwọn ìyípadà tí ó dára bá gba ìmúdájú àti àyẹ̀wò àìtọ́.",
+      referralRewardFallback: "Ẹ̀san Ìfilọ̀",
+      paidTemplate: "A san {date}",
+      statusLabels: {
+        held: "Ó dúró",
+        pending: "Ó ń dúró",
+        released: "A gbé jáde",
+        paid: "A san",
+        cancelled: "A fagilé",
+      },
+    },
+  },
 };
 
 const HA: DeepPartial<AccountCopy> = {
@@ -7651,7 +8243,93 @@ const HA: DeepPartial<AccountCopy> = {
       totalTemplate: "{count} tsari",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "Tura Wasu",
+      description:
+        "Gayyaci abokan ciniki masu cancanta zuwa HenryCo, kuma ka bi diddigin kyaututtuka ta hanyar dakatarwa, sake nazari, da matakan da aka biya.",
+    },
+    hero: {
+      title: "Tura Wasu",
+      description:
+        "Gayyaci abokan ciniki masu cancanta zuwa HenryCo, kuma ka bi diddigin kyaututtuka ta hanyar dakatarwa, sake nazari, da matakan da aka biya.",
+    },
+    code: {
+      eyebrow: "Lambar tura ka",
+      shareLinkLabel: "Hanyar haɗi",
+      copyCodeTitle: "Kwafi lambar",
+      copyLinkTitle: "Kwafi hanyar haɗi",
+      copyLinkLabel: "Kwafi hanyar haɗi",
+      copiedToast: "An kwafi!",
+      rewardNote:
+        "Lada: {amount} ga kowane tura mai cancanta. Ana buɗe lada bayan da mai karɓar tura ya kammala odar da aka biya a cikin tagar riƙe na kwanaki {days}.",
+    },
+    stats: {
+      totalReferred: "Jimillar Wadanda Aka Tura",
+      signedUp: "Sun Yi Rajista",
+      qualified: "Sun Cancanta",
+      flagged: "An Yi Alama",
+      pendingRewards: "Ladan Da Ke Tafe",
+      releasedRewards: "Ladan Da Aka Saki",
+    },
+    howItWorks: {
+      eyebrow: "Yadda Yake Aiki",
+      step1Title: "Raba lambarka",
+      step1Body:
+        "Raba lambarka ko hanyar haɗinka ta musamman. Ana bi diddigin abokan da ke ziyartar duk wani sashin HenryCo ta hanyar haɗinka ta atomatik.",
+      step2Title: "Sun yi mu'amala",
+      step2Body:
+        "Bayan rajista, turawar tana shiga cikin tagar riƙe na kwanaki {days}. Muna bin diddigin asusun da aka tura sau ɗaya kawai — tura kai, kwafin gida, da sake rajistar da aka sake amfani ba su cancanta ba.",
+      step3Title: "Lada na fitowa bayan cancanta",
+      step3Body:
+        "Turawar da ta cancanta tana ɗora {amount} a walat ɗin HenryCo ka bayan nazarin kuɗi. Ladan da ke tafe ba a iya kashe shi har sai an tabbatar da shi.",
+    },
+    policy: {
+      eyebrow: "Manufar Tura",
+      qualifying:
+        "Juyawar da ta cancanta na nufin asusun da aka tura ya kammala aikin HenryCo da ya cancanta wanda ya wuce tabbatar da biyan kuɗi da amincewa.",
+      enforcement:
+        "HenryCo na iya riƙewa, mayar da baya, ko soke lada don tura kai, ƙididdigar juyawa biyu, mayar da baya, mayar da kuɗi, ko alamomin lada na zato.",
+      separation:
+        "Allon bayanan ka yana nuna turawa da tarihin lada daban don kada a yi kuskuren tantance rajistar da aka bi diddiginsu a matsayin kuɗin walat da aka biya.",
+    },
+    referralsList: {
+      eyebrow: "Turawar Ka",
+      emptyTitle: "Babu tura tukuna",
+      emptyDescription:
+        "Raba lambar tura ka don fara gayyatar mutane. Turawa za su bayyana a nan da zarar wani ya yi rajista da hanyar haɗinka.",
+      refereeFallback: "Rajistar da aka tura",
+      signedUpTemplate: "An yi rajista {date}",
+      qualifiedTemplate: "Ya cancanta {date}",
+    },
+    statusLabels: {
+      pending: "Ana jiran rajista",
+      converted: "Ya yi rajista · lokacin riƙewa",
+      qualified: "Ya cancanta · an buɗe lada",
+      flagged: "An yi alama · kariyar zamba",
+      expired: "Ya ƙare",
+    },
+    flagReasons: {
+      selfReferral: "An toshe tura kai",
+      duplicateEmail: "Kwafin imel na mai karɓar tura",
+      deviceReuse: "Sake amfani da na'ura",
+    },
+    rewards: {
+      eyebrow: "Tarihin Lada",
+      emptyTitle: "Babu lada tukuna",
+      emptyDescription:
+        "Ladan da aka biya za su bayyana a nan bayan juyawar da ta cancanta ta wuce tabbatarwa da bita na rigakafin ɓarna.",
+      referralRewardFallback: "Ladan Tura",
+      paidTemplate: "An biya {date}",
+      statusLabels: {
+        held: "An Riƙe",
+        pending: "Yana Jiran",
+        released: "An Saki",
+        paid: "An Biya",
+        cancelled: "An Soke",
+      },
+    },
+  },
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -8589,7 +9267,86 @@ const ZH: DeepPartial<AccountCopy> = {
       totalTemplate: "{count} 项套餐",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "推荐",
+      description: "邀请符合条件的客户加入 HenryCo,并跟踪奖励从待处理、审核到记入帐户的全过程。",
+    },
+    hero: {
+      title: "推荐",
+      description: "邀请符合条件的客户加入 HenryCo,并跟踪奖励从待处理、审核到记入帐户的全过程。",
+    },
+    code: {
+      eyebrow: "您的推荐代码",
+      shareLinkLabel: "分享链接",
+      copyCodeTitle: "复制代码",
+      copyLinkTitle: "复制链接",
+      copyLinkLabel: "复制链接",
+      copiedToast: "已复制!",
+      rewardNote:
+        "奖励:每位合格推荐 {amount}。被推荐人在 {days} 天保留期内完成已付款订单后,奖励即可解锁。",
+    },
+    stats: {
+      totalReferred: "推荐总数",
+      signedUp: "已注册",
+      qualified: "已合格",
+      flagged: "已标记",
+      pendingRewards: "待处理奖励",
+      releasedRewards: "已发放奖励",
+    },
+    howItWorks: {
+      eyebrow: "工作原理",
+      step1Title: "分享您的代码",
+      step1Body: "分享您的独特代码或链接。通过您的链接访问任何 HenryCo 子域名的朋友都将被自动追踪。",
+      step2Title: "他们进行交易",
+      step2Body:
+        "注册后,该推荐进入 {days} 天保留期。我们仅追踪被推荐帐户一次——自我推荐、家庭重复和重复注册均不符合资格。",
+      step3Title: "合格后奖励到账",
+      step3Body: "合格推荐在财务审核后将 {amount} 记入您的 HenryCo 钱包。待处理奖励在审核前不可支出。",
+    },
+    policy: {
+      eyebrow: "推荐政策",
+      qualifying: "合格转化指被推荐帐户完成了通过支付和信任验证的合格 HenryCo 操作。",
+      enforcement:
+        "对于自我推荐、重复转化循环、退单、退款或可疑奖励模式,HenryCo 可保留、撤销或取消奖励。",
+      separation: "您的仪表板分别显示推荐匹配和奖励历史,以便追踪的注册不会与已记入钱包的收益混淆。",
+    },
+    referralsList: {
+      eyebrow: "您的推荐",
+      emptyTitle: "尚无推荐",
+      emptyDescription:
+        "分享您的推荐代码以开始邀请。一旦有人使用您的链接注册,推荐将在此处显示。",
+      refereeFallback: "推荐注册",
+      signedUpTemplate: "已于 {date} 注册",
+      qualifiedTemplate: "已于 {date} 合格",
+    },
+    statusLabels: {
+      pending: "等待注册",
+      converted: "已注册 · 保留期",
+      qualified: "已合格 · 奖励已解锁",
+      flagged: "已标记 · 反欺诈防护",
+      expired: "已过期",
+    },
+    flagReasons: {
+      selfReferral: "已阻止自我推荐",
+      duplicateEmail: "被推荐人电子邮件重复",
+      deviceReuse: "设备重复使用",
+    },
+    rewards: {
+      eyebrow: "奖励历史",
+      emptyTitle: "尚无奖励",
+      emptyDescription: "合格转化通过验证和反滥用审查后,记入的奖励将在此处显示。",
+      referralRewardFallback: "推荐奖励",
+      paidTemplate: "已于 {date} 支付",
+      statusLabels: {
+        held: "已保留",
+        pending: "待处理",
+        released: "已发放",
+        paid: "已支付",
+        cancelled: "已取消",
+      },
+    },
+  },
 };
 
 const HI: DeepPartial<AccountCopy> = {
@@ -9534,7 +10291,93 @@ const HI: DeepPartial<AccountCopy> = {
       totalTemplate: "{count} योजना{plural}",
     },
   },
-
+  referrals: {
+    metadata: {
+      title: "रेफरल",
+      description:
+        "HenryCo में योग्य ग्राहकों को आमंत्रित करें और लंबित, समीक्षाधीन, और जमा की गई स्थितियों के माध्यम से पुरस्कारों को ट्रैक करें।",
+    },
+    hero: {
+      title: "रेफरल",
+      description:
+        "HenryCo में योग्य ग्राहकों को आमंत्रित करें और लंबित, समीक्षाधीन, और जमा की गई स्थितियों के माध्यम से पुरस्कारों को ट्रैक करें।",
+    },
+    code: {
+      eyebrow: "आपका रेफरल कोड",
+      shareLinkLabel: "साझा लिंक",
+      copyCodeTitle: "कोड कॉपी करें",
+      copyLinkTitle: "लिंक कॉपी करें",
+      copyLinkLabel: "लिंक कॉपी करें",
+      copiedToast: "कॉपी हो गया!",
+      rewardNote:
+        "पुरस्कार: प्रति योग्य रेफरल {amount}। रेफरी द्वारा {days}-दिवसीय होल्ड विंडो के भीतर भुगतान किया गया ऑर्डर पूरा करने के बाद पुरस्कार अनलॉक होते हैं।",
+    },
+    stats: {
+      totalReferred: "कुल रेफर किए गए",
+      signedUp: "साइन अप किए",
+      qualified: "योग्य",
+      flagged: "चिह्नित",
+      pendingRewards: "लंबित पुरस्कार",
+      releasedRewards: "जारी पुरस्कार",
+    },
+    howItWorks: {
+      eyebrow: "यह कैसे काम करता है",
+      step1Title: "अपना कोड साझा करें",
+      step1Body:
+        "अपना विशिष्ट कोड या लिंक साझा करें। आपके लिंक के साथ किसी भी HenryCo सबडोमेन पर जाने वाले मित्र स्वचालित रूप से ट्रैक हो जाते हैं।",
+      step2Title: "वे लेन-देन करते हैं",
+      step2Body:
+        "साइन अप के बाद, रेफरल {days}-दिवसीय होल्ड विंडो में प्रवेश करता है। हम रेफर किए गए खाते को केवल एक बार ट्रैक करते हैं — स्व-रेफरल, डुप्लिकेट परिवार, और पुनर्नवीनीकरण साइनअप योग्य नहीं हैं।",
+      step3Title: "योग्यता के बाद पुरस्कार जारी होते हैं",
+      step3Body:
+        "योग्य रेफरल वित्त समीक्षा के बाद {amount} आपके HenryCo वॉलेट में जमा करते हैं। लंबित पुरस्कार जारी होने तक खर्च करने योग्य नहीं हैं।",
+    },
+    policy: {
+      eyebrow: "रेफरल नीति",
+      qualifying:
+        "एक योग्यता रूपांतरण का अर्थ है कि रेफर किए गए खाते ने एक योग्य HenryCo कार्रवाई पूरी की जो भुगतान और विश्वास सत्यापन में उत्तीर्ण हुई।",
+      enforcement:
+        "HenryCo स्व-रेफरल, डुप्लिकेट रूपांतरण लूप, उलट, धनवापसी, या संदिग्ध पुरस्कार पैटर्न के लिए पुरस्कार रोक सकता है, उलट सकता है, या रद्द कर सकता है।",
+      separation:
+        "आपका डैशबोर्ड रेफरल मिलान और पुरस्कार इतिहास अलग से दिखाता है ताकि ट्रैक किए गए साइनअप को जमा वॉलेट कमाई के साथ गलत न समझा जाए।",
+    },
+    referralsList: {
+      eyebrow: "आपके रेफरल",
+      emptyTitle: "अभी तक कोई रेफरल नहीं",
+      emptyDescription:
+        "लोगों को आमंत्रित करना शुरू करने के लिए अपना रेफरल कोड साझा करें। जब कोई आपके लिंक से साइन अप करेगा तो रेफरल यहां दिखाई देंगे।",
+      refereeFallback: "रेफर किया गया साइनअप",
+      signedUpTemplate: "{date} को साइन अप किया",
+      qualifiedTemplate: "{date} को योग्य",
+    },
+    statusLabels: {
+      pending: "साइनअप की प्रतीक्षा",
+      converted: "साइन अप किया · होल्ड अवधि",
+      qualified: "योग्य · पुरस्कार अनलॉक",
+      flagged: "चिह्नित · धोखाधड़ी सुरक्षा",
+      expired: "समाप्त",
+    },
+    flagReasons: {
+      selfReferral: "स्व-रेफरल अवरुद्ध",
+      duplicateEmail: "डुप्लिकेट रेफरी ईमेल",
+      deviceReuse: "डिवाइस का पुन: उपयोग",
+    },
+    rewards: {
+      eyebrow: "पुरस्कार इतिहास",
+      emptyTitle: "अभी तक कोई पुरस्कार नहीं",
+      emptyDescription:
+        "योग्य रूपांतरणों के सत्यापन और दुरुपयोग विरोधी समीक्षा पास करने के बाद जमा पुरस्कार यहां दिखाई देंगे।",
+      referralRewardFallback: "रेफरल पुरस्कार",
+      paidTemplate: "{date} को भुगतान",
+      statusLabels: {
+        held: "रोका गया",
+        pending: "लंबित",
+        released: "जारी",
+        paid: "भुगतान किया",
+        cancelled: "रद्द",
+      },
+    },
+  },
 };
 
 const LOCALE_OVERRIDES: Partial<Record<AppLocale, DeepPartial<AccountCopy>>> = {

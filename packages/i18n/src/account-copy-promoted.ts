@@ -922,6 +922,82 @@ export const ACCOUNT_COPY_ES = {
       "pausedTemplate": "{count} en pausa",
       "totalTemplate": "{count} plan{plural}"
     }
+  },
+  "referrals": {
+    "metadata": {
+      "title": "Referidos",
+      "description": "Invita a clientes calificados a HenryCo y rastrea las recompensas a través de los estados pendiente, revisado y acreditado."
+    },
+    "hero": {
+      "title": "Referidos",
+      "description": "Invita a clientes calificados a HenryCo y rastrea las recompensas a través de los estados pendiente, revisado y acreditado."
+    },
+    "code": {
+      "eyebrow": "Tu código de referido",
+      "shareLinkLabel": "Enlace para compartir",
+      "copyCodeTitle": "Copiar código",
+      "copyLinkTitle": "Copiar enlace",
+      "copyLinkLabel": "Copiar enlace",
+      "copiedToast": "¡Copiado!",
+      "rewardNote": "Recompensa: {amount} por referido calificado. Las recompensas se desbloquean después de que el referido complete un pedido pagado dentro de la ventana de retención de {days} días."
+    },
+    "stats": {
+      "totalReferred": "Total referidos",
+      "signedUp": "Registrados",
+      "qualified": "Calificados",
+      "flagged": "Marcados",
+      "pendingRewards": "Recompensas pendientes",
+      "releasedRewards": "Recompensas liberadas"
+    },
+    "howItWorks": {
+      "eyebrow": "Cómo funciona",
+      "step1Title": "Comparte tu código",
+      "step1Body": "Comparte tu código o enlace único. Los amigos que visiten cualquier subdominio de HenryCo con tu enlace serán rastreados automáticamente.",
+      "step2Title": "Realizan una transacción",
+      "step2Body": "Después del registro, el referido entra en una ventana de retención de {days} días. Solo rastreamos la cuenta referida una vez — las auto-referencias, los duplicados de hogar y los registros reciclados no califican.",
+      "step3Title": "Las recompensas se liberan tras calificar",
+      "step3Body": "Los referidos calificados acreditan {amount} a tu billetera HenryCo tras la revisión financiera. Las recompensas pendientes no son gastables hasta su liberación."
+    },
+    "policy": {
+      "eyebrow": "Política de referidos",
+      "qualifying": "Una conversión calificada significa que la cuenta referida completó una acción elegible de HenryCo que pasó la verificación de pago y confianza.",
+      "enforcement": "HenryCo puede retener, revertir o cancelar recompensas por auto-referencias, bucles de conversión duplicados, reversiones, reembolsos o patrones sospechosos de recompensas.",
+      "separation": "Tu panel muestra los referidos y el historial de recompensas por separado para que los registros rastreados no se confundan con ganancias acreditadas a la billetera."
+    },
+    "referralsList": {
+      "eyebrow": "Tus referidos",
+      "emptyTitle": "Aún no hay referidos",
+      "emptyDescription": "Comparte tu código de referido para comenzar a invitar personas. Los referidos aparecerán aquí una vez que alguien se registre con tu enlace.",
+      "refereeFallback": "Registro referido",
+      "signedUpTemplate": "Registrado el {date}",
+      "qualifiedTemplate": "Calificado el {date}"
+    },
+    "statusLabels": {
+      "pending": "Esperando registro",
+      "converted": "Registrado · período de retención",
+      "qualified": "Calificado · recompensa desbloqueada",
+      "flagged": "Marcado · protección antifraude",
+      "expired": "Expirado"
+    },
+    "flagReasons": {
+      "selfReferral": "Auto-referencia bloqueada",
+      "duplicateEmail": "Correo de referido duplicado",
+      "deviceReuse": "Reutilización de dispositivo"
+    },
+    "rewards": {
+      "eyebrow": "Historial de recompensas",
+      "emptyTitle": "Aún no hay recompensas",
+      "emptyDescription": "Las recompensas acreditadas aparecerán aquí después de que las conversiones calificadas pasen la verificación y la revisión antiabuso.",
+      "referralRewardFallback": "Recompensa de referido",
+      "paidTemplate": "Pagado el {date}",
+      "statusLabels": {
+        "held": "Retenido",
+        "pending": "Pendiente",
+        "released": "Liberado",
+        "paid": "Pagado",
+        "cancelled": "Cancelado"
+      }
+    }
   }
 };
 
@@ -1846,6 +1922,82 @@ export const ACCOUNT_COPY_PT = {
       "pausedTemplate": "{count} pausada·s",
       "totalTemplate": "{count} plano·s"
     }
+  },
+  "referrals": {
+    "metadata": {
+      "title": "Indicações",
+      "description": "Convide clientes qualificados para a HenryCo e acompanhe recompensas pelos estados pendente, revisado e creditado."
+    },
+    "hero": {
+      "title": "Indicações",
+      "description": "Convide clientes qualificados para a HenryCo e acompanhe recompensas pelos estados pendente, revisado e creditado."
+    },
+    "code": {
+      "eyebrow": "Seu código de indicação",
+      "shareLinkLabel": "Link de compartilhamento",
+      "copyCodeTitle": "Copiar código",
+      "copyLinkTitle": "Copiar link",
+      "copyLinkLabel": "Copiar link",
+      "copiedToast": "Copiado!",
+      "rewardNote": "Recompensa: {amount} por indicação qualificada. As recompensas são liberadas após o indicado concluir um pedido pago dentro da janela de retenção de {days} dias."
+    },
+    "stats": {
+      "totalReferred": "Total indicados",
+      "signedUp": "Cadastrados",
+      "qualified": "Qualificados",
+      "flagged": "Marcados",
+      "pendingRewards": "Recompensas pendentes",
+      "releasedRewards": "Recompensas liberadas"
+    },
+    "howItWorks": {
+      "eyebrow": "Como funciona",
+      "step1Title": "Compartilhe seu código",
+      "step1Body": "Compartilhe seu código ou link exclusivo. Amigos que visitarem qualquer subdomínio da HenryCo com seu link serão rastreados automaticamente.",
+      "step2Title": "Eles realizam uma transação",
+      "step2Body": "Após o cadastro, a indicação entra em uma janela de retenção de {days} dias. Rastreamos a conta indicada apenas uma vez — autoindicações, domicílios duplicados e cadastros reciclados não se qualificam.",
+      "step3Title": "Recompensas liberadas após qualificação",
+      "step3Body": "Indicações qualificadas creditam {amount} na sua carteira HenryCo após análise financeira. Recompensas pendentes não são gastáveis até serem liberadas."
+    },
+    "policy": {
+      "eyebrow": "Política de indicações",
+      "qualifying": "Uma conversão qualificada significa que a conta indicada concluiu uma ação elegível da HenryCo que passou na verificação de pagamento e confiança.",
+      "enforcement": "A HenryCo pode reter, reverter ou cancelar recompensas em casos de autoindicações, ciclos de conversão duplicados, estornos, reembolsos ou padrões suspeitos de recompensa.",
+      "separation": "Seu painel mostra indicações e histórico de recompensas separadamente para que cadastros rastreados não sejam confundidos com ganhos creditados na carteira."
+    },
+    "referralsList": {
+      "eyebrow": "Suas indicações",
+      "emptyTitle": "Ainda sem indicações",
+      "emptyDescription": "Compartilhe seu código de indicação para começar a convidar pessoas. As indicações aparecerão aqui assim que alguém se cadastrar com seu link.",
+      "refereeFallback": "Cadastro indicado",
+      "signedUpTemplate": "Cadastrado em {date}",
+      "qualifiedTemplate": "Qualificado em {date}"
+    },
+    "statusLabels": {
+      "pending": "Aguardando cadastro",
+      "converted": "Cadastrado · período de retenção",
+      "qualified": "Qualificado · recompensa desbloqueada",
+      "flagged": "Marcado · proteção antifraude",
+      "expired": "Expirado"
+    },
+    "flagReasons": {
+      "selfReferral": "Autoindicação bloqueada",
+      "duplicateEmail": "E-mail de indicado duplicado",
+      "deviceReuse": "Reutilização de dispositivo"
+    },
+    "rewards": {
+      "eyebrow": "Histórico de recompensas",
+      "emptyTitle": "Ainda sem recompensas",
+      "emptyDescription": "As recompensas creditadas aparecerão aqui após as conversões qualificadas passarem pela verificação e revisão antiabuso.",
+      "referralRewardFallback": "Recompensa de indicação",
+      "paidTemplate": "Pago em {date}",
+      "statusLabels": {
+        "held": "Retido",
+        "pending": "Pendente",
+        "released": "Liberado",
+        "paid": "Pago",
+        "cancelled": "Cancelado"
+      }
+    }
   }
 };
 
@@ -2769,6 +2921,82 @@ export const ACCOUNT_COPY_AR = {
       "activeTemplate": "{count} نشط",
       "pausedTemplate": "{count} متوقّف",
       "totalTemplate": "{count} خطة"
+    }
+  },
+  "referrals": {
+    "metadata": {
+      "title": "الإحالات",
+      "description": "ادعُ العملاء المؤهَّلين إلى HenryCo وتتبَّع المكافآت عبر حالات الانتظار والمراجعة والإيداع."
+    },
+    "hero": {
+      "title": "الإحالات",
+      "description": "ادعُ العملاء المؤهَّلين إلى HenryCo وتتبَّع المكافآت عبر حالات الانتظار والمراجعة والإيداع."
+    },
+    "code": {
+      "eyebrow": "رمز الإحالة الخاص بك",
+      "shareLinkLabel": "رابط المشاركة",
+      "copyCodeTitle": "نسخ الرمز",
+      "copyLinkTitle": "نسخ الرابط",
+      "copyLinkLabel": "نسخ الرابط",
+      "copiedToast": "تم النسخ!",
+      "rewardNote": "المكافأة: {amount} لكل إحالة مؤهَّلة. تُفتح المكافآت بعد إتمام المحال إليه طلبًا مدفوعًا خلال نافذة الانتظار البالغة {days} يومًا."
+    },
+    "stats": {
+      "totalReferred": "إجمالي المحالين",
+      "signedUp": "تم التسجيل",
+      "qualified": "مؤهَّل",
+      "flagged": "موسوم",
+      "pendingRewards": "مكافآت معلَّقة",
+      "releasedRewards": "مكافآت مُفرج عنها"
+    },
+    "howItWorks": {
+      "eyebrow": "كيف تعمل",
+      "step1Title": "شارك رمزك",
+      "step1Body": "شارك رمزك أو رابطك الفريد. يتم تتبُّع الأصدقاء الذين يزورون أي نطاق فرعي لـ HenryCo بواسطة رابطك تلقائيًا.",
+      "step2Title": "يجرون معاملة",
+      "step2Body": "بعد التسجيل، تدخل الإحالة في نافذة انتظار مدتها {days} يومًا. نتتبَّع الحساب المحال إليه مرة واحدة فقط — الإحالات الذاتية، والتكرارات المنزلية، وعمليات التسجيل المعاد استخدامها لا تتأهَّل.",
+      "step3Title": "تُفرج المكافآت بعد التأهُّل",
+      "step3Body": "تُضاف إحالات التأهُّل {amount} إلى محفظتك في HenryCo بعد مراجعة المالية. لا يمكن إنفاق المكافآت المعلَّقة حتى يتم الإفراج عنها."
+    },
+    "policy": {
+      "eyebrow": "سياسة الإحالة",
+      "qualifying": "التحويل المؤهَّل يعني أن الحساب المحال إليه أتمَّ إجراء HenryCo مؤهَّلاً اجتاز التحقق من الدفع والثقة.",
+      "enforcement": "يحقُّ لـ HenryCo حجز أو عكس أو إلغاء المكافآت في حالات الإحالات الذاتية، أو حلقات التحويل المكرَّرة، أو الانعكاسات، أو المبالغ المُعادة، أو أنماط المكافآت المشبوهة.",
+      "separation": "تُظهر لوحتك تطابقات الإحالة وسجل المكافآت بشكل منفصل حتى لا تُخلط عمليات التسجيل المتتبَّعة بمكاسب المحفظة المضافة."
+    },
+    "referralsList": {
+      "eyebrow": "إحالاتك",
+      "emptyTitle": "لا توجد إحالات بعد",
+      "emptyDescription": "شارك رمز الإحالة الخاص بك لبدء دعوة الأشخاص. ستظهر الإحالات هنا بمجرد أن يسجِّل شخص ما بواسطة رابطك.",
+      "refereeFallback": "تسجيل محال",
+      "signedUpTemplate": "سجَّل في {date}",
+      "qualifiedTemplate": "تأهَّل في {date}"
+    },
+    "statusLabels": {
+      "pending": "في انتظار التسجيل",
+      "converted": "سجَّل · فترة الانتظار",
+      "qualified": "مؤهَّل · فُتحت المكافأة",
+      "flagged": "موسوم · حماية الاحتيال",
+      "expired": "منتهي الصلاحية"
+    },
+    "flagReasons": {
+      "selfReferral": "تم منع الإحالة الذاتية",
+      "duplicateEmail": "بريد إلكتروني مكرَّر للمحال إليه",
+      "deviceReuse": "إعادة استخدام الجهاز"
+    },
+    "rewards": {
+      "eyebrow": "سجل المكافآت",
+      "emptyTitle": "لا توجد مكافآت بعد",
+      "emptyDescription": "ستظهر المكافآت المُضافة هنا بعد أن تجتاز التحويلات المؤهَّلة التحقق ومراجعة منع إساءة الاستخدام.",
+      "referralRewardFallback": "مكافأة الإحالة",
+      "paidTemplate": "تم الدفع في {date}",
+      "statusLabels": {
+        "held": "محجوز",
+        "pending": "معلَّق",
+        "released": "مُفرج عنه",
+        "paid": "مدفوع",
+        "cancelled": "ملغى"
+      }
     }
   }
 };
