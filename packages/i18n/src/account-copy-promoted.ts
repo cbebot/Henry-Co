@@ -298,6 +298,149 @@ export const ACCOUNT_COPY_ES = {
         "fee": "comisión"
       }
     }
+  },
+  "calendar": {
+    "metaTitle": "Calendario · HenryCo",
+    "metaDescription":
+      "Agenda multiportal — reservas Care, visitas a propiedades, entrevistas Jobs, hitos Studio, clases Learn, ventanas Logistics.",
+    "heroAriaLabel": "Resumen del calendario",
+    "heroEyebrow": "HenryCo · calendario multiportal",
+    "tileVolumeAriaLabel": "Volumen del calendario",
+    "tileEventsLabel": "Eventos",
+    "tileEventsFoot": "Próximos 28 días",
+    "tilePortalsLabel": "Portales",
+    "tilePortalsFootEmpty": "Care, propiedades, jobs, studio, learn, logistics",
+    "tilePortalsFootSingular": "Una división programada",
+    "tilePortalsFootPlural": "{count} divisiones programadas",
+    "tileNextLabel": "Próximo",
+    "tileNextEmpty": "Nada programado en la ventana",
+    "sideAriaLabel": "Por portal",
+    "sideLabel": "Por portal",
+    "sideTitleEmpty": "Aún sin programación",
+    "sideTitleSingular": "Un portal activo",
+    "sideTitlePlural": "{count} portales en la mezcla",
+    "sideBody":
+      "Reservas, visitas, entrevistas, hitos, clases y ventanas de despacho aparecen aquí en orden cronológico.",
+    "agendaTitle": "Agenda",
+    "agendaAriaLabel": "Eventos programados por día",
+    "agendaMetaEmpty": "Nada programado en la ventana de 28 días",
+    "agendaMetaSingular": "{count} evento · próximos 28 días",
+    "agendaMetaPlural": "{count} eventos · próximos 28 días",
+    "emptyEyebrow": "Calendario tranquilo",
+    "emptyTitle": "Nada programado en los próximos 28 días.",
+    "emptyBody":
+      "Cualquier cosa que reserve — una recogida Care, una visita a una propiedad, una entrevista de contratación, una clase Learn, un hito Studio, una ventana Logistics — aterrizará automáticamente en esta agenda. Los filtros aparecerán cuando los portales comiencen a programar.",
+    "dayMetaSingular": "{count} evento",
+    "dayMetaPlural": "{count} eventos",
+    "eventTimeAriaLabel": "Hora del evento",
+    "eventCta": "Abrir",
+    "headline": {
+      "empty": "Nada programado en los próximos 28 días.",
+      "calmOne": "Una sola cosa en la agenda.",
+      "calmMany": "{count} eventos en los próximos 28 días.",
+      "busy": "{count} eventos programados en {portals} portales.",
+      "packed": "{count} eventos en cola — reserve tiempo de concentración con prudencia."
+    },
+    "blurb": {
+      "empty":
+        "Reservas Care, visitas a propiedades, entrevistas Jobs, hitos Studio, clases Learn y ventanas Logistics aparecen todas aquí.",
+      "calm": "Toque una tarjeta para saltar a su portal. La agenda se actualizará automáticamente a medida que llegue nueva programación.",
+      "busyOrPacked":
+        "Los filtros en la parte superior de la agenda limitan a un solo portal — útil cuando una división está activa."
+    },
+    "kindLabels": {
+      "care_booking": "Reserva Care",
+      "property_viewing": "Visita a propiedad",
+      "jobs_interview": "Entrevista",
+      "learn_class": "Clase en vivo",
+      "studio_milestone": "Hito Studio",
+      "logistics_pickup": "Ventana de recogida",
+      "logistics_delivery": "Ventana de entrega",
+      "room_session": "Sesión de sala"
+    },
+    "dayLabels": {
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "yesterday": "Ayer"
+    },
+    "portalLabels": {
+      "care": "Care",
+      "property": "Propiedad",
+      "jobs": "Jobs",
+      "studio": "Studio",
+      "learn": "Learn",
+      "logistics": "Logistics"
+    }
+  },
+  "notifications": {
+    "metadata": {
+      "title": "Notificaciones",
+      "description": "Cada actualización de HenryCo —cartera, soporte, empleos, marketplace, care y más— en una bandeja de entrada en vivo."
+    },
+    "hero": {
+      "eyebrow": "HenryCo · notificaciones en vivo",
+      "ariaOverview": "Resumen de notificaciones",
+      "ariaVolume": "Volumen de notificaciones",
+      "ariaByDivision": "Por división",
+      "headlineZero": "Bandeja en cero en todo HenryCo.",
+      "headlineOne": "Una cosa quiere tu atención.",
+      "headlineFew": "{count} notificaciones para clasificar.",
+      "headlineMany": "{count} actualizaciones entre tus divisiones.",
+      "blurbZero": "Todo lo que HenryCo envía llega aquí en tiempo real: cartera, soporte, empleos, marketplace, care y más.",
+      "blurbStale": "Se acumularon elementos antiguos. Desliza para archivar, toca para abrir o salta directo a un hilo.",
+      "blurbToday": "Hoy llegaron {count}. Usa los filtros para concentrarte en una sola división o revisa solo las no leídas.",
+      "tileUnreadLabel": "No leídas",
+      "tileUnreadFoot": "Esperando tu mirada",
+      "tileTodayLabel": "Hoy",
+      "tileTodayFoot": "Llegaron en las últimas 24h",
+      "tileWeekLabel": "Esta semana",
+      "tileWeekFoot": "Última actividad {when}",
+      "byDivision": "Por división",
+      "emptyDivisions": "Aún no ha llegado nada.",
+      "lastActivityFallback": "sin actividad reciente",
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {count} min",
+      "hoursAgo": "hace {count} h",
+      "daysAgo": "hace {count} d"
+    },
+    "inbox": {
+      "heading": "Bandeja de entrada",
+      "meta": "Toca para abrir, desliza para archivar — los filtros funcionan en todas las divisiones."
+    },
+    "filters": {
+      "all": "Todas",
+      "unread": "No leídas",
+      "allSources": "Todas las fuentes",
+      "activeFilter": "filtro activo"
+    },
+    "feed": {
+      "unreadSectionKicker": "No leídas",
+      "unreadSectionTitle": "Necesita tu atención",
+      "recentSectionKicker": "Reciente",
+      "recentSectionTitle": "Actividad despejada o revisada",
+      "unreadBadge": "No leído",
+      "openMessageBoard": "Abrir tablero de mensajes"
+    },
+    "swipe": {
+      "archive": "Archivar",
+      "delete": "Eliminar",
+      "markRead": "Marcar como leído",
+      "markUnread": "Marcar como no leído"
+    },
+    "emptyState": {
+      "inboxTitle": "Todo al día.",
+      "inboxBody": "La actividad de todo HenryCo aparece aquí en tiempo real.",
+      "filterTitle": "Sin actividad en esta vista.",
+      "filterBody": "Prueba con otro filtro."
+    },
+    "markAllRead": {
+      "label": "Marcar todo como leído",
+      "pending": "Marcando todo como leído...",
+      "spinner": "Marcando todo como leído"
+    },
+    "footer": {
+      "recentlyDeleted": "Eliminadas recientemente"
+    }
   }
 };
 
@@ -598,6 +741,149 @@ export const ACCOUNT_COPY_PT = {
         "fee": "taxa"
       }
     }
+  },
+  "calendar": {
+    "metaTitle": "Calendário · HenryCo",
+    "metaDescription":
+      "Agenda multi-portal — reservas Care, visitas a imóveis, entrevistas Jobs, marcos Studio, aulas Learn, janelas Logistics.",
+    "heroAriaLabel": "Visão geral do calendário",
+    "heroEyebrow": "HenryCo · calendário multi-portal",
+    "tileVolumeAriaLabel": "Volume do calendário",
+    "tileEventsLabel": "Eventos",
+    "tileEventsFoot": "Próximos 28 dias",
+    "tilePortalsLabel": "Portais",
+    "tilePortalsFootEmpty": "Care, imóveis, jobs, studio, learn, logistics",
+    "tilePortalsFootSingular": "Uma divisão agendada",
+    "tilePortalsFootPlural": "{count} divisões agendadas",
+    "tileNextLabel": "Próximo",
+    "tileNextEmpty": "Nada agendado na janela",
+    "sideAriaLabel": "Por portal",
+    "sideLabel": "Por portal",
+    "sideTitleEmpty": "Sem agendamentos ainda",
+    "sideTitleSingular": "Um portal ativo",
+    "sideTitlePlural": "{count} portais na mistura",
+    "sideBody":
+      "Reservas, visitas, entrevistas, marcos, aulas e janelas de despacho aparecem aqui em ordem cronológica.",
+    "agendaTitle": "Agenda",
+    "agendaAriaLabel": "Eventos agendados por dia",
+    "agendaMetaEmpty": "Nada agendado na janela de 28 dias",
+    "agendaMetaSingular": "{count} evento · próximos 28 dias",
+    "agendaMetaPlural": "{count} eventos · próximos 28 dias",
+    "emptyEyebrow": "Calendário calmo",
+    "emptyTitle": "Nada agendado nos próximos 28 dias.",
+    "emptyBody":
+      "Tudo o que você reservar — uma coleta Care, uma visita a imóvel, uma entrevista de contratação, uma aula Learn, um marco Studio, uma janela Logistics — chegará automaticamente nesta agenda. Os filtros aparecerão quando os portais começarem a agendar.",
+    "dayMetaSingular": "{count} evento",
+    "dayMetaPlural": "{count} eventos",
+    "eventTimeAriaLabel": "Hora do evento",
+    "eventCta": "Abrir",
+    "headline": {
+      "empty": "Nada agendado nos próximos 28 dias.",
+      "calmOne": "Apenas uma coisa na agenda.",
+      "calmMany": "{count} eventos nos próximos 28 dias.",
+      "busy": "{count} eventos agendados em {portals} portais.",
+      "packed": "{count} eventos na fila — reserve tempo de foco com sabedoria."
+    },
+    "blurb": {
+      "empty":
+        "Reservas Care, visitas a imóveis, entrevistas Jobs, marcos Studio, aulas Learn e janelas Logistics aparecem todas aqui.",
+      "calm": "Toque um cartão para ir ao seu portal. A agenda atualizará automaticamente à medida que novos agendamentos chegarem.",
+      "busyOrPacked":
+        "Os filtros no topo da agenda restringem a um único portal — útil quando uma divisão está ativa."
+    },
+    "kindLabels": {
+      "care_booking": "Reserva Care",
+      "property_viewing": "Visita a imóvel",
+      "jobs_interview": "Entrevista",
+      "learn_class": "Aula ao vivo",
+      "studio_milestone": "Marco Studio",
+      "logistics_pickup": "Janela de coleta",
+      "logistics_delivery": "Janela de entrega",
+      "room_session": "Sessão de sala"
+    },
+    "dayLabels": {
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "yesterday": "Ontem"
+    },
+    "portalLabels": {
+      "care": "Care",
+      "property": "Imóveis",
+      "jobs": "Jobs",
+      "studio": "Studio",
+      "learn": "Learn",
+      "logistics": "Logistics"
+    }
+  },
+  "notifications": {
+    "metadata": {
+      "title": "Notificações",
+      "description": "Cada atualização do HenryCo — carteira, suporte, vagas, marketplace, care e mais — em uma caixa de entrada ao vivo."
+    },
+    "hero": {
+      "eyebrow": "HenryCo · notificações ao vivo",
+      "ariaOverview": "Visão geral das notificações",
+      "ariaVolume": "Volume de notificações",
+      "ariaByDivision": "Por divisão",
+      "headlineZero": "Caixa de entrada zerada em todo o HenryCo.",
+      "headlineOne": "Uma coisa precisa da sua atenção.",
+      "headlineFew": "{count} notificações para classificar.",
+      "headlineMany": "{count} atualizações entre as suas divisões.",
+      "blurbZero": "Tudo o que o HenryCo envia chega aqui em tempo real — carteira, suporte, vagas, marketplace, care e mais.",
+      "blurbStale": "Itens mais antigos se acumularam. Deslize para arquivar, toque para abrir ou vá direto para uma conversa.",
+      "blurbToday": "{count} chegaram hoje. Use os filtros para focar em uma única divisão ou percorra apenas as não lidas.",
+      "tileUnreadLabel": "Não lidas",
+      "tileUnreadFoot": "Aguardando o seu olhar",
+      "tileTodayLabel": "Hoje",
+      "tileTodayFoot": "Chegaram nas últimas 24h",
+      "tileWeekLabel": "Esta semana",
+      "tileWeekFoot": "Última atividade {when}",
+      "byDivision": "Por divisão",
+      "emptyDivisions": "Nada chegou ainda.",
+      "lastActivityFallback": "sem atividade recente",
+      "justNow": "agora mesmo",
+      "minutesAgo": "há {count} min",
+      "hoursAgo": "há {count} h",
+      "daysAgo": "há {count} d"
+    },
+    "inbox": {
+      "heading": "Caixa de entrada",
+      "meta": "Toque para abrir, deslize para arquivar — os filtros funcionam em todas as divisões."
+    },
+    "filters": {
+      "all": "Todas",
+      "unread": "Não lidas",
+      "allSources": "Todas as fontes",
+      "activeFilter": "filtro ativo"
+    },
+    "feed": {
+      "unreadSectionKicker": "Não lidas",
+      "unreadSectionTitle": "Precisa da sua atenção",
+      "recentSectionKicker": "Recente",
+      "recentSectionTitle": "Atividade resolvida ou revisada",
+      "unreadBadge": "Não lida",
+      "openMessageBoard": "Abrir quadro de mensagens"
+    },
+    "swipe": {
+      "archive": "Arquivar",
+      "delete": "Excluir",
+      "markRead": "Marcar como lido",
+      "markUnread": "Marcar como não lido"
+    },
+    "emptyState": {
+      "inboxTitle": "Tudo em dia.",
+      "inboxBody": "A atividade de todo o HenryCo aparece aqui em tempo real.",
+      "filterTitle": "Sem atividade nesta visão.",
+      "filterBody": "Tente um filtro diferente."
+    },
+    "markAllRead": {
+      "label": "Marcar tudo como lido",
+      "pending": "Marcando tudo como lido...",
+      "spinner": "Marcando tudo como lido"
+    },
+    "footer": {
+      "recentlyDeleted": "Excluídas recentemente"
+    }
   }
 };
 
@@ -897,6 +1183,149 @@ export const ACCOUNT_COPY_AR = {
         "withdrawal": "سحب",
         "fee": "رسوم"
       }
+    }
+  },
+  "calendar": {
+    "metaTitle": "التقويم · HenryCo",
+    "metaDescription":
+      "جدول أعمال متعدد البوابات — حجوزات Care، معاينات العقارات، مقابلات Jobs، معالم Studio، فصول Learn، نوافذ Logistics.",
+    "heroAriaLabel": "نظرة عامة على التقويم",
+    "heroEyebrow": "HenryCo · تقويم متعدد البوابات",
+    "tileVolumeAriaLabel": "حجم التقويم",
+    "tileEventsLabel": "الأحداث",
+    "tileEventsFoot": "الـ 28 يومًا القادمة",
+    "tilePortalsLabel": "البوابات",
+    "tilePortalsFootEmpty": "Care، عقارات، jobs، studio، learn، logistics",
+    "tilePortalsFootSingular": "قسم واحد مجدول",
+    "tilePortalsFootPlural": "{count} أقسام مجدولة",
+    "tileNextLabel": "التالي",
+    "tileNextEmpty": "لا شيء مجدول في النافذة",
+    "sideAriaLabel": "حسب البوابة",
+    "sideLabel": "حسب البوابة",
+    "sideTitleEmpty": "لا جدولة بعد",
+    "sideTitleSingular": "بوابة واحدة نشطة",
+    "sideTitlePlural": "{count} بوابات في المزيج",
+    "sideBody":
+      "الحجوزات والمعاينات والمقابلات والمعالم والفصول ونوافذ الإرسال جميعها تظهر هنا بالترتيب الزمني.",
+    "agendaTitle": "جدول الأعمال",
+    "agendaAriaLabel": "الأحداث المجدولة حسب اليوم",
+    "agendaMetaEmpty": "لا شيء مجدول في نافذة 28 يومًا",
+    "agendaMetaSingular": "{count} حدث · الـ 28 يومًا القادمة",
+    "agendaMetaPlural": "{count} أحداث · الـ 28 يومًا القادمة",
+    "emptyEyebrow": "التقويم هادئ",
+    "emptyTitle": "لا شيء مجدول في الـ 28 يومًا القادمة.",
+    "emptyBody":
+      "أي شيء تحجزه — استلام Care، معاينة عقار، مقابلة توظيف، فصل Learn، معلم Studio، نافذة Logistics — سيصل تلقائيًا إلى جدول الأعمال هذا. ستظهر شرائح التصفية بمجرد بدء البوابات في الجدولة.",
+    "dayMetaSingular": "{count} حدث",
+    "dayMetaPlural": "{count} أحداث",
+    "eventTimeAriaLabel": "وقت الحدث",
+    "eventCta": "فتح",
+    "headline": {
+      "empty": "لا شيء مجدول في الـ 28 يومًا القادمة.",
+      "calmOne": "شيء واحد فقط في جدول الأعمال.",
+      "calmMany": "{count} أحداث في الـ 28 يومًا القادمة.",
+      "busy": "{count} أحداث مجدولة عبر {portals} بوابات.",
+      "packed": "{count} أحداث في الانتظار — احجز وقت التركيز بحكمة."
+    },
+    "blurb": {
+      "empty":
+        "حجوزات Care، معاينات العقارات، مقابلات Jobs، معالم Studio، فصول Learn ونوافذ Logistics جميعها تظهر هنا.",
+      "calm": "اضغط على البطاقة للانتقال إلى بوابتها. سيتم تحديث جدول الأعمال تلقائيًا مع وصول جدولة جديدة.",
+      "busyOrPacked":
+        "شرائح التصفية في أعلى جدول الأعمال تضيق النطاق إلى بوابة واحدة — مفيدة عندما يكون قسم واحد نشطًا."
+    },
+    "kindLabels": {
+      "care_booking": "حجز Care",
+      "property_viewing": "معاينة عقار",
+      "jobs_interview": "مقابلة",
+      "learn_class": "فصل مباشر",
+      "studio_milestone": "معلم Studio",
+      "logistics_pickup": "نافذة الاستلام",
+      "logistics_delivery": "نافذة التسليم",
+      "room_session": "جلسة غرفة"
+    },
+    "dayLabels": {
+      "today": "اليوم",
+      "tomorrow": "غدًا",
+      "yesterday": "أمس"
+    },
+    "portalLabels": {
+      "care": "Care",
+      "property": "العقارات",
+      "jobs": "Jobs",
+      "studio": "Studio",
+      "learn": "Learn",
+      "logistics": "Logistics"
+    }
+  },
+  "notifications": {
+    "metadata": {
+      "title": "الإشعارات",
+      "description": "كل تحديثات HenryCo — المحفظة والدعم والوظائف والسوق والرعاية والمزيد — في صندوق وارد مباشر واحد."
+    },
+    "hero": {
+      "eyebrow": "HenryCo · إشعارات مباشرة",
+      "ariaOverview": "نظرة عامة على الإشعارات",
+      "ariaVolume": "حجم الإشعارات",
+      "ariaByDivision": "حسب القسم",
+      "headlineZero": "صندوق الوارد فارغ عبر HenryCo.",
+      "headlineOne": "هناك شيء واحد يحتاج اهتمامك.",
+      "headlineFew": "{count} إشعارات للفرز.",
+      "headlineMany": "{count} تحديثات عبر أقسامك.",
+      "blurbZero": "كل ما يرسله HenryCo يصل هنا في الوقت الفعلي — المحفظة والدعم والوظائف والسوق والرعاية والمزيد.",
+      "blurbStale": "تراكمت عناصر قديمة. اسحب للأرشفة، انقر للفتح، أو انتقل مباشرة إلى محادثة.",
+      "blurbToday": "وصلت {count} اليوم. استخدم الفلاتر للتركيز على قسم واحد، أو تصفّح غير المقروء فقط.",
+      "tileUnreadLabel": "غير مقروء",
+      "tileUnreadFoot": "بانتظار نظرتك",
+      "tileTodayLabel": "اليوم",
+      "tileTodayFoot": "وصلت خلال الـ 24 ساعة الماضية",
+      "tileWeekLabel": "هذا الأسبوع",
+      "tileWeekFoot": "آخر نشاط {when}",
+      "byDivision": "حسب القسم",
+      "emptyDivisions": "لم يصل شيء بعد.",
+      "lastActivityFallback": "لا يوجد نشاط حديث",
+      "justNow": "الآن",
+      "minutesAgo": "قبل {count} دقيقة",
+      "hoursAgo": "قبل {count} ساعة",
+      "daysAgo": "قبل {count} يوم"
+    },
+    "inbox": {
+      "heading": "صندوق الوارد",
+      "meta": "انقر للفتح، اسحب للأرشفة — تعمل الفلاتر في جميع الأقسام."
+    },
+    "filters": {
+      "all": "الكل",
+      "unread": "غير مقروء",
+      "allSources": "كل المصادر",
+      "activeFilter": "فلتر نشط"
+    },
+    "feed": {
+      "unreadSectionKicker": "غير مقروء",
+      "unreadSectionTitle": "يحتاج اهتمامك",
+      "recentSectionKicker": "حديث",
+      "recentSectionTitle": "نشاط تمت معالجته أو مراجعته",
+      "unreadBadge": "غير مقروء",
+      "openMessageBoard": "فتح لوحة الرسائل"
+    },
+    "swipe": {
+      "archive": "أرشفة",
+      "delete": "حذف",
+      "markRead": "وضع علامة كمقروء",
+      "markUnread": "وضع علامة كغير مقروء"
+    },
+    "emptyState": {
+      "inboxTitle": "كل شيء على ما يرام.",
+      "inboxBody": "يظهر نشاط HenryCo هنا فور وقوعه.",
+      "filterTitle": "لا يوجد نشاط في هذا العرض.",
+      "filterBody": "جرّب فلترًا مختلفًا."
+    },
+    "markAllRead": {
+      "label": "تحديد الكل كمقروء",
+      "pending": "جارٍ تحديد الكل كمقروء...",
+      "spinner": "جارٍ تحديد الكل كمقروء"
+    },
+    "footer": {
+      "recentlyDeleted": "المحذوفة مؤخرًا"
     }
   }
 };

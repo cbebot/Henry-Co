@@ -1,8 +1,15 @@
 import type { CalendarAggregate, CalendarEvent, CalendarKind } from "@henryco/data";
+import type { AccountCopy } from "@henryco/i18n";
+import { formatAccountTemplate } from "@henryco/i18n";
 
 /**
  * V3 Wave A1 D4 helpers — calendar hero + division mix.
+ *
+ * i18n: copy passed in from the RSC page so locale resolution stays at
+ * the server boundary. Functions never read process state.
  */
+
+type CalendarCopy = AccountCopy["calendar"];
 
 export type CalendarState = "empty" | "calm" | "busy" | "packed";
 
@@ -14,39 +21,39 @@ export function calendarState(agg: CalendarAggregate): CalendarState {
   return "packed";
 }
 
-export function calendarHeadline(state: CalendarState, agg: CalendarAggregate): string {
-  if (state === "empty") return "Nothing scheduled in the next 28 days.";
+export function calendarHeadline(
+  state: CalendarState,
+  agg: CalendarAggregate,
+  copy: CalendarCopy,
+): string {
+  if (state === "empty") return copy.headline.empty;
   if (state === "calm") {
     return agg.events.length === 1
-      ? "One thing on the agenda."
-      : `${agg.events.length} events in the next 28 days.`;
+      ? copy.headline.calmOne
+      : formatAccountTemplate(copy.headline.calmMany, {
+          count: agg.events.length,
+        });
   }
   if (state === "busy") {
-    return `${agg.events.length} events scheduled across ${Object.keys(agg.counts).filter((k) => agg.counts[k] > 0).length} portals.`;
+    return formatAccountTemplate(copy.headline.busy, {
+      count: agg.events.length,
+      portals: Object.keys(agg.counts).filter((k) => agg.counts[k] > 0).length,
+    });
   }
-  return `${agg.events.length} events queued — block focus time wisely.`;
+  return formatAccountTemplate(copy.headline.packed, {
+    count: agg.events.length,
+  });
 }
 
-export function calendarBlurb(state: CalendarState): string {
-  if (state === "empty") {
-    return "Care bookings, property viewings, jobs interviews, studio milestones, learn classes and logistics windows all surface here.";
-  }
-  if (state === "calm") {
-    return "Tap a card to jump to its portal. The agenda will refresh automatically as new scheduling lands.";
-  }
-  return "Filter chips at the top of the agenda narrow to a single portal — useful when one division is loud.";
+export function calendarBlurb(state: CalendarState, copy: CalendarCopy): string {
+  if (state === "empty") return copy.blurb.empty;
+  if (state === "calm") return copy.blurb.calm;
+  return copy.blurb.busyOrPacked;
 }
 
-export const KIND_LABEL: Record<CalendarKind, string> = {
-  care_booking: "Care booking",
-  property_viewing: "Property viewing",
-  jobs_interview: "Interview",
-  learn_class: "Live class",
-  studio_milestone: "Studio milestone",
-  logistics_pickup: "Pickup window",
-  logistics_delivery: "Delivery window",
-  room_session: "Room session",
-};
+export function kindLabel(kind: CalendarKind, copy: CalendarCopy): string {
+  return copy.kindLabels[kind];
+}
 
 export const KIND_ACCENT_VAR: Record<CalendarKind, string> = {
   care_booking: "--acct-div-care",
@@ -65,7 +72,12 @@ export const KIND_ACCENT_VAR: Record<CalendarKind, string> = {
  * display string is locale-formatted on the server. `nowMs` is passed
  * explicitly to keep this function pure (no Date.now()-on-render).
  */
-export function dayLabel(iso: string, nowMs: number): string {
+export function dayLabel(
+  iso: string,
+  nowMs: number,
+  copy: CalendarCopy,
+  intlLocale: string,
+): string {
   const date = new Date(`${iso}T00:00:00.000Z`);
   if (Number.isNaN(date.getTime())) return iso;
   const today = new Date(nowMs);
@@ -73,10 +85,10 @@ export function dayLabel(iso: string, nowMs: number): string {
   const diff = Math.round(
     (date.getTime() - today.getTime()) / 86_400_000,
   );
-  if (diff === 0) return "Today";
-  if (diff === 1) return "Tomorrow";
-  if (diff === -1) return "Yesterday";
-  return new Intl.DateTimeFormat("en", {
+  if (diff === 0) return copy.dayLabels.today;
+  if (diff === 1) return copy.dayLabels.tomorrow;
+  if (diff === -1) return copy.dayLabels.yesterday;
+  return new Intl.DateTimeFormat(intlLocale, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -84,10 +96,10 @@ export function dayLabel(iso: string, nowMs: number): string {
   }).format(date);
 }
 
-export function timeLabel(iso: string): string {
+export function timeLabel(iso: string, intlLocale: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(intlLocale, {
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
@@ -98,6 +110,7 @@ export function timeLabel(iso: string): string {
  */
 export function topMix(
   counts: Record<string, number>,
+  copy: CalendarCopy,
 ): ReadonlyArray<{ key: string; label: string; count: number; accentVar: string }> {
   return Object.entries(counts)
     .filter(([, count]) => count > 0)
@@ -105,14 +118,15 @@ export function topMix(
     .slice(0, 4)
     .map(([key, count]) => ({
       key,
-      label: portalLabel(key),
+      label: portalLabel(key, copy),
       count,
       accentVar: portalAccentVar(key),
     }));
 }
 
-function portalLabel(key: string): string {
-  return key.charAt(0).toUpperCase() + key.slice(1);
+function portalLabel(key: string, copy: CalendarCopy): string {
+  const map = copy.portalLabels as Record<string, string | undefined>;
+  return map[key] ?? key.charAt(0).toUpperCase() + key.slice(1);
 }
 
 function portalAccentVar(key: string): string {

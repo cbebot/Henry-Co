@@ -1,4 +1,6 @@
 import type { CalendarAggregate } from "@henryco/data";
+import type { AccountCopy } from "@henryco/i18n";
+import { formatAccountTemplate } from "@henryco/i18n";
 import {
   calendarBlurb,
   calendarHeadline,
@@ -14,6 +16,7 @@ type Props = {
    * https://react.dev/reference/rules/components-and-hooks-must-be-pure).
    */
   nowMs: number;
+  copy: AccountCopy["calendar"];
 };
 
 /**
@@ -24,69 +27,70 @@ type Props = {
  * feedback_no_giant_hero_text.md). The right panel ranks the top
  * portals by count so the viewer sees mix at a glance.
  */
-export function CalendarHero({ aggregate, nowMs }: Props) {
+export function CalendarHero({ aggregate, nowMs, copy }: Props) {
   const state = calendarState(aggregate);
   const portalsActive = Object.values(aggregate.counts).filter((n) => n > 0).length;
-  const mix = topMix(aggregate.counts);
+  const mix = topMix(aggregate.counts, copy);
 
   const next = aggregate.events.find((e) => Date.parse(e.startAt) >= nowMs);
   const nextLabel = next ? formatNextLabel(next.startAt, nowMs) : "—";
 
+  const portalsFoot =
+    portalsActive === 0
+      ? copy.tilePortalsFootEmpty
+      : portalsActive === 1
+        ? copy.tilePortalsFootSingular
+        : formatAccountTemplate(copy.tilePortalsFootPlural, { count: portalsActive });
+
+  const sideTitle =
+    portalsActive === 0
+      ? copy.sideTitleEmpty
+      : portalsActive === 1
+        ? copy.sideTitleSingular
+        : formatAccountTemplate(copy.sideTitlePlural, { count: portalsActive });
+
   return (
-    <section className="acct-cal__hero" aria-label="Calendar overview">
+    <section className="acct-cal__hero" aria-label={copy.heroAriaLabel}>
       <div className="acct-cal__hero-inner">
         <div>
           <span className="acct-cal__eyebrow">
             <span className="acct-cal__eyebrow-dot" aria-hidden />
-            HenryCo · cross-portal calendar
+            {copy.heroEyebrow}
           </span>
           <h1 className="acct-cal__headline">
-            {calendarHeadline(state, aggregate)}
+            {calendarHeadline(state, aggregate, copy)}
           </h1>
-          <p className="acct-cal__blurb">{calendarBlurb(state)}</p>
-          <div className="acct-cal__hero-tiles" role="list" aria-label="Calendar volume">
+          <p className="acct-cal__blurb">{calendarBlurb(state, copy)}</p>
+          <div
+            className="acct-cal__hero-tiles"
+            role="list"
+            aria-label={copy.tileVolumeAriaLabel}
+          >
             <div className="acct-cal__hero-tile" role="listitem">
-              <span className="acct-cal__hero-tile-label">Events</span>
+              <span className="acct-cal__hero-tile-label">{copy.tileEventsLabel}</span>
               <span className="acct-cal__hero-tile-value">
                 {aggregate.events.length}
               </span>
-              <span className="acct-cal__hero-tile-foot">Next 28 days</span>
+              <span className="acct-cal__hero-tile-foot">{copy.tileEventsFoot}</span>
             </div>
             <div className="acct-cal__hero-tile" role="listitem">
-              <span className="acct-cal__hero-tile-label">Portals</span>
+              <span className="acct-cal__hero-tile-label">{copy.tilePortalsLabel}</span>
               <span className="acct-cal__hero-tile-value">{portalsActive}</span>
-              <span className="acct-cal__hero-tile-foot">
-                {portalsActive === 0
-                  ? "Care, property, jobs, studio, learn, logistics"
-                  : portalsActive === 1
-                    ? "One division scheduled"
-                    : `${portalsActive} divisions scheduled`}
-              </span>
+              <span className="acct-cal__hero-tile-foot">{portalsFoot}</span>
             </div>
             <div className="acct-cal__hero-tile" role="listitem">
-              <span className="acct-cal__hero-tile-label">Next up</span>
+              <span className="acct-cal__hero-tile-label">{copy.tileNextLabel}</span>
               <span className="acct-cal__hero-tile-value">{nextLabel}</span>
               <span className="acct-cal__hero-tile-foot">
-                {next
-                  ? `${next.title}`
-                  : "Nothing scheduled in the window"}
+                {next ? next.title : copy.tileNextEmpty}
               </span>
             </div>
           </div>
         </div>
-        <aside className="acct-cal__hero-side" aria-label="By portal">
-          <p className="acct-cal__hero-side-label">By portal</p>
-          <p className="acct-cal__hero-side-title">
-            {portalsActive === 0
-              ? "No scheduling yet"
-              : portalsActive === 1
-                ? "One portal active"
-                : `${portalsActive} portals in the mix`}
-          </p>
-          <p className="acct-cal__hero-side-body">
-            Bookings, viewings, interviews, milestones, classes and dispatch
-            windows all surface here in chronological order.
-          </p>
+        <aside className="acct-cal__hero-side" aria-label={copy.sideAriaLabel}>
+          <p className="acct-cal__hero-side-label">{copy.sideLabel}</p>
+          <p className="acct-cal__hero-side-title">{sideTitle}</p>
+          <p className="acct-cal__hero-side-body">{copy.sideBody}</p>
           {mix.length === 0 ? null : (
             <div role="list">
               {mix.map((row) => (
