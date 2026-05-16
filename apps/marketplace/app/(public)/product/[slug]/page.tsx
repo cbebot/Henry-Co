@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
@@ -8,18 +9,45 @@ import { TrustPassport } from "@/components/marketplace/shell";
 import { RecommendationRail } from "@/components/marketplace/recommendation-rail";
 import { VariantMatrix } from "@/components/marketplace/variant-matrix";
 import { getMarketplaceProductBySlug } from "@/lib/marketplace/data";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const [{ slug }, locale] = await Promise.all([params, getMarketplacePublicLocale()]);
+  const copy = getMarketplacePublicCopy(locale);
+  const data = await getMarketplaceProductBySlug(slug);
+  if (!data) {
+    return {
+      title: copy.product.metadata.titleTemplate.replace("{title}", slug),
+      description: copy.product.metadata.fallbackDescription,
+    };
+  }
+  return {
+    title: copy.product.metadata.titleTemplate.replace("{title}", data.product.title),
+    description:
+      data.product.summary ||
+      data.product.description ||
+      copy.product.metadata.descriptionTemplate.replace("{title}", data.product.title),
+  };
+}
 
 export default async function ProductPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  const [{ slug }, locale] = await Promise.all([params, getMarketplacePublicLocale()]);
   const data = await getMarketplaceProductBySlug(slug);
   if (!data) notFound();
+  const copy = getMarketplacePublicCopy(locale);
+  const productCopy = copy.product;
 
   // V3 PASS 21 — Product + Offer + AggregateRating JSON-LD (M9)
   const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
@@ -46,6 +74,16 @@ export default async function ProductPage({
         : undefined,
   });
 
+  const stockCount = data.product.stock;
+  const stockLabel = (stockCount === 1
+    ? productCopy.fulfillment.availabilityValueSingular
+    : productCopy.fulfillment.availabilityValuePlural
+  ).replace("{count}", String(stockCount));
+
+  const sellerTrustValue = data.vendor
+    ? productCopy.fulfillment.sellerTrustValueTemplate.replace("{vendor}", data.vendor.name)
+    : productCopy.fulfillment.sellerTrustValueFallback;
+
   const fulfillmentRows: Array<{
     icon: typeof BadgeCheck;
     label: string;
@@ -53,28 +91,47 @@ export default async function ProductPage({
   }> = [
     {
       icon: BadgeCheck,
-      label: "Seller trust",
-      value: data.vendor
-        ? `${data.vendor.name} passport visible`
-        : "Seller passport pending",
+      label: productCopy.fulfillment.sellerTrustLabel,
+      value: sellerTrustValue,
     },
     {
       icon: PackageCheck,
-      label: "Availability",
-      value: `${data.product.stock} unit${data.product.stock === 1 ? "" : "s"} in current stock`,
+      label: productCopy.fulfillment.availabilityLabel,
+      value: stockLabel,
     },
     {
       icon: Truck,
-      label: "Fulfillment",
+      label: productCopy.fulfillment.fulfillmentLabel,
       value: data.product.deliveryNote || data.product.leadTime,
     },
     {
       icon: ShieldCheck,
-      label: "Payment",
+      label: productCopy.fulfillment.paymentLabel,
       value: data.product.codEligible
-        ? "COD or verified transfer"
-        : "Verified transfer flow",
+        ? productCopy.fulfillment.paymentValueCod
+        : productCopy.fulfillment.paymentValueVerified,
     },
+  ];
+
+  const safetyItems: Array<string | null> = [
+    productCopy.safety.stockTemplate.replace("{count}", String(stockCount)),
+    data.product.codEligible
+      ? productCopy.safety.codEligible
+      : productCopy.safety.codFallback,
+    data.vendor
+      ? productCopy.safety.vendorLinkedTemplate.replace("{vendor}", data.vendor.name)
+      : productCopy.safety.vendorPending,
+    /* Suppress rating line entirely until a genuine review exists.
+     * Showing "0 reviews at 0.0 average rating" reads as broken,
+     * not new. */
+    data.product.reviewCount > 0
+      ? (data.product.reviewCount === 1
+          ? productCopy.safety.reviewsTemplateSingular
+          : productCopy.safety.reviewsTemplatePlural
+        )
+          .replace("{count}", String(data.product.reviewCount))
+          .replace("{rating}", data.product.rating.toFixed(1))
+      : null,
   ];
 
   return (
@@ -107,7 +164,7 @@ export default async function ProductPage({
             <div className="mt-7 flex flex-wrap items-end justify-between gap-5 border-y border-[var(--market-line)] py-6">
               <div>
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  Price
+                  {productCopy.price.label}
                 </p>
                 <p className="mt-2 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[2.2rem]">
                   {formatCurrency(data.product.basePrice, data.product.currency)}
@@ -120,7 +177,7 @@ export default async function ProductPage({
               </div>
               <div className="space-y-1 text-right">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  Lead time
+                  {productCopy.price.leadTimeLabel}
                 </p>
                 <p className="text-sm font-semibold text-[var(--market-paper-white)]">
                   {data.product.leadTime}
@@ -187,24 +244,10 @@ export default async function ProductPage({
           {/* Why this feels safer — editorial border-l ribbon */}
           <article className="border-l-2 border-[var(--market-brass)]/55 pl-5">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-              Why this listing feels safer
+              {productCopy.safety.kicker}
             </p>
             <ul className="mt-3 space-y-2.5">
-              {[
-                `${data.product.stock} units currently visible to inventory`,
-                data.product.codEligible
-                  ? "Cash on delivery eligible where supported"
-                  : "Manual verification flow available",
-                data.vendor
-                  ? `${data.vendor.name} seller passport is linked directly from this page`
-                  : "Vendor trust surface is still pending linkage",
-                /* Suppress rating line entirely until a genuine review exists.
-                 * Showing "0 reviews at 0.0 average rating" reads as broken,
-                 * not new. */
-                data.product.reviewCount > 0
-                  ? `${data.product.reviewCount} review${data.product.reviewCount === 1 ? "" : "s"} at ${data.product.rating.toFixed(1)} average rating`
-                  : null,
-              ]
+              {safetyItems
                 .filter((item): item is string => Boolean(item))
                 .map((item) => (
                 <li
@@ -225,29 +268,27 @@ export default async function ProductPage({
       {/* Product detail accordion + Complete the set — 2-col editorial */}
       <section className="grid gap-12 xl:grid-cols-[1.05fr,0.95fr]">
         <article>
-          <p className="market-kicker">Product detail</p>
+          <p className="market-kicker">{productCopy.detail.kicker}</p>
           <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.85rem]">
-            Everything that matters before checkout.
+            {productCopy.detail.title}
           </h2>
           <div className="mt-7 border-t border-[var(--market-line)]">
             <details className="group border-b border-[var(--market-line)] py-5" open>
               <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
                 <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                  Delivery, support, and post-order care
+                  {productCopy.detail.deliverySummaryTitle}
                 </h3>
                 <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[var(--market-muted)] transition group-open:rotate-90 group-open:text-[var(--market-brass)]" />
               </summary>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
-                {data.product.deliveryNote ||
-                  "Delivery windows will be clarified at checkout."}{" "}
-                Orders stay traceable from payment to fulfillment, and disputes or support
-                threads stay attached to the same order record.
+                {data.product.deliveryNote || productCopy.detail.deliveryFallback}{" "}
+                {productCopy.detail.deliveryTail}
               </p>
             </details>
             <details className="group border-b border-[var(--market-line)] py-5">
               <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
                 <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                  Specifications and material clarity
+                  {productCopy.detail.specsTitle}
                 </h3>
                 <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[var(--market-muted)] transition group-open:rotate-90 group-open:text-[var(--market-brass)]" />
               </summary>
@@ -267,7 +308,7 @@ export default async function ProductPage({
             <details className="group border-b border-[var(--market-line)] py-5">
               <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
                 <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                  Store passport and related discovery
+                  {productCopy.detail.passportTitle}
                 </h3>
                 <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[var(--market-muted)] transition group-open:rotate-90 group-open:text-[var(--market-brass)]" />
               </summary>
@@ -277,7 +318,7 @@ export default async function ProductPage({
                     href={`/store/${data.vendor.slug}`}
                     className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
                   >
-                    Visit {data.vendor.name}
+                    {productCopy.detail.visitVendorTemplate.replace("{vendor}", data.vendor.name)}
                   </Link>
                 ) : null}
                 {data.category ? (
@@ -285,7 +326,7 @@ export default async function ProductPage({
                     href={`/category/${data.category.slug}`}
                     className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
                   >
-                    Explore {data.category.name}
+                    {productCopy.detail.exploreCategoryTemplate.replace("{category}", data.category.name)}
                   </Link>
                 ) : null}
                 {data.brand ? (
@@ -293,7 +334,7 @@ export default async function ProductPage({
                     href={`/brand/${data.brand.slug}`}
                     className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
                   >
-                    See {data.brand.name}
+                    {productCopy.detail.seeBrandTemplate.replace("{brand}", data.brand.name)}
                   </Link>
                 ) : null}
               </div>
@@ -302,12 +343,12 @@ export default async function ProductPage({
         </article>
 
         <article>
-          <p className="market-kicker">Complete the set</p>
+          <p className="market-kicker">{productCopy.related.kicker}</p>
           <h2 className="mt-4 max-w-sm text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.85rem]">
-            More from this buying context.
+            {productCopy.related.title}
           </h2>
           <p className="mt-3 max-w-md text-sm leading-7 text-[var(--market-muted)]">
-            Recommendation rails stay curated and clean instead of becoming noisy upsell clutter.
+            {productCopy.related.body}
           </p>
           <ul className="mt-7 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {data.related.slice(0, 4).map((product) => (
@@ -338,9 +379,9 @@ export default async function ProductPage({
         <section>
           <div className="grid gap-12 lg:grid-cols-[0.85fr,1.15fr]">
             <div>
-              <p className="market-kicker">Review highlights</p>
+              <p className="market-kicker">{productCopy.reviews.kicker}</p>
               <h2 className="mt-4 max-w-sm text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[2rem]">
-                Verified buying signals, not noisy filler.
+                {productCopy.reviews.title}
               </h2>
             </div>
             <ul className="divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
@@ -348,7 +389,7 @@ export default async function ProductPage({
                 <li key={review.id} className="grid gap-4 py-6 md:grid-cols-[0.32fr,0.68fr]">
                   <div>
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-                      {review.verifiedPurchase ? "Verified purchase" : "Review"}
+                      {review.verifiedPurchase ? productCopy.reviews.verifiedPurchase : productCopy.reviews.reviewLabel}
                     </p>
                     <p className="mt-2 text-sm font-semibold tracking-tight text-[var(--market-paper-white)]">
                       {review.buyerName}
@@ -370,11 +411,11 @@ export default async function ProductPage({
       ) : null}
 
       <RecommendationRail
-        kicker="Customers also bought"
-        headline="Continue browsing without losing your place."
-        caption="Co-purchase + similar-category signals surface the next obvious step, never noisy upsell clutter."
+        kicker={productCopy.rail.kicker}
+        headline={productCopy.rail.headline}
+        caption={productCopy.rail.caption}
         products={data.related}
-        cta={{ label: "Open search", href: "/search" }}
+        cta={{ label: productCopy.rail.ctaLabel, href: "/search" }}
       />
     </div>
   );

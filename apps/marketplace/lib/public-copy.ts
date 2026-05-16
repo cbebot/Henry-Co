@@ -91,6 +91,59 @@ export type MarketplacePublicCopy = {
       ctaLabel: string;
     };
   };
+  track: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      titlePrefix: string;
+      body: string;
+      orderValueLabel: string;
+      paymentLabel: string;
+      payoutControlLabel: string;
+      payoutFrozen: string;
+      payoutEscrowActive: string;
+    };
+    paymentRecord: {
+      kicker: string;
+      walletBody: string;
+      proofBody: string;
+      awaitingBody: string;
+      methodLabel: string;
+      statusLabel: string;
+      proofLabel: string;
+      viewProof: string;
+      walletDebit: string;
+      pending: string;
+    };
+    timeline: {
+      kicker: string;
+      title: string;
+    };
+    segments: {
+      kicker: string;
+      title: string;
+      henrycoSegment: string;
+      fulfillmentLabel: string;
+      trackingLabel: string;
+      payoutLabel: string;
+      trackingPending: string;
+    };
+    completion: {
+      kicker: string;
+      body: string;
+      confirmCta: string;
+    };
+    help: {
+      kicker: string;
+      title: string;
+      body: string;
+      openSupportCta: string;
+      viewAllOrdersCta: string;
+    };
+  };
   deals: {
     metadata: {
       title: string;
@@ -390,6 +443,68 @@ export type MarketplacePublicCopy = {
       openLabel: string;
     };
   };
+  product: {
+    metadata: {
+      titleTemplate: string;
+      descriptionTemplate: string;
+      fallbackDescription: string;
+    };
+    fulfillment: {
+      sellerTrustLabel: string;
+      sellerTrustValueTemplate: string;
+      sellerTrustValueFallback: string;
+      availabilityLabel: string;
+      availabilityValueSingular: string;
+      availabilityValuePlural: string;
+      fulfillmentLabel: string;
+      paymentLabel: string;
+      paymentValueCod: string;
+      paymentValueVerified: string;
+    };
+    price: {
+      label: string;
+      leadTimeLabel: string;
+    };
+    safety: {
+      kicker: string;
+      stockTemplate: string;
+      codEligible: string;
+      codFallback: string;
+      vendorLinkedTemplate: string;
+      vendorPending: string;
+      reviewsTemplateSingular: string;
+      reviewsTemplatePlural: string;
+    };
+    detail: {
+      kicker: string;
+      title: string;
+      deliverySummaryTitle: string;
+      deliveryFallback: string;
+      deliveryTail: string;
+      specsTitle: string;
+      passportTitle: string;
+      visitVendorTemplate: string;
+      exploreCategoryTemplate: string;
+      seeBrandTemplate: string;
+    };
+    related: {
+      kicker: string;
+      title: string;
+      body: string;
+    };
+    reviews: {
+      kicker: string;
+      title: string;
+      verifiedPurchase: string;
+      reviewLabel: string;
+    };
+    rail: {
+      kicker: string;
+      headline: string;
+      caption: string;
+      ctaLabel: string;
+    };
+  };
 };
 
 const EN: MarketplacePublicCopy = {
@@ -530,6 +645,60 @@ const EN: MarketplacePublicCopy = {
       title: "Your cart is still empty.",
       body: "Quick-add from product cards, save items for later, and the basket will stay updated in the mini-cart drawer and the full cart without a hard refresh.",
       ctaLabel: "Browse products",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Order tracking — HenryCo Marketplace",
+      description:
+        "Track each vendor segment, payment update, and fulfillment milestone in one place. Escrow stays on until delivery confirms.",
+    },
+    hero: {
+      kicker: "Order tracking",
+      titlePrefix: "Tracking",
+      body: "Split-order clarity stays visible here: every vendor segment, payment update, and fulfillment milestone gets its own row so support and buyer expectations stay aligned.",
+      orderValueLabel: "Order value",
+      paymentLabel: "Payment",
+      payoutControlLabel: "Payout control",
+      payoutFrozen: "Frozen",
+      payoutEscrowActive: "Escrow active",
+    },
+    paymentRecord: {
+      kicker: "Payment record",
+      walletBody: "Wallet balance was debited and the order is held in escrow for fulfillment.",
+      proofBody: "Transfer proof is attached for HenryCo finance review.",
+      awaitingBody: "Payment is waiting for finance evidence or delivery reconciliation.",
+      methodLabel: "Method",
+      statusLabel: "Status",
+      proofLabel: "Proof",
+      viewProof: "View proof",
+      walletDebit: "Wallet debit",
+      pending: "Pending",
+    },
+    timeline: {
+      kicker: "Timeline",
+      title: "Customer-visible milestones, in order.",
+    },
+    segments: {
+      kicker: "Vendor segments",
+      title: "Each vendor stays accountable to its own dispatch.",
+      henrycoSegment: "HenryCo segment",
+      fulfillmentLabel: "Fulfillment",
+      trackingLabel: "Tracking",
+      payoutLabel: "Payout",
+      trackingPending: "Pending",
+    },
+    completion: {
+      kicker: "Completion confirmation",
+      body: "Confirm completion once the order is satisfactory. HenryCo only releases seller payout after delivery is confirmed or the order qualifies for auto-release.",
+      confirmCta: "Confirm completion",
+    },
+    help: {
+      kicker: "Need help?",
+      title: "Disputes, refunds, and delivery concerns route through one thread.",
+      body: "Open a support thread with this order number attached so the agent sees the full timeline and vendor split without you re-typing it.",
+      openSupportCta: "Open support thread",
+      viewAllOrdersCta: "View all orders",
     },
   },
   deals: {
@@ -889,6 +1058,72 @@ const EN: MarketplacePublicCopy = {
       openLabel: "Open",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} on HenryCo Marketplace — verified stock, trusted delivery, and seller passport visible before checkout.",
+      fallbackDescription:
+        "A verified HenryCo Marketplace listing with trust signals, delivery clarity, and seller passport surfaced before checkout.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Seller trust",
+      sellerTrustValueTemplate: "{vendor} passport visible",
+      sellerTrustValueFallback: "Seller passport pending",
+      availabilityLabel: "Availability",
+      availabilityValueSingular: "{count} unit in current stock",
+      availabilityValuePlural: "{count} units in current stock",
+      fulfillmentLabel: "Fulfillment",
+      paymentLabel: "Payment",
+      paymentValueCod: "COD or verified transfer",
+      paymentValueVerified: "Verified transfer flow",
+    },
+    price: {
+      label: "Price",
+      leadTimeLabel: "Lead time",
+    },
+    safety: {
+      kicker: "Why this listing feels safer",
+      stockTemplate: "{count} units currently visible to inventory",
+      codEligible: "Cash on delivery eligible where supported",
+      codFallback: "Manual verification flow available",
+      vendorLinkedTemplate: "{vendor} seller passport is linked directly from this page",
+      vendorPending: "Vendor trust surface is still pending linkage",
+      reviewsTemplateSingular: "{count} review at {rating} average rating",
+      reviewsTemplatePlural: "{count} reviews at {rating} average rating",
+    },
+    detail: {
+      kicker: "Product detail",
+      title: "Everything that matters before checkout.",
+      deliverySummaryTitle: "Delivery, support, and post-order care",
+      deliveryFallback: "Delivery windows will be clarified at checkout.",
+      deliveryTail:
+        "Orders stay traceable from payment to fulfillment, and disputes or support threads stay attached to the same order record.",
+      specsTitle: "Specifications and material clarity",
+      passportTitle: "Store passport and related discovery",
+      visitVendorTemplate: "Visit {vendor}",
+      exploreCategoryTemplate: "Explore {category}",
+      seeBrandTemplate: "See {brand}",
+    },
+    related: {
+      kicker: "Complete the set",
+      title: "More from this buying context.",
+      body: "Recommendation rails stay curated and clean instead of becoming noisy upsell clutter.",
+    },
+    reviews: {
+      kicker: "Review highlights",
+      title: "Verified buying signals, not noisy filler.",
+      verifiedPurchase: "Verified purchase",
+      reviewLabel: "Review",
+    },
+    rail: {
+      kicker: "Customers also bought",
+      headline: "Continue browsing without losing your place.",
+      caption:
+        "Co-purchase + similar-category signals surface the next obvious step, never noisy upsell clutter.",
+      ctaLabel: "Open search",
+    },
+  },
 };
 
 const FR: DeepPartial<MarketplacePublicCopy> = {
@@ -1012,6 +1247,60 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
       title: "Votre panier est encore vide.",
       body: "Ajoutez rapidement depuis les fiches produits, sauvegardez des articles pour plus tard, et le panier reste à jour dans le tiroir mini-panier comme dans le panier complet, sans rechargement.",
       ctaLabel: "Parcourir les produits",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Suivi de commande — Marketplace HenryCo",
+      description:
+        "Suivez chaque segment vendeur, mise à jour de paiement et jalon d'expédition au même endroit. L'entiercement reste actif jusqu'à confirmation de la livraison.",
+    },
+    hero: {
+      kicker: "Suivi de commande",
+      titlePrefix: "Suivi",
+      body: "La clarté des commandes fractionnées reste visible ici : chaque segment vendeur, mise à jour de paiement et jalon d'expédition occupe sa propre ligne, pour aligner le support et les attentes de l'acheteur.",
+      orderValueLabel: "Valeur de la commande",
+      paymentLabel: "Paiement",
+      payoutControlLabel: "Contrôle du versement",
+      payoutFrozen: "Gelé",
+      payoutEscrowActive: "Entiercement actif",
+    },
+    paymentRecord: {
+      kicker: "Trace de paiement",
+      walletBody: "Le solde du portefeuille a été débité et la commande est mise sous entiercement jusqu'à l'expédition.",
+      proofBody: "Le justificatif de virement est joint pour examen par la finance HenryCo.",
+      awaitingBody: "Le paiement attend la pièce justificative finance ou la réconciliation à la livraison.",
+      methodLabel: "Méthode",
+      statusLabel: "Statut",
+      proofLabel: "Justificatif",
+      viewProof: "Voir le justificatif",
+      walletDebit: "Débit portefeuille",
+      pending: "En attente",
+    },
+    timeline: {
+      kicker: "Chronologie",
+      title: "Les jalons visibles côté client, dans l'ordre.",
+    },
+    segments: {
+      kicker: "Segments vendeurs",
+      title: "Chaque vendeur reste responsable de sa propre expédition.",
+      henrycoSegment: "Segment HenryCo",
+      fulfillmentLabel: "Expédition",
+      trackingLabel: "Suivi",
+      payoutLabel: "Versement",
+      trackingPending: "En attente",
+    },
+    completion: {
+      kicker: "Confirmation de réception",
+      body: "Confirmez la réception une fois la commande satisfaisante. HenryCo ne libère le versement vendeur qu'après confirmation de livraison ou éligibilité à une libération automatique.",
+      confirmCta: "Confirmer la réception",
+    },
+    help: {
+      kicker: "Besoin d'aide ?",
+      title: "Litiges, remboursements et soucis de livraison passent par un seul fil.",
+      body: "Ouvrez un fil de support avec ce numéro de commande joint, pour que l'agent voie toute la chronologie et la répartition vendeur sans que vous ayez à tout retaper.",
+      openSupportCta: "Ouvrir un fil de support",
+      viewAllOrdersCta: "Voir toutes les commandes",
     },
   },
   deals: {
@@ -1372,6 +1661,72 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "Ouvrir",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} sur HenryCo Marketplace — stock vérifié, livraison fiable et passeport vendeur visibles avant le paiement.",
+      fallbackDescription:
+        "Une annonce vérifiée sur HenryCo Marketplace, avec signaux de confiance, clarté de livraison et passeport vendeur visibles avant le paiement.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Confiance vendeur",
+      sellerTrustValueTemplate: "Passeport {vendor} visible",
+      sellerTrustValueFallback: "Passeport vendeur en attente",
+      availabilityLabel: "Disponibilité",
+      availabilityValueSingular: "{count} unité actuellement en stock",
+      availabilityValuePlural: "{count} unités actuellement en stock",
+      fulfillmentLabel: "Livraison",
+      paymentLabel: "Paiement",
+      paymentValueCod: "Paiement à la livraison ou virement vérifié",
+      paymentValueVerified: "Flux par virement vérifié",
+    },
+    price: {
+      label: "Prix",
+      leadTimeLabel: "Délai",
+    },
+    safety: {
+      kicker: "Pourquoi cette annonce inspire confiance",
+      stockTemplate: "{count} unités actuellement visibles à l’inventaire",
+      codEligible: "Paiement à la livraison possible là où il est pris en charge",
+      codFallback: "Flux de vérification manuelle disponible",
+      vendorLinkedTemplate: "Le passeport vendeur {vendor} est lié directement depuis cette page",
+      vendorPending: "La page de confiance du vendeur est encore en cours de liaison",
+      reviewsTemplateSingular: "{count} avis pour une note moyenne de {rating}",
+      reviewsTemplatePlural: "{count} avis pour une note moyenne de {rating}",
+    },
+    detail: {
+      kicker: "Détail produit",
+      title: "Tout ce qui compte avant le paiement.",
+      deliverySummaryTitle: "Livraison, support et suivi après commande",
+      deliveryFallback: "Les délais de livraison seront précisés au paiement.",
+      deliveryTail:
+        "Les commandes restent traçables du paiement à l’expédition, et les litiges ou fils d’assistance restent rattachés au même dossier de commande.",
+      specsTitle: "Spécifications et clarté des matériaux",
+      passportTitle: "Passeport boutique et découvertes liées",
+      visitVendorTemplate: "Visiter {vendor}",
+      exploreCategoryTemplate: "Explorer {category}",
+      seeBrandTemplate: "Voir {brand}",
+    },
+    related: {
+      kicker: "Compléter l’ensemble",
+      title: "À découvrir dans le même contexte d’achat.",
+      body: "Les rails de recommandation restent ciblés et sobres, sans relances commerciales bruyantes.",
+    },
+    reviews: {
+      kicker: "Faits marquants des avis",
+      title: "Des signaux d’achat vérifiés, sans bruit superflu.",
+      verifiedPurchase: "Achat vérifié",
+      reviewLabel: "Avis",
+    },
+    rail: {
+      kicker: "Les acheteurs ont aussi pris",
+      headline: "Continuez votre navigation sans perdre le fil.",
+      caption:
+        "Les signaux de co-achat et de catégorie similaire ouvrent la prochaine étape évidente, sans surcharge commerciale.",
+      ctaLabel: "Ouvrir la recherche",
+    },
+  },
 };
 
 const ES: DeepPartial<MarketplacePublicCopy> = {
@@ -1386,6 +1741,60 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
       title: "Tu carrito sigue vacío.",
       body: "Añade rápido desde las fichas de producto, guarda artículos para más tarde, y la cesta se mantiene al día tanto en el mini-carrito como en el carrito completo, sin recargar.",
       ctaLabel: "Explorar productos",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Seguimiento de pedido — HenryCo Marketplace",
+      description:
+        "Sigue cada segmento de vendedor, novedad de pago e hito de envío en un solo sitio. El depósito en garantía se mantiene hasta que se confirme la entrega.",
+    },
+    hero: {
+      kicker: "Seguimiento de pedido",
+      titlePrefix: "Seguimiento",
+      body: "La claridad de los pedidos divididos sigue visible aquí: cada segmento de vendedor, actualización de pago y hito de envío ocupa su propia fila para alinear soporte y expectativas del comprador.",
+      orderValueLabel: "Valor del pedido",
+      paymentLabel: "Pago",
+      payoutControlLabel: "Control de liquidación",
+      payoutFrozen: "Congelado",
+      payoutEscrowActive: "Depósito activo",
+    },
+    paymentRecord: {
+      kicker: "Registro de pago",
+      walletBody: "Se cargó el saldo de la cartera y el pedido queda en depósito hasta el envío.",
+      proofBody: "Se adjuntó el comprobante de transferencia para revisión de finanzas de HenryCo.",
+      awaitingBody: "El pago espera el comprobante de finanzas o la conciliación tras la entrega.",
+      methodLabel: "Método",
+      statusLabel: "Estado",
+      proofLabel: "Comprobante",
+      viewProof: "Ver comprobante",
+      walletDebit: "Débito de cartera",
+      pending: "Pendiente",
+    },
+    timeline: {
+      kicker: "Línea de tiempo",
+      title: "Hitos visibles para el cliente, en orden.",
+    },
+    segments: {
+      kicker: "Segmentos de vendedor",
+      title: "Cada vendedor responde por su propio envío.",
+      henrycoSegment: "Segmento HenryCo",
+      fulfillmentLabel: "Envío",
+      trackingLabel: "Seguimiento",
+      payoutLabel: "Liquidación",
+      trackingPending: "Pendiente",
+    },
+    completion: {
+      kicker: "Confirmación de recepción",
+      body: "Confirma la recepción cuando el pedido sea satisfactorio. HenryCo solo libera la liquidación al vendedor tras confirmar la entrega o si el pedido cumple la liberación automática.",
+      confirmCta: "Confirmar recepción",
+    },
+    help: {
+      kicker: "¿Necesitas ayuda?",
+      title: "Disputas, reembolsos y problemas de entrega se canalizan en un solo hilo.",
+      body: "Abre un hilo de soporte con este número de pedido adjunto para que el agente vea la línea de tiempo completa y el desglose por vendedor sin que tengas que volver a escribirlo.",
+      openSupportCta: "Abrir hilo de soporte",
+      viewAllOrdersCta: "Ver todos los pedidos",
     },
   },
   deals: {
@@ -1719,6 +2128,72 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "Abrir",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} en HenryCo Marketplace — stock verificado, entrega fiable y pasaporte del vendedor visibles antes del pago.",
+      fallbackDescription:
+        "Un anuncio verificado en HenryCo Marketplace con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes del pago.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Confianza del vendedor",
+      sellerTrustValueTemplate: "Pasaporte de {vendor} visible",
+      sellerTrustValueFallback: "Pasaporte del vendedor pendiente",
+      availabilityLabel: "Disponibilidad",
+      availabilityValueSingular: "{count} unidad en stock actual",
+      availabilityValuePlural: "{count} unidades en stock actual",
+      fulfillmentLabel: "Entrega",
+      paymentLabel: "Pago",
+      paymentValueCod: "Pago contra entrega o transferencia verificada",
+      paymentValueVerified: "Flujo por transferencia verificada",
+    },
+    price: {
+      label: "Precio",
+      leadTimeLabel: "Plazo de entrega",
+    },
+    safety: {
+      kicker: "Por qué este anuncio inspira más confianza",
+      stockTemplate: "{count} unidades visibles ahora mismo en el inventario",
+      codEligible: "Pago contra entrega disponible donde se admite",
+      codFallback: "Flujo de verificación manual disponible",
+      vendorLinkedTemplate: "El pasaporte del vendedor {vendor} está enlazado directamente desde esta página",
+      vendorPending: "La superficie de confianza del vendedor todavía está pendiente de enlace",
+      reviewsTemplateSingular: "{count} reseña con valoración media de {rating}",
+      reviewsTemplatePlural: "{count} reseñas con valoración media de {rating}",
+    },
+    detail: {
+      kicker: "Detalle del producto",
+      title: "Todo lo importante antes de pagar.",
+      deliverySummaryTitle: "Entrega, soporte y atención posventa",
+      deliveryFallback: "Las ventanas de entrega se aclararán al finalizar la compra.",
+      deliveryTail:
+        "Los pedidos se mantienen trazables desde el pago hasta la entrega, y las disputas o hilos de soporte se vinculan al mismo registro de pedido.",
+      specsTitle: "Especificaciones y claridad del material",
+      passportTitle: "Pasaporte de la tienda y descubrimientos relacionados",
+      visitVendorTemplate: "Visitar {vendor}",
+      exploreCategoryTemplate: "Explorar {category}",
+      seeBrandTemplate: "Ver {brand}",
+    },
+    related: {
+      kicker: "Completa el conjunto",
+      title: "Más en el mismo contexto de compra.",
+      body: "Las recomendaciones se mantienen curadas y limpias, sin ruido comercial.",
+    },
+    reviews: {
+      kicker: "Lo más destacado de las reseñas",
+      title: "Señales de compra verificadas, sin ruido innecesario.",
+      verifiedPurchase: "Compra verificada",
+      reviewLabel: "Reseña",
+    },
+    rail: {
+      kicker: "Quienes vieron esto también compraron",
+      headline: "Sigue navegando sin perder el hilo.",
+      caption:
+        "Las señales de co-compra y de categoría afín muestran el siguiente paso obvio, sin saturar con ofertas innecesarias.",
+      ctaLabel: "Abrir búsqueda",
+    },
+  },
 };
 
 const PT: DeepPartial<MarketplacePublicCopy> = {
@@ -1733,6 +2208,60 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
       title: "O teu carrinho ainda está vazio.",
       body: "Adiciona rapidamente a partir dos cartões de produto, guarda itens para depois, e o carrinho mantém-se atualizado no mini-carrinho e no carrinho completo sem precisares de recarregar.",
       ctaLabel: "Explorar produtos",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Acompanhamento do pedido — HenryCo Marketplace",
+      description:
+        "Acompanha cada segmento de vendedor, atualização de pagamento e marco de entrega num só lugar. O depósito em garantia mantém-se ativo até confirmar a entrega.",
+    },
+    hero: {
+      kicker: "Acompanhamento do pedido",
+      titlePrefix: "Acompanhamento",
+      body: "A clareza dos pedidos divididos permanece visível aqui: cada segmento de vendedor, atualização de pagamento e marco de entrega ocupa a sua própria linha para alinhar o suporte e as expectativas do comprador.",
+      orderValueLabel: "Valor do pedido",
+      paymentLabel: "Pagamento",
+      payoutControlLabel: "Controlo do pagamento ao vendedor",
+      payoutFrozen: "Congelado",
+      payoutEscrowActive: "Depósito ativo",
+    },
+    paymentRecord: {
+      kicker: "Registo de pagamento",
+      walletBody: "O saldo da carteira foi debitado e o pedido fica em depósito até à entrega.",
+      proofBody: "O comprovativo de transferência foi anexado para análise da equipa financeira da HenryCo.",
+      awaitingBody: "O pagamento aguarda a evidência financeira ou a reconciliação na entrega.",
+      methodLabel: "Método",
+      statusLabel: "Estado",
+      proofLabel: "Comprovativo",
+      viewProof: "Ver comprovativo",
+      walletDebit: "Débito de carteira",
+      pending: "Pendente",
+    },
+    timeline: {
+      kicker: "Cronologia",
+      title: "Marcos visíveis para o cliente, por ordem.",
+    },
+    segments: {
+      kicker: "Segmentos de vendedor",
+      title: "Cada vendedor responde pela sua própria expedição.",
+      henrycoSegment: "Segmento HenryCo",
+      fulfillmentLabel: "Expedição",
+      trackingLabel: "Acompanhamento",
+      payoutLabel: "Pagamento",
+      trackingPending: "Pendente",
+    },
+    completion: {
+      kicker: "Confirmação de receção",
+      body: "Confirma a receção quando o pedido estiver satisfatório. A HenryCo só liberta o pagamento ao vendedor após confirmação da entrega ou quando o pedido cumpre a libertação automática.",
+      confirmCta: "Confirmar receção",
+    },
+    help: {
+      kicker: "Precisas de ajuda?",
+      title: "Disputas, reembolsos e questões de entrega seguem por um único fio.",
+      body: "Abre um fio de suporte com este número de pedido anexado para que o agente veja toda a cronologia e a divisão por vendedor sem teres de escrever tudo de novo.",
+      openSupportCta: "Abrir fio de suporte",
+      viewAllOrdersCta: "Ver todos os pedidos",
     },
   },
   deals: {
@@ -2093,6 +2622,72 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "Abrir",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} no HenryCo Marketplace — stock verificado, entrega fiável e passaporte do vendedor visíveis antes do pagamento.",
+      fallbackDescription:
+        "Um anúncio verificado no HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes do pagamento.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Confiança do vendedor",
+      sellerTrustValueTemplate: "Passaporte de {vendor} visível",
+      sellerTrustValueFallback: "Passaporte do vendedor pendente",
+      availabilityLabel: "Disponibilidade",
+      availabilityValueSingular: "{count} unidade em stock atual",
+      availabilityValuePlural: "{count} unidades em stock atual",
+      fulfillmentLabel: "Entrega",
+      paymentLabel: "Pagamento",
+      paymentValueCod: "Pagamento na entrega ou transferência verificada",
+      paymentValueVerified: "Fluxo por transferência verificada",
+    },
+    price: {
+      label: "Preço",
+      leadTimeLabel: "Prazo de entrega",
+    },
+    safety: {
+      kicker: "Porque este anúncio inspira mais confiança",
+      stockTemplate: "{count} unidades atualmente visíveis no inventário",
+      codEligible: "Pagamento na entrega disponível onde for suportado",
+      codFallback: "Fluxo de verificação manual disponível",
+      vendorLinkedTemplate: "O passaporte do vendedor {vendor} está ligado diretamente a partir desta página",
+      vendorPending: "A superfície de confiança do vendedor ainda está por ligar",
+      reviewsTemplateSingular: "{count} avaliação com média de {rating}",
+      reviewsTemplatePlural: "{count} avaliações com média de {rating}",
+    },
+    detail: {
+      kicker: "Detalhe do produto",
+      title: "Tudo o que importa antes de pagar.",
+      deliverySummaryTitle: "Entrega, suporte e cuidado pós-encomenda",
+      deliveryFallback: "As janelas de entrega serão esclarecidas no checkout.",
+      deliveryTail:
+        "As encomendas mantêm-se rastreáveis do pagamento até à entrega, e disputas ou tópicos de suporte permanecem ligados ao mesmo registo de encomenda.",
+      specsTitle: "Especificações e clareza dos materiais",
+      passportTitle: "Passaporte da loja e descobertas relacionadas",
+      visitVendorTemplate: "Visitar {vendor}",
+      exploreCategoryTemplate: "Explorar {category}",
+      seeBrandTemplate: "Ver {brand}",
+    },
+    related: {
+      kicker: "Completar o conjunto",
+      title: "Mais dentro do mesmo contexto de compra.",
+      body: "As recomendações mantêm-se cuidadas e sóbrias, sem ruído comercial excessivo.",
+    },
+    reviews: {
+      kicker: "Destaques das avaliações",
+      title: "Sinais de compra verificados, sem ruído desnecessário.",
+      verifiedPurchase: "Compra verificada",
+      reviewLabel: "Avaliação",
+    },
+    rail: {
+      kicker: "Clientes também compraram",
+      headline: "Continue a navegar sem perder o seu lugar.",
+      caption:
+        "Sinais de co-compra e de categoria semelhante mostram o próximo passo óbvio, sem encher de promoções inúteis.",
+      ctaLabel: "Abrir pesquisa",
+    },
+  },
 };
 
 const DE: DeepPartial<MarketplacePublicCopy> = {
@@ -2107,6 +2702,60 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
       title: "Dein Warenkorb ist noch leer.",
       body: "Füge schnell aus den Produktkarten hinzu, merke dir Artikel für später, und der Warenkorb bleibt sowohl in der Mini-Schublade als auch in der Vollansicht aktuell – ganz ohne Reload.",
       ctaLabel: "Produkte entdecken",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Bestellverfolgung — HenryCo Marketplace",
+      description:
+        "Verfolge jedes Händler-Segment, jede Zahlungsaktualisierung und jeden Versandmeilenstein an einem Ort. Die Treuhand bleibt aktiv, bis die Lieferung bestätigt ist.",
+    },
+    hero: {
+      kicker: "Bestellverfolgung",
+      titlePrefix: "Verfolgung",
+      body: "Die Übersicht über geteilte Bestellungen bleibt hier sichtbar: jedes Händler-Segment, jede Zahlungsaktualisierung und jeder Versandmeilenstein steht in einer eigenen Zeile, damit Support und Käuferin auf demselben Stand bleiben.",
+      orderValueLabel: "Bestellwert",
+      paymentLabel: "Zahlung",
+      payoutControlLabel: "Auszahlungskontrolle",
+      payoutFrozen: "Eingefroren",
+      payoutEscrowActive: "Treuhand aktiv",
+    },
+    paymentRecord: {
+      kicker: "Zahlungsnachweis",
+      walletBody: "Das Wallet-Guthaben wurde belastet und die Bestellung liegt bis zur Erfüllung in der Treuhand.",
+      proofBody: "Der Überweisungsbeleg ist zur Prüfung durch das HenryCo-Finanzteam angehängt.",
+      awaitingBody: "Die Zahlung wartet auf den Finanznachweis oder den Abgleich bei Lieferung.",
+      methodLabel: "Methode",
+      statusLabel: "Status",
+      proofLabel: "Nachweis",
+      viewProof: "Beleg ansehen",
+      walletDebit: "Wallet-Abbuchung",
+      pending: "Ausstehend",
+    },
+    timeline: {
+      kicker: "Zeitachse",
+      title: "Für Kundinnen sichtbare Meilensteine, in Reihenfolge.",
+    },
+    segments: {
+      kicker: "Händler-Segmente",
+      title: "Jeder Händler steht für seinen eigenen Versand ein.",
+      henrycoSegment: "HenryCo-Segment",
+      fulfillmentLabel: "Versand",
+      trackingLabel: "Sendungsverfolgung",
+      payoutLabel: "Auszahlung",
+      trackingPending: "Ausstehend",
+    },
+    completion: {
+      kicker: "Abschlussbestätigung",
+      body: "Bestätige den Abschluss, sobald die Bestellung in Ordnung ist. HenryCo gibt die Händlerauszahlung erst nach bestätigter Lieferung oder bei Eignung für die automatische Freigabe frei.",
+      confirmCta: "Abschluss bestätigen",
+    },
+    help: {
+      kicker: "Brauchst du Hilfe?",
+      title: "Streitfälle, Rückerstattungen und Lieferprobleme laufen über einen Thread.",
+      body: "Öffne einen Support-Thread mit dieser Bestellnummer im Anhang, damit der Agent die komplette Zeitachse und die Händlerteilung sieht, ohne dass du alles erneut tippen musst.",
+      openSupportCta: "Support-Thread öffnen",
+      viewAllOrdersCta: "Alle Bestellungen anzeigen",
     },
   },
   deals: {
@@ -2467,6 +3116,72 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "Öffnen",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} im HenryCo Marketplace — geprüfter Lagerbestand, verlässliche Lieferung und sichtbarer Verkäuferpass vor dem Checkout.",
+      fallbackDescription:
+        "Ein geprüftes Angebot im HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferung und sichtbarem Verkäuferpass vor dem Checkout.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Verkäufervertrauen",
+      sellerTrustValueTemplate: "Pass von {vendor} sichtbar",
+      sellerTrustValueFallback: "Verkäuferpass steht aus",
+      availabilityLabel: "Verfügbarkeit",
+      availabilityValueSingular: "{count} Einheit aktuell im Lager",
+      availabilityValuePlural: "{count} Einheiten aktuell im Lager",
+      fulfillmentLabel: "Versand",
+      paymentLabel: "Zahlung",
+      paymentValueCod: "Nachnahme oder verifizierte Überweisung",
+      paymentValueVerified: "Ablauf mit verifizierter Überweisung",
+    },
+    price: {
+      label: "Preis",
+      leadTimeLabel: "Lieferzeit",
+    },
+    safety: {
+      kicker: "Warum dieses Angebot vertrauenswürdiger wirkt",
+      stockTemplate: "{count} Einheiten derzeit im Bestand sichtbar",
+      codEligible: "Nachnahme dort möglich, wo unterstützt",
+      codFallback: "Manueller Verifizierungsablauf verfügbar",
+      vendorLinkedTemplate: "Der Verkäuferpass von {vendor} ist direkt von dieser Seite verlinkt",
+      vendorPending: "Die Vertrauensfläche des Verkäufers ist noch nicht verknüpft",
+      reviewsTemplateSingular: "{count} Bewertung bei einer Durchschnittsnote von {rating}",
+      reviewsTemplatePlural: "{count} Bewertungen bei einer Durchschnittsnote von {rating}",
+    },
+    detail: {
+      kicker: "Produktdetail",
+      title: "Alles, was vor dem Checkout zählt.",
+      deliverySummaryTitle: "Lieferung, Support und Nachbetreuung",
+      deliveryFallback: "Lieferzeitfenster werden im Checkout konkretisiert.",
+      deliveryTail:
+        "Bestellungen bleiben von der Zahlung bis zur Auslieferung nachverfolgbar, und Beschwerden oder Support-Threads bleiben mit demselben Bestellsatz verknüpft.",
+      specsTitle: "Spezifikationen und Materialklarheit",
+      passportTitle: "Shop-Pass und verwandte Entdeckungen",
+      visitVendorTemplate: "{vendor} besuchen",
+      exploreCategoryTemplate: "{category} erkunden",
+      seeBrandTemplate: "{brand} ansehen",
+    },
+    related: {
+      kicker: "Set vervollständigen",
+      title: "Weitere passende Stücke im selben Einkaufskontext.",
+      body: "Empfehlungs-Rails bleiben kuratiert und ruhig, statt zu lauten Upsell-Floskeln zu werden.",
+    },
+    reviews: {
+      kicker: "Bewertungs-Highlights",
+      title: "Geprüfte Kaufsignale, kein Geräuschpegel.",
+      verifiedPurchase: "Verifizierter Kauf",
+      reviewLabel: "Bewertung",
+    },
+    rail: {
+      kicker: "Andere Kund:innen kauften auch",
+      headline: "Browse weiter, ohne den Faden zu verlieren.",
+      caption:
+        "Co-Kauf- und Kategorie-Signale zeigen den nächsten naheliegenden Schritt, ohne mit Upsell zu überfrachten.",
+      ctaLabel: "Suche öffnen",
+    },
+  },
 };
 
 const IT: DeepPartial<MarketplacePublicCopy> = {
@@ -2481,6 +3196,60 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
       title: "Il tuo carrello è ancora vuoto.",
       body: "Aggiungi al volo dalle schede prodotto, salva articoli per dopo, e il carrello resta aggiornato sia nel mini-carrello sia nella vista completa, senza ricaricare la pagina.",
       ctaLabel: "Esplora i prodotti",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Tracciamento ordine — HenryCo Marketplace",
+      description:
+        "Segui ogni segmento venditore, aggiornamento di pagamento e tappa di consegna in un unico posto. L'escrow resta attivo finché la consegna non è confermata.",
+    },
+    hero: {
+      kicker: "Tracciamento ordine",
+      titlePrefix: "Tracciamento",
+      body: "La chiarezza sugli ordini divisi resta qui visibile: ogni segmento venditore, aggiornamento di pagamento e tappa di consegna ha la propria riga, così supporto e aspettative di chi compra restano allineate.",
+      orderValueLabel: "Valore dell'ordine",
+      paymentLabel: "Pagamento",
+      payoutControlLabel: "Controllo del pagamento al venditore",
+      payoutFrozen: "Bloccato",
+      payoutEscrowActive: "Escrow attivo",
+    },
+    paymentRecord: {
+      kicker: "Traccia di pagamento",
+      walletBody: "Il saldo del portafoglio è stato addebitato e l'ordine resta in escrow fino all'evasione.",
+      proofBody: "La ricevuta di bonifico è allegata per la verifica del team finanziario HenryCo.",
+      awaitingBody: "Il pagamento attende l'evidenza finanziaria o la riconciliazione alla consegna.",
+      methodLabel: "Metodo",
+      statusLabel: "Stato",
+      proofLabel: "Ricevuta",
+      viewProof: "Vedi ricevuta",
+      walletDebit: "Addebito portafoglio",
+      pending: "In attesa",
+    },
+    timeline: {
+      kicker: "Cronologia",
+      title: "Tappe visibili al cliente, in ordine.",
+    },
+    segments: {
+      kicker: "Segmenti venditore",
+      title: "Ogni venditore risponde della propria spedizione.",
+      henrycoSegment: "Segmento HenryCo",
+      fulfillmentLabel: "Evasione",
+      trackingLabel: "Tracciamento",
+      payoutLabel: "Pagamento",
+      trackingPending: "In attesa",
+    },
+    completion: {
+      kicker: "Conferma di completamento",
+      body: "Conferma il completamento quando l'ordine è soddisfacente. HenryCo rilascia il pagamento al venditore solo dopo la conferma della consegna o se l'ordine rientra nel rilascio automatico.",
+      confirmCta: "Conferma completamento",
+    },
+    help: {
+      kicker: "Serve aiuto?",
+      title: "Controversie, rimborsi e problemi di consegna passano tutti da un unico thread.",
+      body: "Apri un thread di supporto con questo numero d'ordine allegato, così l'agente vede l'intera cronologia e la divisione per venditore senza che tu debba riscrivere tutto.",
+      openSupportCta: "Apri thread di supporto",
+      viewAllOrdersCta: "Vedi tutti gli ordini",
     },
   },
   deals: {
@@ -2841,6 +3610,72 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "Apri",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} su HenryCo Marketplace — stock verificato, consegna affidabile e passaporto venditore visibili prima del pagamento.",
+      fallbackDescription:
+        "Un annuncio verificato su HenryCo Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporto venditore visibili prima del pagamento.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Affidabilità venditore",
+      sellerTrustValueTemplate: "Passaporto di {vendor} visibile",
+      sellerTrustValueFallback: "Passaporto venditore in attesa",
+      availabilityLabel: "Disponibilità",
+      availabilityValueSingular: "{count} unità nello stock attuale",
+      availabilityValuePlural: "{count} unità nello stock attuale",
+      fulfillmentLabel: "Consegna",
+      paymentLabel: "Pagamento",
+      paymentValueCod: "Contrassegno o bonifico verificato",
+      paymentValueVerified: "Flusso con bonifico verificato",
+    },
+    price: {
+      label: "Prezzo",
+      leadTimeLabel: "Tempi di consegna",
+    },
+    safety: {
+      kicker: "Perché questo annuncio risulta più affidabile",
+      stockTemplate: "{count} unità attualmente visibili a magazzino",
+      codEligible: "Contrassegno disponibile dove supportato",
+      codFallback: "Flusso di verifica manuale disponibile",
+      vendorLinkedTemplate: "Il passaporto venditore di {vendor} è collegato direttamente da questa pagina",
+      vendorPending: "La superficie di fiducia del venditore è ancora da collegare",
+      reviewsTemplateSingular: "{count} recensione con valutazione media di {rating}",
+      reviewsTemplatePlural: "{count} recensioni con valutazione media di {rating}",
+    },
+    detail: {
+      kicker: "Dettaglio prodotto",
+      title: "Tutto ciò che conta prima del pagamento.",
+      deliverySummaryTitle: "Consegna, supporto e cura post-ordine",
+      deliveryFallback: "Le finestre di consegna saranno chiarite al checkout.",
+      deliveryTail:
+        "Gli ordini restano tracciabili dal pagamento alla spedizione, e le contestazioni o i thread di supporto restano associati allo stesso record d’ordine.",
+      specsTitle: "Specifiche e chiarezza dei materiali",
+      passportTitle: "Passaporto del negozio e scoperte correlate",
+      visitVendorTemplate: "Visita {vendor}",
+      exploreCategoryTemplate: "Esplora {category}",
+      seeBrandTemplate: "Vedi {brand}",
+    },
+    related: {
+      kicker: "Completa il set",
+      title: "Altro nello stesso contesto d’acquisto.",
+      body: "I rail di raccomandazione restano curati e puliti, senza rumore commerciale.",
+    },
+    reviews: {
+      kicker: "Spunti delle recensioni",
+      title: "Segnali d’acquisto verificati, senza rumore inutile.",
+      verifiedPurchase: "Acquisto verificato",
+      reviewLabel: "Recensione",
+    },
+    rail: {
+      kicker: "Chi ha visto ha comprato anche",
+      headline: "Continua a navigare senza perdere il filo.",
+      caption:
+        "I segnali di co-acquisto e di categoria affine portano al prossimo passo evidente, senza saturare di upsell.",
+      ctaLabel: "Apri ricerca",
+    },
+  },
 };
 
 const AR: DeepPartial<MarketplacePublicCopy> = {
@@ -2855,6 +3690,60 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
       title: "سلتك ما زالت فارغة.",
       body: "أضِف بسرعة من بطاقات المنتجات، واحفظ ما تودّ لاحقًا، وستبقى السلة محدّثة في الدُرج المصغّر وفي السلة الكاملة دون الحاجة إلى إعادة تحميل الصفحة.",
       ctaLabel: "تصفّح المنتجات",
+    },
+  },
+  track: {
+    metadata: {
+      title: "تتبّع الطلب — HenryCo Marketplace",
+      description:
+        "تابِع كل قِسم بائع، وكل تحديث دفع، وكل مرحلة شحن في مكان واحد. يبقى الضمان نشطًا حتى يتم تأكيد التسليم.",
+    },
+    hero: {
+      kicker: "تتبّع الطلب",
+      titlePrefix: "تتبّع",
+      body: "وضوح الطلبات المقسّمة يبقى ظاهرًا هنا: كل قِسم بائع، وكل تحديث دفع، وكل مرحلة شحن يحظى بصفّه الخاص، حتى يبقى الدعم وتوقّعات المشتري على المسار نفسه.",
+      orderValueLabel: "قيمة الطلب",
+      paymentLabel: "الدفع",
+      payoutControlLabel: "ضبط تحويل الأموال",
+      payoutFrozen: "مُجمَّد",
+      payoutEscrowActive: "الضمان نشط",
+    },
+    paymentRecord: {
+      kicker: "سجلّ الدفع",
+      walletBody: "تم خصم رصيد المحفظة، والطلب محتجَز في الضمان حتى يكتمل الشحن.",
+      proofBody: "أُرفِق إثبات التحويل لمراجعة فريق المالية في HenryCo.",
+      awaitingBody: "الدفع بانتظار إثبات من الفريق المالي أو مطابقة عند التسليم.",
+      methodLabel: "الطريقة",
+      statusLabel: "الحالة",
+      proofLabel: "الإثبات",
+      viewProof: "عرض الإثبات",
+      walletDebit: "خصم من المحفظة",
+      pending: "قيد الانتظار",
+    },
+    timeline: {
+      kicker: "المسار الزمني",
+      title: "المراحل التي يراها العميل، بالترتيب.",
+    },
+    segments: {
+      kicker: "أقسام البائعين",
+      title: "كل بائع مسؤول عن شحنته الخاصة.",
+      henrycoSegment: "قِسم HenryCo",
+      fulfillmentLabel: "الشحن",
+      trackingLabel: "التتبّع",
+      payoutLabel: "تحويل الأموال",
+      trackingPending: "قيد الانتظار",
+    },
+    completion: {
+      kicker: "تأكيد الاستلام",
+      body: "أكِّد الاستلام عندما يكون الطلب مرضيًا. لا تُفرج HenryCo عن مستحقّات البائع إلا بعد تأكيد التسليم أو عند استيفاء شروط الإفراج التلقائي.",
+      confirmCta: "تأكيد الاستلام",
+    },
+    help: {
+      kicker: "تحتاج إلى مساعدة؟",
+      title: "النزاعات، والاستردادات، ومشكلات التسليم تمرّ كلها عبر خيط واحد.",
+      body: "افتح خيط دعم مرفقًا برقم الطلب هذا، حتى يرى الموظّف المسار الزمني كاملًا وتقسيم البائعين دون أن تكتبه من جديد.",
+      openSupportCta: "فتح خيط دعم",
+      viewAllOrdersCta: "عرض كل الطلبات",
     },
   },
   deals: {
@@ -3215,6 +4104,72 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "فتح",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} على HenryCo Marketplace — مخزون موثّق وتوصيل موثوق وجواز البائع ظاهرة قبل الدفع.",
+      fallbackDescription:
+        "إعلان موثّق على HenryCo Marketplace مع إشارات الثقة ووضوح التوصيل وجواز البائع المعروض قبل الدفع.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "ثقة البائع",
+      sellerTrustValueTemplate: "جواز {vendor} مرئي",
+      sellerTrustValueFallback: "جواز البائع قيد المراجعة",
+      availabilityLabel: "التوفر",
+      availabilityValueSingular: "{count} وحدة في المخزون الحالي",
+      availabilityValuePlural: "{count} وحدات في المخزون الحالي",
+      fulfillmentLabel: "التوصيل",
+      paymentLabel: "الدفع",
+      paymentValueCod: "الدفع عند الاستلام أو تحويل موثّق",
+      paymentValueVerified: "تدفّق بتحويل موثّق",
+    },
+    price: {
+      label: "السعر",
+      leadTimeLabel: "زمن التسليم",
+    },
+    safety: {
+      kicker: "لماذا يبدو هذا الإعلان أكثر أمانًا",
+      stockTemplate: "{count} وحدة مرئية حاليًا في الجرد",
+      codEligible: "الدفع عند الاستلام متاح حيث يُدعم",
+      codFallback: "تدفّق تحقّق يدوي متاح",
+      vendorLinkedTemplate: "جواز البائع {vendor} مرتبط مباشرة من هذه الصفحة",
+      vendorPending: "ربط واجهة ثقة البائع لا يزال قيد الإكمال",
+      reviewsTemplateSingular: "{count} مراجعة بمعدّل تقييم {rating}",
+      reviewsTemplatePlural: "{count} مراجعات بمعدّل تقييم {rating}",
+    },
+    detail: {
+      kicker: "تفاصيل المنتج",
+      title: "كل ما يهمّ قبل الدفع.",
+      deliverySummaryTitle: "التوصيل والدعم والرعاية بعد الطلب",
+      deliveryFallback: "ستُوضّح نوافذ التوصيل عند الدفع.",
+      deliveryTail:
+        "تبقى الطلبات قابلة للتتبّع من الدفع وحتى التسليم، وتظل النزاعات وخيوط الدعم مرتبطة بنفس سجل الطلب.",
+      specsTitle: "المواصفات ووضوح المواد",
+      passportTitle: "جواز المتجر والاكتشافات ذات الصلة",
+      visitVendorTemplate: "زيارة {vendor}",
+      exploreCategoryTemplate: "استكشاف {category}",
+      seeBrandTemplate: "عرض {brand}",
+    },
+    related: {
+      kicker: "أكمل المجموعة",
+      title: "المزيد ضمن سياق الشراء نفسه.",
+      body: "تبقى قضبان التوصية منتقاة وهادئة، دون ضوضاء بيع إضافية.",
+    },
+    reviews: {
+      kicker: "أبرز المراجعات",
+      title: "إشارات شراء موثّقة، دون حشو مزعج.",
+      verifiedPurchase: "شراء موثّق",
+      reviewLabel: "مراجعة",
+    },
+    rail: {
+      kicker: "اشترى الزبائن أيضًا",
+      headline: "تابع التصفّح دون أن تفقد مكانك.",
+      caption:
+        "تكشف إشارات الشراء المشترك والفئات المتقاربة الخطوة التالية البديهية، دون ضوضاء عروض زائدة.",
+      ctaLabel: "فتح البحث",
+    },
+  },
 };
 
 const ZH: DeepPartial<MarketplacePublicCopy> = {
@@ -3229,6 +4184,60 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
       title: "你的购物车还是空的。",
       body: "可从产品卡片快速加入,把心仪商品收藏稍后再看,迷你购物车与完整购物车都会即时同步,无需刷新页面。",
       ctaLabel: "浏览商品",
+    },
+  },
+  track: {
+    metadata: {
+      title: "订单跟踪 — HenryCo Marketplace",
+      description:
+        "把每一个卖家分段、每一次付款进展、每一个履约里程碑集中在同一处呈现。在确认收货之前,代管资金始终生效。",
+    },
+    hero: {
+      kicker: "订单跟踪",
+      titlePrefix: "跟踪",
+      body: "拆分订单的清晰视图在这里持续可见:每个卖家分段、每次付款更新与每个履约里程碑各占一行,让客服与买家的预期保持同步。",
+      orderValueLabel: "订单金额",
+      paymentLabel: "付款",
+      payoutControlLabel: "结算控制",
+      payoutFrozen: "已冻结",
+      payoutEscrowActive: "代管中",
+    },
+    paymentRecord: {
+      kicker: "付款记录",
+      walletBody: "钱包余额已扣款,订单进入代管,等待履约。",
+      proofBody: "转账凭证已附上,等待 HenryCo 财务核验。",
+      awaitingBody: "付款正在等待财务凭证或交付对账。",
+      methodLabel: "方式",
+      statusLabel: "状态",
+      proofLabel: "凭证",
+      viewProof: "查看凭证",
+      walletDebit: "钱包扣款",
+      pending: "待处理",
+    },
+    timeline: {
+      kicker: "时间线",
+      title: "面向客户的里程碑,依顺序排列。",
+    },
+    segments: {
+      kicker: "卖家分段",
+      title: "每位卖家对自己的发货负责。",
+      henrycoSegment: "HenryCo 分段",
+      fulfillmentLabel: "履约",
+      trackingLabel: "物流跟踪",
+      payoutLabel: "结算",
+      trackingPending: "待处理",
+    },
+    completion: {
+      kicker: "完成确认",
+      body: "当订单令你满意时请确认完成。HenryCo 只在确认送达或订单符合自动放款条件后,才会向卖家释放结算款项。",
+      confirmCta: "确认完成",
+    },
+    help: {
+      kicker: "需要帮助?",
+      title: "争议、退款与配送问题都汇总在同一个对话中处理。",
+      body: "在工单中带上这个订单号,客服就能直接看到完整时间线与卖家拆分,不必你再重新输入。",
+      openSupportCta: "开启支持对话",
+      viewAllOrdersCta: "查看全部订单",
     },
   },
   deals: {
@@ -3589,6 +4598,72 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "打开",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo 商城",
+      descriptionTemplate:
+        "{title} 在 HenryCo 商城 — 已核验库存、可靠配送与卖家护照在结账前一目了然。",
+      fallbackDescription:
+        "HenryCo 商城上的已核验商品,信任信号、配送说明与卖家护照都在结账前清晰呈现。",
+    },
+    fulfillment: {
+      sellerTrustLabel: "卖家信任",
+      sellerTrustValueTemplate: "{vendor} 护照已展示",
+      sellerTrustValueFallback: "卖家护照待完善",
+      availabilityLabel: "现货",
+      availabilityValueSingular: "当前库存 {count} 件",
+      availabilityValuePlural: "当前库存 {count} 件",
+      fulfillmentLabel: "配送",
+      paymentLabel: "支付",
+      paymentValueCod: "货到付款或经核验转账",
+      paymentValueVerified: "经核验转账流程",
+    },
+    price: {
+      label: "价格",
+      leadTimeLabel: "交付周期",
+    },
+    safety: {
+      kicker: "为什么这个商品更让人安心",
+      stockTemplate: "库存中可见 {count} 件",
+      codEligible: "支持地区可货到付款",
+      codFallback: "提供人工核验流程",
+      vendorLinkedTemplate: "本页直接关联到 {vendor} 的卖家护照",
+      vendorPending: "卖家信任页尚待关联",
+      reviewsTemplateSingular: "{count} 条评价,平均评分 {rating}",
+      reviewsTemplatePlural: "{count} 条评价,平均评分 {rating}",
+    },
+    detail: {
+      kicker: "商品详情",
+      title: "结账前需要了解的一切。",
+      deliverySummaryTitle: "配送、支持与售后照看",
+      deliveryFallback: "配送窗口将在结账时进一步确认。",
+      deliveryTail:
+        "订单从付款到发货全程可追踪,任何争议或客服记录都与同一订单档案绑定。",
+      specsTitle: "规格与材质透明",
+      passportTitle: "店铺护照与相关发现",
+      visitVendorTemplate: "进入 {vendor}",
+      exploreCategoryTemplate: "浏览 {category}",
+      seeBrandTemplate: "查看 {brand}",
+    },
+    related: {
+      kicker: "补齐一整组",
+      title: "同一购买情境下的更多选择。",
+      body: "推荐栏目保持克制与精选,不会变成噪音式推销。",
+    },
+    reviews: {
+      kicker: "评价亮点",
+      title: "已核验的购买信号,不掺杂噪音。",
+      verifiedPurchase: "已核验购买",
+      reviewLabel: "评价",
+    },
+    rail: {
+      kicker: "买家也常一起买",
+      headline: "继续浏览,不会丢失上下文。",
+      caption:
+        "共同购买与同类目信号会自然引出下一步,不会塞满冗余推销。",
+      ctaLabel: "打开搜索",
+    },
+  },
 };
 
 const HI: DeepPartial<MarketplacePublicCopy> = {
@@ -3603,6 +4678,60 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
       title: "आपका कार्ट अभी ख़ाली है।",
       body: "प्रोडक्ट कार्ड से झटपट जोड़ें, चीज़ें बाद के लिए सहेजें — मिनी-कार्ट और पूरे कार्ट दोनों में सब कुछ बिना रिफ़्रेश के अपडेट रहता है।",
       ctaLabel: "प्रोडक्ट देखें",
+    },
+  },
+  track: {
+    metadata: {
+      title: "ऑर्डर ट्रैकिंग — HenryCo Marketplace",
+      description:
+        "हर विक्रेता सेगमेंट, पेमेंट अपडेट और डिलीवरी पड़ाव एक ही जगह पर ट्रैक करें। डिलीवरी पुष्ट होने तक एस्क्रो चालू रहता है।",
+    },
+    hero: {
+      kicker: "ऑर्डर ट्रैकिंग",
+      titlePrefix: "ट्रैकिंग",
+      body: "स्प्लिट ऑर्डर की पूरी साफ़ तस्वीर यहीं दिखती रहती है: हर विक्रेता सेगमेंट, हर पेमेंट अपडेट और हर डिलीवरी पड़ाव की अलग पंक्ति होती है, ताकि सपोर्ट और ख़रीदार दोनों एक ही पन्ने पर रहें।",
+      orderValueLabel: "ऑर्डर मूल्य",
+      paymentLabel: "पेमेंट",
+      payoutControlLabel: "पेआउट नियंत्रण",
+      payoutFrozen: "रोका हुआ",
+      payoutEscrowActive: "एस्क्रो सक्रिय",
+    },
+    paymentRecord: {
+      kicker: "पेमेंट रिकॉर्ड",
+      walletBody: "वॉलेट बैलेंस से कटौती हो गई है और ऑर्डर डिलीवरी तक एस्क्रो में सुरक्षित है।",
+      proofBody: "ट्रांसफ़र का प्रमाण HenryCo फ़ाइनेंस की समीक्षा के लिए लगा दिया गया है।",
+      awaitingBody: "पेमेंट फ़ाइनेंस के प्रमाण या डिलीवरी मिलान का इंतज़ार कर रहा है।",
+      methodLabel: "तरीक़ा",
+      statusLabel: "स्थिति",
+      proofLabel: "प्रमाण",
+      viewProof: "प्रमाण देखें",
+      walletDebit: "वॉलेट से कटौती",
+      pending: "लंबित",
+    },
+    timeline: {
+      kicker: "टाइमलाइन",
+      title: "ग्राहक को दिखने वाले पड़ाव, क्रम में।",
+    },
+    segments: {
+      kicker: "विक्रेता सेगमेंट",
+      title: "हर विक्रेता अपनी डिस्पैच के लिए ज़िम्मेदार रहता है।",
+      henrycoSegment: "HenryCo सेगमेंट",
+      fulfillmentLabel: "फ़ुलफ़िलमेंट",
+      trackingLabel: "ट्रैकिंग",
+      payoutLabel: "पेआउट",
+      trackingPending: "लंबित",
+    },
+    completion: {
+      kicker: "पूरा होने की पुष्टि",
+      body: "ऑर्डर ठीक हो तो पूरा होने की पुष्टि करें। HenryCo विक्रेता का पेआउट तभी जारी करता है जब डिलीवरी पुष्ट हो जाए या ऑर्डर ऑटो-रिलीज़ की शर्तें पूरी कर ले।",
+      confirmCta: "पूरा होने की पुष्टि करें",
+    },
+    help: {
+      kicker: "मदद चाहिए?",
+      title: "विवाद, रिफ़ंड और डिलीवरी की चिंताएँ — सब एक ही थ्रेड में चलती हैं।",
+      body: "इस ऑर्डर नंबर के साथ सपोर्ट थ्रेड खोलें ताकि एजेंट को पूरी टाइमलाइन और विक्रेता-वार बँटवारा बिना दोबारा टाइप किए दिख जाए।",
+      openSupportCta: "सपोर्ट थ्रेड खोलें",
+      viewAllOrdersCta: "सभी ऑर्डर देखें",
     },
   },
   deals: {
@@ -3963,6 +5092,72 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "खोलें",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} HenryCo Marketplace पर — चेकआउट से पहले सत्यापित स्टॉक, भरोसेमंद डिलीवरी और सेलर पासपोर्ट सबकुछ साफ़।",
+      fallbackDescription:
+        "HenryCo Marketplace पर एक सत्यापित लिस्टिंग — चेकआउट से पहले ट्रस्ट सिग्नल, डिलीवरी की स्पष्टता और सेलर पासपोर्ट साफ़ दिखते हैं।",
+    },
+    fulfillment: {
+      sellerTrustLabel: "सेलर ट्रस्ट",
+      sellerTrustValueTemplate: "{vendor} पासपोर्ट दिख रहा है",
+      sellerTrustValueFallback: "सेलर पासपोर्ट अभी पेंडिंग",
+      availabilityLabel: "उपलब्धता",
+      availabilityValueSingular: "वर्तमान स्टॉक में {count} यूनिट",
+      availabilityValuePlural: "वर्तमान स्टॉक में {count} यूनिट",
+      fulfillmentLabel: "डिलीवरी",
+      paymentLabel: "भुगतान",
+      paymentValueCod: "COD या सत्यापित ट्रांसफ़र",
+      paymentValueVerified: "सत्यापित ट्रांसफ़र फ़्लो",
+    },
+    price: {
+      label: "क़ीमत",
+      leadTimeLabel: "लीड टाइम",
+    },
+    safety: {
+      kicker: "यह लिस्टिंग ज़्यादा सुरक्षित क्यों लगती है",
+      stockTemplate: "इन्वेंटरी में अभी {count} यूनिट दिख रही हैं",
+      codEligible: "जहाँ सपोर्ट है वहाँ कैश ऑन डिलीवरी उपलब्ध",
+      codFallback: "मैनुअल वेरिफ़िकेशन फ़्लो उपलब्ध",
+      vendorLinkedTemplate: "{vendor} का सेलर पासपोर्ट सीधे इसी पेज से लिंक है",
+      vendorPending: "वेंडर ट्रस्ट सरफ़ेस अभी लिंक नहीं हुआ",
+      reviewsTemplateSingular: "{count} रिव्यू, औसत रेटिंग {rating}",
+      reviewsTemplatePlural: "{count} रिव्यू, औसत रेटिंग {rating}",
+    },
+    detail: {
+      kicker: "प्रोडक्ट डिटेल",
+      title: "चेकआउट से पहले जो भी ज़रूरी है।",
+      deliverySummaryTitle: "डिलीवरी, सपोर्ट और ऑर्डर के बाद की देखभाल",
+      deliveryFallback: "डिलीवरी विंडो चेकआउट पर स्पष्ट कर दी जाएंगी।",
+      deliveryTail:
+        "ऑर्डर पेमेंट से लेकर डिलीवरी तक ट्रेसेबल रहते हैं, और कोई भी विवाद या सपोर्ट थ्रेड उसी ऑर्डर रिकॉर्ड से जुड़ा रहता है।",
+      specsTitle: "स्पेसिफ़िकेशन और मटीरियल की स्पष्टता",
+      passportTitle: "स्टोर पासपोर्ट और जुड़ी खोज",
+      visitVendorTemplate: "{vendor} पर जाएँ",
+      exploreCategoryTemplate: "{category} एक्सप्लोर करें",
+      seeBrandTemplate: "{brand} देखें",
+    },
+    related: {
+      kicker: "सेट पूरा करें",
+      title: "इसी ख़रीद-संदर्भ में और भी विकल्प।",
+      body: "रिकमेंडेशन रेल्स क्यूरेटेड और साफ़ रहती हैं, अनचाही पुश-सेल नहीं।",
+    },
+    reviews: {
+      kicker: "रिव्यू हाइलाइट्स",
+      title: "सत्यापित ख़रीद-सिग्नल, बेमतलब का शोर नहीं।",
+      verifiedPurchase: "सत्यापित ख़रीद",
+      reviewLabel: "रिव्यू",
+    },
+    rail: {
+      kicker: "ग्राहकों ने यह भी ख़रीदा",
+      headline: "अपनी जगह खोए बिना ब्राउज़ करते रहें।",
+      caption:
+        "को-पर्चेज़ और मिलते-जुलते कैटेगरी सिग्नल अगला तार्किक क़दम दिखाते हैं, ज़बरदस्ती की अपसेल नहीं।",
+      ctaLabel: "सर्च खोलें",
+    },
+  },
 };
 
 const IG: DeepPartial<MarketplacePublicCopy> = {
@@ -3977,6 +5172,60 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
       title: "Nkata gị ka tọgbọrọ chakoo.",
       body: "Tinye ihe ọsọ ọsọ site na kaadị ngwa ahịa, debe ihe maka mgbe ọzọ — nkata ga-anọgide na-emelite n'ime drawer mini na nkata zuru oke n'enweghị nlọghachi azụ.",
       ctaLabel: "Lelee ngwa ahịa",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Nsochi iwu — HenryCo Marketplace",
+      description:
+        "Soro akụkụ onye nke ọ bụla na-ere ahịa, mmelite ịkwụ ụgwọ, na ihe ndọrọ nsonye dị mkpa n'otu ebe. Escrow nọgide na-arụ ọrụ ruo mgbe a kwadoro nnyefe.",
+    },
+    hero: {
+      kicker: "Nsochi iwu",
+      titlePrefix: "Nsochi",
+      body: "Ìhè iwu kewara n'akụkụ na-anọgide na-apụta n'ebe a: akụkụ onye nke ọ bụla na-ere ahịa, mmelite ịkwụ ụgwọ na ihe ndọrọ nsonye nke ọ bụla nwere ahịrị nke ya, ka nkwado na atụmatụ onye na-azụ ahịa wee dabaa.",
+      orderValueLabel: "Uru iwu",
+      paymentLabel: "Ịkwụ ụgwọ",
+      payoutControlLabel: "Njikwa nkwụghachi ụgwọ",
+      payoutFrozen: "E kwụsịrị",
+      payoutEscrowActive: "Escrow na-arụ ọrụ",
+    },
+    paymentRecord: {
+      kicker: "Ndekọ ịkwụ ụgwọ",
+      walletBody: "E sitere n'akpa ego wepụ ego, iwu nọkwa n'escrow ruo mgbe nnyefe gachara.",
+      proofBody: "E tinyere ihe akaebe nke nkwụnye ego ka ndị na-elekọta ego HenryCo nyochaa ya.",
+      awaitingBody: "Ịkwụ ụgwọ na-eche ihe akaebe sitere n'aka ndị na-elekọta ego ma ọ bụ idokọ mgbe nnyefe ruru.",
+      methodLabel: "Ụzọ",
+      statusLabel: "Ọnọdụ",
+      proofLabel: "Akaebe",
+      viewProof: "Lelee akaebe",
+      walletDebit: "Mwepụ akpa ego",
+      pending: "Na-echere",
+    },
+    timeline: {
+      kicker: "Usoro oge",
+      title: "Ihe ndọrọ nsonye nke ndị ahịa na-ahụ, n'usoro.",
+    },
+    segments: {
+      kicker: "Akụkụ ndị na-ere ahịa",
+      title: "Onye nke ọ bụla na-ere ahịa na-aza maka mbufe nke ya.",
+      henrycoSegment: "Akụkụ HenryCo",
+      fulfillmentLabel: "Mbufe",
+      trackingLabel: "Nsochi",
+      payoutLabel: "Nkwụghachi ụgwọ",
+      trackingPending: "Na-echere",
+    },
+    completion: {
+      kicker: "Nkwado nke ngwụcha",
+      body: "Kwado mgwụcha mgbe iwu ahụ dị mma. HenryCo na-ahapụ nkwụghachi ụgwọ onye na-ere ahịa naanị mgbe a kwadoro nnyefe ma ọ bụ mgbe iwu ahụ ruru ihe ọkpụkpụ na-ahapụ onwe ya.",
+      confirmCta: "Kwado ngwụcha",
+    },
+    help: {
+      kicker: "Ịchọrọ enyemaka?",
+      title: "Esemokwu, nkwụghachi ego, na nchegbu nnyefe niile na-aga site n'otu eriri.",
+      body: "Mepee eriri nkwado nke nwere nọmba iwu a etinyere, ka onye nyere aka wee hụ usoro oge zuru oke na nkewa onye na-ere ahịa n'enweghị ka i depụta ya ọzọ.",
+      openSupportCta: "Mepee eriri nkwado",
+      viewAllOrdersCta: "Lelee iwu niile",
     },
   },
   deals: {
@@ -4337,6 +5586,72 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "Mepee",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} na HenryCo Marketplace — ngwaahịa anwapụtara, nbufe a tụkwasịrị obi na akwụkwọ ngafe onye na-ere ihe pụta ìhè tupu ịkwụ ụgwọ.",
+      fallbackDescription:
+        "Edemede anwapụtara na HenryCo Marketplace — akara ntụkwasị obi, doro anya nbufe na akwụkwọ ngafe onye na-ere ihe pụta ìhè tupu ịkwụ ụgwọ.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Ntụkwasị obi onye na-ere",
+      sellerTrustValueTemplate: "Akwụkwọ ngafe {vendor} pụta",
+      sellerTrustValueFallback: "Akwụkwọ ngafe onye na-ere ka na-eche",
+      availabilityLabel: "Ọnụnọ",
+      availabilityValueSingular: "{count} otu n'ụlọ ahịa ugbu a",
+      availabilityValuePlural: "{count} ihe n'ụlọ ahịa ugbu a",
+      fulfillmentLabel: "Nbufe",
+      paymentLabel: "Ịkwụ ụgwọ",
+      paymentValueCod: "Kwụọ ego mgbe e wepụtara ma ọ bụ mbufe anwapụtara",
+      paymentValueVerified: "Ụzọ mbufe anwapụtara",
+    },
+    price: {
+      label: "Ọnụ ahịa",
+      leadTimeLabel: "Oge nnyefe",
+    },
+    safety: {
+      kicker: "Ihe mere edemede a ji yie nke kwụsiri ike",
+      stockTemplate: "{count} ihe na-apụta na nchekwa ugbu a",
+      codEligible: "Ịkwụ ego mgbe e wepụtara dị mgbe ọ kwadoro",
+      codFallback: "Usoro nkwado n'aka dị",
+      vendorLinkedTemplate: "Ejikọrọ akwụkwọ ngafe {vendor} ozugbo site na peeji a",
+      vendorPending: "Akụkụ ntụkwasị obi onye na-ere ka chọrọ njikọ",
+      reviewsTemplateSingular: "{count} nyocha na ọkwa nkezi nke {rating}",
+      reviewsTemplatePlural: "{count} nyocha na ọkwa nkezi nke {rating}",
+    },
+    detail: {
+      kicker: "Nkọwa ngwaahịa",
+      title: "Ihe niile dị mkpa tupu ịkwụ ụgwọ.",
+      deliverySummaryTitle: "Nbufe, nkwado na nlekọta nke ọrụ gachara",
+      deliveryFallback: "A ga-akọwapụta oge nbufe na nkwụ ụgwọ.",
+      deliveryTail:
+        "Iwu ahịa na-anọgide na-eso ụzọ site n'ịkwụ ụgwọ ruo nnyefe, ndọrọ ndọrọ ma ọ bụ akwara nkwado nile na-ejide ndekọ otu iwu ahịa ahụ.",
+      specsTitle: "Nkọwa na mma nke ihe ejiri mee",
+      passportTitle: "Akwụkwọ ngafe ụlọ ahịa na mkpughe metụtara",
+      visitVendorTemplate: "Gaa {vendor}",
+      exploreCategoryTemplate: "Nyochaa {category}",
+      seeBrandTemplate: "Hụ {brand}",
+    },
+    related: {
+      kicker: "Mejupụta usoro ahụ",
+      title: "Ihe ndị ọzọ n'otu ọnọdụ ịzụ ahịa.",
+      body: "A na-elekọta usoro nkwanye ka ọ dị ọcha, ọ bụghị mkpọtụ mbukota.",
+    },
+    reviews: {
+      kicker: "Ihe pụtara ìhè na nyocha",
+      title: "Akara ịzụ ahịa anwapụtara, ọ bụghị mkpọtụ efu.",
+      verifiedPurchase: "Ịzụ ahịa anwapụtara",
+      reviewLabel: "Nyocha",
+    },
+    rail: {
+      kicker: "Ndị ahịa zụtakwara",
+      headline: "Gaa n'ihu ịchọ ihe na-atụfughị ebe i nọ.",
+      caption:
+        "Akara mmekọ ịzụ na otu ụdị na-eweta nzọụkwụ na-esote n'ụzọ doro anya, ọ bụghị mkpọtụ mbukota.",
+      ctaLabel: "Mepee nchọta",
+    },
+  },
 };
 
 const YO: DeepPartial<MarketplacePublicCopy> = {
@@ -4351,6 +5666,60 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
       title: "Apo ìrajà rẹ ṣì ṣófo.",
       body: "Fi nǹkan kún kíá láti orí káàdì ọjà, fi àwọn ohun pamọ́ fún ìgbà tó ń bọ̀ — apo ìrajà yóò máa wà ní ìmúdójúìwọ̀n nínú àpótí kéékèèkè àti nínú apo kíkún láìní àtúngbà ojú-ìwé.",
       ctaLabel: "Ṣàwárí àwọn ọjà",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Ìtọpinpin àṣẹ — HenryCo Marketplace",
+      description:
+        "Tọpinpin gbogbo apá olùtà, ìmúdójúìwọ̀n ìsanwó, àti àmì ìfijiṣẹ́ ní ibì kan náà. Escrow yóò máa wà títí di ìgbà tí a ó fi fìdí ìfijiṣẹ́ múlẹ̀.",
+    },
+    hero: {
+      kicker: "Ìtọpinpin àṣẹ",
+      titlePrefix: "Ìtọpinpin",
+      body: "Àlàyé tó mọ́ fún àwọn àṣẹ tí ó pín sí ọ̀pọ̀ yóò máa farahàn níbí: apá olùtà kọ̀ọ̀kan, ìmúdójúìwọ̀n ìsanwó kọ̀ọ̀kan, àti àmì ìfijiṣẹ́ kọ̀ọ̀kan ní ìlà tirẹ̀ kan, kí àtìlẹyìn àti ìfojúsọ́nà olùra wà ní ìlà kan náà.",
+      orderValueLabel: "Iye àṣẹ",
+      paymentLabel: "Ìsanwó",
+      payoutControlLabel: "Ìṣàkóso ìsanpadà",
+      payoutFrozen: "Ó dúró",
+      payoutEscrowActive: "Escrow ń ṣiṣẹ́",
+    },
+    paymentRecord: {
+      kicker: "Àkọsílẹ̀ ìsanwó",
+      walletBody: "A ti yọ owó kúrò nínú àpamọ́wọ́, àṣẹ náà sì wà nínú escrow títí ìfijiṣẹ́ yóò fi parí.",
+      proofBody: "A ti fi ẹ̀rí ìfìránṣẹ́ owó hàn fún àyẹ̀wò ẹgbẹ́ ìṣúná HenryCo.",
+      awaitingBody: "Ìsanwó ń dúró de ẹ̀rí ìṣúná tàbí ìbámu ní àkókò ìfijiṣẹ́.",
+      methodLabel: "Ọ̀nà",
+      statusLabel: "Ipò",
+      proofLabel: "Ẹ̀rí",
+      viewProof: "Wo ẹ̀rí",
+      walletDebit: "Yíyọ owó nínú àpamọ́wọ́",
+      pending: "Ó ń dúró",
+    },
+    timeline: {
+      kicker: "Ìṣẹ̀lẹ̀rí àkókò",
+      title: "Àwọn àmì tí olùra rí, nínú ètò.",
+    },
+    segments: {
+      kicker: "Apá olùtà",
+      title: "Olùtà kọ̀ọ̀kan ń jíhìn fún ìfìránṣẹ́ tirẹ̀.",
+      henrycoSegment: "Apá HenryCo",
+      fulfillmentLabel: "Ìfijiṣẹ́",
+      trackingLabel: "Ìtọpinpin",
+      payoutLabel: "Ìsanpadà",
+      trackingPending: "Ó ń dúró",
+    },
+    completion: {
+      kicker: "Ìfìdí ìparí múlẹ̀",
+      body: "Fìdí ìparí múlẹ̀ nígbà tí àṣẹ náà bá tẹ́ ọ lọ́rùn. HenryCo kì í tu ìsanpadà fún olùtà sílẹ̀ àfi lẹ́yìn tí a bá ti fìdí ìfijiṣẹ́ múlẹ̀ tàbí tí àṣẹ náà bá yẹ fún ìtusílẹ̀ alátọwọ́dá-fúnra-rẹ̀.",
+      confirmCta: "Fìdí ìparí múlẹ̀",
+    },
+    help: {
+      kicker: "Ṣé o nílò ìrànlọ́wọ́?",
+      title: "Awuyewuye, ìsanpadà àti ìṣòro ìfijiṣẹ́ máa ń gba ọ̀nà eriri kan náà.",
+      body: "Ṣí eriri àtìlẹyìn pẹ̀lú nọ́mbà àṣẹ yìí tí o so mọ́, kí àṣojú náà rí ìṣẹ̀lẹ̀rí àkókò gbogbo àti ìpín olùtà láìjẹ́ pé ó dà á kọ ọ̀rọ̀ rẹ ní ẹ̀ẹ̀kejì.",
+      openSupportCta: "Ṣí eriri àtìlẹyìn",
+      viewAllOrdersCta: "Wo gbogbo àṣẹ",
     },
   },
   deals: {
@@ -4711,6 +6080,72 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
       openLabel: "Ṣí",
     },
   },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} lórí HenryCo Marketplace — ọjà ti a fọwọ́ sí, ìfijíṣẹ́ tó gbára lé, àti àwòrán olùtàjà tó hàn kí o tó san owó.",
+      fallbackDescription:
+        "Àkọsílẹ̀ tí a fọwọ́ sí lórí HenryCo Marketplace — pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, kíkún ìfijíṣẹ́, àti àwòrán olùtàjà tó hàn kí o tó san owó.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Ìgbẹ́kẹ̀lé olùtàjà",
+      sellerTrustValueTemplate: "Àwòrán {vendor} hàn",
+      sellerTrustValueFallback: "Àwòrán olùtàjà ṣì ń dúró",
+      availabilityLabel: "Ìwà-ńlàá",
+      availabilityValueSingular: "{count} pisi nínú ọjà tó wà báyìí",
+      availabilityValuePlural: "{count} pisi nínú ọjà tó wà báyìí",
+      fulfillmentLabel: "Ìfijíṣẹ́",
+      paymentLabel: "Ìsanwó",
+      paymentValueCod: "Ìsanwó nígbà ìjíṣẹ́ tàbí ìfiránṣẹ́ owó tó wúlò",
+      paymentValueVerified: "Ìtẹ̀lé ìfiránṣẹ́ owó tó wúlò",
+    },
+    price: {
+      label: "Iye owó",
+      leadTimeLabel: "Àkókò ìjíṣẹ́",
+    },
+    safety: {
+      kicker: "Ìdí tí àkọsílẹ̀ yìí fi rí bí ó ṣe ní ààbò jù",
+      stockTemplate: "{count} pisi ń hàn nínú àkójọ ọjà báyìí",
+      codEligible: "Ìsanwó nígbà ìjíṣẹ́ wà níbi tí ó ti ṣeé ṣe",
+      codFallback: "Ọ̀nà ìmúdájú ọwọ́ ń wà fún ò",
+      vendorLinkedTemplate: "Àwòrán olùtàjà {vendor} ti so mọ́ ojú-ìwé yìí tààrà",
+      vendorPending: "Ìjápọ̀ àwòrán ìgbẹ́kẹ̀lé olùtàjà ṣì ń dúró",
+      reviewsTemplateSingular: "{count} àyẹ̀wò ní ìpíndọ́gba ìdíwọ̀n {rating}",
+      reviewsTemplatePlural: "{count} àyẹ̀wò ní ìpíndọ́gba ìdíwọ̀n {rating}",
+    },
+    detail: {
+      kicker: "Àlàyé ọjà",
+      title: "Gbogbo ohun tó ṣe pàtàkì kí o tó san owó.",
+      deliverySummaryTitle: "Ìfijíṣẹ́, àtìlẹ́yìn, àti ìtọ́jú lẹ́yìn àṣẹ rírà",
+      deliveryFallback: "A ó ṣe àlàyé àkókò ìjíṣẹ́ ní ìpín ìsanwó.",
+      deliveryTail:
+        "Àwọn àṣẹ rírà máa ń wà ní orí ọwọ́ láti ìsanwó dé ìjíṣẹ́, àti àwọn àríyànjiyàn tàbí ọ̀rọ̀ àtìlẹ́yìn ń so mọ́ àkọsílẹ̀ àṣẹ rírà kan náà.",
+      specsTitle: "Àwọn àlàyé àti ìmọ́lẹ̀ ohun èlò",
+      passportTitle: "Àwòrán ilé ìtajà àti àwọn àwárí tó jọmọ́",
+      visitVendorTemplate: "Lọ sí {vendor}",
+      exploreCategoryTemplate: "Ṣàwárí {category}",
+      seeBrandTemplate: "Wo {brand}",
+    },
+    related: {
+      kicker: "Mú àkójọ pé",
+      title: "Ohun mìíràn nínú ipò ọjà kan náà.",
+      body: "Àwọn ìtọ́sọ́nà máa ń jẹ́ tó dára àti tó mọ́, kì í ṣe ariwo títaja.",
+    },
+    reviews: {
+      kicker: "Àwọn àfojúsùn àyẹ̀wò",
+      title: "Àmì rírà tó wúlò, kì í ṣe ariwo lásán.",
+      verifiedPurchase: "Rírà tó wúlò",
+      reviewLabel: "Àyẹ̀wò",
+    },
+    rail: {
+      kicker: "Àwọn alábaramẹ́nu náà rà",
+      headline: "Tẹ̀síwájú ìwòye láìpẹ̀.",
+      caption:
+        "Àwọn àmì rírà àjọṣe àti àwọn ẹ̀ka tó sún mọ́lé ń mú igbésẹ̀ tó tẹ̀lé jáde, kò ní ariwo títaja àfikún.",
+      ctaLabel: "Ṣí ìṣàwárí",
+    },
+  },
 };
 
 const HA: DeepPartial<MarketplacePublicCopy> = {
@@ -4766,6 +6201,60 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
       title: "Kanti ɗinka har yanzu fanko ne.",
       body: "Ƙara cikin sauri daga katunan kaya, ajiye abubuwa don baya, kuma kanti zai ci gaba da sabuntawa a cikin ƙaramin kanti da kanti cikakke ba tare da sake loda shafi ba.",
       ctaLabel: "Bincika kayayyaki",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Bin diddigin oda — HenryCo Marketplace",
+      description:
+        "Bibi kowane sashe na mai sayarwa, sabuntawar biyan kuɗi, da matakin isarwa a wuri ɗaya. Escrow ya kasance a aiki har sai an tabbatar da isarwa.",
+    },
+    hero: {
+      kicker: "Bin diddigin oda",
+      titlePrefix: "Bin diddigi",
+      body: "Bayyana odar da aka raba a tsakanin masu sayarwa daban-daban tana ci gaba a nan: kowane sashe na mai sayarwa, sabuntawar biyan kuɗi, da matakin isarwa yana da nasa layi, don tallafi da fata na mai siye su zauna a layi ɗaya.",
+      orderValueLabel: "Darajar oda",
+      paymentLabel: "Biyan kuɗi",
+      payoutControlLabel: "Sarrafa biyan mai sayarwa",
+      payoutFrozen: "An daskare",
+      payoutEscrowActive: "Escrow yana aiki",
+    },
+    paymentRecord: {
+      kicker: "Bayanin biyan kuɗi",
+      walletBody: "An cire kuɗi daga walat, kuma odar tana cikin escrow har sai an isar da kayan.",
+      proofBody: "An haɗa hujjar canja wurin kuɗi don bita daga ƙungiyar kuɗi ta HenryCo.",
+      awaitingBody: "Biyan kuɗi yana jiran hujja daga ƙungiyar kuɗi ko daidaita lokacin isarwa.",
+      methodLabel: "Hanya",
+      statusLabel: "Matsayi",
+      proofLabel: "Hujja",
+      viewProof: "Duba hujja",
+      walletDebit: "Cirewa daga walat",
+      pending: "Yana jira",
+    },
+    timeline: {
+      kicker: "Jadawalin lokaci",
+      title: "Matakai da abokin ciniki zai gani, bisa tsari.",
+    },
+    segments: {
+      kicker: "Sassan masu sayarwa",
+      title: "Kowane mai sayarwa yana da alhakin nasa isarwar.",
+      henrycoSegment: "Sashen HenryCo",
+      fulfillmentLabel: "Isarwa",
+      trackingLabel: "Bin diddigi",
+      payoutLabel: "Biyan mai sayarwa",
+      trackingPending: "Yana jira",
+    },
+    completion: {
+      kicker: "Tabbatar da kammala",
+      body: "Tabbatar da kammalawa lokacin da oda ta ƙayatar. HenryCo na sakin biyan mai sayarwa ne kawai bayan an tabbatar da isarwa ko lokacin da odar ta cika ƙa'idodin sakin atomatik.",
+      confirmCta: "Tabbatar da kammala",
+    },
+    help: {
+      kicker: "Kana buƙatar taimako?",
+      title: "Jayayya, mayar da kuɗi, da damuwa kan isarwa, duka suna bi ta zare ɗaya.",
+      body: "Buɗe zaren tallafi tare da haɗa lambar wannan odar, don wakili ya ga cikakken jadawalin lokaci da rabewar masu sayarwa ba tare da ka sake rubuta su ba.",
+      openSupportCta: "Buɗe zaren tallafi",
+      viewAllOrdersCta: "Duba dukkan odoji",
     },
   },
   deals: {
@@ -5064,6 +6553,72 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
     ecosystem: {
       kicker: "Sarrafa kasuwa masu haɗuwa",
       openLabel: "Buɗe",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} a HenryCo Marketplace — ɗakin kaya da aka tabbatar, isar da kaya mai aminci, da fasfo na mai sayarwa duka a fili kafin biya.",
+      fallbackDescription:
+        "Tallar da aka tabbatar a HenryCo Marketplace — alamomin amana, ƙayyadaddun lokutan isarwa, da fasfo na mai sayarwa duk a fili kafin biya.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Amincin mai sayarwa",
+      sellerTrustValueTemplate: "Fasfon {vendor} a fili",
+      sellerTrustValueFallback: "Fasfon mai sayarwa na jiran kammalawa",
+      availabilityLabel: "Samuwa",
+      availabilityValueSingular: "{count} naúrar a cikin tarin yanzu",
+      availabilityValuePlural: "{count} naúrori a cikin tarin yanzu",
+      fulfillmentLabel: "Isar da kaya",
+      paymentLabel: "Biyan kuɗi",
+      paymentValueCod: "Biya yayin isarwa ko wuce gona da iri da aka tabbatar",
+      paymentValueVerified: "Tafarki na wucewa wanda aka tabbatar",
+    },
+    price: {
+      label: "Farashi",
+      leadTimeLabel: "Lokacin isarwa",
+    },
+    safety: {
+      kicker: "Me ya sa wannan tallar take ji aminci",
+      stockTemplate: "Naúrori {count} suna a fili a yanzu cikin sito",
+      codEligible: "Biya yayin isarwa yana samuwa inda aka tallafa",
+      codFallback: "Hanyar tabbatarwa ta hannu tana samuwa",
+      vendorLinkedTemplate: "Fasfon mai sayarwa na {vendor} yana da alaƙa kai tsaye daga shafin nan",
+      vendorPending: "Fuskar amincin mai sayarwa har yanzu tana jiran haɗawa",
+      reviewsTemplateSingular: "{count} sharhi a kan matsakaicin ƙimar {rating}",
+      reviewsTemplatePlural: "{count} sharhi a kan matsakaicin ƙimar {rating}",
+    },
+    detail: {
+      kicker: "Bayanin samfur",
+      title: "Duk abin da yake da muhimmanci kafin biya.",
+      deliverySummaryTitle: "Isar, tallafi, da kulawa bayan oda",
+      deliveryFallback: "Za a fayyace tagulla na isar a lokacin biya.",
+      deliveryTail:
+        "Odoji suna ci gaba da bibiya daga biya har zuwa isar da kaya, kuma jayayya ko zaren tallafi suna nan a haɗe da wannan tarihin odan.",
+      specsTitle: "Ƙayyadewa da bayyananniyar kayan ɗanyu",
+      passportTitle: "Fasfon kanti da gano alaƙa",
+      visitVendorTemplate: "Ziyarci {vendor}",
+      exploreCategoryTemplate: "Bincika {category}",
+      seeBrandTemplate: "Duba {brand}",
+    },
+    related: {
+      kicker: "Cika saiti",
+      title: "Ƙarin daga wannan yanayin sayan.",
+      body: "Layukan shawarwari suna tsabta da kulawa, ba surutun ƙarin sayarwa ba.",
+    },
+    reviews: {
+      kicker: "Manyan sharhi",
+      title: "Alamun sayan da aka tabbatar, ba ƙarin surutu ba.",
+      verifiedPurchase: "Sayan da aka tabbatar",
+      reviewLabel: "Sharhi",
+    },
+    rail: {
+      kicker: "Abokan ciniki sun kuma saya",
+      headline: "Ci gaba da bincike ba tare da rasa wurin ka ba.",
+      caption:
+        "Alamomin haɗin gwiwa da kuma kusan rukuni iri ɗaya suna fitar da matakin gaba a fili, ba ƙarin tallace-tallace ba.",
+      ctaLabel: "Buɗe bincike",
     },
   },
 };
