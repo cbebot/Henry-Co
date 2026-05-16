@@ -135,12 +135,16 @@ export function SettingsHero({ profile, preferences }: Props) {
                     style={{ color: `var(${DIVISION_ACCENT_VAR[key]})` }}
                   >
                     <span className="acct-settings__div-dot" aria-hidden />
-                    <span
-                      style={{
-                        color:
-                          "color-mix(in srgb, var(--acct-bg-soft) 88%, transparent)",
-                      }}
-                    >
+                    {/* Override the parent's accent color back to the
+                        natural foreground so the division name stays
+                        readable in both modes. Previously used
+                        bg-soft@88% which renders as near-black text in
+                        dark mode (bg-soft is #141920 there) — fine —
+                        but as near-white text in light mode against a
+                        page that was already light. Switched to
+                        --acct-ink for clean fg-on-page contrast in
+                        both modes. */}
+                    <span style={{ color: "var(--acct-ink)" }}>
                       {DIVISION_LABEL[key]}
                     </span>
                   </span>
