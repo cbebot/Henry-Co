@@ -465,6 +465,105 @@
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   Mobile thin-bar enforcement — last-in-source !important guard.
+
+   The earlier mobile block (`@media (max-width: 767px)` near the top
+   of this file) sets display:none on pills / meta / participants,
+   shrinks the subject, and turns the header into a single-row bar.
+   On production the desktop rules later in the source file were
+   winning that battle on equal specificity, because last-in-source
+   wins on ties and the desktop rules came after the mobile ones.
+
+   This trailing media query is the SAME mobile collapse re-stated at
+   the very end of the file with `!important` so it cannot lose
+   regardless of:
+     - other rules added later in the cascade
+     - browser style-cache discrepancies
+     - host-app CSS loading order
+
+   Anything visible in the earlier block stays; this re-states only
+   the rules that need to definitively win the layout battle. */
+
+@media (max-width: 767px) {
+  .acct-support-stage {
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+  .acct-support-stage > .acct-support-back {
+    display: none !important;
+  }
+  .acct-thread-header {
+    padding: 0.4rem 0.55rem 0.4rem 0.4rem !important;
+    border-radius: 0 !important;
+    gap: 0.5rem !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    border: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink)) !important;
+    box-shadow: none !important;
+  }
+  .acct-thread-header__mobile-back {
+    display: inline-flex !important;
+  }
+  .acct-thread-header__pills,
+  .acct-thread-header__meta,
+  .acct-thread-header .mt-participants {
+    display: none !important;
+  }
+  .acct-thread-header__primary {
+    gap: 0.05rem !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding-right: 0.25rem !important;
+  }
+  .acct-thread-header__subject {
+    font-size: 0.95rem !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    font-weight: 700 !important;
+    color: var(--acct-ink) !important;
+    font-family: var(--acct-font-sans, system-ui, sans-serif) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    -webkit-line-clamp: 1 !important;
+    line-clamp: 1 !important;
+    display: block !important;
+  }
+  .acct-thread-header__mobile-subtitle {
+    display: inline-flex !important;
+  }
+  .acct-thread-header__actions > :not(.mt-customize):not(.acct-thread-header__menu),
+  .acct-thread-header__actions > .mt-customize {
+    display: none !important;
+  }
+  .acct-thread-header__actions {
+    gap: 0 !important;
+    margin-left: auto !important;
+    align-self: center !important;
+  }
+  .acct-support-room .mt-thread {
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+  }
+  /* Pin the message list to the TOP when content is shorter than the
+     viewport — otherwise short threads sit at the bottom of the
+     min-height area leaving a void above. justify-content:flex-start
+     on the inner ul guarantees the first message sits flush against
+     the top fade, with the composer below. */
+  .acct-support-room .mt-thread-list {
+    padding-top: 0.6rem !important;
+  }
+  .acct-support-room .mt-thread-list-inner {
+    justify-content: flex-start !important;
+  }
+}
+
 .acct-thread-header__primary {
   display: flex;
   flex-direction: column;
