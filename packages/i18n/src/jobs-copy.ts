@@ -1726,6 +1726,51 @@ const YO: DeepPartial<JobsCopy> = {
     statusFlagged: "Tí a sàmì sí",
     statusDraft: "Àkọpamọ́",
   },
+  candidateProfile: {
+    pageTitle: "Profaili Olùbẹ̀wẹ̀",
+    pageSubtitle:
+      "Jẹ́ kí profaili rẹ pé kí àwọn agbanisíṣẹ́ rí ọ̀nà tó dára jùlọ tó o lè fihàn.",
+    rightRailTrustTitle: "Ìgbẹ́kẹ̀lé profaili",
+    rightRailVerificationKicker: "Ìdánilójú",
+    rightRailDefaultReadiness:
+      "Pari profaili rẹ kí ó lè dára sí i bí àwọn agbanisíṣẹ́ ṣe ń wo àwọn ìbéèrè rẹ.",
+    rightRailOpenVerification: "Ṣí ìdánilójú akọọlẹ",
+    rightRailDocumentsTitle: "Àwọn àkọsílẹ̀",
+    rightRailDocumentsCountSingular: "A gbé fáìlì {count} kalẹ̀ sí profaili rẹ.",
+    rightRailDocumentsCountPlural: "A gbé fáìlì {count} kalẹ̀ sí profaili rẹ.",
+    rightRailDocumentsHint:
+      "Àwọn ọgbọ́n, ìtàn iṣẹ́, àti àwọn ìjápọ̀ àkójọ iṣẹ́ ń ràn àwọn agbanisíṣẹ́ lọ́wọ́ láti ṣàyẹ̀wò àwọn ìbéèrè rẹ.",
+    statusVerified: "Tí a dánilójú",
+    statusPending: "N duro",
+    statusRejected: "Tí a kọ̀",
+    statusUnverified: "Aì dánilójú",
+    savedNoticeTitle: "A pa profaili mọ́",
+    savedNoticeBody:
+      "A ti ṣe àtúnṣe profaili rẹ. Àwọn ìyípadà han fún àwọn agbanisíṣẹ́ nígbà tí o bá ń bẹ̀rẹ̀ ìbéèrè.",
+    draftSectionTitle: "Àkọpamọ́ profaili",
+    draftSectionBody:
+      "Àwọn ìyípadà tí ó wà lọ́wọ́lọ́wọ́ ń pa ara wọn mọ́ ní gbogbo ìṣẹ́jú 30 àti nígbà tí o bá kúrò ní ààyè. Tẹ ‘Pa profaili mọ́’ nísàlẹ̀ láti tẹ̀jáde.",
+    editSectionTitle: "Ṣàtúnṣe profaili rẹ",
+    editSectionBody:
+      "Àwọn ẹ̀kúnrẹ́rẹ́ iṣẹ́ níhìn-ín han fún àwọn agbanisíṣẹ́ nígbà tí o bá ń bẹ̀rẹ̀ ìbéèrè fún ipa. HenryCo ní fóònù àti ímẹ̀ìlì rẹ fún ìdánilójú àti àmì ìgbẹ́kẹ̀lé nìkan — kì í ṣe fún àwọn agbanisíṣẹ́.",
+    fieldFullNamePlaceholder: "Orúkọ kíkún",
+    fieldHeadlinePlaceholder: "Àkọ́sórí",
+    fieldSummaryPlaceholder: "Àkópọ̀ iṣẹ́",
+    fieldLocationPlaceholder: "Ibi tí o wà",
+    fieldTimezonePlaceholder: "Agbègbè àkókò",
+    fieldWorkModesPlaceholder: "látòkèèrè, àdàlú, ní ọ́físì",
+    fieldRoleTypesPlaceholder: "àkókò kíkún, àdéhùn",
+    fieldPreferredFunctionsPlaceholder: "Ọjà, Iṣiṣẹ́, Títanìkàlẹ̀",
+    fieldSkillsPlaceholder: "Àwọn ọgbọ́n",
+    fieldPortfolioLinksPlaceholder: "Àwọn ìjápọ̀ àkójọ iṣẹ́",
+    fieldSalaryExpectationPlaceholder: "Owó-oṣù tí a ń retí",
+    fieldAvailabilityPlaceholder: "Wíwà",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Olórí iṣẹ́"}]',
+    fieldEducationPlaceholder: '[{"school":"Yunifásítì","degree":"BSc"}]',
+    fieldCertificationsPlaceholder: '[{"name":"Ìṣàkóso iṣẹ́"}]',
+    submitSaving: "Ń pa profaili mọ́...",
+    submitLabel: "Pa profaili olùbẹ̀wẹ̀ mọ́",
+  },
 };
 
 const HA: DeepPartial<JobsCopy> = {
@@ -1871,6 +1916,51 @@ const HA: DeepPartial<JobsCopy> = {
     statusPendingReview: "Ana jiran tantancewa",
     statusFlagged: "An yiwa alama",
     statusDraft: "Zane",
+  },
+  candidateProfile: {
+    pageTitle: "Bayanin Mai Nema",
+    pageSubtitle:
+      "Ka cika bayanin ka don ma'aikata su ga mafi kyawun siffarka.",
+    rightRailTrustTitle: "Amincin bayanin",
+    rightRailVerificationKicker: "Tantancewa",
+    rightRailDefaultReadiness:
+      "Ka cika bayanin ka don inganta yadda ma'aikata suke duba aikace-aikacenka.",
+    rightRailOpenVerification: "Buɗe tantance asusu",
+    rightRailDocumentsTitle: "Takardu",
+    rightRailDocumentsCountSingular: "An ɗora fayil {count} a bayanin ka.",
+    rightRailDocumentsCountPlural: "An ɗora fayiloli {count} a bayanin ka.",
+    rightRailDocumentsHint:
+      "Ƙwarewa, tarihin aiki, da hanyoyin haɗin fayil suna taimaka wa ma'aikata su tantance aikace-aikacenka.",
+    statusVerified: "An tantance",
+    statusPending: "Ana jira",
+    statusRejected: "An ƙi",
+    statusUnverified: "Ba a tantance ba",
+    savedNoticeTitle: "An adana bayanin",
+    savedNoticeBody:
+      "An sabunta bayanin ka. Canje-canjen suna bayyana ga ma'aikata yayin da kake nema.",
+    draftSectionTitle: "Daftarin bayanin",
+    draftSectionBody:
+      "Canje-canjen da ake yi yanzu suna adana kansu kowane sakan 30 da lokacin da ka bar maɓallin. Danna ‘Adana bayanin’ a ƙasa don wallafa.",
+    editSectionTitle: "Gyara bayanin ka",
+    editSectionBody:
+      "Bayanan sana'a a nan suna bayyana ga ma'aikata lokacin da kake neman ayyuka. HenryCo na riƙe da waya da imel don tantancewa da kimar amincewa kawai — ba a aika su ga ma'aikata ba.",
+    fieldFullNamePlaceholder: "Cikakken suna",
+    fieldHeadlinePlaceholder: "Kanun bayani",
+    fieldSummaryPlaceholder: "Taƙaitaccen sana'a",
+    fieldLocationPlaceholder: "Wuri",
+    fieldTimezonePlaceholder: "Yankin lokaci",
+    fieldWorkModesPlaceholder: "nesa, hadi, a ofis",
+    fieldRoleTypesPlaceholder: "cikakken lokaci, kwangila",
+    fieldPreferredFunctionsPlaceholder: "Samfuri, Ayyuka, Talla",
+    fieldSkillsPlaceholder: "Ƙwarewa",
+    fieldPortfolioLinksPlaceholder: "Hanyoyin haɗin fayil",
+    fieldSalaryExpectationPlaceholder: "Albashin da ake tsammanin",
+    fieldAvailabilityPlaceholder: "Samuwa",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Jagoran ayyuka"}]',
+    fieldEducationPlaceholder: '[{"school":"Jami\'a","degree":"BSc"}]',
+    fieldCertificationsPlaceholder: '[{"name":"Gudanar da ayyuka"}]',
+    submitSaving: "Ana adana bayani...",
+    submitLabel: "Adana bayanin mai nema",
   },
 };
 
@@ -2018,6 +2108,51 @@ const DE: DeepPartial<JobsCopy> = {
     statusFlagged: "Markiert",
     statusDraft: "Entwurf",
   },
+  candidateProfile: {
+    pageTitle: "Bewerberprofil",
+    pageSubtitle:
+      "Halten Sie Ihr Profil vollständig, damit Arbeitgeber die beste Version von Ihnen sehen.",
+    rightRailTrustTitle: "Profilvertrauen",
+    rightRailVerificationKicker: "Verifizierung",
+    rightRailDefaultReadiness:
+      "Vervollständigen Sie Ihr Profil, um die Wahrnehmung Ihrer Bewerbungen durch Arbeitgeber zu verbessern.",
+    rightRailOpenVerification: "Kontoverifizierung öffnen",
+    rightRailDocumentsTitle: "Dokumente",
+    rightRailDocumentsCountSingular: "{count} Datei in Ihr Profil hochgeladen.",
+    rightRailDocumentsCountPlural: "{count} Dateien in Ihr Profil hochgeladen.",
+    rightRailDocumentsHint:
+      "Fähigkeiten, Berufserfahrung und Portfolio-Links helfen Arbeitgebern, Ihre Bewerbungen zu bewerten.",
+    statusVerified: "Verifiziert",
+    statusPending: "Ausstehend",
+    statusRejected: "Abgelehnt",
+    statusUnverified: "Nicht verifiziert",
+    savedNoticeTitle: "Profil gespeichert",
+    savedNoticeBody:
+      "Ihr Profil wurde aktualisiert. Änderungen sind für Arbeitgeber sichtbar, wenn Sie sich bewerben.",
+    draftSectionTitle: "Profilentwurf",
+    draftSectionBody:
+      "Laufende Änderungen werden alle 30 Sekunden und beim Verlassen des Feldes automatisch gespeichert. Drücken Sie unten auf „Profil speichern“, um zu veröffentlichen.",
+    editSectionTitle: "Profil bearbeiten",
+    editSectionBody:
+      "Berufliche Angaben hier sind für Arbeitgeber sichtbar, wenn Sie sich auf Stellen bewerben. Telefon und E-Mail werden von HenryCo nur zur Verifizierung und Vertrauensbewertung gespeichert — sie werden nicht an Arbeitgeber weitergegeben.",
+    fieldFullNamePlaceholder: "Vollständiger Name",
+    fieldHeadlinePlaceholder: "Schlagzeile",
+    fieldSummaryPlaceholder: "Berufliche Zusammenfassung",
+    fieldLocationPlaceholder: "Standort",
+    fieldTimezonePlaceholder: "Zeitzone",
+    fieldWorkModesPlaceholder: "remote, hybrid, vor Ort",
+    fieldRoleTypesPlaceholder: "Vollzeit, Vertrag",
+    fieldPreferredFunctionsPlaceholder: "Produkt, Operations, Marketing",
+    fieldSkillsPlaceholder: "Fähigkeiten",
+    fieldPortfolioLinksPlaceholder: "Portfolio-Links",
+    fieldSalaryExpectationPlaceholder: "Gehaltsvorstellung",
+    fieldAvailabilityPlaceholder: "Verfügbarkeit",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Operations-Leiter"}]',
+    fieldEducationPlaceholder: '[{"school":"Universität","degree":"BSc"}]',
+    fieldCertificationsPlaceholder: '[{"name":"Projektmanagement"}]',
+    submitSaving: "Profil wird gespeichert...",
+    submitLabel: "Bewerberprofil speichern",
+  },
 };
 
 const ZH: DeepPartial<JobsCopy> = {
@@ -2151,6 +2286,46 @@ const ZH: DeepPartial<JobsCopy> = {
     statusPendingReview: "审核中",
     statusFlagged: "已标记",
     statusDraft: "草稿",
+  },
+  candidateProfile: {
+    pageTitle: "候选人资料",
+    pageSubtitle: "保持资料完整，让雇主看到最好的你。",
+    rightRailTrustTitle: "资料信任度",
+    rightRailVerificationKicker: "认证",
+    rightRailDefaultReadiness: "完善资料以提升雇主对你申请的评价。",
+    rightRailOpenVerification: "打开账户认证",
+    rightRailDocumentsTitle: "文件",
+    rightRailDocumentsCountSingular: "已上传 {count} 个文件至你的资料。",
+    rightRailDocumentsCountPlural: "已上传 {count} 个文件至你的资料。",
+    rightRailDocumentsHint: "技能、工作经历和作品集链接有助于雇主评估你的申请。",
+    statusVerified: "已认证",
+    statusPending: "待处理",
+    statusRejected: "已拒绝",
+    statusUnverified: "未认证",
+    savedNoticeTitle: "资料已保存",
+    savedNoticeBody: "你的资料已更新。申请时雇主可见这些更改。",
+    draftSectionTitle: "资料草稿",
+    draftSectionBody: "进行中的更改每 30 秒以及失去焦点时自动保存。点击下方“保存资料”发布。",
+    editSectionTitle: "编辑资料",
+    editSectionBody:
+      "此处的职业信息在你申请职位时对雇主可见。电话和邮箱仅由 HenryCo 用于认证和信任评分 — 不会传递给雇主。",
+    fieldFullNamePlaceholder: "全名",
+    fieldHeadlinePlaceholder: "标题",
+    fieldSummaryPlaceholder: "职业简介",
+    fieldLocationPlaceholder: "所在地",
+    fieldTimezonePlaceholder: "时区",
+    fieldWorkModesPlaceholder: "远程、混合、现场",
+    fieldRoleTypesPlaceholder: "全职、合同",
+    fieldPreferredFunctionsPlaceholder: "产品、运营、市场",
+    fieldSkillsPlaceholder: "技能",
+    fieldPortfolioLinksPlaceholder: "作品集链接",
+    fieldSalaryExpectationPlaceholder: "期望薪资",
+    fieldAvailabilityPlaceholder: "可用时间",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"运营主管"}]',
+    fieldEducationPlaceholder: '[{"school":"大学","degree":"学士"}]',
+    fieldCertificationsPlaceholder: '[{"name":"项目管理"}]',
+    submitSaving: "正在保存资料...",
+    submitLabel: "保存候选人资料",
   },
 };
 
@@ -2298,6 +2473,51 @@ const HI: DeepPartial<JobsCopy> = {
     statusFlagged: "चिह्नित",
     statusDraft: "मसौदा",
   },
+  candidateProfile: {
+    pageTitle: "उम्मीदवार प्रोफ़ाइल",
+    pageSubtitle:
+      "अपनी प्रोफ़ाइल पूरी रखें ताकि नियोक्ता आपका सर्वोत्तम रूप देख सकें.",
+    rightRailTrustTitle: "प्रोफ़ाइल विश्वसनीयता",
+    rightRailVerificationKicker: "सत्यापन",
+    rightRailDefaultReadiness:
+      "अपनी प्रोफ़ाइल पूरी करें ताकि नियोक्ता आपके आवेदनों को बेहतर तरीके से देखें.",
+    rightRailOpenVerification: "खाता सत्यापन खोलें",
+    rightRailDocumentsTitle: "दस्तावेज़",
+    rightRailDocumentsCountSingular: "{count} फ़ाइल आपकी प्रोफ़ाइल पर अपलोड की गई.",
+    rightRailDocumentsCountPlural: "{count} फ़ाइलें आपकी प्रोफ़ाइल पर अपलोड की गईं.",
+    rightRailDocumentsHint:
+      "कौशल, कार्य इतिहास और पोर्टफ़ोलियो लिंक नियोक्ताओं को आपके आवेदनों का मूल्यांकन करने में मदद करते हैं.",
+    statusVerified: "सत्यापित",
+    statusPending: "लंबित",
+    statusRejected: "अस्वीकृत",
+    statusUnverified: "असत्यापित",
+    savedNoticeTitle: "प्रोफ़ाइल सहेजी गई",
+    savedNoticeBody:
+      "आपकी प्रोफ़ाइल अपडेट कर दी गई है. आवेदन करते समय बदलाव नियोक्ताओं को दिखाई देते हैं.",
+    draftSectionTitle: "प्रोफ़ाइल मसौदा",
+    draftSectionBody:
+      "चल रहे बदलाव हर 30 सेकंड और फ़ोकस खोने पर स्वतः सहेजे जाते हैं. प्रकाशित करने के लिए नीचे ‘प्रोफ़ाइल सहेजें’ दबाएँ.",
+    editSectionTitle: "अपनी प्रोफ़ाइल संपादित करें",
+    editSectionBody:
+      "यहाँ की पेशेवर जानकारी आवेदन करते समय नियोक्ताओं को दिखाई देती है. फ़ोन और ईमेल HenryCo केवल सत्यापन और विश्वास स्कोरिंग के लिए रखता है — इन्हें नियोक्ताओं को नहीं भेजा जाता.",
+    fieldFullNamePlaceholder: "पूरा नाम",
+    fieldHeadlinePlaceholder: "शीर्षक",
+    fieldSummaryPlaceholder: "पेशेवर सारांश",
+    fieldLocationPlaceholder: "स्थान",
+    fieldTimezonePlaceholder: "समय क्षेत्र",
+    fieldWorkModesPlaceholder: "रिमोट, हाइब्रिड, ऑनसाइट",
+    fieldRoleTypesPlaceholder: "पूर्णकालिक, अनुबंध",
+    fieldPreferredFunctionsPlaceholder: "उत्पाद, संचालन, मार्केटिंग",
+    fieldSkillsPlaceholder: "कौशल",
+    fieldPortfolioLinksPlaceholder: "पोर्टफ़ोलियो लिंक",
+    fieldSalaryExpectationPlaceholder: "वेतन अपेक्षा",
+    fieldAvailabilityPlaceholder: "उपलब्धता",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"संचालन प्रमुख"}]',
+    fieldEducationPlaceholder: '[{"school":"विश्वविद्यालय","degree":"BSc"}]',
+    fieldCertificationsPlaceholder: '[{"name":"परियोजना प्रबंधन"}]',
+    submitSaving: "प्रोफ़ाइल सहेजी जा रही है...",
+    submitLabel: "उम्मीदवार प्रोफ़ाइल सहेजें",
+  },
 };
 
 const IT: DeepPartial<JobsCopy> = {
@@ -2443,6 +2663,51 @@ const IT: DeepPartial<JobsCopy> = {
     "statusPendingReview": "In revisione",
     "statusFlagged": "Segnalato",
     "statusDraft": "Bozza"
+  },
+  "candidateProfile": {
+    "pageTitle": "Profilo del candidato",
+    "pageSubtitle":
+      "Mantieni il tuo profilo completo affinché i datori di lavoro vedano la versione migliore di te.",
+    "rightRailTrustTitle": "Affidabilità del profilo",
+    "rightRailVerificationKicker": "Verifica",
+    "rightRailDefaultReadiness":
+      "Completa il tuo profilo per migliorare il modo in cui i datori di lavoro vedono le tue candidature.",
+    "rightRailOpenVerification": "Apri la verifica dell'account",
+    "rightRailDocumentsTitle": "Documenti",
+    "rightRailDocumentsCountSingular": "{count} file caricato sul tuo profilo.",
+    "rightRailDocumentsCountPlural": "{count} file caricati sul tuo profilo.",
+    "rightRailDocumentsHint":
+      "Competenze, storia professionale e link del portfolio aiutano i datori di lavoro a valutare le tue candidature.",
+    "statusVerified": "Verificato",
+    "statusPending": "In sospeso",
+    "statusRejected": "Rifiutato",
+    "statusUnverified": "Non verificato",
+    "savedNoticeTitle": "Profilo salvato",
+    "savedNoticeBody":
+      "Il tuo profilo è stato aggiornato. Le modifiche sono visibili ai datori di lavoro quando ti candidi.",
+    "draftSectionTitle": "Bozza del profilo",
+    "draftSectionBody":
+      "Le modifiche in corso si salvano automaticamente ogni 30 secondi e quando perdi il focus. Premi «Salva profilo» qui sotto per pubblicare.",
+    "editSectionTitle": "Modifica il tuo profilo",
+    "editSectionBody":
+      "I dettagli professionali qui sono visibili ai datori di lavoro quando ti candidi per un ruolo. Telefono ed e-mail sono conservati da HenryCo solo per verifica e punteggio di affidabilità — non vengono trasmessi ai datori di lavoro.",
+    "fieldFullNamePlaceholder": "Nome completo",
+    "fieldHeadlinePlaceholder": "Titolo",
+    "fieldSummaryPlaceholder": "Riepilogo professionale",
+    "fieldLocationPlaceholder": "Località",
+    "fieldTimezonePlaceholder": "Fuso orario",
+    "fieldWorkModesPlaceholder": "remoto, ibrido, in sede",
+    "fieldRoleTypesPlaceholder": "tempo pieno, contratto",
+    "fieldPreferredFunctionsPlaceholder": "Prodotto, Operazioni, Marketing",
+    "fieldSkillsPlaceholder": "Competenze",
+    "fieldPortfolioLinksPlaceholder": "Link del portfolio",
+    "fieldSalaryExpectationPlaceholder": "Aspettativa salariale",
+    "fieldAvailabilityPlaceholder": "Disponibilità",
+    "fieldWorkHistoryPlaceholder": "[{\"company\":\"HenryCo\",\"title\":\"Responsabile operazioni\"}]",
+    "fieldEducationPlaceholder": "[{\"school\":\"Università\",\"degree\":\"BSc\"}]",
+    "fieldCertificationsPlaceholder": "[{\"name\":\"Project Management\"}]",
+    "submitSaving": "Salvataggio profilo...",
+    "submitLabel": "Salva profilo del candidato"
   }
 };
 
