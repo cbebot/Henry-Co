@@ -192,6 +192,24 @@ export type JobsCopy = {
     statusPaused: string;
     statusClosed: string;
   };
+  employerHiringPipeline: {
+    subtitleSingular: string;
+    subtitlePlural: string;
+    stagesOverviewTitle: string;
+    stagesOverviewBody: string;
+    kanbanTitle: string;
+    kanbanBody: string;
+    backToPipelines: string;
+    emptyApplications: string;
+    applicantIndexTitle: string;
+    applicantIndexBody: string;
+    stageLabel: string;
+    moveToAria: string;
+    statusActive: string;
+    statusWithdrawn: string;
+    statusRejected: string;
+    statusHired: string;
+  };
   employerCompany: {
     pageTitle: string;
     pageSubtitle: string;
@@ -548,6 +566,27 @@ const EN: JobsCopy = {
     statusPaused: "Paused",
     statusClosed: "Closed",
   },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "{count} applicant in this hiring pipeline. Review candidates, manage stages, and coordinate interviews.",
+    subtitlePlural:
+      "{count} applicants in this hiring pipeline. Review candidates, manage stages, and coordinate interviews.",
+    stagesOverviewTitle: "Pipeline stages",
+    stagesOverviewBody: "Stages configured for this role.",
+    kanbanTitle: "Pipeline kanban",
+    kanbanBody:
+      "Drag applicants between stages. Changes save immediately and roll back if the server rejects the move.",
+    backToPipelines: "Back to pipelines",
+    emptyApplications: "No applications received yet.",
+    applicantIndexTitle: "Applicant index",
+    applicantIndexBody: "Click any applicant to open the full review surface.",
+    stageLabel: "Stage",
+    moveToAria: "Move applicant to stage",
+    statusActive: "Active",
+    statusWithdrawn: "Withdrawn",
+    statusRejected: "Rejected",
+    statusHired: "Hired",
+  },
   employerCompany: {
     pageTitle: "Company Profile",
     pageSubtitle: "Set up your company profile so candidates can learn about your team.",
@@ -799,6 +838,27 @@ const FR: DeepPartial<JobsCopy> = {
     statusPaused: "En pause",
     statusClosed: "Clôturé",
   },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "{count} candidat dans ce pipeline de recrutement. Examinez les candidats, gérez les étapes et coordonnez les entretiens.",
+    subtitlePlural:
+      "{count} candidats dans ce pipeline de recrutement. Examinez les candidats, gérez les étapes et coordonnez les entretiens.",
+    stagesOverviewTitle: "Étapes du pipeline",
+    stagesOverviewBody: "Étapes configurées pour ce poste.",
+    kanbanTitle: "Kanban du pipeline",
+    kanbanBody:
+      "Faites glisser les candidats entre les étapes. Les modifications sont enregistrées immédiatement et annulées si le serveur les refuse.",
+    backToPipelines: "Retour aux pipelines",
+    emptyApplications: "Aucune candidature reçue pour le moment.",
+    applicantIndexTitle: "Index des candidats",
+    applicantIndexBody: "Cliquez sur un candidat pour ouvrir la fiche complète.",
+    stageLabel: "Étape",
+    moveToAria: "Déplacer le candidat vers une étape",
+    statusActive: "Actif",
+    statusWithdrawn: "Retiré",
+    statusRejected: "Refusé",
+    statusHired: "Embauché",
+  },
   employerCompany: {
     pageTitle: "Profil de l'entreprise",
     pageSubtitle:
@@ -978,6 +1038,71 @@ const FR: DeepPartial<JobsCopy> = {
     activityEmptyBody:
       "Les changements d'étape, les notes et les mises à jour clés apparaîtront ici au fil du processus de recrutement.",
   },
+  employerJobNew: {
+    pageTitle: "Publier un poste",
+    pageSubtitle: "Créez une nouvelle offre d'emploi pour votre entreprise.",
+    rightRailCompanyTitle: "Votre entreprise",
+    rightRailEmployerKicker: "Employeur",
+    rightRailVerificationFallback: "en attente",
+    rightRailRoleCountSingular: "{count} poste actuellement publié sous cette entreprise.",
+    rightRailRoleCountPlural: "{count} postes actuellement publiés sous cette entreprise.",
+    rightRailTipsTitle: "Conseils pour de meilleures annonces",
+    rightRailTipSummaries:
+      "Des résumés clairs et des responsabilités structurées attirent des candidats plus solides.",
+    rightRailTipSalaryBenefits:
+      "Indiquer la fourchette salariale et les avantages améliore la qualité des candidatures.",
+    rightRailReadinessTitle: "Préparation à la publication",
+    rightRailAccountTierKicker: "Niveau de compte",
+    rightRailAccountTierBody:
+      "Vos droits de publication dépendent du statut de vérification de votre entreprise et de l'historique de votre compte.",
+    rightRailChecklistReady: "prêt",
+    rightRailChecklistOpen: "à faire",
+    noMembershipSectionTitle: "Profil d'entreprise requis",
+    noMembershipSectionBody: "Configurez votre profil d'entreprise avant de publier des postes.",
+    noMembershipEmptyKicker: "Une étape de plus",
+    noMembershipEmptyTitle: "Créez d'abord le profil de votre entreprise.",
+    noMembershipEmptyBody:
+      "Votre profil d'entreprise est nécessaire pour que les candidats découvrent votre équipe et que vos postes apparaissent sous le bon employeur.",
+    noMembershipEmptyCta: "Ouvrir la configuration de l'entreprise",
+    formSectionTitle: "Créer un nouveau poste",
+    formSectionBody:
+      "Remplissez les détails ci-dessous. Les nouvelles annonces peuvent passer par une courte revue avant publication.",
+    subscriptionRequiredTitle: "Abonnement requis pour publier",
+    subscriptionRequiredBodyTemplate:
+      "Votre abonnement employeur est «{status}». La publication est bloquée tant qu'un abonnement actif n'est pas en place. Contactez l'équipe HenryCo pour renouveler avant de publier.",
+    subscriptionPendingTitle: "Abonnement en attente",
+    subscriptionPendingBody:
+      "La publication de postes nécessitera un abonnement employeur actif une fois la facturation déployée. Vous pouvez publier aujourd'hui ; attendez-vous à un suivi de l'équipe HenryCo concernant le choix du plan.",
+    verificationGateBodySuffix: "La publication d'offres reste bloquée tant que cette vérification n'est pas approuvée.",
+    directPublishingTitle: "Publication directe disponible",
+    directPublishingBody:
+      "Votre compte peut publier des postes directement. Ils seront en ligne dès l'envoi.",
+    reviewRequiredTitle: "Revue requise",
+    reviewRequiredBody:
+      "Les nouveaux postes seront vérifiés par notre équipe avant publication. Cela prend généralement quelques heures.",
+    draftOnlyTitle: "Brouillon uniquement",
+    draftOnlyBody:
+      "Vous pouvez préparer votre annonce maintenant, mais elle sera enregistrée en brouillon tant que votre profil d'entreprise ne répond pas à nos exigences de publication.",
+    fieldTitlePlaceholder: "Intitulé du poste",
+    fieldSlugPlaceholder: "Identifiant personnalisé (optionnel)",
+    fieldSubtitlePlaceholder: "Sous-titre",
+    fieldSummaryPlaceholder: "Résumé court du poste",
+    fieldDescriptionPlaceholder: "Description complète",
+    fieldLocationPlaceholder: "Lieu",
+    fieldCategoryPlaceholder: "Catégorie",
+    fieldWorkModePlaceholder: "télétravail / hybride / sur site",
+    fieldEmploymentTypePlaceholder: "Temps plein / Contrat",
+    fieldSeniorityPlaceholder: "Niveau d'expérience",
+    fieldTeamPlaceholder: "Équipe",
+    fieldSkillsPlaceholder: "Compétences",
+    fieldResponsibilitiesPlaceholder: "Responsabilités, une par ligne",
+    fieldRequirementsPlaceholder: "Exigences, une par ligne",
+    fieldBenefitsPlaceholder: "Avantages, un par ligne",
+    fieldSalaryMinPlaceholder: "Salaire min",
+    fieldSalaryMaxPlaceholder: "Salaire max",
+    submitPending: "Création du poste...",
+    submitLabel: "Créer le poste",
+  },
 };
 
 const ES: DeepPartial<JobsCopy> = {
@@ -1059,6 +1184,27 @@ const ES: DeepPartial<JobsCopy> = {
     statusActive: "Activo",
     statusPaused: "En pausa",
     statusClosed: "Cerrado",
+  },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "{count} candidato en este pipeline de contratación. Revisa candidatos, gestiona etapas y coordina entrevistas.",
+    subtitlePlural:
+      "{count} candidatos en este pipeline de contratación. Revisa candidatos, gestiona etapas y coordina entrevistas.",
+    stagesOverviewTitle: "Etapas del pipeline",
+    stagesOverviewBody: "Etapas configuradas para este puesto.",
+    kanbanTitle: "Kanban del pipeline",
+    kanbanBody:
+      "Arrastra a los candidatos entre etapas. Los cambios se guardan al instante y se revierten si el servidor los rechaza.",
+    backToPipelines: "Volver a los pipelines",
+    emptyApplications: "Aún no se han recibido candidaturas.",
+    applicantIndexTitle: "Índice de candidatos",
+    applicantIndexBody: "Haz clic en un candidato para abrir la ficha completa.",
+    stageLabel: "Etapa",
+    moveToAria: "Mover candidato a etapa",
+    statusActive: "Activo",
+    statusWithdrawn: "Retirado",
+    statusRejected: "Rechazado",
+    statusHired: "Contratado",
   },
   employerCompany: {
     pageTitle: "Perfil de la empresa",
@@ -1322,6 +1468,27 @@ const PT: DeepPartial<JobsCopy> = {
     statusPaused: "Em pausa",
     statusClosed: "Encerrado",
   },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "{count} candidato neste pipeline de contratação. Revise candidatos, gerencie etapas e coordene entrevistas.",
+    subtitlePlural:
+      "{count} candidatos neste pipeline de contratação. Revise candidatos, gerencie etapas e coordene entrevistas.",
+    stagesOverviewTitle: "Etapas do pipeline",
+    stagesOverviewBody: "Etapas configuradas para esta vaga.",
+    kanbanTitle: "Kanban do pipeline",
+    kanbanBody:
+      "Arraste os candidatos entre as etapas. As alterações são salvas imediatamente e revertidas se o servidor rejeitar.",
+    backToPipelines: "Voltar aos pipelines",
+    emptyApplications: "Ainda não foram recebidas candidaturas.",
+    applicantIndexTitle: "Índice de candidatos",
+    applicantIndexBody: "Clique em qualquer candidato para abrir a revisão completa.",
+    stageLabel: "Etapa",
+    moveToAria: "Mover candidato para etapa",
+    statusActive: "Ativo",
+    statusWithdrawn: "Retirado",
+    statusRejected: "Rejeitado",
+    statusHired: "Contratado",
+  },
   employerCompany: {
     pageTitle: "Perfil da empresa",
     pageSubtitle:
@@ -1584,6 +1751,27 @@ const AR: DeepPartial<JobsCopy> = {
     statusPaused: "متوقف",
     statusClosed: "مغلق",
   },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "{count} مرشح في خط التوظيف هذا. راجع المرشحين، وأدر المراحل، ونسّق المقابلات.",
+    subtitlePlural:
+      "{count} مرشحين في خط التوظيف هذا. راجع المرشحين، وأدر المراحل، ونسّق المقابلات.",
+    stagesOverviewTitle: "مراحل خط التوظيف",
+    stagesOverviewBody: "المراحل المهيأة لهذا الدور.",
+    kanbanTitle: "لوحة كانبان لخط التوظيف",
+    kanbanBody:
+      "اسحب المرشحين بين المراحل. تُحفظ التغييرات فورًا وتُلغى إذا رفضها الخادم.",
+    backToPipelines: "العودة إلى الخطوط",
+    emptyApplications: "لم تُستلم أي طلبات بعد.",
+    applicantIndexTitle: "فهرس المرشحين",
+    applicantIndexBody: "انقر على أي مرشح لفتح صفحة المراجعة الكاملة.",
+    stageLabel: "المرحلة",
+    moveToAria: "نقل المرشح إلى مرحلة",
+    statusActive: "نشط",
+    statusWithdrawn: "منسحب",
+    statusRejected: "مرفوض",
+    statusHired: "تم التعيين",
+  },
   employerCompany: {
     pageTitle: "ملف الشركة",
     pageSubtitle: "أعد ملف شركتك ليتعرف المرشحون على فريقك.",
@@ -1840,6 +2028,27 @@ const IG: DeepPartial<JobsCopy> = {
     statusActive: "Na-arụ ọrụ",
     statusPaused: "Akwụsịrị",
     statusClosed: "Emechiri",
+  },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "Onye nwere mmasị {count} n'akara ịchụ ndị ọrụ a. Lelee ndị nwere mmasị, jikwaa ọkwa, ma hazie ajụjụ ọnụ.",
+    subtitlePlural:
+      "Ndị nwere mmasị {count} n'akara ịchụ ndị ọrụ a. Lelee ndị nwere mmasị, jikwaa ọkwa, ma hazie ajụjụ ọnụ.",
+    stagesOverviewTitle: "Ọkwa akara",
+    stagesOverviewBody: "Ọkwa edobere maka ọrụ a.",
+    kanbanTitle: "Kanban akara",
+    kanbanBody:
+      "Dọkpụrụ ndị nwere mmasị n'etiti ọkwa. A na-echekwa mgbanwe ozugbo wee laghachi azụ ma ọ bụrụ na sava jụrụ.",
+    backToPipelines: "Laghachi n'akara",
+    emptyApplications: "Anatabeghị ngwa ọ bụla.",
+    applicantIndexTitle: "Ndepụta ndị nwere mmasị",
+    applicantIndexBody: "Pịa onye nwere mmasị ọ bụla iji mepee ihu nlele zuru oke.",
+    stageLabel: "Ọkwa",
+    moveToAria: "Bugharịa onye nwere mmasị n'ọkwa",
+    statusActive: "Na-arụ ọrụ",
+    statusWithdrawn: "Akwụsịrị",
+    statusRejected: "Ajụrụ",
+    statusHired: "Eweere",
   },
   employerCompany: {
     pageTitle: "Profaịlụ ụlọ ọrụ",
@@ -2103,6 +2312,27 @@ const YO: DeepPartial<JobsCopy> = {
     statusPaused: "Duro",
     statusClosed: "Ti pa",
   },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "Olubẹwẹ {count} ninu ọna gbigba iṣẹ yii. Ṣayẹwo awọn olubẹwẹ, ṣakoso awọn ipele, ki o si ṣeto awọn ifọrọwanilẹnuwo.",
+    subtitlePlural:
+      "Awọn olubẹwẹ {count} ninu ọna gbigba iṣẹ yii. Ṣayẹwo awọn olubẹwẹ, ṣakoso awọn ipele, ki o si ṣeto awọn ifọrọwanilẹnuwo.",
+    stagesOverviewTitle: "Awọn ipele ọna",
+    stagesOverviewBody: "Awọn ipele ti a ṣeto fun ipa yii.",
+    kanbanTitle: "Kanban ọna",
+    kanbanBody:
+      "Fa awọn olubẹwẹ laarin awọn ipele. Awọn ayipada n fipamọ lẹsẹkẹsẹ ati pada bo ti olupin kọ.",
+    backToPipelines: "Pada si awọn ọna",
+    emptyApplications: "Ko si ibẹwẹ ti a gba sibẹsibẹ.",
+    applicantIndexTitle: "Atọka olubẹwẹ",
+    applicantIndexBody: "Tẹ olubẹwẹ eyikeyii lati ṣii oju-iwoye atunwo kikun.",
+    stageLabel: "Ipele",
+    moveToAria: "Gbe olubẹwẹ lọ si ipele",
+    statusActive: "Nṣiṣẹ",
+    statusWithdrawn: "Yọkuro",
+    statusRejected: "Kọ",
+    statusHired: "Gba",
+  },
   employerCompany: {
     pageTitle: "Profaili ile-iṣẹ",
     pageSubtitle:
@@ -2340,6 +2570,27 @@ const HA: DeepPartial<JobsCopy> = {
     statusActive: "Mai aiki",
     statusPaused: "An dakatar",
     statusClosed: "An rufe",
+  },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "Mai nema {count} a wannan layin daukar ma'aikata. Duba masu nema, sarrafa matakai, da tsara hirarraki.",
+    subtitlePlural:
+      "Masu nema {count} a wannan layin daukar ma'aikata. Duba masu nema, sarrafa matakai, da tsara hirarraki.",
+    stagesOverviewTitle: "Matakai na layi",
+    stagesOverviewBody: "Matakai da aka tsara wa wannan matsayin.",
+    kanbanTitle: "Kanban na layi",
+    kanbanBody:
+      "Ja masu nema tsakanin matakai. Canje-canje suna ajiyewa nan take su koma idan uwar garken ta ƙi su.",
+    backToPipelines: "Komawa zuwa layuka",
+    emptyApplications: "Babu wata neman da aka karɓa tukuna.",
+    applicantIndexTitle: "Jadawalin masu nema",
+    applicantIndexBody: "Danna kowane mai nema don buɗe shafin nazari cikakke.",
+    stageLabel: "Mataki",
+    moveToAria: "Matsar da mai nema zuwa mataki",
+    statusActive: "Mai aiki",
+    statusWithdrawn: "An janye",
+    statusRejected: "An ƙi",
+    statusHired: "An ɗauka",
   },
   employerCompany: {
     pageTitle: "Bayanan kamfani",
@@ -2579,6 +2830,27 @@ const DE: DeepPartial<JobsCopy> = {
     statusPaused: "Pausiert",
     statusClosed: "Geschlossen",
   },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "{count} Bewerber in dieser Einstellungspipeline. Prüfen Sie Kandidaten, verwalten Sie Phasen und koordinieren Sie Interviews.",
+    subtitlePlural:
+      "{count} Bewerber in dieser Einstellungspipeline. Prüfen Sie Kandidaten, verwalten Sie Phasen und koordinieren Sie Interviews.",
+    stagesOverviewTitle: "Pipeline-Phasen",
+    stagesOverviewBody: "Für diese Stelle konfigurierte Phasen.",
+    kanbanTitle: "Pipeline-Kanban",
+    kanbanBody:
+      "Ziehen Sie Bewerber zwischen Phasen. Änderungen werden sofort gespeichert und zurückgesetzt, wenn der Server sie ablehnt.",
+    backToPipelines: "Zurück zu den Pipelines",
+    emptyApplications: "Noch keine Bewerbungen eingegangen.",
+    applicantIndexTitle: "Bewerberverzeichnis",
+    applicantIndexBody: "Klicken Sie auf einen Bewerber, um die vollständige Prüfungsansicht zu öffnen.",
+    stageLabel: "Phase",
+    moveToAria: "Bewerber in eine Phase verschieben",
+    statusActive: "Aktiv",
+    statusWithdrawn: "Zurückgezogen",
+    statusRejected: "Abgelehnt",
+    statusHired: "Eingestellt",
+  },
   employerCompany: {
     pageTitle: "Unternehmensprofil",
     pageSubtitle:
@@ -2814,6 +3086,24 @@ const ZH: DeepPartial<JobsCopy> = {
     statusPaused: "已暂停",
     statusClosed: "已关闭",
   },
+  employerHiringPipeline: {
+    subtitleSingular: "本招聘流程中有 {count} 位申请人。审核候选人、管理阶段并协调面试。",
+    subtitlePlural: "本招聘流程中有 {count} 位申请人。审核候选人、管理阶段并协调面试。",
+    stagesOverviewTitle: "流程阶段",
+    stagesOverviewBody: "为该职位配置的阶段。",
+    kanbanTitle: "流程看板",
+    kanbanBody: "在阶段之间拖动申请人。变更立即保存，若服务器拒绝则自动回滚。",
+    backToPipelines: "返回流程列表",
+    emptyApplications: "暂未收到任何申请。",
+    applicantIndexTitle: "申请人索引",
+    applicantIndexBody: "点击任意申请人以打开完整的审核界面。",
+    stageLabel: "阶段",
+    moveToAria: "将申请人移动到阶段",
+    statusActive: "进行中",
+    statusWithdrawn: "已撤回",
+    statusRejected: "已拒绝",
+    statusHired: "已录用",
+  },
   employerCompany: {
     pageTitle: "公司资料",
     pageSubtitle: "完善公司资料，让候选人了解你的团队。",
@@ -3032,6 +3322,27 @@ const HI: DeepPartial<JobsCopy> = {
     statusActive: "सक्रिय",
     statusPaused: "रोका गया",
     statusClosed: "बंद",
+  },
+  employerHiringPipeline: {
+    subtitleSingular:
+      "इस भर्ती पाइपलाइन में {count} आवेदक है। उम्मीदवारों की समीक्षा करें, चरणों का प्रबंधन करें और साक्षात्कारों का समन्वय करें।",
+    subtitlePlural:
+      "इस भर्ती पाइपलाइन में {count} आवेदक हैं। उम्मीदवारों की समीक्षा करें, चरणों का प्रबंधन करें और साक्षात्कारों का समन्वय करें।",
+    stagesOverviewTitle: "पाइपलाइन चरण",
+    stagesOverviewBody: "इस भूमिका के लिए कॉन्फ़िगर किए गए चरण।",
+    kanbanTitle: "पाइपलाइन कानबन",
+    kanbanBody:
+      "आवेदकों को चरणों के बीच खींचें। परिवर्तन तुरंत सहेजे जाते हैं और यदि सर्वर अस्वीकार करता है तो वापस आ जाते हैं।",
+    backToPipelines: "पाइपलाइनों पर वापस जाएँ",
+    emptyApplications: "अभी तक कोई आवेदन प्राप्त नहीं हुआ है।",
+    applicantIndexTitle: "आवेदक सूची",
+    applicantIndexBody: "पूर्ण समीक्षा पृष्ठ खोलने के लिए किसी भी आवेदक पर क्लिक करें।",
+    stageLabel: "चरण",
+    moveToAria: "आवेदक को चरण में ले जाएँ",
+    statusActive: "सक्रिय",
+    statusWithdrawn: "वापस ले लिया",
+    statusRejected: "अस्वीकृत",
+    statusHired: "नियुक्त",
   },
   employerCompany: {
     pageTitle: "कंपनी प्रोफ़ाइल",
@@ -3270,6 +3581,27 @@ const IT: DeepPartial<JobsCopy> = {
     "statusActive": "Attiva",
     "statusPaused": "In pausa",
     "statusClosed": "Chiusa"
+  },
+  "employerHiringPipeline": {
+    "subtitleSingular":
+      "{count} candidato in questa pipeline di assunzione. Esamina i candidati, gestisci le fasi e coordina i colloqui.",
+    "subtitlePlural":
+      "{count} candidati in questa pipeline di assunzione. Esamina i candidati, gestisci le fasi e coordina i colloqui.",
+    "stagesOverviewTitle": "Fasi della pipeline",
+    "stagesOverviewBody": "Fasi configurate per questo ruolo.",
+    "kanbanTitle": "Kanban della pipeline",
+    "kanbanBody":
+      "Trascina i candidati tra le fasi. Le modifiche vengono salvate immediatamente e annullate se il server le rifiuta.",
+    "backToPipelines": "Torna alle pipeline",
+    "emptyApplications": "Nessuna candidatura ricevuta finora.",
+    "applicantIndexTitle": "Indice dei candidati",
+    "applicantIndexBody": "Fai clic su un candidato per aprire la scheda di revisione completa.",
+    "stageLabel": "Fase",
+    "moveToAria": "Sposta candidato in una fase",
+    "statusActive": "Attivo",
+    "statusWithdrawn": "Ritirato",
+    "statusRejected": "Rifiutato",
+    "statusHired": "Assunto"
   },
   "employerCompany": {
     "pageTitle": "Profilo aziendale",

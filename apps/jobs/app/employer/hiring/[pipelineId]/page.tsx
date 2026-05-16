@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { getJobsCopy } from "@henryco/i18n";
 import { requireJobsRoles } from "@/lib/auth";
 import { getPipelineById, getApplications } from "@/lib/jobs/hiring";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { employerNav } from "@/lib/jobs/navigation";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 import { PipelineKanban } from "@/components/hiring/PipelineKanban";
@@ -20,7 +22,11 @@ export default async function PipelineDetailPage({
   const pipeline = await getPipelineById(pipelineId);
   if (!pipeline) return notFound();
 
-  const applications = await getApplications(pipelineId);
+  const [applications, locale] = await Promise.all([
+    getApplications(pipelineId),
+    getJobsPublicLocale(),
+  ]);
+  const copy = getJobsCopy(locale).employerHiringPipeline;
 
   const stageTone = (status: string) => {
     if (status === "active") return "good" as const;
@@ -30,18 +36,33 @@ export default async function PipelineDetailPage({
     return "neutral" as const;
   };
 
+  const statusLabel = (status: string) => {
+    if (status === "active") return copy.statusActive;
+    if (status === "withdrawn") return copy.statusWithdrawn;
+    if (status === "rejected") return copy.statusRejected;
+    if (status === "hired") return copy.statusHired;
+    return status;
+  };
+
+  const subtitleTemplate =
+    applications.length === 1 ? copy.subtitleSingular : copy.subtitlePlural;
+  const subtitle = subtitleTemplate.replace(
+    "{count}",
+    String(applications.length),
+  );
+
   return (
     <WorkspaceShell
       area="employer"
       title={pipeline.jobTitle}
-      subtitle={`${applications.length} applicant${applications.length !== 1 ? "s" : ""} in this hiring pipeline. Review candidates, manage stages, and coordinate interviews.`}
+      subtitle={subtitle}
       nav={employerNav}
       activeHref="/employer/hiring"
       accent="linear-gradient(135deg,#7c5a28 0%,#b88a47 55%,#f1c88c 100%)"
     >
       <div className="space-y-4">
         {/* Pipeline stages overview */}
-        <SectionCard title="Pipeline stages" body="Stages configured for this role.">
+        <SectionCard title={copy.stagesOverviewTitle} body={copy.stagesOverviewBody}>
           <div className="flex flex-wrap gap-2">
             {pipeline.stages.map((stage, index) => (
               <div
@@ -61,21 +82,21 @@ export default async function PipelineDetailPage({
 
         {/* J4 — Pipeline kanban with drag-to-move + optimistic UI rollback */}
         <SectionCard
-          title="Pipeline kanban"
-          body="Drag applicants between stages. Changes save immediately and roll back if the server rejects the move."
+          title={copy.kanbanTitle}
+          body={copy.kanbanBody}
           actions={
             <Link
               href="/employer/hiring"
               className="text-sm font-semibold text-[var(--jobs-accent)]"
             >
-              Back to pipelines
+              {copy.backToPipelines}
             </Link>
           }
         >
           {applications.length === 0 ? (
             <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-6 text-center">
               <p className="text-sm text-[var(--jobs-muted)]">
-                No applications received yet.
+                {copy.emptyApplications}
               </p>
             </div>
           ) : (
@@ -97,8 +118,8 @@ export default async function PipelineDetailPage({
 
         {/* Applicant list — legacy linkable detail entry */}
         <SectionCard
-          title="Applicant index"
-          body="Click any applicant to open the full review surface."
+          title={copy.applicantIndexTitle}
+          body={copy.applicantIndexBody}
         >
           {applications.length === 0 ? null : (
             <div className="space-y-3">
@@ -127,11 +148,11 @@ export default async function PipelineDetailPage({
                       <div>
                         <div className="font-semibold">{app.candidateName}</div>
                         <div className="text-sm text-[var(--jobs-muted)]">
-                          Stage: {app.stage}
+                          {copy.stageLabel}: {app.stage}
                         </div>
                       </div>
                     </div>
-                    <StatusPill label={app.status} tone={stageTone(app.status)} />
+                    <StatusPill label={statusLabel(app.status)} tone={stageTone(app.status)} />
                   </div>
                 </Link>
               ))}
