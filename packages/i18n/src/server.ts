@@ -14,6 +14,7 @@ export { getLogisticsBusinessCopy, type LogisticsBusinessCopy } from "./logistic
 export { getLogisticsCoverageCopy, type LogisticsCoverageCopy } from "./logistics-coverage-copy";
 export { getLogisticsPricingCopy, type LogisticsPricingCopy } from "./logistics-pricing-copy";
 export { getLogisticsQuoteCopy, type LogisticsQuoteCopy } from "./logistics-quote-copy";
+export { getLogisticsSupportCopy, type LogisticsSupportCopy } from "./logistics-support-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
