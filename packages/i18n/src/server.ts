@@ -22,6 +22,10 @@ export { getCareContactCopy, type CareContactCopy } from "./care-contact-copy";
 export { getLearnTrustCopy, type LearnTrustCopy } from "./learn-trust-copy";
 export { getLearnPathsCopy, type LearnPathsCopy } from "./learn-paths-copy";
 export { getLearnInstructorsCopy, type LearnInstructorsCopy } from "./learn-instructors-copy";
+export {
+  getLearnCertificationsCopy,
+  type LearnCertificationsCopy,
+} from "./learn-certifications-copy";
 export { getAccountCopy, formatAccountTemplate, type AccountCopy } from "./account-copy";
 export {
   getSurfaceCopy,

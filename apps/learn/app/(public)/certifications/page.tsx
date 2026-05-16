@@ -1,32 +1,47 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, ClipboardList, GraduationCap } from "lucide-react";
+import { getLearnCertificationsCopy } from "@henryco/i18n/server";
 import { CourseCard, LearnSectionIntro } from "@/components/learn/ui";
 import { getPublicAcademyData } from "@/lib/learn/data";
 import { getAccountLearnUrl } from "@/lib/learn/links";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 
-export const metadata = { title: "Certificates - HenryCo Learn" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLearnPublicLocale();
+  const copy = getLearnCertificationsCopy(locale);
+  return { title: copy.meta.title };
+}
 
 export default async function CertificationsPage() {
+  const locale = await getLearnPublicLocale();
+  const copy = getLearnCertificationsCopy(locale);
   const academy = await getPublicAcademyData();
   const certifications = academy.courses.filter((course) => course.certification);
 
   const pillars = [
     {
       icon: GraduationCap,
-      title: "Who it’s for",
-      body: "Anyone who completes an eligible program — public learners, assigned staff, or partners — holds the same standard of proof.",
+      title: copy.pillars.whoTitle,
+      body: copy.pillars.whoBody,
     },
     {
       icon: ClipboardList,
-      title: "What “qualified” means",
-      body: "Requirements are set per course (lessons + sometimes a passing assessment). Your learning room shows a simple checklist until everything is satisfied.",
+      title: copy.pillars.qualifiedTitle,
+      body: copy.pillars.qualifiedBody,
     },
     {
       icon: BadgeCheck,
-      title: "After you earn it",
-      body: "Add it to your CV or profile, share the verification link, or keep it in your HenryCo account alongside the rest of your learning history.",
+      title: copy.pillars.afterTitle,
+      body: copy.pillars.afterBody,
     },
   ] as const;
+
+  const heroAside = [
+    { label: copy.hero.asideFormatLabel, value: copy.hero.asideFormatValue },
+    { label: copy.hero.asideVerificationLabel, value: copy.hero.asideVerificationValue },
+    { label: copy.hero.asideStorageLabel, value: copy.hero.asideStorageValue },
+  ];
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
@@ -34,23 +49,17 @@ export default async function CertificationsPage() {
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
-              Verified certificates
+              {copy.hero.eyebrow}
             </p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-              Credentials you can show. Anyone can verify.
+              {copy.hero.title}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
-              Certificate-eligible courses carry a badge. Finish the required lessons, pass any
-              assessments, and HenryCo Learn records the completion. You get a downloadable PDF
-              plus a public verification code for employers, clients, and partners.
+              {copy.hero.body}
             </p>
           </div>
           <ul className="grid gap-3 text-sm">
-            {[
-              { label: "Format", value: "Downloadable PDF + public link" },
-              { label: "Verification", value: "Code-checkable, no account needed" },
-              { label: "Storage", value: "Saved on your HenryCo account" },
-            ].map((item) => (
+            {heroAside.map((item) => (
               <li
                 key={item.label}
                 className="flex items-baseline gap-3 border-b border-[var(--learn-line)] py-3 last:border-b-0"
@@ -69,7 +78,7 @@ export default async function CertificationsPage() {
 
       <section className="mt-16">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
-          How a credential works
+          {copy.pillars.sectionEyebrow}
         </p>
         <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[var(--learn-line)]">
           {pillars.map((item, i) => {
@@ -91,14 +100,13 @@ export default async function CertificationsPage() {
         <div className="grid gap-6 lg:grid-cols-[1fr,0.9fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
-              Verify someone’s certificate
+              {copy.verify.eyebrow}
             </p>
             <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.85rem]">
-              Enter the code, see whether the record matches.
+              {copy.verify.title}
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--learn-ink-soft)]">
-              Enter the code printed on their credential. You’ll see whether HenryCo Learn has a
-              matching, active record &mdash; no account required to check.
+              {copy.verify.body}
             </p>
           </div>
           <form
@@ -109,14 +117,14 @@ export default async function CertificationsPage() {
             <input
               name="code"
               required
-              placeholder="Verification code"
+              placeholder={copy.verify.inputPlaceholder}
               className="learn-input rounded-2xl px-4 py-3"
             />
             <button
               type="submit"
               className="learn-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
             >
-              Verify
+              {copy.verify.submit}
               <ArrowRight className="h-4 w-4" />
             </button>
           </form>
@@ -125,22 +133,21 @@ export default async function CertificationsPage() {
 
       <section className="mt-16">
         <LearnSectionIntro
-          kicker="Certificate programs"
-          title="Courses that currently award a HenryCo certificate"
-          body="Open any program for the full syllabus, quiz details, and enrollment options."
+          kicker={copy.catalog.kicker}
+          title={copy.catalog.title}
+          body={copy.catalog.body}
         />
 
         {certifications.length === 0 ? (
           <p className="mt-8 max-w-2xl border-l-2 border-[var(--learn-mint-soft)]/55 pl-5 text-sm leading-7 text-[var(--learn-ink-soft)]">
-            No certificate-track courses are published in the catalog yet. Browse all programs on
-            the{" "}
+            {copy.catalog.emptyPrefix}
             <Link
               href="/courses"
               className="font-semibold text-[var(--learn-mint-soft)] underline-offset-2 hover:underline"
             >
-              course catalog
-            </Link>{" "}
-            &mdash; we’ll label new credentials clearly as they go live.
+              {copy.catalog.emptyLinkLabel}
+            </Link>
+            {copy.catalog.emptySuffix}
           </p>
         ) : (
           <div className="mt-8 grid gap-5 lg:grid-cols-3">
@@ -156,13 +163,13 @@ export default async function CertificationsPage() {
           href={getAccountLearnUrl("certificates")}
           className="learn-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
         >
-          My certificates in account
+          {copy.footer.ctaAccount}
         </a>
         <Link
           href="/trust"
           className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[var(--learn-mint-soft)] underline-offset-4 hover:underline"
         >
-          How verification works
+          {copy.footer.ctaVerification}
         </Link>
       </section>
     </main>

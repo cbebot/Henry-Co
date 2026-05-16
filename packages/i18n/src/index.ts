@@ -16,6 +16,7 @@ export * from "./care-contact-copy";
 export * from "./learn-trust-copy";
 export * from "./learn-paths-copy";
 export * from "./learn-instructors-copy";
+export * from "./learn-certifications-copy";
 export * from "./studio-copy";
 export * from "./surface-copy";
 export * from "./account-copy";
