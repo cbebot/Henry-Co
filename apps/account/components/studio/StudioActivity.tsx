@@ -1,10 +1,20 @@
 import { CheckCircle2, CreditCard, FolderOpen, MessageCircle, Package } from "lucide-react";
+import {
+  formatAccountTemplate,
+  translateSurfaceLabel,
+  type AccountCopy,
+  type AppLocale,
+} from "@henryco/i18n";
 
 import { formatStamp, type StudioActivityRow } from "./helpers";
+
+type StudioCopy = AccountCopy["divisionStudio"];
 
 type Props = {
   activity: ReadonlyArray<StudioActivityRow>;
   ariaLabel: string;
+  copy: StudioCopy;
+  locale: AppLocale;
   limit?: number;
 };
 
@@ -29,7 +39,7 @@ function kindFor(type: string | null): IconKind {
   return "generic";
 }
 
-export function StudioActivity({ activity, ariaLabel, limit = 8 }: Props) {
+export function StudioActivity({ activity, ariaLabel, copy, locale, limit = 8 }: Props) {
   const rows = activity.slice(0, limit);
   if (rows.length === 0) return null;
 
@@ -38,10 +48,15 @@ export function StudioActivity({ activity, ariaLabel, limit = 8 }: Props) {
       {rows.map((row) => {
         const kind = kindFor(row.activityType);
         const Icon = ICON_BY_KIND[kind];
-        const title = row.title?.trim() || (row.activityType ? row.activityType.replace(/_/g, " ") : ariaLabel);
-        const sub = row.description?.trim() ?? null;
+        const rawTitle = row.title?.trim()
+          || (row.activityType ? row.activityType.replace(/_/g, " ") : ariaLabel);
+        const title = translateSurfaceLabel(locale, rawTitle);
+        const sub = row.description?.trim()
+          ? translateSurfaceLabel(locale, row.description.trim())
+          : null;
         const href = row.actionUrl?.trim() || null;
         const stamp = formatStamp(row.occurredAt);
+        const aria = formatAccountTemplate(copy.activity.rowAriaLabelTemplate, { title, stamp });
 
         const inner = (
           <>
@@ -62,7 +77,7 @@ export function StudioActivity({ activity, ariaLabel, limit = 8 }: Props) {
             href={href}
             className="acct-stu__activity-row acct-stu__activity-row--link"
             role="listitem"
-            aria-label={`${title} · ${stamp}`}
+            aria-label={aria}
           >
             {inner}
           </a>

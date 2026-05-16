@@ -171,7 +171,7 @@ export type HeroCopy = {
   ctaSecondary: { label: string; href: string };
 };
 
-const STUDIO_ORIGIN = "https://studio.henrycogroup.com";
+export const STUDIO_ORIGIN = "https://studio.henrycogroup.com";
 
 export function buildHeroCopy(state: HeroState, stats: StudioStats): HeroCopy {
   if (state === "empty") {
