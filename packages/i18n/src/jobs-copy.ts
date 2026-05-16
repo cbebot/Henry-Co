@@ -246,6 +246,48 @@ export type JobsCopy = {
     statusFlagged: string;
     statusDraft: string;
   };
+  employerApplicants: {
+    pageTitle: string;
+    pageSubtitle: string;
+    sectionTitle: string;
+    tableCandidate: string;
+    tableRole: string;
+    tableStage: string;
+    tableProfile: string;
+    tableMatch: string;
+    noEmail: string;
+    emptyKicker: string;
+    emptyTitle: string;
+    emptyBody: string;
+    stageReviewing: string;
+    stageShortlisted: string;
+    stageInterview: string;
+    stageOffer: string;
+    stageHired: string;
+    stageRejected: string;
+    detailTitle: string;
+    detailSubtitle: string;
+    detailJobTemplate: string;
+    profileStrengthTemplate: string;
+    matchConfidenceTemplate: string;
+    noCoverNote: string;
+    noticeStageUpdatedTitle: string;
+    noticeStageUpdatedBody: string;
+    noticeNoteAddedTitle: string;
+    noticeNoteAddedBody: string;
+    stageSectionTitle: string;
+    stageNotePlaceholder: string;
+    stagePending: string;
+    stageSubmit: string;
+    noteSectionTitle: string;
+    notePlaceholder: string;
+    notePending: string;
+    noteSubmit: string;
+    activitySectionTitle: string;
+    activityEmptyKicker: string;
+    activityEmptyTitle: string;
+    activityEmptyBody: string;
+  };
 };
 
 const EN: JobsCopy = {
@@ -510,6 +552,51 @@ const EN: JobsCopy = {
     statusFlagged: "Flagged",
     statusDraft: "Draft",
   },
+  employerApplicants: {
+    pageTitle: "Applicants",
+    pageSubtitle: "Review and move real applicants across your employer pipeline.",
+    sectionTitle: "Applicant table",
+    tableCandidate: "Candidate",
+    tableRole: "Role",
+    tableStage: "Stage",
+    tableProfile: "Profile",
+    tableMatch: "Match",
+    noEmail: "No email",
+    emptyKicker: "Pipeline is clear",
+    emptyTitle: "No applications are in this queue yet.",
+    emptyBody:
+      "New candidates will appear here as soon as roles start receiving live applications.",
+    stageReviewing: "Reviewing",
+    stageShortlisted: "Shortlisted",
+    stageInterview: "Interview",
+    stageOffer: "Offer",
+    stageHired: "Hired",
+    stageRejected: "Rejected",
+    detailTitle: "Applicant Detail",
+    detailSubtitle: "Review this candidate, move them through stages, and add notes.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "Profile strength {percent}%",
+    matchConfidenceTemplate: "Match confidence {percent}%",
+    noCoverNote: "No cover note provided.",
+    noticeStageUpdatedTitle: "Stage updated",
+    noticeStageUpdatedBody:
+      "The candidate's stage has been updated. They'll see the change in their candidate hub.",
+    noticeNoteAddedTitle: "Note added",
+    noticeNoteAddedBody: "Your note has been saved to this application.",
+    stageSectionTitle: "Update stage",
+    stageNotePlaceholder: "Context for the move",
+    stagePending: "Updating stage...",
+    stageSubmit: "Update stage",
+    noteSectionTitle: "Internal note",
+    notePlaceholder: "Add a private note about this candidate",
+    notePending: "Saving note...",
+    noteSubmit: "Add note",
+    activitySectionTitle: "Activity history",
+    activityEmptyKicker: "No activity yet",
+    activityEmptyTitle: "No events recorded for this application.",
+    activityEmptyBody:
+      "Stage changes, notes, and key updates will appear here as you work through the hiring process.",
+  },
 };
 
 const FR: DeepPartial<JobsCopy> = {
@@ -724,6 +811,52 @@ const FR: DeepPartial<JobsCopy> = {
     statusPendingReview: "En cours d'examen",
     statusFlagged: "Signalé",
     statusDraft: "Brouillon",
+  },
+  employerApplicants: {
+    pageTitle: "Candidats",
+    pageSubtitle: "Examinez et déplacez les candidats réels dans votre pipeline employeur.",
+    sectionTitle: "Tableau des candidats",
+    tableCandidate: "Candidat",
+    tableRole: "Poste",
+    tableStage: "Étape",
+    tableProfile: "Profil",
+    tableMatch: "Correspondance",
+    noEmail: "Pas d'e-mail",
+    emptyKicker: "Pipeline vide",
+    emptyTitle: "Aucune candidature dans cette file pour l'instant.",
+    emptyBody:
+      "De nouveaux candidats apparaîtront ici dès que les offres commenceront à recevoir des candidatures.",
+    stageReviewing: "En cours d'examen",
+    stageShortlisted: "Présélectionné",
+    stageInterview: "Entretien",
+    stageOffer: "Offre",
+    stageHired: "Embauché",
+    stageRejected: "Refusé",
+    detailTitle: "Détail du candidat",
+    detailSubtitle:
+      "Examinez ce candidat, faites-le avancer dans les étapes et ajoutez des notes.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "Solidité du profil {percent} %",
+    matchConfidenceTemplate: "Confiance de correspondance {percent} %",
+    noCoverNote: "Aucune note de motivation fournie.",
+    noticeStageUpdatedTitle: "Étape mise à jour",
+    noticeStageUpdatedBody:
+      "L'étape du candidat a été mise à jour. Il verra le changement dans son espace candidat.",
+    noticeNoteAddedTitle: "Note ajoutée",
+    noticeNoteAddedBody: "Votre note a été enregistrée pour cette candidature.",
+    stageSectionTitle: "Mettre à jour l'étape",
+    stageNotePlaceholder: "Contexte du déplacement",
+    stagePending: "Mise à jour de l'étape...",
+    stageSubmit: "Mettre à jour l'étape",
+    noteSectionTitle: "Note interne",
+    notePlaceholder: "Ajouter une note privée sur ce candidat",
+    notePending: "Enregistrement de la note...",
+    noteSubmit: "Ajouter la note",
+    activitySectionTitle: "Historique d'activité",
+    activityEmptyKicker: "Pas encore d'activité",
+    activityEmptyTitle: "Aucun événement enregistré pour cette candidature.",
+    activityEmptyBody:
+      "Les changements d'étape, les notes et les mises à jour clés apparaîtront ici au fil du processus de recrutement.",
   },
 };
 
@@ -940,6 +1073,53 @@ const ES: DeepPartial<JobsCopy> = {
     statusFlagged: "Marcado",
     statusDraft: "Borrador",
   },
+  employerApplicants: {
+    pageTitle: "Candidatos",
+    pageSubtitle:
+      "Revisa y mueve a los candidatos reales por tu pipeline de empleador.",
+    sectionTitle: "Tabla de candidatos",
+    tableCandidate: "Candidato",
+    tableRole: "Puesto",
+    tableStage: "Etapa",
+    tableProfile: "Perfil",
+    tableMatch: "Coincidencia",
+    noEmail: "Sin correo",
+    emptyKicker: "Pipeline despejado",
+    emptyTitle: "Aún no hay candidaturas en esta cola.",
+    emptyBody:
+      "Los nuevos candidatos aparecerán aquí en cuanto los puestos empiecen a recibir candidaturas reales.",
+    stageReviewing: "En revisión",
+    stageShortlisted: "Preseleccionado",
+    stageInterview: "Entrevista",
+    stageOffer: "Oferta",
+    stageHired: "Contratado",
+    stageRejected: "Rechazado",
+    detailTitle: "Detalle del candidato",
+    detailSubtitle:
+      "Revisa a este candidato, hazlo avanzar por las etapas y añade notas.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "Solidez del perfil {percent} %",
+    matchConfidenceTemplate: "Confianza de coincidencia {percent} %",
+    noCoverNote: "No se proporcionó carta de presentación.",
+    noticeStageUpdatedTitle: "Etapa actualizada",
+    noticeStageUpdatedBody:
+      "La etapa del candidato se ha actualizado. Verá el cambio en su espacio de candidato.",
+    noticeNoteAddedTitle: "Nota añadida",
+    noticeNoteAddedBody: "Tu nota se ha guardado en esta candidatura.",
+    stageSectionTitle: "Actualizar etapa",
+    stageNotePlaceholder: "Contexto del movimiento",
+    stagePending: "Actualizando etapa...",
+    stageSubmit: "Actualizar etapa",
+    noteSectionTitle: "Nota interna",
+    notePlaceholder: "Añade una nota privada sobre este candidato",
+    notePending: "Guardando nota...",
+    noteSubmit: "Añadir nota",
+    activitySectionTitle: "Historial de actividad",
+    activityEmptyKicker: "Aún sin actividad",
+    activityEmptyTitle: "No hay eventos registrados para esta candidatura.",
+    activityEmptyBody:
+      "Los cambios de etapa, notas y actualizaciones clave aparecerán aquí a medida que avances en el proceso de contratación.",
+  },
 };
 
 const PT: DeepPartial<JobsCopy> = {
@@ -1155,6 +1335,53 @@ const PT: DeepPartial<JobsCopy> = {
     statusFlagged: "Sinalizada",
     statusDraft: "Rascunho",
   },
+  employerApplicants: {
+    pageTitle: "Candidatos",
+    pageSubtitle:
+      "Reveja e mova candidatos reais ao longo do seu pipeline de empregador.",
+    sectionTitle: "Tabela de candidatos",
+    tableCandidate: "Candidato",
+    tableRole: "Vaga",
+    tableStage: "Etapa",
+    tableProfile: "Perfil",
+    tableMatch: "Correspondência",
+    noEmail: "Sem e-mail",
+    emptyKicker: "Pipeline limpa",
+    emptyTitle: "Ainda não há candidaturas nesta fila.",
+    emptyBody:
+      "Novos candidatos aparecerão aqui assim que as vagas começarem a receber candidaturas reais.",
+    stageReviewing: "Em análise",
+    stageShortlisted: "Pré-selecionado",
+    stageInterview: "Entrevista",
+    stageOffer: "Oferta",
+    stageHired: "Contratado",
+    stageRejected: "Rejeitado",
+    detailTitle: "Detalhe do candidato",
+    detailSubtitle:
+      "Reveja este candidato, mova-o entre as etapas e adicione notas.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "Solidez do perfil {percent} %",
+    matchConfidenceTemplate: "Confiança de correspondência {percent} %",
+    noCoverNote: "Nenhuma carta de apresentação fornecida.",
+    noticeStageUpdatedTitle: "Etapa atualizada",
+    noticeStageUpdatedBody:
+      "A etapa do candidato foi atualizada. Ele verá a mudança no seu espaço de candidato.",
+    noticeNoteAddedTitle: "Nota adicionada",
+    noticeNoteAddedBody: "A sua nota foi guardada nesta candidatura.",
+    stageSectionTitle: "Atualizar etapa",
+    stageNotePlaceholder: "Contexto da mudança",
+    stagePending: "A atualizar etapa...",
+    stageSubmit: "Atualizar etapa",
+    noteSectionTitle: "Nota interna",
+    notePlaceholder: "Adicione uma nota privada sobre este candidato",
+    notePending: "A guardar nota...",
+    noteSubmit: "Adicionar nota",
+    activitySectionTitle: "Histórico de atividade",
+    activityEmptyKicker: "Sem atividade ainda",
+    activityEmptyTitle: "Nenhum evento registado para esta candidatura.",
+    activityEmptyBody:
+      "Mudanças de etapa, notas e atualizações importantes aparecerão aqui à medida que avança no processo de contratação.",
+  },
 };
 
 const AR: DeepPartial<JobsCopy> = {
@@ -1364,6 +1591,53 @@ const AR: DeepPartial<JobsCopy> = {
     statusPendingReview: "قيد المراجعة",
     statusFlagged: "مُعلَّمة",
     statusDraft: "مسودة",
+  },
+  employerApplicants: {
+    pageTitle: "المتقدمون",
+    pageSubtitle:
+      "راجع المتقدمين الحقيقيين وانقلهم عبر مسار التوظيف لديك.",
+    sectionTitle: "جدول المتقدمين",
+    tableCandidate: "المرشح",
+    tableRole: "الدور",
+    tableStage: "المرحلة",
+    tableProfile: "الملف الشخصي",
+    tableMatch: "التطابق",
+    noEmail: "لا يوجد بريد إلكتروني",
+    emptyKicker: "المسار خالٍ",
+    emptyTitle: "لا توجد طلبات في هذا الطابور بعد.",
+    emptyBody:
+      "سيظهر المرشحون الجدد هنا فور أن تبدأ الوظائف في تلقي الطلبات الحقيقية.",
+    stageReviewing: "قيد المراجعة",
+    stageShortlisted: "ضمن القائمة المختصرة",
+    stageInterview: "مقابلة",
+    stageOffer: "عرض",
+    stageHired: "تم التوظيف",
+    stageRejected: "مرفوض",
+    detailTitle: "تفاصيل المتقدم",
+    detailSubtitle:
+      "راجع هذا المرشح وحرّكه عبر المراحل وأضِف الملاحظات.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "قوة الملف الشخصي {percent}٪",
+    matchConfidenceTemplate: "ثقة التطابق {percent}٪",
+    noCoverNote: "لم يتم تقديم رسالة تعريفية.",
+    noticeStageUpdatedTitle: "تم تحديث المرحلة",
+    noticeStageUpdatedBody:
+      "تم تحديث مرحلة المرشح. سيرى التغيير في مساحة المرشح الخاصة به.",
+    noticeNoteAddedTitle: "تمت إضافة ملاحظة",
+    noticeNoteAddedBody: "تم حفظ ملاحظتك على هذا الطلب.",
+    stageSectionTitle: "تحديث المرحلة",
+    stageNotePlaceholder: "سياق النقل",
+    stagePending: "جارٍ تحديث المرحلة...",
+    stageSubmit: "تحديث المرحلة",
+    noteSectionTitle: "ملاحظة داخلية",
+    notePlaceholder: "أضِف ملاحظة خاصة عن هذا المرشح",
+    notePending: "جارٍ حفظ الملاحظة...",
+    noteSubmit: "إضافة ملاحظة",
+    activitySectionTitle: "سجل النشاط",
+    activityEmptyKicker: "لا يوجد نشاط بعد",
+    activityEmptyTitle: "لم يتم تسجيل أحداث لهذا الطلب.",
+    activityEmptyBody:
+      "ستظهر هنا تغييرات المراحل والملاحظات والتحديثات الرئيسية أثناء سيرك في عملية التوظيف.",
   },
 };
 
@@ -1580,6 +1854,53 @@ const IG: DeepPartial<JobsCopy> = {
     statusFlagged: "Akpọrọ aha",
     statusDraft: "Ihe edeturu",
   },
+  employerApplicants: {
+    pageTitle: "Ndị Tinyere Akwụkwọ",
+    pageSubtitle:
+      "Lelee ma kpụgharịa ndị tinyere akwụkwọ ezigbo n'ime usoro ọrụ ọchịchị gị.",
+    sectionTitle: "Tebụl ndị tinyere akwụkwọ",
+    tableCandidate: "Onye nwere mmasị",
+    tableRole: "Ọrụ",
+    tableStage: "Ọkwa",
+    tableProfile: "Profaịlụ",
+    tableMatch: "Nkwekọ",
+    noEmail: "Enweghị email",
+    emptyKicker: "Usoro doro anya",
+    emptyTitle: "Enweghị arịrịọ ọ bụla nọ n'usoro a.",
+    emptyBody:
+      "Ndị nwere mmasị ọhụrụ ga-apụta ebe a ozugbo ọrụ malitere ịnata arịrịọ.",
+    stageReviewing: "Na-atụle",
+    stageShortlisted: "Họpụtara",
+    stageInterview: "Ajụjụ ọnụ",
+    stageOffer: "Ofee",
+    stageHired: "Ewerela",
+    stageRejected: "Ajụrụ",
+    detailTitle: "Nkọwa onye tinyere akwụkwọ",
+    detailSubtitle:
+      "Lelee onye nwere mmasị a, kpụgharịa ya site na ọkwa, ma gbakwunye ndetu.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "Ike profaịlụ {percent}%",
+    matchConfidenceTemplate: "Ntụkwasị obi nkwekọ {percent}%",
+    noCoverNote: "Enyeghị akwụkwọ ozi mkpuchi.",
+    noticeStageUpdatedTitle: "Emelitere ọkwa",
+    noticeStageUpdatedBody:
+      "Emelitere ọkwa onye nwere mmasị. Ọ ga-ahụ mgbanwe a na mpaghara onye nwere mmasị nke ya.",
+    noticeNoteAddedTitle: "Agbakwunyere ndetu",
+    noticeNoteAddedBody: "Edebela ndetu gị na arịrịọ a.",
+    stageSectionTitle: "Melite ọkwa",
+    stageNotePlaceholder: "Ihe gbasara mgbanwe a",
+    stagePending: "Na-emelite ọkwa...",
+    stageSubmit: "Melite ọkwa",
+    noteSectionTitle: "Ndetu ime",
+    notePlaceholder: "Tinye ndetu nzuzo banyere onye nwere mmasị a",
+    notePending: "Na-edebe ndetu...",
+    noteSubmit: "Tinye ndetu",
+    activitySectionTitle: "Akụkọ ihe omume",
+    activityEmptyKicker: "Enweghị ihe omume ọ bụla",
+    activityEmptyTitle: "Edeghị ihe omume ọ bụla maka arịrịọ a.",
+    activityEmptyBody:
+      "Mgbanwe ọkwa, ndetu, na mmelite dị mkpa ga-apụta ebe a ka ị na-arụ ọrụ site na usoro ịchụ ọrụ.",
+  },
 };
 
 const YO: DeepPartial<JobsCopy> = {
@@ -1725,6 +2046,53 @@ const YO: DeepPartial<JobsCopy> = {
     statusPendingReview: "N duro de àtúnyẹ̀wò",
     statusFlagged: "Tí a sàmì sí",
     statusDraft: "Àkọpamọ́",
+  },
+  employerApplicants: {
+    pageTitle: "Awọn olubẹwẹ",
+    pageSubtitle:
+      "Ṣe àyẹ̀wò kí o sì mú àwọn olubẹwẹ tòótọ́ kọjá ọ̀nà ìgbaniṣiṣẹ́ rẹ.",
+    sectionTitle: "Tábìlì àwọn olubẹwẹ",
+    tableCandidate: "Olubẹwẹ",
+    tableRole: "Ipa",
+    tableStage: "Ipele",
+    tableProfile: "Profaili",
+    tableMatch: "Ìbámu",
+    noEmail: "Kò sí ímẹ̀ìlì",
+    emptyKicker: "Ọ̀nà mọ́",
+    emptyTitle: "Kò sí ìbéèrè kankan nínú ààyè yìí síbẹ̀.",
+    emptyBody:
+      "Awọn olubẹwẹ tuntun á farahàn níbí ní gbàrà tí àwọn ipa bá bẹ̀rẹ̀ sí gba àwọn ìbéèrè tòótọ́.",
+    stageReviewing: "Ní àtúnyẹ̀wò",
+    stageShortlisted: "Tí a yan",
+    stageInterview: "Ìfọ̀rọ̀wánilẹ́nuwò",
+    stageOffer: "Ìfunni",
+    stageHired: "Tí a gbà",
+    stageRejected: "Tí a kọ̀",
+    detailTitle: "Àlàyé olubẹwẹ",
+    detailSubtitle:
+      "Ṣe àyẹ̀wò olubẹwẹ yìí, mú u kọjá àwọn ipele, kí o sì fi àwọn àkọsílẹ̀ kún.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "Agbára profaili {percent}%",
+    matchConfidenceTemplate: "Ìgbẹ́kẹ̀lé ìbámu {percent}%",
+    noCoverNote: "Kò sí lẹ́tà ìbọ̀wọ̀ kan tí a pèsè.",
+    noticeStageUpdatedTitle: "A ti ṣe àtúnṣe ipele",
+    noticeStageUpdatedBody:
+      "A ti ṣe àtúnṣe ipele olubẹwẹ. Yóò rí ìyípadà náà ní àyè olubẹwẹ rẹ̀.",
+    noticeNoteAddedTitle: "A ti fi àkọsílẹ̀ kún",
+    noticeNoteAddedBody: "A ti fi àkọsílẹ̀ rẹ pamọ́ sí ìbéèrè yìí.",
+    stageSectionTitle: "Ṣe àtúnṣe ipele",
+    stageNotePlaceholder: "Ìdí fún ìṣíṣẹ́ náà",
+    stagePending: "Ńṣe àtúnṣe ipele...",
+    stageSubmit: "Ṣe àtúnṣe ipele",
+    noteSectionTitle: "Àkọsílẹ̀ inú",
+    notePlaceholder: "Fi àkọsílẹ̀ ìkọ̀kọ̀ kún nípa olubẹwẹ yìí",
+    notePending: "Ńpa àkọsílẹ̀ mọ́...",
+    noteSubmit: "Fi àkọsílẹ̀ kún",
+    activitySectionTitle: "Ìtàn ìṣẹ̀lẹ̀",
+    activityEmptyKicker: "Kò sí ìṣẹ̀lẹ̀ síbẹ̀",
+    activityEmptyTitle: "Kò sí ìṣẹ̀lẹ̀ kankan tí a kọ sílẹ̀ fún ìbéèrè yìí.",
+    activityEmptyBody:
+      "Àwọn ìyípadà ipele, àkọsílẹ̀, àti àwọn àtúnṣe pàtàkì á farahàn níbí bí o ṣe ń ṣiṣẹ́ kọjá ìlànà ìgbaniṣiṣẹ́.",
   },
   candidateProfile: {
     pageTitle: "Profaili Olùbẹ̀wẹ̀",
@@ -1917,6 +2285,53 @@ const HA: DeepPartial<JobsCopy> = {
     statusFlagged: "An yiwa alama",
     statusDraft: "Zane",
   },
+  employerApplicants: {
+    pageTitle: "Masu nema",
+    pageSubtitle:
+      "Duba kuma matsar da masu nema na gaske ta hanyar tarukan ma'aikaci naka.",
+    sectionTitle: "Teburin masu nema",
+    tableCandidate: "Mai nema",
+    tableRole: "Matsayi",
+    tableStage: "Mataki",
+    tableProfile: "Bayani",
+    tableMatch: "Daidaitawa",
+    noEmail: "Babu imel",
+    emptyKicker: "Tarukan a buɗe yake",
+    emptyTitle: "Babu wasu aikace-aikace a wannan layi tukuna.",
+    emptyBody:
+      "Sabbin masu nema za su bayyana a nan da zaran ayyuka suka fara karɓar aikace-aikace na gaske.",
+    stageReviewing: "Ana dubawa",
+    stageShortlisted: "An zaɓa",
+    stageInterview: "Hira",
+    stageOffer: "Tayi",
+    stageHired: "An ɗauka",
+    stageRejected: "An ƙi",
+    detailTitle: "Bayanin mai nema",
+    detailSubtitle:
+      "Duba wannan mai nema, ka matsar da shi ta matakai, kuma ka ƙara bayanai.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "Ƙarfin bayani {percent}%",
+    matchConfidenceTemplate: "Amincin daidaitawa {percent}%",
+    noCoverNote: "Babu wasiƙar gabatarwa da aka samar.",
+    noticeStageUpdatedTitle: "An sabunta mataki",
+    noticeStageUpdatedBody:
+      "An sabunta matakin mai nema. Zai ga sauyin a sararin mai nema nasa.",
+    noticeNoteAddedTitle: "An ƙara bayani",
+    noticeNoteAddedBody: "An adana bayaninka a wannan neman.",
+    stageSectionTitle: "Sabunta mataki",
+    stageNotePlaceholder: "Mahallin canjin",
+    stagePending: "Ana sabunta mataki...",
+    stageSubmit: "Sabunta mataki",
+    noteSectionTitle: "Bayani na ciki",
+    notePlaceholder: "Ƙara bayani na sirri game da wannan mai nema",
+    notePending: "Ana adana bayani...",
+    noteSubmit: "Ƙara bayani",
+    activitySectionTitle: "Tarihin ayyuka",
+    activityEmptyKicker: "Babu ayyuka tukuna",
+    activityEmptyTitle: "Babu wasu abubuwan da aka rubuta don wannan neman.",
+    activityEmptyBody:
+      "Canje-canjen matakai, bayanai, da muhimman sabuntawa za su bayyana a nan yayin da kake aiki ta hanyar tsarin ɗaukar ma'aikata.",
+  },
   candidateProfile: {
     pageTitle: "Bayanin Mai Nema",
     pageSubtitle:
@@ -2108,6 +2523,53 @@ const DE: DeepPartial<JobsCopy> = {
     statusFlagged: "Markiert",
     statusDraft: "Entwurf",
   },
+  employerApplicants: {
+    pageTitle: "Bewerbungen",
+    pageSubtitle:
+      "Überprüfen Sie echte Bewerbungen und bewegen Sie sie durch Ihre Arbeitgeber-Pipeline.",
+    sectionTitle: "Bewerbungsübersicht",
+    tableCandidate: "Kandidat",
+    tableRole: "Stelle",
+    tableStage: "Stufe",
+    tableProfile: "Profil",
+    tableMatch: "Übereinstimmung",
+    noEmail: "Keine E-Mail",
+    emptyKicker: "Pipeline ist leer",
+    emptyTitle: "Noch keine Bewerbungen in dieser Warteschlange.",
+    emptyBody:
+      "Neue Kandidaten erscheinen hier, sobald Stellen echte Bewerbungen erhalten.",
+    stageReviewing: "In Prüfung",
+    stageShortlisted: "In engerer Auswahl",
+    stageInterview: "Interview",
+    stageOffer: "Angebot",
+    stageHired: "Eingestellt",
+    stageRejected: "Abgelehnt",
+    detailTitle: "Bewerberdetail",
+    detailSubtitle:
+      "Bewerten Sie diesen Kandidaten, bewegen Sie ihn durch die Stufen und fügen Sie Notizen hinzu.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "Profilstärke {percent} %",
+    matchConfidenceTemplate: "Match-Konfidenz {percent} %",
+    noCoverNote: "Kein Anschreiben vorhanden.",
+    noticeStageUpdatedTitle: "Stufe aktualisiert",
+    noticeStageUpdatedBody:
+      "Die Stufe des Kandidaten wurde aktualisiert. Er sieht die Änderung in seinem Kandidatenbereich.",
+    noticeNoteAddedTitle: "Notiz hinzugefügt",
+    noticeNoteAddedBody: "Ihre Notiz wurde zu dieser Bewerbung gespeichert.",
+    stageSectionTitle: "Stufe aktualisieren",
+    stageNotePlaceholder: "Kontext für den Wechsel",
+    stagePending: "Stufe wird aktualisiert...",
+    stageSubmit: "Stufe aktualisieren",
+    noteSectionTitle: "Interne Notiz",
+    notePlaceholder: "Private Notiz zu diesem Kandidaten hinzufügen",
+    notePending: "Notiz wird gespeichert...",
+    noteSubmit: "Notiz hinzufügen",
+    activitySectionTitle: "Aktivitätsverlauf",
+    activityEmptyKicker: "Noch keine Aktivität",
+    activityEmptyTitle: "Für diese Bewerbung sind keine Ereignisse erfasst.",
+    activityEmptyBody:
+      "Stufenwechsel, Notizen und wichtige Aktualisierungen erscheinen hier, während Sie den Einstellungsprozess durchlaufen.",
+  },
   candidateProfile: {
     pageTitle: "Bewerberprofil",
     pageSubtitle:
@@ -2286,6 +2748,48 @@ const ZH: DeepPartial<JobsCopy> = {
     statusPendingReview: "审核中",
     statusFlagged: "已标记",
     statusDraft: "草稿",
+  },
+  employerApplicants: {
+    pageTitle: "申请人",
+    pageSubtitle: "审核并在你的雇主流水线中推进真实申请人。",
+    sectionTitle: "申请人表格",
+    tableCandidate: "候选人",
+    tableRole: "职位",
+    tableStage: "阶段",
+    tableProfile: "档案",
+    tableMatch: "匹配度",
+    noEmail: "无邮箱",
+    emptyKicker: "队列已清空",
+    emptyTitle: "此队列中暂无申请。",
+    emptyBody: "当职位开始收到真实申请时，新候选人将出现在此处。",
+    stageReviewing: "审核中",
+    stageShortlisted: "入围",
+    stageInterview: "面试",
+    stageOffer: "录用通知",
+    stageHired: "已入职",
+    stageRejected: "已拒绝",
+    detailTitle: "申请人详情",
+    detailSubtitle: "审核此候选人，在阶段间移动，并添加笔记。",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "档案强度 {percent}%",
+    matchConfidenceTemplate: "匹配置信度 {percent}%",
+    noCoverNote: "未提供求职信。",
+    noticeStageUpdatedTitle: "阶段已更新",
+    noticeStageUpdatedBody: "候选人的阶段已更新。他们将在候选人中心看到变化。",
+    noticeNoteAddedTitle: "已添加笔记",
+    noticeNoteAddedBody: "你的笔记已保存到此申请。",
+    stageSectionTitle: "更新阶段",
+    stageNotePlaceholder: "变更说明",
+    stagePending: "正在更新阶段...",
+    stageSubmit: "更新阶段",
+    noteSectionTitle: "内部笔记",
+    notePlaceholder: "添加关于此候选人的私人笔记",
+    notePending: "正在保存笔记...",
+    noteSubmit: "添加笔记",
+    activitySectionTitle: "活动历史",
+    activityEmptyKicker: "暂无活动",
+    activityEmptyTitle: "此申请暂无记录的事件。",
+    activityEmptyBody: "随着你推进招聘流程，阶段变更、笔记和关键更新将显示在此处。",
   },
   candidateProfile: {
     pageTitle: "候选人资料",
@@ -2472,6 +2976,53 @@ const HI: DeepPartial<JobsCopy> = {
     statusPendingReview: "समीक्षाधीन",
     statusFlagged: "चिह्नित",
     statusDraft: "मसौदा",
+  },
+  employerApplicants: {
+    pageTitle: "आवेदक",
+    pageSubtitle:
+      "अपनी नियोक्ता पाइपलाइन में वास्तविक आवेदकों की समीक्षा करें और उन्हें आगे बढ़ाएँ.",
+    sectionTitle: "आवेदक तालिका",
+    tableCandidate: "उम्मीदवार",
+    tableRole: "भूमिका",
+    tableStage: "चरण",
+    tableProfile: "प्रोफ़ाइल",
+    tableMatch: "मिलान",
+    noEmail: "कोई ईमेल नहीं",
+    emptyKicker: "पाइपलाइन साफ़ है",
+    emptyTitle: "इस कतार में अभी कोई आवेदन नहीं है.",
+    emptyBody:
+      "जैसे ही भूमिकाएँ वास्तविक आवेदन प्राप्त करना शुरू करेंगी, नए उम्मीदवार यहाँ दिखाई देंगे.",
+    stageReviewing: "समीक्षाधीन",
+    stageShortlisted: "शॉर्टलिस्ट किया गया",
+    stageInterview: "साक्षात्कार",
+    stageOffer: "प्रस्ताव",
+    stageHired: "नियुक्त",
+    stageRejected: "अस्वीकृत",
+    detailTitle: "आवेदक विवरण",
+    detailSubtitle:
+      "इस उम्मीदवार की समीक्षा करें, उन्हें चरणों के माध्यम से आगे बढ़ाएँ और नोट जोड़ें.",
+    detailJobTemplate: "{jobTitle} · {employerName}",
+    profileStrengthTemplate: "प्रोफ़ाइल मज़बूती {percent}%",
+    matchConfidenceTemplate: "मिलान विश्वास {percent}%",
+    noCoverNote: "कोई कवर नोट प्रदान नहीं किया गया.",
+    noticeStageUpdatedTitle: "चरण अद्यतन किया गया",
+    noticeStageUpdatedBody:
+      "उम्मीदवार का चरण अद्यतन कर दिया गया है. वे अपने उम्मीदवार हब में परिवर्तन देखेंगे.",
+    noticeNoteAddedTitle: "नोट जोड़ा गया",
+    noticeNoteAddedBody: "आपका नोट इस आवेदन में सहेज लिया गया है.",
+    stageSectionTitle: "चरण अद्यतन करें",
+    stageNotePlaceholder: "बदलाव का संदर्भ",
+    stagePending: "चरण अद्यतन हो रहा है...",
+    stageSubmit: "चरण अद्यतन करें",
+    noteSectionTitle: "आंतरिक नोट",
+    notePlaceholder: "इस उम्मीदवार के बारे में निजी नोट जोड़ें",
+    notePending: "नोट सहेजा जा रहा है...",
+    noteSubmit: "नोट जोड़ें",
+    activitySectionTitle: "गतिविधि इतिहास",
+    activityEmptyKicker: "अभी कोई गतिविधि नहीं",
+    activityEmptyTitle: "इस आवेदन के लिए कोई इवेंट दर्ज नहीं है.",
+    activityEmptyBody:
+      "जब आप भर्ती प्रक्रिया से गुज़रेंगे, तो चरण बदलाव, नोट और मुख्य अद्यतन यहाँ दिखाई देंगे.",
   },
   candidateProfile: {
     pageTitle: "उम्मीदवार प्रोफ़ाइल",
@@ -2663,6 +3214,53 @@ const IT: DeepPartial<JobsCopy> = {
     "statusPendingReview": "In revisione",
     "statusFlagged": "Segnalato",
     "statusDraft": "Bozza"
+  },
+  "employerApplicants": {
+    "pageTitle": "Candidati",
+    "pageSubtitle":
+      "Esamina e sposta i candidati reali lungo la tua pipeline da datore di lavoro.",
+    "sectionTitle": "Tabella dei candidati",
+    "tableCandidate": "Candidato",
+    "tableRole": "Ruolo",
+    "tableStage": "Fase",
+    "tableProfile": "Profilo",
+    "tableMatch": "Corrispondenza",
+    "noEmail": "Nessuna email",
+    "emptyKicker": "Pipeline libera",
+    "emptyTitle": "Nessuna candidatura in questa coda al momento.",
+    "emptyBody":
+      "I nuovi candidati appariranno qui non appena i ruoli inizieranno a ricevere candidature reali.",
+    "stageReviewing": "In esame",
+    "stageShortlisted": "In lista ristretta",
+    "stageInterview": "Colloquio",
+    "stageOffer": "Offerta",
+    "stageHired": "Assunto",
+    "stageRejected": "Rifiutato",
+    "detailTitle": "Dettaglio candidato",
+    "detailSubtitle":
+      "Esamina questo candidato, fallo avanzare tra le fasi e aggiungi note.",
+    "detailJobTemplate": "{jobTitle} · {employerName}",
+    "profileStrengthTemplate": "Solidità del profilo {percent} %",
+    "matchConfidenceTemplate": "Fiducia di corrispondenza {percent} %",
+    "noCoverNote": "Nessuna lettera di presentazione fornita.",
+    "noticeStageUpdatedTitle": "Fase aggiornata",
+    "noticeStageUpdatedBody":
+      "La fase del candidato è stata aggiornata. Vedrà la modifica nel suo spazio candidato.",
+    "noticeNoteAddedTitle": "Nota aggiunta",
+    "noticeNoteAddedBody": "La tua nota è stata salvata in questa candidatura.",
+    "stageSectionTitle": "Aggiorna fase",
+    "stageNotePlaceholder": "Contesto dello spostamento",
+    "stagePending": "Aggiornamento fase in corso...",
+    "stageSubmit": "Aggiorna fase",
+    "noteSectionTitle": "Nota interna",
+    "notePlaceholder": "Aggiungi una nota privata su questo candidato",
+    "notePending": "Salvataggio nota in corso...",
+    "noteSubmit": "Aggiungi nota",
+    "activitySectionTitle": "Cronologia attività",
+    "activityEmptyKicker": "Ancora nessuna attività",
+    "activityEmptyTitle": "Nessun evento registrato per questa candidatura.",
+    "activityEmptyBody":
+      "Cambi di fase, note e aggiornamenti chiave appariranno qui mentre porti avanti il processo di assunzione."
   },
   "candidateProfile": {
     "pageTitle": "Profilo del candidato",
