@@ -5,6 +5,7 @@ import {
   activityTitle,
   formatStamp,
   type ActivityKind,
+  type ActivityTitleLabels,
 } from "./helpers";
 
 export type PropertyActivityRow = {
@@ -19,6 +20,8 @@ export type PropertyActivityRow = {
 
 type Props = {
   activity: ReadonlyArray<PropertyActivityRow>;
+  ariaLabel: string;
+  titleLabels: ActivityTitleLabels;
   limit?: number;
 };
 
@@ -29,16 +32,16 @@ const ICON_BY_KIND: Record<ActivityKind, typeof Home> = {
   generic: Home,
 };
 
-export function PropertyActivity({ activity, limit = 8 }: Props) {
+export function PropertyActivity({ activity, ariaLabel, titleLabels, limit = 8 }: Props) {
   const rows = activity.slice(0, limit);
   if (rows.length === 0) return null;
 
   return (
-    <div className="acct-prop__activity" role="list" aria-label="Property activity">
+    <div className="acct-prop__activity" role="list" aria-label={ariaLabel}>
       {rows.map((row) => {
         const kind = activityKind(row.activityType);
         const Icon = ICON_BY_KIND[kind];
-        const title = row.title?.trim() || activityTitle(row.activityType);
+        const title = row.title?.trim() || activityTitle(row.activityType, titleLabels);
         const sub = row.description?.trim() ?? null;
         const href = row.actionUrl?.trim() || null;
         const stamp = formatStamp(row.occurredAt);

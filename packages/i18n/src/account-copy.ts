@@ -1179,6 +1179,441 @@ export type AccountCopy = {
       leaveReview: string;
     };
   };
+  divisionProperty: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      ariaLabel: string;
+      browseListingsCta: string;
+      savedShortlistCta: string;
+      tilesAriaLabel: string;
+      tileLabels: {
+        saved: string;
+        inquiries: string;
+        viewings: string;
+        listings: string;
+      };
+      tileFoot: {
+        savedManagedTemplate: string;
+        savedEmpty: string;
+        savedWith: string;
+        inquiriesEmpty: string;
+        inquiriesWith: string;
+        viewingsEmpty: string;
+        viewingsWith: string;
+        listingsEmpty: string;
+        listingsWith: string;
+      };
+      sideAriaLabel: string;
+      sideKicker: string;
+      sideTitle: string;
+      sideBody: string;
+      sideBodyMuted: string;
+      breakdownAriaLabel: string;
+      breakdownLabel: string;
+      breakdownLabels: {
+        saved: string;
+        inquiries: string;
+        viewings: string;
+        listings: string;
+      };
+      state: {
+        empty: {
+          headline: string;
+          blurb: string;
+        };
+        discover: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+        };
+        active: {
+          viewingHeadlineTemplateSingular: string;
+          viewingHeadlineTemplatePlural: string;
+          inquiryHeadlineTemplateSingular: string;
+          inquiryHeadlineTemplatePlural: string;
+          blurb: string;
+        };
+      };
+    };
+    sections: {
+      saved: string;
+      savedMetaEmpty: string;
+      savedMetaTemplate: string;
+      activity: string;
+      activityMetaEmpty: string;
+      activityMetaTemplateSingular: string;
+      activityMetaTemplatePlural: string;
+    };
+    empty: {
+      savedTitle: string;
+      savedBody: string;
+      activityTitle: string;
+      activityBody: string;
+    };
+    activity: {
+      ariaLabel: string;
+      titles: {
+        inquiry: string;
+        viewing: string;
+        listing_submitted: string;
+        listing_updated: string;
+        listing_reviewed: string;
+      };
+    };
+    gallery: {
+      ariaLabel: string;
+      managedBadge: string;
+      featuredBadge: string;
+      locationPending: string;
+      contactAgent: string;
+      savedAtTemplate: string;
+      bedSingular: string;
+      bedPlural: string;
+      bathSingular: string;
+      bathPlural: string;
+      sizeSqmTemplate: string;
+    };
+  };
+  divisionMarketplace: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      ariaLabel: string;
+      sideAriaLabel: string;
+      sideKicker: string;
+      sideTitle: string;
+      sideBody: string;
+      breakdownLabel: string;
+      breakdownAriaLabel: string;
+      tilesAriaLabel: string;
+      tileLabels: {
+        orders: string;
+        disputes: string;
+        store: string;
+        payouts: string;
+      };
+      tileFoot: {
+        ordersEmpty: string;
+        ordersInMotionTemplate: string;
+        ordersDeliveredTemplate: string;
+        disputesClear: string;
+        disputesActiveTemplate: string;
+        storeActiveNoName: string;
+        storeActiveWithNameTemplate: string;
+        storeApplicationTemplate: string;
+        storeIdle: string;
+        payoutsEmptyNoneSettled: string;
+        payoutsSettledTemplate: string;
+        payoutsPendingTemplate: string;
+      };
+      breakdownLabels: {
+        inMotion: string;
+        openDisputes: string;
+        delivered: string;
+        pendingPayouts: string;
+      };
+      state: {
+        empty: {
+          headline: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        attention: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        activeOrders: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        activePayouts: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        calmBuyer: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        calmSeller: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+      };
+    };
+    sections: {
+      matters: {
+        title: string;
+        meta: string;
+        ariaLabel: string;
+        emptyTitle: string;
+        emptyBody: string;
+      };
+      orders: {
+        title: string;
+        empty: string;
+        metaTemplateSingular: string;
+        metaTemplatePlural: string;
+        emptyTitle: string;
+        emptyBody: string;
+        ariaLabel: string;
+      };
+      activity: {
+        title: string;
+        empty: string;
+        metaTemplateSingular: string;
+        metaTemplatePlural: string;
+        emptyTitle: string;
+        emptyBody: string;
+        ariaLabel: string;
+      };
+    };
+    matters: {
+      disputes: {
+        kicker: string;
+        titleTemplateSingular: string;
+        titleTemplatePlural: string;
+        bodyLatestTemplate: string;
+        bodyFallback: string;
+        cta: string;
+      };
+      application: {
+        kicker: string;
+        bodyWithStoreTemplate: string;
+        bodyDefault: string;
+        bodyReviewSuffixTemplate: string;
+        cta: string;
+        defaultStatus: string;
+      };
+      payouts: {
+        kicker: string;
+        titleTemplate: string;
+        bodyTemplateSingular: string;
+        bodyTemplatePlural: string;
+        cta: string;
+      };
+    };
+    orders: {
+      rowTitleTemplate: string;
+      rowSubTemplate: string;
+      rowAriaLabelTemplate: string;
+      statusFallbackDraft: string;
+    };
+    statusValueLabels: {
+      delivered: string;
+      completed: string;
+      customer_confirmed: string;
+      fulfilled: string;
+      cancelled: string;
+      refunded: string;
+      disputed: string;
+      exception: string;
+      placed: string;
+      paid: string;
+      awaiting_fulfilment: string;
+      confirmed: string;
+      queued: string;
+    };
+    applicationStatusLabels: {
+      submitted: string;
+      under_review: string;
+      approved: string;
+      rejected: string;
+      pending_documents: string;
+      changes_requested: string;
+    };
+    formatLabels: {
+      dash: string;
+    };
+  };
+  divisionJobs: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    header: {
+      title: string;
+      description: string;
+      candidateModuleCta: string;
+      interviewRoomsCta: string;
+      browseLiveRolesCta: string;
+    };
+    hero: {
+      eyebrow: string;
+      headline: string;
+      body: string;
+      statsAriaLabel: string;
+      statLabels: {
+        applications: string;
+        saved: string;
+        readiness: string;
+        updates: string;
+      };
+      statDetails: {
+        applicationsLeadingTemplate: string;
+        applicationsEmpty: string;
+        savedSome: string;
+        savedEmpty: string;
+        updatesLatestTemplate: string;
+        updatesEmpty: string;
+      };
+    };
+    sections: {
+      nextActionsKicker: string;
+      nextActionsTitle: string;
+      openTimelineCta: string;
+      applicationsKicker: string;
+      applicationsTitle: string;
+      savedKicker: string;
+      savedTitle: string;
+      openSavedRolesCta: string;
+      recommendedKicker: string;
+      recommendedTitle: string;
+      browseCatalogCta: string;
+      recruiterFeedKicker: string;
+      recruiterFeedTitle: string;
+      candidateInboxCta: string;
+      profileKicker: string;
+      profileTitle: string;
+      sharedInboxKicker: string;
+      sharedInboxTitle: string;
+      alertsKicker: string;
+      alertsTitle: string;
+    };
+    empty: {
+      applicationsTitle: string;
+      applicationsBody: string;
+      exploreJobsCta: string;
+      savedJobsTitle: string;
+      savedJobsBody: string;
+      recommendedTitle: string;
+      recommendedBody: string;
+      recruiterFeedTitle: string;
+      recruiterFeedBody: string;
+      notificationsTitle: string;
+      notificationsBody: string;
+      alertsTitle: string;
+      alertsBody: string;
+      browseRolesCta: string;
+    };
+    application: {
+      progressPercentTemplate: string;
+      appliedAtTemplate: string;
+      candidateReadiness: string;
+      recruiterConfidence: string;
+      latestMovement: string;
+      nextBestMove: string;
+      openTimelineCta: string;
+      interviewRoomCta: string;
+      viewRoleCta: string;
+    };
+    savedJob: {
+      trustTemplate: string;
+      savedAtTemplate: string;
+    };
+    recommended: {
+      compFallback: string;
+    };
+    stageLabels: {
+      applied: string;
+      reviewing: string;
+      shortlisted: string;
+      interview: string;
+      offer: string;
+      hired: string;
+      rejected: string;
+    };
+    nextStep: {
+      labels: {
+        applied: string;
+        shortlisted: string;
+        interview: string;
+        offer: string;
+        rejected: string;
+      };
+      bodies: {
+        applied: string;
+        shortlisted: string;
+        interview: string;
+        offer: string;
+        rejected: string;
+      };
+    };
+    readinessLabels: {
+      interviewReady: string;
+      strongProfile: string;
+      needsProof: string;
+      needsStructure: string;
+    };
+    workModeLabels: {
+      remote: string;
+      hybrid: string;
+      onsite: string;
+    };
+    employmentTypeLabels: {
+      fullTime: string;
+      partTime: string;
+      contract: string;
+      internship: string;
+      temporary: string;
+    };
+    profile: {
+      readinessLabel: string;
+      skillsMappedLabel: string;
+      filesLabel: string;
+      improveProfileCta: string;
+      openCandidateModuleCta: string;
+      checklist: {
+        identityLabel: string;
+        identityDetail: string;
+        storyLabel: string;
+        storyDetail: string;
+        verificationLabel: string;
+        verificationDetail: string;
+        proofLabel: string;
+        proofDetail: string;
+        skillsLabel: string;
+        skillsDetail: string;
+      };
+    };
+    nextActions: {
+      gapTemplate: string;
+      interviewLabel: string;
+      offerLabel: string;
+      attentionTemplate: string;
+      convertSavedLabel: string;
+      convertSavedTemplate: string;
+      restartLabel: string;
+      restartDetail: string;
+    };
+    alertStatus: {
+      active: string;
+      paused: string;
+    };
+    recruiterUpdateTitleTemplate: string;
+  };
 };
 
 const EN: AccountCopy = {
@@ -2433,6 +2868,448 @@ const EN: AccountCopy = {
       openLiveBooking: "Open live booking",
       leaveReview: "Leave review",
     },
+  },
+  divisionProperty: {
+    metadata: {
+      title: "Property · saved & inquiries",
+      description: "Your Property shortlist, inquiries, viewings, and listing follow-ups — every action on HenryCo Property mirrors into this account room.",
+    },
+    hero: {
+      eyebrow: "Property · live",
+      ariaLabel: "Property overview",
+      browseListingsCta: "Browse listings",
+      savedShortlistCta: "Saved shortlist",
+      tilesAriaLabel: "Property activity",
+      tileLabels: {
+        saved: "Saved",
+        inquiries: "Inquiries",
+        viewings: "Viewings",
+        listings: "Listings",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} HenryCo-managed",
+        savedEmpty: "Save listings to build a shortlist",
+        savedWith: "Compare and revisit anytime",
+        inquiriesEmpty: "No conversations open yet",
+        inquiriesWith: "Follow-ups land in this room",
+        viewingsEmpty: "Request a viewing on a saved home",
+        viewingsWith: "Confirmations sync across devices",
+        listingsEmpty: "Submit a listing on Property",
+        listingsWith: "Moderation outcomes mirror here",
+      },
+      sideAriaLabel: "How this room works",
+      sideKicker: "How this room works",
+      sideTitle: "Discover on Property, follow up here.",
+      sideBody:
+        "Save a listing, request a viewing, or open an inquiry on HenryCo Property — every action mirrors into this account room so you can pick up where you left off across devices.",
+      sideBodyMuted:
+        "HenryCo-managed listings flag with a Managed badge — review, inspection, and lease follow-ups are coordinated by the Property team.",
+      breakdownAriaLabel: "Activity breakdown",
+      breakdownLabel: "By activity",
+      breakdownLabels: {
+        saved: "Saved",
+        inquiries: "Inquiries",
+        viewings: "Viewings",
+        listings: "Listings",
+      },
+      state: {
+        empty: {
+          headline: "Start exploring HenryCo Property.",
+          blurb:
+            "Discover residential rentals, sale listings, and HenryCo-managed homes. Save your favourites and every inquiry, viewing, or listing follow-up lands here automatically.",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} shortlisted home.",
+          headlineTemplatePlural: "{count} shortlisted homes.",
+          blurb:
+            "Saved homes ready to revisit. Open a listing to request a viewing or send an inquiry, and the follow-up will mirror straight back into this room.",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "{count} viewing scheduled.",
+          viewingHeadlineTemplatePlural: "{count} viewings scheduled.",
+          inquiryHeadlineTemplateSingular: "{count} inquiry live.",
+          inquiryHeadlineTemplatePlural: "{count} inquiries live.",
+          blurb:
+            "Your shortlist, inquiries, and viewing schedule live in one room. Pick up where you left off — every action is mirrored from HenryCo Property in real time.",
+        },
+      },
+    },
+    sections: {
+      saved: "Saved shortlist",
+      savedMetaEmpty: "Save listings on HenryCo Property to build your shortlist.",
+      savedMetaTemplate: "{saved} saved · {managed} managed by HenryCo",
+      activity: "Recent activity",
+      activityMetaEmpty: "Inquiries, viewings, and listing reviews mirror here as they happen.",
+      activityMetaTemplateSingular: "{count} update · most recent first",
+      activityMetaTemplatePlural: "{count} updates · most recent first",
+    },
+    empty: {
+      savedTitle: "No saved properties yet",
+      savedBody:
+        "Discover residential rentals, sale listings, and HenryCo-managed homes on Property. Anything you save lands here automatically.",
+      activityTitle: "No property activity yet",
+      activityBody:
+        "Open a listing on HenryCo Property to request a viewing or send an inquiry — every step from your first message through review will appear here.",
+    },
+    activity: {
+      ariaLabel: "Property activity",
+      titles: {
+        inquiry: "Property inquiry",
+        viewing: "Viewing request",
+        listing_submitted: "Listing submitted",
+        listing_updated: "Listing updated",
+        listing_reviewed: "Listing review complete",
+      },
+    },
+    gallery: {
+      ariaLabel: "Saved properties",
+      managedBadge: "Managed",
+      featuredBadge: "Featured",
+      locationPending: "Location pending",
+      contactAgent: "Contact agent",
+      savedAtTemplate: "Saved {date}",
+      bedSingular: "bed",
+      bedPlural: "beds",
+      bathSingular: "bath",
+      bathPlural: "baths",
+      sizeSqmTemplate: "{size} sqm",
+    },
+  },
+  divisionMarketplace: {
+    metadata: {
+      title: "Marketplace · orders & seller activity",
+      description: "Track every HenryCo Marketplace order, dispute, and seller payout linked to this account — buyer activity and seller workspace, mirrored into one room in real time.",
+    },
+    hero: {
+      eyebrow: "Marketplace · live",
+      ariaLabel: "Marketplace overview",
+      sideAriaLabel: "How this room works",
+      sideKicker: "How this room works",
+      sideTitle: "Buy and sell — one room.",
+      sideBody: "Every order, dispute, and payout request you create on Marketplace mirrors into this room. Seller workspace activity threads in alongside buyer orders, so the two sides of marketplace stay visible at a glance.",
+      breakdownLabel: "By status",
+      breakdownAriaLabel: "Activity breakdown",
+      tilesAriaLabel: "Marketplace activity",
+      tileLabels: {
+        orders: "Orders",
+        disputes: "Disputes",
+        store: "Store",
+        payouts: "Payouts",
+      },
+      tileFoot: {
+        ordersEmpty: "First order will appear here",
+        ordersInMotionTemplate: "{inFlight} in motion · {delivered} delivered",
+        ordersDeliveredTemplate: "{delivered} delivered to date",
+        disputesClear: "All clear",
+        disputesActiveTemplate: "{open} open · {resolving} resolving",
+        storeActiveNoName: "Vendor membership active",
+        storeActiveWithNameTemplate: "Store: {name}",
+        storeApplicationTemplate: "Application: {status}",
+        storeIdle: "Not selling yet — apply when ready",
+        payoutsEmptyNoneSettled: "No payout requests yet",
+        payoutsSettledTemplate: "{count} settled to date",
+        payoutsPendingTemplate: "{amount} pending",
+      },
+      breakdownLabels: {
+        inMotion: "In motion",
+        openDisputes: "Open disputes",
+        delivered: "Delivered",
+        pendingPayouts: "Pending payouts",
+      },
+      state: {
+        empty: {
+          headline: "Start shopping on HenryCo Marketplace.",
+          blurb: "Orders, disputes, seller activity, and payouts mirror into this room as soon as you transact. Browse the marketplace to get the first one rolling.",
+          ctaPrimary: "Open marketplace",
+          ctaSecondary: "Apply to sell",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} matter needs attention.",
+          headlineTemplatePlural: "{count} matters need attention.",
+          blurb: "Disputes and exception orders sit at the top of the queue. Open the case to add evidence or accept resolution.",
+          ctaPrimary: "Review matters",
+          ctaSecondary: "Open marketplace",
+        },
+        activeOrders: {
+          headlineTemplateSingular: "{count} order in motion.",
+          headlineTemplatePlural: "{count} orders in motion.",
+          blurb: "Live order status, payment state, and seller follow-up mirror into this room from HenryCo Marketplace in real time.",
+          ctaPrimary: "Open marketplace",
+          ctaSecondary: "Apply to sell",
+        },
+        activePayouts: {
+          headlineTemplateSingular: "{count} payout in review.",
+          headlineTemplatePlural: "{count} payouts in review.",
+          blurb: "Vendor payout requests are moving through finance verification. Status updates appear here as the team progresses each request.",
+          ctaPrimary: "Open seller workspace",
+          ctaSecondary: "Open marketplace",
+        },
+        calmBuyer: {
+          headlineTemplateSingular: "{count} order on record.",
+          headlineTemplatePlural: "{count} orders on record.",
+          blurb: "All your marketplace activity in one room — buyer orders, seller payouts, dispute outcomes, and the latest status from every store.",
+          ctaPrimary: "Open marketplace",
+          ctaSecondary: "Apply to sell",
+        },
+        calmSeller: {
+          headlineTemplateSingular: "{count} order · seller active.",
+          headlineTemplatePlural: "{count} orders · seller active.",
+          blurb: "All your marketplace activity in one room — buyer orders, seller payouts, dispute outcomes, and the latest status from every store.",
+          ctaPrimary: "Open marketplace",
+          ctaSecondary: "Open seller workspace",
+        },
+      },
+    },
+    sections: {
+      matters: {
+        title: "Active matters",
+        meta: "Disputes, seller application status, and pending payouts surface here when action is needed.",
+        ariaLabel: "Active marketplace matters",
+        emptyTitle: "Nothing requires action",
+        emptyBody: "All your marketplace activity is moving normally — no open disputes, no payouts in review, and (if applicable) your seller application has cleared.",
+      },
+      orders: {
+        title: "Recent orders",
+        empty: "Orders placed on Marketplace appear here in real time.",
+        metaTemplateSingular: "{count} order · most recent first",
+        metaTemplatePlural: "{count} orders · most recent first",
+        emptyTitle: "No orders yet",
+        emptyBody: "Place your first order on HenryCo Marketplace — order status, payment state, and any follow-up land here automatically.",
+        ariaLabel: "Recent orders",
+      },
+      activity: {
+        title: "Recent activity",
+        empty: "Status updates, payments, and reviews mirror here as they happen.",
+        metaTemplateSingular: "{count} update · most recent first",
+        metaTemplatePlural: "{count} updates · most recent first",
+        emptyTitle: "No marketplace activity yet",
+        emptyBody: "Order confirmations, dispute updates, and seller payout outcomes will appear here as they happen.",
+        ariaLabel: "Marketplace activity",
+      },
+    },
+    matters: {
+      disputes: {
+        kicker: "Disputes",
+        titleTemplateSingular: "{count} case needs action",
+        titleTemplatePlural: "{count} cases need action",
+        bodyLatestTemplate: "Latest: {ref} · updated {stamp}",
+        bodyFallback: "Open the queue to add evidence.",
+        cta: "Review cases",
+      },
+      application: {
+        kicker: "Seller application",
+        bodyWithStoreTemplate: "Store: {name}",
+        bodyDefault: "Application in HenryCo review queue.",
+        bodyReviewSuffixTemplate: " · {note}",
+        cta: "View status",
+        defaultStatus: "submitted",
+      },
+      payouts: {
+        kicker: "Payouts in review",
+        titleTemplate: "{amount} pending",
+        bodyTemplateSingular: "{count} request awaiting finance verification.",
+        bodyTemplatePlural: "{count} requests awaiting finance verification.",
+        cta: "Open seller workspace",
+      },
+    },
+    orders: {
+      rowTitleTemplate: "Order {orderNo}",
+      rowSubTemplate: "{amount} · placed {stamp}",
+      rowAriaLabelTemplate: "Order {orderNo} · {status}",
+      statusFallbackDraft: "Draft",
+    },
+    statusValueLabels: {
+      delivered: "Delivered",
+      completed: "Completed",
+      customer_confirmed: "Customer confirmed",
+      fulfilled: "Fulfilled",
+      cancelled: "Cancelled",
+      refunded: "Refunded",
+      disputed: "Disputed",
+      exception: "Exception",
+      placed: "Placed",
+      paid: "Paid",
+      awaiting_fulfilment: "Awaiting fulfilment",
+      confirmed: "Confirmed",
+      queued: "Queued",
+    },
+    applicationStatusLabels: {
+      submitted: "submitted",
+      under_review: "under review",
+      approved: "approved",
+      rejected: "rejected",
+      pending_documents: "pending documents",
+      changes_requested: "changes requested",
+    },
+    formatLabels: {
+      dash: "—",
+    },
+  },
+  divisionJobs: {
+    metadata: {
+      title: "Jobs · candidate dashboard",
+      description: "Track every HenryCo Jobs application, saved role, recruiter update, and profile readiness signal linked to this account.",
+    },
+    header: {
+      title: "Jobs",
+      description: "Your applications, saved roles, recruiter updates, and profile strength — all in one place.",
+      candidateModuleCta: "Candidate module",
+      interviewRoomsCta: "Interview rooms",
+      browseLiveRolesCta: "Browse live roles",
+    },
+    hero: {
+      eyebrow: "Your account",
+      headline: "Your jobs activity, all in one place.",
+      body: "Applications, saved roles, recruiter updates, and profile readiness are linked to your HenryCo account.",
+      statsAriaLabel: "Jobs activity summary",
+      statLabels: {
+        applications: "Active applications",
+        saved: "Saved roles",
+        readiness: "Profile readiness",
+        updates: "Recruiter updates",
+      },
+      statDetails: {
+        applicationsLeadingTemplate: "{stage} is your leading live stage.",
+        applicationsEmpty: "No live applications yet.",
+        savedSome: "Your shortlist is ready for another review pass.",
+        savedEmpty: "Build a shortlist so good roles are easier to revisit.",
+        updatesLatestTemplate: "{relative} latest movement.",
+        updatesEmpty: "No recruiter updates yet.",
+      },
+    },
+    sections: {
+      nextActionsKicker: "Next Actions",
+      nextActionsTitle: "What deserves your attention now",
+      openTimelineCta: "Open timeline",
+      applicationsKicker: "Applications",
+      applicationsTitle: "Live hiring movement",
+      savedKicker: "Saved Jobs",
+      savedTitle: "Shortlist with better context",
+      openSavedRolesCta: "Open saved roles",
+      recommendedKicker: "Recommended Roles",
+      recommendedTitle: "What fits your current signal",
+      browseCatalogCta: "Browse catalog",
+      recruiterFeedKicker: "Recruiter Feed",
+      recruiterFeedTitle: "Messages, stage moves, and alerts",
+      candidateInboxCta: "Candidate inbox",
+      profileKicker: "Profile Strength",
+      profileTitle: "Candidate readiness and CV quality",
+      sharedInboxKicker: "Shared Inbox",
+      sharedInboxTitle: "Jobs notifications linked to your account",
+      alertsKicker: "Alerts",
+      alertsTitle: "Saved search intent",
+    },
+    empty: {
+      applicationsTitle: "No applications are live yet",
+      applicationsBody: "Saved roles, recruiter updates, and timelines will appear here as soon as you move from browsing into a live application.",
+      exploreJobsCta: "Explore jobs",
+      savedJobsTitle: "No saved roles yet",
+      savedJobsBody: "Save promising roles to keep them on your shortlist across Jobs and your account.",
+      recommendedTitle: "Recommendations will sharpen as you use Jobs",
+      recommendedBody: "Once your profile, shortlist, and applications deepen, the role suggestions here will get more targeted.",
+      recruiterFeedTitle: "No recruiter movement yet",
+      recruiterFeedBody: "Application stage changes, shared recruiter notes, and in-app jobs notifications will collect here.",
+      notificationsTitle: "No jobs notifications yet",
+      notificationsBody: "Future shortlist moves, employer updates, and application changes will land here and inside the Jobs module.",
+      alertsTitle: "No jobs alerts are active",
+      alertsBody: "Create an alert so new roles matching your criteria appear in your Jobs feed.",
+      browseRolesCta: "Browse roles",
+    },
+    application: {
+      progressPercentTemplate: "{percent}% complete",
+      appliedAtTemplate: "Applied {date}",
+      candidateReadiness: "Candidate readiness",
+      recruiterConfidence: "Recruiter confidence",
+      latestMovement: "Latest recruiter movement",
+      nextBestMove: "Next best move",
+      openTimelineCta: "Open timeline",
+      interviewRoomCta: "Interview room",
+      viewRoleCta: "View role",
+    },
+    savedJob: {
+      trustTemplate: "Trust {score}",
+      savedAtTemplate: "Saved {date}",
+    },
+    recommended: {
+      compFallback: "Comp discussed in process",
+    },
+    stageLabels: {
+      applied: "Applied",
+      reviewing: "Reviewing",
+      shortlisted: "Shortlisted",
+      interview: "Interview",
+      offer: "Offer",
+      hired: "Hired",
+      rejected: "Rejected",
+    },
+    nextStep: {
+      labels: {
+        applied: "Keep your profile and resume current",
+        shortlisted: "Have proof and portfolio context ready",
+        interview: "Prepare examples and scheduling blocks",
+        offer: "Review scope, timing, and compensation",
+        rejected: "Strengthen the next application pack",
+      },
+      bodies: {
+        applied: "Early-stage review benefits from sharper proof, clean contact info, and a current resume.",
+        shortlisted: "Shortlist status means you passed the first signal check. Tight proof matters now.",
+        interview: "Interview stages move faster when your strongest work proof and availability are easy to scan.",
+        offer: "Use the offer stage to close ambiguity, not to guess at responsibilities.",
+        rejected: "Use the rejection as signal. Tighten summary, examples, and role fit before applying again.",
+      },
+    },
+    readinessLabels: {
+      interviewReady: "Interview-ready",
+      strongProfile: "Strong profile",
+      needsProof: "Needs proof",
+      needsStructure: "Needs structure",
+    },
+    workModeLabels: {
+      remote: "Remote",
+      hybrid: "Hybrid",
+      onsite: "On-site",
+    },
+    employmentTypeLabels: {
+      fullTime: "Full-time",
+      partTime: "Part-time",
+      contract: "Contract",
+      internship: "Internship",
+      temporary: "Temporary",
+    },
+    profile: {
+      readinessLabel: "Readiness",
+      skillsMappedLabel: "Skills mapped",
+      filesLabel: "Files",
+      improveProfileCta: "Improve profile",
+      openCandidateModuleCta: "Open candidate module",
+      checklist: {
+        identityLabel: "Profile basics",
+        identityDetail: "Full name, phone, and location are present for recruiter follow-through.",
+        storyLabel: "Role story",
+        storyDetail: "Headline and summary explain what you do beyond a blank record.",
+        verificationLabel: "Identity verification",
+        verificationDetail: "Jobs trust stays capped until your HenryCo account has cleared identity review.",
+        proofLabel: "Proof of work",
+        proofDetail: "Resume plus portfolio evidence makes shortlist movement easier.",
+        skillsLabel: "Skills mapped",
+        skillsDetail: "At least four skills and preferred functions improve recommendations.",
+      },
+    },
+    nextActions: {
+      gapTemplate: "Close the {label} gap",
+      interviewLabel: "Prepare for an interview lane",
+      offerLabel: "Respond to an active offer",
+      attentionTemplate: "{title} at {employer} needs attention now.",
+      convertSavedLabel: "Convert a saved role into a live application",
+      convertSavedTemplate: "{title} is already on your shortlist and ready for a deeper pass.",
+      restartLabel: "Restart your jobs search with stronger filters",
+      restartDetail: "Use verified-employer and internal-role filters to build a cleaner shortlist faster.",
+    },
+    alertStatus: {
+      active: "Active",
+      paused: "Paused",
+    },
+    recruiterUpdateTitleTemplate: "{stage} update",
   },
 };
 
@@ -3707,6 +4584,448 @@ const FR: DeepPartial<AccountCopy> = {
       leaveReview: "Laisser un avis",
     },
   },
+  divisionProperty: {
+    metadata: {
+      title: "Property · favoris et demandes",
+      description: "Votre sélection Property, vos demandes, vos visites et le suivi de vos annonces — chaque action sur HenryCo Property se reflète dans cette pièce du compte.",
+    },
+    hero: {
+      eyebrow: "Property · en direct",
+      ariaLabel: "Vue d’ensemble Property",
+      browseListingsCta: "Parcourir les annonces",
+      savedShortlistCta: "Favoris",
+      tilesAriaLabel: "Activité Property",
+      tileLabels: {
+        saved: "Favoris",
+        inquiries: "Demandes",
+        viewings: "Visites",
+        listings: "Annonces",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} gérée·s par HenryCo",
+        savedEmpty: "Enregistrez des annonces pour bâtir une sélection",
+        savedWith: "Comparez et revenez quand vous voulez",
+        inquiriesEmpty: "Aucune conversation en cours",
+        inquiriesWith: "Les suivis arrivent dans cette pièce",
+        viewingsEmpty: "Demandez une visite pour un bien enregistré",
+        viewingsWith: "Les confirmations se synchronisent partout",
+        listingsEmpty: "Soumettez une annonce sur Property",
+        listingsWith: "Les décisions de modération arrivent ici",
+      },
+      sideAriaLabel: "Comment cette pièce fonctionne",
+      sideKicker: "Comment cette pièce fonctionne",
+      sideTitle: "Découvrez sur Property, suivez ici.",
+      sideBody:
+        "Enregistrez une annonce, demandez une visite ou ouvrez une demande sur HenryCo Property — chaque action se reflète dans cette pièce du compte pour reprendre là où vous en étiez, sur tous vos appareils.",
+      sideBodyMuted:
+        "Les annonces gérées par HenryCo portent un badge Géré — vérifications, inspections et suivis de bail sont coordonnés par l’équipe Property.",
+      breakdownAriaLabel: "Détail d’activité",
+      breakdownLabel: "Par activité",
+      breakdownLabels: {
+        saved: "Favoris",
+        inquiries: "Demandes",
+        viewings: "Visites",
+        listings: "Annonces",
+      },
+      state: {
+        empty: {
+          headline: "Commencez à explorer HenryCo Property.",
+          blurb:
+            "Découvrez les locations résidentielles, les ventes et les biens gérés par HenryCo. Enregistrez vos favoris et chaque demande, visite ou suivi d’annonce arrive ici automatiquement.",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} bien dans la sélection.",
+          headlineTemplatePlural: "{count} biens dans la sélection.",
+          blurb:
+            "Vos biens enregistrés, prêts à être revus. Ouvrez une annonce pour demander une visite ou envoyer une demande — le suivi reviendra directement dans cette pièce.",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "{count} visite planifiée.",
+          viewingHeadlineTemplatePlural: "{count} visites planifiées.",
+          inquiryHeadlineTemplateSingular: "{count} demande en cours.",
+          inquiryHeadlineTemplatePlural: "{count} demandes en cours.",
+          blurb:
+            "Vos favoris, demandes et planning de visites vivent dans une seule pièce. Reprenez là où vous en étiez — chaque action est reflétée depuis HenryCo Property en temps réel.",
+        },
+      },
+    },
+    sections: {
+      saved: "Sélection enregistrée",
+      savedMetaEmpty: "Enregistrez des annonces sur HenryCo Property pour bâtir votre sélection.",
+      savedMetaTemplate: "{saved} enregistré·s · {managed} géré·s par HenryCo",
+      activity: "Activité récente",
+      activityMetaEmpty: "Demandes, visites et examens d’annonces se reflètent ici en temps réel.",
+      activityMetaTemplateSingular: "{count} mise à jour · plus récente en premier",
+      activityMetaTemplatePlural: "{count} mises à jour · plus récente en premier",
+    },
+    empty: {
+      savedTitle: "Aucun bien enregistré pour le moment",
+      savedBody:
+        "Découvrez les locations résidentielles, les ventes et les biens gérés par HenryCo sur Property. Tout ce que vous enregistrez arrive ici automatiquement.",
+      activityTitle: "Aucune activité Property pour le moment",
+      activityBody:
+        "Ouvrez une annonce sur HenryCo Property pour demander une visite ou envoyer une demande — chaque étape, du premier message à la revue, apparaîtra ici.",
+    },
+    activity: {
+      ariaLabel: "Activité Property",
+      titles: {
+        inquiry: "Demande immobilière",
+        viewing: "Demande de visite",
+        listing_submitted: "Annonce soumise",
+        listing_updated: "Annonce mise à jour",
+        listing_reviewed: "Examen d’annonce terminé",
+      },
+    },
+    gallery: {
+      ariaLabel: "Biens enregistrés",
+      managedBadge: "Géré",
+      featuredBadge: "À la une",
+      locationPending: "Localisation à venir",
+      contactAgent: "Contacter l’agent",
+      savedAtTemplate: "Enregistré le {date}",
+      bedSingular: "chambre",
+      bedPlural: "chambres",
+      bathSingular: "salle de bain",
+      bathPlural: "salles de bain",
+      sizeSqmTemplate: "{size} m²",
+    },
+  },
+  divisionMarketplace: {
+    metadata: {
+      title: "Marketplace · commandes et activité vendeur",
+      description: "Suivez chaque commande, litige et versement vendeur HenryCo Marketplace lié à ce compte — activité d’achat et espace vendeur, miroirés dans une seule pièce en temps réel.",
+    },
+    hero: {
+      eyebrow: "Marketplace · en direct",
+      ariaLabel: "Vue d’ensemble Marketplace",
+      sideAriaLabel: "Comment cette pièce fonctionne",
+      sideKicker: "Comment cette pièce fonctionne",
+      sideTitle: "Acheter et vendre — une seule pièce.",
+      sideBody: "Chaque commande, litige et demande de versement créés sur Marketplace est miroité dans cette pièce. L’activité de l’espace vendeur s’y entremêle avec les commandes acheteur, pour que les deux faces du marketplace restent visibles d’un coup d’œil.",
+      breakdownLabel: "Par statut",
+      breakdownAriaLabel: "Répartition de l’activité",
+      tilesAriaLabel: "Activité Marketplace",
+      tileLabels: {
+        orders: "Commandes",
+        disputes: "Litiges",
+        store: "Boutique",
+        payouts: "Versements",
+      },
+      tileFoot: {
+        ordersEmpty: "La première commande apparaîtra ici",
+        ordersInMotionTemplate: "{inFlight} en cours · {delivered} livrée(s)",
+        ordersDeliveredTemplate: "{delivered} livrée(s) à ce jour",
+        disputesClear: "Tout est clair",
+        disputesActiveTemplate: "{open} ouvert(s) · {resolving} en résolution",
+        storeActiveNoName: "Adhésion vendeur active",
+        storeActiveWithNameTemplate: "Boutique : {name}",
+        storeApplicationTemplate: "Candidature : {status}",
+        storeIdle: "Pas encore vendeur — postulez quand vous êtes prêt·e",
+        payoutsEmptyNoneSettled: "Aucune demande de versement",
+        payoutsSettledTemplate: "{count} versé(s) à ce jour",
+        payoutsPendingTemplate: "{amount} en attente",
+      },
+      breakdownLabels: {
+        inMotion: "En cours",
+        openDisputes: "Litiges ouverts",
+        delivered: "Livrées",
+        pendingPayouts: "Versements en attente",
+      },
+      state: {
+        empty: {
+          headline: "Commencez à acheter sur HenryCo Marketplace.",
+          blurb: "Les commandes, litiges, activité vendeur et versements sont miroirés dans cette pièce dès la première transaction. Parcourez la marketplace pour démarrer.",
+          ctaPrimary: "Ouvrir Marketplace",
+          ctaSecondary: "Devenir vendeur",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} sujet à traiter.",
+          headlineTemplatePlural: "{count} sujets à traiter.",
+          blurb: "Les litiges et commandes en exception passent en tête de file. Ouvrez le dossier pour ajouter des preuves ou accepter la résolution.",
+          ctaPrimary: "Voir les dossiers",
+          ctaSecondary: "Ouvrir Marketplace",
+        },
+        activeOrders: {
+          headlineTemplateSingular: "{count} commande en cours.",
+          headlineTemplatePlural: "{count} commandes en cours.",
+          blurb: "Statut en direct, paiement, et suivi vendeur sont miroirés dans cette pièce depuis HenryCo Marketplace en temps réel.",
+          ctaPrimary: "Ouvrir Marketplace",
+          ctaSecondary: "Devenir vendeur",
+        },
+        activePayouts: {
+          headlineTemplateSingular: "{count} versement en revue.",
+          headlineTemplatePlural: "{count} versements en revue.",
+          blurb: "Les demandes de versement vendeur passent par la vérification finance. Les mises à jour de statut s’affichent ici au fur et à mesure.",
+          ctaPrimary: "Ouvrir l’espace vendeur",
+          ctaSecondary: "Ouvrir Marketplace",
+        },
+        calmBuyer: {
+          headlineTemplateSingular: "{count} commande enregistrée.",
+          headlineTemplatePlural: "{count} commandes enregistrées.",
+          blurb: "Toute votre activité marketplace dans une seule pièce — commandes acheteur, versements vendeur, issues de litiges et dernier statut de chaque boutique.",
+          ctaPrimary: "Ouvrir Marketplace",
+          ctaSecondary: "Devenir vendeur",
+        },
+        calmSeller: {
+          headlineTemplateSingular: "{count} commande · vendeur actif.",
+          headlineTemplatePlural: "{count} commandes · vendeur actif.",
+          blurb: "Toute votre activité marketplace dans une seule pièce — commandes acheteur, versements vendeur, issues de litiges et dernier statut de chaque boutique.",
+          ctaPrimary: "Ouvrir Marketplace",
+          ctaSecondary: "Ouvrir l’espace vendeur",
+        },
+      },
+    },
+    sections: {
+      matters: {
+        title: "Sujets actifs",
+        meta: "Litiges, statut de la candidature vendeur et versements en attente apparaissent ici dès qu’une action est requise.",
+        ariaLabel: "Sujets Marketplace actifs",
+        emptyTitle: "Rien ne requiert d’action",
+        emptyBody: "Toute votre activité marketplace avance normalement — aucun litige ouvert, aucun versement en revue, et (le cas échéant) votre candidature vendeur est validée.",
+      },
+      orders: {
+        title: "Commandes récentes",
+        empty: "Les commandes passées sur Marketplace apparaissent ici en temps réel.",
+        metaTemplateSingular: "{count} commande · plus récente en premier",
+        metaTemplatePlural: "{count} commandes · plus récentes en premier",
+        emptyTitle: "Aucune commande pour l’instant",
+        emptyBody: "Passez votre première commande sur HenryCo Marketplace — statut, paiement et tout suivi atterrissent ici automatiquement.",
+        ariaLabel: "Commandes récentes",
+      },
+      activity: {
+        title: "Activité récente",
+        empty: "Mises à jour de statut, paiements et avis se reflètent ici dès qu’ils se produisent.",
+        metaTemplateSingular: "{count} mise à jour · plus récente en premier",
+        metaTemplatePlural: "{count} mises à jour · plus récentes en premier",
+        emptyTitle: "Aucune activité marketplace pour l’instant",
+        emptyBody: "Confirmations de commande, mises à jour de litige et résultats de versement vendeur apparaîtront ici en temps réel.",
+        ariaLabel: "Activité Marketplace",
+      },
+    },
+    matters: {
+      disputes: {
+        kicker: "Litiges",
+        titleTemplateSingular: "{count} dossier à traiter",
+        titleTemplatePlural: "{count} dossiers à traiter",
+        bodyLatestTemplate: "Dernier : {ref} · mis à jour {stamp}",
+        bodyFallback: "Ouvrez la file pour ajouter des preuves.",
+        cta: "Voir les dossiers",
+      },
+      application: {
+        kicker: "Candidature vendeur",
+        bodyWithStoreTemplate: "Boutique : {name}",
+        bodyDefault: "Candidature dans la file de revue HenryCo.",
+        bodyReviewSuffixTemplate: " · {note}",
+        cta: "Voir le statut",
+        defaultStatus: "soumise",
+      },
+      payouts: {
+        kicker: "Versements en revue",
+        titleTemplate: "{amount} en attente",
+        bodyTemplateSingular: "{count} demande en attente de vérification finance.",
+        bodyTemplatePlural: "{count} demandes en attente de vérification finance.",
+        cta: "Ouvrir l’espace vendeur",
+      },
+    },
+    orders: {
+      rowTitleTemplate: "Commande {orderNo}",
+      rowSubTemplate: "{amount} · passée {stamp}",
+      rowAriaLabelTemplate: "Commande {orderNo} · {status}",
+      statusFallbackDraft: "Brouillon",
+    },
+    statusValueLabels: {
+      delivered: "Livré",
+      completed: "Terminé",
+      customer_confirmed: "Confirmé par le client",
+      fulfilled: "Honoré",
+      cancelled: "Annulé",
+      refunded: "Remboursé",
+      disputed: "En litige",
+      exception: "Exception",
+      placed: "Passée",
+      paid: "Payée",
+      awaiting_fulfilment: "En attente d’expédition",
+      confirmed: "Confirmée",
+      queued: "En file",
+    },
+    applicationStatusLabels: {
+      submitted: "soumise",
+      under_review: "en cours d’examen",
+      approved: "approuvée",
+      rejected: "rejetée",
+      pending_documents: "documents requis",
+      changes_requested: "modifications demandées",
+    },
+    formatLabels: {
+      dash: "—",
+    },
+  },
+  divisionJobs: {
+    metadata: {
+      title: "Emplois · tableau de bord candidat",
+      description: "Suivez chaque candidature HenryCo Jobs, poste sauvegardé, mise à jour recruteur et indicateur de préparation de profil lié à ce compte.",
+    },
+    header: {
+      title: "Emplois",
+      description: "Vos candidatures, postes sauvegardés, mises à jour recruteurs et solidité de profil — tout au même endroit.",
+      candidateModuleCta: "Module candidat",
+      interviewRoomsCta: "Salles d’entretien",
+      browseLiveRolesCta: "Parcourir les postes en ligne",
+    },
+    hero: {
+      eyebrow: "Votre compte",
+      headline: "Votre activité emploi, tout au même endroit.",
+      body: "Candidatures, postes sauvegardés, mises à jour recruteurs et préparation de profil sont liés à votre compte HenryCo.",
+      statsAriaLabel: "Résumé d’activité emploi",
+      statLabels: {
+        applications: "Candidatures actives",
+        saved: "Postes sauvegardés",
+        readiness: "Préparation du profil",
+        updates: "Mises à jour recruteurs",
+      },
+      statDetails: {
+        applicationsLeadingTemplate: "{stage} est votre étape active dominante.",
+        applicationsEmpty: "Aucune candidature active pour l’instant.",
+        savedSome: "Votre présélection est prête pour une nouvelle relecture.",
+        savedEmpty: "Constituez une présélection pour retrouver plus facilement les bons postes.",
+        updatesLatestTemplate: "{relative} dernier mouvement.",
+        updatesEmpty: "Aucune mise à jour recruteur pour l’instant.",
+      },
+    },
+    sections: {
+      nextActionsKicker: "Prochaines actions",
+      nextActionsTitle: "Ce qui mérite votre attention maintenant",
+      openTimelineCta: "Ouvrir la chronologie",
+      applicationsKicker: "Candidatures",
+      applicationsTitle: "Mouvement d’embauche en direct",
+      savedKicker: "Postes sauvegardés",
+      savedTitle: "Présélection avec plus de contexte",
+      openSavedRolesCta: "Ouvrir les postes sauvegardés",
+      recommendedKicker: "Postes recommandés",
+      recommendedTitle: "Ce qui correspond à votre signal actuel",
+      browseCatalogCta: "Parcourir le catalogue",
+      recruiterFeedKicker: "Fil recruteur",
+      recruiterFeedTitle: "Messages, changements d’étape et alertes",
+      candidateInboxCta: "Boîte candidat",
+      profileKicker: "Solidité du profil",
+      profileTitle: "Préparation du candidat et qualité du CV",
+      sharedInboxKicker: "Boîte partagée",
+      sharedInboxTitle: "Notifications emploi liées à votre compte",
+      alertsKicker: "Alertes",
+      alertsTitle: "Intention de recherche enregistrée",
+    },
+    empty: {
+      applicationsTitle: "Aucune candidature active pour l’instant",
+      applicationsBody: "Les postes sauvegardés, les mises à jour recruteurs et les chronologies apparaîtront ici dès que vous passerez de la navigation à une candidature active.",
+      exploreJobsCta: "Explorer les emplois",
+      savedJobsTitle: "Aucun poste sauvegardé pour l’instant",
+      savedJobsBody: "Sauvegardez les postes prometteurs pour les garder sur votre présélection dans Jobs et votre compte.",
+      recommendedTitle: "Les recommandations s’affineront avec votre usage",
+      recommendedBody: "À mesure que votre profil, votre présélection et vos candidatures s’étoffent, les suggestions ici deviendront plus ciblées.",
+      recruiterFeedTitle: "Aucun mouvement recruteur pour l’instant",
+      recruiterFeedBody: "Les changements d’étape de candidature, les notes recruteurs partagées et les notifications Jobs in-app se rassembleront ici.",
+      notificationsTitle: "Aucune notification emploi pour l’instant",
+      notificationsBody: "Les futurs mouvements de présélection, mises à jour employeurs et changements de candidature arriveront ici et dans le module Jobs.",
+      alertsTitle: "Aucune alerte emploi active",
+      alertsBody: "Créez une alerte pour voir apparaître dans votre fil Jobs les nouveaux postes correspondant à vos critères.",
+      browseRolesCta: "Parcourir les postes",
+    },
+    application: {
+      progressPercentTemplate: "{percent}% terminé",
+      appliedAtTemplate: "Postulé le {date}",
+      candidateReadiness: "Préparation candidat",
+      recruiterConfidence: "Confiance recruteur",
+      latestMovement: "Dernier mouvement recruteur",
+      nextBestMove: "Prochaine meilleure action",
+      openTimelineCta: "Ouvrir la chronologie",
+      interviewRoomCta: "Salle d’entretien",
+      viewRoleCta: "Voir le poste",
+    },
+    savedJob: {
+      trustTemplate: "Confiance {score}",
+      savedAtTemplate: "Sauvegardé le {date}",
+    },
+    recommended: {
+      compFallback: "Rémunération abordée durant le processus",
+    },
+    stageLabels: {
+      applied: "Postulé",
+      reviewing: "Examen",
+      shortlisted: "Présélectionné",
+      interview: "Entretien",
+      offer: "Offre",
+      hired: "Embauché",
+      rejected: "Refusé",
+    },
+    nextStep: {
+      labels: {
+        applied: "Gardez votre profil et votre CV à jour",
+        shortlisted: "Préparez vos preuves et le contexte du portfolio",
+        interview: "Préparez des exemples et des créneaux",
+        offer: "Examinez la portée, le calendrier et la rémunération",
+        rejected: "Renforcez le prochain dossier de candidature",
+      },
+      bodies: {
+        applied: "Aux premières étapes, des preuves plus nettes, des coordonnées propres et un CV à jour aident.",
+        shortlisted: "La présélection signifie que vous avez passé le premier filtre. Des preuves précises comptent désormais.",
+        interview: "Les entretiens avancent plus vite quand vos meilleures preuves et disponibilités sont faciles à voir.",
+        offer: "Utilisez l’étape d’offre pour lever les ambiguïtés, pas pour deviner les responsabilités.",
+        rejected: "Tirez parti du refus comme signal. Resserrez le résumé, les exemples et l’adéquation avant de re-postuler.",
+      },
+    },
+    readinessLabels: {
+      interviewReady: "Prêt pour l’entretien",
+      strongProfile: "Profil solide",
+      needsProof: "Preuves à renforcer",
+      needsStructure: "Structure à renforcer",
+    },
+    workModeLabels: {
+      remote: "Télétravail",
+      hybrid: "Hybride",
+      onsite: "Sur site",
+    },
+    employmentTypeLabels: {
+      fullTime: "Temps plein",
+      partTime: "Temps partiel",
+      contract: "Contrat",
+      internship: "Stage",
+      temporary: "Temporaire",
+    },
+    profile: {
+      readinessLabel: "Préparation",
+      skillsMappedLabel: "Compétences cartographiées",
+      filesLabel: "Fichiers",
+      improveProfileCta: "Améliorer le profil",
+      openCandidateModuleCta: "Ouvrir le module candidat",
+      checklist: {
+        identityLabel: "Bases du profil",
+        identityDetail: "Nom complet, téléphone et localisation présents pour la relance recruteur.",
+        storyLabel: "Récit professionnel",
+        storyDetail: "Titre et résumé expliquent ce que vous faites au-delà d’une simple fiche.",
+        verificationLabel: "Vérification d’identité",
+        verificationDetail: "La confiance Jobs reste plafonnée tant que votre identité HenryCo n’est pas validée.",
+        proofLabel: "Preuves de travail",
+        proofDetail: "CV plus preuves du portfolio facilitent les mouvements en présélection.",
+        skillsLabel: "Compétences cartographiées",
+        skillsDetail: "Au moins quatre compétences et des fonctions préférées améliorent les recommandations.",
+      },
+    },
+    nextActions: {
+      gapTemplate: "Combler la lacune {label}",
+      interviewLabel: "Préparer une étape d’entretien",
+      offerLabel: "Répondre à une offre active",
+      attentionTemplate: "{title} chez {employer} requiert votre attention maintenant.",
+      convertSavedLabel: "Convertir un poste sauvegardé en candidature active",
+      convertSavedTemplate: "{title} figure déjà dans votre présélection et est prêt pour un examen plus approfondi.",
+      restartLabel: "Relancez votre recherche avec des filtres plus stricts",
+      restartDetail: "Utilisez les filtres employeur vérifié et poste interne pour bâtir une présélection plus propre, plus vite.",
+    },
+    alertStatus: {
+      active: "Active",
+      paused: "En pause",
+    },
+    recruiterUpdateTitleTemplate: "Mise à jour {stage}",
+  },
 };
 
 const DE: DeepPartial<AccountCopy> = {
@@ -4910,6 +6229,448 @@ const DE: DeepPartial<AccountCopy> = {
       noReceiptYet: "Noch kein Beleg",
       openLiveBooking: "Live-Buchung öffnen",
       leaveReview: "Bewertung abgeben",
+    },
+  },
+  divisionProperty: {
+    metadata: {
+      title: "Property · Merkliste & Anfragen",
+      description: "Ihre Property-Merkliste, Anfragen, Besichtigungen und Inseratsverläufe – jede Aktion in HenryCo Property wird in diesen Kontoraum gespiegelt.",
+    },
+    hero: {
+      eyebrow: "Property · live",
+      ariaLabel: "Property-Übersicht",
+      browseListingsCta: "Angebote durchsuchen",
+      savedShortlistCta: "Merkliste",
+      tilesAriaLabel: "Property-Aktivität",
+      tileLabels: {
+        saved: "Gemerkt",
+        inquiries: "Anfragen",
+        viewings: "Besichtigungen",
+        listings: "Inserate",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} von HenryCo verwaltet",
+        savedEmpty: "Angebote merken, um eine Liste aufzubauen",
+        savedWith: "Jederzeit vergleichen und erneut ansehen",
+        inquiriesEmpty: "Noch keine offenen Gespräche",
+        inquiriesWith: "Folge-Nachrichten landen in diesem Raum",
+        viewingsEmpty: "Besichtigung für ein gemerktes Objekt anfragen",
+        viewingsWith: "Bestätigungen synchronisieren über alle Geräte",
+        listingsEmpty: "Ein Inserat auf Property einreichen",
+        listingsWith: "Moderationsergebnisse erscheinen hier",
+      },
+      sideAriaLabel: "So funktioniert dieser Raum",
+      sideKicker: "So funktioniert dieser Raum",
+      sideTitle: "Auf Property entdecken, hier weitermachen.",
+      sideBody:
+        "Inserat merken, Besichtigung anfragen oder Anfrage öffnen auf HenryCo Property — jede Aktion wird in diesen Kontoraum gespiegelt, damit Sie geräteübergreifend dort weitermachen, wo Sie aufgehört haben.",
+      sideBodyMuted:
+        "Von HenryCo verwaltete Inserate tragen einen Verwaltet-Badge — Prüfung, Inspektion und Mietabwicklung werden vom Property-Team koordiniert.",
+      breakdownAriaLabel: "Aktivitätsaufschlüsselung",
+      breakdownLabel: "Nach Aktivität",
+      breakdownLabels: {
+        saved: "Gemerkt",
+        inquiries: "Anfragen",
+        viewings: "Besichtigungen",
+        listings: "Inserate",
+      },
+      state: {
+        empty: {
+          headline: "Starten Sie auf HenryCo Property.",
+          blurb:
+            "Entdecken Sie Mietwohnungen, Verkaufsangebote und von HenryCo verwaltete Objekte. Merken Sie Ihre Favoriten — jede Anfrage, Besichtigung oder Inseratsmeldung landet automatisch hier.",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} gemerktes Zuhause.",
+          headlineTemplatePlural: "{count} gemerkte Zuhause.",
+          blurb:
+            "Gemerkte Objekte, bereit zur erneuten Ansicht. Öffnen Sie ein Inserat, um eine Besichtigung anzufragen oder eine Anfrage zu senden — die Antwort landet direkt in diesem Raum.",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "{count} Besichtigung geplant.",
+          viewingHeadlineTemplatePlural: "{count} Besichtigungen geplant.",
+          inquiryHeadlineTemplateSingular: "{count} Anfrage aktiv.",
+          inquiryHeadlineTemplatePlural: "{count} Anfragen aktiv.",
+          blurb:
+            "Ihre Merkliste, Anfragen und Besichtigungstermine in einem Raum. Setzen Sie dort fort, wo Sie aufgehört haben — jede Aktion wird in Echtzeit aus HenryCo Property gespiegelt.",
+        },
+      },
+    },
+    sections: {
+      saved: "Gemerkte Auswahl",
+      savedMetaEmpty: "Inserate auf HenryCo Property merken, um Ihre Liste aufzubauen.",
+      savedMetaTemplate: "{saved} gemerkt · {managed} von HenryCo verwaltet",
+      activity: "Letzte Aktivität",
+      activityMetaEmpty: "Anfragen, Besichtigungen und Inseratsprüfungen erscheinen hier in Echtzeit.",
+      activityMetaTemplateSingular: "{count} Aktualisierung · neueste zuerst",
+      activityMetaTemplatePlural: "{count} Aktualisierungen · neueste zuerst",
+    },
+    empty: {
+      savedTitle: "Noch keine gemerkten Objekte",
+      savedBody:
+        "Entdecken Sie Mietwohnungen, Verkaufsangebote und von HenryCo verwaltete Objekte auf Property. Alles, was Sie merken, landet automatisch hier.",
+      activityTitle: "Noch keine Property-Aktivität",
+      activityBody:
+        "Öffnen Sie ein Inserat auf HenryCo Property, um eine Besichtigung anzufragen oder eine Anfrage zu senden — jeder Schritt, von der ersten Nachricht bis zur Prüfung, erscheint hier.",
+    },
+    activity: {
+      ariaLabel: "Property-Aktivität",
+      titles: {
+        inquiry: "Immobilienanfrage",
+        viewing: "Besichtigungsanfrage",
+        listing_submitted: "Inserat eingereicht",
+        listing_updated: "Inserat aktualisiert",
+        listing_reviewed: "Inseratsprüfung abgeschlossen",
+      },
+    },
+    gallery: {
+      ariaLabel: "Gemerkte Objekte",
+      managedBadge: "Verwaltet",
+      featuredBadge: "Hervorgehoben",
+      locationPending: "Lage in Klärung",
+      contactAgent: "Makler kontaktieren",
+      savedAtTemplate: "Gemerkt am {date}",
+      bedSingular: "Zimmer",
+      bedPlural: "Zimmer",
+      bathSingular: "Bad",
+      bathPlural: "Bäder",
+      sizeSqmTemplate: "{size} m²",
+    },
+  },
+  divisionJobs: {
+    metadata: {
+      title: "Jobs · Kandidaten-Dashboard",
+      description: "Verfolgen Sie jede mit diesem Konto verknüpfte HenryCo-Jobs-Bewerbung, gemerkte Stelle, Recruiter-Aktualisierung und Profilbereitschaft.",
+    },
+    header: {
+      title: "Jobs",
+      description: "Ihre Bewerbungen, gemerkten Stellen, Recruiter-Updates und Profilstärke — alles an einem Ort.",
+      candidateModuleCta: "Kandidaten-Modul",
+      interviewRoomsCta: "Interview-Räume",
+      browseLiveRolesCta: "Aktive Stellen durchsuchen",
+    },
+    hero: {
+      eyebrow: "Ihr Konto",
+      headline: "Ihre Jobs-Aktivität, alles an einem Ort.",
+      body: "Bewerbungen, gemerkte Stellen, Recruiter-Updates und Profilbereitschaft sind mit Ihrem HenryCo-Konto verknüpft.",
+      statsAriaLabel: "Jobs-Aktivitätsübersicht",
+      statLabels: {
+        applications: "Aktive Bewerbungen",
+        saved: "Gemerkte Stellen",
+        readiness: "Profilbereitschaft",
+        updates: "Recruiter-Updates",
+      },
+      statDetails: {
+        applicationsLeadingTemplate: "{stage} ist Ihre führende aktive Phase.",
+        applicationsEmpty: "Noch keine aktiven Bewerbungen.",
+        savedSome: "Ihre Vorauswahl ist bereit für eine weitere Sichtung.",
+        savedEmpty: "Bauen Sie eine Vorauswahl auf, damit gute Stellen leichter wiederzufinden sind.",
+        updatesLatestTemplate: "{relative} letzte Bewegung.",
+        updatesEmpty: "Noch keine Recruiter-Updates.",
+      },
+    },
+    sections: {
+      nextActionsKicker: "Nächste Schritte",
+      nextActionsTitle: "Was jetzt Ihre Aufmerksamkeit verdient",
+      openTimelineCta: "Zeitleiste öffnen",
+      applicationsKicker: "Bewerbungen",
+      applicationsTitle: "Live-Bewegung im Einstellungsprozess",
+      savedKicker: "Gemerkte Stellen",
+      savedTitle: "Vorauswahl mit besserem Kontext",
+      openSavedRolesCta: "Gemerkte Stellen öffnen",
+      recommendedKicker: "Empfohlene Stellen",
+      recommendedTitle: "Was zu Ihrem aktuellen Signal passt",
+      browseCatalogCta: "Katalog durchsuchen",
+      recruiterFeedKicker: "Recruiter-Feed",
+      recruiterFeedTitle: "Nachrichten, Phasenwechsel und Hinweise",
+      candidateInboxCta: "Kandidaten-Postfach",
+      profileKicker: "Profilstärke",
+      profileTitle: "Kandidatenbereitschaft und Lebenslauf-Qualität",
+      sharedInboxKicker: "Gemeinsames Postfach",
+      sharedInboxTitle: "Mit Ihrem Konto verknüpfte Jobs-Benachrichtigungen",
+      alertsKicker: "Benachrichtigungen",
+      alertsTitle: "Gespeicherte Sucheintention",
+    },
+    empty: {
+      applicationsTitle: "Noch keine aktiven Bewerbungen",
+      applicationsBody: "Gemerkte Stellen, Recruiter-Updates und Zeitleisten erscheinen hier, sobald Sie aus dem Durchsuchen in eine aktive Bewerbung übergehen.",
+      exploreJobsCta: "Jobs erkunden",
+      savedJobsTitle: "Noch keine gemerkten Stellen",
+      savedJobsBody: "Merken Sie sich vielversprechende Stellen, um sie in Jobs und Ihrem Konto in der Vorauswahl zu behalten.",
+      recommendedTitle: "Empfehlungen werden mit der Nutzung schärfer",
+      recommendedBody: "Sobald Profil, Vorauswahl und Bewerbungen wachsen, werden die Stellenempfehlungen hier zielgenauer.",
+      recruiterFeedTitle: "Noch keine Recruiter-Bewegung",
+      recruiterFeedBody: "Phasenwechsel von Bewerbungen, geteilte Recruiter-Notizen und In-App-Jobs-Benachrichtigungen sammeln sich hier.",
+      notificationsTitle: "Noch keine Jobs-Benachrichtigungen",
+      notificationsBody: "Künftige Vorauswahl-Bewegungen, Arbeitgeber-Updates und Bewerbungsänderungen landen hier und im Jobs-Modul.",
+      alertsTitle: "Keine aktiven Jobs-Benachrichtigungen",
+      alertsBody: "Richten Sie eine Benachrichtigung ein, damit neue passende Stellen in Ihrem Jobs-Feed erscheinen.",
+      browseRolesCta: "Stellen durchsuchen",
+    },
+    application: {
+      progressPercentTemplate: "{percent}% abgeschlossen",
+      appliedAtTemplate: "Beworben am {date}",
+      candidateReadiness: "Kandidatenbereitschaft",
+      recruiterConfidence: "Recruiter-Vertrauen",
+      latestMovement: "Letzte Recruiter-Bewegung",
+      nextBestMove: "Nächster bester Schritt",
+      openTimelineCta: "Zeitleiste öffnen",
+      interviewRoomCta: "Interview-Raum",
+      viewRoleCta: "Stelle ansehen",
+    },
+    savedJob: {
+      trustTemplate: "Vertrauen {score}",
+      savedAtTemplate: "Gemerkt am {date}",
+    },
+    recommended: {
+      compFallback: "Vergütung wird im Verlauf besprochen",
+    },
+    stageLabels: {
+      applied: "Beworben",
+      reviewing: "Sichtung",
+      shortlisted: "Vorausgewählt",
+      interview: "Interview",
+      offer: "Angebot",
+      hired: "Eingestellt",
+      rejected: "Abgelehnt",
+    },
+    nextStep: {
+      labels: {
+        applied: "Halten Sie Profil und Lebenslauf aktuell",
+        shortlisted: "Halten Sie Nachweise und Portfolio-Kontext bereit",
+        interview: "Bereiten Sie Beispiele und Terminblöcke vor",
+        offer: "Prüfen Sie Umfang, Timing und Vergütung",
+        rejected: "Stärken Sie das nächste Bewerbungspaket",
+      },
+      bodies: {
+        applied: "In der Frühphase helfen schärfere Nachweise, saubere Kontaktdaten und ein aktueller Lebenslauf.",
+        shortlisted: "Vorauswahl heißt, Sie haben die erste Signalprüfung bestanden. Klare Nachweise zählen jetzt.",
+        interview: "Interviewphasen laufen schneller, wenn Ihre besten Arbeitsnachweise und Verfügbarkeit leicht ersichtlich sind.",
+        offer: "Nutzen Sie die Angebotsphase, um Unklarheiten zu klären, nicht um Verantwortlichkeiten zu erraten.",
+        rejected: "Sehen Sie die Absage als Signal. Verfeinern Sie Zusammenfassung, Beispiele und Rollenpassung vor der nächsten Bewerbung.",
+      },
+    },
+    readinessLabels: {
+      interviewReady: "Interview-bereit",
+      strongProfile: "Starkes Profil",
+      needsProof: "Nachweise nötig",
+      needsStructure: "Struktur nötig",
+    },
+    workModeLabels: {
+      remote: "Remote",
+      hybrid: "Hybrid",
+      onsite: "Vor Ort",
+    },
+    employmentTypeLabels: {
+      fullTime: "Vollzeit",
+      partTime: "Teilzeit",
+      contract: "Werkvertrag",
+      internship: "Praktikum",
+      temporary: "Befristet",
+    },
+    profile: {
+      readinessLabel: "Bereitschaft",
+      skillsMappedLabel: "Erfasste Fähigkeiten",
+      filesLabel: "Dateien",
+      improveProfileCta: "Profil verbessern",
+      openCandidateModuleCta: "Kandidaten-Modul öffnen",
+      checklist: {
+        identityLabel: "Profilgrundlagen",
+        identityDetail: "Vollständiger Name, Telefon und Standort sind für Recruiter-Folgekontakte vorhanden.",
+        storyLabel: "Rollengeschichte",
+        storyDetail: "Headline und Zusammenfassung erklären, was Sie tun, über einen leeren Eintrag hinaus.",
+        verificationLabel: "Identitätsprüfung",
+        verificationDetail: "Das Jobs-Vertrauen bleibt begrenzt, bis Ihr HenryCo-Konto die Identitätsprüfung bestanden hat.",
+        proofLabel: "Arbeitsnachweise",
+        proofDetail: "Lebenslauf plus Portfolio-Nachweise erleichtern den Sprung in die Vorauswahl.",
+        skillsLabel: "Erfasste Fähigkeiten",
+        skillsDetail: "Mindestens vier Fähigkeiten und bevorzugte Funktionen verbessern die Empfehlungen.",
+      },
+    },
+    nextActions: {
+      gapTemplate: "Lücke {label} schließen",
+      interviewLabel: "Auf eine Interviewphase vorbereiten",
+      offerLabel: "Auf ein aktives Angebot reagieren",
+      attentionTemplate: "{title} bei {employer} braucht jetzt Aufmerksamkeit.",
+      convertSavedLabel: "Eine gemerkte Stelle in eine aktive Bewerbung umwandeln",
+      convertSavedTemplate: "{title} steht bereits auf Ihrer Vorauswahl und ist bereit für eine vertiefte Sichtung.",
+      restartLabel: "Starten Sie die Jobsuche mit strengeren Filtern neu",
+      restartDetail: "Filtern Sie nach verifizierten Arbeitgebern und internen Stellen, um eine sauberere Vorauswahl schneller aufzubauen.",
+    },
+    alertStatus: {
+      active: "Aktiv",
+      paused: "Pausiert",
+    },
+    recruiterUpdateTitleTemplate: "{stage}-Aktualisierung",
+  },
+  divisionMarketplace: {
+    metadata: {
+      title: "Marketplace · Bestellungen & Verkaufsaktivität",
+      description: "Verfolgen Sie jede HenryCo-Marketplace-Bestellung, jeden Streitfall und jede Verkäuferauszahlung, die mit diesem Konto verknüpft ist – Käuferaktivität und Verkäufer-Workspace gespiegelt in einem Raum, in Echtzeit.",
+    },
+    hero: {
+      eyebrow: "Marketplace · live",
+      ariaLabel: "Marketplace-Übersicht",
+      sideAriaLabel: "So funktioniert dieser Bereich",
+      sideKicker: "So funktioniert dieser Bereich",
+      sideTitle: "Kaufen und verkaufen – ein Raum.",
+      sideBody: "Jede Bestellung, jeder Streitfall und jede Auszahlungsanforderung, die Sie auf Marketplace anlegen, wird in diesen Raum gespiegelt. Aktivität aus dem Verkäufer-Workspace fließt parallel zu den Käuferbestellungen hier ein, sodass beide Seiten des Marketplace auf einen Blick sichtbar bleiben.",
+      breakdownLabel: "Nach Status",
+      breakdownAriaLabel: "Aktivitätsverteilung",
+      tilesAriaLabel: "Marketplace-Aktivität",
+      tileLabels: {
+        orders: "Bestellungen",
+        disputes: "Streitfälle",
+        store: "Shop",
+        payouts: "Auszahlungen",
+      },
+      tileFoot: {
+        ordersEmpty: "Die erste Bestellung erscheint hier",
+        ordersInMotionTemplate: "{inFlight} in Bewegung · {delivered} geliefert",
+        ordersDeliveredTemplate: "{delivered} bis heute geliefert",
+        disputesClear: "Alles klar",
+        disputesActiveTemplate: "{open} offen · {resolving} in Klärung",
+        storeActiveNoName: "Verkäufermitgliedschaft aktiv",
+        storeActiveWithNameTemplate: "Shop: {name}",
+        storeApplicationTemplate: "Bewerbung: {status}",
+        storeIdle: "Noch nicht verkaufend – bewerben Sie sich, wenn Sie bereit sind",
+        payoutsEmptyNoneSettled: "Noch keine Auszahlungsanforderungen",
+        payoutsSettledTemplate: "{count} bis heute ausgezahlt",
+        payoutsPendingTemplate: "{amount} ausstehend",
+      },
+      breakdownLabels: {
+        inMotion: "In Bewegung",
+        openDisputes: "Offene Streitfälle",
+        delivered: "Geliefert",
+        pendingPayouts: "Ausstehende Auszahlungen",
+      },
+      state: {
+        empty: {
+          headline: "Starten Sie den Einkauf auf HenryCo Marketplace.",
+          blurb: "Bestellungen, Streitfälle, Verkäuferaktivität und Auszahlungen werden ab der ersten Transaktion in diesen Raum gespiegelt. Durchsuchen Sie den Marketplace, um zu starten.",
+          ctaPrimary: "Marketplace öffnen",
+          ctaSecondary: "Als Verkäufer bewerben",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} Vorgang braucht Aufmerksamkeit.",
+          headlineTemplatePlural: "{count} Vorgänge brauchen Aufmerksamkeit.",
+          blurb: "Streitfälle und Ausnahmebestellungen rücken nach oben. Öffnen Sie den Fall, um Belege zu ergänzen oder die Lösung anzunehmen.",
+          ctaPrimary: "Vorgänge prüfen",
+          ctaSecondary: "Marketplace öffnen",
+        },
+        activeOrders: {
+          headlineTemplateSingular: "{count} Bestellung in Bewegung.",
+          headlineTemplatePlural: "{count} Bestellungen in Bewegung.",
+          blurb: "Live-Bestellstatus, Zahlungsstand und Verkäufer-Nachverfolgung werden in Echtzeit aus HenryCo Marketplace in diesen Raum gespiegelt.",
+          ctaPrimary: "Marketplace öffnen",
+          ctaSecondary: "Als Verkäufer bewerben",
+        },
+        activePayouts: {
+          headlineTemplateSingular: "{count} Auszahlung in Prüfung.",
+          headlineTemplatePlural: "{count} Auszahlungen in Prüfung.",
+          blurb: "Auszahlungsanforderungen durchlaufen die Finanzprüfung. Statusänderungen erscheinen hier, sobald das Team weiterarbeitet.",
+          ctaPrimary: "Verkäufer-Workspace öffnen",
+          ctaSecondary: "Marketplace öffnen",
+        },
+        calmBuyer: {
+          headlineTemplateSingular: "{count} Bestellung verbucht.",
+          headlineTemplatePlural: "{count} Bestellungen verbucht.",
+          blurb: "Ihre gesamte Marketplace-Aktivität in einem Raum – Käuferbestellungen, Verkäuferauszahlungen, Streitfallergebnisse und der aktuelle Status jedes Shops.",
+          ctaPrimary: "Marketplace öffnen",
+          ctaSecondary: "Als Verkäufer bewerben",
+        },
+        calmSeller: {
+          headlineTemplateSingular: "{count} Bestellung · Verkäufer aktiv.",
+          headlineTemplatePlural: "{count} Bestellungen · Verkäufer aktiv.",
+          blurb: "Ihre gesamte Marketplace-Aktivität in einem Raum – Käuferbestellungen, Verkäuferauszahlungen, Streitfallergebnisse und der aktuelle Status jedes Shops.",
+          ctaPrimary: "Marketplace öffnen",
+          ctaSecondary: "Verkäufer-Workspace öffnen",
+        },
+      },
+    },
+    sections: {
+      matters: {
+        title: "Aktive Vorgänge",
+        meta: "Streitfälle, Status der Verkäuferbewerbung und ausstehende Auszahlungen erscheinen hier, sobald Handlung nötig ist.",
+        ariaLabel: "Aktive Marketplace-Vorgänge",
+        emptyTitle: "Nichts erfordert Handlung",
+        emptyBody: "Ihre gesamte Marketplace-Aktivität läuft normal – keine offenen Streitfälle, keine Auszahlungen in Prüfung, und (falls zutreffend) Ihre Verkäuferbewerbung ist genehmigt.",
+      },
+      orders: {
+        title: "Aktuelle Bestellungen",
+        empty: "Auf Marketplace aufgegebene Bestellungen erscheinen hier in Echtzeit.",
+        metaTemplateSingular: "{count} Bestellung · neueste zuerst",
+        metaTemplatePlural: "{count} Bestellungen · neueste zuerst",
+        emptyTitle: "Noch keine Bestellungen",
+        emptyBody: "Geben Sie Ihre erste Bestellung auf HenryCo Marketplace auf – Status, Zahlung und jede Nachverfolgung landen hier automatisch.",
+        ariaLabel: "Aktuelle Bestellungen",
+      },
+      activity: {
+        title: "Aktuelle Aktivität",
+        empty: "Statusaktualisierungen, Zahlungen und Bewertungen werden hier in Echtzeit gespiegelt.",
+        metaTemplateSingular: "{count} Aktualisierung · neueste zuerst",
+        metaTemplatePlural: "{count} Aktualisierungen · neueste zuerst",
+        emptyTitle: "Noch keine Marketplace-Aktivität",
+        emptyBody: "Bestellbestätigungen, Streitfall-Updates und Verkäuferauszahlungsergebnisse erscheinen hier, sobald sie passieren.",
+        ariaLabel: "Marketplace-Aktivität",
+      },
+    },
+    matters: {
+      disputes: {
+        kicker: "Streitfälle",
+        titleTemplateSingular: "{count} Fall braucht Handlung",
+        titleTemplatePlural: "{count} Fälle brauchen Handlung",
+        bodyLatestTemplate: "Zuletzt: {ref} · aktualisiert {stamp}",
+        bodyFallback: "Öffnen Sie die Warteschlange, um Belege zu ergänzen.",
+        cta: "Fälle prüfen",
+      },
+      application: {
+        kicker: "Verkäuferbewerbung",
+        bodyWithStoreTemplate: "Shop: {name}",
+        bodyDefault: "Bewerbung in der HenryCo-Prüfwarteschlange.",
+        bodyReviewSuffixTemplate: " · {note}",
+        cta: "Status ansehen",
+        defaultStatus: "eingereicht",
+      },
+      payouts: {
+        kicker: "Auszahlungen in Prüfung",
+        titleTemplate: "{amount} ausstehend",
+        bodyTemplateSingular: "{count} Anfrage wartet auf Finanzprüfung.",
+        bodyTemplatePlural: "{count} Anfragen warten auf Finanzprüfung.",
+        cta: "Verkäufer-Workspace öffnen",
+      },
+    },
+    orders: {
+      rowTitleTemplate: "Bestellung {orderNo}",
+      rowSubTemplate: "{amount} · aufgegeben {stamp}",
+      rowAriaLabelTemplate: "Bestellung {orderNo} · {status}",
+      statusFallbackDraft: "Entwurf",
+    },
+    statusValueLabels: {
+      delivered: "Geliefert",
+      completed: "Abgeschlossen",
+      customer_confirmed: "Kundenbestätigt",
+      fulfilled: "Erfüllt",
+      cancelled: "Storniert",
+      refunded: "Erstattet",
+      disputed: "Streitfall",
+      exception: "Ausnahme",
+      placed: "Aufgegeben",
+      paid: "Bezahlt",
+      awaiting_fulfilment: "Wartet auf Versand",
+      confirmed: "Bestätigt",
+      queued: "In Warteschlange",
+    },
+    applicationStatusLabels: {
+      submitted: "eingereicht",
+      under_review: "in Prüfung",
+      approved: "genehmigt",
+      rejected: "abgelehnt",
+      pending_documents: "Unterlagen ausstehend",
+      changes_requested: "Änderungen angefordert",
+    },
+    formatLabels: {
+      dash: "—",
     },
   },
 };
@@ -6117,6 +7878,448 @@ const IT: DeepPartial<AccountCopy> = {
       noReceiptYet: "Nessuna ricevuta ancora",
       openLiveBooking: "Apri prenotazione in diretta",
       leaveReview: "Lascia una recensione",
+    },
+  },
+  divisionProperty: {
+    metadata: {
+      title: "Property · preferiti e richieste",
+      description: "La tua selezione Property, le richieste, le visite e i seguiti degli annunci — ogni azione su HenryCo Property si riflette in questa stanza del conto.",
+    },
+    hero: {
+      eyebrow: "Property · in diretta",
+      ariaLabel: "Panoramica Property",
+      browseListingsCta: "Sfoglia annunci",
+      savedShortlistCta: "Preferiti",
+      tilesAriaLabel: "Attività Property",
+      tileLabels: {
+        saved: "Salvati",
+        inquiries: "Richieste",
+        viewings: "Visite",
+        listings: "Annunci",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} gestiti da HenryCo",
+        savedEmpty: "Salva annunci per costruire una selezione",
+        savedWith: "Confronta e rivedi quando vuoi",
+        inquiriesEmpty: "Nessuna conversazione aperta",
+        inquiriesWith: "I seguiti arrivano in questa stanza",
+        viewingsEmpty: "Richiedi una visita per un immobile salvato",
+        viewingsWith: "Le conferme si sincronizzano su tutti i dispositivi",
+        listingsEmpty: "Invia un annuncio su Property",
+        listingsWith: "Gli esiti della moderazione arrivano qui",
+      },
+      sideAriaLabel: "Come funziona questa stanza",
+      sideKicker: "Come funziona questa stanza",
+      sideTitle: "Scopri su Property, segui qui.",
+      sideBody:
+        "Salva un annuncio, richiedi una visita o apri una richiesta su HenryCo Property — ogni azione si riflette in questa stanza del conto per riprendere da dove avevi lasciato, su tutti i dispositivi.",
+      sideBodyMuted:
+        "Gli annunci gestiti da HenryCo riportano un badge Gestito — verifiche, ispezioni e seguiti di locazione sono coordinati dal team Property.",
+      breakdownAriaLabel: "Ripartizione attività",
+      breakdownLabel: "Per attività",
+      breakdownLabels: {
+        saved: "Salvati",
+        inquiries: "Richieste",
+        viewings: "Visite",
+        listings: "Annunci",
+      },
+      state: {
+        empty: {
+          headline: "Inizia a esplorare HenryCo Property.",
+          blurb:
+            "Scopri locazioni residenziali, annunci di vendita e immobili gestiti da HenryCo. Salva i tuoi preferiti e ogni richiesta, visita o seguito di annuncio arriva qui automaticamente.",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} casa in selezione.",
+          headlineTemplatePlural: "{count} case in selezione.",
+          blurb:
+            "Immobili salvati, pronti per essere rivisti. Apri un annuncio per richiedere una visita o inviare una richiesta — il seguito arriverà direttamente in questa stanza.",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "{count} visita pianificata.",
+          viewingHeadlineTemplatePlural: "{count} visite pianificate.",
+          inquiryHeadlineTemplateSingular: "{count} richiesta attiva.",
+          inquiryHeadlineTemplatePlural: "{count} richieste attive.",
+          blurb:
+            "La tua selezione, le richieste e il calendario delle visite vivono in un’unica stanza. Riprendi da dove avevi lasciato — ogni azione è riflessa da HenryCo Property in tempo reale.",
+        },
+      },
+    },
+    sections: {
+      saved: "Selezione salvata",
+      savedMetaEmpty: "Salva annunci su HenryCo Property per costruire la tua selezione.",
+      savedMetaTemplate: "{saved} salvati · {managed} gestiti da HenryCo",
+      activity: "Attività recente",
+      activityMetaEmpty: "Richieste, visite e revisioni degli annunci si riflettono qui in tempo reale.",
+      activityMetaTemplateSingular: "{count} aggiornamento · prima il più recente",
+      activityMetaTemplatePlural: "{count} aggiornamenti · prima il più recente",
+    },
+    empty: {
+      savedTitle: "Ancora nessun immobile salvato",
+      savedBody:
+        "Scopri locazioni residenziali, annunci di vendita e immobili gestiti da HenryCo su Property. Tutto ciò che salvi arriva qui automaticamente.",
+      activityTitle: "Ancora nessuna attività Property",
+      activityBody:
+        "Apri un annuncio su HenryCo Property per richiedere una visita o inviare una richiesta — ogni passaggio, dal primo messaggio alla revisione, comparirà qui.",
+    },
+    activity: {
+      ariaLabel: "Attività Property",
+      titles: {
+        inquiry: "Richiesta immobiliare",
+        viewing: "Richiesta di visita",
+        listing_submitted: "Annuncio inviato",
+        listing_updated: "Annuncio aggiornato",
+        listing_reviewed: "Revisione annuncio completata",
+      },
+    },
+    gallery: {
+      ariaLabel: "Immobili salvati",
+      managedBadge: "Gestito",
+      featuredBadge: "In evidenza",
+      locationPending: "Posizione in attesa",
+      contactAgent: "Contatta l’agente",
+      savedAtTemplate: "Salvato il {date}",
+      bedSingular: "camera",
+      bedPlural: "camere",
+      bathSingular: "bagno",
+      bathPlural: "bagni",
+      sizeSqmTemplate: "{size} m²",
+    },
+  },
+  divisionJobs: {
+    metadata: {
+      title: "Jobs · cruscotto candidato",
+      description: "Tieni traccia di ogni candidatura HenryCo Jobs, ruolo salvato, aggiornamento dei recruiter e segnale di prontezza del profilo legato a questo account.",
+    },
+    header: {
+      title: "Lavori",
+      description: "Le tue candidature, i ruoli salvati, gli aggiornamenti dei recruiter e la solidità del profilo — tutto in un solo posto.",
+      candidateModuleCta: "Modulo candidato",
+      interviewRoomsCta: "Sale colloquio",
+      browseLiveRolesCta: "Esplora i ruoli attivi",
+    },
+    hero: {
+      eyebrow: "Il tuo account",
+      headline: "La tua attività lavoro, tutto in un solo posto.",
+      body: "Candidature, ruoli salvati, aggiornamenti dei recruiter e prontezza del profilo sono collegati al tuo account HenryCo.",
+      statsAriaLabel: "Riepilogo attività lavoro",
+      statLabels: {
+        applications: "Candidature attive",
+        saved: "Ruoli salvati",
+        readiness: "Prontezza del profilo",
+        updates: "Aggiornamenti recruiter",
+      },
+      statDetails: {
+        applicationsLeadingTemplate: "{stage} è la tua fase attiva principale.",
+        applicationsEmpty: "Ancora nessuna candidatura attiva.",
+        savedSome: "La tua selezione è pronta per un nuovo passaggio di revisione.",
+        savedEmpty: "Crea una selezione per ritrovare più facilmente i ruoli buoni.",
+        updatesLatestTemplate: "{relative} ultimo movimento.",
+        updatesEmpty: "Ancora nessun aggiornamento dei recruiter.",
+      },
+    },
+    sections: {
+      nextActionsKicker: "Prossime azioni",
+      nextActionsTitle: "Ciò che merita la tua attenzione adesso",
+      openTimelineCta: "Apri la cronologia",
+      applicationsKicker: "Candidature",
+      applicationsTitle: "Movimento di assunzione in diretta",
+      savedKicker: "Ruoli salvati",
+      savedTitle: "Selezione con più contesto",
+      openSavedRolesCta: "Apri ruoli salvati",
+      recommendedKicker: "Ruoli consigliati",
+      recommendedTitle: "Cosa si allinea al tuo segnale attuale",
+      browseCatalogCta: "Sfoglia il catalogo",
+      recruiterFeedKicker: "Flusso recruiter",
+      recruiterFeedTitle: "Messaggi, cambi di fase e avvisi",
+      candidateInboxCta: "Posta candidato",
+      profileKicker: "Solidità del profilo",
+      profileTitle: "Prontezza del candidato e qualità del CV",
+      sharedInboxKicker: "Posta condivisa",
+      sharedInboxTitle: "Notifiche Jobs collegate al tuo account",
+      alertsKicker: "Avvisi",
+      alertsTitle: "Intento di ricerca salvato",
+    },
+    empty: {
+      applicationsTitle: "Ancora nessuna candidatura attiva",
+      applicationsBody: "Ruoli salvati, aggiornamenti dei recruiter e cronologie appariranno qui appena passi dalla navigazione a una candidatura attiva.",
+      exploreJobsCta: "Esplora i lavori",
+      savedJobsTitle: "Ancora nessun ruolo salvato",
+      savedJobsBody: "Salva i ruoli promettenti per mantenerli nella tua selezione tra Jobs e il tuo account.",
+      recommendedTitle: "Le raccomandazioni miglioreranno con l’uso",
+      recommendedBody: "Quando profilo, selezione e candidature si arricchiranno, qui i suggerimenti diventeranno più mirati.",
+      recruiterFeedTitle: "Ancora nessun movimento dei recruiter",
+      recruiterFeedBody: "Qui si raccoglieranno cambi di fase, note dei recruiter condivise e notifiche Jobs in-app.",
+      notificationsTitle: "Ancora nessuna notifica Jobs",
+      notificationsBody: "Le prossime mosse di selezione, gli aggiornamenti dei datori di lavoro e le variazioni delle candidature arriveranno qui e nel modulo Jobs.",
+      alertsTitle: "Nessun avviso Jobs attivo",
+      alertsBody: "Crea un avviso così i nuovi ruoli che corrispondono ai tuoi criteri appariranno nel tuo flusso Jobs.",
+      browseRolesCta: "Sfoglia i ruoli",
+    },
+    application: {
+      progressPercentTemplate: "{percent}% completato",
+      appliedAtTemplate: "Inviato il {date}",
+      candidateReadiness: "Prontezza del candidato",
+      recruiterConfidence: "Fiducia del recruiter",
+      latestMovement: "Ultimo movimento del recruiter",
+      nextBestMove: "Prossima mossa migliore",
+      openTimelineCta: "Apri la cronologia",
+      interviewRoomCta: "Sala colloquio",
+      viewRoleCta: "Vedi il ruolo",
+    },
+    savedJob: {
+      trustTemplate: "Fiducia {score}",
+      savedAtTemplate: "Salvato il {date}",
+    },
+    recommended: {
+      compFallback: "Retribuzione discussa nel processo",
+    },
+    stageLabels: {
+      applied: "Inviata",
+      reviewing: "In valutazione",
+      shortlisted: "Selezionato",
+      interview: "Colloquio",
+      offer: "Offerta",
+      hired: "Assunto",
+      rejected: "Respinto",
+    },
+    nextStep: {
+      labels: {
+        applied: "Mantieni profilo e CV aggiornati",
+        shortlisted: "Tieni pronti i contesti di portfolio e prove",
+        interview: "Prepara esempi e fasce orarie",
+        offer: "Rivedi ambito, tempistica e retribuzione",
+        rejected: "Rafforza il prossimo pacchetto di candidatura",
+      },
+      bodies: {
+        applied: "Nelle prime fasi aiutano prove più nitide, contatti puliti e un CV aggiornato.",
+        shortlisted: "Selezione significa che hai superato il primo filtro. Ora contano prove precise.",
+        interview: "I colloqui procedono più rapidi se le tue migliori prove di lavoro e la disponibilità sono facili da leggere.",
+        offer: "Usa la fase di offerta per togliere ambiguità, non per indovinare le responsabilità.",
+        rejected: "Usa il rifiuto come segnale. Affina sintesi, esempi e adeguatezza prima di ricandidarti.",
+      },
+    },
+    readinessLabels: {
+      interviewReady: "Pronto per il colloquio",
+      strongProfile: "Profilo solido",
+      needsProof: "Servono prove",
+      needsStructure: "Serve struttura",
+    },
+    workModeLabels: {
+      remote: "Remoto",
+      hybrid: "Ibrido",
+      onsite: "In sede",
+    },
+    employmentTypeLabels: {
+      fullTime: "Tempo pieno",
+      partTime: "Tempo parziale",
+      contract: "Contratto",
+      internship: "Stage",
+      temporary: "Temporaneo",
+    },
+    profile: {
+      readinessLabel: "Prontezza",
+      skillsMappedLabel: "Competenze mappate",
+      filesLabel: "File",
+      improveProfileCta: "Migliora il profilo",
+      openCandidateModuleCta: "Apri modulo candidato",
+      checklist: {
+        identityLabel: "Basi del profilo",
+        identityDetail: "Nome completo, telefono e posizione presenti per i contatti dei recruiter.",
+        storyLabel: "Storia del ruolo",
+        storyDetail: "Headline e sintesi spiegano cosa fai oltre una scheda vuota.",
+        verificationLabel: "Verifica dell’identità",
+        verificationDetail: "La fiducia Jobs resta limitata finché il tuo account HenryCo non supera la verifica di identità.",
+        proofLabel: "Prove di lavoro",
+        proofDetail: "Curriculum più prove di portfolio facilitano i movimenti in selezione.",
+        skillsLabel: "Competenze mappate",
+        skillsDetail: "Almeno quattro competenze e funzioni preferite migliorano le raccomandazioni.",
+      },
+    },
+    nextActions: {
+      gapTemplate: "Colma il divario {label}",
+      interviewLabel: "Prepara una fase di colloquio",
+      offerLabel: "Rispondi a un’offerta attiva",
+      attentionTemplate: "{title} presso {employer} richiede ora la tua attenzione.",
+      convertSavedLabel: "Converti un ruolo salvato in una candidatura attiva",
+      convertSavedTemplate: "{title} è già nella tua selezione ed è pronto per un passaggio più profondo.",
+      restartLabel: "Riavvia la ricerca con filtri più rigorosi",
+      restartDetail: "Filtra per datori di lavoro verificati e ruoli interni per costruire una selezione più pulita più rapidamente.",
+    },
+    alertStatus: {
+      active: "Attivo",
+      paused: "In pausa",
+    },
+    recruiterUpdateTitleTemplate: "Aggiornamento {stage}",
+  },
+  divisionMarketplace: {
+    metadata: {
+      title: "Marketplace · ordini e attività venditore",
+      description: "Segui ogni ordine HenryCo Marketplace, contestazione e payout venditore collegato a questo account — attività di acquisto e workspace venditore, rispecchiati in un’unica stanza in tempo reale.",
+    },
+    hero: {
+      eyebrow: "Marketplace · live",
+      ariaLabel: "Panoramica Marketplace",
+      sideAriaLabel: "Come funziona questa stanza",
+      sideKicker: "Come funziona questa stanza",
+      sideTitle: "Acquista e vendi — una sola stanza.",
+      sideBody: "Ogni ordine, contestazione e richiesta di payout creata su Marketplace si riflette in questa stanza. L’attività del workspace venditore si intreccia agli ordini dell’acquirente, così entrambi i lati del marketplace restano visibili a colpo d’occhio.",
+      breakdownLabel: "Per stato",
+      breakdownAriaLabel: "Suddivisione dell’attività",
+      tilesAriaLabel: "Attività Marketplace",
+      tileLabels: {
+        orders: "Ordini",
+        disputes: "Contestazioni",
+        store: "Negozio",
+        payouts: "Payout",
+      },
+      tileFoot: {
+        ordersEmpty: "Il primo ordine apparirà qui",
+        ordersInMotionTemplate: "{inFlight} in corso · {delivered} consegnati",
+        ordersDeliveredTemplate: "{delivered} consegnati a oggi",
+        disputesClear: "Tutto a posto",
+        disputesActiveTemplate: "{open} aperti · {resolving} in risoluzione",
+        storeActiveNoName: "Iscrizione venditore attiva",
+        storeActiveWithNameTemplate: "Negozio: {name}",
+        storeApplicationTemplate: "Candidatura: {status}",
+        storeIdle: "Non vendi ancora — candidati quando sei pronto",
+        payoutsEmptyNoneSettled: "Nessuna richiesta di payout",
+        payoutsSettledTemplate: "{count} liquidati a oggi",
+        payoutsPendingTemplate: "{amount} in attesa",
+      },
+      breakdownLabels: {
+        inMotion: "In corso",
+        openDisputes: "Contestazioni aperte",
+        delivered: "Consegnati",
+        pendingPayouts: "Payout in attesa",
+      },
+      state: {
+        empty: {
+          headline: "Inizia a comprare su HenryCo Marketplace.",
+          blurb: "Ordini, contestazioni, attività venditore e payout si riflettono in questa stanza dalla prima transazione. Sfoglia il marketplace per iniziare.",
+          ctaPrimary: "Apri Marketplace",
+          ctaSecondary: "Diventa venditore",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} pratica richiede attenzione.",
+          headlineTemplatePlural: "{count} pratiche richiedono attenzione.",
+          blurb: "Contestazioni e ordini eccezione vanno in cima alla coda. Apri il caso per aggiungere prove o accettare la risoluzione.",
+          ctaPrimary: "Esamina pratiche",
+          ctaSecondary: "Apri Marketplace",
+        },
+        activeOrders: {
+          headlineTemplateSingular: "{count} ordine in corso.",
+          headlineTemplatePlural: "{count} ordini in corso.",
+          blurb: "Stato in tempo reale, pagamento e follow-up venditore si riflettono in questa stanza da HenryCo Marketplace.",
+          ctaPrimary: "Apri Marketplace",
+          ctaSecondary: "Diventa venditore",
+        },
+        activePayouts: {
+          headlineTemplateSingular: "{count} payout in revisione.",
+          headlineTemplatePlural: "{count} payout in revisione.",
+          blurb: "Le richieste di payout del venditore passano per la verifica finanziaria. Gli aggiornamenti compaiono qui man mano.",
+          ctaPrimary: "Apri workspace venditore",
+          ctaSecondary: "Apri Marketplace",
+        },
+        calmBuyer: {
+          headlineTemplateSingular: "{count} ordine registrato.",
+          headlineTemplatePlural: "{count} ordini registrati.",
+          blurb: "Tutta la tua attività marketplace in una sola stanza — ordini acquirente, payout venditore, esiti delle contestazioni e ultimo stato di ogni negozio.",
+          ctaPrimary: "Apri Marketplace",
+          ctaSecondary: "Diventa venditore",
+        },
+        calmSeller: {
+          headlineTemplateSingular: "{count} ordine · venditore attivo.",
+          headlineTemplatePlural: "{count} ordini · venditore attivo.",
+          blurb: "Tutta la tua attività marketplace in una sola stanza — ordini acquirente, payout venditore, esiti delle contestazioni e ultimo stato di ogni negozio.",
+          ctaPrimary: "Apri Marketplace",
+          ctaSecondary: "Apri workspace venditore",
+        },
+      },
+    },
+    sections: {
+      matters: {
+        title: "Pratiche attive",
+        meta: "Contestazioni, stato della candidatura venditore e payout in attesa compaiono qui quando serve un’azione.",
+        ariaLabel: "Pratiche Marketplace attive",
+        emptyTitle: "Nulla richiede azione",
+        emptyBody: "Tutta la tua attività marketplace procede regolarmente — nessuna contestazione aperta, nessun payout in revisione, e (se applicabile) la tua candidatura venditore è approvata.",
+      },
+      orders: {
+        title: "Ordini recenti",
+        empty: "Gli ordini effettuati su Marketplace compaiono qui in tempo reale.",
+        metaTemplateSingular: "{count} ordine · più recente per primo",
+        metaTemplatePlural: "{count} ordini · più recenti per primi",
+        emptyTitle: "Ancora nessun ordine",
+        emptyBody: "Effettua il tuo primo ordine su HenryCo Marketplace — stato, pagamento ed eventuali follow-up arrivano qui automaticamente.",
+        ariaLabel: "Ordini recenti",
+      },
+      activity: {
+        title: "Attività recente",
+        empty: "Aggiornamenti di stato, pagamenti e recensioni si riflettono qui in tempo reale.",
+        metaTemplateSingular: "{count} aggiornamento · più recente per primo",
+        metaTemplatePlural: "{count} aggiornamenti · più recenti per primi",
+        emptyTitle: "Nessuna attività marketplace per ora",
+        emptyBody: "Conferme d’ordine, aggiornamenti delle contestazioni ed esiti dei payout del venditore appariranno qui in tempo reale.",
+        ariaLabel: "Attività Marketplace",
+      },
+    },
+    matters: {
+      disputes: {
+        kicker: "Contestazioni",
+        titleTemplateSingular: "{count} caso richiede azione",
+        titleTemplatePlural: "{count} casi richiedono azione",
+        bodyLatestTemplate: "Ultimo: {ref} · aggiornato {stamp}",
+        bodyFallback: "Apri la coda per aggiungere prove.",
+        cta: "Esamina casi",
+      },
+      application: {
+        kicker: "Candidatura venditore",
+        bodyWithStoreTemplate: "Negozio: {name}",
+        bodyDefault: "Candidatura nella coda di revisione HenryCo.",
+        bodyReviewSuffixTemplate: " · {note}",
+        cta: "Vedi stato",
+        defaultStatus: "inviata",
+      },
+      payouts: {
+        kicker: "Payout in revisione",
+        titleTemplate: "{amount} in attesa",
+        bodyTemplateSingular: "{count} richiesta in attesa di verifica finanziaria.",
+        bodyTemplatePlural: "{count} richieste in attesa di verifica finanziaria.",
+        cta: "Apri workspace venditore",
+      },
+    },
+    orders: {
+      rowTitleTemplate: "Ordine {orderNo}",
+      rowSubTemplate: "{amount} · effettuato {stamp}",
+      rowAriaLabelTemplate: "Ordine {orderNo} · {status}",
+      statusFallbackDraft: "Bozza",
+    },
+    statusValueLabels: {
+      delivered: "Consegnato",
+      completed: "Completato",
+      customer_confirmed: "Confermato dal cliente",
+      fulfilled: "Evaso",
+      cancelled: "Annullato",
+      refunded: "Rimborsato",
+      disputed: "In contestazione",
+      exception: "Eccezione",
+      placed: "Inserito",
+      paid: "Pagato",
+      awaiting_fulfilment: "In attesa di evasione",
+      confirmed: "Confermato",
+      queued: "In coda",
+    },
+    applicationStatusLabels: {
+      submitted: "inviata",
+      under_review: "in revisione",
+      approved: "approvata",
+      rejected: "rifiutata",
+      pending_documents: "documenti in sospeso",
+      changes_requested: "modifiche richieste",
+    },
+    formatLabels: {
+      dash: "—",
     },
   },
 };
@@ -7328,6 +9531,448 @@ const IG: DeepPartial<AccountCopy> = {
       leaveReview: "Hapụ nyocha",
     },
   },
+  divisionProperty: {
+    metadata: {
+      title: "Property · ndị edobere & ajụjụ",
+      description: "Ndepụta Property gị, ajụjụ, nleta na nsogharị ndepụta — ihe ọ bụla i mere na HenryCo Property na-egosipụta n’ime ụlọ akaụntụ a.",
+    },
+    hero: {
+      eyebrow: "Property · ndụ",
+      ariaLabel: "Nchịkọta Property",
+      browseListingsCta: "Chọgharịa ndepụta",
+      savedShortlistCta: "Edobere",
+      tilesAriaLabel: "Mmegharị Property",
+      tileLabels: {
+        saved: "Edobere",
+        inquiries: "Ajụjụ",
+        viewings: "Nleta",
+        listings: "Ndepụta",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} HenryCo na-elekọta",
+        savedEmpty: "Dobe ndepụta iji wuo ndepụta ụfọdụ",
+        savedWith: "Tụlee ma laghachi mgbe ọ bụla",
+        inquiriesEmpty: "Enweghị mkparịta ụka mepere emepe",
+        inquiriesWith: "Nsogharị na-eru n’ụlọ a",
+        viewingsEmpty: "Rịọ nleta n’ụlọ edobere",
+        viewingsWith: "Nkwenye na-emegharị n’akụrụngwa niile",
+        listingsEmpty: "Nyefee ndepụta na Property",
+        listingsWith: "Nsonaazụ nleba anya na-erute ebe a",
+      },
+      sideAriaLabel: "Otú ụlọ a si arụ ọrụ",
+      sideKicker: "Otú ụlọ a si arụ ọrụ",
+      sideTitle: "Chọpụta na Property, soro ya n’ebe a.",
+      sideBody:
+        "Dobe ndepụta, rịọ nleta, ma ọ bụ mepee ajụjụ na HenryCo Property — ihe ọ bụla i mere na-egosipụta n’ụlọ akaụntụ a ka i nwee ike ịmaliteghachi ebe i kwụsịrị, n’elu ngwaọrụ niile.",
+      sideBodyMuted:
+        "Ndepụta HenryCo na-elekọta na-egosi akara Elekọta — nleba anya, nyocha, na nsogharị mgbazinye na-anabata site n’òtù Property.",
+      breakdownAriaLabel: "Nkewa mmegharị",
+      breakdownLabel: "Site n’mmegharị",
+      breakdownLabels: {
+        saved: "Edobere",
+        inquiries: "Ajụjụ",
+        viewings: "Nleta",
+        listings: "Ndepụta",
+      },
+      state: {
+        empty: {
+          headline: "Bido ịchọgharị HenryCo Property.",
+          blurb:
+            "Chọpụta ụlọ obibi, ndepụta ire ahịa, na ụlọ ndị HenryCo na-elekọta. Dobe ndị ị masịrị, ajụjụ ọ bụla, nleta, ma ọ bụ nsogharị ndepụta na-arute ebe a n’onwe ya.",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} ụlọ n’ndepụta.",
+          headlineTemplatePlural: "{count} ụlọ n’ndepụta.",
+          blurb:
+            "Ụlọ edobere, dị njikere maka ọmụmụ ọzọ. Mepee ndepụta iji rịọ nleta ma ọ bụ zipu ajụjụ — nsogharị ga-alaghachi ozugbo n’ụlọ a.",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "{count} nleta ahaziri.",
+          viewingHeadlineTemplatePlural: "{count} nleta ahaziri.",
+          inquiryHeadlineTemplateSingular: "{count} ajụjụ na-arụ ọrụ.",
+          inquiryHeadlineTemplatePlural: "{count} ajụjụ na-arụ ọrụ.",
+          blurb:
+            "Ndepụta gị, ajụjụ, na usoro nleta bi n’ otu ụlọ. Maliteghachi ebe i kwụsịrị — ihe ọ bụla na-egosipụta site na HenryCo Property n’oge mmemme.",
+        },
+      },
+    },
+    sections: {
+      saved: "Ndepụta edobere",
+      savedMetaEmpty: "Dobe ndepụta na HenryCo Property iji wuo ndepụta gị.",
+      savedMetaTemplate: "{saved} edobere · {managed} HenryCo na-elekọta",
+      activity: "Mmegharị ọhụrụ",
+      activityMetaEmpty: "Ajụjụ, nleta, na nyocha ndepụta na-egosipụta ebe a mgbe ha na-eme.",
+      activityMetaTemplateSingular: "{count} mmelite · ọhụrụ mbụ",
+      activityMetaTemplatePlural: "{count} mmelite · ọhụrụ mbụ",
+    },
+    empty: {
+      savedTitle: "Enweghị ụlọ edobere",
+      savedBody:
+        "Chọpụta ụlọ obibi, ndepụta ire ahịa, na ụlọ ndị HenryCo na-elekọta na Property. Ihe ọ bụla i dobere na-arute ebe a n’onwe ya.",
+      activityTitle: "Enweghị mmegharị Property",
+      activityBody:
+        "Mepee ndepụta na HenryCo Property iji rịọ nleta ma ọ bụ zipu ajụjụ — nzọụkwụ ọ bụla, site na ozi mbụ ruo nyocha, ga-apụta ebe a.",
+    },
+    activity: {
+      ariaLabel: "Mmegharị Property",
+      titles: {
+        inquiry: "Ajụjụ ụlọ",
+        viewing: "Arịrịọ nleta",
+        listing_submitted: "Edepụtara ndepụta",
+        listing_updated: "Emelitere ndepụta",
+        listing_reviewed: "Nyocha ndepụta agwụla",
+      },
+    },
+    gallery: {
+      ariaLabel: "Ụlọ edobere",
+      managedBadge: "Elekọta",
+      featuredBadge: "Pụtara ìhè",
+      locationPending: "Ebe na-echere",
+      contactAgent: "Kpọtụrụ onye nnọchite anya",
+      savedAtTemplate: "Edobere na {date}",
+      bedSingular: "ọnụ ụlọ ihi",
+      bedPlural: "ọnụ ụlọ ihi",
+      bathSingular: "ime ọma",
+      bathPlural: "ime ọma",
+      sizeSqmTemplate: "{size} sqm",
+    },
+  },
+  divisionMarketplace: {
+    metadata: {
+      title: "Marketplace · iwu ahịa na ọrụ onye na-ere",
+      description: "Soro iwu HenryCo Marketplace ọ bụla, esemokwu na ụgwọ onye na-ere ejikọtara na akaụntụ a — ọrụ onye na-azụ na ebe ọrụ onye na-ere, na-egosi n’otu ụlọ ozugbo.",
+    },
+    hero: {
+      eyebrow: "Marketplace · ndụ",
+      ariaLabel: "Nlebanya Marketplace",
+      sideAriaLabel: "Otu ụlọ a si arụ ọrụ",
+      sideKicker: "Otu ụlọ a si arụ ọrụ",
+      sideTitle: "Zụta ma ree — otu ụlọ.",
+      sideBody: "Iwu ahịa, esemokwu na arịrịọ ụgwọ ọ bụla i mepụtara na Marketplace na-egosi n’ụlọ a. Ọrụ ebe onye na-ere na-abanye n’akụkụ iwu ahịa nke onye na-azụ, ka akụkụ abụọ nke marketplace na-adịgide site n’otu ile anya.",
+      breakdownLabel: "Site na ọnọdụ",
+      breakdownAriaLabel: "Nkewa ọrụ",
+      tilesAriaLabel: "Ọrụ Marketplace",
+      tileLabels: {
+        orders: "Iwu ahịa",
+        disputes: "Esemokwu",
+        store: "Ụlọ ahịa",
+        payouts: "Ụgwọ",
+      },
+      tileFoot: {
+        ordersEmpty: "Iwu mbụ ga-apụta ebe a",
+        ordersInMotionTemplate: "{inFlight} na-aga · {delivered} enyefere",
+        ordersDeliveredTemplate: "{delivered} enyefere ruo taa",
+        disputesClear: "Ihe niile dị mma",
+        disputesActiveTemplate: "{open} mepere · {resolving} a na-edozi",
+        storeActiveNoName: "Ihe ọmụma onye na-ere dị irè",
+        storeActiveWithNameTemplate: "Ụlọ ahịa: {name}",
+        storeApplicationTemplate: "Akwụkwọ ọnọdụ: {status}",
+        storeIdle: "Ị na-ereghị aka — tinye akwụkwọ mgbe ị dị njikere",
+        payoutsEmptyNoneSettled: "Enwebeghị arịrịọ ụgwọ ọ bụla",
+        payoutsSettledTemplate: "{count} akwụgharala ruo taa",
+        payoutsPendingTemplate: "{amount} ka na-echere",
+      },
+      breakdownLabels: {
+        inMotion: "Na-aga",
+        openDisputes: "Esemokwu mepere",
+        delivered: "Enyefere",
+        pendingPayouts: "Ụgwọ na-echere",
+      },
+      state: {
+        empty: {
+          headline: "Malite ịzụ ihe na HenryCo Marketplace.",
+          blurb: "Iwu, esemokwu, ọrụ onye na-ere na ụgwọ na-egosi n’ụlọ a ozugbo ị malitere azụmaahịa. Lelee marketplace iji malite.",
+          ctaPrimary: "Mepee Marketplace",
+          ctaSecondary: "Tinye akwụkwọ ire ihe",
+        },
+        attention: {
+          headlineTemplateSingular: "Okwu {count} chọrọ nlebara anya.",
+          headlineTemplatePlural: "Okwu {count} chọrọ nlebara anya.",
+          blurb: "Esemokwu na iwu mwepu na-aga n’ihu n’ahịrị. Mepee okwu iji tinye akaebe ma ọ bụ nakwere mgbazi.",
+          ctaPrimary: "Lelee okwu",
+          ctaSecondary: "Mepee Marketplace",
+        },
+        activeOrders: {
+          headlineTemplateSingular: "Iwu {count} na-aga.",
+          headlineTemplatePlural: "Iwu {count} na-aga.",
+          blurb: "Ọnọdụ iwu ndụ, ọnọdụ ịkwụ ụgwọ, na nleba anya onye na-ere na-egosi n’ụlọ a site na HenryCo Marketplace ozugbo.",
+          ctaPrimary: "Mepee Marketplace",
+          ctaSecondary: "Tinye akwụkwọ ire ihe",
+        },
+        activePayouts: {
+          headlineTemplateSingular: "Ụgwọ {count} a na-elele.",
+          headlineTemplatePlural: "Ụgwọ {count} a na-elele.",
+          blurb: "Arịrịọ ụgwọ ndị na-ere na-aga site na nyocha ego. Ndepụta ọnọdụ na-apụta ebe a ka ndị otu na-arụ ọrụ.",
+          ctaPrimary: "Mepee ebe ọrụ onye na-ere",
+          ctaSecondary: "Mepee Marketplace",
+        },
+        calmBuyer: {
+          headlineTemplateSingular: "Iwu {count} edebere.",
+          headlineTemplatePlural: "Iwu {count} edebere.",
+          blurb: "Ọrụ marketplace gị niile n’otu ụlọ — iwu ndị na-azụ, ụgwọ ndị na-ere, ihe si na esemokwu pụta, na ọnọdụ ọhụrụ nke ụlọ ahịa ọ bụla.",
+          ctaPrimary: "Mepee Marketplace",
+          ctaSecondary: "Tinye akwụkwọ ire ihe",
+        },
+        calmSeller: {
+          headlineTemplateSingular: "Iwu {count} · onye na-ere na-arụ ọrụ.",
+          headlineTemplatePlural: "Iwu {count} · onye na-ere na-arụ ọrụ.",
+          blurb: "Ọrụ marketplace gị niile n’otu ụlọ — iwu ndị na-azụ, ụgwọ ndị na-ere, ihe si na esemokwu pụta, na ọnọdụ ọhụrụ nke ụlọ ahịa ọ bụla.",
+          ctaPrimary: "Mepee Marketplace",
+          ctaSecondary: "Mepee ebe ọrụ onye na-ere",
+        },
+      },
+    },
+    sections: {
+      matters: {
+        title: "Okwu na-arụ ọrụ",
+        meta: "Esemokwu, ọnọdụ akwụkwọ onye na-ere na ụgwọ na-echere na-apụta ebe a mgbe a chọrọ ihe omume.",
+        ariaLabel: "Okwu Marketplace na-arụ ọrụ",
+        emptyTitle: "Ọ dịghị ihe chọrọ omume",
+        emptyBody: "Ọrụ marketplace gị niile na-aga nke ọma — ọ dịghị esemokwu mepere, ọ dịghị ụgwọ a na-elele, na (ọ bụrụ na ọ dabara) akwụkwọ onye na-ere gị enyerela ohere.",
+      },
+      orders: {
+        title: "Iwu ndị nso",
+        empty: "Iwu emere na Marketplace na-egosi ebe a ozugbo.",
+        metaTemplateSingular: "Iwu {count} · nke ọhụrụ na mbụ",
+        metaTemplatePlural: "Iwu {count} · ndị ọhụrụ na mbụ",
+        emptyTitle: "Enwebeghị iwu",
+        emptyBody: "Mee iwu mbụ gị na HenryCo Marketplace — ọnọdụ iwu, ọnọdụ ịkwụ ụgwọ na nleba anya ọ bụla na-arịdata ebe a ozugbo.",
+        ariaLabel: "Iwu ndị nso",
+      },
+      activity: {
+        title: "Ọrụ ndị nso",
+        empty: "Ndepụta ọnọdụ, ịkwụ ụgwọ na nyocha na-egosi ebe a ka ha na-eme.",
+        metaTemplateSingular: "Ndepụta {count} · nke ọhụrụ na mbụ",
+        metaTemplatePlural: "Ndepụta {count} · ndị ọhụrụ na mbụ",
+        emptyTitle: "Enwebeghị ọrụ marketplace",
+        emptyBody: "Nkwenye iwu, ndepụta esemokwu na ihe si n’ụgwọ onye na-ere pụta ga-apụta ebe a ka ha na-eme.",
+        ariaLabel: "Ọrụ Marketplace",
+      },
+    },
+    matters: {
+      disputes: {
+        kicker: "Esemokwu",
+        titleTemplateSingular: "Okwu {count} chọrọ omume",
+        titleTemplatePlural: "Okwu {count} chọrọ omume",
+        bodyLatestTemplate: "Nke ọhụrụ: {ref} · emelitere {stamp}",
+        bodyFallback: "Mepee ahịrị iji tinye akaebe.",
+        cta: "Lelee okwu",
+      },
+      application: {
+        kicker: "Akwụkwọ onye na-ere",
+        bodyWithStoreTemplate: "Ụlọ ahịa: {name}",
+        bodyDefault: "Akwụkwọ n’ahịrị nyocha HenryCo.",
+        bodyReviewSuffixTemplate: " · {note}",
+        cta: "Lelee ọnọdụ",
+        defaultStatus: "ezigara",
+      },
+      payouts: {
+        kicker: "Ụgwọ a na-elele",
+        titleTemplate: "{amount} na-echere",
+        bodyTemplateSingular: "Arịrịọ {count} na-echere nyocha ego.",
+        bodyTemplatePlural: "Arịrịọ {count} na-echere nyocha ego.",
+        cta: "Mepee ebe ọrụ onye na-ere",
+      },
+    },
+    orders: {
+      rowTitleTemplate: "Iwu {orderNo}",
+      rowSubTemplate: "{amount} · emere {stamp}",
+      rowAriaLabelTemplate: "Iwu {orderNo} · {status}",
+      statusFallbackDraft: "Nzaghachi",
+    },
+    statusValueLabels: {
+      delivered: "Enyefere",
+      completed: "Emechara",
+      customer_confirmed: "Onye ahịa kwenyere",
+      fulfilled: "Emezuru",
+      cancelled: "Akagbuoro",
+      refunded: "Nyeghachiri ego",
+      disputed: "N’esemokwu",
+      exception: "Mwepu",
+      placed: "Etinyere",
+      paid: "Akwụrụ",
+      awaiting_fulfilment: "Na-echere imezu",
+      confirmed: "Akwadoro",
+      queued: "N’ahịrị",
+    },
+    applicationStatusLabels: {
+      submitted: "ezigara",
+      under_review: "n’elele",
+      approved: "anabatara",
+      rejected: "ajụrụ",
+      pending_documents: "akwụkwọ na-echere",
+      changes_requested: "a chọrọ mgbanwe",
+    },
+    formatLabels: {
+      dash: "—",
+    },
+  },
+  divisionJobs: {
+    metadata: {
+      title: "Ọrụ · dashboard onye etinyere",
+      description: "Soro tinyobi maka aplikeshọn HenryCo Jobs ọ bụla, ọrụ edobere, nleba anya nke onye na-achọ ndị ọrụ, na akara njikere profaịlụ ejikọtara na akaụntụ a.",
+    },
+    header: {
+      title: "Ọrụ",
+      description: "Aplikeshọn gị, ọrụ edobere, nleba anya nke ndị na-achọ ndị ọrụ, na ike profaịlụ — ihe niile n’otu ebe.",
+      candidateModuleCta: "Modul onye etinyere",
+      interviewRoomsCta: "Ọnụ ụlọ ajụjụ ọnụ",
+      browseLiveRolesCta: "Chọgharịa ọrụ na-aga",
+    },
+    hero: {
+      eyebrow: "Akaụntụ gị",
+      headline: "Ihe omume ọrụ gị, ihe niile n’otu ebe.",
+      body: "Aplikeshọn, ọrụ edobere, nleba anya nke ndị na-achọ ndị ọrụ, na njikere profaịlụ ejikọtara na akaụntụ HenryCo gị.",
+      statsAriaLabel: "Nchịkọta ọrụ ọrụ",
+      statLabels: {
+        applications: "Aplikeshọn na-aga",
+        saved: "Ọrụ edobere",
+        readiness: "Njikere profaịlụ",
+        updates: "Nleba anya ndị na-achọ ndị ọrụ",
+      },
+      statDetails: {
+        applicationsLeadingTemplate: "{stage} bụ ọkwa na-eduga gị ugbu a.",
+        applicationsEmpty: "Enwebeghị aplikeshọn na-aga ugbu a.",
+        savedSome: "Ndepụta gị dị njikere maka nyocha ọzọ.",
+        savedEmpty: "Wuo ndepụta ka ọrụ ndị dị mma dị mfe ịchọta ọzọ.",
+        updatesLatestTemplate: "{relative} mmegharị ikpeazụ.",
+        updatesEmpty: "Enwebeghị nleba anya ndị na-achọ ndị ọrụ.",
+      },
+    },
+    sections: {
+      nextActionsKicker: "Omume Ọzọ",
+      nextActionsTitle: "Ihe kwesịrị nlebara anya gị ugbu a",
+      openTimelineCta: "Mepee oge eme ihe",
+      applicationsKicker: "Aplikeshọn",
+      applicationsTitle: "Mmegharị ọrụ na-eme ugbu a",
+      savedKicker: "Ọrụ Edobere",
+      savedTitle: "Ndepụta nwere ihe ngosi karịa",
+      openSavedRolesCta: "Mepee ọrụ edobere",
+      recommendedKicker: "Ọrụ a tụrụ aro",
+      recommendedTitle: "Ihe dabara na akara gị ugbu a",
+      browseCatalogCta: "Chọgharịa katalọgụ",
+      recruiterFeedKicker: "Mgbasa Nke Onye Na-achọ Ndị Ọrụ",
+      recruiterFeedTitle: "Ozi, mmegharị ọkwa, na nleba anya",
+      candidateInboxCta: "Igbe ozi onye etinyere",
+      profileKicker: "Ike Profaịlụ",
+      profileTitle: "Njikere onye etinyere na ọmarịcha CV",
+      sharedInboxKicker: "Igbe Ozi Ekekọrịtara",
+      sharedInboxTitle: "Mkpọsa ọrụ jikọtara na akaụntụ gị",
+      alertsKicker: "Mkpọsa",
+      alertsTitle: "Ebumnobi nchọchọ edobere",
+    },
+    empty: {
+      applicationsTitle: "Enwebeghị aplikeshọn na-aga ugbu a",
+      applicationsBody: "Ọrụ edobere, nleba anya ndị na-achọ ndị ọrụ, na oge eme ihe ga-apụta ebe a ozugbo ị gbanwere site na nchọgharị gaa n’aplikeshọn na-aga.",
+      exploreJobsCta: "Nyochaa ọrụ",
+      savedJobsTitle: "Enwebeghị ọrụ edobere",
+      savedJobsBody: "Debe ọrụ ndị dị mma ka ha dịgide na ndepụta gị n’etiti Jobs na akaụntụ gị.",
+      recommendedTitle: "Ntụaro ga-amapụta dị ka i ji Jobs",
+      recommendedBody: "Mgbe profaịlụ, ndepụta, na aplikeshọn gị mụbawanyere, ntụaro ebe a ga-aka adaba.",
+      recruiterFeedTitle: "Enwebeghị mmegharị nke onye na-achọ ndị ọrụ",
+      recruiterFeedBody: "Mgbanwe ọkwa aplikeshọn, ndetu ekekọrịtara nke ndị na-achọ ndị ọrụ, na mkpọsa Jobs ga-akpọkọta ebe a.",
+      notificationsTitle: "Enwebeghị mkpọsa ọrụ",
+      notificationsBody: "Mmegharị ndepụta n’ọdịniihu, nleba anya nke ndị ọrụ, na mgbanwe aplikeshọn ga-arute ebe a na n’ime modul Jobs.",
+      alertsTitle: "Enweghị mkpọsa ọrụ na-arụ ọrụ",
+      alertsBody: "Mepụta mkpọsa ka ọrụ ọhụụ dabara na ụkpụrụ gị pụta na mgbasa Jobs gị.",
+      browseRolesCta: "Chọgharịa ọrụ",
+    },
+    application: {
+      progressPercentTemplate: "{percent}% mezuru",
+      appliedAtTemplate: "Tinyere na {date}",
+      candidateReadiness: "Njikere onye etinyere",
+      recruiterConfidence: "Ntụkwasị obi nke onye na-achọ ndị ọrụ",
+      latestMovement: "Mmegharị ikpeazụ nke onye na-achọ ndị ọrụ",
+      nextBestMove: "Mmegharị kacha mma",
+      openTimelineCta: "Mepee oge eme ihe",
+      interviewRoomCta: "Ọnụ ụlọ ajụjụ ọnụ",
+      viewRoleCta: "Lee ọrụ",
+    },
+    savedJob: {
+      trustTemplate: "Ntụkwasị obi {score}",
+      savedAtTemplate: "Edobere na {date}",
+    },
+    recommended: {
+      compFallback: "A tụlere ụgwọ n’ime usoro",
+    },
+    stageLabels: {
+      applied: "Etinyere",
+      reviewing: "Na-enyocha",
+      shortlisted: "Họpụtara",
+      interview: "Ajụjụ ọnụ",
+      offer: "Nye onyinye",
+      hired: "Goro",
+      rejected: "Jụrụ",
+    },
+    nextStep: {
+      labels: {
+        applied: "Mee ka profaịlụ na CV gị bụrụ ọhụụ",
+        shortlisted: "Nweekwa ihe akaebe na ihe gbasara portfolio",
+        interview: "Kwadebe ihe atụ na oge eme ihe",
+        offer: "Nyochaa ọkwa, oge, na ụgwọ",
+        rejected: "Mee ka ngwugwu aplikeshọn ọzọ sie ike",
+      },
+      bodies: {
+        applied: "N’ọkwa mbụ, ihe akaebe doro anya, ihe nkwukọrịta dị ọcha, na CV ọhụụ na-enyere aka.",
+        shortlisted: "Họpụta pụtara na i gafere nyochaa akara mbụ. Ihe akaebe ziri ezi dị mkpa ugbu a.",
+        interview: "Ọkwa ajụjụ ọnụ na-eme ngwa ngwa ma akaebe ọrụ kacha mma na oge gị dị mfe ịhụ.",
+        offer: "Jiri ọkwa onyinye iwepu enweghị doro anya, ọ bụghị iche ọrụ.",
+        rejected: "Jiri njụ dị ka akara. Mee ka nchịkọta, ihe atụ, na dabara n’ọrụ sie ike tupu i tinye aplikeshọn ọzọ.",
+      },
+    },
+    readinessLabels: {
+      interviewReady: "Njikere maka ajụjụ ọnụ",
+      strongProfile: "Profaịlụ siri ike",
+      needsProof: "Chọrọ ihe akaebe",
+      needsStructure: "Chọrọ usoro",
+    },
+    workModeLabels: {
+      remote: "Site n’anya",
+      hybrid: "Agwakọta",
+      onsite: "N’ebe ọrụ",
+    },
+    employmentTypeLabels: {
+      fullTime: "Oge zuru oke",
+      partTime: "Oge nta",
+      contract: "Nkwekọrịta",
+      internship: "Mmụta na-arụ",
+      temporary: "Nwa oge",
+    },
+    profile: {
+      readinessLabel: "Njikere",
+      skillsMappedLabel: "Nkà depụtara",
+      filesLabel: "Faịlụ",
+      improveProfileCta: "Mee ka profaịlụ ka mma",
+      openCandidateModuleCta: "Mepee modul onye etinyere",
+      checklist: {
+        identityLabel: "Ntọala profaịlụ",
+        identityDetail: "Aha zuru oke, ekwentị, na ebe dị maka soro onye na-achọ ndị ọrụ.",
+        storyLabel: "Akụkọ ọrụ",
+        storyDetail: "Aha akara na nchịkọta na-akọwa ihe ị na-eme karịa ngosi efu.",
+        verificationLabel: "Nyochaa njirimara",
+        verificationDetail: "Ntụkwasị obi Jobs ga-akwụsị ruo mgbe akaụntụ HenryCo gị wepụrụ nyocha njirimara.",
+        proofLabel: "Ihe akaebe ọrụ",
+        proofDetail: "CV gbakwunyere ihe akaebe portfolio na-eme ka mmegharị họpụta dị mfe.",
+        skillsLabel: "Nkà depụtara",
+        skillsDetail: "Opekata mpe nkà anọ na ọrụ a họọrọ na-eme ka ntụaro ka mma.",
+      },
+    },
+    nextActions: {
+      gapTemplate: "Mechie oghere {label}",
+      interviewLabel: "Kwadebe maka ọkwa ajụjụ ọnụ",
+      offerLabel: "Zaa onyinye na-arụ ọrụ",
+      attentionTemplate: "{title} na {employer} chọrọ nlebara anya gị ugbu a.",
+      convertSavedLabel: "Gbanwee ọrụ edobere ka ọ bụrụ aplikeshọn na-aga",
+      convertSavedTemplate: "{title} adịzi na ndepụta gị, dịkwa njikere maka ọzọ nyocha.",
+      restartLabel: "Bidogharịa nchọchọ ọrụ gị site na nyocha siri ike",
+      restartDetail: "Jiri nyocha onye were nyochaa na ọrụ dị n’ime iji wuo ndepụta dị ọcha ngwa ngwa.",
+    },
+    alertStatus: {
+      active: "Na-arụ ọrụ",
+      paused: "Akwụsịrị",
+    },
+    recruiterUpdateTitleTemplate: "Nleba anya {stage}",
+  },
 };
 
 const YO: DeepPartial<AccountCopy> = {
@@ -8536,6 +11181,278 @@ const YO: DeepPartial<AccountCopy> = {
       openLiveBooking: "Ṣí ìfìpamọ́ lójú ẹsẹ̀",
       leaveReview: "Fi àyẹ̀wò sílẹ̀",
     },
+  },
+  divisionProperty: {
+    metadata: {
+      title: "Property · àwọn tí a fipamọ́ àti ìbéèrè",
+      description: "Àkójọpọ̀ Property rẹ, àwọn ìbéèrè, àwọn ìbẹ̀wò, àti àwọn ìtẹ̀síwájú ìpolówó — gbogbo ìṣe lórí HenryCo Property ń farahàn nínú yàrá àkáùntì yìí.",
+    },
+    hero: {
+      eyebrow: "Property · taara",
+      ariaLabel: "Àkópọ̀ Property",
+      browseListingsCta: "Wo àwọn ìpolówó",
+      savedShortlistCta: "Àkójọpọ̀",
+      tilesAriaLabel: "Ìṣẹ̀lẹ̀ Property",
+      tileLabels: {
+        saved: "Tí a fipamọ́",
+        inquiries: "Ìbéèrè",
+        viewings: "Ìbẹ̀wò",
+        listings: "Ìpolówó",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} tí HenryCo ń darí",
+        savedEmpty: "Fipamọ́ àwọn ìpolówó láti kọ́ àkójọpọ̀",
+        savedWith: "Ṣe àfojúsùn àti yípadà nígbà gbogbo",
+        inquiriesEmpty: "Kò sí ìjíròrò tí ó ṣí",
+        inquiriesWith: "Àwọn ìtẹ̀síwájú yóò dé yàrá yìí",
+        viewingsEmpty: "Béèrè ìbẹ̀wò sí ilé tí a fipamọ́",
+        viewingsWith: "Àwọn ìfìdíhàn ń ṣe àjùmọ̀ṣe káàkiri ẹ̀rọ",
+        listingsEmpty: "Fi ìpolówó sí Property",
+        listingsWith: "Àbájáde àtúnyẹ̀wò ń farahàn níbí",
+      },
+      sideAriaLabel: "Bí yàrá yìí ṣe ń ṣiṣẹ́",
+      sideKicker: "Bí yàrá yìí ṣe ń ṣiṣẹ́",
+      sideTitle: "Ṣàwárí lórí Property, tẹ̀síwájú níbí.",
+      sideBody:
+        "Fipamọ́ ìpolówó, béèrè ìbẹ̀wò, tàbí ṣí ìbéèrè lórí HenryCo Property — gbogbo ìṣe ń farahàn nínú yàrá àkáùntì yìí kí o lè bẹ̀rẹ̀ lẹ́yìn ibi tí o dúró sí láti orí gbogbo ẹ̀rọ rẹ.",
+      sideBodyMuted:
+        "Àwọn ìpolówó tí HenryCo ń darí ní àmì Tí ń darí — àtúnyẹ̀wò, àyẹ̀wò, àti ìtẹ̀síwájú àdéhùn ìyálò ni ẹgbẹ́ Property ń ṣe àkójọpọ̀.",
+      breakdownAriaLabel: "Ìpín ìṣẹ̀lẹ̀",
+      breakdownLabel: "Nípa ìṣẹ̀lẹ̀",
+      breakdownLabels: {
+        saved: "Tí a fipamọ́",
+        inquiries: "Ìbéèrè",
+        viewings: "Ìbẹ̀wò",
+        listings: "Ìpolówó",
+      },
+      state: {
+        empty: {
+          headline: "Bẹ̀rẹ̀ àtikẹ́kọ̀ọ́ HenryCo Property.",
+          blurb:
+            "Ṣàwárí àwọn ilé ìyálò, àwọn ìpolówó títà, àti àwọn ilé tí HenryCo ń darí. Fipamọ́ àwọn ti ó wù ọ́, gbogbo ìbéèrè, ìbẹ̀wò, tàbí ìtẹ̀síwájú ìpolówó yóò dé níbí lóòòrè.",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} ilé nínú àkójọpọ̀.",
+          headlineTemplatePlural: "{count} ilé nínú àkójọpọ̀.",
+          blurb:
+            "Àwọn ilé tí a fipamọ́, tó ṣetán fún ìṣàyẹ̀wò. Ṣí ìpolówó láti béèrè ìbẹ̀wò tàbí fi ìbéèrè ránṣẹ́ — ìtẹ̀síwájú yóò padà síbí tààrà.",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "{count} ìbẹ̀wò tí a ṣètò.",
+          viewingHeadlineTemplatePlural: "{count} ìbẹ̀wò tí a ṣètò.",
+          inquiryHeadlineTemplateSingular: "{count} ìbéèrè tí ó ń lọ.",
+          inquiryHeadlineTemplatePlural: "{count} ìbéèrè tí ń lọ.",
+          blurb:
+            "Àkójọpọ̀, ìbéèrè, àti ètò ìbẹ̀wò rẹ wà nínú yàrá kan. Bẹ̀rẹ̀ lẹ́yìn ibi tí o dúró sí — gbogbo ìṣe ń ṣàfihàn láti HenryCo Property gẹ́gẹ́ bí àkókò gidi.",
+        },
+      },
+    },
+    sections: {
+      saved: "Àkójọpọ̀ tí a fipamọ́",
+      savedMetaEmpty: "Fipamọ́ àwọn ìpolówó lórí HenryCo Property láti kọ́ àkójọpọ̀ rẹ.",
+      savedMetaTemplate: "{saved} tí a fipamọ́ · {managed} tí HenryCo ń darí",
+      activity: "Ìṣẹ̀lẹ̀ tuntun",
+      activityMetaEmpty: "Àwọn ìbéèrè, ìbẹ̀wò, àti àtúnyẹ̀wò ìpolówó ń ṣàfihàn níbí bí wọ́n ti ń ṣẹlẹ̀.",
+      activityMetaTemplateSingular: "{count} ìmúdójúìwọ̀n · tuntun jùlọ ní àkọ́kọ́",
+      activityMetaTemplatePlural: "{count} ìmúdójúìwọ̀n · tuntun jùlọ ní àkọ́kọ́",
+    },
+    empty: {
+      savedTitle: "Kò sí ilé tí a fipamọ́ síbẹ̀",
+      savedBody:
+        "Ṣàwárí àwọn ilé ìyálò, àwọn ìpolówó títà, àti àwọn ilé tí HenryCo ń darí lórí Property. Ohunkóhun tí o bá fipamọ́ yóò dé níbí lóòòrè.",
+      activityTitle: "Kò sí ìṣẹ̀lẹ̀ Property síbẹ̀",
+      activityBody:
+        "Ṣí ìpolówó lórí HenryCo Property láti béèrè ìbẹ̀wò tàbí fi ìbéèrè ránṣẹ́ — ipele kọ̀ọ̀kan, láti ọ̀rọ̀ àkọ́kọ́ rẹ títí dé àtúnyẹ̀wò, yóò farahàn níbí.",
+    },
+    activity: {
+      ariaLabel: "Ìṣẹ̀lẹ̀ Property",
+      titles: {
+        inquiry: "Ìbéèrè ilé",
+        viewing: "Ìbéèrè ìbẹ̀wò",
+        listing_submitted: "A fi ìpolówó",
+        listing_updated: "A mú ìpolówó dáadáa",
+        listing_reviewed: "A pari àtúnyẹ̀wò ìpolówó",
+      },
+    },
+    gallery: {
+      ariaLabel: "Àwọn ilé tí a fipamọ́",
+      managedBadge: "Tí ń darí",
+      featuredBadge: "Tí a yàn",
+      locationPending: "Ipò ń dúró",
+      contactAgent: "Bá aṣojú sọ̀rọ̀",
+      savedAtTemplate: "Fipamọ́ ní {date}",
+      bedSingular: "yàrá ìbùsùn",
+      bedPlural: "yàrá ìbùsùn",
+      bathSingular: "yàrá ìwẹ̀",
+      bathPlural: "yàrá ìwẹ̀",
+      sizeSqmTemplate: "{size} sqm",
+    },
+  },
+  divisionJobs: {
+    metadata: {
+      title: "Iṣẹ́ · pẹpẹ olùdánwò",
+      description: "Tọpinpin gbogbo ìbéèrè HenryCo Jobs, iṣẹ́ tí a fipamọ́, ìròyìn aṣàrokin, àti àmì ìmúrasílẹ̀ profáìlì tí ó so mọ́ àkáǹtì yìí.",
+    },
+    header: {
+      title: "Iṣẹ́",
+      description: "Àwọn ìbéèrè rẹ, iṣẹ́ tí a fipamọ́, ìròyìn aṣàrokin, àti agbára profáìlì — gbogbo rẹ̀ ní ibìkan.",
+      candidateModuleCta: "Module olùdánwò",
+      interviewRoomsCta: "Yàrá ìbéèrè",
+      browseLiveRolesCta: "Wo iṣẹ́ tí ó wà ní gbangba",
+    },
+    hero: {
+      eyebrow: "Àkáǹtì rẹ",
+      headline: "Iṣẹ́ ìgbòkègbódò rẹ, gbogbo rẹ̀ ní ibìkan.",
+      body: "Àwọn ìbéèrè, iṣẹ́ tí a fipamọ́, ìròyìn aṣàrokin, àti ìmúrasílẹ̀ profáìlì ni a ti so mọ́ àkáǹtì HenryCo rẹ.",
+      statsAriaLabel: "Ìsọ̀rọ̀ kúkurú nípa ìgbòkègbódò iṣẹ́",
+      statLabels: {
+        applications: "Àwọn ìbéèrè tí ń ṣiṣẹ́",
+        saved: "Iṣẹ́ tí a fipamọ́",
+        readiness: "Ìmúrasílẹ̀ profáìlì",
+        updates: "Ìròyìn aṣàrokin",
+      },
+      statDetails: {
+        applicationsLeadingTemplate: "{stage} ni ipele rẹ tí ó ń ṣiṣẹ́ jùlọ.",
+        applicationsEmpty: "Kò sí ìbéèrè tí ń ṣiṣẹ́ síbẹ̀.",
+        savedSome: "Àkójọ rẹ ti ṣetán fún ayẹ̀wò mìíràn.",
+        savedEmpty: "Kọ́ àkójọ kí o lè rí àwọn iṣẹ́ rere ní rọ̀rùn lẹ́ẹ̀kan sí i.",
+        updatesLatestTemplate: "{relative} ìṣípayá tuntun.",
+        updatesEmpty: "Kò sí ìròyìn aṣàrokin síbẹ̀.",
+      },
+    },
+    sections: {
+      nextActionsKicker: "Iṣẹ́ Tó Ń Bọ̀",
+      nextActionsTitle: "Ohun tí ó tọ́ ìfojúsùn rẹ báyìí",
+      openTimelineCta: "Ṣí ìṣàyẹ̀wò àkókò",
+      applicationsKicker: "Ìbéèrè",
+      applicationsTitle: "Ìṣípayá ìṣàlò tí ń ṣẹlẹ̀",
+      savedKicker: "Iṣẹ́ Tí A Fipamọ́",
+      savedTitle: "Àkójọ pẹ̀lú ìmọ̀ síwájú",
+      openSavedRolesCta: "Ṣí iṣẹ́ tí a fipamọ́",
+      recommendedKicker: "Iṣẹ́ Tí A Dámọ̀ràn",
+      recommendedTitle: "Ohun tí ó bá àmì rẹ lọ́wọ́lọ́wọ́ mu",
+      browseCatalogCta: "Wo kátálọ́gì",
+      recruiterFeedKicker: "Èté Aṣàrokin",
+      recruiterFeedTitle: "Iṣẹ́ àkọsílẹ̀, ìyípadà ipele, àti ìkìlọ̀",
+      candidateInboxCta: "Apá olùdánwò",
+      profileKicker: "Agbára Profáìlì",
+      profileTitle: "Ìmúrasílẹ̀ olùdánwò àti ìmúdára CV",
+      sharedInboxKicker: "Apá Pínpín",
+      sharedInboxTitle: "Ìkéde Jobs tí a so mọ́ àkáǹtì rẹ",
+      alertsKicker: "Ìkìlọ̀",
+      alertsTitle: "Èrò ìwákiri tí a fipamọ́",
+    },
+    empty: {
+      applicationsTitle: "Kò sí ìbéèrè tí ń ṣiṣẹ́ síbẹ̀",
+      applicationsBody: "Iṣẹ́ tí a fipamọ́, ìròyìn aṣàrokin, àti àkókò ìṣẹ̀lẹ̀ yóò farahàn níhìn-ín ní kété tí o bá yí padà láti ìwákiri sí ìbéèrè tí ń ṣiṣẹ́.",
+      exploreJobsCta: "Ṣàwárí iṣẹ́",
+      savedJobsTitle: "Kò sí iṣẹ́ tí a fipamọ́ síbẹ̀",
+      savedJobsBody: "Fipamọ́ àwọn iṣẹ́ tí ó dára kí ó lè wà nínú àkójọ rẹ jákèjádò Jobs àti àkáǹtì rẹ.",
+      recommendedTitle: "Àwọn ìmọ̀ràn yóò mú dágbá pẹ̀lú lílo Jobs",
+      recommendedBody: "Bí profáìlì, àkójọ, àti àwọn ìbéèrè rẹ ti ń dára, àwọn ìmọ̀ràn iṣẹ́ níhìn-ín yóò di ohun tí ó ní àfojúsùn jù.",
+      recruiterFeedTitle: "Kò sí ìṣípayá aṣàrokin síbẹ̀",
+      recruiterFeedBody: "Ìyípadà ipele ìbéèrè, àkọsílẹ̀ aṣàrokin tí a pín, àti àwọn ìkéde Jobs nínú app yóò ko síhìn-ín.",
+      notificationsTitle: "Kò sí àwọn ìkéde Jobs síbẹ̀",
+      notificationsBody: "Ìṣípayá àkójọ ọjọ́ iwájú, ìròyìn agbanisíṣẹ́, àti àyípadà ìbéèrè yóò gúnlẹ̀ síbí àti nínú module Jobs.",
+      alertsTitle: "Kò sí ìkìlọ̀ Jobs tí ń ṣiṣẹ́",
+      alertsBody: "Ṣẹ̀dá ìkìlọ̀ kí àwọn iṣẹ́ tuntun tí ó bá àwọn àmì rẹ mu lè farahàn nínú èté Jobs rẹ.",
+      browseRolesCta: "Wo iṣẹ́",
+    },
+    application: {
+      progressPercentTemplate: "{percent}% pé",
+      appliedAtTemplate: "Béèrè ní {date}",
+      candidateReadiness: "Ìmúrasílẹ̀ olùdánwò",
+      recruiterConfidence: "Ìgbàgbọ́ aṣàrokin",
+      latestMovement: "Ìṣípayá tuntun aṣàrokin",
+      nextBestMove: "Ìgbésẹ̀ tí ó dára jù",
+      openTimelineCta: "Ṣí ìṣàyẹ̀wò àkókò",
+      interviewRoomCta: "Yàrá ìbéèrè",
+      viewRoleCta: "Wo iṣẹ́",
+    },
+    savedJob: {
+      trustTemplate: "Ìgbẹ́kẹ̀lé {score}",
+      savedAtTemplate: "Fipamọ́ ní {date}",
+    },
+    recommended: {
+      compFallback: "Owó ipa-yá tí ó wà nínú ètò",
+    },
+    stageLabels: {
+      applied: "Béèrè",
+      reviewing: "Ń ṣàyẹ̀wò",
+      shortlisted: "A yàn",
+      interview: "Ìbéèrè",
+      offer: "Ìdásílẹ̀",
+      hired: "A gbà",
+      rejected: "A kọ̀",
+    },
+    nextStep: {
+      labels: {
+        applied: "Pa profáìlì àti CV rẹ mọ́",
+        shortlisted: "Mú ẹ̀rí àti àyíká portfolio ṣetán",
+        interview: "Mú àwọn àpẹẹrẹ àti àkókò sílẹ̀",
+        offer: "Ṣàyẹ̀wò àyíká, àkókò, àti owó",
+        rejected: "Mú apò ìbéèrè tókàn lágbára",
+      },
+      bodies: {
+        applied: "Ní ipele àkọ́kọ́, ẹ̀rí tí ó dára, ohun ìbánisọ̀rọ̀ tí ó mọ́, àti CV tuntun ń ràn lọ́wọ́.",
+        shortlisted: "Ní a yàn túmọ̀ sí pé o ti kọjá àyẹ̀wò àkọ́kọ́. Ẹ̀rí tí ó dájú máa ka báyìí.",
+        interview: "Àwọn ipele ìbéèrè ń lọ ní iyára nígbà tí ẹ̀rí iṣẹ́ tí ó dára jù àti àkókò rẹ rọrùn láti rí.",
+        offer: "Lo ipele ìdásílẹ̀ láti yọ ẹ̀rí kúrò, kì í ṣe láti ronú nípa àwọn ojúṣe.",
+        rejected: "Lo ìkọ̀sílẹ̀ gẹ́gẹ́ bí àmì. Mú àfojúsùn, àpẹẹrẹ, àti ìbámu pẹ̀lú ipa lágbára kí o tó béèrè lẹ́ẹ̀kan sí i.",
+      },
+    },
+    readinessLabels: {
+      interviewReady: "Múratán fún ìbéèrè",
+      strongProfile: "Profáìlì tó lágbára",
+      needsProof: "Nílò ẹ̀rí",
+      needsStructure: "Nílò ètò",
+    },
+    workModeLabels: {
+      remote: "Ìjìnnà",
+      hybrid: "Adàpọ̀",
+      onsite: "Lókè ojú",
+    },
+    employmentTypeLabels: {
+      fullTime: "Àkókò kíkún",
+      partTime: "Àkókò díẹ̀",
+      contract: "Adéhùn",
+      internship: "Ìkọ́ṣẹ́",
+      temporary: "Ìgbà kúkúrú",
+    },
+    profile: {
+      readinessLabel: "Ìmúrasílẹ̀",
+      skillsMappedLabel: "Àwọn ìmọ̀ tí a fi sípò",
+      filesLabel: "Àwọn fáìlì",
+      improveProfileCta: "Mú profáìlì dára síi",
+      openCandidateModuleCta: "Ṣí module olùdánwò",
+      checklist: {
+        identityLabel: "Ìpilẹ̀ profáìlì",
+        identityDetail: "Orúkọ kíkún, fóònù, àti ipò wà fún ìbánisọ̀rọ̀ aṣàrokin.",
+        storyLabel: "Ìtàn ipa",
+        storyDetail: "Akọlé àti ìsọnísókí ṣàlàyé ohun tí o ṣe ju àkọsílẹ̀ òfo lọ.",
+        verificationLabel: "Ìfọwọ́sí ìdánimọ̀",
+        verificationDetail: "Ìgbẹ́kẹ̀lé Jobs ṣì wà ní ààlà títí àkáǹtì HenryCo rẹ yóò ti kọjá àyẹ̀wò ìdánimọ̀.",
+        proofLabel: "Ẹ̀rí iṣẹ́",
+        proofDetail: "CV pẹ̀lú ẹ̀rí portfolio ń jẹ́ kí ìṣípayá yíyàn rọrùn.",
+        skillsLabel: "Àwọn ìmọ̀ tí a fi sípò",
+        skillsDetail: "Ó kéré tán ìmọ̀ mẹ́rin àti àwọn iṣẹ́ tí o fẹ́ jẹ́ kí ìmọ̀ràn dára síi.",
+      },
+    },
+    nextActions: {
+      gapTemplate: "Pa ìyàtọ̀ {label} kúrò",
+      interviewLabel: "Múrasílẹ̀ fún ipele ìbéèrè",
+      offerLabel: "Dáhùn sí ìdásílẹ̀ tí ń ṣiṣẹ́",
+      attentionTemplate: "{title} ní {employer} nílò àfiyèsí rẹ báyìí.",
+      convertSavedLabel: "Sọ iṣẹ́ tí a fipamọ́ di ìbéèrè tí ń ṣiṣẹ́",
+      convertSavedTemplate: "{title} ti wà nínú àkójọ rẹ tẹ́lẹ̀, ó sì ti ṣetán fún ìfojúsùn jíjinlẹ̀.",
+      restartLabel: "Bẹ̀rẹ̀ ìwákiri iṣẹ́ rẹ pẹ̀lú àwọn ìṣàfilọ́yàn tí ó lágbára",
+      restartDetail: "Lo àwọn ìṣàfilọ́yàn agbanisíṣẹ́ tí a fọwọ́sí àti ipa àkọ́kọ́ láti kọ́ àkójọ tí ó mọ́ ní iyára.",
+    },
+    alertStatus: {
+      active: "Ń ṣiṣẹ́",
+      paused: "Dúró",
+    },
+    recruiterUpdateTitleTemplate: "Ìṣípayá {stage}",
   },
 };
 
@@ -9746,6 +12663,278 @@ const HA: DeepPartial<AccountCopy> = {
       leaveReview: "Bar bita",
     },
   },
+  divisionProperty: {
+    metadata: {
+      title: "Property · ajiyayyu da tambayoyi",
+      description: "Jerin Property naka, tambayoyi, ziyarce-ziyarce da bin diddigin tallace-tallace — kowace mataki a HenryCo Property tana bayyana a wannan dakin asusu.",
+    },
+    hero: {
+      eyebrow: "Property · kai tsaye",
+      ariaLabel: "Bayanin Property",
+      browseListingsCta: "Duba tallace-tallace",
+      savedShortlistCta: "Jerin da aka ajiye",
+      tilesAriaLabel: "Aikin Property",
+      tileLabels: {
+        saved: "An ajiye",
+        inquiries: "Tambayoyi",
+        viewings: "Ziyarce-ziyarce",
+        listings: "Tallace-tallace",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} HenryCo na kula da su",
+        savedEmpty: "Ajiye tallace-tallace don gina jeri",
+        savedWith: "Kwatanta kuma sake bita a kowane lokaci",
+        inquiriesEmpty: "Babu tattaunawa a yanzu",
+        inquiriesWith: "Amsoshi za su sauka a wannan dakin",
+        viewingsEmpty: "Nemi ziyara ga gida da ka ajiye",
+        viewingsWith: "Tabbatarwa suna aiki tare a kan dukkan na'urori",
+        listingsEmpty: "Tura talla a Property",
+        listingsWith: "Sakamakon bita yana bayyana a nan",
+      },
+      sideAriaLabel: "Yadda wannan ɗaki yake aiki",
+      sideKicker: "Yadda wannan ɗaki yake aiki",
+      sideTitle: "Gano akan Property, biyo baya a nan.",
+      sideBody:
+        "Ajiye talla, nemi ziyara, ko buɗe tambaya a HenryCo Property — kowane aiki yana bayyana a wannan dakin asusu domin ka iya ci gaba daga inda ka tsaya a kowane na'ura.",
+      sideBodyMuted:
+        "Tallace-tallacen da HenryCo ke kulawa suna ɗauke da alamar Mai kulawa — bitar, dubawa, da biyo bayan haya na'urar gudanarwar Property ne ke daidaita.",
+      breakdownAriaLabel: "Rabuwar aiki",
+      breakdownLabel: "Bisa aiki",
+      breakdownLabels: {
+        saved: "An ajiye",
+        inquiries: "Tambayoyi",
+        viewings: "Ziyarce-ziyarce",
+        listings: "Tallace-tallace",
+      },
+      state: {
+        empty: {
+          headline: "Fara binciken HenryCo Property.",
+          blurb:
+            "Gano gidaje don haya, tallace-tallacen sayarwa, da gidajen da HenryCo ke kulawa. Ajiye abubuwan da kake so, kuma duk tambaya, ziyara, ko biyo bayan talla zai sauka a nan kai tsaye.",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} gida a jeri.",
+          headlineTemplatePlural: "{count} gidaje a jeri.",
+          blurb:
+            "Gidajen da aka ajiye, a shirye don sake bitar. Buɗe talla don nemi ziyara ko aika tambaya — amsa za ta dawo kai tsaye zuwa wannan dakin.",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "{count} ziyara aka tsara.",
+          viewingHeadlineTemplatePlural: "{count} ziyarce-ziyarce aka tsara.",
+          inquiryHeadlineTemplateSingular: "{count} tambaya tana aiki.",
+          inquiryHeadlineTemplatePlural: "{count} tambayoyi suna aiki.",
+          blurb:
+            "Jerin ku, tambayoyi, da jadawalin ziyara suna zaune a daki ɗaya. Ci gaba daga inda ka tsaya — kowane aiki yana bayyana daga HenryCo Property a ainihin lokaci.",
+        },
+      },
+    },
+    sections: {
+      saved: "Jerin da aka ajiye",
+      savedMetaEmpty: "Ajiye tallace-tallace a HenryCo Property don gina jerin ku.",
+      savedMetaTemplate: "{saved} an ajiye · {managed} HenryCo na kula",
+      activity: "Aikin baya-bayan nan",
+      activityMetaEmpty: "Tambayoyi, ziyarce-ziyarce, da bitar tallace-tallace suna bayyana a nan kamar yadda suke faruwa.",
+      activityMetaTemplateSingular: "{count} sabuntawa · sabuwar farko",
+      activityMetaTemplatePlural: "{count} sabuntawa · sabuwar farko",
+    },
+    empty: {
+      savedTitle: "Babu gidaje da aka ajiye tukuna",
+      savedBody:
+        "Gano gidaje don haya, tallace-tallacen sayarwa, da gidajen da HenryCo ke kulawa a Property. Duk abin da ka ajiye yana sauka a nan kai tsaye.",
+      activityTitle: "Babu aikin Property tukuna",
+      activityBody:
+        "Buɗe talla a HenryCo Property don nemi ziyara ko aika tambaya — kowace mataki, daga saƙon farko har bitar, za ta bayyana a nan.",
+    },
+    activity: {
+      ariaLabel: "Aikin Property",
+      titles: {
+        inquiry: "Tambayar gida",
+        viewing: "Buƙatar ziyara",
+        listing_submitted: "An tura talla",
+        listing_updated: "An sabunta talla",
+        listing_reviewed: "An kammala bitar talla",
+      },
+    },
+    gallery: {
+      ariaLabel: "Gidajen da aka ajiye",
+      managedBadge: "Mai kulawa",
+      featuredBadge: "Wanda aka zaɓa",
+      locationPending: "Wuri ya jira",
+      contactAgent: "Tuntuɓi wakili",
+      savedAtTemplate: "An ajiye a {date}",
+      bedSingular: "ɗaki",
+      bedPlural: "ɗakuna",
+      bathSingular: "wanka",
+      bathPlural: "wanke-wanke",
+      sizeSqmTemplate: "{size} sqm",
+    },
+  },
+  divisionJobs: {
+    metadata: {
+      title: "Ayyuka · dashboard ɗan takara",
+      description: "Bibiyar kowace neman aikin HenryCo Jobs, ayyukan da aka ajiye, sabuntawa daga mai daukar ma'aikata, da alamar shirye-shiryen bayanin martaba mai alaƙa da wannan asusu.",
+    },
+    header: {
+      title: "Ayyuka",
+      description: "Neman ayyuka, ayyukan ajiye, sabuntawa daga masu daukar ma'aikata, da ƙarfin bayanin martaba — duka a wuri ɗaya.",
+      candidateModuleCta: "Modul ɗan takara",
+      interviewRoomsCta: "Ɗakunan tambayoyi",
+      browseLiveRolesCta: "Bincika ayyukan da ke da rai",
+    },
+    hero: {
+      eyebrow: "Asusunka",
+      headline: "Ayyukanka, duka a wuri ɗaya.",
+      body: "Neman ayyuka, ayyukan ajiye, sabuntawa daga masu daukar ma'aikata, da shirye-shiryen bayanin martaba an haɗa su da asusunka na HenryCo.",
+      statsAriaLabel: "Taƙaitaccen ayyukan aiki",
+      statLabels: {
+        applications: "Neman ayyuka masu rai",
+        saved: "Ayyukan da aka ajiye",
+        readiness: "Shirye-shiryen bayanin martaba",
+        updates: "Sabuntawa daga masu daukar ma'aikata",
+      },
+      statDetails: {
+        applicationsLeadingTemplate: "{stage} shi ne matakinka mai rai mai jagoranci.",
+        applicationsEmpty: "Babu neman ayyuka mai rai tukuna.",
+        savedSome: "Jerinka a shirye yake don sake duba.",
+        savedEmpty: "Gina jeri don sauƙin samun ayyuka masu kyau.",
+        updatesLatestTemplate: "{relative} motsi na ƙarshe.",
+        updatesEmpty: "Babu sabuntawa daga masu daukar ma'aikata tukuna.",
+      },
+    },
+    sections: {
+      nextActionsKicker: "Ayyuka Na Gaba",
+      nextActionsTitle: "Abin da ya cancanci hankalinka yanzu",
+      openTimelineCta: "Buɗe layin lokaci",
+      applicationsKicker: "Neman Ayyuka",
+      applicationsTitle: "Motsin ɗaukar ma'aikata mai rai",
+      savedKicker: "Ayyukan Da Aka Ajiye",
+      savedTitle: "Jeri tare da mafi kyawun mahallin",
+      openSavedRolesCta: "Buɗe ayyukan da aka ajiye",
+      recommendedKicker: "Ayyukan Da Aka Ba Da Shawara",
+      recommendedTitle: "Abin da ya dace da siginarka ta yanzu",
+      browseCatalogCta: "Bincika katalog",
+      recruiterFeedKicker: "Tashar Mai Daukar Ma'aikata",
+      recruiterFeedTitle: "Saƙonni, canjin mataki, da sanarwa",
+      candidateInboxCta: "Akwati ɗan takara",
+      profileKicker: "Ƙarfin Bayanin Martaba",
+      profileTitle: "Shirye-shiryen ɗan takara da ingancin CV",
+      sharedInboxKicker: "Akwati Mai Rabawa",
+      sharedInboxTitle: "Sanarwar Jobs masu alaƙa da asusunka",
+      alertsKicker: "Sanarwa",
+      alertsTitle: "Manufar binciken da aka ajiye",
+    },
+    empty: {
+      applicationsTitle: "Babu neman ayyuka mai rai tukuna",
+      applicationsBody: "Ayyukan da aka ajiye, sabuntawa daga masu daukar ma'aikata, da layin lokaci za su bayyana nan da zarar ka koma daga bincike zuwa neman aiki mai rai.",
+      exploreJobsCta: "Bincika ayyuka",
+      savedJobsTitle: "Babu ayyukan da aka ajiye tukuna",
+      savedJobsBody: "Ajiye ayyuka masu alkawari don kiyaye su a jerinka a duk Jobs da asusunka.",
+      recommendedTitle: "Shawarwari za su yi kyau yayin amfani da Jobs",
+      recommendedBody: "Da zarar bayanin martaba, jeri, da neman ayyukanka suka yi zurfi, shawarwarin ayyuka a nan za su zama mafi ƙayyade.",
+      recruiterFeedTitle: "Babu motsi daga mai daukar ma'aikata tukuna",
+      recruiterFeedBody: "Canje-canje na matakin neman aiki, bayanan da aka raba daga mai daukar ma'aikata, da sanarwar Jobs a cikin app za su tara nan.",
+      notificationsTitle: "Babu sanarwar Jobs tukuna",
+      notificationsBody: "Motsi na jeri na gaba, sabuntawa daga ma'aikata, da canje-canje na neman aiki za su iso nan da kuma a cikin modul Jobs.",
+      alertsTitle: "Babu sanarwar Jobs mai aiki",
+      alertsBody: "Ƙirƙira sanarwa don sabbin ayyukan da suka dace da ka'idodinka su bayyana a cikin tashar Jobs.",
+      browseRolesCta: "Bincika ayyuka",
+    },
+    application: {
+      progressPercentTemplate: "{percent}% an kammala",
+      appliedAtTemplate: "An nema a {date}",
+      candidateReadiness: "Shirye-shiryen ɗan takara",
+      recruiterConfidence: "Amincewar mai daukar ma'aikata",
+      latestMovement: "Motsi na ƙarshe daga mai daukar ma'aikata",
+      nextBestMove: "Mafi kyawun matakin gaba",
+      openTimelineCta: "Buɗe layin lokaci",
+      interviewRoomCta: "Ɗakin tambayoyi",
+      viewRoleCta: "Duba aiki",
+    },
+    savedJob: {
+      trustTemplate: "Amincewa {score}",
+      savedAtTemplate: "An ajiye a {date}",
+    },
+    recommended: {
+      compFallback: "An tattauna albashi cikin tsari",
+    },
+    stageLabels: {
+      applied: "An nema",
+      reviewing: "Ana dubawa",
+      shortlisted: "An zaɓa",
+      interview: "Tambayoyi",
+      offer: "Bayar",
+      hired: "An ɗauka",
+      rejected: "An ƙi",
+    },
+    nextStep: {
+      labels: {
+        applied: "Ka kiyaye bayanin martaba da CV ɗinka na zamani",
+        shortlisted: "Ka shirya hujja da mahallin portfolio",
+        interview: "Ka shirya misalai da lokaci",
+        offer: "Ka duba iyaka, lokaci, da albashi",
+        rejected: "Ka ƙarfafa kunshin neman aiki na gaba",
+      },
+      bodies: {
+        applied: "A matakin farko, hujja mafi kyau, bayanan tuntuɓar mai tsabta, da CV na zamani suna taimakawa.",
+        shortlisted: "An zaɓa yana nufin cewa ka wuce gwajin alamar farko. Hujja mai tsanani tana da muhimmanci yanzu.",
+        interview: "Matakan tambayoyi suna ci gaba da sauri lokacin da mafi kyawun hujjojinka da samuwanka ke da sauƙin gani.",
+        offer: "Yi amfani da matakin bayarwa don kawar da rashin tabbas, ba don tsammanin nauyi ba.",
+        rejected: "Yi amfani da ƙin a matsayin alama. Ƙarfafa taƙaitawa, misalai, da daidaiton aiki kafin ka sake nema.",
+      },
+    },
+    readinessLabels: {
+      interviewReady: "A shirye don tambayoyi",
+      strongProfile: "Bayanin martaba mai ƙarfi",
+      needsProof: "Yana buƙatar hujja",
+      needsStructure: "Yana buƙatar tsari",
+    },
+    workModeLabels: {
+      remote: "Daga nesa",
+      hybrid: "Hauhaɗɗen",
+      onsite: "A wuri",
+    },
+    employmentTypeLabels: {
+      fullTime: "Cikakken lokaci",
+      partTime: "Lokaci kaɗan",
+      contract: "Kwangila",
+      internship: "Horarwa",
+      temporary: "Na ɗan lokaci",
+    },
+    profile: {
+      readinessLabel: "Shirye-shirye",
+      skillsMappedLabel: "Ƙwarewar da aka tsara",
+      filesLabel: "Fayiloli",
+      improveProfileCta: "Inganta bayanin martaba",
+      openCandidateModuleCta: "Buɗe modul ɗan takara",
+      checklist: {
+        identityLabel: "Tushen bayanin martaba",
+        identityDetail: "Cikakken suna, waya, da wuri suna nan don bin diddigi daga mai daukar ma'aikata.",
+        storyLabel: "Labarin aiki",
+        storyDetail: "Taken da taƙaitawa suna bayyana abin da kake yi fiye da rikodi mara komai.",
+        verificationLabel: "Tabbatar da shaidar",
+        verificationDetail: "Amincewar Jobs ta dakata har sai asusunka na HenryCo ya wuce binciken shaidar.",
+        proofLabel: "Hujjar aiki",
+        proofDetail: "CV tare da hujjar portfolio na sa motsi cikin jerin ya yi sauƙi.",
+        skillsLabel: "Ƙwarewar da aka tsara",
+        skillsDetail: "Aƙalla ƙwarewa huɗu da ayyukan da aka fi so suna inganta shawarwari.",
+      },
+    },
+    nextActions: {
+      gapTemplate: "Rufe gibin {label}",
+      interviewLabel: "Shiri don matakin tambayoyi",
+      offerLabel: "Amsa bayar mai rai",
+      attentionTemplate: "{title} a {employer} yana buƙatar hankalinka yanzu.",
+      convertSavedLabel: "Mai da aikin da aka ajiye zuwa neman aiki mai rai",
+      convertSavedTemplate: "{title} riga yana cikin jerinka kuma a shirye yake don zurfin duba.",
+      restartLabel: "Sake fara binciken aikinka tare da matatun masu ƙarfi",
+      restartDetail: "Yi amfani da matatun ma'aikata da aka tabbatar da ayyukan ciki don gina jeri mai tsabta da sauri.",
+    },
+    alertStatus: {
+      active: "Mai aiki",
+      paused: "Tsaye",
+    },
+    recruiterUpdateTitleTemplate: "Sabunta {stage}",
+  },
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -10939,6 +14128,278 @@ const ZH: DeepPartial<AccountCopy> = {
       openLiveBooking: "打开实时预订",
       leaveReview: "留下评价",
     },
+  },
+  divisionProperty: {
+    metadata: {
+      title: "Property · 收藏与询盘",
+      description: "您的 Property 收藏清单、询盘、看房和房源跟进 — 在 HenryCo Property 上的每一项操作都会同步到此账户房间。",
+    },
+    hero: {
+      eyebrow: "Property · 实时",
+      ariaLabel: "Property 概览",
+      browseListingsCta: "浏览房源",
+      savedShortlistCta: "收藏清单",
+      tilesAriaLabel: "Property 活动",
+      tileLabels: {
+        saved: "已收藏",
+        inquiries: "询盘",
+        viewings: "看房",
+        listings: "房源",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} 套由 HenryCo 托管",
+        savedEmpty: "收藏房源以建立清单",
+        savedWith: "随时对比与回访",
+        inquiriesEmpty: "暂无对话",
+        inquiriesWith: "后续跟进会进入此房间",
+        viewingsEmpty: "为已收藏的房源申请看房",
+        viewingsWith: "确认信息跨设备同步",
+        listingsEmpty: "在 Property 提交一条房源",
+        listingsWith: "审核结果将在此呈现",
+      },
+      sideAriaLabel: "此房间的运作方式",
+      sideKicker: "此房间的运作方式",
+      sideTitle: "在 Property 发现,在此跟进。",
+      sideBody:
+        "在 HenryCo Property 收藏房源、申请看房或发起询盘 — 每一项操作都会同步到此账户房间,让您可以跨设备从停下的地方继续。",
+      sideBodyMuted:
+        "HenryCo 托管的房源带有“托管”标识 — 审核、勘察与租约跟进均由 Property 团队协调。",
+      breakdownAriaLabel: "活动明细",
+      breakdownLabel: "按活动分类",
+      breakdownLabels: {
+        saved: "已收藏",
+        inquiries: "询盘",
+        viewings: "看房",
+        listings: "房源",
+      },
+      state: {
+        empty: {
+          headline: "开始探索 HenryCo Property。",
+          blurb:
+            "发现住宅租赁、出售房源以及由 HenryCo 托管的住宅。收藏您的喜爱,每一项询盘、看房或房源跟进都会自动同步到这里。",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} 套已入清单的住宅。",
+          headlineTemplatePlural: "{count} 套已入清单的住宅。",
+          blurb:
+            "收藏的住宅,随时可回访。打开房源申请看房或发起询盘 — 后续会直接同步回此房间。",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "已安排 {count} 次看房。",
+          viewingHeadlineTemplatePlural: "已安排 {count} 次看房。",
+          inquiryHeadlineTemplateSingular: "{count} 项询盘进行中。",
+          inquiryHeadlineTemplatePlural: "{count} 项询盘进行中。",
+          blurb:
+            "您的收藏清单、询盘与看房日程汇聚于一处。从停下的地方继续 — 每一项操作都从 HenryCo Property 实时同步。",
+        },
+      },
+    },
+    sections: {
+      saved: "已收藏清单",
+      savedMetaEmpty: "在 HenryCo Property 收藏房源以建立您的清单。",
+      savedMetaTemplate: "已收藏 {saved} 套 · 其中 {managed} 套由 HenryCo 托管",
+      activity: "近期活动",
+      activityMetaEmpty: "询盘、看房与房源审核会实时在此呈现。",
+      activityMetaTemplateSingular: "{count} 条更新 · 最新优先",
+      activityMetaTemplatePlural: "{count} 条更新 · 最新优先",
+    },
+    empty: {
+      savedTitle: "尚未收藏任何房源",
+      savedBody:
+        "在 Property 发现住宅租赁、出售房源以及由 HenryCo 托管的住宅。您收藏的内容会自动同步到这里。",
+      activityTitle: "尚无 Property 活动",
+      activityBody:
+        "在 HenryCo Property 打开房源以申请看房或发送询盘 — 从第一条消息到审核的每一步都会出现在这里。",
+    },
+    activity: {
+      ariaLabel: "Property 活动",
+      titles: {
+        inquiry: "房产询盘",
+        viewing: "看房申请",
+        listing_submitted: "已提交房源",
+        listing_updated: "已更新房源",
+        listing_reviewed: "房源审核完成",
+      },
+    },
+    gallery: {
+      ariaLabel: "已收藏房源",
+      managedBadge: "托管",
+      featuredBadge: "精选",
+      locationPending: "位置待定",
+      contactAgent: "联系经纪人",
+      savedAtTemplate: "于 {date} 收藏",
+      bedSingular: "卧室",
+      bedPlural: "卧室",
+      bathSingular: "卫浴",
+      bathPlural: "卫浴",
+      sizeSqmTemplate: "{size} 平米",
+    },
+  },
+  divisionJobs: {
+    metadata: {
+      title: "Jobs · 候选人仪表板",
+      description: "在此跟踪与本账户关联的每一次 HenryCo Jobs 申请、收藏职位、招聘方动态和个人资料准备度信号。",
+    },
+    header: {
+      title: "Jobs",
+      description: "您的申请、收藏职位、招聘方动态和个人资料强度——一站汇总。",
+      candidateModuleCta: "候选人模块",
+      interviewRoomsCta: "面试间",
+      browseLiveRolesCta: "浏览在线职位",
+    },
+    hero: {
+      eyebrow: "您的账户",
+      headline: "您的求职动态,一站汇总。",
+      body: "申请、收藏职位、招聘方动态和个人资料准备度均已关联到您的 HenryCo 账户。",
+      statsAriaLabel: "求职活动摘要",
+      statLabels: {
+        applications: "进行中的申请",
+        saved: "收藏职位",
+        readiness: "资料准备度",
+        updates: "招聘方动态",
+      },
+      statDetails: {
+        applicationsLeadingTemplate: "{stage} 是您领先的进行阶段。",
+        applicationsEmpty: "暂无进行中的申请。",
+        savedSome: "您的备选清单可以再做一轮筛选。",
+        savedEmpty: "建立备选清单,以便更易找回合适的职位。",
+        updatesLatestTemplate: "{relative} 最新动态。",
+        updatesEmpty: "暂无招聘方动态。",
+      },
+    },
+    sections: {
+      nextActionsKicker: "下一步行动",
+      nextActionsTitle: "现在最值得关注的事项",
+      openTimelineCta: "打开时间线",
+      applicationsKicker: "申请",
+      applicationsTitle: "实时招聘进展",
+      savedKicker: "收藏职位",
+      savedTitle: "更具情境的备选清单",
+      openSavedRolesCta: "打开收藏职位",
+      recommendedKicker: "推荐职位",
+      recommendedTitle: "与您当前信号匹配的内容",
+      browseCatalogCta: "浏览职位库",
+      recruiterFeedKicker: "招聘方动态",
+      recruiterFeedTitle: "消息、阶段变更与提醒",
+      candidateInboxCta: "候选人收件箱",
+      profileKicker: "资料强度",
+      profileTitle: "候选人准备度与简历质量",
+      sharedInboxKicker: "共享收件箱",
+      sharedInboxTitle: "与您账户关联的求职通知",
+      alertsKicker: "提醒",
+      alertsTitle: "已保存的搜索意图",
+    },
+    empty: {
+      applicationsTitle: "暂无进行中的申请",
+      applicationsBody: "一旦您从浏览转入正式申请,收藏职位、招聘方动态和时间线将在此显示。",
+      exploreJobsCta: "探索职位",
+      savedJobsTitle: "暂无收藏职位",
+      savedJobsBody: "收藏有潜力的职位,在 Jobs 与账户中保留备选清单。",
+      recommendedTitle: "随着 Jobs 的使用,推荐会更精准",
+      recommendedBody: "当您的资料、备选清单和申请更深入时,这里的职位建议会更具针对性。",
+      recruiterFeedTitle: "暂无招聘方动态",
+      recruiterFeedBody: "申请阶段变更、共享的招聘方备注和应用内 Jobs 通知将在此汇集。",
+      notificationsTitle: "暂无求职通知",
+      notificationsBody: "未来的备选清单变动、雇主更新和申请变更将落到此处和 Jobs 模块内。",
+      alertsTitle: "暂无活跃的求职提醒",
+      alertsBody: "创建提醒,让符合您条件的新职位出现在 Jobs 信息流中。",
+      browseRolesCta: "浏览职位",
+    },
+    application: {
+      progressPercentTemplate: "{percent}% 完成",
+      appliedAtTemplate: "{date} 已申请",
+      candidateReadiness: "候选人准备度",
+      recruiterConfidence: "招聘方信心",
+      latestMovement: "最近招聘方动态",
+      nextBestMove: "下一最优动作",
+      openTimelineCta: "打开时间线",
+      interviewRoomCta: "面试间",
+      viewRoleCta: "查看职位",
+    },
+    savedJob: {
+      trustTemplate: "信任度 {score}",
+      savedAtTemplate: "{date} 已收藏",
+    },
+    recommended: {
+      compFallback: "薪酬将在流程中讨论",
+    },
+    stageLabels: {
+      applied: "已申请",
+      reviewing: "审核中",
+      shortlisted: "已入围",
+      interview: "面试",
+      offer: "录用通知",
+      hired: "已录用",
+      rejected: "已拒绝",
+    },
+    nextStep: {
+      labels: {
+        applied: "保持资料和简历的最新",
+        shortlisted: "准备好作品和组合的背景信息",
+        interview: "准备示例和时间段",
+        offer: "审阅范围、时间和薪酬",
+        rejected: "强化下一次申请",
+      },
+      bodies: {
+        applied: "早期阶段中,更清晰的证明、整洁的联系方式和最新的简历更有帮助。",
+        shortlisted: "入围意味着您已通过首轮信号筛选。此时精炼的证明尤为重要。",
+        interview: "当您最强的工作证明和可用时间一目了然时,面试阶段进展更快。",
+        offer: "在录用阶段消除模糊,而不是猜测职责。",
+        rejected: "把拒绝当作信号。再次申请前,精炼摘要、示例和岗位契合。",
+      },
+    },
+    readinessLabels: {
+      interviewReady: "面试就绪",
+      strongProfile: "资料强劲",
+      needsProof: "需补充证明",
+      needsStructure: "需补结构",
+    },
+    workModeLabels: {
+      remote: "远程",
+      hybrid: "混合",
+      onsite: "现场",
+    },
+    employmentTypeLabels: {
+      fullTime: "全职",
+      partTime: "兼职",
+      contract: "合同",
+      internship: "实习",
+      temporary: "临时",
+    },
+    profile: {
+      readinessLabel: "准备度",
+      skillsMappedLabel: "已映射技能",
+      filesLabel: "文件",
+      improveProfileCta: "完善资料",
+      openCandidateModuleCta: "打开候选人模块",
+      checklist: {
+        identityLabel: "资料基础",
+        identityDetail: "姓名、电话和位置齐全,便于招聘方跟进。",
+        storyLabel: "职业叙述",
+        storyDetail: "标题与摘要说明您的工作内容,超越一条空白记录。",
+        verificationLabel: "身份验证",
+        verificationDetail: "在 HenryCo 账户完成身份审核前,Jobs 信任度保持封顶。",
+        proofLabel: "工作证明",
+        proofDetail: "简历加作品证据让入围更顺畅。",
+        skillsLabel: "已映射技能",
+        skillsDetail: "至少四项技能及偏好职能可提升推荐质量。",
+      },
+    },
+    nextActions: {
+      gapTemplate: "补足{label}的空缺",
+      interviewLabel: "为面试通道做准备",
+      offerLabel: "回应一份在线录用",
+      attentionTemplate: "{employer} 的 {title} 现在需要您的关注。",
+      convertSavedLabel: "将一个收藏职位转为正式申请",
+      convertSavedTemplate: "{title} 已在您的备选清单,可进入更深一轮的审阅。",
+      restartLabel: "用更严格的筛选重启求职",
+      restartDetail: "使用经认证雇主和内部岗位筛选,更快构建更干净的备选清单。",
+    },
+    alertStatus: {
+      active: "活跃",
+      paused: "已暂停",
+    },
+    recruiterUpdateTitleTemplate: "{stage} 更新",
   },
 };
 
@@ -12146,6 +15607,112 @@ const HI: DeepPartial<AccountCopy> = {
       noReceiptYet: "अभी कोई रसीद नहीं",
       openLiveBooking: "लाइव बुकिंग खोलें",
       leaveReview: "समीक्षा छोड़ें",
+    },
+  },
+  divisionProperty: {
+    metadata: {
+      title: "Property · सहेजे गए और पूछताछ",
+      description: "आपकी Property शॉर्टलिस्ट, पूछताछ, अवलोकन और लिस्टिंग फॉलो-अप — HenryCo Property पर हर क्रिया इस खाते के कक्ष में दिखती है।",
+    },
+    hero: {
+      eyebrow: "Property · लाइव",
+      ariaLabel: "Property अवलोकन",
+      browseListingsCta: "लिस्टिंग देखें",
+      savedShortlistCta: "शॉर्टलिस्ट",
+      tilesAriaLabel: "Property गतिविधि",
+      tileLabels: {
+        saved: "सहेजे",
+        inquiries: "पूछताछ",
+        viewings: "अवलोकन",
+        listings: "लिस्टिंग",
+      },
+      tileFoot: {
+        savedManagedTemplate: "{count} HenryCo द्वारा प्रबंधित",
+        savedEmpty: "शॉर्टलिस्ट बनाने के लिए लिस्टिंग सहेजें",
+        savedWith: "कभी भी तुलना और पुनर्विचार",
+        inquiriesEmpty: "अभी कोई बातचीत खुली नहीं",
+        inquiriesWith: "फॉलो-अप इस कक्ष में आते हैं",
+        viewingsEmpty: "सहेजे गए घर के लिए अवलोकन का अनुरोध करें",
+        viewingsWith: "पुष्टियाँ सभी डिवाइसों पर सिंक होती हैं",
+        listingsEmpty: "Property पर लिस्टिंग जमा करें",
+        listingsWith: "मॉडरेशन परिणाम यहाँ दिखते हैं",
+      },
+      sideAriaLabel: "यह कक्ष कैसे काम करता है",
+      sideKicker: "यह कक्ष कैसे काम करता है",
+      sideTitle: "Property पर खोजें, यहाँ फॉलो-अप करें।",
+      sideBody:
+        "HenryCo Property पर लिस्टिंग सहेजें, अवलोकन का अनुरोध करें या पूछताछ खोलें — हर क्रिया इस खाते के कक्ष में दिखती है ताकि आप सभी डिवाइसों पर वहीं से जारी रख सकें जहाँ छोड़ा था।",
+      sideBodyMuted:
+        "HenryCo द्वारा प्रबंधित लिस्टिंग पर “प्रबंधित” बैज दिखता है — समीक्षा, निरीक्षण और लीज फॉलो-अप का समन्वय Property टीम करती है।",
+      breakdownAriaLabel: "गतिविधि विभाजन",
+      breakdownLabel: "गतिविधि के अनुसार",
+      breakdownLabels: {
+        saved: "सहेजे",
+        inquiries: "पूछताछ",
+        viewings: "अवलोकन",
+        listings: "लिस्टिंग",
+      },
+      state: {
+        empty: {
+          headline: "HenryCo Property खोजना शुरू करें।",
+          blurb:
+            "आवासीय किराये, बिक्री लिस्टिंग और HenryCo-प्रबंधित घर खोजें। अपने पसंदीदा सहेजें, और हर पूछताछ, अवलोकन या लिस्टिंग फॉलो-अप यहाँ स्वतः आ जाता है।",
+        },
+        discover: {
+          headlineTemplateSingular: "{count} शॉर्टलिस्टेड घर।",
+          headlineTemplatePlural: "{count} शॉर्टलिस्टेड घर।",
+          blurb:
+            "सहेजे गए घर, पुनर्विचार के लिए तैयार। लिस्टिंग खोलें, अवलोकन का अनुरोध करें या पूछताछ भेजें — फॉलो-अप सीधे इसी कक्ष में लौटेगा।",
+        },
+        active: {
+          viewingHeadlineTemplateSingular: "{count} अवलोकन निर्धारित।",
+          viewingHeadlineTemplatePlural: "{count} अवलोकन निर्धारित।",
+          inquiryHeadlineTemplateSingular: "{count} पूछताछ सक्रिय।",
+          inquiryHeadlineTemplatePlural: "{count} पूछताछ सक्रिय।",
+          blurb:
+            "आपकी शॉर्टलिस्ट, पूछताछ और अवलोकन कार्यक्रम एक कक्ष में। वहीं से जारी रखें जहाँ छोड़ा था — हर क्रिया HenryCo Property से वास्तविक समय में मिरर होती है।",
+        },
+      },
+    },
+    sections: {
+      saved: "सहेजी शॉर्टलिस्ट",
+      savedMetaEmpty: "अपनी शॉर्टलिस्ट बनाने के लिए HenryCo Property पर लिस्टिंग सहेजें।",
+      savedMetaTemplate: "{saved} सहेजे · {managed} HenryCo द्वारा प्रबंधित",
+      activity: "हाल की गतिविधि",
+      activityMetaEmpty: "पूछताछ, अवलोकन और लिस्टिंग समीक्षाएँ जब घटित होती हैं तब यहाँ मिरर होती हैं।",
+      activityMetaTemplateSingular: "{count} अद्यतन · सबसे नया पहले",
+      activityMetaTemplatePlural: "{count} अद्यतन · सबसे नया पहले",
+    },
+    empty: {
+      savedTitle: "अभी कोई सहेजी संपत्ति नहीं",
+      savedBody:
+        "Property पर आवासीय किराये, बिक्री लिस्टिंग और HenryCo-प्रबंधित घर खोजें। जो भी आप सहेजेंगे वह यहाँ स्वतः आ जाएगा।",
+      activityTitle: "अभी कोई Property गतिविधि नहीं",
+      activityBody:
+        "HenryCo Property पर लिस्टिंग खोलें, अवलोकन का अनुरोध करें या पूछताछ भेजें — आपके पहले संदेश से लेकर समीक्षा तक का हर कदम यहाँ दिखेगा।",
+    },
+    activity: {
+      ariaLabel: "Property गतिविधि",
+      titles: {
+        inquiry: "संपत्ति पूछताछ",
+        viewing: "अवलोकन अनुरोध",
+        listing_submitted: "लिस्टिंग जमा",
+        listing_updated: "लिस्टिंग अद्यतन",
+        listing_reviewed: "लिस्टिंग समीक्षा पूर्ण",
+      },
+    },
+    gallery: {
+      ariaLabel: "सहेजी संपत्तियाँ",
+      managedBadge: "प्रबंधित",
+      featuredBadge: "विशेष",
+      locationPending: "स्थान शीघ्र",
+      contactAgent: "एजेंट से संपर्क करें",
+      savedAtTemplate: "{date} को सहेजा",
+      bedSingular: "कमरा",
+      bedPlural: "कमरे",
+      bathSingular: "बाथरूम",
+      bathPlural: "बाथरूम",
+      sizeSqmTemplate: "{size} वर्ग मीटर",
     },
   },
 };

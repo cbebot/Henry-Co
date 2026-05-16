@@ -1175,6 +1175,105 @@ export const ACCOUNT_COPY_ES = {
       "openLiveBooking": "Abrir reserva en vivo",
       "leaveReview": "Dejar reseña"
     }
+  },
+  "divisionProperty": {
+    "metadata": {
+      "title": "Property · guardados y consultas",
+      "description": "Tu selección Property, consultas, visitas y seguimientos de anuncios — cada acción en HenryCo Property se refleja en esta sala de la cuenta."
+    },
+    "hero": {
+      "eyebrow": "Property · en vivo",
+      "ariaLabel": "Resumen de Property",
+      "browseListingsCta": "Explorar anuncios",
+      "savedShortlistCta": "Guardados",
+      "tilesAriaLabel": "Actividad de Property",
+      "tileLabels": {
+        "saved": "Guardados",
+        "inquiries": "Consultas",
+        "viewings": "Visitas",
+        "listings": "Anuncios"
+      },
+      "tileFoot": {
+        "savedManagedTemplate": "{count} gestionadas por HenryCo",
+        "savedEmpty": "Guarda anuncios para construir una selección",
+        "savedWith": "Compara y vuelve cuando quieras",
+        "inquiriesEmpty": "Aún no hay conversaciones abiertas",
+        "inquiriesWith": "Los seguimientos llegan a esta sala",
+        "viewingsEmpty": "Solicita una visita en una vivienda guardada",
+        "viewingsWith": "Las confirmaciones se sincronizan en todos los dispositivos",
+        "listingsEmpty": "Envía un anuncio en Property",
+        "listingsWith": "Los resultados de moderación llegan aquí"
+      },
+      "sideAriaLabel": "Cómo funciona esta sala",
+      "sideKicker": "Cómo funciona esta sala",
+      "sideTitle": "Descubre en Property, sigue aquí.",
+      "sideBody": "Guarda un anuncio, solicita una visita o abre una consulta en HenryCo Property — cada acción se refleja en esta sala de la cuenta para que puedas retomar donde lo dejaste en cualquier dispositivo.",
+      "sideBodyMuted": "Los anuncios gestionados por HenryCo llevan un distintivo Gestionado — la revisión, inspección y seguimiento del contrato los coordina el equipo de Property.",
+      "breakdownAriaLabel": "Desglose de actividad",
+      "breakdownLabel": "Por actividad",
+      "breakdownLabels": {
+        "saved": "Guardados",
+        "inquiries": "Consultas",
+        "viewings": "Visitas",
+        "listings": "Anuncios"
+      },
+      "state": {
+        "empty": {
+          "headline": "Empieza a explorar HenryCo Property.",
+          "blurb": "Descubre alquileres residenciales, anuncios de venta y viviendas gestionadas por HenryCo. Guarda tus favoritos y cada consulta, visita o seguimiento de anuncio llega aquí automáticamente."
+        },
+        "discover": {
+          "headlineTemplateSingular": "{count} vivienda en la selección.",
+          "headlineTemplatePlural": "{count} viviendas en la selección.",
+          "blurb": "Viviendas guardadas, listas para revisar. Abre un anuncio para solicitar una visita o enviar una consulta — el seguimiento volverá directamente a esta sala."
+        },
+        "active": {
+          "viewingHeadlineTemplateSingular": "{count} visita programada.",
+          "viewingHeadlineTemplatePlural": "{count} visitas programadas.",
+          "inquiryHeadlineTemplateSingular": "{count} consulta activa.",
+          "inquiryHeadlineTemplatePlural": "{count} consultas activas.",
+          "blurb": "Tu selección, consultas y agenda de visitas viven en una sola sala. Retoma donde lo dejaste — cada acción se refleja desde HenryCo Property en tiempo real."
+        }
+      }
+    },
+    "sections": {
+      "saved": "Selección guardada",
+      "savedMetaEmpty": "Guarda anuncios en HenryCo Property para construir tu selección.",
+      "savedMetaTemplate": "{saved} guardados · {managed} gestionadas por HenryCo",
+      "activity": "Actividad reciente",
+      "activityMetaEmpty": "Consultas, visitas y revisiones de anuncios se reflejan aquí en tiempo real.",
+      "activityMetaTemplateSingular": "{count} actualización · más reciente primero",
+      "activityMetaTemplatePlural": "{count} actualizaciones · más recientes primero"
+    },
+    "empty": {
+      "savedTitle": "Aún no hay propiedades guardadas",
+      "savedBody": "Descubre alquileres residenciales, anuncios de venta y viviendas gestionadas por HenryCo en Property. Todo lo que guardes llega aquí automáticamente.",
+      "activityTitle": "Aún no hay actividad en Property",
+      "activityBody": "Abre un anuncio en HenryCo Property para solicitar una visita o enviar una consulta — cada paso, desde tu primer mensaje hasta la revisión, aparecerá aquí."
+    },
+    "activity": {
+      "ariaLabel": "Actividad de Property",
+      "titles": {
+        "inquiry": "Consulta inmobiliaria",
+        "viewing": "Solicitud de visita",
+        "listing_submitted": "Anuncio enviado",
+        "listing_updated": "Anuncio actualizado",
+        "listing_reviewed": "Revisión de anuncio completada"
+      }
+    },
+    "gallery": {
+      "ariaLabel": "Propiedades guardadas",
+      "managedBadge": "Gestionada",
+      "featuredBadge": "Destacada",
+      "locationPending": "Ubicación pendiente",
+      "contactAgent": "Contactar al agente",
+      "savedAtTemplate": "Guardado el {date}",
+      "bedSingular": "habitación",
+      "bedPlural": "habitaciones",
+      "bathSingular": "baño",
+      "bathPlural": "baños",
+      "sizeSqmTemplate": "{size} m²"
+    }
   }
 };
 
@@ -2352,6 +2451,105 @@ export const ACCOUNT_COPY_PT = {
       "openLiveBooking": "Abrir reserva ao vivo",
       "leaveReview": "Deixar avaliação"
     }
+  },
+  "divisionProperty": {
+    "metadata": {
+      "title": "Property · salvos e consultas",
+      "description": "Sua seleção Property, consultas, visitas e acompanhamentos de anúncios — cada ação no HenryCo Property é espelhada nesta sala da conta."
+    },
+    "hero": {
+      "eyebrow": "Property · ao vivo",
+      "ariaLabel": "Visão geral de Property",
+      "browseListingsCta": "Explorar anúncios",
+      "savedShortlistCta": "Salvos",
+      "tilesAriaLabel": "Atividade de Property",
+      "tileLabels": {
+        "saved": "Salvos",
+        "inquiries": "Consultas",
+        "viewings": "Visitas",
+        "listings": "Anúncios"
+      },
+      "tileFoot": {
+        "savedManagedTemplate": "{count} gerenciados pela HenryCo",
+        "savedEmpty": "Salve anúncios para montar uma seleção",
+        "savedWith": "Compare e revise quando quiser",
+        "inquiriesEmpty": "Nenhuma conversa em aberto",
+        "inquiriesWith": "Os acompanhamentos chegam nesta sala",
+        "viewingsEmpty": "Solicite uma visita em um imóvel salvo",
+        "viewingsWith": "As confirmações sincronizam em todos os dispositivos",
+        "listingsEmpty": "Envie um anúncio no Property",
+        "listingsWith": "Os resultados da moderação chegam aqui"
+      },
+      "sideAriaLabel": "Como esta sala funciona",
+      "sideKicker": "Como esta sala funciona",
+      "sideTitle": "Descubra no Property, acompanhe aqui.",
+      "sideBody": "Salve um anúncio, solicite uma visita ou abra uma consulta no HenryCo Property — cada ação é espelhada nesta sala da conta para você retomar de onde parou em qualquer dispositivo.",
+      "sideBodyMuted": "Os anúncios gerenciados pela HenryCo trazem um selo Gerenciado — revisão, inspeção e acompanhamento do contrato ficam a cargo da equipe Property.",
+      "breakdownAriaLabel": "Detalhamento da atividade",
+      "breakdownLabel": "Por atividade",
+      "breakdownLabels": {
+        "saved": "Salvos",
+        "inquiries": "Consultas",
+        "viewings": "Visitas",
+        "listings": "Anúncios"
+      },
+      "state": {
+        "empty": {
+          "headline": "Comece a explorar o HenryCo Property.",
+          "blurb": "Descubra aluguéis residenciais, anúncios de venda e imóveis gerenciados pela HenryCo. Salve seus favoritos e cada consulta, visita ou acompanhamento de anúncio chega aqui automaticamente."
+        },
+        "discover": {
+          "headlineTemplateSingular": "{count} imóvel na seleção.",
+          "headlineTemplatePlural": "{count} imóveis na seleção.",
+          "blurb": "Imóveis salvos, prontos para revisitar. Abra um anúncio para solicitar uma visita ou enviar uma consulta — o acompanhamento volta direto para esta sala."
+        },
+        "active": {
+          "viewingHeadlineTemplateSingular": "{count} visita agendada.",
+          "viewingHeadlineTemplatePlural": "{count} visitas agendadas.",
+          "inquiryHeadlineTemplateSingular": "{count} consulta ativa.",
+          "inquiryHeadlineTemplatePlural": "{count} consultas ativas.",
+          "blurb": "Sua seleção, consultas e agenda de visitas vivem em uma só sala. Retome de onde parou — cada ação é espelhada do HenryCo Property em tempo real."
+        }
+      }
+    },
+    "sections": {
+      "saved": "Seleção salva",
+      "savedMetaEmpty": "Salve anúncios no HenryCo Property para montar sua seleção.",
+      "savedMetaTemplate": "{saved} salvos · {managed} gerenciados pela HenryCo",
+      "activity": "Atividade recente",
+      "activityMetaEmpty": "Consultas, visitas e revisões de anúncios são espelhadas aqui em tempo real.",
+      "activityMetaTemplateSingular": "{count} atualização · mais recente primeiro",
+      "activityMetaTemplatePlural": "{count} atualizações · mais recente primeiro"
+    },
+    "empty": {
+      "savedTitle": "Ainda não há imóveis salvos",
+      "savedBody": "Descubra aluguéis residenciais, anúncios de venda e imóveis gerenciados pela HenryCo no Property. Tudo o que você salvar chega aqui automaticamente.",
+      "activityTitle": "Ainda não há atividade em Property",
+      "activityBody": "Abra um anúncio no HenryCo Property para solicitar uma visita ou enviar uma consulta — cada passo, da primeira mensagem à revisão, aparecerá aqui."
+    },
+    "activity": {
+      "ariaLabel": "Atividade de Property",
+      "titles": {
+        "inquiry": "Consulta imobiliária",
+        "viewing": "Pedido de visita",
+        "listing_submitted": "Anúncio enviado",
+        "listing_updated": "Anúncio atualizado",
+        "listing_reviewed": "Revisão de anúncio concluída"
+      }
+    },
+    "gallery": {
+      "ariaLabel": "Imóveis salvos",
+      "managedBadge": "Gerenciado",
+      "featuredBadge": "Destaque",
+      "locationPending": "Localização pendente",
+      "contactAgent": "Contatar o corretor",
+      "savedAtTemplate": "Salvo em {date}",
+      "bedSingular": "quarto",
+      "bedPlural": "quartos",
+      "bathSingular": "banheiro",
+      "bathPlural": "banheiros",
+      "sizeSqmTemplate": "{size} m²"
+    }
   }
 };
 
@@ -3528,6 +3726,105 @@ export const ACCOUNT_COPY_AR = {
       "noReceiptYet": "لا يوجد إيصال بعد",
       "openLiveBooking": "فتح الحجز المباشر",
       "leaveReview": "اترك مراجعة"
+    }
+  },
+  "divisionProperty": {
+    "metadata": {
+      "title": "Property · المحفوظات والاستفسارات",
+      "description": "قائمة Property المختصرة، الاستفسارات، المعاينات ومتابعات الإعلانات — كل إجراء على HenryCo Property يُعكس في غرفة هذا الحساب."
+    },
+    "hero": {
+      "eyebrow": "Property · مباشر",
+      "ariaLabel": "نظرة عامة على Property",
+      "browseListingsCta": "تصفح الإعلانات",
+      "savedShortlistCta": "المحفوظات",
+      "tilesAriaLabel": "نشاط Property",
+      "tileLabels": {
+        "saved": "المحفوظة",
+        "inquiries": "الاستفسارات",
+        "viewings": "المعاينات",
+        "listings": "الإعلانات"
+      },
+      "tileFoot": {
+        "savedManagedTemplate": "{count} تديرها HenryCo",
+        "savedEmpty": "احفظ الإعلانات لبناء قائمة مختصرة",
+        "savedWith": "قارن وأعد الزيارة في أي وقت",
+        "inquiriesEmpty": "لا توجد محادثات مفتوحة بعد",
+        "inquiriesWith": "تصل المتابعات إلى هذه الغرفة",
+        "viewingsEmpty": "اطلب معاينة في عقار محفوظ",
+        "viewingsWith": "تُزامن التأكيدات عبر الأجهزة",
+        "listingsEmpty": "أرسل إعلانًا على Property",
+        "listingsWith": "تظهر نتائج المراجعة هنا"
+      },
+      "sideAriaLabel": "كيف تعمل هذه الغرفة",
+      "sideKicker": "كيف تعمل هذه الغرفة",
+      "sideTitle": "اكتشف على Property، وتابع هنا.",
+      "sideBody": "احفظ إعلانًا، أو اطلب معاينة، أو افتح استفسارًا على HenryCo Property — كل إجراء يُعكس في غرفة الحساب هذه لتتمكن من المتابعة من حيث توقفت عبر جميع أجهزتك.",
+      "sideBodyMuted": "الإعلانات التي تديرها HenryCo تحمل شارة مُدارة — تتولى المراجعة والمعاينة ومتابعة العقد فرقُ Property.",
+      "breakdownAriaLabel": "تفصيل النشاط",
+      "breakdownLabel": "حسب النشاط",
+      "breakdownLabels": {
+        "saved": "المحفوظة",
+        "inquiries": "الاستفسارات",
+        "viewings": "المعاينات",
+        "listings": "الإعلانات"
+      },
+      "state": {
+        "empty": {
+          "headline": "ابدأ استكشاف HenryCo Property.",
+          "blurb": "اكتشف الإيجارات السكنية وإعلانات البيع والمنازل التي تديرها HenryCo. احفظ ما يعجبك، وستصل كل استفسار أو معاينة أو متابعة إعلان إلى هنا تلقائيًا."
+        },
+        "discover": {
+          "headlineTemplateSingular": "{count} منزل في القائمة المختصرة.",
+          "headlineTemplatePlural": "{count} منزل في القائمة المختصرة.",
+          "blurb": "منازل محفوظة جاهزة لإعادة الزيارة. افتح إعلانًا لطلب معاينة أو إرسال استفسار — سترجع المتابعة مباشرة إلى هذه الغرفة."
+        },
+        "active": {
+          "viewingHeadlineTemplateSingular": "{count} معاينة مجدولة.",
+          "viewingHeadlineTemplatePlural": "{count} معاينة مجدولة.",
+          "inquiryHeadlineTemplateSingular": "{count} استفسار نشط.",
+          "inquiryHeadlineTemplatePlural": "{count} استفسار نشط.",
+          "blurb": "قائمتك المختصرة واستفساراتك وجدول المعاينات في غرفة واحدة. تابع من حيث توقفت — تُعكس كل إجراءاتك من HenryCo Property في الوقت الفعلي."
+        }
+      }
+    },
+    "sections": {
+      "saved": "القائمة المختصرة المحفوظة",
+      "savedMetaEmpty": "احفظ إعلانات على HenryCo Property لبناء قائمتك المختصرة.",
+      "savedMetaTemplate": "{saved} محفوظة · {managed} تديرها HenryCo",
+      "activity": "النشاط الأخير",
+      "activityMetaEmpty": "تُعرض الاستفسارات والمعاينات ومراجعات الإعلانات هنا فور حدوثها.",
+      "activityMetaTemplateSingular": "{count} تحديث · الأحدث أولًا",
+      "activityMetaTemplatePlural": "{count} تحديث · الأحدث أولًا"
+    },
+    "empty": {
+      "savedTitle": "لا توجد عقارات محفوظة بعد",
+      "savedBody": "اكتشف الإيجارات السكنية وإعلانات البيع والعقارات التي تديرها HenryCo على Property. كل ما تحفظه يصل إلى هنا تلقائيًا.",
+      "activityTitle": "لا يوجد نشاط Property بعد",
+      "activityBody": "افتح إعلانًا على HenryCo Property لطلب معاينة أو إرسال استفسار — ستظهر هنا كل خطوة، من رسالتك الأولى وحتى المراجعة."
+    },
+    "activity": {
+      "ariaLabel": "نشاط Property",
+      "titles": {
+        "inquiry": "استفسار عقاري",
+        "viewing": "طلب معاينة",
+        "listing_submitted": "أُرسل الإعلان",
+        "listing_updated": "حُدِّث الإعلان",
+        "listing_reviewed": "اكتملت مراجعة الإعلان"
+      }
+    },
+    "gallery": {
+      "ariaLabel": "العقارات المحفوظة",
+      "managedBadge": "مُدارة",
+      "featuredBadge": "مميزة",
+      "locationPending": "الموقع قيد التحديد",
+      "contactAgent": "تواصل مع الوكيل",
+      "savedAtTemplate": "حُفظ في {date}",
+      "bedSingular": "غرفة نوم",
+      "bedPlural": "غرف نوم",
+      "bathSingular": "حمام",
+      "bathPlural": "حمامات",
+      "sizeSqmTemplate": "{size} م²"
     }
   }
 };
