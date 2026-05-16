@@ -612,6 +612,49 @@ export const ACCOUNT_COPY_ES = {
       "approved": "Aprobado",
       "paid": "Pagado"
     }
+  },
+  "support": {
+    "metadata": {
+      "title": "Soporte",
+      "description": "Obtén ayuda con cualquier servicio HenryCo."
+    },
+    "hero": {
+      "title": "Soporte",
+      "description": "Obtén ayuda con cualquier servicio HenryCo.",
+      "newRequestCta": "Nueva solicitud"
+    },
+    "summary": {
+      "openRequestsTemplate": "{count} solicitud(es) abierta(s)",
+      "escalatedTemplate": "{count} escaladas",
+      "escalationNote": "Cada mensaje queda registrado. Si el triaje detecta riesgo o urgencia, el personal recibe automáticamente una cola priorizada."
+    },
+    "quickHelp": {
+      "helpCenterLabel": "Centro de ayuda",
+      "helpCenterDesc": "Explora preguntas frecuentes y guías",
+      "contactLabel": "Contáctanos",
+      "contactDesc": "Soporte por correo o teléfono",
+      "liveChatLabel": "Chat en vivo",
+      "liveChatDesc": "Chatea con nuestro equipo"
+    },
+    "threads": {
+      "sectionKicker": "Tus solicitudes",
+      "emptyTitle": "Sin solicitudes de soporte",
+      "emptyDescription": "Aún no has creado ninguna solicitud de soporte. Estamos aquí para ayudarte si necesitas algo.",
+      "createCta": "Crear solicitud"
+    },
+    "statusLabels": {
+      "open": "Abierta",
+      "awaitingReply": "Esperando respuesta",
+      "inProgress": "En curso",
+      "resolved": "Resuelta",
+      "closed": "Cerrada"
+    },
+    "priorityLabels": {
+      "low": "Baja",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
+    }
   }
 };
 
@@ -1226,6 +1269,49 @@ export const ACCOUNT_COPY_PT = {
       "approved": "Aprovado",
       "paid": "Pago"
     }
+  },
+  "support": {
+    "metadata": {
+      "title": "Suporte",
+      "description": "Obtenha ajuda com qualquer serviço HenryCo."
+    },
+    "hero": {
+      "title": "Suporte",
+      "description": "Obtenha ajuda com qualquer serviço HenryCo.",
+      "newRequestCta": "Novo pedido"
+    },
+    "summary": {
+      "openRequestsTemplate": "{count} pedido(s) em aberto",
+      "escalatedTemplate": "{count} escalado(s)",
+      "escalationNote": "Cada mensagem é registada. Se a triagem identificar risco ou urgência, a equipa recebe automaticamente uma fila priorizada."
+    },
+    "quickHelp": {
+      "helpCenterLabel": "Central de ajuda",
+      "helpCenterDesc": "Explore perguntas frequentes e guias",
+      "contactLabel": "Fale connosco",
+      "contactDesc": "Apoio por e-mail ou telefone",
+      "liveChatLabel": "Chat ao vivo",
+      "liveChatDesc": "Converse com a nossa equipa"
+    },
+    "threads": {
+      "sectionKicker": "Os seus pedidos",
+      "emptyTitle": "Sem pedidos de suporte",
+      "emptyDescription": "Ainda não criou nenhum pedido de suporte. Estamos aqui para ajudar se precisar de alguma coisa.",
+      "createCta": "Criar pedido"
+    },
+    "statusLabels": {
+      "open": "Aberto",
+      "awaitingReply": "À espera de resposta",
+      "inProgress": "Em curso",
+      "resolved": "Resolvido",
+      "closed": "Fechado"
+    },
+    "priorityLabels": {
+      "low": "Baixa",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
+    }
   }
 };
 
@@ -1839,6 +1925,49 @@ export const ACCOUNT_COPY_AR = {
       "verified": "مؤكَّد",
       "approved": "موافَق عليه",
       "paid": "مدفوع"
+    }
+  },
+  "support": {
+    "metadata": {
+      "title": "الدعم",
+      "description": "احصل على مساعدة لأي خدمة من خدمات HenryCo."
+    },
+    "hero": {
+      "title": "الدعم",
+      "description": "احصل على مساعدة لأي خدمة من خدمات HenryCo.",
+      "newRequestCta": "طلب جديد"
+    },
+    "summary": {
+      "openRequestsTemplate": "{count} طلب/طلبات مفتوحة",
+      "escalatedTemplate": "{count} مُصعَّد",
+      "escalationNote": "يتم تتبع كل رسالة. إذا رصد الفرز خطرًا أو إلحاحًا، يحصل الموظفون تلقائيًا على قائمة انتظار ذات أولوية."
+    },
+    "quickHelp": {
+      "helpCenterLabel": "مركز المساعدة",
+      "helpCenterDesc": "تصفح الأسئلة الشائعة والأدلة",
+      "contactLabel": "اتصل بنا",
+      "contactDesc": "دعم عبر البريد الإلكتروني أو الهاتف",
+      "liveChatLabel": "دردشة مباشرة",
+      "liveChatDesc": "تحدث مع فريقنا"
+    },
+    "threads": {
+      "sectionKicker": "طلباتك",
+      "emptyTitle": "لا توجد طلبات دعم",
+      "emptyDescription": "لم تنشئ أي طلبات دعم بعد. نحن هنا للمساعدة إذا احتجت إلى أي شيء.",
+      "createCta": "إنشاء طلب"
+    },
+    "statusLabels": {
+      "open": "مفتوح",
+      "awaitingReply": "في انتظار الرد",
+      "inProgress": "قيد المعالجة",
+      "resolved": "تم الحل",
+      "closed": "مغلق"
+    },
+    "priorityLabels": {
+      "low": "منخفض",
+      "normal": "عادي",
+      "high": "مرتفع",
+      "urgent": "عاجل"
     }
   }
 };

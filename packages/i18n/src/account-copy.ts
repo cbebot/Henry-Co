@@ -502,6 +502,82 @@ export type AccountCopy = {
     };
     footerNote: string;
   };
+  messages: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      ariaLabel: string;
+      ariaTiles: string;
+      ariaSide: string;
+      sideLabel: string;
+      sideBody: string;
+    };
+    headlines: {
+      zero: string;
+      calmOne: string;
+      calmMany: string;
+      busy: string;
+      overloaded: string;
+    };
+    blurbs: {
+      zero: string;
+      calm: string;
+      busy: string;
+      overloaded: string;
+    };
+    tiles: {
+      openLabel: string;
+      openFootEmpty: string;
+      openFootActive: string;
+      unreadLabel: string;
+      unreadFootEmpty: string;
+      unreadFootActive: string;
+      portalsLabel: string;
+      portalsFootEmpty: string;
+      portalsFootSingular: string;
+      portalsFootPlural: string;
+    };
+    sideTitle: {
+      empty: string;
+      singular: string;
+      plural: string;
+    };
+    section: {
+      title: string;
+      ariaLabel: string;
+      metaEmpty: string;
+      metaSingular: string;
+      metaPlural: string;
+    };
+    chips: {
+      ariaLabel: string;
+      allThreads: string;
+    };
+    empty: {
+      eyebrow: string;
+      titleAll: string;
+      titleFilter: string;
+      bodyAll: string;
+      bodyFilter: string;
+    };
+    list: {
+      unreadDotLabel: string;
+      fallbackTime: string;
+    };
+    divisionLabels: {
+      support: string;
+      marketplace: string;
+      jobs: string;
+      studio: string;
+      care: string;
+      property: string;
+      logistics: string;
+      learn: string;
+    };
+  };
   wallet: {
     hero: {
       ariaLabel: string;
@@ -614,6 +690,49 @@ export type AccountCopy = {
       verified: string;
       approved: string;
       paid: string;
+    };
+  };
+  support: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      title: string;
+      description: string;
+      newRequestCta: string;
+    };
+    summary: {
+      openRequestsTemplate: string;
+      escalatedTemplate: string;
+      escalationNote: string;
+    };
+    quickHelp: {
+      helpCenterLabel: string;
+      helpCenterDesc: string;
+      contactLabel: string;
+      contactDesc: string;
+      liveChatLabel: string;
+      liveChatDesc: string;
+    };
+    threads: {
+      sectionKicker: string;
+      emptyTitle: string;
+      emptyDescription: string;
+      createCta: string;
+    };
+    statusLabels: {
+      open: string;
+      awaitingReply: string;
+      inProgress: string;
+      resolved: string;
+      closed: string;
+    };
+    priorityLabels: {
+      low: string;
+      normal: string;
+      high: string;
+      urgent: string;
     };
   };
 };
@@ -1169,6 +1288,86 @@ const EN: AccountCopy = {
     },
     footerNote: "Receipts download as branded PDFs.",
   },
+  messages: {
+    metadata: {
+      title: "Messages · HenryCo",
+      description:
+        "One inbox across support, marketplace, jobs, studio, care, property, logistics and learn.",
+    },
+    hero: {
+      eyebrow: "HenryCo · unified inbox",
+      ariaLabel: "Inbox overview",
+      ariaTiles: "Inbox volume",
+      ariaSide: "By portal",
+      sideLabel: "By portal",
+      sideBody:
+        "Every portal feeds this one inbox. Support, marketplace orders, jobs interviews, studio projects and care bookings all surface here in chronological order.",
+    },
+    headlines: {
+      zero: "Inbox zero across HenryCo.",
+      calmOne: "One thread is waiting on you.",
+      calmMany: "{count} threads are open.",
+      busy: "{unread} unread · {open} open across your portals.",
+      overloaded: "{unread} unread across {open} open threads.",
+    },
+    blurbs: {
+      zero: "Everything across support, marketplace, jobs, studio, care, property, logistics and learn is acknowledged.",
+      calm: "A short reply now keeps the loop closed before tomorrow.",
+      busy: "Tap a row to open the thread, or filter to one portal at a time.",
+      overloaded: "Sweep through divisions one by one — newest threads at the top.",
+    },
+    tiles: {
+      openLabel: "Open",
+      openFootEmpty: "Nothing in progress",
+      openFootActive: "Threads awaiting movement",
+      unreadLabel: "Unread",
+      unreadFootEmpty: "Inbox caught up",
+      unreadFootActive: "Tap a row to open the thread",
+      portalsLabel: "Portals",
+      portalsFootEmpty: "Care, Marketplace, Studio, Jobs and more",
+      portalsFootSingular: "One division active",
+      portalsFootPlural: "{count} divisions represented",
+    },
+    sideTitle: {
+      empty: "Quiet across every division",
+      singular: "One division has traffic",
+      plural: "{count} divisions in the mix",
+    },
+    section: {
+      title: "Threads",
+      ariaLabel: "Inbox threads",
+      metaEmpty: "Nothing here yet — every portal feeds this inbox",
+      metaSingular: "{count} thread",
+      metaPlural: "{count} threads",
+    },
+    chips: {
+      ariaLabel: "Filter inbox by portal",
+      allThreads: "All threads",
+    },
+    empty: {
+      eyebrow: "Inbox quiet",
+      titleAll: "Nothing waiting on you.",
+      titleFilter: "No threads in this portal yet.",
+      bodyAll:
+        "Support, marketplace, jobs, studio, care, property, logistics and learn all surface here — anything cross-portal lands in this list as soon as it begins.",
+      bodyFilter:
+        "Switch filter chips to see another portal, or browse all threads to confirm nothing is pending.",
+    },
+    list: {
+      unreadDotLabel: "Unread",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "Support",
+      marketplace: "Marketplace",
+      jobs: "Jobs",
+      studio: "Studio",
+      care: "Care",
+      property: "Property",
+      logistics: "Logistics",
+      learn: "Learn",
+    },
+  },
   wallet: {
     hero: {
       ariaLabel: "Wallet balance",
@@ -1278,6 +1477,51 @@ const EN: AccountCopy = {
       verified: "Confirmed",
       approved: "Approved",
       paid: "Paid out",
+    },
+  },
+  support: {
+    metadata: {
+      title: "Support",
+      description: "Get help with any HenryCo service.",
+    },
+    hero: {
+      title: "Support",
+      description: "Get help with any HenryCo service.",
+      newRequestCta: "New request",
+    },
+    summary: {
+      openRequestsTemplate: "{count} open request(s)",
+      escalatedTemplate: "{count} escalated",
+      escalationNote:
+        "Every message is tracked. If triage marks risk or urgency, staff gets a prioritized queue automatically.",
+    },
+    quickHelp: {
+      helpCenterLabel: "Help Center",
+      helpCenterDesc: "Browse FAQs and guides",
+      contactLabel: "Contact Us",
+      contactDesc: "Email or phone support",
+      liveChatLabel: "Live Chat",
+      liveChatDesc: "Chat with our team",
+    },
+    threads: {
+      sectionKicker: "Your requests",
+      emptyTitle: "No support requests",
+      emptyDescription:
+        "You haven't created any support requests yet. We're here to help if you need anything.",
+      createCta: "Create request",
+    },
+    statusLabels: {
+      open: "Open",
+      awaitingReply: "Awaiting reply",
+      inProgress: "In progress",
+      resolved: "Resolved",
+      closed: "Closed",
+    },
+    priorityLabels: {
+      low: "Low",
+      normal: "Normal",
+      high: "High",
+      urgent: "Urgent",
     },
   },
 };
@@ -1851,6 +2095,86 @@ const FR: DeepPartial<AccountCopy> = {
     },
     footerNote: "Les reçus se téléchargent en PDF de marque.",
   },
+  messages: {
+    metadata: {
+      title: "Messages · HenryCo",
+      description:
+        "Une seule boîte de réception pour le support, le marketplace, les emplois, le studio, le care, l’immobilier, la logistique et l’apprentissage.",
+    },
+    hero: {
+      eyebrow: "HenryCo · boîte de réception unifiée",
+      ariaLabel: "Aperçu de la boîte de réception",
+      ariaTiles: "Volume de la boîte de réception",
+      ariaSide: "Par portail",
+      sideLabel: "Par portail",
+      sideBody:
+        "Chaque portail alimente cette boîte de réception unique. Support, commandes du marketplace, entretiens d’embauche, projets studio et réservations care apparaissent ici dans l’ordre chronologique.",
+    },
+    headlines: {
+      zero: "Boîte de réception vide à travers HenryCo.",
+      calmOne: "Un fil attend votre réponse.",
+      calmMany: "{count} fils sont ouverts.",
+      busy: "{unread} non lus · {open} ouverts dans vos portails.",
+      overloaded: "{unread} non lus parmi {open} fils ouverts.",
+    },
+    blurbs: {
+      zero: "Tout est acquitté à travers le support, le marketplace, les emplois, le studio, le care, l’immobilier, la logistique et l’apprentissage.",
+      calm: "Une courte réponse maintenant ferme la boucle avant demain.",
+      busy: "Touchez une ligne pour ouvrir le fil, ou filtrez un portail à la fois.",
+      overloaded: "Parcourez les divisions une à une — les fils les plus récents en haut.",
+    },
+    tiles: {
+      openLabel: "Ouverts",
+      openFootEmpty: "Rien en cours",
+      openFootActive: "Fils en attente d’action",
+      unreadLabel: "Non lus",
+      unreadFootEmpty: "Boîte de réception à jour",
+      unreadFootActive: "Touchez une ligne pour ouvrir le fil",
+      portalsLabel: "Portails",
+      portalsFootEmpty: "Care, Marketplace, Studio, Jobs et plus",
+      portalsFootSingular: "Une division active",
+      portalsFootPlural: "{count} divisions représentées",
+    },
+    sideTitle: {
+      empty: "Calme dans toutes les divisions",
+      singular: "Une division a du trafic",
+      plural: "{count} divisions actives",
+    },
+    section: {
+      title: "Fils",
+      ariaLabel: "Fils de la boîte de réception",
+      metaEmpty: "Rien ici pour l’instant — chaque portail alimente cette boîte",
+      metaSingular: "{count} fil",
+      metaPlural: "{count} fils",
+    },
+    chips: {
+      ariaLabel: "Filtrer la boîte de réception par portail",
+      allThreads: "Tous les fils",
+    },
+    empty: {
+      eyebrow: "Boîte calme",
+      titleAll: "Rien ne vous attend.",
+      titleFilter: "Pas encore de fils dans ce portail.",
+      bodyAll:
+        "Support, marketplace, emplois, studio, care, immobilier, logistique et apprentissage apparaissent ici — tout fil cross-portail s’ajoute à cette liste dès qu’il démarre.",
+      bodyFilter:
+        "Changez de filtre pour voir un autre portail, ou parcourez tous les fils pour confirmer qu’aucun n’est en attente.",
+    },
+    list: {
+      unreadDotLabel: "Non lu",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "Support",
+      marketplace: "Marketplace",
+      jobs: "Emplois",
+      studio: "Studio",
+      care: "Care",
+      property: "Immobilier",
+      logistics: "Logistique",
+      learn: "Apprentissage",
+    },
+  },
   wallet: {
     hero: {
       ariaLabel: "Solde du portefeuille",
@@ -1960,6 +2284,51 @@ const FR: DeepPartial<AccountCopy> = {
       verified: "Confirmé",
       approved: "Approuvé",
       paid: "Payé",
+    },
+  },
+  support: {
+    metadata: {
+      title: "Assistance",
+      description: "Obtenez de l’aide pour n’importe quel service HenryCo.",
+    },
+    hero: {
+      title: "Assistance",
+      description: "Obtenez de l’aide pour n’importe quel service HenryCo.",
+      newRequestCta: "Nouvelle demande",
+    },
+    summary: {
+      openRequestsTemplate: "{count} demande(s) ouverte(s)",
+      escalatedTemplate: "{count} escaladée(s)",
+      escalationNote:
+        "Chaque message est suivi. Si le triage signale un risque ou une urgence, l’équipe reçoit automatiquement une file prioritaire.",
+    },
+    quickHelp: {
+      helpCenterLabel: "Centre d’aide",
+      helpCenterDesc: "Parcourir les FAQ et les guides",
+      contactLabel: "Nous contacter",
+      contactDesc: "Assistance par e-mail ou téléphone",
+      liveChatLabel: "Chat en direct",
+      liveChatDesc: "Discutez avec notre équipe",
+    },
+    threads: {
+      sectionKicker: "Vos demandes",
+      emptyTitle: "Aucune demande d’assistance",
+      emptyDescription:
+        "Vous n’avez encore créé aucune demande d’assistance. Nous sommes là si vous avez besoin de quoi que ce soit.",
+      createCta: "Créer une demande",
+    },
+    statusLabels: {
+      open: "Ouverte",
+      awaitingReply: "En attente de réponse",
+      inProgress: "En cours",
+      resolved: "Résolue",
+      closed: "Clôturée",
+    },
+    priorityLabels: {
+      low: "Faible",
+      normal: "Normale",
+      high: "Élevée",
+      urgent: "Urgente",
     },
   },
 };
@@ -2465,6 +2834,86 @@ const DE: DeepPartial<AccountCopy> = {
     },
     "footerNote": "Belege werden als markenbezogene PDFs heruntergeladen."
   },
+  messages: {
+    metadata: {
+      title: "Nachrichten · HenryCo",
+      description:
+        "Ein Posteingang für Support, Marketplace, Jobs, Studio, Care, Immobilien, Logistik und Lernen.",
+    },
+    hero: {
+      eyebrow: "HenryCo · vereinheitlichter Posteingang",
+      ariaLabel: "Posteingangsübersicht",
+      ariaTiles: "Posteingangsvolumen",
+      ariaSide: "Nach Portal",
+      sideLabel: "Nach Portal",
+      sideBody:
+        "Jedes Portal speist diesen einen Posteingang. Support, Marketplace-Bestellungen, Vorstellungsgespräche, Studio-Projekte und Care-Buchungen erscheinen hier in chronologischer Reihenfolge.",
+    },
+    headlines: {
+      zero: "Posteingang leer in ganz HenryCo.",
+      calmOne: "Ein Thread wartet auf Sie.",
+      calmMany: "{count} Threads sind offen.",
+      busy: "{unread} ungelesen · {open} offen in Ihren Portalen.",
+      overloaded: "{unread} ungelesen in {open} offenen Threads.",
+    },
+    blurbs: {
+      zero: "Alles ist bestätigt — Support, Marketplace, Jobs, Studio, Care, Immobilien, Logistik und Lernen.",
+      calm: "Eine kurze Antwort jetzt schließt die Schleife noch heute.",
+      busy: "Tippen Sie auf eine Zeile, um den Thread zu öffnen, oder filtern Sie nach einem Portal.",
+      overloaded: "Arbeiten Sie die Divisionen nacheinander ab — neueste Threads oben.",
+    },
+    tiles: {
+      openLabel: "Offen",
+      openFootEmpty: "Nichts in Bearbeitung",
+      openFootActive: "Threads, die Bewegung erwarten",
+      unreadLabel: "Ungelesen",
+      unreadFootEmpty: "Posteingang aufgeräumt",
+      unreadFootActive: "Tippen Sie auf eine Zeile, um den Thread zu öffnen",
+      portalsLabel: "Portale",
+      portalsFootEmpty: "Care, Marketplace, Studio, Jobs und mehr",
+      portalsFootSingular: "Eine Division aktiv",
+      portalsFootPlural: "{count} Divisionen vertreten",
+    },
+    sideTitle: {
+      empty: "Ruhig in allen Divisionen",
+      singular: "Eine Division hat Verkehr",
+      plural: "{count} Divisionen aktiv",
+    },
+    section: {
+      title: "Threads",
+      ariaLabel: "Threads im Posteingang",
+      metaEmpty: "Noch nichts hier — jedes Portal speist diesen Posteingang",
+      metaSingular: "{count} Thread",
+      metaPlural: "{count} Threads",
+    },
+    chips: {
+      ariaLabel: "Posteingang nach Portal filtern",
+      allThreads: "Alle Threads",
+    },
+    empty: {
+      eyebrow: "Posteingang ruhig",
+      titleAll: "Nichts wartet auf Sie.",
+      titleFilter: "Noch keine Threads in diesem Portal.",
+      bodyAll:
+        "Support, Marketplace, Jobs, Studio, Care, Immobilien, Logistik und Lernen tauchen hier auf — alles Cross-Portal landet hier, sobald es beginnt.",
+      bodyFilter:
+        "Wechseln Sie die Filter-Chips für ein anderes Portal, oder durchsuchen Sie alle Threads, um sicherzugehen, dass nichts ansteht.",
+    },
+    list: {
+      unreadDotLabel: "Ungelesen",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "Support",
+      marketplace: "Marketplace",
+      jobs: "Jobs",
+      studio: "Studio",
+      care: "Care",
+      property: "Immobilien",
+      logistics: "Logistik",
+      learn: "Lernen",
+    },
+  },
   wallet: {
     hero: {
       ariaLabel: "Wallet-Saldo",
@@ -2574,6 +3023,51 @@ const DE: DeepPartial<AccountCopy> = {
       verified: "Bestätigt",
       approved: "Genehmigt",
       paid: "Ausgezahlt",
+    },
+  },
+  support: {
+    metadata: {
+      title: "Support",
+      description: "Erhalten Sie Unterstützung für jeden HenryCo-Dienst.",
+    },
+    hero: {
+      title: "Support",
+      description: "Erhalten Sie Unterstützung für jeden HenryCo-Dienst.",
+      newRequestCta: "Neue Anfrage",
+    },
+    summary: {
+      openRequestsTemplate: "{count} offene Anfrage(n)",
+      escalatedTemplate: "{count} eskaliert",
+      escalationNote:
+        "Jede Nachricht wird verfolgt. Wenn die Triage Risiko oder Dringlichkeit erkennt, erhält das Team automatisch eine priorisierte Warteschlange.",
+    },
+    quickHelp: {
+      helpCenterLabel: "Hilfezentrum",
+      helpCenterDesc: "FAQs und Anleitungen durchsuchen",
+      contactLabel: "Kontakt aufnehmen",
+      contactDesc: "Support per E-Mail oder Telefon",
+      liveChatLabel: "Live-Chat",
+      liveChatDesc: "Chatten Sie mit unserem Team",
+    },
+    threads: {
+      sectionKicker: "Ihre Anfragen",
+      emptyTitle: "Keine Support-Anfragen",
+      emptyDescription:
+        "Sie haben noch keine Support-Anfragen erstellt. Wir sind für Sie da, wenn Sie etwas brauchen.",
+      createCta: "Anfrage erstellen",
+    },
+    statusLabels: {
+      open: "Offen",
+      awaitingReply: "Wartet auf Antwort",
+      inProgress: "In Bearbeitung",
+      resolved: "Gelöst",
+      closed: "Geschlossen",
+    },
+    priorityLabels: {
+      low: "Niedrig",
+      normal: "Normal",
+      high: "Hoch",
+      urgent: "Dringend",
     },
   },
 };
@@ -3081,6 +3575,86 @@ const IT: DeepPartial<AccountCopy> = {
     },
     footerNote: "Le ricevute si scaricano come PDF di marca.",
   },
+  messages: {
+    metadata: {
+      title: "Messaggi · HenryCo",
+      description:
+        "Un’unica casella per supporto, marketplace, lavoro, studio, care, immobili, logistica e formazione.",
+    },
+    hero: {
+      eyebrow: "HenryCo · casella unificata",
+      ariaLabel: "Panoramica della casella",
+      ariaTiles: "Volume della casella",
+      ariaSide: "Per portale",
+      sideLabel: "Per portale",
+      sideBody:
+        "Ogni portale alimenta questa unica casella. Supporto, ordini marketplace, colloqui di lavoro, progetti studio e prenotazioni care compaiono qui in ordine cronologico.",
+    },
+    headlines: {
+      zero: "Casella vuota in tutta HenryCo.",
+      calmOne: "Un thread aspetta una tua risposta.",
+      calmMany: "{count} thread aperti.",
+      busy: "{unread} non letti · {open} aperti nei tuoi portali.",
+      overloaded: "{unread} non letti su {open} thread aperti.",
+    },
+    blurbs: {
+      zero: "Tutto è confermato: supporto, marketplace, lavoro, studio, care, immobili, logistica e formazione.",
+      calm: "Una breve risposta adesso chiude il ciclo prima di domani.",
+      busy: "Tocca una riga per aprire il thread, oppure filtra un portale alla volta.",
+      overloaded: "Procedi per divisioni una alla volta — i thread più recenti in alto.",
+    },
+    tiles: {
+      openLabel: "Aperti",
+      openFootEmpty: "Niente in corso",
+      openFootActive: "Thread in attesa di un’azione",
+      unreadLabel: "Non letti",
+      unreadFootEmpty: "Casella aggiornata",
+      unreadFootActive: "Tocca una riga per aprire il thread",
+      portalsLabel: "Portali",
+      portalsFootEmpty: "Care, Marketplace, Studio, Jobs e altro",
+      portalsFootSingular: "Una divisione attiva",
+      portalsFootPlural: "{count} divisioni rappresentate",
+    },
+    sideTitle: {
+      empty: "Calma in ogni divisione",
+      singular: "Una divisione ha traffico",
+      plural: "{count} divisioni attive",
+    },
+    section: {
+      title: "Thread",
+      ariaLabel: "Thread della casella",
+      metaEmpty: "Ancora niente — ogni portale alimenta questa casella",
+      metaSingular: "{count} thread",
+      metaPlural: "{count} thread",
+    },
+    chips: {
+      ariaLabel: "Filtra la casella per portale",
+      allThreads: "Tutti i thread",
+    },
+    empty: {
+      eyebrow: "Casella tranquilla",
+      titleAll: "Niente in attesa.",
+      titleFilter: "Ancora nessun thread in questo portale.",
+      bodyAll:
+        "Supporto, marketplace, lavoro, studio, care, immobili, logistica e formazione compaiono qui — qualsiasi cosa cross-portale arriva in questa lista appena inizia.",
+      bodyFilter:
+        "Cambia chip di filtro per vedere un altro portale, o sfoglia tutti i thread per confermare che nulla sia in sospeso.",
+    },
+    list: {
+      unreadDotLabel: "Non letto",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "Supporto",
+      marketplace: "Marketplace",
+      jobs: "Lavoro",
+      studio: "Studio",
+      care: "Care",
+      property: "Immobili",
+      logistics: "Logistica",
+      learn: "Formazione",
+    },
+  },
   wallet: {
     hero: {
       ariaLabel: "Saldo del portafoglio",
@@ -3190,6 +3764,51 @@ const IT: DeepPartial<AccountCopy> = {
       verified: "Confermato",
       approved: "Approvato",
       paid: "Pagato",
+    },
+  },
+  support: {
+    metadata: {
+      title: "Assistenza",
+      description: "Ricevi aiuto per qualsiasi servizio HenryCo.",
+    },
+    hero: {
+      title: "Assistenza",
+      description: "Ricevi aiuto per qualsiasi servizio HenryCo.",
+      newRequestCta: "Nuova richiesta",
+    },
+    summary: {
+      openRequestsTemplate: "{count} richiesta/e aperta/e",
+      escalatedTemplate: "{count} priorità alta",
+      escalationNote:
+        "Ogni messaggio viene tracciato. Se il triage segnala rischio o urgenza, il team riceve automaticamente una coda prioritaria.",
+    },
+    quickHelp: {
+      helpCenterLabel: "Centro assistenza",
+      helpCenterDesc: "Sfoglia FAQ e guide",
+      contactLabel: "Contattaci",
+      contactDesc: "Assistenza via email o telefono",
+      liveChatLabel: "Chat dal vivo",
+      liveChatDesc: "Chatta con il nostro team",
+    },
+    threads: {
+      sectionKicker: "Le tue richieste",
+      emptyTitle: "Nessuna richiesta di assistenza",
+      emptyDescription:
+        "Non hai ancora creato richieste di assistenza. Siamo qui per aiutarti se hai bisogno di qualcosa.",
+      createCta: "Crea richiesta",
+    },
+    statusLabels: {
+      open: "Aperta",
+      awaitingReply: "In attesa di risposta",
+      inProgress: "In corso",
+      resolved: "Risolta",
+      closed: "Chiusa",
+    },
+    priorityLabels: {
+      low: "Bassa",
+      normal: "Normale",
+      high: "Alta",
+      urgent: "Urgente",
     },
   },
 };
@@ -3699,6 +4318,86 @@ const IG: DeepPartial<AccountCopy> = {
     },
     footerNote: "Akwụkwọ nnata na-ebudata dị ka PDF nwere akara.",
   },
+  messages: {
+    metadata: {
+      title: "Ozi · HenryCo",
+      description:
+        "Otu igbe ozi maka nkwado, ahịa, ọrụ, studio, nlekọta, ụlọ, mbufe na mmụta.",
+    },
+    hero: {
+      eyebrow: "HenryCo · igbe ozi jikọtara",
+      ariaLabel: "Nlerughari igbe ozi",
+      ariaTiles: "Olu igbe ozi",
+      ariaSide: "Site na portal",
+      sideLabel: "Site na portal",
+      sideBody:
+        "Portal nke ọ bụla na-eweta n’otu igbe ozi a. Nkwado, iwu ahịa, ajụjụ ọnụ ọrụ, ọrụ studio na ndokwa nlekọta niile na-egosi ebe a n’usoro oge.",
+    },
+    headlines: {
+      zero: "Igbe ozi ọcha n’ofe HenryCo niile.",
+      calmOne: "Otu eriri na-eche gị.",
+      calmMany: "Eriri {count} ka mepere emepe.",
+      busy: "{unread} agụghị agụ · {open} mepere emepe n’ofe portal gị.",
+      overloaded: "{unread} agụghị agụ n’ime eriri {open} mepere emepe.",
+    },
+    blurbs: {
+      zero: "Ihe niile akwadoro — nkwado, ahịa, ọrụ, studio, nlekọta, ụlọ, mbufe na mmụta.",
+      calm: "Nzaghachi mkpirikpi ugbu a na-emechi akaghị tupu echi.",
+      busy: "Pịa ahịrị iji mepee eriri ahụ, ma ọ bụ nyochaa otu portal n’otu oge.",
+      overloaded: "Gafee ngalaba n’otu n’otu — eriri kachasị ọhụrụ n’elu.",
+    },
+    tiles: {
+      openLabel: "Mepere emepe",
+      openFootEmpty: "Ọ dịghị ihe na-aga n’ihu",
+      openFootActive: "Eriri ndị na-eche mmegharị",
+      unreadLabel: "Agụghị agụ",
+      unreadFootEmpty: "Igbe ozi nọ na ndị",
+      unreadFootActive: "Pịa ahịrị iji mepee eriri ahụ",
+      portalsLabel: "Portal",
+      portalsFootEmpty: "Nlekọta, Ahịa, Studio, Ọrụ na ndị ọzọ",
+      portalsFootSingular: "Otu ngalaba na-arụ ọrụ",
+      portalsFootPlural: "Ngalaba {count} nọchitere",
+    },
+    sideTitle: {
+      empty: "Dị jụụ na ngalaba ọ bụla",
+      singular: "Otu ngalaba nwere okporo ụzọ",
+      plural: "Ngalaba {count} dị n’ime ya",
+    },
+    section: {
+      title: "Eriri",
+      ariaLabel: "Eriri igbe ozi",
+      metaEmpty: "Ọ dịghị ihe ebe a — portal niile na-azụ igbe ozi a",
+      metaSingular: "{count} eriri",
+      metaPlural: "Eriri {count}",
+    },
+    chips: {
+      ariaLabel: "Nyochaa igbe ozi site na portal",
+      allThreads: "Eriri niile",
+    },
+    empty: {
+      eyebrow: "Igbe ozi dị jụụ",
+      titleAll: "Ọ dịghị ihe na-eche gị.",
+      titleFilter: "Enwebeghị eriri na portal a.",
+      bodyAll:
+        "Nkwado, ahịa, ọrụ, studio, nlekọta, ụlọ, mbufe na mmụta niile na-egosi ebe a — ihe ọ bụla cross-portal ga-abịa na ndepụta a ozugbo ọ malitere.",
+      bodyFilter:
+        "Gbanwee chip nyocha iji hụ portal ọzọ, ma ọ bụ chọgharịa eriri niile iji kpebie na ọ dịghị ihe na-eche.",
+    },
+    list: {
+      unreadDotLabel: "Agụghị agụ",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "Nkwado",
+      marketplace: "Ahịa",
+      jobs: "Ọrụ",
+      studio: "Studio",
+      care: "Nlekọta",
+      property: "Ụlọ",
+      logistics: "Mbufe",
+      learn: "Mmụta",
+    },
+  },
   wallet: {
     hero: {
       ariaLabel: "Ego dị n'obere akpa",
@@ -3808,6 +4507,51 @@ const IG: DeepPartial<AccountCopy> = {
       verified: "Akwadoro",
       approved: "Akwadoro",
       paid: "A kwụrụ",
+    },
+  },
+  support: {
+    metadata: {
+      title: "Nkwado",
+      description: "Nweta enyemaka maka ọrụ HenryCo ọ bụla.",
+    },
+    hero: {
+      title: "Nkwado",
+      description: "Nweta enyemaka maka ọrụ HenryCo ọ bụla.",
+      newRequestCta: "Arịrịọ ọhụrụ",
+    },
+    summary: {
+      openRequestsTemplate: "{count} arịrịọ mepere emepe",
+      escalatedTemplate: "{count} bulitere elu",
+      escalationNote:
+        "A na-esochi ozi ọ bụla. Ọ bụrụ na nyocha mbụ akpọtụrụ ihe ize ndụ ma ọ bụ ihe ngwa ngwa, ndị ọrụ na-enweta kwụụ otu mbụ na-akpaghị aka.",
+    },
+    quickHelp: {
+      helpCenterLabel: "Ebe Enyemaka",
+      helpCenterDesc: "Chọgharịa ajụjụ ndị a na-ajụkarị na ntuziaka",
+      contactLabel: "Kpọtụrụ Anyị",
+      contactDesc: "Nkwado site na email ma ọ bụ ekwentị",
+      liveChatLabel: "Mkparịta ụka Ndụ",
+      liveChatDesc: "Soro ndị otu anyị kparịta ụka",
+    },
+    threads: {
+      sectionKicker: "Arịrịọ gị",
+      emptyTitle: "Enweghị arịrịọ nkwado",
+      emptyDescription:
+        "Ị mebebeghị arịrịọ nkwado ọ bụla. Anyị nọ ebe a iji nyere gị aka ọ bụrụ na ị chọrọ ihe ọ bụla.",
+      createCta: "Mepụta arịrịọ",
+    },
+    statusLabels: {
+      open: "Emepere",
+      awaitingReply: "Na-eche nzaghachi",
+      inProgress: "Na-aga n’ihu",
+      resolved: "Edoziri",
+      closed: "Emechiri",
+    },
+    priorityLabels: {
+      low: "Dị ala",
+      normal: "Nkịtị",
+      high: "Dị elu",
+      urgent: "Ngwa ngwa",
     },
   },
 };
@@ -4317,6 +5061,86 @@ const YO: DeepPartial<AccountCopy> = {
     },
     footerNote: "Àwọn risiti ń gbasilẹ gẹ́gẹ́ bí PDF tí ó ní àmì-iṣòwò.",
   },
+  messages: {
+    metadata: {
+      title: "Àwọn ìránṣẹ́ · HenryCo",
+      description:
+        "Àpótí ìránṣẹ́ kan ṣoṣo fún ìrànlọ́wọ́, ọjà, iṣẹ́, studio, ìtọ́jú, ohun-ìní, ìfijíṣẹ́ àti ẹ̀kọ́.",
+    },
+    hero: {
+      eyebrow: "HenryCo · àpótí ìránṣẹ́ ìṣọ̀kan",
+      ariaLabel: "Àkópọ̀ àpótí ìránṣẹ́",
+      ariaTiles: "Ìwọ̀n àpótí ìránṣẹ́",
+      ariaSide: "Nípasẹ̀ pọ́tà",
+      sideLabel: "Nípasẹ̀ pọ́tà",
+      sideBody:
+        "Pọ́tà kọ̀ọ̀kan ń jẹ àpótí ìránṣẹ́ kan ṣoṣo yìí. Ìrànlọ́wọ́, àṣẹ ọjà, ìfọ̀rọ̀wánilẹ́nuwò iṣẹ́, àwọn iṣẹ́ studio àti àwọn ìpàdé ìtọ́jú gbogbo wọn fara hàn níbí lẹ́ẹ́sẹ̀ akoko.",
+    },
+    headlines: {
+      zero: "Àpótí ìránṣẹ́ ti ṣofo kárí HenryCo.",
+      calmOne: "Òkun kan ń dúró dè ọ́.",
+      calmMany: "Òkun {count} ti ṣí.",
+      busy: "{unread} àìkàrí · {open} ti ṣí kárí àwọn pọ́tà rẹ.",
+      overloaded: "{unread} àìkàrí láàrín òkun {open} tí ó ṣí.",
+    },
+    blurbs: {
+      zero: "Gbogbo nǹkan ti gba ní ìrànlọ́wọ́, ọjà, iṣẹ́, studio, ìtọ́jú, ohun-ìní, ìfijíṣẹ́ àti ẹ̀kọ́.",
+      calm: "Ìdáhùn ṣókí báyìí máa pa àlọ́ dé kí ọjọ́ ọ̀la tó dé.",
+      busy: "Tẹ ìlà kan láti ṣí òkun náà, tàbí ṣe ìyàsọ́tọ̀ sí pọ́tà kan lẹ́ẹ̀kan.",
+      overloaded: "Gba àwọn ìpín kọ̀ọ̀kan — òkun tuntun ní òkè.",
+    },
+    tiles: {
+      openLabel: "Ti ṣí",
+      openFootEmpty: "Kò sí ohun tó ń lọ",
+      openFootActive: "Òkun ń dúró fún ìṣe",
+      unreadLabel: "Àìkàrí",
+      unreadFootEmpty: "Àpótí ìránṣẹ́ ti pé",
+      unreadFootActive: "Tẹ ìlà kan láti ṣí òkun náà",
+      portalsLabel: "Pọ́tà",
+      portalsFootEmpty: "Ìtọ́jú, Ọjà, Studio, Iṣẹ́ àti àwọn mìíràn",
+      portalsFootSingular: "Ìpín kan ń ṣiṣẹ́",
+      portalsFootPlural: "Àwọn ìpín {count} ti sọ̀rọ̀",
+    },
+    sideTitle: {
+      empty: "Idakẹjẹ kárí gbogbo ìpín",
+      singular: "Ìpín kan ní ìjabọ̀",
+      plural: "Àwọn ìpín {count} ń bùkún",
+    },
+    section: {
+      title: "Àwọn òkun",
+      ariaLabel: "Òkun àpótí ìránṣẹ́",
+      metaEmpty: "Kò sí ohun tí ó wà síbẹ̀ — gbogbo pọ́tà ń jẹ àpótí ìránṣẹ́ yìí",
+      metaSingular: "Òkun {count}",
+      metaPlural: "Òkun {count}",
+    },
+    chips: {
+      ariaLabel: "Ṣe ìyàsọ́tọ̀ àpótí ìránṣẹ́ nípasẹ̀ pọ́tà",
+      allThreads: "Gbogbo òkun",
+    },
+    empty: {
+      eyebrow: "Àpótí ìránṣẹ́ jẹ́",
+      titleAll: "Kò sí ohun tó ń dúró dè ọ́.",
+      titleFilter: "Kò sí òkun ní pọ́tà yìí síbẹ̀.",
+      bodyAll:
+        "Ìrànlọ́wọ́, ọjà, iṣẹ́, studio, ìtọ́jú, ohun-ìní, ìfijíṣẹ́ àti ẹ̀kọ́ gbogbo fara hàn níbí — ohunkóhun tí ó ré-pọ́tà yóò dé sí àkójọ yìí kíákíá tí ó bá bẹ̀rẹ̀.",
+      bodyFilter:
+        "Ṣe ìyípadà àwọn chìpù ìyàsọ́tọ̀ láti rí pọ́tà mìíràn, tàbí ṣàwárí gbogbo òkun láti rí dájú pé kò sí ohun tó dúró.",
+    },
+    list: {
+      unreadDotLabel: "Àìkàrí",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "Ìrànlọ́wọ́",
+      marketplace: "Ọjà",
+      jobs: "Iṣẹ́",
+      studio: "Studio",
+      care: "Ìtọ́jú",
+      property: "Ohun-ìní",
+      logistics: "Ìfijíṣẹ́",
+      learn: "Ẹ̀kọ́",
+    },
+  },
   wallet: {
     hero: {
       ariaLabel: "Iwọntunwọnsi àpamọ́wọ́",
@@ -4426,6 +5250,51 @@ const YO: DeepPartial<AccountCopy> = {
       verified: "A ti jẹrisi",
       approved: "A ti fàṣẹ̀sí",
       paid: "Ti sanwó",
+    },
+  },
+  support: {
+    metadata: {
+      title: "Ìrànlọ́wọ́",
+      description: "Gba ìrànlọ́wọ́ pẹ̀lú iṣẹ́ HenryCo èyíkéyìí.",
+    },
+    hero: {
+      title: "Ìrànlọ́wọ́",
+      description: "Gba ìrànlọ́wọ́ pẹ̀lú iṣẹ́ HenryCo èyíkéyìí.",
+      newRequestCta: "Ìbéèrè tuntun",
+    },
+    summary: {
+      openRequestsTemplate: "Ìbéèrè {count} tó ṣí",
+      escalatedTemplate: "{count} tó gòkè",
+      escalationNote:
+        "A ń ṣe àkọsílẹ̀ gbogbo ìròyìn. Bí àyẹ̀wò bá rí ewu tàbí kíákíá, àwọn òṣìṣẹ́ ma gba àtòjọ pẹ̀lú ìpilẹ̀ ní àìfọwọ́yi.",
+    },
+    quickHelp: {
+      helpCenterLabel: "Ilé Ìrànlọ́wọ́",
+      helpCenterDesc: "Ṣe àyẹ̀wò ìbéèrè àti ìtọ́nisọ́nà",
+      contactLabel: "Kàn sí Wa",
+      contactDesc: "Ìrànlọ́wọ́ nípa ìmẹ́lì tàbí tẹlifóònù",
+      liveChatLabel: "Ìjọ̀rọ̀ Bíi Ìgbà Yìí",
+      liveChatDesc: "Bá ẹgbẹ́ wa sọ̀rọ̀",
+    },
+    threads: {
+      sectionKicker: "Àwọn ìbéèrè rẹ",
+      emptyTitle: "Kò sí ìbéèrè ìrànlọ́wọ́",
+      emptyDescription:
+        "O kò tíì dá ìbéèrè ìrànlọ́wọ́ kankan. A wà níbí láti ràn ọ́ lọ́wọ́ bí o bá nílò ohunkóhun.",
+      createCta: "Dá ìbéèrè sílẹ̀",
+    },
+    statusLabels: {
+      open: "Ṣíi",
+      awaitingReply: "Ń dúró ìdáhùn",
+      inProgress: "Ń lọ lọ́wọ́",
+      resolved: "Tí yanjú",
+      closed: "Tí pa",
+    },
+    priorityLabels: {
+      low: "Kéréje",
+      normal: "Déédéé",
+      high: "Gíga",
+      urgent: "Kíákíá",
     },
   },
 };
@@ -5046,6 +5915,51 @@ const HA: DeepPartial<AccountCopy> = {
       paid: "An biya",
     },
   },
+  support: {
+    metadata: {
+      title: "Tallafi",
+      description: "Sami taimako don kowane sabis na HenryCo.",
+    },
+    hero: {
+      title: "Tallafi",
+      description: "Sami taimako don kowane sabis na HenryCo.",
+      newRequestCta: "Sabuwar buƙata",
+    },
+    summary: {
+      openRequestsTemplate: "Buƙatu {count} a buɗe",
+      escalatedTemplate: "{count} an ɗaga",
+      escalationNote:
+        "Ana bin diddigin kowane saƙo. Idan binciken farko ya kalli haɗari ko gaggawa, ma’aikata sukan sami layi mai fifiko ta atomatik.",
+    },
+    quickHelp: {
+      helpCenterLabel: "Cibiyar Tallafi",
+      helpCenterDesc: "Bincika FAQ da jagorori",
+      contactLabel: "Tuntube Mu",
+      contactDesc: "Tallafi ta imel ko waya",
+      liveChatLabel: "Hira ta Kai Tsaye",
+      liveChatDesc: "Yi hira da ƙungiyarmu",
+    },
+    threads: {
+      sectionKicker: "Buƙatunku",
+      emptyTitle: "Babu buƙatun tallafi",
+      emptyDescription:
+        "Ba ku kafa buƙatar tallafi ba tukuna. Muna nan don taimaka muku idan kuna buƙatar wani abu.",
+      createCta: "Ƙirƙiri buƙata",
+    },
+    statusLabels: {
+      open: "A buɗe",
+      awaitingReply: "Ana jiran amsa",
+      inProgress: "Ana ci gaba",
+      resolved: "An warware",
+      closed: "An rufe",
+    },
+    priorityLabels: {
+      low: "Ƙarami",
+      normal: "Na yau da kullum",
+      high: "Mai girma",
+      urgent: "Gaggawa",
+    },
+  },
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -5661,6 +6575,51 @@ const ZH: DeepPartial<AccountCopy> = {
       verified: "已确认",
       approved: "已批准",
       paid: "已支付",
+    },
+  },
+  support: {
+    metadata: {
+      title: "支持",
+      description: "获取任何 HenryCo 服务的帮助。",
+    },
+    hero: {
+      title: "支持",
+      description: "获取任何 HenryCo 服务的帮助。",
+      newRequestCta: "新建请求",
+    },
+    summary: {
+      openRequestsTemplate: "{count} 个未处理请求",
+      escalatedTemplate: "{count} 个已升级",
+      escalationNote:
+        "每条消息都会被记录。如果分流识别到风险或紧急情况,工作人员将自动获得优先队列。",
+    },
+    quickHelp: {
+      helpCenterLabel: "帮助中心",
+      helpCenterDesc: "浏览常见问题和指南",
+      contactLabel: "联系我们",
+      contactDesc: "电子邮件或电话支持",
+      liveChatLabel: "在线聊天",
+      liveChatDesc: "与我们的团队聊天",
+    },
+    threads: {
+      sectionKicker: "您的请求",
+      emptyTitle: "暂无支持请求",
+      emptyDescription:
+        "您还没有创建任何支持请求。如有需要,我们随时为您提供帮助。",
+      createCta: "创建请求",
+    },
+    statusLabels: {
+      open: "未处理",
+      awaitingReply: "等待回复",
+      inProgress: "进行中",
+      resolved: "已解决",
+      closed: "已关闭",
+    },
+    priorityLabels: {
+      low: "低",
+      normal: "正常",
+      high: "高",
+      urgent: "紧急",
     },
   },
 };
@@ -6279,6 +7238,51 @@ const HI: DeepPartial<AccountCopy> = {
       verified: "पुष्टि की गई",
       approved: "स्वीकृत",
       paid: "भुगतान किया",
+    },
+  },
+  support: {
+    metadata: {
+      title: "सहायता",
+      description: "किसी भी HenryCo सेवा के लिए सहायता प्राप्त करें।",
+    },
+    hero: {
+      title: "सहायता",
+      description: "किसी भी HenryCo सेवा के लिए सहायता प्राप्त करें।",
+      newRequestCta: "नया अनुरोध",
+    },
+    summary: {
+      openRequestsTemplate: "{count} खुले अनुरोध",
+      escalatedTemplate: "{count} एस्केलेटेड",
+      escalationNote:
+        "हर संदेश को ट्रैक किया जाता है। यदि ट्राइएज जोखिम या तत्कालता पाता है, तो स्टाफ़ को स्वतः ही प्राथमिकता वाली कतार मिलती है।",
+    },
+    quickHelp: {
+      helpCenterLabel: "सहायता केंद्र",
+      helpCenterDesc: "सामान्य प्रश्न और गाइड देखें",
+      contactLabel: "संपर्क करें",
+      contactDesc: "ईमेल या फ़ोन सहायता",
+      liveChatLabel: "लाइव चैट",
+      liveChatDesc: "हमारी टीम से चैट करें",
+    },
+    threads: {
+      sectionKicker: "आपके अनुरोध",
+      emptyTitle: "कोई सहायता अनुरोध नहीं",
+      emptyDescription:
+        "आपने अभी तक कोई सहायता अनुरोध नहीं बनाया है। यदि आपको कुछ चाहिए तो हम मदद के लिए यहाँ हैं।",
+      createCta: "अनुरोध बनाएँ",
+    },
+    statusLabels: {
+      open: "खुला",
+      awaitingReply: "उत्तर की प्रतीक्षा",
+      inProgress: "जारी",
+      resolved: "हल",
+      closed: "बंद",
+    },
+    priorityLabels: {
+      low: "कम",
+      normal: "सामान्य",
+      high: "उच्च",
+      urgent: "तत्काल",
     },
   },
 };
