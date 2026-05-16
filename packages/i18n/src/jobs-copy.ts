@@ -146,6 +146,43 @@ export type JobsCopy = {
     statusPaused: string;
     statusClosed: string;
   };
+  employerCompany: {
+    pageTitle: string;
+    pageSubtitle: string;
+    rightRailVerificationTitle: string;
+    rightRailStatusLabel: string;
+    rightRailStatusPending: string;
+    rightRailStatusPendingCapitalized: string;
+    rightRailOpenRoleSingular: string;
+    rightRailOpenRolePlural: string;
+    rightRailResponseSlaTemplate: string;
+    rightRailEmptyProfileBody: string;
+    rightRailTipsTitle: string;
+    rightRailTipDescription: string;
+    rightRailTipPolicies: string;
+    rightRailTipVerified: string;
+    profileSavedNoticeTitle: string;
+    profileSavedNoticeBodyTemplate: string;
+    verificationCalloutBodySuffix: string;
+    openAccountVerification: string;
+    sectionTitle: string;
+    sectionBody: string;
+    fieldNamePlaceholder: string;
+    fieldSlugPlaceholder: string;
+    fieldTaglinePlaceholder: string;
+    fieldDescriptionPlaceholder: string;
+    fieldWebsitePlaceholder: string;
+    fieldIndustryPlaceholder: string;
+    fieldLocationsPlaceholder: string;
+    fieldHeadcountPlaceholder: string;
+    fieldRemotePolicyPlaceholder: string;
+    fieldBenefitsHeadlinePlaceholder: string;
+    fieldCulturePointsPlaceholder: string;
+    employerTypeExternal: string;
+    employerTypeInternal: string;
+    submitSaving: string;
+    submitLabel: string;
+  };
 };
 
 const EN: JobsCopy = {
@@ -300,6 +337,47 @@ const EN: JobsCopy = {
     statusPaused: "Paused",
     statusClosed: "Closed",
   },
+  employerCompany: {
+    pageTitle: "Company Profile",
+    pageSubtitle: "Set up your company profile so candidates can learn about your team.",
+    rightRailVerificationTitle: "Verification status",
+    rightRailStatusLabel: "Status",
+    rightRailStatusPending: "pending",
+    rightRailStatusPendingCapitalized: "Pending",
+    rightRailOpenRoleSingular: "open role",
+    rightRailOpenRolePlural: "open roles",
+    rightRailResponseSlaTemplate: "{count} {roleLabel}. You aim to respond to candidates within {hours} hours.",
+    rightRailEmptyProfileBody:
+      "Create your company profile to begin the verification process and set up your public employer page.",
+    rightRailTipsTitle: "Tips for a strong profile",
+    rightRailTipDescription: "A clear public description of the team and hiring intent.",
+    rightRailTipPolicies: "Working policies, locations, and culture points that remove ambiguity.",
+    rightRailTipVerified: "A verified surface that recruiters and candidates can trust.",
+    profileSavedNoticeTitle: "Employer profile saved",
+    profileSavedNoticeBodyTemplate:
+      "{name} has been saved. Your company profile is now in the verification queue.",
+    verificationCalloutBodySuffix:
+      "Complete account verification before expecting role posting or employer trust upgrades to unlock.",
+    openAccountVerification: "Open account verification",
+    sectionTitle: "Company details",
+    sectionBody:
+      "This information appears on your public employer page and helps candidates evaluate your company.",
+    fieldNamePlaceholder: "Company name",
+    fieldSlugPlaceholder: "company-slug",
+    fieldTaglinePlaceholder: "Tagline",
+    fieldDescriptionPlaceholder: "Employer description",
+    fieldWebsitePlaceholder: "Website",
+    fieldIndustryPlaceholder: "Industry",
+    fieldLocationsPlaceholder: "Lagos, Abuja, Remote",
+    fieldHeadcountPlaceholder: "Headcount",
+    fieldRemotePolicyPlaceholder: "Remote policy",
+    fieldBenefitsHeadlinePlaceholder: "Benefits headline",
+    fieldCulturePointsPlaceholder: "Culture points",
+    employerTypeExternal: "External employer",
+    employerTypeInternal: "Internal HenryCo hiring",
+    submitSaving: "Saving company...",
+    submitLabel: "Save employer profile",
+  },
 };
 
 const FR: DeepPartial<JobsCopy> = {
@@ -381,6 +459,52 @@ const FR: DeepPartial<JobsCopy> = {
     statusActive: "Actif",
     statusPaused: "En pause",
     statusClosed: "Clôturé",
+  },
+  employerCompany: {
+    pageTitle: "Profil de l'entreprise",
+    pageSubtitle:
+      "Configurez le profil de votre entreprise pour que les candidats puissent en savoir plus sur votre équipe.",
+    rightRailVerificationTitle: "Statut de vérification",
+    rightRailStatusLabel: "Statut",
+    rightRailStatusPending: "en attente",
+    rightRailStatusPendingCapitalized: "En attente",
+    rightRailOpenRoleSingular: "poste ouvert",
+    rightRailOpenRolePlural: "postes ouverts",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}. Vous visez à répondre aux candidats sous {hours} heures.",
+    rightRailEmptyProfileBody:
+      "Créez le profil de votre entreprise pour lancer le processus de vérification et configurer votre page employeur publique.",
+    rightRailTipsTitle: "Conseils pour un profil solide",
+    rightRailTipDescription:
+      "Une description publique claire de l'équipe et de l'intention de recrutement.",
+    rightRailTipPolicies:
+      "Politiques de travail, lieux et éléments de culture qui lèvent toute ambiguïté.",
+    rightRailTipVerified:
+      "Une présence vérifiée à laquelle recruteurs et candidats peuvent faire confiance.",
+    profileSavedNoticeTitle: "Profil employeur enregistré",
+    profileSavedNoticeBodyTemplate:
+      "{name} a été enregistré. Le profil de votre entreprise est désormais dans la file de vérification.",
+    verificationCalloutBodySuffix:
+      "Terminez la vérification du compte avant d'attendre la publication d'offres ou des améliorations de confiance employeur.",
+    openAccountVerification: "Ouvrir la vérification du compte",
+    sectionTitle: "Détails de l'entreprise",
+    sectionBody:
+      "Ces informations apparaissent sur votre page employeur publique et aident les candidats à évaluer votre entreprise.",
+    fieldNamePlaceholder: "Nom de l'entreprise",
+    fieldSlugPlaceholder: "slug-entreprise",
+    fieldTaglinePlaceholder: "Slogan",
+    fieldDescriptionPlaceholder: "Description de l'employeur",
+    fieldWebsitePlaceholder: "Site web",
+    fieldIndustryPlaceholder: "Secteur",
+    fieldLocationsPlaceholder: "Lagos, Abuja, Télétravail",
+    fieldHeadcountPlaceholder: "Effectif",
+    fieldRemotePolicyPlaceholder: "Politique de télétravail",
+    fieldBenefitsHeadlinePlaceholder: "Avantages clés",
+    fieldCulturePointsPlaceholder: "Éléments de culture",
+    employerTypeExternal: "Employeur externe",
+    employerTypeInternal: "Recrutement interne HenryCo",
+    submitSaving: "Enregistrement de l'entreprise...",
+    submitLabel: "Enregistrer le profil employeur",
   },
 };
 
@@ -464,6 +588,52 @@ const ES: DeepPartial<JobsCopy> = {
     statusPaused: "En pausa",
     statusClosed: "Cerrado",
   },
+  employerCompany: {
+    pageTitle: "Perfil de la empresa",
+    pageSubtitle:
+      "Configura el perfil de tu empresa para que los candidatos conozcan a tu equipo.",
+    rightRailVerificationTitle: "Estado de verificación",
+    rightRailStatusLabel: "Estado",
+    rightRailStatusPending: "pendiente",
+    rightRailStatusPendingCapitalized: "Pendiente",
+    rightRailOpenRoleSingular: "puesto abierto",
+    rightRailOpenRolePlural: "puestos abiertos",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}. Tu objetivo es responder a los candidatos en menos de {hours} horas.",
+    rightRailEmptyProfileBody:
+      "Crea el perfil de tu empresa para iniciar el proceso de verificación y configurar tu página pública de empleador.",
+    rightRailTipsTitle: "Consejos para un perfil sólido",
+    rightRailTipDescription:
+      "Una descripción pública clara del equipo y de la intención de contratación.",
+    rightRailTipPolicies:
+      "Políticas de trabajo, ubicaciones y puntos de cultura que eliminan ambigüedades.",
+    rightRailTipVerified:
+      "Una presencia verificada en la que reclutadores y candidatos pueden confiar.",
+    profileSavedNoticeTitle: "Perfil del empleador guardado",
+    profileSavedNoticeBodyTemplate:
+      "{name} se ha guardado. Tu perfil de empresa ya está en la cola de verificación.",
+    verificationCalloutBodySuffix:
+      "Completa la verificación de la cuenta antes de esperar la publicación de roles o mejoras en la confianza del empleador.",
+    openAccountVerification: "Abrir verificación de cuenta",
+    sectionTitle: "Detalles de la empresa",
+    sectionBody:
+      "Esta información aparece en tu página pública de empleador y ayuda a los candidatos a evaluar tu empresa.",
+    fieldNamePlaceholder: "Nombre de la empresa",
+    fieldSlugPlaceholder: "slug-empresa",
+    fieldTaglinePlaceholder: "Eslogan",
+    fieldDescriptionPlaceholder: "Descripción del empleador",
+    fieldWebsitePlaceholder: "Sitio web",
+    fieldIndustryPlaceholder: "Sector",
+    fieldLocationsPlaceholder: "Lagos, Abuja, Remoto",
+    fieldHeadcountPlaceholder: "Plantilla",
+    fieldRemotePolicyPlaceholder: "Política de trabajo remoto",
+    fieldBenefitsHeadlinePlaceholder: "Beneficios destacados",
+    fieldCulturePointsPlaceholder: "Puntos de cultura",
+    employerTypeExternal: "Empleador externo",
+    employerTypeInternal: "Contratación interna HenryCo",
+    submitSaving: "Guardando empresa...",
+    submitLabel: "Guardar perfil del empleador",
+  },
 };
 
 const PT: DeepPartial<JobsCopy> = {
@@ -545,6 +715,52 @@ const PT: DeepPartial<JobsCopy> = {
     statusActive: "Ativo",
     statusPaused: "Em pausa",
     statusClosed: "Encerrado",
+  },
+  employerCompany: {
+    pageTitle: "Perfil da empresa",
+    pageSubtitle:
+      "Configure o perfil da sua empresa para que os candidatos conheçam a sua equipa.",
+    rightRailVerificationTitle: "Estado da verificação",
+    rightRailStatusLabel: "Estado",
+    rightRailStatusPending: "pendente",
+    rightRailStatusPendingCapitalized: "Pendente",
+    rightRailOpenRoleSingular: "vaga aberta",
+    rightRailOpenRolePlural: "vagas abertas",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}. O seu objetivo é responder aos candidatos em até {hours} horas.",
+    rightRailEmptyProfileBody:
+      "Crie o perfil da sua empresa para iniciar o processo de verificação e configurar a sua página pública de empregador.",
+    rightRailTipsTitle: "Dicas para um perfil sólido",
+    rightRailTipDescription:
+      "Uma descrição pública clara da equipa e da intenção de contratação.",
+    rightRailTipPolicies:
+      "Políticas de trabalho, locais e pontos de cultura que eliminam ambiguidades.",
+    rightRailTipVerified:
+      "Uma presença verificada na qual recrutadores e candidatos podem confiar.",
+    profileSavedNoticeTitle: "Perfil do empregador guardado",
+    profileSavedNoticeBodyTemplate:
+      "{name} foi guardado. O perfil da sua empresa está agora na fila de verificação.",
+    verificationCalloutBodySuffix:
+      "Conclua a verificação da conta antes de esperar a publicação de vagas ou melhorias na confiança do empregador.",
+    openAccountVerification: "Abrir verificação da conta",
+    sectionTitle: "Detalhes da empresa",
+    sectionBody:
+      "Estas informações aparecem na sua página pública de empregador e ajudam os candidatos a avaliar a sua empresa.",
+    fieldNamePlaceholder: "Nome da empresa",
+    fieldSlugPlaceholder: "slug-empresa",
+    fieldTaglinePlaceholder: "Slogan",
+    fieldDescriptionPlaceholder: "Descrição do empregador",
+    fieldWebsitePlaceholder: "Site",
+    fieldIndustryPlaceholder: "Setor",
+    fieldLocationsPlaceholder: "Lagos, Abuja, Remoto",
+    fieldHeadcountPlaceholder: "Quadro de pessoal",
+    fieldRemotePolicyPlaceholder: "Política de trabalho remoto",
+    fieldBenefitsHeadlinePlaceholder: "Benefícios em destaque",
+    fieldCulturePointsPlaceholder: "Pontos de cultura",
+    employerTypeExternal: "Empregador externo",
+    employerTypeInternal: "Contratação interna HenryCo",
+    submitSaving: "A guardar empresa...",
+    submitLabel: "Guardar perfil do empregador",
   },
 };
 
@@ -628,6 +844,48 @@ const AR: DeepPartial<JobsCopy> = {
     statusPaused: "متوقف",
     statusClosed: "مغلق",
   },
+  employerCompany: {
+    pageTitle: "ملف الشركة",
+    pageSubtitle: "أعد ملف شركتك ليتعرف المرشحون على فريقك.",
+    rightRailVerificationTitle: "حالة التحقق",
+    rightRailStatusLabel: "الحالة",
+    rightRailStatusPending: "قيد الانتظار",
+    rightRailStatusPendingCapitalized: "قيد الانتظار",
+    rightRailOpenRoleSingular: "وظيفة مفتوحة",
+    rightRailOpenRolePlural: "وظائف مفتوحة",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}. تهدف إلى الرد على المرشحين خلال {hours} ساعة.",
+    rightRailEmptyProfileBody:
+      "أنشئ ملف شركتك لبدء عملية التحقق وإعداد صفحة صاحب العمل العامة الخاصة بك.",
+    rightRailTipsTitle: "نصائح لملف قوي",
+    rightRailTipDescription: "وصف عام واضح للفريق ونية التوظيف.",
+    rightRailTipPolicies: "سياسات العمل والمواقع وعناصر الثقافة التي تزيل أي غموض.",
+    rightRailTipVerified: "حضور موثق يمكن للمسؤولين والمرشحين الوثوق به.",
+    profileSavedNoticeTitle: "تم حفظ ملف صاحب العمل",
+    profileSavedNoticeBodyTemplate:
+      "تم حفظ {name}. ملف شركتك الآن في قائمة انتظار التحقق.",
+    verificationCalloutBodySuffix:
+      "أكمل التحقق من الحساب قبل أن تتوقع فتح إمكانية نشر الوظائف أو ترقيات ثقة صاحب العمل.",
+    openAccountVerification: "فتح التحقق من الحساب",
+    sectionTitle: "تفاصيل الشركة",
+    sectionBody:
+      "تظهر هذه المعلومات على صفحتك العامة كصاحب عمل وتساعد المرشحين على تقييم شركتك.",
+    fieldNamePlaceholder: "اسم الشركة",
+    fieldSlugPlaceholder: "slug-الشركة",
+    fieldTaglinePlaceholder: "الشعار",
+    fieldDescriptionPlaceholder: "وصف صاحب العمل",
+    fieldWebsitePlaceholder: "الموقع الإلكتروني",
+    fieldIndustryPlaceholder: "القطاع",
+    fieldLocationsPlaceholder: "لاغوس، أبوجا، عن بُعد",
+    fieldHeadcountPlaceholder: "عدد الموظفين",
+    fieldRemotePolicyPlaceholder: "سياسة العمل عن بُعد",
+    fieldBenefitsHeadlinePlaceholder: "أبرز المزايا",
+    fieldCulturePointsPlaceholder: "عناصر الثقافة",
+    employerTypeExternal: "صاحب عمل خارجي",
+    employerTypeInternal: "توظيف داخلي في HenryCo",
+    submitSaving: "جارٍ حفظ الشركة...",
+    submitLabel: "حفظ ملف صاحب العمل",
+  },
 };
 
 const IG: DeepPartial<JobsCopy> = {
@@ -709,6 +967,52 @@ const IG: DeepPartial<JobsCopy> = {
     statusActive: "Na-arụ ọrụ",
     statusPaused: "Akwụsịrị",
     statusClosed: "Emechiri",
+  },
+  employerCompany: {
+    pageTitle: "Profaịlụ ụlọ ọrụ",
+    pageSubtitle:
+      "Hazie profaịlụ ụlọ ọrụ gị ka ndị na-achọ ọrụ mata banyere ndị otu gị.",
+    rightRailVerificationTitle: "Ọnọdụ nyocha",
+    rightRailStatusLabel: "Ọnọdụ",
+    rightRailStatusPending: "na-eche",
+    rightRailStatusPendingCapitalized: "Na-eche",
+    rightRailOpenRoleSingular: "ọrụ na-emeghe",
+    rightRailOpenRolePlural: "ọrụ na-emeghe",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}. Ị na-achọ ịzaghachi ndị na-achọ ọrụ n'ime awa {hours}.",
+    rightRailEmptyProfileBody:
+      "Mepụta profaịlụ ụlọ ọrụ gị iji malite usoro nyocha wee hazie ibe ọchịchị ọha gị.",
+    rightRailTipsTitle: "Ndụmọdụ maka profaịlụ siri ike",
+    rightRailTipDescription:
+      "Nkọwa doro anya nke ọha banyere ndị otu na ebumnuche ịchụ ndị ọrụ.",
+    rightRailTipPolicies:
+      "Iwu ọrụ, ebe a na-arụ ọrụ, na isi ihe omenala na-ewepụ enweghị nghọta.",
+    rightRailTipVerified:
+      "Ihu nyochara nke ndị na-achọ ndị ọrụ na ndị na-achọ ọrụ nwere ike ịtụkwasị obi.",
+    profileSavedNoticeTitle: "Edebere profaịlụ ọchịchị",
+    profileSavedNoticeBodyTemplate:
+      "Edebela {name}. Profaịlụ ụlọ ọrụ gị nọ ugbu a n'usoro nyocha.",
+    verificationCalloutBodySuffix:
+      "Mechaa nyocha akaụntụ tupu ị tụgharị atụ na ibipụta ọrụ ma ọ bụ nkwalite ntụkwasị obi ọchịchị ga-emeghe.",
+    openAccountVerification: "Mepee nyocha akaụntụ",
+    sectionTitle: "Nkọwa ụlọ ọrụ",
+    sectionBody:
+      "Ozi a na-apụta na ibe ọchịchị ọha gị ma na-enyere ndị na-achọ ọrụ aka ịkpebi banyere ụlọ ọrụ gị.",
+    fieldNamePlaceholder: "Aha ụlọ ọrụ",
+    fieldSlugPlaceholder: "slug-ulọ-ọrụ",
+    fieldTaglinePlaceholder: "Okwu mkpọrọgwụ",
+    fieldDescriptionPlaceholder: "Nkọwa ọchịchị",
+    fieldWebsitePlaceholder: "Webụsaịtị",
+    fieldIndustryPlaceholder: "Ngalaba",
+    fieldLocationsPlaceholder: "Lagos, Abuja, Ọrụ site n'ụlọ",
+    fieldHeadcountPlaceholder: "Ọnụọgụgụ ndị ọrụ",
+    fieldRemotePolicyPlaceholder: "Iwu ọrụ site n'ụlọ",
+    fieldBenefitsHeadlinePlaceholder: "Uru pụtara ìhè",
+    fieldCulturePointsPlaceholder: "Isi ihe omenala",
+    employerTypeExternal: "Ọchịchị mpụga",
+    employerTypeInternal: "Ọrụ ime ụlọ HenryCo",
+    submitSaving: "Na-edebe ụlọ ọrụ...",
+    submitLabel: "Debe profaịlụ ọchịchị",
   },
 };
 
@@ -792,6 +1096,52 @@ const YO: DeepPartial<JobsCopy> = {
     statusPaused: "Duro",
     statusClosed: "Ti pa",
   },
+  employerCompany: {
+    pageTitle: "Profaili ile-iṣẹ",
+    pageSubtitle:
+      "Ṣeto profaili ile-iṣẹ rẹ ki awọn olubẹwẹ le mọ nipa ẹgbẹ rẹ.",
+    rightRailVerificationTitle: "Ipo ìfìdíhanrọ̀",
+    rightRailStatusLabel: "Ipo",
+    rightRailStatusPending: "ndúró",
+    rightRailStatusPendingCapitalized: "Ndúró",
+    rightRailOpenRoleSingular: "ipa ṣíṣí",
+    rightRailOpenRolePlural: "awọn ipa ṣíṣí",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}. O nlo lati dahun fun awọn olubẹwẹ laarin wakati {hours}.",
+    rightRailEmptyProfileBody:
+      "Da profaili ile-iṣẹ rẹ silẹ lati bẹrẹ ìlànà ìfìdíhanrọ̀ ati ṣeto ojú-ìwé agbanisiṣẹ ọlá-jùmọ̀.",
+    rightRailTipsTitle: "Awọn imọran fun profaili to lagbara",
+    rightRailTipDescription:
+      "Apejuwe ọlá-jùmọ̀ kedere ti ẹgbẹ ati ìpinnu láti gba ẹnikẹni síṣẹ́.",
+    rightRailTipPolicies:
+      "Awọn ìlànà iṣẹ, awọn ipo, ati awọn ìṣe àṣà tí ó mú ìṣòro kúrò.",
+    rightRailTipVerified:
+      "Ìjókòó tí a fìdí múlẹ̀ tí àwọn olùforíniṣẹ́ àti olubẹwẹ lè gbẹ́kẹ̀lé.",
+    profileSavedNoticeTitle: "Profaili agbanisiṣẹ ti fipamọ",
+    profileSavedNoticeBodyTemplate:
+      "A ti fi {name} pamọ. Profaili ile-iṣẹ rẹ ti wa ní ìlà ìfìdíhanrọ̀ báyìí.",
+    verificationCalloutBodySuffix:
+      "Pari ìfìdíhanrọ̀ ákántì ṣáájú kí o tó dúró de ìfìjáde ipa tàbí àwọn àyípadà ìgbẹ́kẹ̀lé agbanisiṣẹ.",
+    openAccountVerification: "Ṣí ìfìdíhanrọ̀ ákántì",
+    sectionTitle: "Awọn ẹ̀kúnrẹ́rẹ́ ile-iṣẹ",
+    sectionBody:
+      "Ìfítónilétí yìí farahàn lori ojú-ìwé agbanisiṣẹ ọlá-jùmọ̀ rẹ ó sì ràn àwọn olubẹwẹ lọ́wọ́ láti ṣàyẹ̀wò ile-iṣẹ rẹ.",
+    fieldNamePlaceholder: "Orúkọ ile-iṣẹ",
+    fieldSlugPlaceholder: "slug-ile-iṣẹ",
+    fieldTaglinePlaceholder: "Òrò ìpolówó",
+    fieldDescriptionPlaceholder: "Apejuwe agbanisiṣẹ",
+    fieldWebsitePlaceholder: "Wẹ́bùsáìtì",
+    fieldIndustryPlaceholder: "Eka",
+    fieldLocationsPlaceholder: "Lagos, Abuja, Lati ibikan",
+    fieldHeadcountPlaceholder: "Iye àwọn òṣìṣẹ́",
+    fieldRemotePolicyPlaceholder: "Ìlànà iṣẹ́ latibikan",
+    fieldBenefitsHeadlinePlaceholder: "Anfani pàtàkì",
+    fieldCulturePointsPlaceholder: "Awọn ìṣe àṣà",
+    employerTypeExternal: "Agbanisiṣẹ ode",
+    employerTypeInternal: "Ìgbaniṣiṣẹ́ inú HenryCo",
+    submitSaving: "Ńfi ile-iṣẹ pamọ...",
+    submitLabel: "Fi profaili agbanisiṣẹ pamọ",
+  },
 };
 
 const HA: DeepPartial<JobsCopy> = {
@@ -873,6 +1223,52 @@ const HA: DeepPartial<JobsCopy> = {
     statusActive: "Mai aiki",
     statusPaused: "An dakatar",
     statusClosed: "An rufe",
+  },
+  employerCompany: {
+    pageTitle: "Bayanan kamfani",
+    pageSubtitle:
+      "Saita bayanan kamfaninka don masu nema su iya sanin game da tawagarka.",
+    rightRailVerificationTitle: "Matsayin tabbatarwa",
+    rightRailStatusLabel: "Matsayi",
+    rightRailStatusPending: "ana jira",
+    rightRailStatusPendingCapitalized: "Ana jira",
+    rightRailOpenRoleSingular: "matsayi a buɗe",
+    rightRailOpenRolePlural: "matsayi a buɗe",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}. Burinka shi ne ka amsa wa masu nema cikin awa {hours}.",
+    rightRailEmptyProfileBody:
+      "Ƙirƙira bayanan kamfaninka don fara aikin tabbatarwa da kuma saita shafin ma'aikacin jama'ar ka.",
+    rightRailTipsTitle: "Shawarwari don ingantaccen bayani",
+    rightRailTipDescription:
+      "Bayani na jama'a a fili game da tawagar da niyyar daukar ma'aikata.",
+    rightRailTipPolicies:
+      "Ƙa'idodin aiki, wurare, da abubuwan al'ada da ke kawar da rashin tabbas.",
+    rightRailTipVerified:
+      "Kasancewar da aka tabbatar wadda masu daukar ma'aikata da masu nema za su iya amincewa da ita.",
+    profileSavedNoticeTitle: "An adana bayanan ma'aikaci",
+    profileSavedNoticeBodyTemplate:
+      "An adana {name}. Bayanan kamfaninka yanzu yana cikin jerin jiran tabbatarwa.",
+    verificationCalloutBodySuffix:
+      "Kammala tabbatar da asusu kafin ka yi tsammanin sakin matsayi ko inganta amincewar ma'aikaci.",
+    openAccountVerification: "Buɗe tabbatar da asusu",
+    sectionTitle: "Cikakkun bayanan kamfani",
+    sectionBody:
+      "Wannan bayanin yana bayyana akan shafin ma'aikacin jama'ar ka kuma yana taimaka wa masu nema su kimanta kamfaninka.",
+    fieldNamePlaceholder: "Sunan kamfani",
+    fieldSlugPlaceholder: "slug-kamfani",
+    fieldTaglinePlaceholder: "Taken",
+    fieldDescriptionPlaceholder: "Bayanin ma'aikaci",
+    fieldWebsitePlaceholder: "Yanar gizo",
+    fieldIndustryPlaceholder: "Sashe",
+    fieldLocationsPlaceholder: "Lagos, Abuja, Nesa",
+    fieldHeadcountPlaceholder: "Adadin ma'aikata",
+    fieldRemotePolicyPlaceholder: "Manufar aiki na nesa",
+    fieldBenefitsHeadlinePlaceholder: "Manyan amfanin",
+    fieldCulturePointsPlaceholder: "Abubuwan al'ada",
+    employerTypeExternal: "Ma'aikaci na waje",
+    employerTypeInternal: "Daukar ma'aikata na cikin HenryCo",
+    submitSaving: "Ana adana kamfani...",
+    submitLabel: "Adana bayanan ma'aikaci",
   },
 };
 
@@ -956,6 +1352,52 @@ const DE: DeepPartial<JobsCopy> = {
     statusPaused: "Pausiert",
     statusClosed: "Geschlossen",
   },
+  employerCompany: {
+    pageTitle: "Unternehmensprofil",
+    pageSubtitle:
+      "Richten Sie Ihr Unternehmensprofil ein, damit Bewerber Ihr Team kennenlernen können.",
+    rightRailVerificationTitle: "Verifizierungsstatus",
+    rightRailStatusLabel: "Status",
+    rightRailStatusPending: "ausstehend",
+    rightRailStatusPendingCapitalized: "Ausstehend",
+    rightRailOpenRoleSingular: "offene Stelle",
+    rightRailOpenRolePlural: "offene Stellen",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}. Sie streben an, Bewerbern innerhalb von {hours} Stunden zu antworten.",
+    rightRailEmptyProfileBody:
+      "Erstellen Sie Ihr Unternehmensprofil, um den Verifizierungsprozess zu starten und Ihre öffentliche Arbeitgeberseite einzurichten.",
+    rightRailTipsTitle: "Tipps für ein starkes Profil",
+    rightRailTipDescription:
+      "Eine klare öffentliche Beschreibung des Teams und der Einstellungsabsicht.",
+    rightRailTipPolicies:
+      "Arbeitsrichtlinien, Standorte und Kulturpunkte, die Mehrdeutigkeit beseitigen.",
+    rightRailTipVerified:
+      "Eine verifizierte Präsenz, der Recruiter und Bewerber vertrauen können.",
+    profileSavedNoticeTitle: "Arbeitgeberprofil gespeichert",
+    profileSavedNoticeBodyTemplate:
+      "{name} wurde gespeichert. Ihr Unternehmensprofil befindet sich nun in der Verifizierungswarteschlange.",
+    verificationCalloutBodySuffix:
+      "Schließen Sie die Kontoverifizierung ab, bevor Sie mit der Stellenveröffentlichung oder Upgrades des Arbeitgebervertrauens rechnen.",
+    openAccountVerification: "Kontoverifizierung öffnen",
+    sectionTitle: "Unternehmensdetails",
+    sectionBody:
+      "Diese Informationen erscheinen auf Ihrer öffentlichen Arbeitgeberseite und helfen Bewerbern, Ihr Unternehmen zu bewerten.",
+    fieldNamePlaceholder: "Unternehmensname",
+    fieldSlugPlaceholder: "unternehmens-slug",
+    fieldTaglinePlaceholder: "Slogan",
+    fieldDescriptionPlaceholder: "Arbeitgeberbeschreibung",
+    fieldWebsitePlaceholder: "Webseite",
+    fieldIndustryPlaceholder: "Branche",
+    fieldLocationsPlaceholder: "Lagos, Abuja, Remote",
+    fieldHeadcountPlaceholder: "Mitarbeiterzahl",
+    fieldRemotePolicyPlaceholder: "Remote-Richtlinie",
+    fieldBenefitsHeadlinePlaceholder: "Leistungen im Überblick",
+    fieldCulturePointsPlaceholder: "Kulturpunkte",
+    employerTypeExternal: "Externer Arbeitgeber",
+    employerTypeInternal: "Interne HenryCo-Einstellung",
+    submitSaving: "Unternehmen wird gespeichert...",
+    submitLabel: "Arbeitgeberprofil speichern",
+  },
 };
 
 const ZH: DeepPartial<JobsCopy> = {
@@ -1034,6 +1476,44 @@ const ZH: DeepPartial<JobsCopy> = {
     statusActive: "进行中",
     statusPaused: "已暂停",
     statusClosed: "已关闭",
+  },
+  employerCompany: {
+    pageTitle: "公司资料",
+    pageSubtitle: "完善公司资料，让候选人了解你的团队。",
+    rightRailVerificationTitle: "认证状态",
+    rightRailStatusLabel: "状态",
+    rightRailStatusPending: "待审核",
+    rightRailStatusPendingCapitalized: "待审核",
+    rightRailOpenRoleSingular: "个空缺职位",
+    rightRailOpenRolePlural: "个空缺职位",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}。您计划在 {hours} 小时内回复候选人。",
+    rightRailEmptyProfileBody: "创建公司资料以启动认证流程并设置公开雇主页面。",
+    rightRailTipsTitle: "打造优质资料的建议",
+    rightRailTipDescription: "对团队及招聘意向的清晰公开描述。",
+    rightRailTipPolicies: "工作政策、办公地点和文化要点，消除模糊。",
+    rightRailTipVerified: "招聘者和候选人都能信赖的认证形象。",
+    profileSavedNoticeTitle: "雇主资料已保存",
+    profileSavedNoticeBodyTemplate: "{name} 已保存。您的公司资料已进入认证队列。",
+    verificationCalloutBodySuffix: "请先完成账户认证，再期待职位发布或雇主信任升级解锁。",
+    openAccountVerification: "打开账户认证",
+    sectionTitle: "公司详情",
+    sectionBody: "这些信息将显示在您的公开雇主页面上，帮助候选人评估您的公司。",
+    fieldNamePlaceholder: "公司名称",
+    fieldSlugPlaceholder: "公司-slug",
+    fieldTaglinePlaceholder: "标语",
+    fieldDescriptionPlaceholder: "雇主介绍",
+    fieldWebsitePlaceholder: "网站",
+    fieldIndustryPlaceholder: "行业",
+    fieldLocationsPlaceholder: "拉各斯、阿布贾、远程",
+    fieldHeadcountPlaceholder: "员工人数",
+    fieldRemotePolicyPlaceholder: "远程办公政策",
+    fieldBenefitsHeadlinePlaceholder: "核心福利",
+    fieldCulturePointsPlaceholder: "文化要点",
+    employerTypeExternal: "外部雇主",
+    employerTypeInternal: "HenryCo 内部招聘",
+    submitSaving: "正在保存公司...",
+    submitLabel: "保存雇主资料",
   },
 };
 
@@ -1117,6 +1597,52 @@ const HI: DeepPartial<JobsCopy> = {
     statusPaused: "रोका गया",
     statusClosed: "बंद",
   },
+  employerCompany: {
+    pageTitle: "कंपनी प्रोफ़ाइल",
+    pageSubtitle:
+      "अपनी कंपनी की प्रोफ़ाइल तैयार करें ताकि उम्मीदवार आपकी टीम के बारे में जान सकें।",
+    rightRailVerificationTitle: "सत्यापन स्थिति",
+    rightRailStatusLabel: "स्थिति",
+    rightRailStatusPending: "लंबित",
+    rightRailStatusPendingCapitalized: "लंबित",
+    rightRailOpenRoleSingular: "खुली भूमिका",
+    rightRailOpenRolePlural: "खुली भूमिकाएं",
+    rightRailResponseSlaTemplate:
+      "{count} {roleLabel}। आपका लक्ष्य उम्मीदवारों को {hours} घंटे के भीतर उत्तर देना है।",
+    rightRailEmptyProfileBody:
+      "सत्यापन प्रक्रिया शुरू करने और अपना सार्वजनिक नियोक्ता पृष्ठ सेट करने के लिए अपनी कंपनी की प्रोफ़ाइल बनाएं।",
+    rightRailTipsTitle: "मज़बूत प्रोफ़ाइल के लिए सुझाव",
+    rightRailTipDescription:
+      "टीम और भर्ती के इरादे का स्पष्ट सार्वजनिक विवरण।",
+    rightRailTipPolicies:
+      "कार्य नीतियां, स्थान और सांस्कृतिक बिंदु जो अस्पष्टता हटाते हैं।",
+    rightRailTipVerified:
+      "एक सत्यापित उपस्थिति जिस पर भर्तीकर्ता और उम्मीदवार भरोसा कर सकते हैं।",
+    profileSavedNoticeTitle: "नियोक्ता प्रोफ़ाइल सहेज ली गई",
+    profileSavedNoticeBodyTemplate:
+      "{name} सहेज लिया गया है। आपकी कंपनी की प्रोफ़ाइल अब सत्यापन कतार में है।",
+    verificationCalloutBodySuffix:
+      "भूमिका प्रकाशन या नियोक्ता विश्वास उन्नयन को अनलॉक होने की उम्मीद करने से पहले खाता सत्यापन पूरा करें।",
+    openAccountVerification: "खाता सत्यापन खोलें",
+    sectionTitle: "कंपनी विवरण",
+    sectionBody:
+      "यह जानकारी आपके सार्वजनिक नियोक्ता पृष्ठ पर दिखाई देती है और उम्मीदवारों को आपकी कंपनी का मूल्यांकन करने में मदद करती है।",
+    fieldNamePlaceholder: "कंपनी का नाम",
+    fieldSlugPlaceholder: "कंपनी-slug",
+    fieldTaglinePlaceholder: "टैगलाइन",
+    fieldDescriptionPlaceholder: "नियोक्ता विवरण",
+    fieldWebsitePlaceholder: "वेबसाइट",
+    fieldIndustryPlaceholder: "उद्योग",
+    fieldLocationsPlaceholder: "लागोस, अबुजा, रिमोट",
+    fieldHeadcountPlaceholder: "कर्मचारियों की संख्या",
+    fieldRemotePolicyPlaceholder: "रिमोट कार्य नीति",
+    fieldBenefitsHeadlinePlaceholder: "प्रमुख लाभ",
+    fieldCulturePointsPlaceholder: "सांस्कृतिक बिंदु",
+    employerTypeExternal: "बाहरी नियोक्ता",
+    employerTypeInternal: "आंतरिक HenryCo भर्ती",
+    submitSaving: "कंपनी सहेजी जा रही है...",
+    submitLabel: "नियोक्ता प्रोफ़ाइल सहेजें",
+  },
 };
 
 const IT: DeepPartial<JobsCopy> = {
@@ -1198,6 +1724,52 @@ const IT: DeepPartial<JobsCopy> = {
     "statusActive": "Attiva",
     "statusPaused": "In pausa",
     "statusClosed": "Chiusa"
+  },
+  "employerCompany": {
+    "pageTitle": "Profilo aziendale",
+    "pageSubtitle":
+      "Imposta il profilo della tua azienda così i candidati possono conoscere il tuo team.",
+    "rightRailVerificationTitle": "Stato di verifica",
+    "rightRailStatusLabel": "Stato",
+    "rightRailStatusPending": "in attesa",
+    "rightRailStatusPendingCapitalized": "In attesa",
+    "rightRailOpenRoleSingular": "ruolo aperto",
+    "rightRailOpenRolePlural": "ruoli aperti",
+    "rightRailResponseSlaTemplate":
+      "{count} {roleLabel}. Punti a rispondere ai candidati entro {hours} ore.",
+    "rightRailEmptyProfileBody":
+      "Crea il profilo della tua azienda per avviare il processo di verifica e impostare la tua pagina datore di lavoro pubblica.",
+    "rightRailTipsTitle": "Suggerimenti per un profilo solido",
+    "rightRailTipDescription":
+      "Una descrizione pubblica chiara del team e dell'intento di assunzione.",
+    "rightRailTipPolicies":
+      "Politiche di lavoro, sedi e punti culturali che eliminano ogni ambiguità.",
+    "rightRailTipVerified":
+      "Una presenza verificata di cui recruiter e candidati possono fidarsi.",
+    "profileSavedNoticeTitle": "Profilo datore di lavoro salvato",
+    "profileSavedNoticeBodyTemplate":
+      "{name} è stato salvato. Il profilo della tua azienda è ora nella coda di verifica.",
+    "verificationCalloutBodySuffix":
+      "Completa la verifica dell'account prima di aspettarti che la pubblicazione dei ruoli o gli upgrade di fiducia del datore di lavoro si sblocchino.",
+    "openAccountVerification": "Apri verifica dell'account",
+    "sectionTitle": "Dettagli aziendali",
+    "sectionBody":
+      "Queste informazioni appaiono sulla tua pagina datore di lavoro pubblica e aiutano i candidati a valutare la tua azienda.",
+    "fieldNamePlaceholder": "Nome dell'azienda",
+    "fieldSlugPlaceholder": "slug-azienda",
+    "fieldTaglinePlaceholder": "Tagline",
+    "fieldDescriptionPlaceholder": "Descrizione del datore di lavoro",
+    "fieldWebsitePlaceholder": "Sito web",
+    "fieldIndustryPlaceholder": "Settore",
+    "fieldLocationsPlaceholder": "Lagos, Abuja, Remoto",
+    "fieldHeadcountPlaceholder": "Organico",
+    "fieldRemotePolicyPlaceholder": "Politica di lavoro da remoto",
+    "fieldBenefitsHeadlinePlaceholder": "Benefit principali",
+    "fieldCulturePointsPlaceholder": "Punti culturali",
+    "employerTypeExternal": "Datore di lavoro esterno",
+    "employerTypeInternal": "Assunzione interna HenryCo",
+    "submitSaving": "Salvataggio azienda...",
+    "submitLabel": "Salva profilo datore di lavoro"
   }
 };
 
