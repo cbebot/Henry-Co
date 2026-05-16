@@ -1,19 +1,34 @@
 import Link from "next/link";
+import { getJobsCopy } from "@henryco/i18n";
 import { createJobPostAction } from "@/app/actions";
 import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
 import { employerNav } from "@/lib/jobs/navigation";
 import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
 import { isEmployerSubscribed } from "@/lib/jobs/employer-subscription";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { EmptyState, InlineNotice } from "@/components/feedback";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata() {
+  const locale = await getJobsPublicLocale();
+  const copy = getJobsCopy(locale).employerJobNew;
+  return {
+    title: copy.pageTitle,
+    description: copy.pageSubtitle,
+  };
+}
+
 export default async function EmployerNewJobPage() {
   const viewer = await requireJobsRoles(["employer", "admin", "owner"], "/employer/jobs/new");
-  const data = await getEmployerDashboardData(viewer.user!.id, viewer.user!.email);
+  const [data, locale] = await Promise.all([
+    getEmployerDashboardData(viewer.user!.id, viewer.user!.email),
+    getJobsPublicLocale(),
+  ]);
+  const copy = getJobsCopy(locale).employerJobNew;
   const membership = data.memberships[0];
   const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true }) : null;
   const employer = companyRecord?.employer ?? null;
@@ -29,47 +44,51 @@ export default async function EmployerNewJobPage() {
       ])
     : [null, null];
 
+  const roleCount = data.jobs.length;
+  const roleCountTemplate = roleCount === 1 ? copy.rightRailRoleCountSingular : copy.rightRailRoleCountPlural;
+  const roleCountText = roleCountTemplate.replace("{count}", String(roleCount));
+
   return (
     <WorkspaceShell
       area="employer"
-      title="Post a Role"
-      subtitle="Create a new job posting for your company."
+      title={copy.pageTitle}
+      subtitle={copy.pageSubtitle}
       nav={employerNav}
       activeHref="/employer/jobs/new"
       accent="linear-gradient(135deg,#7c5a28 0%,#b88a47 55%,#f1c88c 100%)"
       rightRail={
         membership ? (
           <>
-            <SectionCard title="Your company">
+            <SectionCard title={copy.rightRailCompanyTitle}>
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <div className="jobs-kicker">Employer</div>
+                    <div className="jobs-kicker">{copy.rightRailEmployerKicker}</div>
                     <div className="mt-2 text-lg font-semibold">{membership.employerName}</div>
                   </div>
-                  <StatusPill label={employer?.verificationStatus ?? "pending"} tone={employer?.verificationStatus === "verified" ? "good" : "warn"} />
+                  <StatusPill label={employer?.verificationStatus ?? copy.rightRailVerificationFallback} tone={employer?.verificationStatus === "verified" ? "good" : "warn"} />
                 </div>
                 <p className="text-sm leading-7 text-[var(--jobs-muted)]">
-                  {data.jobs.length} role{data.jobs.length === 1 ? "" : "s"} currently posted under this company.
+                  {roleCountText}
                 </p>
               </div>
             </SectionCard>
-            <SectionCard title="Tips for better posts">
+            <SectionCard title={copy.rightRailTipsTitle}>
               <div className="space-y-3 text-sm text-[var(--jobs-muted)]">
-                <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">Clear summaries and structured responsibilities attract stronger candidates.</div>
-                <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">Sharing salary ranges and benefits increases application quality.</div>
+                <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">{copy.rightRailTipSummaries}</div>
+                <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">{copy.rightRailTipSalaryBenefits}</div>
               </div>
             </SectionCard>
             {eligibility ? (
-              <SectionCard title="Posting readiness">
+              <SectionCard title={copy.rightRailReadinessTitle}>
                 <div className="space-y-3">
                   <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
-                    <div className="jobs-kicker">Account tier</div>
+                    <div className="jobs-kicker">{copy.rightRailAccountTierKicker}</div>
                     <div className="mt-2 text-lg font-semibold capitalize">
                       {eligibility.trustTier.replace(/_/g, " ")}
                     </div>
                     <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
-                      Your posting privileges are based on your company&apos;s verification status and account history.
+                      {copy.rightRailAccountTierBody}
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -77,7 +96,7 @@ export default async function EmployerNewJobPage() {
                       <div key={item.id} className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-sm font-semibold">{item.label}</div>
-                          <StatusPill label={item.complete ? "ready" : "open"} tone={item.complete ? "good" : "warn"} />
+                          <StatusPill label={item.complete ? copy.rightRailChecklistReady : copy.rightRailChecklistOpen} tone={item.complete ? "good" : "warn"} />
                         </div>
                         <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">{item.detail}</p>
                       </div>
@@ -91,34 +110,34 @@ export default async function EmployerNewJobPage() {
       }
     >
       {!membership ? (
-        <SectionCard title="Company profile required" body="Set up your company profile before posting roles.">
+        <SectionCard title={copy.noMembershipSectionTitle} body={copy.noMembershipSectionBody}>
           <EmptyState
-            kicker="One more step"
-            title="Create your company profile first."
-            body="Your company profile is needed so candidates can learn about your team and your roles appear under the right employer."
+            kicker={copy.noMembershipEmptyKicker}
+            title={copy.noMembershipEmptyTitle}
+            body={copy.noMembershipEmptyBody}
             action={
               <Link href="/employer/company" className="jobs-button-primary rounded-full px-5 py-3 text-sm font-semibold">
-                Open company setup
+                {copy.noMembershipEmptyCta}
               </Link>
             }
           />
         </SectionCard>
       ) : (
-        <SectionCard title="Create a new role" body="Fill in the details below. New posts may go through a brief review before going live.">
+        <SectionCard title={copy.formSectionTitle} body={copy.formSectionBody}>
           {subscription && !subscription.allowed ? (
             <div className="mb-5">
               <InlineNotice
                 tone="warn"
-                title="Subscription required to publish"
-                body={`Your employer subscription is "${subscription.status}". Posting is blocked until a live subscription is in place. Contact the HenryCo team to renew before publishing.`}
+                title={copy.subscriptionRequiredTitle}
+                body={copy.subscriptionRequiredBodyTemplate.replace("{status}", subscription.status)}
               />
             </div>
           ) : null}
           {subscription && subscription.allowed && subscription.status === "soft-fail" ? (
             <div className="mb-5">
               <InlineNotice
-                title="Subscription pending"
-                body="Posting roles will require an active employer subscription once billing rolls out. You can publish today; expect a follow-up from the HenryCo team about plan selection."
+                title={copy.subscriptionPendingTitle}
+                body={copy.subscriptionPendingBody}
               />
             </div>
           ) : null}
@@ -129,7 +148,7 @@ export default async function EmployerNewJobPage() {
                   <InlineNotice
                     tone="warn"
                     title={eligibility.verificationGate.headline}
-                    body={`${eligibility.verificationGate.detail} Jobs posting stays blocked until that review is approved.`}
+                    body={`${eligibility.verificationGate.detail} ${copy.verificationGateBodySuffix}`}
                   />
                   <Link href={eligibility.verificationGate.href} className="jobs-button-secondary inline-flex rounded-full px-4 py-2 text-sm font-semibold">
                     {eligibility.verificationGate.actionLabel}
@@ -138,19 +157,19 @@ export default async function EmployerNewJobPage() {
               ) : eligibility.autoApprovalAllowed ? (
                 <InlineNotice
                   tone="success"
-                  title="Direct publishing available"
-                  body="Your account can publish roles directly. They'll go live as soon as you submit."
+                  title={copy.directPublishingTitle}
+                  body={copy.directPublishingBody}
                 />
               ) : eligibility.canSubmitForReview ? (
                 <InlineNotice
-                  title="Review required"
-                  body="New roles will be reviewed by our team before going live. This typically takes a few hours."
+                  title={copy.reviewRequiredTitle}
+                  body={copy.reviewRequiredBody}
                 />
               ) : (
                 <InlineNotice
                   tone="warn"
-                  title="Draft only"
-                  body="You can prepare your job posting now, but it will be saved as a draft until your company profile meets our posting requirements."
+                  title={copy.draftOnlyTitle}
+                  body={copy.draftOnlyBody}
                 />
               )}
             </div>
@@ -158,32 +177,32 @@ export default async function EmployerNewJobPage() {
           <form action={createJobPostAction} className="grid gap-4">
             <input type="hidden" name="employerSlug" value={membership.employerSlug} />
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="title" className="jobs-input" placeholder="Role title" />
-              <input name="slug" className="jobs-input" placeholder="Optional custom slug" />
+              <input name="title" className="jobs-input" placeholder={copy.fieldTitlePlaceholder} />
+              <input name="slug" className="jobs-input" placeholder={copy.fieldSlugPlaceholder} />
             </div>
-            <input name="subtitle" className="jobs-input" placeholder="Subtitle" />
-            <textarea name="summary" className="jobs-textarea min-h-24" placeholder="Short role summary" />
-            <textarea name="description" className="jobs-textarea min-h-40" placeholder="Full description" />
+            <input name="subtitle" className="jobs-input" placeholder={copy.fieldSubtitlePlaceholder} />
+            <textarea name="summary" className="jobs-textarea min-h-24" placeholder={copy.fieldSummaryPlaceholder} />
+            <textarea name="description" className="jobs-textarea min-h-40" placeholder={copy.fieldDescriptionPlaceholder} />
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="location" className="jobs-input" placeholder="Location" />
-              <input name="category" className="jobs-input" placeholder="Category" />
+              <input name="location" className="jobs-input" placeholder={copy.fieldLocationPlaceholder} />
+              <input name="category" className="jobs-input" placeholder={copy.fieldCategoryPlaceholder} />
             </div>
             <div className="grid gap-4 md:grid-cols-3">
-              <input name="workMode" className="jobs-input" placeholder="remote / hybrid / onsite" />
-              <input name="employmentType" className="jobs-input" placeholder="Full-time / Contract" />
-              <input name="seniority" className="jobs-input" placeholder="Seniority" />
+              <input name="workMode" className="jobs-input" placeholder={copy.fieldWorkModePlaceholder} />
+              <input name="employmentType" className="jobs-input" placeholder={copy.fieldEmploymentTypePlaceholder} />
+              <input name="seniority" className="jobs-input" placeholder={copy.fieldSeniorityPlaceholder} />
             </div>
-            <input name="team" className="jobs-input" placeholder="Team" />
-            <input name="skills" className="jobs-input" placeholder="Skills" />
-            <textarea name="responsibilities" className="jobs-textarea min-h-24" placeholder="Responsibilities, one per line" />
-            <textarea name="requirements" className="jobs-textarea min-h-24" placeholder="Requirements, one per line" />
-            <textarea name="benefits" className="jobs-textarea min-h-24" placeholder="Benefits, one per line" />
+            <input name="team" className="jobs-input" placeholder={copy.fieldTeamPlaceholder} />
+            <input name="skills" className="jobs-input" placeholder={copy.fieldSkillsPlaceholder} />
+            <textarea name="responsibilities" className="jobs-textarea min-h-24" placeholder={copy.fieldResponsibilitiesPlaceholder} />
+            <textarea name="requirements" className="jobs-textarea min-h-24" placeholder={copy.fieldRequirementsPlaceholder} />
+            <textarea name="benefits" className="jobs-textarea min-h-24" placeholder={copy.fieldBenefitsPlaceholder} />
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="salaryMin" className="jobs-input" placeholder="Salary min" />
-              <input name="salaryMax" className="jobs-input" placeholder="Salary max" />
+              <input name="salaryMin" className="jobs-input" placeholder={copy.fieldSalaryMinPlaceholder} />
+              <input name="salaryMax" className="jobs-input" placeholder={copy.fieldSalaryMaxPlaceholder} />
             </div>
-            <PendingSubmitButton pendingLabel="Creating role..." className="w-full sm:w-auto">
-              Create role
+            <PendingSubmitButton pendingLabel={copy.submitPending} className="w-full sm:w-auto">
+              {copy.submitLabel}
             </PendingSubmitButton>
           </form>
         </SectionCard>

@@ -1386,6 +1386,71 @@ const ES: DeepPartial<JobsCopy> = {
     activityEmptyBody:
       "Los cambios de etapa, notas y actualizaciones clave aparecerán aquí a medida que avances en el proceso de contratación.",
   },
+  employerJobNew: {
+    pageTitle: "Publicar un puesto",
+    pageSubtitle: "Crea una nueva oferta de empleo para tu empresa.",
+    rightRailCompanyTitle: "Tu empresa",
+    rightRailEmployerKicker: "Empleador",
+    rightRailVerificationFallback: "pendiente",
+    rightRailRoleCountSingular: "{count} puesto actualmente publicado bajo esta empresa.",
+    rightRailRoleCountPlural: "{count} puestos actualmente publicados bajo esta empresa.",
+    rightRailTipsTitle: "Consejos para mejores ofertas",
+    rightRailTipSummaries:
+      "Resúmenes claros y responsabilidades bien estructuradas atraen a candidatos más sólidos.",
+    rightRailTipSalaryBenefits:
+      "Compartir rangos salariales y beneficios mejora la calidad de las candidaturas.",
+    rightRailReadinessTitle: "Preparación para publicar",
+    rightRailAccountTierKicker: "Nivel de cuenta",
+    rightRailAccountTierBody:
+      "Tus permisos de publicación dependen del estado de verificación de tu empresa y del historial de tu cuenta.",
+    rightRailChecklistReady: "listo",
+    rightRailChecklistOpen: "pendiente",
+    noMembershipSectionTitle: "Perfil de empresa requerido",
+    noMembershipSectionBody: "Configura el perfil de tu empresa antes de publicar puestos.",
+    noMembershipEmptyKicker: "Un paso más",
+    noMembershipEmptyTitle: "Crea primero el perfil de tu empresa.",
+    noMembershipEmptyBody:
+      "El perfil de tu empresa es necesario para que los candidatos conozcan a tu equipo y tus puestos aparezcan bajo el empleador correcto.",
+    noMembershipEmptyCta: "Abrir configuración de empresa",
+    formSectionTitle: "Crear un nuevo puesto",
+    formSectionBody:
+      "Completa los detalles a continuación. Las nuevas ofertas pueden pasar por una breve revisión antes de publicarse.",
+    subscriptionRequiredTitle: "Suscripción requerida para publicar",
+    subscriptionRequiredBodyTemplate:
+      "Tu suscripción de empleador es «{status}». La publicación está bloqueada hasta que tengas una suscripción activa. Contacta al equipo de HenryCo para renovar antes de publicar.",
+    subscriptionPendingTitle: "Suscripción pendiente",
+    subscriptionPendingBody:
+      "Publicar puestos requerirá una suscripción de empleador activa cuando se active la facturación. Hoy puedes publicar; espera un seguimiento del equipo de HenryCo sobre la elección del plan.",
+    verificationGateBodySuffix: "La publicación de empleos seguirá bloqueada hasta que se apruebe esa revisión.",
+    directPublishingTitle: "Publicación directa disponible",
+    directPublishingBody:
+      "Tu cuenta puede publicar puestos directamente. Estarán activos en cuanto los envíes.",
+    reviewRequiredTitle: "Revisión requerida",
+    reviewRequiredBody:
+      "Los nuevos puestos serán revisados por nuestro equipo antes de publicarse. Esto suele tardar unas horas.",
+    draftOnlyTitle: "Solo borrador",
+    draftOnlyBody:
+      "Puedes preparar tu oferta ahora, pero se guardará como borrador hasta que el perfil de tu empresa cumpla los requisitos de publicación.",
+    fieldTitlePlaceholder: "Título del puesto",
+    fieldSlugPlaceholder: "Identificador personalizado (opcional)",
+    fieldSubtitlePlaceholder: "Subtítulo",
+    fieldSummaryPlaceholder: "Resumen breve del puesto",
+    fieldDescriptionPlaceholder: "Descripción completa",
+    fieldLocationPlaceholder: "Ubicación",
+    fieldCategoryPlaceholder: "Categoría",
+    fieldWorkModePlaceholder: "remoto / híbrido / presencial",
+    fieldEmploymentTypePlaceholder: "Tiempo completo / Contrato",
+    fieldSeniorityPlaceholder: "Nivel de experiencia",
+    fieldTeamPlaceholder: "Equipo",
+    fieldSkillsPlaceholder: "Habilidades",
+    fieldResponsibilitiesPlaceholder: "Responsabilidades, una por línea",
+    fieldRequirementsPlaceholder: "Requisitos, uno por línea",
+    fieldBenefitsPlaceholder: "Beneficios, uno por línea",
+    fieldSalaryMinPlaceholder: "Salario mín.",
+    fieldSalaryMaxPlaceholder: "Salario máx.",
+    submitPending: "Creando puesto...",
+    submitLabel: "Crear puesto",
+  },
 };
 
 const PT: DeepPartial<JobsCopy> = {
@@ -1669,6 +1734,71 @@ const PT: DeepPartial<JobsCopy> = {
     activityEmptyBody:
       "Mudanças de etapa, notas e atualizações importantes aparecerão aqui à medida que avança no processo de contratação.",
   },
+  employerJobNew: {
+    pageTitle: "Publicar uma vaga",
+    pageSubtitle: "Crie uma nova oferta de emprego para a sua empresa.",
+    rightRailCompanyTitle: "A sua empresa",
+    rightRailEmployerKicker: "Empregador",
+    rightRailVerificationFallback: "pendente",
+    rightRailRoleCountSingular: "{count} vaga atualmente publicada sob esta empresa.",
+    rightRailRoleCountPlural: "{count} vagas atualmente publicadas sob esta empresa.",
+    rightRailTipsTitle: "Dicas para anúncios melhores",
+    rightRailTipSummaries:
+      "Resumos claros e responsabilidades bem estruturadas atraem candidatos mais sólidos.",
+    rightRailTipSalaryBenefits:
+      "Partilhar faixas salariais e benefícios aumenta a qualidade das candidaturas.",
+    rightRailReadinessTitle: "Prontidão para publicar",
+    rightRailAccountTierKicker: "Nível da conta",
+    rightRailAccountTierBody:
+      "Os seus privilégios de publicação dependem do estado de verificação da empresa e do histórico da conta.",
+    rightRailChecklistReady: "pronto",
+    rightRailChecklistOpen: "em aberto",
+    noMembershipSectionTitle: "Perfil de empresa necessário",
+    noMembershipSectionBody: "Configure o perfil da sua empresa antes de publicar vagas.",
+    noMembershipEmptyKicker: "Mais um passo",
+    noMembershipEmptyTitle: "Crie primeiro o perfil da sua empresa.",
+    noMembershipEmptyBody:
+      "O perfil da sua empresa é necessário para que os candidatos conheçam a sua equipa e as vagas apareçam sob o empregador certo.",
+    noMembershipEmptyCta: "Abrir configuração da empresa",
+    formSectionTitle: "Criar uma nova vaga",
+    formSectionBody:
+      "Preencha os detalhes abaixo. Novas vagas podem passar por uma revisão breve antes de irem ao ar.",
+    subscriptionRequiredTitle: "Assinatura necessária para publicar",
+    subscriptionRequiredBodyTemplate:
+      "A sua assinatura de empregador está «{status}». A publicação está bloqueada até existir uma assinatura ativa. Contacte a equipa HenryCo para renovar antes de publicar.",
+    subscriptionPendingTitle: "Assinatura pendente",
+    subscriptionPendingBody:
+      "Publicar vagas exigirá uma assinatura de empregador ativa quando a faturação for ativada. Pode publicar hoje; a equipa HenryCo entrará em contacto sobre a escolha do plano.",
+    verificationGateBodySuffix: "A publicação de vagas permanece bloqueada até essa revisão ser aprovada.",
+    directPublishingTitle: "Publicação direta disponível",
+    directPublishingBody:
+      "A sua conta pode publicar vagas diretamente. Ficarão ativas assim que as submeter.",
+    reviewRequiredTitle: "Revisão necessária",
+    reviewRequiredBody:
+      "Novas vagas serão revistas pela nossa equipa antes de irem ao ar. Normalmente demora algumas horas.",
+    draftOnlyTitle: "Apenas rascunho",
+    draftOnlyBody:
+      "Pode preparar a sua vaga agora, mas será guardada como rascunho até o perfil da empresa cumprir os requisitos de publicação.",
+    fieldTitlePlaceholder: "Título da vaga",
+    fieldSlugPlaceholder: "Identificador personalizado (opcional)",
+    fieldSubtitlePlaceholder: "Subtítulo",
+    fieldSummaryPlaceholder: "Resumo curto da vaga",
+    fieldDescriptionPlaceholder: "Descrição completa",
+    fieldLocationPlaceholder: "Localização",
+    fieldCategoryPlaceholder: "Categoria",
+    fieldWorkModePlaceholder: "remoto / híbrido / presencial",
+    fieldEmploymentTypePlaceholder: "Tempo inteiro / Contrato",
+    fieldSeniorityPlaceholder: "Senioridade",
+    fieldTeamPlaceholder: "Equipa",
+    fieldSkillsPlaceholder: "Competências",
+    fieldResponsibilitiesPlaceholder: "Responsabilidades, uma por linha",
+    fieldRequirementsPlaceholder: "Requisitos, um por linha",
+    fieldBenefitsPlaceholder: "Benefícios, um por linha",
+    fieldSalaryMinPlaceholder: "Salário mín.",
+    fieldSalaryMaxPlaceholder: "Salário máx.",
+    submitPending: "A criar vaga...",
+    submitLabel: "Criar vaga",
+  },
 };
 
 const AR: DeepPartial<JobsCopy> = {
@@ -1946,6 +2076,71 @@ const AR: DeepPartial<JobsCopy> = {
     activityEmptyTitle: "لم يتم تسجيل أحداث لهذا الطلب.",
     activityEmptyBody:
       "ستظهر هنا تغييرات المراحل والملاحظات والتحديثات الرئيسية أثناء سيرك في عملية التوظيف.",
+  },
+  employerJobNew: {
+    pageTitle: "نشر وظيفة",
+    pageSubtitle: "أنشئ إعلان وظيفة جديدًا لشركتك.",
+    rightRailCompanyTitle: "شركتك",
+    rightRailEmployerKicker: "صاحب العمل",
+    rightRailVerificationFallback: "قيد الانتظار",
+    rightRailRoleCountSingular: "وظيفة {count} منشورة حاليًا تحت هذه الشركة.",
+    rightRailRoleCountPlural: "{count} وظائف منشورة حاليًا تحت هذه الشركة.",
+    rightRailTipsTitle: "نصائح لإعلانات أفضل",
+    rightRailTipSummaries:
+      "الملخصات الواضحة والمسؤوليات المنظمة تجذب مرشحين أقوى.",
+    rightRailTipSalaryBenefits:
+      "مشاركة نطاقات الرواتب والمزايا يحسّن جودة الطلبات.",
+    rightRailReadinessTitle: "جاهزية النشر",
+    rightRailAccountTierKicker: "مستوى الحساب",
+    rightRailAccountTierBody:
+      "تعتمد امتيازات النشر لديك على حالة التحقق من شركتك وسجل حسابك.",
+    rightRailChecklistReady: "جاهز",
+    rightRailChecklistOpen: "متبقي",
+    noMembershipSectionTitle: "ملف الشركة مطلوب",
+    noMembershipSectionBody: "أعد ضبط ملف شركتك قبل نشر الوظائف.",
+    noMembershipEmptyKicker: "خطوة واحدة بعد",
+    noMembershipEmptyTitle: "أنشئ ملف شركتك أولًا.",
+    noMembershipEmptyBody:
+      "ملف شركتك ضروري حتى يتعرف المرشحون على فريقك وتظهر وظائفك تحت صاحب العمل الصحيح.",
+    noMembershipEmptyCta: "فتح إعداد الشركة",
+    formSectionTitle: "إنشاء وظيفة جديدة",
+    formSectionBody:
+      "أكمل التفاصيل أدناه. قد تمر الإعلانات الجديدة بمراجعة قصيرة قبل النشر.",
+    subscriptionRequiredTitle: "الاشتراك مطلوب للنشر",
+    subscriptionRequiredBodyTemplate:
+      "اشتراك صاحب العمل لديك «{status}». تم حظر النشر حتى يتوفر اشتراك فعّال. تواصل مع فريق HenryCo للتجديد قبل النشر.",
+    subscriptionPendingTitle: "الاشتراك قيد الانتظار",
+    subscriptionPendingBody:
+      "سيتطلب نشر الوظائف اشتراك صاحب عمل نشطًا عند تفعيل الفوترة. يمكنك النشر اليوم؛ توقع متابعة من فريق HenryCo بشأن اختيار الخطة.",
+    verificationGateBodySuffix: "يظل نشر الوظائف محظورًا حتى تتم الموافقة على تلك المراجعة.",
+    directPublishingTitle: "النشر المباشر متاح",
+    directPublishingBody:
+      "يمكن لحسابك نشر الوظائف مباشرة. ستظهر بمجرد إرسالها.",
+    reviewRequiredTitle: "المراجعة مطلوبة",
+    reviewRequiredBody:
+      "ستراجع فرقنا الوظائف الجديدة قبل النشر. يستغرق ذلك عادة بضع ساعات.",
+    draftOnlyTitle: "مسودة فقط",
+    draftOnlyBody:
+      "يمكنك إعداد إعلان الوظيفة الآن، لكنه سيُحفظ كمسودة حتى يستوفي ملف شركتك متطلبات النشر لدينا.",
+    fieldTitlePlaceholder: "عنوان الوظيفة",
+    fieldSlugPlaceholder: "معرّف مخصص (اختياري)",
+    fieldSubtitlePlaceholder: "العنوان الفرعي",
+    fieldSummaryPlaceholder: "ملخص قصير للوظيفة",
+    fieldDescriptionPlaceholder: "الوصف الكامل",
+    fieldLocationPlaceholder: "الموقع",
+    fieldCategoryPlaceholder: "الفئة",
+    fieldWorkModePlaceholder: "عن بُعد / هجين / في الموقع",
+    fieldEmploymentTypePlaceholder: "دوام كامل / عقد",
+    fieldSeniorityPlaceholder: "مستوى الخبرة",
+    fieldTeamPlaceholder: "الفريق",
+    fieldSkillsPlaceholder: "المهارات",
+    fieldResponsibilitiesPlaceholder: "المسؤوليات، واحدة في كل سطر",
+    fieldRequirementsPlaceholder: "المتطلبات، واحدة في كل سطر",
+    fieldBenefitsPlaceholder: "المزايا، واحدة في كل سطر",
+    fieldSalaryMinPlaceholder: "الحد الأدنى للراتب",
+    fieldSalaryMaxPlaceholder: "الحد الأقصى للراتب",
+    submitPending: "جارٍ إنشاء الوظيفة...",
+    submitLabel: "إنشاء الوظيفة",
   },
 };
 
@@ -2230,6 +2425,71 @@ const IG: DeepPartial<JobsCopy> = {
     activityEmptyBody:
       "Mgbanwe ọkwa, ndetu, na mmelite dị mkpa ga-apụta ebe a ka ị na-arụ ọrụ site na usoro ịchụ ọrụ.",
   },
+  employerJobNew: {
+    pageTitle: "Bipụta Ọrụ",
+    pageSubtitle: "Mepụta mkpọsa ọrụ ọhụrụ maka ụlọ ọrụ gị.",
+    rightRailCompanyTitle: "Ụlọ ọrụ gị",
+    rightRailEmployerKicker: "Onye were ọrụ",
+    rightRailVerificationFallback: "na-echere",
+    rightRailRoleCountSingular: "Ọrụ {count} ka ebipụtara n'okpuru ụlọ ọrụ a ugbu a.",
+    rightRailRoleCountPlural: "Ọrụ {count} ka ebipụtara n'okpuru ụlọ ọrụ a ugbu a.",
+    rightRailTipsTitle: "Ndụmọdụ maka mkpọsa ka mma",
+    rightRailTipSummaries:
+      "Nchịkọta doro anya na ọrụ ahaziri ahazi na-eweta ndị nwere mmasị ka ike.",
+    rightRailTipSalaryBenefits:
+      "Ikere ụgwọ ọnwa na uru na-eme ka ogo arịrịọ dịkwuo elu.",
+    rightRailReadinessTitle: "Njikere ibipụta",
+    rightRailAccountTierKicker: "Ọkwa akaụntụ",
+    rightRailAccountTierBody:
+      "Ikike ibipụta gị dabere na ọnọdụ nyocha ụlọ ọrụ gị na akụkọ ihe mere eme akaụntụ gị.",
+    rightRailChecklistReady: "njikere",
+    rightRailChecklistOpen: "mepere",
+    noMembershipSectionTitle: "Profaịlụ ụlọ ọrụ dị mkpa",
+    noMembershipSectionBody: "Tọọ profaịlụ ụlọ ọrụ gị tupu ibipụta ọrụ.",
+    noMembershipEmptyKicker: "Otu nzọụkwụ ọzọ",
+    noMembershipEmptyTitle: "Mepụta profaịlụ ụlọ ọrụ gị buru ụzọ.",
+    noMembershipEmptyBody:
+      "Profaịlụ ụlọ ọrụ gị dị mkpa ka ndị nwere mmasị nwee ike ịmụta gbasara otu gị, ka ọrụ gị pụtakwa n'okpuru onye were ọrụ kwesịrị ekwesị.",
+    noMembershipEmptyCta: "Mepee nhazi ụlọ ọrụ",
+    formSectionTitle: "Mepụta ọrụ ọhụrụ",
+    formSectionBody:
+      "Dejupụta nkọwa ndị dị n'okpuru. Mkpọsa ọhụrụ nwere ike ịgafe nyocha mkpirikpi tupu ọ pụta ìhè.",
+    subscriptionRequiredTitle: "Ndenye aha dị mkpa ka ibipụta",
+    subscriptionRequiredBodyTemplate:
+      "Ndenye aha onye were ọrụ gị bụ «{status}». A gbochiri ibipụta ruo mgbe enwere ndenye aha dị ndụ. Kpọtụrụ ndị otu HenryCo ka ha kpọghachi tupu ibipụta.",
+    subscriptionPendingTitle: "Ndenye aha na-echere",
+    subscriptionPendingBody:
+      "Ibipụta ọrụ ga-achọ ndenye aha onye were ọrụ rụ ọrụ ozugbo ụgwọ ọnwa amalitere. Ị nwere ike ibipụta taa; tụgharịa anya na ndị otu HenryCo ga-akpọtụrụ gị banyere nhọrọ atụmatụ.",
+    verificationGateBodySuffix: "Ibipụta ọrụ ga-anọgide na-egbochi ruo mgbe akwadoro nyocha ahụ.",
+    directPublishingTitle: "Mbipụta ozugbo dị",
+    directPublishingBody:
+      "Akaụntụ gị nwere ike ibipụta ọrụ ozugbo. Ha ga-eru ngwa ngwa ka ị zigara ha.",
+    reviewRequiredTitle: "Nyocha dị mkpa",
+    reviewRequiredBody:
+      "Ndị otu anyị ga-enyocha ọrụ ọhụrụ tupu ha apụta ìhè. Nke a na-ewe naanị awa ole na ole.",
+    draftOnlyTitle: "Naanị nchịkọta",
+    draftOnlyBody:
+      "Ị nwere ike ịkwado mkpọsa ọrụ gị ugbu a, mana a ga-echekwa ya dị ka nchịkọta ruo mgbe profaịlụ ụlọ ọrụ gị ga-ezute ihe ndị anyị chọrọ maka ibipụta.",
+    fieldTitlePlaceholder: "Aha ọrụ",
+    fieldSlugPlaceholder: "Slọgụ ahaziri ahazi (nhọrọ)",
+    fieldSubtitlePlaceholder: "Aha nke abụọ",
+    fieldSummaryPlaceholder: "Nchịkọta dị mkpirikpi banyere ọrụ",
+    fieldDescriptionPlaceholder: "Nkọwa zuru ezu",
+    fieldLocationPlaceholder: "Ebe",
+    fieldCategoryPlaceholder: "Ụdị",
+    fieldWorkModePlaceholder: "site n'ebe dị anya / ngwakọ / n'ụlọ ọrụ",
+    fieldEmploymentTypePlaceholder: "Oge zuru oke / Nkwekọrịta",
+    fieldSeniorityPlaceholder: "Ọkwa ahụmahụ",
+    fieldTeamPlaceholder: "Otu",
+    fieldSkillsPlaceholder: "Nkà",
+    fieldResponsibilitiesPlaceholder: "Ọrụ ndị dị mkpa, otu n'ahịrị nke ọ bụla",
+    fieldRequirementsPlaceholder: "Ihe ndị achọrọ, otu n'ahịrị nke ọ bụla",
+    fieldBenefitsPlaceholder: "Uru, otu n'ahịrị nke ọ bụla",
+    fieldSalaryMinPlaceholder: "Ụgwọ ọnwa kacha nta",
+    fieldSalaryMaxPlaceholder: "Ụgwọ ọnwa kacha elu",
+    submitPending: "Na-emepụta ọrụ...",
+    submitLabel: "Mepụta ọrụ",
+  },
 };
 
 const YO: DeepPartial<JobsCopy> = {
@@ -2488,6 +2748,71 @@ const YO: DeepPartial<JobsCopy> = {
     fieldCertificationsPlaceholder: '[{"name":"Ìṣàkóso iṣẹ́"}]',
     submitSaving: "Ń pa profaili mọ́...",
     submitLabel: "Pa profaili olùbẹ̀wẹ̀ mọ́",
+  },
+  employerJobNew: {
+    pageTitle: "Tẹ Ipa kan jáde",
+    pageSubtitle: "Ṣẹ̀dá ìpolówó iṣẹ́ tuntun fún ilé-iṣẹ́ rẹ.",
+    rightRailCompanyTitle: "Ilé-iṣẹ́ rẹ",
+    rightRailEmployerKicker: "Agbanisíṣẹ́",
+    rightRailVerificationFallback: "ń dúró",
+    rightRailRoleCountSingular: "Ipa {count} ti a tẹ̀ jáde nísinsìnyí lábẹ́ ilé-iṣẹ́ yìí.",
+    rightRailRoleCountPlural: "Awọn ipa {count} tí a tẹ̀ jáde nísinsìnyí lábẹ́ ilé-iṣẹ́ yìí.",
+    rightRailTipsTitle: "Àwọn ìmọ̀ràn fún ìpolówó dáradára",
+    rightRailTipSummaries:
+      "Àkópọ̀ tó ṣe kedere àti àwọn ojúṣe tó ṣètò dáradára ń fa àwọn olùbẹ̀wẹ̀ tó lágbára síi.",
+    rightRailTipSalaryBenefits:
+      "Pípín ìwọn owó osù àti àǹfààní ń mu ìtọ́jú àwọn ìbéèrè dára síi.",
+    rightRailReadinessTitle: "Ìmúratán fún ìtẹ̀jáde",
+    rightRailAccountTierKicker: "Ìpele akọọlẹ",
+    rightRailAccountTierBody:
+      "Àwọn ẹ̀tọ́ ìtẹ̀jáde rẹ dá lórí ipò ìdánilójú ilé-iṣẹ́ rẹ àti ìtàn akọọlẹ rẹ.",
+    rightRailChecklistReady: "ti ṣetán",
+    rightRailChecklistOpen: "kò sí",
+    noMembershipSectionTitle: "Profaili ilé-iṣẹ́ ṣe pàtàkì",
+    noMembershipSectionBody: "Ṣètò profaili ilé-iṣẹ́ rẹ kí o tó tẹ̀ àwọn ipa jáde.",
+    noMembershipEmptyKicker: "Ìgbésẹ̀ kan síi",
+    noMembershipEmptyTitle: "Kọ́kọ́ ṣẹ̀dá profaili ilé-iṣẹ́ rẹ.",
+    noMembershipEmptyBody:
+      "Profaili ilé-iṣẹ́ rẹ ṣe pàtàkì kí àwọn olùbẹ̀wẹ̀ lè mọ̀ nípa ẹgbẹ́ rẹ àti kí àwọn ipa rẹ farahàn lábẹ́ agbanisíṣẹ́ tó tọ́.",
+    noMembershipEmptyCta: "Ṣí ètò ilé-iṣẹ́",
+    formSectionTitle: "Ṣẹ̀dá ipa tuntun",
+    formSectionBody:
+      "Kọ àwọn ẹ̀kúnrẹ́rẹ́ ní isàlẹ̀. Àwọn ìpolówó tuntun lè la àyẹ̀wò kúkúrú kí wọ́n tó wà ní àkànṣe.",
+    subscriptionRequiredTitle: "A nílò ìforúkọsílẹ̀ láti tẹ̀jáde",
+    subscriptionRequiredBodyTemplate:
+      "Ìforúkọsílẹ̀ agbanisíṣẹ́ rẹ jẹ́ «{status}». A ti dí ìtẹ̀jáde títí tí ìforúkọsílẹ̀ tó wà láàyè yóò fi wà. Kàn sí ẹgbẹ́ HenryCo láti tún ṣe kí o tó tẹ̀jáde.",
+    subscriptionPendingTitle: "Ìforúkọsílẹ̀ ń dúró",
+    subscriptionPendingBody:
+      "Ìtẹ̀jáde àwọn ipa yóò nílò ìforúkọsílẹ̀ agbanisíṣẹ́ tó ń ṣiṣẹ́ nígbà tí ìsanwó bá bẹ̀rẹ̀. O lè tẹ̀jáde lónìí; dúró fún ìfọwọ́sí láti ẹgbẹ́ HenryCo nípa yíyàn ètò.",
+    verificationGateBodySuffix: "Ìtẹ̀jáde iṣẹ́ máa ń dí títí ìfọwọ́sí àyẹ̀wò yẹn yóò fi parí.",
+    directPublishingTitle: "Ìtẹ̀jáde tààrà ṣeé wà",
+    directPublishingBody:
+      "Akọọlẹ rẹ lè tẹ̀ àwọn ipa jáde tààrà. Wọn yóò gòkè bí o ti rán wọn.",
+    reviewRequiredTitle: "Àyẹ̀wò ṣe pàtàkì",
+    reviewRequiredBody:
+      "Ẹgbẹ́ wa yóò yẹ àwọn ipa tuntun wò kí wọ́n tó gòkè. Èyí ń lo nǹkan bíi wákàtí díẹ̀.",
+    draftOnlyTitle: "Àkọpamọ́ nìkan",
+    draftOnlyBody:
+      "O lè múra ìpolówó iṣẹ́ rẹ sílẹ̀ báyìí, ṣùgbọ́n a óò tọ́jú gẹ́gẹ́ bí àkọpamọ́ títí profaili ilé-iṣẹ́ rẹ yóò fi ní ìbámu pẹ̀lú àwọn ìbéèrè ìtẹ̀jáde wa.",
+    fieldTitlePlaceholder: "Orúkọ ipa",
+    fieldSlugPlaceholder: "Ìdánimọ̀ àkànṣe (yíyàn)",
+    fieldSubtitlePlaceholder: "Orúkọ kékeré",
+    fieldSummaryPlaceholder: "Àkópọ̀ kúkúrú ti ipa",
+    fieldDescriptionPlaceholder: "Àpèjúwe kíkún",
+    fieldLocationPlaceholder: "Ààyè",
+    fieldCategoryPlaceholder: "Ẹka",
+    fieldWorkModePlaceholder: "ní jìnnà / àkànpọ̀ / nínú ọ́fíìsì",
+    fieldEmploymentTypePlaceholder: "Àkókò kíkún / Àdéhùn",
+    fieldSeniorityPlaceholder: "Ìpele ìrírí",
+    fieldTeamPlaceholder: "Ẹgbẹ́",
+    fieldSkillsPlaceholder: "Òye",
+    fieldResponsibilitiesPlaceholder: "Ojúṣe, ọ̀kọ̀ọ̀kan ní ìlà kọ̀ọ̀kan",
+    fieldRequirementsPlaceholder: "Ìbéèrè, ọ̀kọ̀ọ̀kan ní ìlà kọ̀ọ̀kan",
+    fieldBenefitsPlaceholder: "Àǹfààní, ọ̀kọ̀ọ̀kan ní ìlà kọ̀ọ̀kan",
+    fieldSalaryMinPlaceholder: "Owó osù tó kéré jùlọ",
+    fieldSalaryMaxPlaceholder: "Owó osù tó pọ̀jùlọ",
+    submitPending: "Ń ṣẹ̀dá ipa...",
+    submitLabel: "Ṣẹ̀dá ipa",
   },
 };
 
@@ -2748,6 +3073,71 @@ const HA: DeepPartial<JobsCopy> = {
     submitSaving: "Ana adana bayani...",
     submitLabel: "Adana bayanin mai nema",
   },
+  employerJobNew: {
+    pageTitle: "Buga Aiki",
+    pageSubtitle: "Ƙirƙiri sabon talla na aiki ga kamfanin ka.",
+    rightRailCompanyTitle: "Kamfanin ka",
+    rightRailEmployerKicker: "Ma'aikaci",
+    rightRailVerificationFallback: "yana jira",
+    rightRailRoleCountSingular: "Aiki {count} a halin yanzu yana bugawa a ƙarƙashin wannan kamfanin.",
+    rightRailRoleCountPlural: "Ayyuka {count} a halin yanzu suna bugawa a ƙarƙashin wannan kamfanin.",
+    rightRailTipsTitle: "Shawarwari don tallace-tallace mafi kyau",
+    rightRailTipSummaries:
+      "Tarihin a sarari da kuma alhakai da aka tsara da kyau suna jawo masu nema masu ƙarfi.",
+    rightRailTipSalaryBenefits:
+      "Raba kewayon albashi da fa'idodi yana inganta ingancin neman aiki.",
+    rightRailReadinessTitle: "Shirye-shiryen bugawa",
+    rightRailAccountTierKicker: "Matakin asusu",
+    rightRailAccountTierBody:
+      "Damar bugawa ka ta dogara ne akan matsayin tantance kamfanin ka da tarihin asusun ka.",
+    rightRailChecklistReady: "shirye",
+    rightRailChecklistOpen: "ba a yi ba",
+    noMembershipSectionTitle: "Ana buƙatar bayanin kamfani",
+    noMembershipSectionBody: "Saita bayanin kamfanin ka kafin buga ayyuka.",
+    noMembershipEmptyKicker: "Mataki ɗaya da ya rage",
+    noMembershipEmptyTitle: "Ƙirƙiri bayanin kamfanin ka da farko.",
+    noMembershipEmptyBody:
+      "Ana buƙatar bayanin kamfanin ka don masu neman aiki su koyi game da ƙungiyar ka kuma ayyukan ka su bayyana ƙarƙashin daidaitaccen ma'aikaci.",
+    noMembershipEmptyCta: "Buɗe saitin kamfani",
+    formSectionTitle: "Ƙirƙiri sabon aiki",
+    formSectionBody:
+      "Cika bayanan da ke ƙasa. Sabbin tallace-tallace na iya wuce ta dubawar gajere kafin a buga su.",
+    subscriptionRequiredTitle: "Ana buƙatar biyan kuɗi don bugawa",
+    subscriptionRequiredBodyTemplate:
+      "Biyan kuɗin ma'aikaci na ka shine «{status}». An toshe bugawa har sai akwai biyan kuɗi mai aiki. Tuntuɓi ƙungiyar HenryCo don sabuntawa kafin bugawa.",
+    subscriptionPendingTitle: "Biyan kuɗi yana jira",
+    subscriptionPendingBody:
+      "Buga ayyuka zai buƙaci biyan kuɗin ma'aikaci mai aiki lokacin da aka kunna lissafin kuɗi. Kana iya bugawa a yau; ka jira mu kira kai daga ƙungiyar HenryCo game da zaɓin shirin.",
+    verificationGateBodySuffix: "Buga ayyuka zai ci gaba da toshe har sai an amince da wannan dubawa.",
+    directPublishingTitle: "Bugawa kai tsaye yana samuwa",
+    directPublishingBody:
+      "Asusunka zai iya buga ayyuka kai tsaye. Za su tafi rayuwa da zaran ka aiko.",
+    reviewRequiredTitle: "Ana buƙatar dubawa",
+    reviewRequiredBody:
+      "Ƙungiyar mu za ta duba sabbin ayyuka kafin su tafi rayuwa. Yawanci yana ɗaukar 'yan awoyi.",
+    draftOnlyTitle: "Daftarin kawai",
+    draftOnlyBody:
+      "Kana iya shirya talla na aikin ka yanzu, amma za a adana shi a matsayin daftari har sai bayanin kamfanin ka ya cika abubuwan da muke buƙata don bugawa.",
+    fieldTitlePlaceholder: "Sunan aiki",
+    fieldSlugPlaceholder: "Slug na musamman (na zaɓi)",
+    fieldSubtitlePlaceholder: "Lakabi na ƙasa",
+    fieldSummaryPlaceholder: "Taƙaitaccen bayanin aiki",
+    fieldDescriptionPlaceholder: "Cikakken bayani",
+    fieldLocationPlaceholder: "Wuri",
+    fieldCategoryPlaceholder: "Rukuni",
+    fieldWorkModePlaceholder: "daga nesa / haɗakar / cikin ofis",
+    fieldEmploymentTypePlaceholder: "Cikakken lokaci / Kwangila",
+    fieldSeniorityPlaceholder: "Matakin gogewa",
+    fieldTeamPlaceholder: "Ƙungiya",
+    fieldSkillsPlaceholder: "Ƙwarewa",
+    fieldResponsibilitiesPlaceholder: "Alhakai, ɗaya a kowane layi",
+    fieldRequirementsPlaceholder: "Buƙatu, ɗaya a kowane layi",
+    fieldBenefitsPlaceholder: "Fa'idodi, ɗaya a kowane layi",
+    fieldSalaryMinPlaceholder: "Mafi ƙarancin albashi",
+    fieldSalaryMaxPlaceholder: "Mafi yawan albashi",
+    submitPending: "Ana ƙirƙirar aiki...",
+    submitLabel: "Ƙirƙira aiki",
+  },
 };
 
 const DE: DeepPartial<JobsCopy> = {
@@ -3007,6 +3397,71 @@ const DE: DeepPartial<JobsCopy> = {
     submitSaving: "Profil wird gespeichert...",
     submitLabel: "Bewerberprofil speichern",
   },
+  employerJobNew: {
+    pageTitle: "Stelle ausschreiben",
+    pageSubtitle: "Erstellen Sie eine neue Stellenanzeige für Ihr Unternehmen.",
+    rightRailCompanyTitle: "Ihr Unternehmen",
+    rightRailEmployerKicker: "Arbeitgeber",
+    rightRailVerificationFallback: "ausstehend",
+    rightRailRoleCountSingular: "{count} Stelle aktuell unter diesem Unternehmen ausgeschrieben.",
+    rightRailRoleCountPlural: "{count} Stellen aktuell unter diesem Unternehmen ausgeschrieben.",
+    rightRailTipsTitle: "Tipps für bessere Anzeigen",
+    rightRailTipSummaries:
+      "Klare Zusammenfassungen und strukturierte Verantwortlichkeiten ziehen stärkere Kandidaten an.",
+    rightRailTipSalaryBenefits:
+      "Gehaltsspannen und Vorteile zu nennen erhöht die Qualität der Bewerbungen.",
+    rightRailReadinessTitle: "Veröffentlichungsbereitschaft",
+    rightRailAccountTierKicker: "Konto-Stufe",
+    rightRailAccountTierBody:
+      "Ihre Veröffentlichungsrechte basieren auf dem Verifizierungsstatus Ihres Unternehmens und der Kontohistorie.",
+    rightRailChecklistReady: "bereit",
+    rightRailChecklistOpen: "offen",
+    noMembershipSectionTitle: "Unternehmensprofil erforderlich",
+    noMembershipSectionBody: "Richten Sie Ihr Unternehmensprofil ein, bevor Sie Stellen ausschreiben.",
+    noMembershipEmptyKicker: "Noch ein Schritt",
+    noMembershipEmptyTitle: "Erstellen Sie zuerst Ihr Unternehmensprofil.",
+    noMembershipEmptyBody:
+      "Ihr Unternehmensprofil ist notwendig, damit Kandidaten Ihr Team kennenlernen und Ihre Stellen unter dem richtigen Arbeitgeber erscheinen.",
+    noMembershipEmptyCta: "Unternehmenseinrichtung öffnen",
+    formSectionTitle: "Neue Stelle erstellen",
+    formSectionBody:
+      "Füllen Sie die Details unten aus. Neue Anzeigen können vor der Veröffentlichung eine kurze Prüfung durchlaufen.",
+    subscriptionRequiredTitle: "Abonnement zur Veröffentlichung erforderlich",
+    subscriptionRequiredBodyTemplate:
+      "Ihr Arbeitgeber-Abonnement ist „{status}“. Die Veröffentlichung ist blockiert, bis ein aktives Abonnement vorliegt. Wenden Sie sich an das HenryCo-Team, um vor der Veröffentlichung zu verlängern.",
+    subscriptionPendingTitle: "Abonnement ausstehend",
+    subscriptionPendingBody:
+      "Das Veröffentlichen von Stellen erfordert ein aktives Arbeitgeber-Abonnement, sobald die Abrechnung eingeführt wird. Sie können heute veröffentlichen; erwarten Sie eine Nachfrage des HenryCo-Teams zur Tarifauswahl.",
+    verificationGateBodySuffix: "Die Stellenausschreibung bleibt blockiert, bis diese Prüfung genehmigt ist.",
+    directPublishingTitle: "Direkte Veröffentlichung verfügbar",
+    directPublishingBody:
+      "Ihr Konto kann Stellen direkt veröffentlichen. Sie gehen sofort nach dem Absenden live.",
+    reviewRequiredTitle: "Prüfung erforderlich",
+    reviewRequiredBody:
+      "Neue Stellen werden von unserem Team geprüft, bevor sie live gehen. Das dauert in der Regel einige Stunden.",
+    draftOnlyTitle: "Nur Entwurf",
+    draftOnlyBody:
+      "Sie können Ihre Stellenanzeige jetzt vorbereiten, sie wird jedoch als Entwurf gespeichert, bis Ihr Unternehmensprofil unseren Veröffentlichungsanforderungen entspricht.",
+    fieldTitlePlaceholder: "Stellenbezeichnung",
+    fieldSlugPlaceholder: "Benutzerdefinierter Slug (optional)",
+    fieldSubtitlePlaceholder: "Untertitel",
+    fieldSummaryPlaceholder: "Kurze Zusammenfassung der Rolle",
+    fieldDescriptionPlaceholder: "Vollständige Beschreibung",
+    fieldLocationPlaceholder: "Standort",
+    fieldCategoryPlaceholder: "Kategorie",
+    fieldWorkModePlaceholder: "Remote / Hybrid / Vor Ort",
+    fieldEmploymentTypePlaceholder: "Vollzeit / Vertrag",
+    fieldSeniorityPlaceholder: "Senioritätsstufe",
+    fieldTeamPlaceholder: "Team",
+    fieldSkillsPlaceholder: "Fähigkeiten",
+    fieldResponsibilitiesPlaceholder: "Verantwortlichkeiten, eine pro Zeile",
+    fieldRequirementsPlaceholder: "Anforderungen, eine pro Zeile",
+    fieldBenefitsPlaceholder: "Vorteile, einer pro Zeile",
+    fieldSalaryMinPlaceholder: "Gehalt min.",
+    fieldSalaryMaxPlaceholder: "Gehalt max.",
+    submitPending: "Stelle wird erstellt...",
+    submitLabel: "Stelle erstellen",
+  },
 };
 
 const ZH: DeepPartial<JobsCopy> = {
@@ -3240,6 +3695,65 @@ const ZH: DeepPartial<JobsCopy> = {
     fieldCertificationsPlaceholder: '[{"name":"项目管理"}]',
     submitSaving: "正在保存资料...",
     submitLabel: "保存候选人资料",
+  },
+  employerJobNew: {
+    pageTitle: "发布职位",
+    pageSubtitle: "为你的公司创建新的职位信息。",
+    rightRailCompanyTitle: "你的公司",
+    rightRailEmployerKicker: "雇主",
+    rightRailVerificationFallback: "待审核",
+    rightRailRoleCountSingular: "此公司当前发布了 {count} 个职位。",
+    rightRailRoleCountPlural: "此公司当前发布了 {count} 个职位。",
+    rightRailTipsTitle: "更好招聘的提示",
+    rightRailTipSummaries: "清晰的概述和结构化的职责能吸引更优秀的候选人。",
+    rightRailTipSalaryBenefits: "分享薪资范围和福利可提升申请质量。",
+    rightRailReadinessTitle: "发布准备",
+    rightRailAccountTierKicker: "账户等级",
+    rightRailAccountTierBody: "你的发布权限取决于公司认证状态和账户历史。",
+    rightRailChecklistReady: "已就绪",
+    rightRailChecklistOpen: "待完成",
+    noMembershipSectionTitle: "需要公司资料",
+    noMembershipSectionBody: "在发布职位前请先设置公司资料。",
+    noMembershipEmptyKicker: "还差一步",
+    noMembershipEmptyTitle: "请先创建你的公司资料。",
+    noMembershipEmptyBody:
+      "需要你的公司资料，候选人才能了解你的团队，你的职位也会显示在正确的雇主下。",
+    noMembershipEmptyCta: "打开公司设置",
+    formSectionTitle: "创建新职位",
+    formSectionBody: "填写以下详情。新职位在上线前可能会经过简短审核。",
+    subscriptionRequiredTitle: "发布需要订阅",
+    subscriptionRequiredBodyTemplate:
+      "你的雇主订阅为「{status}」。在订阅有效之前，发布将被阻止。请联系 HenryCo 团队在发布前续订。",
+    subscriptionPendingTitle: "订阅待处理",
+    subscriptionPendingBody:
+      "计费功能上线后，发布职位将需要有效的雇主订阅。你今天可以发布；请等待 HenryCo 团队就方案选择与你跟进。",
+    verificationGateBodySuffix: "在该审核获得批准之前，发布职位将保持被阻止。",
+    directPublishingTitle: "可直接发布",
+    directPublishingBody: "你的账户可以直接发布职位。提交后立即上线。",
+    reviewRequiredTitle: "需要审核",
+    reviewRequiredBody: "新职位将由我们的团队在上线前审核。通常需要几个小时。",
+    draftOnlyTitle: "仅草稿",
+    draftOnlyBody:
+      "你现在可以准备职位信息，但在公司资料满足发布要求之前，它将保存为草稿。",
+    fieldTitlePlaceholder: "职位名称",
+    fieldSlugPlaceholder: "自定义标识（可选）",
+    fieldSubtitlePlaceholder: "副标题",
+    fieldSummaryPlaceholder: "职位简短概述",
+    fieldDescriptionPlaceholder: "完整描述",
+    fieldLocationPlaceholder: "地点",
+    fieldCategoryPlaceholder: "类别",
+    fieldWorkModePlaceholder: "远程 / 混合 / 现场",
+    fieldEmploymentTypePlaceholder: "全职 / 合同",
+    fieldSeniorityPlaceholder: "经验等级",
+    fieldTeamPlaceholder: "团队",
+    fieldSkillsPlaceholder: "技能",
+    fieldResponsibilitiesPlaceholder: "职责，每行一项",
+    fieldRequirementsPlaceholder: "要求，每行一项",
+    fieldBenefitsPlaceholder: "福利，每行一项",
+    fieldSalaryMinPlaceholder: "最低薪资",
+    fieldSalaryMaxPlaceholder: "最高薪资",
+    submitPending: "正在创建职位...",
+    submitLabel: "创建职位",
   },
 };
 
@@ -3500,6 +4014,71 @@ const HI: DeepPartial<JobsCopy> = {
     submitSaving: "प्रोफ़ाइल सहेजी जा रही है...",
     submitLabel: "उम्मीदवार प्रोफ़ाइल सहेजें",
   },
+  employerJobNew: {
+    pageTitle: "नौकरी पोस्ट करें",
+    pageSubtitle: "अपनी कंपनी के लिए नई नौकरी की पोस्टिंग बनाएँ.",
+    rightRailCompanyTitle: "आपकी कंपनी",
+    rightRailEmployerKicker: "नियोक्ता",
+    rightRailVerificationFallback: "लंबित",
+    rightRailRoleCountSingular: "इस कंपनी के तहत वर्तमान में {count} भूमिका पोस्ट की गई.",
+    rightRailRoleCountPlural: "इस कंपनी के तहत वर्तमान में {count} भूमिकाएँ पोस्ट की गईं.",
+    rightRailTipsTitle: "बेहतर पोस्ट के लिए सुझाव",
+    rightRailTipSummaries:
+      "स्पष्ट सारांश और सुव्यवस्थित ज़िम्मेदारियाँ मज़बूत उम्मीदवारों को आकर्षित करती हैं.",
+    rightRailTipSalaryBenefits:
+      "वेतन सीमा और लाभ साझा करने से आवेदनों की गुणवत्ता बढ़ती है.",
+    rightRailReadinessTitle: "पोस्टिंग की तैयारी",
+    rightRailAccountTierKicker: "खाता स्तर",
+    rightRailAccountTierBody:
+      "आपके पोस्टिंग अधिकार आपकी कंपनी के सत्यापन की स्थिति और खाता इतिहास पर आधारित हैं.",
+    rightRailChecklistReady: "तैयार",
+    rightRailChecklistOpen: "लंबित",
+    noMembershipSectionTitle: "कंपनी प्रोफ़ाइल आवश्यक",
+    noMembershipSectionBody: "भूमिकाएँ पोस्ट करने से पहले अपनी कंपनी प्रोफ़ाइल सेट करें.",
+    noMembershipEmptyKicker: "एक और कदम",
+    noMembershipEmptyTitle: "पहले अपनी कंपनी की प्रोफ़ाइल बनाएँ.",
+    noMembershipEmptyBody:
+      "आपकी कंपनी प्रोफ़ाइल आवश्यक है ताकि उम्मीदवार आपकी टीम के बारे में जान सकें और आपकी भूमिकाएँ सही नियोक्ता के तहत दिखाई दें.",
+    noMembershipEmptyCta: "कंपनी सेटअप खोलें",
+    formSectionTitle: "नई भूमिका बनाएँ",
+    formSectionBody:
+      "नीचे विवरण भरें. नई पोस्ट लाइव होने से पहले संक्षिप्त समीक्षा से गुज़र सकती हैं.",
+    subscriptionRequiredTitle: "प्रकाशन के लिए सब्सक्रिप्शन आवश्यक",
+    subscriptionRequiredBodyTemplate:
+      "आपकी नियोक्ता सब्सक्रिप्शन «{status}» है. सक्रिय सब्सक्रिप्शन लागू होने तक पोस्टिंग अवरुद्ध है. प्रकाशन से पहले नवीनीकरण के लिए HenryCo टीम से संपर्क करें.",
+    subscriptionPendingTitle: "सब्सक्रिप्शन लंबित",
+    subscriptionPendingBody:
+      "बिलिंग शुरू होने के बाद भूमिकाएँ पोस्ट करने के लिए सक्रिय नियोक्ता सब्सक्रिप्शन की आवश्यकता होगी. आप आज प्रकाशित कर सकते हैं; योजना चयन के बारे में HenryCo टीम का अनुवर्ती अपेक्षा करें.",
+    verificationGateBodySuffix: "जब तक उस समीक्षा को मंज़ूरी नहीं मिलती, नौकरी पोस्टिंग अवरुद्ध रहती है.",
+    directPublishingTitle: "सीधा प्रकाशन उपलब्ध",
+    directPublishingBody:
+      "आपका खाता भूमिकाएँ सीधे प्रकाशित कर सकता है. सबमिट करते ही वे लाइव हो जाएँगी.",
+    reviewRequiredTitle: "समीक्षा आवश्यक",
+    reviewRequiredBody:
+      "नई भूमिकाएँ लाइव होने से पहले हमारी टीम द्वारा समीक्षा की जाएँगी. इसमें आमतौर पर कुछ घंटे लगते हैं.",
+    draftOnlyTitle: "केवल मसौदा",
+    draftOnlyBody:
+      "आप अभी अपनी नौकरी की पोस्टिंग तैयार कर सकते हैं, लेकिन यह मसौदा के रूप में सहेजी जाएगी जब तक कि आपकी कंपनी प्रोफ़ाइल हमारी पोस्टिंग आवश्यकताओं को पूरा न कर ले.",
+    fieldTitlePlaceholder: "भूमिका का शीर्षक",
+    fieldSlugPlaceholder: "कस्टम स्लग (वैकल्पिक)",
+    fieldSubtitlePlaceholder: "उपशीर्षक",
+    fieldSummaryPlaceholder: "भूमिका का संक्षिप्त सारांश",
+    fieldDescriptionPlaceholder: "पूर्ण विवरण",
+    fieldLocationPlaceholder: "स्थान",
+    fieldCategoryPlaceholder: "श्रेणी",
+    fieldWorkModePlaceholder: "रिमोट / हाइब्रिड / कार्यालय",
+    fieldEmploymentTypePlaceholder: "पूर्णकालिक / अनुबंध",
+    fieldSeniorityPlaceholder: "अनुभव स्तर",
+    fieldTeamPlaceholder: "टीम",
+    fieldSkillsPlaceholder: "कौशल",
+    fieldResponsibilitiesPlaceholder: "ज़िम्मेदारियाँ, प्रति पंक्ति एक",
+    fieldRequirementsPlaceholder: "आवश्यकताएँ, प्रति पंक्ति एक",
+    fieldBenefitsPlaceholder: "लाभ, प्रति पंक्ति एक",
+    fieldSalaryMinPlaceholder: "न्यूनतम वेतन",
+    fieldSalaryMaxPlaceholder: "अधिकतम वेतन",
+    submitPending: "भूमिका बन रही है...",
+    submitLabel: "भूमिका बनाएँ",
+  },
 };
 
 const IT: DeepPartial<JobsCopy> = {
@@ -3758,6 +4337,71 @@ const IT: DeepPartial<JobsCopy> = {
     "fieldCertificationsPlaceholder": "[{\"name\":\"Project Management\"}]",
     "submitSaving": "Salvataggio profilo...",
     "submitLabel": "Salva profilo del candidato"
+  },
+  "employerJobNew": {
+    "pageTitle": "Pubblica un ruolo",
+    "pageSubtitle": "Crea un nuovo annuncio di lavoro per la tua azienda.",
+    "rightRailCompanyTitle": "La tua azienda",
+    "rightRailEmployerKicker": "Datore di lavoro",
+    "rightRailVerificationFallback": "in attesa",
+    "rightRailRoleCountSingular": "{count} ruolo attualmente pubblicato sotto questa azienda.",
+    "rightRailRoleCountPlural": "{count} ruoli attualmente pubblicati sotto questa azienda.",
+    "rightRailTipsTitle": "Suggerimenti per annunci migliori",
+    "rightRailTipSummaries":
+      "Riassunti chiari e responsabilità ben strutturate attirano candidati più solidi.",
+    "rightRailTipSalaryBenefits":
+      "Condividere fasce salariali e benefit migliora la qualità delle candidature.",
+    "rightRailReadinessTitle": "Pronto per la pubblicazione",
+    "rightRailAccountTierKicker": "Livello account",
+    "rightRailAccountTierBody":
+      "I tuoi privilegi di pubblicazione si basano sullo stato di verifica della tua azienda e sulla storia dell'account.",
+    "rightRailChecklistReady": "pronto",
+    "rightRailChecklistOpen": "aperto",
+    "noMembershipSectionTitle": "Profilo aziendale richiesto",
+    "noMembershipSectionBody": "Imposta il profilo della tua azienda prima di pubblicare ruoli.",
+    "noMembershipEmptyKicker": "Un altro passaggio",
+    "noMembershipEmptyTitle": "Crea prima il profilo della tua azienda.",
+    "noMembershipEmptyBody":
+      "Il profilo della tua azienda è necessario affinché i candidati conoscano la tua squadra e i tuoi ruoli appaiano sotto il datore di lavoro corretto.",
+    "noMembershipEmptyCta": "Apri la configurazione azienda",
+    "formSectionTitle": "Crea un nuovo ruolo",
+    "formSectionBody":
+      "Compila i dettagli qui sotto. I nuovi annunci possono passare per una breve revisione prima della pubblicazione.",
+    "subscriptionRequiredTitle": "Abbonamento richiesto per pubblicare",
+    "subscriptionRequiredBodyTemplate":
+      "Il tuo abbonamento come datore di lavoro è «{status}». La pubblicazione è bloccata finché non è attivo un abbonamento valido. Contatta il team HenryCo per rinnovare prima di pubblicare.",
+    "subscriptionPendingTitle": "Abbonamento in attesa",
+    "subscriptionPendingBody":
+      "La pubblicazione dei ruoli richiederà un abbonamento datore di lavoro attivo una volta avviata la fatturazione. Puoi pubblicare oggi; attendi un seguito dal team HenryCo riguardo alla scelta del piano.",
+    "verificationGateBodySuffix": "La pubblicazione dei lavori resta bloccata finché tale revisione non viene approvata.",
+    "directPublishingTitle": "Pubblicazione diretta disponibile",
+    "directPublishingBody":
+      "Il tuo account può pubblicare ruoli direttamente. Saranno online appena invierai.",
+    "reviewRequiredTitle": "Revisione richiesta",
+    "reviewRequiredBody":
+      "I nuovi ruoli saranno revisionati dal nostro team prima di andare online. In genere richiede poche ore.",
+    "draftOnlyTitle": "Solo bozza",
+    "draftOnlyBody":
+      "Puoi preparare il tuo annuncio di lavoro ora, ma verrà salvato come bozza finché il profilo della tua azienda non soddisfa i nostri requisiti di pubblicazione.",
+    "fieldTitlePlaceholder": "Titolo del ruolo",
+    "fieldSlugPlaceholder": "Slug personalizzato (opzionale)",
+    "fieldSubtitlePlaceholder": "Sottotitolo",
+    "fieldSummaryPlaceholder": "Breve riepilogo del ruolo",
+    "fieldDescriptionPlaceholder": "Descrizione completa",
+    "fieldLocationPlaceholder": "Località",
+    "fieldCategoryPlaceholder": "Categoria",
+    "fieldWorkModePlaceholder": "remoto / ibrido / in sede",
+    "fieldEmploymentTypePlaceholder": "Tempo pieno / Contratto",
+    "fieldSeniorityPlaceholder": "Seniority",
+    "fieldTeamPlaceholder": "Team",
+    "fieldSkillsPlaceholder": "Competenze",
+    "fieldResponsibilitiesPlaceholder": "Responsabilità, una per riga",
+    "fieldRequirementsPlaceholder": "Requisiti, uno per riga",
+    "fieldBenefitsPlaceholder": "Benefit, uno per riga",
+    "fieldSalaryMinPlaceholder": "Salario min",
+    "fieldSalaryMaxPlaceholder": "Salario max",
+    "submitPending": "Creazione del ruolo in corso...",
+    "submitLabel": "Crea ruolo"
   }
 };
 
