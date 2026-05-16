@@ -1,5 +1,5 @@
 import type { AppLocale } from "./locales";
-import { deepMergeMessages } from "./merge-messages";
+import { deepMergeMessages, type DeepPartial } from "./merge-messages";
 
 export type CareCopy = {
   nav: {
@@ -67,6 +67,50 @@ export type CareCopy = {
     alterations: string;
     homeCleaning: string;
     officeCleaning: string;
+  };
+  staffManager: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      title: string;
+      body: string;
+    };
+    quickLinks: {
+      openOperations: string;
+      openExpenses: string;
+      trackingPage: string;
+      createWalkIn: string;
+    };
+    metrics: {
+      activeBookings: { label: string; note: string };
+      urgentQueue: { label: string; note: string };
+      registeredPieces: { label: string; note: string };
+      recordedInflow: { label: string; note: string };
+      pendingExpenses: { label: string; note: string };
+    };
+    urgentPanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      noSlot: string;
+      openBooking: string;
+      empty: string;
+    };
+    pressurePanel: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      missingIntake: { label: string; note: string };
+      approvedExpenses: { label: string; note: string };
+      overallBalance: {
+        label: string;
+        flowTemplate: string;
+      };
+    };
+    dash: string;
   };
 };
 
@@ -137,9 +181,60 @@ const EN: CareCopy = {
     homeCleaning: "Home cleaning",
     officeCleaning: "Office cleaning",
   },
+  staffManager: {
+    metadata: {
+      title: "Manager Dashboard | Henry & Co. Fabric Care",
+      description:
+        "Manager command dashboard for intake, live operations, inflow, and expense control.",
+    },
+    hero: {
+      eyebrow: "Manager operations room",
+      title: "Run the day. Keep the records truthful.",
+      body: "This is the manager's live control layer. Intake, pricing-backed registration, status movement, payment capture, and daily expenses should all be handled from here without confusion.",
+    },
+    quickLinks: {
+      openOperations: "Open operations",
+      openExpenses: "Open expenses",
+      trackingPage: "Tracking page",
+      createWalkIn: "Create walk-in booking",
+    },
+    metrics: {
+      activeBookings: { label: "Active bookings", note: "Current live workload" },
+      urgentQueue: { label: "Urgent queue", note: "Needs quick attention" },
+      registeredPieces: { label: "Registered pieces", note: "Pricing-backed item records" },
+      recordedInflow: { label: "Recorded inflow", note: "Money logged against bookings" },
+      pendingExpenses: { label: "Pending expenses", note: "Awaiting owner review" },
+    },
+    urgentPanel: {
+      eyebrow: "Priority",
+      title: "Urgent bookings",
+      subtitle: "These are the jobs the manager should not ignore.",
+      noSlot: "No slot",
+      openBooking: "Open booking",
+      empty: "No urgent bookings right now.",
+    },
+    pressurePanel: {
+      eyebrow: "Manager truth checks",
+      title: "Operational pressure points",
+      subtitle: "These indicators help the manager stop hidden mistakes before they become company problems.",
+      missingIntake: {
+        label: "Garment bookings missing intake",
+        note: "Only garment bookings should be flagged here. Service bookings are tracked separately.",
+      },
+      approvedExpenses: {
+        label: "Approved expenses",
+        note: "These costs have already been accepted by owner review.",
+      },
+      overallBalance: {
+        label: "Overall balance",
+        flowTemplate: "{inflow} in • {outflow} out",
+      },
+    },
+    dash: "—",
+  },
 };
 
-const FR: Partial<CareCopy> = {
+const FR: DeepPartial<CareCopy> = {
   nav: {
     home: "Accueil",
     book: "Réserver",
@@ -206,9 +301,60 @@ const FR: Partial<CareCopy> = {
     homeCleaning: "Ménage",
     officeCleaning: "Nettoyage de bureau",
   },
+  staffManager: {
+    metadata: {
+      title: "Tableau de bord du responsable | Henry & Co. Fabric Care",
+      description:
+        "Tableau de commande du responsable pour la prise en charge, les opérations en direct, les entrées et le contrôle des dépenses.",
+    },
+    hero: {
+      eyebrow: "Salle d'opérations du responsable",
+      title: "Dirigez la journée. Gardez les registres exacts.",
+      body: "Voici la couche de contrôle en direct du responsable. La prise en charge, l'enregistrement adossé à la tarification, le suivi des statuts, la saisie des paiements et les dépenses quotidiennes doivent tous être gérés depuis ici, sans confusion.",
+    },
+    quickLinks: {
+      openOperations: "Ouvrir les opérations",
+      openExpenses: "Ouvrir les dépenses",
+      trackingPage: "Page de suivi",
+      createWalkIn: "Créer une réservation sur place",
+    },
+    metrics: {
+      activeBookings: { label: "Réservations actives", note: "Charge de travail en cours" },
+      urgentQueue: { label: "File urgente", note: "Nécessite une attention rapide" },
+      registeredPieces: { label: "Pièces enregistrées", note: "Enregistrements adossés à la tarification" },
+      recordedInflow: { label: "Entrées enregistrées", note: "Argent comptabilisé sur les réservations" },
+      pendingExpenses: { label: "Dépenses en attente", note: "En attente de revue du propriétaire" },
+    },
+    urgentPanel: {
+      eyebrow: "Priorité",
+      title: "Réservations urgentes",
+      subtitle: "Ce sont les missions que le responsable ne doit pas ignorer.",
+      noSlot: "Aucun créneau",
+      openBooking: "Ouvrir la réservation",
+      empty: "Aucune réservation urgente pour le moment.",
+    },
+    pressurePanel: {
+      eyebrow: "Vérifications du responsable",
+      title: "Points de pression opérationnels",
+      subtitle: "Ces indicateurs aident le responsable à arrêter les erreurs cachées avant qu'elles ne deviennent des problèmes pour l'entreprise.",
+      missingIntake: {
+        label: "Réservations vêtements sans prise en charge",
+        note: "Seules les réservations vêtements doivent être signalées ici. Les réservations de service sont suivies séparément.",
+      },
+      approvedExpenses: {
+        label: "Dépenses approuvées",
+        note: "Ces coûts ont déjà été acceptés lors de la revue du propriétaire.",
+      },
+      overallBalance: {
+        label: "Solde global",
+        flowTemplate: "{inflow} entrant • {outflow} sortant",
+      },
+    },
+    dash: "—",
+  },
 };
 
-const ES: Partial<CareCopy> = {
+const ES: DeepPartial<CareCopy> = {
   nav: {
     home: "Inicio",
     book: "Reservar",
@@ -275,9 +421,60 @@ const ES: Partial<CareCopy> = {
     homeCleaning: "Limpieza del hogar",
     officeCleaning: "Limpieza de oficina",
   },
+  staffManager: {
+    metadata: {
+      title: "Panel del gerente | Henry & Co. Fabric Care",
+      description:
+        "Panel de mando del gerente para recepción, operaciones en vivo, entradas y control de gastos.",
+    },
+    hero: {
+      eyebrow: "Sala de operaciones del gerente",
+      title: "Lleva el día. Mantén los registros veraces.",
+      body: "Esta es la capa de control en vivo del gerente. La recepción, el registro respaldado por precios, el movimiento de estado, la captura de pagos y los gastos diarios deben gestionarse desde aquí sin confusión.",
+    },
+    quickLinks: {
+      openOperations: "Abrir operaciones",
+      openExpenses: "Abrir gastos",
+      trackingPage: "Página de seguimiento",
+      createWalkIn: "Crear reserva sin cita",
+    },
+    metrics: {
+      activeBookings: { label: "Reservas activas", note: "Carga de trabajo actual" },
+      urgentQueue: { label: "Cola urgente", note: "Requiere atención rápida" },
+      registeredPieces: { label: "Piezas registradas", note: "Registros respaldados por precios" },
+      recordedInflow: { label: "Entradas registradas", note: "Dinero contabilizado por reservas" },
+      pendingExpenses: { label: "Gastos pendientes", note: "Esperando revisión del propietario" },
+    },
+    urgentPanel: {
+      eyebrow: "Prioridad",
+      title: "Reservas urgentes",
+      subtitle: "Estos son los trabajos que el gerente no debe ignorar.",
+      noSlot: "Sin horario",
+      openBooking: "Abrir reserva",
+      empty: "Ninguna reserva urgente en este momento.",
+    },
+    pressurePanel: {
+      eyebrow: "Comprobaciones del gerente",
+      title: "Puntos de presión operativos",
+      subtitle: "Estos indicadores ayudan al gerente a detener errores ocultos antes de que se conviertan en problemas para la empresa.",
+      missingIntake: {
+        label: "Reservas de prendas sin recepción",
+        note: "Solo se deben señalar aquí las reservas de prendas. Las reservas de servicio se rastrean por separado.",
+      },
+      approvedExpenses: {
+        label: "Gastos aprobados",
+        note: "Estos costos ya fueron aceptados en la revisión del propietario.",
+      },
+      overallBalance: {
+        label: "Saldo total",
+        flowTemplate: "{inflow} entrada • {outflow} salida",
+      },
+    },
+    dash: "—",
+  },
 };
 
-const PT: Partial<CareCopy> = {
+const PT: DeepPartial<CareCopy> = {
   nav: {
     home: "Início",
     book: "Reservar",
@@ -344,9 +541,60 @@ const PT: Partial<CareCopy> = {
     homeCleaning: "Limpeza residencial",
     officeCleaning: "Limpeza de escritório",
   },
+  staffManager: {
+    metadata: {
+      title: "Painel do gerente | Henry & Co. Fabric Care",
+      description:
+        "Painel de comando do gerente para recepção, operações ao vivo, entradas e controle de despesas.",
+    },
+    hero: {
+      eyebrow: "Sala de operações do gerente",
+      title: "Conduza o dia. Mantenha os registros verdadeiros.",
+      body: "Esta é a camada de controle ao vivo do gerente. Recepção, registro respaldado por preços, movimento de status, captura de pagamentos e despesas diárias devem ser tratados aqui sem confusão.",
+    },
+    quickLinks: {
+      openOperations: "Abrir operações",
+      openExpenses: "Abrir despesas",
+      trackingPage: "Página de rastreamento",
+      createWalkIn: "Criar reserva sem agendamento",
+    },
+    metrics: {
+      activeBookings: { label: "Reservas ativas", note: "Carga de trabalho atual" },
+      urgentQueue: { label: "Fila urgente", note: "Requer atenção rápida" },
+      registeredPieces: { label: "Peças registradas", note: "Registros respaldados por preços" },
+      recordedInflow: { label: "Entradas registradas", note: "Dinheiro contabilizado nas reservas" },
+      pendingExpenses: { label: "Despesas pendentes", note: "Aguardando revisão do proprietário" },
+    },
+    urgentPanel: {
+      eyebrow: "Prioridade",
+      title: "Reservas urgentes",
+      subtitle: "Estes são os trabalhos que o gerente não deve ignorar.",
+      noSlot: "Sem horário",
+      openBooking: "Abrir reserva",
+      empty: "Nenhuma reserva urgente no momento.",
+    },
+    pressurePanel: {
+      eyebrow: "Verificações do gerente",
+      title: "Pontos de pressão operacionais",
+      subtitle: "Esses indicadores ajudam o gerente a interromper erros ocultos antes que se tornem problemas da empresa.",
+      missingIntake: {
+        label: "Reservas de roupas sem recepção",
+        note: "Apenas reservas de roupas devem ser sinalizadas aqui. Reservas de serviço são rastreadas separadamente.",
+      },
+      approvedExpenses: {
+        label: "Despesas aprovadas",
+        note: "Estes custos já foram aceitos na revisão do proprietário.",
+      },
+      overallBalance: {
+        label: "Saldo geral",
+        flowTemplate: "{inflow} entrada • {outflow} saída",
+      },
+    },
+    dash: "—",
+  },
 };
 
-const AR: Partial<CareCopy> = {
+const AR: DeepPartial<CareCopy> = {
   nav: {
     home: "الرئيسية",
     book: "احجز",
@@ -413,9 +661,60 @@ const AR: Partial<CareCopy> = {
     homeCleaning: "تنظيف المنزل",
     officeCleaning: "تنظيف المكتب",
   },
+  staffManager: {
+    metadata: {
+      title: "لوحة قيادة المدير | Henry & Co. Fabric Care",
+      description:
+        "لوحة قيادة المدير للاستلام والعمليات المباشرة والتدفقات الواردة وضبط المصروفات.",
+    },
+    hero: {
+      eyebrow: "غرفة عمليات المدير",
+      title: "أدِر اليوم. حافظ على سجلات صادقة.",
+      body: "هذه طبقة التحكم المباشرة للمدير. يجب التعامل من هنا مع الاستلام والتسجيل المدعوم بالتسعير ونقل الحالات وتسجيل المدفوعات والمصروفات اليومية دون أي ارتباك.",
+    },
+    quickLinks: {
+      openOperations: "فتح العمليات",
+      openExpenses: "فتح المصروفات",
+      trackingPage: "صفحة التتبع",
+      createWalkIn: "إنشاء حجز فوري",
+    },
+    metrics: {
+      activeBookings: { label: "الحجوزات النشطة", note: "حجم العمل الحالي" },
+      urgentQueue: { label: "الطابور العاجل", note: "يتطلب اهتماماً سريعاً" },
+      registeredPieces: { label: "القطع المسجلة", note: "سجلات مدعومة بالتسعير" },
+      recordedInflow: { label: "التدفقات المسجلة", note: "أموال مقيدة على الحجوزات" },
+      pendingExpenses: { label: "المصروفات المعلقة", note: "بانتظار مراجعة المالك" },
+    },
+    urgentPanel: {
+      eyebrow: "الأولوية",
+      title: "حجوزات عاجلة",
+      subtitle: "هذه هي المهام التي يجب ألا يتجاهلها المدير.",
+      noSlot: "لا توجد فترة",
+      openBooking: "فتح الحجز",
+      empty: "لا توجد حجوزات عاجلة الآن.",
+    },
+    pressurePanel: {
+      eyebrow: "مراجعات صدق المدير",
+      title: "نقاط ضغط تشغيلية",
+      subtitle: "تساعد هذه المؤشرات المدير على إيقاف الأخطاء الخفية قبل أن تصبح مشاكل للشركة.",
+      missingIntake: {
+        label: "حجوزات الملابس بدون استلام",
+        note: "يجب الإشارة هنا إلى حجوزات الملابس فقط. حجوزات الخدمة تُتابع بشكل منفصل.",
+      },
+      approvedExpenses: {
+        label: "المصروفات المعتمدة",
+        note: "تم قبول هذه التكاليف بالفعل في مراجعة المالك.",
+      },
+      overallBalance: {
+        label: "الرصيد الإجمالي",
+        flowTemplate: "{inflow} داخل • {outflow} خارج",
+      },
+    },
+    dash: "—",
+  },
 };
 
-const IG: Partial<CareCopy> = {
+const IG: DeepPartial<CareCopy> = {
   nav: {
     home: "Ụlọ",
     book: "Dee",
@@ -482,9 +781,60 @@ const IG: Partial<CareCopy> = {
     homeCleaning: "Ịkọcha ụlọ",
     officeCleaning: "Ịkọcha ọfịs",
   },
+  staffManager: {
+    metadata: {
+      title: "Dashboard Onye Nlekọta | Henry & Co. Fabric Care",
+      description:
+        "Dashboard nke onye nlekọta maka nnata, ọrụ ndụ, mbata ego, na njikwa mmefu.",
+    },
+    hero: {
+      eyebrow: "Ụlọ ọrụ onye nlekọta",
+      title: "Were ụbọchị ahụ na-edu. Mee ka ndekọ kwesị ntụkwasị obi.",
+      body: "Nke a bụ akwa njikwa ndụ nke onye nlekọta. Nnata, ndebanye aha kwado site n'ọnụahịa, mmegharị ọnọdụ, ịnata ụgwọ, na mmefu kwa ụbọchị kwesịrị ka edobere ebe a n'enweghị mgbagwoju anya.",
+    },
+    quickLinks: {
+      openOperations: "Mepee ọrụ",
+      openExpenses: "Mepee mmefu",
+      trackingPage: "Ibe nleba anya",
+      createWalkIn: "Mepụta ndeede mbịa nso",
+    },
+    metrics: {
+      activeBookings: { label: "Ndeede na-arụ ọrụ", note: "Ibu ọrụ ndụ ugbu a" },
+      urgentQueue: { label: "Ahịrị ngwa ngwa", note: "Chọrọ nlebara anya ọsọ ọsọ" },
+      registeredPieces: { label: "Ihe edebanyere aha", note: "Ndekọ kwado site n'ọnụahịa" },
+      recordedInflow: { label: "Ego mbata edekọrọ", note: "Ego edere n'isi ndeede" },
+      pendingExpenses: { label: "Mmefu na-echere", note: "Na-echere nyocha onye nwe" },
+    },
+    urgentPanel: {
+      eyebrow: "Ihe mbu",
+      title: "Ndeede ngwa ngwa",
+      subtitle: "Ndị a bụ ọrụ onye nlekọta ekwesịghị ileghara anya.",
+      noSlot: "Enweghị oge",
+      openBooking: "Mepee ndeede",
+      empty: "Enweghị ndeede ngwa ngwa ugbu a.",
+    },
+    pressurePanel: {
+      eyebrow: "Nyocha ezi okwu onye nlekọta",
+      title: "Isi ihe mgbu n'ọrụ",
+      subtitle: "Ihe ndị a na-eme ka onye nlekọta kwụsị ndị ọrụ ọjọọ zoro ezo tupu ha aghọọ nsogbu nye ụlọ ọrụ.",
+      missingIntake: {
+        label: "Ndeede uwe na-enweghị nnata",
+        note: "Naanị ndeede uwe ka a ga-egosipụta ebe a. Ndeede ọrụ ka a na-eso ya iche.",
+      },
+      approvedExpenses: {
+        label: "Mmefu enabatara",
+        note: "Ego ndị a anabatala n'oge nyocha onye nwe.",
+      },
+      overallBalance: {
+        label: "Mkpokọta nguzo ego",
+        flowTemplate: "{inflow} mbata • {outflow} mfu",
+      },
+    },
+    dash: "—",
+  },
 };
 
-const YO: Partial<CareCopy> = {
+const YO: DeepPartial<CareCopy> = {
   nav: {
     home: "Ile",
     book: "Gbe",
@@ -551,9 +901,60 @@ const YO: Partial<CareCopy> = {
     homeCleaning: "Mimọ ile",
     officeCleaning: "Mimọ ọfiisi",
   },
+  staffManager: {
+    metadata: {
+      title: "Pẹpẹ Onítọ́jú | Henry & Co. Fabric Care",
+      description:
+        "Pẹpẹ ìdarí onítọ́jú fún gbígbà, iṣẹ́ alaaye, owó tó ń wọlé, àti ìṣàkóso owó tí ó ń jáde.",
+    },
+    hero: {
+      eyebrow: "Yàrá iṣẹ́ onítọ́jú",
+      title: "Darí ọjọ́. Pa àkọsílẹ̀ mọ́ nínú òtítọ́.",
+      body: "Eyi ni ìpele ìdarí alaaye fún onítọ́jú. Gbígbà, ìfiwérèsìlẹ̀ tí ó dúró lórí ìdíyelé, ìṣípayá ipò, gbígba owó, àti àwọn owó ojoojúmọ́, gbogbo wọn yẹ kí a ṣàkóso nibí láìsí ìdàrúdàpọ̀.",
+    },
+    quickLinks: {
+      openOperations: "Ṣii iṣẹ́",
+      openExpenses: "Ṣii owó tí ó ń jáde",
+      trackingPage: "Ojú-ìwé ìtọpa",
+      createWalkIn: "Ṣẹda ifiṣura tó bá dé",
+    },
+    metrics: {
+      activeBookings: { label: "Ifiṣura tó ń lọ", note: "Ẹrù iṣẹ́ àtìpótì lọ́wọ́" },
+      urgentQueue: { label: "Ìlà kíákíá", note: "Béèrè fún àfiyèsí kíákíá" },
+      registeredPieces: { label: "Àwọn ohun tí a forúkọ sílẹ̀", note: "Àkọsílẹ̀ ìtọpa-ìdíyelé" },
+      recordedInflow: { label: "Owó wíwọlé tí a kọ", note: "Owó tí a kọ sí orí ifiṣura" },
+      pendingExpenses: { label: "Owó tí ó ń jáde tí ó ń dúró", note: "Ń dúró de àyẹ̀wò onílé" },
+    },
+    urgentPanel: {
+      eyebrow: "Iṣẹ́ pàtàkì",
+      title: "Ifiṣura kíákíá",
+      subtitle: "Awọn wọ̀nyí ni iṣẹ́ tí onítọ́jú kò gbọdọ̀ fojú parẹ́.",
+      noSlot: "Kò sí àkókò",
+      openBooking: "Ṣii ifiṣura",
+      empty: "Kò sí ifiṣura kíákíá ní àkókò yìí.",
+    },
+    pressurePanel: {
+      eyebrow: "Àwọn ìbéèrè òtítọ́ ti onítọ́jú",
+      title: "Àwọn ibi ìpọ́njú iṣẹ́",
+      subtitle: "Àwọn ìtọkasí wọnyi ràn onítọ́jú lọ́wọ́ láti dá àwọn àṣìṣe tí a fipamọ́ dúró ṣáájú kí wọ́n tó di ìṣòro fún iléeṣẹ́.",
+      missingIntake: {
+        label: "Ifiṣura aṣọ tí kò ní ìgbawọlé",
+        note: "Kìkì ifiṣura aṣọ ni a gbọdọ̀ tọkasí níbí. Ifiṣura iṣẹ́ ni a ń tọpa lọ́tọ̀ọ̀tọ̀.",
+      },
+      approvedExpenses: {
+        label: "Owó tí a fọwọsi",
+        note: "A ti gba awọn ìnáwó wọ̀nyí lákọ̀ọ́kọ́ nínú àyẹ̀wò onílé.",
+      },
+      overallBalance: {
+        label: "Iyókù gbogbogbo",
+        flowTemplate: "{inflow} wíwọlé • {outflow} jíjáde",
+      },
+    },
+    dash: "—",
+  },
 };
 
-const HA: Partial<CareCopy> = {
+const HA: DeepPartial<CareCopy> = {
   nav: {
     home: "Gida",
     book: "Yi Ajiya",
@@ -620,9 +1021,60 @@ const HA: Partial<CareCopy> = {
     homeCleaning: "Tsabtace gida",
     officeCleaning: "Tsabtace ofis",
   },
+  staffManager: {
+    metadata: {
+      title: "Dashbod na Manaja | Henry & Co. Fabric Care",
+      description:
+        "Dashbod na umarni ga manaja domin shigarwa, ayyukan kai tsaye, kuɗin shiga, da sarrafa kashe kuɗi.",
+    },
+    hero: {
+      eyebrow: "Ɗakin ayyukan manaja",
+      title: "Jagoranci yini. Riƙe bayanai cikin gaskiya.",
+      body: "Wannan shi ne sashin sarrafawa na kai-tsaye na manaja. Karɓa, rajistar da farashi ke goyon baya, motsi na hali, ɗaukar biyan kuɗi, da kuɗin yau da kullum dukkansu ya kamata a tafiyar da su a nan ba tare da rikicewa ba.",
+    },
+    quickLinks: {
+      openOperations: "Buɗe ayyuka",
+      openExpenses: "Buɗe kashe kuɗi",
+      trackingPage: "Shafin bin didiga",
+      createWalkIn: "Ƙirƙira ajiyar shigowa",
+    },
+    metrics: {
+      activeBookings: { label: "Ajiyar masu aiki", note: "Aikin yanzu mai gudana" },
+      urgentQueue: { label: "Layi mai gaggawa", note: "Yana buƙatar kulawa nan da nan" },
+      registeredPieces: { label: "Tufafi da aka rijista", note: "Bayanai da farashi ya goyi baya" },
+      recordedInflow: { label: "Kuɗin shiga da aka rubuta", note: "Kuɗin da aka rubuta a kan ajiyar" },
+      pendingExpenses: { label: "Kashe kuɗi a tsare", note: "Suna jiran sake duba na mai shi" },
+    },
+    urgentPanel: {
+      eyebrow: "Fifiko",
+      title: "Ajiya masu gaggawa",
+      subtitle: "Waɗannan su ne ayyukan da manaja bai kamata ya yi watsi da su ba.",
+      noSlot: "Babu lokaci",
+      openBooking: "Buɗe ajiya",
+      empty: "Babu ajiya mai gaggawa a yanzu.",
+    },
+    pressurePanel: {
+      eyebrow: "Binciken gaskiya na manaja",
+      title: "Wuraren matsi na ayyuka",
+      subtitle: "Waɗannan alamomi suna taimaka wa manaja ya dakatar da kurakurai na ɓoye kafin su zama matsala ga kamfani.",
+      missingIntake: {
+        label: "Ajiyar tufafi marasa karɓa",
+        note: "Sai ajiyar tufafi kaɗai ya kamata a alamta a nan. Ajiyar sabis ana bi su daban.",
+      },
+      approvedExpenses: {
+        label: "Kashe kuɗi da aka amince da su",
+        note: "An riga an amince da waɗannan kuɗaɗen a sake duba na mai shi.",
+      },
+      overallBalance: {
+        label: "Daidaiton gabaɗaya",
+        flowTemplate: "{inflow} shigowa • {outflow} fitowa",
+      },
+    },
+    dash: "—",
+  },
 };
 
-const DE: Partial<CareCopy> = {
+const DE: DeepPartial<CareCopy> = {
   nav: {
     home: "Start",
     book: "Buchen",
@@ -691,7 +1143,7 @@ const DE: Partial<CareCopy> = {
   },
 };
 
-const ZH: Partial<CareCopy> = {
+const ZH: DeepPartial<CareCopy> = {
   nav: {
     home: "首页",
     book: "预订",
@@ -760,7 +1212,7 @@ const ZH: Partial<CareCopy> = {
   },
 };
 
-const HI: Partial<CareCopy> = {
+const HI: DeepPartial<CareCopy> = {
   nav: {
     home: "होम",
     book: "बुक करें",
@@ -829,7 +1281,7 @@ const HI: Partial<CareCopy> = {
   },
 };
 
-const IT: Partial<CareCopy> = {
+const IT: DeepPartial<CareCopy> = {
   "nav": {
     "home": "Casa",
     "book": "Prenota",
@@ -898,7 +1350,7 @@ const IT: Partial<CareCopy> = {
   }
 };
 
-const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<CareCopy>>> = {
+const LOCALE_OVERRIDES: Partial<Record<AppLocale, DeepPartial<CareCopy>>> = {
   fr: FR,
   es: ES,
   pt: PT,

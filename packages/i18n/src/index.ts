@@ -10,6 +10,8 @@ export * from "./logistics-coverage-copy";
 export * from "./logistics-pricing-copy";
 export * from "./logistics-quote-copy";
 export * from "./logistics-support-copy";
+export * from "./logistics-staff-dispatcher-copy";
+export * from "./logistics-staff-owner-copy";
 export * from "./consent-copy";
 export * from "./auth-copy";
 export * from "./state-copy";

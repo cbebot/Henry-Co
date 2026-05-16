@@ -1002,6 +1002,183 @@ export type AccountCopy = {
       };
     };
   };
+  divisionCare: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      eyebrow: string;
+      sideKicker: string;
+      sideTitle: string;
+      sideBody: string;
+      breakdownLabel: string;
+      tilesAriaLabel: string;
+      tileLabels: {
+        total: string;
+        inFlight: string;
+        payment: string;
+        completed: string;
+      };
+      tileFoot: {
+        totalEmpty: string;
+        totalWithTemplate: string;
+        inFlightEmpty: string;
+        inFlightWith: string;
+        paymentEmpty: string;
+        paymentWith: string;
+        completedEmpty: string;
+        completedWith: string;
+      };
+      breakdownLabels: {
+        inFlight: string;
+        scheduled: string;
+        payment: string;
+        completed: string;
+      };
+      state: {
+        empty: {
+          headline: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        attention: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        active: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+        calm: {
+          headlineTemplateSingular: string;
+          headlineTemplatePlural: string;
+          blurb: string;
+          ctaPrimary: string;
+          ctaSecondary: string;
+        };
+      };
+    };
+    sections: {
+      glance: string;
+      glanceMeta: string;
+      bookings: string;
+      bookingsEmpty: string;
+      bookingsMetaTemplateSingular: string;
+      bookingsMetaTemplatePlural: string;
+      activity: string;
+      activityEmpty: string;
+      activityMetaTemplateSingular: string;
+      activityMetaTemplatePlural: string;
+    };
+    empty: {
+      title: string;
+      body: string;
+    };
+    glance: {
+      nextActionLabel: string;
+      serviceLabel: string;
+      pickupLabel: string;
+      balanceLabel: string;
+      trackingLabel: string;
+      serviceFallback: string;
+    };
+    activityAriaLabel: string;
+    status: {
+      live: string;
+      scheduled: string;
+      completed: string;
+      issue: string;
+      payment: string;
+    };
+    statusValueLabels: {
+      booked: string;
+      awaiting_payment: string;
+      receipt_submitted: string;
+      under_review: string;
+      delivered: string;
+      customer_confirmed: string;
+      inspection_completed: string;
+      service_completed: string;
+      cancelled: string;
+      issue: string;
+      exception: string;
+      rejected: string;
+    };
+    formatLabels: {
+      toBeScheduled: string;
+      shortMonths: [string, string, string, string, string, string, string, string, string, string, string, string];
+    };
+    dashboard: {
+      filters: {
+        all: string;
+        unpaid: string;
+        receipt: string;
+        active: string;
+        completed: string;
+        issue: string;
+      };
+      filtered: string;
+      bookingSingular: string;
+      bookingPlural: string;
+      metrics: {
+        visible: string;
+        visibleHint: string;
+        balance: string;
+        balanceHintSomeTemplate: string;
+        balanceHintNone: string;
+        receiptQueue: string;
+        receiptQueueHintSome: string;
+        receiptQueueHintNone: string;
+        completed: string;
+        completedHintSome: string;
+        completedHintNone: string;
+      };
+      linkedBookings: string;
+      linkedBookingsDescription: string;
+      onThisPage: string;
+      selectedBooking: string;
+      paymentSnapshot: string;
+      receiptVisibility: string;
+      nextBestAction: string;
+      serviceSummary: string;
+      serviceFallback: string;
+      addressPending: string;
+      updated: string;
+      balanceDue: string;
+      nextMove: string;
+      paginationLabel: string;
+      pageLabel: string;
+      of: string;
+      perPage: string;
+      previous: string;
+      next: string;
+      customerFallback: string;
+      scheduledDate: string;
+      notScheduled: string;
+      timeWindow: string;
+      windowPending: string;
+      pickupAddress: string;
+      returnAddress: string;
+      returnAddressFallback: string;
+      trackingCode: string;
+      quotedTotal: string;
+      amountRecorded: string;
+      receiptState: string;
+      receiptsSubmitted: string;
+      lastSubmission: string;
+      noReceiptYet: string;
+      openLiveBooking: string;
+      leaveReview: string;
+    };
+  };
 };
 
 const EN: AccountCopy = {
@@ -2078,6 +2255,183 @@ const EN: AccountCopy = {
         paid: "Paid",
         cancelled: "Cancelled",
       },
+    },
+  },
+  divisionCare: {
+    metadata: {
+      title: "Care · linked bookings",
+      description: "Track every HenryCo Care booking linked to this account — status, payment verification, and the next operational step in one place.",
+    },
+    hero: {
+      eyebrow: "Care · live",
+      sideKicker: "How this room works",
+      sideTitle: "Book on Care, follow up here.",
+      sideBody: "Every booking made on HenryCo Care mirrors into this room — tracking code, payment status, and the next operational step land here automatically. The dashboard below stays in sync as service progresses.",
+      breakdownLabel: "By status",
+      tilesAriaLabel: "Care booking summary",
+      tileLabels: {
+        total: "Bookings",
+        inFlight: "In service",
+        payment: "Awaiting payment",
+        completed: "Completed",
+      },
+      tileFoot: {
+        totalEmpty: "Book your first Care service to start",
+        totalWithTemplate: "{count} linked to this account",
+        inFlightEmpty: "Nothing actively moving right now",
+        inFlightWith: "Live status mirrors below",
+        paymentEmpty: "No outstanding payment verification",
+        paymentWith: "Submit or check receipt below",
+        completedEmpty: "No services completed yet",
+        completedWith: "Marked done by the Care team",
+      },
+      breakdownLabels: {
+        inFlight: "In service",
+        scheduled: "Scheduled",
+        payment: "Awaiting payment",
+        completed: "Completed",
+      },
+      state: {
+        empty: {
+          headline: "Book your first Care service.",
+          blurb: "Care services you book here sync automatically into this room — tracking code, payment status, and the next operational step.",
+          ctaPrimary: "Book a service",
+          ctaSecondary: "Open tracking",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} action to take.",
+          headlineTemplatePlural: "{count} actions to take.",
+          blurb: "One or more bookings are waiting on payment verification or a follow-up. Open the booking below to clear it.",
+          ctaPrimary: "Review bookings",
+          ctaSecondary: "Open tracking",
+        },
+        active: {
+          headlineTemplateSingular: "{count} service in motion.",
+          headlineTemplatePlural: "{count} services in motion.",
+          blurb: "Live tracking, payment verification, and the next operational step are mirrored from HenryCo Care into this room.",
+          ctaPrimary: "Open tracking",
+          ctaSecondary: "Book a service",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} booking on record.",
+          headlineTemplatePlural: "{count} bookings on record.",
+          blurb: "Your Care bookings, tracking codes, receipts, and upcoming actions — all in one place, synced in real time.",
+          ctaPrimary: "Book a service",
+          ctaSecondary: "Open tracking",
+        },
+      },
+    },
+    sections: {
+      glance: "Next action",
+      glanceMeta: "The most time-sensitive booking surfaces here.",
+      bookings: "All bookings",
+      bookingsEmpty: "Bookings made while signed in appear here in real time.",
+      bookingsMetaTemplateSingular: "{count} booking · filter, paginate, and open any one for the live detail.",
+      bookingsMetaTemplatePlural: "{count} bookings · filter, paginate, and open any one for the live detail.",
+      activity: "Recent activity",
+      activityEmpty: "Status updates, receipts, and reviews surface here as they happen.",
+      activityMetaTemplateSingular: "{count} update · most recent first",
+      activityMetaTemplatePlural: "{count} updates · most recent first",
+    },
+    empty: {
+      title: "No Care bookings linked yet",
+      body: "Bookings you make on Care while signed in land here immediately. Older bookings also surface once their email or phone matches your shared profile.",
+    },
+    glance: {
+      nextActionLabel: "Next action",
+      serviceLabel: "Service",
+      pickupLabel: "Pickup",
+      balanceLabel: "Balance due",
+      trackingLabel: "Tracking",
+      serviceFallback: "Care service",
+    },
+    activityAriaLabel: "Care activity",
+    status: {
+      live: "In service",
+      scheduled: "Scheduled",
+      completed: "Completed",
+      issue: "Action needed",
+      payment: "Payment review",
+    },
+    statusValueLabels: {
+      booked: "Booked",
+      awaiting_payment: "Awaiting payment",
+      receipt_submitted: "Receipt submitted",
+      under_review: "Under review",
+      delivered: "Delivered",
+      customer_confirmed: "Customer confirmed",
+      inspection_completed: "Inspection completed",
+      service_completed: "Service completed",
+      cancelled: "Cancelled",
+      issue: "Issue",
+      exception: "Exception",
+      rejected: "Rejected",
+    },
+    formatLabels: {
+      toBeScheduled: "To be scheduled",
+      shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    },
+    dashboard: {
+      filters: {
+        all: "All",
+        unpaid: "Balance due",
+        receipt: "Receipt / review",
+        active: "In progress",
+        completed: "Completed",
+        issue: "Issues",
+      },
+      filtered: "filtered",
+      bookingSingular: "booking",
+      bookingPlural: "bookings",
+      metrics: {
+        visible: "Visible bookings",
+        visibleHint: "Real Care bookings linked to this account.",
+        balance: "Outstanding balance",
+        balanceHintSomeTemplate: "{count} booking(s) still need payment follow-up.",
+        balanceHintNone: "No unpaid Care balance is currently open.",
+        receiptQueue: "Receipt queue",
+        receiptQueueHintSome: "Bookings with submitted receipts still waiting for verification.",
+        receiptQueueHintNone: "No receipt-verification backlog is linked to this account.",
+        completed: "Completed",
+        completedHintSome: "Completed bookings that can move into review follow-up.",
+        completedHintNone: "Completed Care bookings will appear here once service closes.",
+      },
+      linkedBookings: "Linked Care bookings",
+      linkedBookingsDescription: "Your Care bookings, payment status, and upcoming actions.",
+      onThisPage: "on this page",
+      selectedBooking: "Selected booking",
+      paymentSnapshot: "Payment snapshot",
+      receiptVisibility: "Receipt visibility",
+      nextBestAction: "Next best action",
+      serviceSummary: "Service summary",
+      serviceFallback: "Care service",
+      addressPending: "Address pending",
+      updated: "Updated",
+      balanceDue: "Balance due",
+      nextMove: "Next move",
+      paginationLabel: "Care bookings pagination",
+      pageLabel: "Page",
+      of: "of",
+      perPage: "per page",
+      previous: "Previous",
+      next: "Next",
+      customerFallback: "Customer",
+      scheduledDate: "Scheduled date",
+      notScheduled: "Not scheduled yet",
+      timeWindow: "Time window",
+      windowPending: "Window pending",
+      pickupAddress: "Pickup address",
+      returnAddress: "Return / delivery address",
+      returnAddressFallback: "Uses pickup address unless changed during booking",
+      trackingCode: "Tracking code",
+      quotedTotal: "Quoted total",
+      amountRecorded: "Amount recorded",
+      receiptState: "Receipt state",
+      receiptsSubmitted: "Receipts submitted",
+      lastSubmission: "Last submission",
+      noReceiptYet: "No receipt yet",
+      openLiveBooking: "Open live booking",
+      leaveReview: "Leave review",
     },
   },
 };
@@ -3174,6 +3528,183 @@ const FR: DeepPartial<AccountCopy> = {
         paid: "Payé",
         cancelled: "Annulé",
       },
+    },
+  },
+  divisionCare: {
+    metadata: {
+      title: "Care · réservations liées",
+      description: "Suivez chaque réservation HenryCo Care liée à ce compte — statut, vérification du paiement et prochaine étape opérationnelle au même endroit.",
+    },
+    hero: {
+      eyebrow: "Care · en direct",
+      sideKicker: "Comment cette pièce fonctionne",
+      sideTitle: "Réservez sur Care, suivez ici.",
+      sideBody: "Chaque réservation faite sur HenryCo Care est miroitée dans cette pièce — code de suivi, statut du paiement et prochaine étape opérationnelle y arrivent automatiquement. Le tableau de bord ci-dessous reste synchronisé pendant le service.",
+      breakdownLabel: "Par statut",
+      tilesAriaLabel: "Résumé des réservations Care",
+      tileLabels: {
+        total: "Réservations",
+        inFlight: "En cours",
+        payment: "Paiement à vérifier",
+        completed: "Terminées",
+      },
+      tileFoot: {
+        totalEmpty: "Réservez votre premier service Care",
+        totalWithTemplate: "{count} lié·e·s à ce compte",
+        inFlightEmpty: "Rien d’actif pour le moment",
+        inFlightWith: "Statut en direct ci-dessous",
+        paymentEmpty: "Aucune vérification de paiement en attente",
+        paymentWith: "Soumettre ou vérifier le reçu ci-dessous",
+        completedEmpty: "Aucune prestation terminée pour le moment",
+        completedWith: "Marquées comme terminées par Care",
+      },
+      breakdownLabels: {
+        inFlight: "En cours",
+        scheduled: "Planifiées",
+        payment: "Paiement à vérifier",
+        completed: "Terminées",
+      },
+      state: {
+        empty: {
+          headline: "Réservez votre première prestation Care.",
+          blurb: "Les services Care que vous réservez ici se synchronisent automatiquement dans cette pièce — code de suivi, paiement et prochaine étape opérationnelle.",
+          ctaPrimary: "Réserver un service",
+          ctaSecondary: "Ouvrir le suivi",
+        },
+        attention: {
+          headlineTemplateSingular: "{count} action à mener.",
+          headlineTemplatePlural: "{count} actions à mener.",
+          blurb: "Une ou plusieurs réservations attendent une preuve de paiement ou un suivi. Ouvrez la réservation concernée ci-dessous.",
+          ctaPrimary: "Voir les réservations",
+          ctaSecondary: "Ouvrir le suivi",
+        },
+        active: {
+          headlineTemplateSingular: "{count} prestation en cours.",
+          headlineTemplatePlural: "{count} prestations en cours.",
+          blurb: "Suivi en direct, paiement vérifié et prochaine étape opérationnelle miroirés depuis HenryCo Care dans cette pièce.",
+          ctaPrimary: "Ouvrir le suivi",
+          ctaSecondary: "Réserver un service",
+        },
+        calm: {
+          headlineTemplateSingular: "{count} réservation liée.",
+          headlineTemplatePlural: "{count} réservations liées.",
+          blurb: "Vos réservations Care, codes de suivi, reçus et prochaines actions réunis au même endroit — synchronisés en temps réel.",
+          ctaPrimary: "Réserver un service",
+          ctaSecondary: "Ouvrir le suivi",
+        },
+      },
+    },
+    sections: {
+      glance: "Prochaine action",
+      glanceMeta: "La réservation la plus urgente est mise en avant ici.",
+      bookings: "Toutes les réservations",
+      bookingsEmpty: "Les réservations faites en étant connecté apparaissent ici en temps réel.",
+      bookingsMetaTemplateSingular: "{count} réservation · filtrer, paginer et ouvrir le détail en direct.",
+      bookingsMetaTemplatePlural: "{count} réservations · filtrer, paginer et ouvrir le détail en direct.",
+      activity: "Activité récente",
+      activityEmpty: "Mises à jour de statut, reçus et avis apparaissent ici dès qu’ils se produisent.",
+      activityMetaTemplateSingular: "{count} mise à jour · plus récente en premier",
+      activityMetaTemplatePlural: "{count} mises à jour · plus récentes en premier",
+    },
+    empty: {
+      title: "Aucune réservation Care liée pour le moment",
+      body: "Les réservations faites sur Care en étant connecté apparaîtront ici immédiatement. Les anciennes réservations apparaîtront aussi une fois que leur e-mail ou téléphone correspondra à votre profil partagé.",
+    },
+    glance: {
+      nextActionLabel: "Prochaine action",
+      serviceLabel: "Service",
+      pickupLabel: "Enlèvement",
+      balanceLabel: "Solde dû",
+      trackingLabel: "Suivi",
+      serviceFallback: "Service Care",
+    },
+    activityAriaLabel: "Activité Care",
+    status: {
+      live: "En cours",
+      scheduled: "Planifiée",
+      completed: "Terminée",
+      issue: "Action requise",
+      payment: "Paiement à vérifier",
+    },
+    statusValueLabels: {
+      booked: "Réservé",
+      awaiting_payment: "Paiement attendu",
+      receipt_submitted: "Reçu envoyé",
+      under_review: "En revue",
+      delivered: "Livré",
+      customer_confirmed: "Confirmé par le client",
+      inspection_completed: "Inspection terminée",
+      service_completed: "Service terminé",
+      cancelled: "Annulé",
+      issue: "Incident",
+      exception: "Exception",
+      rejected: "Rejeté",
+    },
+    formatLabels: {
+      toBeScheduled: "À planifier",
+      shortMonths: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."],
+    },
+    dashboard: {
+      filters: {
+        all: "Tout",
+        unpaid: "Solde dû",
+        receipt: "Reçu / revue",
+        active: "En cours",
+        completed: "Terminées",
+        issue: "Incidents",
+      },
+      filtered: "filtré",
+      bookingSingular: "réservation",
+      bookingPlural: "réservations",
+      metrics: {
+        visible: "Réservations visibles",
+        visibleHint: "Vraies réservations Care liées à ce compte.",
+        balance: "Solde restant",
+        balanceHintSomeTemplate: "{count} réservation(s) demandent encore un suivi de paiement.",
+        balanceHintNone: "Aucun solde Care impayé n’est ouvert pour le moment.",
+        receiptQueue: "File des reçus",
+        receiptQueueHintSome: "Des réservations avec reçu envoyé attendent encore une vérification.",
+        receiptQueueHintNone: "Aucun retard de vérification de reçu n’est lié à ce compte.",
+        completed: "Terminées",
+        completedHintSome: "Des réservations terminées peuvent maintenant passer au suivi d’avis.",
+        completedHintNone: "Les réservations Care terminées apparaîtront ici à la fin du service.",
+      },
+      linkedBookings: "Réservations Care liées",
+      linkedBookingsDescription: "Vos réservations Care, leur statut de paiement et les prochaines actions.",
+      onThisPage: "sur cette page",
+      selectedBooking: "Réservation sélectionnée",
+      paymentSnapshot: "Aperçu du paiement",
+      receiptVisibility: "Visibilité du reçu",
+      nextBestAction: "Meilleure action suivante",
+      serviceSummary: "Résumé du service",
+      serviceFallback: "Service Care",
+      addressPending: "Adresse en attente",
+      updated: "Mis à jour",
+      balanceDue: "Solde dû",
+      nextMove: "Prochaine action",
+      paginationLabel: "Pagination des réservations Care",
+      pageLabel: "Page",
+      of: "sur",
+      perPage: "par page",
+      previous: "Précédent",
+      next: "Suivant",
+      customerFallback: "Client",
+      scheduledDate: "Date prévue",
+      notScheduled: "Pas encore planifié",
+      timeWindow: "Créneau horaire",
+      windowPending: "Créneau en attente",
+      pickupAddress: "Adresse de collecte",
+      returnAddress: "Adresse de retour / livraison",
+      returnAddressFallback: "Utilise l’adresse de collecte sauf modification pendant la réservation",
+      trackingCode: "Code de suivi",
+      quotedTotal: "Total estimé",
+      amountRecorded: "Montant enregistré",
+      receiptState: "État du reçu",
+      receiptsSubmitted: "Reçus envoyés",
+      lastSubmission: "Dernier envoi",
+      noReceiptYet: "Aucun reçu pour le moment",
+      openLiveBooking: "Ouvrir la réservation en direct",
+      leaveReview: "Laisser un avis",
     },
   },
 };

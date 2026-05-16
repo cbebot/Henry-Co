@@ -16,6 +16,14 @@ export { getLogisticsCoverageCopy, type LogisticsCoverageCopy } from "./logistic
 export { getLogisticsPricingCopy, type LogisticsPricingCopy } from "./logistics-pricing-copy";
 export { getLogisticsQuoteCopy, type LogisticsQuoteCopy } from "./logistics-quote-copy";
 export { getLogisticsSupportCopy, type LogisticsSupportCopy } from "./logistics-support-copy";
+export {
+  getLogisticsStaffDispatcherCopy,
+  type LogisticsStaffDispatcherCopy,
+} from "./logistics-staff-dispatcher-copy";
+export {
+  getLogisticsStaffOwnerCopy,
+  type LogisticsStaffOwnerCopy,
+} from "./logistics-staff-owner-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";

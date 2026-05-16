@@ -133,6 +133,52 @@ export type JobsCopy = {
     savedAt: string;
     autosaveHint: string;
     saveError: string;
+    addCta: string;
+    rolePlaceholder: string;
+    companyPlaceholder: string;
+    descriptionPlaceholder: string;
+    skillsAddPlaceholder: string;
+    removeCta: string;
+    removeSkillAria: string;
+  };
+  candidateProfile: {
+    pageTitle: string;
+    pageSubtitle: string;
+    rightRailTrustTitle: string;
+    rightRailVerificationKicker: string;
+    rightRailDefaultReadiness: string;
+    rightRailOpenVerification: string;
+    rightRailDocumentsTitle: string;
+    rightRailDocumentsCountSingular: string;
+    rightRailDocumentsCountPlural: string;
+    rightRailDocumentsHint: string;
+    statusVerified: string;
+    statusPending: string;
+    statusRejected: string;
+    statusUnverified: string;
+    savedNoticeTitle: string;
+    savedNoticeBody: string;
+    draftSectionTitle: string;
+    draftSectionBody: string;
+    editSectionTitle: string;
+    editSectionBody: string;
+    fieldFullNamePlaceholder: string;
+    fieldHeadlinePlaceholder: string;
+    fieldSummaryPlaceholder: string;
+    fieldLocationPlaceholder: string;
+    fieldTimezonePlaceholder: string;
+    fieldWorkModesPlaceholder: string;
+    fieldRoleTypesPlaceholder: string;
+    fieldPreferredFunctionsPlaceholder: string;
+    fieldSkillsPlaceholder: string;
+    fieldPortfolioLinksPlaceholder: string;
+    fieldSalaryExpectationPlaceholder: string;
+    fieldAvailabilityPlaceholder: string;
+    fieldWorkHistoryPlaceholder: string;
+    fieldEducationPlaceholder: string;
+    fieldCertificationsPlaceholder: string;
+    submitSaving: string;
+    submitLabel: string;
   };
   employerHiring: {
     pageTitle: string;
@@ -338,6 +384,57 @@ const EN: JobsCopy = {
     savedAt: "Saved",
     autosaveHint: "Auto-saves every 30s and on blur",
     saveError: "Couldn't save your draft.",
+    addCta: "+ Add",
+    rolePlaceholder: "Role",
+    companyPlaceholder: "Company",
+    descriptionPlaceholder: "Describe your contributions",
+    skillsAddPlaceholder: "Press Enter to add",
+    removeCta: "Remove",
+    removeSkillAria: "Remove skill",
+  },
+  candidateProfile: {
+    pageTitle: "Candidate Profile",
+    pageSubtitle: "Keep your profile complete so employers can see the best version of you.",
+    rightRailTrustTitle: "Profile trust",
+    rightRailVerificationKicker: "Verification",
+    rightRailDefaultReadiness:
+      "Complete your profile to improve how employers see your applications.",
+    rightRailOpenVerification: "Open account verification",
+    rightRailDocumentsTitle: "Documents",
+    rightRailDocumentsCountSingular: "{count} file uploaded to your profile.",
+    rightRailDocumentsCountPlural: "{count} files uploaded to your profile.",
+    rightRailDocumentsHint:
+      "Skills, work history, and portfolio links help employers evaluate your applications.",
+    statusVerified: "Verified",
+    statusPending: "Pending",
+    statusRejected: "Rejected",
+    statusUnverified: "Unverified",
+    savedNoticeTitle: "Profile saved",
+    savedNoticeBody:
+      "Your profile has been updated. Changes are visible to employers when you apply.",
+    draftSectionTitle: "Profile draft",
+    draftSectionBody:
+      "Work-in-progress changes auto-save every 30 seconds and on blur. Press 'Save profile' below to publish.",
+    editSectionTitle: "Edit your profile",
+    editSectionBody:
+      "Professional details here are visible to employers when you apply to roles. Phone and email are held by HenryCo for verification and trust scoring only — they are not passed to employers.",
+    fieldFullNamePlaceholder: "Full name",
+    fieldHeadlinePlaceholder: "Headline",
+    fieldSummaryPlaceholder: "Professional summary",
+    fieldLocationPlaceholder: "Location",
+    fieldTimezonePlaceholder: "Timezone",
+    fieldWorkModesPlaceholder: "remote, hybrid, onsite",
+    fieldRoleTypesPlaceholder: "full-time, contract",
+    fieldPreferredFunctionsPlaceholder: "Product, Operations, Marketing",
+    fieldSkillsPlaceholder: "Skills",
+    fieldPortfolioLinksPlaceholder: "Portfolio links",
+    fieldSalaryExpectationPlaceholder: "Salary expectation",
+    fieldAvailabilityPlaceholder: "Availability",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Operations Lead"}]',
+    fieldEducationPlaceholder: '[{"school":"University","degree":"BSc"}]',
+    fieldCertificationsPlaceholder: '[{"name":"Project Management"}]',
+    submitSaving: "Saving profile...",
+    submitLabel: "Save candidate profile",
   },
   employerHiring: {
     pageTitle: "Hiring Pipelines",
@@ -541,6 +638,75 @@ const FR: DeepPartial<JobsCopy> = {
     submitSaving: "Enregistrement de l'entreprise...",
     submitLabel: "Enregistrer le profil employeur",
   },
+  profileBuilder: {
+    sectionBasics: "Informations de base",
+    sectionExperience: "Expérience",
+    sectionEducation: "Formation",
+    sectionSkills: "Compétences",
+    sectionPortfolio: "Portfolio",
+    fullName: "Nom complet",
+    headline: "Titre professionnel",
+    summary: "Résumé",
+    location: "Lieu",
+    phone: "Téléphone",
+    email: "E-mail",
+    saving: "Enregistrement…",
+    savedAt: "Enregistré",
+    autosaveHint: "Enregistrement automatique toutes les 30 s et à la perte de focus",
+    saveError: "Impossible d'enregistrer votre brouillon.",
+    addCta: "+ Ajouter",
+    rolePlaceholder: "Poste",
+    companyPlaceholder: "Entreprise",
+    descriptionPlaceholder: "Décrivez vos contributions",
+    skillsAddPlaceholder: "Appuyez sur Entrée pour ajouter",
+    removeCta: "Supprimer",
+    removeSkillAria: "Supprimer la compétence",
+  },
+  candidateProfile: {
+    pageTitle: "Profil du candidat",
+    pageSubtitle:
+      "Gardez votre profil complet pour que les employeurs voient le meilleur de vous.",
+    rightRailTrustTitle: "Confiance du profil",
+    rightRailVerificationKicker: "Vérification",
+    rightRailDefaultReadiness:
+      "Complétez votre profil pour améliorer la perception de vos candidatures par les employeurs.",
+    rightRailOpenVerification: "Ouvrir la vérification du compte",
+    rightRailDocumentsTitle: "Documents",
+    rightRailDocumentsCountSingular: "{count} fichier téléversé sur votre profil.",
+    rightRailDocumentsCountPlural: "{count} fichiers téléversés sur votre profil.",
+    rightRailDocumentsHint:
+      "Les compétences, l'historique professionnel et les liens du portfolio aident les employeurs à évaluer vos candidatures.",
+    statusVerified: "Vérifié",
+    statusPending: "En attente",
+    statusRejected: "Refusé",
+    statusUnverified: "Non vérifié",
+    savedNoticeTitle: "Profil enregistré",
+    savedNoticeBody:
+      "Votre profil a été mis à jour. Les modifications sont visibles par les employeurs lors de vos candidatures.",
+    draftSectionTitle: "Brouillon du profil",
+    draftSectionBody:
+      "Les changements en cours s'enregistrent automatiquement toutes les 30 secondes et à la perte de focus. Cliquez sur « Enregistrer le profil » ci-dessous pour publier.",
+    editSectionTitle: "Modifier votre profil",
+    editSectionBody:
+      "Les informations professionnelles ici sont visibles par les employeurs lors de vos candidatures. Le téléphone et l'e-mail sont conservés par HenryCo pour la vérification et la notation de confiance uniquement — ils ne sont pas transmis aux employeurs.",
+    fieldFullNamePlaceholder: "Nom complet",
+    fieldHeadlinePlaceholder: "Titre professionnel",
+    fieldSummaryPlaceholder: "Résumé professionnel",
+    fieldLocationPlaceholder: "Lieu",
+    fieldTimezonePlaceholder: "Fuseau horaire",
+    fieldWorkModesPlaceholder: "télétravail, hybride, sur site",
+    fieldRoleTypesPlaceholder: "temps plein, contrat",
+    fieldPreferredFunctionsPlaceholder: "Produit, Opérations, Marketing",
+    fieldSkillsPlaceholder: "Compétences",
+    fieldPortfolioLinksPlaceholder: "Liens du portfolio",
+    fieldSalaryExpectationPlaceholder: "Prétentions salariales",
+    fieldAvailabilityPlaceholder: "Disponibilité",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Responsable des opérations"}]',
+    fieldEducationPlaceholder: '[{"school":"Université","degree":"Licence"}]',
+    fieldCertificationsPlaceholder: '[{"name":"Gestion de projet"}]',
+    submitSaving: "Enregistrement du profil...",
+    submitLabel: "Enregistrer le profil du candidat",
+  },
   employerJobs: {
     pageTitle: "Offres employeur",
     pageSubtitle: "Gérez vos offres d'emploi et suivez les candidatures.",
@@ -686,6 +852,75 @@ const ES: DeepPartial<JobsCopy> = {
     employerTypeInternal: "Contratación interna HenryCo",
     submitSaving: "Guardando empresa...",
     submitLabel: "Guardar perfil del empleador",
+  },
+  profileBuilder: {
+    sectionBasics: "Datos básicos",
+    sectionExperience: "Experiencia",
+    sectionEducation: "Formación",
+    sectionSkills: "Habilidades",
+    sectionPortfolio: "Portafolio",
+    fullName: "Nombre completo",
+    headline: "Titular profesional",
+    summary: "Resumen",
+    location: "Ubicación",
+    phone: "Teléfono",
+    email: "Correo electrónico",
+    saving: "Guardando…",
+    savedAt: "Guardado",
+    autosaveHint: "Guardado automático cada 30 s y al perder el foco",
+    saveError: "No se pudo guardar tu borrador.",
+    addCta: "+ Añadir",
+    rolePlaceholder: "Puesto",
+    companyPlaceholder: "Empresa",
+    descriptionPlaceholder: "Describe tus aportes",
+    skillsAddPlaceholder: "Pulsa Intro para añadir",
+    removeCta: "Eliminar",
+    removeSkillAria: "Eliminar habilidad",
+  },
+  candidateProfile: {
+    pageTitle: "Perfil del candidato",
+    pageSubtitle:
+      "Mantén tu perfil completo para que los empleadores vean lo mejor de ti.",
+    rightRailTrustTitle: "Confianza del perfil",
+    rightRailVerificationKicker: "Verificación",
+    rightRailDefaultReadiness:
+      "Completa tu perfil para mejorar cómo los empleadores ven tus candidaturas.",
+    rightRailOpenVerification: "Abrir verificación de cuenta",
+    rightRailDocumentsTitle: "Documentos",
+    rightRailDocumentsCountSingular: "{count} archivo subido a tu perfil.",
+    rightRailDocumentsCountPlural: "{count} archivos subidos a tu perfil.",
+    rightRailDocumentsHint:
+      "Las habilidades, la trayectoria laboral y los enlaces del portafolio ayudan a los empleadores a evaluar tus candidaturas.",
+    statusVerified: "Verificado",
+    statusPending: "Pendiente",
+    statusRejected: "Rechazado",
+    statusUnverified: "Sin verificar",
+    savedNoticeTitle: "Perfil guardado",
+    savedNoticeBody:
+      "Tu perfil ha sido actualizado. Los cambios son visibles para los empleadores cuando te postules.",
+    draftSectionTitle: "Borrador del perfil",
+    draftSectionBody:
+      "Los cambios en curso se guardan automáticamente cada 30 segundos y al perder el foco. Pulsa «Guardar perfil» abajo para publicar.",
+    editSectionTitle: "Editar tu perfil",
+    editSectionBody:
+      "Los datos profesionales aquí son visibles para los empleadores cuando te postules. El teléfono y el correo los conserva HenryCo solo para la verificación y la puntuación de confianza — no se transmiten a los empleadores.",
+    fieldFullNamePlaceholder: "Nombre completo",
+    fieldHeadlinePlaceholder: "Titular profesional",
+    fieldSummaryPlaceholder: "Resumen profesional",
+    fieldLocationPlaceholder: "Ubicación",
+    fieldTimezonePlaceholder: "Zona horaria",
+    fieldWorkModesPlaceholder: "remoto, híbrido, presencial",
+    fieldRoleTypesPlaceholder: "tiempo completo, contrato",
+    fieldPreferredFunctionsPlaceholder: "Producto, Operaciones, Marketing",
+    fieldSkillsPlaceholder: "Habilidades",
+    fieldPortfolioLinksPlaceholder: "Enlaces del portafolio",
+    fieldSalaryExpectationPlaceholder: "Expectativa salarial",
+    fieldAvailabilityPlaceholder: "Disponibilidad",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Responsable de operaciones"}]',
+    fieldEducationPlaceholder: '[{"school":"Universidad","degree":"Licenciatura"}]',
+    fieldCertificationsPlaceholder: '[{"name":"Gestión de proyectos"}]',
+    submitSaving: "Guardando perfil...",
+    submitLabel: "Guardar perfil del candidato",
   },
   employerJobs: {
     pageTitle: "Empleos del empleador",
@@ -833,6 +1068,75 @@ const PT: DeepPartial<JobsCopy> = {
     submitSaving: "A guardar empresa...",
     submitLabel: "Guardar perfil do empregador",
   },
+  profileBuilder: {
+    sectionBasics: "Informações básicas",
+    sectionExperience: "Experiência",
+    sectionEducation: "Formação",
+    sectionSkills: "Competências",
+    sectionPortfolio: "Portefólio",
+    fullName: "Nome completo",
+    headline: "Título profissional",
+    summary: "Resumo",
+    location: "Localização",
+    phone: "Telefone",
+    email: "E-mail",
+    saving: "A guardar…",
+    savedAt: "Guardado",
+    autosaveHint: "Guarda automática a cada 30 s e ao perder o foco",
+    saveError: "Não foi possível guardar o seu rascunho.",
+    addCta: "+ Adicionar",
+    rolePlaceholder: "Cargo",
+    companyPlaceholder: "Empresa",
+    descriptionPlaceholder: "Descreva os seus contributos",
+    skillsAddPlaceholder: "Prima Enter para adicionar",
+    removeCta: "Remover",
+    removeSkillAria: "Remover competência",
+  },
+  candidateProfile: {
+    pageTitle: "Perfil do candidato",
+    pageSubtitle:
+      "Mantenha o seu perfil completo para que os empregadores vejam o seu melhor.",
+    rightRailTrustTitle: "Confiança do perfil",
+    rightRailVerificationKicker: "Verificação",
+    rightRailDefaultReadiness:
+      "Conclua o seu perfil para melhorar a forma como os empregadores avaliam as suas candidaturas.",
+    rightRailOpenVerification: "Abrir verificação da conta",
+    rightRailDocumentsTitle: "Documentos",
+    rightRailDocumentsCountSingular: "{count} ficheiro carregado no seu perfil.",
+    rightRailDocumentsCountPlural: "{count} ficheiros carregados no seu perfil.",
+    rightRailDocumentsHint:
+      "Competências, histórico profissional e links do portefólio ajudam os empregadores a avaliar as suas candidaturas.",
+    statusVerified: "Verificado",
+    statusPending: "Pendente",
+    statusRejected: "Rejeitado",
+    statusUnverified: "Não verificado",
+    savedNoticeTitle: "Perfil guardado",
+    savedNoticeBody:
+      "O seu perfil foi atualizado. As alterações ficam visíveis para os empregadores quando se candidata.",
+    draftSectionTitle: "Rascunho do perfil",
+    draftSectionBody:
+      "As alterações em curso são guardadas automaticamente a cada 30 segundos e ao perder o foco. Prima «Guardar perfil» abaixo para publicar.",
+    editSectionTitle: "Editar o seu perfil",
+    editSectionBody:
+      "Os dados profissionais aqui são visíveis para os empregadores quando se candidata. O telefone e o e-mail são mantidos pela HenryCo apenas para verificação e pontuação de confiança — não são transmitidos aos empregadores.",
+    fieldFullNamePlaceholder: "Nome completo",
+    fieldHeadlinePlaceholder: "Título profissional",
+    fieldSummaryPlaceholder: "Resumo profissional",
+    fieldLocationPlaceholder: "Localização",
+    fieldTimezonePlaceholder: "Fuso horário",
+    fieldWorkModesPlaceholder: "remoto, híbrido, presencial",
+    fieldRoleTypesPlaceholder: "tempo integral, contrato",
+    fieldPreferredFunctionsPlaceholder: "Produto, Operações, Marketing",
+    fieldSkillsPlaceholder: "Competências",
+    fieldPortfolioLinksPlaceholder: "Links do portefólio",
+    fieldSalaryExpectationPlaceholder: "Expectativa salarial",
+    fieldAvailabilityPlaceholder: "Disponibilidade",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Líder de operações"}]',
+    fieldEducationPlaceholder: '[{"school":"Universidade","degree":"Licenciatura"}]',
+    fieldCertificationsPlaceholder: '[{"name":"Gestão de projetos"}]',
+    submitSaving: "A guardar perfil...",
+    submitLabel: "Guardar perfil do candidato",
+  },
   employerJobs: {
     pageTitle: "Vagas do empregador",
     pageSubtitle: "Gerencie suas vagas publicadas e acompanhe os candidatos.",
@@ -974,6 +1278,74 @@ const AR: DeepPartial<JobsCopy> = {
     employerTypeInternal: "توظيف داخلي في HenryCo",
     submitSaving: "جارٍ حفظ الشركة...",
     submitLabel: "حفظ ملف صاحب العمل",
+  },
+  profileBuilder: {
+    sectionBasics: "المعلومات الأساسية",
+    sectionExperience: "الخبرة",
+    sectionEducation: "التعليم",
+    sectionSkills: "المهارات",
+    sectionPortfolio: "ملف الأعمال",
+    fullName: "الاسم الكامل",
+    headline: "العنوان المهني",
+    summary: "نبذة",
+    location: "الموقع",
+    phone: "الهاتف",
+    email: "البريد الإلكتروني",
+    saving: "جارٍ الحفظ…",
+    savedAt: "تم الحفظ",
+    autosaveHint: "حفظ تلقائي كل 30 ثانية وعند فقدان التركيز",
+    saveError: "تعذّر حفظ مسودتك.",
+    addCta: "+ إضافة",
+    rolePlaceholder: "المنصب",
+    companyPlaceholder: "الشركة",
+    descriptionPlaceholder: "صف مساهماتك",
+    skillsAddPlaceholder: "اضغط Enter للإضافة",
+    removeCta: "إزالة",
+    removeSkillAria: "إزالة المهارة",
+  },
+  candidateProfile: {
+    pageTitle: "ملف المرشّح",
+    pageSubtitle: "حافظ على اكتمال ملفك الشخصي ليرى أصحاب العمل أفضل صورة عنك.",
+    rightRailTrustTitle: "ثقة الملف الشخصي",
+    rightRailVerificationKicker: "التحقق",
+    rightRailDefaultReadiness:
+      "أكمل ملفك الشخصي لتحسين نظرة أصحاب العمل إلى طلباتك.",
+    rightRailOpenVerification: "فتح التحقق من الحساب",
+    rightRailDocumentsTitle: "المستندات",
+    rightRailDocumentsCountSingular: "تم رفع {count} ملف إلى ملفك الشخصي.",
+    rightRailDocumentsCountPlural: "تم رفع {count} ملفات إلى ملفك الشخصي.",
+    rightRailDocumentsHint:
+      "تساعد المهارات وتاريخ العمل وروابط المعرض أصحاب العمل في تقييم طلباتك.",
+    statusVerified: "موثّق",
+    statusPending: "قيد الانتظار",
+    statusRejected: "مرفوض",
+    statusUnverified: "غير موثّق",
+    savedNoticeTitle: "تم حفظ الملف الشخصي",
+    savedNoticeBody:
+      "تم تحديث ملفك الشخصي. التغييرات مرئية لأصحاب العمل عند التقديم.",
+    draftSectionTitle: "مسودة الملف الشخصي",
+    draftSectionBody:
+      "يتم حفظ التغييرات قيد التنفيذ تلقائيًا كل 30 ثانية وعند فقدان التركيز. اضغط «حفظ الملف الشخصي» بالأسفل للنشر.",
+    editSectionTitle: "تعديل ملفك الشخصي",
+    editSectionBody:
+      "التفاصيل المهنية هنا مرئية لأصحاب العمل عند التقديم على الوظائف. تحتفظ HenryCo بالهاتف والبريد الإلكتروني للتحقق وحساب درجة الثقة فقط — ولا يتم تمريرها إلى أصحاب العمل.",
+    fieldFullNamePlaceholder: "الاسم الكامل",
+    fieldHeadlinePlaceholder: "العنوان المهني",
+    fieldSummaryPlaceholder: "ملخّص مهني",
+    fieldLocationPlaceholder: "الموقع",
+    fieldTimezonePlaceholder: "المنطقة الزمنية",
+    fieldWorkModesPlaceholder: "عن بُعد، هجين، في الموقع",
+    fieldRoleTypesPlaceholder: "دوام كامل، عقد",
+    fieldPreferredFunctionsPlaceholder: "المنتج، العمليات، التسويق",
+    fieldSkillsPlaceholder: "المهارات",
+    fieldPortfolioLinksPlaceholder: "روابط المعرض",
+    fieldSalaryExpectationPlaceholder: "الراتب المتوقع",
+    fieldAvailabilityPlaceholder: "التوفر",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"قائد العمليات"}]',
+    fieldEducationPlaceholder: '[{"school":"جامعة","degree":"بكالوريوس"}]',
+    fieldCertificationsPlaceholder: '[{"name":"إدارة المشاريع"}]',
+    submitSaving: "جارٍ حفظ الملف الشخصي...",
+    submitLabel: "حفظ ملف المرشّح",
   },
   employerJobs: {
     pageTitle: "وظائف صاحب العمل",
@@ -1120,6 +1492,75 @@ const IG: DeepPartial<JobsCopy> = {
     employerTypeInternal: "Ọrụ ime ụlọ HenryCo",
     submitSaving: "Na-edebe ụlọ ọrụ...",
     submitLabel: "Debe profaịlụ ọchịchị",
+  },
+  profileBuilder: {
+    sectionBasics: "Ihe ndị bụ isi",
+    sectionExperience: "Ahụmahụ",
+    sectionEducation: "Agụmakwụkwọ",
+    sectionSkills: "Nkà",
+    sectionPortfolio: "Pọtfọlio",
+    fullName: "Aha zuru ezu",
+    headline: "Aha akwụkwọ ọrụ",
+    summary: "Nchịkọta",
+    location: "Ebe ị nọ",
+    phone: "Ekwentị",
+    email: "Email",
+    saving: "Na-edebe…",
+    savedAt: "Edebere",
+    autosaveHint: "Na-edebe akpaaka kwa sekọnd 30 na mgbe ọ kụlachara",
+    saveError: "Enweghị ike idebe ihe edeturu gị.",
+    addCta: "+ Tinye",
+    rolePlaceholder: "Ọkwa",
+    companyPlaceholder: "Ụlọ ọrụ",
+    descriptionPlaceholder: "Kọwaa onyinye gị",
+    skillsAddPlaceholder: "Pịa Enter iji tinye",
+    removeCta: "Wepụ",
+    removeSkillAria: "Wepụ nkà",
+  },
+  candidateProfile: {
+    pageTitle: "Profaịlụ Onye Tinyere Akwụkwọ",
+    pageSubtitle:
+      "Mee ka profaịlụ gị zuo oke ka ndị ọchịchị wee hụ ụdị gị kachasị mma.",
+    rightRailTrustTitle: "Ntụkwasị obi profaịlụ",
+    rightRailVerificationKicker: "Nyochaa",
+    rightRailDefaultReadiness:
+      "Mechaa profaịlụ gị iji meziwanye otú ndị ọchịchị si elele arịrịọ gị.",
+    rightRailOpenVerification: "Mepee nyocha akaụntụ",
+    rightRailDocumentsTitle: "Akwụkwọ",
+    rightRailDocumentsCountSingular: "Etinyere {count} faịlụ na profaịlụ gị.",
+    rightRailDocumentsCountPlural: "Etinyere {count} faịlụ na profaịlụ gị.",
+    rightRailDocumentsHint:
+      "Nkà, akụkọ ihe mere eme ọrụ, na njikọ pọtfọlio na-enyere ndị ọchịchị aka ileba arịrịọ gị.",
+    statusVerified: "Akwadoro",
+    statusPending: "Na-eche",
+    statusRejected: "Ajụrụ",
+    statusUnverified: "Akwadobeghị",
+    savedNoticeTitle: "Edebere profaịlụ",
+    savedNoticeBody:
+      "Emelitela profaịlụ gị. Mgbanwe na-egosi ndị ọchịchị mgbe ị na-etinye akwụkwọ.",
+    draftSectionTitle: "Ihe edeturu profaịlụ",
+    draftSectionBody:
+      "Mgbanwe ndị na-aga n'ihu na-edebe akpaaka kwa sekọnd 30 na mgbe ọ kụlachara. Pịa 'Debe profaịlụ' n'okpuru iji bipụta.",
+    editSectionTitle: "Dezie profaịlụ gị",
+    editSectionBody:
+      "Nkọwa ọrụ ebe a na-egosi ndị ọchịchị mgbe ị na-etinye akwụkwọ. Ekwentị na email bụ nke HenryCo na-edebe maka nyocha na akara ntụkwasị obi naanị — a naghị enye ya ndị ọchịchị.",
+    fieldFullNamePlaceholder: "Aha zuru ezu",
+    fieldHeadlinePlaceholder: "Aha akwụkwọ ọrụ",
+    fieldSummaryPlaceholder: "Nchịkọta ọrụ",
+    fieldLocationPlaceholder: "Ebe ị nọ",
+    fieldTimezonePlaceholder: "Mpaghara oge",
+    fieldWorkModesPlaceholder: "n'ụlọ, ngwakọ, n'ọrụ",
+    fieldRoleTypesPlaceholder: "oge zuru oke, nkwekọrịta",
+    fieldPreferredFunctionsPlaceholder: "Ngwaahịa, Ọrụ, Mgbasa ozi",
+    fieldSkillsPlaceholder: "Nkà",
+    fieldPortfolioLinksPlaceholder: "Njikọ pọtfọlio",
+    fieldSalaryExpectationPlaceholder: "Ụgwọ ọnwa atụrụ anya",
+    fieldAvailabilityPlaceholder: "Inwe ohere",
+    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Onye ndu ọrụ"}]',
+    fieldEducationPlaceholder: '[{"school":"Mahadum","degree":"BSc"}]',
+    fieldCertificationsPlaceholder: '[{"name":"Njikwa ọrụ"}]',
+    submitSaving: "Na-edebe profaịlụ...",
+    submitLabel: "Debe profaịlụ onye tinyere akwụkwọ",
   },
   employerJobs: {
     pageTitle: "Ọrụ Ọchịchị",
