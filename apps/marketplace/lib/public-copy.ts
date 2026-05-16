@@ -1906,6 +1906,69 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
       kicker: "生态系统的信任强化",
     },
   },
+  sell: {
+    metadata: {
+      title: "在 HenryCo 开店 — 面向以信任为本的卖家的精选商城",
+      description:
+        "申请加入 HenryCo Marketplace 销售:以信任为核心的定位、精致店铺,以及统一的订单、结算与支持工作台。",
+    },
+    hero: {
+      kicker: "在 HenryCo 开店",
+      title: "天生精选。专为以信任领跑的卖家而生。",
+      body: "HenryCo Marketplace 优先考虑注重呈现、按时履约且诚实保障买家权益的卖家。本页清晰列出门槛;卖家申请将在你的 HenryCo 账户内继续完成。",
+      primaryCta: "开始卖家申请",
+      secondaryCta: "查看卖家定价",
+      signInCta: "用 HenryCo 账户登录",
+      highlights: [
+        { label: "选择", value: "人工审核,而非付费上架" },
+        { label: "店铺", value: "买家可见的信任护照" },
+        { label: "工作台", value: "订单、结算、支持统一管理" },
+      ],
+    },
+    advantages: {
+      kicker: "为什么更强的卖家在这里更出色",
+      items: [
+        { title: "以信任为核心的定位", body: "你的店铺拥有清晰可见的信任护照,而不是被低质杂乱的商城噪音掩盖。" },
+        { title: "更优的店铺质量", body: "编辑栏目、更安静的搜索与更整洁的产品卡片,帮助高质量店铺更快转化。" },
+        { title: "更清晰的运营", body: "结算、订单、支持、审核与库存提醒在更整洁的同一工作台中持续可见。" },
+      ],
+    },
+    onboarding: {
+      kicker: "入驻流程",
+      stepLabel: "步骤",
+      steps: [
+        { step: "01", title: "提交卖家申请", body: "从 HenryCo 账户内打开申请 — 在你整理资料时,草稿会自动保存。" },
+        { step: "02", title: "补充经营资料", body: "公司名称、店铺简介、品类聚焦,以及说明你如何履约的核验文件。" },
+        { step: "03", title: "申请审核", body: "HenryCo 团队会审核文件、信任信号与店铺准备度 — 而不仅看一个付费徽章。" },
+        { step: "04", title: "卖家入驻", body: "通过的卖家进入入驻流程,定价、上架费、结算周期与政策规则会在开放发布之前清晰可见。" },
+      ],
+      callout: {
+        eyebrow: "更整洁的卖家申请",
+        body: "卖家注册保留在你的账户内,经营资料、审核状态与审批更新都保持私密且便于跟进。",
+      },
+    },
+    plans: {
+      kicker: "套餐经济",
+      title: "层级在发布前就已声明,而非事后。",
+      feeLabel: "费用",
+      payoutLabel: "结算",
+      includedLabel: "包含",
+      includedSuffix: "条上架",
+      featuredLabel: "推荐位",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "信任等级影响权益",
+      title: "享受更快的结算、更大的店铺与更多政策优势。",
+    },
+    closing: {
+      kicker: "继续前进",
+      title: "提交申请,在账户中查看申请状态。",
+      body: "通过审批后,即可进入卖家入驻流程。定价、上架费与结算周期在发布前都可见 — 不会有事后合同上的意外。",
+      primaryCta: "开始申请",
+      secondaryCta: "前往卖家工作台",
+    },
+  },
 };
 
 const HI: DeepPartial<MarketplacePublicCopy> = {
@@ -2033,6 +2096,69 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
     },
     ecosystem: {
       kicker: "इकोसिस्टम-व्यापी ट्रस्ट सुदृढ़ीकरण",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "HenryCo पर बेचें — भरोसे की अगुवाई करने वाले विक्रेताओं के लिए चुनिंदा मार्केटप्लेस",
+      description:
+        "HenryCo Marketplace पर बेचने के लिए आवेदन करें: भरोसे पर टिकी पोज़िशनिंग, प्रीमियम स्टोरफ्रंट और ऑर्डर, भुगतान व सपोर्ट के लिए एक ही जगह काम करने की सुविधा।",
+    },
+    hero: {
+      kicker: "HenryCo पर बेचें",
+      title: "मूल रूप से चयनात्मक। उन विक्रेताओं के लिए जो भरोसे की अगुवाई करते हैं।",
+      body: "HenryCo Marketplace उन विक्रेताओं को तरजीह देता है जो प्रस्तुति का ख़याल रखते हैं, भरोसेमंद डिलीवरी करते हैं और ख़रीदार सुरक्षा को सच्चे मन से निभाते हैं। मानक इस पेज पर खुलकर बताए गए हैं; विक्रेता आवेदन आपके HenryCo अकाउंट के अंदर जारी रहता है।",
+      primaryCta: "विक्रेता आवेदन खोलें",
+      secondaryCta: "विक्रेता मूल्य देखें",
+      signInCta: "HenryCo अकाउंट से साइन इन करें",
+      highlights: [
+        { label: "चयन", value: "मैनुअल समीक्षा, पेड-लिस्टिंग नहीं" },
+        { label: "स्टोरफ्रंट", value: "ख़रीदारों को दिखता ट्रस्ट पासपोर्ट" },
+        { label: "वर्कस्पेस", value: "ऑर्डर, पेआउट, सपोर्ट एक साथ" },
+      ],
+    },
+    advantages: {
+      kicker: "मज़बूत विक्रेता यहाँ क्यों आगे बढ़ते हैं",
+      items: [
+        { title: "भरोसे पर टिकी पोज़िशनिंग", body: "आपके स्टोर को साफ़ दिखने वाला ट्रस्ट पासपोर्ट मिलता है, न कि कम-गुणवत्ता वाले मार्केटप्लेस के शोर में दब जाना।" },
+        { title: "बेहतर स्टोरफ्रंट क्वालिटी", body: "एडिटोरियल रेल, शांत सर्च और साफ़ प्रोडक्ट कार्ड क्वालिटी स्टोर को तेज़ी से कन्वर्ज़न तक पहुँचाते हैं।" },
+        { title: "तेज़ संचालन", body: "पेआउट, ऑर्डर, सपोर्ट, मॉडरेशन और स्टॉक अलर्ट सब कुछ एक साफ़ वर्कस्पेस में दिखता रहता है।" },
+      ],
+    },
+    onboarding: {
+      kicker: "ऑनबोर्डिंग कैसे होती है",
+      stepLabel: "चरण",
+      steps: [
+        { step: "01", title: "विक्रेता आवेदन शुरू करें", body: "आवेदन अपने HenryCo अकाउंट से खोलें — जैसे-जैसे विवरण जोड़ते जाएँ, ड्राफ़्ट अपने आप सेव होते जाते हैं।" },
+        { step: "02", title: "व्यवसाय विवरण जोड़ें", body: "व्यवसाय का नाम, स्टोर प्रोफ़ाइल, प्रोडक्ट फ़ोकस और वे वेरिफ़िकेशन डॉक्युमेंट जो बताते हैं कि आप ऑर्डर कैसे पूरे करते हैं।" },
+        { step: "03", title: "आवेदन की समीक्षा", body: "HenryCo टीम दस्तावेज़, ट्रस्ट संकेत और स्टोर की तैयारी देखती है — सिर्फ़ कोई पेड बैज नहीं।" },
+        { step: "04", title: "वेंडर ऑनबोर्डिंग", body: "स्वीकृत विक्रेता वेंडर ऑनबोर्डिंग में जाते हैं, जहाँ कीमतें, लिस्टिंग शुल्क, पेआउट विंडो और नीतियाँ पब्लिश से पहले ही दिखती हैं।" },
+      ],
+      callout: {
+        eyebrow: "साफ़-सुथरा विक्रेता आवेदन",
+        body: "विक्रेता रजिस्ट्रेशन आपके अकाउंट के अंदर रहता है, इसलिए व्यवसाय विवरण, समीक्षा की स्थिति और स्वीकृति अपडेट निजी रहते हैं और फ़ॉलो करना आसान होता है।",
+      },
+    },
+    plans: {
+      kicker: "प्लान का अर्थशास्त्र",
+      title: "स्तर पहले ही बताए जाते हैं, पब्लिश के बाद नहीं।",
+      feeLabel: "शुल्क",
+      payoutLabel: "पेआउट",
+      includedLabel: "शामिल",
+      includedSuffix: "लिस्टिंग",
+      featuredLabel: "फ़ीचर्ड",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "ट्रस्ट टियर विशेषाधिकार बदलते हैं",
+      title: "तेज़ पेआउट, बड़े स्टोरफ्रंट और नीति-स्तर के लाभ कमाएँ।",
+    },
+    closing: {
+      kicker: "आगे बढ़ें",
+      title: "आवेदन करें, फिर अपने अकाउंट से आवेदन की स्थिति देखें।",
+      body: "अनुमोदन से वेंडर ऑनबोर्डिंग खुलती है। पब्लिश करने से पहले ही कीमत, लिस्टिंग शुल्क और पेआउट विंडो दिख जाती है — बाद में कोई कॉन्ट्रैक्ट-सरप्राइज़ नहीं।",
+      primaryCta: "आवेदन शुरू करें",
+      secondaryCta: "वेंडर वर्कस्पेस देखें",
     },
   },
 };
@@ -2164,6 +2290,69 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Mepee tiketi nkwado",
     },
   },
+  sell: {
+    metadata: {
+      title: "Ree ahịa na HenryCo — ahịa a họpụtara maka ndị na-ere ahịa na-eduga na ntụkwasị obi",
+      description:
+        "Tinye akwụkwọ maka ire ahịa na HenryCo Marketplace: njikere nke dabere na ntụkwasị obi, ụlọ ahịa mara mma na otu ebe maka iwu ahịa, ịkwụ ụgwọ na nkwado.",
+    },
+    hero: {
+      kicker: "Ree ahịa na HenryCo",
+      title: "Nhọrọ site na atụmatụ. E meere ya maka ndị na-ere ahịa nke na-eduga na ntụkwasị obi.",
+      body: "HenryCo Marketplace na-eburu ụzọ họrọ ndị na-ere ahịa na-eche maka ngosi, ndị nwere ntụkwasị obi na nnyefe, na ndị ji obi eziokwu na-echekwa ndị na-azụ ahịa. Ihe a chọrọ doro anya na ibe a; akwụkwọ ire ahịa na-aga n'ihu n'akaụntụ HenryCo gị.",
+      primaryCta: "Mepee akwụkwọ ire ahịa",
+      secondaryCta: "Lee ego ndị na-ere ahịa",
+      signInCta: "Banye site na akaụntụ HenryCo",
+      highlights: [
+        { label: "Nhọrọ", value: "Nyocha aka, ọ bụghị ịkwụ ụgwọ idepụta" },
+        { label: "Ụlọ ahịa", value: "Paspọtụ ntụkwasị obi ka ndị na-azụ ahịa hụ" },
+        { label: "Ebe ọrụ", value: "Iwu ahịa, ịkwụ ụgwọ na nkwado n'otu ebe" },
+      ],
+    },
+    advantages: {
+      kicker: "Maka gịnị mere ndị na-ere ahịa siri ike ji emeri ebe a",
+      items: [
+        { title: "Njikere dabere na ntụkwasị obi", body: "Ụlọ ahịa gị na-enweta paspọtụ ntụkwasị obi pụtara ìhè, kama ka ọ ghara ifuru n'ime mkpọtụ ahịa na-adịghị elu." },
+        { title: "Ụlọ ahịa nke ọma karịa", body: "Ụzọ nkọwa, ọchụchọ dị jụụ, na kaadị ngwa ahịa dị ọcha na-enyere ụlọ ahịa dị mma aka ịgbanwe ngwa ngwa." },
+        { title: "Mmemme doro anya", body: "Ịkwụ ụgwọ, iwu ahịa, nkwado, nlekọta na ọkwa ngwa na-anọgide na-egosi n'otu ebe ọrụ kachasị ọcha." },
+      ],
+    },
+    onboarding: {
+      kicker: "Otu mmalite si arụ ọrụ",
+      stepLabel: "Nzọụkwụ",
+      steps: [
+        { step: "01", title: "Bido akwụkwọ ire ahịa", body: "Mepee akwụkwọ ahụ site n'akaụntụ HenryCo gị — ndepụta na-echekwa onwe ya ka ị na-achịkọta ihe niile." },
+        { step: "02", title: "Tinye nkọwa azụmaahịa", body: "Aha azụmaahịa, profaịlụ ụlọ ahịa, ihe nzukọ ngwa ahịa, na akwụkwọ nyocha ọ bụla na-akọwa ka i si emezu iwu ahịa." },
+        { step: "03", title: "Nyochaa akwụkwọ", body: "Otu HenryCo na-enyocha akwụkwọ, ihe ịrịba ama ntụkwasị obi na njikere ụlọ ahịa — ọ bụghị naanị baajị akwụ ụgwọ." },
+        { step: "04", title: "Mmebata onye na-ere ahịa", body: "Ndị enyere ohere na-aga n'ihu na mmebata, ebe ego, ụgwọ idepụta, oge nkwụ ụgwọ na iwu pụtara tupu ibido ibipụta." },
+      ],
+      callout: {
+        eyebrow: "Akwụkwọ ire ahịa dị ọcha",
+        body: "Ndebanye aha onye na-ere ahịa na-anọgide n'akaụntụ gị ka nkọwa azụmaahịa, ọnọdụ nyocha, na mmelite nkwado bụrụ nzuzo ma dị mfe iso.",
+      },
+    },
+    plans: {
+      kicker: "Akụnụba atụmatụ",
+      title: "Ọkwa na-egosi tupu, ọ bụghị mgbe ibipụta gachara.",
+      feeLabel: "Ụgwọ",
+      payoutLabel: "Nkwụnye ego",
+      includedLabel: "Etinyere",
+      includedSuffix: "ndepụta",
+      featuredLabel: "Edobere",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Ọkwa ntụkwasị obi na-agbanwe ihe nrite",
+      title: "Nweta nkwụ ụgwọ ngwa ngwa, ụlọ ahịa buru ibu, na uru iwu.",
+    },
+    closing: {
+      kicker: "Gaa n'ihu",
+      title: "Tinye akwụkwọ, mgbe ahụ lelee ọnọdụ akwụkwọ gị site n'akaụntụ gị.",
+      body: "Nnabata na-emepe mmebata onye na-ere ahịa. Ego, ụgwọ idepụta, na oge nkwụ ụgwọ na-egosi tupu ibipụta — enweghị ihe ijuanya nkwekọrịta nke ga-abịa ma emechaa.",
+      primaryCta: "Bido akwụkwọ",
+      secondaryCta: "Gaa n'ebe ọrụ ndị na-ere ahịa",
+    },
+  },
 };
 
 const YO: DeepPartial<MarketplacePublicCopy> = {
@@ -2293,6 +2482,69 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Ṣí ìwé ìbéèrè ìrànlọ́wọ́",
     },
   },
+  sell: {
+    metadata: {
+      title: "Tàjà lórí HenryCo — ọjà tí a yàn fún àwọn olùtà tí ó ń darí ìgbẹ́kẹ̀lé",
+      description:
+        "Forúkọsílẹ̀ láti tà lórí HenryCo Marketplace: àfihàn tí ó dá lórí ìgbẹ́kẹ̀lé, àwọn ilé-ìtajà tó tóótun, àti àyè iṣẹ́ kan ṣoṣo fún àwọn àṣẹ, ìsanwó, àti ìrànlọ́wọ́.",
+    },
+    hero: {
+      kicker: "Tàjà lórí HenryCo",
+      title: "Ó yàn nínú ìṣètò. A ṣe é fún àwọn olùtà tí ó ń darí ìgbẹ́kẹ̀lé.",
+      body: "HenryCo Marketplace fẹ́ràn àwọn olùtà tí ó ń bìkítà nípa ìfihàn, ìfijíṣẹ́ tí ó gbẹ́kẹ̀lé, àti ìdáàbòbò olùra ní òtítọ́. Ìwọ̀n náà hàn lójú ojú-ìwé yìí; ìwé ìfiránṣẹ́ olùtà yóò máa bá a lọ nínú àkántì HenryCo rẹ.",
+      primaryCta: "Ṣí ìwé ìfiránṣẹ́ olùtà",
+      secondaryCta: "Wo iye olùtà",
+      signInCta: "Forúkọsílẹ̀ pẹ̀lú àkántì HenryCo",
+      highlights: [
+        { label: "Ìyàn", value: "Àyẹ̀wò ọwọ́, kì í ṣe ìsanwó láti darapọ̀" },
+        { label: "Ilé-ìtajà", value: "Ìwé-ìrìnnà ìgbẹ́kẹ̀lé tí ó hàn fún olùra" },
+        { label: "Àyè iṣẹ́", value: "Àṣẹ, ìsanwó, ìrànlọ́wọ́ nínú ibìkan" },
+      ],
+    },
+    advantages: {
+      kicker: "Èèṣe ti àwọn olùtà tí ó lágbára fi máa borí síbí",
+      items: [
+        { title: "Àfihàn tí ó dá lórí ìgbẹ́kẹ̀lé", body: "Ilé-ìtajà rẹ máa gba ìwé-ìrìnnà ìgbẹ́kẹ̀lé tí ó hàn, kì í ṣe pé yóò sọnù nínú ariwo ọjà tí kò dára." },
+        { title: "Ilé-ìtajà tó dára ju lọ", body: "Àwọn ọ̀nà ìtejade, ìwákiri tí ó dákẹ́ jẹ́jẹ́, àti káàdì ọjà tí ó mọ́ máa ń ran ilé-ìtajà tí ó dára lọ́wọ́ láti yí padà yára." },
+        { title: "Iṣẹ́ tí ó hàn kedere", body: "Ìsanwó, àṣẹ, ìrànlọ́wọ́, ìṣàkóso àti ìkìlọ̀ ọjà-ìpamọ́ wà ní àfihàn nínú àyè iṣẹ́ kan tó mọ́." },
+      ],
+    },
+    onboarding: {
+      kicker: "Bí ìbẹ̀rẹ̀ ṣe ń lọ",
+      stepLabel: "Ìgbésẹ̀",
+      steps: [
+        { step: "01", title: "Bẹ̀rẹ̀ ìwé ìfiránṣẹ́ olùtà", body: "Ṣí ìwé náà láti inú àkántì HenryCo rẹ — àwọn àkọsílẹ̀ máa wà ní fífipamọ́ aládàáṣe nígbà tí o ń kó àwọn ìwífún jọ." },
+        { step: "02", title: "Fi àwọn ẹ̀ka iṣẹ́ kún", body: "Orúkọ iṣẹ́, profàìlì ilé-ìtajà, ìdojúkọ ọjà, àti àwọn ìwé ìjẹ́rìí tí ó ṣàlàyé bí o ṣe ń mú àwọn àṣẹ ṣẹ." },
+        { step: "03", title: "Àyẹ̀wò ìwé ìfiránṣẹ́", body: "Ẹgbẹ́ HenryCo ń ṣàyẹ̀wò àwọn ìwé, àwọn àmì ìgbẹ́kẹ̀lé, àti ìmúrasílẹ̀ ilé-ìtajà — kì í ṣe àmì tí ó san owó nìkan." },
+        { step: "04", title: "Ìbẹ̀rẹ̀ olùtà", body: "Àwọn olùtà tí a fọwọ́sí máa tẹ̀síwájú sí ìbẹ̀rẹ̀, níbi tí àwọn iye, owó fíkún, àkókò ìsanwó, àti ìlànà ti hàn ṣáájú ìpolówó." },
+      ],
+      callout: {
+        eyebrow: "Ìwé ìfiránṣẹ́ olùtà tí ó mọ́",
+        body: "Ìforúkọsílẹ̀ olùtà wà nínú àkántì rẹ kí àwọn ìwífún iṣẹ́, ipò àyẹ̀wò, àti ìmúdójúìwọ̀n ìfọwọ́sí lè wà ní ìkọ̀kọ̀ kí o sì rọrùn láti tẹ̀lé.",
+      },
+    },
+    plans: {
+      kicker: "Èrò ọrọ̀-ajé àwọn ètò",
+      title: "A sọ ìpele ní àkọ́kọ́, kì í ṣe lẹ́yìn ìpolówó.",
+      feeLabel: "Owó",
+      payoutLabel: "Ìsanwó",
+      includedLabel: "Tí ó wà nínú",
+      includedSuffix: "ìpolówó",
+      featuredLabel: "Ìfihàn",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Ìpele ìgbẹ́kẹ̀lé yí àwọn àǹfààní padà",
+      title: "Gba ìsanwó kíákíá, ilé-ìtajà tó tóbi, àti àwọn àǹfààní ìlànà.",
+    },
+    closing: {
+      kicker: "Tẹ̀síwájú",
+      title: "Forúkọsílẹ̀, lẹ́yìn náà wo ipò ìfiránṣẹ́ rẹ láti inú àkántì rẹ.",
+      body: "Ìfọwọ́sí máa ṣí ìbẹ̀rẹ̀ olùtà. Iye, owó fíkún, àti àkókò ìsanwó hàn ṣáájú ìpolówó — kò sí àrùn àdéhùn tí ó máa wáyé lẹ́yìn náà.",
+      primaryCta: "Bẹ̀rẹ̀ ìfiránṣẹ́",
+      secondaryCta: "Bẹ̀ àyè olùtà wò",
+    },
+  },
 };
 
 const HA: DeepPartial<MarketplacePublicCopy> = {
@@ -2401,6 +2653,69 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
       title: "Buɗe tikitin tallafi — mutum zai karanta shi.",
       body: "Tikiti yana ajiye dukkan mahallin tare — odar, mai sayarwa, tarihin sabani — domin ƙungiyar ta yi aiki a kan al'amarin ba tare da ka sake rubuta shi a kowane amsa ba.",
       ctaLabel: "Buɗe tikitin tallafi",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Sayar a HenryCo — kasuwa zaɓaɓɓa ga masu sayar da ke jagorancin amincewa",
+      description:
+        "Nemi izinin sayarwa a HenryCo Marketplace: matsayi da aka kafa kan amincewa, shagunan inganci, da wuri ɗaya don odoji, biyan kuɗi da tallafi.",
+    },
+    hero: {
+      kicker: "Sayar a HenryCo",
+      title: "Zaɓaɓɓa daga tushe. An gina ta don masu sayarwa da ke jagorancin amincewa.",
+      body: "HenryCo Marketplace yana fifita masu sayarwa da ke kula da gabatarwa, masu kuɗi a isarwa da masu gaskiya wajen kare mai siye. Sharuɗɗan a fili suke a wannan shafin; aikace-aikacen mai sayarwa zai ci gaba a cikin asusunka na HenryCo.",
+      primaryCta: "Buɗe aikace-aikacen mai sayarwa",
+      secondaryCta: "Duba farashin mai sayarwa",
+      signInCta: "Shiga da asusun HenryCo",
+      highlights: [
+        { label: "Zaɓi", value: "Bita ta hannu, ba listing mai biyan kuɗi ba" },
+        { label: "Shago", value: "Fasfo ɗin amincewa wanda masu siye ke iya gani" },
+        { label: "Wurin aiki", value: "Odoji, biyan kuɗi da tallafi a wuri ɗaya" },
+      ],
+    },
+    advantages: {
+      kicker: "Me ya sa masu sayarwa masu ƙarfi ke nasara a nan",
+      items: [
+        { title: "Matsayi da aka kafa kan amincewa", body: "Shagonka yana samun fasfon amincewa a fili, maimakon ya ɓace cikin hayaniyar kasuwa marar inganci." },
+        { title: "Mafi kyawun ingancin shago", body: "Layukan edita, bincike mai natsuwa, da katunan kayayyaki masu tsabta suna taimaka wa shaguna masu inganci su juyar da abokan ciniki cikin sauri." },
+        { title: "Aiki mai tsabta", body: "Biyan kuɗi, odoji, tallafi, sa ido, da gargaɗin kayan ajiya su kasance a sarari a cikin wuri ɗaya na aiki." },
+      ],
+    },
+    onboarding: {
+      kicker: "Yadda fara aiki ke gudana",
+      stepLabel: "Mataki",
+      steps: [
+        { step: "01", title: "Fara aikace-aikacen mai sayarwa", body: "Buɗe aikace-aikacen daga asusunka na HenryCo — daftarin yana ajiyewa kai tsaye yayin da kake tara cikakkun bayanai." },
+        { step: "02", title: "Ƙara cikakkun bayanan kasuwanci", body: "Sunan kasuwanci, bayanin shago, mai da hankali kan samfuri, da duk wani takardun tabbatarwa da ke bayyana yadda kake cika odoji." },
+        { step: "03", title: "Bita na aikace-aikacen", body: "Ƙungiyar HenryCo tana bitar takardu, alamomin amincewa, da shirin shago — ba kawai alamar biyan kuɗi ba." },
+        { step: "04", title: "Fara aikin mai siyarwa", body: "Masu sayarwa da aka amince da su za su ci gaba zuwa fara aiki inda farashi, kudin shigarwa, lokutan biyan kuɗi da ƙa'idoji ke a sarari kafin a fara bugawa." },
+      ],
+      callout: {
+        eyebrow: "Aikace-aikacen mai sayarwa mai tsabta",
+        body: "Rajistar mai sayarwa tana zama a cikin asusunka, don haka cikakkun bayanan kasuwanci, matsayin bita, da sabuntawar amincewa su kasance masu zaman kansu kuma masu sauƙin bibiya.",
+      },
+    },
+    plans: {
+      kicker: "Tattalin arzikin tsare-tsare",
+      title: "An faɗi matakai a gaba, ba bayan an buga ba.",
+      feeLabel: "Kuɗi",
+      payoutLabel: "Biya",
+      includedLabel: "An haɗa",
+      includedSuffix: "tallace-tallace",
+      featuredLabel: "Mai ƙayatarwa",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Matakan amincewa suna canza gata",
+      title: "Sami biyan kuɗi cikin sauri, shaguna masu girma, da fa'idodin manufa.",
+    },
+    closing: {
+      kicker: "Ci gaba",
+      title: "Yi aikace-aikacen, sannan ka bi matsayin daga asusunka.",
+      body: "Amincewa yana buɗe shirin mai sayarwa. Farashi, kudin shigarwa, da lokutan biyan kuɗi suna nan a sarari kafin ka buga — babu mamaki na kwangila daga baya.",
+      primaryCta: "Fara aikace-aikacen",
+      secondaryCta: "Ziyarci wurin aiki na mai sayarwa",
     },
   },
 };
