@@ -21,6 +21,7 @@ export * from "./care-services-copy";
 export * from "./care-about-copy";
 export * from "./care-contact-copy";
 export * from "./learn-trust-copy";
+export * from "./learn-categories-copy";
 export * from "./learn-paths-copy";
 export * from "./learn-instructors-copy";
 export * from "./learn-certifications-copy";
