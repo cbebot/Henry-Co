@@ -5804,6 +5804,86 @@ const HA: DeepPartial<AccountCopy> = {
     },
     footerNote: "Rasidoji suna saukarwa a matsayin PDF mai alama.",
   },
+  messages: {
+    metadata: {
+      title: "Saƙonni · HenryCo",
+      description:
+        "Akwati ɗaya na saƙonni don tallafi, kasuwa, ayyuka, studio, kulawa, kadara, kayan aiki da koyo.",
+    },
+    hero: {
+      eyebrow: "HenryCo · akwati ɗaya na saƙonni",
+      ariaLabel: "Bayyani na akwatin saƙonni",
+      ariaTiles: "Yawan saƙonnin akwati",
+      ariaSide: "Ta portal",
+      sideLabel: "Ta portal",
+      sideBody:
+        "Kowane portal yana ciyar da wannan akwati guda. Tallafi, umarnin kasuwa, hira ta aiki, ayyukan studio da rajistar kulawa duka suna bayyana a nan a tsarin lokaci.",
+    },
+    headlines: {
+      zero: "Akwatin saƙonni babu kome a duk HenryCo.",
+      calmOne: "Zare ɗaya yana jiranka.",
+      calmMany: "Zare {count} suna a buɗe.",
+      busy: "{unread} ba a karanta ba · {open} a buɗe a portal ɗinka.",
+      overloaded: "{unread} ba a karanta ba a cikin zare {open} da suka buɗe.",
+    },
+    blurbs: {
+      zero: "An tabbatar da komai — tallafi, kasuwa, ayyuka, studio, kulawa, kadara, kayan aiki da koyo.",
+      calm: "Amsa gajeriyar yanzu zai rufe da'irar kafin gobe.",
+      busy: "Latsa layi don buɗe zare, ko tace portal ɗaya a lokaci.",
+      overloaded: "Bi sassan ɗaya bayan ɗaya — zare na ƙarshe a saman.",
+    },
+    tiles: {
+      openLabel: "A buɗe",
+      openFootEmpty: "Babu mai gudana",
+      openFootActive: "Zare suna jiran motsi",
+      unreadLabel: "Ba a karanta ba",
+      unreadFootEmpty: "Akwatin saƙonni ya cika",
+      unreadFootActive: "Latsa layi don buɗe zare",
+      portalsLabel: "Portal",
+      portalsFootEmpty: "Kulawa, Kasuwa, Studio, Ayyuka da sauransu",
+      portalsFootSingular: "Sashe ɗaya na aiki",
+      portalsFootPlural: "Sassa {count} sun wakilta",
+    },
+    sideTitle: {
+      empty: "Shiru a duk sassan",
+      singular: "Sashe ɗaya na da motsi",
+      plural: "Sassa {count} sun haɗu",
+    },
+    section: {
+      title: "Zare",
+      ariaLabel: "Zare na akwatin saƙonni",
+      metaEmpty: "Babu kome a nan tukuna — kowane portal yana ciyar da wannan akwati",
+      metaSingular: "Zare {count}",
+      metaPlural: "Zare {count}",
+    },
+    chips: {
+      ariaLabel: "Tace akwatin saƙonni ta portal",
+      allThreads: "Dukan zare",
+    },
+    empty: {
+      eyebrow: "Akwatin saƙonni shiru",
+      titleAll: "Babu wani abu da yake jiranka.",
+      titleFilter: "Babu zare a wannan portal tukuna.",
+      bodyAll:
+        "Tallafi, kasuwa, ayyuka, studio, kulawa, kadara, kayan aiki da koyo duka suna bayyana a nan — duk wani cross-portal yana zuwa wannan jeri da zarar ya fara.",
+      bodyFilter:
+        "Sauya chip ɗin tace don ganin wani portal, ko duba duka zare don tabbatar ba a sa wani abu a jira ba.",
+    },
+    list: {
+      unreadDotLabel: "Ba a karanta ba",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "Tallafi",
+      marketplace: "Kasuwa",
+      jobs: "Ayyuka",
+      studio: "Studio",
+      care: "Kulawa",
+      property: "Kadara",
+      logistics: "Kayan aiki",
+      learn: "Koyo",
+    },
+  },
   wallet: {
     hero: {
       ariaLabel: "Ma'aunin walat",
@@ -6465,6 +6545,86 @@ const ZH: DeepPartial<AccountCopy> = {
       fallback: "账户",
     },
     footerNote: "收据以带品牌的 PDF 形式下载。",
+  },
+  messages: {
+    metadata: {
+      title: "消息 · HenryCo",
+      description:
+        "支持、市场、招聘、工作室、护理、房产、物流和学习的统一收件箱。",
+    },
+    hero: {
+      eyebrow: "HenryCo · 统一收件箱",
+      ariaLabel: "收件箱概览",
+      ariaTiles: "收件箱数量",
+      ariaSide: "按门户",
+      sideLabel: "按门户",
+      sideBody:
+        "每个门户都汇聚到这一个收件箱。支持、市场订单、面试、工作室项目和护理预约都按时间顺序在此呈现。",
+    },
+    headlines: {
+      zero: "整个 HenryCo 收件箱已清空。",
+      calmOne: "有一条会话在等你回复。",
+      calmMany: "有 {count} 条会话处于打开状态。",
+      busy: "{unread} 条未读 · 你的门户中有 {open} 条打开。",
+      overloaded: "{open} 条打开会话中有 {unread} 条未读。",
+    },
+    blurbs: {
+      zero: "支持、市场、招聘、工作室、护理、房产、物流和学习的所有事项均已确认。",
+      calm: "现在简短回复一句,就能在明天之前结清这一轮。",
+      busy: "点击一行打开会话,或一次筛选一个门户。",
+      overloaded: "按部门逐一处理 — 最新会话在顶部。",
+    },
+    tiles: {
+      openLabel: "打开",
+      openFootEmpty: "没有进行中的事项",
+      openFootActive: "等待跟进的会话",
+      unreadLabel: "未读",
+      unreadFootEmpty: "收件箱已处理完毕",
+      unreadFootActive: "点击一行打开会话",
+      portalsLabel: "门户",
+      portalsFootEmpty: "护理、市场、工作室、招聘等",
+      portalsFootSingular: "一个部门活跃",
+      portalsFootPlural: "{count} 个部门参与",
+    },
+    sideTitle: {
+      empty: "所有部门均无动态",
+      singular: "一个部门有动态",
+      plural: "{count} 个部门同时活跃",
+    },
+    section: {
+      title: "会话",
+      ariaLabel: "收件箱会话",
+      metaEmpty: "暂时没有内容 — 每个门户都汇聚到此收件箱",
+      metaSingular: "{count} 条会话",
+      metaPlural: "{count} 条会话",
+    },
+    chips: {
+      ariaLabel: "按门户筛选收件箱",
+      allThreads: "所有会话",
+    },
+    empty: {
+      eyebrow: "收件箱安静",
+      titleAll: "没有等你处理的事项。",
+      titleFilter: "此门户下还没有会话。",
+      bodyAll:
+        "支持、市场、招聘、工作室、护理、房产、物流和学习都会汇聚到这里 — 任何跨门户事项一旦开始就会进入此列表。",
+      bodyFilter:
+        "切换筛选片以查看其他门户,或浏览所有会话以确认没有遗漏。",
+    },
+    list: {
+      unreadDotLabel: "未读",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "支持",
+      marketplace: "市场",
+      jobs: "招聘",
+      studio: "工作室",
+      care: "护理",
+      property: "房产",
+      logistics: "物流",
+      learn: "学习",
+    },
   },
   wallet: {
     hero: {
@@ -7128,6 +7288,86 @@ const HI: DeepPartial<AccountCopy> = {
       fallback: "खाता",
     },
     footerNote: "रसीदें ब्रांडेड PDF के रूप में डाउनलोड होती हैं।",
+  },
+  messages: {
+    metadata: {
+      title: "संदेश · HenryCo",
+      description:
+        "समर्थन, मार्केटप्लेस, नौकरियाँ, स्टूडियो, केयर, संपत्ति, लॉजिस्टिक्स और सीखने के लिए एक साझा इनबॉक्स।",
+    },
+    hero: {
+      eyebrow: "HenryCo · एकीकृत इनबॉक्स",
+      ariaLabel: "इनबॉक्स अवलोकन",
+      ariaTiles: "इनबॉक्स मात्रा",
+      ariaSide: "पोर्टल के अनुसार",
+      sideLabel: "पोर्टल के अनुसार",
+      sideBody:
+        "हर पोर्टल इसी एक इनबॉक्स में आता है। समर्थन, मार्केटप्लेस ऑर्डर, साक्षात्कार, स्टूडियो प्रोजेक्ट और केयर बुकिंग सभी यहाँ क्रमवार दिखते हैं।",
+    },
+    headlines: {
+      zero: "पूरे HenryCo में इनबॉक्स खाली है।",
+      calmOne: "एक थ्रेड आपका इंतज़ार कर रहा है।",
+      calmMany: "{count} थ्रेड खुले हैं।",
+      busy: "{unread} अपठित · आपके पोर्टलों में {open} खुले।",
+      overloaded: "{open} खुले थ्रेडों में {unread} अपठित।",
+    },
+    blurbs: {
+      zero: "समर्थन, मार्केटप्लेस, नौकरियाँ, स्टूडियो, केयर, संपत्ति, लॉजिस्टिक्स और सीखने में सब कुछ स्वीकार किया गया है।",
+      calm: "एक छोटा-सा जवाब अभी कल से पहले लूप बंद रखेगा।",
+      busy: "थ्रेड खोलने के लिए एक पंक्ति पर टैप करें, या एक बार में एक पोर्टल पर फ़िल्टर करें।",
+      overloaded: "विभागों को एक-एक करके निपटाएँ — नवीनतम थ्रेड ऊपर।",
+    },
+    tiles: {
+      openLabel: "खुले",
+      openFootEmpty: "कुछ भी प्रगति में नहीं",
+      openFootActive: "गतिविधि की प्रतीक्षा में थ्रेड",
+      unreadLabel: "अपठित",
+      unreadFootEmpty: "इनबॉक्स पूरी तरह से देख लिया गया",
+      unreadFootActive: "थ्रेड खोलने के लिए पंक्ति पर टैप करें",
+      portalsLabel: "पोर्टल",
+      portalsFootEmpty: "केयर, मार्केटप्लेस, स्टूडियो, नौकरियाँ और अधिक",
+      portalsFootSingular: "एक विभाग सक्रिय",
+      portalsFootPlural: "{count} विभाग शामिल",
+    },
+    sideTitle: {
+      empty: "हर विभाग में शांति",
+      singular: "एक विभाग में हलचल",
+      plural: "{count} विभाग एक साथ",
+    },
+    section: {
+      title: "थ्रेड",
+      ariaLabel: "इनबॉक्स के थ्रेड",
+      metaEmpty: "अभी यहाँ कुछ नहीं है — हर पोर्टल इस इनबॉक्स में आता है",
+      metaSingular: "{count} थ्रेड",
+      metaPlural: "{count} थ्रेड",
+    },
+    chips: {
+      ariaLabel: "इनबॉक्स को पोर्टल के अनुसार फ़िल्टर करें",
+      allThreads: "सभी थ्रेड",
+    },
+    empty: {
+      eyebrow: "इनबॉक्स शांत",
+      titleAll: "आपका कुछ भी इंतज़ार नहीं कर रहा।",
+      titleFilter: "इस पोर्टल में अभी कोई थ्रेड नहीं।",
+      bodyAll:
+        "समर्थन, मार्केटप्लेस, नौकरियाँ, स्टूडियो, केयर, संपत्ति, लॉजिस्टिक्स और सीखने सब यहाँ दिखते हैं — कोई भी क्रॉस-पोर्टल चीज़ शुरू होते ही इस सूची में आ जाती है।",
+      bodyFilter:
+        "दूसरा पोर्टल देखने के लिए फ़िल्टर चिप बदलें, या यह सुनिश्चित करने के लिए सभी थ्रेड ब्राउज़ करें कि कुछ बकाया नहीं है।",
+    },
+    list: {
+      unreadDotLabel: "अपठित",
+      fallbackTime: "—",
+    },
+    divisionLabels: {
+      support: "समर्थन",
+      marketplace: "मार्केटप्लेस",
+      jobs: "नौकरियाँ",
+      studio: "स्टूडियो",
+      care: "केयर",
+      property: "संपत्ति",
+      logistics: "लॉजिस्टिक्स",
+      learn: "सीखें",
+    },
   },
   wallet: {
     hero: {

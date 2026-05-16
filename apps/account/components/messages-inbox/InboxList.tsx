@@ -1,11 +1,15 @@
 import Link from "next/link";
 import type { InboxThread } from "@henryco/data";
+import type { AccountCopy } from "@henryco/i18n/server";
 import { DIVISION_ACCENT_VAR, formatRelative } from "./helpers";
+
+type MessagesCopy = AccountCopy["messages"];
 
 type Props = {
   threads: ReadonlyArray<InboxThread>;
   /** Server-resolved "now" ms — keeps formatRelative pure. */
   nowMs: number;
+  copy: MessagesCopy;
 };
 
 function statusTone(status: string): "warn" | "good" | undefined {
@@ -23,8 +27,13 @@ function statusTone(status: string): "warn" | "good" | undefined {
  * Each row's `href` is the canonical thread view in the originating
  * portal (we do not rewrite or rebuild those — see audit §8.1 K-class
  * routes). The shell's role is to surface, not to host every detail.
+ *
+ * `copy` carries the localised "Unread" aria-label for the unread dot.
+ * Timestamps continue to use the EN-only `formatRelative` helper for
+ * now — the i18n surface for relative-time strings (just now/m/h/d/w)
+ * is a follow-up pass that touches every dashboard list.
  */
-export function InboxList({ threads, nowMs }: Props) {
+export function InboxList({ threads, nowMs, copy }: Props) {
   return (
     <div className="acct-inbox__list" role="list">
       {threads.map((thread) => (
@@ -66,8 +75,8 @@ export function InboxList({ threads, nowMs }: Props) {
             {thread.unread ? (
               <span
                 className="acct-inbox__row-unread-dot"
-                aria-label="Unread"
-                title="Unread"
+                aria-label={copy.list.unreadDotLabel}
+                title={copy.list.unreadDotLabel}
               />
             ) : null}
           </div>

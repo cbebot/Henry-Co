@@ -6,6 +6,10 @@ import type { InboxAggregate, InboxDivision } from "@henryco/data";
 
 export type InboxState = "zero" | "calm" | "busy" | "overloaded";
 
+export type InboxHeadlineKey = "zero" | "calmOne" | "calmMany" | "busy" | "overloaded";
+
+export type InboxBlurbKey = "zero" | "calm" | "busy" | "overloaded";
+
 export function inboxState(agg: InboxAggregate): InboxState {
   const open = agg.totalOpen;
   const unread = agg.totalUnread;
@@ -15,42 +19,28 @@ export function inboxState(agg: InboxAggregate): InboxState {
   return "overloaded";
 }
 
-export function inboxHeadline(state: InboxState, agg: InboxAggregate): string {
-  if (state === "zero") return "Inbox zero across HenryCo.";
-  if (state === "calm") {
-    return agg.totalUnread === 1
-      ? "One thread is waiting on you."
-      : `${agg.totalOpen} threads are open.`;
-  }
-  if (state === "busy") {
-    return `${agg.totalUnread} unread · ${agg.totalOpen} open across your portals.`;
-  }
-  return `${agg.totalUnread} unread across ${agg.totalOpen} open threads.`;
+/**
+ * Map (state, aggregate) → the headline key the caller should pull from
+ * the localised `messages.headlines` slice. The headline templates carry
+ * any `{count}`/`{unread}`/`{open}` interpolation themselves — this
+ * helper only chooses which key applies.
+ */
+export function inboxHeadlineKey(
+  state: InboxState,
+  agg: InboxAggregate,
+): InboxHeadlineKey {
+  if (state === "zero") return "zero";
+  if (state === "calm") return agg.totalUnread === 1 ? "calmOne" : "calmMany";
+  if (state === "busy") return "busy";
+  return "overloaded";
 }
 
-export function inboxBlurb(state: InboxState): string {
-  if (state === "zero") {
-    return "Everything across support, marketplace, jobs, studio, care, property, logistics and learn is acknowledged.";
-  }
-  if (state === "calm") {
-    return "A short reply now keeps the loop closed before tomorrow.";
-  }
-  if (state === "busy") {
-    return "Tap a row to open the thread, or filter to one portal at a time.";
-  }
-  return "Sweep through divisions one by one — newest threads at the top.";
+export function inboxBlurbKey(state: InboxState): InboxBlurbKey {
+  if (state === "zero") return "zero";
+  if (state === "calm") return "calm";
+  if (state === "busy") return "busy";
+  return "overloaded";
 }
-
-export const DIVISION_LABEL: Record<InboxDivision, string> = {
-  support: "Support",
-  marketplace: "Marketplace",
-  jobs: "Jobs",
-  studio: "Studio",
-  care: "Care",
-  property: "Property",
-  logistics: "Logistics",
-  learn: "Learn",
-};
 
 /**
  * Mapping from inbox division → CSS custom-property name for the
@@ -70,7 +60,8 @@ export const DIVISION_ACCENT_VAR: Record<InboxDivision, string> = {
 /**
  * Render a relative-time string. `nowMs` is passed by the caller so
  * the helper stays pure (React 19 component-purity rule — no Date.now
- * during render).
+ * during render). The leading-em-dash fallback is also rendered for an
+ * unparseable timestamp, so callers can use this directly.
  */
 export function formatRelative(iso: string | null, nowMs: number): string {
   if (!iso) return "—";

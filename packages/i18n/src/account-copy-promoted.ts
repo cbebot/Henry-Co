@@ -502,6 +502,82 @@ export const ACCOUNT_COPY_ES = {
     },
     "footerNote": "Los recibos se descargan como PDFs de marca."
   },
+  "messages": {
+    "metadata": {
+      "title": "Mensajes · HenryCo",
+      "description": "Una sola bandeja de entrada para soporte, marketplace, empleos, estudio, cuidado, propiedad, logística y aprendizaje."
+    },
+    "hero": {
+      "eyebrow": "HenryCo · bandeja de entrada unificada",
+      "ariaLabel": "Vista general de la bandeja de entrada",
+      "ariaTiles": "Volumen de la bandeja de entrada",
+      "ariaSide": "Por portal",
+      "sideLabel": "Por portal",
+      "sideBody": "Cada portal alimenta esta bandeja única. Soporte, pedidos de marketplace, entrevistas de empleo, proyectos de estudio y reservas de cuidado aparecen aquí en orden cronológico."
+    },
+    "headlines": {
+      "zero": "Bandeja de entrada vacía en todo HenryCo.",
+      "calmOne": "Un hilo está esperando tu respuesta.",
+      "calmMany": "{count} hilos están abiertos.",
+      "busy": "{unread} sin leer · {open} abiertos en tus portales.",
+      "overloaded": "{unread} sin leer entre {open} hilos abiertos."
+    },
+    "blurbs": {
+      "zero": "Todo está reconocido en soporte, marketplace, empleos, estudio, cuidado, propiedad, logística y aprendizaje.",
+      "calm": "Una respuesta breve ahora cierra el ciclo antes de mañana.",
+      "busy": "Toca una fila para abrir el hilo, o filtra un portal a la vez.",
+      "overloaded": "Recorre las divisiones una por una — los hilos más recientes arriba."
+    },
+    "tiles": {
+      "openLabel": "Abiertos",
+      "openFootEmpty": "Nada en curso",
+      "openFootActive": "Hilos a la espera de una acción",
+      "unreadLabel": "Sin leer",
+      "unreadFootEmpty": "Bandeja al día",
+      "unreadFootActive": "Toca una fila para abrir el hilo",
+      "portalsLabel": "Portales",
+      "portalsFootEmpty": "Cuidado, Marketplace, Estudio, Empleos y más",
+      "portalsFootSingular": "Una división activa",
+      "portalsFootPlural": "{count} divisiones representadas"
+    },
+    "sideTitle": {
+      "empty": "Tranquilidad en todas las divisiones",
+      "singular": "Una división con movimiento",
+      "plural": "{count} divisiones en marcha"
+    },
+    "section": {
+      "title": "Hilos",
+      "ariaLabel": "Hilos de la bandeja",
+      "metaEmpty": "Nada por aquí aún — cada portal alimenta esta bandeja",
+      "metaSingular": "{count} hilo",
+      "metaPlural": "{count} hilos"
+    },
+    "chips": {
+      "ariaLabel": "Filtrar la bandeja por portal",
+      "allThreads": "Todos los hilos"
+    },
+    "empty": {
+      "eyebrow": "Bandeja tranquila",
+      "titleAll": "Nada te está esperando.",
+      "titleFilter": "Aún no hay hilos en este portal.",
+      "bodyAll": "Soporte, marketplace, empleos, estudio, cuidado, propiedad, logística y aprendizaje aparecen aquí — cualquier cosa cross-portal aterriza en esta lista en cuanto comienza.",
+      "bodyFilter": "Cambia los chips de filtro para ver otro portal, o navega por todos los hilos para confirmar que nada queda pendiente."
+    },
+    "list": {
+      "unreadDotLabel": "Sin leer",
+      "fallbackTime": "—"
+    },
+    "divisionLabels": {
+      "support": "Soporte",
+      "marketplace": "Marketplace",
+      "jobs": "Empleos",
+      "studio": "Estudio",
+      "care": "Cuidado",
+      "property": "Propiedad",
+      "logistics": "Logística",
+      "learn": "Aprendizaje"
+    }
+  },
   "wallet": {
     "hero": {
       "ariaLabel": "Saldo de la cartera",
@@ -1159,6 +1235,82 @@ export const ACCOUNT_COPY_PT = {
     },
     "footerNote": "Os recibos são transferidos como PDFs de marca."
   },
+  "messages": {
+    "metadata": {
+      "title": "Mensagens · HenryCo",
+      "description": "Uma única caixa de entrada para suporte, marketplace, empregos, estúdio, cuidados, propriedade, logística e aprendizagem."
+    },
+    "hero": {
+      "eyebrow": "HenryCo · caixa de entrada unificada",
+      "ariaLabel": "Visão geral da caixa de entrada",
+      "ariaTiles": "Volume da caixa de entrada",
+      "ariaSide": "Por portal",
+      "sideLabel": "Por portal",
+      "sideBody": "Cada portal alimenta esta única caixa de entrada. Suporte, encomendas do marketplace, entrevistas de emprego, projetos do estúdio e marcações de cuidados aparecem aqui por ordem cronológica."
+    },
+    "headlines": {
+      "zero": "Caixa de entrada vazia em todo o HenryCo.",
+      "calmOne": "Há um fio à espera de si.",
+      "calmMany": "{count} fios estão abertos.",
+      "busy": "{unread} por ler · {open} abertos nos seus portais.",
+      "overloaded": "{unread} por ler em {open} fios abertos."
+    },
+    "blurbs": {
+      "zero": "Tudo está reconhecido em suporte, marketplace, empregos, estúdio, cuidados, propriedade, logística e aprendizagem.",
+      "calm": "Uma resposta curta agora fecha o ciclo antes de amanhã.",
+      "busy": "Toque numa linha para abrir o fio, ou filtre um portal de cada vez.",
+      "overloaded": "Percorra as divisões uma a uma — os fios mais recentes no topo."
+    },
+    "tiles": {
+      "openLabel": "Abertos",
+      "openFootEmpty": "Nada em curso",
+      "openFootActive": "Fios à espera de ação",
+      "unreadLabel": "Por ler",
+      "unreadFootEmpty": "Caixa de entrada em dia",
+      "unreadFootActive": "Toque numa linha para abrir o fio",
+      "portalsLabel": "Portais",
+      "portalsFootEmpty": "Cuidados, Marketplace, Estúdio, Empregos e mais",
+      "portalsFootSingular": "Uma divisão ativa",
+      "portalsFootPlural": "{count} divisões representadas"
+    },
+    "sideTitle": {
+      "empty": "Tranquilidade em todas as divisões",
+      "singular": "Uma divisão com movimento",
+      "plural": "{count} divisões em ação"
+    },
+    "section": {
+      "title": "Fios",
+      "ariaLabel": "Fios da caixa de entrada",
+      "metaEmpty": "Ainda nada por aqui — cada portal alimenta esta caixa",
+      "metaSingular": "{count} fio",
+      "metaPlural": "{count} fios"
+    },
+    "chips": {
+      "ariaLabel": "Filtrar a caixa de entrada por portal",
+      "allThreads": "Todos os fios"
+    },
+    "empty": {
+      "eyebrow": "Caixa tranquila",
+      "titleAll": "Nada à sua espera.",
+      "titleFilter": "Ainda não há fios neste portal.",
+      "bodyAll": "Suporte, marketplace, empregos, estúdio, cuidados, propriedade, logística e aprendizagem aparecem aqui — qualquer coisa cross-portal aterra nesta lista assim que começa.",
+      "bodyFilter": "Mude os chips de filtro para ver outro portal, ou percorra todos os fios para confirmar que nada está pendente."
+    },
+    "list": {
+      "unreadDotLabel": "Por ler",
+      "fallbackTime": "—"
+    },
+    "divisionLabels": {
+      "support": "Suporte",
+      "marketplace": "Marketplace",
+      "jobs": "Empregos",
+      "studio": "Estúdio",
+      "care": "Cuidados",
+      "property": "Propriedade",
+      "logistics": "Logística",
+      "learn": "Aprendizagem"
+    }
+  },
   "wallet": {
     "hero": {
       "ariaLabel": "Saldo da carteira",
@@ -1815,6 +1967,82 @@ export const ACCOUNT_COPY_AR = {
       "fallback": "الحساب"
     },
     "footerNote": "يتم تنزيل الإيصالات كملفات PDF تحمل العلامة."
+  },
+  "messages": {
+    "metadata": {
+      "title": "الرسائل · HenryCo",
+      "description": "صندوق وارد واحد للدعم والسوق والوظائف والاستوديو والرعاية والعقارات واللوجستيات والتعلم."
+    },
+    "hero": {
+      "eyebrow": "HenryCo · صندوق وارد موحَّد",
+      "ariaLabel": "نظرة عامة على صندوق الوارد",
+      "ariaTiles": "حجم صندوق الوارد",
+      "ariaSide": "حسب البوابة",
+      "sideLabel": "حسب البوابة",
+      "sideBody": "كل بوابة تغذِّي هذا الصندوق الواحد. الدعم وطلبات السوق ومقابلات العمل ومشاريع الاستوديو وحجوزات الرعاية تظهر هنا بترتيب زمني."
+    },
+    "headlines": {
+      "zero": "صندوق الوارد فارغ في كل HenryCo.",
+      "calmOne": "محادثة واحدة بانتظار ردِّك.",
+      "calmMany": "{count} محادثات مفتوحة.",
+      "busy": "{unread} غير مقروءة · {open} مفتوحة في بواباتك.",
+      "overloaded": "{unread} غير مقروءة ضمن {open} محادثات مفتوحة."
+    },
+    "blurbs": {
+      "zero": "كل شيء في الدعم والسوق والوظائف والاستوديو والرعاية والعقارات واللوجستيات والتعلم تمَّ الاعتراف به.",
+      "calm": "ردٌّ قصير الآن يُغلق الحلقة قبل الغد.",
+      "busy": "اضغط على صف لفتح المحادثة، أو رشِّح بوابة واحدة في كل مرَّة.",
+      "overloaded": "تجاوز الأقسام واحدةً تلو الأخرى — أحدث المحادثات في الأعلى."
+    },
+    "tiles": {
+      "openLabel": "مفتوحة",
+      "openFootEmpty": "لا شيء قيد التنفيذ",
+      "openFootActive": "محادثات تنتظر إجراءً",
+      "unreadLabel": "غير مقروءة",
+      "unreadFootEmpty": "صندوق الوارد محدَّث",
+      "unreadFootActive": "اضغط على صف لفتح المحادثة",
+      "portalsLabel": "البوابات",
+      "portalsFootEmpty": "الرعاية والسوق والاستوديو والوظائف وغيرها",
+      "portalsFootSingular": "قسم واحد نشط",
+      "portalsFootPlural": "{count} أقسام ممثَّلة"
+    },
+    "sideTitle": {
+      "empty": "هدوء في كل الأقسام",
+      "singular": "قسم واحد به حركة",
+      "plural": "{count} أقسام نشطة"
+    },
+    "section": {
+      "title": "المحادثات",
+      "ariaLabel": "محادثات صندوق الوارد",
+      "metaEmpty": "لا شيء هنا بعد — كل بوابة تغذِّي هذا الصندوق",
+      "metaSingular": "{count} محادثة",
+      "metaPlural": "{count} محادثات"
+    },
+    "chips": {
+      "ariaLabel": "تصفية صندوق الوارد حسب البوابة",
+      "allThreads": "كل المحادثات"
+    },
+    "empty": {
+      "eyebrow": "صندوق الوارد هادئ",
+      "titleAll": "لا شيء بانتظارك.",
+      "titleFilter": "لا توجد محادثات في هذه البوابة بعد.",
+      "bodyAll": "الدعم والسوق والوظائف والاستوديو والرعاية والعقارات واللوجستيات والتعلم كلها تظهر هنا — أي شيء عبر البوابات يصل إلى هذه القائمة فور بدئه.",
+      "bodyFilter": "بدِّل شرائح التصفية لرؤية بوابة أخرى، أو تصفَّح كل المحادثات للتأكُّد من عدم وجود شيء معلَّق."
+    },
+    "list": {
+      "unreadDotLabel": "غير مقروءة",
+      "fallbackTime": "—"
+    },
+    "divisionLabels": {
+      "support": "الدعم",
+      "marketplace": "السوق",
+      "jobs": "الوظائف",
+      "studio": "الاستوديو",
+      "care": "الرعاية",
+      "property": "العقارات",
+      "logistics": "اللوجستيات",
+      "learn": "التعلم"
+    }
   },
   "wallet": {
     "hero": {

@@ -1,8 +1,10 @@
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import { getInboxAggregate, type InboxDivision } from "@henryco/data";
 import { RouteLiveRefresh } from "@henryco/ui";
+import { getAccountCopy, formatAccountTemplate } from "@henryco/i18n/server";
 
 import { requireAccountUser } from "@/lib/auth";
+import { getAccountAppLocale } from "@/lib/locale-server";
 
 import "@/components/messages-inbox/editorial.css";
 import { InboxHero } from "@/components/messages-inbox/InboxHero";
@@ -11,6 +13,9 @@ import { InboxList } from "@/components/messages-inbox/InboxList";
 
 export const dynamic = "force-dynamic";
 
+// Metadata literal kept at module scope (Next.js requires a static
+// `metadata` export). Localised title/description are surfaced through
+// the page UI; the metadata object remains the EN default for SEO.
 export const metadata = {
   title: "Messages · HenryCo",
   description:
@@ -63,7 +68,13 @@ export default async function MessagesPage({
   const params = (await searchParams) ?? {};
   const filter = pickFilter(params.filter);
 
-  const user = await requireAccountUser();
+  const [locale, user] = await Promise.all([
+    getAccountAppLocale(),
+    requireAccountUser(),
+  ]);
+  const accountCopy = getAccountCopy(locale);
+  const copy = accountCopy.messages;
+
   const viewer = await buildUnifiedViewer({
     id: user.id,
     email: user.email,
@@ -82,40 +93,41 @@ export default async function MessagesPage({
       ? aggregate.threads
       : aggregate.threads.filter((t) => t.division === filter);
 
+  const threadCount = filteredThreads.length;
+  const sectionMeta =
+    threadCount === 0
+      ? copy.section.metaEmpty
+      : formatAccountTemplate(
+          threadCount === 1 ? copy.section.metaSingular : copy.section.metaPlural,
+          { count: threadCount },
+        );
+
   return (
     <div className="acct-inbox acct-fade-in">
       <RouteLiveRefresh intervalMs={20000} />
-      <InboxHero aggregate={aggregate} />
-      <section aria-labelledby="acct-inbox-threads">
+      <InboxHero aggregate={aggregate} copy={copy} />
+      <section aria-labelledby="acct-inbox-threads" aria-label={copy.section.ariaLabel}>
         <div className="acct-inbox__section-head">
           <h2 id="acct-inbox-threads" className="acct-inbox__section-title">
-            Threads
+            {copy.section.title}
           </h2>
-          <span className="acct-inbox__section-meta">
-            {filteredThreads.length === 0
-              ? "Nothing here yet — every portal feeds this inbox"
-              : `${filteredThreads.length} thread${filteredThreads.length === 1 ? "" : "s"}`}
-          </span>
+          <span className="acct-inbox__section-meta">{sectionMeta}</span>
         </div>
         <div style={{ marginBottom: 16 }}>
-          <InboxFilterChips aggregate={aggregate} active={filter} />
+          <InboxFilterChips aggregate={aggregate} active={filter} copy={copy} />
         </div>
-        {filteredThreads.length === 0 ? (
+        {threadCount === 0 ? (
           <div className="acct-inbox__empty" role="status">
-            <p className="acct-inbox__empty-eyebrow">Inbox quiet</p>
+            <p className="acct-inbox__empty-eyebrow">{copy.empty.eyebrow}</p>
             <h3 className="acct-inbox__empty-title">
-              {filter === "all"
-                ? "Nothing waiting on you."
-                : "No threads in this portal yet."}
+              {filter === "all" ? copy.empty.titleAll : copy.empty.titleFilter}
             </h3>
             <p className="acct-inbox__empty-body">
-              {filter === "all"
-                ? "Support, marketplace, jobs, studio, care, property, logistics and learn all surface here — anything cross-portal lands in this list as soon as it begins."
-                : "Switch filter chips to see another portal, or browse all threads to confirm nothing is pending."}
+              {filter === "all" ? copy.empty.bodyAll : copy.empty.bodyFilter}
             </p>
           </div>
         ) : (
-          <InboxList threads={filteredThreads} nowMs={nowMs} />
+          <InboxList threads={filteredThreads} nowMs={nowMs} copy={copy} />
         )}
       </section>
     </div>

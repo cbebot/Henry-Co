@@ -1,11 +1,15 @@
 import Link from "next/link";
 import type { InboxAggregate, InboxDivision } from "@henryco/data";
-import { DIVISION_ACCENT_VAR, DIVISION_LABEL } from "./helpers";
+import type { AccountCopy } from "@henryco/i18n/server";
+import { DIVISION_ACCENT_VAR } from "./helpers";
+
+type MessagesCopy = AccountCopy["messages"];
 
 type Props = {
   aggregate: InboxAggregate;
   /** Currently selected division (or "all"). */
   active: InboxDivision | "all";
+  copy: MessagesCopy;
 };
 
 /**
@@ -16,18 +20,18 @@ type Props = {
  * is cacheable per filter. The active chip flips to ink fill, inactive
  * chips wear the division accent dot.
  */
-export function InboxFilterChips({ aggregate, active }: Props) {
+export function InboxFilterChips({ aggregate, active, copy }: Props) {
   const divisions = Object.keys(aggregate.counts) as InboxDivision[];
 
   return (
-    <nav className="acct-inbox__chips" aria-label="Filter inbox by portal">
+    <nav className="acct-inbox__chips" aria-label={copy.chips.ariaLabel}>
       <Link
         href="/messages"
         className="acct-inbox__chip"
         data-active={active === "all"}
         aria-current={active === "all" ? "page" : undefined}
       >
-        <span>All threads</span>
+        <span>{copy.chips.allThreads}</span>
         <span className="acct-inbox__chip-count">{aggregate.threads.length}</span>
       </Link>
       {divisions
@@ -46,7 +50,7 @@ export function InboxFilterChips({ aggregate, active }: Props) {
               aria-hidden
               style={{ color: `var(${DIVISION_ACCENT_VAR[division]})` }}
             />
-            <span>{DIVISION_LABEL[division]}</span>
+            <span>{copy.divisionLabels[division]}</span>
             <span className="acct-inbox__chip-count">
               {aggregate.counts[division]}
             </span>
