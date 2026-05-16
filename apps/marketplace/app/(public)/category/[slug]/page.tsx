@@ -1,18 +1,44 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { CollectionCard, ProductCard } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const [{ slug }, locale] = await Promise.all([params, getMarketplacePublicLocale()]);
+  const copy = getMarketplacePublicCopy(locale);
+  const snapshot = await getMarketplaceHomeData();
+  const category = snapshot.categories.find((item) => item.slug === slug);
+  const categoryName = category?.name ?? slug;
+
+  return {
+    title: copy.category.metadata.titleTemplate.replace("{category}", categoryName),
+    description: category?.hero
+      ? copy.category.metadata.descriptionTemplate.replace("{category}", categoryName)
+      : copy.category.metadata.fallbackDescription,
+  };
+}
 
 export default async function CategoryPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-  const snapshot = await getMarketplaceHomeData();
+  const [{ slug }, locale, snapshot] = await Promise.all([
+    params,
+    getMarketplacePublicLocale(),
+    getMarketplaceHomeData(),
+  ]);
+  const copy = getMarketplacePublicCopy(locale);
   const category = snapshot.categories.find((item) => item.slug === slug);
   if (!category) notFound();
 
@@ -28,7 +54,7 @@ export default async function CategoryPage({
       <section>
         <div className="grid gap-10 xl:grid-cols-[1.15fr,0.85fr] xl:items-end">
           <div>
-            <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">Category edit</p>
+            <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">{copy.category.hero.kicker}</p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {category.name}
             </h1>
@@ -40,20 +66,20 @@ export default async function CategoryPage({
                 href={`/search?category=${category.slug}`}
                 className="market-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Search this category
+                {copy.category.hero.searchCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/trust"
                 className="market-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Review trust standards
+                {copy.category.hero.trustCta}
               </Link>
             </div>
             {category.filterPresets.length > 0 ? (
               <div className="mt-7">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  Quick filters
+                  {copy.category.hero.quickFiltersLabel}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {category.filterPresets.map((preset) => (
@@ -71,7 +97,7 @@ export default async function CategoryPage({
           <ul className="grid gap-3 text-sm">
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                Active listings
+                {copy.category.stats.activeListingsLabel}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {products.length}
@@ -98,10 +124,10 @@ export default async function CategoryPage({
           <div className="flex items-end justify-between gap-4 border-b border-[var(--market-line)] pb-4">
             <div>
               <p className="market-kicker text-[10.5px] uppercase tracking-[0.22em]">
-                Curated rails
+                {copy.category.collectionsRail.kicker}
               </p>
               <h2 className="mt-2 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
-                Collections that shorten decision-making.
+                {copy.category.collectionsRail.title}
               </h2>
             </div>
           </div>
@@ -117,17 +143,17 @@ export default async function CategoryPage({
         <div className="flex items-end justify-between gap-4 border-b border-[var(--market-line)] pb-4">
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.22em]">
-              Category catalog
+              {copy.category.catalog.kicker}
             </p>
             <h2 className="mt-2 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
-              Premium products, tighter hierarchy.
+              {copy.category.catalog.title}
             </h2>
           </div>
           <Link
             href={`/search?category=${category.slug}`}
             className="text-sm font-semibold text-[var(--market-brass)] underline-offset-4 hover:underline"
           >
-            Open full search
+            {copy.category.catalog.openSearch}
           </Link>
         </div>
         <div className="mt-6 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">

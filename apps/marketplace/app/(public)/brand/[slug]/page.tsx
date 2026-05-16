@@ -1,18 +1,42 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { ProductCard } from "@/components/marketplace/shell";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const [{ slug }, locale] = await Promise.all([params, getMarketplacePublicLocale()]);
+  const copy = getMarketplacePublicCopy(locale);
+  const snapshot = await getMarketplaceHomeData();
+  const brand = snapshot.brands.find((item) => item.slug === slug);
+  const brandName = brand?.name ?? slug;
+
+  return {
+    title: copy.brand.metadataTitle.replace("{brand}", brandName),
+    description: brand?.description ?? copy.brand.metadataDescription.replace("{brand}", brandName),
+  };
+}
 
 export default async function BrandPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-  const snapshot = await getMarketplaceHomeData();
+  const [{ slug }, locale, snapshot] = await Promise.all([
+    params,
+    getMarketplacePublicLocale(),
+    getMarketplaceHomeData(),
+  ]);
+  const copy = getMarketplacePublicCopy(locale);
   const brand = snapshot.brands.find((item) => item.slug === slug);
   if (!brand) notFound();
 
@@ -23,33 +47,33 @@ export default async function BrandPage({
       <section>
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
-            <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">Brand</p>
+            <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">{copy.brand.eyebrow}</p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {brand.name}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-              {brand.description}
+              {brand.description || copy.brand.bodyFallback}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href={`/search?brand=${brand.slug}`}
                 className="market-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Search this brand
+                {copy.brand.searchCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/trust"
                 className="market-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Trust standards
+                {copy.brand.trustCta}
               </Link>
             </div>
           </div>
           <ul className="grid gap-3 text-sm">
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                Active products
+                {copy.brand.stats.activeProducts}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {products.length}
@@ -57,18 +81,18 @@ export default async function BrandPage({
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                Listings reviewed
+                {copy.brand.stats.listingsReviewed}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                Trust passport visible per item
+                {copy.brand.stats.listingsReviewedValue}
               </span>
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                Buyer protection
+                {copy.brand.stats.buyerProtection}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                Escrowed checkout
+                {copy.brand.stats.buyerProtectionValue}
               </span>
             </li>
           </ul>
@@ -78,13 +102,13 @@ export default async function BrandPage({
       <section>
         <div className="flex items-end justify-between gap-4 border-b border-[var(--market-line)] pb-4">
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.22em]">
-            Live from {brand.name}
+            {copy.brand.liveKicker.replace("{brand}", brand.name)}
           </p>
           <Link
             href={`/search?brand=${brand.slug}`}
             className="text-sm font-semibold text-[var(--market-brass)] underline-offset-4 hover:underline"
           >
-            Open full search
+            {copy.brand.openFullSearch}
           </Link>
         </div>
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">

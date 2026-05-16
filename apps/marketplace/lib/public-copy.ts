@@ -91,6 +91,48 @@ export type MarketplacePublicCopy = {
       ctaLabel: string;
     };
   };
+  category: {
+    hero: {
+      kicker: string;
+      searchCta: string;
+      trustCta: string;
+      quickFiltersLabel: string;
+    };
+    stats: {
+      activeListingsLabel: string;
+    };
+    collectionsRail: {
+      kicker: string;
+      title: string;
+    };
+    catalog: {
+      kicker: string;
+      title: string;
+      openSearch: string;
+    };
+    metadata: {
+      titleTemplate: string;
+      descriptionTemplate: string;
+      fallbackDescription: string;
+    };
+  };
+  brand: {
+    eyebrow: string;
+    bodyFallback: string;
+    searchCta: string;
+    trustCta: string;
+    stats: {
+      activeProducts: string;
+      listingsReviewed: string;
+      listingsReviewedValue: string;
+      buyerProtection: string;
+      buyerProtectionValue: string;
+    };
+    liveKicker: string;
+    openFullSearch: string;
+    metadataTitle: string;
+    metadataDescription: string;
+  };
 };
 
 const EN: MarketplacePublicCopy = {
@@ -233,6 +275,51 @@ const EN: MarketplacePublicCopy = {
       ctaLabel: "Browse products",
     },
   },
+  category: {
+    hero: {
+      kicker: "Category edit",
+      searchCta: "Search this category",
+      trustCta: "Review trust standards",
+      quickFiltersLabel: "Quick filters",
+    },
+    stats: {
+      activeListingsLabel: "Active listings",
+    },
+    collectionsRail: {
+      kicker: "Curated rails",
+      title: "Collections that shorten decision-making.",
+    },
+    catalog: {
+      kicker: "Category catalog",
+      title: "Premium products, tighter hierarchy.",
+      openSearch: "Open full search",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Explore verified products in {category} on HenryCo Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout.",
+      fallbackDescription:
+        "Browse a curated category on HenryCo Marketplace with trust signals, delivery clarity, and seller passports surfaced before checkout.",
+    },
+  },
+  brand: {
+    eyebrow: "Brand",
+    bodyFallback: "A verified store on HenryCo Marketplace with trust signals, delivery clarity, and seller passport details surfaced before checkout.",
+    searchCta: "Search this brand",
+    trustCta: "Trust standards",
+    stats: {
+      activeProducts: "Active products",
+      listingsReviewed: "Listings reviewed",
+      listingsReviewedValue: "Trust passport visible per item",
+      buyerProtection: "Buyer protection",
+      buyerProtectionValue: "Escrowed checkout",
+    },
+    liveKicker: "Live from {brand}",
+    openFullSearch: "Open full search",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Explore verified products from {brand} on HenryCo Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout.",
+  },
 };
 
 const FR: DeepPartial<MarketplacePublicCopy> = {
@@ -358,6 +445,52 @@ const FR: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Parcourir les produits",
     },
   },
+  category: {
+    hero: {
+      kicker: "Édition catégorie",
+      searchCta: "Rechercher dans cette catégorie",
+      trustCta: "Voir les standards de confiance",
+      quickFiltersLabel: "Filtres rapides",
+    },
+    stats: {
+      activeListingsLabel: "Annonces actives",
+    },
+    collectionsRail: {
+      kicker: "Sélections curatées",
+      title: "Des collections qui raccourcissent la décision.",
+    },
+    catalog: {
+      kicker: "Catalogue de la catégorie",
+      title: "Produits premium, hiérarchie plus nette.",
+      openSearch: "Ouvrir la recherche complète",
+    },
+    metadata: {
+      titleTemplate: "{category} — Marketplace HenryCo",
+      descriptionTemplate:
+        "Explorez les produits vérifiés de {category} sur HenryCo Marketplace, avec des signaux de confiance, des informations de livraison claires et des passeports vendeurs visibles avant le paiement.",
+      fallbackDescription:
+        "Parcourez une catégorie sélectionnée du HenryCo Marketplace avec des signaux de confiance, une livraison plus claire et des passeports vendeurs avant paiement.",
+    },
+  },
+  brand: {
+    eyebrow: "Marque",
+    bodyFallback:
+      "Une boutique vérifiée sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport vendeur visibles avant le paiement.",
+    searchCta: "Rechercher dans cette marque",
+    trustCta: "Standards de confiance",
+    stats: {
+      activeProducts: "Produits actifs",
+      listingsReviewed: "Annonces vérifiées",
+      listingsReviewedValue: "Passeport de confiance visible par article",
+      buyerProtection: "Protection acheteur",
+      buyerProtectionValue: "Paiement sous séquestre",
+    },
+    liveKicker: "En direct de {brand}",
+    openFullSearch: "Ouvrir la recherche complète",
+    metadataTitle: "{brand} — Marketplace HenryCo",
+    metadataDescription:
+      "Explorez les produits vérifiés de {brand} sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et des passeports vendeurs visibles avant le paiement.",
+  },
 };
 
 const ES: DeepPartial<MarketplacePublicCopy> = {
@@ -374,6 +507,25 @@ const ES: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Explorar productos",
     },
   },
+  brand: {
+    eyebrow: "Marca",
+    bodyFallback:
+      "Una tienda verificada en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes del pago.",
+    searchCta: "Buscar en esta marca",
+    trustCta: "Estándares de confianza",
+    stats: {
+      activeProducts: "Productos activos",
+      listingsReviewed: "Anuncios revisados",
+      listingsReviewedValue: "Pasaporte de confianza visible por artículo",
+      buyerProtection: "Protección al comprador",
+      buyerProtectionValue: "Pago en custodia",
+    },
+    liveKicker: "En directo desde {brand}",
+    openFullSearch: "Abrir búsqueda completa",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Explora productos verificados de {brand} en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaportes de vendedor visibles antes del pago.",
+  },
 };
 
 const PT: DeepPartial<MarketplacePublicCopy> = {
@@ -388,6 +540,52 @@ const PT: DeepPartial<MarketplacePublicCopy> = {
       title: "O teu carrinho ainda está vazio.",
       body: "Adiciona rapidamente a partir dos cartões de produto, guarda itens para depois, e o carrinho mantém-se atualizado no mini-carrinho e no carrinho completo sem precisares de recarregar.",
       ctaLabel: "Explorar produtos",
+    },
+  },
+  brand: {
+    eyebrow: "Marca",
+    bodyFallback:
+      "Uma loja verificada na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes do pagamento.",
+    searchCta: "Pesquisar nesta marca",
+    trustCta: "Padrões de confiança",
+    stats: {
+      activeProducts: "Produtos ativos",
+      listingsReviewed: "Anúncios revistos",
+      listingsReviewedValue: "Passaporte de confiança visível por item",
+      buyerProtection: "Proteção ao comprador",
+      buyerProtectionValue: "Pagamento em custódia",
+    },
+    liveKicker: "Em direto de {brand}",
+    openFullSearch: "Abrir pesquisa completa",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Explora produtos verificados de {brand} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento.",
+  },
+  category: {
+    hero: {
+      kicker: "Edição por categoria",
+      searchCta: "Procurar nesta categoria",
+      trustCta: "Rever padrões de confiança",
+      quickFiltersLabel: "Filtros rápidos",
+    },
+    stats: {
+      activeListingsLabel: "Anúncios ativos",
+    },
+    collectionsRail: {
+      kicker: "Seleções curadas",
+      title: "Coleções que encurtam a decisão de compra.",
+    },
+    catalog: {
+      kicker: "Catálogo da categoria",
+      title: "Produtos premium, hierarquia mais nítida.",
+      openSearch: "Abrir pesquisa completa",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Explora produtos verificados em {category} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento.",
+      fallbackDescription:
+        "Percorre uma categoria curada da HenryCo Marketplace com sinais de confiança, clareza de entrega e passaportes de vendedor antes do pagamento.",
     },
   },
 };
@@ -406,6 +604,52 @@ const DE: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Produkte entdecken",
     },
   },
+  brand: {
+    eyebrow: "Marke",
+    bodyFallback:
+      "Ein verifizierter Shop auf HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor dem Checkout.",
+    searchCta: "In dieser Marke suchen",
+    trustCta: "Vertrauensstandards",
+    stats: {
+      activeProducts: "Aktive Produkte",
+      listingsReviewed: "Geprüfte Angebote",
+      listingsReviewedValue: "Trust-Passport pro Artikel sichtbar",
+      buyerProtection: "Käuferschutz",
+      buyerProtectionValue: "Treuhand-Checkout",
+    },
+    liveKicker: "Live von {brand}",
+    openFullSearch: "Volle Suche öffnen",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Entdecke verifizierte Produkte von {brand} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout.",
+  },
+  category: {
+    hero: {
+      kicker: "Kategorie-Edition",
+      searchCta: "In dieser Kategorie suchen",
+      trustCta: "Vertrauensstandards ansehen",
+      quickFiltersLabel: "Schnellfilter",
+    },
+    stats: {
+      activeListingsLabel: "Aktive Angebote",
+    },
+    collectionsRail: {
+      kicker: "Kuratierte Auswahl",
+      title: "Kollektionen, die Kaufentscheidungen verkürzen.",
+    },
+    catalog: {
+      kicker: "Kategorie-Katalog",
+      title: "Premium-Produkte, klarere Hierarchie.",
+      openSearch: "Volle Suche öffnen",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Entdecke verifizierte Produkte in {category} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports schon vor dem Checkout.",
+      fallbackDescription:
+        "Stöbere durch eine kuratierte Kategorie im HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout.",
+    },
+  },
 };
 
 const IT: DeepPartial<MarketplacePublicCopy> = {
@@ -420,6 +664,52 @@ const IT: DeepPartial<MarketplacePublicCopy> = {
       title: "Il tuo carrello è ancora vuoto.",
       body: "Aggiungi al volo dalle schede prodotto, salva articoli per dopo, e il carrello resta aggiornato sia nel mini-carrello sia nella vista completa, senza ricaricare la pagina.",
       ctaLabel: "Esplora i prodotti",
+    },
+  },
+  brand: {
+    eyebrow: "Marchio",
+    bodyFallback:
+      "Un negozio verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporto del venditore visibili prima del pagamento.",
+    searchCta: "Cerca in questo marchio",
+    trustCta: "Standard di fiducia",
+    stats: {
+      activeProducts: "Prodotti attivi",
+      listingsReviewed: "Annunci verificati",
+      listingsReviewedValue: "Trust Passport visibile per ogni articolo",
+      buyerProtection: "Protezione acquirente",
+      buyerProtectionValue: "Pagamento in deposito",
+    },
+    liveKicker: "In diretta da {brand}",
+    openFullSearch: "Apri la ricerca completa",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Esplora i prodotti verificati di {brand} su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporti dei venditori visibili prima del pagamento.",
+  },
+  category: {
+    hero: {
+      kicker: "Edizione di categoria",
+      searchCta: "Cerca in questa categoria",
+      trustCta: "Rivedi gli standard di fiducia",
+      quickFiltersLabel: "Filtri rapidi",
+    },
+    stats: {
+      activeListingsLabel: "Annunci attivi",
+    },
+    collectionsRail: {
+      kicker: "Selezioni curate",
+      title: "Collezioni che accorciano la decisione d’acquisto.",
+    },
+    catalog: {
+      kicker: "Catalogo della categoria",
+      title: "Prodotti premium, gerarchia più nitida.",
+      openSearch: "Apri ricerca completa",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Esplora prodotti verificati in {category} su HenryCo Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporti venditore visibili prima del pagamento.",
+      fallbackDescription:
+        "Sfoglia una categoria curata di HenryCo Marketplace con segnali di fiducia, chiarezza sulla consegna e passaporti venditore prima del pagamento.",
     },
   },
 };
@@ -438,6 +728,52 @@ const AR: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "تصفّح المنتجات",
     },
   },
+  brand: {
+    eyebrow: "العلامة التجارية",
+    bodyFallback:
+      "متجر موثّق على HenryCo Marketplace، تظهر فيه إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل إتمام الدفع.",
+    searchCta: "ابحث داخل هذه العلامة",
+    trustCta: "معايير الثقة",
+    stats: {
+      activeProducts: "منتجات نشطة",
+      listingsReviewed: "إعلانات تمّت مراجعتها",
+      listingsReviewedValue: "جواز ثقة ظاهر لكل منتج",
+      buyerProtection: "حماية المشتري",
+      buyerProtectionValue: "دفع عبر حساب وسيط",
+    },
+    liveKicker: "مباشر من {brand}",
+    openFullSearch: "فتح البحث الكامل",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "استكشف المنتجات الموثّقة من {brand} على HenryCo Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل إتمام الدفع.",
+  },
+  category: {
+    hero: {
+      kicker: "تشكيلة الفئة",
+      searchCta: "ابحث ضمن هذه الفئة",
+      trustCta: "اطّلع على معايير الثقة",
+      quickFiltersLabel: "فلاتر سريعة",
+    },
+    stats: {
+      activeListingsLabel: "إعلانات نشطة",
+    },
+    collectionsRail: {
+      kicker: "مجموعات منتقاة",
+      title: "مجموعات تختصر قرار الشراء.",
+    },
+    catalog: {
+      kicker: "كتالوج الفئة",
+      title: "منتجات فاخرة، تسلسل أكثر وضوحًا.",
+      openSearch: "افتح البحث الكامل",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "استكشف منتجات موثّقة ضمن {category} على HenryCo Marketplace، مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين ظاهرة قبل الدفع.",
+      fallbackDescription:
+        "تصفّح فئة منتقاة على HenryCo Marketplace مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين قبل الدفع.",
+    },
+  },
 };
 
 const ZH: DeepPartial<MarketplacePublicCopy> = {
@@ -452,6 +788,52 @@ const ZH: DeepPartial<MarketplacePublicCopy> = {
       title: "你的购物车还是空的。",
       body: "可从产品卡片快速加入,把心仪商品收藏稍后再看,迷你购物车与完整购物车都会即时同步,无需刷新页面。",
       ctaLabel: "浏览商品",
+    },
+  },
+  brand: {
+    eyebrow: "品牌",
+    bodyFallback:
+      "HenryCo Marketplace 上经过认证的店铺,信任信号、配送清晰度与卖家护照在结账前即可查看。",
+    searchCta: "在该品牌内搜索",
+    trustCta: "信任标准",
+    stats: {
+      activeProducts: "在售商品",
+      listingsReviewed: "已审核商品",
+      listingsReviewedValue: "每件商品均显示信任护照",
+      buyerProtection: "买家保障",
+      buyerProtectionValue: "托管结算",
+    },
+    liveKicker: "来自 {brand} 的实时上架",
+    openFullSearch: "打开完整搜索",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "在 HenryCo Marketplace 浏览 {brand} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。",
+  },
+  category: {
+    hero: {
+      kicker: "品类精选",
+      searchCta: "在该品类中搜索",
+      trustCta: "查看信任标准",
+      quickFiltersLabel: "快速筛选",
+    },
+    stats: {
+      activeListingsLabel: "在售商品",
+    },
+    collectionsRail: {
+      kicker: "精选合辑",
+      title: "助你更快做出购买决定的合辑。",
+    },
+    catalog: {
+      kicker: "品类目录",
+      title: "高端商品,层级更清晰。",
+      openSearch: "打开完整搜索",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "在 HenryCo Marketplace 探索 {category} 中已验证的商品,结算前即可看到信任信号、清晰的配送说明与商家信任护照。",
+      fallbackDescription:
+        "在 HenryCo Marketplace 浏览一个精选品类,结算前即可看到信任信号、清晰的配送说明与商家信任护照。",
     },
   },
 };
@@ -470,6 +852,52 @@ const HI: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "प्रोडक्ट देखें",
     },
   },
+  brand: {
+    eyebrow: "ब्रांड",
+    bodyFallback:
+      "HenryCo Marketplace पर एक सत्यापित स्टोर — ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट चेकआउट से पहले ही दिखते हैं।",
+    searchCta: "इस ब्रांड में खोजें",
+    trustCta: "ट्रस्ट मानक",
+    stats: {
+      activeProducts: "सक्रिय उत्पाद",
+      listingsReviewed: "जाँचे गए लिस्टिंग",
+      listingsReviewedValue: "हर आइटम पर ट्रस्ट पासपोर्ट दिखाई देता है",
+      buyerProtection: "ख़रीदार सुरक्षा",
+      buyerProtectionValue: "एस्क्रो चेकआउट",
+    },
+    liveKicker: "{brand} से लाइव",
+    openFullSearch: "पूरी खोज खोलें",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "HenryCo Marketplace पर {brand} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।",
+  },
+  category: {
+    hero: {
+      kicker: "कैटेगरी एडिट",
+      searchCta: "इस कैटेगरी में खोजें",
+      trustCta: "ट्रस्ट स्टैंडर्ड देखें",
+      quickFiltersLabel: "क्विक फ़िल्टर",
+    },
+    stats: {
+      activeListingsLabel: "सक्रिय लिस्टिंग",
+    },
+    collectionsRail: {
+      kicker: "क्यूरेटेड रेल",
+      title: "कलेक्शन जो ख़रीदारी का फ़ैसला आसान बनाते हैं।",
+    },
+    catalog: {
+      kicker: "कैटेगरी कैटलॉग",
+      title: "प्रीमियम प्रोडक्ट, ज़्यादा साफ़ ढाँचा।",
+      openSearch: "पूरी सर्च खोलें",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "HenryCo Marketplace पर {category} में सत्यापित प्रोडक्ट देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।",
+      fallbackDescription:
+        "HenryCo Marketplace की एक क्यूरेटेड कैटेगरी देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।",
+    },
+  },
 };
 
 const IG: DeepPartial<MarketplacePublicCopy> = {
@@ -484,6 +912,52 @@ const IG: DeepPartial<MarketplacePublicCopy> = {
       title: "Nkata gị ka tọgbọrọ chakoo.",
       body: "Tinye ihe ọsọ ọsọ site na kaadị ngwa ahịa, debe ihe maka mgbe ọzọ — nkata ga-anọgide na-emelite n'ime drawer mini na nkata zuru oke n'enweghị nlọghachi azụ.",
       ctaLabel: "Lelee ngwa ahịa",
+    },
+  },
+  brand: {
+    eyebrow: "Akaraaka ahịa",
+    bodyFallback:
+      "Ụlọ ahịa enyochara n'elu HenryCo Marketplace, ebe akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ.",
+    searchCta: "Chọọ n'ime akaraaka ahịa a",
+    trustCta: "Ọkwa ntụkwasị obi",
+    stats: {
+      activeProducts: "Ngwa ahịa na-arụ ọrụ",
+      listingsReviewed: "Edemede enyochara",
+      listingsReviewedValue: "Paspọtụ ntụkwasị obi pụtara ìhè kwa ihe",
+      buyerProtection: "Nchekwa onye na-azụ ahịa",
+      buyerProtectionValue: "Ịkwụ ụgwọ site n'aka onye nnọchi anya",
+    },
+    liveKicker: "Ọkụ ọkụ site na {brand}",
+    openFullSearch: "Mepee nchọta zuru oke",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Lelee ngwa ahịa enyochara nke {brand} na HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ ndị na-ere ahịa na-egosi tupu ịkwụ ụgwọ.",
+  },
+  category: {
+    hero: {
+      kicker: "Nhọrọ ụdị",
+      searchCta: "Chọọ n'ime ụdị a",
+      trustCta: "Lelee ụkpụrụ ntụkwasị obi",
+      quickFiltersLabel: "Nzacha ngwa ngwa",
+    },
+    stats: {
+      activeListingsLabel: "Ndepụta na-arụ ọrụ",
+    },
+    collectionsRail: {
+      kicker: "Ngwakọta a họpụtara",
+      title: "Mkpokọta na-eme ka mkpebi ịzụrụ dị mfe.",
+    },
+    catalog: {
+      kicker: "Katalọgụ ụdị",
+      title: "Ngwa ahịa nke kachasị mma, usoro doro anya.",
+      openSearch: "Mepee ọchụchọ zuru ezu",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Chọpụta ngwa ahịa enyochara n'ime {category} na HenryCo Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa nke pụtara tupu ịkwụ ụgwọ.",
+      fallbackDescription:
+        "Tụgharịa n'ime ụdị a họpụtara na HenryCo Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ.",
     },
   },
 };
@@ -502,6 +976,52 @@ const YO: DeepPartial<MarketplacePublicCopy> = {
       ctaLabel: "Ṣàwárí àwọn ọjà",
     },
   },
+  brand: {
+    eyebrow: "Àmì-ọjà",
+    bodyFallback:
+      "Ilé-ìtajà tí a ti fọwọ́sí lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé pípé fún ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tí ó hàn ṣáájú ìsanwó.",
+    searchCta: "Ṣe ìwákiri nínú àmì-ọjà yìí",
+    trustCta: "Ìlànà ìgbẹ́kẹ̀lé",
+    stats: {
+      activeProducts: "Àwọn ọjà tó ń ṣiṣẹ́",
+      listingsReviewed: "Àwọn ìpolówó tí a yẹ̀ wò",
+      listingsReviewedValue: "Ìwé-ìrìnnà ìgbẹ́kẹ̀lé hàn lórí ọjà kọ̀ọ̀kan",
+      buyerProtection: "Ààbò Olùra",
+      buyerProtectionValue: "Ìsanwó láti ọwọ́ alábojútó",
+    },
+    liveKicker: "Tààrà láti {brand}",
+    openFullSearch: "Ṣí ìwákiri kíkún",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {brand} lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà ṣáájú ìsanwó.",
+  },
+  category: {
+    hero: {
+      kicker: "Àyẹsí ẹka",
+      searchCta: "Ṣàwárí nínú ẹka yìí",
+      trustCta: "Wo àwọn ọgbọ́n ìgbẹ́kẹ̀lé",
+      quickFiltersLabel: "Àyọkà yára",
+    },
+    stats: {
+      activeListingsLabel: "Àkójọ tó wà lẹ́yìn iṣẹ́",
+    },
+    collectionsRail: {
+      kicker: "Àkójọpọ̀ tí a yàn",
+      title: "Àkójọpọ̀ tí ó ń mú kí ìpinnu ìrajà rọrùn.",
+    },
+    catalog: {
+      kicker: "Ìtàn ẹka",
+      title: "Ọjà tó tóótun, ètò tó ṣe kedere síi.",
+      openSearch: "Ṣí àwárí kíkún",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Ṣàwárí àwọn ọjà tó jẹ́ ìmúdájú nínú {category} lórí HenryCo Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà tó wà ní ṣíṣí kí o tó san owó.",
+      fallbackDescription:
+        "Ṣàwárí ẹka tí a yàn pẹ̀lú àmọ̀ lórí HenryCo Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà kí o tó san owó.",
+    },
+  },
 };
 
 const HA: DeepPartial<MarketplacePublicCopy> = {
@@ -516,6 +1036,33 @@ const HA: DeepPartial<MarketplacePublicCopy> = {
       title: "Kanti ɗinka har yanzu fanko ne.",
       body: "Ƙara cikin sauri daga katunan kaya, ajiye abubuwa don baya, kuma kanti zai ci gaba da sabuntawa a cikin ƙaramin kanti da kanti cikakke ba tare da sake loda shafi ba.",
       ctaLabel: "Bincika kayayyaki",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Zaɓin nau'i",
+      searchCta: "Nemo a cikin wannan nau'in",
+      trustCta: "Duba ƙa'idodin amintacce",
+      quickFiltersLabel: "Tace cikin sauri",
+    },
+    stats: {
+      activeListingsLabel: "Tallace-tallace masu aiki",
+    },
+    collectionsRail: {
+      kicker: "Tarin da aka zaɓa",
+      title: "Tari da ke sauƙaƙe shawarar siyayya.",
+    },
+    catalog: {
+      kicker: "Katalogin nau'i",
+      title: "Kayayyaki masu inganci, tsari mafi sauƙin karantawa.",
+      openSearch: "Buɗe cikakken bincike",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Bincika tabbatattun kayayyaki a cikin {category} a HenryCo Marketplace, tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya.",
+      fallbackDescription:
+        "Bincika zaɓaɓɓen nau'i a HenryCo Marketplace tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya.",
     },
   },
 };
