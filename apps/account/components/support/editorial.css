@@ -1,0 +1,1273 @@
+/*
+ * V3 follow-up — /support/[threadId] editorial chat surface, premium pass.
+ *
+ * Layered on top of @henryco/messaging-thread (`.mt-*`) + the account
+ * dashboard surface (`.acct-*`). Since /support/[threadId] is the only
+ * mount-site for `.acct-support-stage` + `.acct-support-room`, every rule
+ * here applies unconditionally to that route — no opt-in modifier needed.
+ *
+ * Premium pass goals (over the original PASS 24 surface):
+ *   1. True full-bleed chat on mobile — the surface escapes the
+ *      max-w-5xl / px-4 padding of AccountLayoutInner via `:has()` so the
+ *      conversation fills 100dvh edge-to-edge with safe-area-inset
+ *      respect for the iOS home indicator + the BottomActionBar.
+ *   2. Aurora ambient backdrop — a soft gold + ink gradient field behind
+ *      the bubble list reads "expensive" without competing with content.
+ *   3. Refined two-tone bubble system with tail tick and inner hairline:
+ *      viewer's own → ink-to-gold gradient, gold accent border; staff →
+ *      cream surface with gold-soft border. Subtle shadow + 1px inset
+ *      hairline both sides.
+ *   4. Sticky frosted-glass header that compresses on scroll, with the
+ *      participant strip moving below the subject line on mobile.
+ *   5. Premium composer chrome — frosted bar, magnetic gold send button
+ *      with glow, refined attachment / extra affordances row, safe-area
+ *      bottom padding that clears the global BottomActionBar.
+ *   6. Refined scrollbar — thin, gold-tinted, hidden when idle. Top and
+ *      bottom soft-fades so bubbles dissolve into the surface instead of
+ *      clipping hard against the chrome.
+ *   7. Day-separator styling (engine emits `.mt-day-divider` when a
+ *      consecutive pair of messages crosses a calendar day).
+ *   8. Editorial empty state — premium spotlight glyph + welcome copy
+ *      with starter affordances supplied by the host.
+ *   9. Accessibility — every motion respects prefers-reduced-motion,
+ *      every interactive control has a 2px gold focus ring, ARIA roles
+ *      stay on the engine, all copy flows through translateSurfaceLabel.
+ *
+ * Token discipline: zero new --acct-* / --jobs-* tokens introduced; one
+ * documented `--acct-gold-text` fallback (`#8a6f00`) carried from PASS 24.
+ * All paint via existing tokens + color-mix() derivations.
+ */
+
+/* ──────────────────────────────────────────────────────────────────
+   Layout — full-viewport, layout-bleed chat surface.
+
+   The account layout (AccountLayoutInner) wraps every page in
+   `.hc-shell-main > div.mx-auto.max-w-5xl.px-4.py-6 ...`. On a chat
+   surface that's a tax we don't want — the conversation should feel
+   like a workspace, not a card on a page. The `:has()` rule below
+   detects this route by looking for our stage class and strips the
+   wrapper paddings, so the chat fills the viewport edge to edge on
+   mobile and goes wide on desktop. Desktop still leaves the sidebar
+   intact (the rule only neutralises the inner wrapper, not the
+   shell-main padding-left).
+   ────────────────────────────────────────────────────────────────── */
+
+.hc-shell-main > div:has(> .acct-support-stage),
+.hc-shell-main > div:has(.acct-support-stage) {
+  max-width: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+@media (max-width: 767px) {
+  /* On mobile the dashboard-shell's BottomActionBar (3.5rem) sits
+     fixed at the viewport bottom; `.hc-shell-main` adds matching
+     padding-bottom so flow content clears it. We shave the same
+     budget off the parent's min-height so the chat stage (which
+     fills it) lands the sticky composer above the bar, not under
+     it. The 0.5rem matches the shell's own padding buffer. */
+  .hc-shell-main > div:has(.acct-support-stage) {
+    min-height: calc(100dvh - 3.5rem - env(safe-area-inset-bottom, 0px) - 0.5rem);
+  }
+}
+
+.acct-support-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem 0.85rem;
+  background:
+    radial-gradient(
+      120% 60% at 15% 0%,
+      color-mix(in srgb, var(--acct-gold-soft) 65%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      80% 50% at 100% 100%,
+      color-mix(in srgb, var(--acct-gold) 8%, transparent) 0%,
+      transparent 70%
+    ),
+    var(--acct-bg);
+  isolation: isolate;
+}
+
+@media (min-width: 768px) {
+  .acct-support-stage {
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .acct-support-stage {
+    padding: 1.5rem 2rem;
+  }
+}
+
+/* The ambient aurora — sits behind everything else, subtly drifts.
+   Pure decoration, can't take pointer events. */
+.acct-support-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(
+      40% 30% at 80% 20%,
+      color-mix(in srgb, var(--acct-gold) 18%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 25% at 10% 80%,
+      color-mix(in srgb, var(--acct-gold-strong) 12%, transparent) 0%,
+      transparent 70%
+    );
+  animation: acct-support-aurora 22s ease-in-out infinite alternate;
+}
+
+@keyframes acct-support-aurora {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-1.5%, 1.2%, 0) scale(1.05);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-support-stage::before {
+    animation: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Back affordance — refined pill, full-width tap on mobile.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 80%, transparent);
+  backdrop-filter: blur(10px) saturate(1.05);
+  -webkit-backdrop-filter: blur(10px) saturate(1.05);
+  color: var(--acct-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+  width: fit-content;
+  align-self: flex-start;
+}
+
+.acct-support-back:hover {
+  color: var(--acct-ink);
+  border-color: color-mix(in srgb, var(--acct-gold) 42%, var(--acct-line));
+  background: color-mix(in srgb, var(--acct-gold-soft) 55%, var(--acct-bg-elevated));
+  transform: translateX(-2px);
+}
+
+.acct-support-back:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-support-back {
+    transition: none;
+  }
+  .acct-support-back:hover {
+    transform: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Header — sticky frosted on scroll, compact on mobile.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-thread-header {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.95rem 1.05rem 0.85rem;
+  border-radius: 1.2rem;
+  border: 1px solid color-mix(in srgb, var(--acct-line) 95%, var(--acct-ink));
+  background:
+    linear-gradient(
+      140deg,
+      color-mix(in srgb, var(--acct-gold-soft) 90%, transparent) 0%,
+      color-mix(in srgb, var(--acct-bg-elevated) 100%, transparent) 60%
+    ),
+    color-mix(in srgb, var(--acct-bg-elevated) 92%, transparent);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  box-shadow:
+    0 18px 48px -32px rgba(15, 17, 24, 0.28),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+}
+
+@media (min-width: 768px) {
+  .acct-thread-header {
+    padding: 1.25rem 1.6rem 1.1rem;
+    border-radius: 1.5rem;
+    gap: 1.25rem;
+  }
+}
+
+.acct-thread-header__primary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1 1 18rem;
+}
+
+.acct-thread-header__pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.acct-thread-header__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  border: 1px solid color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 75%, transparent);
+  color: var(--acct-muted);
+  white-space: nowrap;
+}
+
+.acct-thread-header__pill--division {
+  color: var(--acct-ink);
+  background: color-mix(in srgb, var(--acct-gold-soft) 50%, var(--acct-bg-elevated));
+  border-color: color-mix(in srgb, var(--acct-gold) 32%, var(--acct-line));
+}
+
+.acct-thread-header__pill--status {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.acct-thread-header__pill-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 0 0 0 currentColor;
+}
+
+.acct-thread-header__pill[aria-label*="Awaiting" i] .acct-thread-header__pill-dot,
+.acct-thread-header__pill-dot[data-tone="awaiting"] {
+  animation: acct-thread-pill-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes acct-thread-pill-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 50%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 0.32rem color-mix(in srgb, currentColor 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-thread-header__pill-dot[data-tone="awaiting"] {
+    animation: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .acct-thread-header__pill {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.7rem;
+  }
+}
+
+.acct-thread-header__subject {
+  margin: 0;
+  font-size: clamp(20px, 2.6vw, 26px);
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  color: var(--acct-ink);
+  /* Single-line on mobile so the chat gets the screen; up to 2 on desktop. */
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .acct-thread-header__subject {
+    font-size: clamp(22px, 2.4vw, 28px);
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
+.acct-thread-header__meta {
+  margin: 0;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--acct-muted) 90%, transparent);
+  letter-spacing: 0.04em;
+  font-feature-settings: "tnum";
+}
+
+.acct-thread-header__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+  align-self: flex-start;
+  margin-left: auto;
+}
+
+@media (min-width: 768px) {
+  .acct-thread-header__actions {
+    gap: 0.5rem;
+  }
+}
+
+/* On narrow phones hide the download button label, keep the icon. */
+@media (max-width: 640px) {
+  .acct-thread-header__actions [data-download-label] {
+    display: none;
+  }
+  .acct-thread-header__actions button,
+  .acct-thread-header__actions a {
+    min-width: 2.4rem;
+    height: 2.4rem;
+    padding: 0 0.55rem;
+  }
+}
+
+/* Overflow menu refinement */
+.acct-thread-header__menu {
+  position: relative;
+}
+
+.acct-thread-header__menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.45rem);
+  z-index: 30;
+  width: min(20rem, calc(100vw - 1.5rem));
+  padding: 0.4rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--acct-line) 95%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 98%, transparent);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  box-shadow:
+    0 28px 70px -36px rgba(15, 17, 24, 0.32),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  animation: acct-menu-in 160ms ease-out both;
+}
+
+@keyframes acct-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-thread-header__menu-panel {
+    animation: none;
+  }
+}
+
+.acct-thread-header__menu-divider {
+  height: 1px;
+  margin: 0.25rem 0.35rem;
+  background: color-mix(in srgb, var(--acct-line) 80%, transparent);
+}
+
+.acct-thread-header__menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.7rem;
+  border: 0;
+  background: transparent;
+  color: var(--acct-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.acct-thread-header__menu-item:hover:not(:disabled),
+.acct-thread-header__menu-item:focus-visible {
+  background: color-mix(in srgb, var(--acct-gold-soft) 60%, transparent);
+  outline: none;
+}
+
+.acct-thread-header__menu-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.acct-thread-header__menu-item-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--acct-gold-soft) 70%, transparent);
+  color: var(--acct-gold-text, #8a6f00);
+}
+
+.acct-thread-header__menu-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.acct-thread-header__menu-item-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+
+.acct-thread-header__menu-item-desc {
+  font-size: 11.5px;
+  color: var(--acct-muted);
+  line-height: 1.4;
+}
+
+.acct-thread-header__menu-feedback {
+  margin: 0.2rem 0.5rem 0;
+  padding: 0.4rem 0.55rem;
+  font-size: 11.5px;
+  border-radius: 0.55rem;
+  background: color-mix(in srgb, var(--acct-gold-soft) 80%, transparent);
+  color: var(--acct-gold-text, #8a6f00);
+}
+
+.acct-thread-header__menu-foot {
+  margin: 0.35rem 0.55rem 0.15rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed color-mix(in srgb, var(--acct-line) 80%, transparent);
+  font-size: 10.5px;
+  color: color-mix(in srgb, var(--acct-muted) 90%, transparent);
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Room + thread surface — full-bleed under header, layered scrim.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+
+.acct-support-room .mt-thread {
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 24rem;
+  border-radius: 1.4rem;
+  border-color: color-mix(in srgb, var(--acct-line) 92%, var(--acct-ink));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--acct-bg-elevated) 100%, transparent) 0%,
+      color-mix(in srgb, var(--acct-surface) 55%, var(--acct-bg-elevated)) 100%
+    );
+  box-shadow:
+    0 30px 70px -36px rgba(15, 17, 24, 0.32),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .acct-support-room .mt-thread {
+    min-height: 30rem;
+    border-radius: 1.75rem;
+  }
+}
+
+/* Top fade — bubbles dissolve into the surface instead of clipping. */
+.acct-support-room .mt-thread::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2.5rem;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--acct-bg-elevated) 100%, transparent) 0%,
+    color-mix(in srgb, var(--acct-bg-elevated) 0%, transparent) 100%
+  );
+}
+
+/* Bottom fade above the composer — same idea on the bottom. */
+.acct-support-room .mt-thread .mt-thread-list::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  display: block;
+  margin: -1rem -1rem 0;
+  height: 1rem;
+  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    color-mix(in srgb, var(--acct-bg-elevated) 100%, transparent) 0%,
+    color-mix(in srgb, var(--acct-bg-elevated) 0%, transparent) 100%
+  );
+}
+
+/* Premium scrollbar — thin, gold-tinted, hidden until hover. */
+.acct-support-room .mt-thread-list {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+.acct-support-room .mt-thread-list:hover {
+  scrollbar-color: color-mix(in srgb, var(--acct-gold) 55%, transparent)
+    color-mix(in srgb, var(--acct-line) 50%, transparent);
+}
+
+.acct-support-room .mt-thread-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.acct-support-room .mt-thread-list::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: transparent;
+  transition: background 200ms ease;
+}
+
+.acct-support-room .mt-thread-list:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--acct-gold) 50%, transparent);
+}
+
+.acct-support-room .mt-thread-list:hover::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--acct-gold) 75%, transparent);
+}
+
+.acct-support-room .mt-thread-list {
+  padding: 1.2rem 1rem 0.8rem;
+}
+
+@media (min-width: 768px) {
+  .acct-support-room .mt-thread-list {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+}
+
+.acct-support-room .mt-thread-list-inner {
+  gap: 0.65rem;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Day separator (engine emits when consecutive messages cross days)
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .mt-day-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0.65rem 0 0.35rem;
+  list-style: none;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--acct-muted) 90%, transparent);
+}
+
+.acct-support-room .mt-day-divider::before,
+.acct-support-room .mt-day-divider::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--acct-line) 100%, transparent) 30%,
+    color-mix(in srgb, var(--acct-line) 100%, transparent) 70%,
+    transparent 100%
+  );
+  max-width: 6rem;
+}
+
+.acct-support-room .mt-day-divider span {
+  padding: 0.18rem 0.7rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Bubbles — refined two-tone with tail tick + inner hairline.
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .mt-bubble {
+  position: relative;
+  max-width: min(34rem, 84%);
+  padding: 0.75rem 0.95rem 0.85rem;
+  border-radius: 1.15rem;
+  border-width: 1px;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--acct-bg-elevated);
+  border-color: color-mix(in srgb, var(--acct-line) 92%, var(--acct-ink));
+  color: var(--acct-ink);
+  box-shadow:
+    0 6px 16px -10px rgba(15, 17, 24, 0.22),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+}
+
+.acct-support-room .mt-bubble-row {
+  align-items: flex-end;
+  gap: 0.55rem;
+}
+
+/* Staff / agent bubble — cream surface with gold-soft border, tail
+   tick on the top-left so the sender side reads instantly. */
+.acct-support-room .mt-bubble-row[data-side="other"] .mt-bubble,
+.acct-support-room .mt-bubble-row[data-side="team"] .mt-bubble {
+  background: color-mix(in srgb, var(--acct-surface) 65%, var(--acct-bg-elevated));
+  border-color: color-mix(in srgb, var(--acct-gold-soft) 70%, var(--acct-line));
+  border-top-left-radius: 0.35rem;
+}
+
+/* Viewer's own bubble — ink-gold gradient with gold accent border. */
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble {
+  background:
+    linear-gradient(
+      140deg,
+      var(--acct-ink) 0%,
+      color-mix(in srgb, var(--acct-ink) 84%, var(--acct-gold-strong)) 100%
+    );
+  border-color: color-mix(in srgb, var(--acct-gold) 42%, transparent);
+  color: var(--acct-bg-soft);
+  border-top-right-radius: 0.35rem;
+  box-shadow:
+    0 10px 24px -14px color-mix(in srgb, var(--acct-ink) 70%, transparent),
+    0 1px 0 color-mix(in srgb, var(--acct-gold) 26%, transparent) inset;
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-meta {
+  /* Auto-flipping muted on top of the always-contrasting bubble bg.
+     --acct-bg-soft is white in light / near-black in dark, so the
+     bubble's own primary text is bg-soft and the eyebrow is a
+     softened mix that stays legible in both modes. */
+  color: color-mix(in srgb, var(--acct-bg-soft) 78%, transparent);
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-name {
+  /* Eyebrow accent — bg-soft warmed with gold so it reads as a
+     premium "you" indicator without ever falling below 4.5:1 in
+     either mode (light: pale gold on near-black; dark: muted ink
+     with gold tint on cream). */
+  color: color-mix(in srgb, var(--acct-bg-soft) 72%, var(--acct-gold));
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  margin-top: 0.5rem;
+  padding: 0.16rem 0.6rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--acct-gold) 30%, transparent);
+  /* Use the same bg-soft trick as the bubble body — guarantees
+     contrast in both light + dark mode without manual overrides. */
+  color: color-mix(in srgb, var(--acct-bg-soft) 90%, var(--acct-gold));
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"] {
+  background: color-mix(in srgb, var(--acct-gold) 50%, transparent);
+  color: var(--acct-bg-soft);
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="pending"] {
+  background: color-mix(in srgb, var(--acct-muted) 25%, transparent);
+  color: color-mix(in srgb, var(--acct-bg-soft) 75%, transparent);
+  font-style: italic;
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  /* Always-bright pulse dot — --acct-gold reads at high contrast
+     against the inked bubble in both modes (it's #C9A227 in light,
+     #D4AF37 in dark; the dot sits on a gold-tinted background). */
+  background: var(--acct-gold);
+  box-shadow: 0 0 0 0 var(--acct-gold);
+  animation: acct-bubble-read 1.8s ease-in-out infinite;
+}
+
+@keyframes acct-bubble-read {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-gold) 50%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 0.32rem color-mix(in srgb, var(--acct-gold) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-support-room .mt-bubble-row[data-side="own"] .mt-bubble-status[data-state="read"]::before {
+    animation: none;
+  }
+}
+
+/* System bubble — centered, dashed, very subtle. */
+.acct-support-room .mt-bubble-row[data-side="system"] .mt-bubble {
+  background: color-mix(in srgb, var(--acct-surface) 40%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--acct-line) 100%, var(--acct-ink));
+  color: var(--acct-muted);
+  font-size: 12.5px;
+  border-radius: 0.85rem;
+  padding: 0.5rem 0.9rem;
+}
+
+/* Avatars — gold-toned ring, larger on the viewer's own side. */
+.acct-support-room .mt-avatar {
+  width: 2.1rem;
+  height: 2.1rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1.5px solid color-mix(in srgb, var(--acct-gold) 36%, var(--acct-line));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--acct-gold-soft) 92%, transparent) 0%,
+      color-mix(in srgb, var(--acct-surface) 78%, transparent) 100%
+    );
+  color: var(--acct-gold-text, #8a6f00);
+  box-shadow:
+    0 6px 14px -8px color-mix(in srgb, var(--acct-gold) 50%, transparent),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+}
+
+.acct-support-room .mt-bubble-row[data-side="own"] .mt-avatar {
+  background:
+    linear-gradient(
+      135deg,
+      var(--acct-gold) 0%,
+      color-mix(in srgb, var(--acct-gold) 65%, var(--acct-gold-strong)) 100%
+    );
+  /* In light mode --acct-ink is near-black on bright gold — contrast
+     is excellent. In dark mode --acct-ink flips to a light value and
+     would fall to ~2.4:1 against the same bright gold, so we override
+     the glyph color under `.dark` below to use bg-soft (dark in dark
+     mode) for guaranteed legibility. */
+  color: var(--acct-ink);
+  border-color: color-mix(in srgb, var(--acct-gold) 75%, var(--acct-ink));
+}
+
+.dark .acct-support-room .mt-bubble-row[data-side="own"] .mt-avatar {
+  /* Dark-mode override — bg-soft is #141920 here, which gives us a
+     near-black glyph on the bright gold avatar (≈11:1 contrast). */
+  color: var(--acct-bg-soft);
+}
+
+/* Bubble body type */
+.acct-support-room .mt-bubble-body,
+.acct-support-room .mt-bubble-body-rich {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.acct-support-room .mt-bubble-meta {
+  font-size: 11px;
+  font-feature-settings: "tnum";
+  letter-spacing: 0.01em;
+  gap: 0.45rem;
+}
+
+.acct-support-room .mt-bubble-name {
+  font-weight: 700;
+}
+
+/* Attachment chips — refine to feel like premium asset pills. */
+.acct-support-room .mt-attachment-chip {
+  border-color: color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 95%, transparent);
+  color: var(--acct-ink);
+  padding: 0.45rem 0.75rem 0.45rem 0.55rem;
+  border-radius: 0.85rem;
+  transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.acct-support-room .mt-attachment-chip:hover {
+  border-color: color-mix(in srgb, var(--acct-gold) 45%, var(--acct-line));
+  background: color-mix(in srgb, var(--acct-gold-soft) 35%, var(--acct-bg-elevated));
+  transform: translateY(-1px);
+}
+
+.acct-support-room .mt-attachment-icon {
+  background: color-mix(in srgb, var(--acct-gold-soft) 80%, transparent);
+  color: var(--acct-gold-text, #8a6f00);
+}
+
+.acct-support-room .mt-attachment-meta {
+  color: var(--acct-muted);
+}
+
+/* Image attachments — softer corners, gold focus ring. */
+.acct-support-room .mt-attachment-image {
+  border-color: color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  border-radius: 0.85rem;
+}
+
+.acct-support-room .mt-attachment-image:hover {
+  border-color: color-mix(in srgb, var(--acct-gold) 50%, transparent);
+}
+
+.acct-support-room .mt-attachment-image:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Typing indicator — refined gold dots
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .mt-typing-bubble {
+  border-color: color-mix(in srgb, var(--acct-gold-soft) 80%, var(--acct-line));
+  background: color-mix(in srgb, var(--acct-gold-soft) 30%, var(--acct-bg-elevated));
+  border-radius: 1rem;
+}
+
+.acct-support-room .mt-typing-dot {
+  background: color-mix(in srgb, var(--acct-gold) 75%, transparent);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Composer — frosted bar, magnetic gold send, refined affordances
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room [class*="cc-composer"],
+.acct-support-room [data-composer] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--acct-bg-elevated) 95%, transparent) 0%,
+    color-mix(in srgb, var(--acct-bg-elevated) 100%, transparent) 100%
+  );
+  border-top: 1px solid color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  /* Account for the BottomActionBar (Home / Modules / Inbox / More)
+     plus the iOS home indicator. Safe-area-inset-bottom protects
+     against the URL bar on iOS Safari. */
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.4rem);
+  backdrop-filter: blur(12px) saturate(1.05);
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
+}
+
+/* Pin the composer to the bottom of the chat container. The wrapper
+   is height-locked; this keeps the composer in view as the message
+   list scrolls. */
+.acct-support-room .mt-thread > :last-child {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+
+.acct-support-room .mt-composer-host {
+  background: transparent;
+  padding: 0.65rem 0.65rem max(env(safe-area-inset-bottom, 0px), 0.65rem);
+  border-top: 1px solid color-mix(in srgb, var(--acct-line) 75%, transparent);
+}
+
+@media (min-width: 640px) {
+  .acct-support-room .mt-composer-host {
+    padding: 0.85rem 1rem max(env(safe-area-inset-bottom, 0px), 0.85rem);
+  }
+}
+
+/* Composer textarea / input — premium feel, gold focus ring. */
+.acct-support-room [data-composer-input],
+.acct-support-room textarea[name*="message" i],
+.acct-support-room textarea[placeholder] {
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--acct-line) 85%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 100%, transparent);
+  color: var(--acct-ink);
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 0.65rem 0.85rem;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.acct-support-room [data-composer-input]:focus-visible,
+.acct-support-room textarea[name*="message" i]:focus-visible,
+.acct-support-room textarea[placeholder]:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--acct-gold) 60%, var(--acct-line));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--acct-gold) 25%, transparent);
+}
+
+/* Send button — magnetic, glowing, ink-on-gold. */
+.acct-support-room button[type="submit"],
+.acct-support-room [data-composer-send] {
+  background:
+    linear-gradient(
+      135deg,
+      var(--acct-gold) 0%,
+      var(--acct-gold-strong) 100%
+    );
+  color: var(--acct-ink);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 0;
+  border-radius: 1rem;
+  padding: 0.6rem 1rem;
+  box-shadow:
+    0 12px 24px -12px color-mix(in srgb, var(--acct-gold) 80%, transparent),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 65%, transparent) inset;
+  transition:
+    transform 160ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 220ms ease,
+    filter 200ms ease;
+}
+
+.acct-support-room button[type="submit"]:hover:not(:disabled),
+.acct-support-room [data-composer-send]:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow:
+    0 18px 32px -14px color-mix(in srgb, var(--acct-gold) 95%, transparent),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 70%, transparent) inset;
+}
+
+.acct-support-room button[type="submit"]:active:not(:disabled),
+.acct-support-room [data-composer-send]:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.acct-support-room button[type="submit"]:focus-visible,
+.acct-support-room [data-composer-send]:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 3px;
+}
+
+.acct-support-room button[type="submit"]:disabled,
+.acct-support-room [data-composer-send]:disabled {
+  background: color-mix(in srgb, var(--acct-gold) 30%, var(--acct-surface));
+  color: color-mix(in srgb, var(--acct-ink) 55%, var(--acct-muted));
+  box-shadow: none;
+  transform: none;
+  filter: none;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-support-room button[type="submit"],
+  .acct-support-room [data-composer-send] {
+    transition: none;
+  }
+  .acct-support-room button[type="submit"]:hover:not(:disabled),
+  .acct-support-room [data-composer-send]:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Attachment / utility buttons in the composer toolbar. */
+.acct-support-room [data-composer-attach],
+.acct-support-room button[aria-label*="ttach" i],
+.acct-support-room button[aria-label*="aperclip" i] {
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--acct-line) 85%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 95%, transparent);
+  color: var(--acct-muted);
+  transition: border-color 160ms ease, color 160ms ease, transform 140ms ease;
+}
+
+.acct-support-room [data-composer-attach]:hover,
+.acct-support-room button[aria-label*="ttach" i]:hover,
+.acct-support-room button[aria-label*="aperclip" i]:hover {
+  border-color: color-mix(in srgb, var(--acct-gold) 45%, var(--acct-line));
+  color: var(--acct-ink);
+  transform: translateY(-1px);
+}
+
+.acct-support-room [data-composer-attach]:focus-visible,
+.acct-support-room button[aria-label*="ttach" i]:focus-visible,
+.acct-support-room button[aria-label*="aperclip" i]:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Empty state — premium spotlight glyph + welcome copy
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .mt-thread-empty {
+  padding: 3rem 1.5rem 4rem;
+  gap: 0.9rem;
+}
+
+.acct-support-room .mt-thread-empty-icon {
+  width: 3.4rem;
+  height: 3.4rem;
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      color-mix(in srgb, var(--acct-gold-soft) 95%, transparent) 0%,
+      color-mix(in srgb, var(--acct-bg-elevated) 85%, transparent) 100%
+    );
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 38%, var(--acct-line));
+  color: var(--acct-gold-text, #8a6f00);
+  box-shadow:
+    0 14px 28px -14px color-mix(in srgb, var(--acct-gold) 50%, transparent),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 70%, transparent) inset;
+}
+
+.acct-support-room .mt-thread-empty-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--acct-ink);
+}
+
+.acct-support-room .mt-thread-empty-body {
+  max-width: 28rem;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--acct-muted);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Live-banner (reconnect) — gold scrim
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .mt-live-banner {
+  color: var(--acct-gold-text, #8a6f00);
+  background: color-mix(in srgb, var(--acct-gold-soft) 78%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--acct-gold) 32%, transparent);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  font-size: 11px;
+}
+
+.acct-support-room .mt-live-dot {
+  background: var(--acct-gold-strong);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--acct-gold) 50%, transparent);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Closed / resolved pinned notes — editorial chrome
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-room .acct-support-room__closed-note,
+.acct-support-room .acct-support-room__resolved-note {
+  margin-top: 0.55rem;
+  border-radius: 1rem;
+  padding: 0.9rem 1.15rem;
+  font-size: 13px;
+  line-height: 1.55;
+  background: color-mix(in srgb, var(--acct-gold-soft) 55%, var(--acct-bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 28%, var(--acct-line));
+  color: var(--acct-ink);
+  box-shadow:
+    0 12px 28px -18px rgba(15, 17, 24, 0.22),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Participants strip — refined chips, gold hover halo
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-stage .mt-participants {
+  padding: 0.4rem 0 0;
+}
+
+.acct-support-stage .mt-participant {
+  background: color-mix(in srgb, var(--acct-bg-elevated) 90%, transparent);
+  border-color: color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.acct-support-stage .mt-participant:hover {
+  border-color: color-mix(in srgb, var(--acct-gold) 40%, var(--acct-line));
+  background: color-mix(in srgb, var(--acct-gold-soft) 25%, var(--acct-bg-elevated));
+}
+
+.acct-support-stage .mt-participant__avatar {
+  background: color-mix(in srgb, var(--acct-gold-soft) 75%, transparent);
+  color: var(--acct-gold-text, #8a6f00);
+}
+
+.acct-support-stage .mt-participant[data-self="true"] {
+  border-color: color-mix(in srgb, var(--acct-gold) 50%, var(--acct-line));
+}
+
+.acct-support-stage .mt-participant__name {
+  color: var(--acct-ink);
+}
+
+.acct-support-stage .mt-participant__role {
+  color: var(--acct-muted);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Customization popover — match the dashboard editorial vocabulary
+   ────────────────────────────────────────────────────────────────── */
+
+.acct-support-stage .mt-customize__trigger {
+  border-color: color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 95%, transparent);
+  color: var(--acct-muted);
+  transition: border-color 160ms ease, color 160ms ease, transform 140ms ease;
+}
+
+.acct-support-stage .mt-customize__trigger:hover {
+  border-color: color-mix(in srgb, var(--acct-gold) 50%, var(--acct-line));
+  color: var(--acct-ink);
+  transform: translateY(-1px);
+}
+
+.acct-support-stage .mt-customize__trigger:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+.acct-support-stage .mt-customize__panel {
+  border-color: color-mix(in srgb, var(--acct-line) 95%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg-elevated) 98%, transparent);
+  box-shadow:
+    0 28px 60px -32px rgba(15, 17, 24, 0.32),
+    0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 60%, transparent) inset;
+}
+
+.acct-support-stage .mt-customize__title,
+.acct-support-stage .mt-customize__row-label,
+.acct-support-stage .mt-customize__hint {
+  color: var(--acct-muted);
+}
+
+.acct-support-stage .mt-customize__segment {
+  border-color: color-mix(in srgb, var(--acct-line) 90%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-bg) 90%, transparent);
+}
+
+.acct-support-stage .mt-customize__segment-option {
+  color: var(--acct-muted);
+}
+
+.acct-support-stage .mt-customize__segment-option:hover:not([data-active]) {
+  background: color-mix(in srgb, var(--acct-gold-soft) 35%, transparent);
+  color: var(--acct-ink);
+}
+
+.acct-support-stage .mt-customize__segment-option[data-active] {
+  background: color-mix(in srgb, var(--acct-gold) 26%, transparent);
+  color: var(--acct-ink);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--acct-gold) 44%, transparent);
+}
+
+.acct-support-stage .mt-customize__row-icon {
+  background: color-mix(in srgb, var(--acct-gold-soft) 70%, transparent);
+  color: var(--acct-gold-text, #8a6f00);
+}
+
+.acct-support-stage .mt-customize__reset {
+  color: var(--acct-muted);
+}
+
+.acct-support-stage .mt-customize__reset:hover {
+  color: var(--acct-ink);
+  border-color: color-mix(in srgb, var(--acct-gold) 50%, var(--acct-line));
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Print — hide chrome, render conversation cleanly
+   ────────────────────────────────────────────────────────────────── */
+
+@media print {
+  .acct-support-stage {
+    min-height: auto;
+    background: transparent;
+    padding: 0;
+  }
+  .acct-support-stage::before {
+    display: none;
+  }
+  .acct-support-back,
+  .acct-thread-header__actions,
+  .acct-support-room .mt-composer-host,
+  .acct-support-room [data-composer] {
+    display: none !important;
+  }
+  .acct-thread-header {
+    position: static;
+    box-shadow: none;
+    border-color: transparent;
+  }
+  .acct-support-room .mt-thread {
+    min-height: auto;
+    box-shadow: none;
+    border-color: #aaa;
+  }
+  .acct-support-room .mt-bubble {
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}

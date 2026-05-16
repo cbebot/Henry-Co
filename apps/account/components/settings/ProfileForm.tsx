@@ -14,7 +14,8 @@ import {
   normalizeLocale,
   type AppLocale,
 } from "@henryco/i18n";
-import { Camera } from "lucide-react";
+import Link from "next/link";
+import { Camera, LifeBuoy, Lock } from "lucide-react";
 import UserAvatar from "@/components/layout/UserAvatar";
 
 const COUNTRIES = getActiveCountries().map((country) => ({
@@ -236,8 +237,52 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
 
       <div>
         <label className="mb-1.5 block text-sm font-medium">{t("Email")}</label>
-        <input type="email" value={email || ""} disabled className="acct-input opacity-60" />
-        <p className="mt-1 text-xs text-[var(--acct-muted)]">{t("Contact support to change your email")}</p>
+        <div className="relative">
+          <input
+            type="email"
+            value={email || ""}
+            disabled
+            className="acct-input pr-10 opacity-70"
+            aria-describedby="acct-profile-email-help"
+          />
+          <Lock
+            size={14}
+            aria-hidden
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--acct-muted)]"
+          />
+        </div>
+        <div
+          id="acct-profile-email-help"
+          className="mt-2 flex flex-col gap-3 rounded-2xl border border-[color:color-mix(in_srgb,var(--acct-line)_90%,var(--acct-ink))] bg-[color:color-mix(in_srgb,var(--acct-gold-soft)_28%,var(--acct-surface))] p-3 shadow-[inset_0_1px_0_color-mix(in_srgb,var(--acct-bg-soft)_55%,transparent)] sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p className="text-xs leading-5 text-[var(--acct-muted)] sm:flex-1">
+            {t(
+              "Email changes go through identity-verified support so trust, KYC and wallet records stay aligned.",
+            )}
+          </p>
+          <Link
+            href={`/support/new?category=account&subject=${encodeURIComponent(
+              t("Email change request"),
+            )}&message=${encodeURIComponent(
+              [
+                t("Hi HenryCo Support,"),
+                "",
+                t("I'd like to change the email on my account."),
+                "",
+                `${t("Current email")}: ${email || ""}`,
+                `${t("New email")}: `,
+                "",
+                `${t("Reason")}: `,
+                "",
+                t("Thanks."),
+              ].join("\n"),
+            )}`}
+            className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-[var(--acct-ink)] px-4 py-2 text-xs font-bold tracking-wide text-[var(--acct-bg-soft)] shadow-[0_10px_22px_-14px_color-mix(in_srgb,var(--acct-ink)_75%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--acct-gold)_32%,transparent)] transition-[transform,box-shadow,background,filter] duration-200 ease-out hover:-translate-y-px hover:bg-[color:color-mix(in_srgb,var(--acct-ink)_85%,var(--acct-gold))] hover:shadow-[0_16px_30px_-14px_color-mix(in_srgb,var(--acct-gold)_85%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--acct-gold)_40%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acct-gold)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+          >
+            <LifeBuoy size={14} aria-hidden />
+            {t("Request email change")}
+          </Link>
+        </div>
       </div>
 
       <div>
