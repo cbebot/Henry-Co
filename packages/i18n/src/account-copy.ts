@@ -735,6 +735,79 @@ export type AccountCopy = {
       urgent: string;
     };
   };
+  payments: {
+    hero: {
+      title: string;
+      description: string;
+      addMethodCta: string;
+    };
+    empty: {
+      title: string;
+      description: string;
+      cta: string;
+    };
+    card: {
+      savedMethodFallback: string;
+      cardLastFourTemplate: string;
+    };
+    wallet: {
+      eyebrow: string;
+      body: string;
+      manageCta: string;
+    };
+  };
+  savedItems: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      title: string;
+      description: string;
+    };
+    summary: {
+      activeTemplate: string;
+      expiredTemplate: string;
+      expiryNote: string;
+      savedTemplate: string;
+    };
+    toolbar: {
+      showLabel: string;
+      allDivisions: string;
+      sortLabel: string;
+      sortNewest: string;
+      sortOldest: string;
+      sortExpiring: string;
+    };
+    selection: {
+      selectedTemplate: string;
+      clear: string;
+      moving: string;
+      moveSelectedToCart: string;
+      selectAllOnPage: string;
+    };
+    empty: {
+      title: string;
+      description: string;
+      browseCta: string;
+    };
+    card: {
+      deselectItem: string;
+      selectItem: string;
+      savedItemFallback: string;
+      expiresToday: string;
+      expiresInTemplate: string;
+      expiredNotice: string;
+      moveToCart: string;
+      moving: string;
+      removeFromSaved: string;
+      openOriginal: string;
+    };
+    expired: {
+      sectionKicker: string;
+      sectionNote: string;
+    };
+  };
 };
 
 const EN: AccountCopy = {
@@ -1522,6 +1595,84 @@ const EN: AccountCopy = {
       normal: "Normal",
       high: "High",
       urgent: "Urgent",
+    },
+  },
+  payments: {
+    hero: {
+      title: "Payment Methods",
+      description: "Manage your saved payment options for quick checkout.",
+      addMethodCta: "Add method",
+    },
+    empty: {
+      title: "No payment methods",
+      description:
+        "Add a debit card, bank account, or other payment method for quick checkout across all HenryCo services.",
+      cta: "Add payment method",
+    },
+    card: {
+      savedMethodFallback: "Saved method",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "HenryCo Wallet",
+      body: "Your HenryCo Wallet is always available as a payment option.",
+      manageCta: "Manage wallet",
+    },
+  },
+  savedItems: {
+    metadata: {
+      title: "Saved for later",
+      description:
+        "Items you set aside from any HenryCo cart, kept for 90 days with an expiry warning a week early.",
+    },
+    hero: {
+      title: "Saved for later",
+      description:
+        "Items you set aside from any HenryCo cart. We'll keep them for 90 days and warn you a week before they expire.",
+    },
+    summary: {
+      activeTemplate: "{count} active",
+      expiredTemplate: "{count} expired",
+      expiryNote:
+        "Items expire 90 days after they're saved. We warn you a week early.",
+      savedTemplate: "{count} saved",
+    },
+    toolbar: {
+      showLabel: "Show",
+      allDivisions: "All divisions",
+      sortLabel: "Sort",
+      sortNewest: "Newest first",
+      sortOldest: "Oldest first",
+      sortExpiring: "Expiring soon",
+    },
+    selection: {
+      selectedTemplate: "{count} selected",
+      clear: "Clear",
+      moving: "Moving…",
+      moveSelectedToCart: "Move selected to cart",
+      selectAllOnPage: "Select all on page",
+    },
+    empty: {
+      title: "Nothing saved for later yet",
+      description:
+        "When you find something you're not ready to buy, save it for later from the cart. We'll keep the price you saw at the time and warn you a week before it expires.",
+      browseCta: "Browse",
+    },
+    card: {
+      deselectItem: "Deselect item",
+      selectItem: "Select item",
+      savedItemFallback: "Saved item",
+      expiresToday: "Expires today",
+      expiresInTemplate: "Expires in {days} day{plural}",
+      expiredNotice: "Expired — restore resets the 90-day window",
+      moveToCart: "Move to cart",
+      moving: "Moving…",
+      removeFromSaved: "Remove from saved items",
+      openOriginal: "Open original listing",
+    },
+    expired: {
+      sectionKicker: "Recently expired",
+      sectionNote: "Restoring resets the 90-day window.",
     },
   },
 };
@@ -2331,6 +2482,84 @@ const FR: DeepPartial<AccountCopy> = {
       urgent: "Urgente",
     },
   },
+  payments: {
+    hero: {
+      title: "Moyens de paiement",
+      description: "Gérez vos options de paiement enregistrées pour un paiement rapide.",
+      addMethodCta: "Ajouter un moyen",
+    },
+    empty: {
+      title: "Aucun moyen de paiement",
+      description:
+        "Ajoutez une carte bancaire, un compte bancaire ou un autre moyen de paiement pour passer rapidement à la caisse dans tous les services HenryCo.",
+      cta: "Ajouter un moyen de paiement",
+    },
+    card: {
+      savedMethodFallback: "Moyen enregistré",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "Portefeuille HenryCo",
+      body: "Votre portefeuille HenryCo est toujours disponible comme moyen de paiement.",
+      manageCta: "Gérer le portefeuille",
+    },
+  },
+  savedItems: {
+    metadata: {
+      title: "Articles enregistrés",
+      description:
+        "Articles mis de côté depuis n’importe quel panier HenryCo, conservés 90 jours avec un avertissement une semaine avant l’expiration.",
+    },
+    hero: {
+      title: "Enregistrés pour plus tard",
+      description:
+        "Les articles que vous avez mis de côté depuis vos paniers HenryCo. Nous les gardons 90 jours et vous prévenons une semaine avant leur expiration.",
+    },
+    summary: {
+      activeTemplate: "{count} actif·s",
+      expiredTemplate: "{count} expiré·s",
+      expiryNote:
+        "Les articles expirent 90 jours après leur enregistrement. Nous vous prévenons une semaine à l’avance.",
+      savedTemplate: "{count} enregistré·s",
+    },
+    toolbar: {
+      showLabel: "Afficher",
+      allDivisions: "Toutes les divisions",
+      sortLabel: "Trier",
+      sortNewest: "Plus récents d’abord",
+      sortOldest: "Plus anciens d’abord",
+      sortExpiring: "Expirant bientôt",
+    },
+    selection: {
+      selectedTemplate: "{count} sélectionné·s",
+      clear: "Effacer",
+      moving: "Transfert…",
+      moveSelectedToCart: "Déplacer la sélection vers le panier",
+      selectAllOnPage: "Tout sélectionner sur cette page",
+    },
+    empty: {
+      title: "Rien d’enregistré pour l’instant",
+      description:
+        "Quand vous trouvez un article que vous n’êtes pas prêt à acheter, enregistrez-le depuis le panier. Nous conservons le prix vu à ce moment-là et vous prévenons une semaine avant son expiration.",
+      browseCta: "Parcourir",
+    },
+    card: {
+      deselectItem: "Désélectionner l’article",
+      selectItem: "Sélectionner l’article",
+      savedItemFallback: "Article enregistré",
+      expiresToday: "Expire aujourd’hui",
+      expiresInTemplate: "Expire dans {days} jour{plural}",
+      expiredNotice: "Expiré — la restauration réinitialise la fenêtre de 90 jours",
+      moveToCart: "Déplacer vers le panier",
+      moving: "Transfert…",
+      removeFromSaved: "Retirer des articles enregistrés",
+      openOriginal: "Ouvrir l’annonce d’origine",
+    },
+    expired: {
+      sectionKicker: "Expirés récemment",
+      sectionNote: "Restaurer réinitialise la fenêtre de 90 jours.",
+    },
+  },
 };
 
 const DE: DeepPartial<AccountCopy> = {
@@ -3068,6 +3297,84 @@ const DE: DeepPartial<AccountCopy> = {
       normal: "Normal",
       high: "Hoch",
       urgent: "Dringend",
+    },
+  },
+  payments: {
+    hero: {
+      title: "Zahlungsmethoden",
+      description: "Verwalten Sie Ihre gespeicherten Zahlungsoptionen für einen schnellen Bezahlvorgang.",
+      addMethodCta: "Methode hinzufügen",
+    },
+    empty: {
+      title: "Keine Zahlungsmethoden",
+      description:
+        "Fügen Sie eine Debitkarte, ein Bankkonto oder eine andere Zahlungsmethode hinzu, um in allen HenryCo-Diensten schnell zu bezahlen.",
+      cta: "Zahlungsmethode hinzufügen",
+    },
+    card: {
+      savedMethodFallback: "Gespeicherte Methode",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "HenryCo Wallet",
+      body: "Ihre HenryCo Wallet steht jederzeit als Zahlungsoption zur Verfügung.",
+      manageCta: "Wallet verwalten",
+    },
+  },
+  savedItems: {
+    metadata: {
+      title: "Gespeicherte Artikel",
+      description:
+        "Artikel, die Sie aus einem HenryCo-Warenkorb beiseitegelegt haben — 90 Tage aufbewahrt, mit Hinweis eine Woche vor Ablauf.",
+    },
+    hero: {
+      title: "Für später gespeichert",
+      description:
+        "Artikel, die Sie aus einem HenryCo-Warenkorb beiseitegelegt haben. Wir bewahren sie 90 Tage auf und warnen Sie eine Woche vor Ablauf.",
+    },
+    summary: {
+      activeTemplate: "{count} aktiv",
+      expiredTemplate: "{count} abgelaufen",
+      expiryNote:
+        "Artikel laufen 90 Tage nach dem Speichern ab. Wir warnen Sie eine Woche im Voraus.",
+      savedTemplate: "{count} gespeichert",
+    },
+    toolbar: {
+      showLabel: "Anzeigen",
+      allDivisions: "Alle Bereiche",
+      sortLabel: "Sortieren",
+      sortNewest: "Neueste zuerst",
+      sortOldest: "Älteste zuerst",
+      sortExpiring: "Bald ablaufend",
+    },
+    selection: {
+      selectedTemplate: "{count} ausgewählt",
+      clear: "Aufheben",
+      moving: "Wird verschoben…",
+      moveSelectedToCart: "Auswahl in den Warenkorb verschieben",
+      selectAllOnPage: "Alle auf dieser Seite auswählen",
+    },
+    empty: {
+      title: "Noch nichts gespeichert",
+      description:
+        "Wenn Sie etwas finden, das Sie noch nicht kaufen möchten, speichern Sie es aus dem Warenkorb für später. Wir behalten den Preis bei und warnen Sie eine Woche vor Ablauf.",
+      browseCta: "Stöbern",
+    },
+    card: {
+      deselectItem: "Artikel abwählen",
+      selectItem: "Artikel auswählen",
+      savedItemFallback: "Gespeicherter Artikel",
+      expiresToday: "Läuft heute ab",
+      expiresInTemplate: "Läuft in {days} Tag{plural} ab",
+      expiredNotice: "Abgelaufen — Wiederherstellen setzt die 90-Tage-Frist zurück",
+      moveToCart: "In den Warenkorb",
+      moving: "Wird verschoben…",
+      removeFromSaved: "Aus gespeicherten Artikeln entfernen",
+      openOriginal: "Ursprünglichen Eintrag öffnen",
+    },
+    expired: {
+      sectionKicker: "Kürzlich abgelaufen",
+      sectionNote: "Wiederherstellen setzt die 90-Tage-Frist zurück.",
     },
   },
 };
@@ -3809,6 +4116,84 @@ const IT: DeepPartial<AccountCopy> = {
       normal: "Normale",
       high: "Alta",
       urgent: "Urgente",
+    },
+  },
+  payments: {
+    hero: {
+      title: "Metodi di pagamento",
+      description: "Gestisci le tue opzioni di pagamento salvate per un checkout rapido.",
+      addMethodCta: "Aggiungi metodo",
+    },
+    empty: {
+      title: "Nessun metodo di pagamento",
+      description:
+        "Aggiungi una carta di debito, un conto bancario o un altro metodo di pagamento per un checkout rapido in tutti i servizi HenryCo.",
+      cta: "Aggiungi metodo di pagamento",
+    },
+    card: {
+      savedMethodFallback: "Metodo salvato",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "Portafoglio HenryCo",
+      body: "Il tuo portafoglio HenryCo è sempre disponibile come opzione di pagamento.",
+      manageCta: "Gestisci portafoglio",
+    },
+  },
+  savedItems: {
+    metadata: {
+      title: "Articoli salvati",
+      description:
+        "Articoli messi da parte da un carrello HenryCo, conservati per 90 giorni con un avviso una settimana prima della scadenza.",
+    },
+    hero: {
+      title: "Salvati per dopo",
+      description:
+        "Articoli messi da parte da un carrello HenryCo. Li conserviamo per 90 giorni e ti avvisiamo una settimana prima della scadenza.",
+    },
+    summary: {
+      activeTemplate: "{count} attivo/i",
+      expiredTemplate: "{count} scaduto/i",
+      expiryNote:
+        "Gli articoli scadono 90 giorni dopo essere stati salvati. Ti avvisiamo con una settimana di anticipo.",
+      savedTemplate: "{count} salvato/i",
+    },
+    toolbar: {
+      showLabel: "Mostra",
+      allDivisions: "Tutte le divisioni",
+      sortLabel: "Ordina",
+      sortNewest: "Più recenti prima",
+      sortOldest: "Più vecchi prima",
+      sortExpiring: "In scadenza",
+    },
+    selection: {
+      selectedTemplate: "{count} selezionato/i",
+      clear: "Annulla",
+      moving: "Spostamento…",
+      moveSelectedToCart: "Sposta selezionati nel carrello",
+      selectAllOnPage: "Seleziona tutto in questa pagina",
+    },
+    empty: {
+      title: "Niente di salvato per dopo",
+      description:
+        "Quando trovi qualcosa che non sei pronto ad acquistare, salvalo per dopo dal carrello. Manterremo il prezzo che hai visto e ti avviseremo una settimana prima della scadenza.",
+      browseCta: "Sfoglia",
+    },
+    card: {
+      deselectItem: "Deseleziona articolo",
+      selectItem: "Seleziona articolo",
+      savedItemFallback: "Articolo salvato",
+      expiresToday: "Scade oggi",
+      expiresInTemplate: "Scade tra {days} giorno{plural}",
+      expiredNotice: "Scaduto — il ripristino reimposta la finestra di 90 giorni",
+      moveToCart: "Sposta nel carrello",
+      moving: "Spostamento…",
+      removeFromSaved: "Rimuovi dagli articoli salvati",
+      openOriginal: "Apri annuncio originale",
+    },
+    expired: {
+      sectionKicker: "Scaduti di recente",
+      sectionNote: "Il ripristino reimposta la finestra di 90 giorni.",
     },
   },
 };
@@ -4554,6 +4939,84 @@ const IG: DeepPartial<AccountCopy> = {
       urgent: "Ngwa ngwa",
     },
   },
+  payments: {
+    hero: {
+      title: "Ụzọ ịkwụ ụgwọ",
+      description: "Jikwaa ụzọ ịkwụ ụgwọ ndị ị chekwara maka ngwa ngwa ịkwụ ụgwọ.",
+      addMethodCta: "Tinye ụzọ",
+    },
+    empty: {
+      title: "Enweghị ụzọ ịkwụ ụgwọ",
+      description:
+        "Tinye kaadị debit, akaụntụ ụlọakụ, ma ọ bụ ụzọ ịkwụ ụgwọ ọzọ maka ngwa ngwa ịkwụ ụgwọ n’ọrụ HenryCo niile.",
+      cta: "Tinye ụzọ ịkwụ ụgwọ",
+    },
+    card: {
+      savedMethodFallback: "Ụzọ echekwara",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "Akpa ego HenryCo",
+      body: "Akpa ego HenryCo gị dị mgbe niile dị ka nhọrọ ịkwụ ụgwọ.",
+      manageCta: "Jikwaa akpa ego",
+    },
+  },
+  savedItems: {
+    metadata: {
+      title: "Ihe echekwara",
+      description:
+        "Ihe ndị i wepụrụ na nkata HenryCo ọ bụla, anyị na-edobere gị ụbọchị iri itoolu ma na-adọ aka na ntị otu izu tupu ha agwụ.",
+    },
+    hero: {
+      title: "Chekwa maka mgbe ọzọ",
+      description:
+        "Ihe ndị i wepụrụ na nkata HenryCo ọ bụla. Anyị ga-edobere gị ha ụbọchị iri itoolu ma dọọ gị aka na ntị otu izu tupu ha agwụ.",
+    },
+    summary: {
+      activeTemplate: "{count} na-arụ ọrụ",
+      expiredTemplate: "{count} agwụla",
+      expiryNote:
+        "Ihe na-agwụ ụbọchị iri itoolu mgbe e chekwara ha. Anyị na-adọ gị aka na ntị otu izu n’oge.",
+      savedTemplate: "{count} echekwara",
+    },
+    toolbar: {
+      showLabel: "Gosi",
+      allDivisions: "Ngalaba niile",
+      sortLabel: "Hazie",
+      sortNewest: "Kacha ọhụrụ buru ụzọ",
+      sortOldest: "Kacha ochie buru ụzọ",
+      sortExpiring: "Na-agwụ ngwa ngwa",
+    },
+    selection: {
+      selectedTemplate: "Ahọpụtara {count}",
+      clear: "Hichaa",
+      moving: "Ana-ebufe…",
+      moveSelectedToCart: "Bufee ndị ahọpụtara na nkata",
+      selectAllOnPage: "Họrọ niile na peeji a",
+    },
+    empty: {
+      title: "O nweghị ihe echekwara maka mgbe ọzọ ka",
+      description:
+        "Mgbe ị hụrụ ihe ị na-akwadebeghị ịzụ, chekwaa ya na nkata maka mgbe ọzọ. Anyị ga-edebe ọnụahịa ị hụrụ ma dọọ gị aka na ntị otu izu tupu ọ gwụ.",
+      browseCta: "Chọgharịa",
+    },
+    card: {
+      deselectItem: "Wepụ nhọrọ",
+      selectItem: "Họrọ ihe",
+      savedItemFallback: "Ihe echekwara",
+      expiresToday: "Na-agwụ taa",
+      expiresInTemplate: "Na-agwụ n’ime ụbọchị {days}{plural}",
+      expiredNotice: "Agwụla — iweghachi na-eweghachi oge ụbọchị iri itoolu",
+      moveToCart: "Bufee na nkata",
+      moving: "Ana-ebufe…",
+      removeFromSaved: "Wepụ n’ihe echekwara",
+      openOriginal: "Mepee ndepụta mbụ",
+    },
+    expired: {
+      sectionKicker: "Ndị gwụrụ na nso nso a",
+      sectionNote: "Iweghachi na-eweghachi oge ụbọchị iri itoolu.",
+    },
+  },
 };
 
 const YO: DeepPartial<AccountCopy> = {
@@ -5295,6 +5758,84 @@ const YO: DeepPartial<AccountCopy> = {
       normal: "Déédéé",
       high: "Gíga",
       urgent: "Kíákíá",
+    },
+  },
+  payments: {
+    hero: {
+      title: "Àwọn ọ̀nà ìsanwó",
+      description: "Ṣàkóso àwọn àṣàyàn ìsanwó tí o tọ́jú fún ìsanwó yára.",
+      addMethodCta: "Ṣàfikún ọ̀nà",
+    },
+    empty: {
+      title: "Kò sí ọ̀nà ìsanwó",
+      description:
+        "Ṣàfikún káàdì débítì, àkáǹtì báńkì, tàbí ọ̀nà ìsanwó míràn fún ìsanwó yára kọjá gbogbo iṣẹ́ HenryCo.",
+      cta: "Ṣàfikún ọ̀nà ìsanwó",
+    },
+    card: {
+      savedMethodFallback: "Ọ̀nà tí a tọ́jú",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "Àpamọ́wọ́ HenryCo",
+      body: "Àpamọ́wọ́ HenryCo rẹ wà nígbà gbogbo gẹ́gẹ́ bí àṣàyàn ìsanwó.",
+      manageCta: "Ṣàkóso àpamọ́wọ́",
+    },
+  },
+  savedItems: {
+    metadata: {
+      title: "Ohun tí a tọ́jú",
+      description:
+        "Àwọn ohun tí o yà sọ́tọ̀ kúrò nínú apò ọjà HenryCo èyíkéyìí, a máa tọ́jú wọn fún ọjọ́ àádọ́rùnún (90) pẹ̀lú ìmọ̀ràn ọ̀sẹ̀ kan ṣáájú parí.",
+    },
+    hero: {
+      title: "Tọ́jú fún àkókò mìíràn",
+      description:
+        "Àwọn ohun tí o yà sọ́tọ̀ kúrò nínú apò ọjà HenryCo èyíkéyìí. A máa tọ́jú wọn fún ọjọ́ àádọ́rùnún (90) tí a ó sì kìlọ̀ fún ọ ní ọ̀sẹ̀ kan kí wọ́n tó parí.",
+    },
+    summary: {
+      activeTemplate: "{count} tó ń ṣiṣẹ́",
+      expiredTemplate: "{count} tó ti parí",
+      expiryNote:
+        "Àwọn ohun náà ń parí ọjọ́ àádọ́rùnún (90) lẹ́yìn tí a bá tọ́jú wọn. A kìlọ̀ fún ọ ní ọ̀sẹ̀ kan ṣáájú.",
+      savedTemplate: "{count} tí a tọ́jú",
+    },
+    toolbar: {
+      showLabel: "Fihàn",
+      allDivisions: "Gbogbo ìpín",
+      sortLabel: "To",
+      sortNewest: "Tuntun lákọ̀ọ́kọ́",
+      sortOldest: "Àtijọ́ lákọ̀ọ́kọ́",
+      sortExpiring: "Ó fẹ́rẹ̀ parí",
+    },
+    selection: {
+      selectedTemplate: "{count} tí a yàn",
+      clear: "Pa rẹ́",
+      moving: "À ń kó…",
+      moveSelectedToCart: "Gbé àwọn tí a yàn sí apò ọjà",
+      selectAllOnPage: "Yan gbogbo lójú-ìwé",
+    },
+    empty: {
+      title: "Kò sí ohun tí a tọ́jú síbẹ̀",
+      description:
+        "Nígbà tí o bá rí ohun tí o kò ṣetán láti rà, tọ́jú rẹ̀ kúrò nínú apò ọjà. A ó pa iye owó tí o rí mọ́, a ó sì kìlọ̀ fún ọ ní ọ̀sẹ̀ kan kí ó tó parí.",
+      browseCta: "Wo",
+    },
+    card: {
+      deselectItem: "Yọ ohun náà kúrò nínú àyẹ̀wò",
+      selectItem: "Yan ohun náà",
+      savedItemFallback: "Ohun tí a tọ́jú",
+      expiresToday: "Ó parí lónìí",
+      expiresInTemplate: "Ó parí ní ọjọ́ {days}{plural}",
+      expiredNotice: "Ó ti parí — ìmúpadàbọ̀sípò ń tún àkókò ọjọ́ àádọ́rùnún ṣe",
+      moveToCart: "Gbé sí apò ọjà",
+      moving: "À ń kó…",
+      removeFromSaved: "Yọ kúrò nínú ohun tí a tọ́jú",
+      openOriginal: "Ṣí àkọ́sílẹ̀ ìpilẹ̀",
+    },
+    expired: {
+      sectionKicker: "Tí parí láìpẹ́",
+      sectionNote: "Ìmúpadàbọ̀sípò ń tún àkókò ọjọ́ àádọ́rùnún ṣe.",
     },
   },
 };
@@ -6040,6 +6581,28 @@ const HA: DeepPartial<AccountCopy> = {
       urgent: "Gaggawa",
     },
   },
+  payments: {
+    hero: {
+      title: "Hanyoyin biya",
+      description: "Sarrafa zaɓuɓɓukan biya da kuka adana don saurin kammala biya.",
+      addMethodCta: "Ƙara hanya",
+    },
+    empty: {
+      title: "Babu hanyoyin biya",
+      description:
+        "Ƙara katin debit, asusun banki, ko wata hanyar biya don saurin biya a duk sabis na HenryCo.",
+      cta: "Ƙara hanyar biya",
+    },
+    card: {
+      savedMethodFallback: "Hanyar da aka adana",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "Walat HenryCo",
+      body: "Walat HenryCo naka koyaushe yana akwai a matsayin zaɓin biya.",
+      manageCta: "Sarrafa walat",
+    },
+  },
 };
 
 const ZH: DeepPartial<AccountCopy> = {
@@ -6780,6 +7343,27 @@ const ZH: DeepPartial<AccountCopy> = {
       normal: "正常",
       high: "高",
       urgent: "紧急",
+    },
+  },
+  payments: {
+    hero: {
+      title: "支付方式",
+      description: "管理您已保存的支付选项,实现快速结账。",
+      addMethodCta: "添加方式",
+    },
+    empty: {
+      title: "暂无支付方式",
+      description: "添加借记卡、银行账户或其他支付方式,可在所有 HenryCo 服务中快速结账。",
+      cta: "添加支付方式",
+    },
+    card: {
+      savedMethodFallback: "已保存的方式",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "HenryCo 钱包",
+      body: "您的 HenryCo 钱包始终可作为支付选项使用。",
+      manageCta: "管理钱包",
     },
   },
 };
@@ -7523,6 +8107,28 @@ const HI: DeepPartial<AccountCopy> = {
       normal: "सामान्य",
       high: "उच्च",
       urgent: "तत्काल",
+    },
+  },
+  payments: {
+    hero: {
+      title: "भुगतान विधियाँ",
+      description: "त्वरित चेकआउट के लिए अपने सहेजे गए भुगतान विकल्प प्रबंधित करें।",
+      addMethodCta: "विधि जोड़ें",
+    },
+    empty: {
+      title: "कोई भुगतान विधि नहीं",
+      description:
+        "सभी HenryCo सेवाओं में त्वरित चेकआउट के लिए डेबिट कार्ड, बैंक खाता, या अन्य भुगतान विधि जोड़ें।",
+      cta: "भुगतान विधि जोड़ें",
+    },
+    card: {
+      savedMethodFallback: "सहेजी गई विधि",
+      cardLastFourTemplate: "•••• {last4}",
+    },
+    wallet: {
+      eyebrow: "HenryCo वॉलेट",
+      body: "आपका HenryCo वॉलेट हमेशा भुगतान विकल्प के रूप में उपलब्ध है।",
+      manageCta: "वॉलेट प्रबंधित करें",
     },
   },
 };

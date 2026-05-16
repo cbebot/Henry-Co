@@ -731,6 +731,27 @@ export const ACCOUNT_COPY_ES = {
       "high": "Alta",
       "urgent": "Urgente"
     }
+  },
+  "payments": {
+    "hero": {
+      "title": "Métodos de pago",
+      "description": "Gestiona tus opciones de pago guardadas para un pago rápido.",
+      "addMethodCta": "Añadir método"
+    },
+    "empty": {
+      "title": "Sin métodos de pago",
+      "description": "Añade una tarjeta de débito, cuenta bancaria u otro método de pago para pagar rápido en todos los servicios HenryCo.",
+      "cta": "Añadir método de pago"
+    },
+    "card": {
+      "savedMethodFallback": "Método guardado",
+      "cardLastFourTemplate": "•••• {last4}"
+    },
+    "wallet": {
+      "eyebrow": "Cartera HenryCo",
+      "body": "Tu Cartera HenryCo siempre está disponible como opción de pago.",
+      "manageCta": "Gestionar cartera"
+    }
   }
 };
 
@@ -1464,6 +1485,27 @@ export const ACCOUNT_COPY_PT = {
       "high": "Alta",
       "urgent": "Urgente"
     }
+  },
+  "payments": {
+    "hero": {
+      "title": "Métodos de pagamento",
+      "description": "Gerencie suas opções de pagamento salvas para um checkout rápido.",
+      "addMethodCta": "Adicionar método"
+    },
+    "empty": {
+      "title": "Sem métodos de pagamento",
+      "description": "Adicione um cartão de débito, conta bancária ou outro método de pagamento para um checkout rápido em todos os serviços HenryCo.",
+      "cta": "Adicionar método de pagamento"
+    },
+    "card": {
+      "savedMethodFallback": "Método salvo",
+      "cardLastFourTemplate": "•••• {last4}"
+    },
+    "wallet": {
+      "eyebrow": "Carteira HenryCo",
+      "body": "Sua Carteira HenryCo está sempre disponível como opção de pagamento.",
+      "manageCta": "Gerenciar carteira"
+    }
   }
 };
 
@@ -2196,6 +2238,27 @@ export const ACCOUNT_COPY_AR = {
       "normal": "عادي",
       "high": "مرتفع",
       "urgent": "عاجل"
+    }
+  },
+  "payments": {
+    "hero": {
+      "title": "طرق الدفع",
+      "description": "أدر خيارات الدفع المحفوظة لإتمام الدفع بسرعة.",
+      "addMethodCta": "إضافة طريقة"
+    },
+    "empty": {
+      "title": "لا توجد طرق دفع",
+      "description": "أضف بطاقة خصم أو حسابًا مصرفيًا أو طريقة دفع أخرى لإتمام الدفع بسرعة في جميع خدمات HenryCo.",
+      "cta": "إضافة طريقة دفع"
+    },
+    "card": {
+      "savedMethodFallback": "طريقة محفوظة",
+      "cardLastFourTemplate": "•••• {last4}"
+    },
+    "wallet": {
+      "eyebrow": "محفظة HenryCo",
+      "body": "محفظتك في HenryCo متاحة دائمًا كخيار للدفع.",
+      "manageCta": "إدارة المحفظة"
     }
   }
 };
