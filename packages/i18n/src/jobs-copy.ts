@@ -1,5 +1,5 @@
 import type { AppLocale } from "./locales";
-import { deepMergeMessages } from "./merge-messages";
+import { deepMergeMessages, type DeepPartial } from "./merge-messages";
 
 export type JobsCopy = {
   nav: {
@@ -133,6 +133,18 @@ export type JobsCopy = {
     savedAt: string;
     autosaveHint: string;
     saveError: string;
+  };
+  employerHiring: {
+    pageTitle: string;
+    pageSubtitle: string;
+    sectionTitle: string;
+    sectionBody: string;
+    emptyMessage: string;
+    applicantSingular: string;
+    applicantPlural: string;
+    statusActive: string;
+    statusPaused: string;
+    statusClosed: string;
   };
 };
 
@@ -273,9 +285,24 @@ const EN: JobsCopy = {
     autosaveHint: "Auto-saves every 30s and on blur",
     saveError: "Couldn't save your draft.",
   },
+  employerHiring: {
+    pageTitle: "Hiring Pipelines",
+    pageSubtitle:
+      "Manage your active hiring pipelines, communicate with candidates, and schedule interviews from one workspace.",
+    sectionTitle: "All pipelines",
+    sectionBody:
+      "Each pipeline corresponds to a live or past role. Open a pipeline to review applicants, conversations, and interviews.",
+    emptyMessage:
+      "No hiring pipelines yet. Pipelines are created automatically when you publish a role.",
+    applicantSingular: "applicant",
+    applicantPlural: "applicants",
+    statusActive: "Active",
+    statusPaused: "Paused",
+    statusClosed: "Closed",
+  },
 };
 
-const FR: Partial<JobsCopy> = {
+const FR: DeepPartial<JobsCopy> = {
   nav: {
     browse: "Parcourir les offres",
     post: "Publier une offre",
@@ -340,9 +367,24 @@ const FR: Partial<JobsCopy> = {
     noApplications: "Pas encore de candidatures.",
     noPostings: "Aucune offre active.",
   },
+  employerHiring: {
+    pageTitle: "Pipelines de recrutement",
+    pageSubtitle:
+      "Gérez vos pipelines de recrutement actifs, communiquez avec les candidats et planifiez les entretiens depuis un seul espace.",
+    sectionTitle: "Tous les pipelines",
+    sectionBody:
+      "Chaque pipeline correspond à un poste actif ou passé. Ouvrez-en un pour consulter les candidats, les échanges et les entretiens.",
+    emptyMessage:
+      "Aucun pipeline de recrutement pour l'instant. Les pipelines sont créés automatiquement lorsque vous publiez un poste.",
+    applicantSingular: "candidat",
+    applicantPlural: "candidats",
+    statusActive: "Actif",
+    statusPaused: "En pause",
+    statusClosed: "Clôturé",
+  },
 };
 
-const ES: Partial<JobsCopy> = {
+const ES: DeepPartial<JobsCopy> = {
   nav: {
     browse: "Ver ofertas",
     post: "Publicar empleo",
@@ -407,9 +449,24 @@ const ES: Partial<JobsCopy> = {
     noApplications: "Aún sin candidaturas.",
     noPostings: "Sin publicaciones activas.",
   },
+  employerHiring: {
+    pageTitle: "Pipelines de contratación",
+    pageSubtitle:
+      "Gestiona tus pipelines de contratación activos, comunícate con los candidatos y agenda entrevistas desde un único espacio.",
+    sectionTitle: "Todos los pipelines",
+    sectionBody:
+      "Cada pipeline corresponde a un puesto activo o pasado. Abre uno para revisar candidatos, conversaciones y entrevistas.",
+    emptyMessage:
+      "Aún no hay pipelines de contratación. Los pipelines se crean automáticamente al publicar un puesto.",
+    applicantSingular: "candidato",
+    applicantPlural: "candidatos",
+    statusActive: "Activo",
+    statusPaused: "En pausa",
+    statusClosed: "Cerrado",
+  },
 };
 
-const PT: Partial<JobsCopy> = {
+const PT: DeepPartial<JobsCopy> = {
   nav: {
     browse: "Ver vagas",
     post: "Publicar vaga",
@@ -474,9 +531,24 @@ const PT: Partial<JobsCopy> = {
     noApplications: "Sem candidaturas ainda.",
     noPostings: "Sem publicações ativas.",
   },
+  employerHiring: {
+    pageTitle: "Pipelines de contratação",
+    pageSubtitle:
+      "Gerencie seus pipelines de contratação ativos, converse com candidatos e agende entrevistas em um único espaço.",
+    sectionTitle: "Todos os pipelines",
+    sectionBody:
+      "Cada pipeline corresponde a uma vaga ativa ou passada. Abra um para revisar candidatos, conversas e entrevistas.",
+    emptyMessage:
+      "Ainda não há pipelines de contratação. Os pipelines são criados automaticamente quando você publica uma vaga.",
+    applicantSingular: "candidato",
+    applicantPlural: "candidatos",
+    statusActive: "Ativo",
+    statusPaused: "Em pausa",
+    statusClosed: "Encerrado",
+  },
 };
 
-const AR: Partial<JobsCopy> = {
+const AR: DeepPartial<JobsCopy> = {
   nav: {
     browse: "تصفح الوظائف",
     post: "نشر وظيفة",
@@ -541,9 +613,24 @@ const AR: Partial<JobsCopy> = {
     noApplications: "لا توجد طلبات بعد.",
     noPostings: "لا توجد إعلانات وظيفية نشطة.",
   },
+  employerHiring: {
+    pageTitle: "خطوط التوظيف",
+    pageSubtitle:
+      "أدر خطوط التوظيف النشطة، وتواصل مع المرشحين، وحدد مواعيد المقابلات من مكان عمل واحد.",
+    sectionTitle: "كل الخطوط",
+    sectionBody:
+      "كل خط توظيف يقابل دورًا نشطًا أو سابقًا. افتح خطًا لمراجعة المرشحين والمحادثات والمقابلات.",
+    emptyMessage:
+      "لا توجد خطوط توظيف بعد. تُنشأ الخطوط تلقائيًا عند نشر دور.",
+    applicantSingular: "مرشح",
+    applicantPlural: "مرشحون",
+    statusActive: "نشط",
+    statusPaused: "متوقف",
+    statusClosed: "مغلق",
+  },
 };
 
-const IG: Partial<JobsCopy> = {
+const IG: DeepPartial<JobsCopy> = {
   nav: {
     browse: "Lelee ọrụ",
     post: "Dee ọrụ",
@@ -608,9 +695,24 @@ const IG: Partial<JobsCopy> = {
     noApplications: "Enweghị arịrịọ ọ bụla.",
     noPostings: "Enweghị nkwupụta ọrụ dị ndụ.",
   },
+  employerHiring: {
+    pageTitle: "Akara ịchụ ndị ọrụ",
+    pageSubtitle:
+      "Jikwaa akara ịchụ ndị ọrụ gị na-arụ ọrụ, kparịta ụka na ndị nwere mmasị, ma hazie nzukọ ajụjụ ọnụ site n'otu ebe ọrụ.",
+    sectionTitle: "Akara niile",
+    sectionBody:
+      "Akara nke ọ bụla na-egosi ọrụ dị ndụ ma ọ bụ ọrụ gara aga. Mepee otu iji lelee ndị nwere mmasị, mkparịta ụka, na ajụjụ ọnụ.",
+    emptyMessage:
+      "Enweghị akara ịchụ ndị ọrụ ọ bụla. A na-emepụta akara n'onwe ya mgbe ị bipụtara ọrụ.",
+    applicantSingular: "onye nwere mmasị",
+    applicantPlural: "ndị nwere mmasị",
+    statusActive: "Na-arụ ọrụ",
+    statusPaused: "Akwụsịrị",
+    statusClosed: "Emechiri",
+  },
 };
 
-const YO: Partial<JobsCopy> = {
+const YO: DeepPartial<JobsCopy> = {
   nav: {
     browse: "Wo awọn iṣẹ",
     post: "Firanṣẹ iṣẹ",
@@ -675,9 +777,24 @@ const YO: Partial<JobsCopy> = {
     noApplications: "Ko si ìbéèrè sibẹsibẹ.",
     noPostings: "Ko si atẹjade iṣẹ ti nṣiṣẹ.",
   },
+  employerHiring: {
+    pageTitle: "Awọn ọna gbigba iṣẹ",
+    pageSubtitle:
+      "Ṣakoso awọn ọna gbigba iṣẹ rẹ ti nṣiṣẹ, ba awọn olubẹwẹ sọrọ, ki o si ṣeto awọn ifọrọwanilẹnuwo lati ibi iṣẹ kanṣoṣo.",
+    sectionTitle: "Gbogbo awọn ọna",
+    sectionBody:
+      "Ọna kọọkan baamu ipa kan ti nṣiṣẹ tabi ti tẹlẹ. Ṣii ọna lati ṣayẹwo awọn olubẹwẹ, awọn ibaraẹnisọrọ, ati awọn ifọrọwanilẹnuwo.",
+    emptyMessage:
+      "Ko si ọna gbigba iṣẹ sibẹsibẹ. A ṣẹda awọn ọna laifọwọyi nigbati o ba tẹjade ipa kan.",
+    applicantSingular: "olubẹwẹ",
+    applicantPlural: "awọn olubẹwẹ",
+    statusActive: "Nṣiṣẹ",
+    statusPaused: "Duro",
+    statusClosed: "Ti pa",
+  },
 };
 
-const HA: Partial<JobsCopy> = {
+const HA: DeepPartial<JobsCopy> = {
   nav: {
     browse: "Duba ayyuka",
     post: "Sanya aikin",
@@ -742,9 +859,24 @@ const HA: Partial<JobsCopy> = {
     noApplications: "Babu aikace-aikace tukuna.",
     noPostings: "Babu sanarwar aiki mai aiki.",
   },
+  employerHiring: {
+    pageTitle: "Layukan daukar ma'aikata",
+    pageSubtitle:
+      "Sarrafa layukan daukar ma'aikata masu aiki, sadarwa da masu nema, da tsara hira daga wuri ɗaya.",
+    sectionTitle: "Dukkan layuka",
+    sectionBody:
+      "Kowane layi yana wakiltar matsayi mai aiki ko na baya. Buɗe layi don duba masu nema, tattaunawa, da hirarraki.",
+    emptyMessage:
+      "Babu layukan daukar ma'aikata tukuna. Ana ƙirƙirar layuka ta atomatik lokacin da ka buga matsayi.",
+    applicantSingular: "mai nema",
+    applicantPlural: "masu nema",
+    statusActive: "Mai aiki",
+    statusPaused: "An dakatar",
+    statusClosed: "An rufe",
+  },
 };
 
-const DE: Partial<JobsCopy> = {
+const DE: DeepPartial<JobsCopy> = {
   nav: {
     browse: "Jobs durchsuchen",
     post: "Job veröffentlichen",
@@ -809,9 +941,24 @@ const DE: Partial<JobsCopy> = {
     noApplications: "Noch keine Bewerbungen.",
     noPostings: "Keine aktiven Stellenanzeigen.",
   },
+  employerHiring: {
+    pageTitle: "Einstellungspipelines",
+    pageSubtitle:
+      "Verwalten Sie Ihre aktiven Einstellungspipelines, kommunizieren Sie mit Bewerbern und planen Sie Interviews aus einem Arbeitsbereich.",
+    sectionTitle: "Alle Pipelines",
+    sectionBody:
+      "Jede Pipeline entspricht einer aktiven oder vergangenen Stelle. Öffnen Sie eine Pipeline, um Bewerber, Gespräche und Interviews einzusehen.",
+    emptyMessage:
+      "Noch keine Einstellungspipelines. Pipelines werden automatisch erstellt, sobald Sie eine Stelle veröffentlichen.",
+    applicantSingular: "Bewerber",
+    applicantPlural: "Bewerber",
+    statusActive: "Aktiv",
+    statusPaused: "Pausiert",
+    statusClosed: "Geschlossen",
+  },
 };
 
-const ZH: Partial<JobsCopy> = {
+const ZH: DeepPartial<JobsCopy> = {
   nav: {
     browse: "浏览职位",
     post: "发布职位",
@@ -876,9 +1023,21 @@ const ZH: Partial<JobsCopy> = {
     noApplications: "还没有申请。",
     noPostings: "没有活跃的职位发布。",
   },
+  employerHiring: {
+    pageTitle: "招聘流程",
+    pageSubtitle: "在一个工作区中管理活跃招聘流程、与候选人沟通并安排面试。",
+    sectionTitle: "全部流程",
+    sectionBody: "每条流程对应一个活跃或已结束的职位。打开流程以查看候选人、对话和面试。",
+    emptyMessage: "暂无招聘流程。发布职位后将自动创建流程。",
+    applicantSingular: "位申请人",
+    applicantPlural: "位申请人",
+    statusActive: "进行中",
+    statusPaused: "已暂停",
+    statusClosed: "已关闭",
+  },
 };
 
-const HI: Partial<JobsCopy> = {
+const HI: DeepPartial<JobsCopy> = {
   nav: {
     browse: "नौकरियां देखें",
     post: "नौकरी पोस्ट करें",
@@ -943,9 +1102,24 @@ const HI: Partial<JobsCopy> = {
     noApplications: "अभी तक कोई आवेदन नहीं।",
     noPostings: "कोई सक्रिय नौकरी पोस्टिंग नहीं।",
   },
+  employerHiring: {
+    pageTitle: "भर्ती पाइपलाइन",
+    pageSubtitle:
+      "एक ही कार्यक्षेत्र से अपनी सक्रिय भर्ती पाइपलाइनों का प्रबंधन करें, उम्मीदवारों से संवाद करें और साक्षात्कार निर्धारित करें।",
+    sectionTitle: "सभी पाइपलाइनें",
+    sectionBody:
+      "प्रत्येक पाइपलाइन एक सक्रिय या पिछली भूमिका से संबंधित है। आवेदकों, बातचीतों और साक्षात्कारों की समीक्षा के लिए कोई पाइपलाइन खोलें।",
+    emptyMessage:
+      "अभी तक कोई भर्ती पाइपलाइन नहीं है। जब आप कोई भूमिका प्रकाशित करते हैं तो पाइपलाइनें स्वचालित रूप से बन जाती हैं।",
+    applicantSingular: "आवेदक",
+    applicantPlural: "आवेदक",
+    statusActive: "सक्रिय",
+    statusPaused: "रोका गया",
+    statusClosed: "बंद",
+  },
 };
 
-const IT: Partial<JobsCopy> = {
+const IT: DeepPartial<JobsCopy> = {
   "nav": {
     "browse": "Sfoglia i lavori",
     "post": "Pubblica un lavoro",
@@ -1009,10 +1183,25 @@ const IT: Partial<JobsCopy> = {
     "noJobs": "Nessun lavoro corrispondente trovato. Prova a modificare i filtri.",
     "noApplications": "Nessuna candidatura ancora.",
     "noPostings": "Nessuna offerta di lavoro attiva."
+  },
+  "employerHiring": {
+    "pageTitle": "Pipeline di assunzione",
+    "pageSubtitle":
+      "Gestisci le tue pipeline di assunzione attive, comunica con i candidati e pianifica i colloqui da un unico spazio di lavoro.",
+    "sectionTitle": "Tutte le pipeline",
+    "sectionBody":
+      "Ogni pipeline corrisponde a un ruolo attivo o passato. Apri una pipeline per esaminare candidati, conversazioni e colloqui.",
+    "emptyMessage":
+      "Nessuna pipeline di assunzione per ora. Le pipeline vengono create automaticamente quando pubblichi un ruolo.",
+    "applicantSingular": "candidato",
+    "applicantPlural": "candidati",
+    "statusActive": "Attiva",
+    "statusPaused": "In pausa",
+    "statusClosed": "Chiusa"
   }
 };
 
-const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<JobsCopy>>> = {
+const LOCALE_OVERRIDES: Partial<Record<AppLocale, DeepPartial<JobsCopy>>> = {
   fr: FR,
   es: ES,
   pt: PT,
