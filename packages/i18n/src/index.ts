@@ -12,6 +12,7 @@ export * from "./care-copy";
 export * from "./care-pricing-copy";
 export * from "./care-services-copy";
 export * from "./care-about-copy";
+export * from "./care-contact-copy";
 export * from "./learn-trust-copy";
 export * from "./learn-paths-copy";
 export * from "./learn-instructors-copy";

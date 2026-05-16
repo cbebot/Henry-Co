@@ -1,4 +1,5 @@
 import type { CSSProperties, ComponentType } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -11,20 +12,33 @@ import {
   Sparkles,
 } from "lucide-react";
 import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
+import { getCareContactCopy, type CareContactCopy } from "@henryco/i18n/server";
 import ContactForm from "@/components/care/ContactForm";
 import CopyButton from "@/components/ui/CopyButton";
 import { getCareSettings } from "@/lib/care-data";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 
 const care = getDivisionConfig("care");
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getCarePublicLocale();
+  const copy = getCareContactCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
+
 export default async function ContactPage() {
+  const locale = await getCarePublicLocale();
+  const copy = getCareContactCopy(locale);
   const settings = await getCareSettings();
   const supportEmail = settings.support_email || care.supportEmail || BRAND_EMAILS.care;
   const supportPhone = settings.support_phone || care.supportPhone;
   const whatsappNumber =
     settings.payment_support_whatsapp || settings.payment_whatsapp || settings.support_phone || supportPhone;
-  const pickupHours = settings.pickup_hours || "Mon - Sat • 8:00 AM to 7:00 PM";
+  const pickupHours = settings.pickup_hours || copy.rail.defaultPickupHours;
 
   return (
     <main
@@ -44,33 +58,31 @@ export default async function ContactPage() {
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
                 <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
-                Contact and support
+                {copy.hero.eyebrow}
               </p>
               <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
-                One desk. Clear answers.
+                {copy.hero.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
-                Booking guidance, schedule changes, billing clarity, or follow-up on an existing
-                service &mdash; handled with one consistent thread from first message to final
-                resolution.
+                {copy.hero.body}
               </p>
             </div>
             <ul className="grid gap-3 text-sm">
               {[
                 {
                   icon: Clock3,
-                  label: "Service hours",
+                  label: copy.rail.serviceHoursLabel,
                   value: pickupHours,
                 },
                 {
                   icon: MapPin,
-                  label: "Coverage",
-                  value: "Garment, home, and office requests across covered zones",
+                  label: copy.rail.coverageLabel,
+                  value: copy.rail.coverageValue,
                 },
                 {
                   icon: Sparkles,
-                  label: "Follow-up",
-                  value: "Logged under one reference per request",
+                  label: copy.rail.followUpLabel,
+                  value: copy.rail.followUpValue,
                 },
               ].map(({ icon: Icon, label, value }) => (
                 <li
@@ -93,7 +105,7 @@ export default async function ContactPage() {
         <section className="grid gap-12 xl:grid-cols-[1.08fr,0.92fr]">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-              Send a message
+              {copy.sendMessage.eyebrow}
             </p>
             <div className="mt-5">
               <ContactForm />
@@ -103,57 +115,59 @@ export default async function ContactPage() {
           <aside className="space-y-12">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                Direct channels
+                {copy.channels.eyebrow}
               </p>
               <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
-                Choose the route that fits the moment.
+                {copy.channels.title}
               </h2>
               <ul className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
                 <SupportRow
                   icon={PhoneCall}
-                  title="Phone support"
-                  body="Best for same-day pickup changes, access instructions, urgent service coordination, and anything timing-sensitive."
+                  title={copy.channels.phoneTitle}
+                  body={copy.channels.phoneBody}
                   value={supportPhone}
                   href={`tel:${supportPhone.replace(/\s+/g, "")}`}
+                  copyLabel={copy.channels.copyLabel}
                 />
                 <SupportRow
                   icon={Mail}
-                  title="Email support"
-                  body="Best for quotes, billing clarity, recurring-plan questions, and anything that benefits from a written record."
+                  title={copy.channels.emailTitle}
+                  body={copy.channels.emailBody}
                   value={supportEmail}
                   href={`mailto:${supportEmail}`}
+                  copyLabel={copy.channels.copyLabel}
                 />
                 <SupportRow
                   icon={MessageSquare}
-                  title="WhatsApp contact"
-                  body="Useful when the team only needs a quick confirmation or proof-of-payment attachment after earlier guidance."
+                  title={copy.channels.whatsappTitle}
+                  body={copy.channels.whatsappBody}
                   value={whatsappNumber}
                   href={`https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`}
+                  copyLabel={copy.channels.copyLabel}
                 />
               </ul>
             </div>
 
             <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
-                Already have a tracking code?
+                {copy.tracking.eyebrow}
               </p>
               <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
-                Track the service first. In many cases, the latest movement, arrival stage, or
-                completion update will answer the question immediately.
+                {copy.tracking.body}
               </p>
               <div className="mt-3 flex flex-wrap gap-3 text-sm">
                 <Link
                   href="/track"
                   className="font-semibold text-[color:var(--accent)] underline-offset-4 hover:underline"
                 >
-                  Track a service
+                  {copy.tracking.trackLink}
                 </Link>
                 <span className="text-zinc-400 dark:text-white/30">·</span>
                 <Link
                   href="/book"
                   className="font-semibold text-zinc-700 underline-offset-4 hover:underline dark:text-white/80"
                 >
-                  Start a booking
+                  {copy.tracking.bookLink}
                 </Link>
               </div>
             </div>
@@ -164,14 +178,13 @@ export default async function ContactPage() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                Built to feel calm under pressure
+                {copy.footer.eyebrow}
               </p>
               <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
-                One desk, cleaner follow-up.
+                {copy.footer.title}
               </h2>
               <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
-                Messages are logged under one clear reference so the team can respond promptly and
-                keep every update in one place.
+                {copy.footer.body}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -179,14 +192,14 @@ export default async function ContactPage() {
                 href="/book"
                 className="care-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Start a booking
+                {copy.footer.bookCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/services"
                 className="inline-flex items-center gap-2 rounded-full border border-black/10 px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 dark:border-white/15 dark:text-white"
               >
-                Compare services
+                {copy.footer.compareCta}
               </Link>
             </div>
           </div>
@@ -202,12 +215,14 @@ function SupportRow({
   body,
   value,
   href,
+  copyLabel,
 }: {
   icon: ComponentType<{ className?: string }>;
   title: string;
   body: string;
   value: string;
   href?: string;
+  copyLabel: CareContactCopy["channels"]["copyLabel"];
 }) {
   return (
     <li className="grid gap-3 py-5 sm:grid-cols-[auto,1fr,auto] sm:items-start sm:gap-6">
@@ -235,7 +250,7 @@ function SupportRow({
             {value}
           </span>
         )}
-        <CopyButton value={value} label="Copy" />
+        <CopyButton value={value} label={copyLabel} />
       </div>
     </li>
   );
