@@ -204,6 +204,8 @@ export const INTENTIONAL_ECHOS = {
     "employerAnalytics.stageInterview",       // DE "Interview" universal cognate
     "employerAnalytics.stageOffer",           // ZH "Offer" universal English borrow in HR context
     "interviewRoom.tabChat",                  // "Chat" universal loanword in ES/PT/IT/DE/ZH/HI/etc
+    "salary.p50Label",                        // DE/IT "Median" universal statistics term
+    "profileBuilder.sectionPortfolio",        // DE/IT "Portfolio" universally borrowed
   ],
   care: [
     "staffManager.dash",      // "—" universal em-dash punctuation
