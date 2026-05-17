@@ -1214,6 +1214,61 @@ const FR: DeepPartial<JobsCopy> = {
     noApplications: "Pas encore de candidatures.",
     noPostings: "Aucune offre active.",
   },
+  interviewRoom: {
+    kicker: "Salle d'entretien",
+    candidateFallback: "Candidat·e",
+    employerFallback: "Équipe de recrutement",
+    minutes: "min.",
+    iframeTitle: "Salle d'entretien vidéo",
+    placeholder:
+      "L'attribution de la salle est en cours. Votre intervieweur·euse partagera un lien de réunion dans le chat sous peu.",
+    tabChat: "Discussion",
+    tabNotes: "Bloc-notes",
+    chatHint:
+      "La messagerie en salle est fournie par le prestataire vidéo. Utilisez-la pour partager des liens pendant l'appel.",
+    notesLabel: "Notes privées",
+    notesPlaceholder:
+      "Consignez vos observations. Visible uniquement par votre équipe de recrutement.",
+    notesSaving: "Enregistrement…",
+    notesSavedAt: "Enregistrées",
+    notesAutosave: "Enregistrement automatique toutes les 30 s",
+    notesSaveError: "Impossible d'enregistrer les notes.",
+  },
+  verification: {
+    skillTitle: "Compétences vérifiées",
+    skillSubtitle: "Des compétences en lesquelles les employeurs peuvent avoir confiance d'un coup d'œil.",
+    experienceTitle: "Expérience vérifiée",
+    experienceSubtitle: "Postes et ancienneté confirmés.",
+    referenceTitle: "Vérification de références",
+    referenceSubtitle: "Réponses recueillies auprès de vos références professionnelles.",
+    badgeVerified: "Vérifié",
+    badgePending: "En attente",
+    badgeRejected: "Non vérifié",
+  },
+  offerLetter: {
+    title: "Lettre d'offre",
+    subtitle: "Examinez votre offre et signez-la quand vous êtes prêt·e.",
+    statusDraft: "Brouillon",
+    statusSent: "En attente de votre signature",
+    statusSigned: "Signée",
+    statusExpired: "Expirée",
+    statusDeclined: "Refusée",
+    signCta: "Ouvrir l'espace de signature",
+    typedFallbackTitle: "Confirmer l'acceptation",
+    typedFallbackPrompt:
+      "Saisissez votre nom complet pour accepter cette offre. Un PDF signé est conservé dans vos fichiers.",
+  },
+  salary: {
+    rangeLabel: "Fourchette publiée",
+    benchmarkLabel: "Référence du marché",
+    p25Label: "25ᵉ percentile",
+    p50Label: "Médiane",
+    p75Label: "75ᵉ percentile",
+    sampleLabel: "Taille de l'échantillon",
+    sourceLabel: "Source des données",
+    discloseRequiredError:
+      "La divulgation du salaire est requise. Indiquez une fourchette numérique ou un libellé concret.",
+  },
   employerHiring: {
     pageTitle: "Pipelines de recrutement",
     pageSubtitle:
@@ -1301,7 +1356,7 @@ const FR: DeepPartial<JobsCopy> = {
     sectionExperience: "Expérience",
     sectionEducation: "Formation",
     sectionSkills: "Compétences",
-    sectionPortfolio: "Portfolio",
+    sectionPortfolio: "Réalisations",
     fullName: "Nom complet",
     headline: "Titre professionnel",
     summary: "Résumé",
@@ -1329,7 +1384,7 @@ const FR: DeepPartial<JobsCopy> = {
     rightRailDefaultReadiness:
       "Complétez votre profil pour améliorer la perception de vos candidatures par les employeurs.",
     rightRailOpenVerification: "Ouvrir la vérification du compte",
-    rightRailDocumentsTitle: "Documents",
+    rightRailDocumentsTitle: "Mes documents",
     rightRailDocumentsCountSingular: "{count} fichier téléversé sur votre profil.",
     rightRailDocumentsCountPlural: "{count} fichiers téléversés sur votre profil.",
     rightRailDocumentsHint:

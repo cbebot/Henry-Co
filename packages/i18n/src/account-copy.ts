@@ -8571,6 +8571,55 @@ const DE: DeepPartial<AccountCopy> = {
     profileSectionKicker: "Profilinformationen",
     notificationsSectionKicker: "Benachrichtigungseinstellungen",
   },
+  addresses: {
+    metadata: {
+      title: "Adressen",
+      description:
+        "Verwalten Sie Ihre gespeicherten Adressen (Privat, Büro, Geschäft…) — verwendet für Lieferung, Buchungen und KYC-Verifizierung.",
+    },
+    hero: {
+      title: "Adressen",
+      description:
+        "Verwalten Sie Ihre gespeicherten Adressen (Privat, Büro, Geschäft…) — verwendet für Lieferung, Buchungen und KYC-Verifizierung.",
+    },
+    card: {
+      defaultBadge: "Standard",
+      kycVerifiedBadge: "KYC verifiziert",
+      setDefaultCta: "Als Standard festlegen",
+      editCta: "Bearbeiten",
+      deleteCta: "Löschen",
+    },
+    deleteConfirm: {
+      prompt: "Diese Adresse löschen? Dies kann nicht rückgängig gemacht werden.",
+      confirmCta: "Löschen",
+      cancelCta: "Abbrechen",
+    },
+    empty: {
+      body:
+        "Sie haben noch keine Adressen hinzugefügt. Fügen Sie Ihre erste hinzu, um den Checkout über HenryCo zu beschleunigen.",
+    },
+    add: {
+      cta: "Adresse hinzufügen",
+      formTitle: "Neue Adresse hinzufügen",
+      editFormTitleTemplate: "{label} bearbeiten",
+      maxedNoticeTemplate:
+        "Sie haben die maximale Anzahl von {count} Adresstypen hinzugefügt (Privat, Büro, Geschäft, Lager, Alternative 1, Alternative 2). Bearbeiten oder löschen Sie eine, um eine andere Adresse hinzuzufügen.",
+    },
+  },
+  search: {
+    metadata: {
+      title: "Konto durchsuchen",
+      description:
+        "Durchsuchen Sie HenryCo-Konto-Workflows und verbundene Abteilungs-Routen.",
+    },
+    hero: {
+      title: "Durchsuchen Sie Ihre HenryCo-Workflows.",
+      description:
+        "Springen Sie direkt zu bestimmten Kontoaktionen und verbundenen Abteilungs-Routen, ohne auf generische Dashboards zurückzufallen.",
+    },
+    placeholder:
+      "Konto durchsuchen: Benachrichtigungen, Wallet, Rechnungen, Support, Stellenbewerbungen…",
+  },
 };
 
 const IT: DeepPartial<AccountCopy> = {
