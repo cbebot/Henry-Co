@@ -34,6 +34,7 @@ import type {
   WorkspaceTask,
   WorkspaceViewer,
 } from "@/app/lib/workspace/types";
+import type { HubWorkspaceCopy } from "@henryco/i18n";
 
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -94,30 +95,34 @@ function metricToneClasses(
   }
 }
 
-function sectionIntro(key: WorkspaceSectionKey, division?: WorkspaceDivision) {
+function sectionIntro(
+  key: WorkspaceSectionKey,
+  copy: HubWorkspaceCopy["workspaceScreen"],
+  division?: WorkspaceDivision
+) {
   switch (key) {
     case "overview":
-      return "Cross-division operating view tuned to the staff member's live role scope.";
+      return copy.introOverview;
     case "tasks":
-      return "Priority-weighted worklist generated from bookings, approvals, alerts, and support activity.";
+      return copy.introTasks;
     case "inbox":
-      return "Notification center combining unread alerts and active customer or operational conversations.";
+      return copy.introInbox;
     case "approvals":
-      return "Review queues for submissions, moderation, finance, and cross-division sign-off.";
+      return copy.introApprovals;
     case "queues":
-      return "Lane-based operational boards for active workload across each visible division.";
+      return copy.introQueues;
     case "archive":
-      return "Shared audit and operational history for staff-visible divisions.";
+      return copy.introArchive;
     case "reports":
-      return "Signals, throughput, readiness, and workload deltas across the workspace.";
+      return copy.introReports;
     case "settings":
-      return "Staff identity, role family, permission scope, and module access details.";
+      return copy.introSettings;
     case "division":
       return division
-        ? `${getDivisionConfig(division).shortName} operations, queues, insights, and live workload.`
-        : "Division detail surface.";
+        ? copy.introDivisionTemplate.replace("{shortName}", getDivisionConfig(division).shortName)
+        : copy.introDivisionFallback;
     default:
-      return "Workspace";
+      return copy.introDivisionFallback;
   }
 }
 
@@ -160,8 +165,10 @@ function MetricCard({
 
 function InsightCard({
   insight,
+  copy,
 }: {
   insight: WorkspaceSnapshot["insights"][number];
+  copy: HubWorkspaceCopy["workspaceScreen"];
 }) {
   return (
     <div
@@ -172,7 +179,7 @@ function InsightCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
-            Helper Insight
+            {copy.helperInsightLabel}
           </p>
           <h3 className="mt-2 text-lg font-semibold text-slate-950">{insight.title}</h3>
         </div>
@@ -196,7 +203,7 @@ function InsightCard({
           href={insight.href}
           className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900"
         >
-          Open
+          {copy.insightOpenLabel}
           <ArrowRight className="h-4 w-4" />
         </Link>
       ) : null}
@@ -204,7 +211,7 @@ function InsightCard({
   );
 }
 
-function TaskCard({ task }: { task: WorkspaceTask }) {
+function TaskCard({ task, copy }: { task: WorkspaceTask; copy: HubWorkspaceCopy["workspaceScreen"] }) {
   return (
     <Link
       href={task.href}
@@ -237,7 +244,7 @@ function TaskCard({ task }: { task: WorkspaceTask }) {
         {task.dueLabel ? <span className="rounded-full bg-slate-100 px-3 py-1">{task.dueLabel}</span> : null}
       </div>
       <div className="mt-4 rounded-2xl bg-slate-950 px-4 py-3 text-sm text-white">
-        <span className="font-semibold">Suggested next action:</span> {task.suggestedAction}
+        <span className="font-semibold">{copy.suggestedNextAction}</span> {task.suggestedAction}
       </div>
       {task.evidence.length > 0 ? (
         <div className="mt-4 space-y-2">
@@ -254,8 +261,10 @@ function TaskCard({ task }: { task: WorkspaceTask }) {
 
 function InboxCard({
   item,
+  copy,
 }: {
   item: WorkspaceSnapshot["inbox"][number];
+  copy: HubWorkspaceCopy["workspaceScreen"];
 }) {
   return (
     <Link
@@ -273,7 +282,7 @@ function InboxCard({
             </span>
             {item.unread ? (
               <span className="rounded-full bg-sky-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-700">
-                unread
+                {copy.unreadBadge}
               </span>
             ) : null}
           </div>
@@ -289,8 +298,10 @@ function InboxCard({
 
 function QueueLaneCard({
   lane,
+  copy,
 }: {
   lane: DivisionWorkspaceModule["queueLanes"][number];
+  copy: HubWorkspaceCopy["workspaceScreen"];
 }) {
   return (
     <div className="rounded-[28px] border border-white/70 bg-white/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
@@ -324,7 +335,7 @@ function QueueLaneCard({
           ))
         ) : (
           <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
-            Nothing is currently parked in this lane.
+            {copy.queueLaneEmpty}
           </div>
         )}
       </div>
@@ -335,9 +346,11 @@ function QueueLaneCard({
 function ModuleCard({
   module,
   href,
+  copy,
 }: {
   module: DivisionWorkspaceModule;
   href: string;
+  copy: HubWorkspaceCopy["workspaceScreen"];
 }) {
   const config = getDivisionConfig(module.division);
 
@@ -359,10 +372,10 @@ function ModuleCard({
             </span>
             <span className="rounded-full bg-white/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-700">
               {module.sourceMode === "structured"
-                ? "Dedicated data"
+                ? copy.sourceModeStructured
                 : module.sourceMode === "shared-signals"
-                  ? "Shared signals"
-                  : "Planned"}
+                  ? copy.sourceModeSharedSignals
+                  : copy.sourceModePlanned}
             </span>
           </div>
           <h3 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
@@ -390,14 +403,14 @@ function ModuleCard({
           href={href}
           className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
         >
-          Open module
+          {copy.openModuleLabel}
           <ArrowRight className="h-4 w-4" />
         </Link>
         <Link
           href={module.externalUrl}
           className="inline-flex items-center gap-2 rounded-2xl bg-white/85 px-4 py-3 text-sm font-semibold text-slate-900"
         >
-          Open division app
+          {copy.openDivisionAppLabel}
           <ExternalLink className="h-4 w-4" />
         </Link>
       </div>
@@ -507,6 +520,7 @@ export default function WorkspaceScreen({
   workspaceUrl,
   preferredWorkspaceUrl,
   divisionHrefs,
+  copy,
 }: {
   viewer: WorkspaceViewer;
   snapshot: WorkspaceSnapshot;
@@ -517,6 +531,7 @@ export default function WorkspaceScreen({
   workspaceUrl: string;
   preferredWorkspaceUrl: string;
   divisionHrefs: Partial<Record<WorkspaceDivision, string>>;
+  copy: HubWorkspaceCopy["workspaceScreen"];
 }) {
   const selectedModule =
     currentKey === "division" && currentDivision
@@ -531,8 +546,8 @@ export default function WorkspaceScreen({
     if (!viewer.user || snapshot.modules.length === 0) {
       return (
         <EmptyState
-          title="Workspace access is pending"
-          description="This internal workspace only opens for recognized HenryCo staff memberships or division role assignments. Shared authentication is working, but there is no staff scope attached to this account yet."
+          title={copy.accessPendingTitle}
+          description={copy.accessPendingDescription}
         />
       );
     }
@@ -552,14 +567,13 @@ export default function WorkspaceScreen({
                 <div className="rounded-[30px] border border-white/70 bg-white/85 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
                   <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
                     <Bot className="h-4 w-4" />
-                    Operations Helper
+                    {copy.operationsHelperLabel}
                   </div>
                   <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                    Evidence-based next actions
+                    {copy.operationsHelperTitle}
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-                    The helper layer is ranking real backlog, stale work, unread alerts, and approval
-                    pressure pulled from the live HenryCo signal stream.
+                    {copy.operationsHelperDescription}
                   </p>
                   <div className="mt-6 grid gap-4 md:grid-cols-2">
                     {priorityTasks.slice(0, 4).map((task) => (
@@ -577,6 +591,7 @@ export default function WorkspaceScreen({
                       key={module.division}
                       module={module}
                       href={divisionHrefs[module.division] || "#"}
+                      copy={copy}
                     />
                   ))}
                 </div>
@@ -584,11 +599,13 @@ export default function WorkspaceScreen({
 
               <div className="space-y-5">
                 {helperCards.length > 0 ? (
-                  helperCards.map((insight) => <InsightCard key={insight.id} insight={insight} />)
+                  helperCards.map((insight) => (
+                    <InsightCard key={insight.id} insight={insight} copy={copy} />
+                  ))
                 ) : (
                   <EmptyState
-                    title="No helper signals yet"
-                    description="Once live work lands in the permitted division scopes, the workspace helper will summarize stale tasks, SLA risks, and workload pressure here."
+                    title={copy.noHelperSignalsTitle}
+                    description={copy.noHelperSignalsDescription}
                   />
                 )}
               </div>
@@ -600,13 +617,13 @@ export default function WorkspaceScreen({
         return priorityTasks.length > 0 ? (
           <div className="grid gap-5 xl:grid-cols-2">
             {priorityTasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard key={task.id} task={task} copy={copy} />
             ))}
           </div>
         ) : (
           <EmptyState
-            title="No active tasks"
-            description="No prioritized tasks are visible in the current role scope."
+            title={copy.noActiveTasksTitle}
+            description={copy.noActiveTasksDescription}
           />
         );
 
@@ -614,13 +631,13 @@ export default function WorkspaceScreen({
         return snapshot.inbox.length > 0 ? (
           <div className="grid gap-5 xl:grid-cols-2">
             {snapshot.inbox.map((item) => (
-              <InboxCard key={item.id} item={item} />
+              <InboxCard key={item.id} item={item} copy={copy} />
             ))}
           </div>
         ) : (
           <EmptyState
-            title="Inbox is calm"
-            description="There are no unread alerts or open conversation threads inside the current workspace scope."
+            title={copy.inboxCalmTitle}
+            description={copy.inboxCalmDescription}
           />
         );
 
@@ -628,13 +645,13 @@ export default function WorkspaceScreen({
         return approvals.length > 0 ? (
           <div className="grid gap-5 xl:grid-cols-2">
             {approvals.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard key={task.id} task={task} copy={copy} />
             ))}
           </div>
         ) : (
           <EmptyState
-            title="No approvals waiting"
-            description="There are no active approval items in the current role scope."
+            title={copy.noApprovalsTitle}
+            description={copy.noApprovalsDescription}
           />
         );
 
@@ -656,7 +673,7 @@ export default function WorkspaceScreen({
                 </div>
                 <div className="grid gap-5 xl:grid-cols-3">
                   {module.queueLanes.map((lane) => (
-                    <QueueLaneCard key={lane.id} lane={lane} />
+                    <QueueLaneCard key={lane.id} lane={lane} copy={copy} />
                   ))}
                 </div>
               </section>
@@ -668,13 +685,13 @@ export default function WorkspaceScreen({
         return snapshot.history.length > 0 ? (
           <div className="grid gap-5 xl:grid-cols-2">
             {snapshot.history.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard key={task.id} task={task} copy={copy} />
             ))}
           </div>
         ) : (
           <EmptyState
-            title="No visible history"
-            description="Shared audit events have not been surfaced for the current role scope yet."
+            title={copy.noHistoryTitle}
+            description={copy.noHistoryDescription}
           />
         );
 
@@ -694,7 +711,7 @@ export default function WorkspaceScreen({
                     {trend.current}
                   </div>
                   <div className="mt-2 text-sm text-slate-600">
-                    Previous window: {trend.previous}
+                    {copy.previousWindowLabel} {trend.previous}
                   </div>
                   <div
                     className={`mt-4 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
@@ -705,7 +722,7 @@ export default function WorkspaceScreen({
                           : "bg-slate-100 text-slate-700"
                     }`}
                   >
-                    Delta {trend.delta > 0 ? "+" : ""}
+                    {copy.deltaLabel} {trend.delta > 0 ? "+" : ""}
                     {trend.delta}
                   </div>
                 </div>
@@ -748,27 +765,27 @@ export default function WorkspaceScreen({
           <div className="grid gap-5 xl:grid-cols-[0.8fr_1.2fr]">
             <div className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
               <div className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
-                Staff Identity
+                {copy.staffIdentityLabel}
               </div>
               <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-slate-950">
-                {viewer.user?.fullName || "Unnamed staff account"}
+                {viewer.user?.fullName || copy.unnamedStaffAccount}
               </h2>
-              <p className="mt-2 text-sm text-slate-600">{viewer.user?.email || "No email address"}</p>
+              <p className="mt-2 text-sm text-slate-600">{viewer.user?.email || copy.noEmailAddress}</p>
               <div className="mt-6 space-y-3">
                 <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
-                  <span className="font-semibold">Profile role:</span>{" "}
-                  {viewer.user?.profileRole || "Not assigned"}
+                  <span className="font-semibold">{copy.profileRoleLabel}</span>{" "}
+                  {viewer.user?.profileRole || copy.notAssigned}
                 </div>
                 <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
-                  <span className="font-semibold">Primary division:</span>{" "}
-                  {viewer.defaultDivision || "None"}
+                  <span className="font-semibold">{copy.primaryDivisionLabel}</span>{" "}
+                  {viewer.defaultDivision || copy.noPrimaryDivision}
                 </div>
                 <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
-                  <span className="font-semibold">Current access route:</span> {workspaceUrl}
+                  <span className="font-semibold">{copy.currentAccessRouteLabel}</span> {workspaceUrl}
                 </div>
                 {workspaceUrl !== preferredWorkspaceUrl ? (
                   <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
-                    <span className="font-semibold">Preferred workspace host:</span> {preferredWorkspaceUrl}
+                    <span className="font-semibold">{copy.preferredWorkspaceHostLabel}</span> {preferredWorkspaceUrl}
                   </div>
                 ) : null}
               </div>
@@ -778,7 +795,7 @@ export default function WorkspaceScreen({
               <div className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
                 <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
                   <ShieldCheck className="h-4 w-4" />
-                  Permission Scope
+                  {copy.permissionScopeLabel}
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {viewer.permissions.map((permission) => (
@@ -795,7 +812,7 @@ export default function WorkspaceScreen({
               <div className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
                 <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
                   <BookOpenCheck className="h-4 w-4" />
-                  Division Memberships
+                  {copy.divisionMembershipsLabel}
                 </div>
                 <div className="mt-5 space-y-3">
                   {viewer.divisions.map((membership) => (
@@ -836,18 +853,18 @@ export default function WorkspaceScreen({
               <div className="space-y-5">
                 {selectedModule.insights.length > 0 ? (
                   selectedModule.insights.map((insight) => (
-                    <InsightCard key={insight.id} insight={insight} />
+                    <InsightCard key={insight.id} insight={insight} copy={copy} />
                   ))
                 ) : (
                   <EmptyState
-                    title={`${selectedModule.label} is calm`}
-                    description="No active insight cards are being generated for this module right now."
+                    title={copy.divisionCalmTitle.replace("{label}", selectedModule.label)}
+                    description={copy.divisionCalmDescription}
                   />
                 )}
                 <div className="rounded-[28px] border border-white/70 bg-white/85 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
                   <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
                     <Sparkles className="h-4 w-4" />
-                    Data Mode
+                    {copy.dataModeLabel}
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
                     <span className="rounded-full bg-slate-950 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white">
@@ -855,10 +872,10 @@ export default function WorkspaceScreen({
                     </span>
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-700">
                       {selectedModule.sourceMode === "structured"
-                        ? "Dedicated data"
+                        ? copy.sourceModeStructured
                         : selectedModule.sourceMode === "shared-signals"
-                          ? "Shared signals"
-                          : "Planned"}
+                          ? copy.sourceModeSharedSignals
+                          : copy.sourceModePlanned}
                     </span>
                   </div>
                   <p className="mt-4 text-sm leading-6 text-slate-600">{selectedModule.sourceSummary}</p>
@@ -868,19 +885,19 @@ export default function WorkspaceScreen({
                 {selectedModule.tasks.length > 0 ? (
                   <div className="grid gap-5 xl:grid-cols-2">
                     {selectedModule.tasks.map((task) => (
-                      <TaskCard key={task.id} task={task} />
+                      <TaskCard key={task.id} task={task} copy={copy} />
                     ))}
                   </div>
                 ) : (
                   <EmptyState
-                    title="No visible task workload"
-                    description="This division is either calm or the current role scope is intentionally not exposing active task cards here."
+                    title={copy.noTaskWorkloadTitle}
+                    description={copy.noTaskWorkloadDescription}
                   />
                 )}
                 {selectedModule.approvals.length > 0 ? (
                   <div className="grid gap-5 xl:grid-cols-2">
                     {selectedModule.approvals.map((task) => (
-                      <TaskCard key={task.id} task={task} />
+                      <TaskCard key={task.id} task={task} copy={copy} />
                     ))}
                   </div>
                 ) : null}
@@ -889,20 +906,20 @@ export default function WorkspaceScreen({
             {selectedModule.queueLanes.length > 0 ? (
               <section className="grid gap-5 xl:grid-cols-3">
                 {selectedModule.queueLanes.map((lane) => (
-                  <QueueLaneCard key={lane.id} lane={lane} />
+                  <QueueLaneCard key={lane.id} lane={lane} copy={copy} />
                 ))}
               </section>
             ) : (
               <EmptyState
-                title="No queue lanes in scope"
-                description="Queue boards are hidden when the current role family does not carry queue visibility for this division."
+                title={copy.noQueueLanesTitle}
+                description={copy.noQueueLanesDescription}
               />
             )}
           </div>
         ) : (
           <EmptyState
-            title="Module unavailable"
-            description="This division is not visible in the current role scope."
+            title={copy.moduleUnavailableTitle}
+            description={copy.moduleUnavailableDescription}
           />
         );
 
@@ -921,37 +938,37 @@ export default function WorkspaceScreen({
               <div>
                 <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/60">
                   <Route className="h-4 w-4" />
-                  HenryCo Staff Workspace
+                  {copy.headerEyebrow}
                 </div>
                 <h1 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-4xl">
                   {getWorkspaceSectionTitle(currentKey, currentDivision)}
                 </h1>
                 <p className="mt-3 max-w-3xl text-sm leading-6 text-white/72">
-                  {sectionIntro(currentKey, currentDivision)}
+                  {sectionIntro(currentKey, copy, currentDivision)}
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[420px]">
                 <div className="rounded-[24px] border border-white/10 bg-white/6 p-4">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
-                    Active staff profile
+                    {copy.activeStaffProfileLabel}
                   </div>
                   <div className="mt-2 text-base font-semibold text-white">
-                    {viewer.user?.fullName || viewer.user?.email || "Unassigned"}
+                    {viewer.user?.fullName || viewer.user?.email || copy.notAssigned}
                   </div>
                   <div className="mt-2 text-sm text-white/60">
-                    {viewer.families.join(" • ") || "No workspace families"}
+                    {viewer.families.join(" • ") || copy.noWorkspaceFamilies}
                   </div>
                 </div>
                 <div className="rounded-[24px] border border-white/10 bg-white/6 p-4">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
-                    Helper mode
+                    {copy.helperModeLabel}
                   </div>
                   <div className="mt-2 text-base font-semibold text-white">
-                    Real workload signals
+                    {copy.helperModeValue}
                   </div>
                   <div className="mt-2 text-sm text-white/60">
-                    Stale tasks, approvals, unread alerts, and division pressure only.
+                    {copy.helperModeDescription}
                   </div>
                 </div>
               </div>
@@ -965,28 +982,31 @@ export default function WorkspaceScreen({
               <div className="mb-5 flex flex-wrap items-center gap-3 rounded-[24px] border border-white/70 bg-white/80 px-4 py-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
                 <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-700">
                   <Clock3 className="h-3.5 w-3.5" />
-                  Generated from live Supabase signals
+                  {copy.badgeLiveSignals}
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-700">
                   <ShieldCheck className="h-3.5 w-3.5" />
-                  Shared identity via Supabase Auth
+                  {copy.badgeSharedAuth}
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-700">
                   <CircleAlert className="h-3.5 w-3.5" />
-                  Role-aware modules
+                  {copy.badgeRoleModules}
                 </div>
                 {workspaceUrl !== preferredWorkspaceUrl ? (
                   <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-800">
                     <CircleAlert className="h-3.5 w-3.5" />
-                    Fallback access route active
+                    {copy.badgeFallbackRoute}
                   </div>
                 ) : null}
               </div>
 
               {workspaceUrl !== preferredWorkspaceUrl ? (
                 <div className="mb-5 rounded-[24px] border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-900 shadow-[0_18px_45px_rgba(15,23,42,0.04)]">
-                  Shared login now returns to the reachable live deployment at <span className="font-semibold">{workspaceUrl}</span>
-                  {" "}until the preferred workspace host at <span className="font-semibold">{preferredWorkspaceUrl}</span> is attached on Vercel.
+                  Shared login now returns to the reachable live deployment at{" "}
+                  <span className="font-semibold">{workspaceUrl}</span>{" "}
+                  until the preferred workspace host at{" "}
+                  <span className="font-semibold">{preferredWorkspaceUrl}</span>{" "}
+                  is attached on Vercel.
                 </div>
               ) : null}
 
