@@ -53,6 +53,102 @@ export const INTENTIONAL_ECHOS = {
     "overview.transactions",
     "tasks.priorityLabels.normal", // FR "normal" lowercase cognate
     "security.email",         // "Email" universally borrowed
+    // Calendar portal labels — HenryCo division brand names, not translatable.
+    "calendar.portalLabels.care",
+    "calendar.portalLabels.jobs",
+    "calendar.portalLabels.studio",
+    "calendar.portalLabels.learn",
+    "calendar.portalLabels.logistics",
+    // Invoice division labels — brand names.
+    "invoices.divisions.marketplace",
+    "invoices.divisions.studio",
+    "invoices.divisions.jobs",
+    "invoices.divisions.learn",
+    "invoices.divisions.property",
+    "invoices.divisions.logistics",
+    "invoices.divisions.care",
+    "invoices.divisions.account",
+    "invoices.divisions.wallet",
+    "invoices.divisions.fallback",
+    // Message division labels — brand names.
+    "messages.divisionLabels.marketplace",
+    "messages.divisionLabels.jobs",
+    "messages.divisionLabels.studio",
+    "messages.divisionLabels.care",
+    "messages.divisionLabels.property",
+    "messages.divisionLabels.logistics",
+    "messages.divisionLabels.learn",
+    "messages.divisionLabels.support",
+    // Universal punctuation / template strings — never localised.
+    "messages.list.fallbackTime",           // "—" universal dash
+    "payments.card.cardLastFourTemplate",   // "•••• {last4}" universal mask
+    "documents.card.sizeTemplate",          // "{size}" universal template
+    "subscriptions.card.tierSeparator",     // " · " universal separator
+    "subscriptions.card.renewsFallback",    // "—" universal dash
+    "divisionMarketplace.formatLabels.dash", // "—" universal dash
+    "divisionLogistics.shipment.detailSeparator", // " · " universal separator
+    "divisionLogistics.spend.emptyTick",    // "—" universal dash
+    "divisionStudio.projects.fallbackStamp", // "—" universal dash
+    "divisionStudio.payments.rowAriaLabelTemplate", // "{label} · {status}" universal template
+    "divisionStudio.payments.subTemplate",  // "{amount} · {method} · {due}" universal template
+    "divisionStudio.projects.rowAriaLabelTemplate", // "{title} · {kind}" universal template
+    "divisionStudio.activity.rowAriaLabelTemplate", // "{title} · {stamp}" universal template
+    "divisionLearn.courses.statusDelimiter", // " · " universal separator
+    // Cognate notification/document metadata titles.
+    "notifications.metadata.title",  // "Notifications" universal cognate
+    "documents.metadata.title",       // "Documents" universal cognate
+    "documents.hero.title",           // "Documents" universal cognate
+    "documents.types.document",       // "Document" universal cognate
+    "documents.categories.document",  // "Documents" universal cognate
+    "calendar.agendaTitle",           // "Agenda" universal cognate
+    // Activity filter eyebrows — cognates in most locales.
+    "activity.filters.divisionEyebrow", // "Division" universal cognate
+    "activity.filters.typeEyebrow",     // "Type" universal cognate
+    "activity.filters.statusEyebrow",   // "Status" universal cognate
+    // Jobs section — brand/cognate.
+    "divisionJobs.alertStatus.active",  // "Active" near-universal cognate
+    "divisionJobs.header.title",        // "Jobs" brand name
+    "divisionJobs.workModeLabels.remote", // "Remote" universal English borrow
+    "divisionJobs.workModeLabels.hybrid", // "Hybrid" universal cognate
+    "divisionJobs.stageLabels.interview", // "Interview" universal cognate
+    // Logistics domain string — technical URL fragment, not translatable.
+    "divisionLogistics.hero.bodyDomain", // " logistics.henrycogroup.com" — URL
+    // Property gallery template.
+    "divisionProperty.gallery.sizeSqmTemplate", // "{size} sqm" — unit template
+    // Studio project kind labels — cognate.
+    "divisionStudio.hero.eyebrowLive",      // "Studio · live" — brand + universal
+    "divisionStudio.projectKindLabels.live", // "Live" universal English borrow
+    // Subscriptions total template — formula stays the same.
+    "subscriptions.summary.totalTemplate",  // "{count} plan{plural}" — template
+    // Care/Marketplace exception labels — EN-equal in many locales already.
+    "divisionCare.glance.serviceLabel",      // "Service" universal cognate
+    "divisionLearn.extras.expertiseLabel",   // "Expertise" universal cognate
+    "divisionLearn.extras.statusLabel",      // "Status" universal cognate
+    "messages.section.title",               // "Threads" — technical/brand
+    "messages.section.metaSingular",        // "{count} thread" — technical
+    "support.metadata.title",               // "Support" universal cognate
+    "support.hero.title",                   // "Support" universal cognate
+    "support.priorityLabels.normal",        // "Normal" universal cognate
+    "payments.wallet.eyebrow",              // "HenryCo Wallet" — brand
+    "divisionCare.hero.eyebrow",            // "Care · live" — brand
+    "divisionProperty.hero.eyebrow",        // "Property · live" — brand
+    "divisionMarketplace.hero.eyebrow",     // "Marketplace · live" — brand
+    "divisionLearn.hero.eyebrow",           // "Learn · live" — brand
+    "divisionCare.glance.trackingLabel",    // "Tracking" — universal English
+    "divisionJobs.stageLabels.interview",   // already above but duplicate guard
+    "invoices.divisions.property",          // already above
+    // Template/separator strings that are locale-neutral.
+    "divisionMarketplace.matters.application.bodyReviewSuffixTemplate", // " · {note}" separator+template
+    "divisionLogistics.shipment.etaAriaTemplate", // "ETA {eta}" — ETA universal acronym
+    "divisionLogistics.urgencyLabels.standard", // "Standard" universal cognate
+    "divisionLogistics.urgencyLabels.express",  // "Express" universal cognate
+    "divisionStudio.projects.deliverablesTemplateSingular", // "{count} deliverable" — template
+    // Remaining FR-specific cognates / echoes.
+    "messages.metadata.title",    // "Messages · HenryCo" — brand title
+    "documents.summary.countTemplate", // "{count} document{plural}" — template
+    "divisionCare.statusValueLabels.exception", // "Exception" universal cognate
+    "divisionCare.dashboard.pageLabel",  // "Page" universal cognate
+    "divisionMarketplace.statusValueLabels.exception", // "Exception" universal cognate
   ],
   hubHome: [
     "nav.faq",                // "FAQ" universal acronym
