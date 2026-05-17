@@ -149,6 +149,8 @@ export const INTENTIONAL_ECHOS = {
     "divisionCare.statusValueLabels.exception", // "Exception" universal cognate
     "divisionCare.dashboard.pageLabel",  // "Page" universal cognate
     "divisionMarketplace.statusValueLabels.exception", // "Exception" universal cognate
+    // Address separator — ", " is universal punctuation in all locales.
+    "addresses.card.addressSeparator",  // ", " universal address separator
   ],
   hubHome: [
     "nav.faq",                // "FAQ" universal acronym

@@ -4426,7 +4426,7 @@ const FR: DeepPartial<AccountCopy> = {
       notifications:
         "Des mises à jour non lues attendent encore une revue.",
     },
-    priorityFallback: { low: "Calme", normal: "Routine", high: "Élevée", urgent: "Urgente" },
+    priorityFallback: { low: "Calme", normal: "Courant", high: "Élevée", urgent: "Urgente" },
     eyebrow: "File d’action · en direct",
     guidanceTitle: "Une file unique, toutes les divisions.",
     overviewAria: "Aperçu des tâches",
@@ -6435,6 +6435,54 @@ const FR: DeepPartial<AccountCopy> = {
       "Gérez votre profil, vos préférences de communication, vos contrôles de confidentialité et les demandes manuelles de données.",
     profileSectionKicker: "Informations de profil",
     notificationsSectionKicker: "Préférences de notification",
+  },
+  addresses: {
+    metadata: {
+      title: "Adresses",
+      description:
+        "Gérez vos adresses enregistrées (domicile, bureau, boutique…) — utilisées pour les livraisons, les réservations et la vérification KYC.",
+    },
+    hero: {
+      title: "Adresses",
+      description:
+        "Gérez vos adresses enregistrées (domicile, bureau, boutique…) — utilisées pour les livraisons, les réservations et la vérification KYC.",
+    },
+    card: {
+      defaultBadge: "Par défaut",
+      kycVerifiedBadge: "KYC vérifié",
+      setDefaultCta: "Définir par défaut",
+      editCta: "Modifier",
+      deleteCta: "Supprimer",
+      addressSeparator: ", ",
+    },
+    deleteConfirm: {
+      prompt: "Supprimer cette adresse ? Cette action est irréversible.",
+      confirmCta: "Supprimer",
+      cancelCta: "Annuler",
+    },
+    empty: {
+      body:
+        "Vous n'avez encore ajouté aucune adresse. Ajoutez-en une pour accélérer le paiement dans HenryCo.",
+    },
+    add: {
+      cta: "Ajouter une adresse",
+      formTitle: "Ajouter une nouvelle adresse",
+      editFormTitleTemplate: "Modifier {label}",
+      maxedNoticeTemplate:
+        "Vous avez atteint le maximum de {count} types d'adresse (domicile, bureau, boutique, entrepôt, alternative 1, alternative 2). Modifiez ou supprimez-en une pour ajouter un autre type.",
+    },
+  },
+  search: {
+    metadata: {
+      title: "Recherche du compte",
+      description: "Recherchez les flux de votre compte HenryCo et les routes des divisions connectées.",
+    },
+    hero: {
+      title: "Recherchez vos flux HenryCo.",
+      description:
+        "Accédez directement aux actions précises du compte et aux routes des divisions connectées sans passer par des tableaux de bord génériques.",
+    },
+    placeholder: "Rechercher : notifications, portefeuille, factures, support, candidatures...",
   },
 };
 
