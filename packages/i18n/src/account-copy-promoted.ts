@@ -1972,6 +1972,13 @@ export const ACCOUNT_COPY_ES = {
       "figureAriaLabel": "Gasto logístico de los últimos 6 meses",
       "emptyTick": "—"
     }
+  },
+  "settings": {
+    "pageTitle": "Ajustes y preferencias",
+    "pageDescription":
+      "Gestiona tu perfil, preferencias de comunicación, controles de privacidad y rutas manuales de solicitud de datos.",
+    "profileSectionKicker": "Información del perfil",
+    "notificationsSectionKicker": "Preferencias de notificación"
   }
 
 };
@@ -3947,6 +3954,13 @@ export const ACCOUNT_COPY_PT = {
       "figureAriaLabel": "Gasto logístico dos últimos 6 meses",
       "emptyTick": "—"
     }
+  },
+  "settings": {
+    "pageTitle": "Definições e preferências",
+    "pageDescription":
+      "Gere o seu perfil, preferências de comunicação, controlos de privacidade e pedidos manuais de dados.",
+    "profileSectionKicker": "Informações do perfil",
+    "notificationsSectionKicker": "Preferências de notificação"
   }
 
 };
@@ -5922,6 +5936,13 @@ export const ACCOUNT_COPY_AR = {
       "figureAriaLabel": "الإنفاق اللوجستي خلال آخر 6 أشهر",
       "emptyTick": "—"
     }
+  },
+  "settings": {
+    "pageTitle": "الإعدادات والتفضيلات",
+    "pageDescription":
+      "أدِر ملفك الشخصي وتفضيلات التواصل وضوابط الخصوصية ومسارات طلبات البيانات اليدوية.",
+    "profileSectionKicker": "معلومات الملف الشخصي",
+    "notificationsSectionKicker": "تفضيلات الإشعارات"
   }
 
 };
