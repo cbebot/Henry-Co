@@ -28,6 +28,7 @@ const MODULES = [
   ["account-copy.ts",          "getAccountCopy",     "account",        "account-copy.ts"],
   ["hub-home-copy.ts",         "getHubHomeCopy",     "hubHome",        "hub-home-copy.ts"],
   ["marketplace-copy.ts",      "getMarketplaceCopy", "marketplace",    "marketplace-copy.ts"],
+  ["studio-copy.ts",           "getStudioCopy",      "studio",         "studio-copy.ts"],
   ["jobs-copy.ts",             "getJobsCopy",        "jobs",           "jobs-copy.ts"],
   ["care-copy.ts",             "getCareCopy",        "care",           "care-copy.ts"],
   ["auth-copy.ts",             "getAuthCopy",        "auth",           "auth-copy.ts"],
