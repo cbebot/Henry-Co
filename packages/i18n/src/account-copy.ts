@@ -8750,11 +8750,82 @@ const IT: DeepPartial<AccountCopy> = {
       "walletFunding": "La tua prova è in attesa di conferma finanziaria.",
       "support": "Le conversazioni aperte di supporto richiedono ancora la tua attenzione.",
       "notifications": "Gli aggiornamenti non letti sono in attesa di revisione."
-    }
+    },
+    "priorityFallback": {
+      "low": "Calmo",
+      "normal": "Ordinario",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "eyebrow": "Coda azioni · in tempo reale",
+    "guidanceTitle": "Una sola coda, tutte le divisioni.",
+    "overviewAria": "Panoramica delle attività",
+    "volumeAria": "Volume delle attività",
+    "pendingAria": "Attività in sospeso",
+    "sideAria": "Come funziona la coda",
+    "bySource": "Per origine",
+    "openTotalLabel": "Totale aperti",
+    "nothingBlocking": "Nulla blocca al momento",
+    "resolveBlockers": "Risolvi per sbloccare le altre corsie",
+    "routine": "ordinarie",
+    "divisionRepresentedSingular": "{count} divisione rappresentata",
+    "divisionRepresentedPlural": "{count} divisioni rappresentate",
+    "headlineEmpty": "Nessun elemento in coda.",
+    "headlineBlockerSingular": "{count} blocco da risolvere.",
+    "headlineBlockerPlural": "{count} blocchi da risolvere.",
+    "headlineUrgentSingular": "{count} attività urgente da chiudere.",
+    "headlineUrgentPlural": "{count} attività urgenti da chiudere.",
+    "headlineActiveSingular": "{count} attività da gestire.",
+    "headlineActivePlural": "{count} attività da gestire.",
+    "headlineCalmSingular": "{count} elemento nella tua coda.",
+    "headlineCalmPlural": "{count} elementi nella tua coda.",
+    "blurbEmpty": "Il tuo account è in ordine — verifica, pagamenti e corsie sensibili alle revisioni sono tutti puliti. Ti mostreremo automaticamente qui la prossima mossa appena si presenta.",
+    "blurbRisk": "Questi elementi bloccano le azioni a maggiore fiducia in HenryCo — prelievi dal portafoglio, approvazione venditore marketplace, verifica datore di lavoro. Risolverli sblocca ciascuna corsia.",
+    "blurbActive": "Ogni riga ti porta alla prossima azione con un solo tocco. Filtri, etichette di priorità e collegamenti restano coerenti in tutte le divisioni HenryCo.",
+    "metaEmpty": "Sei a posto. Qualsiasi novità apparirà qui appena arriva.",
+    "metaCount": "{count} aperti · ordinati per priorità e stato bloccante."
   },
   "security": {
     "title": "Sicurezza",
     "description": "Controlla l'attività di sicurezza recente, modifica la password e termina le sessioni HenryCo quando necessario.",
+    "heroAriaLabel": "Panoramica della sicurezza",
+    "hero": {
+      "trustScoreLabel": "Punteggio di fiducia",
+      "nextTierPrefix": "Prossimo ·",
+      "nextTierAriaTemplate": "Livello successivo {tier}",
+      "accountActiveSingularTemplate": "Account attivo da {days} giorno",
+      "accountActivePluralTemplate": "Account attivo da {days} giorni",
+      "flaggedEventsSingularTemplate": "{count} evento segnalato in archivio · controlla sotto",
+      "flaggedEventsPluralTemplate": "{count} eventi segnalati in archivio · controlla sotto",
+      "statusEyebrow": {
+        "secure": "Sicurezza e accesso · protetto",
+        "watch": "Sicurezza e accesso · azione consigliata",
+        "risk": "Sicurezza e accesso · rischio segnalato"
+      },
+      "statusHeadline": {
+        "secure": "Il tuo account è protetto.",
+        "watch": "Bastano poche mosse per rafforzare l'account.",
+        "risk": "Abbiamo segnalato un'attività che richiede la tua attenzione."
+      },
+      "statusBlurb": {
+        "secure": "Nessun evento sospetto, la verifica è solida e ogni azione a maggiore fiducia offerta da HenryCo è aperta per te.",
+        "watch": "Nulla è rotto — ma alcuni segnali (conferma email, revisione identità, contatti duplicati) farebbero salire il tuo punteggio di fiducia e sbloccherebbero più corsie.",
+        "risk": "Eventi recenti sono stati classificati come rischio elevato. Esamina il flusso di attività qui sotto e cambia la password se qualcosa ti sembra estraneo."
+      }
+    },
+    "signalsTitle": "Segnali",
+    "signalsMeta": "Quello che i nostri motori di verifica e scoring vedono sul tuo account in questo momento.",
+    "signalsAriaLabel": "Segnali di sicurezza",
+    "guideTitle": "Dove sei · cosa ti fa avanzare",
+    "guideMetaTemplate": "Valutazione onesta, non un numero di marketing. {tier}.",
+    "allLanesOpen": "Tutte le corsie aperte",
+    "accountActionsTitle": "Azioni sull'account",
+    "accountActionsMeta": "Controlli ordinari che gestisci direttamente.",
+    "changePasswordTitle": "Cambia la tua password",
+    "signOutEverywhereTitle": "Disconnettiti ovunque",
+    "suspiciousEventFoot": "Esamina il flusso di attività qui sotto.",
+    "noSuspiciousEventFoot": "Nulla segnalato nell'ultima finestra di revisione.",
+    "activityAriaLabel": "Eventi di sicurezza recenti",
     "trustProfile": "Profilo di fiducia",
     "trustDescription": "La fiducia è operativa in tutto l'account. Ora controlla le azioni aziendali di valore più elevato, la postura di moderazione e un'idoneità più forte per i moduli HenryCo.",
     "trustScore": "Punteggio di affidabilità dell'account",
@@ -10638,6 +10709,54 @@ const IT: DeepPartial<AccountCopy> = {
       "Gestisci il tuo profilo, le preferenze di comunicazione, i controlli sulla privacy e le richieste manuali di dati.",
     profileSectionKicker: "Informazioni del profilo",
     notificationsSectionKicker: "Preferenze di notifica",
+  },
+  addresses: {
+    metadata: {
+      title: "Indirizzi",
+      description:
+        "Gestisci i tuoi indirizzi salvati (casa, ufficio, negozio…) — usati per consegne, prenotazioni e verifica KYC.",
+    },
+    hero: {
+      title: "Indirizzi",
+      description:
+        "Gestisci i tuoi indirizzi salvati (casa, ufficio, negozio…) — usati per consegne, prenotazioni e verifica KYC.",
+    },
+    card: {
+      defaultBadge: "Predefinito",
+      kycVerifiedBadge: "Verificato KYC",
+      setDefaultCta: "Imposta come predefinito",
+      editCta: "Modifica",
+      deleteCta: "Elimina",
+    },
+    deleteConfirm: {
+      prompt: "Eliminare questo indirizzo? L'operazione non può essere annullata.",
+      confirmCta: "Elimina",
+      cancelCta: "Annulla",
+    },
+    empty: {
+      body:
+        "Non hai ancora aggiunto indirizzi. Aggiungine uno per velocizzare il checkout in tutto HenryCo.",
+    },
+    add: {
+      cta: "Aggiungi indirizzo",
+      formTitle: "Aggiungi un nuovo indirizzo",
+      editFormTitleTemplate: "Modifica {label}",
+      maxedNoticeTemplate:
+        "Hai aggiunto il numero massimo di {count} tipi di indirizzi (casa, ufficio, negozio, magazzino, alternativo 1, alternativo 2). Modifica o elimina uno per aggiungerne un altro.",
+    },
+  },
+  search: {
+    metadata: {
+      title: "Cerca nell'account",
+      description:
+        "Cerca flussi di lavoro dell'account HenryCo e percorsi collegati delle divisioni.",
+    },
+    hero: {
+      title: "Cerca nei tuoi flussi HenryCo.",
+      description:
+        "Vai direttamente alle azioni esatte dell'account e ai percorsi collegati delle divisioni, senza ripiegare su dashboard generiche.",
+    },
+    placeholder: "Cerca nell'account: notifiche, portafoglio, fatture, supporto, candidature lavoro...",
   },
 };
 
