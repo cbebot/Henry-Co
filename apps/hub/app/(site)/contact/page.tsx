@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { COMPANY } from "@henryco/config";
-import { getHubPublicCopy } from "@henryco/i18n/server";
+import { getHubPublicCopy, getHubHomeCopy } from "@henryco/i18n/server";
 import { getHubPublicLocale } from "../../../lib/locale-server";
 import CompanyPageClient from "../../components/CompanyPageClient";
 import ContactHeroLayout from "../../components/ContactHeroLayout";
@@ -49,6 +49,7 @@ export default async function ContactPage({
 
   const settings = normalizeCompanySettings(settingsResult);
   const copy = getHubPublicCopy(locale);
+  const homeCopy = getHubHomeCopy(locale);
 
   const supportEmail =
     settings.support_email?.trim() || COMPANY.group.supportEmail;
@@ -65,6 +66,7 @@ export default async function ContactPage({
         initialReason={initialReason}
         planContext={planContext}
         copy={copy.contactHero}
+        formCopy={homeCopy.contactHeroForm}
       />
       <CompanyPageClient
         pageKey="contact"

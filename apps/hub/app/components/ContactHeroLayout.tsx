@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { HubPublicCopy } from "@henryco/i18n";
+import type { HubHomeCopy, HubPublicCopy } from "@henryco/i18n";
 import ContactHeroForm from "./ContactHeroForm";
 
 /**
@@ -14,12 +14,14 @@ export default function ContactHeroLayout({
   initialReason,
   planContext,
   copy,
+  formCopy,
 }: {
   supportEmail: string;
   responseTime?: string;
   initialReason?: string;
   planContext?: string | null;
   copy: HubPublicCopy["contactHero"];
+  formCopy: HubHomeCopy["contactHeroForm"];
 }) {
   return (
     <section className="relative">
@@ -79,6 +81,7 @@ export default function ContactHeroLayout({
             responseTime={responseTime}
             initialReason={initialReason}
             planContext={planContext ?? null}
+            copy={formCopy}
           />
         </div>
       </div>

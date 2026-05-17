@@ -162,6 +162,32 @@ export type HubHomeCopy = {
     links: string;
   };
   faqFallback: { q: string; a: string }[];
+  contactHeroForm: {
+    formEyebrow: string;
+    formTitle: string;
+    orEmail: string;
+    orEmailDirect: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    reasonLabel: string;
+    messageLabel: string;
+    messagePlaceholder: string;
+    defaultResponseTime: string;
+    partnerPlanContext: string;
+    sendingLabel: string;
+    sendLabel: string;
+    reasons: {
+      general: string;
+      partnerships: string;
+      media: string;
+      supplier: string;
+      investor: string;
+      complaint: string;
+      other: string;
+    };
+  };
 };
 
 const HUB_HOME_COPY_EN: HubHomeCopy = {
@@ -385,6 +411,33 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
       a: "About, Contact, Privacy, and Terms. Together they explain the company's posture, how to reach us, how information is handled, and the basis for using our public surfaces.",
     },
   ],
+  contactHeroForm: {
+    formEyebrow: "Reach the company",
+    formTitle: "Send the company a note",
+    orEmail: "Or email",
+    orEmailDirect: "directly.",
+    nameLabel: "Your name",
+    namePlaceholder: "Full name",
+    emailLabel: "Email",
+    emailPlaceholder: "you@example.com",
+    reasonLabel: "Reason",
+    messageLabel: "Message",
+    messagePlaceholder: "A short note about why you are reaching out.",
+    defaultResponseTime: "Replies within 1 business day",
+    partnerPlanContext:
+      "I'd like to discuss the marketplace Partner tier — custom inventory terms and direct placement controls. Here is what I'm working with: ",
+    sendingLabel: "Sending…",
+    sendLabel: "Send message",
+    reasons: {
+      general: "General enquiry",
+      partnerships: "Partnership",
+      media: "Media / press",
+      supplier: "Supplier introduction",
+      investor: "Investor / advisor",
+      complaint: "Complaint or concern",
+      other: "Something else",
+    },
+  },
 };
 
 const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
@@ -604,6 +657,33 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
       a: "Commencez par À propos, Contact, Confidentialité et Conditions. Ensemble, elles expliquent le groupe, ses standards et ses politiques publiques.",
     },
   ],
+  contactHeroForm: {
+    formEyebrow: "Contacter l'entreprise",
+    formTitle: "Envoyer un message à l'entreprise",
+    orEmail: "Ou par e-mail",
+    orEmailDirect: "directement.",
+    nameLabel: "Votre nom",
+    namePlaceholder: "Nom complet",
+    emailLabel: "E-mail",
+    emailPlaceholder: "vous@exemple.com",
+    reasonLabel: "Motif",
+    messageLabel: "Message",
+    messagePlaceholder: "Un mot sur la raison de votre prise de contact.",
+    defaultResponseTime: "Réponse sous 1 jour ouvré",
+    partnerPlanContext:
+      "Je souhaite discuter du niveau Partenaire Marketplace — conditions d'inventaire personnalisées et contrôles de placement direct. Voici ma situation : ",
+    sendingLabel: "Envoi en cours…",
+    sendLabel: "Envoyer le message",
+    reasons: {
+      general: "Demande générale",
+      partnerships: "Partenariat",
+      media: "Médias / presse",
+      supplier: "Introduction fournisseur",
+      investor: "Investisseur / conseiller",
+      complaint: "Réclamation ou préoccupation",
+      other: "Autre",
+    },
+  },
 };
 
 const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
@@ -710,6 +790,33 @@ const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
     { q: "¿Para quién está diseñado este sitio web?", a: "El hub sirve a clientes, socios, proveedores, medios, talento y partes interesadas que necesitan una visión más clara del grupo Henry & Co. y sus negocios operativos." },
     { q: "¿Qué páginas corporativas debo revisar primero?", a: "Los mejores puntos de partida son las páginas Acerca de, Contacto, Aviso de Privacidad y Términos y Condiciones. Juntas, proporcionan una visión más clara de la empresa, sus estándares y sus políticas públicas." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Contacta con la empresa",
+    formTitle: "Envía una nota a la empresa",
+    orEmail: "O escribe por correo",
+    orEmailDirect: "directamente.",
+    nameLabel: "Tu nombre",
+    namePlaceholder: "Nombre completo",
+    emailLabel: "Correo electrónico",
+    emailPlaceholder: "tu@ejemplo.com",
+    reasonLabel: "Motivo",
+    messageLabel: "Mensaje",
+    messagePlaceholder: "Una breve nota sobre el motivo de tu contacto.",
+    defaultResponseTime: "Respuesta en 1 día hábil",
+    partnerPlanContext:
+      "Me gustaría hablar sobre el nivel Socio del Marketplace — términos de inventario personalizados y controles de colocación directa. Aquí está mi situación: ",
+    sendingLabel: "Enviando…",
+    sendLabel: "Enviar mensaje",
+    reasons: {
+      general: "Consulta general",
+      partnerships: "Asociación",
+      media: "Medios / prensa",
+      supplier: "Presentación de proveedor",
+      investor: "Inversor / asesor",
+      complaint: "Queja o preocupación",
+      other: "Otro asunto",
+    },
+  },
 };
 
 const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
@@ -816,6 +923,33 @@ const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
     { q: "Para quem este site foi projetado?", a: "O hub serve clientes, parceiros, fornecedores, mídia, talentos e partes interessadas que precisam de uma visão mais clara do grupo Henry & Co. e seus negócios operacionais." },
     { q: "Quais páginas corporativas devo revisar primeiro?", a: "Os melhores pontos de partida são as páginas Sobre, Contato, Aviso de Privacidade e Termos e Condições. Juntas, fornecem uma visão mais clara da empresa, seus padrões e suas políticas públicas." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Fale com a empresa",
+    formTitle: "Envie uma mensagem à empresa",
+    orEmail: "Ou envie um e-mail",
+    orEmailDirect: "diretamente.",
+    nameLabel: "Seu nome",
+    namePlaceholder: "Nome completo",
+    emailLabel: "E-mail",
+    emailPlaceholder: "voce@exemplo.com",
+    reasonLabel: "Motivo",
+    messageLabel: "Mensagem",
+    messagePlaceholder: "Uma breve nota sobre o motivo do seu contato.",
+    defaultResponseTime: "Resposta em até 1 dia útil",
+    partnerPlanContext:
+      "Gostaria de discutir o nível Parceiro do Marketplace — termos de inventário personalizados e controles de posicionamento direto. Aqui está minha situação: ",
+    sendingLabel: "Enviando…",
+    sendLabel: "Enviar mensagem",
+    reasons: {
+      general: "Consulta geral",
+      partnerships: "Parceria",
+      media: "Mídia / imprensa",
+      supplier: "Apresentação de fornecedor",
+      investor: "Investidor / consultor",
+      complaint: "Reclamação ou preocupação",
+      other: "Outro assunto",
+    },
+  },
 };
 
 const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
@@ -922,6 +1056,33 @@ const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
     { q: "لمن صُمم هذا الموقع؟", a: "يخدم المركز العملاء والشركاء والموردين والإعلام والكفاءات وأصحاب المصلحة الذين يحتاجون إلى رؤية أوضح لمجموعة Henry & Co. وأعمالها التشغيلية." },
     { q: "ما صفحات الشركة التي يجب مراجعتها أولاً؟", a: "أفضل نقاط البداية هي صفحات من نحن والاتصال وإشعار الخصوصية والشروط والأحكام. معاً توفر رؤية أوضح للشركة ومعاييرها وسياساتها العامة." },
   ],
+  contactHeroForm: {
+    formEyebrow: "تواصل مع الشركة",
+    formTitle: "أرسل رسالة إلى الشركة",
+    orEmail: "أو عبر البريد الإلكتروني",
+    orEmailDirect: "مباشرةً.",
+    nameLabel: "اسمك",
+    namePlaceholder: "الاسم الكامل",
+    emailLabel: "البريد الإلكتروني",
+    emailPlaceholder: "you@example.com",
+    reasonLabel: "السبب",
+    messageLabel: "الرسالة",
+    messagePlaceholder: "ملاحظة قصيرة حول سبب تواصلك.",
+    defaultResponseTime: "رد خلال يوم عمل واحد",
+    partnerPlanContext:
+      "أود مناقشة مستوى الشريك في السوق — شروط المخزون المخصصة وضوابط الوضع المباشر. إليك وضعي: ",
+    sendingLabel: "جارٍ الإرسال…",
+    sendLabel: "إرسال الرسالة",
+    reasons: {
+      general: "استفسار عام",
+      partnerships: "شراكة",
+      media: "إعلام / صحافة",
+      supplier: "تقديم مورد",
+      investor: "مستثمر / مستشار",
+      complaint: "شكوى أو مخاوف",
+      other: "موضوع آخر",
+    },
+  },
 };
 
 const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
@@ -1028,6 +1189,33 @@ const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
     { q: "Für wen ist diese Website konzipiert?", a: "Der Hub dient Kunden, Partnern, Lieferanten, Medien, Talenten und Stakeholdern, die einen klareren Überblick über die Henry & Co. Gruppe und ihre operativen Unternehmen benötigen." },
     { q: "Welche Unternehmensseiten sollte ich zuerst ansehen?", a: "Die besten Ausgangspunkte sind die Seiten Über uns, Kontakt, Datenschutzhinweis und Allgemeine Geschäftsbedingungen. Zusammen bieten sie einen klareren Überblick über das Unternehmen, seine Standards und seine öffentlichen Richtlinien." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Kontakt zum Unternehmen",
+    formTitle: "Eine Nachricht an das Unternehmen senden",
+    orEmail: "Oder per E-Mail",
+    orEmailDirect: "direkt.",
+    nameLabel: "Ihr Name",
+    namePlaceholder: "Vollständiger Name",
+    emailLabel: "E-Mail",
+    emailPlaceholder: "sie@beispiel.de",
+    reasonLabel: "Grund",
+    messageLabel: "Nachricht",
+    messagePlaceholder: "Eine kurze Notiz zum Grund Ihrer Kontaktaufnahme.",
+    defaultResponseTime: "Antwort innerhalb von 1 Werktag",
+    partnerPlanContext:
+      "Ich möchte die Marketplace-Partnerstufe besprechen — individuelle Lagerkonditionen und direkte Platzierungskontrollen. Hier ist meine Situation: ",
+    sendingLabel: "Wird gesendet…",
+    sendLabel: "Nachricht senden",
+    reasons: {
+      general: "Allgemeine Anfrage",
+      partnerships: "Partnerschaft",
+      media: "Medien / Presse",
+      supplier: "Lieferantenvorstellung",
+      investor: "Investor / Berater",
+      complaint: "Beschwerde oder Anliegen",
+      other: "Sonstiges",
+    },
+  },
 };
 
 const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
@@ -1134,6 +1322,33 @@ const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
     { q: "这个网站是为谁设计的？", a: "该中心服务于需要更清晰了解 Henry & Co. 集团及其运营业务的客户、合作伙伴、供应商、媒体、人才和利益相关者。" },
     { q: "我应该首先查看哪些公司页面？", a: "最佳起点是关于我们、联系我们、隐私声明和条款与条件页面。它们共同提供了对公司、其标准和公共政策的更清晰了解。" },
   ],
+  contactHeroForm: {
+    formEyebrow: "联系公司",
+    formTitle: "向公司发送信息",
+    orEmail: "或发送电子邮件",
+    orEmailDirect: "直接联系。",
+    nameLabel: "您的姓名",
+    namePlaceholder: "全名",
+    emailLabel: "电子邮件",
+    emailPlaceholder: "您@示例.com",
+    reasonLabel: "原因",
+    messageLabel: "信息",
+    messagePlaceholder: "请简要说明您联系的原因。",
+    defaultResponseTime: "1个工作日内回复",
+    partnerPlanContext:
+      "我想讨论Marketplace合作伙伴级别 — 定制库存条款和直接投放控制。以下是我的情况：",
+    sendingLabel: "发送中…",
+    sendLabel: "发送信息",
+    reasons: {
+      general: "一般咨询",
+      partnerships: "合作关系",
+      media: "媒体 / 新闻",
+      supplier: "供应商介绍",
+      investor: "投资者 / 顾问",
+      complaint: "投诉或关切",
+      other: "其他事项",
+    },
+  },
 };
 
 const HUB_HOME_COPY_HI: DeepPartial<HubHomeCopy> = {
@@ -1240,6 +1455,33 @@ const HUB_HOME_COPY_HI: DeepPartial<HubHomeCopy> = {
     { q: "यह वेबसाइट किसके लिए डिज़ाइन की गई है?", a: "हब ग्राहकों, भागीदारों, आपूर्तिकर्ताओं, मीडिया, प्रतिभाओं और हितधारकों की सेवा करता है जिन्हें Henry & Co. समूह और इसके परिचालन व्यवसायों का स्पष्ट दृश्य चाहिए।" },
     { q: "मुझे पहले कौन से कंपनी पेज देखने चाहिए?", a: "सबसे अच्छे शुरुआती बिंदु हमारे बारे में, संपर्क, गोपनीयता नोटिस और नियम और शर्तें पेज हैं। साथ में, वे कंपनी, इसके मानकों और इसकी सार्वजनिक नीतियों का स्पष्ट दृश्य प्रदान करते हैं।" },
   ],
+  contactHeroForm: {
+    formEyebrow: "कंपनी से संपर्क करें",
+    formTitle: "कंपनी को एक संदेश भेजें",
+    orEmail: "या ईमेल करें",
+    orEmailDirect: "सीधे।",
+    nameLabel: "आपका नाम",
+    namePlaceholder: "पूरा नाम",
+    emailLabel: "ईमेल",
+    emailPlaceholder: "aap@udaharan.com",
+    reasonLabel: "कारण",
+    messageLabel: "संदेश",
+    messagePlaceholder: "संपर्क के कारण के बारे में एक संक्षिप्त नोट।",
+    defaultResponseTime: "1 कार्य दिवस के भीतर जवाब",
+    partnerPlanContext:
+      "मैं Marketplace Partner स्तर के बारे में चर्चा करना चाहता हूं — कस्टम इन्वेंटरी शर्तें और प्रत्यक्ष प्लेसमेंट नियंत्रण। यहां मेरी स्थिति है: ",
+    sendingLabel: "भेजा जा रहा है…",
+    sendLabel: "संदेश भेजें",
+    reasons: {
+      general: "सामान्य पूछताछ",
+      partnerships: "साझेदारी",
+      media: "मीडिया / प्रेस",
+      supplier: "आपूर्तिकर्ता परिचय",
+      investor: "निवेशक / सलाहकार",
+      complaint: "शिकायत या चिंता",
+      other: "कुछ और",
+    },
+  },
 };
 
 const HUB_HOME_COPY_IG: DeepPartial<HubHomeCopy> = {
@@ -1346,6 +1588,33 @@ const HUB_HOME_COPY_IG: DeepPartial<HubHomeCopy> = {
     { q: "Maka onye e wuru saịtị a?", a: "Hub na-ejere ọrụ ndị ahịa, ndị mmekọ, ndị na-enye ngwaahịa, ndị ọchịchọ, ndị nka, na ndị nwere ọrụ ndị chọrọ ọhụụ doro anya nke ìgwè Henry & Co. na azụmahịa ya na-arụ ọrụ." },
     { q: "Kedu peeji ụlọ ọrụ m kwesịrị nyochaa ụzọ mbụ?", a: "Isi mmalite ndị kacha mma bụ peeji Maka anyị, Kpọtụrụ anyị, Ọkwa Nzuzo, na Usoro na Ọnọdụ. Ọ bụ ọnụ ọgụgụ, ha na-enye ọhụụ doro anya nke ụlọ ọrụ, ọkọlọtọ ya, na iwu ya n'ọha." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Kpọtụrụ ụlọ ọrụ",
+    formTitle: "Zipu ụlọ ọrụ ozi",
+    orEmail: "Ma ọ bụ zipu imeli",
+    orEmailDirect: "ụzọ ọtọ.",
+    nameLabel: "Aha gị",
+    namePlaceholder: "Aha zuru ezu",
+    emailLabel: "Imeli",
+    emailPlaceholder: "gi@ihe.com",
+    reasonLabel: "Ihe kpatara",
+    messageLabel: "Ozi",
+    messagePlaceholder: "Ozi dị mkpụmkpụ gbasara ihe mere ị kpọtụrụ anyị.",
+    defaultResponseTime: "Ọzaazị n'ime ụbọchị ọrụ 1",
+    partnerPlanContext:
+      "Achọrọ m ịkọwa gbasara ọkwa Onye mmekọ Marketplace — ọnọdụ ngwaahịa pụrụ iche na njikwa ntinye. Nke a bụ ọnọdụ m: ",
+    sendingLabel: "Na-eziga…",
+    sendLabel: "Zipu ozi",
+    reasons: {
+      general: "Ajụjụ ọzọ",
+      partnerships: "Mmekọahịa",
+      media: "Ọchịchọ / mbipụta",
+      supplier: "Ntụgharị onye na-enye ngwaahịa",
+      investor: "Onye na-etinye ego / ndụmọdụ",
+      complaint: "Mkpesa ma ọ bụ nchegbu",
+      other: "Ihe ọzọ",
+    },
+  },
 };
 
 const HUB_HOME_COPY_YO: DeepPartial<HubHomeCopy> = {
@@ -1452,6 +1721,33 @@ const HUB_HOME_COPY_YO: DeepPartial<HubHomeCopy> = {
     { q: "Fún tani a ṣe ojúewé ìntánẹ́ẹ̀tì yìí?", a: "Hub ń sìn àwọn oníbàárà, àwọn alábàákẹ́gbẹ́, àwọn olùpèsè, àwọn oníròyìn, àwọn ẹni tí wọ́n ń wá iṣẹ́, àti àwọn olùjọpọ̀ tí wọ́n nílò ìwò tó mọ̀ síi ti ìjọ Henry & Co. àti àwọn iṣẹ́-ṣe ìṣiṣẹ́ rẹ̀." },
     { q: "Àwọn ojúewé ilé-iṣẹ́ wo nì mí gbọdọ̀ tún wo àkọ́kọ́?", a: "Àwọn ìbẹ̀rẹ̀ tó dára jùlọ ni àwọn ojúewé Nípa Wa, Kàn Sí Wa, Ìkìlọ̀ Ìpamọ́, àti Àwọn Òfin àti Ìpèsè. Pọ̀pọ̀, wọ́n pèsè ìwò tó mọ̀ síi ti ilé-iṣẹ́, àwọn ìtọ́kasí rẹ̀, àti àwọn ìlànà gbangba rẹ̀." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Kàn sí ilé-iṣẹ́",
+    formTitle: "Fi ìránṣẹ́ ránṣẹ́ sí ilé-iṣẹ́",
+    orEmail: "Tàbí fi ímeèlì ránṣẹ́",
+    orEmailDirect: "tààrà.",
+    nameLabel: "Orúkọ rẹ",
+    namePlaceholder: "Orúkọ kíkún",
+    emailLabel: "Ímeèlì",
+    emailPlaceholder: "iwo@apẹẹrẹ.com",
+    reasonLabel: "Ìdí",
+    messageLabel: "Ìránṣẹ́",
+    messagePlaceholder: "Àkọsílẹ̀ kúkúrú nípa ìdí tí o fi ń kàn wá.",
+    defaultResponseTime: "Ìdáhùn láàárín ọjọ́ iṣẹ́ 1",
+    partnerPlanContext:
+      "Mo fẹ́ jíròrò nípa ìpele Alábàárọ̀ Marketplace — àwọn ìpèsè àkójọpọ̀ àti àwọn ìdarí ìgbékalẹ̀ tààrà. Èyí ni ipò mi: ",
+    sendingLabel: "Ń ránsẹ́…",
+    sendLabel: "Fi ìránṣẹ́ ránṣẹ́",
+    reasons: {
+      general: "Ìbéèrè gbogbogbò",
+      partnerships: "Àjọṣepọ̀",
+      media: "Ìkànnì / ìròyìn",
+      supplier: "Ìfihàn olùpèsè",
+      investor: "Onísọwọ̀ / olùdámọ̀ràn",
+      complaint: "Ìkùnà tàbí ìbínú",
+      other: "Ohun mìíràn",
+    },
+  },
 };
 
 const HUB_HOME_COPY_HA: DeepPartial<HubHomeCopy> = {
@@ -1558,6 +1854,33 @@ const HUB_HOME_COPY_HA: DeepPartial<HubHomeCopy> = {
     { q: "Ga wa aka tsara wannan gidan yanar gizo?", a: "Hub yana sabis ga abokan ciniki, abokan hulɗa, masu ba da kayayyaki, kafofin watsa labarai, ƙwararru, da masu ruwa da tsaki waɗanda ke buƙatar ƙarin bayyananniyar ra'ayi na ƙungiyar Henry & Co. da kasuwancinta na aiki." },
     { q: "Waɗanne shafukan kamfani ya kamata na duba da farko?", a: "Mafi kyawun wuraren farawa sune shafukan Game da Mu, Tuntuɓa Mu, Sanarwar Sirri, da Sharuɗɗa da Yanayi. Tare, suna ba da ƙarin bayyananniyar ra'ayi na kamfani, ma'aunansa, da manufofinsa na jama'a." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Tuntuɓi kamfani",
+    formTitle: "Aika sakon kamfani",
+    orEmail: "Ko ta imel",
+    orEmailDirect: "kai tsaye.",
+    nameLabel: "Sunanka",
+    namePlaceholder: "Cikakken suna",
+    emailLabel: "Imel",
+    emailPlaceholder: "kai@misali.com",
+    reasonLabel: "Dalili",
+    messageLabel: "Sako",
+    messagePlaceholder: "Takaitaccen bayanin dalilin tuntuɓinku.",
+    defaultResponseTime: "Amsawa cikin kwana 1 na aiki",
+    partnerPlanContext:
+      "Ina son tattauna matakin Abokin Hulɗa na Marketplace — tsarin kayan aiki na musamman da kula da saka kai tsaye. Ga halin da nake ciki: ",
+    sendingLabel: "Ana aika…",
+    sendLabel: "Aika sako",
+    reasons: {
+      general: "Tambaya ta gaba ɗaya",
+      partnerships: "Haɗin gwiwa",
+      media: "Kafofin watsa labarai / manema labarai",
+      supplier: "Gabatar da mai ba da kaya",
+      investor: "Mai saka hannun jari / mai ba da shawara",
+      complaint: "Ƙara ko damuwa",
+      other: "Wani abu",
+    },
+  },
 };
 
 const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
@@ -1771,7 +2094,34 @@ const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
       "q": "Quali pagine aziendali dovrei rivedere per prime?",
       "a": "I migliori punti di partenza sono le pagine Informazioni, Contatti, Informativa sulla privacy e Termini e condizioni. Insieme, forniscono una visione più chiara dell’azienda, dei suoi standard e delle sue politiche pubbliche."
     }
-  ]
+  ],
+  contactHeroForm: {
+    formEyebrow: "Contatta l’azienda",
+    formTitle: "Invia un messaggio all’azienda",
+    orEmail: "O scrivi via e-mail",
+    orEmailDirect: "direttamente.",
+    nameLabel: "Il tuo nome",
+    namePlaceholder: "Nome completo",
+    emailLabel: "E-mail",
+    emailPlaceholder: "tu@esempio.it",
+    reasonLabel: "Motivo",
+    messageLabel: "Messaggio",
+    messagePlaceholder: "Una breve nota sul motivo del tuo contatto.",
+    defaultResponseTime: "Risposta entro 1 giorno lavorativo",
+    partnerPlanContext:
+      "Vorrei discutere il livello Partner Marketplace — termini di inventario personalizzati e controlli di posizionamento diretto. Ecco la mia situazione: ",
+    sendingLabel: "Invio in corso…",
+    sendLabel: "Invia messaggio",
+    reasons: {
+      general: "Richiesta generale",
+      partnerships: "Partnership",
+      media: "Media / stampa",
+      supplier: "Presentazione fornitore",
+      investor: "Investitore / consulente",
+      complaint: "Reclamo o segnalazione",
+      other: "Altro",
+    },
+  },
 };
 
 const HUB_HOME_LOCALE_MAP: Partial<Record<AppLocale, DeepPartial<HubHomeCopy>>> = {
