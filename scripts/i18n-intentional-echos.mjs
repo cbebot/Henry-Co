@@ -73,6 +73,23 @@ export const INTENTIONAL_ECHOS = {
     "checkout.total",         // FR/ES/PT "Total" identical
     "checkout.subtotal",      // ES/PT "Subtotal" identical
   ],
+  studio: [
+    // Brand names — NEVER translate.
+    "proposal.signatureProviderSignWell",  // "SignWell" — product/brand name
+    // Universal English borrowings in business/tech context.
+    "sales.kanbanTitle",          // "Pipeline" — business English universally borrowed (FR/ES/PT/DE/IT)
+    "sales.stageLead",            // "Lead" — sales English universally borrowed (PT/DE/IT)
+    "sales.conversionLabel",      // "Conversion" — FR "Conversion" identical cognate
+    "pm.resourceTotalRow",        // "Total" — FR/ES/PT "Total" identical
+    // Cognates — identical in these locales.
+    "nav.services",               // FR "Services" identical cognate
+    "nav.contact",                // FR "Contact" identical cognate
+    "nav.home",                   // IT borrows "Home" for web nav
+    "revisions.versionLabel",     // FR/DE "Version" identical cognate
+    "milestones.nameLabel",       // DE "Name" identical
+    "proposal.signatureProviderLabel", // IT "Provider" English-borrowed term
+    "pm.overviewTitle",           // IT keeps "Project management" (industry standard)
+  ],
   jobs: [
     "filters.remote",         // DE "Remote" universal English borrow
     "filters.hybrid",         // DE "Hybrid" universal cognate
