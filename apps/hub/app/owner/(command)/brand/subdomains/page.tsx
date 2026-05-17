@@ -29,11 +29,11 @@ export default async function BrandSubdomainsPage() {
       />
 
       <OwnerPanel title={copy.panelTitle} description={copy.panelDescription}>
-        <CreateDivisionBrandForm />
+        <CreateDivisionBrandForm copy={getHubOwnerCopy(locale).divisionBrandForm} />
 
         <div className="space-y-4">
           {data.divisions.map((division) => (
-            <EditDivisionBrandForm key={String(division.id)} division={division as Record<string, unknown>} />
+            <EditDivisionBrandForm key={String(division.id)} division={division as Record<string, unknown>} copy={getHubOwnerCopy(locale).divisionBrandForm} />
           ))}
         </div>
       </OwnerPanel>
