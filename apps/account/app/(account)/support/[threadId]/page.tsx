@@ -12,6 +12,7 @@ import {
   markSupportThreadRead,
 } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
+import "@/components/support/editorial.css";
 import SupportThreadHeader from "@/components/support/SupportThreadHeader";
 import SupportThreadRoom from "@/components/support/SupportThreadRoom";
 
@@ -132,48 +133,43 @@ export default async function SupportThreadPage({ params }: Props) {
   });
 
   return (
-    <div className="acct-thread-workspace acct-fade-in">
+    <div className="acct-support-stage acct-fade-in">
       <RouteLiveRefresh intervalMs={10000} />
-      <div className="acct-thread-workspace__backbar">
-        <Link
-          href="/support"
-          className="acct-thread-workspace__backlink"
-          aria-label={t("Back to support")}
-          title={t("Back to support")}
-        >
-          <ArrowLeft size={16} />
-          <span>{t("Back to support")}</span>
-        </Link>
-      </div>
+      <Link
+        href="/support"
+        className="acct-support-back"
+        aria-label={t("Back to support")}
+      >
+        <ArrowLeft size={14} aria-hidden />
+        {t("Back to support")}
+      </Link>
       <ThreadAppearanceProvider>
-        <div className="acct-thread-workspace__grid">
-          <SupportThreadHeader
-            threadId={threadId}
-            subject={subject}
-            divisionLabel={divisionLabelText}
-            categoryLabel={categoryLabelText}
-            status={status}
-            statusLabel={statusLabel}
-            initialMuted={initialMuted}
-            participants={participants}
-            download={{
-              endpoint: `/api/documents/support-thread/${threadId}`,
-              filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
-              shareTitle: `HenryCo Support Thread — ${subject}`,
-              label: t("Download thread"),
-            }}
-          />
-          <SupportThreadRoom
-            threadId={threadId}
-            messages={messages}
-            threadStatus={status}
-            viewer={{
-              userId: user.id,
-              fullName: user.fullName || user.email || "You",
-              email: user.email,
-            }}
-          />
-        </div>
+        <SupportThreadHeader
+          threadId={threadId}
+          subject={subject}
+          divisionLabel={divisionLabelText}
+          categoryLabel={categoryLabelText}
+          status={status}
+          statusLabel={statusLabel}
+          initialMuted={initialMuted}
+          participants={participants}
+          download={{
+            endpoint: `/api/documents/support-thread/${threadId}`,
+            filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
+            shareTitle: `HenryCo Support Thread — ${subject}`,
+            label: t("Download thread"),
+          }}
+        />
+        <SupportThreadRoom
+          threadId={threadId}
+          messages={messages}
+          threadStatus={status}
+          viewer={{
+            userId: user.id,
+            fullName: user.fullName || user.email || "You",
+            email: user.email,
+          }}
+        />
       </ThreadAppearanceProvider>
     </div>
   );

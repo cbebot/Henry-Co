@@ -1254,28 +1254,10 @@ html, body { overflow-x: clip; max-width: 100vw; }
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-.acct-thread-header__actions-primary {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
 
 /* ─── Overflow menu ─── */
 .acct-thread-header__menu {
   position: relative;
-}
-.acct-thread-header__menu > .acct-button-ghost {
-  display: inline-flex;
-  min-height: 2.625rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-}
-.acct-thread-header__menu-trigger-label {
-  display: none;
-  font-size: 0.82rem;
-  font-weight: 650;
 }
 .acct-thread-header__menu-panel {
   position: absolute;
@@ -1309,7 +1291,6 @@ html, body { overflow-x: clip; max-width: 100vw; }
 
 .acct-thread-header__menu-item {
   display: flex;
-  width: 100%;
   align-items: flex-start;
   gap: 0.6rem;
   padding: 0.55rem 0.7rem;
@@ -1317,10 +1298,8 @@ html, body { overflow-x: clip; max-width: 100vw; }
   background: transparent;
   border: 0;
   text-align: left;
-  font: inherit;
   cursor: pointer;
   color: var(--acct-ink);
-  text-decoration: none;
   transition: background 120ms ease;
 }
 .acct-thread-header__menu-item:hover:not(:disabled),
@@ -1363,16 +1342,6 @@ html, body { overflow-x: clip; max-width: 100vw; }
   color: var(--acct-muted);
   line-height: 1.45;
 }
-.acct-thread-header__menu-feedback {
-  margin: 0.25rem 0.7rem 0;
-  border-radius: 0.75rem;
-  background: var(--acct-gold-soft);
-  padding: 0.5rem 0.65rem;
-  color: var(--acct-gold-text, #8a6f00);
-  font-size: 0.74rem;
-  font-weight: 600;
-  line-height: 1.35;
-}
 .acct-thread-header__menu-foot {
   margin: 0.25rem 0.7rem 0.4rem;
   padding-top: 0.45rem;
@@ -1385,225 +1354,121 @@ html, body { overflow-x: clip; max-width: 100vw; }
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   PASS 25 — full support-thread workspace
-   --------------------------------------------------------------------
-   The shared thread renderer defaults to a compact embeddable widget.
-   This route promotes it into an account-grade conversation room while
-   keeping the rest of the dashboard on the normal max-width shell.
-   ────────────────────────────────────────────────────────────────── */
-.hc-shell-content:has(.acct-thread-workspace) {
-  width: 100%;
-  max-width: min(100%, 100rem);
-}
+   Dashboard hero — dark-mode token rebinding.
 
-.acct-thread-workspace {
-  display: flex;
-  min-height: calc(100svh - 8rem);
-  flex-direction: column;
-  gap: 0.9rem;
-}
+   Every dashboard service component (Care, Logistics, Marketplace,
+   Studio, Learn, Invoices, Notifications, Property, Tasks, Security,
+   Verification, Calendar, Messages-inbox, …) ships a `*__hero` block
+   that uses --acct-ink as background and --acct-bg-soft for text.
+   That pairing was authored against light-mode token values
+   (ink=#1A1814 dark, bg-soft=#FFFFFF white) so the hero reads as a
+   premium dark card on a light page.
 
-.acct-thread-workspace__backbar {
-  display: flex;
-  align-items: center;
-}
+   Both tokens are designed to FLIP in dark mode (ink → light fg,
+   bg-soft → dark surface). So the same hero block inverts: the
+   "ink" bg becomes light (#F0EDE8) and the bg-soft text becomes
+   dark (#141920) — net result: a cheap-looking near-white card on a
+   dark page (the bug the owner flagged on the /settings shot).
 
-.acct-thread-workspace__backlink {
-  display: inline-flex;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: 0.55rem;
-  border-radius: 9999px;
-  padding: 0.45rem 0.85rem;
-  color: var(--acct-muted);
-  text-decoration: none;
-  transition:
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
-}
-.acct-thread-workspace__backlink:hover,
-.acct-thread-workspace__backlink:focus-visible {
-  background: var(--acct-surface);
+   This block restores the intended "dark card with light text" in
+   dark mode by re-binding the two tokens inside any element whose
+   class contains both `acct-` and `__hero`. One rule, every surface
+   fixed at once, no per-component CSS edits needed.
+
+   `:not(.acct-settings__hero)` carves out /settings because that
+   surface has been re-designed as a transparent editorial spread
+   (no card) — the global card override would re-impose a card and
+   undo the rebuild. */
+
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) {
+  background-color: var(--acct-bg-soft);
   color: var(--acct-ink);
-  outline: none;
-}
-.acct-thread-workspace__backlink:active {
-  transform: translateY(1px);
-}
-
-.acct-thread-workspace__grid {
-  display: grid;
-  min-height: 0;
-  gap: 1rem;
+  /* Outer hero rim — gold-tinted in dark mode. Lowered from 26% to
+     18% so the edge reads as a soft warm rim, not a stark frame. */
+  border-color: color-mix(in srgb, var(--acct-gold) 18%, transparent);
 }
 
-.acct-thread-workspace .acct-thread-header {
-  min-width: 0;
-  border-color: color-mix(in srgb, var(--acct-line) 86%, var(--acct-gold));
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--acct-gold-soft) 58%, var(--acct-bg-elevated)) 0%,
-      var(--acct-bg-elevated) 62%
-    );
-  box-shadow: 0 18px 54px -34px rgba(15, 23, 42, 0.28);
+/* Descendant text colors set on individual elements (headline, blurb,
+   tile labels/values/foot, side-panel label/title/body, etc.) all
+   reference --acct-bg-soft directly — the override above only flips
+   the wrapper. We tighten the cascade by rebinding the tokens for
+   the whole hero subtree so every internal color: var(--acct-bg-soft)
+   keeps reading as the "light text on dark surface" the original
+   designer intended. The override has high specificity (1 class +
+   2 attribute selectors) so it wins against the component-level
+   `.acct-care__headline { color: var(--acct-bg-soft); }` rules. */
+
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__headline"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__blurb"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-tile-value"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-side-title"] {
+  color: var(--acct-ink);
 }
 
-.acct-thread-workspace .acct-support-room {
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__eyebrow"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-tile-label"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-tile-foot"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-side-label"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-side-body"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-tile-value-suffix"] {
+  /* Softer text on the dark hero — mirrors the design's muted look. */
+  color: color-mix(in srgb, var(--acct-ink) 78%, transparent);
 }
 
-.acct-thread-workspace .acct-support-room .mt-thread {
-  height: clamp(30rem, calc(100svh - 18rem), 50rem);
-  border-color: color-mix(in srgb, var(--acct-line) 82%, var(--acct-gold));
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--acct-bg-elevated) 92%, var(--acct-gold-soft)) 0%,
-      var(--acct-bg-elevated) 100%
-    );
-  box-shadow:
-    0 30px 78px -48px rgba(15, 23, 42, 0.36),
-    0 1px 0 rgba(255, 255, 255, 0.72) inset;
-}
-.acct-thread-workspace .mt-thread-list {
-  scrollbar-gutter: stable;
-}
-.acct-thread-workspace .mt-bubble {
-  max-width: min(34rem, 78%);
-}
-.acct-thread-workspace .mt-composer-host {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--acct-bg-elevated) 82%, transparent) 0%,
-      var(--acct-bg-elevated) 100%
-    );
+/* Tile + side-panel surfaces inside the hero. The original component
+   CSS uses bg-soft@8% + bg-soft@12% which works on the dark light-
+   mode hero (white scrim + white border = subtle elevation). After
+   the wrapper flip in dark mode, those references invert: an earlier
+   pass switched to ink-based scrims which then produced a stark
+   light edge on every tile — owner-flagged as 'white highlight,
+   looks cheap'.
+
+   Fix: use a gold-tinted scrim + warm gold rim instead of ink. Gold
+   is the brand anchor and stays warm in both modes, so the tile
+   reads as a subtle ember-edged inset surface, not a white box. */
+
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-tile"],
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-side"] {
+  background: color-mix(in srgb, var(--acct-gold) 5%, transparent);
+  border-color: color-mix(in srgb, var(--acct-gold) 14%, transparent);
 }
 
-@media (min-width: 1024px) {
-  .hc-shell-content:has(.acct-thread-workspace) {
-    padding-inline: clamp(1.25rem, 2vw, 2.5rem);
-  }
-
-  .acct-thread-workspace {
-    min-height: calc(100svh - 7rem);
-  }
-
-  .acct-thread-workspace__grid {
-    grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
-    align-items: stretch;
-  }
-
-  .acct-thread-workspace .acct-thread-header {
-    position: sticky;
-    top: 1rem;
-    min-height: clamp(40rem, calc(100svh - 8.5rem), 58rem);
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1.2rem;
-  }
-
-  .acct-thread-workspace .acct-thread-header__actions {
-    align-self: stretch;
-    justify-content: space-between;
-  }
-
-  .acct-thread-workspace .acct-support-room .mt-thread {
-    height: clamp(40rem, calc(100svh - 8.5rem), 58rem);
-  }
-
-  .acct-thread-workspace .mt-bubble {
-    max-width: min(42rem, 76%);
-  }
+/* Hairlines inside the hero (eg. breakdown dividers in /marketplace
+   side panel). The component CSS uses bg-soft@14% which renders as a
+   visible light line on the dark hero in dark mode. Override to a
+   gold-tinted hairline at low opacity. */
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__hero-breakdown"] {
+  border-top-color: color-mix(in srgb, var(--acct-gold) 12%, transparent);
 }
 
-@media (max-width: 767px) {
-  .hc-shell-content:has(.acct-thread-workspace) {
-    padding-top: 0.9rem;
-    padding-inline: 0.85rem;
-  }
-
-  .acct-thread-workspace {
-    gap: 0.7rem;
-    min-height: calc(100svh - 9.5rem);
-  }
-
-  .acct-thread-workspace__backlink {
-    min-height: 2.5rem;
-    padding-inline: 0.7rem;
-    font-size: 0.86rem;
-  }
-
-  .acct-thread-workspace .acct-thread-header {
-    gap: 0.85rem;
-    padding: 1rem;
-    border-radius: 1.15rem;
-    box-shadow: 0 18px 44px -36px rgba(15, 23, 42, 0.32);
-  }
-
-  .acct-thread-workspace .acct-thread-header__subject {
-    font-size: 1.32rem;
-    line-height: 1.12;
-  }
-
-  .acct-thread-header__actions {
-    justify-content: flex-end;
-  }
-
-  .acct-thread-header__actions-primary {
-    display: none;
-  }
-
-  .acct-thread-header__menu-trigger-label {
-    display: inline;
-  }
-
-  .acct-thread-header__menu-panel {
-    position: fixed;
-    right: 0.85rem;
-    bottom: calc(4.9rem + env(safe-area-inset-bottom, 0px));
-    left: 0.85rem;
-    top: auto;
-    min-width: 0;
-    max-height: min(70svh, 32rem);
-    overflow: auto;
-    border-radius: 1.1rem;
-    padding: 0.55rem;
-    z-index: 80;
-  }
-
-  .acct-thread-workspace .acct-support-room .mt-thread {
-    height: calc(100svh - 16.25rem);
-    min-height: 28rem;
-    border-radius: 1.15rem;
-  }
-
-  .acct-thread-workspace .mt-thread-list {
-    padding: 0.85rem;
-  }
-
-  .acct-thread-workspace .mt-thread-list-inner {
-    gap: 0.65rem;
-  }
-
-  .acct-thread-workspace .mt-bubble {
-    max-width: min(20rem, 86%);
-  }
-
-  .acct-thread-workspace .mt-composer-host {
-    padding: 0.7rem;
-  }
+/* Eyebrow pill (Henryco · Identity & Preferences, Care · Service,
+   etc.) — original styling uses bg-soft@14% as bg + bg-soft@18% as
+   border, designed against the dark light-mode hero. After our
+   wrapper flip in dark mode those references resolve to dark-on-dark
+   and the pill dissolves into the surface. Rebind to a gold-tinted
+   scrim so the eyebrow reads as a premium ember accent in dark mode. */
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__eyebrow"] {
+  background: color-mix(in srgb, var(--acct-gold) 8%, transparent);
+  border-color: color-mix(in srgb, var(--acct-gold) 16%, transparent);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .acct-thread-workspace__backlink {
-    transition: none;
-  }
-  .acct-thread-workspace__backlink:active {
-    transform: none;
-  }
+/* CTA buttons inside the hero — the primary CTA's white-button look
+   (bg: bg-soft) flips to a dark button in dark mode that visually
+   blends into the now-dark hero. Upgrade to a gold-on-bg-soft pop:
+   bright gold surface with the natural-flipped bg-soft as a dark
+   glyph color for premium punch in dark mode. Ghost CTA: its label
+   was bg-soft which becomes near-black on the dark hero (invisible);
+   override to --acct-ink (light in dark mode) for legibility, plus a
+   subtle gold scrim so the button reads as a ghost surface and not
+   raw text. */
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__cta--primary"] {
+  background: var(--acct-gold);
+  color: var(--acct-bg-soft);
+  border-color: transparent;
+}
+
+.dark [class*="acct-"][class*="__hero"]:not(.acct-settings__hero) [class*="__cta--ghost"] {
+  color: var(--acct-ink);
+  background: color-mix(in srgb, var(--acct-gold) 5%, transparent);
+  border-color: color-mix(in srgb, var(--acct-ink) 22%, transparent);
 }

@@ -10,6 +10,7 @@ import { useState } from "react";
 import { getOwnerNavSections, type OwnerNavItem } from "@/lib/owner-navigation";
 import { initials } from "@/lib/format";
 import Logo from "@/components/brand/Logo";
+import OwnerSearchButton from "@/components/owner/OwnerSearchButton";
 
 type OwnerSidebarProps = {
   user: {
@@ -154,7 +155,8 @@ export default function OwnerSidebar({ user, ownerRailEntries }: OwnerSidebarPro
         </div>
       </div>
 
-      <div className="mx-3 mt-3 space-y-1">
+      <div className="mx-3 mt-3 space-y-2">
+        <OwnerSearchButton variant="sidebar" />
         <Link
           href={getAccountUrl("/")}
           className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] transition-all"

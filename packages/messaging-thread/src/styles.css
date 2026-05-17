@@ -9,6 +9,7 @@
    ────────────────────────────────────────────────────────────────── */
 
 .mt-thread {
+  position: relative;
   display: flex;
   height: 28rem;
   flex-direction: column;
@@ -428,6 +429,53 @@
   color: var(--ws-warning, #f5d27a);
   background: color-mix(in srgb, var(--ws-warning, #f5d27a) 8%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--ws-warning, #f5d27a) 24%, transparent);
+}
+
+/* Positive live indicator — sits at the top-right corner of the
+   thread surface, signals "realtime is connected" with a soft green
+   pulse. Hosts can restyle via .mt-live-pill / .mt-live-pill-dot if
+   their brand uses a different success token. */
+.mt-live-pill {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.7rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  padding: 0.18rem 0.55rem 0.18rem 0.45rem;
+  border-radius: 9999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ws-success, #7be0a2);
+  background: color-mix(in srgb, var(--ws-success, #7be0a2) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ws-success, #7be0a2) 36%, transparent);
+}
+
+.mt-live-pill-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 9999px;
+  background: var(--ws-success, #7be0a2);
+  box-shadow: 0 0 0 0 var(--ws-success, #7be0a2);
+  animation: mt-live-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes mt-live-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ws-success, #7be0a2) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 0.4rem color-mix(in srgb, var(--ws-success, #7be0a2) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-live-pill-dot {
+    animation: none;
+  }
 }
 
 .mt-live-dot {

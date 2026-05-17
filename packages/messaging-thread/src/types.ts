@@ -214,4 +214,25 @@ export type MessageThreadProps = {
    * draft state via context.
    */
   composerExtras?: (ctx: { draft: string; setDraft: (value: string) => void }) => import("react").ReactNode;
+  /**
+   * Optional day-divider labeller. When provided, the engine groups
+   * consecutive messages by calendar day in the viewer's local timezone
+   * and emits a divider row (`<li class="mt-day-divider">`) before the
+   * first message of each new day. The host owns the label entirely —
+   * pass `translateSurfaceLabel` for the relative tokens ("Today",
+   * "Yesterday") and `Intl.DateTimeFormat` for the absolute date so the
+   * output stays locale-correct.
+   *
+   * `position` is one of:
+   *   - "today"     → message date matches the viewer's local today
+   *   - "yesterday" → message date is exactly one day before today
+   *   - "earlier"   → any older calendar day; host typically formats it
+   *
+   * Returning null suppresses the divider for that day (eg. system-only
+   * spans the host wants to keep visually quiet).
+   */
+  dayDividerLabel?: (
+    date: Date,
+    position: "today" | "yesterday" | "earlier",
+  ) => string | null;
 };

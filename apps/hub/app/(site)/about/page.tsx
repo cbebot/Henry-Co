@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import { getHubPublicCopy } from "@henryco/i18n/server";
-import { getHubPublicLocale } from "../../../lib/locale-server";
 import AboutHonestBlock from "../../components/AboutHonestBlock";
-import AboutLeadershipGrid from "../../components/AboutLeadershipGrid";
 import CompanyPageClient from "../../components/CompanyPageClient";
-import { getPublishedPeople } from "../../lib/about-people";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
@@ -33,34 +29,41 @@ export default async function AboutPage() {
   /** allSettled so a single fetcher rejection cannot escalate to error.tsx.
    * The static fallback is the source of truth when supabase is unavailable
    * (e.g., preview env without secrets) — the page still renders premium
-   * content without the dynamic edits. */
-  const [pageResult, peopleResult, settingsResult, divisionsResult, locale] =
-    await Promise.all([
-      getCompanyPage("about").catch(() => ({ page: null, hasServerError: true })),
-      getPublishedPeople("about").catch(() => ({ people: [], hasServerError: true })),
-      getCompanySettings().catch(() => null),
-      getPublishedDivisions().catch(() => ({ divisions: [] })),
-      getHubPublicLocale().catch(() => "en" as const),
+   * content without the dynamic edits.
+   *
+   * V3 PASS 21 polish-layer: the AboutLeadershipGrid + getPublishedPeople
+   * fetcher were removed from this public route. The grid component itself
+   * remains on disk for admin/curation surfaces — the rubric called for
+   * "concrete divisions over team-photo grids" as the premium signal on
+   * the public /about route. */
+  const [pageResult, settingsResult, divisionsResult] =
+    await Promise.allSettled([
+      getCompanyPage("about"),
+      getCompanySettings(),
+      getPublishedDivisions(),
     ]);
-  const settings: CompanySettingsRecord = normalizeCompanySettings(settingsResult);
-  const divisions: DivisionRow[] = Array.isArray(divisionsResult?.divisions)
-    ? divisionsResult.divisions
-    : [];
-  const copy = getHubPublicCopy(locale);
+  const pageData = pageResult.status === "fulfilled"
+    ? pageResult.value
+    : { page: null, hasServerError: true };
+  const settings: CompanySettingsRecord = normalizeCompanySettings(
+    settingsResult.status === "fulfilled" ? settingsResult.value : null
+  );
+  const divisions: DivisionRow[] =
+    divisionsResult.status === "fulfilled" &&
+    Array.isArray(divisionsResult.value?.divisions)
+      ? divisionsResult.value.divisions
+      : [];
 
   return (
     <>
       <CompanyPageClient
         pageKey="about"
-        initialData={pageResult.page ?? createFallbackCompanyPage("about")}
-        serverWarning={Boolean(pageResult.hasServerError || peopleResult.hasServerError)}
-        hideSections
+        initialData={pageData.page ?? createFallbackCompanyPage("about")}
+        serverWarning={Boolean(pageData.hasServerError)}
+        hideSections={false}
         hideFooter
-        copy={copy.companyPage}
-        locale={locale}
       />
-      <AboutHonestBlock settings={settings} divisions={divisions} copy={copy.aboutHonest} />
-      <AboutLeadershipGrid people={peopleResult.people} copy={copy.leadership} />
+      <AboutHonestBlock settings={settings} divisions={divisions} />
     </>
   );
 }

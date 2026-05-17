@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Activity,
@@ -12,72 +11,59 @@ import {
   Users,
 } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
-import { getHubOwnerCopy } from "@henryco/i18n/server";
 import MetricCard from "@/components/owner/MetricCard";
 import DivisionBadge from "@/components/owner/DivisionBadge";
 import { OwnerPageHeader, OwnerPanel, OwnerNotice, OwnerQuickLink } from "@/components/owner/OwnerPrimitives";
 import { getOwnerOverviewData } from "@/lib/owner-data";
 import { formatCurrencyAmount, formatCompactNumber, timeAgo } from "@/lib/format";
-import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getHubPublicLocale();
-  const copy = getHubOwnerCopy(locale);
-  return {
-    title: copy.metadata.title,
-    description: copy.metadata.description,
-  };
-}
-
 export default async function OwnerOverviewPage() {
-  const locale = await getHubPublicLocale();
-  const copy = getHubOwnerCopy(locale);
   const data = await getOwnerOverviewData();
 
   return (
     <div className="space-y-6 acct-fade-in">
       <RouteLiveRefresh />
       <OwnerPageHeader
-        eyebrow={copy.hero.eyebrow}
-        title={copy.hero.titleTemplate.replace("{company}", data.companyTitle)}
-        description={copy.hero.description}
+        eyebrow="Central Owner Command Center"
+        title={`${data.companyTitle} company brain`}
+        description="Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one HenryCo HQ surface."
         actions={
           <>
             <Link href="/owner/staff/invite" className="acct-button-primary">
-              {copy.hero.inviteStaff}
+              Invite staff
             </Link>
             <Link href="/owner/brand/settings" className="acct-button-secondary">
-              {copy.hero.updateBrand}
+              Update brand settings
             </Link>
           </>
         }
       />
 
-      <OwnerNotice tone="info" title={copy.dataHealth.title} body={data.dataHealthNote} />
-      <OwnerPanel title={copy.situationRoom.title} description={copy.situationRoom.description}>
+      <OwnerNotice tone="info" title="Data freshness" body={data.dataHealthNote} />
+      <OwnerPanel title="Executive situation room" description="Fast owner read for what matters now.">
         <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
             <p className="text-sm font-semibold text-[var(--acct-ink)]">{data.briefing.headline}</p>
             <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">{data.briefing.focus}</p>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-xs text-[var(--acct-muted)]">
-                {copy.situationRoom.openSupport}: {data.briefing.commsHealth.openSupportThreads}
+                Open support: {data.briefing.commsHealth.openSupportThreads}
               </div>
               <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-xs text-[var(--acct-muted)]">
-                {copy.situationRoom.failedDelivery}: {data.briefing.commsHealth.failedDeliveries}
+                Failed delivery: {data.briefing.commsHealth.failedDeliveries}
               </div>
               <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-xs text-[var(--acct-muted)]">
-                {copy.situationRoom.whatsappSkipped}: {data.briefing.commsHealth.skippedWhatsApp}
+                WhatsApp skipped: {data.briefing.commsHealth.skippedWhatsApp}
               </div>
               <div className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-surface)] px-3 py-2 text-xs text-[var(--acct-muted)]">
-                {copy.situationRoom.queuedNotifications}: {data.briefing.commsHealth.queuedNotifications}
+                Queued notifications: {data.briefing.commsHealth.queuedNotifications}
               </div>
             </div>
           </div>
           <div className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">{copy.situationRoom.nextStepsEyebrow}</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-[var(--acct-muted)]">Next best owner actions</p>
             <div className="mt-3 space-y-2">
               {data.briefing.nextSteps.slice(0, 4).map((step) => (
                 <Link key={step.title} href={step.href} className="block rounded-xl bg-[var(--acct-surface)] px-3 py-2">
@@ -91,30 +77,66 @@ export default async function OwnerOverviewPage() {
       </OwnerPanel>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <MetricCard label={copy.metrics.divisionsLive} value={data.metrics.divisionsLive} subtitle={copy.metrics.divisionsLiveSubtitle} icon={Building2} />
-        <MetricCard label={copy.metrics.recognizedRevenue} value={formatCurrencyAmount(data.metrics.totalRevenueNaira)} subtitle={copy.metrics.recognizedRevenueSubtitle} icon={DollarSign} />
-        <MetricCard label={copy.metrics.openSupport} value={formatCompactNumber(data.metrics.openSupport)} subtitle={copy.metrics.openSupportSubtitle} icon={MessageSquare} />
-        <MetricCard label={copy.metrics.activeStaff} value={data.metrics.activeStaff} subtitle={copy.metrics.activeStaffSubtitle} icon={Users} />
-        <MetricCard label={copy.metrics.criticalSignals} value={data.metrics.criticalSignals} subtitle={copy.metrics.criticalSignalsSubtitle} icon={Shield} />
-        <MetricCard label={copy.metrics.outboundNotifications} value={formatCompactNumber(data.metrics.queuedNotifications)} subtitle={copy.metrics.outboundNotificationsSubtitle} icon={Activity} />
+        <MetricCard
+          label="Live divisions"
+          value={data.metrics.divisionsLive}
+          subtitle="Tracked by the command center"
+          icon={Building2}
+          traceId="overview.divisions-live"
+        />
+        <MetricCard
+          label="Recognized revenue"
+          value={formatCurrencyAmount(data.metrics.totalRevenueNaira)}
+          subtitle="Care, marketplace, and paid shared invoices"
+          icon={DollarSign}
+          traceId="overview.recognized-revenue"
+        />
+        <MetricCard
+          label="Open support pressure"
+          value={formatCompactNumber(data.metrics.openSupport)}
+          subtitle="Cross-division support threads awaiting movement"
+          icon={MessageSquare}
+          traceId="overview.open-support"
+        />
+        <MetricCard
+          label="Active staff"
+          value={data.metrics.activeStaff}
+          subtitle="Auth-backed workforce members seen recently"
+          icon={Users}
+          traceId="overview.active-staff"
+        />
+        <MetricCard
+          label="Critical signals"
+          value={data.metrics.criticalSignals}
+          subtitle="Items needing owner attention now"
+          icon={Shield}
+          traceId="overview.critical-signals"
+        />
+        <MetricCard
+          label="Outbound notifications"
+          value={formatCompactNumber(data.metrics.queuedNotifications)}
+          subtitle="Queued email and WhatsApp delivery"
+          icon={Activity}
+          traceId="overview.outbound-notifications"
+        />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <OwnerPanel title={copy.executiveDigest.title} description={copy.executiveDigest.description}>
+        <OwnerPanel title="Executive digest" description="What needs attention now.">
           <p className="rounded-[1.5rem] bg-[var(--acct-surface)] px-4 py-4 text-sm leading-7 text-[var(--acct-ink)]">
             {data.executiveDigest}
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <OwnerQuickLink href="/owner/operations/alerts" label={copy.executiveDigest.reviewAlerts} icon={Activity} />
-            <OwnerQuickLink href="/owner/finance" label={copy.executiveDigest.financePressure} icon={DollarSign} />
-            <OwnerQuickLink href="/owner/staff" label={copy.executiveDigest.manageWorkforce} icon={Users} />
-            <OwnerQuickLink href="/owner/ai" label={copy.executiveDigest.helperLayer} icon={Bot} />
-            <OwnerQuickLink href="/owner/messaging/team" label={copy.executiveDigest.teamChat} icon={MessagesSquare} />
-            <OwnerQuickLink href="/owner/operations/approvals" label={copy.executiveDigest.approvalCenter} icon={ClipboardCheck} />
+            <OwnerQuickLink href="/owner/operations/alerts" label="Review operational alerts" icon={Activity} />
+            <OwnerQuickLink href="/owner/finance" label="Check finance pressure" icon={DollarSign} />
+            <OwnerQuickLink href="/owner/staff" label="Manage workforce" icon={Users} />
+            <OwnerQuickLink href="/owner/ai" label="Open helper layer" icon={Bot} />
+            <OwnerQuickLink href="/owner/messaging/team" label="Team internal chat" icon={MessagesSquare} />
+            <OwnerQuickLink href="/owner/operations/approvals" label="Approval center" icon={ClipboardCheck} />
           </div>
         </OwnerPanel>
 
-        <OwnerPanel title={copy.urgentSignals.title} description={copy.urgentSignals.description}>
+        <OwnerPanel title="Urgent signals" description="Evidence-backed risk and anomaly detection from live tables.">
           <div className="space-y-3">
             {data.signals.slice(0, 5).map((signal) => (
               <div key={signal.id} className="rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
@@ -124,7 +146,7 @@ export default async function OwnerOverviewPage() {
                 </div>
                 <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{signal.body}</p>
                 <Link href={signal.href} className="mt-3 inline-flex text-xs font-semibold text-[var(--owner-accent)]">
-                  {copy.urgentSignals.openModule}
+                  Open module
                 </Link>
               </div>
             ))}
@@ -132,26 +154,21 @@ export default async function OwnerOverviewPage() {
         </OwnerPanel>
       </div>
 
-      <OwnerPanel title={copy.divisionsPanel.title} description={copy.divisionsPanel.description} action={<Link href="/owner/divisions" className="acct-button-ghost">{copy.divisionsPanel.viewAll}</Link>}>
+      <OwnerPanel title="Division control center" description="One health map for every live or future HenryCo division." action={<Link href="/owner/divisions" className="acct-button-ghost">View all divisions</Link>}>
         <div className="grid gap-4 lg:grid-cols-2">
           {data.divisions.map((division) => (
             <Link key={division.slug} href={`/owner/divisions/${division.slug}`} className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4 transition-all hover:border-[var(--owner-accent)]/30 hover:shadow-[var(--acct-shadow)]">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold text-[var(--acct-ink)]">{division.displayName}</div>
-                  <p className="mt-1 text-xs text-[var(--acct-muted)]">
-                    {copy.divisionsPanel.healthLabelTemplate
-                      .replace("{label}", division.healthLabel)
-                      .replace("{alerts}", String(division.alertCount))
-                      .replace("{open}", String(division.workOpen))}
-                  </p>
+                  <p className="mt-1 text-xs text-[var(--acct-muted)]">{division.healthLabel} health · {division.alertCount} alerts · {division.workOpen} open items</p>
                 </div>
                 <DivisionBadge division={division.slug} />
               </div>
               <div className="mt-4 grid gap-2 text-xs text-[var(--acct-muted)] sm:grid-cols-3">
-                <div>{copy.divisionsPanel.revenueLabel}: {formatCurrencyAmount(division.revenueNaira)}</div>
-                <div>{copy.divisionsPanel.staffLabel}: {division.staffingCount}</div>
-                <div>{copy.divisionsPanel.supportLabel}: {division.supportOpen}</div>
+                <div>Revenue: {formatCurrencyAmount(division.revenueNaira)}</div>
+                <div>Staff: {division.staffingCount}</div>
+                <div>Support: {division.supportOpen}</div>
               </div>
             </Link>
           ))}
@@ -159,27 +176,27 @@ export default async function OwnerOverviewPage() {
       </OwnerPanel>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <OwnerPanel title={copy.helperInsights.title} description={copy.helperInsights.description}>
+        <OwnerPanel title="Helper recommendations" description="Only recommendations backed by live signals.">
           <div className="space-y-3">
             {data.helperInsights.map((insight) => (
               <div key={insight.id} className="rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4">
                 <div className="text-sm font-semibold text-[var(--acct-ink)]">{insight.title}</div>
                 <p className="mt-2 text-sm leading-6 text-[var(--acct-muted)]">{insight.body}</p>
                 <Link href={insight.href} className="mt-3 inline-flex text-xs font-semibold text-[var(--owner-accent)]">
-                  {copy.helperInsights.takeAction}
+                  Take action
                 </Link>
               </div>
             ))}
           </div>
         </OwnerPanel>
 
-        <OwnerPanel title={copy.sensitiveActivity.title} description={copy.sensitiveActivity.description}>
+        <OwnerPanel title="Sensitive activity" description="Recent owner-facing audit and staff changes.">
           <div className="space-y-3">
             {data.recentAudit.map((entry) => (
               <div key={`${entry.id}-${entry.action}`} className="rounded-[1.25rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-sm font-medium text-[var(--acct-ink)]">{entry.action}</div>
-                  <span className="text-xs text-[var(--acct-muted)]">{entry.createdAt ? timeAgo(entry.createdAt) : copy.sensitiveActivity.unknownTime}</span>
+                  <span className="text-xs text-[var(--acct-muted)]">{entry.createdAt ? timeAgo(entry.createdAt) : "Unknown time"}</span>
                 </div>
                 <div className="mt-1 text-xs uppercase tracking-wide text-[var(--acct-muted)]">{entry.actor}</div>
               </div>

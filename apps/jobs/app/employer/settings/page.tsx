@@ -1,24 +1,167 @@
+import Link from "next/link";
+import { Bell, Building2, MessageSquare, ShieldCheck, Wallet } from "lucide-react";
+import { getAccountUrl } from "@henryco/config";
 import { requireJobsRoles } from "@/lib/auth";
+import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
 import { employerNav } from "@/lib/jobs/navigation";
-import { SectionCard, WorkspaceShell } from "@/components/workspace-shell";
+import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
 
+function toneForVerification(status: string) {
+  if (status === "verified") return "good" as const;
+  if (status === "watch" || status === "rejected") return "danger" as const;
+  return "warn" as const;
+}
+
+/**
+ * V3 follow-up — Employer settings is a directive hand-off surface, not a
+ * decorative "Coming soon" tile. Names the canonical surface for each
+ * setting category, deep-links to it, and shows current company status.
+ */
 export default async function EmployerSettingsPage() {
-  await requireJobsRoles(["employer", "admin", "owner"], "/employer/settings");
+  const viewer = await requireJobsRoles(["employer", "admin", "owner"], "/employer/settings");
+  const data = await getEmployerDashboardData(viewer.user!.id, viewer.user!.email);
+  const membership = data.memberships[0] ?? null;
+  const companyRecord = membership
+    ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true })
+    : null;
+  const employer = companyRecord?.employer ?? null;
+  const verificationStatus = String(employer?.verificationStatus ?? "pending");
 
   return (
     <WorkspaceShell
       area="employer"
       title="Employer Settings"
-      subtitle="Manage your employer account preferences."
+      subtitle="Identity, hiring channels and billing — every change syncs to every job posting and every conversation."
       nav={employerNav}
       activeHref="/employer/settings"
       accent="linear-gradient(135deg,#7c5a28 0%,#b88a47 55%,#f1c88c 100%)"
     >
-      <SectionCard title="Coming soon" body="Employer settings are managed through your company profile for now.">
-        <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4 text-sm leading-7 text-[var(--jobs-muted)]">
-          Additional billing, team management, and notification preferences will be available here soon.
+      <SectionCard
+        title="Company profile"
+        body="The canonical employer record. Logo, legal name, location, hiring contact and verification documents live here — every job posting reads from this single source."
+        actions={
+          <Link
+            href="/employer/company"
+            className="inline-flex h-10 items-center rounded-full bg-[var(--jobs-accent)] px-4 text-sm font-semibold text-white hover:bg-[var(--jobs-accent-strong)]"
+          >
+            Open profile
+          </Link>
+        }
+      >
+        <div className="jobs-soft-panel flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--jobs-accent-soft)] text-[var(--jobs-accent-strong)]">
+              <Building2 size={20} aria-hidden />
+            </span>
+            <div>
+              <p className="text-base font-semibold text-[var(--jobs-ink)]">
+                {employer?.name ?? membership?.employerName ?? "Set up your company"}
+              </p>
+              <p className="mt-0.5 text-xs leading-5 text-[var(--jobs-muted)]">
+                {employer?.slug
+                  ? `henrycogroup.com/employer/${employer.slug}`
+                  : "No public slug yet — set one in the company profile."}
+              </p>
+            </div>
+          </div>
+          <StatusPill
+            label={
+              verificationStatus === "verified"
+                ? "Verified"
+                : verificationStatus === "rejected"
+                  ? "Verification rejected"
+                  : verificationStatus === "watch"
+                    ? "Under review"
+                    : "Verification pending"
+            }
+            tone={toneForVerification(verificationStatus)}
+          />
+        </div>
+      </SectionCard>
+
+      <SectionCard
+        title="Conversations & alerts"
+        body="Inbound applicant messages, interview reminders and hiring nudges all route through the unified HenryCo notification rail. Manage channels in your account preferences."
+        actions={
+          <Link
+            href={getAccountUrl("/settings/notifications")}
+            className="inline-flex h-10 items-center rounded-full border border-[var(--jobs-line)] bg-white px-4 text-sm font-semibold text-[var(--jobs-ink)] hover:bg-[var(--jobs-paper-soft)]"
+          >
+            Manage channels
+          </Link>
+        }
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="jobs-soft-panel rounded-[1.5rem] p-4">
+            <div className="jobs-kicker flex items-center gap-2">
+              <MessageSquare size={14} aria-hidden /> Applicant messages
+            </div>
+            <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
+              Every applicant thread surfaces in your candidate inbox and in
+              the unified /messages view across HenryCo.
+            </p>
+          </div>
+          <div className="jobs-soft-panel rounded-[1.5rem] p-4">
+            <div className="jobs-kicker flex items-center gap-2">
+              <Bell size={14} aria-hidden /> Hiring alerts
+            </div>
+            <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
+              Email, WhatsApp and in-app notifications — quiet hours and
+              digest cadence are set in your account preferences.
+            </p>
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard
+        title="Plan & billing"
+        body="Posting credits, featured-listing add-ons and team-seat billing are part of the unified HenryCo wallet — same balance, same payout history, same KYC tier."
+        actions={
+          <Link
+            href={getAccountUrl("/wallet")}
+            className="inline-flex h-10 items-center rounded-full border border-[var(--jobs-line)] bg-white px-4 text-sm font-semibold text-[var(--jobs-ink)] hover:bg-[var(--jobs-paper-soft)]"
+          >
+            Open wallet
+          </Link>
+        }
+      >
+        <div className="jobs-soft-panel rounded-[1.5rem] p-4">
+          <div className="jobs-kicker flex items-center gap-2">
+            <Wallet size={14} aria-hidden /> Posting credits
+          </div>
+          <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
+            Free credits and featured-listing fees draw from the same balance
+            you use across Marketplace, Studio and Property. Team-seat
+            invoicing is owner-flagged — contact support if your headcount
+            needs a seat plan.
+          </p>
+        </div>
+      </SectionCard>
+
+      <SectionCard
+        title="Identity & access"
+        body="Account-level identity, password, session security and the unified HenryCo trust score sit at the account-hub level — every division (Jobs, Care, Studio, Marketplace, Learn, Property, Logistics) reads from the same record."
+        actions={
+          <Link
+            href={getAccountUrl("/security")}
+            className="inline-flex h-10 items-center rounded-full border border-[var(--jobs-line)] bg-white px-4 text-sm font-semibold text-[var(--jobs-ink)] hover:bg-[var(--jobs-paper-soft)]"
+          >
+            Open security
+          </Link>
+        }
+      >
+        <div className="jobs-soft-panel rounded-[1.5rem] p-4">
+          <div className="jobs-kicker flex items-center gap-2">
+            <ShieldCheck size={14} aria-hidden /> Single identity across HenryCo
+          </div>
+          <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
+            Sign in once at HenryCo and access Jobs as employer, Care as a
+            customer, Studio as a buyer — all from the same identity. Security
+            settings (password, MFA, signed-out sessions) live at the account
+            hub.
+          </p>
         </div>
       </SectionCard>
     </WorkspaceShell>

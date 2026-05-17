@@ -25,6 +25,8 @@ export const BRAND_EMAILS = {
   finance: at("finance"),
   billing: at("billing"),
   privacy: at("privacy"),
+  legal: at("legal"),
+  dpo: at("dpo"),
   security: at("security"),
   abuse: at("abuse"),
   automation: at("automation"),
