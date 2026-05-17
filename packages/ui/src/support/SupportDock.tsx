@@ -29,6 +29,7 @@
 import { useState, useEffect, useRef, useMemo, useId, useCallback, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 import { getAccountUrl, getDivisionUrl, getHubUrl } from "@henryco/config";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { HenryCoMonogram } from "../brand";
 import { useFocusTrap } from "../a11y/use-focus-trap";
@@ -206,18 +207,25 @@ function IconCompass({ size = 16 }: { size?: number }) {
 
 type ActionsByLocale = (locale: string) => DockAction[];
 
+// Helper so DIVISION_ACTIONS factories can wrap user-visible label/description
+// strings with the surface-label translator without each call repeating the
+// `translateSurfaceLabel(locale, text)` boilerplate.
+function t(locale: string, text: string): string {
+  return translateSurfaceLabel(locale as AppLocale, text);
+}
+
 const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
-  marketplace: () => [
+  marketplace: (locale) => [
     {
-      label: "Track your order",
-      description: "Live status, fulfillment, and delivery updates",
+      label: t(locale, "Track your order"),
+      description: t(locale, "Live status, fulfillment, and delivery updates"),
       href: divisionUrl("marketplace", "/account/orders"),
       external: false,
       icon: <IconTruck />,
     },
     {
-      label: "Order support",
-      description: "Help with seller communication, delivery, fulfillment",
+      label: t(locale, "Order support"),
+      description: t(locale, "Help with seller communication, delivery, fulfillment"),
       href: accountSupportHref({
         division: "marketplace",
         subject: "Marketplace order support",
@@ -227,8 +235,8 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconLifebuoy />,
     },
     {
-      label: "Buyer protection",
-      description: "Disputes, refunds, and HenryCo escrow review",
+      label: t(locale, "Buyer protection"),
+      description: t(locale, "Disputes, refunds, and HenryCo escrow review"),
       href: accountSupportHref({
         division: "marketplace",
         subject: "Marketplace buyer protection issue",
@@ -238,8 +246,8 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconShield />,
     },
     {
-      label: "Open a support thread",
-      description: "Reach the HenryCo support team directly",
+      label: t(locale, "Open a support thread"),
+      description: t(locale, "Reach the HenryCo support team directly"),
       href: accountSupportHref({
         division: "marketplace",
         subject: "Marketplace support request",
@@ -249,31 +257,31 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconMessage />,
     },
     {
-      label: "Your notifications",
-      description: "Inbox, account updates, and alerts",
+      label: t(locale, "Your notifications"),
+      description: t(locale, "Inbox, account updates, and alerts"),
       href: acct("/notifications"),
       external: false,
       icon: <IconBell />,
     },
   ],
-  care: () => [
+  care: (locale) => [
     {
-      label: "Track your booking",
-      description: "Pickup, technician ETA, and care updates",
+      label: t(locale, "Track your booking"),
+      description: t(locale, "Pickup, technician ETA, and care updates"),
       href: "/track",
       external: false,
       icon: <IconTruck />,
     },
     {
-      label: "Open care bookings",
-      description: "Linked bookings, receipts, and follow-up",
+      label: t(locale, "Open care bookings"),
+      description: t(locale, "Linked bookings, receipts, and follow-up"),
       href: acct("/care"),
       external: false,
       icon: <IconLifebuoy />,
     },
     {
-      label: "Payment and receipt help",
-      description: "Receipts, billing, and payment proof issues",
+      label: t(locale, "Payment and receipt help"),
+      description: t(locale, "Receipts, billing, and payment proof issues"),
       href: accountSupportHref({
         division: "care",
         subject: "Care payment or receipt issue",
@@ -283,8 +291,8 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconShield />,
     },
     {
-      label: "Care support",
-      description: "Speak directly to the HenryCo Care team",
+      label: t(locale, "Care support"),
+      description: t(locale, "Speak directly to the HenryCo Care team"),
       href: accountSupportHref({
         division: "care",
         subject: "Care booking support",
@@ -294,24 +302,24 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconMessage />,
     },
   ],
-  jobs: () => [
+  jobs: (locale) => [
     {
-      label: "Your applications",
-      description: "Track applications and recruiter activity",
+      label: t(locale, "Your applications"),
+      description: t(locale, "Track applications and recruiter activity"),
       href: divisionUrl("jobs", "/candidate/applications"),
       external: false,
       icon: <IconUser />,
     },
     {
-      label: "Interview status",
-      description: "Scheduled interviews and recruiter notes",
+      label: t(locale, "Interview status"),
+      description: t(locale, "Scheduled interviews and recruiter notes"),
       href: divisionUrl("jobs", "/candidate/interviews"),
       external: false,
       icon: <IconCompass />,
     },
     {
-      label: "Report suspicious employer",
-      description: "Flag a hiring company for review",
+      label: t(locale, "Report suspicious employer"),
+      description: t(locale, "Flag a hiring company for review"),
       href: accountSupportHref({
         division: "jobs",
         subject: "Report suspicious employer",
@@ -321,31 +329,31 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconShield />,
     },
     {
-      label: "Jobs help",
-      description: "Reach the HenryCo Jobs support team",
+      label: t(locale, "Jobs help"),
+      description: t(locale, "Reach the HenryCo Jobs support team"),
       href: divisionUrl("jobs", "/help"),
       external: false,
       icon: <IconMessage />,
     },
   ],
-  learn: () => [
+  learn: (locale) => [
     {
-      label: "Continue learning",
-      description: "Pick up where you left off",
+      label: t(locale, "Continue learning"),
+      description: t(locale, "Pick up where you left off"),
       href: acct("/learn?panel=active"),
       external: false,
       icon: <IconCompass />,
     },
     {
-      label: "Open certificates",
-      description: "Issued certificates and completion records",
+      label: t(locale, "Open certificates"),
+      description: t(locale, "Issued certificates and completion records"),
       href: acct("/learn?panel=certificates"),
       external: false,
       icon: <IconShield />,
     },
     {
-      label: "Report a course issue",
-      description: "Content, access, or billing problems",
+      label: t(locale, "Report a course issue"),
+      description: t(locale, "Content, access, or billing problems"),
       href: accountSupportHref({
         division: "learn",
         subject: "Learn course issue",
@@ -355,31 +363,31 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconLifebuoy />,
     },
     {
-      label: "Learning help",
-      description: "Reach the HenryCo Learn team",
+      label: t(locale, "Learning help"),
+      description: t(locale, "Reach the HenryCo Learn team"),
       href: divisionUrl("learn", "/help"),
       external: false,
       icon: <IconMessage />,
     },
   ],
-  logistics: () => [
+  logistics: (locale) => [
     {
-      label: "Track your shipment",
-      description: "Live location and delivery ETA",
+      label: t(locale, "Track your shipment"),
+      description: t(locale, "Live location and delivery ETA"),
       href: "/track",
       external: false,
       icon: <IconTruck />,
     },
     {
-      label: "Open logistics hub",
-      description: "Activity, pricing, and shared account history",
+      label: t(locale, "Open logistics hub"),
+      description: t(locale, "Activity, pricing, and shared account history"),
       href: acct("/logistics"),
       external: false,
       icon: <IconCompass />,
     },
     {
-      label: "Report delivery issue",
-      description: "Missing, damaged, or late shipment",
+      label: t(locale, "Report delivery issue"),
+      description: t(locale, "Missing, damaged, or late shipment"),
       href: accountSupportHref({
         division: "logistics",
         subject: "Logistics delivery issue",
@@ -389,31 +397,31 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconShield />,
     },
     {
-      label: "Logistics support",
-      description: "Reach the HenryCo Logistics team",
+      label: t(locale, "Logistics support"),
+      description: t(locale, "Reach the HenryCo Logistics team"),
       href: "/support",
       external: false,
       icon: <IconMessage />,
     },
   ],
-  property: () => [
+  property: (locale) => [
     {
-      label: "Track listing review",
-      description: "Listing status and editor feedback",
+      label: t(locale, "Track listing review"),
+      description: t(locale, "Listing status and editor feedback"),
       href: acct("/property?panel=listings"),
       external: false,
       icon: <IconCompass />,
     },
     {
-      label: "Find properties to view",
-      description: "Browse and shortlist viewings",
+      label: t(locale, "Find properties to view"),
+      description: t(locale, "Browse and shortlist viewings"),
       href: "/search",
       external: false,
       icon: <IconStore />,
     },
     {
-      label: "Report a listing",
-      description: "Inaccurate or suspicious listing",
+      label: t(locale, "Report a listing"),
+      description: t(locale, "Inaccurate or suspicious listing"),
       href: accountSupportHref({
         division: "property",
         subject: "Report property listing",
@@ -423,8 +431,8 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconShield />,
     },
     {
-      label: "Property support",
-      description: "Reach the HenryCo Property team",
+      label: t(locale, "Property support"),
+      description: t(locale, "Reach the HenryCo Property team"),
       href: accountSupportHref({
         division: "property",
         subject: "Property support request",
@@ -434,52 +442,52 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconMessage />,
     },
   ],
-  studio: () => [
+  studio: (locale) => [
     {
-      label: "Open your workspace",
-      description: "Projects, files, payments, messages",
+      label: t(locale, "Open your workspace"),
+      description: t(locale, "Projects, files, payments, messages"),
       href: divisionUrl("studio", "/client"),
       external: false,
       icon: <IconCompass />,
     },
     {
-      label: "Draft a brief with the co-pilot",
-      description: "Describe it in a paragraph — we structure it",
+      label: t(locale, "Draft a brief with the co-pilot"),
+      description: t(locale, "Describe it in a paragraph — we structure it"),
       href: divisionUrl("studio", "/request"),
       external: false,
       icon: <IconStore />,
     },
     {
-      label: "Project messages",
-      description: "Active threads with your Studio team",
+      label: t(locale, "Project messages"),
+      description: t(locale, "Active threads with your Studio team"),
       href: divisionUrl("studio", "/client/messages"),
       external: false,
       icon: <IconMessage />,
     },
     {
-      label: "Files and deliverables",
-      description: "Approved assets and shared work",
+      label: t(locale, "Files and deliverables"),
+      description: t(locale, "Approved assets and shared work"),
       href: divisionUrl("studio", "/client/files"),
       external: false,
       icon: <IconShield />,
     },
     {
-      label: "Payments and invoices",
-      description: "Outstanding balance, history, receipts",
+      label: t(locale, "Payments and invoices"),
+      description: t(locale, "Outstanding balance, history, receipts"),
       href: divisionUrl("studio", "/client/payments"),
       external: false,
       icon: <IconShield />,
     },
     {
-      label: "Browse ready-to-start templates",
-      description: "Prefilled briefs you can launch in minutes",
+      label: t(locale, "Browse ready-to-start templates"),
+      description: t(locale, "Prefilled briefs you can launch in minutes"),
       href: divisionUrl("studio", "/pick"),
       external: false,
       icon: <IconStore />,
     },
     {
-      label: "Payment and invoice help",
-      description: "Open a support thread with finance",
+      label: t(locale, "Payment and invoice help"),
+      description: t(locale, "Open a support thread with finance"),
       href: accountSupportHref({
         division: "studio",
         subject: "Studio payment or invoice help",
@@ -489,68 +497,68 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconLifebuoy />,
     },
     {
-      label: "Contact Studio",
-      description: "Reach the Studio team directly",
+      label: t(locale, "Contact Studio"),
+      description: t(locale, "Reach the Studio team directly"),
       href: divisionUrl("studio", "/contact"),
       external: false,
       icon: <IconUser />,
     },
   ],
-  account: () => [
+  account: (locale) => [
     {
-      label: "Open inbox",
-      description: "Notifications across HenryCo divisions",
+      label: t(locale, "Open inbox"),
+      description: t(locale, "Notifications across HenryCo divisions"),
       href: "/notifications",
       external: false,
       icon: <IconBell />,
     },
     {
-      label: "Support center",
-      description: "Create or view support tickets",
+      label: t(locale, "Support center"),
+      description: t(locale, "Create or view support tickets"),
       href: "/support",
       external: false,
       icon: <IconLifebuoy />,
     },
     {
-      label: "Wallet and payments",
-      description: "Funding, withdrawals, and transactions",
+      label: t(locale, "Wallet and payments"),
+      description: t(locale, "Funding, withdrawals, and transactions"),
       href: "/wallet",
       external: false,
       icon: <IconShield />,
     },
     {
-      label: "Manage preferences",
-      description: "Notifications, privacy, and display",
+      label: t(locale, "Manage preferences"),
+      description: t(locale, "Notifications, privacy, and display"),
       href: "/settings",
       external: false,
       icon: <IconCompass />,
     },
   ],
-  hub: () => [
+  hub: (locale) => [
     {
-      label: "Explore divisions",
-      description: "All Henry & Co. divisions on one page",
+      label: t(locale, "Explore divisions"),
+      description: t(locale, "All Henry & Co. divisions on one page"),
       href: "/#divisions",
       external: false,
       icon: <IconCompass />,
     },
     {
-      label: "Open your account",
-      description: "Wallet, inbox, and dashboard",
+      label: t(locale, "Open your account"),
+      description: t(locale, "Wallet, inbox, and dashboard"),
       href: acct("/"),
       external: false,
       icon: <IconUser />,
     },
     {
-      label: "Contact HenryCo",
-      description: "General support and enquiries",
+      label: t(locale, "Contact HenryCo"),
+      description: t(locale, "General support and enquiries"),
       href: hub("/contact"),
       external: false,
       icon: <IconMessage />,
     },
     {
-      label: "View ecosystem map",
-      description: "How the divisions connect across the platform",
+      label: t(locale, "View ecosystem map"),
+      description: t(locale, "How the divisions connect across the platform"),
       href: "/#ecosystem",
       external: false,
       icon: <IconStore />,
@@ -564,7 +572,11 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
 // "right now" action at the top of the dock. Pure-string matching to
 // keep this dependency-free.
 
-function detectContextualAction(division: AssistDivision, pathname: string): DockAction | null {
+function detectContextualAction(
+  division: AssistDivision,
+  pathname: string,
+  locale: string,
+): DockAction | null {
   if (!pathname) return null;
 
   if (division === "marketplace") {
@@ -578,8 +590,8 @@ function detectContextualAction(division: AssistDivision, pathname: string): Doc
         return_to: pathname,
       });
       return {
-        label: "Contact this store",
-        description: "Open a support thread tied to this storefront",
+        label: t(locale, "Contact this store"),
+        description: t(locale, "Open a support thread tied to this storefront"),
         href: `/help?${params.toString()}`,
         external: false,
         icon: <IconStore />,
@@ -592,8 +604,8 @@ function detectContextualAction(division: AssistDivision, pathname: string): Doc
       const subject = `Question about ${slug.replace(/-/g, " ")}`;
       const params = new URLSearchParams({ subject, return_to: pathname });
       return {
-        label: "Question about this product",
-        description: "Send a support thread linked to this listing",
+        label: t(locale, "Question about this product"),
+        description: t(locale, "Send a support thread linked to this listing"),
         href: `/help?${params.toString()}`,
         external: false,
         icon: <IconLifebuoy />,
@@ -606,8 +618,8 @@ function detectContextualAction(division: AssistDivision, pathname: string): Doc
         return_to: pathname,
       });
       return {
-        label: "Checkout help",
-        description: "Get help finishing this order",
+        label: t(locale, "Checkout help"),
+        description: t(locale, "Get help finishing this order"),
         href: `/help?${params.toString()}`,
         external: false,
         icon: <IconShield />,
@@ -620,8 +632,8 @@ function detectContextualAction(division: AssistDivision, pathname: string): Doc
     const trackMatch = pathname.match(/^\/track\/([^/?#]+)/);
     if (trackMatch) {
       return {
-        label: "Help with this shipment",
-        description: "Open a thread tied to this tracking code",
+        label: t(locale, "Help with this shipment"),
+        description: t(locale, "Open a thread tied to this tracking code"),
         href: accountSupportHref({
           division: "logistics",
           subject: `Help with shipment ${trackMatch[1]}`,
@@ -637,8 +649,8 @@ function detectContextualAction(division: AssistDivision, pathname: string): Doc
   if (division === "care") {
     if (pathname.startsWith("/track") || pathname.startsWith("/booking")) {
       return {
-        label: "Help with this booking",
-        description: "Reach the Care team about your active booking",
+        label: t(locale, "Help with this booking"),
+        description: t(locale, "Reach the Care team about your active booking"),
         href: accountSupportHref({
           division: "care",
           subject: "Help with active care booking",
@@ -654,8 +666,8 @@ function detectContextualAction(division: AssistDivision, pathname: string): Doc
   if (division === "property") {
     if (pathname.startsWith("/search") || pathname.startsWith("/listing")) {
       return {
-        label: "Help finding a property",
-        description: "Tell our team what you're looking for",
+        label: t(locale, "Help finding a property"),
+        description: t(locale, "Tell our team what you're looking for"),
         href: accountSupportHref({
           division: "property",
           subject: "Help finding a property",
@@ -874,8 +886,8 @@ export function SupportDock({ division, accent = "#C9A227" }: SupportDockProps) 
   const searchRef = useRef<HTMLInputElement>(null);
 
   const contextualAction = useMemo(
-    () => detectContextualAction(division, pathname),
-    [division, pathname],
+    () => detectContextualAction(division, pathname, locale),
+    [division, pathname, locale],
   );
 
   // Auto-close when route changes (defensive — popstate covers most cases).

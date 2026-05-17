@@ -4,13 +4,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { translateSurfaceLabel, useHenryCoLocale, type AppLocale } from "@henryco/i18n";
+import {
+  translateSurfaceLabel,
+  useHenryCoLocale,
+  type AccountCopy,
+  type AppLocale,
+} from "@henryco/i18n";
 import type { EnrichedNotification } from "@/lib/account-data";
 import NotificationLifecycleControls from "@/components/messages/NotificationLifecycleControls";
 import { timeAgoLocalized } from "@/lib/format";
 import { divisionAccentVar, resolveSeverity } from "./severity-style";
 import { NotificationsFeedEmptyState } from "./NotificationsFeedEmptyState";
 import { SwipeableNotificationCard } from "./SwipeableNotificationCard";
+
+type NotificationsCopy = AccountCopy["notifications"];
 
 function SourceMark({ notification, sourceLabel }: { notification: EnrichedNotification; sourceLabel: string }) {
   const source = notification.source;
@@ -183,11 +190,12 @@ function NotificationCard({
 
 export default function NotificationsFeed({
   notifications,
+  copy,
 }: {
   notifications: EnrichedNotification[];
+  copy: NotificationsCopy;
 }) {
   const locale = useHenryCoLocale();
-  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [selectedSource, setSelectedSource] = useState("all");
   const [mode, setMode] = useState<"all" | "unread">("all");
 
@@ -204,13 +212,12 @@ export default function NotificationsFeed({
 
   const swipeLabels = useMemo(
     () => ({
-      archive: t("Archive"),
-      delete: t("Delete"),
-      markRead: t("Mark as read"),
-      markUnread: t("Mark as unread"),
+      archive: copy.swipe.archive,
+      delete: copy.swipe.delete,
+      markRead: copy.swipe.markRead,
+      markUnread: copy.swipe.markUnread,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- locale-driven recomputation
-    [locale],
+    [copy.swipe],
   );
 
   const filtered = notifications.filter((notification) => {
@@ -235,7 +242,7 @@ export default function NotificationsFeed({
                 : "bg-[var(--acct-surface)] text-[var(--acct-muted)]"
             }`}
           >
-            {t("All")}
+            {copy.filters.all}
           </button>
           <button
             type="button"
@@ -246,7 +253,7 @@ export default function NotificationsFeed({
                 : "bg-[var(--acct-surface)] text-[var(--acct-muted)]"
             }`}
           >
-            {t("Unread")}
+            {copy.filters.unread}
           </button>
         </div>
 
@@ -260,7 +267,7 @@ export default function NotificationsFeed({
                 : "bg-[var(--acct-surface)] text-[var(--acct-muted)]"
             }`}
           >
-            {t("All sources")}
+            {copy.filters.allSources}
           </button>
           {sourceOptions.map((option) => (
             <button
@@ -280,15 +287,19 @@ export default function NotificationsFeed({
       </div>
 
       {filtered.length === 0 ? (
-        <NotificationsFeedEmptyState variant="filter" filterLabel={t("active filter")} />
+        <NotificationsFeedEmptyState
+          variant="filter"
+          filterLabel={copy.filters.activeFilter}
+          copy={copy.emptyState}
+        />
       ) : (
         <div className="space-y-6">
           {unread.length > 0 ? (
             <section className="space-y-3">
               <div>
-                <p className="acct-kicker">{t("Unread")}</p>
+                <p className="acct-kicker">{copy.feed.unreadSectionKicker}</p>
                 <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-                  {t("Needs your attention")}
+                  {copy.feed.unreadSectionTitle}
                 </h2>
               </div>
               <div className="space-y-3">
@@ -297,8 +308,8 @@ export default function NotificationsFeed({
                     key={String(notification.id)}
                     notification={notification}
                     locale={locale}
-                    unreadLabel={t("Unread")}
-                    openMessageBoardLabel={t("Open message board")}
+                    unreadLabel={copy.feed.unreadBadge}
+                    openMessageBoardLabel={copy.feed.openMessageBoard}
                     swipeLabels={swipeLabels}
                   />
                 ))}
@@ -309,9 +320,9 @@ export default function NotificationsFeed({
           {recent.length > 0 ? (
             <section className="space-y-3">
               <div>
-                <p className="acct-kicker">{t("Recent")}</p>
+                <p className="acct-kicker">{copy.feed.recentSectionKicker}</p>
                 <h2 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
-                  {t("Cleared or reviewed activity")}
+                  {copy.feed.recentSectionTitle}
                 </h2>
               </div>
               <div className="space-y-3">
@@ -320,8 +331,8 @@ export default function NotificationsFeed({
                     key={String(notification.id)}
                     notification={notification}
                     locale={locale}
-                    unreadLabel={t("Unread")}
-                    openMessageBoardLabel={t("Open message board")}
+                    unreadLabel={copy.feed.unreadBadge}
+                    openMessageBoardLabel={copy.feed.openMessageBoard}
                     swipeLabels={swipeLabels}
                   />
                 ))}

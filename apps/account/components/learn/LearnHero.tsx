@@ -1,22 +1,20 @@
 import { ArrowUpRight } from "lucide-react";
 
-import {
-  buildHeroCopy,
-  heroState,
-  type LearnLocale,
-  type LearnStats,
-} from "./helpers";
+import type { HeroState, LearnStats } from "./helpers";
 
 type Props = {
   stats: LearnStats;
   learnOrigin: string;
-  locale: LearnLocale;
+  state: HeroState;
   labels: {
+    ariaLabel: string;
     eyebrow: string;
     sideKicker: string;
     sideTitle: string;
     sideBody: string;
     breakdownLabel: string;
+    breakdownAriaLabel: string;
+    tilesAriaLabel: string;
     tileLabels: {
       active: string;
       completed: string;
@@ -39,12 +37,15 @@ type Props = {
       certificates: string;
       saved: string;
     };
+    openLearnCta: string;
+    applyToTeachCta: string;
+    headline: string;
+    blurb: string;
   };
 };
 
-export function LearnHero({ stats, learnOrigin, locale, labels }: Props) {
-  const state = heroState(stats);
-  const copy = buildHeroCopy(state, stats, learnOrigin, locale);
+export function LearnHero({ stats, learnOrigin, state, labels }: Props) {
+  const teachHref = `${learnOrigin}/teach`;
 
   const breakdown = [
     { key: "active",       label: labels.breakdownNames.active,       count: stats.metrics.activeCourses,    color: "var(--acct-gold)" },
@@ -54,34 +55,34 @@ export function LearnHero({ stats, learnOrigin, locale, labels }: Props) {
   ].filter((row) => row.count > 0);
 
   return (
-    <section className="acct-lrn__hero" data-state={state} aria-label={labels.eyebrow}>
+    <section className="acct-lrn__hero" data-state={state} aria-label={labels.ariaLabel}>
       <div className="acct-lrn__hero-inner">
         <div>
           <span className="acct-lrn__eyebrow">
             <span className="acct-lrn__eyebrow-dot" aria-hidden />
             {labels.eyebrow}
           </span>
-          <h1 className="acct-lrn__headline">{copy.headline}</h1>
-          <p className="acct-lrn__blurb">{copy.blurb}</p>
+          <h1 className="acct-lrn__headline">{labels.headline}</h1>
+          <p className="acct-lrn__blurb">{labels.blurb}</p>
           <div className="acct-lrn__hero-ctas">
             <a
               className="acct-lrn__cta acct-lrn__cta--primary"
-              href={copy.ctaPrimary.href}
+              href={learnOrigin}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {copy.ctaPrimary.label} <ArrowUpRight size={14} aria-hidden />
+              {labels.openLearnCta} <ArrowUpRight size={14} aria-hidden />
             </a>
             <a
               className="acct-lrn__cta acct-lrn__cta--ghost"
-              href={copy.ctaSecondary.href}
+              href={teachHref}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {copy.ctaSecondary.label} <ArrowUpRight size={14} aria-hidden />
+              {labels.applyToTeachCta} <ArrowUpRight size={14} aria-hidden />
             </a>
           </div>
-          <div className="acct-lrn__hero-tiles" role="list" aria-label={labels.eyebrow}>
+          <div className="acct-lrn__hero-tiles" role="list" aria-label={labels.tilesAriaLabel}>
             <div className="acct-lrn__hero-tile" role="listitem">
               <span className="acct-lrn__hero-tile-label">{labels.tileLabels.active}</span>
               <span className="acct-lrn__hero-tile-value">{stats.metrics.activeCourses}</span>
@@ -117,7 +118,7 @@ export function LearnHero({ stats, learnOrigin, locale, labels }: Props) {
           <p className="acct-lrn__hero-side-title">{labels.sideTitle}</p>
           <p className="acct-lrn__hero-side-body">{labels.sideBody}</p>
           {breakdown.length > 0 ? (
-            <div className="acct-lrn__hero-breakdown" aria-label={labels.breakdownLabel}>
+            <div className="acct-lrn__hero-breakdown" aria-label={labels.breakdownAriaLabel}>
               <p className="acct-lrn__hero-breakdown-label">{labels.breakdownLabel}</p>
               {breakdown.map((row) => (
                 <div key={row.key} className="acct-lrn__hero-breakdown-row">

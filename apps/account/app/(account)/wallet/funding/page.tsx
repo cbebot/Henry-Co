@@ -2,7 +2,7 @@ import { RouteLiveRefresh } from "@henryco/ui";
 
 import { requireAccountUser } from "@/lib/auth";
 import { getWalletFundingContext } from "@/lib/account-data";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
 import "@/components/wallet/styles.css";
@@ -17,6 +17,8 @@ export const dynamic = "force-dynamic";
 export default async function WalletFundingPage() {
   const locale = await getAccountAppLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
+  const accountCopy = getAccountCopy(locale);
+  const copy = accountCopy.wallet;
   const user = await requireAccountUser();
   const data = await getWalletFundingContext(user.id);
   const balanceKobo = Number(data.wallet.balance_kobo) || 0;
@@ -34,6 +36,7 @@ export default async function WalletFundingPage() {
         settlementNote={t(
           "Verified balance is ready to spend across HenryCo. Pending funding sits separately until finance clears the transfer.",
         )}
+        copy={copy.hero}
       />
       <section className="acct-wal__section" aria-labelledby="wal-fund-rail-head">
         <div className="acct-wal__section-head">
@@ -75,7 +78,12 @@ export default async function WalletFundingPage() {
         ) : (
           <div className="acct-wal__funding-list">
             {data.requests.map((request) => (
-              <FundingRequestRow key={request.id} request={request} />
+              <FundingRequestRow
+                key={request.id}
+                request={request}
+                copy={copy.funding}
+                statusLabels={copy.statusLabels}
+              />
             ))}
           </div>
         )}

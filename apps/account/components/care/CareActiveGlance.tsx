@@ -7,6 +7,8 @@ import {
   statusKind,
   statusLabel,
   type CareLocale,
+  type ShortMonths,
+  type StatusLabels,
 } from "./helpers";
 
 type Props = {
@@ -18,13 +20,22 @@ type Props = {
     pickupLabel: string;
     balanceLabel: string;
     trackingLabel: string;
+    serviceFallback: string;
+    toBeScheduled: string;
+    shortMonths: ShortMonths;
+    statusLabels: StatusLabels;
   };
 };
 
-export function CareActiveGlance({ booking, locale, labels }: Props) {
+export function CareActiveGlance({ booking, locale: _locale, labels }: Props) {
   const kind = statusKind(booking);
-  const status = statusLabel(booking, locale);
-  const when = formatBookingWhen(booking.pickup_date, booking.pickup_slot, locale);
+  const status = statusLabel(booking, labels.statusLabels);
+  const when = formatBookingWhen(
+    booking.pickup_date,
+    booking.pickup_slot,
+    labels.shortMonths,
+    labels.toBeScheduled,
+  );
   const action = booking.nextAction;
   const balance = booking.payment.balanceDue;
 
@@ -52,7 +63,7 @@ export function CareActiveGlance({ booking, locale, labels }: Props) {
             <Calendar size={14} aria-hidden />
             {labels.serviceLabel}
           </dt>
-          <dd>{booking.service_type || "Care service"}</dd>
+          <dd>{booking.service_type || labels.serviceFallback}</dd>
         </div>
         <div className="acct-care__glance-meta-row">
           <dt>

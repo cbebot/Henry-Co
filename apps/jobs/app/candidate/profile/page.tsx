@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getAccountUrl } from "@henryco/config";
 import { getJobsCopy } from "@henryco/i18n";
@@ -13,11 +14,30 @@ import { ProfileBuilder } from "@/components/candidate/ProfileBuilder";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getJobsPublicLocale();
+  const copy = getJobsCopy(locale).candidateProfile;
+  return {
+    title: copy.pageTitle,
+    description: copy.pageSubtitle,
+  };
+}
+
 function toneForVerification(status: string) {
   if (status === "verified") return "good" as const;
   if (status === "pending") return "warn" as const;
   if (status === "rejected") return "danger" as const;
   return "neutral" as const;
+}
+
+function labelForVerification(
+  status: string,
+  copy: ReturnType<typeof getJobsCopy>["candidateProfile"],
+) {
+  if (status === "verified") return copy.statusVerified;
+  if (status === "pending") return copy.statusPending;
+  if (status === "rejected") return copy.statusRejected;
+  return copy.statusUnverified;
 }
 
 export default async function CandidateProfilePage({
@@ -33,47 +53,59 @@ export default async function CandidateProfilePage({
   ]);
   const profile = data.profile;
   const saved = params.saved === "1";
-  const profileBuilderLabels = getJobsCopy(locale).profileBuilder;
+  const jobsCopy = getJobsCopy(locale);
+  const copy = jobsCopy.candidateProfile;
+  const profileBuilderLabels = jobsCopy.profileBuilder;
+  const verificationStatus = profile?.verificationStatus ?? "unverified";
+  const documentTemplate =
+    data.documents.length === 1
+      ? copy.rightRailDocumentsCountSingular
+      : copy.rightRailDocumentsCountPlural;
+  const documentsLine = documentTemplate.replace(
+    "{count}",
+    String(data.documents.length),
+  );
 
   return (
     <WorkspaceShell
       area="candidate"
-      title="Candidate Profile"
-      subtitle="Keep your profile complete so employers can see the best version of you."
+      title={copy.pageTitle}
+      subtitle={copy.pageSubtitle}
       nav={candidateNav}
       activeHref="/candidate/profile"
       accent="linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%)"
       rightRail={
         <>
-          <SectionCard title="Profile trust">
+          <SectionCard title={copy.rightRailTrustTitle}>
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="jobs-kicker">Verification</div>
+                  <div className="jobs-kicker">{copy.rightRailVerificationKicker}</div>
                   <div className="mt-2 text-3xl font-semibold">{profile?.trustScore ?? 0}</div>
                 </div>
-                <StatusPill label={profile?.verificationStatus ?? "unverified"} tone={toneForVerification(profile?.verificationStatus ?? "unverified")} />
+                <StatusPill
+                  label={labelForVerification(verificationStatus, copy)}
+                  tone={toneForVerification(verificationStatus)}
+                />
               </div>
               <p className="text-sm leading-7 text-[var(--jobs-muted)]">
-                {profile?.readinessLabel || "Complete your profile to improve how employers see your applications."}
+                {profile?.readinessLabel || copy.rightRailDefaultReadiness}
               </p>
-              {profile?.verificationStatus !== "verified" ? (
+              {verificationStatus !== "verified" ? (
                 <Link
                   href={getAccountUrl("/verification")}
                   className="inline-flex rounded-full bg-[var(--jobs-accent-soft)] px-4 py-2 text-xs font-semibold text-[var(--jobs-accent)]"
                 >
-                  Open account verification
+                  {copy.rightRailOpenVerification}
                 </Link>
               ) : null}
             </div>
           </SectionCard>
-          <SectionCard title="Documents">
+          <SectionCard title={copy.rightRailDocumentsTitle}>
             <div className="space-y-3 text-sm text-[var(--jobs-muted)]">
+              <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">{documentsLine}</div>
               <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
-                {data.documents.length} file{data.documents.length === 1 ? "" : "s"} uploaded to your profile.
-              </div>
-              <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
-                Skills, work history, and portfolio links help employers evaluate your applications.
+                {copy.rightRailDocumentsHint}
               </div>
             </div>
           </SectionCard>
@@ -84,15 +116,15 @@ export default async function CandidateProfilePage({
         {saved ? (
           <InlineNotice
             tone="success"
-            title="Profile saved"
-            body="Your profile has been updated. Changes are visible to employers when you apply."
+            title={copy.savedNoticeTitle}
+            body={copy.savedNoticeBody}
           />
         ) : null}
 
         {/* J3 — auto-save profile draft. Persists every 30s + on blur. */}
         <SectionCard
-          title="Profile draft"
-          body="Work-in-progress changes auto-save every 30 seconds and on blur. Press 'Save profile' below to publish."
+          title={copy.draftSectionTitle}
+          body={copy.draftSectionBody}
         >
           <ProfileBuilder
             initialDraft={{
@@ -111,8 +143,8 @@ export default async function CandidateProfilePage({
         </SectionCard>
 
         <SectionCard
-          title="Edit your profile"
-          body="Professional details here are visible to employers when you apply to roles. Phone and email are held by HenryCo for verification and trust scoring only — they are not passed to employers."
+          title={copy.editSectionTitle}
+          body={copy.editSectionBody}
         >
           <form action={saveCandidateProfileAction} className="grid gap-4">
             <div className="grid gap-4 md:grid-cols-2">
@@ -121,56 +153,101 @@ export default async function CandidateProfilePage({
                 autoComplete="name"
                 className="jobs-input"
                 defaultValue={profile?.fullName || viewer.user!.fullName || ""}
-                placeholder="Full name"
+                placeholder={copy.fieldFullNamePlaceholder}
               />
             </div>
-            <input name="headline" className="jobs-input" defaultValue={profile?.headline || ""} placeholder="Headline" />
-            <textarea name="summary" className="jobs-textarea min-h-36" defaultValue={profile?.summary || ""} placeholder="Professional summary" />
+            <input
+              name="headline"
+              className="jobs-input"
+              defaultValue={profile?.headline || ""}
+              placeholder={copy.fieldHeadlinePlaceholder}
+            />
+            <textarea
+              name="summary"
+              className="jobs-textarea min-h-36"
+              defaultValue={profile?.summary || ""}
+              placeholder={copy.fieldSummaryPlaceholder}
+            />
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="location" className="jobs-input" defaultValue={profile?.location || ""} placeholder="Location" />
-              <input name="timezone" className="jobs-input" defaultValue={profile?.timezone || ""} placeholder="Timezone" />
+              <input
+                name="location"
+                className="jobs-input"
+                defaultValue={profile?.location || ""}
+                placeholder={copy.fieldLocationPlaceholder}
+              />
+              <input
+                name="timezone"
+                className="jobs-input"
+                defaultValue={profile?.timezone || ""}
+                placeholder={copy.fieldTimezonePlaceholder}
+              />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="workModes" className="jobs-input" defaultValue={profile?.workModes.join(", ") || ""} placeholder="remote, hybrid, onsite" />
-              <input name="roleTypes" className="jobs-input" defaultValue={profile?.roleTypes.join(", ") || ""} placeholder="full-time, contract" />
+              <input
+                name="workModes"
+                className="jobs-input"
+                defaultValue={profile?.workModes.join(", ") || ""}
+                placeholder={copy.fieldWorkModesPlaceholder}
+              />
+              <input
+                name="roleTypes"
+                className="jobs-input"
+                defaultValue={profile?.roleTypes.join(", ") || ""}
+                placeholder={copy.fieldRoleTypesPlaceholder}
+              />
             </div>
             <input
               name="preferredFunctions"
               className="jobs-input"
               defaultValue={profile?.preferredFunctions.join(", ") || ""}
-              placeholder="Product, Operations, Marketing"
+              placeholder={copy.fieldPreferredFunctionsPlaceholder}
             />
-            <input name="skills" className="jobs-input" defaultValue={profile?.skills.join(", ") || ""} placeholder="Skills" />
+            <input
+              name="skills"
+              className="jobs-input"
+              defaultValue={profile?.skills.join(", ") || ""}
+              placeholder={copy.fieldSkillsPlaceholder}
+            />
             <input
               name="portfolioLinks"
               className="jobs-input"
               defaultValue={profile?.portfolioLinks.join(", ") || ""}
-              placeholder="Portfolio links"
+              placeholder={copy.fieldPortfolioLinksPlaceholder}
             />
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="salaryExpectation" className="jobs-input" defaultValue={profile?.salaryExpectation || ""} placeholder="Salary expectation" />
-              <input name="availability" className="jobs-input" defaultValue={profile?.availability || ""} placeholder="Availability" />
+              <input
+                name="salaryExpectation"
+                className="jobs-input"
+                defaultValue={profile?.salaryExpectation || ""}
+                placeholder={copy.fieldSalaryExpectationPlaceholder}
+              />
+              <input
+                name="availability"
+                className="jobs-input"
+                defaultValue={profile?.availability || ""}
+                placeholder={copy.fieldAvailabilityPlaceholder}
+              />
             </div>
             <textarea
               name="workHistory"
               className="jobs-textarea min-h-28"
               defaultValue={JSON.stringify(profile?.workHistory || [], null, 2)}
-              placeholder='[{"company":"HenryCo","title":"Operations Lead"}]'
+              placeholder={copy.fieldWorkHistoryPlaceholder}
             />
             <textarea
               name="education"
               className="jobs-textarea min-h-24"
               defaultValue={JSON.stringify(profile?.education || [], null, 2)}
-              placeholder='[{"school":"University","degree":"BSc"}]'
+              placeholder={copy.fieldEducationPlaceholder}
             />
             <textarea
               name="certifications"
               className="jobs-textarea min-h-24"
               defaultValue={JSON.stringify(profile?.certifications || [], null, 2)}
-              placeholder='[{"name":"Project Management"}]'
+              placeholder={copy.fieldCertificationsPlaceholder}
             />
-            <PendingSubmitButton pendingLabel="Saving profile..." className="w-full sm:w-auto">
-              Save candidate profile
+            <PendingSubmitButton pendingLabel={copy.submitSaving} className="w-full sm:w-auto">
+              {copy.submitLabel}
             </PendingSubmitButton>
           </form>
         </SectionCard>

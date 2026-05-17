@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Activity } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { translateSurfaceLabel, getAccountCopy, type AccountCopy } from "@henryco/i18n/server";
 import { requireAccountUser } from "@/lib/auth";
 import { getRecentActivity } from "@/lib/account-data";
 import { activityMessageHref } from "@/lib/notification-center";
@@ -12,46 +12,22 @@ import { ActivityFiltersClient } from "@/components/branded-documents/ActivityFi
 
 export const dynamic = "force-dynamic";
 
-function getStatusLabel(locale: string, value: string | number | null) {
+function getStatusLabel(
+  statusLabels: AccountCopy["activity"]["statusLabels"],
+  value: string | number | null,
+) {
   const normalized = String(value || "").trim().toLowerCase();
   if (!normalized) return null;
 
-  const labels: Record<string, string> =
-    locale === "fr"
-      ? {
-          pending: "En attente",
-          open: "Ouvert",
-          updated: "Mis à jour",
-          completed: "Terminé",
-          resolved: "Résolu",
-          paid: "Payé",
-          failed: "Échoué",
-          active: "Actif",
-        }
-      : {};
-
+  const labels = statusLabels as Record<string, string>;
   return labels[normalized] || String(value);
 }
 
 export default async function ActivityPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const activity = await getRecentActivity(user.id, 50);
-  const copy =
-    locale === "fr"
-      ? {
-          title: "Activité",
-          description: "Tout ce que vous avez fait dans les divisions HenryCo.",
-          emptyTitle: "Aucune activité pour le moment",
-          emptyDescription:
-            "Votre activité inter-division apparaîtra ici au fur et à mesure de votre utilisation des services HenryCo.",
-        }
-      : {
-          title: "Activity",
-          description: "Everything you've done across all HenryCo divisions.",
-          emptyTitle: "No activity yet",
-          emptyDescription:
-            "Your cross-division activity will appear here as you use HenryCo services.",
-        };
+  const accountCopy = getAccountCopy(locale);
+  const copy = accountCopy.activity;
 
   return (
     <div className="space-y-6 acct-fade-in">
@@ -69,6 +45,8 @@ export default async function ActivityPage() {
               .filter(Boolean)
           )
         ).sort()}
+        copy={copy.filters}
+        statusLabels={copy.statusLabels}
       />
 
       {activity.length === 0 ? (
@@ -102,7 +80,7 @@ export default async function ActivityPage() {
                   </span>
                   {item.status ? (
                     <span className="acct-chip acct-chip-blue text-[0.65rem]">
-                      {getStatusLabel(locale, item.status)}
+                      {getStatusLabel(copy.statusLabels, item.status)}
                     </span>
                   ) : null}
                   <span className="text-[0.65rem] text-[var(--acct-muted)]">

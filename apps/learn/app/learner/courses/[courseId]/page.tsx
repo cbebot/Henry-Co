@@ -7,10 +7,12 @@ import {
   Layers3,
   Trophy,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitQuizAttemptAction } from "@/lib/learn/actions";
 import { requireLearnUser } from "@/lib/learn/auth";
 import { getLearnerWorkspace } from "@/lib/learn/data";
 import { getAccountLearnUrl } from "@/lib/learn/links";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 import { courseRoomNav } from "@/lib/learn/navigation";
 import { lookupLearnProfiles, resolveLearnProfile } from "@/lib/learn/people";
 import { syncViewerIdentity } from "@/lib/learn/workflows";
@@ -64,6 +66,8 @@ export default async function LearnerCoursePage({
   params: Promise<{ courseId: string }>;
 }) {
   const { courseId } = await params;
+  const locale = await getLearnPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const viewer = await requireLearnUser("/learner/courses");
   await syncViewerIdentity(viewer);
   const workspace = await getLearnerWorkspace(viewer);
@@ -117,13 +121,13 @@ export default async function LearnerCoursePage({
     !quiz
       ? null
       : !courseAccessActive
-        ? "Your seat is reserved and the room is waiting for payment activation."
+        ? t("Your seat is reserved and the room is waiting for payment activation.")
         : !allLessonsComplete
-          ? "Finish every lesson before the final assessment opens."
+          ? t("Finish every lesson before the final assessment opens.")
           : quizPassed
-            ? "Assessment passed."
+            ? t("Assessment passed.")
             : remainingAttempts === 0
-              ? "The assessment has reached its maximum attempts. Ask the academy team for a review."
+              ? t("The assessment has reached its maximum attempts. Ask the academy team for a review.")
               : null;
   const reviewQuestions =
     latestAttempt && !latestAttempt.passed
@@ -134,27 +138,27 @@ export default async function LearnerCoursePage({
   const certificateHref = certificate ? `/certifications/verify/${certificate.verificationCode}` : null;
   const requirementItems = [
     {
-      label: "Every lesson marked complete",
+      label: t("Every lesson marked complete"),
       done: allLessonsComplete,
-      detail: `${completedLessonIds.size} of ${flatLessons.length || 0} lessons done`,
+      detail: `${completedLessonIds.size} / ${flatLessons.length || 0} ${t("lessons done")}`,
     },
     {
-      label: quiz ? `Final assessment: ${quiz.passScore}% or higher` : "No final assessment for this program",
+      label: quiz ? `${t("Final assessment")} — ${quiz.passScore}%+` : t("No final assessment for this program"),
       done: quiz ? quizPassed : true,
       detail: quiz
         ? bestAttempt
-          ? `Your best score so far: ${bestAttempt.score}%`
-          : "Unlocked after all lessons are complete"
-        : "You can finish by completing the lessons only",
+          ? `${t("Best score")}: ${bestAttempt.score}%`
+          : t("Unlocked after all lessons are complete")
+        : t("You can finish by completing the lessons only"),
     },
     {
-      label: "Certificate on file (if this course awards one)",
+      label: t("Certificate on file (if this course awards one)"),
       done: !!certificate,
       detail: certificate
-        ? `${certificate.certificateNo} — download or share your verification link`
+        ? `${certificate.certificateNo} — ${t("download or share your verification link")}`
         : course.certification
-          ? "Appears automatically when the two steps above are satisfied"
-          : "This course does not include a certificate",
+          ? t("Appears automatically when the two steps above are satisfied")
+          : t("This course does not include a certificate"),
     },
   ];
 
@@ -205,9 +209,11 @@ export default async function LearnerCoursePage({
 
   return (
     <LearnWorkspaceShell
-      kicker="Learning room"
+      kicker={t("Learning room")}
       title={course.title}
-      description="Work through lessons in order, take the final assessment when it unlocks, and download your certificate here when you’ve earned it. Enrollments, billing, and saved courses also appear in your HenryCo account under Learn."
+      description={t(
+        "Work through lessons in order, take the final assessment when it unlocks, and download your certificate here when you’ve earned it. Enrollments, billing, and saved courses also appear in your HenryCo account under Learn.",
+      )}
       nav={courseRoomNav(`/learner/courses/${course.id}`)}
       actions={
         <>
@@ -215,14 +221,14 @@ export default async function LearnerCoursePage({
             href={getAccountLearnUrl()}
             className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold"
           >
-            HenryCo account
+            {t("HenryCo account")}
           </a>
           {certificate ? (
             <CertificateDownloadButton
               verificationCode={certificate.verificationCode}
               learnerName={viewer.user?.fullName ?? null}
               courseTitle={course.title}
-              label="Download certificate"
+              label={t("Download certificate")}
               className="learn-print-hidden"
             />
           ) : null}
@@ -253,7 +259,7 @@ export default async function LearnerCoursePage({
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                    Final assessment
+                    {t("Final assessment")}
                   </p>
                   <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
                     {quiz.title}
@@ -263,14 +269,14 @@ export default async function LearnerCoursePage({
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <LearnStatusBadge label={`Pass score ${quiz.passScore}%`} tone="signal" />
+                  <LearnStatusBadge label={`${t("Pass score")}: ${quiz.passScore}%`} tone="signal" />
                   <LearnStatusBadge
                     label={
                       quizPassed
-                        ? "Passed"
+                        ? t("Passed")
                         : quizLockedReason
-                          ? "Locked"
-                          : `${remainingAttempts} attempts remaining`
+                          ? t("Locked")
+                          : `${t("Attempts remaining")}: ${remainingAttempts}`
                     }
                     tone={quizPassed ? "success" : quizLockedReason ? "warning" : "neutral"}
                   />

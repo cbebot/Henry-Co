@@ -1,6 +1,9 @@
 import { ArrowUpRight, Truck } from "lucide-react";
 
+import { formatAccountTemplate, getAccountCopy } from "@henryco/i18n/server";
+
 import { requireAccountUser } from "@/lib/auth";
+import { getAccountAppLocale } from "@/lib/locale-server";
 import {
   getLogisticsSnapshotForAccountUser,
   logisticsBookUrl,
@@ -16,8 +19,21 @@ import { SpendStrip } from "@/components/logistics/SpendStrip";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata() {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountCopy(locale).divisionLogistics;
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
+
 export default async function LogisticsPage() {
-  const user = await requireAccountUser();
+  const [locale, user] = await Promise.all([
+    getAccountAppLocale(),
+    requireAccountUser(),
+  ]);
+  const copy = getAccountCopy(locale).divisionLogistics;
   const email =
     typeof user.email === "string" && user.email.trim()
       ? user.email.trim().toLowerCase()
@@ -26,21 +42,20 @@ export default async function LogisticsPage() {
 
   return (
     <div className="acct-log acct-fade-in">
-      <section className="acct-log__hero" aria-label="Logistics overview">
+      <section className="acct-log__hero" aria-label={copy.hero.ariaLabel}>
         <div className="acct-log__hero-row">
           <div>
             <span className="acct-log__hero-eyebrow">
               <span className="acct-log__hero-eyebrow-dot" aria-hidden />
-              HenryCo Logistics
+              {copy.hero.brand}
             </span>
             <h1 className="acct-log__hero-title hc-h1 acct-display">
-              Every parcel, one room.
+              {copy.hero.title}
             </h1>
             <p className="acct-log__hero-blurb hc-body-sm">
-              Pickups, drop-offs, ETAs and proofs of delivery — all mirrored
-              from the logistics network into your account. Book once on
-              <span style={{ whiteSpace: "nowrap" }}> logistics.henrycogroup.com</span>
-              and your shipments appear here automatically.
+              {copy.hero.body}
+              <span style={{ whiteSpace: "nowrap" }}>{copy.hero.bodyDomain}</span>
+              {" "}
             </p>
           </div>
           <a
@@ -50,67 +65,73 @@ export default async function LogisticsPage() {
             rel="noopener noreferrer"
           >
             <Truck size={16} aria-hidden />
-            New delivery
+            {copy.hero.ctaNewDelivery}
             <ArrowUpRight size={14} aria-hidden />
           </a>
         </div>
-        <HeroMetrics metrics={snapshot.metrics} />
+        <HeroMetrics metrics={snapshot.metrics} copy={copy} />
       </section>
 
-      <LiveShipmentMap active={snapshot.active} hasAnyShipments={snapshot.hasAnyShipments} />
+      <LiveShipmentMap
+        active={snapshot.active}
+        hasAnyShipments={snapshot.hasAnyShipments}
+        copy={copy}
+      />
 
       {snapshot.active.length > 0 ? (
         <section aria-labelledby="acct-log-active-head">
           <div className="acct-log__section-head">
             <h2 id="acct-log-active-head" className="acct-log__section-title hc-h3 acct-display">
-              In flight right now
+              {copy.sections.activeTitle}
             </h2>
             <span className="acct-log__section-meta">
-              {snapshot.active.length} active · auto-syncs from logistics
+              {formatAccountTemplate(copy.sections.activeMetaTemplate, {
+                count: snapshot.active.length,
+              })}
             </span>
           </div>
-          <div className="acct-log__rail" role="list" aria-label="Active shipments">
+          <div className="acct-log__rail" role="list" aria-label={copy.sections.activeRailAriaLabel}>
             {snapshot.active.map((s) => (
               <div role="listitem" key={s.id}>
-                <ShipmentCard shipment={s} />
+                <ShipmentCard shipment={s} copy={copy} />
               </div>
             ))}
           </div>
         </section>
       ) : snapshot.hasAnyShipments ? (
-        <section className="acct-log__empty" aria-label="No active shipments">
+        <section className="acct-log__empty" aria-label={copy.sections.emptyAriaLabel}>
           <span className="acct-log__empty-icon" aria-hidden>
             <Truck size={18} />
           </span>
-          <h3 className="acct-log__empty-title">No active shipments</h3>
-          <p className="acct-log__empty-body">
-            Your past deliveries are below. Book another and it will appear
-            here as soon as the rider confirms pickup.
-          </p>
+          <h3 className="acct-log__empty-title">{copy.sections.emptyTitle}</h3>
+          <p className="acct-log__empty-body">{copy.sections.emptyBody}</p>
         </section>
       ) : null}
 
       <section aria-labelledby="acct-log-actions-head">
         <div className="acct-log__section-head">
           <h2 id="acct-log-actions-head" className="acct-log__section-title hc-h3 acct-display">
-            Run a delivery
+            {copy.sections.actionsTitle}
           </h2>
-          <span className="acct-log__section-meta">Shortcuts to common flows</span>
+          <span className="acct-log__section-meta">{copy.sections.actionsMeta}</span>
         </div>
-        <QuickActions />
+        <QuickActions copy={copy} />
       </section>
 
       {snapshot.recent.length > 0 ? (
         <section aria-labelledby="acct-log-recent-head">
           <div className="acct-log__section-head">
             <h2 id="acct-log-recent-head" className="acct-log__section-title hc-h3 acct-display">
-              Recently delivered
+              {copy.sections.recentTitle}
             </h2>
             <span className="acct-log__section-meta">
-              Last {snapshot.recent.length} of {snapshot.shipments.length} lifetime
+              {formatAccountTemplate(copy.sections.recentMetaTemplate, {
+                recent: snapshot.recent.length,
+                lifetime: snapshot.shipments.length,
+              })}
             </span>
           </div>
-          <CompletedTimeline recent={snapshot.recent} />
+          <CompletedTimeline recent={snapshot.recent} copy={copy} />
         </section>
       ) : null}
 
@@ -118,11 +139,11 @@ export default async function LogisticsPage() {
         <section aria-labelledby="acct-log-spend-head">
           <div className="acct-log__section-head">
             <h2 id="acct-log-spend-head" className="acct-log__section-title hc-h3 acct-display">
-              Spend · last 6 months
+              {copy.sections.spendTitle}
             </h2>
-            <span className="acct-log__section-meta">Paid only</span>
+            <span className="acct-log__section-meta">{copy.sections.spendMeta}</span>
           </div>
-          <SpendStrip spendByMonth={snapshot.spendByMonth} />
+          <SpendStrip spendByMonth={snapshot.spendByMonth} copy={copy} />
         </section>
       ) : null}
     </div>

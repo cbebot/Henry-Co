@@ -1,4 +1,4 @@
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { translateSurfaceLabel, getAccountCopy } from "@henryco/i18n/server";
 
 import { requireAccountUser } from "@/lib/auth";
 import { getInvoices } from "@/lib/account-data";
@@ -15,96 +15,6 @@ import {
 
 export const dynamic = "force-dynamic";
 
-type CopyShape = {
-  title: string;
-  description: string;
-  emptyTitle: string;
-  emptyDescription: string;
-  fallbackInvoice: string;
-  statuses: Record<string, string>;
-  statusPending: string;
-  eyebrow: string;
-  headlineWithReceipts: string;
-  headlineEmpty: string;
-  blurbDefault: string;
-  totalPaid: string;
-  thisMonth: string;
-  outstanding: string;
-  paidLabel: string;
-  pendingLabel: string;
-  overdueLabel: string;
-  byDivision: string;
-  nothing: string;
-  sectionTitle: string;
-};
-
-function getCopy(locale: string): CopyShape {
-  if (locale === "fr") {
-    return {
-      title: "Factures et reçus",
-      description: "Votre historique de paiements et vos reçus téléchargeables.",
-      emptyTitle: "Aucune facture pour le moment",
-      emptyDescription:
-        "Vos factures et reçus apparaîtront ici après vos paiements dans les services HenryCo.",
-      fallbackInvoice: "Facture {number}",
-      statuses: {
-        paid: "Payée",
-        pending: "En attente",
-        overdue: "En retard",
-        draft: "Brouillon",
-        cancelled: "Annulée",
-        refunded: "Remboursée",
-      },
-      statusPending: "Statut en attente",
-      eyebrow: "Factures · reçus",
-      headlineWithReceipts: "Votre historique de paiements.",
-      headlineEmpty: "Vos reçus apparaîtront ici.",
-      blurbDefault:
-        "Tous les paiements à travers HenryCo finissent ici en PDFs téléchargeables et de marque.",
-      totalPaid: "Payé · à vie",
-      thisMonth: "Payé · ce mois",
-      outstanding: "En attente",
-      paidLabel: "reçus",
-      pendingLabel: "en attente",
-      overdueLabel: "en retard",
-      byDivision: "Par division",
-      nothing: "Aucune facture pour le moment.",
-      sectionTitle: "Toutes les factures",
-    };
-  }
-  return {
-    title: "Invoices & Receipts",
-    description: "Your payment history and downloadable receipts.",
-    emptyTitle: "No invoices yet",
-    emptyDescription:
-      "Your invoices and receipts will appear here after making payments across HenryCo services.",
-    fallbackInvoice: "Invoice {number}",
-    statuses: {
-      paid: "Paid",
-      pending: "Pending",
-      overdue: "Overdue",
-      draft: "Draft",
-      cancelled: "Cancelled",
-      refunded: "Refunded",
-    },
-    statusPending: "Status pending",
-    eyebrow: "Invoices · receipts",
-    headlineWithReceipts: "Every receipt, one place.",
-    headlineEmpty: "Receipts will land here.",
-    blurbDefault:
-      "Every payment across HenryCo arrives here as a branded, downloadable PDF — care bookings, marketplace orders, studio invoices, logistics shipments, learn certificates.",
-    totalPaid: "Total paid · lifetime",
-    thisMonth: "Paid · this month",
-    outstanding: "Outstanding",
-    paidLabel: "receipts",
-    pendingLabel: "pending",
-    overdueLabel: "overdue",
-    byDivision: "By division",
-    nothing: "No invoices yet.",
-    sectionTitle: "All invoices",
-  };
-}
-
 export default async function InvoicesPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const rawInvoices = await getInvoices(user.id, 50);
@@ -117,53 +27,65 @@ export default async function InvoicesPage() {
     total_kobo: Number(row.total_kobo) || 0,
     created_at: String(row.created_at ?? ""),
   }));
-  const copy = getCopy(locale);
+  const accountCopy = getAccountCopy(locale);
+  const copy = accountCopy.invoices;
   const stats = invoiceStats(invoices);
   const headline =
-    invoices.length === 0 ? copy.headlineEmpty : copy.headlineWithReceipts;
+    invoices.length === 0 ? copy.hero.headlineEmpty : copy.hero.headlineWithReceipts;
+  const sectionMeta =
+    invoices.length === 1
+      ? `${invoices.length} ${copy.section.receiptsOnFileSingular}`
+      : `${invoices.length} ${copy.section.receiptsOnFilePlural}`;
 
   return (
     <div className="acct-inv acct-fade-in">
       <InvoicesHero
         stats={stats}
-        eyebrow={copy.eyebrow}
+        eyebrow={copy.hero.eyebrow}
         headline={headline}
-        blurb={copy.blurbDefault}
+        blurb={copy.hero.blurb}
         labels={{
-          totalPaid: copy.totalPaid,
-          thisMonth: copy.thisMonth,
-          outstanding: copy.outstanding,
-          paidCount: copy.paidLabel,
-          pendingCount: copy.pendingLabel,
-          overdueCount: copy.overdueLabel,
-          byDivision: copy.byDivision,
-          nothing: copy.nothing,
+          ariaOverview: copy.hero.ariaOverview,
+          ariaTotals: copy.hero.ariaTotals,
+          ariaByDivision: copy.hero.ariaByDivision,
+          totalPaid: copy.hero.totalPaidLabel,
+          thisMonth: copy.hero.thisMonthLabel,
+          thisMonthFoot: copy.hero.thisMonthFoot,
+          outstanding: copy.hero.outstandingLabel,
+          paidCount: copy.hero.paidCountUnit,
+          pendingCount: copy.hero.pendingCountUnit,
+          overdueCount: copy.hero.overdueCountUnit,
+          byDivision: copy.hero.byDivision,
+          nothing: copy.hero.byDivisionEmpty,
         }}
+        divisionLabels={copy.divisions}
       />
       <section aria-labelledby="acct-inv-list">
         <div className="acct-inv__section-head">
           <h2 id="acct-inv-list" className="acct-inv__section-title">
-            {copy.sectionTitle}
+            {copy.section.title}
           </h2>
-          <span className="acct-inv__section-meta">
-            {invoices.length} {invoices.length === 1 ? "receipt" : "receipts"} on file
-          </span>
+          <span className="acct-inv__section-meta">{sectionMeta}</span>
         </div>
         {invoices.length === 0 ? (
           <div className="acct-inv__empty">
-            <strong>{copy.emptyTitle}</strong>
-            {copy.emptyDescription}
+            <strong>{copy.empty.title}</strong>
+            {copy.empty.description}
           </div>
         ) : (
           <InvoicesList
             invoices={invoices}
-            statusLabel={(status) =>
-              copy.statuses[status as keyof typeof copy.statuses] || copy.statusPending
-            }
+            statusLabel={(status) => {
+              const statuses = copy.statuses as Record<string, string>;
+              return statuses[status] || copy.statuses.fallback;
+            }}
             fallbackTitle={(invoiceNo) =>
-              copy.fallbackInvoice.replace("{number}", invoiceNo ?? "")
+              copy.list.fallbackTitle.replace("{number}", invoiceNo ?? "")
             }
             formatDate={(iso) => formatDate(iso, { locale })}
+            ariaListLabel={copy.list.ariaLabel}
+            rowAriaTemplate={copy.list.rowAriaLabel}
+            divisionLabels={copy.divisions}
           />
         )}
       </section>
@@ -175,7 +97,7 @@ export default async function InvoicesPage() {
           margin: "8px 0 0",
         }}
       >
-        {translateSurfaceLabel(locale, "Receipts download as branded PDFs.")}
+        {translateSurfaceLabel(locale, copy.footerNote)}
       </p>
     </div>
   );

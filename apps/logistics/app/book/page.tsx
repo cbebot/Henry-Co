@@ -1,23 +1,72 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ClipboardCheck, MapPin, Radio, ShieldCheck } from "lucide-react";
+import { getLogisticsBookCopy } from "@henryco/i18n/server";
 import BookRequestForm from "@/components/booking/BookRequestForm";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getLogisticsZones } from "@/lib/logistics/data";
 import { getLogisticsViewer } from "@/lib/logistics/auth";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
-export const metadata: Metadata = {
-  title: "Book a delivery | HenryCo Logistics",
-  description: "Submit a pickup and delivery request with governed pricing and live tracking.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsBookCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
 
 export const dynamic = "force-dynamic";
 
 export default async function BookPage() {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsBookCopy(locale);
   const [zones, viewer] = await Promise.all([getLogisticsZones(), getLogisticsViewer()]);
   const savedAddresses = viewer.user
-    ? await loadSavedAddresses(viewer.user.id)
+    ? await loadSavedAddresses(viewer.user.id, copy.savedAddress.fallbackLabel)
     : [];
+
+  const requirementCards = [
+    {
+      icon: MapPin,
+      title: copy.requirements.pickupDropoffTitle,
+      body: copy.requirements.pickupDropoffBody,
+    },
+    {
+      icon: ClipboardCheck,
+      title: copy.requirements.parcelProfileTitle,
+      body: copy.requirements.parcelProfileBody,
+    },
+    {
+      icon: Radio,
+      title: copy.requirements.serviceTierTitle,
+      body: copy.requirements.serviceTierBody,
+    },
+  ];
+
+  const afterSubmitSteps = [
+    {
+      step: "01",
+      title: copy.afterSubmit.step1Title,
+      body: copy.afterSubmit.step1Body,
+    },
+    {
+      step: "02",
+      title: copy.afterSubmit.step2Title,
+      body: copy.afterSubmit.step2Body,
+    },
+    {
+      step: "03",
+      title: copy.afterSubmit.step3Title,
+      body: copy.afterSubmit.step3Body,
+    },
+    {
+      step: "04",
+      title: copy.afterSubmit.step4Title,
+      body: copy.afterSubmit.step4Body,
+    },
+  ];
 
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
@@ -26,42 +75,25 @@ export default async function BookPage() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-start">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
-                Pickup &middot; Dispatch &middot; Proof
+                {copy.hero.eyebrow}
               </p>
               <h1 className="mt-5 max-w-2xl text-balance text-[2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
-                Book a delivery.
+                {copy.hero.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)]">
-                Sender, recipient, and where to meet both sides. Tracking code is issued immediately;
-                milestones update as dispatch progresses.
+                {copy.hero.subtitle}
               </p>
               <p className="mt-7 text-[11px] font-medium uppercase tracking-[0.22em] text-white/45">
-                Governed pricing · Live milestones · Proof at delivery
+                {copy.hero.meta}
               </p>
             </div>
 
             <aside>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                What we’ll need from you
+                {copy.requirements.eyebrow}
               </p>
               <ul className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-                {[
-                  {
-                    icon: MapPin,
-                    title: "Pickup and dropoff",
-                    body: "Two clean addresses with the right contact name and phone for each end.",
-                  },
-                  {
-                    icon: ClipboardCheck,
-                    title: "Parcel profile",
-                    body: "Weight band, dimensions if oversized, and any handling notes (fragile, cold, document).",
-                  },
-                  {
-                    icon: Radio,
-                    title: "Service tier",
-                    body: "Standard, express, or scheduled — pick the timing both sides can hold to.",
-                  },
-                ].map(({ icon: Icon, title, body }) => (
+                {requirementCards.map(({ icon: Icon, title, body }) => (
                   <li key={title} className="flex gap-4 py-4">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--logistics-line)] bg-white/[0.03] text-[var(--logistics-accent)]">
                       <Icon className="h-4 w-4" />
@@ -82,7 +114,7 @@ export default async function BookPage() {
         <section className="grid gap-10 lg:grid-cols-[1.05fr,0.95fr] lg:items-start">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-              Booking details
+              {copy.form.heading}
             </p>
             <div className="mt-6">
               <BookRequestForm zones={zones} defaultMode="book" savedAddresses={savedAddresses} />
@@ -92,34 +124,13 @@ export default async function BookPage() {
           <aside className="space-y-10 lg:pt-8">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                After you submit
+                {copy.afterSubmit.eyebrow}
               </p>
               <ol className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-                {[
-                  {
-                    step: "01",
-                    title: "Tracking code on screen",
-                    body: "You see it the moment the booking is recorded — no email wait. Save it or share with the recipient.",
-                  },
-                  {
-                    step: "02",
-                    title: "Dispatch picks it up",
-                    body: "Routing assigns within the operating window; pickup milestone writes live to the timeline.",
-                  },
-                  {
-                    step: "03",
-                    title: "Both sides stay informed",
-                    body: "Sender and recipient see the same milestones. Updates land via SMS or in your HenryCo account thread.",
-                  },
-                  {
-                    step: "04",
-                    title: "Proof of delivery on arrival",
-                    body: "Recipient name, time, and capture method save to the shipment record — visible immediately on the track page.",
-                  },
-                ].map(({ step, title, body }) => (
+                {afterSubmitSteps.map(({ step, title, body }) => (
                   <li key={step} className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                      Step {step}
+                      {copy.afterSubmit.stepLabel} {step}
                     </span>
                     <div>
                       <h3 className="text-sm font-semibold tracking-tight text-white">{title}</h3>
@@ -134,11 +145,10 @@ export default async function BookPage() {
 
             <div className="border-l-2 border-[var(--logistics-accent)]/55 pl-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> Recipient privacy
+                <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> {copy.privacy.eyebrow}
               </p>
               <p className="mt-2 text-sm leading-7 text-[var(--logistics-muted)]">
-                Phone numbers are used to authorise tracking lookups and surface milestones — not
-                shared with third parties. Both sides can revoke updates from their thread.
+                {copy.privacy.body}
               </p>
             </div>
           </aside>
@@ -148,14 +158,13 @@ export default async function BookPage() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                Already have a tracking code?
+                {copy.trackCta.eyebrow}
               </p>
               <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
-                Pick up where the last shipment left off.
+                {copy.trackCta.title}
               </h2>
               <p className="mt-3 text-sm leading-7 text-[var(--logistics-muted)]">
-                Status, proof of delivery, and any active exception live on the track page. Account
-                holders also see logistics activity inside their HenryCo support thread.
+                {copy.trackCta.body}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -163,14 +172,14 @@ export default async function BookPage() {
                 href="/track"
                 className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
               >
-                Track a shipment
+                {copy.trackCta.trackButton}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/quote"
                 className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.04]"
               >
-                Get a quote first
+                {copy.trackCta.quoteButton}
               </Link>
             </div>
           </div>
@@ -180,7 +189,7 @@ export default async function BookPage() {
   );
 }
 
-async function loadSavedAddresses(userId: string) {
+async function loadSavedAddresses(userId: string, fallbackLabel: string) {
   // V2-ADDR-01: canonical user_addresses (replaces customer_addresses).
   const admin = createAdminSupabase();
   const { data } = await admin
@@ -192,7 +201,7 @@ async function loadSavedAddresses(userId: string) {
     .limit(6);
   return (data ?? []).map((row) => ({
     id: String(row.id),
-    label: String(row.label || "Saved address"),
+    label: String(row.label || fallbackLabel),
     fullAddress:
       String(row.formatted_address || "").trim() ||
       [row.street, row.city, row.state, row.country].filter(Boolean).join(", "),

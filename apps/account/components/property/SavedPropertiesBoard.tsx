@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { Building2, Clock3, ExternalLink, HeartOff, MapPin, MessageCircleMore, Scale, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import type { SavedPropertyCard } from "@/lib/property-module";
 import EmptyState from "@/components/layout/EmptyState";
 
@@ -47,6 +49,11 @@ export default function SavedPropertiesBoard({
   propertyOrigin,
 }: SavedPropertiesBoardProps) {
   const router = useRouter();
+  const locale = useHenryCoLocale();
+  const t = useCallback(
+    (text: string) => translateSurfaceLabel(locale, text),
+    [locale],
+  );
   const [properties, setProperties] = useState(initialProperties);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +72,7 @@ export default function SavedPropertiesBoard({
       }
 
       if (current.length >= 3) {
-        setError("You can compare up to three saved properties at once.");
+        setError(t("You can compare up to three saved properties at once."));
         return current;
       }
 
@@ -86,7 +93,7 @@ export default function SavedPropertiesBoard({
 
       if (!response.ok) {
         const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(payload?.error || "Saved property could not be removed.");
+        throw new Error(payload?.error || t("Saved property could not be removed."));
       }
 
       startTransition(() => {
@@ -95,7 +102,7 @@ export default function SavedPropertiesBoard({
         router.refresh();
       });
     } catch (removeError) {
-      setError(removeError instanceof Error ? removeError.message : "Saved property could not be removed.");
+      setError(removeError instanceof Error ? removeError.message : t("Saved property could not be removed."));
     } finally {
       setRemovingId(null);
     }
@@ -105,8 +112,8 @@ export default function SavedPropertiesBoard({
     return (
       <EmptyState
         icon={Building2}
-        title="No saved properties yet"
-        description="Start exploring HenryCo Property and the best listings you save will appear here with compare, inquiry, and follow-up actions."
+        title={t("No saved properties yet")}
+        description={t("Start exploring HenryCo Property and the best listings you save will appear here with compare, inquiry, and follow-up actions.")}
         action={
           <a
             href={propertyOrigin}
@@ -114,7 +121,7 @@ export default function SavedPropertiesBoard({
             rel="noopener noreferrer"
             className="acct-button-primary rounded-xl"
           >
-            Explore Property <ExternalLink size={14} />
+            {t("Explore Property")} <ExternalLink size={14} />
           </a>
         }
       />
@@ -163,7 +170,7 @@ export default function SavedPropertiesBoard({
                   </span>
                   {property.managedByHenryCo ? (
                     <span className="rounded-full bg-[var(--acct-green-soft)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-green)]">
-                      Managed by HenryCo
+                      {t("Managed by HenryCo")}
                     </span>
                   ) : null}
                 </div>
@@ -186,7 +193,7 @@ export default function SavedPropertiesBoard({
                       {formatPrice(property.price, property.currency, property.priceInterval)}
                     </p>
                     <p className="mt-1 text-[0.72rem] text-[var(--acct-muted)]">
-                      Saved {formatDate(property.savedAt)}
+                      {t("Saved")} {formatDate(property.savedAt)}
                     </p>
                   </div>
                 </div>
@@ -196,7 +203,7 @@ export default function SavedPropertiesBoard({
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div className="rounded-[1.2rem] bg-[var(--acct-surface)] px-4 py-3">
                     <p className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">
-                      Listing type
+                      {t("Listing type")}
                     </p>
                     <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">
                       {prettifyKind(property.kind)}
@@ -204,7 +211,7 @@ export default function SavedPropertiesBoard({
                   </div>
                   <div className="rounded-[1.2rem] bg-[var(--acct-surface)] px-4 py-3">
                     <p className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">
-                      Last updated
+                      {t("Last updated")}
                     </p>
                     <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">
                       {formatDate(property.lastUpdatedAt)}
@@ -212,12 +219,12 @@ export default function SavedPropertiesBoard({
                   </div>
                   <div className="rounded-[1.2rem] bg-[var(--acct-surface)] px-4 py-3">
                     <p className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">
-                      Fit summary
+                      {t("Fit summary")}
                     </p>
                     <p className="mt-2 text-sm font-semibold text-[var(--acct-ink)]">
-                      {property.bedrooms ? `${property.bedrooms} bed` : "Flexible"}
-                      {property.bathrooms ? ` · ${property.bathrooms} bath` : ""}
-                      {property.sizeSqm ? ` · ${property.sizeSqm} sqm` : ""}
+                      {property.bedrooms ? `${property.bedrooms} ${t("bed")}` : t("Flexible")}
+                      {property.bathrooms ? ` · ${property.bathrooms} ${t("bath")}` : ""}
+                      {property.sizeSqm ? ` · ${property.sizeSqm} ${t("sqm")}` : ""}
                     </p>
                   </div>
                 </div>
@@ -229,7 +236,7 @@ export default function SavedPropertiesBoard({
                     rel="noopener noreferrer"
                     className="acct-button-primary rounded-xl"
                   >
-                    Open details <ExternalLink size={14} />
+                    {t("Open details")} <ExternalLink size={14} />
                   </a>
                   <a
                     href={property.inquiryUrl}
@@ -237,7 +244,7 @@ export default function SavedPropertiesBoard({
                     rel="noopener noreferrer"
                     className="acct-button-secondary rounded-xl"
                   >
-                    Contact / inquire <MessageCircleMore size={14} />
+                    {t("Contact / inquire")} <MessageCircleMore size={14} />
                   </a>
                   <button
                     type="button"
@@ -249,7 +256,7 @@ export default function SavedPropertiesBoard({
                     }`}
                   >
                     <Scale size={14} className="mr-2 inline-flex" />
-                    {selected ? "In compare" : "Compare"}
+                    {selected ? t("In compare") : t("Compare")}
                   </button>
                   <button
                     type="button"
@@ -258,7 +265,7 @@ export default function SavedPropertiesBoard({
                     className="rounded-xl border border-[var(--acct-red)]/20 bg-[var(--acct-red-soft)] px-4 py-2 text-sm font-semibold text-[var(--acct-red)] transition hover:border-[var(--acct-red)]/40 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <HeartOff size={14} className="mr-2 inline-flex" />
-                    {removing ? "Removing..." : "Remove from saved"}
+                    {removing ? t("Removing...") : t("Remove from saved")}
                   </button>
                 </div>
               </div>
@@ -271,11 +278,11 @@ export default function SavedPropertiesBoard({
         <section className="sticky bottom-4 z-20 rounded-[1.8rem] border border-[var(--acct-line)] bg-[rgba(255,255,255,0.96)] p-5 shadow-[0_18px_48px_rgba(15,23,42,0.14)] backdrop-blur">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="acct-kicker">Compare tray</p>
+              <p className="acct-kicker">{t("Compare tray")}</p>
               <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">
                 {compareItems.length === 1
-                  ? "Select one or two more properties to compare side by side."
-                  : "Saved properties side by side"}
+                  ? t("Select one or two more properties to compare side by side.")
+                  : t("Saved properties side by side")}
               </h3>
             </div>
             <button
@@ -283,7 +290,7 @@ export default function SavedPropertiesBoard({
               onClick={() => setCompareIds([])}
               className="rounded-xl border border-[var(--acct-line)] px-4 py-2 text-sm font-semibold text-[var(--acct-muted)] transition hover:border-[var(--acct-gold)]/30 hover:text-[var(--acct-ink)]"
             >
-              Clear compare
+              {t("Clear compare")}
             </button>
           </div>
 
@@ -301,12 +308,12 @@ export default function SavedPropertiesBoard({
                 </div>
 
                 <div className="mt-4 space-y-2 text-sm text-[var(--acct-muted)]">
-                  <p><span className="font-semibold text-[var(--acct-ink)]">Price:</span> {formatPrice(property.price, property.currency, property.priceInterval)}</p>
-                  <p><span className="font-semibold text-[var(--acct-ink)]">Status:</span> {prettifyStatus(property.status)}</p>
-                  <p><span className="font-semibold text-[var(--acct-ink)]">Type:</span> {prettifyKind(property.kind)}</p>
-                  <p><span className="font-semibold text-[var(--acct-ink)]">Bedrooms:</span> {property.bedrooms ?? "N/A"}</p>
-                  <p><span className="font-semibold text-[var(--acct-ink)]">Bathrooms:</span> {property.bathrooms ?? "N/A"}</p>
-                  <p><span className="font-semibold text-[var(--acct-ink)]">Size:</span> {property.sizeSqm ? `${property.sizeSqm} sqm` : "Not listed"}</p>
+                  <p><span className="font-semibold text-[var(--acct-ink)]">{t("Price")}:</span> {formatPrice(property.price, property.currency, property.priceInterval)}</p>
+                  <p><span className="font-semibold text-[var(--acct-ink)]">{t("Status")}:</span> {prettifyStatus(property.status)}</p>
+                  <p><span className="font-semibold text-[var(--acct-ink)]">{t("Type")}:</span> {prettifyKind(property.kind)}</p>
+                  <p><span className="font-semibold text-[var(--acct-ink)]">{t("Bedrooms")}:</span> {property.bedrooms ?? t("N/A")}</p>
+                  <p><span className="font-semibold text-[var(--acct-ink)]">{t("Bathrooms")}:</span> {property.bathrooms ?? t("N/A")}</p>
+                  <p><span className="font-semibold text-[var(--acct-ink)]">{t("Size")}:</span> {property.sizeSqm ? `${property.sizeSqm} ${t("sqm")}` : t("Not listed")}</p>
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -316,14 +323,14 @@ export default function SavedPropertiesBoard({
                     rel="noopener noreferrer"
                     className="rounded-xl bg-[var(--acct-ink)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
                   >
-                    Open details
+                    {t("Open details")}
                   </a>
                   <button
                     type="button"
                     onClick={() => toggleCompare(property.listingId)}
                     className="rounded-xl border border-[var(--acct-line)] px-4 py-2 text-sm font-semibold text-[var(--acct-muted)] transition hover:text-[var(--acct-ink)]"
                   >
-                    Remove
+                    {t("Remove")}
                   </button>
                 </div>
               </div>
@@ -332,7 +339,7 @@ export default function SavedPropertiesBoard({
 
           <div className="mt-4 flex items-center gap-2 text-xs text-[var(--acct-muted)]">
             <Clock3 size={14} />
-            Compare uses your live saved shortlist, so removing or updating a listing here stays consistent with the Property experience.
+            {t("Compare uses your live saved shortlist, so removing or updating a listing here stays consistent with the Property experience.")}
           </div>
         </section>
       ) : null}

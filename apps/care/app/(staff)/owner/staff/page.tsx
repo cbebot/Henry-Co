@@ -15,11 +15,13 @@ import {
   Users,
 } from "lucide-react";
 import { BRAND_EMAIL_PLACEHOLDERS } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import ConfirmButton from "@/components/feedback/ConfirmButton";
 import PendingSubmitButton from "@/components/forms/PendingSubmitButton";
 
 import { reconcileStaffDirectory } from "@/lib/auth/staff-identity";
 import { requireRoles } from "@/lib/auth/server";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import { logProtectedPageAccess } from "@/lib/security/logger";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
@@ -195,6 +197,8 @@ export default async function OwnerStaffPage({
 }) {
   const auth = await requireRoles(["owner"]);
   await logProtectedPageAccess("/owner/staff");
+  const locale = await getCarePublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const actorRole = String(auth.profile.role || "").toLowerCase();
   const actorTs = auth.user.last_sign_in_at
@@ -252,14 +256,15 @@ export default async function OwnerStaffPage({
     <div className="space-y-8">
       <section className="rounded-[38px] border border-black/10 bg-white/80 p-8 shadow-[0_22px_80px_rgba(0,0,0,0.08)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04]">
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-          Staff command
+          {t("Staff command")}
         </div>
         <h1 className="mt-2 text-4xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-5xl">
-          Control every staff account from one command surface.
+          {t("Control every staff account from one command surface.")}
         </h1>
         <p className="mt-4 max-w-3xl text-zinc-600 dark:text-white/65">
-          Promote, demote, freeze, clear access pressure, force re-authentication,
-          and keep the live auth role, the mirrored profile row, and the actual dashboard route aligned.
+          {t(
+            "Promote, demote, freeze, clear access pressure, force re-authentication, and keep the live auth role, the mirrored profile row, and the actual dashboard route aligned.",
+          )}
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
@@ -267,7 +272,7 @@ export default async function OwnerStaffPage({
             href="/owner/security"
             className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-[color:var(--accent)]/40 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
           >
-            Security center
+            {t("Security center")}
             <ArrowRight className="h-4 w-4" />
           </Link>
 
@@ -275,7 +280,7 @@ export default async function OwnerStaffPage({
             href="/owner"
             className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:border-[color:var(--accent)]/40 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
           >
-            Owner dashboard
+            {t("Owner dashboard")}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -292,15 +297,15 @@ export default async function OwnerStaffPage({
         <div className="grid gap-6 xl:grid-cols-[0.88fr_1.12fr]">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-              Staff provisioning
+              {t("Staff provisioning")}
             </div>
             <h2 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white">
-              Create staff, assign role, and send setup access from one place.
+              {t("Create staff, assign role, and send setup access from one place.")}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600 dark:text-white/65">
-              New accounts are provisioned securely, aligned with their assigned dashboard, and sent a
-              setup link that opens the correct workspace after password creation. If a live auth issue
-              blocks new-user creation, this page now reports the exact failure instead of implying success.
+              {t(
+                "New accounts are provisioned securely, aligned with their assigned dashboard, and sent a setup link that opens the correct workspace after password creation. If a live auth issue blocks new-user creation, this page now reports the exact failure instead of implying success.",
+              )}
             </p>
           </div>
 
@@ -316,19 +321,19 @@ export default async function OwnerStaffPage({
             <div className="grid gap-4 md:grid-cols-2">
               <label className="grid gap-2">
                 <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                  Full name
+                  {t("Full name")}
                 </span>
                 <input
                   name="full_name"
                   required
-                  placeholder="Staff member name"
+                  placeholder={t("Staff member name")}
                   className="h-12 rounded-2xl border border-black/10 bg-white px-4 text-sm font-medium text-zinc-900 shadow-sm outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
                 />
               </label>
 
               <label className="grid gap-2">
                 <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                  Work email
+                  {t("Work email")}
                 </span>
                 <input
                   name="email"
@@ -343,18 +348,18 @@ export default async function OwnerStaffPage({
             <div className="grid gap-4 md:grid-cols-[1fr_0.7fr_0.8fr]">
               <label className="grid gap-2">
                 <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                  Phone
+                  {t("Phone")}
                 </span>
                 <input
                   name="phone"
-                  placeholder="Optional phone number"
+                  placeholder={t("Optional phone number")}
                   className="h-12 rounded-2xl border border-black/10 bg-white px-4 text-sm font-medium text-zinc-900 shadow-sm outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
                 />
               </label>
 
               <label className="grid gap-2">
                 <span className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
-                  Role
+                  {t("Role")}
                 </span>
                 <select
                   name="role"
@@ -373,7 +378,7 @@ export default async function OwnerStaffPage({
                 <input type="hidden" name="is_active" value="false" />
                 <label className="flex h-12 items-center gap-3 rounded-2xl border border-black/10 bg-white px-4 text-sm font-medium text-zinc-900 shadow-sm dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white">
                   <input type="checkbox" name="is_active" value="true" defaultChecked />
-                  Active immediately
+                  {t("Active immediately")}
                 </label>
               </div>
             </div>
@@ -383,13 +388,13 @@ export default async function OwnerStaffPage({
                 <input type="hidden" name="send_invite" value="false" />
                 <label className="inline-flex items-center gap-3 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-zinc-900 shadow-sm dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white">
                   <input type="checkbox" name="send_invite" value="true" defaultChecked />
-                  Send setup email immediately
+                  {t("Send setup email immediately")}
                 </label>
               </div>
 
               <PendingSubmitButton
-                label="Create or update staff"
-                pendingLabel="Saving staff account..."
+                label={t("Create or update staff")}
+                pendingLabel={t("Saving staff account...")}
                 className="h-12 rounded-2xl px-5 text-sm font-semibold"
               />
             </div>
@@ -397,10 +402,14 @@ export default async function OwnerStaffPage({
             {recentProvisioningIssue ? (
               <div className="rounded-[1.6rem] border border-amber-300/30 bg-amber-500/10 px-4 py-4 text-sm leading-7 text-amber-800 dark:text-amber-100">
                 {provisioningConstraintIssue
-                  ? "Fresh auth inserts are still colliding with the live profile mirror rule: the database tries to create a customer profile first, and profiles_role_check rejects customer. This owner page can still recover onboarding by reactivating a retired empty access slot when one is available."
-                  : "Fresh auth inserts are currently being rejected upstream by Supabase Auth before the account row can exist. Existing staff can still receive setup links and access resets."}
+                  ? t(
+                      "Fresh auth inserts are still colliding with the live profile mirror rule: the database tries to create a customer profile first, and profiles_role_check rejects customer. This owner page can still recover onboarding by reactivating a retired empty access slot when one is available.",
+                    )
+                  : t(
+                      "Fresh auth inserts are currently being rejected upstream by Supabase Auth before the account row can exist. Existing staff can still receive setup links and access resets.",
+                    )}
                 <div className="mt-2 text-xs uppercase tracking-[0.14em] text-amber-700/80 dark:text-amber-200/70">
-                  Last blocked attempt • {formatDateTime(recentProvisioningIssue.createdAt)}
+                  {t("Last blocked attempt")} • {formatDateTime(recentProvisioningIssue.createdAt)}
                   {recentProvisioningIssue.targetEmail ? ` • ${recentProvisioningIssue.targetEmail}` : ""}
                   {recentProvisioningIssue.code ? ` • code ${recentProvisioningIssue.code}` : ""}
                 </div>
@@ -423,45 +432,45 @@ export default async function OwnerStaffPage({
       <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-7">
         <MetricCard
           icon={Users}
-          label="Total staff"
+          label={t("Total staff")}
           value={String(total)}
-          note="All accounts seen by the system"
+          note={t("All accounts seen by the system")}
         />
         <MetricCard
           icon={UserCog}
-          label="Managers"
+          label={t("Managers")}
           value={String(managersCount)}
-          note="Operational leadership"
+          note={t("Operational leadership")}
         />
         <MetricCard
           icon={Lock}
-          label="Frozen accounts"
+          label={t("Frozen accounts")}
           value={String(frozenCount)}
-          note="Blocked from normal use"
+          note={t("Blocked from normal use")}
         />
         <MetricCard
           icon={UserMinus}
-          label="Archived access"
+          label={t("Archived access")}
           value={String(archivedCount)}
-          note="Safe delete / restore state"
+          note={t("Safe delete / restore state")}
         />
         <MetricCard
           icon={ShieldCheck}
-          label="Forced re-login"
+          label={t("Forced re-login")}
           value={String(reauthCount)}
-          note="Must sign in again"
+          note={t("Must sign in again")}
         />
         <MetricCard
           icon={AlertTriangle}
-          label="Missing profile rows"
+          label={t("Missing profile rows")}
           value={String(missingProfilesCount)}
-          note="Auth user exists without profile row"
+          note={t("Auth user exists without profile row")}
         />
         <MetricCard
           icon={BadgeCheck}
-          label="Auth role drift"
+          label={t("Auth role drift")}
           value={String(authDriftCount)}
-          note="Profile mirror not aligned with live auth metadata"
+          note={t("Profile mirror not aligned with live auth metadata")}
         />
       </section>
 
@@ -472,7 +481,7 @@ export default async function OwnerStaffPage({
             <input
               name="q"
               defaultValue={q}
-              placeholder="Search name, email, phone, role, or ID..."
+              placeholder={t("Search name, email, phone, role, or ID...")}
               className="h-12 w-full rounded-2xl border border-black/10 bg-white pl-11 pr-4 text-sm font-medium text-zinc-900 shadow-sm outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
             />
           </div>
@@ -482,12 +491,12 @@ export default async function OwnerStaffPage({
             defaultValue={roleFilter}
             className="h-12 rounded-2xl border border-black/10 bg-white px-4 text-sm font-medium text-zinc-900 shadow-sm outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
           >
-            <option value="">All roles</option>
-            <option value="owner">Owner</option>
-            <option value="manager">Manager</option>
-            <option value="rider">Rider</option>
-            <option value="support">Support</option>
-            <option value="staff">Staff</option>
+            <option value="">{t("All roles")}</option>
+            <option value="owner">{t("Owner")}</option>
+            <option value="manager">{t("Manager")}</option>
+            <option value="rider">{t("Rider")}</option>
+            <option value="support">{t("Support")}</option>
+            <option value="staff">{t("Staff")}</option>
           </select>
 
           <select
@@ -495,19 +504,19 @@ export default async function OwnerStaffPage({
             defaultValue={stateFilter}
             className="h-12 rounded-2xl border border-black/10 bg-white px-4 text-sm font-medium text-zinc-900 shadow-sm outline-none dark:border-white/10 dark:bg-[#0F1A2C] dark:text-white"
           >
-            <option value="">All states</option>
-            <option value="active">Active only</option>
-            <option value="frozen">Frozen only</option>
-            <option value="archived">Archived only</option>
-            <option value="reauth">Forced re-login</option>
-            <option value="missing-profile">Missing profile rows</option>
+            <option value="">{t("All states")}</option>
+            <option value="active">{t("Active only")}</option>
+            <option value="frozen">{t("Frozen only")}</option>
+            <option value="archived">{t("Archived only")}</option>
+            <option value="reauth">{t("Forced re-login")}</option>
+            <option value="missing-profile">{t("Missing profile rows")}</option>
           </select>
 
           <button
             type="submit"
             className="care-button-primary h-12 rounded-2xl px-5 text-sm font-semibold"
           >
-            Filter
+            {t("Filter")}
           </button>
         </form>
       </section>
@@ -531,7 +540,7 @@ export default async function OwnerStaffPage({
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="text-2xl font-semibold text-zinc-950 dark:text-white">
-                        {safeText(staff.full_name, "Unnamed staff")}
+                        {safeText(staff.full_name, t("Unnamed staff"))}
                       </div>
 
                       <span
@@ -544,93 +553,95 @@ export default async function OwnerStaffPage({
 
                       {frozen ? (
                         <span className="rounded-full border border-red-300/30 bg-red-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-red-700 dark:text-red-100">
-                          Frozen
+                          {t("Frozen")}
                         </span>
                       ) : null}
 
                       {archived ? (
                         <span className="rounded-full border border-amber-300/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-100">
-                          Archived
+                          {t("Archived")}
                         </span>
                       ) : null}
 
                       {forced ? (
                         <span className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-purple-700 dark:text-purple-100">
-                          Reauth required
+                          {t("Reauth required")}
                         </span>
                       ) : null}
 
                       {!staff.profile_exists ? (
                         <span className="rounded-full border border-amber-300/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-100">
-                          Profile missing
+                          {t("Profile missing")}
                         </span>
                       ) : null}
 
                       {!staff.auth_role_aligned ? (
                         <span className="rounded-full border border-[color:var(--accent)]/25 bg-[color:var(--accent)]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">
-                          Auth role drift
+                          {t("Auth role drift")}
                         </span>
                       ) : null}
 
                       {staff.profile_write_error ? (
                         <span className="rounded-full border border-amber-300/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-100">
-                          Profile mirror blocked
+                          {t("Profile mirror blocked")}
                         </span>
                       ) : null}
 
                       {isSelf ? (
                         <span className="rounded-full border border-amber-300/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-100">
-                          Current owner
+                          {t("Current owner")}
                         </span>
                       ) : null}
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                      <Field label="Email">{safeText(staff.email)}</Field>
-                      <Field label="Phone">{safeText(staff.phone)}</Field>
-                      <Field label="User ID">{staff.id}</Field>
-                      <Field label="Dashboard route">{roleDestination(staff.role)}</Field>
-                      <Field label="Access state">
-                        {archived ? "Archived" : frozen ? "Frozen" : "Active"}
+                      <Field label={t("Email")}>{safeText(staff.email)}</Field>
+                      <Field label={t("Phone")}>{safeText(staff.phone)}</Field>
+                      <Field label={t("User ID")}>{staff.id}</Field>
+                      <Field label={t("Dashboard route")}>{roleDestination(staff.role)}</Field>
+                      <Field label={t("Access state")}>
+                        {archived ? t("Archived") : frozen ? t("Frozen") : t("Active")}
                       </Field>
-                      <Field label="Created">{formatDateTime(staff.created_at)}</Field>
-                      <Field label="Last sign in">{formatDateTime(staff.last_sign_in_at)}</Field>
-                      <Field label="Auth access role">
+                      <Field label={t("Created")}>{formatDateTime(staff.created_at)}</Field>
+                      <Field label={t("Last sign in")}>{formatDateTime(staff.last_sign_in_at)}</Field>
+                      <Field label={t("Auth access role")}>
                         {safeText(staff.app_role || staff.user_role || null)}
                       </Field>
-                      <Field label="Forced re-login at">
+                      <Field label={t("Forced re-login at")}>
                         {formatDateTime(staff.force_reauth_after)}
                       </Field>
-                      <Field label="Archived at">{formatDateTime(staff.deleted_at)}</Field>
+                      <Field label={t("Archived at")}>{formatDateTime(staff.deleted_at)}</Field>
                     </div>
 
                     {!staff.profile_exists ? (
                       <div className="rounded-2xl border border-amber-300/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-100">
-                        This sign-in account exists, but the staff directory record is missing. Access can
-                        still follow the assigned role, and the repair action below will keep trying to rebuild
-                        the missing record safely.
+                        {t(
+                          "This sign-in account exists, but the staff directory record is missing. Access can still follow the assigned role, and the repair action below will keep trying to rebuild the missing record safely.",
+                        )}
                       </div>
                     ) : null}
 
                     {staff.profile_write_error ? (
                       <div className="rounded-2xl border border-amber-300/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-100">
-                        The database rejected the latest staff directory refresh for this account. Role-based
-                        access can still follow the auth record, and the repair action below will retry the
-                        directory sync once the database-side issue is clear.
+                        {t(
+                          "The database rejected the latest staff directory refresh for this account. Role-based access can still follow the auth record, and the repair action below will retry the directory sync once the database-side issue is clear.",
+                        )}
                       </div>
                     ) : null}
 
                     {!staff.email ? (
                       <div className="rounded-2xl border border-amber-300/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-100">
-                        This is now a profile-only archive record without a live auth sign-in attached. You can
-                        preserve it for history, repair it when auth exists again, or permanently delete it once
-                        you are sure the record is no longer needed.
+                        {t(
+                          "This is now a profile-only archive record without a live auth sign-in attached. You can preserve it for history, repair it when auth exists again, or permanently delete it once you are sure the record is no longer needed.",
+                        )}
                       </div>
                     ) : null}
 
                     {archived ? (
                       <div className="rounded-2xl border border-amber-300/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-100">
-                        This account is archived under the safe-delete model. Sign-in is blocked until an owner restores access.
+                        {t(
+                          "This account is archived under the safe-delete model. Sign-in is blocked until an owner restores access.",
+                        )}
                       </div>
                     ) : null}
                   </div>
@@ -639,11 +650,12 @@ export default async function OwnerStaffPage({
                     <div className="rounded-3xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/5">
                       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
                         <UserPlus className="h-4 w-4 text-[color:var(--accent)]" />
-                        Role control
+                        {t("Role control")}
                       </div>
                       <div className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                        Saving a role refreshes the account’s assigned workspace, repairs the directory record
-                        when possible, and prompts a fresh access check the next time the staff member signs in.
+                        {t(
+                          "Saving a role refreshes the account’s assigned workspace, repairs the directory record when possible, and prompts a fresh access check the next time the staff member signs in.",
+                        )}
                       </div>
 
                       <form action={updateStaffRoleAction} className="mt-4 grid gap-3">
@@ -670,22 +682,22 @@ export default async function OwnerStaffPage({
                         </select>
 
                         <PendingSubmitButton
-                          label="Save role"
-                          pendingLabel="Saving role..."
+                          label={t("Save role")}
+                          pendingLabel={t("Saving role...")}
                           disabled={isSelf}
                           className="h-12 rounded-2xl px-5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
                         />
                       </form>
 
                       <div className="rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-xs leading-6 text-zinc-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/62">
-                        Expected dashboard after save: <span className="font-semibold text-zinc-900 dark:text-white">{roleDestination(staff.role)}</span>
+                        {t("Expected dashboard after save:")} <span className="font-semibold text-zinc-900 dark:text-white">{roleDestination(staff.role)}</span>
                         {staff.auth_role_aligned ? (
-                          <> • the access record already matches this assignment.</>
+                          <> • {t("the access record already matches this assignment.")}</>
                         ) : (
-                          <> • the live access record still needs repair and will be rechecked on the next successful save.</>
+                          <> • {t("the live access record still needs repair and will be rechecked on the next successful save.")}</>
                         )}
                         {staff.profile_write_error ? (
-                          <> • the staff directory record is still blocked by a database-side restriction.</>
+                          <> • {t("the staff directory record is still blocked by a database-side restriction.")}</>
                         ) : null}
                       </div>
                     </div>
@@ -694,7 +706,7 @@ export default async function OwnerStaffPage({
                       <div className="rounded-3xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/5">
                         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
                           <UserMinus className="h-4 w-4 text-red-500" />
-                          Account state
+                          {t("Account state")}
                         </div>
 
                         <form action={setStaffFrozenAction} className="mt-4 grid gap-3">
@@ -711,11 +723,15 @@ export default async function OwnerStaffPage({
                           <ConfirmButton
                             type="submit"
                             disabled={isSelf || archived}
-                            confirmTitle={frozen ? "Unfreeze this staff account?" : "Freeze this staff account?"}
+                            confirmTitle={frozen ? t("Unfreeze this staff account?") : t("Freeze this staff account?")}
                             confirmDescription={
                               frozen
-                                ? "The user will be allowed back into the workspace unless another restriction is active."
-                                : "The user will be blocked from the workspace and will need owner review before returning."
+                                ? t(
+                                    "The user will be allowed back into the workspace unless another restriction is active.",
+                                  )
+                                : t(
+                                    "The user will be blocked from the workspace and will need owner review before returning.",
+                                  )
                             }
                             className={`h-12 rounded-2xl px-5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${
                               frozen
@@ -723,7 +739,7 @@ export default async function OwnerStaffPage({
                                 : "border border-red-300/30 bg-red-500/10 text-red-700 dark:text-red-100"
                             }`}
                           >
-                            {frozen ? "Unfreeze account" : "Freeze account"}
+                            {frozen ? t("Unfreeze account") : t("Freeze account")}
                           </ConfirmButton>
                         </form>
 
@@ -741,11 +757,13 @@ export default async function OwnerStaffPage({
                           <ConfirmButton
                             type="submit"
                             disabled={isSelf}
-                            confirmTitle={archived ? "Restore this staff account?" : "Archive this staff account?"}
+                            confirmTitle={archived ? t("Restore this staff account?") : t("Archive this staff account?")}
                             confirmDescription={
                               archived
-                                ? "Restoring access clears the archive flag and allows normal sign-in again."
-                                : "Archiving is the safe-delete model. It blocks sign-in, preserves records, and keeps historical actions intact."
+                                ? t("Restoring access clears the archive flag and allows normal sign-in again.")
+                                : t(
+                                    "Archiving is the safe-delete model. It blocks sign-in, preserves records, and keeps historical actions intact.",
+                                  )
                             }
                             className={`h-12 rounded-2xl px-5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${
                               archived
@@ -753,12 +771,14 @@ export default async function OwnerStaffPage({
                                 : "border border-amber-300/30 bg-amber-500/10 text-amber-700 dark:text-amber-100"
                             }`}
                           >
-                            {archived ? "Restore access" : "Archive access (safe delete)"}
+                            {archived ? t("Restore access") : t("Archive access (safe delete)")}
                           </ConfirmButton>
                         </form>
 
                         <div className="rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-xs leading-6 text-zinc-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/62">
-                          Archive is the safest delete model here. It removes workspace access without destroying historical bookings, payments, reviews, or audit records.
+                          {t(
+                            "Archive is the safest delete model here. It removes workspace access without destroying historical bookings, payments, reviews, or audit records.",
+                          )}
                         </div>
 
                         <form action={deleteStaffAccountAction} className="mt-3 grid gap-3">
@@ -774,11 +794,13 @@ export default async function OwnerStaffPage({
                           <ConfirmButton
                             type="submit"
                             disabled={isSelf || !archived}
-                            confirmTitle="Permanently delete this archived account?"
-                            confirmDescription="This removes sign-in access for good. The profile row will only be removed if no historical records still depend on it."
+                            confirmTitle={t("Permanently delete this archived account?")}
+                            confirmDescription={t(
+                              "This removes sign-in access for good. The profile row will only be removed if no historical records still depend on it.",
+                            )}
                             className="h-12 rounded-2xl border border-red-300/30 bg-red-500/10 px-5 text-sm font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-100"
                           >
-                            {archived ? "Permanent delete archived account" : "Archive before permanent delete"}
+                            {archived ? t("Permanent delete archived account") : t("Archive before permanent delete")}
                           </ConfirmButton>
                         </form>
                       </div>
@@ -786,7 +808,7 @@ export default async function OwnerStaffPage({
                       <div className="rounded-3xl border border-black/10 bg-black/[0.03] p-5 dark:border-white/10 dark:bg-white/5">
                         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 dark:text-white/45">
                           <BadgeCheck className="h-4 w-4 text-[color:var(--accent)]" />
-                          Session control
+                          {t("Session control")}
                         </div>
 
                         <div className="mt-4 grid gap-3">
@@ -801,8 +823,8 @@ export default async function OwnerStaffPage({
                               <input type="hidden" name="id" value={staff.id} />
                               <input type="hidden" name="source_route" value="/owner/staff" />
                               <PendingSubmitButton
-                                label="Repair access record"
-                                pendingLabel="Repairing access..."
+                                label={t("Repair access record")}
+                                pendingLabel={t("Repairing access...")}
                                 variant="secondary"
                                 className="h-12 w-full rounded-2xl border border-cyan-300/30 bg-cyan-500/10 px-5 text-sm font-semibold text-cyan-700 dark:text-cyan-100"
                               />
@@ -819,8 +841,8 @@ export default async function OwnerStaffPage({
                             <input type="hidden" name="id" value={staff.id} />
                             <input type="hidden" name="source_route" value="/owner/staff" />
                             <PendingSubmitButton
-                              label="Force sign-in again"
-                              pendingLabel="Forcing sign-in..."
+                              label={t("Force sign-in again")}
+                              pendingLabel={t("Forcing sign-in...")}
                               disabled={isSelf}
                               variant="danger"
                               className="h-12 w-full rounded-2xl border border-amber-300/30 bg-amber-500/10 px-5 text-sm font-semibold text-amber-700 disabled:cursor-not-allowed disabled:opacity-60 dark:text-amber-100"
@@ -838,8 +860,8 @@ export default async function OwnerStaffPage({
                               <input type="hidden" name="id" value={staff.id} />
                               <input type="hidden" name="source_route" value="/owner/staff" />
                               <PendingSubmitButton
-                                label="Clear forced re-login"
-                                pendingLabel="Clearing re-login..."
+                                label={t("Clear forced re-login")}
+                                pendingLabel={t("Clearing re-login...")}
                                 variant="secondary"
                                 className="h-12 w-full rounded-2xl border border-black/10 bg-white px-5 text-sm font-semibold text-zinc-900 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
                               />
@@ -856,8 +878,8 @@ export default async function OwnerStaffPage({
                             <input type="hidden" name="id" value={staff.id} />
                             <input type="hidden" name="source_route" value="/owner/staff" />
                             <PendingSubmitButton
-                              label={archived ? "Restore before setup email" : "Resend setup email"}
-                              pendingLabel="Sending setup email..."
+                              label={archived ? t("Restore before setup email") : t("Resend setup email")}
+                              pendingLabel={t("Sending setup email...")}
                               variant="secondary"
                               disabled={archived}
                               className="h-12 w-full rounded-2xl border border-[color:var(--accent)]/20 bg-[color:var(--accent)]/10 px-5 text-sm font-semibold text-zinc-900 dark:text-white"
@@ -865,8 +887,9 @@ export default async function OwnerStaffPage({
                           </form>
 
                           <div className="rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-xs leading-6 text-zinc-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/62">
-                            Setup email delivery now reports the real outcome: sent, queued, or failed. It no longer
-                            shows a false success when an older notification record already exists.
+                            {t(
+                              "Setup email delivery now reports the real outcome: sent, queued, or failed. It no longer shows a false success when an older notification record already exists.",
+                            )}
                           </div>
                         </div>
                       </div>
@@ -878,7 +901,7 @@ export default async function OwnerStaffPage({
           })
         ) : (
           <div className="rounded-3xl border border-black/10 bg-white/80 p-16 text-center text-zinc-500 shadow-sm dark:border-white/10 dark:bg-white/[0.04] dark:text-white/55">
-            No staff records matched your filter.
+            {t("No staff records matched your filter.")}
           </div>
         )}
       </section>

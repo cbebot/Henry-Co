@@ -15,9 +15,19 @@ import type {
   SavedItemRecord,
   SavedItemSnapshotCore,
 } from "@henryco/cart-saved-items";
+import {
+  translateSurfaceLabel,
+  type AccountCopy,
+  type AppLocale,
+} from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { formatNaira } from "@/lib/format";
 
-const DIVISION_LABEL: Record<SavedItemDivision, string> = {
+type SavedItemsCopy = AccountCopy["savedItems"];
+
+// EN division labels — the source of truth that the surface-label translator
+// will look up at runtime (falls back to EN passthrough on missing overrides).
+const DIVISION_LABEL_EN: Record<SavedItemDivision, string> = {
   marketplace: "Marketplace",
   care: "Care",
   learn: "Academy",
@@ -27,6 +37,10 @@ const DIVISION_LABEL: Record<SavedItemDivision, string> = {
   studio: "Studio",
   account: "Account",
 };
+
+function divisionLabelOf(division: SavedItemDivision, locale: AppLocale): string {
+  return translateSurfaceLabel(locale, DIVISION_LABEL_EN[division] ?? division);
+}
 
 const DIVISION_HOME: Record<SavedItemDivision, string> = {
   marketplace: "https://marketplace.henrycogroup.com/cart",
@@ -41,16 +55,26 @@ const DIVISION_HOME: Record<SavedItemDivision, string> = {
 
 type SortKey = "newest" | "oldest" | "expiring";
 
+function formatTemplate(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
+    template,
+  );
+}
+
 export function SavedItemsClient({
   initialActive,
   initialExpired,
   groupedByDivision,
+  copy,
 }: {
   initialActive: SavedItemRecord[];
   initialExpired: SavedItemRecord[];
   groupedByDivision: Record<string, SavedItemRecord[]>;
+  copy: SavedItemsCopy;
 }) {
   const router = useRouter();
+  const locale = useHenryCoLocale();
   const [active, setActive] = useState(initialActive);
   const [expired, setExpired] = useState(initialExpired);
   const [filterDivision, setFilterDivision] = useState<SavedItemDivision | "all">("all");
@@ -154,12 +178,16 @@ export function SavedItemsClient({
       {/* Summary strip */}
       <section className="acct-card p-5">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="acct-chip acct-chip-blue text-[0.65rem]">{totalActive} active</span>
+          <span className="acct-chip acct-chip-blue text-[0.65rem]">
+            {formatTemplate(copy.summary.activeTemplate, { count: totalActive })}
+          </span>
           {expired.length > 0 ? (
-            <span className="acct-chip acct-chip-gold text-[0.65rem]">{expired.length} expired</span>
+            <span className="acct-chip acct-chip-gold text-[0.65rem]">
+              {formatTemplate(copy.summary.expiredTemplate, { count: expired.length })}
+            </span>
           ) : null}
           <span className="text-xs text-[var(--acct-muted)]">
-            Items expire 90 days after they&apos;re saved. We warn you a week early.
+            {copy.summary.expiryNote}
           </span>
         </div>
 
@@ -177,10 +205,12 @@ export function SavedItemsClient({
                 }`}
               >
                 <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                  {DIVISION_LABEL[key]}
+                  {divisionLabelOf(key, locale)}
                 </p>
                 <p className="text-[0.65rem] uppercase tracking-[0.16em] text-[var(--acct-muted)]">
-                  {groupedByDivision[key].length} saved
+                  {formatTemplate(copy.summary.savedTemplate, {
+                    count: groupedByDivision[key].length,
+                  })}
                 </p>
               </button>
             ))}
@@ -192,7 +222,7 @@ export function SavedItemsClient({
       <section className="acct-card flex flex-wrap items-center gap-3 p-4">
         <div className="flex items-center gap-2">
           <span className="text-xs uppercase tracking-[0.18em] text-[var(--acct-muted)]">
-            Show
+            {copy.toolbar.showLabel}
           </span>
           <select
             value={filterDivision}
@@ -203,7 +233,9 @@ export function SavedItemsClient({
           >
             {divisions.map((key) => (
               <option key={key} value={key}>
-                {key === "all" ? "All divisions" : DIVISION_LABEL[key as SavedItemDivision]}
+                {key === "all"
+                  ? copy.toolbar.allDivisions
+                  : divisionLabelOf(key as SavedItemDivision, locale)}
               </option>
             ))}
           </select>
@@ -211,16 +243,16 @@ export function SavedItemsClient({
 
         <div className="flex items-center gap-2">
           <span className="text-xs uppercase tracking-[0.18em] text-[var(--acct-muted)]">
-            Sort
+            {copy.toolbar.sortLabel}
           </span>
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value as SortKey)}
             className="rounded-lg border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-3 py-1.5 text-sm text-[var(--acct-ink)]"
           >
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-            <option value="expiring">Expiring soon</option>
+            <option value="newest">{copy.toolbar.sortNewest}</option>
+            <option value="oldest">{copy.toolbar.sortOldest}</option>
+            <option value="expiring">{copy.toolbar.sortExpiring}</option>
           </select>
         </div>
 
@@ -228,14 +260,14 @@ export function SavedItemsClient({
           {selected.size > 0 ? (
             <>
               <span className="text-xs text-[var(--acct-muted)]">
-                {selected.size} selected
+                {formatTemplate(copy.selection.selectedTemplate, { count: selected.size })}
               </span>
               <button
                 type="button"
                 onClick={clearSelection}
                 className="rounded-lg border border-[var(--acct-line)] px-3 py-1.5 text-xs font-semibold text-[var(--acct-muted)] hover:text-[var(--acct-ink)]"
               >
-                Clear
+                {copy.selection.clear}
               </button>
               <button
                 type="button"
@@ -243,7 +275,9 @@ export function SavedItemsClient({
                 disabled={busy !== "none" || pending}
                 className="inline-flex items-center gap-2 rounded-lg bg-[var(--acct-gold)] px-3 py-1.5 text-xs font-semibold text-[var(--acct-noir,#0a0806)] disabled:cursor-wait disabled:opacity-70"
               >
-                {busy === "bulk-restore" ? "Moving..." : "Move selected to cart"}
+                {busy === "bulk-restore"
+                  ? copy.selection.moving
+                  : copy.selection.moveSelectedToCart}
               </button>
             </>
           ) : filtered.length > 0 ? (
@@ -252,7 +286,7 @@ export function SavedItemsClient({
               onClick={selectAll}
               className="inline-flex items-center gap-2 rounded-lg border border-[var(--acct-line)] px-3 py-1.5 text-xs font-semibold text-[var(--acct-muted)] hover:text-[var(--acct-ink)]"
             >
-              <CheckSquare size={13} /> Select all on page
+              <CheckSquare size={13} /> {copy.selection.selectAllOnPage}
             </button>
           ) : null}
         </div>
@@ -264,12 +298,10 @@ export function SavedItemsClient({
           <Bookmark size={32} className="text-[var(--acct-gold)]" />
           <div>
             <h2 className="text-lg font-semibold text-[var(--acct-ink)]">
-              Nothing saved for later yet
+              {copy.empty.title}
             </h2>
             <p className="mt-2 max-w-md text-sm leading-6 text-[var(--acct-muted)]">
-              When you find something you&apos;re not ready to buy, save it for later from the
-              cart. We&apos;ll keep the price you saw at the time and warn you a week before it
-              expires.
+              {copy.empty.description}
             </p>
           </div>
           <div className="grid w-full max-w-md grid-cols-2 gap-3 sm:grid-cols-4">
@@ -281,10 +313,10 @@ export function SavedItemsClient({
                   className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] px-3 py-3 text-left text-xs transition hover:border-[var(--acct-gold)]/40"
                 >
                   <p className="text-sm font-semibold text-[var(--acct-ink)]">
-                    {DIVISION_LABEL[division]}
+                    {divisionLabelOf(division, locale)}
                   </p>
                   <p className="text-[0.65rem] uppercase tracking-[0.16em] text-[var(--acct-muted)]">
-                    Browse
+                    {copy.empty.browseCta}
                   </p>
                 </Link>
               )
@@ -300,11 +332,13 @@ export function SavedItemsClient({
             <SavedItemCard
               key={item.id}
               item={item}
+              locale={locale}
               selected={selected.has(item.id)}
               onToggle={() => toggleSelect(item.id)}
               onRestore={() => void restoreOne(item)}
               onRemove={() => void removeOne(item)}
               busy={busy}
+              copy={copy.card}
             />
           ))}
         </section>
@@ -314,9 +348,9 @@ export function SavedItemsClient({
       {expired.length > 0 ? (
         <section className="acct-card p-5">
           <div className="mb-3 flex items-center justify-between">
-            <p className="acct-kicker">Recently expired</p>
+            <p className="acct-kicker">{copy.expired.sectionKicker}</p>
             <span className="text-xs text-[var(--acct-muted)]">
-              Restoring resets the 90-day window.
+              {copy.expired.sectionNote}
             </span>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -324,12 +358,14 @@ export function SavedItemsClient({
               <SavedItemCard
                 key={item.id}
                 item={item}
+                locale={locale}
                 selected={false}
                 onToggle={() => undefined}
                 onRestore={() => void restoreOne(item)}
                 onRemove={() => void removeOne(item)}
                 busy={busy}
                 expired
+                copy={copy.card}
               />
             ))}
           </div>
@@ -341,20 +377,24 @@ export function SavedItemsClient({
 
 function SavedItemCard({
   item,
+  locale,
   selected,
   onToggle,
   onRestore,
   onRemove,
   busy,
   expired = false,
+  copy,
 }: {
   item: SavedItemRecord;
+  locale: AppLocale;
   selected: boolean;
   onToggle: () => void;
   onRestore: () => void;
   onRemove: () => void;
   busy: "none" | "restore" | "remove" | "bulk-restore";
   expired?: boolean;
+  copy: SavedItemsCopy["card"];
 }) {
   const snapshot = item.itemSnapshot as SavedItemSnapshotCore;
   // Snapshot the "now" reference once on mount — avoids re-render churn and
@@ -379,7 +419,7 @@ function SavedItemCard({
         <button
           type="button"
           onClick={onToggle}
-          aria-label={selected ? "Deselect item" : "Select item"}
+          aria-label={selected ? copy.deselectItem : copy.selectItem}
           className="absolute left-3 top-3 z-10 inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--acct-line)] bg-[var(--acct-bg)] text-[var(--acct-muted)] hover:text-[var(--acct-gold)]"
         >
           {selected ? <CheckSquare size={14} /> : <Square size={14} />}
@@ -391,7 +431,7 @@ function SavedItemCard({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={snapshot.image}
-            alt={snapshot?.title || "Saved item"}
+            alt={snapshot?.title || copy.savedItemFallback}
             className="h-20 w-20 shrink-0 rounded-xl object-cover"
             loading="lazy"
           />
@@ -401,10 +441,10 @@ function SavedItemCard({
 
         <div className="flex min-w-0 flex-1 flex-col">
           <p className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--acct-muted)]">
-            {DIVISION_LABEL[item.division] || item.division}
+            {divisionLabelOf(item.division, locale) || item.division}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-semibold text-[var(--acct-ink)]">
-            {snapshot?.title || "Saved item"}
+            {snapshot?.title || copy.savedItemFallback}
           </h3>
           {snapshot?.vendorName ? (
             <p className="mt-1 text-xs text-[var(--acct-muted)]">{snapshot.vendorName}</p>
@@ -419,13 +459,18 @@ function SavedItemCard({
 
       {isExpiring ? (
         <p className="rounded-lg bg-[var(--acct-gold-soft)] px-3 py-2 text-[0.65rem] font-semibold text-[var(--acct-gold)]">
-          {daysToExpire <= 1 ? "Expires today" : `Expires in ${daysToExpire} days`}
+          {daysToExpire <= 1
+            ? copy.expiresToday
+            : formatTemplate(copy.expiresInTemplate, {
+                days: daysToExpire,
+                plural: daysToExpire === 1 ? "" : "s",
+              })}
         </p>
       ) : null}
 
       {expired ? (
         <p className="rounded-lg bg-[var(--acct-red-soft,#fde8e8)] px-3 py-2 text-[0.65rem] font-semibold text-[var(--acct-red)]">
-          Expired — restore resets the 90-day window
+          {copy.expiredNotice}
         </p>
       ) : null}
 
@@ -436,14 +481,14 @@ function SavedItemCard({
           disabled={busy !== "none"}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--acct-ink)] px-3 py-2 text-xs font-semibold text-[var(--acct-bg)] hover:opacity-90 disabled:cursor-wait disabled:opacity-70"
         >
-          {busy === "restore" ? "Moving..." : "Move to cart"}
+          {busy === "restore" ? copy.moving : copy.moveToCart}
           <ChevronRight size={12} />
         </button>
         <button
           type="button"
           onClick={onRemove}
           disabled={busy !== "none"}
-          aria-label="Remove from saved items"
+          aria-label={copy.removeFromSaved}
           className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--acct-line)] text-[var(--acct-muted)] hover:text-[var(--acct-red)] disabled:cursor-wait"
         >
           <Trash2 size={14} />
@@ -456,7 +501,7 @@ function SavedItemCard({
                 : snapshot.href
             }
             className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--acct-line)] text-[var(--acct-muted)] hover:text-[var(--acct-gold)]"
-            aria-label="Open original listing"
+            aria-label={copy.openOriginal}
             target="_blank"
             rel="noopener noreferrer"
           >

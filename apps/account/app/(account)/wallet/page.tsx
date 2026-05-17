@@ -1,5 +1,7 @@
 import { RouteLiveRefresh } from "@henryco/ui";
+import { getAccountCopy } from "@henryco/i18n/server";
 
+import { getAccountAppLocale } from "@/lib/locale-server";
 import { requireAccountUser } from "@/lib/auth";
 import {
   getPayoutMethods,
@@ -29,8 +31,17 @@ import type { WalletTransaction } from "@/components/wallet/helpers";
 
 export const dynamic = "force-dynamic";
 
+function format(template: string, values: Record<string, string | number>): string {
+  return Object.entries(values).reduce(
+    (acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v)),
+    template,
+  );
+}
+
 export default async function WalletPage() {
-  const user = await requireAccountUser();
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const accountCopy = getAccountCopy(locale);
+  const copy = accountCopy.wallet;
   const [
     { wallet, pending_kobo, requests },
     withdrawalRequests,
@@ -100,6 +111,15 @@ export default async function WalletPage() {
       reference_type: (t.reference_type as string | null) ?? null,
     }));
 
+  const verificationLabel =
+    verification.status === "verified"
+      ? copy.trust.verificationLabels.verified
+      : verification.status === "pending"
+        ? copy.trust.verificationLabels.pending
+        : verification.status === "rejected"
+          ? copy.trust.verificationLabels.rejected
+          : copy.trust.verificationLabels.notSubmitted;
+
   return (
     <div className="acct-wal acct-fade-in">
       <RouteLiveRefresh />
@@ -109,53 +129,48 @@ export default async function WalletPage() {
         pendingWithdrawalKobo={pendingWithdrawalKobo}
         availableKobo={availableBalanceKobo}
         currency={wallet.currency || "NGN"}
-        settlementNote={region.settlementNote}
+        settlementNote={region.settlementNote || copy.hero.settlementFallback}
+        copy={copy.hero}
       />
       <section className="acct-wal__section" aria-labelledby="acct-wal-actions-head">
         <div className="acct-wal__section-head">
           <h2 id="acct-wal-actions-head" className="acct-wal__section-title hc-h3 acct-display">
-            Wallet actions
+            {copy.sections.actionsTitle}
           </h2>
-          <span className="acct-wal__section-meta">Add, withdraw, pay, reconcile</span>
+          <span className="acct-wal__section-meta">{copy.sections.actionsMeta}</span>
         </div>
-        <QuickActions />
+        <QuickActions copy={copy.quickActions} />
       </section>
       <section className="acct-wal__section" aria-labelledby="acct-wal-pending-head">
         <div className="acct-wal__section-head">
           <h2 id="acct-wal-pending-head" className="acct-wal__section-title hc-h3 acct-display">
-            Pending operations
+            {copy.sections.pendingTitle}
           </h2>
-          <span className="acct-wal__section-meta">Kept separate from your available balance</span>
+          <span className="acct-wal__section-meta">{copy.sections.pendingMeta}</span>
         </div>
         <PendingOpsTiles
           pendingFundingKobo={pending_kobo}
           pendingFundingCount={pendingFundingCount}
           pendingWithdrawalKobo={pendingWithdrawalKobo}
           pendingWithdrawalCount={pendingWithdrawalCount}
+          copy={copy.pendingOps}
         />
       </section>
       <section className="acct-wal__section" aria-labelledby="acct-wal-flow-head">
         <div className="acct-wal__section-head">
           <h2 id="acct-wal-flow-head" className="acct-wal__section-title hc-h3 acct-display">
-            How your money flows
+            {copy.sections.flowTitle}
           </h2>
-          <span className="acct-wal__section-meta">Last 30 days · last 6 months · by division</span>
+          <span className="acct-wal__section-meta">{copy.sections.flowMeta}</span>
         </div>
         <div className="acct-wal__columns">
-          <SpendStrip transactions={transactions} />
+          <SpendStrip transactions={transactions} copy={copy.spend} />
           <TrustLadder
-            verificationLabel={
-              verification.status === "verified"
-                ? "Identity verified"
-                : verification.status === "pending"
-                  ? "Verification in review"
-                  : verification.status === "rejected"
-                    ? "Verification needs another submission"
-                    : "Identity not yet submitted"
-            }
+            verificationLabel={verificationLabel}
             verificationDone={verification.status === "verified"}
             payoutMethodCount={(payoutMethods as Array<unknown>).length}
             withdrawalPinConfigured={pinConfigured}
+            copy={copy.trust}
           />
         </div>
       </section>
@@ -163,9 +178,11 @@ export default async function WalletPage() {
         <section className="acct-wal__section" aria-labelledby="acct-wal-funding-head">
           <div className="acct-wal__section-head">
             <h2 id="acct-wal-funding-head" className="acct-wal__section-title hc-h3 acct-display">
-              Recent funding requests
+              {copy.sections.fundingTitle}
             </h2>
-            <span className="acct-wal__section-meta">{pendingFundingCount} in review</span>
+            <span className="acct-wal__section-meta">
+              {format(copy.sections.fundingMetaTemplate, { count: pendingFundingCount })}
+            </span>
           </div>
           <div className="acct-wal__funding-list">
             {(requests as Array<{
@@ -178,7 +195,12 @@ export default async function WalletPage() {
             }>)
               .slice(0, 4)
               .map((request) => (
-                <FundingRequestRow key={request.id} request={request} />
+                <FundingRequestRow
+                  key={request.id}
+                  request={request}
+                  copy={copy.funding}
+                  statusLabels={copy.statusLabels}
+                />
               ))}
           </div>
         </section>
@@ -186,11 +208,13 @@ export default async function WalletPage() {
       <section className="acct-wal__section" aria-labelledby="acct-wal-activity-head">
         <div className="acct-wal__section-head">
           <h2 id="acct-wal-activity-head" className="acct-wal__section-title hc-h3 acct-display">
-            Activity
+            {copy.sections.activityTitle}
           </h2>
-          <span className="acct-wal__section-meta">Latest {Math.min(transactions.length, 50)}</span>
+          <span className="acct-wal__section-meta">
+            {format(copy.sections.activityMetaTemplate, { count: Math.min(transactions.length, 50) })}
+          </span>
         </div>
-        <ActivityFeed transactions={transactions} />
+        <ActivityFeed transactions={transactions} copy={copy.activity} />
       </section>
     </div>
   );

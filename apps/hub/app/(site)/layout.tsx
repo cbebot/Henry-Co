@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { LocaleProvider } from "@henryco/i18n/react";
-import { getConsentCopy } from "@henryco/i18n/server";
+import { getConsentCopy, getHubPublicCopy } from "@henryco/i18n/server";
 import { EcosystemPreferences } from "@henryco/ui/public";
 import { getAccountUrl } from "@henryco/config";
 import PublicSiteShell from "../components/PublicSiteShell";
@@ -118,6 +118,7 @@ export default async function SiteLayout({
   const chipUser = chipResult.status === "fulfilled" ? chipResult.value : null;
   const { settings } = company;
   const consentCopy = getConsentCopy(locale);
+  const shellCopy = getHubPublicCopy(locale).publicSiteShell;
   const returnPath = headerReader.get("x-hub-return-path") || "/";
   const accountChip = {
     user: chipUser,
@@ -129,7 +130,7 @@ export default async function SiteLayout({
   return (
     <HubPublicProviders>
         <LocaleProvider locale={locale}>
-          <PublicSiteShell initialSettings={settings} accountChip={accountChip}>
+          <PublicSiteShell initialSettings={settings} accountChip={accountChip} copy={shellCopy}>
             {children}
           </PublicSiteShell>
           <EcosystemPreferences copy={consentCopy} initialLocale={locale} />

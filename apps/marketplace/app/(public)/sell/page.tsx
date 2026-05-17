@@ -1,51 +1,33 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, FileCheck2, Store, WalletCards } from "lucide-react";
 import { sellerPlanRows, sellerTrustTierRules } from "@/lib/marketplace/policy";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
-export default function SellPage() {
-  const advantages = [
-    {
-      icon: BadgeCheck,
-      title: "Trust-led positioning",
-      body: "Your store gets a visible trust passport instead of being buried in low-quality marketplace clutter.",
-    },
-    {
-      icon: Store,
-      title: "Better storefront quality",
-      body: "Editorial rails, calmer search, and cleaner product cards help quality stores convert faster.",
-    },
-    {
-      icon: WalletCards,
-      title: "Sharper operations",
-      body: "Payouts, orders, support, moderation, and stock alerts stay visible in one cleaner workspace.",
-    },
-  ] as const;
+const ADVANTAGE_ICONS = [BadgeCheck, Store, WalletCards] as const;
 
-  const onboardingSteps = [
-    {
-      step: "01",
-      title: "Start the seller application",
-      body: "Open the application from inside your HenryCo account — drafts save automatically while you assemble details.",
-    },
-    {
-      step: "02",
-      title: "Add business details",
-      body: "Business name, store profile, product focus, and any verification documents that explain how you fulfil orders.",
-    },
-    {
-      step: "03",
-      title: "Application review",
-      body: "The HenryCo team reviews documents, trust signals, and store readiness — not just a paid badge.",
-    },
-    {
-      step: "04",
-      title: "Vendor onboarding",
-      body: "Approved sellers continue into vendor onboarding where pricing, posting fees, payout windows, and policy rules stay visible before publishing opens.",
-    },
-  ] as const;
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  return {
+    title: copy.sell.metadata.title,
+    description: copy.sell.metadata.description,
+  };
+}
+
+export default async function SellPage() {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  const sell = copy.sell;
+
+  const advantages = sell.advantages.items.map((item, index) => ({
+    ...item,
+    icon: ADVANTAGE_ICONS[index] ?? BadgeCheck,
+  }));
 
   return (
     <main className="mx-auto max-w-[1480px] space-y-16 px-4 py-12 sm:px-6 xl:px-8">
@@ -53,44 +35,38 @@ export default function SellPage() {
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">
-              Sell on HenryCo
+              {sell.hero.kicker}
             </p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-              Selective by design. Built for sellers who lead on trust.
+              {sell.hero.title}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-              HenryCo Marketplace favours sellers who care about presentation, reliable
-              fulfillment, and honest buyer protection. The bar is explicit on this page; the
-              seller application continues inside your HenryCo account.
+              {sell.hero.body}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/account/seller-application"
                 className="market-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Open seller application
+                {sell.hero.primaryCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/sell/pricing"
                 className="market-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                See seller pricing
+                {sell.hero.secondaryCta}
               </Link>
               <Link
                 href={buildSharedAccountLoginUrl("/account/seller-application")}
                 className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[var(--market-brass)] underline-offset-4 hover:underline"
               >
-                Sign in with HenryCo account
+                {sell.hero.signInCta}
               </Link>
             </div>
           </div>
           <ul className="grid gap-3 text-sm">
-            {[
-              { label: "Selection", value: "Manual review, not pay-to-list" },
-              { label: "Storefront", value: "Trust passport visible to buyers" },
-              { label: "Workspace", value: "Orders, payouts, support unified" },
-            ].map((item) => (
+            {sell.hero.highlights.map((item) => (
               <li
                 key={item.label}
                 className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0"
@@ -109,7 +85,7 @@ export default function SellPage() {
 
       <section>
         <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
-          Why stronger sellers win here
+          {sell.advantages.kicker}
         </p>
         <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[var(--market-line)]">
           {advantages.map((item, i) => {
@@ -129,16 +105,16 @@ export default function SellPage() {
 
       <section>
         <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
-          How onboarding works
+          {sell.onboarding.kicker}
         </p>
         <ol className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
-          {onboardingSteps.map((item) => (
+          {sell.onboarding.steps.map((item) => (
             <li
               key={item.step}
               className="grid gap-3 py-5 sm:grid-cols-[auto,1fr] sm:gap-6"
             >
               <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-                Step {item.step}
+                {sell.onboarding.stepLabel} {item.step}
               </span>
               <div>
                 <h3 className="text-sm font-semibold tracking-tight text-[var(--market-ink)]">
@@ -154,20 +130,21 @@ export default function SellPage() {
         <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
             <FileCheck2 className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
-            A cleaner seller application
+            {sell.onboarding.callout.eyebrow}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
-            Seller registration stays inside your account so business details, review status, and
-            approval updates remain private and easy to follow.
+            {sell.onboarding.callout.body}
           </p>
         </div>
       </section>
 
       <section className="grid gap-12 xl:grid-cols-[1fr,1fr] xl:divide-x xl:divide-[var(--market-line)]">
         <div>
-          <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">Plan economics</p>
+          <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
+            {sell.plans.kicker}
+          </p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
-            Tiers stated up front, not after publishing.
+            {sell.plans.title}
           </h2>
           <ul className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {sellerPlanRows.map((plan) => (
@@ -186,27 +163,31 @@ export default function SellPage() {
                 <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-xs text-[var(--market-muted)] sm:grid-cols-4">
                   <div>
                     <dt className="font-semibold uppercase tracking-[0.18em] text-[var(--market-ink)]/60">
-                      Fee
+                      {sell.plans.feeLabel}
                     </dt>
                     <dd className="mt-0.5">{plan.marketplaceFeeLabel}</dd>
                   </div>
                   <div>
                     <dt className="font-semibold uppercase tracking-[0.18em] text-[var(--market-ink)]/60">
-                      Payout
+                      {sell.plans.payoutLabel}
                     </dt>
                     <dd className="mt-0.5">{plan.payoutFeeLabel}</dd>
                   </div>
                   <div>
                     <dt className="font-semibold uppercase tracking-[0.18em] text-[var(--market-ink)]/60">
-                      Included
+                      {sell.plans.includedLabel}
                     </dt>
-                    <dd className="mt-0.5">{plan.includedListings} listings</dd>
+                    <dd className="mt-0.5">
+                      {plan.includedListings} {sell.plans.includedSuffix}
+                    </dd>
                   </div>
                   <div>
                     <dt className="font-semibold uppercase tracking-[0.18em] text-[var(--market-ink)]/60">
-                      Featured
+                      {sell.plans.featuredLabel}
                     </dt>
-                    <dd className="mt-0.5">NGN {plan.featuredSlotFee.toLocaleString()}</dd>
+                    <dd className="mt-0.5">
+                      {sell.plans.featuredCurrencyPrefix} {plan.featuredSlotFee.toLocaleString()}
+                    </dd>
                   </div>
                 </dl>
               </li>
@@ -216,10 +197,10 @@ export default function SellPage() {
 
         <div className="xl:pl-12">
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            Trust tiers change privileges
+            {sell.trustTiers.kicker}
           </p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
-            Earn faster payouts, larger storefronts, and policy advantages.
+            {sell.trustTiers.title}
           </h2>
           <ul className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {sellerTrustTierRules.map((tier) => (
@@ -247,13 +228,14 @@ export default function SellPage() {
       <section className="border-t border-[var(--market-line)] pt-10">
         <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
           <div>
-            <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">Move forward</p>
+            <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
+              {sell.closing.kicker}
+            </p>
             <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
-              Apply, then watch the application status from your account.
+              {sell.closing.title}
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--market-muted)]">
-              Approval unlocks vendor onboarding. Pricing, posting fees, and payout windows are
-              visible before you publish — no contract surprises later.
+              {sell.closing.body}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
@@ -261,14 +243,14 @@ export default function SellPage() {
               href="/account/seller-application"
               className="market-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Start application
+              {sell.closing.primaryCta}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/vendor"
               className="market-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
-              Visit vendor workspace
+              {sell.closing.secondaryCta}
             </Link>
           </div>
         </div>

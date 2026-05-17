@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { ecosystemOffers, policyPages } from "@/lib/marketplace/policy";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
+import type { MarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
@@ -14,27 +18,59 @@ type PolicyMetadata = {
 /** Differentiated metadata per policy. The previous single hardcoded row
  * showed "Buyers + sellers" on the seller policy page (factually wrong)
  * because the page used one shared block for every slug. CHROME-01A. */
-function policyMetadata(slug: string): PolicyMetadata {
+function policyMetadata(
+  slug: string,
+  policiesCopy: MarketplacePublicCopy["policies"],
+): PolicyMetadata {
   switch (slug) {
     case "buyer-protection":
       return {
-        coverage: "Buyers",
-        enforcement: "Server-held payments + dispute freeze",
-        updated: "On payment + dispute revisions",
+        coverage: policiesCopy.coverageBySlug.buyerProtection,
+        enforcement: policiesCopy.enforcementBySlug.buyerProtection,
+        updated: policiesCopy.updatedBySlug.buyerProtection,
       };
     case "seller-policy":
       return {
-        coverage: "Sellers",
-        enforcement: "Trust-tier review + payout reserve",
-        updated: "On seller standards revisions",
+        coverage: policiesCopy.coverageBySlug.sellerPolicy,
+        enforcement: policiesCopy.enforcementBySlug.sellerPolicy,
+        updated: policiesCopy.updatedBySlug.sellerPolicy,
       };
     default:
       return {
-        coverage: "Marketplace participants",
-        enforcement: "Server-logged trail",
-        updated: "On policy revisions",
+        coverage: policiesCopy.coverageBySlug.fallback,
+        enforcement: policiesCopy.enforcementBySlug.fallback,
+        updated: policiesCopy.updatedBySlug.fallback,
       };
   }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  const policy = policyPages.find((item) => item.slug === slug);
+
+  if (!policy) {
+    return {
+      title: copy.policies.metadata.fallbackTitle,
+      description: copy.policies.metadata.fallbackDescription,
+    };
+  }
+
+  const title = copy.policies.metadata.titleTemplate.replace(
+    "{policy}",
+    policy.title,
+  );
+  const description = copy.policies.metadata.descriptionTemplate.replace(
+    "{policy}",
+    policy.title,
+  );
+
+  return { title, description };
 }
 
 export default async function MarketplacePolicyPage({
@@ -45,7 +81,9 @@ export default async function MarketplacePolicyPage({
   const { slug } = await params;
   const policy = policyPages.find((item) => item.slug === slug);
   if (!policy) notFound();
-  const meta = policyMetadata(slug);
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  const meta = policyMetadata(slug, copy.policies);
 
   return (
     <main className="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6 lg:px-8">
@@ -66,21 +104,21 @@ export default async function MarketplacePolicyPage({
                 href="/trust"
                 className="font-semibold text-[var(--market-brass)] underline-offset-4 hover:underline"
               >
-                Back to trust standards
+                {copy.policies.hero.backToTrust}
               </Link>
               <span className="text-[var(--market-line)]">·</span>
               <Link
                 href="/help"
                 className="font-semibold text-[var(--market-ink)] underline-offset-4 hover:underline"
               >
-                Open support thread
+                {copy.policies.hero.openSupport}
               </Link>
             </div>
           </div>
           <ul className="grid gap-3 text-sm">
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                Coverage
+                {copy.policies.details.coverageLabel}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {meta.coverage}
@@ -88,7 +126,7 @@ export default async function MarketplacePolicyPage({
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                Enforcement
+                {copy.policies.details.enforcementLabel}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {meta.enforcement}
@@ -96,7 +134,7 @@ export default async function MarketplacePolicyPage({
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                Updated
+                {copy.policies.details.updatedLabel}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
                 {meta.updated}
@@ -107,7 +145,9 @@ export default async function MarketplacePolicyPage({
       </section>
 
       <section>
-        <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">Policy provisions</p>
+        <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
+          {copy.policies.provisions.kicker}
+        </p>
         <ol className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
           {policy.bullets.map((bullet, i) => (
             <li
@@ -125,7 +165,7 @@ export default async function MarketplacePolicyPage({
 
       <section className="border-t border-[var(--market-line)] pt-10">
         <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
-          Connected marketplace controls
+          {copy.policies.ecosystem.kicker}
         </p>
         <ul className="mt-8 grid gap-10 md:grid-cols-2 xl:grid-cols-3 xl:divide-x xl:divide-[var(--market-line)]">
           {ecosystemOffers.slice(0, 3).map((offer, i) => (
@@ -137,7 +177,7 @@ export default async function MarketplacePolicyPage({
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{offer.body}</p>
                 <span className="mt-3 inline-flex items-center gap-1 text-[11.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)] underline-offset-4 group-hover:underline">
-                  Open
+                  {copy.policies.ecosystem.openLabel}
                   <ArrowRight className="h-3 w-3" />
                 </span>
               </a>

@@ -1,23 +1,70 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, ClipboardList, Compass, Receipt } from "lucide-react";
+import { getLogisticsQuoteCopy } from "@henryco/i18n/server";
 import BookRequestForm from "@/components/booking/BookRequestForm";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getLogisticsZones } from "@/lib/logistics/data";
 import { getLogisticsViewer } from "@/lib/logistics/auth";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
-export const metadata: Metadata = {
-  title: "Request a quote | HenryCo Logistics",
-  description: "Get an indicative logistics quote before you commit to a booking.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsQuoteCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
 
 export const dynamic = "force-dynamic";
 
 export default async function QuotePage() {
-  const [zones, viewer] = await Promise.all([getLogisticsZones(), getLogisticsViewer()]);
+  const [zones, viewer, locale] = await Promise.all([
+    getLogisticsZones(),
+    getLogisticsViewer(),
+    getLogisticsPublicLocale(),
+  ]);
+  const copy = getLogisticsQuoteCopy(locale);
   const savedAddresses = viewer.user
     ? await loadSavedAddresses(viewer.user.id)
     : [];
+
+  const quoteShowsItems = [
+    {
+      icon: Compass,
+      title: copy.whatQuoteShows.items.laneTier.title,
+      body: copy.whatQuoteShows.items.laneTier.body,
+    },
+    {
+      icon: Receipt,
+      title: copy.whatQuoteShows.items.itemised.title,
+      body: copy.whatQuoteShows.items.itemised.body,
+    },
+    {
+      icon: ClipboardList,
+      title: copy.whatQuoteShows.items.promiseWindow.title,
+      body: copy.whatQuoteShows.items.promiseWindow.body,
+    },
+  ];
+
+  const afterSubmitItems = [
+    {
+      step: "01",
+      title: copy.afterSubmit.items.returned.title,
+      body: copy.afterSubmit.items.returned.body,
+    },
+    {
+      step: "02",
+      title: copy.afterSubmit.items.reference.title,
+      body: copy.afterSubmit.items.reference.body,
+    },
+    {
+      step: "03",
+      title: copy.afterSubmit.items.pickup.title,
+      body: copy.afterSubmit.items.pickup.body,
+    },
+  ];
 
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
@@ -26,42 +73,25 @@ export default async function QuotePage() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-start">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
-                Lane &middot; Service &middot; Profile
+                {copy.hero.eyebrow}
               </p>
               <h1 className="mt-5 max-w-2xl text-balance text-[2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
-                See the price before you book.
+                {copy.hero.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)]">
-                Priced from your lane, service type, and parcel profile. Quotes save with a tracking
-                reference so a booking is one click later — no retyping.
+                {copy.hero.body}
               </p>
               <p className="mt-7 text-[11px] font-medium uppercase tracking-[0.22em] text-white/45">
-                Indicative · Convertible to booking · No surprise add-ons
+                {copy.hero.badge}
               </p>
             </div>
 
             <aside>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                What the quote shows
+                {copy.whatQuoteShows.eyebrow}
               </p>
               <ul className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-                {[
-                  {
-                    icon: Compass,
-                    title: "Lane and service tier",
-                    body: "Standard, express, or scheduled — priced against the actual zones you’re moving between.",
-                  },
-                  {
-                    icon: Receipt,
-                    title: "Itemised total",
-                    body: "Base fare, weight bands, and any handling — visible before commitment, not at the door.",
-                  },
-                  {
-                    icon: ClipboardList,
-                    title: "Promise window",
-                    body: "Honest hour bands with a confidence read, not a single number we can’t hold to.",
-                  },
-                ].map(({ icon: Icon, title, body }) => (
+                {quoteShowsItems.map(({ icon: Icon, title, body }) => (
                   <li key={title} className="flex gap-4 py-4">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--logistics-line)] bg-white/[0.03] text-[var(--logistics-accent)]">
                       <Icon className="h-4 w-4" />
@@ -82,7 +112,7 @@ export default async function QuotePage() {
         <section className="grid gap-10 lg:grid-cols-[1.05fr,0.95fr] lg:items-start">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-              Quote details
+              {copy.quoteDetails.eyebrow}
             </p>
             <div className="mt-6">
               <BookRequestForm zones={zones} defaultMode="quote" savedAddresses={savedAddresses} />
@@ -92,29 +122,13 @@ export default async function QuotePage() {
           <aside className="space-y-10 lg:pt-8">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                What happens after you submit
+                {copy.afterSubmit.eyebrow}
               </p>
               <ol className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-                {[
-                  {
-                    step: "01",
-                    title: "Quote returned instantly",
-                    body: "Indicative total and promise window appear in line — no follow-up email needed to see the price.",
-                  },
-                  {
-                    step: "02",
-                    title: "Reference saved for later",
-                    body: "Each quote stores with a tracking reference. Convert it to a booking from the same form when you’re ready.",
-                  },
-                  {
-                    step: "03",
-                    title: "Pickup scheduled cleanly",
-                    body: "Booking issues a tracking code and dispatch begins routing within current operating hours.",
-                  },
-                ].map(({ step, title, body }) => (
+                {afterSubmitItems.map(({ step, title, body }) => (
                   <li key={step} className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                      Step {step}
+                      {copy.afterSubmit.stepLabel} {step}
                     </span>
                     <div>
                       <h3 className="text-sm font-semibold tracking-tight text-white">{title}</h3>
@@ -129,25 +143,24 @@ export default async function QuotePage() {
 
             <div className="border-l-2 border-[var(--logistics-accent)]/55 pl-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                Need volume pricing?
+                {copy.volume.eyebrow}
               </p>
               <p className="mt-2 text-sm leading-7 text-[var(--logistics-muted)]">
-                Recurring B2B lanes, multi-stop dispatch, and contract pricing run through the
-                business desk — not a quick public quote.
+                {copy.volume.body}
               </p>
               <div className="mt-3 flex flex-wrap gap-3 text-sm">
                 <Link
                   href="/business"
                   className="font-semibold text-[var(--logistics-accent-soft)] underline-offset-4 hover:underline"
                 >
-                  Talk to the business desk
+                  {copy.volume.talkLink}
                 </Link>
                 <span className="text-white/30">·</span>
                 <Link
                   href="/services"
                   className="font-semibold text-white/80 underline-offset-4 hover:underline"
                 >
-                  Compare service tiers
+                  {copy.volume.compareLink}
                 </Link>
               </div>
             </div>
@@ -158,14 +171,13 @@ export default async function QuotePage() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-                Ready to ship?
+                {copy.conversion.eyebrow}
               </p>
               <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-white sm:text-[1.85rem]">
-                Convert the quote — we’ll issue a tracking code straight away.
+                {copy.conversion.title}
               </h2>
               <p className="mt-3 text-sm leading-7 text-[var(--logistics-muted)]">
-                Pricing carries through to the booking with no resets. Milestones write live as
-                pickup and dispatch progress.
+                {copy.conversion.body}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -173,13 +185,13 @@ export default async function QuotePage() {
                 href="/book"
                 className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3 text-sm font-semibold text-[#170f12] transition hover:-translate-y-0.5"
               >
-                <CheckCircle2 className="h-4 w-4" /> Book this lane
+                <CheckCircle2 className="h-4 w-4" /> {copy.conversion.bookCta}
               </Link>
               <Link
                 href="/track"
                 className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.04]"
               >
-                Track an existing shipment
+                {copy.conversion.trackCta}
               </Link>
             </div>
           </div>

@@ -1,9 +1,12 @@
 import { MapPin } from "lucide-react";
 
+import { formatAccountTemplate } from "@henryco/i18n";
+
 import {
   formatMoney,
   formatRoomCount,
   formatStamp,
+  type RoomCountLabels,
 } from "./helpers";
 
 export type SavedPropertyCard = {
@@ -27,13 +30,23 @@ export type SavedPropertyCard = {
   detailUrl: string;
 };
 
+export type SavedPropertiesGalleryCopy = RoomCountLabels & {
+  ariaLabel: string;
+  managedBadge: string;
+  featuredBadge: string;
+  locationPending: string;
+  contactAgent: string;
+  savedAtTemplate: string;
+};
+
 type Props = {
   saved: ReadonlyArray<SavedPropertyCard>;
   emptyTitle: string;
   emptyBody: string;
+  copy: SavedPropertiesGalleryCopy;
 };
 
-export function SavedPropertiesGallery({ saved, emptyTitle, emptyBody }: Props) {
+export function SavedPropertiesGallery({ saved, emptyTitle, emptyBody, copy }: Props) {
   if (saved.length === 0) {
     return (
       <div className="acct-prop__empty">
@@ -42,10 +55,18 @@ export function SavedPropertiesGallery({ saved, emptyTitle, emptyBody }: Props) 
       </div>
     );
   }
+  const roomCountLabels: RoomCountLabels = {
+    bedSingular: copy.bedSingular,
+    bedPlural: copy.bedPlural,
+    bathSingular: copy.bathSingular,
+    bathPlural: copy.bathPlural,
+    sizeSqmTemplate: copy.sizeSqmTemplate,
+  };
   return (
-    <div className="acct-prop__grid" role="list" aria-label="Saved properties">
+    <div className="acct-prop__grid" role="list" aria-label={copy.ariaLabel}>
       {saved.slice(0, 8).map((card) => {
-        const roomLine = formatRoomCount(card.bedrooms, card.bathrooms, card.sizeSqm);
+        const roomLine = formatRoomCount(card.bedrooms, card.bathrooms, card.sizeSqm, roomCountLabels);
+        const locationText = card.location || card.district || copy.locationPending;
         return (
           <a
             key={card.listingId}
@@ -54,7 +75,7 @@ export function SavedPropertiesGallery({ saved, emptyTitle, emptyBody }: Props) 
             rel="noopener noreferrer"
             className="acct-prop__listing"
             role="listitem"
-            aria-label={`${card.title} in ${card.location || "—"}`}
+            aria-label={`${card.title} · ${locationText}`}
           >
             <div className="acct-prop__listing-image">
               {card.heroImage ? (
@@ -67,29 +88,29 @@ export function SavedPropertiesGallery({ saved, emptyTitle, emptyBody }: Props) 
               )}
               <div className="acct-prop__listing-badges">
                 {card.managedByHenryCo ? (
-                  <span className="acct-prop__listing-badge" data-tone="info">Managed</span>
+                  <span className="acct-prop__listing-badge" data-tone="info">{copy.managedBadge}</span>
                 ) : null}
                 {card.featured ? (
-                  <span className="acct-prop__listing-badge" data-tone="good">Featured</span>
+                  <span className="acct-prop__listing-badge" data-tone="good">{copy.featuredBadge}</span>
                 ) : null}
               </div>
             </div>
             <div className="acct-prop__listing-body">
               <h3 className="acct-prop__listing-title">{card.title}</h3>
               <p className="acct-prop__listing-meta">
-                {card.location || card.district || "Location pending"}
+                {locationText}
                 {roomLine ? ` · ${roomLine}` : ""}
               </p>
               <div className="acct-prop__listing-price-row">
                 <span className="acct-prop__listing-price">
-                  {formatMoney(card.price, card.currency)}
+                  {formatMoney(card.price, card.currency, copy.contactAgent)}
                 </span>
                 {card.priceInterval ? (
                   <span className="acct-prop__listing-price-interval">{card.priceInterval}</span>
                 ) : null}
               </div>
               <span className="acct-prop__listing-saved-stamp">
-                Saved {formatStamp(card.savedAt)}
+                {formatAccountTemplate(copy.savedAtTemplate, { date: formatStamp(card.savedAt) })}
               </span>
             </div>
           </a>

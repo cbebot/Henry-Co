@@ -3,11 +3,13 @@ import { ChevronRight } from "lucide-react";
 
 import type { CalendarEvent } from "@henryco/data";
 import { groupEventsByDay } from "@henryco/data";
+import type { AccountCopy } from "@henryco/i18n";
+import { formatAccountTemplate } from "@henryco/i18n";
 
 import {
   KIND_ACCENT_VAR,
-  KIND_LABEL,
   dayLabel,
+  kindLabel,
   timeLabel,
 } from "./helpers";
 
@@ -15,6 +17,8 @@ type Props = {
   events: ReadonlyArray<CalendarEvent>;
   /** Server-resolved "now" ms — keeps dayLabel pure. */
   nowMs: number;
+  copy: AccountCopy["calendar"];
+  intlLocale: string;
 };
 
 function statusTone(status: string): "warn" | "good" | undefined {
@@ -35,11 +39,11 @@ function statusTone(status: string): "warn" | "good" | undefined {
  * (chronological vertical scroll). Each day is a card with its own
  * header, and each row deep-links to the originating portal entity.
  */
-export function CalendarAgenda({ events, nowMs }: Props) {
+export function CalendarAgenda({ events, nowMs, copy, intlLocale }: Props) {
   const days = groupEventsByDay(events);
 
   return (
-    <div className="acct-cal__agenda" role="list" aria-label="Scheduled events by day">
+    <div className="acct-cal__agenda" role="list" aria-label={copy.agendaAriaLabel}>
       {days.map((day) => (
         <article
           key={day.date}
@@ -49,10 +53,13 @@ export function CalendarAgenda({ events, nowMs }: Props) {
         >
           <header className="acct-cal__day-head">
             <h3 id={`acct-cal-day-${day.date}`} className="acct-cal__day-title">
-              {dayLabel(day.date, nowMs)}
+              {dayLabel(day.date, nowMs, copy, intlLocale)}
             </h3>
             <span className="acct-cal__day-meta">
-              {day.items.length} event{day.items.length === 1 ? "" : "s"}
+              {formatAccountTemplate(
+                day.items.length === 1 ? copy.dayMetaSingular : copy.dayMetaPlural,
+                { count: day.items.length },
+              )}
             </span>
           </header>
           <div className="acct-cal__events" role="list">
@@ -68,18 +75,18 @@ export function CalendarAgenda({ events, nowMs }: Props) {
                   aria-hidden
                   style={{ background: `var(${KIND_ACCENT_VAR[event.kind]})` }}
                 />
-                <span className="acct-cal__event-time" aria-label="Event time">
+                <span className="acct-cal__event-time" aria-label={copy.eventTimeAriaLabel}>
                   <span className="acct-cal__event-time-start">
-                    {timeLabel(event.startAt)}
+                    {timeLabel(event.startAt, intlLocale)}
                   </span>
                   {event.endAt ? (
-                    <span>– {timeLabel(event.endAt)}</span>
+                    <span>– {timeLabel(event.endAt, intlLocale)}</span>
                   ) : null}
                 </span>
                 <div className="acct-cal__event-body">
                   <div className="acct-cal__event-head">
                     <span className="acct-cal__event-kind">
-                      {KIND_LABEL[event.kind]}
+                      {kindLabel(event.kind, copy)}
                     </span>
                     <span
                       className="acct-cal__event-status"
@@ -94,7 +101,7 @@ export function CalendarAgenda({ events, nowMs }: Props) {
                   ) : null}
                 </div>
                 <span className="acct-cal__event-meta">
-                  <span className="acct-cal__event-cta">Open</span>
+                  <span className="acct-cal__event-cta">{copy.eventCta}</span>
                   <ChevronRight size={14} aria-hidden />
                 </span>
               </Link>

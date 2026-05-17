@@ -2,6 +2,8 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { submitLogisticsBookingAction, type BookingFormState } from "@/app/actions/logistics-booking";
 import type { LogisticsZone } from "@/lib/logistics/types";
@@ -41,6 +43,8 @@ export default function BookRequestForm({
     region: string;
   }>;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [state, action, pending] = useActionState(submitLogisticsBookingAction, initial);
   const formRef = useRef<HTMLFormElement>(null);
   const toastRef = useRef<HTMLDivElement>(null);
@@ -61,20 +65,20 @@ export default function BookRequestForm({
           role="status"
           className="rounded-[1.5rem] border border-emerald-500/35 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-100 outline-none"
         >
-          <p className="font-semibold text-white">Request received</p>
+          <p className="font-semibold text-white">{t("Request received")}</p>
           <p className="mt-2 leading-relaxed">{state.message}</p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link
               href={state.trackingUrl}
               className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#170f12]"
             >
-              Open tracking
+              {t("Open tracking")}
             </Link>
             <Link
               href={defaultMode === "quote" ? "/quote" : "/book"}
               className="inline-flex rounded-full border border-white/25 px-4 py-2 text-sm font-semibold text-white/90"
             >
-              Submit another
+              {t("Submit another")}
             </Link>
           </div>
         </div>
@@ -90,13 +94,13 @@ export default function BookRequestForm({
         <input type="hidden" name="mode" value={defaultMode} />
 
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
-          <h2 className="text-lg font-semibold text-white">Service</h2>
+          <h2 className="text-lg font-semibold text-white">{t("Service")}</h2>
           <p className="mt-1 text-sm text-[var(--logistics-muted)]">
-            Pick how fast you need this to move. Pricing updates instantly from your selections.
+            {t("Pick how fast you need this to move. Pricing updates instantly from your selections.")}
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Zone</span>
+              <span className="text-[var(--logistics-muted)]">{t("Zone")}</span>
               <select
                 name="zoneKey"
                 required
@@ -111,18 +115,18 @@ export default function BookRequestForm({
               </select>
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Speed</span>
+              <span className="text-[var(--logistics-muted)]">{t("Speed")}</span>
               <select name="urgency" required className={controlClassName}>
                 {urgencies.map((u) => (
                   <option key={u.value} value={u.value}>
-                    {u.label}
+                    {t(u.label)}
                   </option>
                 ))}
               </select>
             </label>
           </div>
           <fieldset className="mt-5 space-y-3">
-            <legend className="text-sm text-[var(--logistics-muted)]">Delivery product</legend>
+            <legend className="text-sm text-[var(--logistics-muted)]">{t("Delivery product")}</legend>
             <div className="grid gap-3 sm:grid-cols-2">
               {services.map((s) => (
                 <label
@@ -131,9 +135,9 @@ export default function BookRequestForm({
                 >
                   <span className="flex items-center gap-2">
                     <input type="radio" name="serviceType" value={s.value} required defaultChecked={s.value === "scheduled"} />
-                    <span className="font-medium text-white">{s.label}</span>
+                    <span className="font-medium text-white">{t(s.label)}</span>
                   </span>
-                  <span className="pl-6 text-xs text-[var(--logistics-muted)]">{s.hint}</span>
+                  <span className="pl-6 text-xs text-[var(--logistics-muted)]">{t(s.hint)}</span>
                 </label>
               ))}
             </div>
@@ -141,14 +145,14 @@ export default function BookRequestForm({
         </section>
 
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
-          <h2 className="text-lg font-semibold text-white">People</h2>
+          <h2 className="text-lg font-semibold text-white">{t("People")}</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Sender name</span>
+              <span className="text-[var(--logistics-muted)]">{t("Sender name")}</span>
               <input name="senderName" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Sender phone</span>
+              <span className="text-[var(--logistics-muted)]">{t("Sender phone")}</span>
               <input
                 name="senderPhone"
                 type="tel"
@@ -160,7 +164,7 @@ export default function BookRequestForm({
               />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Sender email (optional)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Sender email (optional)")}</span>
               <input
                 name="senderEmail"
                 type="email"
@@ -169,11 +173,11 @@ export default function BookRequestForm({
               />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Recipient name</span>
+              <span className="text-[var(--logistics-muted)]">{t("Recipient name")}</span>
               <input name="recipientName" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Recipient phone</span>
+              <span className="text-[var(--logistics-muted)]">{t("Recipient phone")}</span>
               <input
                 name="recipientPhone"
                 type="tel"
@@ -183,21 +187,21 @@ export default function BookRequestForm({
               />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Recipient email (optional)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Recipient email (optional)")}</span>
               <input name="recipientEmail" type="email" className={controlClassName} />
             </label>
           </div>
         </section>
 
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
-          <h2 className="text-lg font-semibold text-white">Pickup</h2>
+          <h2 className="text-lg font-semibold text-white">{t("Pickup")}</h2>
           <p className="mt-1 text-sm text-[var(--logistics-muted)]">
-            Where our rider or dispatch team should collect the parcel.
+            {t("Where our rider or dispatch team should collect the parcel.")}
           </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {(savedAddresses ?? []).length > 0 ? (
               <label className="grid gap-1 text-sm sm:col-span-2">
-                <span className="text-[var(--logistics-muted)]">Use saved address (optional)</span>
+                <span className="text-[var(--logistics-muted)]">{t("Use saved address (optional)")}</span>
                 <select
                   className={controlClassName}
                   onChange={(event) => {
@@ -214,7 +218,7 @@ export default function BookRequestForm({
                   }}
                   defaultValue=""
                 >
-                  <option value="">Select saved pickup address</option>
+                  <option value="">{t("Select saved pickup address")}</option>
                   {(savedAddresses ?? []).map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.label}
@@ -224,37 +228,37 @@ export default function BookRequestForm({
               </label>
             ) : null}
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Street / building</span>
+              <span className="text-[var(--logistics-muted)]">{t("Street / building")}</span>
               <input name="pickupLine1" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">City</span>
+              <span className="text-[var(--logistics-muted)]">{t("City")}</span>
               <input name="pickupCity" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">State / region</span>
+              <span className="text-[var(--logistics-muted)]">{t("State / region")}</span>
               <input name="pickupRegion" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Landmark (optional)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Landmark (optional)")}</span>
               <input name="pickupLandmark" className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Instructions (optional)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Instructions (optional)")}</span>
               <textarea name="pickupInstructions" rows={2} className={controlClassName} />
             </label>
           </div>
         </section>
 
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
-          <h2 className="text-lg font-semibold text-white">Receiving address</h2>
+          <h2 className="text-lg font-semibold text-white">{t("Receiving address")}</h2>
           <p className="mt-1 text-sm text-[var(--logistics-muted)]">
-            Where the parcel should be handed over to the recipient.
+            {t("Where the parcel should be handed over to the recipient.")}
           </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {(savedAddresses ?? []).length > 0 ? (
               <label className="grid gap-1 text-sm sm:col-span-2">
-                <span className="text-[var(--logistics-muted)]">Use saved address (optional)</span>
+                <span className="text-[var(--logistics-muted)]">{t("Use saved address (optional)")}</span>
                 <select
                   className={controlClassName}
                   onChange={(event) => {
@@ -271,7 +275,7 @@ export default function BookRequestForm({
                   }}
                   defaultValue=""
                 >
-                  <option value="">Select saved receiving address</option>
+                  <option value="">{t("Select saved receiving address")}</option>
                   {(savedAddresses ?? []).map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.label}
@@ -281,58 +285,58 @@ export default function BookRequestForm({
               </label>
             ) : null}
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Street / building</span>
+              <span className="text-[var(--logistics-muted)]">{t("Street / building")}</span>
               <input name="dropLine1" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">City</span>
+              <span className="text-[var(--logistics-muted)]">{t("City")}</span>
               <input name="dropCity" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">State / region</span>
+              <span className="text-[var(--logistics-muted)]">{t("State / region")}</span>
               <input name="dropRegion" required className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Landmark (optional)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Landmark (optional)")}</span>
               <input name="dropLandmark" className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Instructions (optional)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Instructions (optional)")}</span>
               <textarea name="dropInstructions" rows={2} className={controlClassName} />
             </label>
           </div>
         </section>
 
         <section className="rounded-[1.75rem] border border-[var(--logistics-line)] bg-[var(--logistics-panel)] p-5 shadow-[var(--logistics-shadow)] sm:p-7">
-          <h2 className="text-lg font-semibold text-white">Parcel</h2>
+          <h2 className="text-lg font-semibold text-white">{t("Parcel")}</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Type</span>
-              <input name="parcelType" defaultValue="Parcel" className={controlClassName} />
+              <span className="text-[var(--logistics-muted)]">{t("Type")}</span>
+              <input name="parcelType" defaultValue={t("Parcel")} className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Weight (kg)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Weight (kg)")}</span>
               <input name="weightKg" type="number" min={0} step={0.1} defaultValue={1} className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm">
-              <span className="text-[var(--logistics-muted)]">Size</span>
+              <span className="text-[var(--logistics-muted)]">{t("Size")}</span>
               <select name="sizeTier" className={controlClassName}>
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
-                <option value="oversize">Oversize</option>
+                <option value="small">{t("Small")}</option>
+                <option value="medium">{t("Medium")}</option>
+                <option value="large">{t("Large")}</option>
+                <option value="oversize">{t("Oversize")}</option>
               </select>
             </label>
             <label className="flex items-center gap-3 text-sm text-white">
               <input type="checkbox" name="fragile" className="h-4 w-4 rounded border-[var(--logistics-line)]" />
-              Fragile handling
+              {t("Fragile handling")}
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Description (optional)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Description (optional)")}</span>
               <textarea name="parcelDescription" rows={2} className={controlClassName} />
             </label>
             <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-[var(--logistics-muted)]">Preferred pickup time (optional)</span>
+              <span className="text-[var(--logistics-muted)]">{t("Preferred pickup time (optional)")}</span>
               <input name="scheduledPickupAt" type="datetime-local" className={controlClassName} />
             </label>
           </div>
@@ -340,9 +344,9 @@ export default function BookRequestForm({
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-[var(--logistics-muted)]">
-            Indicative pricing is calculated from your zone and parcel profile. Final quotes may be confirmed by dispatch.
+            {t("Indicative pricing is calculated from your zone and parcel profile. Final quotes may be confirmed by dispatch.")}
             {defaultMode === "book"
-              ? " Bookings enter the live queue; payment may be confirmed offline or via a link from our team."
+              ? " " + t("Bookings enter the live queue; payment may be confirmed offline or via a link from our team.")
               : null}
           </p>
           <button
@@ -352,11 +356,11 @@ export default function BookRequestForm({
           >
             <ButtonPendingContent
               pending={pending}
-              pendingLabel={defaultMode === "quote" ? "Requesting quote..." : "Booking delivery..."}
-              spinnerLabel={defaultMode === "quote" ? "Requesting quote" : "Booking delivery"}
+              pendingLabel={defaultMode === "quote" ? t("Requesting quote...") : t("Booking delivery...")}
+              spinnerLabel={defaultMode === "quote" ? t("Requesting quote") : t("Booking delivery")}
               className="gap-2"
             >
-              {defaultMode === "quote" ? "Request quote" : "Book delivery"}
+              {defaultMode === "quote" ? t("Request quote") : t("Book delivery")}
             </ButtonPendingContent>
           </button>
         </div>

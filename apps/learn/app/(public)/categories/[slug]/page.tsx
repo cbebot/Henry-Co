@@ -1,8 +1,27 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { getLearnCategoriesCopy } from "@henryco/i18n/server";
 import { CourseCard } from "@/components/learn/ui";
 import { getCategoryBySlug } from "@/lib/learn/data";
+import { getLearnPublicLocale } from "@/lib/locale-server";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const [data, locale] = await Promise.all([getCategoryBySlug(slug), getLearnPublicLocale()]);
+  if (!data) return {};
+  const copy = getLearnCategoriesCopy(locale);
+  const categoryName = data.category.name;
+  return {
+    title: copy.meta.titleTemplate.replace("{category}", categoryName),
+    description: copy.meta.descriptionTemplate.replace("{category}", categoryName),
+  };
+}
 
 export default async function CategoryPage({
   params,
@@ -10,8 +29,12 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = await getCategoryBySlug(slug);
+  const [data, locale] = await Promise.all([getCategoryBySlug(slug), getLearnPublicLocale()]);
   if (!data) notFound();
+
+  const copy = getLearnCategoriesCopy(locale);
+  const categoryName = data.category.name;
+  const courseCount = data.courses.length;
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
@@ -21,7 +44,7 @@ export default async function CategoryPage({
           className="inline-flex items-center gap-1 font-semibold text-[var(--learn-mint-soft)] underline-offset-4 hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          All courses
+          {copy.breadcrumb.backToCourses}
         </Link>
       </nav>
 
@@ -29,7 +52,7 @@ export default async function CategoryPage({
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
-              Category · {data.category.name}
+              {copy.hero.eyebrowTemplate.replace("{category}", categoryName)}
             </p>
             <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {data.category.heroCopy}
@@ -42,40 +65,40 @@ export default async function CategoryPage({
                 href="/courses"
                 className="learn-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Browse all courses
+                {copy.hero.ctaBrowseAll}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/paths"
                 className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[var(--learn-mint-soft)] underline-offset-4 hover:underline"
               >
-                Explore learning paths
+                {copy.hero.ctaExplorePaths}
               </Link>
             </div>
           </div>
           <ul className="grid gap-3 text-sm">
             <li className="flex items-baseline gap-3 border-b border-[var(--learn-line)] py-3">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-                Active courses
+                {copy.stats.activeCoursesLabel}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
-                {data.courses.length}
+                {courseCount}
               </span>
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--learn-line)] py-3">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-                Enrollment
+                {copy.stats.enrollmentLabel}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
-                One HenryCo account
+                {copy.stats.enrollmentValue}
               </span>
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--learn-line)] py-3 last:border-b-0">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-                Records
+                {copy.stats.recordsLabel}
               </span>
               <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
-                Server-side, verifiable
+                {copy.stats.recordsValue}
               </span>
             </li>
           </ul>
@@ -85,10 +108,10 @@ export default async function CategoryPage({
       <section className="mt-14">
         <div className="flex items-end justify-between gap-4 border-b border-[var(--learn-line)] pb-4">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
-            Courses in {data.category.name}
+            {copy.grid.eyebrowTemplate.replace("{category}", categoryName)}
           </p>
           <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-ink-soft)]">
-            {data.courses.length} listed
+            {copy.grid.countTemplate.replace("{count}", String(courseCount))}
           </span>
         </div>
         <div className="mt-6 grid gap-5 lg:grid-cols-2 xl:grid-cols-3">

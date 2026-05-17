@@ -3,10 +3,10 @@ const SHORT_MONTHS = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
-export function formatStamp(iso: string | null | undefined): string {
-  if (!iso) return "—";
+export function formatStamp(iso: string | null | undefined, dash: string = "—"): string {
+  if (!iso) return dash;
   const ms = Date.parse(iso);
-  if (!Number.isFinite(ms)) return "—";
+  if (!Number.isFinite(ms)) return dash;
   const d = new Date(ms);
   return `${d.getUTCDate().toString().padStart(2, "0")} ${SHORT_MONTHS[d.getUTCMonth()]}`;
 }
@@ -77,9 +77,18 @@ export function orderKind(order: OrderRow): OrderKind {
   return "in-flight";
 }
 
-export function orderStatusLabel(order: OrderRow): string {
+export function orderStatusLabel(
+  order: OrderRow,
+  opts?: {
+    statusValueLabels?: Record<string, string>;
+    fallbackDraft?: string;
+  },
+): string {
   const s = String(order.status || "").trim();
-  if (!s) return "Draft";
+  if (!s) return opts?.fallbackDraft ?? "Draft";
+  const key = s.toLowerCase();
+  const mapped = opts?.statusValueLabels?.[key];
+  if (mapped) return mapped;
   return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 

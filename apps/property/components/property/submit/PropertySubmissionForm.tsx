@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { getAccountUrl } from "@henryco/config";
 import { LoaderCircle, ShieldCheck, UploadCloud } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { getSharedAccountPropertyUrl } from "@/lib/property/links";
 import {
@@ -174,6 +176,8 @@ function UploadField({
 }
 
 export function PropertySubmissionForm({ areas, defaults }: Props) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [serviceType, setServiceType] = useState<PropertyListingServiceType>("rent");
   const [intent, setIntent] = useState<PropertyListingIntent>("owner_listed");
@@ -223,14 +227,14 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       }
 
       if (!response.ok || !payload?.ok || !payload.submission) {
-        throw new Error(payload?.error || "Property submission could not be completed.");
+        throw new Error(payload?.error || t("Property submission could not be completed."));
       }
 
       setMessage({
         type: "success",
         text:
           payload.message ||
-          "Listing submitted. HenryCo Property queued moderation and trust review.",
+          t("Listing submitted. HenryCo Property queued moderation and trust review."),
       });
       setSubmissionFeedback(payload.submission);
       formRef.current?.reset();
@@ -243,7 +247,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         text:
           error instanceof Error
             ? error.message
-            : "Property submission could not be completed.",
+            : t("Property submission could not be completed."),
       });
     } finally {
       setSubmitting(false);
@@ -277,39 +281,39 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             </p>
           </div>
           <div className="rounded-full border border-[rgba(152,179,154,0.35)] bg-[rgba(152,179,154,0.10)] px-4 py-2 text-xs font-semibold tracking-wide text-[var(--property-sage-soft)]">
-            {blueprint.requiresInspection ? "Inspection-sensitive" : "Editorial review path"}
+            {blueprint.requiresInspection ? t("Inspection-sensitive") : t("Editorial review path")}
           </div>
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-              Documents
+              {t("Documents")}
             </div>
             <div className="mt-2 text-sm text-[var(--property-ink)]">
-              {blueprint.docsMin === 0 ? "Optional" : `${blueprint.docsMin}+ expected`}
+              {blueprint.docsMin === 0 ? t("Optional") : `${blueprint.docsMin}+ ${t("expected")}`}
             </div>
             <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
-              Direct uploads are preferred over links for authority, identity, and management review.
+              {t("Direct uploads are preferred over links for authority, identity, and management review.")}
             </div>
           </div>
           <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-              Media
+              {t("Media")}
             </div>
             <div className="mt-2 text-sm text-[var(--property-ink)]">
-              {blueprint.mediaMin}+ suggested for strong review
+              {blueprint.mediaMin}+ {t("suggested for strong review")}
             </div>
             <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
-              Better media improves approval speed, inspection preparation, and buyer trust.
+              {t("Better media improves approval speed, inspection preparation, and buyer trust.")}
             </div>
           </div>
           <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-              Eligibility
+              {t("Eligibility")}
             </div>
             <div className="mt-2 text-sm text-[var(--property-ink)]">
-              {blueprint.requiresVerifiedIdentity ? "Verified identity expected" : "Authority-first"}
+              {blueprint.requiresVerifiedIdentity ? t("Verified identity expected") : t("Authority-first")}
             </div>
             <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
               {blueprint.eligibilityCopy}
@@ -317,10 +321,10 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           </div>
           <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-              Operating path
+              {t("Operating path")}
             </div>
             <div className="mt-2 text-sm text-[var(--property-ink)]">
-              {serviceType === "managed_property" ? "Managed listing" : "Non-managed listing"}
+              {serviceType === "managed_property" ? t("Managed listing") : t("Non-managed listing")}
             </div>
             <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
               {blueprint.managedTrackCopy}
@@ -331,7 +335,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Service type</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Service type")}</span>
           <select
             value={serviceType}
             onChange={(event) => {
@@ -353,7 +357,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Submission mode</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Submission mode")}</span>
           <select
             value={effectiveIntent}
             onChange={(event) => setIntent(event.target.value as PropertyListingIntent)}
@@ -370,7 +374,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Owner or agent name</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Owner or agent name")}</span>
           <input
             name="owner_name"
             required
@@ -380,7 +384,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Email</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Email")}</span>
           <input
             name="owner_email"
             type="email"
@@ -391,7 +395,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Phone</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Phone")}</span>
           <input
             name="owner_phone"
             required
@@ -401,21 +405,22 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </label>
         <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-            Trust routing
+            {t("Trust routing")}
           </div>
           <div className="mt-2 text-sm font-semibold text-[var(--property-ink)]">
-            {blueprint.kind.replaceAll("_", " ")} listing
+            {blueprint.kind.replaceAll("_", " ")} {t("listing")}
           </div>
           <div className="mt-2 text-xs leading-6 text-[var(--property-ink-soft)]">
-            HenryCo keeps this record private first, then decides whether it moves to documents,
-            eligibility, inspection, or editorial review.
+            {t(
+              "HenryCo keeps this record private first, then decides whether it moves to documents, eligibility, inspection, or editorial review.",
+            )}
           </div>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Listing title</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Listing title")}</span>
           <input
             name="title"
             required
@@ -424,7 +429,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Area</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Area")}</span>
           <select name="location_slug" required className="property-select mt-2 rounded-2xl px-4 py-3">
             {areas.map((area) => (
               <option key={area.id} value={area.slug}>
@@ -437,30 +442,32 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Short summary</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Short summary")}</span>
           <textarea
             name="summary"
             required
             rows={4}
             className="property-textarea mt-2 rounded-2xl px-4 py-3"
-            placeholder="A decisive paragraph that frames the property well."
+            placeholder={t("A decisive paragraph that frames the property well.")}
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Description</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Description")}</span>
           <textarea
             name="description"
             required
             rows={4}
             className="property-textarea mt-2 rounded-2xl px-4 py-3"
-            placeholder="Explain the space, occupancy reality, access conditions, and what makes the listing serious."
+            placeholder={t(
+              "Explain the space, occupancy reality, access conditions, and what makes the listing serious.",
+            )}
           />
         </label>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Location label</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Location label")}</span>
           <input
             name="location_label"
             required
@@ -469,7 +476,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">District</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("District")}</span>
           <input
             name="district"
             required
@@ -478,12 +485,12 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Address line</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Address line")}</span>
           <input
             name="address_line"
             required
             className="property-input mt-2 rounded-2xl px-4 py-3"
-            placeholder="Street name or estate"
+            placeholder={t("Street name or estate")}
           />
         </label>
       </div>
@@ -491,7 +498,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       {blueprint.showPriceFields ? (
         <div className="grid gap-4 md:grid-cols-4">
           <label className="block">
-            <span className="text-sm font-medium text-[var(--property-ink)]">Price</span>
+            <span className="text-sm font-medium text-[var(--property-ink)]">{t("Price")}</span>
             <input
               name="price"
               type="number"
@@ -501,17 +508,17 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium text-[var(--property-ink)]">Interval</span>
+            <span className="text-sm font-medium text-[var(--property-ink)]">{t("Interval")}</span>
             <input
               name="price_interval"
               required
               className="property-input mt-2 rounded-2xl px-4 py-3"
-              placeholder={serviceType === "shortlet" ? "per night" : "per year"}
+              placeholder={serviceType === "shortlet" ? t("per night") : t("per year")}
             />
           </label>
           {blueprint.showBedrooms ? (
             <label className="block">
-              <span className="text-sm font-medium text-[var(--property-ink)]">Beds</span>
+              <span className="text-sm font-medium text-[var(--property-ink)]">{t("Beds")}</span>
               <input
                 name="bedrooms"
                 type="number"
@@ -524,7 +531,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           )}
           {blueprint.showBathrooms ? (
             <label className="block">
-              <span className="text-sm font-medium text-[var(--property-ink)]">Baths</span>
+              <span className="text-sm font-medium text-[var(--property-ink)]">{t("Baths")}</span>
               <input
                 name="bathrooms"
                 type="number"
@@ -534,7 +541,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             </label>
           ) : (
             <label className="block">
-              <span className="text-sm font-medium text-[var(--property-ink)]">Parking</span>
+              <span className="text-sm font-medium text-[var(--property-ink)]">{t("Parking")}</span>
               <input
                 name="parking_spaces"
                 type="number"
@@ -546,39 +553,40 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </div>
       ) : (
         <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5 text-sm leading-7 text-[var(--property-ink-soft)]">
-          This path is inspection-led rather than publication-led. HenryCo still needs the location,
-          authority, and access truth before deciding whether the property can move into a public
-          listing workflow.
+          {t(
+            "This path is inspection-led rather than publication-led. HenryCo still needs the location, authority, and access truth before deciding whether the property can move into a public listing workflow.",
+          )}
         </div>
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Amenities</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Amenities")}</span>
           <textarea
             name="amenities"
             rows={3}
             className="property-textarea mt-2 rounded-2xl px-4 py-3"
-            placeholder="Generator, smart security, rooftop terrace..."
+            placeholder={t("Generator, smart security, rooftop terrace...")}
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Existing media URLs</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Existing media URLs")}</span>
           <textarea
             name="gallery_urls"
             rows={3}
             className="property-textarea mt-2 rounded-2xl px-4 py-3"
-            placeholder="If assets already exist online, add one URL per line."
+            placeholder={t("If assets already exist online, add one URL per line.")}
           />
         </label>
       </div>
 
       {blueprint.contextFields.length > 0 ? (
         <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
-          <div className="text-lg font-semibold text-[var(--property-ink)]">Path-specific details</div>
+          <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Path-specific details")}</div>
           <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-            Only the details relevant to this listing path are shown below. HenryCo uses them to
-            understand authority, occupancy, inspection access, and managed handoff reality.
+            {t(
+              "Only the details relevant to this listing path are shown below. HenryCo uses them to understand authority, occupancy, inspection access, and managed handoff reality.",
+            )}
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             {blueprint.contextFields.map((field) => renderField(field))}
@@ -589,14 +597,15 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="text-lg font-semibold text-[var(--property-ink)]">Media and evidence</div>
+            <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Media and evidence")}</div>
             <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-              Upload the real evidence directly. HenryCo stores review files against the listing so
-              staff can assess them without chasing pasted links.
+              {t(
+                "Upload the real evidence directly. HenryCo stores review files against the listing so staff can assess them without chasing pasted links.",
+              )}
             </p>
           </div>
           <div className="rounded-full border border-[var(--property-line)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink-soft)]">
-            Async upload flow
+            {t("Async upload flow")}
           </div>
         </div>
 

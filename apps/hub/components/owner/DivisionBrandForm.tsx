@@ -5,14 +5,25 @@ import { FormPendingButton } from "@henryco/ui";
 import { saveDivisionBrandAction } from "@/lib/owner-actions";
 import { initialOwnerFormState } from "@/lib/owner-form-state";
 import { OwnerFormFeedback } from "@/components/owner/OwnerFormFeedback";
+import type { HubOwnerCopy } from "@henryco/i18n";
 
-function SaveButton({ label }: { label: string }) {
+type DivisionBrandCopy = HubOwnerCopy["divisionBrandForm"];
+
+function SaveButton({
+  label,
+  pendingLabel,
+  spinnerLabel,
+}: {
+  label: string;
+  pendingLabel: string;
+  spinnerLabel: string;
+}) {
   return (
     <FormPendingButton
       type="submit"
       className="acct-button-primary lg:col-span-2"
-      pendingLabel="Saving..."
-      spinnerLabel="Saving division"
+      pendingLabel={pendingLabel}
+      spinnerLabel={spinnerLabel}
     >
       {label}
     </FormPendingButton>
@@ -21,42 +32,44 @@ function SaveButton({ label }: { label: string }) {
 
 type DivisionRow = Record<string, unknown>;
 
-export function CreateDivisionBrandForm() {
+export function CreateDivisionBrandForm({ copy }: { copy: DivisionBrandCopy }) {
   const [state, action] = useActionState(saveDivisionBrandAction, initialOwnerFormState);
 
   return (
     <form action={action} className="mb-5 rounded-[1.5rem] border border-dashed border-[var(--acct-line)] bg-[var(--acct-bg)] p-4">
       <div className="mb-3">
-        <p className="text-sm font-semibold text-[var(--acct-ink)]">Create new division row</p>
-        <p className="mt-1 text-xs text-[var(--acct-muted)]">
-          Add a pending or active division directly in the registry so owner-controlled rows drive the wider company surface.
-        </p>
+        <p className="text-sm font-semibold text-[var(--acct-ink)]">{copy.createHeading}</p>
+        <p className="mt-1 text-xs text-[var(--acct-muted)]">{copy.createBlurb}</p>
       </div>
       <div className="lg:col-span-2">
         <OwnerFormFeedback state={state} />
       </div>
       <div className="mt-3 grid gap-4 lg:grid-cols-2">
-        <input name="slug" className="acct-input" placeholder="Slug, e.g. logistics-labs" required />
-        <input name="name" className="acct-input" placeholder="Division name" />
+        <input name="slug" className="acct-input" placeholder={copy.slugPlaceholder} required />
+        <input name="name" className="acct-input" placeholder={copy.namePlaceholder} />
         <select name="status" className="acct-select" defaultValue="pending">
-          <option value="pending">Pending</option>
-          <option value="active">Active</option>
-          <option value="paused">Paused</option>
-          <option value="archived">Archived</option>
+          <option value="pending">{copy.statusPending}</option>
+          <option value="active">{copy.statusActive}</option>
+          <option value="paused">{copy.statusPaused}</option>
+          <option value="archived">{copy.statusArchived}</option>
         </select>
-        <input name="subdomain" className="acct-input" placeholder="Subdomain" />
-        <input name="primary_url" className="acct-input" placeholder="Primary URL" />
-        <input name="domain" className="acct-input" placeholder="Domain" />
-        <input name="accent" className="acct-input" placeholder="#..." defaultValue="#C9A227" />
-        <input name="tagline" className="acct-input" placeholder="Tagline" />
-        <textarea name="description" className="acct-textarea lg:col-span-2" placeholder="Description" />
-        <SaveButton label="Create division row" />
+        <input name="subdomain" className="acct-input" placeholder={copy.subdomainPlaceholder} />
+        <input name="primary_url" className="acct-input" placeholder={copy.primaryUrlPlaceholder} />
+        <input name="domain" className="acct-input" placeholder={copy.domainPlaceholder} />
+        <input name="accent" className="acct-input" placeholder={copy.accentPlaceholder} defaultValue="#C9A227" />
+        <input name="tagline" className="acct-input" placeholder={copy.taglinePlaceholder} />
+        <textarea name="description" className="acct-textarea lg:col-span-2" placeholder={copy.descriptionPlaceholder} />
+        <SaveButton
+          label={copy.createCtaLabel}
+          pendingLabel={copy.pendingLabel}
+          spinnerLabel={copy.spinnerLabel}
+        />
       </div>
     </form>
   );
 }
 
-export function EditDivisionBrandForm({ division }: { division: DivisionRow }) {
+export function EditDivisionBrandForm({ division, copy }: { division: DivisionRow; copy: DivisionBrandCopy }) {
   const [state, action] = useActionState(saveDivisionBrandAction, initialOwnerFormState);
   const highlights = Array.isArray(division.highlights) ? (division.highlights as string[]).join("\n") : "";
   const who = Array.isArray(division.who_its_for) ? (division.who_its_for as string[]).join("\n") : "";
@@ -71,26 +84,30 @@ export function EditDivisionBrandForm({ division }: { division: DivisionRow }) {
       <input type="hidden" name="id" value={String(division.id || "")} />
       <input type="hidden" name="slug" value={String(division.slug || "")} />
       <div className="grid gap-4 lg:grid-cols-2">
-        <input name="name" defaultValue={String(division.name || "")} className="acct-input" placeholder="Division name" />
-        <input name="tagline" defaultValue={String(division.tagline || "")} className="acct-input" placeholder="Tagline" />
-        <input name="subdomain" defaultValue={String(division.subdomain || "")} className="acct-input" placeholder="Subdomain" />
-        <input name="primary_url" defaultValue={String(division.primary_url || "")} className="acct-input" placeholder="Primary URL" />
-        <input name="domain" defaultValue={String(division.domain || "")} className="acct-input" placeholder="Domain" />
+        <input name="name" defaultValue={String(division.name || "")} className="acct-input" placeholder={copy.namePlaceholder} />
+        <input name="tagline" defaultValue={String(division.tagline || "")} className="acct-input" placeholder={copy.taglinePlaceholder} />
+        <input name="subdomain" defaultValue={String(division.subdomain || "")} className="acct-input" placeholder={copy.subdomainPlaceholder} />
+        <input name="primary_url" defaultValue={String(division.primary_url || "")} className="acct-input" placeholder={copy.primaryUrlPlaceholder} />
+        <input name="domain" defaultValue={String(division.domain || "")} className="acct-input" placeholder={copy.domainPlaceholder} />
         <select name="status" defaultValue={String(division.status || "active")} className="acct-select">
-          <option value="pending">Pending</option>
-          <option value="active">Active</option>
-          <option value="paused">Paused</option>
-          <option value="archived">Archived</option>
+          <option value="pending">{copy.statusPending}</option>
+          <option value="active">{copy.statusActive}</option>
+          <option value="paused">{copy.statusPaused}</option>
+          <option value="archived">{copy.statusArchived}</option>
         </select>
-        <input name="accent" defaultValue={String(division.accent || "")} className="acct-input" placeholder="#..." />
-        <input name="logo_url" defaultValue={String(division.logo_url || "")} className="acct-input lg:col-span-2" placeholder="Logo URL" />
-        <input name="cover_url" defaultValue={String(division.cover_url || "")} className="acct-input lg:col-span-2" placeholder="Hero media / cover URL" />
-        <textarea name="description" defaultValue={String(division.description || "")} className="acct-textarea lg:col-span-2" placeholder="Description" />
-        <textarea name="highlights" defaultValue={highlights} className="acct-textarea" placeholder="Highlights, one per line" />
-        <textarea name="who_its_for" defaultValue={who} className="acct-textarea" placeholder="Audience, one per line" />
-        <textarea name="how_it_works" defaultValue={how} className="acct-textarea" placeholder="How it works, one per line" />
-        <textarea name="trust" defaultValue={trust} className="acct-textarea" placeholder="Trust items, one per line" />
-        <SaveButton label="Save division row" />
+        <input name="accent" defaultValue={String(division.accent || "")} className="acct-input" placeholder={copy.accentPlaceholder} />
+        <input name="logo_url" defaultValue={String(division.logo_url || "")} className="acct-input lg:col-span-2" placeholder={copy.logoUrlPlaceholder} />
+        <input name="cover_url" defaultValue={String(division.cover_url || "")} className="acct-input lg:col-span-2" placeholder={copy.coverUrlPlaceholder} />
+        <textarea name="description" defaultValue={String(division.description || "")} className="acct-textarea lg:col-span-2" placeholder={copy.descriptionPlaceholder} />
+        <textarea name="highlights" defaultValue={highlights} className="acct-textarea" placeholder={copy.highlightsPlaceholder} />
+        <textarea name="who_its_for" defaultValue={who} className="acct-textarea" placeholder={copy.whoItsForPlaceholder} />
+        <textarea name="how_it_works" defaultValue={how} className="acct-textarea" placeholder={copy.howItWorksPlaceholder} />
+        <textarea name="trust" defaultValue={trust} className="acct-textarea" placeholder={copy.trustPlaceholder} />
+        <SaveButton
+          label={copy.saveCtaLabel}
+          pendingLabel={copy.pendingLabel}
+          spinnerLabel={copy.spinnerLabel}
+        />
       </div>
     </form>
   );

@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import { getLogisticsCoverageCopy } from "@henryco/i18n/server";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import type { LogisticsZone } from "@/lib/logistics/types";
 
-export const metadata: Metadata = {
-  title: "Coverage | HenryCo Logistics",
-  description:
-    "Service zones, ETAs, and base coverage we deliver across — published from the live logistics rate book.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsCoverageCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -19,11 +24,13 @@ const naira = new Intl.NumberFormat("en-NG", {
 });
 
 export default async function CoveragePage() {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsCoverageCopy(locale);
   const { zones, settings, stats } = await getPublicLogisticsSnapshot();
 
   const groupedByRegion = zones.reduce<Record<string, LogisticsZone[]>>(
     (acc: Record<string, LogisticsZone[]>, zone: LogisticsZone) => {
-      const region = zone.region || "Other";
+      const region = zone.region || copy.zones.regionFallback;
       acc[region] = acc[region] ? [...acc[region], zone] : [zone];
       return acc;
     },
@@ -31,27 +38,28 @@ export default async function CoveragePage() {
   );
   const regions = Object.keys(groupedByRegion).sort();
 
+  const heroBody = copy.hero.bodyTemplate
+    .replace("{activeZones}", String(stats.activeZones))
+    .replace("{pickupHours}", settings.pickupHours);
+
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[88rem] space-y-12">
         <header>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
-            Coverage
+            {copy.hero.eyebrow}
           </p>
           <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-white sm:text-[2.6rem] md:text-[3rem]">
-            Where we deliver.
+            {copy.hero.title}
           </h1>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
-            {stats.activeZones} active zones · {settings.pickupHours}. Outside these zones we route via
-            inter-city dispatch — request a quote and we will confirm feasibility before we accept.
+            {heroBody}
           </p>
         </header>
 
         <section className="space-y-10">
           {regions.length === 0 ? (
-            <p className="text-sm text-[var(--logistics-muted)]">
-              Coverage is being refreshed. Request a quote and we will confirm your zone manually.
-            </p>
+            <p className="text-sm text-[var(--logistics-muted)]">{copy.zones.empty}</p>
           ) : (
             regions.map((region) => (
               <div key={region} className="space-y-5">
@@ -60,7 +68,10 @@ export default async function CoveragePage() {
                     {region}
                   </h2>
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
-                    {groupedByRegion[region].length} zones
+                    {copy.zones.regionCountTemplate.replace(
+                      "{count}",
+                      String(groupedByRegion[region].length),
+                    )}
                   </span>
                 </div>
                 <ul className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
@@ -82,7 +93,9 @@ export default async function CoveragePage() {
                       <div className="text-right text-sm">
                         <p className="font-semibold text-white">{naira.format(zone.baseFee)}</p>
                         <p className="mt-1 text-xs text-[var(--logistics-muted)]">
-                          {zone.etaHoursMin}–{zone.etaHoursMax}h ETA
+                          {copy.zones.etaSuffixTemplate
+                            .replace("{min}", String(zone.etaHoursMin))
+                            .replace("{max}", String(zone.etaHoursMax))}
                         </p>
                       </div>
                     </li>
@@ -98,14 +111,14 @@ export default async function CoveragePage() {
             href="/quote"
             className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-6 py-3.5 text-sm font-semibold text-[#170f12] shadow-[0_18px_44px_rgba(215,117,57,0.22)] transition hover:-translate-y-0.5"
           >
-            Request a quote
+            {copy.ctas.quote}
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href="/business"
             className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:bg-white/[0.07]"
           >
-            For business
+            {copy.ctas.business}
           </Link>
         </div>
       </div>

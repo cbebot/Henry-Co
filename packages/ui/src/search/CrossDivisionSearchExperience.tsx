@@ -131,6 +131,92 @@ const ICONS: Record<CrossDivisionSearchIcon, ComponentType<{ className?: string 
   headphones: Headphones,
 };
 
+/**
+ * Internal copy strings that are not already covered by the top-level
+ * `title` / `description` / `placeholder` / `signInLabel` props.
+ * Pass `copy={getXxxCopy(locale).crossSearch}` to translate.
+ */
+export type CrossDivisionSearchCopy = {
+  /** Eyebrow above the title, e.g. "HenryCo Search". */
+  eyebrow: string;
+  /** Visually-hidden `<label>` for the search input. */
+  inputLabel: string;
+  /** Submit button label. */
+  searchButton: string;
+  /** Submit button label while the navigation transition is pending. */
+  searchButtonPending: string;
+  /** Prefix shown in the status bar when a query is active, e.g. "Query". */
+  queryPrefix: string;
+  /** Keyboard hint shown when no query is active. */
+  keyboardHint: string;
+  /** Status text when no query is active, e.g. "Top routes across the ecosystem". */
+  statusDefault: string;
+  /** Unit for a single result, e.g. "match". */
+  matchSingular: string;
+  /** Unit for multiple results, e.g. "matches". */
+  matchPlural: string;
+  /** Auth hint title when zero public results exist. */
+  protectedHintTitleZero: string;
+  /** Auth hint title when some public results exist. */
+  protectedHintTitleSome: string;
+  /** Auth hint description when zero public results exist. */
+  protectedHintBodyZero: string;
+  /** Auth hint description when some public results exist. */
+  protectedHintBodySome: string;
+  /** Lock-badge text on individual locked result rows. */
+  signInBadge: string;
+  /** aria-label for the division navigator. */
+  browseNavLabel: string;
+  /** Eyebrow above the division navigator pills. */
+  browseEyebrow: string;
+  /** Section heading when query mode is active and results exist. */
+  topMatchesHeading: string;
+  /** Unit for a single route in a division heading (e.g. "route"). */
+  routeSingular: string;
+  /** Unit for multiple routes in a division heading (e.g. "routes"). */
+  routePlural: string;
+  /** Empty-state eyebrow when the query returned nothing. */
+  emptyQueryEyebrow: string;
+  /** Empty-state eyebrow when no query has been entered. */
+  emptyDefaultEyebrow: string;
+  /** Empty-state heading when the query returned nothing. */
+  emptyQueryHeading: string;
+  /** Empty-state heading when no query has been entered. */
+  emptyDefaultHeading: string;
+  /** Empty-state body paragraph (always shown). */
+  emptyBody: string;
+};
+
+const DEFAULT_SEARCH_COPY: CrossDivisionSearchCopy = {
+  eyebrow: "HenryCo Search",
+  inputLabel: "Search HenryCo",
+  searchButton: "Search",
+  searchButtonPending: "Searching",
+  queryPrefix: "Query",
+  keyboardHint: "Press / to focus · Enter to search",
+  statusDefault: "Top routes across the ecosystem",
+  matchSingular: "match",
+  matchPlural: "matches",
+  protectedHintTitleZero: "Sign in to search private HenryCo workflows",
+  protectedHintTitleSome: "More HenryCo routes are available after sign in",
+  protectedHintBodyZero:
+    "This query matches account-only routes such as orders, notifications, subscriptions, or support.",
+  protectedHintBodySome:
+    "This query also matches private account routes — orders, notifications, subscriptions, support. Sign in to land on the exact destination.",
+  signInBadge: "Sign in",
+  browseNavLabel: "Browse the HenryCo ecosystem",
+  browseEyebrow: "Browse the ecosystem",
+  topMatchesHeading: "Top matches",
+  routeSingular: "route",
+  routePlural: "routes",
+  emptyQueryEyebrow: "Nothing exact yet",
+  emptyDefaultEyebrow: "Start here",
+  emptyQueryHeading: "We didn't find an exact route — try a division name, workflow, or support intent.",
+  emptyDefaultHeading: "Browse the strongest entry points across HenryCo.",
+  emptyBody:
+    "Notifications, wallet, marketplace orders, jobs help, logistics tracking, property viewings — every one is one route away. These are the most-used entry points right now.",
+};
+
 type CrossDivisionSearchExperienceProps = {
   context: CrossDivisionSearchContext;
   title: string;
@@ -141,6 +227,8 @@ type CrossDivisionSearchExperienceProps = {
   lockedResults?: CrossDivisionSearchResult[];
   signInHref?: string;
   signInLabel?: string;
+  /** Internal UI copy — pass `getXxxCopy(locale).crossSearch` to translate. Defaults to English. */
+  copy?: CrossDivisionSearchCopy;
   onSignal?: (signal: CrossDivisionSearchSignal) => void;
 };
 
@@ -182,12 +270,14 @@ function ResultRow({
   resultCount,
   context,
   onSignal,
+  signInBadge,
 }: {
   result: CrossDivisionSearchResult;
   query: string;
   resultCount: number;
   context: CrossDivisionSearchContext;
   onSignal?: (signal: CrossDivisionSearchSignal) => void;
+  signInBadge: string;
 }) {
   const Icon = ICONS[result.icon] ?? Layers3;
   const signalKind = result.type === "division" ? "division_selected" : "result_clicked";
@@ -226,7 +316,7 @@ function ResultRow({
           </span>
           {result.authRequirement !== "none" ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-[var(--public-foreground,#1c1612)]/22 px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.22em] text-[var(--public-foreground,#1c1612)]/72 dark:border-white/22 dark:text-white/72">
-              <Lock className="h-2.5 w-2.5" aria-hidden /> Sign in
+              <Lock className="h-2.5 w-2.5" aria-hidden /> {signInBadge}
             </span>
           ) : null}
           {result.badge ? (
@@ -260,11 +350,15 @@ function DivisionSection({
   title,
   count,
   children,
+  routeSingular,
+  routePlural,
 }: {
   id?: string;
   title: string;
   count: number;
   children: React.ReactNode;
+  routeSingular: string;
+  routePlural: string;
 }) {
   return (
     <section id={id} className="scroll-mt-24">
@@ -273,7 +367,7 @@ function DivisionSection({
           {title}
         </h2>
         <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--public-foreground,#1c1612)]/55 dark:text-white/50">
-          {count} {count === 1 ? "route" : "routes"}
+          {count} {count === 1 ? routeSingular : routePlural}
         </span>
         <span className="h-px flex-1 bg-[var(--public-foreground,#1c1612)]/12 dark:bg-white/12" />
       </header>
@@ -294,6 +388,7 @@ export function CrossDivisionSearchExperience({
   lockedResults = [],
   signInHref,
   signInLabel = "Sign in to search your HenryCo workflows",
+  copy = DEFAULT_SEARCH_COPY,
   onSignal,
 }: CrossDivisionSearchExperienceProps) {
   const router = useRouter();
@@ -357,17 +452,13 @@ export function CrossDivisionSearchExperience({
   const hiddenProtectedCount = rankedLocked.length;
   const showProtectedHint = Boolean(submittedQuery && hiddenProtectedCount > 0 && signInHref);
   const protectedHintTitle =
-    resultCount === 0
-      ? "Sign in to search private HenryCo workflows"
-      : "More HenryCo routes are available after sign in";
+    resultCount === 0 ? copy.protectedHintTitleZero : copy.protectedHintTitleSome;
   const protectedHintDescription =
-    resultCount === 0
-      ? "This query matches account-only routes such as orders, notifications, subscriptions, or support."
-      : "This query also matches private account routes — orders, notifications, subscriptions, support. Sign in to land on the exact destination.";
+    resultCount === 0 ? copy.protectedHintBodyZero : copy.protectedHintBodySome;
 
   const statusLabel = queryMode
-    ? `${resultCount} ${resultCount === 1 ? "match" : "matches"}`
-    : "Top routes across the ecosystem";
+    ? `${resultCount} ${resultCount === 1 ? copy.matchSingular : copy.matchPlural}`
+    : copy.statusDefault;
 
   const handleDivisionPill = useCallback((division: string) => {
     if (typeof document === "undefined") return;
@@ -388,7 +479,7 @@ export function CrossDivisionSearchExperience({
         {/* Editorial hero — eyebrow + display + restrained body */}
         <header className="max-w-4xl">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--public-foreground,#1c1612)]/55 dark:text-white/45">
-            HenryCo Search
+            {copy.eyebrow}
           </p>
           <h1 className="mt-4 text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--public-foreground,#1c1612)] sm:text-[2.55rem] md:text-[3rem] dark:text-white">
             {title}
@@ -439,7 +530,7 @@ export function CrossDivisionSearchExperience({
           }}
         >
           <label className="sr-only" htmlFor="henryco-cross-search">
-            Search HenryCo
+            {copy.inputLabel}
           </label>
           <div className="flex items-center gap-3 border-b border-[var(--public-foreground,#1c1612)]/18 pb-4 pt-3 transition focus-within:border-[var(--public-foreground,#1c1612)]/55 sm:gap-4 dark:border-white/18 dark:focus-within:border-white/55">
             <Search
@@ -467,7 +558,7 @@ export function CrossDivisionSearchExperience({
               disabled={pending}
               className="ml-1 inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-[var(--public-accent,#7a5a23)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--public-accent-strong,#5d4118)] disabled:cursor-wait disabled:opacity-70 dark:bg-[#d6a851] dark:text-zinc-950 dark:hover:bg-[#e3b966]"
             >
-              {pending ? "Searching" : "Search"}
+              {pending ? copy.searchButtonPending : copy.searchButton}
               <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>
@@ -477,10 +568,11 @@ export function CrossDivisionSearchExperience({
             <span className="hidden sm:inline">
               {queryMode ? (
                 <>
-                  Query <span className="font-mono normal-case tracking-tight">"{deferredQuery}"</span>
+                  {copy.queryPrefix}{" "}
+                  <span className="font-mono normal-case tracking-tight">"{deferredQuery}"</span>
                 </>
               ) : (
-                <>Press / to focus · Enter to search</>
+                <>{copy.keyboardHint}</>
               )}
             </span>
           </div>
@@ -533,9 +625,9 @@ export function CrossDivisionSearchExperience({
 
         {/* Division navigator — pill row of available divisions, jumps to anchor */}
         {!queryMode && orderedGroups.length > 1 ? (
-          <nav aria-label="Browse the HenryCo ecosystem" className="mt-14">
+          <nav aria-label={copy.browseNavLabel} className="mt-14">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--public-foreground,#1c1612)]/55 dark:text-white/45">
-              Browse the ecosystem
+              {copy.browseEyebrow}
             </p>
             <ul className="mt-4 flex flex-wrap gap-2">
               {orderedGroups.map(([division, divisionResults]) => {
@@ -564,7 +656,12 @@ export function CrossDivisionSearchExperience({
         {resultCount > 0 ? (
           <div className="mt-12 space-y-12">
             {queryMode ? (
-              <DivisionSection title="Top matches" count={resultCount}>
+              <DivisionSection
+                title={copy.topMatchesHeading}
+                count={resultCount}
+                routeSingular={copy.routeSingular}
+                routePlural={copy.routePlural}
+              >
                 {visibleResults.map((result) => (
                   <li key={result.id}>
                     <ResultRow
@@ -573,6 +670,7 @@ export function CrossDivisionSearchExperience({
                       resultCount={resultCount}
                       context={context}
                       onSignal={onSignal}
+                      signInBadge={copy.signInBadge}
                     />
                   </li>
                 ))}
@@ -584,6 +682,8 @@ export function CrossDivisionSearchExperience({
                   id={`division-${division}`}
                   title={DIVISION_LABELS[division] || division}
                   count={divisionResults.length}
+                  routeSingular={copy.routeSingular}
+                  routePlural={copy.routePlural}
                 >
                   {divisionResults.map((result) => (
                     <li key={result.id}>
@@ -593,6 +693,7 @@ export function CrossDivisionSearchExperience({
                         resultCount={resultCount}
                         context={context}
                         onSignal={onSignal}
+                        signInBadge={copy.signInBadge}
                       />
                     </li>
                   ))}
@@ -604,17 +705,13 @@ export function CrossDivisionSearchExperience({
           <section className="mt-16 grid gap-12 lg:grid-cols-[1.05fr,0.95fr]">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--public-foreground,#1c1612)]/55 dark:text-white/45">
-                {deferredQuery.trim() ? "Nothing exact yet" : "Start here"}
+                {deferredQuery.trim() ? copy.emptyQueryEyebrow : copy.emptyDefaultEyebrow}
               </p>
               <p className="mt-4 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--public-foreground,#1c1612)] sm:text-[1.95rem] dark:text-white">
-                {deferredQuery.trim()
-                  ? "We didn't find an exact route — try a division name, workflow, or support intent."
-                  : "Browse the strongest entry points across HenryCo."}
+                {deferredQuery.trim() ? copy.emptyQueryHeading : copy.emptyDefaultHeading}
               </p>
               <p className="mt-4 max-w-xl text-sm leading-7 text-[var(--public-foreground,#1c1612)]/72 dark:text-white/72">
-                Notifications, wallet, marketplace orders, jobs help, logistics tracking, property
-                viewings — every one is one route away. These are the most-used entry points right
-                now.
+                {copy.emptyBody}
               </p>
             </div>
             <ol className="divide-y divide-[var(--public-foreground,#1c1612)]/10 border-y border-[var(--public-foreground,#1c1612)]/10 dark:divide-white/10 dark:border-white/10">

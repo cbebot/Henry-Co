@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { getAccountUrl } from "@henryco/config";
+import { getJobsCopy } from "@henryco/i18n";
 import { createEmployerProfileAction } from "@/app/actions";
 import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { employerNav } from "@/lib/jobs/navigation";
 import { getEmployerPostingEligibility } from "@/lib/jobs/posting-eligibility";
 import { InlineNotice } from "@/components/feedback";
@@ -23,10 +25,12 @@ export default async function EmployerCompanyPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const viewer = await requireJobsRoles(["employer", "admin", "owner"], "/employer/company");
-  const [data, params] = await Promise.all([
+  const [data, params, locale] = await Promise.all([
     getEmployerDashboardData(viewer.user!.id, viewer.user!.email),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
+    getJobsPublicLocale(),
   ]);
+  const copy = getJobsCopy(locale).employerCompany;
   const membership = data.memberships[0];
   const companyRecord = membership ? await getEmployerProfileBySlug(membership.employerSlug, { includeUnpublished: true }) : null;
   const employer = companyRecord?.employer ?? null;
@@ -40,30 +44,41 @@ export default async function EmployerCompanyPage({
     : null;
   const created = typeof params.created === "string" ? params.created : null;
 
+  const verificationStatusValue = employer?.verificationStatus ?? copy.rightRailStatusPending;
+  const verificationStatusDisplay = employer?.verificationStatus
+    ? employer.verificationStatus.charAt(0).toUpperCase() + employer.verificationStatus.slice(1)
+    : copy.rightRailStatusPendingCapitalized;
+
+  const responseSlaCopy = employer
+    ? copy.rightRailResponseSlaTemplate
+        .replace("{count}", String(employer.openRoleCount))
+        .replace(
+          "{roleLabel}",
+          employer.openRoleCount === 1 ? copy.rightRailOpenRoleSingular : copy.rightRailOpenRolePlural,
+        )
+        .replace("{hours}", String(employer.responseSlaHours))
+    : copy.rightRailEmptyProfileBody;
+
   return (
     <WorkspaceShell
       area="employer"
-      title="Company Profile"
-      subtitle="Set up your company profile so candidates can learn about your team."
+      title={copy.pageTitle}
+      subtitle={copy.pageSubtitle}
       nav={employerNav}
       activeHref="/employer/company"
       accent="linear-gradient(135deg,#7c5a28 0%,#b88a47 55%,#f1c88c 100%)"
       rightRail={
         <>
-          <SectionCard title="Verification status">
+          <SectionCard title={copy.rightRailVerificationTitle}>
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="jobs-kicker">Status</div>
-                  <div className="mt-2 text-lg font-semibold capitalize">{employer?.verificationStatus ?? "Pending"}</div>
+                  <div className="jobs-kicker">{copy.rightRailStatusLabel}</div>
+                  <div className="mt-2 text-lg font-semibold capitalize">{verificationStatusDisplay}</div>
                 </div>
-                <StatusPill label={employer?.verificationStatus ?? "pending"} tone={toneForVerification(employer?.verificationStatus ?? "pending")} />
+                <StatusPill label={verificationStatusValue} tone={toneForVerification(employer?.verificationStatus ?? "pending")} />
               </div>
-              <p className="text-sm leading-7 text-[var(--jobs-muted)]">
-                {employer
-                  ? `${employer.openRoleCount} open role${employer.openRoleCount === 1 ? "" : "s"}. You aim to respond to candidates within ${employer.responseSlaHours} hours.`
-                  : "Create your company profile to begin the verification process and set up your public employer page."}
-              </p>
+              <p className="text-sm leading-7 text-[var(--jobs-muted)]">{responseSlaCopy}</p>
               {eligibility && eligibility.verificationStatus !== "verified" ? (
                 <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
                   <div className="text-sm font-semibold">{eligibility.verificationGate.headline}</div>
@@ -80,11 +95,11 @@ export default async function EmployerCompanyPage({
               ) : null}
             </div>
           </SectionCard>
-          <SectionCard title="Tips for a strong profile">
+          <SectionCard title={copy.rightRailTipsTitle}>
             <div className="space-y-3 text-sm text-[var(--jobs-muted)]">
-              <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">A clear public description of the team and hiring intent.</div>
-              <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">Working policies, locations, and culture points that remove ambiguity.</div>
-              <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">A verified surface that recruiters and candidates can trust.</div>
+              <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">{copy.rightRailTipDescription}</div>
+              <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">{copy.rightRailTipPolicies}</div>
+              <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">{copy.rightRailTipVerified}</div>
             </div>
           </SectionCard>
         </>
@@ -94,8 +109,8 @@ export default async function EmployerCompanyPage({
         {created ? (
           <InlineNotice
             tone="success"
-            title="Employer profile saved"
-            body={`${created} has been saved. Your company profile is now in the verification queue.`}
+            title={copy.profileSavedNoticeTitle}
+            body={copy.profileSavedNoticeBodyTemplate.replace("{name}", created)}
           />
         ) : null}
         {eligibility && eligibility.verificationStatus !== "verified" ? (
@@ -103,41 +118,41 @@ export default async function EmployerCompanyPage({
             <InlineNotice
               tone="warn"
               title={eligibility.verificationGate.headline}
-              body={`${eligibility.verificationGate.detail} Complete account verification before expecting role posting or employer trust upgrades to unlock.`}
+              body={`${eligibility.verificationGate.detail} ${copy.verificationCalloutBodySuffix}`}
             />
             <Link href={getAccountUrl("/verification")} className="jobs-button-secondary inline-flex rounded-full px-4 py-2 text-sm font-semibold">
-              Open account verification
+              {copy.openAccountVerification}
             </Link>
           </div>
         ) : null}
 
-        <SectionCard title="Company details" body="This information appears on your public employer page and helps candidates evaluate your company.">
+        <SectionCard title={copy.sectionTitle} body={copy.sectionBody}>
           <form action={createEmployerProfileAction} className="grid gap-4">
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="name" className="jobs-input" defaultValue={employer?.name || membership?.employerName || ""} placeholder="Company name" />
-              <input name="slug" className="jobs-input" defaultValue={employer?.slug || membership?.employerSlug || ""} placeholder="company-slug" />
+              <input name="name" className="jobs-input" defaultValue={employer?.name || membership?.employerName || ""} placeholder={copy.fieldNamePlaceholder} />
+              <input name="slug" className="jobs-input" defaultValue={employer?.slug || membership?.employerSlug || ""} placeholder={copy.fieldSlugPlaceholder} />
             </div>
-            <input name="tagline" className="jobs-input" defaultValue={employer?.tagline || ""} placeholder="Tagline" />
-            <textarea name="description" className="jobs-textarea min-h-32" defaultValue={employer?.description || ""} placeholder="Employer description" />
+            <input name="tagline" className="jobs-input" defaultValue={employer?.tagline || ""} placeholder={copy.fieldTaglinePlaceholder} />
+            <textarea name="description" className="jobs-textarea min-h-32" defaultValue={employer?.description || ""} placeholder={copy.fieldDescriptionPlaceholder} />
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="website" className="jobs-input" defaultValue={employer?.website || ""} placeholder="Website" />
-              <input name="industry" className="jobs-input" defaultValue={employer?.industry || ""} placeholder="Industry" />
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <input name="locations" className="jobs-input" defaultValue={employer?.locations.join(", ") || ""} placeholder="Lagos, Abuja, Remote" />
-              <input name="headcount" className="jobs-input" defaultValue={employer?.headcount || ""} placeholder="Headcount" />
+              <input name="website" className="jobs-input" defaultValue={employer?.website || ""} placeholder={copy.fieldWebsitePlaceholder} />
+              <input name="industry" className="jobs-input" defaultValue={employer?.industry || ""} placeholder={copy.fieldIndustryPlaceholder} />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <input name="remotePolicy" className="jobs-input" defaultValue={employer?.remotePolicy || ""} placeholder="Remote policy" />
-              <input name="benefitsHeadline" className="jobs-input" defaultValue={employer?.benefitsHeadline || ""} placeholder="Benefits headline" />
+              <input name="locations" className="jobs-input" defaultValue={employer?.locations.join(", ") || ""} placeholder={copy.fieldLocationsPlaceholder} />
+              <input name="headcount" className="jobs-input" defaultValue={employer?.headcount || ""} placeholder={copy.fieldHeadcountPlaceholder} />
             </div>
-            <input name="culturePoints" className="jobs-input" defaultValue={employer?.culturePoints.join(", ") || ""} placeholder="Culture points" />
+            <div className="grid gap-4 md:grid-cols-2">
+              <input name="remotePolicy" className="jobs-input" defaultValue={employer?.remotePolicy || ""} placeholder={copy.fieldRemotePolicyPlaceholder} />
+              <input name="benefitsHeadline" className="jobs-input" defaultValue={employer?.benefitsHeadline || ""} placeholder={copy.fieldBenefitsHeadlinePlaceholder} />
+            </div>
+            <input name="culturePoints" className="jobs-input" defaultValue={employer?.culturePoints.join(", ") || ""} placeholder={copy.fieldCulturePointsPlaceholder} />
             <select name="employerType" className="jobs-select" defaultValue={employer?.employerType || "external"}>
-              <option value="external">External employer</option>
-              <option value="internal">Internal HenryCo hiring</option>
+              <option value="external">{copy.employerTypeExternal}</option>
+              <option value="internal">{copy.employerTypeInternal}</option>
             </select>
-            <PendingSubmitButton pendingLabel="Saving company..." className="w-full sm:w-auto">
-              Save employer profile
+            <PendingSubmitButton pendingLabel={copy.submitSaving} className="w-full sm:w-auto">
+              {copy.submitLabel}
             </PendingSubmitButton>
           </form>
         </SectionCard>

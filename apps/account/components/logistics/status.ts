@@ -1,3 +1,8 @@
+import type { AccountCopy } from "@henryco/i18n";
+import { formatAccountTemplate } from "@henryco/i18n";
+
+type LogisticsCopy = AccountCopy["divisionLogistics"];
+
 export type StatusTone = "active" | "warn" | "success" | "neutral";
 
 const TONE_BY_STATUS: Record<string, StatusTone> = {
@@ -21,50 +26,70 @@ export function statusTone(status: string): StatusTone {
   return TONE_BY_STATUS[status] ?? "neutral";
 }
 
-const LABEL_BY_STATUS: Record<string, string> = {
-  quote_requested: "Quote pending",
-  quote_sent: "Quote ready",
-  pending_payment: "Awaiting payment",
-  scheduled: "Scheduled",
-  assigned: "Rider assigned",
-  pickup_confirmed: "Picked up",
-  in_transit: "In transit",
-  delayed: "Delayed",
-  attempted_delivery: "Attempted delivery",
-  delivered: "Delivered",
-  completed: "Completed",
-  closed: "Closed",
-  cancelled: "Cancelled",
-  refunded: "Refunded",
-};
-
-export function statusLabel(status: string): string {
-  return (
-    LABEL_BY_STATUS[status] ??
-    status.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase())
-  );
+export function statusLabel(status: string, copy: LogisticsCopy): string {
+  const labels = copy.statusLabels;
+  switch (status) {
+    case "quote_requested":
+      return labels.quoteRequested;
+    case "quote_sent":
+      return labels.quoteSent;
+    case "pending_payment":
+      return labels.pendingPayment;
+    case "scheduled":
+      return labels.scheduled;
+    case "assigned":
+      return labels.assigned;
+    case "pickup_confirmed":
+      return labels.pickupConfirmed;
+    case "in_transit":
+      return labels.inTransit;
+    case "delayed":
+      return labels.delayed;
+    case "attempted_delivery":
+      return labels.attemptedDelivery;
+    case "delivered":
+      return labels.delivered;
+    case "completed":
+      return labels.completed;
+    case "closed":
+      return labels.closed;
+    case "cancelled":
+      return labels.cancelled;
+    case "refunded":
+      return labels.refunded;
+    default:
+      return status.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
+  }
 }
 
-const URGENCY_LABELS: Record<string, string> = {
-  standard: "Standard",
-  same_day: "Same day",
-  express: "Express",
-  next_day: "Next day",
-};
-
-export function urgencyLabel(urgency: string): string {
-  return URGENCY_LABELS[urgency] ?? urgency.replace(/_/g, " ");
+export function urgencyLabel(urgency: string, copy: LogisticsCopy): string {
+  switch (urgency) {
+    case "standard":
+      return copy.urgencyLabels.standard;
+    case "same_day":
+      return copy.urgencyLabels.sameDay;
+    case "express":
+      return copy.urgencyLabels.express;
+    case "next_day":
+      return copy.urgencyLabels.nextDay;
+    default:
+      return urgency.replace(/_/g, " ");
+  }
 }
 
-const SERVICE_LABELS: Record<string, string> = {
-  scheduled: "Scheduled",
-  same_day: "Same-day",
-  inter_city: "Inter-city",
-  bulk: "Bulk",
-};
-
-export function serviceLabel(service: string): string {
-  return SERVICE_LABELS[service] ?? service.replace(/_/g, " ");
+export function serviceLabel(service: string, copy: LogisticsCopy): string {
+  switch (service) {
+    case "scheduled":
+      return copy.serviceLabels.scheduled;
+    case "same_day":
+      return copy.serviceLabels.sameDay;
+    case "inter_city":
+      return copy.serviceLabels.interCity;
+    case "bulk":
+      return copy.serviceLabels.bulk;
+    default:
+      return service.replace(/_/g, " ");
+  }
 }
 
 const SHORT_MONTHS = [
@@ -87,7 +112,7 @@ export function shortDate(iso: string | null): { day: string; month: string } {
  * countdown-flavored copy when within the next 36 hours, otherwise a
  * locale-formatted date.
  */
-export function etaFragment(iso: string | null): string | null {
+export function etaFragment(iso: string | null, copy: LogisticsCopy): string | null {
   if (!iso) return null;
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return null;
@@ -95,11 +120,15 @@ export function etaFragment(iso: string | null): string | null {
   const absHours = Math.abs(delta) / 36e5;
   if (absHours < 1) {
     const minutes = Math.max(0, Math.round(Math.abs(delta) / 60_000));
-    return delta >= 0 ? `in ${minutes} min` : `${minutes} min overdue`;
+    return delta >= 0
+      ? formatAccountTemplate(copy.shipment.etaMinutesInTemplate, { minutes })
+      : formatAccountTemplate(copy.shipment.etaMinutesOverdueTemplate, { minutes });
   }
   if (absHours < 36) {
     const hours = Math.round(absHours);
-    return delta >= 0 ? `in ${hours}h` : `${hours}h overdue`;
+    return delta >= 0
+      ? formatAccountTemplate(copy.shipment.etaHoursInTemplate, { hours })
+      : formatAccountTemplate(copy.shipment.etaHoursOverdueTemplate, { hours });
   }
   const d = new Date(ms);
   return d.toLocaleString(undefined, {

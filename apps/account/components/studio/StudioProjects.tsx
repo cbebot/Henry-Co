@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronRight, FolderOpen } from "lucide-react";
+import { formatAccountTemplate, type AccountCopy } from "@henryco/i18n";
 
 import {
   formatStamp,
@@ -8,29 +9,56 @@ import {
   type ProjectRow,
 } from "./helpers";
 
+type StudioCopy = AccountCopy["divisionStudio"];
+
 type Props = {
   projects: ReadonlyArray<ProjectRow>;
+  copy: StudioCopy;
   limit?: number;
 };
 
-const KIND_LABEL: Record<ProjectKind, string> = {
-  live: "Live",
-  ready_review: "Ready for review",
-  scheduled: "Scheduled",
-  delivered: "Delivered",
-  issue: "Action needed",
-};
+function kindLabel(kind: ProjectKind, copy: StudioCopy): string {
+  const labels = copy.projectKindLabels;
+  if (kind === "live") return labels.live;
+  if (kind === "ready_review") return labels.ready_review;
+  if (kind === "scheduled") return labels.scheduled;
+  if (kind === "delivered") return labels.delivered;
+  return labels.issue;
+}
 
-export function StudioProjects({ projects, limit = 6 }: Props) {
+export function StudioProjects({ projects, copy, limit = 6 }: Props) {
   const rows = projects.slice(0, limit);
   if (rows.length === 0) return null;
 
   return (
-    <div className="acct-stu__projects" role="list" aria-label="Studio projects">
+    <div className="acct-stu__projects" role="list" aria-label={copy.projects.listAriaLabel}>
       {rows.map((project) => {
         const kind = projectKind(project.status);
         const stamp = formatStamp(project.latestUpdate?.createdAt || project.updatedAt);
-        const subtitle = project.nextAction || project.latestUpdate?.summary || "Studio is preparing the next update.";
+        const kindText = kindLabel(kind, copy);
+        const subtitle =
+          project.nextAction || project.latestUpdate?.summary || copy.projects.fallbackSubtitle;
+        const milestones = formatAccountTemplate(copy.projects.milestonesTemplate, {
+          approved: project.approvedMilestones,
+          total: project.totalMilestones || 0,
+        });
+        const paymentsLine = formatAccountTemplate(
+          project.openPayments === 1
+            ? copy.projects.paymentsTemplateSingular
+            : copy.projects.paymentsTemplatePlural,
+          { count: project.openPayments },
+        );
+        const deliverablesLine = formatAccountTemplate(
+          project.deliverables === 1
+            ? copy.projects.deliverablesTemplateSingular
+            : copy.projects.deliverablesTemplatePlural,
+          { count: project.deliverables },
+        );
+        const updated = formatAccountTemplate(copy.projects.updatedTemplate, { stamp });
+        const ariaLabel = formatAccountTemplate(copy.projects.rowAriaLabelTemplate, {
+          title: project.title,
+          kind: kindText,
+        });
 
         return (
           <Link
@@ -38,7 +66,7 @@ export function StudioProjects({ projects, limit = 6 }: Props) {
             href={`/studio/projects/${project.id}`}
             className="acct-stu__project-row"
             role="listitem"
-            aria-label={`${project.title} · ${KIND_LABEL[kind]}`}
+            aria-label={ariaLabel}
           >
             <span className="acct-stu__project-icon" data-kind={kind} aria-hidden>
               <FolderOpen size={16} />
@@ -47,7 +75,7 @@ export function StudioProjects({ projects, limit = 6 }: Props) {
               <div className="acct-stu__project-titlebar">
                 <span className="acct-stu__project-title">{project.title}</span>
                 <span className="acct-stu__chip" data-kind={kind}>
-                  {KIND_LABEL[kind]}
+                  {kindText}
                 </span>
               </div>
               <p className="acct-stu__project-sub">{subtitle}</p>
@@ -58,13 +86,13 @@ export function StudioProjects({ projects, limit = 6 }: Props) {
                 />
               </div>
               <div className="acct-stu__project-foot">
-                <span>{project.approvedMilestones}/{project.totalMilestones || 0} milestones</span>
+                <span>{milestones}</span>
                 <span>·</span>
-                <span>{project.openPayments} open payment{project.openPayments === 1 ? "" : "s"}</span>
+                <span>{paymentsLine}</span>
                 <span>·</span>
-                <span>{project.deliverables} deliverable{project.deliverables === 1 ? "" : "s"}</span>
+                <span>{deliverablesLine}</span>
                 <span className="acct-stu__project-foot-spacer" />
-                <span>Updated {stamp}</span>
+                <span>{updated}</span>
               </div>
             </div>
             <ChevronRight size={14} aria-hidden className="acct-stu__project-chevron" />

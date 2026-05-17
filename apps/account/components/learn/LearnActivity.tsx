@@ -5,7 +5,10 @@ import { formatStamp, type LearnActivityRow, type LearnLocale } from "./helpers"
 type Props = {
   activity: ReadonlyArray<LearnActivityRow>;
   locale: LearnLocale;
-  ariaLabel: string;
+  labels: {
+    ariaLabel: string;
+    fallbackTitle: string;
+  };
   limit?: number;
 };
 
@@ -28,16 +31,18 @@ function kindFor(type: string | null): IconKind {
   return "generic";
 }
 
-export function LearnActivity({ activity, locale, ariaLabel, limit = 8 }: Props) {
+export function LearnActivity({ activity, locale, labels, limit = 8 }: Props) {
   const rows = activity.slice(0, limit);
   if (rows.length === 0) return null;
 
   return (
-    <div className="acct-lrn__activity" role="list" aria-label={ariaLabel}>
+    <div className="acct-lrn__activity" role="list" aria-label={labels.ariaLabel}>
       {rows.map((row) => {
         const kind = kindFor(row.activityType);
         const Icon = ICON_BY_KIND[kind];
-        const title = row.title?.trim() || (row.activityType ? row.activityType.replace(/_/g, " ") : ariaLabel);
+        const title =
+          row.title?.trim() ||
+          (row.activityType ? row.activityType.replace(/_/g, " ") : labels.fallbackTitle);
         const sub = row.description?.trim() ?? null;
         const href = row.actionUrl?.trim() || null;
         const stamp = formatStamp(row.occurredAt, locale);

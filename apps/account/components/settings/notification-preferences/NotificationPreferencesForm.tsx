@@ -501,7 +501,7 @@ export default function NotificationPreferencesForm({
       </div>
 
       {/* Delivery */}
-      <Section title={t("In-app delivery")} kicker="Delivery" icon={Bell}>
+      <Section title={t("In-app delivery")} kicker={t("Delivery")} icon={Bell}>
         <Toggle
           label={t("Preview popups")}
           description={t("Compact preview cards for new notifications while the page is open.")}
@@ -534,7 +534,7 @@ export default function NotificationPreferencesForm({
       </Section>
 
       {/* Quiet hours */}
-      <Section title={t("Quiet hours")} kicker="Calm" icon={AlarmClock}>
+      <Section title={t("Quiet hours")} kicker={t("Calm")} icon={AlarmClock}>
         <Toggle
           label={t("Enable quiet hours")}
           description={t("Suppress sound and vibration during the time window you choose.")}
@@ -633,7 +633,7 @@ export default function NotificationPreferencesForm({
       </Section>
 
       {/* Email fallback */}
-      <Section title={t("Email fallback")} kicker="Email" icon={Mail}>
+      <Section title={t("Email fallback")} kicker={t("Email")} icon={Mail}>
         <Toggle
           label={t("Email me when I miss notifications in-app")}
           description={t("Send a reminder email if a notification stays unread past the chosen delay.")}
@@ -681,7 +681,7 @@ export default function NotificationPreferencesForm({
       </Section>
 
       {/* Channel cluster */}
-      <Section title={t("Email & messaging channels")} kicker="Channels" icon={MessageSquare}>
+      <Section title={t("Email & messaging channels")} kicker={t("Channels")} icon={MessageSquare}>
         <Toggle
           label={t("Transaction emails")}
           description={t("Receipts, confirmations, and account-critical alerts.")}
@@ -727,7 +727,7 @@ export default function NotificationPreferencesForm({
       </Section>
 
       {/* Mute by division */}
-      <Section title={t("Mute divisions")} kicker="Mute" icon={BellOff}>
+      <Section title={t("Mute divisions")} kicker={t("Mute")} icon={BellOff}>
         <p className="text-xs leading-5 text-[var(--acct-muted)]">
           {t("Muted divisions still arrive in your inbox but stop sound, vibration, popups, and email fallback for that source.")}
         </p>
@@ -776,7 +776,7 @@ export default function NotificationPreferencesForm({
       </Section>
 
       {/* Mute by event type */}
-      <Section title={t("Mute specific events")} kicker="Event mute" icon={BellOff}>
+      <Section title={t("Mute specific events")} kicker={t("Event mute")} icon={BellOff}>
         <button
           type="button"
           onClick={() => setEventListOpen((v) => !v)}

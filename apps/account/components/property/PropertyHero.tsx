@@ -1,31 +1,129 @@
 import { ArrowUpRight } from "lucide-react";
 
+import { formatAccountTemplate } from "@henryco/i18n";
+
 import {
   activityBreakdown,
-  buildBlurb,
-  buildHeadline,
   heroState,
   type PropertyStats,
 } from "./helpers";
 
+type BreakdownLabels = {
+  saved: string;
+  inquiries: string;
+  viewings: string;
+  listings: string;
+};
+
+export type PropertyHeroCopy = {
+  eyebrow: string;
+  ariaLabel: string;
+  browseListingsCta: string;
+  savedShortlistCta: string;
+  tilesAriaLabel: string;
+  tileLabels: {
+    saved: string;
+    inquiries: string;
+    viewings: string;
+    listings: string;
+  };
+  tileFoot: {
+    savedManagedTemplate: string;
+    savedEmpty: string;
+    savedWith: string;
+    inquiriesEmpty: string;
+    inquiriesWith: string;
+    viewingsEmpty: string;
+    viewingsWith: string;
+    listingsEmpty: string;
+    listingsWith: string;
+  };
+  sideAriaLabel: string;
+  sideKicker: string;
+  sideTitle: string;
+  sideBody: string;
+  sideBodyMuted: string;
+  breakdownAriaLabel: string;
+  breakdownLabel: string;
+  breakdownLabels: BreakdownLabels;
+  state: {
+    empty: {
+      headline: string;
+      blurb: string;
+    };
+    discover: {
+      headlineTemplateSingular: string;
+      headlineTemplatePlural: string;
+      blurb: string;
+    };
+    active: {
+      viewingHeadlineTemplateSingular: string;
+      viewingHeadlineTemplatePlural: string;
+      inquiryHeadlineTemplateSingular: string;
+      inquiryHeadlineTemplatePlural: string;
+      blurb: string;
+    };
+  };
+};
+
 type Props = {
   stats: PropertyStats;
   propertyOrigin: string;
+  copy: PropertyHeroCopy;
 };
 
-export function PropertyHero({ stats, propertyOrigin }: Props) {
+function buildHeadline(state: ReturnType<typeof heroState>, stats: PropertyStats, copy: PropertyHeroCopy): string {
+  if (state === "empty") return copy.state.empty.headline;
+  if (state === "active") {
+    if (stats.viewings > 0) {
+      return formatAccountTemplate(
+        stats.viewings === 1
+          ? copy.state.active.viewingHeadlineTemplateSingular
+          : copy.state.active.viewingHeadlineTemplatePlural,
+        { count: stats.viewings },
+      );
+    }
+    return formatAccountTemplate(
+      stats.inquiries === 1
+        ? copy.state.active.inquiryHeadlineTemplateSingular
+        : copy.state.active.inquiryHeadlineTemplatePlural,
+      { count: stats.inquiries },
+    );
+  }
+  return formatAccountTemplate(
+    stats.saved === 1
+      ? copy.state.discover.headlineTemplateSingular
+      : copy.state.discover.headlineTemplatePlural,
+    { count: stats.saved },
+  );
+}
+
+function buildBlurb(state: ReturnType<typeof heroState>, copy: PropertyHeroCopy): string {
+  if (state === "empty") return copy.state.empty.blurb;
+  if (state === "active") return copy.state.active.blurb;
+  return copy.state.discover.blurb;
+}
+
+export function PropertyHero({ stats, propertyOrigin, copy }: Props) {
   const state = heroState(stats);
-  const headline = buildHeadline(state, stats);
-  const blurb = buildBlurb(state);
-  const breakdown = activityBreakdown(stats);
+  const headline = buildHeadline(state, stats, copy);
+  const blurb = buildBlurb(state, copy);
+  const breakdown = activityBreakdown(stats, copy.breakdownLabels);
+
+  const savedFoot =
+    stats.managed > 0
+      ? formatAccountTemplate(copy.tileFoot.savedManagedTemplate, { count: stats.managed })
+      : stats.saved === 0
+        ? copy.tileFoot.savedEmpty
+        : copy.tileFoot.savedWith;
 
   return (
-    <section className="acct-prop__hero" data-state={state} aria-label="Property overview">
+    <section className="acct-prop__hero" data-state={state} aria-label={copy.ariaLabel}>
       <div className="acct-prop__hero-inner">
         <div>
           <span className="acct-prop__eyebrow">
             <span className="acct-prop__eyebrow-dot" aria-hidden />
-            Property · live
+            {copy.eyebrow}
           </span>
           <h1 className="acct-prop__headline">{headline}</h1>
           <p className="acct-prop__blurb">{blurb}</p>
@@ -36,63 +134,51 @@ export function PropertyHero({ stats, propertyOrigin }: Props) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Browse listings <ArrowUpRight size={14} aria-hidden />
+              {copy.browseListingsCta} <ArrowUpRight size={14} aria-hidden />
             </a>
             <a className="acct-prop__cta acct-prop__cta--ghost" href="/property/saved">
-              Saved shortlist <ArrowUpRight size={14} aria-hidden />
+              {copy.savedShortlistCta} <ArrowUpRight size={14} aria-hidden />
             </a>
           </div>
-          <div className="acct-prop__hero-tiles" role="list" aria-label="Property activity">
+          <div className="acct-prop__hero-tiles" role="list" aria-label={copy.tilesAriaLabel}>
             <div className="acct-prop__hero-tile" role="listitem">
-              <span className="acct-prop__hero-tile-label">Saved</span>
+              <span className="acct-prop__hero-tile-label">{copy.tileLabels.saved}</span>
               <span className="acct-prop__hero-tile-value">{stats.saved}</span>
-              <span className="acct-prop__hero-tile-foot">
-                {stats.managed > 0
-                  ? `${stats.managed} HenryCo-managed`
-                  : stats.saved === 0
-                    ? "Save listings to build a shortlist"
-                    : "Compare and revisit anytime"}
-              </span>
+              <span className="acct-prop__hero-tile-foot">{savedFoot}</span>
             </div>
             <div className="acct-prop__hero-tile" role="listitem">
-              <span className="acct-prop__hero-tile-label">Inquiries</span>
+              <span className="acct-prop__hero-tile-label">{copy.tileLabels.inquiries}</span>
               <span className="acct-prop__hero-tile-value">{stats.inquiries}</span>
               <span className="acct-prop__hero-tile-foot">
-                {stats.inquiries === 0 ? "No conversations open yet" : "Follow-ups land in this room"}
+                {stats.inquiries === 0 ? copy.tileFoot.inquiriesEmpty : copy.tileFoot.inquiriesWith}
               </span>
             </div>
             <div className="acct-prop__hero-tile" role="listitem">
-              <span className="acct-prop__hero-tile-label">Viewings</span>
+              <span className="acct-prop__hero-tile-label">{copy.tileLabels.viewings}</span>
               <span className="acct-prop__hero-tile-value">{stats.viewings}</span>
               <span className="acct-prop__hero-tile-foot">
-                {stats.viewings === 0 ? "Request a viewing on a saved home" : "Confirmations sync across devices"}
+                {stats.viewings === 0 ? copy.tileFoot.viewingsEmpty : copy.tileFoot.viewingsWith}
               </span>
             </div>
             <div className="acct-prop__hero-tile" role="listitem">
-              <span className="acct-prop__hero-tile-label">Listings</span>
+              <span className="acct-prop__hero-tile-label">{copy.tileLabels.listings}</span>
               <span className="acct-prop__hero-tile-value">{stats.listings}</span>
               <span className="acct-prop__hero-tile-foot">
-                {stats.listings === 0 ? "Submit a listing on Property" : "Moderation outcomes mirror here"}
+                {stats.listings === 0 ? copy.tileFoot.listingsEmpty : copy.tileFoot.listingsWith}
               </span>
             </div>
           </div>
         </div>
-        <aside className="acct-prop__hero-side" aria-label="How this room works">
-          <p className="acct-prop__hero-side-label">How this room works</p>
-          <p className="acct-prop__hero-side-title">Discover on Property, follow up here.</p>
-          <p className="acct-prop__hero-side-body">
-            Save a listing, request a viewing, or open an inquiry on HenryCo
-            Property — every action mirrors into this account room so you can
-            pick up where you left off across devices.
-          </p>
+        <aside className="acct-prop__hero-side" aria-label={copy.sideAriaLabel}>
+          <p className="acct-prop__hero-side-label">{copy.sideKicker}</p>
+          <p className="acct-prop__hero-side-title">{copy.sideTitle}</p>
+          <p className="acct-prop__hero-side-body">{copy.sideBody}</p>
           <p className="acct-prop__hero-side-body acct-prop__hero-side-body--muted">
-            HenryCo-managed listings flag with a Managed badge — review,
-            inspection, and lease follow-ups are coordinated by the Property
-            team.
+            {copy.sideBodyMuted}
           </p>
           {breakdown.length > 0 ? (
-            <div className="acct-prop__hero-breakdown" aria-label="Activity breakdown">
-              <p className="acct-prop__hero-breakdown-label">By activity</p>
+            <div className="acct-prop__hero-breakdown" aria-label={copy.breakdownAriaLabel}>
+              <p className="acct-prop__hero-breakdown-label">{copy.breakdownLabel}</p>
               {breakdown.map((row) => (
                 <div key={row.key} className="acct-prop__hero-breakdown-row">
                   <span className="acct-prop__hero-breakdown-name">

@@ -3,11 +3,21 @@
 import { useState, useCallback } from "react";
 import { Copy, Check, Link as LinkIcon } from "lucide-react";
 
-type CopyReferralCodeProps = {
-  code: string;
+type CopyReferralCodeCopy = {
+  eyebrow: string;
+  shareLinkLabel: string;
+  copyCodeTitle: string;
+  copyLinkTitle: string;
+  copyLinkLabel: string;
+  copiedToast: string;
 };
 
-export default function CopyReferralCode({ code }: CopyReferralCodeProps) {
+type CopyReferralCodeProps = {
+  code: string;
+  copy: CopyReferralCodeCopy;
+};
+
+export default function CopyReferralCode({ code, copy }: CopyReferralCodeProps) {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const shareLink = `https://account.henrycogroup.com/signup?ref=${code}`;
@@ -35,7 +45,7 @@ export default function CopyReferralCode({ code }: CopyReferralCodeProps) {
       {/* Referral Code */}
       <div>
         <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
-          Your Referral Code
+          {copy.eyebrow}
         </p>
         <div className="mt-1.5 flex items-center gap-2">
           <span className="rounded-lg bg-[var(--acct-surface)] px-4 py-2 font-mono text-base font-semibold tracking-wider text-[var(--acct-ink)]">
@@ -45,12 +55,12 @@ export default function CopyReferralCode({ code }: CopyReferralCodeProps) {
             type="button"
             onClick={() => copyToClipboard(code, "code")}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--acct-line)] text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
-            title="Copy code"
+            title={copy.copyCodeTitle}
           >
             {copiedCode ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
           </button>
           {copiedCode && (
-            <span className="text-xs font-medium text-emerald-500">Copied!</span>
+            <span className="text-xs font-medium text-emerald-500">{copy.copiedToast}</span>
           )}
         </div>
       </div>
@@ -58,7 +68,7 @@ export default function CopyReferralCode({ code }: CopyReferralCodeProps) {
       {/* Share Link */}
       <div>
         <p className="text-[0.65rem] font-semibold uppercase text-[var(--acct-muted)]">
-          Share Link
+          {copy.shareLinkLabel}
         </p>
         <div className="mt-1.5 flex items-center gap-2">
           <div className="min-w-0 flex-1 truncate rounded-lg bg-[var(--acct-surface)] px-4 py-2 text-sm text-[var(--acct-muted)]">
@@ -68,17 +78,17 @@ export default function CopyReferralCode({ code }: CopyReferralCodeProps) {
             type="button"
             onClick={() => copyToClipboard(shareLink, "link")}
             className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-[var(--acct-line)] px-3 text-sm font-medium text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
-            title="Copy link"
+            title={copy.copyLinkTitle}
           >
             {copiedLink ? (
               <>
                 <Check size={14} className="text-emerald-500" />
-                <span className="text-emerald-500">Copied!</span>
+                <span className="text-emerald-500">{copy.copiedToast}</span>
               </>
             ) : (
               <>
                 <LinkIcon size={14} />
-                <span>Copy link</span>
+                <span>{copy.copyLinkLabel}</span>
               </>
             )}
           </button>

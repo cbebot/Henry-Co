@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Clock, Layers3, Sparkles, Target } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { PublicProofRail, PublicSpotlight } from "@henryco/ui/public-shell";
 import { getStudioCatalog } from "@/lib/studio/catalog";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { studioTemplates } from "@/lib/studio/templates";
 import { formatCurrency } from "@/lib/env";
 
 export default async function StudioHomePage() {
   const catalog = await getStudioCatalog();
+  const locale = await getStudioPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const featuredPackages = catalog.packages.slice(0, 3);
   const featuredServices = catalog.services.slice(0, 5);
   const featuredTeams = catalog.teams.slice(0, 4);
@@ -24,17 +28,19 @@ export default async function StudioHomePage() {
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="studio-panel studio-hero studio-mesh rounded-[2rem] px-5 py-7 sm:rounded-[2.4rem] sm:px-8 sm:py-10 lg:rounded-[3rem] lg:px-10 lg:py-12">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="studio-kicker">HenryCo Studio</span>
+              <span className="studio-kicker">{t("HenryCo Studio")}</span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--studio-signal)]" />
-                Software built with sharper process
+                {t("Software built with sharper process")}
               </span>
             </div>
             <h1 className="studio-display mt-5 max-w-3xl text-balance text-[var(--studio-ink)] sm:mt-7">
-              Serious software, delivered with discipline.
+              {t("Serious software, delivered with discipline.")}
             </h1>
             <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-7 text-[var(--studio-ink-soft)] sm:mt-6 sm:text-base sm:leading-8 lg:text-lg">
-              We design and build websites, web apps, and internal platforms for companies that expect a calmer path from brief to launch &mdash; scoped in plain English, priced on milestones, delivered in one structured workspace.
+              {t(
+                "We design and build websites, web apps, and internal platforms for companies that expect a calmer path from brief to launch \u2014 scoped in plain English, priced on milestones, delivered in one structured workspace.",
+              )}
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-9 sm:gap-3">
@@ -42,28 +48,28 @@ export default async function StudioHomePage() {
                 href="/pick"
                 className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px] sm:gap-3 sm:px-6 sm:py-4"
               >
-                Help me pick a project type
+                {t("Help me pick a project type")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/request"
                 className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px] sm:px-6 sm:py-4"
               >
-                Start a brief
+                {t("Start a brief")}
               </Link>
             </div>
           </div>
 
           <div className="grid gap-6">
             <PublicProofRail
-              eyebrow="At a glance"
+              eyebrow={t("At a glance")}
               density="tight"
               variant="rail"
               items={[
-                { label: "Services", value: String(catalog.services.length) },
-                { label: "Packages", value: String(catalog.packages.length) },
-                { label: "Teams", value: String(catalog.teams.length) },
-                { label: "Case studies", value: String(catalog.caseStudies.length) },
+                { label: t("Services"), value: String(catalog.services.length) },
+                { label: t("Packages"), value: String(catalog.packages.length) },
+                { label: t("Teams"), value: String(catalog.teams.length) },
+                { label: t("Case studies"), value: String(catalog.caseStudies.length) },
               ]}
             />
 
@@ -71,17 +77,21 @@ export default async function StudioHomePage() {
               {[
                 {
                   icon: Layers3,
-                  title: "Package path",
-                  body: "Premium websites, commerce, dashboards \u2014 repeatable scopes with clear price bands.",
+                  title: t("Package path"),
+                  body: t(
+                    "Premium websites, commerce, dashboards \u2014 repeatable scopes with clear price bands.",
+                  ),
                   href: "/pricing",
-                  cta: "Compare packages",
+                  cta: t("Compare packages"),
                 },
                 {
                   icon: Sparkles,
-                  title: "Custom project path",
-                  body: "Bespoke software, portals, multi-role products, and specific feature architecture.",
+                  title: t("Custom project path"),
+                  body: t(
+                    "Bespoke software, portals, multi-role products, and specific feature architecture.",
+                  ),
                   href: "/request",
-                  cta: "Build a brief",
+                  cta: t("Build a brief"),
                 },
               ].map((item) => (
                 <Link
@@ -106,17 +116,18 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
-            <div className="studio-kicker">Ready-made by Studio</div>
+            <div className="studio-kicker">{t("Ready-made by Studio")}</div>
             <h2 className="studio-heading mt-4">
-              Pick a template — launch in {fastestTemplateDays}+ days.
+              {t("Pick a template — launch in")} {fastestTemplateDays}+ {t("days.")}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-              Real prices. Real timelines. We tailor the chosen site to your brand and
-              content, then launch.
+              {t(
+                "Real prices. Real timelines. We tailor the chosen site to your brand and content, then launch.",
+              )}
             </p>
           </div>
           <Link href="/pick" className="text-sm font-semibold text-[var(--studio-ink)]">
-            Browse all templates
+            {t("Browse all templates")}
           </Link>
         </div>
 
@@ -162,8 +173,8 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
-            <div className="studio-kicker">Why Studio</div>
-            <h2 className="studio-heading mt-4">The difference clients actually notice.</h2>
+            <div className="studio-kicker">{t("Why Studio")}</div>
+            <h2 className="studio-heading mt-4">{t("The difference clients actually notice.")}</h2>
           </div>
         </div>
         <div className="mt-10 grid gap-x-12 gap-y-10 lg:grid-cols-3 lg:divide-x lg:divide-[var(--studio-line)]">
@@ -189,11 +200,11 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-3xl">
-            <div className="studio-kicker">Packages</div>
-            <h2 className="studio-heading mt-4">Transparent pricing so you know what to expect before the first conversation.</h2>
+            <div className="studio-kicker">{t("Packages")}</div>
+            <h2 className="studio-heading mt-4">{t("Transparent pricing so you know what to expect before the first conversation.")}</h2>
           </div>
           <Link href="/pricing" className="text-sm font-semibold text-[var(--studio-ink)]">
-            Explore all packages
+            {t("Explore all packages")}
           </Link>
         </div>
 
@@ -214,7 +225,7 @@ export default async function StudioHomePage() {
                 <div className="studio-kicker">{pkg.name}</div>
                 {idx === 1 ? (
                   <span className="rounded-full border border-[var(--studio-signal)]/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
-                    Most chosen
+                    {t("Most chosen")}
                   </span>
                 ) : null}
               </div>
@@ -224,17 +235,17 @@ export default async function StudioHomePage() {
               <p className="mt-4 text-sm leading-7 text-[var(--studio-ink-soft)]">{pkg.summary}</p>
               <dl className="mt-5 flex items-end justify-between gap-6 border-t border-[var(--studio-line)] pt-4">
                 <div>
-                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">Deposit</dt>
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">{t("Deposit")}</dt>
                   <dd className="mt-1 text-base font-semibold text-[var(--studio-ink)]">{Math.round(pkg.depositRate * 100)}%</dd>
                 </div>
                 <div>
-                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">Timeline</dt>
-                  <dd className="mt-1 text-base font-semibold text-[var(--studio-ink)]">{pkg.timelineWeeks} wks</dd>
+                  <dt className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--studio-signal)]">{t("Timeline")}</dt>
+                  <dd className="mt-1 text-base font-semibold text-[var(--studio-ink)]">{pkg.timelineWeeks} {t("wks")}</dd>
                 </div>
               </dl>
-              <div className="mt-5 text-sm text-[var(--studio-ink-soft)]"><span className="text-[var(--studio-ink)] font-medium">Best for:</span> {pkg.bestFor}</div>
+              <div className="mt-5 text-sm text-[var(--studio-ink-soft)]"><span className="text-[var(--studio-ink)] font-medium">{t("Best for:")}</span> {pkg.bestFor}</div>
               <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--studio-signal)]">
-                Open package detail
+                {t("Open package detail")}
                 <ArrowRight className="h-3.5 w-3.5 transition motion-safe:group-hover:translate-x-0.5" aria-hidden />
               </div>
             </Link>
@@ -245,8 +256,8 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="grid gap-12 xl:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <div className="studio-kicker">Services</div>
-            <h2 className="studio-heading mt-4">Specialised services built around real business outcomes.</h2>
+            <div className="studio-kicker">{t("Services")}</div>
+            <h2 className="studio-heading mt-4">{t("Specialised services built around real business outcomes.")}</h2>
             <ul className="mt-8 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
               {featuredServices.map((service) => (
                 <li key={service.id}>
@@ -259,7 +270,7 @@ export default async function StudioHomePage() {
                       <p className="mt-1 max-w-xl text-sm leading-relaxed text-[var(--studio-ink-soft)]">{service.headline}</p>
                     </div>
                     <div className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--studio-signal)] whitespace-nowrap">
-                      from {formatCurrency(service.startingPrice)}
+                      {t("from")} {formatCurrency(service.startingPrice)}
                       <ArrowRight className="h-3.5 w-3.5 opacity-0 transition motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:opacity-100" aria-hidden />
                     </div>
                   </Link>
@@ -269,7 +280,7 @@ export default async function StudioHomePage() {
           </div>
 
           <div className="studio-panel rounded-[2.6rem] p-6 sm:p-8">
-            <div className="studio-kicker">Selected work</div>
+            <div className="studio-kicker">{t("Selected work")}</div>
             <div className="mt-6 space-y-5">
               {featuredCases.map((item) => (
                 <Link
@@ -297,8 +308,8 @@ export default async function StudioHomePage() {
 
       <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="max-w-2xl">
-          <div className="studio-kicker">How an engagement runs</div>
-          <h2 className="studio-heading mt-4">From first call to launch, in one continuous record.</h2>
+          <div className="studio-kicker">{t("How an engagement runs")}</div>
+          <h2 className="studio-heading mt-4">{t("From first call to launch, in one continuous record.")}</h2>
         </div>
         <ol className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {catalog.process.slice(0, 4).map((step, index) => (
@@ -316,9 +327,9 @@ export default async function StudioHomePage() {
 
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--studio-line)] pt-6">
           <div>
-            <div className="studio-kicker">Specialist teams</div>
+            <div className="studio-kicker">{t("Specialist teams")}</div>
             <p className="mt-2 text-sm text-[var(--studio-ink-soft)]">
-              Matched to project type. Availability shown live on each team.
+              {t("Matched to project type. Availability shown live on each team.")}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -339,9 +350,11 @@ export default async function StudioHomePage() {
       <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10 space-y-8">
         <PublicSpotlight
           tone="contrast"
-          eyebrow="Trust & credibility"
-          title="Quality you can verify before you invest."
-          body="Every project runs on a single record &mdash; scope, payments, reviews, milestones. Nothing about your engagement lives in a back-channel."
+          eyebrow={t("Trust & credibility")}
+          title={t("Quality you can verify before you invest.")}
+          body={t(
+            "Every project runs on a single record — scope, payments, reviews, milestones. Nothing about your engagement lives in a back-channel.",
+          )}
           aside={
             <div className="space-y-5">
               {featuredTestimonials.map((item) => (
@@ -358,24 +371,24 @@ export default async function StudioHomePage() {
           density="tight"
           variant="rail"
           items={[
-            { label: "Visibility", value: "Full project", hint: "Scope, payments, reviews — visible at every stage." },
-            { label: "Workspace", value: "One team", hint: "Design, dev, finance, support — same record." },
-            { label: "Standard", value: "Premium", hint: "Custom work runs the same milestones as packages." },
-            { label: "Account", value: "Always on", hint: "History, invoices, updates from your HenryCo account." },
+            { label: t("Visibility"), value: t("Full project"), hint: t("Scope, payments, reviews — visible at every stage.") },
+            { label: t("Workspace"), value: t("One team"), hint: t("Design, dev, finance, support — same record.") },
+            { label: t("Standard"), value: t("Premium"), hint: t("Custom work runs the same milestones as packages.") },
+            { label: t("Account"), value: t("Always on"), hint: t("History, invoices, updates from your HenryCo account.") },
           ]}
         />
 
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border border-[var(--studio-line)] bg-black/15 px-6 py-5">
           <div className="flex items-center gap-3 text-[var(--studio-ink-soft)]">
             <Target className="h-5 w-5 text-[var(--studio-signal)]" />
-            <span className="text-sm">Ready to scope a project? Brief takes about 8 minutes.</span>
+            <span className="text-sm">{t("Ready to scope a project? Brief takes about 8 minutes.")}</span>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/request" className="studio-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold">
-              Start a brief
+              {t("Start a brief")}
             </Link>
             <Link href="/pricing" className="studio-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold">
-              See packages
+              {t("See packages")}
             </Link>
           </div>
         </div>

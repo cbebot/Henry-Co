@@ -1,3 +1,6 @@
+import { getAccountCopy } from "@henryco/i18n/server";
+import { formatAccountTemplate } from "@henryco/i18n";
+
 import { requireAccountUser } from "@/lib/auth";
 import {
   getCareBookings,
@@ -9,7 +12,7 @@ import "@/components/care/styles.css";
 import { CareHero } from "@/components/care/CareHero";
 import { CareActiveGlance } from "@/components/care/CareActiveGlance";
 import { CareActivity } from "@/components/care/CareActivity";
-import { careStats, toCareActivityRows, type CareLocale } from "@/components/care/helpers";
+import { careStats, heroState, toCareActivityRows } from "@/components/care/helpers";
 
 import CareBookingsDashboard, {
   CARE_BOOKING_FILTER_OPTIONS,
@@ -20,95 +23,25 @@ import CareBookingsDashboard, {
 export const dynamic = "force-dynamic";
 
 const CARE_PAGE_SIZE = 12;
+const CARE_BOOK_URL = "https://care.henrycogroup.com/book";
+const CARE_TRACK_URL = "https://care.henrycogroup.com/track";
 
-const COPY_EN = {
-  eyebrow: "Care · live",
-  sideKicker: "How this room works",
-  sideTitle: "Book on Care, follow up here.",
-  sideBody: "Every booking made on HenryCo Care mirrors into this room — tracking code, payment status, and the next operational step land here automatically. The dashboard below stays in sync as service progresses.",
-  breakdownLabel: "By status",
-  tileLabels: {
-    total: "Bookings",
-    inFlight: "In service",
-    payment: "Awaiting payment",
-    completed: "Completed",
-  },
-  tileFoot: {
-    totalEmpty: "Book your first Care service to start",
-    totalWith: (n: number) => `${n} linked to this account`,
-    inFlightEmpty: "Nothing actively moving right now",
-    inFlightWith: "Live status mirrors below",
-    paymentEmpty: "No outstanding payment verification",
-    paymentWith: "Submit or check receipt below",
-    completedEmpty: "No services completed yet",
-    completedWith: "Marked done by the Care team",
-  },
-  sectionGlance: "Next action",
-  sectionGlanceMeta: "The most time-sensitive booking surfaces here.",
-  sectionBookings: "All bookings",
-  sectionBookingsEmpty: "Bookings made while signed in appear here in real time.",
-  sectionBookingsMeta: (n: number) => `${n} booking${n === 1 ? "" : "s"} · filter, paginate, and open any one for the live detail.`,
-  sectionActivity: "Recent activity",
-  sectionActivityEmpty: "Status updates, receipts, and reviews surface here as they happen.",
-  sectionActivityMeta: (n: number) => `${n} update${n === 1 ? "" : "s"} · most recent first`,
-  emptyTitle: "No Care bookings linked yet",
-  emptyBody: "Bookings you make on Care while signed in land here immediately. Older bookings also surface once their email or phone matches your shared profile.",
-  glanceNextAction: "Next action",
-  glanceService: "Service",
-  glancePickup: "Pickup",
-  glanceBalance: "Balance due",
-  glanceTracking: "Tracking",
-  activityAriaLabel: "Care activity",
-};
-
-const COPY_FR: typeof COPY_EN = {
-  eyebrow: "Care · en direct",
-  sideKicker: "Comment cette pièce fonctionne",
-  sideTitle: "Réservez sur Care, suivez ici.",
-  sideBody: "Chaque réservation faite sur HenryCo Care est miroitée dans cette pièce — code de suivi, statut du paiement, et la prochaine étape opérationnelle arrivent ici automatiquement. Le tableau de bord ci-dessous reste synchronisé pendant le service.",
-  breakdownLabel: "Par statut",
-  tileLabels: {
-    total: "Réservations",
-    inFlight: "En cours",
-    payment: "Paiement à vérifier",
-    completed: "Terminées",
-  },
-  tileFoot: {
-    totalEmpty: "Réservez votre premier service Care",
-    totalWith: (n: number) => `${n} liée${n === 1 ? "" : "s"} à ce compte`,
-    inFlightEmpty: "Rien d’actif pour le moment",
-    inFlightWith: "Statut en direct ci-dessous",
-    paymentEmpty: "Aucune vérification de paiement en attente",
-    paymentWith: "Soumettre ou vérifier le reçu ci-dessous",
-    completedEmpty: "Aucune prestation terminée pour le moment",
-    completedWith: "Marquées comme terminées par Care",
-  },
-  sectionGlance: "Prochaine action",
-  sectionGlanceMeta: "La réservation la plus urgente est mise en avant ici.",
-  sectionBookings: "Toutes les réservations",
-  sectionBookingsEmpty: "Les réservations faites en étant connecté apparaissent ici en temps réel.",
-  sectionBookingsMeta: (n: number) => `${n} réservation${n === 1 ? "" : "s"} · filtrer, paginer et ouvrir le détail en direct.`,
-  sectionActivity: "Activité récente",
-  sectionActivityEmpty: "Mises à jour de statut, reçus et avis apparaissent ici dès qu’ils se produisent.",
-  sectionActivityMeta: (n: number) => `${n} mise${n === 1 ? "" : "s"} à jour · plus récentes en premier`,
-  emptyTitle: "Aucune réservation Care liée pour le moment",
-  emptyBody: "Les nouvelles réservations faites en étant connecté apparaîtront ici immédiatement. Les anciennes réservations apparaîtront aussi une fois que leur e-mail ou téléphone correspondra à votre profil partagé.",
-  glanceNextAction: "Prochaine action",
-  glanceService: "Service",
-  glancePickup: "Enlèvement",
-  glanceBalance: "Solde dû",
-  glanceTracking: "Suivi",
-  activityAriaLabel: "Activité Care",
-};
+export async function generateMetadata() {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountCopy(locale).divisionCare;
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
 
 export default async function CarePage({
   searchParams,
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [localeRaw, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
-  const locale: CareLocale = localeRaw === "fr" ? "fr" : "en";
-  const copy = locale === "fr" ? COPY_FR : COPY_EN;
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const copy = getAccountCopy(locale).divisionCare;
 
   const params = searchParams ? await searchParams : {};
   const selectedBookingId = typeof params.booking === "string" ? params.booking : null;
@@ -131,19 +64,95 @@ export default async function CarePage({
   const listSlice = filteredBookings.slice((page - 1) * CARE_PAGE_SIZE, page * CARE_PAGE_SIZE);
   const activityRows = toCareActivityRows(activity);
 
+  // Resolve hero copy from i18n slice (was previously baked into helpers).
+  const state = heroState(stats);
+  const heroCount =
+    state === "empty"
+      ? 0
+      : state === "attention"
+        ? stats.needsPayment + stats.needsAttention
+        : state === "active"
+          ? stats.inFlight
+          : stats.total;
+  let heroHeadline: string;
+  let heroBlurb: string;
+  let heroCtaPrimaryLabel: string;
+  let heroCtaSecondaryLabel: string;
+  if (state === "empty") {
+    const s = copy.hero.state.empty;
+    heroHeadline = s.headline;
+    heroBlurb = s.blurb;
+    heroCtaPrimaryLabel = s.ctaPrimary;
+    heroCtaSecondaryLabel = s.ctaSecondary;
+  } else {
+    const s =
+      state === "attention"
+        ? copy.hero.state.attention
+        : state === "active"
+          ? copy.hero.state.active
+          : copy.hero.state.calm;
+    heroHeadline = formatAccountTemplate(
+      heroCount === 1 ? s.headlineTemplateSingular : s.headlineTemplatePlural,
+      { count: heroCount },
+    );
+    heroBlurb = s.blurb;
+    heroCtaPrimaryLabel = s.ctaPrimary;
+    heroCtaSecondaryLabel = s.ctaSecondary;
+  }
+
+  const bookingsMeta =
+    bookings.length === 0
+      ? copy.sections.bookingsEmpty
+      : formatAccountTemplate(
+          bookings.length === 1
+            ? copy.sections.bookingsMetaTemplateSingular
+            : copy.sections.bookingsMetaTemplatePlural,
+          { count: bookings.length },
+        );
+  const activityMeta =
+    activityRows.length === 0
+      ? copy.sections.activityEmpty
+      : formatAccountTemplate(
+          activityRows.length === 1
+            ? copy.sections.activityMetaTemplateSingular
+            : copy.sections.activityMetaTemplatePlural,
+          { count: activityRows.length },
+        );
+
   return (
     <div className="acct-care acct-fade-in">
       <CareHero
         stats={stats}
-        locale={locale}
         labels={{
-          eyebrow: copy.eyebrow,
-          sideKicker: copy.sideKicker,
-          sideTitle: copy.sideTitle,
-          sideBody: copy.sideBody,
-          breakdownLabel: copy.breakdownLabel,
-          tileLabels: copy.tileLabels,
-          tileFoot: copy.tileFoot,
+          eyebrow: copy.hero.eyebrow,
+          sideKicker: copy.hero.sideKicker,
+          sideTitle: copy.hero.sideTitle,
+          sideBody: copy.hero.sideBody,
+          breakdownLabel: copy.hero.breakdownLabel,
+          tilesAriaLabel: copy.hero.tilesAriaLabel,
+          tileLabels: copy.hero.tileLabels,
+          tileFoot: {
+            totalEmpty: copy.hero.tileFoot.totalEmpty,
+            totalWith: (n: number) =>
+              formatAccountTemplate(copy.hero.tileFoot.totalWithTemplate, { count: n }),
+            inFlightEmpty: copy.hero.tileFoot.inFlightEmpty,
+            inFlightWith: copy.hero.tileFoot.inFlightWith,
+            paymentEmpty: copy.hero.tileFoot.paymentEmpty,
+            paymentWith: copy.hero.tileFoot.paymentWith,
+            completedEmpty: copy.hero.tileFoot.completedEmpty,
+            completedWith: copy.hero.tileFoot.completedWith,
+          },
+          breakdownLabels: copy.hero.breakdownLabels,
+          headline: heroHeadline,
+          blurb: heroBlurb,
+          ctaPrimary: {
+            label: heroCtaPrimaryLabel,
+            href: state === "attention" ? "#care-bookings" : state === "active" ? CARE_TRACK_URL : CARE_BOOK_URL,
+          },
+          ctaSecondary: {
+            label: heroCtaSecondaryLabel,
+            href: state === "active" ? CARE_BOOK_URL : CARE_TRACK_URL,
+          },
         }}
       />
 
@@ -151,19 +160,23 @@ export default async function CarePage({
         <section aria-labelledby="acct-care-glance">
           <div className="acct-care__section-head">
             <h2 id="acct-care-glance" className="acct-care__section-title">
-              {copy.sectionGlance}
+              {copy.sections.glance}
             </h2>
-            <span className="acct-care__section-meta">{copy.sectionGlanceMeta}</span>
+            <span className="acct-care__section-meta">{copy.sections.glanceMeta}</span>
           </div>
           <CareActiveGlance
             booking={stats.topActiveBooking}
             locale={locale}
             labels={{
-              nextActionLabel: copy.glanceNextAction,
-              serviceLabel: copy.glanceService,
-              pickupLabel: copy.glancePickup,
-              balanceLabel: copy.glanceBalance,
-              trackingLabel: copy.glanceTracking,
+              nextActionLabel: copy.glance.nextActionLabel,
+              serviceLabel: copy.glance.serviceLabel,
+              pickupLabel: copy.glance.pickupLabel,
+              balanceLabel: copy.glance.balanceLabel,
+              trackingLabel: copy.glance.trackingLabel,
+              serviceFallback: copy.glance.serviceFallback,
+              toBeScheduled: copy.formatLabels.toBeScheduled,
+              shortMonths: copy.formatLabels.shortMonths,
+              statusLabels: copy.status,
             }}
           />
         </section>
@@ -172,18 +185,14 @@ export default async function CarePage({
       <section id="care-bookings" aria-labelledby="acct-care-bookings">
         <div className="acct-care__section-head">
           <h2 id="acct-care-bookings" className="acct-care__section-title">
-            {copy.sectionBookings}
+            {copy.sections.bookings}
           </h2>
-          <span className="acct-care__section-meta">
-            {bookings.length === 0
-              ? copy.sectionBookingsEmpty
-              : copy.sectionBookingsMeta(bookings.length)}
-          </span>
+          <span className="acct-care__section-meta">{bookingsMeta}</span>
         </div>
         {bookings.length === 0 ? (
           <div className="acct-care__empty">
-            <strong>{copy.emptyTitle}</strong>
-            {copy.emptyBody}
+            <strong>{copy.empty.title}</strong>
+            {copy.empty.body}
           </div>
         ) : (
           <CareBookingsDashboard
@@ -196,6 +205,8 @@ export default async function CarePage({
             totalPages={totalPages}
             pageSize={CARE_PAGE_SIZE}
             totalFiltered={filteredBookings.length}
+            copy={copy.dashboard}
+            statusValueLabels={copy.statusValueLabels}
           />
         )}
       </section>
@@ -203,23 +214,19 @@ export default async function CarePage({
       <section aria-labelledby="acct-care-activity">
         <div className="acct-care__section-head">
           <h2 id="acct-care-activity" className="acct-care__section-title">
-            {copy.sectionActivity}
+            {copy.sections.activity}
           </h2>
-          <span className="acct-care__section-meta">
-            {activityRows.length === 0
-              ? copy.sectionActivityEmpty
-              : copy.sectionActivityMeta(activityRows.length)}
-          </span>
+          <span className="acct-care__section-meta">{activityMeta}</span>
         </div>
         {activityRows.length === 0 ? (
           <div className="acct-care__empty">
-            <strong>{copy.sectionActivity}</strong>
-            {copy.sectionActivityEmpty}
+            <strong>{copy.sections.activity}</strong>
+            {copy.sections.activityEmpty}
           </div>
         ) : (
           <CareActivity
             activity={activityRows}
-            locale={locale}
+            shortMonths={copy.formatLabels.shortMonths}
             ariaLabel={copy.activityAriaLabel}
           />
         )}

@@ -10,14 +10,57 @@ import {
   type PayoutRow,
 } from "./helpers";
 
+type MattersLabels = {
+  ariaLabel: string;
+  disputes: {
+    kicker: string;
+    titleTemplateSingular: string;
+    titleTemplatePlural: string;
+    bodyLatestTemplate: string;
+    bodyFallback: string;
+    cta: string;
+  };
+  application: {
+    kicker: string;
+    bodyWithStoreTemplate: string;
+    bodyDefault: string;
+    bodyReviewSuffixTemplate: string;
+    cta: string;
+    defaultStatus: string;
+  };
+  payouts: {
+    kicker: string;
+    titleTemplate: string;
+    bodyTemplateSingular: string;
+    bodyTemplatePlural: string;
+    cta: string;
+  };
+  applicationStatusLabels: Record<string, string>;
+  dash: string;
+};
+
 type Props = {
   disputes: ReadonlyArray<DisputeRow>;
   application: ApplicationRow;
   payouts: ReadonlyArray<PayoutRow>;
   marketplaceOrigin: string;
+  labels: MattersLabels;
 };
 
-export function MarketplaceMatters({ disputes, application, payouts, marketplaceOrigin }: Props) {
+function fill(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
+    template,
+  );
+}
+
+export function MarketplaceMatters({
+  disputes,
+  application,
+  payouts,
+  marketplaceOrigin,
+  labels,
+}: Props) {
   const openDisputes = disputes.filter((d) => disputeKind(d) !== "resolved");
   const pendingPayouts = payouts.filter((p) => payoutKind(p) === "pending");
   const showApplication =
@@ -28,8 +71,16 @@ export function MarketplaceMatters({ disputes, application, payouts, marketplace
     return null;
   }
 
+  const localizeAppStatus = (raw: string | null): string => {
+    if (!raw) return labels.application.defaultStatus;
+    const key = raw.toLowerCase();
+    return labels.applicationStatusLabels[key] ?? raw.replace(/_/g, " ");
+  };
+
+  const applicationToneStatus = String(application?.status || "").toLowerCase();
+
   return (
-    <div className="acct-mkt__matters" role="list" aria-label="Active marketplace matters">
+    <div className="acct-mkt__matters" role="list" aria-label={labels.ariaLabel}>
       {openDisputes.length > 0 ? (
         <a
           key="disputes"
@@ -44,18 +95,26 @@ export function MarketplaceMatters({ disputes, application, payouts, marketplace
             <span className="acct-mkt__matter-icon" aria-hidden>
               <AlertTriangle size={16} />
             </span>
-            <p className="acct-mkt__matter-kicker">Disputes</p>
+            <p className="acct-mkt__matter-kicker">{labels.disputes.kicker}</p>
           </div>
           <p className="acct-mkt__matter-title">
-            {openDisputes.length} {openDisputes.length === 1 ? "case" : "cases"} need action
+            {fill(
+              openDisputes.length === 1
+                ? labels.disputes.titleTemplateSingular
+                : labels.disputes.titleTemplatePlural,
+              { count: openDisputes.length },
+            )}
           </p>
           <p className="acct-mkt__matter-body">
             {openDisputes[0]
-              ? `Latest: ${openDisputes[0].disputeNo || openDisputes[0].id.slice(0, 8)} · updated ${formatStamp(openDisputes[0].updatedAt)}`
-              : "Open the queue to add evidence."}
+              ? fill(labels.disputes.bodyLatestTemplate, {
+                  ref: openDisputes[0].disputeNo || openDisputes[0].id.slice(0, 8),
+                  stamp: formatStamp(openDisputes[0].updatedAt, labels.dash),
+                })
+              : labels.disputes.bodyFallback}
           </p>
           <span className="acct-mkt__matter-cta">
-            Review cases <ArrowUpRight size={14} aria-hidden />
+            {labels.disputes.cta} <ArrowUpRight size={14} aria-hidden />
           </span>
         </a>
       ) : null}
@@ -67,26 +126,26 @@ export function MarketplaceMatters({ disputes, application, payouts, marketplace
           target="_blank"
           rel="noopener noreferrer"
           className="acct-mkt__matter"
-          data-tone={String(application.status || "").toLowerCase() === "rejected" ? "risk" : "info"}
+          data-tone={applicationToneStatus === "rejected" ? "risk" : "info"}
           role="listitem"
         >
           <div className="acct-mkt__matter-head">
             <span className="acct-mkt__matter-icon" aria-hidden>
               <FileCheck size={16} />
             </span>
-            <p className="acct-mkt__matter-kicker">Seller application</p>
+            <p className="acct-mkt__matter-kicker">{labels.application.kicker}</p>
           </div>
-          <p className="acct-mkt__matter-title">
-            {(application.status || "submitted").replace(/_/g, " ")}
-          </p>
+          <p className="acct-mkt__matter-title">{localizeAppStatus(application.status)}</p>
           <p className="acct-mkt__matter-body">
             {application.storeName
-              ? `Store: ${application.storeName}`
-              : "Application in HenryCo review queue."}
-            {application.reviewNote ? ` · ${application.reviewNote}` : ""}
+              ? fill(labels.application.bodyWithStoreTemplate, { name: application.storeName })
+              : labels.application.bodyDefault}
+            {application.reviewNote
+              ? fill(labels.application.bodyReviewSuffixTemplate, { note: application.reviewNote })
+              : ""}
           </p>
           <span className="acct-mkt__matter-cta">
-            View status <ArrowUpRight size={14} aria-hidden />
+            {labels.application.cta} <ArrowUpRight size={14} aria-hidden />
           </span>
         </a>
       ) : null}
@@ -105,16 +164,23 @@ export function MarketplaceMatters({ disputes, application, payouts, marketplace
             <span className="acct-mkt__matter-icon" aria-hidden>
               <Wallet size={16} />
             </span>
-            <p className="acct-mkt__matter-kicker">Payouts in review</p>
+            <p className="acct-mkt__matter-kicker">{labels.payouts.kicker}</p>
           </div>
           <p className="acct-mkt__matter-title">
-            {formatNaira(pendingPayouts.reduce((sum, p) => sum + p.amount, 0))} pending
+            {fill(labels.payouts.titleTemplate, {
+              amount: formatNaira(pendingPayouts.reduce((sum, p) => sum + p.amount, 0)),
+            })}
           </p>
           <p className="acct-mkt__matter-body">
-            {pendingPayouts.length} request{pendingPayouts.length === 1 ? "" : "s"} awaiting finance verification.
+            {fill(
+              pendingPayouts.length === 1
+                ? labels.payouts.bodyTemplateSingular
+                : labels.payouts.bodyTemplatePlural,
+              { count: pendingPayouts.length },
+            )}
           </p>
           <span className="acct-mkt__matter-cta">
-            Open seller workspace <ArrowUpRight size={14} aria-hidden />
+            {labels.payouts.cta} <ArrowUpRight size={14} aria-hidden />
           </span>
         </a>
       ) : null}

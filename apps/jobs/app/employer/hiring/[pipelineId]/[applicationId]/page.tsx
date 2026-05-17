@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { getJobsCopy } from "@henryco/i18n";
 import { requireJobsRoles } from "@/lib/auth";
 import {
   getApplicationById,
@@ -11,6 +12,7 @@ import {
   markMessagesRead,
 } from "@/lib/jobs/hiring";
 import { employerNav } from "@/lib/jobs/navigation";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 import { MessageComposer } from "@/components/hiring/MessageComposer";
 import { InterviewScheduler } from "@/components/hiring/InterviewScheduler";
@@ -23,10 +25,14 @@ export default async function ApplicationDetailPage({
   params: Promise<{ pipelineId: string; applicationId: string }>;
 }) {
   const { pipelineId, applicationId } = await params;
-  const viewer = await requireJobsRoles(
-    ["employer", "admin", "owner"],
-    `/employer/hiring/${pipelineId}/${applicationId}`
-  );
+  const [viewer, locale] = await Promise.all([
+    requireJobsRoles(
+      ["employer", "admin", "owner"],
+      `/employer/hiring/${pipelineId}/${applicationId}`
+    ),
+    getJobsPublicLocale(),
+  ]);
+  const interviewSchedulerCopy = getJobsCopy(locale).interviewScheduler;
 
   const [pipeline, application] = await Promise.all([
     getPipelineById(pipelineId),
@@ -234,7 +240,7 @@ export default async function ApplicationDetailPage({
             </div>
           )}
 
-          <InterviewScheduler applicationId={applicationId} />
+          <InterviewScheduler applicationId={applicationId} copy={interviewSchedulerCopy} />
         </SectionCard>
       </div>
     </WorkspaceShell>

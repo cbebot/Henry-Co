@@ -1,6 +1,6 @@
 import type { AppLocale } from "./locales";
 import { DEFAULT_LOCALE } from "./locales";
-import { deepMergeMessages } from "./merge-messages";
+import { deepMergeMessages, type DeepPartial } from "./merge-messages";
 
 export type HubNavLink = { label: string; href: string };
 
@@ -23,6 +23,7 @@ export type HubHomeCopy = {
   hero: {
     badgeBefore: string;
     badgeAfter: string;
+    pressHint: string;
     titleBefore: string;
     titleAfter: string;
     ctaExplore: string;
@@ -36,6 +37,7 @@ export type HubHomeCopy = {
     logoStatus: string;
     logoConfigured: string;
     logoFallback: string;
+    subtitleFallback: string;
   };
   stats: {
     divisions: string;
@@ -92,6 +94,8 @@ export type HubHomeCopy = {
     lastUpdated: string;
     companyPagesEyebrow: string;
     empty: string;
+    searchingState: string;
+    searchHelpLink: string;
   };
   ecosystem: {
     eyebrow: string;
@@ -121,10 +125,16 @@ export type HubHomeCopy = {
     companyPages: string;
     colHub: string;
     colGlobal: string;
+    copyrightAllRightsReserved: string;
+    linkPrivacy: string;
+    linkTerms: string;
+    linkPreferences: string;
+    designedBy: string;
   };
   cards: {
     divisionFallbackLong: string;
     divisionFallbackShort: string;
+    divisionFallbackTile: string;
     destination: string;
     notConfigured: string;
     openDivision: string;
@@ -152,6 +162,32 @@ export type HubHomeCopy = {
     links: string;
   };
   faqFallback: { q: string; a: string }[];
+  contactHeroForm: {
+    formEyebrow: string;
+    formTitle: string;
+    orEmail: string;
+    orEmailDirect: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    reasonLabel: string;
+    messageLabel: string;
+    messagePlaceholder: string;
+    defaultResponseTime: string;
+    partnerPlanContext: string;
+    sendingLabel: string;
+    sendLabel: string;
+    reasons: {
+      general: string;
+      partnerships: string;
+      media: string;
+      supplier: string;
+      investor: string;
+      complaint: string;
+      other: string;
+    };
+  };
 };
 
 const HUB_HOME_COPY_EN: HubHomeCopy = {
@@ -177,6 +213,7 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
   hero: {
     badgeBefore: "Corporate platform \u00b7 press ",
     badgeAfter: " to search",
+    pressHint: "press",
     titleBefore: "Focused businesses. One operating standard. Built by ",
     titleAfter: ".",
     ctaExplore: "Browse all divisions",
@@ -191,6 +228,7 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     logoStatus: "Logo status",
     logoConfigured: "Configured",
     logoFallback: "Fallback mark",
+    subtitleFallback: "Corporate Platform",
   },
   stats: {
     divisions: "Divisions",
@@ -265,6 +303,8 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     lastUpdated: "Last updated",
     companyPagesEyebrow: "Company-level pages",
     empty: "No matching divisions were found. Clear your filters or broaden the search criteria.",
+    searchingState: "Searching…",
+    searchHelpLink: "Search HenryCo workflows and help",
   },
   ecosystem: {
     eyebrow: "Why this exists",
@@ -315,12 +355,18 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     companyPages: "Company pages",
     colHub: "Company hub",
     colGlobal: "Global pages",
+    copyrightAllRightsReserved: "All rights reserved.",
+    linkPrivacy: "Privacy",
+    linkTerms: "Terms",
+    linkPreferences: "Preferences",
+    designedBy: "Designed and built in-house by HenryCo Studio for the HenryCo ecosystem",
   },
   cards: {
     divisionFallbackLong:
       "A public-facing Henry & Co. division built to serve a focused market with clarity and premium presentation.",
     divisionFallbackShort:
       "A focused Henry & Co. division presented as an independent operating brand inside the wider company ecosystem.",
+    divisionFallbackTile: "A focused Henry & Co. operating business.",
     destination: "Destination",
     notConfigured: "Not configured yet",
     openDivision: "Open division",
@@ -365,9 +411,36 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
       a: "About, Contact, Privacy, and Terms. Together they explain the company's posture, how to reach us, how information is handled, and the basis for using our public surfaces.",
     },
   ],
+  contactHeroForm: {
+    formEyebrow: "Reach the company",
+    formTitle: "Send the company a note",
+    orEmail: "Or email",
+    orEmailDirect: "directly.",
+    nameLabel: "Your name",
+    namePlaceholder: "Full name",
+    emailLabel: "Email",
+    emailPlaceholder: "you@example.com",
+    reasonLabel: "Reason",
+    messageLabel: "Message",
+    messagePlaceholder: "A short note about why you are reaching out.",
+    defaultResponseTime: "Replies within 1 business day",
+    partnerPlanContext:
+      "I'd like to discuss the marketplace Partner tier — custom inventory terms and direct placement controls. Here is what I'm working with: ",
+    sendingLabel: "Sending…",
+    sendLabel: "Send message",
+    reasons: {
+      general: "General enquiry",
+      partnerships: "Partnership",
+      media: "Media / press",
+      supplier: "Supplier introduction",
+      investor: "Investor / advisor",
+      complaint: "Complaint or concern",
+      other: "Something else",
+    },
+  },
 };
 
-const HUB_HOME_COPY_FR: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
   nav: {
     featured: "À la une",
     directory: "Annuaire",
@@ -390,6 +463,7 @@ const HUB_HOME_COPY_FR: Partial<HubHomeCopy> = {
   hero: {
     badgeBefore: "Réseau d’entreprises premium • appuyez sur ",
     badgeAfter: " pour rechercher",
+    pressHint: "appuyez sur",
     titleBefore: "Explorez les activités, services et divisions opérationnelles de ",
     titleAfter: ".",
     ctaExplore: "Explorer toutes les divisions",
@@ -404,6 +478,7 @@ const HUB_HOME_COPY_FR: Partial<HubHomeCopy> = {
     logoStatus: "État du logo",
     logoConfigured: "Configuré",
     logoFallback: "Marque de secours",
+    subtitleFallback: "Plateforme corporate",
   },
   stats: {
     divisions: "Divisions",
@@ -478,6 +553,8 @@ const HUB_HOME_COPY_FR: Partial<HubHomeCopy> = {
     lastUpdated: "Dernière mise à jour",
     companyPagesEyebrow: "Pages groupe",
     empty: "Aucune division ne correspond. Réinitialisez les filtres ou élargissez la recherche.",
+    searchingState: "Recherche en cours…",
+    searchHelpLink: "Rechercher les workflows et l’aide HenryCo",
   },
   ecosystem: {
     eyebrow: "Pourquoi c’est important",
@@ -524,12 +601,18 @@ const HUB_HOME_COPY_FR: Partial<HubHomeCopy> = {
     companyPages: "Pages entreprise",
     colHub: "Hub entreprise",
     colGlobal: "Pages globales",
+    copyrightAllRightsReserved: "Tous droits réservés.",
+    linkPrivacy: "Confidentialité",
+    linkTerms: "Conditions",
+    linkPreferences: "Préférences",
+    designedBy: "Conçu et développé en interne par HenryCo Studio pour l’écosystème HenryCo",
   },
   cards: {
     divisionFallbackLong:
       "Une division Henry & Co. tournée vers un marché précis, avec clarté et exigence.",
     divisionFallbackShort:
       "Une division Henry & Co. présentée comme une marque autonome au sein de l’écosystème groupe.",
+    divisionFallbackTile: "Une activité Henry & Co. ciblée.",
     destination: "Destination",
     notConfigured: "Pas encore configuré",
     openDivision: "Ouvrir la division",
@@ -574,22 +657,50 @@ const HUB_HOME_COPY_FR: Partial<HubHomeCopy> = {
       a: "Commencez par À propos, Contact, Confidentialité et Conditions. Ensemble, elles expliquent le groupe, ses standards et ses politiques publiques.",
     },
   ],
+  contactHeroForm: {
+    formEyebrow: "Contacter l'entreprise",
+    formTitle: "Envoyer un message à l'entreprise",
+    orEmail: "Ou par e-mail",
+    orEmailDirect: "directement.",
+    nameLabel: "Votre nom",
+    namePlaceholder: "Nom complet",
+    emailLabel: "E-mail",
+    emailPlaceholder: "vous@exemple.com",
+    reasonLabel: "Motif",
+    messageLabel: "Votre message",
+    messagePlaceholder: "Un mot sur la raison de votre prise de contact.",
+    defaultResponseTime: "Réponse sous 1 jour ouvré",
+    partnerPlanContext:
+      "Je souhaite discuter du niveau Partenaire Marketplace — conditions d'inventaire personnalisées et contrôles de placement direct. Voici ma situation : ",
+    sendingLabel: "Envoi en cours…",
+    sendLabel: "Envoyer le message",
+    reasons: {
+      general: "Demande générale",
+      partnerships: "Partenariat",
+      media: "Médias / presse",
+      supplier: "Introduction fournisseur",
+      investor: "Investisseur / conseiller",
+      complaint: "Réclamation ou préoccupation",
+      other: "Autre",
+    },
+  },
 };
 
-const HUB_HOME_COPY_ES: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
   nav: { featured: "Destacados", directory: "Directorio", company: "Empresa", faq: "FAQ", about: "Acerca de", contact: "Contacto" },
   companyPages: { about: "Acerca de Henry & Co.", contact: "Contactar con la empresa", privacy: "Aviso de privacidad", terms: "Términos y condiciones" },
   status: { active: "Activo", comingSoon: "Próximamente", paused: "En pausa" },
   hero: {
     badgeBefore: "Red de empresas premium • presiona ",
     badgeAfter: " para buscar",
+    pressHint: "presiona",
     titleBefore: "Explora los negocios, servicios y divisiones operativas de ",
     titleAfter: ".",
     ctaExplore: "Explorar todas las divisiones",
     ctaFeatured: "Ver divisiones destacadas",
   },
   introDefault: "Henry & Co. reúne negocios enfocados bajo una identidad de grupo reconocida. Este hub ayuda a clientes, socios y partes interesadas a comprender la empresa, encontrar la división correcta y avanzar con confianza.",
-  brandPanel: { eyebrow: "Sistema de marca corporativa", baseDomain: "Dominio base", accent: "Acento", logoStatus: "Estado del logo", logoConfigured: "Configurado", logoFallback: "Marca de respaldo" },
+  brandPanel: { eyebrow: "Sistema de marca corporativa", baseDomain: "Dominio base", accent: "Acento", logoStatus: "Estado del logo", logoConfigured: "Configurado", logoFallback: "Marca de respaldo", subtitleFallback: "Plataforma corporativa" },
   stats: { divisions: "Divisiones", activeNow: "Activas ahora", comingSoon: "Próximamente", sectors: "Sectores de servicio" },
   standardCard: {
     eyebrow: "Estándar del grupo",
@@ -640,6 +751,8 @@ const HUB_HOME_COPY_ES: Partial<HubHomeCopy> = {
     lastUpdated: "Última actualización",
     companyPagesEyebrow: "Páginas corporativas",
     empty: "No se encontraron divisiones que coincidan. Limpia los filtros o amplía los criterios de búsqueda.",
+    searchingState: "Buscando…",
+    searchHelpLink: "Buscar flujos de trabajo y ayuda de HenryCo",
   },
   ecosystem: {
     eyebrow: "Por qué importa",
@@ -660,10 +773,11 @@ const HUB_HOME_COPY_ES: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Preguntas frecuentes", title: "Preguntas frecuentes", subtitle: "Estas respuestas ayudan a clientes, socios y partes interesadas a entender cómo funciona la empresa antes de ponerse en contacto." },
   topBar: { search: "Buscar", explore: "Explorar" },
-  footer: { exploreDivisions: "Explorar divisiones", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globales" },
+  footer: { exploreDivisions: "Explorar divisiones", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globales", copyrightAllRightsReserved: "Todos los derechos reservados.", linkPrivacy: "Privacidad", linkTerms: "Términos", linkPreferences: "Preferencias", designedBy: "Diseñado y desarrollado internamente por HenryCo Studio para el ecosistema HenryCo" },
   cards: {
     divisionFallbackLong: "Una división de Henry & Co. orientada al público, construida para servir a un mercado enfocado con claridad y presentación premium.",
     divisionFallbackShort: "Una división enfocada de Henry & Co. presentada como una marca operativa independiente dentro del ecosistema del grupo.",
+    divisionFallbackTile: "Un negocio operativo de Henry & Co. enfocado.",
     destination: "Destino", notConfigured: "Aún no configurado", openDivision: "Abrir división", divisionDestination: "Destino de la división", lead: "Responsable", details: "Detalles", open: "Abrir", featured: "Destacado",
   },
   modal: {
@@ -676,22 +790,50 @@ const HUB_HOME_COPY_ES: Partial<HubHomeCopy> = {
     { q: "¿Para quién está diseñado este sitio web?", a: "El hub sirve a clientes, socios, proveedores, medios, talento y partes interesadas que necesitan una visión más clara del grupo Henry & Co. y sus negocios operativos." },
     { q: "¿Qué páginas corporativas debo revisar primero?", a: "Los mejores puntos de partida son las páginas Acerca de, Contacto, Aviso de Privacidad y Términos y Condiciones. Juntas, proporcionan una visión más clara de la empresa, sus estándares y sus políticas públicas." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Contacta con la empresa",
+    formTitle: "Envía una nota a la empresa",
+    orEmail: "O escribe por correo",
+    orEmailDirect: "directamente.",
+    nameLabel: "Tu nombre",
+    namePlaceholder: "Nombre completo",
+    emailLabel: "Correo electrónico",
+    emailPlaceholder: "tu@ejemplo.com",
+    reasonLabel: "Motivo",
+    messageLabel: "Mensaje",
+    messagePlaceholder: "Una breve nota sobre el motivo de tu contacto.",
+    defaultResponseTime: "Respuesta en 1 día hábil",
+    partnerPlanContext:
+      "Me gustaría hablar sobre el nivel Socio del Marketplace — términos de inventario personalizados y controles de colocación directa. Aquí está mi situación: ",
+    sendingLabel: "Enviando…",
+    sendLabel: "Enviar mensaje",
+    reasons: {
+      general: "Consulta general",
+      partnerships: "Asociación",
+      media: "Medios / prensa",
+      supplier: "Presentación de proveedor",
+      investor: "Inversor / asesor",
+      complaint: "Queja o preocupación",
+      other: "Otro asunto",
+    },
+  },
 };
 
-const HUB_HOME_COPY_PT: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
   nav: { featured: "Destaques", directory: "Diretório", company: "Empresa", faq: "FAQ", about: "Sobre", contact: "Contato" },
   companyPages: { about: "Sobre a Henry & Co.", contact: "Contatar a empresa", privacy: "Aviso de privacidade", terms: "Termos e condições" },
   status: { active: "Ativo", comingSoon: "Em breve", paused: "Pausado" },
   hero: {
     badgeBefore: "Rede de empresas premium • pressione ",
     badgeAfter: " para pesquisar",
+    pressHint: "pressione",
     titleBefore: "Explore os negócios, serviços e divisões operacionais da ",
     titleAfter: ".",
     ctaExplore: "Explorar todas as divisões",
     ctaFeatured: "Ver divisões em destaque",
   },
   introDefault: "A Henry & Co. reúne negócios focados sob uma identidade de grupo respeitada. Este hub ajuda clientes, parceiros e partes interessadas a entender a empresa, localizar a divisão certa e avançar com confiança.",
-  brandPanel: { eyebrow: "Sistema de marca corporativa", baseDomain: "Domínio base", accent: "Destaque", logoStatus: "Status do logo", logoConfigured: "Configurado", logoFallback: "Marca de reserva" },
+  brandPanel: { eyebrow: "Sistema de marca corporativa", baseDomain: "Domínio base", accent: "Destaque", logoStatus: "Status do logo", logoConfigured: "Configurado", logoFallback: "Marca de reserva", subtitleFallback: "Plataforma corporativa" },
   stats: { divisions: "Divisões", activeNow: "Ativas agora", comingSoon: "Em breve", sectors: "Setores de serviço" },
   standardCard: {
     eyebrow: "Padrão do grupo",
@@ -742,6 +884,8 @@ const HUB_HOME_COPY_PT: Partial<HubHomeCopy> = {
     lastUpdated: "Última atualização",
     companyPagesEyebrow: "Páginas corporativas",
     empty: "Nenhuma divisão correspondente foi encontrada. Limpe seus filtros ou amplie os critérios de pesquisa.",
+    searchingState: "Pesquisando…",
+    searchHelpLink: "Pesquisar fluxos de trabalho e ajuda da HenryCo",
   },
   ecosystem: {
     eyebrow: "Por que isso importa",
@@ -762,10 +906,11 @@ const HUB_HOME_COPY_PT: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Perguntas frequentes", title: "Perguntas frequentes", subtitle: "Estas respostas ajudam clientes, parceiros e partes interessadas a entender como a empresa funciona antes de entrar em contato." },
   topBar: { search: "Pesquisar", explore: "Explorar" },
-  footer: { exploreDivisions: "Explorar divisões", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globais" },
+  footer: { exploreDivisions: "Explorar divisões", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globais", copyrightAllRightsReserved: "Todos os direitos reservados.", linkPrivacy: "Privacidade", linkTerms: "Termos", linkPreferences: "Preferências", designedBy: "Projetado e desenvolvido internamente pela HenryCo Studio para o ecossistema HenryCo" },
   cards: {
     divisionFallbackLong: "Uma divisão voltada ao público da Henry & Co. construída para servir um mercado focado com clareza e apresentação premium.",
     divisionFallbackShort: "Uma divisão focada da Henry & Co. apresentada como uma marca operacional independente dentro do ecossistema do grupo.",
+    divisionFallbackTile: "Um negócio operacional Henry & Co. focado.",
     destination: "Destino", notConfigured: "Ainda não configurado", openDivision: "Abrir divisão", divisionDestination: "Destino da divisão", lead: "Responsável", details: "Detalhes", open: "Abrir", featured: "Destaque",
   },
   modal: {
@@ -778,22 +923,50 @@ const HUB_HOME_COPY_PT: Partial<HubHomeCopy> = {
     { q: "Para quem este site foi projetado?", a: "O hub serve clientes, parceiros, fornecedores, mídia, talentos e partes interessadas que precisam de uma visão mais clara do grupo Henry & Co. e seus negócios operacionais." },
     { q: "Quais páginas corporativas devo revisar primeiro?", a: "Os melhores pontos de partida são as páginas Sobre, Contato, Aviso de Privacidade e Termos e Condições. Juntas, fornecem uma visão mais clara da empresa, seus padrões e suas políticas públicas." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Fale com a empresa",
+    formTitle: "Envie uma mensagem à empresa",
+    orEmail: "Ou envie um e-mail",
+    orEmailDirect: "diretamente.",
+    nameLabel: "Seu nome",
+    namePlaceholder: "Nome completo",
+    emailLabel: "E-mail",
+    emailPlaceholder: "voce@exemplo.com",
+    reasonLabel: "Motivo",
+    messageLabel: "Mensagem",
+    messagePlaceholder: "Uma breve nota sobre o motivo do seu contato.",
+    defaultResponseTime: "Resposta em até 1 dia útil",
+    partnerPlanContext:
+      "Gostaria de discutir o nível Parceiro do Marketplace — termos de inventário personalizados e controles de posicionamento direto. Aqui está minha situação: ",
+    sendingLabel: "Enviando…",
+    sendLabel: "Enviar mensagem",
+    reasons: {
+      general: "Consulta geral",
+      partnerships: "Parceria",
+      media: "Mídia / imprensa",
+      supplier: "Apresentação de fornecedor",
+      investor: "Investidor / consultor",
+      complaint: "Reclamação ou preocupação",
+      other: "Outro assunto",
+    },
+  },
 };
 
-const HUB_HOME_COPY_AR: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
   nav: { featured: "المميزة", directory: "الدليل", company: "الشركة", faq: "الأسئلة الشائعة", about: "من نحن", contact: "اتصل بنا" },
   companyPages: { about: "عن Henry & Co.", contact: "التواصل مع الشركة", privacy: "إشعار الخصوصية", terms: "الشروط والأحكام" },
   status: { active: "نشط", comingSoon: "قريباً", paused: "متوقف" },
   hero: {
     badgeBefore: "شبكة شركات متميزة • اضغط ",
     badgeAfter: " للبحث",
+    pressHint: "اضغط",
     titleBefore: "استكشف الأعمال والخدمات والأقسام التشغيلية لـ ",
     titleAfter: ".",
     ctaExplore: "استكشاف جميع الأقسام",
     ctaFeatured: "عرض الأقسام المميزة",
   },
   introDefault: "تجمع Henry & Co. الأعمال المتخصصة تحت هوية مجموعة موثوقة. يساعد هذا المركز العملاء والشركاء وأصحاب المصلحة على فهم الشركة وتحديد القسم المناسب والمضي قدماً بثقة.",
-  brandPanel: { eyebrow: "نظام علامة الشركة", baseDomain: "النطاق الأساسي", accent: "اللون المميز", logoStatus: "حالة الشعار", logoConfigured: "مُهيأ", logoFallback: "علامة احتياطية" },
+  brandPanel: { eyebrow: "نظام علامة الشركة", baseDomain: "النطاق الأساسي", accent: "اللون المميز", logoStatus: "حالة الشعار", logoConfigured: "مُهيأ", logoFallback: "علامة احتياطية", subtitleFallback: "منصة مؤسسية" },
   stats: { divisions: "الأقسام", activeNow: "نشطة الآن", comingSoon: "قريباً", sectors: "قطاعات الخدمة" },
   standardCard: {
     eyebrow: "معيار المجموعة",
@@ -844,6 +1017,8 @@ const HUB_HOME_COPY_AR: Partial<HubHomeCopy> = {
     lastUpdated: "آخر تحديث",
     companyPagesEyebrow: "صفحات الشركة",
     empty: "لم يتم العثور على أقسام مطابقة. امسح المرشحات أو وسّع معايير البحث.",
+    searchingState: "جاري البحث…",
+    searchHelpLink: "ابحث في سير عمل HenryCo والمساعدة",
   },
   ecosystem: {
     eyebrow: "لماذا هذا مهم",
@@ -864,10 +1039,11 @@ const HUB_HOME_COPY_AR: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "الأسئلة المتكررة", title: "الأسئلة الشائعة", subtitle: "هذه الإجابات تساعد العملاء والشركاء وأصحاب المصلحة على فهم كيفية عمل الشركة قبل التواصل معنا." },
   topBar: { search: "بحث", explore: "استكشاف" },
-  footer: { exploreDivisions: "استكشاف الأقسام", companyPages: "صفحات الشركة", colHub: "مركز الشركة", colGlobal: "الصفحات العالمية" },
+  footer: { exploreDivisions: "استكشاف الأقسام", companyPages: "صفحات الشركة", colHub: "مركز الشركة", colGlobal: "الصفحات العالمية", copyrightAllRightsReserved: "جميع الحقوق محفوظة.", linkPrivacy: "الخصوصية", linkTerms: "الشروط", linkPreferences: "التفضيلات", designedBy: "صُمم وطُور داخلياً بواسطة HenryCo Studio لمنظومة HenryCo" },
   cards: {
     divisionFallbackLong: "قسم Henry & Co. المواجه للجمهور مبني لخدمة سوق متخصصة بوضوح وعرض متميز.",
     divisionFallbackShort: "قسم متخصص من Henry & Co. مقدم كعلامة تشغيلية مستقلة ضمن نظام بيئي المجموعة الأشمل.",
+    divisionFallbackTile: "عمل تشغيلي متخصص من Henry & Co.",
     destination: "الوجهة", notConfigured: "لم يُهيأ بعد", openDivision: "فتح القسم", divisionDestination: "وجهة القسم", lead: "القائد", details: "التفاصيل", open: "فتح", featured: "مميز",
   },
   modal: {
@@ -880,22 +1056,50 @@ const HUB_HOME_COPY_AR: Partial<HubHomeCopy> = {
     { q: "لمن صُمم هذا الموقع؟", a: "يخدم المركز العملاء والشركاء والموردين والإعلام والكفاءات وأصحاب المصلحة الذين يحتاجون إلى رؤية أوضح لمجموعة Henry & Co. وأعمالها التشغيلية." },
     { q: "ما صفحات الشركة التي يجب مراجعتها أولاً؟", a: "أفضل نقاط البداية هي صفحات من نحن والاتصال وإشعار الخصوصية والشروط والأحكام. معاً توفر رؤية أوضح للشركة ومعاييرها وسياساتها العامة." },
   ],
+  contactHeroForm: {
+    formEyebrow: "تواصل مع الشركة",
+    formTitle: "أرسل رسالة إلى الشركة",
+    orEmail: "أو عبر البريد الإلكتروني",
+    orEmailDirect: "مباشرةً.",
+    nameLabel: "اسمك",
+    namePlaceholder: "الاسم الكامل",
+    emailLabel: "البريد الإلكتروني",
+    emailPlaceholder: "anta@mithal.com",
+    reasonLabel: "السبب",
+    messageLabel: "الرسالة",
+    messagePlaceholder: "ملاحظة قصيرة حول سبب تواصلك.",
+    defaultResponseTime: "رد خلال يوم عمل واحد",
+    partnerPlanContext:
+      "أود مناقشة مستوى الشريك في السوق — شروط المخزون المخصصة وضوابط الوضع المباشر. إليك وضعي: ",
+    sendingLabel: "جارٍ الإرسال…",
+    sendLabel: "إرسال الرسالة",
+    reasons: {
+      general: "استفسار عام",
+      partnerships: "شراكة",
+      media: "إعلام / صحافة",
+      supplier: "تقديم مورد",
+      investor: "مستثمر / مستشار",
+      complaint: "شكوى أو مخاوف",
+      other: "موضوع آخر",
+    },
+  },
 };
 
-const HUB_HOME_COPY_DE: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
   nav: { featured: "Highlights", directory: "Verzeichnis", company: "Unternehmen", faq: "FAQ", about: "Über uns", contact: "Kontakt" },
   companyPages: { about: "Über Henry & Co.", contact: "Unternehmen kontaktieren", privacy: "Datenschutzhinweis", terms: "Allgemeine Geschäftsbedingungen" },
   status: { active: "Aktiv", comingSoon: "Demnächst", paused: "Pausiert" },
   hero: {
     badgeBefore: "Premium-Unternehmensnetzwerk • drücken Sie ",
     badgeAfter: " zum Suchen",
+    pressHint: "drücken Sie",
     titleBefore: "Entdecken Sie die Unternehmen, Dienste und operativen Abteilungen von ",
     titleAfter: ".",
     ctaExplore: "Alle Abteilungen erkunden",
     ctaFeatured: "Ausgewählte Abteilungen anzeigen",
   },
   introDefault: "Henry & Co. vereint fokussierte Unternehmen unter einer angesehenen Gruppenidentität. Dieser Hub hilft Kunden, Partnern und Stakeholdern dabei, das Unternehmen zu verstehen, die richtige Abteilung zu finden und sicher voranzuschreiten.",
-  brandPanel: { eyebrow: "Unternehmens-Markensystem", baseDomain: "Basisdomain", accent: "Akzent", logoStatus: "Logo-Status", logoConfigured: "Konfiguriert", logoFallback: "Ersatzmarke" },
+  brandPanel: { eyebrow: "Unternehmens-Markensystem", baseDomain: "Basisdomain", accent: "Akzent", logoStatus: "Logo-Status", logoConfigured: "Konfiguriert", logoFallback: "Ersatzmarke", subtitleFallback: "Unternehmensplattform" },
   stats: { divisions: "Abteilungen", activeNow: "Derzeit aktiv", comingSoon: "Demnächst", sectors: "Dienstleistungssektoren" },
   standardCard: {
     eyebrow: "Gruppenstandard",
@@ -946,6 +1150,8 @@ const HUB_HOME_COPY_DE: Partial<HubHomeCopy> = {
     lastUpdated: "Zuletzt aktualisiert",
     companyPagesEyebrow: "Unternehmensseiten",
     empty: "Keine passenden Abteilungen gefunden. Filter löschen oder Suchkriterien erweitern.",
+    searchingState: "Suche läuft…",
+    searchHelpLink: "HenryCo-Workflows und Hilfe durchsuchen",
   },
   ecosystem: {
     eyebrow: "Warum das wichtig ist",
@@ -966,10 +1172,11 @@ const HUB_HOME_COPY_DE: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Häufig gestellt", title: "Häufig gestellte Fragen", subtitle: "Diese Antworten helfen Kunden, Partnern und Stakeholdern dabei, zu verstehen, wie das Unternehmen funktioniert, bevor sie sich melden müssen." },
   topBar: { search: "Hub durchsuchen", explore: "Erkunden" },
-  footer: { exploreDivisions: "Abteilungen erkunden", companyPages: "Unternehmensseiten", colHub: "Unternehmens-Hub", colGlobal: "Globale Seiten" },
+  footer: { exploreDivisions: "Abteilungen erkunden", companyPages: "Unternehmensseiten", colHub: "Unternehmens-Hub", colGlobal: "Globale Seiten", copyrightAllRightsReserved: "Alle Rechte vorbehalten.", linkPrivacy: "Datenschutz", linkTerms: "AGB", linkPreferences: "Einstellungen", designedBy: "Intern entworfen und entwickelt von HenryCo Studio für das HenryCo-Ökosystem" },
   cards: {
     divisionFallbackLong: "Eine öffentlich zugängliche Henry & Co. Abteilung, die darauf ausgelegt ist, einen fokussierten Markt mit Klarheit und Premium-Präsentation zu bedienen.",
     divisionFallbackShort: "Eine fokussierte Henry & Co. Abteilung, die als unabhängige Betriebsmarke innerhalb des weiteren Unternehmensökosystems präsentiert wird.",
+    divisionFallbackTile: "Ein fokussiertes Henry & Co. Betriebsunternehmen.",
     destination: "Ziel", notConfigured: "Noch nicht konfiguriert", openDivision: "Abteilung öffnen", divisionDestination: "Abteilungsziel", lead: "Leitung", details: "Details", open: "Öffnen", featured: "Highlights",
   },
   modal: {
@@ -982,22 +1189,50 @@ const HUB_HOME_COPY_DE: Partial<HubHomeCopy> = {
     { q: "Für wen ist diese Website konzipiert?", a: "Der Hub dient Kunden, Partnern, Lieferanten, Medien, Talenten und Stakeholdern, die einen klareren Überblick über die Henry & Co. Gruppe und ihre operativen Unternehmen benötigen." },
     { q: "Welche Unternehmensseiten sollte ich zuerst ansehen?", a: "Die besten Ausgangspunkte sind die Seiten Über uns, Kontakt, Datenschutzhinweis und Allgemeine Geschäftsbedingungen. Zusammen bieten sie einen klareren Überblick über das Unternehmen, seine Standards und seine öffentlichen Richtlinien." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Kontakt zum Unternehmen",
+    formTitle: "Eine Nachricht an das Unternehmen senden",
+    orEmail: "Oder per E-Mail",
+    orEmailDirect: "direkt.",
+    nameLabel: "Ihr Name",
+    namePlaceholder: "Vollständiger Name",
+    emailLabel: "E-Mail",
+    emailPlaceholder: "sie@beispiel.de",
+    reasonLabel: "Grund",
+    messageLabel: "Nachricht",
+    messagePlaceholder: "Eine kurze Notiz zum Grund Ihrer Kontaktaufnahme.",
+    defaultResponseTime: "Antwort innerhalb von 1 Werktag",
+    partnerPlanContext:
+      "Ich möchte die Marketplace-Partnerstufe besprechen — individuelle Lagerkonditionen und direkte Platzierungskontrollen. Hier ist meine Situation: ",
+    sendingLabel: "Wird gesendet…",
+    sendLabel: "Nachricht senden",
+    reasons: {
+      general: "Allgemeine Anfrage",
+      partnerships: "Partnerschaft",
+      media: "Medien / Presse",
+      supplier: "Lieferantenvorstellung",
+      investor: "Investor / Berater",
+      complaint: "Beschwerde oder Anliegen",
+      other: "Sonstiges",
+    },
+  },
 };
 
-const HUB_HOME_COPY_ZH: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
   nav: { featured: "精选", directory: "目录", company: "公司", faq: "常见问题", about: "关于我们", contact: "联系我们" },
   companyPages: { about: "关于 Henry & Co.", contact: "联系公司", privacy: "隐私声明", terms: "条款与条件" },
   status: { active: "活跃", comingSoon: "即将推出", paused: "暂停" },
   hero: {
     badgeBefore: "优质企业网络 • 按 ",
     badgeAfter: " 搜索",
+    pressHint: "按",
     titleBefore: "探索 ",
     titleAfter: " 的业务、服务和运营部门。",
     ctaExplore: "探索所有部门",
     ctaFeatured: "查看精选部门",
   },
   introDefault: "Henry & Co. 将专注型业务集合在一个受人尊敬的集团品牌下。这个中心帮助客户、合作伙伴和利益相关者了解公司、找到合适的部门并自信地前进。",
-  brandPanel: { eyebrow: "公司品牌体系", baseDomain: "基础域名", accent: "强调色", logoStatus: "标志状态", logoConfigured: "已配置", logoFallback: "备用标志" },
+  brandPanel: { eyebrow: "公司品牌体系", baseDomain: "基础域名", accent: "强调色", logoStatus: "标志状态", logoConfigured: "已配置", logoFallback: "备用标志", subtitleFallback: "企业平台" },
   stats: { divisions: "部门", activeNow: "当前活跃", comingSoon: "即将推出", sectors: "服务领域" },
   standardCard: {
     eyebrow: "集团标准",
@@ -1048,6 +1283,8 @@ const HUB_HOME_COPY_ZH: Partial<HubHomeCopy> = {
     lastUpdated: "最后更新",
     companyPagesEyebrow: "公司页面",
     empty: "未找到匹配的部门。请清除筛选条件或扩大搜索范围。",
+    searchingState: "正在搜索…",
+    searchHelpLink: "搜索 HenryCo 工作流程与帮助",
   },
   ecosystem: {
     eyebrow: "为何重要",
@@ -1068,10 +1305,11 @@ const HUB_HOME_COPY_ZH: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "常见问题", title: "常见问题解答", subtitle: "这些解答帮助客户、合作伙伴和利益相关者在需要联系之前了解公司的运作方式。" },
   topBar: { search: "搜索中心", explore: "探索" },
-  footer: { exploreDivisions: "探索部门", companyPages: "公司页面", colHub: "公司中心", colGlobal: "全球页面" },
+  footer: { exploreDivisions: "探索部门", companyPages: "公司页面", colHub: "公司中心", colGlobal: "全球页面", copyrightAllRightsReserved: "版权所有。", linkPrivacy: "隐私", linkTerms: "条款", linkPreferences: "偏好设置", designedBy: "由 HenryCo Studio 内部为 HenryCo 生态系统设计与开发" },
   cards: {
     divisionFallbackLong: "Henry & Co. 的一个面向公众的部门，旨在以清晰和优质的展示服务于专注的市场。",
     divisionFallbackShort: "Henry & Co. 的一个专注部门，作为更广泛公司生态系统内的独立运营品牌呈现。",
+    divisionFallbackTile: "Henry & Co. 旗下专注的运营业务。",
     destination: "目的地", notConfigured: "尚未配置", openDivision: "打开部门", divisionDestination: "部门目的地", lead: "负责人", details: "详情", open: "打开", featured: "精选",
   },
   modal: {
@@ -1084,22 +1322,50 @@ const HUB_HOME_COPY_ZH: Partial<HubHomeCopy> = {
     { q: "这个网站是为谁设计的？", a: "该中心服务于需要更清晰了解 Henry & Co. 集团及其运营业务的客户、合作伙伴、供应商、媒体、人才和利益相关者。" },
     { q: "我应该首先查看哪些公司页面？", a: "最佳起点是关于我们、联系我们、隐私声明和条款与条件页面。它们共同提供了对公司、其标准和公共政策的更清晰了解。" },
   ],
+  contactHeroForm: {
+    formEyebrow: "联系公司",
+    formTitle: "向公司发送信息",
+    orEmail: "或发送电子邮件",
+    orEmailDirect: "直接联系。",
+    nameLabel: "您的姓名",
+    namePlaceholder: "全名",
+    emailLabel: "电子邮件",
+    emailPlaceholder: "您@示例.com",
+    reasonLabel: "原因",
+    messageLabel: "信息",
+    messagePlaceholder: "请简要说明您联系的原因。",
+    defaultResponseTime: "1个工作日内回复",
+    partnerPlanContext:
+      "我想讨论Marketplace合作伙伴级别 — 定制库存条款和直接投放控制。以下是我的情况：",
+    sendingLabel: "发送中…",
+    sendLabel: "发送信息",
+    reasons: {
+      general: "一般咨询",
+      partnerships: "合作关系",
+      media: "媒体 / 新闻",
+      supplier: "供应商介绍",
+      investor: "投资者 / 顾问",
+      complaint: "投诉或关切",
+      other: "其他事项",
+    },
+  },
 };
 
-const HUB_HOME_COPY_HI: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_HI: DeepPartial<HubHomeCopy> = {
   nav: { featured: "फीचर्ड", directory: "निर्देशिका", company: "कंपनी", faq: "सामान्य प्रश्न", about: "हमारे बारे में", contact: "संपर्क" },
   companyPages: { about: "Henry & Co. के बारे में", contact: "कंपनी से संपर्क करें", privacy: "गोपनीयता नोटिस", terms: "नियम और शर्तें" },
   status: { active: "सक्रिय", comingSoon: "जल्द आ रहा है", paused: "विराम" },
   hero: {
     badgeBefore: "प्रीमियम कंपनी नेटवर्क • खोजने के लिए ",
     badgeAfter: " दबाएं",
+    pressHint: "दबाएं",
     titleBefore: "",
     titleAfter: " के व्यवसायों, सेवाओं और परिचालन प्रभागों का अन्वेषण करें।",
     ctaExplore: "सभी प्रभाग देखें",
     ctaFeatured: "फीचर्ड प्रभाग देखें",
   },
   introDefault: "Henry & Co. एक सम्मानित समूह पहचान के तहत केंद्रित व्यवसायों को एकत्रित करती है। यह हब ग्राहकों, भागीदारों और हितधारकों को कंपनी समझने, सही प्रभाग खोजने और आत्मविश्वास के साथ आगे बढ़ने में मदद करता है।",
-  brandPanel: { eyebrow: "कंपनी ब्रांड सिस्टम", baseDomain: "बेस डोमेन", accent: "एक्सेंट", logoStatus: "लोगो स्थिति", logoConfigured: "कॉन्फ़िगर किया गया", logoFallback: "फ़ॉलबैक मार्क" },
+  brandPanel: { eyebrow: "कंपनी ब्रांड सिस्टम", baseDomain: "बेस डोमेन", accent: "एक्सेंट", logoStatus: "लोगो स्थिति", logoConfigured: "कॉन्फ़िगर किया गया", logoFallback: "फ़ॉलबैक मार्क", subtitleFallback: "कॉर्पोरेट प्लेटफ़ॉर्म" },
   stats: { divisions: "प्रभाग", activeNow: "अभी सक्रिय", comingSoon: "जल्द आ रहा है", sectors: "सेवा क्षेत्र" },
   standardCard: {
     eyebrow: "समूह मानक",
@@ -1150,6 +1416,8 @@ const HUB_HOME_COPY_HI: Partial<HubHomeCopy> = {
     lastUpdated: "अंतिम अपडेट",
     companyPagesEyebrow: "कंपनी-स्तरीय पेज",
     empty: "कोई मिलान प्रभाग नहीं मिला। अपने फिल्टर साफ करें या खोज मानदंड व्यापक करें।",
+    searchingState: "खोज हो रही है…",
+    searchHelpLink: "HenryCo वर्कफ़्लो और सहायता खोजें",
   },
   ecosystem: {
     eyebrow: "यह क्यों मायने रखता है",
@@ -1170,10 +1438,11 @@ const HUB_HOME_COPY_HI: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "अक्सर पूछे जाने वाले प्रश्न", title: "अक्सर पूछे जाने वाले प्रश्न", subtitle: "ये उत्तर ग्राहकों, भागीदारों और हितधारकों को संपर्क करने से पहले कंपनी के काम को समझने में मदद करते हैं।" },
   topBar: { search: "हब खोजें", explore: "एक्सप्लोर करें" },
-  footer: { exploreDivisions: "प्रभाग एक्सप्लोर करें", companyPages: "कंपनी पेज", colHub: "कंपनी हब", colGlobal: "ग्लोबल पेज" },
+  footer: { exploreDivisions: "प्रभाग एक्सप्लोर करें", companyPages: "कंपनी पेज", colHub: "कंपनी हब", colGlobal: "ग्लोबल पेज", copyrightAllRightsReserved: "सर्वाधिकार सुरक्षित।", linkPrivacy: "गोपनीयता", linkTerms: "नियम", linkPreferences: "वरीयताएँ", designedBy: "HenryCo Studio द्वारा HenryCo इकोसिस्टम के लिए इन-हाउस डिज़ाइन और निर्मित" },
   cards: {
     divisionFallbackLong: "Henry & Co. का एक सार्वजनिक-सामना प्रभाग स्पष्टता और प्रीमियम प्रस्तुति के साथ एक केंद्रित बाजार की सेवा करने के लिए बनाया गया है।",
     divisionFallbackShort: "Henry & Co. का एक केंद्रित प्रभाग व्यापक कंपनी इकोसिस्टम के भीतर एक स्वतंत्र ऑपरेटिंग ब्रांड के रूप में प्रस्तुत किया गया है।",
+    divisionFallbackTile: "Henry & Co. का एक केंद्रित परिचालन व्यवसाय।",
     destination: "गंतव्य", notConfigured: "अभी तक कॉन्फ़िगर नहीं", openDivision: "प्रभाग खोलें", divisionDestination: "प्रभाग गंतव्य", lead: "प्रमुख", details: "विवरण", open: "खोलें", featured: "फीचर्ड",
   },
   modal: {
@@ -1186,22 +1455,50 @@ const HUB_HOME_COPY_HI: Partial<HubHomeCopy> = {
     { q: "यह वेबसाइट किसके लिए डिज़ाइन की गई है?", a: "हब ग्राहकों, भागीदारों, आपूर्तिकर्ताओं, मीडिया, प्रतिभाओं और हितधारकों की सेवा करता है जिन्हें Henry & Co. समूह और इसके परिचालन व्यवसायों का स्पष्ट दृश्य चाहिए।" },
     { q: "मुझे पहले कौन से कंपनी पेज देखने चाहिए?", a: "सबसे अच्छे शुरुआती बिंदु हमारे बारे में, संपर्क, गोपनीयता नोटिस और नियम और शर्तें पेज हैं। साथ में, वे कंपनी, इसके मानकों और इसकी सार्वजनिक नीतियों का स्पष्ट दृश्य प्रदान करते हैं।" },
   ],
+  contactHeroForm: {
+    formEyebrow: "कंपनी से संपर्क करें",
+    formTitle: "कंपनी को एक संदेश भेजें",
+    orEmail: "या ईमेल करें",
+    orEmailDirect: "सीधे।",
+    nameLabel: "आपका नाम",
+    namePlaceholder: "पूरा नाम",
+    emailLabel: "ईमेल",
+    emailPlaceholder: "aap@udaharan.com",
+    reasonLabel: "कारण",
+    messageLabel: "संदेश",
+    messagePlaceholder: "संपर्क के कारण के बारे में एक संक्षिप्त नोट।",
+    defaultResponseTime: "1 कार्य दिवस के भीतर जवाब",
+    partnerPlanContext:
+      "मैं Marketplace Partner स्तर के बारे में चर्चा करना चाहता हूं — कस्टम इन्वेंटरी शर्तें और प्रत्यक्ष प्लेसमेंट नियंत्रण। यहां मेरी स्थिति है: ",
+    sendingLabel: "भेजा जा रहा है…",
+    sendLabel: "संदेश भेजें",
+    reasons: {
+      general: "सामान्य पूछताछ",
+      partnerships: "साझेदारी",
+      media: "मीडिया / प्रेस",
+      supplier: "आपूर्तिकर्ता परिचय",
+      investor: "निवेशक / सलाहकार",
+      complaint: "शिकायत या चिंता",
+      other: "कुछ और",
+    },
+  },
 };
 
-const HUB_HOME_COPY_IG: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_IG: DeepPartial<HubHomeCopy> = {
   nav: { featured: "Ndị a họpụtara", directory: "Ndepụta", company: "Ụlọ ọrụ", faq: "Ajụjụ ndị a na-ajụ", about: "Maka anyị", contact: "Kpọtụrụ anyị" },
   companyPages: { about: "Maka Henry & Co.", contact: "Kpọtụrụ ụlọ ọrụ ahụ", privacy: "Ọkwa nzuzo", terms: "Usoro na Ọnọdụ" },
   status: { active: "Na-arụ ọrụ", comingSoon: "Na-abịa n'oge na-adịghị anya", paused: "Akwụsịrị" },
   hero: {
     badgeBefore: "Netwọk ụlọ ọrụ kacha mma • pịa ",
     badgeAfter: " iji chọọ",
+    pressHint: "pịa",
     titleBefore: "Nyochaa azụmahịa, ọrụ na ngalaba arụmọrụ nke ",
     titleAfter: ".",
     ctaExplore: "Nyochaa ngalaba niile",
     ctaFeatured: "Hụ ngalaba a họpụtara",
   },
   introDefault: "Henry & Co. na-ewebata azụmahịa ndị lekwasị anya n'okpuru otu akara ìgwè a na-asọpụrụ. Hub a na-enyere ndị ahịa, ndị mmekọ, na ndị nwere ọrụ aka ịghọta ụlọ ọrụ ahụ, ịchọta ngalaba ziri ezi ma gaa n'ihu n'obi ụtọ.",
-  brandPanel: { eyebrow: "Sistemụ akara ụlọ ọrụ", baseDomain: "Domain bụ isi", accent: "Ọcha nkọwa", logoStatus: "Ọnọdụ akara", logoConfigured: "Atọhapụtara", logoFallback: "Akara mbu" },
+  brandPanel: { eyebrow: "Sistemụ akara ụlọ ọrụ", baseDomain: "Domain bụ isi", accent: "Ọcha nkọwa", logoStatus: "Ọnọdụ akara", logoConfigured: "Atọhapụtara", logoFallback: "Akara mbu", subtitleFallback: "Plaformụ ụlọ ọrụ" },
   stats: { divisions: "Ngalaba", activeNow: "Na-arụ ọrụ ugbu a", comingSoon: "Na-abịa n'oge na-adịghị anya", sectors: "Ngalaba ọrụ" },
   standardCard: {
     eyebrow: "Ọkọlọtọ ìgwè",
@@ -1252,6 +1549,8 @@ const HUB_HOME_COPY_IG: Partial<HubHomeCopy> = {
     lastUpdated: "Emelitere oge ikpeazụ",
     companyPagesEyebrow: "Peeji ụlọ ọrụ",
     empty: "Ọ dịghị ngalaba dabara. Hichapụ nzacha gị ma ọ bụ gbasaa usoro nchọọ.",
+    searchingState: "Na-achọ…",
+    searchHelpLink: "Chọọ usoro ọrụ na enyemaka HenryCo",
   },
   ecosystem: {
     eyebrow: "Ihe kpatara o dị mkpa",
@@ -1272,10 +1571,11 @@ const HUB_HOME_COPY_IG: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "A na-ajụ ajụjụ ndị a mgbe niile", title: "Ajụjụ ndị a na-ajụ mgbe niile", subtitle: "Azịza ndị a na-enyere ndị ahịa, ndị mmekọ na ndị nwere ọrụ aka ịghọta otu ụlọ ọrụ ahụ si arụ ọrụ tupu ha kpọtụrụ." },
   topBar: { search: "Chọọ hub", explore: "Nyochaa" },
-  footer: { exploreDivisions: "Nyochaa ngalaba", companyPages: "Peeji ụlọ ọrụ", colHub: "Hub ụlọ ọrụ", colGlobal: "Peeji zuru ụwa ọnụ" },
+  footer: { exploreDivisions: "Nyochaa ngalaba", companyPages: "Peeji ụlọ ọrụ", colHub: "Hub ụlọ ọrụ", colGlobal: "Peeji zuru ụwa ọnụ", copyrightAllRightsReserved: "Ikike niile e debere.", linkPrivacy: "Nzuzo", linkTerms: "Usoro", linkPreferences: "Mmasị", designedBy: "HenryCo Studio mere ma rụọ ya n'ime ụlọ maka usoro ihe ọkụkụ HenryCo" },
   cards: {
     divisionFallbackLong: "Ngalaba Henry & Co. e wuru iji jụ ahịa lekwasịrị anya n'ụzọ doro anya na ngosipụta kacha mma.",
     divisionFallbackShort: "Ngalaba Henry & Co. lekwasịrị anya gosipụtara dị ka akara arụmọrụ nke nọ n'onwe ya n'ime ikike ụlọ ọrụ ka ọ bụ.",
+    divisionFallbackTile: "Azụmahịa Henry & Co. lekwasịrị anya.",
     destination: "Ebe ọ na-aga", notConfigured: "Atọhapụtabeghị ya", openDivision: "Mepee ngalaba", divisionDestination: "Ebe ngalaba na-aga", lead: "Onye ndu", details: "Nkọwa", open: "Mepe", featured: "A họpụtara",
   },
   modal: {
@@ -1288,22 +1588,50 @@ const HUB_HOME_COPY_IG: Partial<HubHomeCopy> = {
     { q: "Maka onye e wuru saịtị a?", a: "Hub na-ejere ọrụ ndị ahịa, ndị mmekọ, ndị na-enye ngwaahịa, ndị ọchịchọ, ndị nka, na ndị nwere ọrụ ndị chọrọ ọhụụ doro anya nke ìgwè Henry & Co. na azụmahịa ya na-arụ ọrụ." },
     { q: "Kedu peeji ụlọ ọrụ m kwesịrị nyochaa ụzọ mbụ?", a: "Isi mmalite ndị kacha mma bụ peeji Maka anyị, Kpọtụrụ anyị, Ọkwa Nzuzo, na Usoro na Ọnọdụ. Ọ bụ ọnụ ọgụgụ, ha na-enye ọhụụ doro anya nke ụlọ ọrụ, ọkọlọtọ ya, na iwu ya n'ọha." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Kpọtụrụ ụlọ ọrụ",
+    formTitle: "Zipu ụlọ ọrụ ozi",
+    orEmail: "Ma ọ bụ zipu imeli",
+    orEmailDirect: "ụzọ ọtọ.",
+    nameLabel: "Aha gị",
+    namePlaceholder: "Aha zuru ezu",
+    emailLabel: "Imeli",
+    emailPlaceholder: "gi@ihe.com",
+    reasonLabel: "Ihe kpatara",
+    messageLabel: "Ozi",
+    messagePlaceholder: "Ozi dị mkpụmkpụ gbasara ihe mere ị kpọtụrụ anyị.",
+    defaultResponseTime: "Ọzaazị n'ime ụbọchị ọrụ 1",
+    partnerPlanContext:
+      "Achọrọ m ịkọwa gbasara ọkwa Onye mmekọ Marketplace — ọnọdụ ngwaahịa pụrụ iche na njikwa ntinye. Nke a bụ ọnọdụ m: ",
+    sendingLabel: "Na-eziga…",
+    sendLabel: "Zipu ozi",
+    reasons: {
+      general: "Ajụjụ ọzọ",
+      partnerships: "Mmekọahịa",
+      media: "Ọchịchọ / mbipụta",
+      supplier: "Ntụgharị onye na-enye ngwaahịa",
+      investor: "Onye na-etinye ego / ndụmọdụ",
+      complaint: "Mkpesa ma ọ bụ nchegbu",
+      other: "Ihe ọzọ",
+    },
+  },
 };
 
-const HUB_HOME_COPY_YO: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_YO: DeepPartial<HubHomeCopy> = {
   nav: { featured: "Àwọn tí a yàn", directory: "Àtọ́kàn", company: "Ilé-iṣẹ́", faq: "Àwọn ìbéèrè tó máa ń wọ́pọ̀", about: "Nípa wa", contact: "Kàn sí wa" },
   companyPages: { about: "Nípa Henry & Co.", contact: "Kàn sí ilé-iṣẹ́", privacy: "Ìkìlọ̀ ìpamọ́", terms: "Àwọn òfin àti ìpèsè" },
   status: { active: "Ń ṣiṣẹ́", comingSoon: "Máa wá ní kùtùkùtù", paused: "Dúró dè" },
   hero: {
     badgeBefore: "Nẹ́tíwọ̀ọ̀kì ilé-iṣẹ́ àgbéga • tẹ ",
     badgeAfter: " láti wá",
+    pressHint: "tẹ",
     titleBefore: "Ṣàwárí àwọn iṣẹ́-ṣe, iṣẹ́, àti àwọn ẹ̀ka iṣẹ́ ti ",
     titleAfter: ".",
     ctaExplore: "Ṣàwárí gbogbo àwọn ẹ̀ka",
     ctaFeatured: "Wo àwọn ẹ̀ka tí a yàn",
   },
   introDefault: "Henry & Co. ń kojọ àwọn iṣẹ́-ṣe tó dójútì sí abẹ́ ìdánimọ̀ ìjọ tí wọn bọ̀wọ̀ fún. Hub yìí ń ràn àwọn oníbàárà, àwọn alábàákẹ́gbẹ́, àti àwọn tó ní àfikún lọ́wọ́ láti mọ ilé-iṣẹ́, wá ẹ̀ka tó péye, tí wọ́n sì máa ń rìnrìn àjò pẹ̀lú ìgboyà.",
-  brandPanel: { eyebrow: "Ètò àmi ilé-iṣẹ́", baseDomain: "Domein ìpìlẹ̀", accent: "Àwọ̀ àkíyèsí", logoStatus: "Ipò àmì ìdánimọ̀", logoConfigured: "Tí a ṣètò", logoFallback: "Àmì ìfiṣe" },
+  brandPanel: { eyebrow: "Ètò àmi ilé-iṣẹ́", baseDomain: "Domein ìpìlẹ̀", accent: "Àwọ̀ àkíyèsí", logoStatus: "Ipò àmì ìdánimọ̀", logoConfigured: "Tí a ṣètò", logoFallback: "Àmì ìfiṣe", subtitleFallback: "Pẹpẹ ilé-iṣẹ́" },
   stats: { divisions: "Àwọn ẹ̀ka", activeNow: "Ń ṣiṣẹ́ báyìí", comingSoon: "Máa wá ní kùtùkùtù", sectors: "Àwọn ẹ̀ka iṣẹ́" },
   standardCard: {
     eyebrow: "Ìtọ́kasí ìjọ",
@@ -1354,6 +1682,8 @@ const HUB_HOME_COPY_YO: Partial<HubHomeCopy> = {
     lastUpdated: "Ìgbà tó kẹ́yìn tí a ṣe àtúnṣe",
     companyPagesEyebrow: "Àwọn ojúewé ìpele ilé-iṣẹ́",
     empty: "A kò rí àwọn ẹ̀ka tó bá a mu. Pa àwọn àlẹ̀mọ rẹ mọ́ tàbí gbòòrò àwọn ìpèsè ìwádìí.",
+    searchingState: "A ń wá…",
+    searchHelpLink: "Wá àwọn ìṣàn iṣẹ́ àti ìrànlọ́wọ́ HenryCo",
   },
   ecosystem: {
     eyebrow: "Ìdí tó fi ṣe pàtàkì",
@@ -1374,10 +1704,11 @@ const HUB_HOME_COPY_YO: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Tí a máa ń béèrè", title: "Àwọn ìbéèrè tó máa ń wọ́pọ̀", subtitle: "Àwọn ìdáhùn wọ̀nyí ń ràn àwọn oníbàárà, àwọn alábàákẹ́gbẹ́, àti àwọn olùjọpọ̀ lọ́wọ́ láti mọ bí ilé-iṣẹ́ ṣe ń ṣiṣẹ́ ṣáájú kí wọn to kàn sí." },
   topBar: { search: "Wá hub", explore: "Ṣàwárí" },
-  footer: { exploreDivisions: "Ṣàwárí àwọn ẹ̀ka", companyPages: "Àwọn ojúewé ilé-iṣẹ́", colHub: "Hub ilé-iṣẹ́", colGlobal: "Àwọn ojúewé àgbáyé" },
+  footer: { exploreDivisions: "Ṣàwárí àwọn ẹ̀ka", companyPages: "Àwọn ojúewé ilé-iṣẹ́", colHub: "Hub ilé-iṣẹ́", colGlobal: "Àwọn ojúewé àgbáyé", copyrightAllRightsReserved: "Gbogbo ẹ̀tọ́ wà ní àìbàjẹ́.", linkPrivacy: "Ìpamọ́", linkTerms: "Àwọn òfin", linkPreferences: "Àwọn àyànfẹ́", designedBy: "Tí a ṣe àpẹrẹ tí a sì kọ́ ní ilé-iṣẹ́ nípasẹ̀ HenryCo Studio fún ètò-àyíká HenryCo" },
   cards: {
     divisionFallbackLong: "Ẹ̀ka Henry & Co. tó ń dojú kọ gbangba tí a kọ́ láti sìn ọjà tó dájú pẹ̀lú ìmọ̀ àti àgbéjáde àgbéga.",
     divisionFallbackShort: "Ẹ̀ka tó dájú ti Henry & Co. tó jẹ́ àgbéjáde bí àmì-iṣẹ́ tó ṣiṣẹ́ nìkanṣoṣo abẹ́ ètò-ẹ̀ka ilé-iṣẹ́ tó gbòòrò.",
+    divisionFallbackTile: "Iṣẹ́-ṣe ìṣiṣẹ́ Henry & Co. tó dájú.",
     destination: "Ìgbésẹ̀", notConfigured: "Kò tíì ṣètò", openDivision: "Ṣí ẹ̀ka", divisionDestination: "Ìgbésẹ̀ ẹ̀ka", lead: "Olórí", details: "Àlàyé", open: "Ṣí", featured: "Tí a yàn",
   },
   modal: {
@@ -1390,22 +1721,50 @@ const HUB_HOME_COPY_YO: Partial<HubHomeCopy> = {
     { q: "Fún tani a ṣe ojúewé ìntánẹ́ẹ̀tì yìí?", a: "Hub ń sìn àwọn oníbàárà, àwọn alábàákẹ́gbẹ́, àwọn olùpèsè, àwọn oníròyìn, àwọn ẹni tí wọ́n ń wá iṣẹ́, àti àwọn olùjọpọ̀ tí wọ́n nílò ìwò tó mọ̀ síi ti ìjọ Henry & Co. àti àwọn iṣẹ́-ṣe ìṣiṣẹ́ rẹ̀." },
     { q: "Àwọn ojúewé ilé-iṣẹ́ wo nì mí gbọdọ̀ tún wo àkọ́kọ́?", a: "Àwọn ìbẹ̀rẹ̀ tó dára jùlọ ni àwọn ojúewé Nípa Wa, Kàn Sí Wa, Ìkìlọ̀ Ìpamọ́, àti Àwọn Òfin àti Ìpèsè. Pọ̀pọ̀, wọ́n pèsè ìwò tó mọ̀ síi ti ilé-iṣẹ́, àwọn ìtọ́kasí rẹ̀, àti àwọn ìlànà gbangba rẹ̀." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Kàn sí ilé-iṣẹ́",
+    formTitle: "Fi ìránṣẹ́ ránṣẹ́ sí ilé-iṣẹ́",
+    orEmail: "Tàbí fi ímeèlì ránṣẹ́",
+    orEmailDirect: "tààrà.",
+    nameLabel: "Orúkọ rẹ",
+    namePlaceholder: "Orúkọ kíkún",
+    emailLabel: "Ímeèlì",
+    emailPlaceholder: "iwo@apẹẹrẹ.com",
+    reasonLabel: "Ìdí",
+    messageLabel: "Ìránṣẹ́",
+    messagePlaceholder: "Àkọsílẹ̀ kúkúrú nípa ìdí tí o fi ń kàn wá.",
+    defaultResponseTime: "Ìdáhùn láàárín ọjọ́ iṣẹ́ 1",
+    partnerPlanContext:
+      "Mo fẹ́ jíròrò nípa ìpele Alábàárọ̀ Marketplace — àwọn ìpèsè àkójọpọ̀ àti àwọn ìdarí ìgbékalẹ̀ tààrà. Èyí ni ipò mi: ",
+    sendingLabel: "Ń ránsẹ́…",
+    sendLabel: "Fi ìránṣẹ́ ránṣẹ́",
+    reasons: {
+      general: "Ìbéèrè gbogbogbò",
+      partnerships: "Àjọṣepọ̀",
+      media: "Ìkànnì / ìròyìn",
+      supplier: "Ìfihàn olùpèsè",
+      investor: "Onísọwọ̀ / olùdámọ̀ràn",
+      complaint: "Ìkùnà tàbí ìbínú",
+      other: "Ohun mìíràn",
+    },
+  },
 };
 
-const HUB_HOME_COPY_HA: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_HA: DeepPartial<HubHomeCopy> = {
   nav: { featured: "Zaɓaɓɓu", directory: "Jerin sunayen", company: "Kamfani", faq: "Tambayoyi na kowa", about: "Game da mu", contact: "Tuntuɓi mu" },
   companyPages: { about: "Game da Henry & Co.", contact: "Tuntuɓi kamfani", privacy: "Sanarwar sirri", terms: "Sharuɗɗa da yanayi" },
   status: { active: "Aiki", comingSoon: "Zai zo ba da daɗewa ba", paused: "An daina" },
   hero: {
     badgeBefore: "Cibiyar sadarwa ta kamfanoni na musamman • danna ",
     badgeAfter: " don bincika",
+    pressHint: "danna",
     titleBefore: "Bincika kasuwancin, ayyuka, da sassan aiki na ",
     titleAfter: ".",
     ctaExplore: "Bincika dukkan sassan",
     ctaFeatured: "Duba sassan da aka zaɓa",
   },
   introDefault: "Henry & Co. tana tattara kasuwancin da ke mai da hankali ƙarƙashin sunan ƙungiya da ake girmamawa. Wannan hub yana taimaka wa abokan ciniki, abokan hulɗa, da masu ruwa da tsaki su fahimci kamfani, su nemo sasshen da ya dace, su ci gaba da kwarin gwiwa.",
-  brandPanel: { eyebrow: "Tsarin alamar kamfani", baseDomain: "Domein na asali", accent: "Launi na musamman", logoStatus: "Halin tambarin", logoConfigured: "An saita", logoFallback: "Alamar madadin" },
+  brandPanel: { eyebrow: "Tsarin alamar kamfani", baseDomain: "Domein na asali", accent: "Launi na musamman", logoStatus: "Halin tambarin", logoConfigured: "An saita", logoFallback: "Alamar madadin", subtitleFallback: "Dandalin kamfani" },
   stats: { divisions: "Sassan", activeNow: "Aiki yanzu", comingSoon: "Zai zo ba da daɗewa ba", sectors: "Fannonin sabis" },
   standardCard: {
     eyebrow: "Ma'aunin ƙungiya",
@@ -1456,6 +1815,8 @@ const HUB_HOME_COPY_HA: Partial<HubHomeCopy> = {
     lastUpdated: "An sabunta ƙarshe",
     companyPagesEyebrow: "Shafukan matakin kamfani",
     empty: "Ba a sami daidaitaccen sassan ba. Share tacewar ku ko faɗaɗa ƙa'idodin bincike.",
+    searchingState: "Ana bincika…",
+    searchHelpLink: "Bincika ayyukan HenryCo da taimako",
   },
   ecosystem: {
     eyebrow: "Dalilin da yasa yana da mahimmanci",
@@ -1476,10 +1837,11 @@ const HUB_HOME_COPY_HA: Partial<HubHomeCopy> = {
   },
   faq: { eyebrow: "Ana tambaya akai-akai", title: "Tambayoyin da ake yi akai-akai", subtitle: "Waɗannan amsoshi suna taimaka wa abokan ciniki, abokan hulɗa, da masu ruwa da tsaki su fahimci yadda kamfani ke aiki kafin su tuntuɓa." },
   topBar: { search: "Bincika hub", explore: "Bincika" },
-  footer: { exploreDivisions: "Bincika sassan", companyPages: "Shafukan kamfani", colHub: "Hub na kamfani", colGlobal: "Shafukan duniya" },
+  footer: { exploreDivisions: "Bincika sassan", companyPages: "Shafukan kamfani", colHub: "Hub na kamfani", colGlobal: "Shafukan duniya", copyrightAllRightsReserved: "Duk haƙƙoƙin sun kiyaye.", linkPrivacy: "Sirri", linkTerms: "Sharuɗɗa", linkPreferences: "Abubuwan da aka fi so", designedBy: "An ƙira tare da ginawa a cikin gida ta HenryCo Studio don tsarin yanayi na HenryCo" },
   cards: {
     divisionFallbackLong: "Sashi na Henry & Co. da ke fuskanta jama'a da aka gina don sabis ɗin kasuwancin da ke mai da hankali da ƙarfi kuma gabatarwa na musamman.",
     divisionFallbackShort: "Sashi mai mai da hankali na Henry & Co. da aka gabatar a matsayin alamar aiki mai zaman kanta a cikin tsarin kamfani mafi girma.",
+    divisionFallbackTile: "Kasuwancin Henry & Co. da ke mai da hankali.",
     destination: "Wurin zuwa", notConfigured: "Ba a saita tukuna", openDivision: "Buɗe sashi", divisionDestination: "Wurin zuwa na sashi", lead: "Shugaba", details: "Cikakkun bayanai", open: "Buɗe", featured: "Zaɓaɓɓu",
   },
   modal: {
@@ -1492,9 +1854,36 @@ const HUB_HOME_COPY_HA: Partial<HubHomeCopy> = {
     { q: "Ga wa aka tsara wannan gidan yanar gizo?", a: "Hub yana sabis ga abokan ciniki, abokan hulɗa, masu ba da kayayyaki, kafofin watsa labarai, ƙwararru, da masu ruwa da tsaki waɗanda ke buƙatar ƙarin bayyananniyar ra'ayi na ƙungiyar Henry & Co. da kasuwancinta na aiki." },
     { q: "Waɗanne shafukan kamfani ya kamata na duba da farko?", a: "Mafi kyawun wuraren farawa sune shafukan Game da Mu, Tuntuɓa Mu, Sanarwar Sirri, da Sharuɗɗa da Yanayi. Tare, suna ba da ƙarin bayyananniyar ra'ayi na kamfani, ma'aunansa, da manufofinsa na jama'a." },
   ],
+  contactHeroForm: {
+    formEyebrow: "Tuntuɓi kamfani",
+    formTitle: "Aika sakon kamfani",
+    orEmail: "Ko ta imel",
+    orEmailDirect: "kai tsaye.",
+    nameLabel: "Sunanka",
+    namePlaceholder: "Cikakken suna",
+    emailLabel: "Imel",
+    emailPlaceholder: "kai@misali.com",
+    reasonLabel: "Dalili",
+    messageLabel: "Sako",
+    messagePlaceholder: "Takaitaccen bayanin dalilin tuntuɓinku.",
+    defaultResponseTime: "Amsawa cikin kwana 1 na aiki",
+    partnerPlanContext:
+      "Ina son tattauna matakin Abokin Hulɗa na Marketplace — tsarin kayan aiki na musamman da kula da saka kai tsaye. Ga halin da nake ciki: ",
+    sendingLabel: "Ana aika…",
+    sendLabel: "Aika sako",
+    reasons: {
+      general: "Tambaya ta gaba ɗaya",
+      partnerships: "Haɗin gwiwa",
+      media: "Kafofin watsa labarai / manema labarai",
+      supplier: "Gabatar da mai ba da kaya",
+      investor: "Mai saka hannun jari / mai ba da shawara",
+      complaint: "Ƙara ko damuwa",
+      other: "Wani abu",
+    },
+  },
 };
 
-const HUB_HOME_COPY_IT: Partial<HubHomeCopy> = {
+const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
   "nav": {
     "featured": "In primo piano",
     "directory": "Directory",
@@ -1517,6 +1906,7 @@ const HUB_HOME_COPY_IT: Partial<HubHomeCopy> = {
   "hero": {
     "badgeBefore": "Rete aziendale premium • premi",
     "badgeAfter": " per cercare",
+    "pressHint": "premi",
     "titleBefore": "Esplora le attività, i servizi e le divisioni operative di",
     "titleAfter": ".",
     "ctaExplore": "Esplora tutte le divisioni",
@@ -1529,7 +1919,8 @@ const HUB_HOME_COPY_IT: Partial<HubHomeCopy> = {
     "accent": "Accento",
     "logoStatus": "Stato del logo",
     "logoConfigured": "Configurato",
-    "logoFallback": "Marchio di riserva"
+    "logoFallback": "Marchio di riserva",
+    "subtitleFallback": "Piattaforma aziendale"
   },
   "stats": {
     "divisions": "Divisioni",
@@ -1584,6 +1975,8 @@ const HUB_HOME_COPY_IT: Partial<HubHomeCopy> = {
     "title": "Individua l'attività Henry & Co. giusta",
     "body": "Cerca per nome della divisione, categoria, enfasi sul servizio o focus aziendale. Questa directory esiste per aiutare le persone a spostarsi rapidamente e con sicurezza nella parte giusta dell'azienda.",
     "searchPlaceholder": "Cerca divisioni, servizi, categorie, sottodomini...",
+    "searchingState": "Ricerca in corso…",
+    "searchHelpLink": "Cerca flussi di lavoro e supporto HenryCo",
     "clearSearchAria": "Cancella ricerca",
     "popularSectors": "Settori popolari",
     "featuredOn": "Mostra solo in primo piano",
@@ -1655,11 +2048,17 @@ const HUB_HOME_COPY_IT: Partial<HubHomeCopy> = {
     "exploreDivisions": "Esplora le divisioni",
     "companyPages": "Pagine aziendali",
     "colHub": "Polo aziendale",
-    "colGlobal": "Pagine globali"
+    "colGlobal": "Pagine globali",
+    "copyrightAllRightsReserved": "Tutti i diritti riservati.",
+    "linkPrivacy": "Riservatezza",
+    "linkTerms": "Termini",
+    "linkPreferences": "Preferenze",
+    "designedBy": "Progettato e realizzato internamente da HenryCo Studio per l'ecosistema HenryCo"
   },
   "cards": {
     "divisionFallbackLong": "Una divisione Henry & Co. rivolta al pubblico, creata per servire un mercato mirato con chiarezza e presentazione premium.",
     "divisionFallbackShort": "Una divisione Henry & Co. focalizzata presentata come un marchio operativo indipendente all'interno del più ampio ecosistema aziendale.",
+    "divisionFallbackTile": "Un'attività operativa Henry & Co. focalizzata.",
     "destination": "Destinazione",
     "notConfigured": "Non ancora configurato",
     "openDivision": "Divisione aperta",
@@ -1703,10 +2102,37 @@ const HUB_HOME_COPY_IT: Partial<HubHomeCopy> = {
       "q": "Quali pagine aziendali dovrei rivedere per prime?",
       "a": "I migliori punti di partenza sono le pagine Informazioni, Contatti, Informativa sulla privacy e Termini e condizioni. Insieme, forniscono una visione più chiara dell’azienda, dei suoi standard e delle sue politiche pubbliche."
     }
-  ]
+  ],
+  contactHeroForm: {
+    formEyebrow: "Contatta l’azienda",
+    formTitle: "Invia un messaggio all’azienda",
+    orEmail: "O scrivi via e-mail",
+    orEmailDirect: "direttamente.",
+    nameLabel: "Il tuo nome",
+    namePlaceholder: "Nome completo",
+    emailLabel: "E-mail",
+    emailPlaceholder: "tu@esempio.it",
+    reasonLabel: "Motivo",
+    messageLabel: "Messaggio",
+    messagePlaceholder: "Una breve nota sul motivo del tuo contatto.",
+    defaultResponseTime: "Risposta entro 1 giorno lavorativo",
+    partnerPlanContext:
+      "Vorrei discutere il livello Partner Marketplace — termini di inventario personalizzati e controlli di posizionamento diretto. Ecco la mia situazione: ",
+    sendingLabel: "Invio in corso…",
+    sendLabel: "Invia messaggio",
+    reasons: {
+      general: "Richiesta generale",
+      partnerships: "Collaborazione",
+      media: "Media / stampa",
+      supplier: "Presentazione fornitore",
+      investor: "Investitore / consulente",
+      complaint: "Reclamo o segnalazione",
+      other: "Altro",
+    },
+  },
 };
 
-const HUB_HOME_LOCALE_MAP: Partial<Record<AppLocale, Partial<HubHomeCopy>>> = {
+const HUB_HOME_LOCALE_MAP: Partial<Record<AppLocale, DeepPartial<HubHomeCopy>>> = {
   fr: HUB_HOME_COPY_FR,
   es: HUB_HOME_COPY_ES,
   pt: HUB_HOME_COPY_PT,

@@ -1,4 +1,9 @@
 import { getDivisionUrl } from "@henryco/config";
+import {
+  formatAccountTemplate,
+  getAccountCopy,
+} from "@henryco/i18n/server";
+import type { AccountCopy } from "@henryco/i18n/server";
 
 import { requireAccountUser } from "@/lib/auth";
 import { getDivisionActivity } from "@/lib/division-data";
@@ -11,110 +16,72 @@ import { LearnCourses } from "@/components/learn/LearnCourses";
 import { LearnExtras } from "@/components/learn/LearnExtras";
 import { LearnActivity } from "@/components/learn/LearnActivity";
 import {
+  heroState,
   learnStats,
   toLearnActivityRows,
   type AssignmentRow,
   type CertificateRow,
   type CourseRow,
   type LearnLocale,
+  type LearnStats,
   type SavedCourseRow,
   type TeacherApplication,
 } from "@/components/learn/helpers";
 
 export const dynamic = "force-dynamic";
 
-const COPY_EN = {
-  eyebrow: "Learn · live",
-  sideKicker: "How this room works",
-  sideTitle: "Catalog on Learn, progress here.",
-  sideBody: "Every lesson, quiz, and certificate from HenryCo Learn syncs into this room — pick up where you left off, see your progress at a glance, and keep credentials in one place.",
-  breakdownLabel: "By state",
-  tileLabels: { active: "Active", completed: "Completed", certificates: "Certificates", assignments: "Assigned" },
-  tileFoot: {
-    activeEmpty: "Enroll to start a course",
-    activeWith: "Lesson + quiz progress mirrors here",
-    completedEmpty: "Programs you finish appear here",
-    completedWith: "Handy for CVs and reporting",
-    certificatesEmpty: "Earn one by completing a course",
-    certificatesWith: "Verifiable links to each credential",
-    assignmentsEmpty: "Nothing assigned right now",
-    assignmentsWith: "From your manager or team",
-  },
-  breakdownNames: { active: "Active", assigned: "Assigned", certificates: "Certificates", saved: "Saved" },
-  sectionCourses: "Continue learning",
-  sectionCoursesMeta: (active: number, completed: number) =>
-    `${active} active · ${completed} completed`,
-  sectionCoursesEmpty: "Browse the HenryCo Learn catalog to enroll in your first course.",
-  sectionExtras: "Credentials, assignments, and teaching",
-  sectionExtrasMeta: "Certificates, assigned training, saved courses, and instructor application live here.",
-  sectionActivity: "Recent activity",
-  sectionActivityMeta: (n: number) => `${n} update${n === 1 ? "" : "s"} · most recent first`,
-  sectionActivityEmpty: "Lessons, quizzes, certificates, and payments mirror here as they happen.",
-  emptyTitle: "No courses linked yet",
-  emptyBody: "Browse the catalog on HenryCo Learn and enroll. Your place will appear here automatically.",
-  emptyActivityTitle: "No Learn activity yet",
-  emptyActivityBody: "Course progress, quiz results, certificate issuance, and payment receipts surface here as they happen.",
-  certificatesTitle: "Certificates",
-  assignmentsTitle: "Assigned learning",
-  savedTitle: "Saved courses",
-  teachingTitle: "Teach with HenryCo",
-  statusLabel: "Status",
-  expertiseLabel: "Expertise",
-  topicsLabel: "Topics",
-  openApplication: "Open application",
-  applyToTeach: "Apply to teach",
-  teachingEmpty: "We review teaching applications manually. Apply on HenryCo Learn and status will sync back here.",
-  activityAriaLabel: "Learn activity",
-};
+type DivisionLearnCopy = AccountCopy["divisionLearn"];
 
-const COPY_FR: typeof COPY_EN = {
-  eyebrow: "Learn · en direct",
-  sideKicker: "Comment cette pièce fonctionne",
-  sideTitle: "Catalogue sur Learn, progression ici.",
-  sideBody: "Chaque leçon, quiz et certificat de HenryCo Learn est synchronisé ici — reprenez là où vous vous êtes arrêté, visualisez votre progression en un coup d’œil, et gardez vos certifications au même endroit.",
-  breakdownLabel: "Par état",
-  tileLabels: { active: "Actifs", completed: "Terminés", certificates: "Certificats", assignments: "Assignés" },
-  tileFoot: {
-    activeEmpty: "Inscrivez-vous pour commencer",
-    activeWith: "Leçons + quiz reflétés ici",
-    completedEmpty: "Les programmes terminés apparaîtront ici",
-    completedWith: "Pratique pour CV et rapports",
-    certificatesEmpty: "Obtenez-en un en terminant un cours",
-    certificatesWith: "Liens vérifiables vers chaque certificat",
-    assignmentsEmpty: "Rien d’assigné pour le moment",
-    assignmentsWith: "De votre manager ou équipe",
-  },
-  breakdownNames: { active: "Actifs", assigned: "Assignés", certificates: "Certificats", saved: "Enregistrés" },
-  sectionCourses: "Continuer l’apprentissage",
-  sectionCoursesMeta: (active: number, completed: number) =>
-    `${active} actif${active === 1 ? "" : "s"} · ${completed} terminé${completed === 1 ? "" : "s"}`,
-  sectionCoursesEmpty: "Parcourez le catalogue HenryCo Learn pour vous inscrire à votre premier cours.",
-  sectionExtras: "Certificats, assignations et enseignement",
-  sectionExtrasMeta: "Certificats, formations assignées, cours enregistrés et candidature enseignant.",
-  sectionActivity: "Activité récente",
-  sectionActivityMeta: (n: number) => `${n} mise${n === 1 ? "" : "s"} à jour · plus récentes en premier`,
-  sectionActivityEmpty: "Leçons, quiz, certificats et paiements reflétés ici en temps réel.",
-  emptyTitle: "Aucun cours lié pour le moment",
-  emptyBody: "Parcourez le catalogue sur HenryCo Learn et inscrivez-vous. Votre place apparaîtra ici automatiquement.",
-  emptyActivityTitle: "Aucune activité Learn pour le moment",
-  emptyActivityBody: "Progression des cours, résultats de quiz, émission de certificats et reçus de paiement apparaissent ici en temps réel.",
-  certificatesTitle: "Certificats",
-  assignmentsTitle: "Formations assignées",
-  savedTitle: "Cours enregistrés",
-  teachingTitle: "Enseigner avec HenryCo",
-  statusLabel: "Statut",
-  expertiseLabel: "Expertise",
-  topicsLabel: "Sujets",
-  openApplication: "Ouvrir la candidature",
-  applyToTeach: "Postuler pour enseigner",
-  teachingEmpty: "Nous examinons manuellement les candidatures d’enseignants. Postulez sur HenryCo Learn : le statut se synchronisera ici.",
-  activityAriaLabel: "Activité Learn",
-};
+export async function generateMetadata() {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountCopy(locale);
+  return {
+    title: copy.divisionLearn.metadata.title,
+    description: copy.divisionLearn.metadata.description,
+  };
+}
+
+function buildHeroHeadline(
+  state: "empty" | "calm" | "active",
+  stats: LearnStats,
+  copy: DivisionLearnCopy,
+) {
+  if (state === "empty") {
+    return {
+      headline: copy.hero.state.empty.headline,
+      blurb: copy.hero.state.empty.blurb,
+    };
+  }
+  if (state === "active") {
+    const count = stats.metrics.activeCourses;
+    const template =
+      count === 1
+        ? copy.hero.state.active.headlineTemplateSingular
+        : copy.hero.state.active.headlineTemplatePlural;
+    return {
+      headline: formatAccountTemplate(template, { count }),
+      blurb: copy.hero.state.active.blurb,
+    };
+  }
+  const count = stats.metrics.completedCourses;
+  const template =
+    count === 1
+      ? copy.hero.state.calm.headlineTemplateSingular
+      : copy.hero.state.calm.headlineTemplatePlural;
+  return {
+    headline: formatAccountTemplate(template, { count }),
+    blurb: copy.hero.state.calm.blurb,
+  };
+}
 
 export default async function LearnPage() {
-  const [localeRaw, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
-  const locale: LearnLocale = localeRaw === "fr" ? "fr" : "en";
-  const copy = locale === "fr" ? COPY_FR : COPY_EN;
+  const [locale, user] = await Promise.all([
+    getAccountAppLocale(),
+    requireAccountUser(),
+  ]);
+  const copy = getAccountCopy(locale);
+  const learnCopy = copy.divisionLearn;
+  const helperLocale: LearnLocale = locale === "fr" ? "fr" : "en";
 
   const [summary, activityRaw] = await Promise.all([
     getLearnAccountSummary(user.id, user.email),
@@ -192,72 +159,106 @@ export default async function LearnPage() {
     teacherApplication,
   });
 
+  const state = heroState(stats);
+  const heroHeadline = buildHeroHeadline(state, stats, learnCopy);
+
   const activityRows = toLearnActivityRows(activityRaw);
+
+  const coursesMeta =
+    combinedCourses.length === 0
+      ? learnCopy.sections.coursesMetaEmpty
+      : formatAccountTemplate(learnCopy.sections.coursesMetaTemplate, {
+          active: stats.metrics.activeCourses,
+          completed: stats.metrics.completedCourses,
+        });
+
+  const activityMeta =
+    activityRows.length === 0
+      ? learnCopy.sections.activityMetaEmpty
+      : formatAccountTemplate(
+          activityRows.length === 1
+            ? learnCopy.sections.activityMetaTemplateSingular
+            : learnCopy.sections.activityMetaTemplatePlural,
+          { count: activityRows.length },
+        );
 
   return (
     <div className="acct-lrn acct-fade-in">
       <LearnHero
         stats={stats}
         learnOrigin={learnOrigin}
-        locale={locale}
         labels={{
-          eyebrow: copy.eyebrow,
-          sideKicker: copy.sideKicker,
-          sideTitle: copy.sideTitle,
-          sideBody: copy.sideBody,
-          breakdownLabel: copy.breakdownLabel,
-          tileLabels: copy.tileLabels,
-          tileFoot: copy.tileFoot,
-          breakdownNames: copy.breakdownNames,
+          ariaLabel: learnCopy.hero.ariaLabel,
+          eyebrow: learnCopy.hero.eyebrow,
+          sideKicker: learnCopy.hero.sideKicker,
+          sideTitle: learnCopy.hero.sideTitle,
+          sideBody: learnCopy.hero.sideBody,
+          breakdownLabel: learnCopy.hero.breakdownLabel,
+          breakdownAriaLabel: learnCopy.hero.breakdownAriaLabel,
+          tilesAriaLabel: learnCopy.hero.tilesAriaLabel,
+          tileLabels: learnCopy.hero.tileLabels,
+          tileFoot: learnCopy.hero.tileFoot,
+          breakdownNames: learnCopy.hero.breakdownNames,
+          openLearnCta: learnCopy.hero.openLearnCta,
+          applyToTeachCta: learnCopy.hero.applyToTeachCta,
+          headline: heroHeadline.headline,
+          blurb: heroHeadline.blurb,
         }}
+        state={state}
       />
 
       <section aria-labelledby="acct-lrn-courses">
         <div className="acct-lrn__section-head">
           <h2 id="acct-lrn-courses" className="acct-lrn__section-title">
-            {copy.sectionCourses}
+            {learnCopy.sections.coursesTitle}
           </h2>
-          <span className="acct-lrn__section-meta">
-            {combinedCourses.length === 0
-              ? copy.sectionCoursesEmpty
-              : copy.sectionCoursesMeta(stats.metrics.activeCourses, stats.metrics.completedCourses)}
-          </span>
+          <span className="acct-lrn__section-meta">{coursesMeta}</span>
         </div>
         {combinedCourses.length === 0 ? (
           <div className="acct-lrn__empty">
-            <strong>{copy.emptyTitle}</strong>
-            {copy.emptyBody}
+            <strong>{learnCopy.empty.coursesTitle}</strong>
+            {learnCopy.empty.coursesBody}
           </div>
         ) : (
-          <LearnCourses courses={combinedCourses} locale={locale} />
+          <LearnCourses
+            courses={combinedCourses}
+            locale={helperLocale}
+            labels={{
+              ariaLabel: learnCopy.courses.ariaLabel,
+              completedAtTemplate: learnCopy.courses.completedAtTemplate,
+              progressPercentTemplate: learnCopy.courses.progressPercentTemplate,
+              statusDelimiter: learnCopy.courses.statusDelimiter,
+            }}
+          />
         )}
       </section>
 
       <section aria-labelledby="acct-lrn-extras">
         <div className="acct-lrn__section-head">
           <h2 id="acct-lrn-extras" className="acct-lrn__section-title">
-            {copy.sectionExtras}
+            {learnCopy.sections.extrasTitle}
           </h2>
-          <span className="acct-lrn__section-meta">{copy.sectionExtrasMeta}</span>
+          <span className="acct-lrn__section-meta">{learnCopy.sections.extrasMeta}</span>
         </div>
         <LearnExtras
           certificates={certificates}
           assignments={assignments}
           savedCourses={savedCourses}
           teacherApplication={teacherApplication}
-          locale={locale}
+          locale={helperLocale}
           learnOrigin={learnOrigin}
           labels={{
-            certificatesTitle: copy.certificatesTitle,
-            assignmentsTitle: copy.assignmentsTitle,
-            savedTitle: copy.savedTitle,
-            teachingTitle: copy.teachingTitle,
-            statusLabel: copy.statusLabel,
-            expertiseLabel: copy.expertiseLabel,
-            topicsLabel: copy.topicsLabel,
-            openApplication: copy.openApplication,
-            applyToTeach: copy.applyToTeach,
-            teachingEmpty: copy.teachingEmpty,
+            ariaLabel: learnCopy.extras.ariaLabel,
+            certificatesTitle: learnCopy.extras.certificatesTitle,
+            assignmentsTitle: learnCopy.extras.assignmentsTitle,
+            savedTitle: learnCopy.extras.savedTitle,
+            teachingTitle: learnCopy.extras.teachingTitle,
+            statusLabel: learnCopy.extras.statusLabel,
+            expertiseLabel: learnCopy.extras.expertiseLabel,
+            topicsLabel: learnCopy.extras.topicsLabel,
+            openApplicationCta: learnCopy.extras.openApplicationCta,
+            applyToTeachCta: learnCopy.extras.applyToTeachCta,
+            teachingEmpty: learnCopy.extras.teachingEmpty,
           }}
         />
       </section>
@@ -265,21 +266,24 @@ export default async function LearnPage() {
       <section aria-labelledby="acct-lrn-activity">
         <div className="acct-lrn__section-head">
           <h2 id="acct-lrn-activity" className="acct-lrn__section-title">
-            {copy.sectionActivity}
+            {learnCopy.sections.activityTitle}
           </h2>
-          <span className="acct-lrn__section-meta">
-            {activityRows.length === 0
-              ? copy.sectionActivityEmpty
-              : copy.sectionActivityMeta(activityRows.length)}
-          </span>
+          <span className="acct-lrn__section-meta">{activityMeta}</span>
         </div>
         {activityRows.length === 0 ? (
           <div className="acct-lrn__empty">
-            <strong>{copy.emptyActivityTitle}</strong>
-            {copy.emptyActivityBody}
+            <strong>{learnCopy.empty.activityTitle}</strong>
+            {learnCopy.empty.activityBody}
           </div>
         ) : (
-          <LearnActivity activity={activityRows} locale={locale} ariaLabel={copy.activityAriaLabel} />
+          <LearnActivity
+            activity={activityRows}
+            locale={helperLocale}
+            labels={{
+              ariaLabel: learnCopy.activity.ariaLabel,
+              fallbackTitle: learnCopy.activity.fallbackTitle,
+            }}
+          />
         )}
       </section>
     </div>

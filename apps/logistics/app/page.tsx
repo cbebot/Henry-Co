@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -9,9 +10,11 @@ import {
   TruckIcon,
 } from "lucide-react";
 import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { getLogisticsHomeCopy, type LogisticsHomeCopy } from "@henryco/i18n/server";
 import { PublicSpotlight } from "@henryco/ui/public-shell";
 import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
 import { LOGISTICS_FAQS } from "@/lib/logistics/content";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import {
   PortalHero,
   PortalSection,
@@ -25,8 +28,44 @@ import "@/components/portal/styles.css";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsHomeCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
+
+function applyTemplate(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) =>
+    Object.prototype.hasOwnProperty.call(values, key) ? values[key] : `{${key}}`,
+  );
+}
+
+function buildCoverageLine(
+  copy: LogisticsHomeCopy,
+  zoneNames: string[],
+): string | null {
+  if (!zoneNames.length) return null;
+  if (zoneNames.length === 1) {
+    return applyTemplate(copy.coverage.one, { zone: zoneNames[0]! });
+  }
+  if (zoneNames.length === 2) {
+    return applyTemplate(copy.coverage.two, {
+      first: zoneNames[0]!,
+      second: zoneNames[1]!,
+    });
+  }
+  const head = zoneNames.slice(0, -1).join(", ");
+  const tail = zoneNames.at(-1) ?? "";
+  return applyTemplate(copy.coverage.many, { head, tail });
+}
+
 export default async function LogisticsHomePage() {
   const logistics = getDivisionConfig("logistics");
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsHomeCopy(locale);
   const snapshot = await getPublicLogisticsSnapshot();
 
   /*
@@ -40,15 +79,7 @@ export default async function LogisticsHomePage() {
   const zoneNames = Array.from(
     new Set(activeZones.map((zone) => zone.name.trim()).filter(Boolean))
   );
-  const coverageLine = zoneNames.length
-    ? `Live in ${
-        zoneNames.length === 1
-          ? zoneNames[0]
-          : zoneNames.length === 2
-            ? `${zoneNames[0]} and ${zoneNames[1]}`
-            : `${zoneNames.slice(0, -1).join(", ")}, and ${zoneNames.at(-1)}`
-      }`
-    : null;
+  const coverageLine = buildCoverageLine(copy, zoneNames);
   const services = snapshot.services;
   const fastestEtaZone = activeZones.reduce<{ low: number; high: number } | null>(
     (acc, zone) => {
@@ -59,56 +90,70 @@ export default async function LogisticsHomePage() {
     null,
   );
 
+  const activeLanesTrend = (() => {
+    if (activeZones.length === 0) return copy.metrics.activeLanesAwaiting;
+    if (zoneNames.length === activeZones.length) {
+      return applyTemplate(
+        zoneNames.length === 1
+          ? copy.metrics.activeLanesAcrossOne
+          : copy.metrics.activeLanesAcrossMany,
+        { count: String(zoneNames.length) },
+      );
+    }
+    return applyTemplate(copy.metrics.activeLanesNamedToday, {
+      count: String(zoneNames.length),
+    });
+  })();
+
   const capabilityMetrics: PortalCapabilityMetric[] = [
     {
-      label: "Active lanes",
+      label: copy.metrics.activeLanesLabel,
       value: String(activeZones.length || 0),
-      trend:
-        activeZones.length === 0
-          ? "Awaiting first lane"
-          : zoneNames.length === activeZones.length
-            ? `Across ${zoneNames.length} ${zoneNames.length === 1 ? "zone" : "zones"}`
-            : `${zoneNames.length} named today`,
+      trend: activeLanesTrend,
       trendDirection: "pos",
       pulse: activeZones.length > 0,
       emphasis: true,
     },
     {
-      label: "Service tiers",
+      label: copy.metrics.serviceTiersLabel,
       value: String(services.length),
-      trend: "Same-day, scheduled, dispatch, inter-city",
+      trend: copy.metrics.serviceTiersTrend,
     },
     {
-      label: "Fastest window",
-      value: fastestEtaZone ? `${fastestEtaZone.low}–${fastestEtaZone.high}h` : "—",
-      trend: fastestEtaZone ? "Governed by lane confidence" : "Awaiting zone activation",
+      label: copy.metrics.fastestWindowLabel,
+      value: fastestEtaZone
+        ? `${fastestEtaZone.low}–${fastestEtaZone.high}h`
+        : copy.metrics.fastestWindowDash,
+      trend: fastestEtaZone
+        ? copy.metrics.fastestWindowTrendGoverned
+        : copy.metrics.fastestWindowTrendAwaiting,
     },
     {
-      label: "Operating hours",
+      label: copy.metrics.operatingHoursLabel,
       value: snapshot.settings.pickupHours.includes("•")
         ? (snapshot.settings.pickupHours.split("•")[1]?.trim() ?? snapshot.settings.pickupHours)
         : snapshot.settings.pickupHours,
       trend: snapshot.settings.pickupHours.includes("•")
-        ? (snapshot.settings.pickupHours.split("•")[0]?.trim() ?? "Daily")
-        : "Daily",
+        ? (snapshot.settings.pickupHours.split("•")[0]?.trim() ?? copy.metrics.operatingHoursDailyFallback)
+        : copy.metrics.operatingHoursDailyFallback,
     },
   ];
 
   const trustItems: PortalDividedListItem[] = [
     {
       icon: MapPin,
-      title: "Who it is for",
-      body: "Retail replenishment, founder-led brands, professional services, and HenryCo divisions that need predictable pickup and delivery at scale.",
+      title: copy.why.audienceTitle,
+      body: copy.why.audienceBody,
     },
     {
       icon: Radio,
-      title: "How tracking works",
+      title: copy.why.trackingTitle,
       body: snapshot.settings.trackingLookupHelp,
     },
     {
       icon: Shield,
-      title: "Proof and accountability",
-      body: "Milestones write to an immutable event log. Proof-of-delivery is part of the product, not an afterthought.",
+      title: copy.why.proofTitle,
+      body: copy.why.proofBody,
     },
   ];
 
@@ -120,105 +165,117 @@ export default async function LogisticsHomePage() {
     href: "/services",
   }));
 
+  const stepLabel = copy.flow.stepLabel;
   const processItems: PortalDividedListItem[] = [
     {
       icon: ClipboardCheck,
-      title: "Submit a quote or booking",
-      body: "Two addresses, a parcel profile, and a service tier. Governed pricing returns inline before you commit.",
-      status: { label: "Step 01", tone: "active" },
+      title: copy.flow.step01Title,
+      body: copy.flow.step01Body,
+      status: { label: `${stepLabel} 01`, tone: "active" },
     },
     {
       icon: TruckIcon,
-      title: "Dispatch assigns the lane",
-      body: "Routing assigns within the operating window; pickup milestone writes live to your timeline.",
-      status: { label: "Step 02", tone: "neutral" },
+      title: copy.flow.step02Title,
+      body: copy.flow.step02Body,
+      status: { label: `${stepLabel} 02`, tone: "neutral" },
     },
     {
       icon: Clock3,
-      title: "Live milestones, both sides",
-      body: "Sender and recipient see the same events. Updates land via your HenryCo account thread.",
-      status: { label: "Step 03", tone: "neutral" },
+      title: copy.flow.step03Title,
+      body: copy.flow.step03Body,
+      status: { label: `${stepLabel} 03`, tone: "neutral" },
     },
     {
       icon: CheckCircle2,
-      title: "Proof of delivery, captured",
-      body: "Recipient name, time, and capture method save to the shipment record — visible on the track page.",
-      status: { label: "Step 04", tone: "good" },
+      title: copy.flow.step04Title,
+      body: copy.flow.step04Body,
+      status: { label: `${stepLabel} 04`, tone: "good" },
     },
   ];
+
+  const faqEntries: { q: string; a: string }[] = [
+    { q: copy.faqItems.quoteQ, a: copy.faqItems.quoteA },
+    { q: copy.faqItems.trackingQ, a: copy.faqItems.trackingA },
+    { q: copy.faqItems.riderIssueQ, a: copy.faqItems.riderIssueA },
+    { q: copy.faqItems.repeatRoutesQ, a: copy.faqItems.repeatRoutesA },
+  ].slice(0, LOGISTICS_FAQS.length);
 
   return (
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[92rem] log-pf">
         <PortalHero
-          eyebrow="Pickup · Dispatch · Proof"
-          title="Calm last-mile, visible end to end."
-          blurb="Built for people and businesses that need honest ETAs, clean handoffs, and a customer experience that stays premium when operations get noisy."
+          eyebrow={copy.hero.eyebrow}
+          title={copy.hero.title}
+          blurb={copy.hero.blurb}
           coverage={coverageLine}
           pickupHours={snapshot.settings.pickupHours}
           capabilityMetrics={capabilityMetrics}
           ctas={[
-            { href: "/book", label: "Book a delivery", variant: "primary" },
-            { href: "/quote", label: "Request a quote", variant: "secondary" },
-            { href: "/track", label: "Track a shipment", variant: "ghost" },
+            { href: "/book", label: copy.hero.bookCta, variant: "primary" },
+            { href: "/quote", label: copy.hero.quoteCta, variant: "secondary" },
+            { href: "/track", label: copy.hero.trackCta, variant: "ghost" },
           ]}
         />
 
         <PortalSection
           id="log-pf-why"
-          kicker="Why teams switch"
-          title="One operating model. Honest by design."
+          kicker={copy.why.kicker}
+          title={copy.why.title}
         >
           <div className="log-pf__section-grid">
-            <p className="log-pf__section-body">
-              Governed rate cards, immutable milestones, and one shared account remove the
-              operational debt that quietly erodes premium experiences. Same dispatcher logic
-              for same-day, scheduled, dispatch, and inter-city — same calm proof trail.
-            </p>
+            <p className="log-pf__section-body">{copy.why.body}</p>
             <PortalDividedList items={trustItems} />
           </div>
         </PortalSection>
 
         <PortalSection
           id="log-pf-lanes"
-          kicker="Operating lanes"
-          title="Four lane shapes. One promise discipline."
-          meta={`${services.length} tiers · governed pricing`}
+          kicker={copy.lanes.kicker}
+          title={copy.lanes.title}
+          meta={applyTemplate(copy.lanes.metaTiersLabel, {
+            count: String(services.length),
+          })}
         >
           <PortalLaneGrid lanes={laneCards} />
         </PortalSection>
 
         <PortalSection
           id="log-pf-flow"
-          kicker="From request to doorstep"
-          title="Every step is visible, every milestone is timestamped."
+          kicker={copy.flow.kicker}
+          title={copy.flow.title}
         >
           <PortalDividedList items={processItems} />
         </PortalSection>
 
         <PublicSpotlight
           tone="contrast"
-          eyebrow="The HenryCo posture"
-          title="Operations stay calm because the platform makes it cheaper to do the right thing."
-          body="Governed rate cards, immutable milestones, and one shared account remove the operational debt that quietly erodes premium experiences."
+          eyebrow={copy.spotlight.eyebrow}
+          title={copy.spotlight.title}
+          body={copy.spotlight.body}
           aside={
             <ul className="space-y-4">
               <li className="border-l border-white/15 pl-4">
-                <p className="text-sm font-semibold text-white">Honest ETAs</p>
+                <p className="text-sm font-semibold text-white">
+                  {copy.spotlight.honestEtaTitle}
+                </p>
                 <p className="mt-1 text-sm leading-relaxed text-white/72">
-                  Promise windows come from real lane data, not optimistic guesses. Slippage gets logged and explained.
+                  {copy.spotlight.honestEtaBody}
                 </p>
               </li>
               <li className="border-l border-white/15 pl-4">
-                <p className="text-sm font-semibold text-white">Proof, not promises</p>
+                <p className="text-sm font-semibold text-white">
+                  {copy.spotlight.proofTitle}
+                </p>
                 <p className="mt-1 text-sm leading-relaxed text-white/72">
-                  Every handoff writes to an immutable event log. Proof-of-delivery is a product feature, not a ticket attachment.
+                  {copy.spotlight.proofBody}
                 </p>
               </li>
               <li className="border-l border-white/15 pl-4">
-                <p className="text-sm font-semibold text-white">One account, one bill</p>
+                <p className="text-sm font-semibold text-white">
+                  {copy.spotlight.accountTitle}
+                </p>
                 <p className="mt-1 text-sm leading-relaxed text-white/72">
-                  Customers reuse the HenryCo account they already trust. Operators reconcile in one place across every division.
+                  {copy.spotlight.accountBody}
                 </p>
               </li>
             </ul>
@@ -227,36 +284,34 @@ export default async function LogisticsHomePage() {
 
         <PortalSection
           id="log-pf-faq"
-          kicker="Questions before you book"
-          title="The honest answers, before the order."
-          meta={`Contact ${logistics.shortName}`}
+          kicker={copy.faq.kicker}
+          title={copy.faq.title}
+          meta={applyTemplate(copy.faq.metaContactPrefix, {
+            brand: logistics.shortName,
+          })}
         >
           <div className="log-pf__section-grid">
             <div>
-              <p className="log-pf__section-body">
-                If a lane, parcel profile, or contract pricing falls outside the FAQ, the
-                business desk picks it up. Quotes that need a human are not a different product —
-                they live on the same shipment record once they convert.
-              </p>
+              <p className="log-pf__section-body">{copy.faq.body}</p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <a
                   className="log-pf__cta log-pf__cta-secondary"
                   href={`mailto:${logistics.supportEmail}`}
                 >
-                  Email {logistics.shortName}
+                  {applyTemplate(copy.faq.emailPrefix, { brand: logistics.shortName })}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </a>
                 <a
                   className="log-pf__cta log-pf__cta-ghost"
                   href={getAccountUrl("/logistics")}
                 >
-                  Open account hub
+                  {copy.faq.accountCta}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </a>
               </div>
             </div>
             <dl className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
-              {LOGISTICS_FAQS.map((faq) => (
+              {faqEntries.map((faq) => (
                 <div key={faq.q} className="py-5">
                   <dt className="text-base font-semibold tracking-tight text-white">
                     {faq.q}

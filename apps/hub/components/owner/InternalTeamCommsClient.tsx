@@ -17,6 +17,7 @@ import {
   Square,
   X,
 } from "lucide-react";
+import type { HubOwnerCopy } from "@henryco/i18n";
 
 type Thread = {
   id: string;
@@ -97,7 +98,7 @@ async function fetchSignedUrl(path: string) {
   return payload.url;
 }
 
-function AttachmentPreview({ att }: { att: AttachmentRow }) {
+function AttachmentPreview({ att, downloadFileFallback }: { att: AttachmentRow; downloadFileFallback: string }) {
   const [url, setUrl] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -168,12 +169,12 @@ function AttachmentPreview({ att }: { att: AttachmentRow }) {
       className="mt-2 inline-flex items-center gap-2 rounded-lg border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-2 text-xs font-semibold text-[var(--owner-accent)]"
     >
       <FileText className="h-4 w-4" aria-hidden />
-      {att.file_name || "Download file"}
+      {att.file_name || downloadFileFallback}
     </a>
   );
 }
 
-export default function InternalTeamCommsClient() {
+export default function InternalTeamCommsClient({ copy }: { copy: HubOwnerCopy["internalTeamComms"] }) {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<MessageRow[]>([]);
@@ -796,8 +797,8 @@ export default function InternalTeamCommsClient() {
   if (loadingThreads && threads.length === 0) {
     return (
       <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)]">
-        <HenryCoActivityIndicator className="text-[var(--acct-gold)]" label="Loading channels" />
-        <span className="sr-only">Loading internal communications</span>
+        <HenryCoActivityIndicator className="text-[var(--acct-gold)]" label={copy.loadingChannels} />
+        <span className="sr-only">{copy.loadingChannelsSr}</span>
       </div>
     );
   }
@@ -807,11 +808,10 @@ export default function InternalTeamCommsClient() {
       <aside className="space-y-3 rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-3">
         <div className="rounded-[1.15rem] border border-[var(--acct-line)] bg-[var(--acct-bg)] p-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
-            Direct chat
+            {copy.directChatTitle}
           </p>
           <p className="mt-2 text-xs leading-5 text-[var(--acct-muted)]">
-            Search people in your workforce or owner roster (type at least 2 characters). Starting a chat only works for
-            authorized staff or owner profiles.
+            {copy.directChatDescription}
           </p>
           <div className="relative mt-3">
             <Search
@@ -822,13 +822,13 @@ export default function InternalTeamCommsClient() {
               type="search"
               value={memberQuery}
               onChange={(e) => setMemberQuery(e.target.value)}
-              placeholder="Search people…"
+              placeholder={copy.searchPeoplePlaceholder}
               className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] py-2.5 pl-9 pr-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
-              aria-label="Search people for direct chat"
+              aria-label={copy.searchPeopleAriaLabel}
             />
           </div>
           {loadingMembers ? (
-            <p className="mt-2 text-xs text-[var(--acct-muted)]">Searching…</p>
+            <p className="mt-2 text-xs text-[var(--acct-muted)]">{copy.searchingMembers}</p>
           ) : memberHits.length > 0 ? (
             <ul className="mt-2 max-h-40 space-y-1 overflow-y-auto rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] p-1">
               {memberHits.map((m) => (
@@ -838,7 +838,7 @@ export default function InternalTeamCommsClient() {
                     disabled={startingDm || m.can_dm === false}
                     title={
                       m.can_dm === false
-                        ? "Add this person to workforce or owner profiles before direct messaging."
+                        ? copy.dmDisabledTitle
                         : undefined
                     }
                     onClick={() => void startDirectChat(m.user_id)}
@@ -847,28 +847,28 @@ export default function InternalTeamCommsClient() {
                     <span className="font-semibold text-[var(--acct-ink)]">{m.label}</span>
                     <span className="text-[11px] text-[var(--acct-muted)]">
                       {m.email_hint || m.user_id.slice(0, 8)}… · {m.source}
-                      {m.can_dm === false ? " · roster only" : ""}
+                      {m.can_dm === false ? ` · ${copy.rosterOnlyNote}` : ""}
                     </span>
                   </button>
                 </li>
               ))}
             </ul>
           ) : debouncedMemberQuery.length >= 2 ? (
-            <p className="mt-2 text-xs text-[var(--acct-muted)]">No matches. Try another email fragment or name.</p>
+            <p className="mt-2 text-xs text-[var(--acct-muted)]">{copy.noMembersMatch}</p>
           ) : null}
         </div>
 
         <div className="rounded-[1.15rem] border border-[var(--acct-line)] bg-[var(--acct-bg)] p-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
-              Governance
+              {copy.governanceTitle}
             </p>
             <Link
               href="/owner/settings/comms"
               className="inline-flex items-center gap-1 rounded-lg border border-[var(--acct-line)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--acct-ink)] hover:bg-[var(--acct-surface)]"
             >
               <Settings2 className="h-3 w-3" aria-hidden />
-              Rules
+              {copy.governanceRulesLabel}
             </Link>
           </div>
           <div className="mt-3 space-y-2">
@@ -880,15 +880,13 @@ export default function InternalTeamCommsClient() {
                     : "border-[var(--acct-gold)]/30 bg-[var(--acct-gold-soft)] text-[var(--acct-ink)]"
                 }`}
               >
-                {health.ok
-                  ? "Internal comms storage, memberships, attachments, and presence checks are healthy."
-                  : `Provisioning is incomplete. Apply HenryCo Hub migrations through 20260408120000 and confirm the health probe passes before relying on this room set.`}
+                {health.ok ? copy.healthOk : copy.healthDegraded}
               </div>
             ) : null}
             <input
               value={roomTitle}
               onChange={(e) => setRoomTitle(e.target.value)}
-              placeholder="New room title"
+              placeholder={copy.newRoomTitlePlaceholder}
               className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-3 py-2.5 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
             />
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
@@ -896,16 +894,16 @@ export default function InternalTeamCommsClient() {
                 value={roomKind}
                 onChange={(e) => setRoomKind(e.target.value as Thread["kind"])}
                 className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-3 py-2.5 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
-                aria-label="Room type"
+                aria-label={copy.roomTypeAriaLabel}
               >
-                <option value="group">Group room</option>
-                <option value="broadcast">Broadcast room</option>
-                <option value="announcement">Announcement room</option>
+                <option value="group">{copy.roomTypeGroupOption}</option>
+                <option value="broadcast">{copy.roomTypeBroadcastOption}</option>
+                <option value="announcement">{copy.roomTypeAnnouncementOption}</option>
               </select>
               <input
                 value={roomDivision}
                 onChange={(e) => setRoomDivision(e.target.value)}
-                placeholder="Division slug"
+                placeholder={copy.divisionSlugPlaceholder}
                 className="rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-3 py-2.5 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
               />
             </div>
@@ -913,7 +911,7 @@ export default function InternalTeamCommsClient() {
               value={roomWelcome}
               onChange={(e) => setRoomWelcome(e.target.value)}
               rows={3}
-              placeholder="Optional opening message or governance note…"
+              placeholder={copy.roomWelcomePlaceholder}
               className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-3 py-2.5 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
             />
             <button
@@ -926,17 +924,17 @@ export default function InternalTeamCommsClient() {
                 <HenryCoActivityIndicator
                   size="sm"
                   className="text-[var(--market-noir,#1a1814)]"
-                  label="Creating room"
+                  label={copy.creatingRoomLabel}
                 />
               ) : (
-                "Create governed room"
+                copy.createRoomLabel
               )}
             </button>
           </div>
         </div>
 
         <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--acct-muted)]">
-          Channels
+          {copy.channelsLabel}
         </p>
         <div className="relative px-1">
           <Search
@@ -947,15 +945,14 @@ export default function InternalTeamCommsClient() {
             type="search"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search channels…"
+            placeholder={copy.searchChannelsPlaceholder}
             className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] py-2.5 pl-9 pr-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
-            aria-label="Search channels"
+            aria-label={copy.searchChannelsAriaLabel}
           />
         </div>
         {threads.length === 0 ? (
           <p className="px-2 text-sm text-[var(--acct-muted)]">
-            No channels match your search. If storage is not provisioned yet, apply HenryCo Hub Supabase migrations and
-            wait for the schema cache to refresh.
+            {copy.noChannelsMatch}
           </p>
         ) : (
           <ul className="space-y-1">
@@ -978,13 +975,13 @@ export default function InternalTeamCommsClient() {
                   </span>
                   {t.unread_count > 0 ? (
                     <span className="mt-1 inline-flex rounded-full bg-[var(--acct-gold)] px-2 py-0.5 text-[10px] font-semibold tabular-nums text-[var(--market-noir,#1a1814)]">
-                      {t.unread_count > 99 ? "99+" : t.unread_count} new
+                      {t.unread_count > 99 ? "99+" : t.unread_count} {copy.unreadBadgeSuffix}
                     </span>
                   ) : null}
                 </button>
                 <button
                   type="button"
-                  title={t.pinned ? "Unpin channel" : "Pin channel"}
+                  title={t.pinned ? copy.unpinChannelTitle : copy.pinChannelTitle}
                   onClick={(e) => void togglePin(t, e)}
                   className="shrink-0 rounded-xl border border-transparent px-2 text-[var(--acct-muted)] hover:border-[var(--acct-line)] hover:bg-[var(--acct-surface)]"
                 >
@@ -999,15 +996,14 @@ export default function InternalTeamCommsClient() {
       <section className="flex min-h-[420px] flex-col rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)]">
         <header className="border-b border-[var(--acct-line)] px-5 py-4">
           <h2 className="text-lg font-semibold text-[var(--acct-ink)]">
-            {activeThread?.title || "Internal chat"}
+            {activeThread?.title || copy.threadFallbackTitle}
           </h2>
           <p className="mt-1 text-xs text-[var(--acct-muted)]">
-            Owner-protected HQ surface. Use direct chat for 1:1 conversations and governed rooms for owner-wide updates.
-            Messages use Supabase row-level security, private storage, and realtime delivery with safe fallback to REST.
+            {copy.threadDescription}
           </p>
           {realtimeDegraded ? (
             <p className="mt-2 text-xs font-medium text-[var(--acct-gold)]">
-              Live updates degraded — history stays accurate; refresh if something looks stale.
+              {copy.realtimeDegraded}
             </p>
           ) : null}
           <div className="relative mt-3">
@@ -1019,13 +1015,13 @@ export default function InternalTeamCommsClient() {
               type="search"
               value={messageSearch}
               onChange={(e) => setMessageSearch(e.target.value)}
-              placeholder="Search in this thread…"
+              placeholder={copy.searchThreadPlaceholder}
               className="w-full rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] py-2.5 pl-9 pr-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
-              aria-label="Search messages in thread"
+              aria-label={copy.searchThreadAriaLabel}
             />
           </div>
           {searchLoading ? (
-            <p className="mt-2 text-xs text-[var(--acct-muted)]">Searching messages…</p>
+            <p className="mt-2 text-xs text-[var(--acct-muted)]">{copy.searchingMessages}</p>
           ) : searchHits.length > 0 ? (
             <ul className="mt-2 max-h-32 space-y-1 overflow-y-auto rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-2 text-xs">
               {searchHits.map((h) => (
@@ -1044,7 +1040,7 @@ export default function InternalTeamCommsClient() {
               ))}
             </ul>
           ) : debouncedMessageSearch.length >= 2 ? (
-            <p className="mt-2 text-xs text-[var(--acct-muted)]">No matches in this thread.</p>
+            <p className="mt-2 text-xs text-[var(--acct-muted)]">{copy.noThreadMatches}</p>
           ) : null}
         </header>
 
@@ -1054,7 +1050,7 @@ export default function InternalTeamCommsClient() {
           ) : null}
           {loadingMessages ? (
             <div className="flex justify-center py-12">
-              <HenryCoActivityIndicator className="text-[var(--acct-gold)]" label="Loading messages" />
+              <HenryCoActivityIndicator className="text-[var(--acct-gold)]" label={copy.loadingMessages} />
             </div>
           ) : (
             messages.map((m) => {
@@ -1072,7 +1068,7 @@ export default function InternalTeamCommsClient() {
                       {m.author_label || "Team"}
                       {m.author_id && m.author_id === selfUserId ? (
                         <span className="ml-2 text-[10px] font-normal uppercase tracking-wider text-[var(--acct-muted)]">
-                          You
+                          {copy.youLabel}
                         </span>
                       ) : null}
                     </span>
@@ -1090,7 +1086,7 @@ export default function InternalTeamCommsClient() {
                     <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[var(--acct-ink)]">{m.body}</p>
                   ) : null}
                   {list.map((att) => (
-                    <AttachmentPreview key={att.id} att={att} />
+                    <AttachmentPreview key={att.id} att={att} downloadFileFallback={copy.downloadFileFallback} />
                   ))}
                   <button
                     type="button"
@@ -1098,7 +1094,7 @@ export default function InternalTeamCommsClient() {
                     className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--owner-accent)]"
                   >
                     <Reply className="h-3.5 w-3.5" aria-hidden />
-                    Reply in thread
+                    {copy.replyInThread}
                   </button>
                 </article>
               );
@@ -1111,14 +1107,14 @@ export default function InternalTeamCommsClient() {
           {replyTo ? (
             <div className="mb-3 flex items-start justify-between gap-2 rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] px-3 py-2 text-xs text-[var(--acct-muted)]">
               <div>
-                <span className="font-semibold text-[var(--acct-ink)]">Replying to {replyTo.author_label}</span>
+                <span className="font-semibold text-[var(--acct-ink)]">{copy.replyingTo} {replyTo.author_label}</span>
                 <p className="mt-1 line-clamp-2">{replyTo.body}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setReplyTo(null)}
                 className="shrink-0 rounded-lg p-1 text-[var(--acct-muted)] hover:bg-[var(--acct-surface)]"
-                aria-label="Cancel reply"
+                aria-label={copy.cancelReplyAriaLabel}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -1145,7 +1141,7 @@ export default function InternalTeamCommsClient() {
               className="inline-flex items-center gap-2 rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-2 text-xs font-semibold text-[var(--acct-ink)] disabled:opacity-50"
             >
               <Paperclip className="h-4 w-4" aria-hidden />
-              Attach
+              {copy.attachLabel}
             </button>
             <button
               type="button"
@@ -1159,7 +1155,7 @@ export default function InternalTeamCommsClient() {
               className="inline-flex items-center gap-2 rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-2 text-xs font-semibold text-[var(--acct-ink)] disabled:opacity-50"
             >
               <ImageIcon className="h-4 w-4" aria-hidden />
-              Photo
+              {copy.photoLabel}
             </button>
             <button
               type="button"
@@ -1172,7 +1168,7 @@ export default function InternalTeamCommsClient() {
               }}
               className="inline-flex items-center gap-2 rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-3 py-2 text-xs font-semibold text-[var(--acct-ink)] disabled:opacity-50"
             >
-              Video
+              {copy.videoLabel}
             </button>
             <button
               type="button"
@@ -1185,12 +1181,12 @@ export default function InternalTeamCommsClient() {
               }`}
             >
               {isRecording ? <Square className="h-4 w-4 fill-current" aria-hidden /> : <Mic className="h-4 w-4" aria-hidden />}
-              {isRecording ? "Stop" : "Voice note"}
+              {isRecording ? copy.stopRecordingLabel : copy.voiceNoteLabel}
             </button>
             {uploadBusy ? (
               <span className="inline-flex items-center gap-2 text-xs text-[var(--acct-muted)]">
-                <HenryCoActivityIndicator size="sm" className="text-[var(--acct-gold)]" label="Uploading" />
-                Uploading…
+                <HenryCoActivityIndicator size="sm" className="text-[var(--acct-gold)]" label={copy.uploadingLabel} />
+                {copy.uploadingLabel}
               </span>
             ) : null}
           </div>
@@ -1199,7 +1195,7 @@ export default function InternalTeamCommsClient() {
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               rows={3}
-              placeholder="Write an internal message…"
+              placeholder={copy.messagePlaceholder}
               className="min-h-[88px] flex-1 resize-y rounded-xl border border-[var(--acct-line)] bg-[var(--acct-bg)] px-4 py-3 text-sm text-[var(--acct-ink)] outline-none focus:border-[var(--acct-gold)]"
             />
             <button
@@ -1209,11 +1205,11 @@ export default function InternalTeamCommsClient() {
               className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[var(--acct-gold)] px-6 text-sm font-semibold text-[var(--market-noir,#1a1814)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {sending ? (
-                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir,#1a1814)]" label="Sending" />
+                <HenryCoActivityIndicator size="sm" className="text-[var(--market-noir,#1a1814)]" label={copy.sendLabel} />
               ) : (
                 <Send className="h-4 w-4" aria-hidden />
               )}
-              Send
+              {copy.sendLabel}
             </button>
           </div>
         </footer>

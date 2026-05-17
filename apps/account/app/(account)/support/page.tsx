@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { LifeBuoy, Plus, MessageSquare, Clock, CheckCircle2, AlertCircle } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import {
+  formatAccountTemplate,
+  getAccountCopy,
+  translateSurfaceLabel,
+} from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { requireAccountUser } from "@/lib/auth";
 import { getSupportThreads } from "@/lib/account-data";
@@ -13,20 +17,20 @@ export const dynamic = "force-dynamic";
 
 export default async function SupportPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
-  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const copy = getAccountCopy(locale).support;
   const threads = await getSupportThreads(user.id);
   const statusInfo: Record<string, { icon: typeof Clock; color: string; label: string }> =
     {
-      open: { icon: AlertCircle, color: "var(--acct-blue)", label: t("Open") },
-      awaiting_reply: { icon: Clock, color: "var(--acct-orange)", label: t("Awaiting reply") },
-      in_progress: { icon: MessageSquare, color: "var(--acct-purple)", label: t("In progress") },
-      resolved: { icon: CheckCircle2, color: "var(--acct-green)", label: t("Resolved") },
-      closed: { icon: CheckCircle2, color: "var(--acct-muted)", label: t("Closed") },
+      open: { icon: AlertCircle, color: "var(--acct-blue)", label: copy.statusLabels.open },
+      awaiting_reply: { icon: Clock, color: "var(--acct-orange)", label: copy.statusLabels.awaitingReply },
+      in_progress: { icon: MessageSquare, color: "var(--acct-purple)", label: copy.statusLabels.inProgress },
+      resolved: { icon: CheckCircle2, color: "var(--acct-green)", label: copy.statusLabels.resolved },
+      closed: { icon: CheckCircle2, color: "var(--acct-muted)", label: copy.statusLabels.closed },
     };
   const quickHelp = [
-    { label: t("Help Center"), desc: t("Browse FAQs and guides"), href: "/support" },
-    { label: t("Contact Us"), desc: t("Email or phone support"), href: "/support/new" },
-    { label: t("Live Chat"), desc: t("Chat with our team"), href: "/support/new" },
+    { label: copy.quickHelp.helpCenterLabel, desc: copy.quickHelp.helpCenterDesc, href: "/support" },
+    { label: copy.quickHelp.contactLabel, desc: copy.quickHelp.contactDesc, href: "/support/new" },
+    { label: copy.quickHelp.liveChatLabel, desc: copy.quickHelp.liveChatDesc, href: "/support/new" },
   ];
   const openCount = threads.filter((thread: Record<string, unknown>) => {
     const status = String(thread.status || "");
@@ -40,22 +44,26 @@ export default async function SupportPage() {
     <div className="space-y-6 acct-fade-in">
       <RouteLiveRefresh intervalMs={12000} />
       <PageHeader
-        title={t("Support")}
-        description={t("Get help with any HenryCo service.")}
+        title={copy.hero.title}
+        description={copy.hero.description}
         icon={LifeBuoy}
         actions={
           <Link href="/support/new" className="acct-button-primary rounded-xl">
-            <Plus size={16} /> {t("New request")}
+            <Plus size={16} /> {copy.hero.newRequestCta}
           </Link>
         }
       />
 
       <div className="acct-card p-4">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="acct-chip acct-chip-blue text-[0.65rem]">{openCount} {t("open request(s)")}</span>
-          <span className="acct-chip acct-chip-red text-[0.65rem]">{urgentCount} {t("escalated")}</span>
+          <span className="acct-chip acct-chip-blue text-[0.65rem]">
+            {formatAccountTemplate(copy.summary.openRequestsTemplate, { count: openCount })}
+          </span>
+          <span className="acct-chip acct-chip-red text-[0.65rem]">
+            {formatAccountTemplate(copy.summary.escalatedTemplate, { count: urgentCount })}
+          </span>
           <span className="text-xs text-[var(--acct-muted)]">
-            {t("Every message is tracked. If triage marks risk or urgency, staff gets a prioritized queue automatically.")}
+            {copy.summary.escalationNote}
           </span>
         </div>
       </div>
@@ -77,27 +85,27 @@ export default async function SupportPage() {
       </div>
 
       <section>
-        <p className="acct-kicker mb-3">{t("Your requests")}</p>
+        <p className="acct-kicker mb-3">{copy.threads.sectionKicker}</p>
         {threads.length === 0 ? (
           <EmptyState
             icon={MessageSquare}
-            title={t("No support requests")}
-            description={t("You haven't created any support requests yet. We're here to help if you need anything.")}
+            title={copy.threads.emptyTitle}
+            description={copy.threads.emptyDescription}
             action={
               <Link href="/support/new" className="acct-button-primary rounded-xl">
-                <Plus size={16} /> {t("Create request")}
+                <Plus size={16} /> {copy.threads.createCta}
               </Link>
             }
           />
         ) : (
           <div className="acct-card divide-y divide-[var(--acct-line)]">
-            {threads.map((t: Record<string, string>) => {
-              const si = statusInfo[t.status] || statusInfo.open;
+            {threads.map((thread: Record<string, string>) => {
+              const si = statusInfo[thread.status] || statusInfo.open;
               const StatusIcon = si.icon;
               return (
                 <Link
-                  key={t.id}
-                  href={`/support/${t.id}`}
+                  key={thread.id}
+                  href={`/support/${thread.id}`}
                   className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-[var(--acct-surface)]"
                 >
                   <div
@@ -107,10 +115,10 @@ export default async function SupportPage() {
                     <StatusIcon size={18} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{t.subject}</p>
+                    <p className="text-sm font-semibold text-[var(--acct-ink)]">{thread.subject}</p>
                     <p className="text-xs text-[var(--acct-muted)]">
-                      {t.division ? `${translateSurfaceLabel(locale, divisionLabel(t.division))} · ` : ""}
-                      {si.label} · {timeAgoLocalized(t.updated_at, locale)}
+                      {thread.division ? `${translateSurfaceLabel(locale, divisionLabel(thread.division))} · ` : ""}
+                      {si.label} · {timeAgoLocalized(thread.updated_at, locale)}
                     </p>
                   </div>
                 </Link>

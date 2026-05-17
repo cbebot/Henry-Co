@@ -1,5 +1,5 @@
 import type { AppLocale } from "@henryco/i18n/server";
-import { translateSurfaceLabel } from "@henryco/i18n";
+import { deepMergeMessages, translateSurfaceLabel, type DeepPartial } from "@henryco/i18n";
 
 export type MarketplacePublicCopy = {
   home: {
@@ -78,6 +78,432 @@ export type MarketplacePublicCopy = {
   workspace: {
     kicker: string;
     operatorKicker: string;
+  };
+  cart: {
+    pageIntro: {
+      kicker: string;
+      title: string;
+      description: string;
+    };
+    emptyState: {
+      title: string;
+      body: string;
+      ctaLabel: string;
+    };
+  };
+  track: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      titlePrefix: string;
+      body: string;
+      orderValueLabel: string;
+      paymentLabel: string;
+      payoutControlLabel: string;
+      payoutFrozen: string;
+      payoutEscrowActive: string;
+    };
+    paymentRecord: {
+      kicker: string;
+      walletBody: string;
+      proofBody: string;
+      awaitingBody: string;
+      methodLabel: string;
+      statusLabel: string;
+      proofLabel: string;
+      viewProof: string;
+      walletDebit: string;
+      pending: string;
+    };
+    timeline: {
+      kicker: string;
+      title: string;
+    };
+    segments: {
+      kicker: string;
+      title: string;
+      henrycoSegment: string;
+      fulfillmentLabel: string;
+      trackingLabel: string;
+      payoutLabel: string;
+      trackingPending: string;
+    };
+    completion: {
+      kicker: string;
+      body: string;
+      confirmCta: string;
+    };
+    help: {
+      kicker: string;
+      title: string;
+      body: string;
+      openSupportCta: string;
+      viewAllOrdersCta: string;
+    };
+  };
+  deals: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    pageIntro: {
+      kicker: string;
+      title: string;
+      description: string;
+    };
+    sectionLabel: string;
+    listEyebrow: string;
+    refreshNote: string;
+    discountBadgePrefix: string;
+    emptyState: {
+      title: string;
+      body: string;
+    };
+  };
+  category: {
+    hero: {
+      kicker: string;
+      searchCta: string;
+      trustCta: string;
+      quickFiltersLabel: string;
+    };
+    stats: {
+      activeListingsLabel: string;
+    };
+    collectionsRail: {
+      kicker: string;
+      title: string;
+    };
+    catalog: {
+      kicker: string;
+      title: string;
+      openSearch: string;
+    };
+    metadata: {
+      titleTemplate: string;
+      descriptionTemplate: string;
+      fallbackDescription: string;
+    };
+  };
+  brand: {
+    eyebrow: string;
+    bodyFallback: string;
+    searchCta: string;
+    trustCta: string;
+    stats: {
+      activeProducts: string;
+      listingsReviewed: string;
+      listingsReviewedValue: string;
+      buyerProtection: string;
+      buyerProtectionValue: string;
+    };
+    liveKicker: string;
+    openFullSearch: string;
+    metadataTitle: string;
+    metadataDescription: string;
+  };
+  store: {
+    metadataTitle: string;
+    metadataDescription: string;
+    metadataDescriptionFallback: string;
+    hero: {
+      eyebrow: string;
+      bodyFallback: string;
+    };
+    stats: {
+      trustScore: string;
+      responseSla: string;
+      responseSlaSuffix: string;
+      followers: string;
+    };
+    standards: {
+      eyebrow: string;
+    };
+    support: {
+      eyebrow: string;
+      contactLinkLabel: string;
+      contactBodySuffix: string;
+      ctaLabel: string;
+      subjectTemplate: string;
+    };
+    reviews: {
+      eyebrow: string;
+      verifiedPurchase: string;
+      review: string;
+    };
+    catalog: {
+      kicker: string;
+      title: string;
+      exploreLink: string;
+      emptyTitle: string;
+      emptyBody: string;
+    };
+  };
+  sell: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      body: string;
+      primaryCta: string;
+      secondaryCta: string;
+      signInCta: string;
+      highlights: Array<{ label: string; value: string }>;
+    };
+    advantages: {
+      kicker: string;
+      items: Array<{ title: string; body: string }>;
+    };
+    onboarding: {
+      kicker: string;
+      stepLabel: string;
+      steps: Array<{ step: string; title: string; body: string }>;
+      callout: {
+        eyebrow: string;
+        body: string;
+      };
+    };
+    plans: {
+      kicker: string;
+      title: string;
+      feeLabel: string;
+      payoutLabel: string;
+      includedLabel: string;
+      includedSuffix: string;
+      featuredLabel: string;
+      featuredCurrencyPrefix: string;
+    };
+    trustTiers: {
+      kicker: string;
+      title: string;
+    };
+    closing: {
+      kicker: string;
+      title: string;
+      body: string;
+      primaryCta: string;
+      secondaryCta: string;
+    };
+  };
+  sellPricing: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      body: string;
+      primaryCta: string;
+      secondaryCta: string;
+      statsLabels: {
+        planTiers: string;
+        trustTiers: string;
+        featuredSlots: string;
+      };
+      featuredSlotsValue: string;
+    };
+    plans: {
+      kicker: string;
+      feeLabel: string;
+      payoutLabel: string;
+      includedLabel: string;
+      includedSuffix: string;
+      extraListingLabel: string;
+      featuredSlotLabel: string;
+      currencyPrefix: string;
+      ctaPartner: string;
+      ctaTemplate: string;
+    };
+    economics: {
+      kicker: string;
+      title: string;
+      items: string[];
+    };
+    trustTiers: {
+      kicker: string;
+      title: string;
+    };
+    closing: {
+      kicker: string;
+      title: string;
+      body: string;
+      primaryCta: string;
+      secondaryCta: string;
+    };
+  };
+  help: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      body: string;
+    };
+    stillNeedHelp: {
+      kicker: string;
+      title: string;
+      body: string;
+      ctaLabel: string;
+    };
+  };
+  trust: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      body: string;
+      pillars: Array<{ label: string; value: string }>;
+    };
+    guardrails: {
+      kicker: string;
+      items: Array<{ title: string; body: string }>;
+    };
+    sellerLadder: {
+      kicker: string;
+      title: string;
+    };
+    policySurfaces: {
+      kicker: string;
+      title: string;
+    };
+    ecosystem: {
+      kicker: string;
+    };
+  };
+  collections: {
+    metadata: {
+      titleTemplate: string;
+      descriptionTemplate: string;
+      fallbackDescription: string;
+    };
+    hero: {
+      primaryCta: string;
+      secondaryCta: string;
+    };
+    sidebar: {
+      itemsLabel: string;
+      editedByLabel: string;
+      editedByValue: string;
+      buyerProtectionLabel: string;
+      buyerProtectionValue: string;
+    };
+    rail: {
+      kicker: string;
+      itemsSuffix: string;
+    };
+  };
+  policies: {
+    metadata: {
+      titleTemplate: string;
+      descriptionTemplate: string;
+      fallbackTitle: string;
+      fallbackDescription: string;
+    };
+    hero: {
+      backToTrust: string;
+      openSupport: string;
+    };
+    details: {
+      coverageLabel: string;
+      enforcementLabel: string;
+      updatedLabel: string;
+    };
+    coverageBySlug: {
+      buyerProtection: string;
+      sellerPolicy: string;
+      fallback: string;
+    };
+    enforcementBySlug: {
+      buyerProtection: string;
+      sellerPolicy: string;
+      fallback: string;
+    };
+    updatedBySlug: {
+      buyerProtection: string;
+      sellerPolicy: string;
+      fallback: string;
+    };
+    provisions: {
+      kicker: string;
+    };
+    ecosystem: {
+      kicker: string;
+      openLabel: string;
+    };
+  };
+  product: {
+    metadata: {
+      titleTemplate: string;
+      descriptionTemplate: string;
+      fallbackDescription: string;
+    };
+    fulfillment: {
+      sellerTrustLabel: string;
+      sellerTrustValueTemplate: string;
+      sellerTrustValueFallback: string;
+      availabilityLabel: string;
+      availabilityValueSingular: string;
+      availabilityValuePlural: string;
+      fulfillmentLabel: string;
+      paymentLabel: string;
+      paymentValueCod: string;
+      paymentValueVerified: string;
+    };
+    price: {
+      label: string;
+      leadTimeLabel: string;
+    };
+    safety: {
+      kicker: string;
+      stockTemplate: string;
+      codEligible: string;
+      codFallback: string;
+      vendorLinkedTemplate: string;
+      vendorPending: string;
+      reviewsTemplateSingular: string;
+      reviewsTemplatePlural: string;
+    };
+    detail: {
+      kicker: string;
+      title: string;
+      deliverySummaryTitle: string;
+      deliveryFallback: string;
+      deliveryTail: string;
+      specsTitle: string;
+      passportTitle: string;
+      visitVendorTemplate: string;
+      exploreCategoryTemplate: string;
+      seeBrandTemplate: string;
+    };
+    related: {
+      kicker: string;
+      title: string;
+      body: string;
+    };
+    reviews: {
+      kicker: string;
+      title: string;
+      verifiedPurchase: string;
+      reviewLabel: string;
+    };
+    rail: {
+      kicker: string;
+      headline: string;
+      caption: string;
+      ctaLabel: string;
+    };
   };
 };
 
@@ -208,9 +634,499 @@ const EN: MarketplacePublicCopy = {
     kicker: "Workspace",
     operatorKicker: "Operator Surface",
   },
+  cart: {
+    pageIntro: {
+      kicker: "Cart",
+      title: "A premium basket with faster edits and cleaner split-order clarity.",
+      description:
+        "The cart now keeps vendor grouping visible, updates quantity quickly, and stays connected to the mini-cart drawer so buyers never lose context when they are close to checkout.",
+    },
+    emptyState: {
+      title: "Your cart is still empty.",
+      body: "Quick-add from product cards, save items for later, and the basket will stay updated in the mini-cart drawer and the full cart without a hard refresh.",
+      ctaLabel: "Browse products",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Order tracking — HenryCo Marketplace",
+      description:
+        "Track each vendor segment, payment update, and fulfillment milestone in one place. Escrow stays on until delivery confirms.",
+    },
+    hero: {
+      kicker: "Order tracking",
+      titlePrefix: "Tracking",
+      body: "Split-order clarity stays visible here: every vendor segment, payment update, and fulfillment milestone gets its own row so support and buyer expectations stay aligned.",
+      orderValueLabel: "Order value",
+      paymentLabel: "Payment",
+      payoutControlLabel: "Payout control",
+      payoutFrozen: "Frozen",
+      payoutEscrowActive: "Escrow active",
+    },
+    paymentRecord: {
+      kicker: "Payment record",
+      walletBody: "Wallet balance was debited and the order is held in escrow for fulfillment.",
+      proofBody: "Transfer proof is attached for HenryCo finance review.",
+      awaitingBody: "Payment is waiting for finance evidence or delivery reconciliation.",
+      methodLabel: "Method",
+      statusLabel: "Status",
+      proofLabel: "Proof",
+      viewProof: "View proof",
+      walletDebit: "Wallet debit",
+      pending: "Pending",
+    },
+    timeline: {
+      kicker: "Timeline",
+      title: "Customer-visible milestones, in order.",
+    },
+    segments: {
+      kicker: "Vendor segments",
+      title: "Each vendor stays accountable to its own dispatch.",
+      henrycoSegment: "HenryCo segment",
+      fulfillmentLabel: "Fulfillment",
+      trackingLabel: "Tracking",
+      payoutLabel: "Payout",
+      trackingPending: "Pending",
+    },
+    completion: {
+      kicker: "Completion confirmation",
+      body: "Confirm completion once the order is satisfactory. HenryCo only releases seller payout after delivery is confirmed or the order qualifies for auto-release.",
+      confirmCta: "Confirm completion",
+    },
+    help: {
+      kicker: "Need help?",
+      title: "Disputes, refunds, and delivery concerns route through one thread.",
+      body: "Open a support thread with this order number attached so the agent sees the full timeline and vendor split without you re-typing it.",
+      openSupportCta: "Open support thread",
+      viewAllOrdersCta: "View all orders",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Verified deals — HenryCo Marketplace",
+      description:
+        "Discounts filtered for trust, stock certainty, and seller accountability. Only verified listings with clean trust signals appear on the HenryCo deals page.",
+    },
+    pageIntro: {
+      kicker: "Verified Deals",
+      title: "Discounts filtered for trust, stock certainty, and seller accountability.",
+      description:
+        "Deals are only surfaced when the listing quality, seller trust passport, and stock status are clean enough to protect conversion and reduce buyer regret.",
+    },
+    sectionLabel: "Verified deals",
+    listEyebrow: "Verified deals",
+    refreshNote: "Updated regularly",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "No verified deals right now",
+      body: "Verified discounts roll in as sellers list them. Check back soon.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Category edit",
+      searchCta: "Search this category",
+      trustCta: "Review trust standards",
+      quickFiltersLabel: "Quick filters",
+    },
+    stats: {
+      activeListingsLabel: "Active listings",
+    },
+    collectionsRail: {
+      kicker: "Curated rails",
+      title: "Collections that shorten decision-making.",
+    },
+    catalog: {
+      kicker: "Category catalog",
+      title: "Premium products, tighter hierarchy.",
+      openSearch: "Open full search",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Explore verified products in {category} on HenryCo Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout.",
+      fallbackDescription:
+        "Browse a curated category on HenryCo Marketplace with trust signals, delivery clarity, and seller passports surfaced before checkout.",
+    },
+  },
+  brand: {
+    eyebrow: "Brand",
+    bodyFallback: "A verified store on HenryCo Marketplace with trust signals, delivery clarity, and seller passport details surfaced before checkout.",
+    searchCta: "Search this brand",
+    trustCta: "Trust standards",
+    stats: {
+      activeProducts: "Active products",
+      listingsReviewed: "Listings reviewed",
+      listingsReviewedValue: "Trust passport visible per item",
+      buyerProtection: "Buyer protection",
+      buyerProtectionValue: "Escrowed checkout",
+    },
+    liveKicker: "Live from {brand}",
+    openFullSearch: "Open full search",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Explore verified products from {brand} on HenryCo Marketplace, with trust signals, delivery clarity, and seller passports surfaced before checkout.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Browse verified products from {store} on HenryCo Marketplace, with trust signals, delivery clarity, and the seller passport surfaced before checkout.",
+    metadataDescriptionFallback:
+      "A verified store on HenryCo Marketplace with trust signals, delivery clarity, and a seller passport surfaced before checkout.",
+    hero: {
+      eyebrow: "Store passport",
+      bodyFallback:
+        "A verified seller on HenryCo Marketplace with trust signals, delivery clarity, and a transparent passport surfaced before every checkout.",
+    },
+    stats: {
+      trustScore: "Trust score",
+      responseSla: "Response SLA",
+      responseSlaSuffix: "h",
+      followers: "Followers",
+    },
+    standards: {
+      eyebrow: "Store standards",
+    },
+    support: {
+      eyebrow: "Support",
+      contactLinkLabel: "Use HenryCo Marketplace to contact this store",
+      contactBodySuffix:
+        " — messages are logged and tied to your order reference so every update stays in one place.",
+      ctaLabel: "Contact this store",
+      subjectTemplate: "Question for {store}",
+    },
+    reviews: {
+      eyebrow: "Recent reviews",
+      verifiedPurchase: "Verified purchase",
+      review: "Review",
+    },
+    catalog: {
+      kicker: "Store catalog",
+      title: "Everything currently live from this store.",
+      exploreLink: "Explore more verified listings",
+      emptyTitle: "No live listings just yet",
+      emptyBody: "Approved products from this store will appear here as they go live.",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Sell on HenryCo — selective marketplace for trust-led sellers",
+      description:
+        "Apply to sell on HenryCo Marketplace: trust-led positioning, premium storefronts, and a unified workspace for orders, payouts, and support.",
+    },
+    hero: {
+      kicker: "Sell on HenryCo",
+      title: "Selective by design. Built for sellers who lead on trust.",
+      body: "HenryCo Marketplace favours sellers who care about presentation, reliable fulfillment, and honest buyer protection. The bar is explicit on this page; the seller application continues inside your HenryCo account.",
+      primaryCta: "Open seller application",
+      secondaryCta: "See seller pricing",
+      signInCta: "Sign in with HenryCo account",
+      highlights: [
+        { label: "Selection", value: "Manual review, not pay-to-list" },
+        { label: "Storefront", value: "Trust passport visible to buyers" },
+        { label: "Workspace", value: "Orders, payouts, support unified" },
+      ],
+    },
+    advantages: {
+      kicker: "Why stronger sellers win here",
+      items: [
+        { title: "Trust-led positioning", body: "Your store gets a visible trust passport instead of being buried in low-quality marketplace clutter." },
+        { title: "Better storefront quality", body: "Editorial rails, calmer search, and cleaner product cards help quality stores convert faster." },
+        { title: "Sharper operations", body: "Payouts, orders, support, moderation, and stock alerts stay visible in one cleaner workspace." },
+      ],
+    },
+    onboarding: {
+      kicker: "How onboarding works",
+      stepLabel: "Step",
+      steps: [
+        { step: "01", title: "Start the seller application", body: "Open the application from inside your HenryCo account — drafts save automatically while you assemble details." },
+        { step: "02", title: "Add business details", body: "Business name, store profile, product focus, and any verification documents that explain how you fulfil orders." },
+        { step: "03", title: "Application review", body: "The HenryCo team reviews documents, trust signals, and store readiness — not just a paid badge." },
+        { step: "04", title: "Vendor onboarding", body: "Approved sellers continue into vendor onboarding where pricing, posting fees, payout windows, and policy rules stay visible before publishing opens." },
+      ],
+      callout: {
+        eyebrow: "A cleaner seller application",
+        body: "Seller registration stays inside your account so business details, review status, and approval updates remain private and easy to follow.",
+      },
+    },
+    plans: {
+      kicker: "Plan economics",
+      title: "Tiers stated up front, not after publishing.",
+      feeLabel: "Fee",
+      payoutLabel: "Payout",
+      includedLabel: "Included",
+      includedSuffix: "listings",
+      featuredLabel: "Featured",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Trust tiers change privileges",
+      title: "Earn faster payouts, larger storefronts, and policy advantages.",
+    },
+    closing: {
+      kicker: "Move forward",
+      title: "Apply, then watch the application status from your account.",
+      body: "Approval unlocks vendor onboarding. Pricing, posting fees, and payout windows are visible before you publish — no contract surprises later.",
+      primaryCta: "Start application",
+      secondaryCta: "Visit vendor workspace",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Seller pricing — HenryCo Marketplace",
+      description:
+        "Plan fees, listing fees, featured-slot fees, transaction commission, and payout processing are all stated up front — before you publish inventory, not after.",
+    },
+    hero: {
+      kicker: "Seller pricing",
+      title: "Clear economics. No hidden fees.",
+      body: "Plan fees, listing fees, featured-slot fees, transaction commission, and payout processing are all stated up front — before you publish inventory, not after.",
+      primaryCta: "Apply as seller",
+      secondaryCta: "Back to seller overview",
+      statsLabels: {
+        planTiers: "Plan tiers",
+        trustTiers: "Trust tiers",
+        featuredSlots: "Featured slots",
+      },
+      featuredSlotsValue: "Reviewed individually",
+    },
+    plans: {
+      kicker: "Plans at a glance",
+      feeLabel: "Fee",
+      payoutLabel: "Payout",
+      includedLabel: "Included",
+      includedSuffix: "listings",
+      extraListingLabel: "Extra listing",
+      featuredSlotLabel: "Featured slot",
+      currencyPrefix: "NGN",
+      ctaPartner: "Contact for partner terms",
+      ctaTemplate: "Start with {plan}",
+    },
+    economics: {
+      kicker: "How HenryCo makes money",
+      title: "Stated up front, deducted in the open.",
+      items: [
+        "Transaction commissions are deducted from each vendor order-group settlement before payout release.",
+        "Posting fees apply after the included listing allowance is exhausted for the seller's active plan.",
+        "Featured placement is a separate paid request and stays subject to quality and trust review.",
+        "Payout processing fees are deducted inside the seller settlement snapshot, not later by surprise.",
+        "Studio, Learn, and Logistics value-added services create additional seller revenue lanes.",
+        "Operator-controlled campaigns and sponsored slots remain auditable and not self-serve chaos.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Trust-tier payout timing",
+      title: "Better behaviour earns shorter holds.",
+    },
+    closing: {
+      kicker: "Ready to apply?",
+      title: "Application opens in your HenryCo account.",
+      body: "You can save the draft and return — pricing visible here applies once vendor onboarding completes.",
+      primaryCta: "Apply as seller",
+      secondaryCta: "Trust standards",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Help centre — HenryCo Marketplace",
+      description:
+        "Browse the answers buyers and sellers ask most. If you do not find what you need, open a support ticket and a person on the team will read it.",
+    },
+    hero: {
+      kicker: "Help centre",
+      title: "Find an answer in seconds — or talk to a person.",
+      body: "Search the topics most buyers and sellers ask about. If you do not find what you need, open a support ticket from the bottom of this page and a person on the team will read it.",
+    },
+    stillNeedHelp: {
+      kicker: "Still need help",
+      title: "Open a support ticket and a person will read it.",
+      body: "Tickets keep the full context attached — the order, the vendor, the dispute history — so the team works through the issue without you re-typing it on every reply.",
+      ctaLabel: "Open a support ticket",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Trust & safety — HenryCo Marketplace",
+      description:
+        "Trust governs what a seller can do, how money moves, and how moderation responds. Seller tiers, escrow holds, disputes, and payout release all leave a server-side paper trail.",
+    },
+    hero: {
+      kicker: "Trust & safety",
+      title: "Visible before checkout. Enforced after it.",
+      body: "Trust governs what a seller can do, how money moves, and how moderation responds. Seller tiers, buyer risk, listing scoring, escrow holds, disputes, and payout release all leave a server-side paper trail.",
+      pillars: [
+        { label: "Money movement", value: "Escrowed, released after checks" },
+        { label: "Reviews", value: "Server-logged, dispute-traceable" },
+        { label: "Tiers", value: "Earned, revocable" },
+      ],
+    },
+    guardrails: {
+      kicker: "Four guardrails",
+      items: [
+        {
+          title: "Trust passports",
+          body: "Every store and product surfaces verification level, SLA, dispute rate, payout readiness, and fulfillment posture.",
+        },
+        {
+          title: "Escrow control",
+          body: "Buyer funds are held by HenryCo first, then move into releasable payout only after delivery and trust checks clear.",
+        },
+        {
+          title: "Anti-fraud review",
+          body: "Off-platform payment steering, duplicate media, listing velocity spikes, and risky payout patterns route into queue visibility.",
+        },
+        {
+          title: "Audit trails",
+          body: "Approvals, rejections, payout actions, dispute decisions, and automation sweeps are logged server-side.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Seller trust ladder",
+      title: "Tiers earned through behaviour, not paid for.",
+    },
+    policySurfaces: {
+      kicker: "Policy surfaces",
+      title: "The standards we hold ourselves to.",
+    },
+    ecosystem: {
+      kicker: "Ecosystem trust reinforcement",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Explore {collection} on HenryCo Marketplace — a curated rail of verified products with trust signals, delivery clarity, and seller passports surfaced before checkout.",
+      fallbackDescription:
+        "A curated collection on HenryCo Marketplace with verified products, trust signals, delivery clarity, and seller passports surfaced before checkout.",
+    },
+    hero: {
+      primaryCta: "Open full search",
+      secondaryCta: "Trust standards",
+    },
+    sidebar: {
+      itemsLabel: "Items in collection",
+      editedByLabel: "Edited by",
+      editedByValue: "Marketplace operations",
+      buyerProtectionLabel: "Buyer protection",
+      buyerProtectionValue: "Escrowed checkout",
+    },
+    rail: {
+      kicker: "What’s in the rail",
+      itemsSuffix: "items",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} on HenryCo Marketplace — server-logged enforcement, escrow controls, and trust posture surfaced before checkout.",
+      fallbackTitle: "Marketplace policy — HenryCo Marketplace",
+      fallbackDescription:
+        "A HenryCo Marketplace policy — server-logged enforcement, escrow controls, and trust posture surfaced before checkout.",
+    },
+    hero: {
+      backToTrust: "Back to trust standards",
+      openSupport: "Open support thread",
+    },
+    details: {
+      coverageLabel: "Coverage",
+      enforcementLabel: "Enforcement",
+      updatedLabel: "Updated",
+    },
+    coverageBySlug: {
+      buyerProtection: "Buyers",
+      sellerPolicy: "Sellers",
+      fallback: "Marketplace participants",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Server-held payments + dispute freeze",
+      sellerPolicy: "Trust-tier review + payout reserve",
+      fallback: "Server-logged trail",
+    },
+    updatedBySlug: {
+      buyerProtection: "On payment + dispute revisions",
+      sellerPolicy: "On seller standards revisions",
+      fallback: "On policy revisions",
+    },
+    provisions: {
+      kicker: "Policy provisions",
+    },
+    ecosystem: {
+      kicker: "Connected marketplace controls",
+      openLabel: "Open",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} on HenryCo Marketplace — verified stock, trusted delivery, and seller passport visible before checkout.",
+      fallbackDescription:
+        "A verified HenryCo Marketplace listing with trust signals, delivery clarity, and seller passport surfaced before checkout.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Seller trust",
+      sellerTrustValueTemplate: "{vendor} passport visible",
+      sellerTrustValueFallback: "Seller passport pending",
+      availabilityLabel: "Availability",
+      availabilityValueSingular: "{count} unit in current stock",
+      availabilityValuePlural: "{count} units in current stock",
+      fulfillmentLabel: "Fulfillment",
+      paymentLabel: "Payment",
+      paymentValueCod: "COD or verified transfer",
+      paymentValueVerified: "Verified transfer flow",
+    },
+    price: {
+      label: "Price",
+      leadTimeLabel: "Lead time",
+    },
+    safety: {
+      kicker: "Why this listing feels safer",
+      stockTemplate: "{count} units currently visible to inventory",
+      codEligible: "Cash on delivery eligible where supported",
+      codFallback: "Manual verification flow available",
+      vendorLinkedTemplate: "{vendor} seller passport is linked directly from this page",
+      vendorPending: "Vendor trust surface is still pending linkage",
+      reviewsTemplateSingular: "{count} review at {rating} average rating",
+      reviewsTemplatePlural: "{count} reviews at {rating} average rating",
+    },
+    detail: {
+      kicker: "Product detail",
+      title: "Everything that matters before checkout.",
+      deliverySummaryTitle: "Delivery, support, and post-order care",
+      deliveryFallback: "Delivery windows will be clarified at checkout.",
+      deliveryTail:
+        "Orders stay traceable from payment to fulfillment, and disputes or support threads stay attached to the same order record.",
+      specsTitle: "Specifications and material clarity",
+      passportTitle: "Store passport and related discovery",
+      visitVendorTemplate: "Visit {vendor}",
+      exploreCategoryTemplate: "Explore {category}",
+      seeBrandTemplate: "See {brand}",
+    },
+    related: {
+      kicker: "Complete the set",
+      title: "More from this buying context.",
+      body: "Recommendation rails stay curated and clean instead of becoming noisy upsell clutter.",
+    },
+    reviews: {
+      kicker: "Review highlights",
+      title: "Verified buying signals, not noisy filler.",
+      verifiedPurchase: "Verified purchase",
+      reviewLabel: "Review",
+    },
+    rail: {
+      kicker: "Customers also bought",
+      headline: "Continue browsing without losing your place.",
+      caption:
+        "Co-purchase + similar-category signals surface the next obvious step, never noisy upsell clutter.",
+      ctaLabel: "Open search",
+    },
+  },
 };
 
-const FR: MarketplacePublicCopy = {
+const FR: DeepPartial<MarketplacePublicCopy> = {
   home: {
     heroKicker: "Marché premium raffiné",
     heroTitle: "Achetez auprès de boutiques vérifiées, sans bruit ni doute sur la confiance.",
@@ -320,14 +1236,5412 @@ const FR: MarketplacePublicCopy = {
     kicker: "Espace de travail",
     operatorKicker: "Surface opérateur",
   },
+  cart: {
+    pageIntro: {
+      kicker: "Panier",
+      title: "Un panier premium, des modifications plus rapides et des commandes fractionnées plus lisibles.",
+      description:
+        "Le panier garde le regroupement par vendeur visible, met à jour les quantités rapidement et reste connecté au tiroir mini-panier pour que les acheteurs ne perdent jamais le fil au moment de finaliser.",
+    },
+    emptyState: {
+      title: "Votre panier est encore vide.",
+      body: "Ajoutez rapidement depuis les fiches produits, sauvegardez des articles pour plus tard, et le panier reste à jour dans le tiroir mini-panier comme dans le panier complet, sans rechargement.",
+      ctaLabel: "Parcourir les produits",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Suivi de commande — Marketplace HenryCo",
+      description:
+        "Suivez chaque segment vendeur, mise à jour de paiement et jalon d'expédition au même endroit. L'entiercement reste actif jusqu'à confirmation de la livraison.",
+    },
+    hero: {
+      kicker: "Suivi de commande",
+      titlePrefix: "Suivi",
+      body: "La clarté des commandes fractionnées reste visible ici : chaque segment vendeur, mise à jour de paiement et jalon d'expédition occupe sa propre ligne, pour aligner le support et les attentes de l'acheteur.",
+      orderValueLabel: "Valeur de la commande",
+      paymentLabel: "Paiement",
+      payoutControlLabel: "Contrôle du versement",
+      payoutFrozen: "Gelé",
+      payoutEscrowActive: "Entiercement actif",
+    },
+    paymentRecord: {
+      kicker: "Trace de paiement",
+      walletBody: "Le solde du portefeuille a été débité et la commande est mise sous entiercement jusqu'à l'expédition.",
+      proofBody: "Le justificatif de virement est joint pour examen par la finance HenryCo.",
+      awaitingBody: "Le paiement attend la pièce justificative finance ou la réconciliation à la livraison.",
+      methodLabel: "Méthode",
+      statusLabel: "Statut",
+      proofLabel: "Justificatif",
+      viewProof: "Voir le justificatif",
+      walletDebit: "Débit portefeuille",
+      pending: "En attente",
+    },
+    timeline: {
+      kicker: "Chronologie",
+      title: "Les jalons visibles côté client, dans l'ordre.",
+    },
+    segments: {
+      kicker: "Segments vendeurs",
+      title: "Chaque vendeur reste responsable de sa propre expédition.",
+      henrycoSegment: "Segment HenryCo",
+      fulfillmentLabel: "Expédition",
+      trackingLabel: "Suivi",
+      payoutLabel: "Versement",
+      trackingPending: "En attente",
+    },
+    completion: {
+      kicker: "Confirmation de réception",
+      body: "Confirmez la réception une fois la commande satisfaisante. HenryCo ne libère le versement vendeur qu'après confirmation de livraison ou éligibilité à une libération automatique.",
+      confirmCta: "Confirmer la réception",
+    },
+    help: {
+      kicker: "Besoin d'aide ?",
+      title: "Litiges, remboursements et soucis de livraison passent par un seul fil.",
+      body: "Ouvrez un fil de support avec ce numéro de commande joint, pour que l'agent voie toute la chronologie et la répartition vendeur sans que vous ayez à tout retaper.",
+      openSupportCta: "Ouvrir un fil de support",
+      viewAllOrdersCta: "Voir toutes les commandes",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Offres vérifiées — Marketplace HenryCo",
+      description:
+        "Des remises filtrées sur la confiance, la disponibilité réelle des stocks et la responsabilité des vendeurs. Seules les annonces vérifiées aux signaux propres apparaissent sur la page des offres HenryCo.",
+    },
+    pageIntro: {
+      kicker: "Offres vérifiées",
+      title: "Des remises filtrées sur la confiance, la disponibilité des stocks et la responsabilité des vendeurs.",
+      description:
+        "Les offres ne sont mises en avant que lorsque la qualité de l’annonce, le passeport de confiance du vendeur et l’état du stock sont assez propres pour protéger la conversion et éviter le regret après achat.",
+    },
+    sectionLabel: "Offres vérifiées",
+    listEyebrow: "Offres vérifiées",
+    refreshNote: "Mises à jour régulièrement",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Aucune offre vérifiée pour le moment",
+      body: "Les remises vérifiées apparaissent dès que les vendeurs les publient. Repassez bientôt.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Édition catégorie",
+      searchCta: "Rechercher dans cette catégorie",
+      trustCta: "Voir les standards de confiance",
+      quickFiltersLabel: "Filtres rapides",
+    },
+    stats: {
+      activeListingsLabel: "Annonces actives",
+    },
+    collectionsRail: {
+      kicker: "Sélections curatées",
+      title: "Des collections qui raccourcissent la décision.",
+    },
+    catalog: {
+      kicker: "Catalogue de la catégorie",
+      title: "Produits premium, hiérarchie plus nette.",
+      openSearch: "Ouvrir la recherche complète",
+    },
+    metadata: {
+      titleTemplate: "{category} — Marketplace HenryCo",
+      descriptionTemplate:
+        "Explorez les produits vérifiés de {category} sur HenryCo Marketplace, avec des signaux de confiance, des informations de livraison claires et des passeports vendeurs visibles avant le paiement.",
+      fallbackDescription:
+        "Parcourez une catégorie sélectionnée du HenryCo Marketplace avec des signaux de confiance, une livraison plus claire et des passeports vendeurs avant paiement.",
+    },
+  },
+  brand: {
+    eyebrow: "Marque",
+    bodyFallback:
+      "Une boutique vérifiée sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport vendeur visibles avant le paiement.",
+    searchCta: "Rechercher dans cette marque",
+    trustCta: "Standards de confiance",
+    stats: {
+      activeProducts: "Produits actifs",
+      listingsReviewed: "Annonces vérifiées",
+      listingsReviewedValue: "Passeport de confiance visible par article",
+      buyerProtection: "Protection acheteur",
+      buyerProtectionValue: "Paiement sous séquestre",
+    },
+    liveKicker: "En direct de {brand}",
+    openFullSearch: "Ouvrir la recherche complète",
+    metadataTitle: "{brand} — Marketplace HenryCo",
+    metadataDescription:
+      "Explorez les produits vérifiés de {brand} sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et des passeports vendeurs visibles avant le paiement.",
+  },
+  store: {
+    metadataTitle: "{store} — Marketplace HenryCo",
+    metadataDescription:
+      "Parcourez les produits vérifiés de {store} sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et le passeport vendeur visibles avant le paiement.",
+    metadataDescriptionFallback:
+      "Une boutique vérifiée sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport vendeur visibles avant chaque paiement.",
+    hero: {
+      eyebrow: "Passeport boutique",
+      bodyFallback:
+        "Un vendeur vérifié sur HenryCo Marketplace, avec des signaux de confiance, une livraison plus claire et un passeport transparent affiché avant chaque paiement.",
+    },
+    stats: {
+      trustScore: "Score de confiance",
+      responseSla: "Délai de réponse",
+      responseSlaSuffix: " h",
+      followers: "Abonnés",
+    },
+    standards: {
+      eyebrow: "Standards de la boutique",
+    },
+    support: {
+      eyebrow: "Support",
+      contactLinkLabel: "Utilisez HenryCo Marketplace pour contacter cette boutique",
+      contactBodySuffix:
+        " — les messages sont enregistrés et rattachés à la référence de votre commande pour que chaque mise à jour reste au même endroit.",
+      ctaLabel: "Contacter cette boutique",
+      subjectTemplate: "Question pour {store}",
+    },
+    reviews: {
+      eyebrow: "Avis récents",
+      verifiedPurchase: "Achat vérifié",
+      review: "Avis",
+    },
+    catalog: {
+      kicker: "Catalogue de la boutique",
+      title: "Tout ce qui est actuellement en ligne dans cette boutique.",
+      exploreLink: "Explorer plus d’annonces vérifiées",
+      emptyTitle: "Pas encore d’annonces en ligne",
+      emptyBody: "Les produits approuvés de cette boutique apparaîtront ici dès leur mise en ligne.",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Centre d’aide — Marketplace HenryCo",
+      description:
+        "Parcourez les questions les plus posées par les acheteurs et vendeurs. Si vous ne trouvez pas ce qu’il vous faut, ouvrez un ticket et un membre de l’équipe le lira.",
+    },
+    hero: {
+      kicker: "Centre d’aide",
+      title: "Trouvez une réponse en quelques secondes — ou parlez à une personne.",
+      body: "Cherchez les sujets que les acheteurs et les vendeurs posent le plus. Si vous ne trouvez pas ce qu’il vous faut, ouvrez un ticket en bas de page et un membre de l’équipe le lira.",
+    },
+    stillNeedHelp: {
+      kicker: "Encore besoin d’aide",
+      title: "Ouvrez un ticket et une personne le lira.",
+      body: "Les tickets gardent tout le contexte rattaché — la commande, le vendeur, l’historique du litige — pour que l’équipe traite le sujet sans que vous ayez à le réécrire à chaque réponse.",
+      ctaLabel: "Ouvrir un ticket de support",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Vendre sur HenryCo — marketplace sélective pour des vendeurs de confiance",
+      description:
+        "Postulez pour vendre sur HenryCo Marketplace : positionnement axé sur la confiance, vitrines premium et un espace unifié pour commandes, paiements et support.",
+    },
+    hero: {
+      kicker: "Vendre sur HenryCo",
+      title: "Sélective par essence. Conçue pour les vendeurs qui misent sur la confiance.",
+      body: "HenryCo Marketplace privilégie les vendeurs soigneux dans leur présentation, fiables dans l’exécution et honnêtes sur la protection des acheteurs. Le niveau attendu est explicité sur cette page ; la candidature vendeur se poursuit dans votre compte HenryCo.",
+      primaryCta: "Ouvrir la candidature vendeur",
+      secondaryCta: "Voir les tarifs vendeur",
+      signInCta: "Se connecter avec un compte HenryCo",
+      highlights: [
+        { label: "Sélection", value: "Revue manuelle, pas de mise en ligne payante" },
+        { label: "Vitrine", value: "Passeport de confiance visible par les acheteurs" },
+        { label: "Espace", value: "Commandes, paiements et support unifiés" },
+      ],
+    },
+    advantages: {
+      kicker: "Pourquoi les meilleurs vendeurs réussissent ici",
+      items: [
+        { title: "Positionnement basé sur la confiance", body: "Votre boutique reçoit un passeport de confiance visible, au lieu d’être noyée dans le bruit d’un marketplace bas de gamme." },
+        { title: "Une meilleure qualité de vitrine", body: "Des rails éditoriaux, une recherche plus calme et des fiches produits plus nettes aident les boutiques exigeantes à mieux convertir." },
+        { title: "Une exploitation plus nette", body: "Paiements, commandes, support, modération et alertes stock restent visibles dans un espace de travail plus clair." },
+      ],
+    },
+    onboarding: {
+      kicker: "Comment se passe l’onboarding",
+      stepLabel: "Étape",
+      steps: [
+        { step: "01", title: "Lancer la candidature vendeur", body: "Ouvrez la candidature depuis votre compte HenryCo — les brouillons s’enregistrent automatiquement pendant que vous rassemblez les informations." },
+        { step: "02", title: "Ajouter les détails de l’activité", body: "Nom d’entreprise, profil de boutique, axe produit et tout document de vérification expliquant comment vous honorez vos commandes." },
+        { step: "03", title: "Revue de la candidature", body: "L’équipe HenryCo examine les documents, les signaux de confiance et la solidité de la boutique — pas seulement un badge payant." },
+        { step: "04", title: "Onboarding vendeur", body: "Les vendeurs approuvés continuent l’onboarding où tarifs, frais de publication, fenêtres de paiement et règles restent visibles avant la mise en ligne." },
+      ],
+      callout: {
+        eyebrow: "Une candidature vendeur plus propre",
+        body: "L’inscription vendeur reste dans votre compte pour que les détails de l’activité, l’état de la revue et les mises à jour d’approbation restent privés et faciles à suivre.",
+      },
+    },
+    plans: {
+      kicker: "Économie des plans",
+      title: "Des paliers annoncés en amont, pas après la mise en ligne.",
+      feeLabel: "Commission",
+      payoutLabel: "Versement",
+      includedLabel: "Inclus",
+      includedSuffix: "annonces",
+      featuredLabel: "Mise en avant",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Les paliers de confiance changent les privilèges",
+      title: "Obtenez des versements plus rapides, des vitrines plus larges et des avantages côté politique.",
+    },
+    closing: {
+      kicker: "Avancer",
+      title: "Postulez, puis suivez le statut de la candidature depuis votre compte.",
+      body: "L’approbation ouvre l’onboarding vendeur. Tarifs, frais de publication et fenêtres de paiement restent visibles avant la mise en ligne — pas de mauvaises surprises contractuelles ensuite.",
+      primaryCta: "Démarrer la candidature",
+      secondaryCta: "Voir l’espace vendeur",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Tarifs vendeur — HenryCo Marketplace",
+      description:
+        "Frais de plan, frais de mise en ligne, frais de mise en avant, commission de transaction et traitement des paiements sont tous annoncés en amont — avant la publication, pas après.",
+    },
+    hero: {
+      kicker: "Tarifs vendeur",
+      title: "Une économie claire. Aucun frais caché.",
+      body: "Frais de plan, frais de mise en ligne, frais de mise en avant, commission de transaction et traitement des paiements sont tous annoncés en amont — avant la publication de votre catalogue, pas après.",
+      primaryCta: "Postuler comme vendeur",
+      secondaryCta: "Retour à l’aperçu vendeur",
+      statsLabels: {
+        planTiers: "Paliers de plan",
+        trustTiers: "Paliers de confiance",
+        featuredSlots: "Mises en avant",
+      },
+      featuredSlotsValue: "Examinées au cas par cas",
+    },
+    plans: {
+      kicker: "Aperçu des plans",
+      feeLabel: "Commission",
+      payoutLabel: "Versement",
+      includedLabel: "Inclus",
+      includedSuffix: "annonces",
+      extraListingLabel: "Annonce supplémentaire",
+      featuredSlotLabel: "Mise en avant",
+      currencyPrefix: "NGN",
+      ctaPartner: "Nous contacter pour des conditions partenaires",
+      ctaTemplate: "Commencer avec {plan}",
+    },
+    economics: {
+      kicker: "Comment HenryCo gagne de l’argent",
+      title: "Annoncé en amont, déduit à la vue de tous.",
+      items: [
+        "Les commissions de transaction sont prélevées sur chaque règlement de groupe-commande vendeur avant la libération du versement.",
+        "Les frais de mise en ligne s’appliquent une fois l’allocation d’annonces incluses épuisée pour le plan actif du vendeur.",
+        "Une mise en avant est une demande payante distincte, soumise à un contrôle de qualité et de confiance.",
+        "Les frais de traitement de versement sont déduits dans le récapitulatif de règlement vendeur, pas en surprise plus tard.",
+        "Les services à valeur ajoutée Studio, Learn et Logistics ouvrent des relais de revenus supplémentaires pour les vendeurs.",
+        "Les campagnes pilotées par l’opérateur et les emplacements sponsorisés restent auditables et non livrés en libre-service.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Calendrier de versement par palier de confiance",
+      title: "Un meilleur comportement raccourcit les retenues.",
+    },
+    closing: {
+      kicker: "Prêt à candidater ?",
+      title: "La candidature s’ouvre dans votre compte HenryCo.",
+      body: "Vous pouvez enregistrer le brouillon et revenir — la tarification affichée ici s’applique une fois l’onboarding vendeur terminé.",
+      primaryCta: "Postuler comme vendeur",
+      secondaryCta: "Standards de confiance",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Confiance & sécurité — HenryCo Marketplace",
+      description:
+        "La confiance définit ce qu’un vendeur peut faire, comment l’argent circule et comment la modération réagit. Niveaux vendeurs, séquestre, litiges et libération des paiements laissent une trace serveur complète.",
+    },
+    hero: {
+      kicker: "Confiance & sécurité",
+      title: "Visible avant le paiement. Appliquée après.",
+      body: "La confiance gouverne ce que peut faire un vendeur, la circulation de l’argent et la réponse de la modération. Niveaux vendeurs, risque acheteur, notation des annonces, séquestre, litiges et libération des paiements laissent une trace serveur.",
+      pillars: [
+        { label: "Flux d’argent", value: "Sous séquestre, libéré après contrôles" },
+        { label: "Avis", value: "Journalisés côté serveur, traçables en litige" },
+        { label: "Niveaux", value: "Gagnés, révocables" },
+      ],
+    },
+    guardrails: {
+      kicker: "Quatre garde-fous",
+      items: [
+        {
+          title: "Passeports de confiance",
+          body: "Chaque boutique et chaque produit expose son niveau de vérification, son SLA, son taux de litige, sa disponibilité au paiement et sa posture d’exécution.",
+        },
+        {
+          title: "Contrôle du séquestre",
+          body: "Les fonds de l’acheteur sont d’abord détenus par HenryCo, puis libérés au paiement seulement après livraison et contrôles validés.",
+        },
+        {
+          title: "Revue anti-fraude",
+          body: "Détours de paiement hors plateforme, médias dupliqués, pics de mise en ligne et schémas de paiement à risque entrent dans la visibilité des files de revue.",
+        },
+        {
+          title: "Pistes d’audit",
+          body: "Approbations, refus, actions de paiement, décisions de litige et balayages automatisés sont journalisés côté serveur.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Échelle de confiance vendeur",
+      title: "Des niveaux gagnés par le comportement, pas achetés.",
+    },
+    policySurfaces: {
+      kicker: "Surfaces des politiques",
+      title: "Les standards que nous nous imposons.",
+    },
+    ecosystem: {
+      kicker: "Renforcement de la confiance dans l’écosystème",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — Marketplace HenryCo",
+      descriptionTemplate:
+        "Découvrez {collection} sur HenryCo Marketplace — une sélection curatée de produits vérifiés, avec signaux de confiance, livraison plus claire et passeports vendeurs avant le paiement.",
+      fallbackDescription:
+        "Une collection curatée sur HenryCo Marketplace, avec des produits vérifiés, des signaux de confiance, une livraison plus claire et des passeports vendeurs avant le paiement.",
+    },
+    hero: {
+      primaryCta: "Ouvrir la recherche complète",
+      secondaryCta: "Standards de confiance",
+    },
+    sidebar: {
+      itemsLabel: "Articles de la collection",
+      editedByLabel: "Édité par",
+      editedByValue: "Opérations Marketplace",
+      buyerProtectionLabel: "Protection acheteur",
+      buyerProtectionValue: "Paiement sous séquestre",
+    },
+    rail: {
+      kicker: "Au programme de la sélection",
+      itemsSuffix: "articles",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — Marketplace HenryCo",
+      descriptionTemplate:
+        "{policy} sur HenryCo Marketplace — application journalisée côté serveur, contrôles d’entiercement et posture de confiance affichés avant le paiement.",
+      fallbackTitle: "Politique du marché — Marketplace HenryCo",
+      fallbackDescription:
+        "Une politique de HenryCo Marketplace — application journalisée côté serveur, contrôles d’entiercement et posture de confiance affichés avant le paiement.",
+    },
+    hero: {
+      backToTrust: "Retour aux standards de confiance",
+      openSupport: "Ouvrir un fil d’assistance",
+    },
+    details: {
+      coverageLabel: "Couverture",
+      enforcementLabel: "Application",
+      updatedLabel: "Mise à jour",
+    },
+    coverageBySlug: {
+      buyerProtection: "Acheteurs",
+      sellerPolicy: "Vendeurs",
+      fallback: "Participants du marché",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Paiements sous séquestre + gel des litiges",
+      sellerPolicy: "Revue par palier de confiance + réserve de paiement",
+      fallback: "Traçabilité serveur",
+    },
+    updatedBySlug: {
+      buyerProtection: "Lors de révisions des paiements et des litiges",
+      sellerPolicy: "Lors de révisions des standards vendeurs",
+      fallback: "Lors des révisions de politique",
+    },
+    provisions: {
+      kicker: "Dispositions de la politique",
+    },
+    ecosystem: {
+      kicker: "Contrôles du marché connectés",
+      openLabel: "Ouvrir",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} sur HenryCo Marketplace — stock vérifié, livraison fiable et passeport vendeur visibles avant le paiement.",
+      fallbackDescription:
+        "Une annonce vérifiée sur HenryCo Marketplace, avec signaux de confiance, clarté de livraison et passeport vendeur visibles avant le paiement.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Confiance vendeur",
+      sellerTrustValueTemplate: "Passeport {vendor} visible",
+      sellerTrustValueFallback: "Passeport vendeur en attente",
+      availabilityLabel: "Disponibilité",
+      availabilityValueSingular: "{count} unité actuellement en stock",
+      availabilityValuePlural: "{count} unités actuellement en stock",
+      fulfillmentLabel: "Livraison",
+      paymentLabel: "Paiement",
+      paymentValueCod: "Paiement à la livraison ou virement vérifié",
+      paymentValueVerified: "Flux par virement vérifié",
+    },
+    price: {
+      label: "Prix",
+      leadTimeLabel: "Délai",
+    },
+    safety: {
+      kicker: "Pourquoi cette annonce inspire confiance",
+      stockTemplate: "{count} unités actuellement visibles à l’inventaire",
+      codEligible: "Paiement à la livraison possible là où il est pris en charge",
+      codFallback: "Flux de vérification manuelle disponible",
+      vendorLinkedTemplate: "Le passeport vendeur {vendor} est lié directement depuis cette page",
+      vendorPending: "La page de confiance du vendeur est encore en cours de liaison",
+      reviewsTemplateSingular: "{count} avis pour une note moyenne de {rating}",
+      reviewsTemplatePlural: "{count} avis pour une note moyenne de {rating}",
+    },
+    detail: {
+      kicker: "Détail produit",
+      title: "Tout ce qui compte avant le paiement.",
+      deliverySummaryTitle: "Livraison, support et suivi après commande",
+      deliveryFallback: "Les délais de livraison seront précisés au paiement.",
+      deliveryTail:
+        "Les commandes restent traçables du paiement à l’expédition, et les litiges ou fils d’assistance restent rattachés au même dossier de commande.",
+      specsTitle: "Spécifications et clarté des matériaux",
+      passportTitle: "Passeport boutique et découvertes liées",
+      visitVendorTemplate: "Visiter {vendor}",
+      exploreCategoryTemplate: "Explorer {category}",
+      seeBrandTemplate: "Voir {brand}",
+    },
+    related: {
+      kicker: "Compléter l’ensemble",
+      title: "À découvrir dans le même contexte d’achat.",
+      body: "Les rails de recommandation restent ciblés et sobres, sans relances commerciales bruyantes.",
+    },
+    reviews: {
+      kicker: "Faits marquants des avis",
+      title: "Des signaux d’achat vérifiés, sans bruit superflu.",
+      verifiedPurchase: "Achat vérifié",
+      reviewLabel: "Avis",
+    },
+    rail: {
+      kicker: "Les acheteurs ont aussi pris",
+      headline: "Continuez votre navigation sans perdre le fil.",
+      caption:
+        "Les signaux de co-achat et de catégorie similaire ouvrent la prochaine étape évidente, sans surcharge commerciale.",
+      ctaLabel: "Ouvrir la recherche",
+    },
+  },
 };
 
-const LOCALE_COPY: Partial<Record<AppLocale, MarketplacePublicCopy>> = {
+const ES: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Carrito",
+      title: "Una cesta premium con ediciones más rápidas y mayor claridad en pedidos divididos.",
+      description:
+        "El carrito mantiene visible la agrupación por vendedor, actualiza las cantidades con agilidad y permanece conectado al mini-carrito para que los compradores no pierdan el contexto al acercarse al pago.",
+    },
+    emptyState: {
+      title: "Tu carrito sigue vacío.",
+      body: "Añade rápido desde las fichas de producto, guarda artículos para más tarde, y la cesta se mantiene al día tanto en el mini-carrito como en el carrito completo, sin recargar.",
+      ctaLabel: "Explorar productos",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Seguimiento de pedido — HenryCo Marketplace",
+      description:
+        "Sigue cada segmento de vendedor, novedad de pago e hito de envío en un solo sitio. El depósito en garantía se mantiene hasta que se confirme la entrega.",
+    },
+    hero: {
+      kicker: "Seguimiento de pedido",
+      titlePrefix: "Seguimiento",
+      body: "La claridad de los pedidos divididos sigue visible aquí: cada segmento de vendedor, actualización de pago y hito de envío ocupa su propia fila para alinear soporte y expectativas del comprador.",
+      orderValueLabel: "Valor del pedido",
+      paymentLabel: "Pago",
+      payoutControlLabel: "Control de liquidación",
+      payoutFrozen: "Congelado",
+      payoutEscrowActive: "Depósito activo",
+    },
+    paymentRecord: {
+      kicker: "Registro de pago",
+      walletBody: "Se cargó el saldo de la cartera y el pedido queda en depósito hasta el envío.",
+      proofBody: "Se adjuntó el comprobante de transferencia para revisión de finanzas de HenryCo.",
+      awaitingBody: "El pago espera el comprobante de finanzas o la conciliación tras la entrega.",
+      methodLabel: "Método",
+      statusLabel: "Estado",
+      proofLabel: "Comprobante",
+      viewProof: "Ver comprobante",
+      walletDebit: "Débito de cartera",
+      pending: "Pendiente",
+    },
+    timeline: {
+      kicker: "Línea de tiempo",
+      title: "Hitos visibles para el cliente, en orden.",
+    },
+    segments: {
+      kicker: "Segmentos de vendedor",
+      title: "Cada vendedor responde por su propio envío.",
+      henrycoSegment: "Segmento HenryCo",
+      fulfillmentLabel: "Envío",
+      trackingLabel: "Seguimiento",
+      payoutLabel: "Liquidación",
+      trackingPending: "Pendiente",
+    },
+    completion: {
+      kicker: "Confirmación de recepción",
+      body: "Confirma la recepción cuando el pedido sea satisfactorio. HenryCo solo libera la liquidación al vendedor tras confirmar la entrega o si el pedido cumple la liberación automática.",
+      confirmCta: "Confirmar recepción",
+    },
+    help: {
+      kicker: "¿Necesitas ayuda?",
+      title: "Disputas, reembolsos y problemas de entrega se canalizan en un solo hilo.",
+      body: "Abre un hilo de soporte con este número de pedido adjunto para que el agente vea la línea de tiempo completa y el desglose por vendedor sin que tengas que volver a escribirlo.",
+      openSupportCta: "Abrir hilo de soporte",
+      viewAllOrdersCta: "Ver todos los pedidos",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Ofertas verificadas — HenryCo Marketplace",
+      description:
+        "Descuentos filtrados por confianza, certeza de stock y responsabilidad del vendedor. En la página de ofertas de HenryCo solo aparecen listados verificados con señales limpias.",
+    },
+    pageIntro: {
+      kicker: "Ofertas verificadas",
+      title: "Descuentos filtrados por confianza, certeza de stock y responsabilidad del vendedor.",
+      description:
+        "Solo destacamos ofertas cuando la calidad del anuncio, el pasaporte de confianza del vendedor y el estado del stock están lo bastante limpios para proteger la conversión y reducir el arrepentimiento del comprador.",
+    },
+    sectionLabel: "Ofertas verificadas",
+    listEyebrow: "Ofertas verificadas",
+    refreshNote: "Actualizadas con regularidad",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "No hay ofertas verificadas ahora mismo",
+      body: "Los descuentos verificados aparecen a medida que los vendedores los publican. Vuelve pronto.",
+    },
+  },
+  brand: {
+    eyebrow: "Marca",
+    bodyFallback:
+      "Una tienda verificada en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes del pago.",
+    searchCta: "Buscar en esta marca",
+    trustCta: "Estándares de confianza",
+    stats: {
+      activeProducts: "Productos activos",
+      listingsReviewed: "Anuncios revisados",
+      listingsReviewedValue: "Pasaporte de confianza visible por artículo",
+      buyerProtection: "Protección al comprador",
+      buyerProtectionValue: "Pago en custodia",
+    },
+    liveKicker: "En directo desde {brand}",
+    openFullSearch: "Abrir búsqueda completa",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Explora productos verificados de {brand} en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaportes de vendedor visibles antes del pago.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Explora los productos verificados de {store} en HenryCo Marketplace, con señales de confianza, claridad de entrega y el pasaporte del vendedor visibles antes del pago.",
+    metadataDescriptionFallback:
+      "Una tienda verificada en HenryCo Marketplace, con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes de cada pago.",
+    hero: {
+      eyebrow: "Pasaporte de la tienda",
+      bodyFallback:
+        "Un vendedor verificado en HenryCo Marketplace, con señales de confianza, claridad de entrega y un pasaporte transparente visible antes de cada pago.",
+    },
+    stats: {
+      trustScore: "Puntuación de confianza",
+      responseSla: "Plazo de respuesta",
+      responseSlaSuffix: " h",
+      followers: "Seguidores",
+    },
+    standards: {
+      eyebrow: "Estándares de la tienda",
+    },
+    support: {
+      eyebrow: "Soporte",
+      contactLinkLabel: "Usa HenryCo Marketplace para contactar con esta tienda",
+      contactBodySuffix:
+        " — los mensajes quedan registrados y vinculados a la referencia de tu pedido para que cada actualización se mantenga en un solo lugar.",
+      ctaLabel: "Contactar con esta tienda",
+      subjectTemplate: "Pregunta para {store}",
+    },
+    reviews: {
+      eyebrow: "Reseñas recientes",
+      verifiedPurchase: "Compra verificada",
+      review: "Reseña",
+    },
+    catalog: {
+      kicker: "Catálogo de la tienda",
+      title: "Todo lo que esta tienda tiene en directo ahora mismo.",
+      exploreLink: "Explorar más anuncios verificados",
+      emptyTitle: "Aún no hay anuncios en directo",
+      emptyBody: "Los productos aprobados de esta tienda aparecerán aquí en cuanto se publiquen.",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Centro de ayuda — HenryCo Marketplace",
+      description:
+        "Consulta las dudas más frecuentes de compradores y vendedores. Si no encuentras lo que buscas, abre un ticket y una persona del equipo lo leerá.",
+    },
+    hero: {
+      kicker: "Centro de ayuda",
+      title: "Encuentra una respuesta en segundos — o habla con una persona.",
+      body: "Busca los temas que más consultan compradores y vendedores. Si no encuentras lo que necesitas, abre un ticket al final de la página y una persona del equipo lo leerá.",
+    },
+    stillNeedHelp: {
+      kicker: "Aún necesitas ayuda",
+      title: "Abre un ticket y una persona lo leerá.",
+      body: "Los tickets conservan todo el contexto adjunto — el pedido, el vendedor, el historial de la disputa — para que el equipo resuelva sin que tengas que reescribirlo en cada respuesta.",
+      ctaLabel: "Abrir un ticket de soporte",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Vender en HenryCo — marketplace selectivo para vendedores de confianza",
+      description:
+        "Solicita vender en HenryCo Marketplace: posicionamiento basado en la confianza, escaparates premium y un espacio unificado para pedidos, pagos y soporte.",
+    },
+    hero: {
+      kicker: "Vender en HenryCo",
+      title: "Selectivo por diseño. Pensado para vendedores que priorizan la confianza.",
+      body: "HenryCo Marketplace favorece a vendedores cuidadosos en la presentación, fiables en el cumplimiento y honestos con la protección al comprador. El nivel exigido se explica en esta página; la solicitud de vendedor continúa dentro de tu cuenta HenryCo.",
+      primaryCta: "Abrir solicitud de vendedor",
+      secondaryCta: "Ver tarifas de vendedor",
+      signInCta: "Iniciar sesión con cuenta HenryCo",
+      highlights: [
+        { label: "Selección", value: "Revisión manual, no pago por listar" },
+        { label: "Escaparate", value: "Pasaporte de confianza visible para compradores" },
+        { label: "Espacio", value: "Pedidos, pagos y soporte unificados" },
+      ],
+    },
+    advantages: {
+      kicker: "Por qué triunfan aquí los vendedores más sólidos",
+      items: [
+        { title: "Posicionamiento basado en la confianza", body: "Tu tienda recibe un pasaporte de confianza visible, en lugar de quedar sepultada en el ruido de un marketplace de baja calidad." },
+        { title: "Mejor calidad de escaparate", body: "Carriles editoriales, una búsqueda más calmada y fichas de producto más limpias ayudan a convertir mejor a las tiendas exigentes." },
+        { title: "Operativa más nítida", body: "Pagos, pedidos, soporte, moderación y avisos de stock se mantienen visibles en un mismo espacio más claro." },
+      ],
+    },
+    onboarding: {
+      kicker: "Cómo funciona el onboarding",
+      stepLabel: "Paso",
+      steps: [
+        { step: "01", title: "Iniciar la solicitud de vendedor", body: "Abre la solicitud desde tu cuenta HenryCo — los borradores se guardan automáticamente mientras reúnes la información." },
+        { step: "02", title: "Añadir los datos del negocio", body: "Nombre de la empresa, perfil de tienda, enfoque de producto y los documentos de verificación que explican cómo cumples los pedidos." },
+        { step: "03", title: "Revisión de la solicitud", body: "El equipo de HenryCo revisa documentos, señales de confianza y la solidez de la tienda — no solo una insignia de pago." },
+        { step: "04", title: "Onboarding del vendedor", body: "Los vendedores aprobados continúan con el onboarding, donde tarifas, comisiones de publicación, ventanas de cobro y políticas son visibles antes de publicar." },
+      ],
+      callout: {
+        eyebrow: "Una solicitud de vendedor más limpia",
+        body: "El registro de vendedor permanece dentro de tu cuenta para que los datos del negocio, el estado de la revisión y las actualizaciones de aprobación queden privados y fáciles de seguir.",
+      },
+    },
+    plans: {
+      kicker: "Economía de los planes",
+      title: "Tarifas claras desde el inicio, no después de publicar.",
+      feeLabel: "Comisión",
+      payoutLabel: "Cobro",
+      includedLabel: "Incluido",
+      includedSuffix: "anuncios",
+      featuredLabel: "Destacado",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Los niveles de confianza cambian los privilegios",
+      title: "Consigue cobros más rápidos, escaparates más amplios y ventajas en políticas.",
+    },
+    closing: {
+      kicker: "Avanzar",
+      title: "Solicita y sigue el estado desde tu cuenta.",
+      body: "La aprobación desbloquea el onboarding de vendedor. Tarifas, comisiones de publicación y ventanas de cobro se ven antes de publicar — sin sorpresas contractuales después.",
+      primaryCta: "Iniciar solicitud",
+      secondaryCta: "Ir al espacio de vendedor",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Tarifas para vendedores — HenryCo Marketplace",
+      description:
+        "Tarifas de plan, de publicación, de destacados, comisión por transacción y procesamiento de cobros se declaran por adelantado — antes de publicar inventario, no después.",
+    },
+    hero: {
+      kicker: "Tarifas para vendedores",
+      title: "Economía clara. Sin comisiones ocultas.",
+      body: "Tarifas de plan, comisiones de publicación, slots destacados, comisión por transacción y procesamiento de cobros se declaran por adelantado — antes de publicar tu inventario, no después.",
+      primaryCta: "Postularme como vendedor",
+      secondaryCta: "Volver al resumen de vendedor",
+      statsLabels: {
+        planTiers: "Niveles de plan",
+        trustTiers: "Niveles de confianza",
+        featuredSlots: "Slots destacados",
+      },
+      featuredSlotsValue: "Revisados caso por caso",
+    },
+    plans: {
+      kicker: "Planes de un vistazo",
+      feeLabel: "Comisión",
+      payoutLabel: "Cobro",
+      includedLabel: "Incluidos",
+      includedSuffix: "anuncios",
+      extraListingLabel: "Anuncio extra",
+      featuredSlotLabel: "Slot destacado",
+      currencyPrefix: "NGN",
+      ctaPartner: "Contactar para condiciones de partner",
+      ctaTemplate: "Empezar con {plan}",
+    },
+    economics: {
+      kicker: "Cómo gana dinero HenryCo",
+      title: "Declarado por adelantado, deducido a la vista.",
+      items: [
+        "Las comisiones por transacción se descuentan en cada liquidación del grupo-pedido del vendedor antes de liberar el cobro.",
+        "Las tarifas de publicación se aplican una vez agotado el cupo de anuncios incluidos en el plan activo del vendedor.",
+        "La colocación destacada es una solicitud de pago aparte y queda sujeta a control de calidad y confianza.",
+        "Las comisiones por procesamiento de cobro se deducen en el resumen de liquidación del vendedor, no después por sorpresa.",
+        "Servicios de valor añadido Studio, Learn y Logistics abren vías adicionales de ingresos para los vendedores.",
+        "Las campañas controladas por el operador y los espacios patrocinados se mantienen auditables y no como caos autoservicio.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Cobros según nivel de confianza",
+      title: "Un mejor comportamiento acorta las retenciones.",
+    },
+    closing: {
+      kicker: "¿Listo para postularte?",
+      title: "La solicitud se abre en tu cuenta de HenryCo.",
+      body: "Puedes guardar el borrador y volver — la tarificación visible aquí se aplica una vez completado el onboarding de vendedor.",
+      primaryCta: "Postularme como vendedor",
+      secondaryCta: "Estándares de confianza",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Confianza y seguridad — HenryCo Marketplace",
+      description:
+        "La confianza define lo que puede hacer un vendedor, cómo se mueve el dinero y cómo responde la moderación. Niveles de vendedor, custodia, disputas y liberación de pagos dejan rastro en el servidor.",
+    },
+    hero: {
+      kicker: "Confianza y seguridad",
+      title: "Visible antes del pago. Aplicada después.",
+      body: "La confianza rige lo que puede hacer un vendedor, cómo circula el dinero y cómo reacciona la moderación. Niveles de vendedor, riesgo del comprador, puntuación de anuncios, custodia, disputas y liberación de pagos dejan registro en el servidor.",
+      pillars: [
+        { label: "Movimiento de dinero", value: "En custodia, liberado tras controles" },
+        { label: "Reseñas", value: "Registradas en servidor, rastreables en disputa" },
+        { label: "Niveles", value: "Ganados, revocables" },
+      ],
+    },
+    guardrails: {
+      kicker: "Cuatro salvaguardas",
+      items: [
+        {
+          title: "Pasaportes de confianza",
+          body: "Cada tienda y producto expone el nivel de verificación, el SLA, la tasa de disputas, la preparación para el pago y la postura de cumplimiento.",
+        },
+        {
+          title: "Control de custodia",
+          body: "Los fondos del comprador los retiene HenryCo primero y solo se liberan al pago cuando la entrega y los controles de confianza están validados.",
+        },
+        {
+          title: "Revisión antifraude",
+          body: "Desvíos de pago fuera de la plataforma, medios duplicados, picos de publicación y patrones de pago de riesgo entran en la visibilidad de la cola.",
+        },
+        {
+          title: "Pistas de auditoría",
+          body: "Aprobaciones, rechazos, acciones de pago, decisiones de disputa y barridos automatizados quedan registrados en el servidor.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Escala de confianza del vendedor",
+      title: "Niveles ganados con el comportamiento, no comprados.",
+    },
+    policySurfaces: {
+      kicker: "Superficies de políticas",
+      title: "Los estándares a los que nos comprometemos.",
+    },
+    ecosystem: {
+      kicker: "Refuerzo de confianza en el ecosistema",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Descubre {collection} en HenryCo Marketplace — una selección curada de productos verificados, con señales de confianza, claridad en la entrega y pasaportes de vendedor visibles antes del pago.",
+      fallbackDescription:
+        "Una colección curada en HenryCo Marketplace, con productos verificados, señales de confianza, entrega clara y pasaportes de vendedor visibles antes del pago.",
+    },
+    hero: {
+      primaryCta: "Abrir búsqueda completa",
+      secondaryCta: "Estándares de confianza",
+    },
+    sidebar: {
+      itemsLabel: "Artículos de la colección",
+      editedByLabel: "Editada por",
+      editedByValue: "Operaciones del Marketplace",
+      buyerProtectionLabel: "Protección al comprador",
+      buyerProtectionValue: "Pago en custodia",
+    },
+    rail: {
+      kicker: "Lo que trae la selección",
+      itemsSuffix: "artículos",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} en HenryCo Marketplace — control de cumplimiento registrado en servidor, custodia de pagos y postura de confianza visibles antes del pago.",
+      fallbackTitle: "Política del marketplace — HenryCo Marketplace",
+      fallbackDescription:
+        "Una política de HenryCo Marketplace — control de cumplimiento registrado en servidor, custodia de pagos y postura de confianza visibles antes del pago.",
+    },
+    hero: {
+      backToTrust: "Volver a los estándares de confianza",
+      openSupport: "Abrir hilo de soporte",
+    },
+    details: {
+      coverageLabel: "Cobertura",
+      enforcementLabel: "Aplicación",
+      updatedLabel: "Actualizado",
+    },
+    coverageBySlug: {
+      buyerProtection: "Compradores",
+      sellerPolicy: "Vendedores",
+      fallback: "Participantes del marketplace",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Pagos en custodia + congelación por disputa",
+      sellerPolicy: "Revisión por nivel de confianza + reserva de pago",
+      fallback: "Registro auditable en servidor",
+    },
+    updatedBySlug: {
+      buyerProtection: "Al revisar pagos y disputas",
+      sellerPolicy: "Al revisar los estándares del vendedor",
+      fallback: "Al revisar la política",
+    },
+    provisions: {
+      kicker: "Disposiciones de la política",
+    },
+    ecosystem: {
+      kicker: "Controles conectados del marketplace",
+      openLabel: "Abrir",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} en HenryCo Marketplace — stock verificado, entrega fiable y pasaporte del vendedor visibles antes del pago.",
+      fallbackDescription:
+        "Un anuncio verificado en HenryCo Marketplace con señales de confianza, claridad de entrega y pasaporte del vendedor visibles antes del pago.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Confianza del vendedor",
+      sellerTrustValueTemplate: "Pasaporte de {vendor} visible",
+      sellerTrustValueFallback: "Pasaporte del vendedor pendiente",
+      availabilityLabel: "Disponibilidad",
+      availabilityValueSingular: "{count} unidad en stock actual",
+      availabilityValuePlural: "{count} unidades en stock actual",
+      fulfillmentLabel: "Entrega",
+      paymentLabel: "Pago",
+      paymentValueCod: "Pago contra entrega o transferencia verificada",
+      paymentValueVerified: "Flujo por transferencia verificada",
+    },
+    price: {
+      label: "Precio",
+      leadTimeLabel: "Plazo de entrega",
+    },
+    safety: {
+      kicker: "Por qué este anuncio inspira más confianza",
+      stockTemplate: "{count} unidades visibles ahora mismo en el inventario",
+      codEligible: "Pago contra entrega disponible donde se admite",
+      codFallback: "Flujo de verificación manual disponible",
+      vendorLinkedTemplate: "El pasaporte del vendedor {vendor} está enlazado directamente desde esta página",
+      vendorPending: "La superficie de confianza del vendedor todavía está pendiente de enlace",
+      reviewsTemplateSingular: "{count} reseña con valoración media de {rating}",
+      reviewsTemplatePlural: "{count} reseñas con valoración media de {rating}",
+    },
+    detail: {
+      kicker: "Detalle del producto",
+      title: "Todo lo importante antes de pagar.",
+      deliverySummaryTitle: "Entrega, soporte y atención posventa",
+      deliveryFallback: "Las ventanas de entrega se aclararán al finalizar la compra.",
+      deliveryTail:
+        "Los pedidos se mantienen trazables desde el pago hasta la entrega, y las disputas o hilos de soporte se vinculan al mismo registro de pedido.",
+      specsTitle: "Especificaciones y claridad del material",
+      passportTitle: "Pasaporte de la tienda y descubrimientos relacionados",
+      visitVendorTemplate: "Visitar {vendor}",
+      exploreCategoryTemplate: "Explorar {category}",
+      seeBrandTemplate: "Ver {brand}",
+    },
+    related: {
+      kicker: "Completa el conjunto",
+      title: "Más en el mismo contexto de compra.",
+      body: "Las recomendaciones se mantienen curadas y limpias, sin ruido comercial.",
+    },
+    reviews: {
+      kicker: "Lo más destacado de las reseñas",
+      title: "Señales de compra verificadas, sin ruido innecesario.",
+      verifiedPurchase: "Compra verificada",
+      reviewLabel: "Reseña",
+    },
+    rail: {
+      kicker: "Quienes vieron esto también compraron",
+      headline: "Sigue navegando sin perder el hilo.",
+      caption:
+        "Las señales de co-compra y de categoría afín muestran el siguiente paso obvio, sin saturar con ofertas innecesarias.",
+      ctaLabel: "Abrir búsqueda",
+    },
+  },
+};
+
+const PT: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Carrinho",
+      title: "Um carrinho premium com edições mais ágeis e clareza nas entregas divididas.",
+      description:
+        "O carrinho mantém o agrupamento por vendedor visível, atualiza quantidades rapidamente e permanece ligado à gaveta do mini-carrinho para que os compradores nunca percam o contexto perto da finalização.",
+    },
+    emptyState: {
+      title: "O teu carrinho ainda está vazio.",
+      body: "Adiciona rapidamente a partir dos cartões de produto, guarda itens para depois, e o carrinho mantém-se atualizado no mini-carrinho e no carrinho completo sem precisares de recarregar.",
+      ctaLabel: "Explorar produtos",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Acompanhamento do pedido — HenryCo Marketplace",
+      description:
+        "Acompanha cada segmento de vendedor, atualização de pagamento e marco de entrega num só lugar. O depósito em garantia mantém-se ativo até confirmar a entrega.",
+    },
+    hero: {
+      kicker: "Acompanhamento do pedido",
+      titlePrefix: "Acompanhamento",
+      body: "A clareza dos pedidos divididos permanece visível aqui: cada segmento de vendedor, atualização de pagamento e marco de entrega ocupa a sua própria linha para alinhar o suporte e as expectativas do comprador.",
+      orderValueLabel: "Valor do pedido",
+      paymentLabel: "Pagamento",
+      payoutControlLabel: "Controlo do pagamento ao vendedor",
+      payoutFrozen: "Congelado",
+      payoutEscrowActive: "Depósito ativo",
+    },
+    paymentRecord: {
+      kicker: "Registo de pagamento",
+      walletBody: "O saldo da carteira foi debitado e o pedido fica em depósito até à entrega.",
+      proofBody: "O comprovativo de transferência foi anexado para análise da equipa financeira da HenryCo.",
+      awaitingBody: "O pagamento aguarda a evidência financeira ou a reconciliação na entrega.",
+      methodLabel: "Método",
+      statusLabel: "Estado",
+      proofLabel: "Comprovativo",
+      viewProof: "Ver comprovativo",
+      walletDebit: "Débito de carteira",
+      pending: "Pendente",
+    },
+    timeline: {
+      kicker: "Cronologia",
+      title: "Marcos visíveis para o cliente, por ordem.",
+    },
+    segments: {
+      kicker: "Segmentos de vendedor",
+      title: "Cada vendedor responde pela sua própria expedição.",
+      henrycoSegment: "Segmento HenryCo",
+      fulfillmentLabel: "Expedição",
+      trackingLabel: "Acompanhamento",
+      payoutLabel: "Pagamento",
+      trackingPending: "Pendente",
+    },
+    completion: {
+      kicker: "Confirmação de receção",
+      body: "Confirma a receção quando o pedido estiver satisfatório. A HenryCo só liberta o pagamento ao vendedor após confirmação da entrega ou quando o pedido cumpre a libertação automática.",
+      confirmCta: "Confirmar receção",
+    },
+    help: {
+      kicker: "Precisas de ajuda?",
+      title: "Disputas, reembolsos e questões de entrega seguem por um único fio.",
+      body: "Abre um fio de suporte com este número de pedido anexado para que o agente veja toda a cronologia e a divisão por vendedor sem teres de escrever tudo de novo.",
+      openSupportCta: "Abrir fio de suporte",
+      viewAllOrdersCta: "Ver todos os pedidos",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Ofertas verificadas — HenryCo Marketplace",
+      description:
+        "Descontos filtrados por confiança, certeza de stock e responsabilidade do vendedor. Na página de ofertas da HenryCo só aparecem anúncios verificados com sinais limpos.",
+    },
+    pageIntro: {
+      kicker: "Ofertas verificadas",
+      title: "Descontos filtrados por confiança, certeza de stock e responsabilidade do vendedor.",
+      description:
+        "Só destacamos ofertas quando a qualidade do anúncio, o passaporte de confiança do vendedor e o estado do stock estão limpos o suficiente para proteger a conversão e reduzir o arrependimento de quem compra.",
+    },
+    sectionLabel: "Ofertas verificadas",
+    listEyebrow: "Ofertas verificadas",
+    refreshNote: "Atualizadas com regularidade",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Sem ofertas verificadas neste momento",
+      body: "Os descontos verificados surgem à medida que os vendedores os publicam. Volta em breve.",
+    },
+  },
+  brand: {
+    eyebrow: "Marca",
+    bodyFallback:
+      "Uma loja verificada na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes do pagamento.",
+    searchCta: "Pesquisar nesta marca",
+    trustCta: "Padrões de confiança",
+    stats: {
+      activeProducts: "Produtos ativos",
+      listingsReviewed: "Anúncios revistos",
+      listingsReviewedValue: "Passaporte de confiança visível por item",
+      buyerProtection: "Proteção ao comprador",
+      buyerProtectionValue: "Pagamento em custódia",
+    },
+    liveKicker: "Em direto de {brand}",
+    openFullSearch: "Abrir pesquisa completa",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Explora produtos verificados de {brand} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Explora os produtos verificados de {store} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e o passaporte do vendedor visíveis antes do pagamento.",
+    metadataDescriptionFallback:
+      "Uma loja verificada na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes de cada pagamento.",
+    hero: {
+      eyebrow: "Passaporte da loja",
+      bodyFallback:
+        "Um vendedor verificado na HenryCo Marketplace, com sinais de confiança, clareza de entrega e um passaporte transparente visível antes de cada pagamento.",
+    },
+    stats: {
+      trustScore: "Pontuação de confiança",
+      responseSla: "Prazo de resposta",
+      responseSlaSuffix: " h",
+      followers: "Seguidores",
+    },
+    standards: {
+      eyebrow: "Padrões da loja",
+    },
+    support: {
+      eyebrow: "Suporte",
+      contactLinkLabel: "Usa a HenryCo Marketplace para contactar esta loja",
+      contactBodySuffix:
+        " — as mensagens ficam registadas e ligadas à referência do teu pedido para que cada atualização permaneça num só lugar.",
+      ctaLabel: "Contactar esta loja",
+      subjectTemplate: "Pergunta para {store}",
+    },
+    reviews: {
+      eyebrow: "Avaliações recentes",
+      verifiedPurchase: "Compra verificada",
+      review: "Avaliação",
+    },
+    catalog: {
+      kicker: "Catálogo da loja",
+      title: "Tudo o que esta loja tem em direto neste momento.",
+      exploreLink: "Explorar mais anúncios verificados",
+      emptyTitle: "Ainda sem anúncios em direto",
+      emptyBody: "Os produtos aprovados desta loja aparecerão aqui assim que entrarem em direto.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Edição por categoria",
+      searchCta: "Procurar nesta categoria",
+      trustCta: "Rever padrões de confiança",
+      quickFiltersLabel: "Filtros rápidos",
+    },
+    stats: {
+      activeListingsLabel: "Anúncios ativos",
+    },
+    collectionsRail: {
+      kicker: "Seleções curadas",
+      title: "Coleções que encurtam a decisão de compra.",
+    },
+    catalog: {
+      kicker: "Catálogo da categoria",
+      title: "Produtos premium, hierarquia mais nítida.",
+      openSearch: "Abrir pesquisa completa",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Explora produtos verificados em {category} na HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaportes de vendedor visíveis antes do pagamento.",
+      fallbackDescription:
+        "Percorre uma categoria curada da HenryCo Marketplace com sinais de confiança, clareza de entrega e passaportes de vendedor antes do pagamento.",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Centro de ajuda — HenryCo Marketplace",
+      description:
+        "Consulta as dúvidas mais comuns de compradores e vendedores. Se não encontrares o que precisas, abre um pedido de apoio e alguém da equipa lê-o.",
+    },
+    hero: {
+      kicker: "Centro de ajuda",
+      title: "Encontra uma resposta em segundos — ou fala com uma pessoa.",
+      body: "Pesquisa os temas que compradores e vendedores mais perguntam. Se não encontrares o que precisas, abre um pedido de apoio no fim desta página e alguém da equipa lê-o.",
+    },
+    stillNeedHelp: {
+      kicker: "Continuas a precisar de ajuda",
+      title: "Abre um pedido de apoio e uma pessoa lê-o.",
+      body: "Os pedidos mantêm todo o contexto ligado — a encomenda, o vendedor, o histórico do litígio — para que a equipa trate do assunto sem precisares de reescrever a cada resposta.",
+      ctaLabel: "Abrir um pedido de apoio",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Vender na HenryCo — marketplace seletivo para vendedores de confiança",
+      description:
+        "Candidata-te para vender na HenryCo Marketplace: posicionamento de confiança, montras premium e um espaço unificado para encomendas, pagamentos e apoio.",
+    },
+    hero: {
+      kicker: "Vender na HenryCo",
+      title: "Seletiva por natureza. Pensada para vendedores que apostam na confiança.",
+      body: "A HenryCo Marketplace prefere vendedores cuidadosos na apresentação, fiáveis no cumprimento e honestos na proteção ao comprador. O nível exigido fica explícito nesta página; a candidatura de vendedor continua dentro da tua conta HenryCo.",
+      primaryCta: "Abrir candidatura de vendedor",
+      secondaryCta: "Ver preços de vendedor",
+      signInCta: "Iniciar sessão com a conta HenryCo",
+      highlights: [
+        { label: "Seleção", value: "Análise manual, sem listagem paga" },
+        { label: "Montra", value: "Passaporte de confiança visível para compradores" },
+        { label: "Espaço", value: "Encomendas, pagamentos e apoio unificados" },
+      ],
+    },
+    advantages: {
+      kicker: "Porque vencem aqui os vendedores mais fortes",
+      items: [
+        { title: "Posicionamento de confiança", body: "A tua loja recebe um passaporte de confiança visível, em vez de se perder no ruído de um marketplace de baixa qualidade." },
+        { title: "Melhor qualidade de montra", body: "Carris editoriais, uma pesquisa mais calma e cartões de produto mais limpos ajudam lojas exigentes a converter melhor." },
+        { title: "Operação mais nítida", body: "Pagamentos, encomendas, apoio, moderação e alertas de stock ficam visíveis num espaço de trabalho mais claro." },
+      ],
+    },
+    onboarding: {
+      kicker: "Como funciona o onboarding",
+      stepLabel: "Passo",
+      steps: [
+        { step: "01", title: "Iniciar a candidatura de vendedor", body: "Abre a candidatura a partir da tua conta HenryCo — os rascunhos são guardados automaticamente enquanto reúnes os detalhes." },
+        { step: "02", title: "Adicionar dados do negócio", body: "Nome da empresa, perfil da loja, foco de produto e quaisquer documentos de verificação que expliquem como cumpres encomendas." },
+        { step: "03", title: "Análise da candidatura", body: "A equipa HenryCo analisa documentos, sinais de confiança e a robustez da loja — não apenas um emblema pago." },
+        { step: "04", title: "Onboarding de vendedor", body: "Os vendedores aprovados seguem para o onboarding onde preços, taxas de publicação, janelas de pagamento e regras ficam visíveis antes de publicares." },
+      ],
+      callout: {
+        eyebrow: "Uma candidatura de vendedor mais limpa",
+        body: "O registo de vendedor mantém-se dentro da tua conta para que os dados do negócio, o estado da análise e as atualizações de aprovação fiquem privados e fáceis de seguir.",
+      },
+    },
+    plans: {
+      kicker: "Economia dos planos",
+      title: "Patamares anunciados à partida, não depois de publicar.",
+      feeLabel: "Comissão",
+      payoutLabel: "Pagamento",
+      includedLabel: "Incluído",
+      includedSuffix: "anúncios",
+      featuredLabel: "Em destaque",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Os patamares de confiança mudam os privilégios",
+      title: "Conquista pagamentos mais rápidos, montras maiores e vantagens nas políticas.",
+    },
+    closing: {
+      kicker: "Avançar",
+      title: "Candidata-te e acompanha o estado a partir da tua conta.",
+      body: "A aprovação desbloqueia o onboarding de vendedor. Preços, taxas de publicação e janelas de pagamento são visíveis antes de publicares — sem surpresas contratuais depois.",
+      primaryCta: "Iniciar candidatura",
+      secondaryCta: "Ir ao espaço de vendedor",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Preços para vendedores — HenryCo Marketplace",
+      description:
+        "Taxas de plano, taxas de publicação, taxas de destaque, comissão por transação e processamento de pagamento são todas declaradas à partida — antes de publicares inventário, não depois.",
+    },
+    hero: {
+      kicker: "Preços para vendedores",
+      title: "Economia clara. Sem taxas escondidas.",
+      body: "Taxas de plano, taxas de publicação, taxas de destaque, comissão por transação e processamento de pagamento são todas declaradas à partida — antes de publicares o teu inventário, não depois.",
+      primaryCta: "Candidatar como vendedor",
+      secondaryCta: "Voltar à visão geral de vendedor",
+      statsLabels: {
+        planTiers: "Níveis de plano",
+        trustTiers: "Níveis de confiança",
+        featuredSlots: "Slots de destaque",
+      },
+      featuredSlotsValue: "Avaliados caso a caso",
+    },
+    plans: {
+      kicker: "Planos em síntese",
+      feeLabel: "Comissão",
+      payoutLabel: "Pagamento",
+      includedLabel: "Incluídos",
+      includedSuffix: "anúncios",
+      extraListingLabel: "Anúncio extra",
+      featuredSlotLabel: "Slot de destaque",
+      currencyPrefix: "NGN",
+      ctaPartner: "Contactar para condições de parceiro",
+      ctaTemplate: "Começar com {plan}",
+    },
+    economics: {
+      kicker: "Como a HenryCo ganha dinheiro",
+      title: "Declarado à partida, deduzido à vista.",
+      items: [
+        "As comissões por transação são deduzidas em cada liquidação do grupo-encomenda do vendedor antes da libertação do pagamento.",
+        "As taxas de publicação aplicam-se depois de esgotada a quota de anúncios incluídos no plano ativo do vendedor.",
+        "A colocação em destaque é um pedido pago à parte e fica sujeita a revisão de qualidade e confiança.",
+        "As taxas de processamento de pagamento são deduzidas no resumo de liquidação do vendedor, não em surpresa depois.",
+        "Os serviços de valor acrescentado Studio, Learn e Logistics abrem vias adicionais de receita para vendedores.",
+        "As campanhas controladas pelo operador e os espaços patrocinados mantêm-se auditáveis e nunca em autosserviço caótico.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Tempos de pagamento por nível de confiança",
+      title: "Melhor comportamento encurta as retenções.",
+    },
+    closing: {
+      kicker: "Pronto para te candidatares?",
+      title: "A candidatura abre na tua conta HenryCo.",
+      body: "Podes guardar o rascunho e voltar — a tarificação visível aqui aplica-se assim que o onboarding de vendedor estiver concluído.",
+      primaryCta: "Candidatar como vendedor",
+      secondaryCta: "Padrões de confiança",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Confiança e segurança — HenryCo Marketplace",
+      description:
+        "A confiança define o que um vendedor pode fazer, como o dinheiro se move e como a moderação responde. Níveis de vendedor, custódia, disputas e libertação de pagamentos deixam rasto no servidor.",
+    },
+    hero: {
+      kicker: "Confiança e segurança",
+      title: "Visível antes do pagamento. Aplicada depois.",
+      body: "A confiança rege o que um vendedor pode fazer, como o dinheiro circula e como a moderação responde. Níveis de vendedor, risco do comprador, pontuação de anúncios, custódia, disputas e libertação de pagamentos deixam registo no servidor.",
+      pillars: [
+        { label: "Movimento de dinheiro", value: "Em custódia, libertado após verificações" },
+        { label: "Avaliações", value: "Registadas no servidor, rastreáveis em disputa" },
+        { label: "Níveis", value: "Conquistados, revogáveis" },
+      ],
+    },
+    guardrails: {
+      kicker: "Quatro salvaguardas",
+      items: [
+        {
+          title: "Passaportes de confiança",
+          body: "Cada loja e produto mostra o nível de verificação, SLA, taxa de disputas, prontidão para pagamento e postura de cumprimento.",
+        },
+        {
+          title: "Controlo da custódia",
+          body: "Os fundos do comprador ficam primeiro retidos pela HenryCo e só são libertados após confirmação da entrega e das verificações de confiança.",
+        },
+        {
+          title: "Revisão antifraude",
+          body: "Desvios de pagamento fora da plataforma, mídias duplicadas, picos de publicação e padrões de pagamento de risco entram na visibilidade da fila.",
+        },
+        {
+          title: "Trilhas de auditoria",
+          body: "Aprovações, recusas, ações de pagamento, decisões de disputa e varreduras automatizadas ficam registadas no servidor.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Escala de confiança do vendedor",
+      title: "Níveis conquistados pelo comportamento, não comprados.",
+    },
+    policySurfaces: {
+      kicker: "Superfícies das políticas",
+      title: "Os padrões que assumimos.",
+    },
+    ecosystem: {
+      kicker: "Reforço de confiança no ecossistema",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Explore {collection} no HenryCo Marketplace — uma seleção curada de produtos verificados, com sinais de confiança, entrega clara e passaportes de vendedor visíveis antes do checkout.",
+      fallbackDescription:
+        "Uma coleção curada no HenryCo Marketplace, com produtos verificados, sinais de confiança, entrega clara e passaportes de vendedor visíveis antes do checkout.",
+    },
+    hero: {
+      primaryCta: "Abrir busca completa",
+      secondaryCta: "Padrões de confiança",
+    },
+    sidebar: {
+      itemsLabel: "Itens da coleção",
+      editedByLabel: "Editada por",
+      editedByValue: "Operações do Marketplace",
+      buyerProtectionLabel: "Proteção ao comprador",
+      buyerProtectionValue: "Pagamento sob custódia",
+    },
+    rail: {
+      kicker: "O que está nesta seleção",
+      itemsSuffix: "itens",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} no HenryCo Marketplace — fiscalização registada no servidor, custódia de pagamentos e postura de confiança visíveis antes do checkout.",
+      fallbackTitle: "Política do marketplace — HenryCo Marketplace",
+      fallbackDescription:
+        "Uma política do HenryCo Marketplace — fiscalização registada no servidor, custódia de pagamentos e postura de confiança visíveis antes do checkout.",
+    },
+    hero: {
+      backToTrust: "Voltar aos padrões de confiança",
+      openSupport: "Abrir conversa de suporte",
+    },
+    details: {
+      coverageLabel: "Cobertura",
+      enforcementLabel: "Fiscalização",
+      updatedLabel: "Atualizado",
+    },
+    coverageBySlug: {
+      buyerProtection: "Compradores",
+      sellerPolicy: "Vendedores",
+      fallback: "Participantes do marketplace",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Pagamentos sob custódia + congelamento por disputa",
+      sellerPolicy: "Revisão por nível de confiança + reserva de payout",
+      fallback: "Registo auditável no servidor",
+    },
+    updatedBySlug: {
+      buyerProtection: "Em revisões de pagamento e disputa",
+      sellerPolicy: "Em revisões dos padrões do vendedor",
+      fallback: "Em revisões de política",
+    },
+    provisions: {
+      kicker: "Disposições da política",
+    },
+    ecosystem: {
+      kicker: "Controlos conectados do marketplace",
+      openLabel: "Abrir",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} no HenryCo Marketplace — stock verificado, entrega fiável e passaporte do vendedor visíveis antes do pagamento.",
+      fallbackDescription:
+        "Um anúncio verificado no HenryCo Marketplace, com sinais de confiança, clareza de entrega e passaporte do vendedor visíveis antes do pagamento.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Confiança do vendedor",
+      sellerTrustValueTemplate: "Passaporte de {vendor} visível",
+      sellerTrustValueFallback: "Passaporte do vendedor pendente",
+      availabilityLabel: "Disponibilidade",
+      availabilityValueSingular: "{count} unidade em stock atual",
+      availabilityValuePlural: "{count} unidades em stock atual",
+      fulfillmentLabel: "Entrega",
+      paymentLabel: "Pagamento",
+      paymentValueCod: "Pagamento na entrega ou transferência verificada",
+      paymentValueVerified: "Fluxo por transferência verificada",
+    },
+    price: {
+      label: "Preço",
+      leadTimeLabel: "Prazo de entrega",
+    },
+    safety: {
+      kicker: "Porque este anúncio inspira mais confiança",
+      stockTemplate: "{count} unidades atualmente visíveis no inventário",
+      codEligible: "Pagamento na entrega disponível onde for suportado",
+      codFallback: "Fluxo de verificação manual disponível",
+      vendorLinkedTemplate: "O passaporte do vendedor {vendor} está ligado diretamente a partir desta página",
+      vendorPending: "A superfície de confiança do vendedor ainda está por ligar",
+      reviewsTemplateSingular: "{count} avaliação com média de {rating}",
+      reviewsTemplatePlural: "{count} avaliações com média de {rating}",
+    },
+    detail: {
+      kicker: "Detalhe do produto",
+      title: "Tudo o que importa antes de pagar.",
+      deliverySummaryTitle: "Entrega, suporte e cuidado pós-encomenda",
+      deliveryFallback: "As janelas de entrega serão esclarecidas no checkout.",
+      deliveryTail:
+        "As encomendas mantêm-se rastreáveis do pagamento até à entrega, e disputas ou tópicos de suporte permanecem ligados ao mesmo registo de encomenda.",
+      specsTitle: "Especificações e clareza dos materiais",
+      passportTitle: "Passaporte da loja e descobertas relacionadas",
+      visitVendorTemplate: "Visitar {vendor}",
+      exploreCategoryTemplate: "Explorar {category}",
+      seeBrandTemplate: "Ver {brand}",
+    },
+    related: {
+      kicker: "Completar o conjunto",
+      title: "Mais dentro do mesmo contexto de compra.",
+      body: "As recomendações mantêm-se cuidadas e sóbrias, sem ruído comercial excessivo.",
+    },
+    reviews: {
+      kicker: "Destaques das avaliações",
+      title: "Sinais de compra verificados, sem ruído desnecessário.",
+      verifiedPurchase: "Compra verificada",
+      reviewLabel: "Avaliação",
+    },
+    rail: {
+      kicker: "Clientes também compraram",
+      headline: "Continue a navegar sem perder o seu lugar.",
+      caption:
+        "Sinais de co-compra e de categoria semelhante mostram o próximo passo óbvio, sem encher de promoções inúteis.",
+      ctaLabel: "Abrir pesquisa",
+    },
+  },
+};
+
+const DE: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Warenkorb",
+      title: "Ein Premium-Warenkorb mit schnelleren Anpassungen und klarer Übersicht bei geteilten Bestellungen.",
+      description:
+        "Der Warenkorb hält die Händler-Gruppierung sichtbar, aktualisiert Mengen zügig und bleibt mit der Mini-Warenkorb-Schublade verbunden, damit Käufer:innen kurz vor dem Checkout den Überblick behalten.",
+    },
+    emptyState: {
+      title: "Dein Warenkorb ist noch leer.",
+      body: "Füge schnell aus den Produktkarten hinzu, merke dir Artikel für später, und der Warenkorb bleibt sowohl in der Mini-Schublade als auch in der Vollansicht aktuell – ganz ohne Reload.",
+      ctaLabel: "Produkte entdecken",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Bestellverfolgung — HenryCo Marketplace",
+      description:
+        "Verfolge jedes Händler-Segment, jede Zahlungsaktualisierung und jeden Versandmeilenstein an einem Ort. Die Treuhand bleibt aktiv, bis die Lieferung bestätigt ist.",
+    },
+    hero: {
+      kicker: "Bestellverfolgung",
+      titlePrefix: "Verfolgung",
+      body: "Die Übersicht über geteilte Bestellungen bleibt hier sichtbar: jedes Händler-Segment, jede Zahlungsaktualisierung und jeder Versandmeilenstein steht in einer eigenen Zeile, damit Support und Käuferin auf demselben Stand bleiben.",
+      orderValueLabel: "Bestellwert",
+      paymentLabel: "Zahlung",
+      payoutControlLabel: "Auszahlungskontrolle",
+      payoutFrozen: "Eingefroren",
+      payoutEscrowActive: "Treuhand aktiv",
+    },
+    paymentRecord: {
+      kicker: "Zahlungsnachweis",
+      walletBody: "Das Wallet-Guthaben wurde belastet und die Bestellung liegt bis zur Erfüllung in der Treuhand.",
+      proofBody: "Der Überweisungsbeleg ist zur Prüfung durch das HenryCo-Finanzteam angehängt.",
+      awaitingBody: "Die Zahlung wartet auf den Finanznachweis oder den Abgleich bei Lieferung.",
+      methodLabel: "Methode",
+      statusLabel: "Status",
+      proofLabel: "Nachweis",
+      viewProof: "Beleg ansehen",
+      walletDebit: "Wallet-Abbuchung",
+      pending: "Ausstehend",
+    },
+    timeline: {
+      kicker: "Zeitachse",
+      title: "Für Kundinnen sichtbare Meilensteine, in Reihenfolge.",
+    },
+    segments: {
+      kicker: "Händler-Segmente",
+      title: "Jeder Händler steht für seinen eigenen Versand ein.",
+      henrycoSegment: "HenryCo-Segment",
+      fulfillmentLabel: "Versand",
+      trackingLabel: "Sendungsverfolgung",
+      payoutLabel: "Auszahlung",
+      trackingPending: "Ausstehend",
+    },
+    completion: {
+      kicker: "Abschlussbestätigung",
+      body: "Bestätige den Abschluss, sobald die Bestellung in Ordnung ist. HenryCo gibt die Händlerauszahlung erst nach bestätigter Lieferung oder bei Eignung für die automatische Freigabe frei.",
+      confirmCta: "Abschluss bestätigen",
+    },
+    help: {
+      kicker: "Brauchst du Hilfe?",
+      title: "Streitfälle, Rückerstattungen und Lieferprobleme laufen über einen Thread.",
+      body: "Öffne einen Support-Thread mit dieser Bestellnummer im Anhang, damit der Agent die komplette Zeitachse und die Händlerteilung sieht, ohne dass du alles erneut tippen musst.",
+      openSupportCta: "Support-Thread öffnen",
+      viewAllOrdersCta: "Alle Bestellungen anzeigen",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Geprüfte Angebote — HenryCo Marketplace",
+      description:
+        "Rabatte gefiltert nach Vertrauen, verlässlicher Bestandslage und Händlerverantwortung. Auf der HenryCo-Deals-Seite erscheinen nur verifizierte Listings mit sauberen Vertrauenssignalen.",
+    },
+    pageIntro: {
+      kicker: "Geprüfte Angebote",
+      title: "Rabatte gefiltert nach Vertrauen, verlässlicher Bestandslage und Händlerverantwortung.",
+      description:
+        "Angebote zeigen wir erst, wenn Listing-Qualität, Vertrauens-Passport des Händlers und Bestandsstatus sauber genug sind, um die Conversion zu schützen und Kaufreue zu vermeiden.",
+    },
+    sectionLabel: "Geprüfte Angebote",
+    listEyebrow: "Geprüfte Angebote",
+    refreshNote: "Regelmäßig aktualisiert",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Aktuell keine geprüften Angebote",
+      body: "Geprüfte Rabatte erscheinen, sobald Händler sie einstellen. Schau bald wieder vorbei.",
+    },
+  },
+  brand: {
+    eyebrow: "Marke",
+    bodyFallback:
+      "Ein verifizierter Shop auf HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor dem Checkout.",
+    searchCta: "In dieser Marke suchen",
+    trustCta: "Vertrauensstandards",
+    stats: {
+      activeProducts: "Aktive Produkte",
+      listingsReviewed: "Geprüfte Angebote",
+      listingsReviewedValue: "Trust-Passport pro Artikel sichtbar",
+      buyerProtection: "Käuferschutz",
+      buyerProtectionValue: "Treuhand-Checkout",
+    },
+    liveKicker: "Live von {brand}",
+    openFullSearch: "Volle Suche öffnen",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Entdecke verifizierte Produkte von {brand} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Entdecke verifizierte Produkte von {store} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor dem Checkout.",
+    metadataDescriptionFallback:
+      "Ein verifizierter Shop auf HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und einsehbarem Händler-Passport schon vor jedem Checkout.",
+    hero: {
+      eyebrow: "Shop-Passport",
+      bodyFallback:
+        "Eine verifizierte Verkäufer:in auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und einem transparenten Passport schon vor jedem Checkout.",
+    },
+    stats: {
+      trustScore: "Vertrauensscore",
+      responseSla: "Reaktionszeit",
+      responseSlaSuffix: " Std.",
+      followers: "Follower:innen",
+    },
+    standards: {
+      eyebrow: "Shop-Standards",
+    },
+    support: {
+      eyebrow: "Support",
+      contactLinkLabel: "Nutze HenryCo Marketplace, um diesen Shop zu kontaktieren",
+      contactBodySuffix:
+        " — Nachrichten werden protokolliert und an deine Bestellreferenz gebunden, damit jede Aktualisierung an einem Ort bleibt.",
+      ctaLabel: "Diesen Shop kontaktieren",
+      subjectTemplate: "Frage an {store}",
+    },
+    reviews: {
+      eyebrow: "Neueste Bewertungen",
+      verifiedPurchase: "Verifizierter Kauf",
+      review: "Bewertung",
+    },
+    catalog: {
+      kicker: "Shop-Katalog",
+      title: "Alles, was dieser Shop gerade live hat.",
+      exploreLink: "Mehr verifizierte Angebote entdecken",
+      emptyTitle: "Noch keine Live-Angebote",
+      emptyBody: "Genehmigte Produkte dieses Shops erscheinen hier, sobald sie live geschaltet werden.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Kategorie-Edition",
+      searchCta: "In dieser Kategorie suchen",
+      trustCta: "Vertrauensstandards ansehen",
+      quickFiltersLabel: "Schnellfilter",
+    },
+    stats: {
+      activeListingsLabel: "Aktive Angebote",
+    },
+    collectionsRail: {
+      kicker: "Kuratierte Auswahl",
+      title: "Kollektionen, die Kaufentscheidungen verkürzen.",
+    },
+    catalog: {
+      kicker: "Kategorie-Katalog",
+      title: "Premium-Produkte, klarere Hierarchie.",
+      openSearch: "Volle Suche öffnen",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Entdecke verifizierte Produkte in {category} auf HenryCo Marketplace – mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports schon vor dem Checkout.",
+      fallbackDescription:
+        "Stöbere durch eine kuratierte Kategorie im HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferübersicht und Händler-Passports vor dem Checkout.",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Hilfe-Center — HenryCo Marketplace",
+      description:
+        "Sieh dir die häufigsten Fragen von Käufer:innen und Verkäufer:innen an. Wenn du nicht fündig wirst, öffne ein Support-Ticket – ein Mensch aus dem Team liest es.",
+    },
+    hero: {
+      kicker: "Hilfe-Center",
+      title: "Finde in Sekunden eine Antwort – oder sprich mit einer Person.",
+      body: "Such die Themen, die Käufer:innen und Verkäufer:innen am häufigsten stellen. Wenn du nicht fündig wirst, öffne unten auf der Seite ein Support-Ticket – ein Mensch aus dem Team liest es.",
+    },
+    stillNeedHelp: {
+      kicker: "Brauchst du weiter Hilfe",
+      title: "Öffne ein Support-Ticket – ein Mensch liest es.",
+      body: "Tickets halten den vollen Kontext beisammen — Bestellung, Händler, Verlauf des Streitfalls — damit das Team die Sache bearbeitet, ohne dass du sie bei jeder Antwort neu tippst.",
+      ctaLabel: "Support-Ticket öffnen",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Auf HenryCo verkaufen — selektiver Marketplace für Vertrauens-Händler:innen",
+      description:
+        "Bewirb dich für den Verkauf auf HenryCo Marketplace: vertrauensorientierte Positionierung, Premium-Storefronts und ein einheitlicher Workspace für Bestellungen, Auszahlungen und Support.",
+    },
+    hero: {
+      kicker: "Auf HenryCo verkaufen",
+      title: "Selektiv von Grund auf. Gemacht für Händler:innen, die Vertrauen führen.",
+      body: "HenryCo Marketplace bevorzugt Händler:innen, die auf Präsentation achten, verlässlich liefern und Käuferschutz ernst nehmen. Die Anforderungen sind auf dieser Seite klar; die Händler-Bewerbung läuft in deinem HenryCo-Konto weiter.",
+      primaryCta: "Händler-Bewerbung öffnen",
+      secondaryCta: "Händler-Preise ansehen",
+      signInCta: "Mit HenryCo-Konto anmelden",
+      highlights: [
+        { label: "Auswahl", value: "Manuelle Prüfung statt Bezahllisting" },
+        { label: "Storefront", value: "Trust-Passport für Käufer:innen sichtbar" },
+        { label: "Workspace", value: "Bestellungen, Auszahlungen, Support vereint" },
+      ],
+    },
+    advantages: {
+      kicker: "Warum stärkere Händler:innen hier gewinnen",
+      items: [
+        { title: "Vertrauensorientierte Positionierung", body: "Dein Shop erhält einen sichtbaren Trust-Passport, statt im Rauschen eines Massen-Marketplaces unterzugehen." },
+        { title: "Bessere Storefront-Qualität", body: "Editoriale Schienen, eine ruhigere Suche und sauberere Produktkarten helfen anspruchsvollen Shops, besser zu konvertieren." },
+        { title: "Klarere Operations", body: "Auszahlungen, Bestellungen, Support, Moderation und Bestandsalarme bleiben in einem klareren Workspace sichtbar." },
+      ],
+    },
+    onboarding: {
+      kicker: "So läuft das Onboarding",
+      stepLabel: "Schritt",
+      steps: [
+        { step: "01", title: "Händler-Bewerbung starten", body: "Öffne die Bewerbung aus deinem HenryCo-Konto heraus — Entwürfe werden automatisch gespeichert, während du die Details zusammenstellst." },
+        { step: "02", title: "Geschäftsdaten ergänzen", body: "Firmenname, Shop-Profil, Produkt-Fokus und alle Verifizierungsdokumente, die zeigen, wie du Bestellungen erfüllst." },
+        { step: "03", title: "Prüfung der Bewerbung", body: "Das HenryCo-Team prüft Dokumente, Vertrauenssignale und Shop-Reife — nicht nur ein bezahltes Abzeichen." },
+        { step: "04", title: "Vendor-Onboarding", body: "Freigegebene Händler:innen gehen ins Vendor-Onboarding, wo Preise, Listing-Gebühren, Auszahlungsfenster und Richtlinien vor der Veröffentlichung sichtbar bleiben." },
+      ],
+      callout: {
+        eyebrow: "Eine sauberere Händler-Bewerbung",
+        body: "Die Händler-Registrierung bleibt in deinem Konto, damit Geschäftsdaten, Prüfstatus und Freigabe-Updates privat und leicht nachvollziehbar bleiben.",
+      },
+    },
+    plans: {
+      kicker: "Plan-Ökonomie",
+      title: "Stufen vorab benannt, nicht erst nach der Veröffentlichung.",
+      feeLabel: "Gebühr",
+      payoutLabel: "Auszahlung",
+      includedLabel: "Inklusive",
+      includedSuffix: "Inserate",
+      featuredLabel: "Hervorgehoben",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Trust-Stufen verändern Privilegien",
+      title: "Hol dir schnellere Auszahlungen, größere Storefronts und Richtlinien-Vorteile.",
+    },
+    closing: {
+      kicker: "Weitergehen",
+      title: "Bewirb dich und verfolge den Status aus deinem Konto.",
+      body: "Mit der Freigabe öffnet sich das Vendor-Onboarding. Preise, Listing-Gebühren und Auszahlungsfenster sind vor der Veröffentlichung sichtbar — keine vertraglichen Überraschungen später.",
+      primaryCta: "Bewerbung starten",
+      secondaryCta: "Zum Vendor-Workspace",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Verkäuferpreise — HenryCo Marketplace",
+      description:
+        "Plangebühren, Listing-Gebühren, Gebühren für Featured-Slots, Transaktionsprovision und Auszahlungsabwicklung werden alle vorab ausgewiesen — vor der Veröffentlichung deines Bestands, nicht danach.",
+    },
+    hero: {
+      kicker: "Verkäuferpreise",
+      title: "Klare Ökonomie. Keine versteckten Gebühren.",
+      body: "Plangebühren, Listing-Gebühren, Gebühren für Featured-Slots, Transaktionsprovision und Auszahlungsabwicklung werden alle vorab ausgewiesen — bevor du Bestand veröffentlichst, nicht danach.",
+      primaryCta: "Als Verkäufer bewerben",
+      secondaryCta: "Zurück zur Verkäuferübersicht",
+      statsLabels: {
+        planTiers: "Plan-Stufen",
+        trustTiers: "Vertrauensstufen",
+        featuredSlots: "Featured-Slots",
+      },
+      featuredSlotsValue: "Einzelfallprüfung",
+    },
+    plans: {
+      kicker: "Pläne im Überblick",
+      feeLabel: "Provision",
+      payoutLabel: "Auszahlung",
+      includedLabel: "Inklusive",
+      includedSuffix: "Inserate",
+      extraListingLabel: "Zusätzliches Inserat",
+      featuredSlotLabel: "Featured-Slot",
+      currencyPrefix: "NGN",
+      ctaPartner: "Für Partnerkonditionen Kontakt aufnehmen",
+      ctaTemplate: "Mit {plan} starten",
+    },
+    economics: {
+      kicker: "Wie HenryCo Geld verdient",
+      title: "Vorab ausgewiesen, offen abgezogen.",
+      items: [
+        "Transaktionsprovisionen werden bei jeder Vendor-Bestellgruppen-Abrechnung vor der Auszahlung abgezogen.",
+        "Listing-Gebühren fallen an, sobald das im aktiven Plan enthaltene Inserate-Kontingent ausgeschöpft ist.",
+        "Featured-Platzierung ist eine separate kostenpflichtige Anfrage und unterliegt einer Qualitäts- und Vertrauensprüfung.",
+        "Bearbeitungsgebühren für Auszahlungen werden im Verkäufer-Abrechnungsbeleg abgezogen, nicht später als Überraschung.",
+        "Mehrwertdienste von Studio, Learn und Logistics schaffen zusätzliche Ertragspfade für Verkäufer.",
+        "Vom Operator gesteuerte Kampagnen und gesponserte Slots bleiben auditierbar und sind kein Self-Service-Chaos.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Auszahlungstakt nach Vertrauensstufe",
+      title: "Besseres Verhalten verkürzt die Haltefrist.",
+    },
+    closing: {
+      kicker: "Bereit für die Bewerbung?",
+      title: "Die Bewerbung öffnet sich in deinem HenryCo-Konto.",
+      body: "Du kannst den Entwurf speichern und zurückkehren — die hier sichtbare Preisgestaltung gilt, sobald das Vendor-Onboarding abgeschlossen ist.",
+      primaryCta: "Als Verkäufer bewerben",
+      secondaryCta: "Vertrauensstandards",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Vertrauen & Sicherheit — HenryCo Marketplace",
+      description:
+        "Vertrauen bestimmt, was ein Verkäufer darf, wie Geld fließt und wie die Moderation reagiert. Verkäuferstufen, Treuhand, Streitfälle und Auszahlungsfreigaben hinterlassen einen serverseitigen Audit-Trail.",
+    },
+    hero: {
+      kicker: "Vertrauen & Sicherheit",
+      title: "Sichtbar vor dem Checkout. Durchgesetzt danach.",
+      body: "Vertrauen steuert, was ein Verkäufer tun darf, wie Geld fließt und wie die Moderation reagiert. Verkäuferstufen, Käufer-Risiko, Listing-Bewertung, Treuhand, Streitfälle und Auszahlungsfreigaben hinterlassen alle eine serverseitige Spur.",
+      pillars: [
+        { label: "Geldfluss", value: "Treuhand, Freigabe nach Prüfung" },
+        { label: "Bewertungen", value: "Serverseitig protokolliert, in Disputen nachvollziehbar" },
+        { label: "Stufen", value: "Verdient, widerrufbar" },
+      ],
+    },
+    guardrails: {
+      kicker: "Vier Leitplanken",
+      items: [
+        {
+          title: "Vertrauens-Passports",
+          body: "Jeder Shop und jedes Produkt zeigt Verifizierungsstufe, SLA, Streitquote, Auszahlungsstatus und Versandbereitschaft.",
+        },
+        {
+          title: "Treuhand-Kontrolle",
+          body: "Käufergelder werden zuerst von HenryCo gehalten und erst nach Lieferung und Vertrauensprüfung zur Auszahlung freigegeben.",
+        },
+        {
+          title: "Anti-Betrugs-Prüfung",
+          body: "Zahlungs-Umlenkungen außerhalb der Plattform, doppelte Medien, Listing-Spitzen und riskante Auszahlungsmuster werden in der Queue sichtbar gemacht.",
+        },
+        {
+          title: "Audit-Trails",
+          body: "Freigaben, Ablehnungen, Auszahlungsaktionen, Streitentscheidungen und Automations-Durchläufe werden serverseitig protokolliert.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Verkäufer-Vertrauensleiter",
+      title: "Stufen, die durch Verhalten verdient, nicht gekauft werden.",
+    },
+    policySurfaces: {
+      kicker: "Richtlinien-Oberflächen",
+      title: "Die Standards, an die wir uns selbst halten.",
+    },
+    ecosystem: {
+      kicker: "Vertrauensverstärkung im Ökosystem",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Entdecken Sie {collection} auf dem HenryCo Marketplace — eine kuratierte Auswahl geprüfter Produkte mit Vertrauenssignalen, klaren Lieferinformationen und Verkäuferpässen vor dem Checkout.",
+      fallbackDescription:
+        "Eine kuratierte Kollektion auf dem HenryCo Marketplace mit geprüften Produkten, Vertrauenssignalen, klarer Lieferung und sichtbaren Verkäuferpässen vor dem Checkout.",
+    },
+    hero: {
+      primaryCta: "Vollständige Suche öffnen",
+      secondaryCta: "Vertrauensstandards",
+    },
+    sidebar: {
+      itemsLabel: "Artikel in der Kollektion",
+      editedByLabel: "Kuratiert von",
+      editedByValue: "Marketplace-Operations",
+      buyerProtectionLabel: "Käuferschutz",
+      buyerProtectionValue: "Treuhand-Checkout",
+    },
+    rail: {
+      kicker: "In dieser Auswahl",
+      itemsSuffix: "Artikel",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} im HenryCo Marketplace — serverseitig protokollierte Durchsetzung, Treuhandkontrollen und Vertrauenslage vor dem Checkout sichtbar.",
+      fallbackTitle: "Marketplace-Richtlinie — HenryCo Marketplace",
+      fallbackDescription:
+        "Eine Richtlinie des HenryCo Marketplace — serverseitig protokollierte Durchsetzung, Treuhandkontrollen und Vertrauenslage vor dem Checkout sichtbar.",
+    },
+    hero: {
+      backToTrust: "Zurück zu den Vertrauensstandards",
+      openSupport: "Support-Thread öffnen",
+    },
+    details: {
+      coverageLabel: "Geltungsbereich",
+      enforcementLabel: "Durchsetzung",
+      updatedLabel: "Aktualisiert",
+    },
+    coverageBySlug: {
+      buyerProtection: "Käufer",
+      sellerPolicy: "Verkäufer",
+      fallback: "Marketplace-Teilnehmer",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Treuhand-Zahlungen + Auszahlungssperre bei Streit",
+      sellerPolicy: "Prüfung nach Vertrauensstufe + Auszahlungsreserve",
+      fallback: "Serverseitig protokollierte Spur",
+    },
+    updatedBySlug: {
+      buyerProtection: "Bei Änderungen zu Zahlung und Streitfällen",
+      sellerPolicy: "Bei Änderungen der Verkäuferstandards",
+      fallback: "Bei Richtlinienänderungen",
+    },
+    provisions: {
+      kicker: "Bestimmungen der Richtlinie",
+    },
+    ecosystem: {
+      kicker: "Verbundene Marketplace-Kontrollen",
+      openLabel: "Öffnen",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} im HenryCo Marketplace — geprüfter Lagerbestand, verlässliche Lieferung und sichtbarer Verkäuferpass vor dem Checkout.",
+      fallbackDescription:
+        "Ein geprüftes Angebot im HenryCo Marketplace mit Vertrauenssignalen, klarer Lieferung und sichtbarem Verkäuferpass vor dem Checkout.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Verkäufervertrauen",
+      sellerTrustValueTemplate: "Pass von {vendor} sichtbar",
+      sellerTrustValueFallback: "Verkäuferpass steht aus",
+      availabilityLabel: "Verfügbarkeit",
+      availabilityValueSingular: "{count} Einheit aktuell im Lager",
+      availabilityValuePlural: "{count} Einheiten aktuell im Lager",
+      fulfillmentLabel: "Versand",
+      paymentLabel: "Zahlung",
+      paymentValueCod: "Nachnahme oder verifizierte Überweisung",
+      paymentValueVerified: "Ablauf mit verifizierter Überweisung",
+    },
+    price: {
+      label: "Preis",
+      leadTimeLabel: "Lieferzeit",
+    },
+    safety: {
+      kicker: "Warum dieses Angebot vertrauenswürdiger wirkt",
+      stockTemplate: "{count} Einheiten derzeit im Bestand sichtbar",
+      codEligible: "Nachnahme dort möglich, wo unterstützt",
+      codFallback: "Manueller Verifizierungsablauf verfügbar",
+      vendorLinkedTemplate: "Der Verkäuferpass von {vendor} ist direkt von dieser Seite verlinkt",
+      vendorPending: "Die Vertrauensfläche des Verkäufers ist noch nicht verknüpft",
+      reviewsTemplateSingular: "{count} Bewertung bei einer Durchschnittsnote von {rating}",
+      reviewsTemplatePlural: "{count} Bewertungen bei einer Durchschnittsnote von {rating}",
+    },
+    detail: {
+      kicker: "Produktdetail",
+      title: "Alles, was vor dem Checkout zählt.",
+      deliverySummaryTitle: "Lieferung, Support und Nachbetreuung",
+      deliveryFallback: "Lieferzeitfenster werden im Checkout konkretisiert.",
+      deliveryTail:
+        "Bestellungen bleiben von der Zahlung bis zur Auslieferung nachverfolgbar, und Beschwerden oder Support-Threads bleiben mit demselben Bestellsatz verknüpft.",
+      specsTitle: "Spezifikationen und Materialklarheit",
+      passportTitle: "Shop-Pass und verwandte Entdeckungen",
+      visitVendorTemplate: "{vendor} besuchen",
+      exploreCategoryTemplate: "{category} erkunden",
+      seeBrandTemplate: "{brand} ansehen",
+    },
+    related: {
+      kicker: "Set vervollständigen",
+      title: "Weitere passende Stücke im selben Einkaufskontext.",
+      body: "Empfehlungs-Rails bleiben kuratiert und ruhig, statt zu lauten Upsell-Floskeln zu werden.",
+    },
+    reviews: {
+      kicker: "Bewertungs-Highlights",
+      title: "Geprüfte Kaufsignale, kein Geräuschpegel.",
+      verifiedPurchase: "Verifizierter Kauf",
+      reviewLabel: "Bewertung",
+    },
+    rail: {
+      kicker: "Andere Kund:innen kauften auch",
+      headline: "Browse weiter, ohne den Faden zu verlieren.",
+      caption:
+        "Co-Kauf- und Kategorie-Signale zeigen den nächsten naheliegenden Schritt, ohne mit Upsell zu überfrachten.",
+      ctaLabel: "Suche öffnen",
+    },
+  },
+};
+
+const IT: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Carrello",
+      title: "Un carrello premium con modifiche più rapide e maggiore chiarezza sugli ordini divisi.",
+      description:
+        "Il carrello mantiene visibile il raggruppamento per venditore, aggiorna le quantità in modo fluido e resta collegato al cassetto del mini-carrello, così chi compra non perde il contesto quando è vicino al checkout.",
+    },
+    emptyState: {
+      title: "Il tuo carrello è ancora vuoto.",
+      body: "Aggiungi al volo dalle schede prodotto, salva articoli per dopo, e il carrello resta aggiornato sia nel mini-carrello sia nella vista completa, senza ricaricare la pagina.",
+      ctaLabel: "Esplora i prodotti",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Tracciamento ordine — HenryCo Marketplace",
+      description:
+        "Segui ogni segmento venditore, aggiornamento di pagamento e tappa di consegna in un unico posto. L'escrow resta attivo finché la consegna non è confermata.",
+    },
+    hero: {
+      kicker: "Tracciamento ordine",
+      titlePrefix: "Tracciamento",
+      body: "La chiarezza sugli ordini divisi resta qui visibile: ogni segmento venditore, aggiornamento di pagamento e tappa di consegna ha la propria riga, così supporto e aspettative di chi compra restano allineate.",
+      orderValueLabel: "Valore dell'ordine",
+      paymentLabel: "Pagamento",
+      payoutControlLabel: "Controllo del pagamento al venditore",
+      payoutFrozen: "Bloccato",
+      payoutEscrowActive: "Escrow attivo",
+    },
+    paymentRecord: {
+      kicker: "Traccia di pagamento",
+      walletBody: "Il saldo del portafoglio è stato addebitato e l'ordine resta in escrow fino all'evasione.",
+      proofBody: "La ricevuta di bonifico è allegata per la verifica del team finanziario HenryCo.",
+      awaitingBody: "Il pagamento attende l'evidenza finanziaria o la riconciliazione alla consegna.",
+      methodLabel: "Metodo",
+      statusLabel: "Stato",
+      proofLabel: "Ricevuta",
+      viewProof: "Vedi ricevuta",
+      walletDebit: "Addebito portafoglio",
+      pending: "In attesa",
+    },
+    timeline: {
+      kicker: "Cronologia",
+      title: "Tappe visibili al cliente, in ordine.",
+    },
+    segments: {
+      kicker: "Segmenti venditore",
+      title: "Ogni venditore risponde della propria spedizione.",
+      henrycoSegment: "Segmento HenryCo",
+      fulfillmentLabel: "Evasione",
+      trackingLabel: "Tracciamento",
+      payoutLabel: "Pagamento",
+      trackingPending: "In attesa",
+    },
+    completion: {
+      kicker: "Conferma di completamento",
+      body: "Conferma il completamento quando l'ordine è soddisfacente. HenryCo rilascia il pagamento al venditore solo dopo la conferma della consegna o se l'ordine rientra nel rilascio automatico.",
+      confirmCta: "Conferma completamento",
+    },
+    help: {
+      kicker: "Serve aiuto?",
+      title: "Controversie, rimborsi e problemi di consegna passano tutti da un unico thread.",
+      body: "Apri un thread di supporto con questo numero d'ordine allegato, così l'agente vede l'intera cronologia e la divisione per venditore senza che tu debba riscrivere tutto.",
+      openSupportCta: "Apri thread di supporto",
+      viewAllOrdersCta: "Vedi tutti gli ordini",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Offerte verificate — HenryCo Marketplace",
+      description:
+        "Sconti filtrati per affidabilità, disponibilità reale di magazzino e responsabilità del venditore. Nella pagina offerte di HenryCo appaiono solo annunci verificati con segnali puliti.",
+    },
+    pageIntro: {
+      kicker: "Offerte verificate",
+      title: "Sconti filtrati per affidabilità, disponibilità di magazzino e responsabilità del venditore.",
+      description:
+        "Mettiamo in evidenza le offerte solo quando qualità dell’annuncio, passaporto di fiducia del venditore e stato delle scorte sono abbastanza puliti da proteggere la conversione e ridurre il rimpianto di chi compra.",
+    },
+    sectionLabel: "Offerte verificate",
+    listEyebrow: "Offerte verificate",
+    refreshNote: "Aggiornate regolarmente",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Nessuna offerta verificata in questo momento",
+      body: "Gli sconti verificati arrivano man mano che i venditori li pubblicano. Torna a dare un’occhiata.",
+    },
+  },
+  brand: {
+    eyebrow: "Marchio",
+    bodyFallback:
+      "Un negozio verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporto del venditore visibili prima del pagamento.",
+    searchCta: "Cerca in questo marchio",
+    trustCta: "Standard di fiducia",
+    stats: {
+      activeProducts: "Prodotti attivi",
+      listingsReviewed: "Annunci verificati",
+      listingsReviewedValue: "Trust Passport visibile per ogni articolo",
+      buyerProtection: "Protezione acquirente",
+      buyerProtectionValue: "Pagamento in deposito",
+    },
+    liveKicker: "In diretta da {brand}",
+    openFullSearch: "Apri la ricerca completa",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Esplora i prodotti verificati di {brand} su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporti dei venditori visibili prima del pagamento.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Esplora i prodotti verificati di {store} su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e il passaporto del venditore visibili prima del pagamento.",
+    metadataDescriptionFallback:
+      "Un negozio verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e passaporto del venditore visibili prima di ogni pagamento.",
+    hero: {
+      eyebrow: "Passaporto del negozio",
+      bodyFallback:
+        "Un venditore verificato su HenryCo Marketplace, con segnali di affidabilità, chiarezza sulla consegna e un passaporto trasparente visibile prima di ogni pagamento.",
+    },
+    stats: {
+      trustScore: "Punteggio di fiducia",
+      responseSla: "Tempo di risposta",
+      responseSlaSuffix: " h",
+      followers: "Follower",
+    },
+    standards: {
+      eyebrow: "Standard del negozio",
+    },
+    support: {
+      eyebrow: "Supporto",
+      contactLinkLabel: "Usa HenryCo Marketplace per contattare questo negozio",
+      contactBodySuffix:
+        " — i messaggi vengono registrati e collegati al riferimento del tuo ordine, così ogni aggiornamento resta in un unico posto.",
+      ctaLabel: "Contatta questo negozio",
+      subjectTemplate: "Domanda per {store}",
+    },
+    reviews: {
+      eyebrow: "Recensioni recenti",
+      verifiedPurchase: "Acquisto verificato",
+      review: "Recensione",
+    },
+    catalog: {
+      kicker: "Catalogo del negozio",
+      title: "Tutto ciò che questo negozio ha attualmente online.",
+      exploreLink: "Esplora altri annunci verificati",
+      emptyTitle: "Ancora nessun annuncio online",
+      emptyBody: "I prodotti approvati di questo negozio appariranno qui non appena saranno online.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Edizione di categoria",
+      searchCta: "Cerca in questa categoria",
+      trustCta: "Rivedi gli standard di fiducia",
+      quickFiltersLabel: "Filtri rapidi",
+    },
+    stats: {
+      activeListingsLabel: "Annunci attivi",
+    },
+    collectionsRail: {
+      kicker: "Selezioni curate",
+      title: "Collezioni che accorciano la decisione d’acquisto.",
+    },
+    catalog: {
+      kicker: "Catalogo della categoria",
+      title: "Prodotti premium, gerarchia più nitida.",
+      openSearch: "Apri ricerca completa",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Esplora prodotti verificati in {category} su HenryCo Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporti venditore visibili prima del pagamento.",
+      fallbackDescription:
+        "Sfoglia una categoria curata di HenryCo Marketplace con segnali di fiducia, chiarezza sulla consegna e passaporti venditore prima del pagamento.",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Centro assistenza — HenryCo Marketplace",
+      description:
+        "Sfoglia le domande più frequenti di chi compra e di chi vende. Se non trovi quello che cerchi, apri un ticket di assistenza e una persona del team lo leggerà.",
+    },
+    hero: {
+      kicker: "Centro assistenza",
+      title: "Trova una risposta in pochi secondi — o parla con una persona.",
+      body: "Cerca i temi che acquirenti e venditori chiedono più spesso. Se non trovi quello che ti serve, apri un ticket in fondo a questa pagina e una persona del team lo leggerà.",
+    },
+    stillNeedHelp: {
+      kicker: "Serve ancora aiuto",
+      title: "Apri un ticket di assistenza e una persona lo leggerà.",
+      body: "I ticket mantengono tutto il contesto allegato — l’ordine, il venditore, lo storico della disputa — così il team lavora al caso senza che tu debba riscrivere tutto a ogni risposta.",
+      ctaLabel: "Apri un ticket di assistenza",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Vendere su HenryCo — marketplace selettivo per venditori di fiducia",
+      description:
+        "Candidati per vendere su HenryCo Marketplace: posizionamento fondato sulla fiducia, vetrine premium e uno spazio unico per ordini, pagamenti e supporto.",
+    },
+    hero: {
+      kicker: "Vendere su HenryCo",
+      title: "Selettivo per scelta. Pensato per venditori che mettono la fiducia al primo posto.",
+      body: "HenryCo Marketplace privilegia venditori attenti alla presentazione, affidabili nelle consegne e onesti sulla protezione dell’acquirente. Il livello richiesto è esplicitato qui; la candidatura venditore prosegue dentro il tuo account HenryCo.",
+      primaryCta: "Apri candidatura venditore",
+      secondaryCta: "Vedi i prezzi venditore",
+      signInCta: "Accedi con account HenryCo",
+      highlights: [
+        { label: "Selezione", value: "Revisione manuale, non listing a pagamento" },
+        { label: "Vetrina", value: "Passaporto di fiducia visibile agli acquirenti" },
+        { label: "Spazio", value: "Ordini, pagamenti e supporto in un solo posto" },
+      ],
+    },
+    advantages: {
+      kicker: "Perché qui vincono i venditori più solidi",
+      items: [
+        { title: "Posizionamento basato sulla fiducia", body: "Il tuo store riceve un passaporto di fiducia visibile, invece di perdersi nel rumore di un marketplace di bassa qualità." },
+        { title: "Vetrine di qualità migliore", body: "Carrelli editoriali, una ricerca più calma e schede prodotto più pulite aiutano gli store esigenti a convertire meglio." },
+        { title: "Operatività più nitida", body: "Pagamenti, ordini, supporto, moderazione e avvisi di stock restano visibili in uno spazio di lavoro più chiaro." },
+      ],
+    },
+    onboarding: {
+      kicker: "Come funziona l’onboarding",
+      stepLabel: "Passo",
+      steps: [
+        { step: "01", title: "Avviare la candidatura venditore", body: "Apri la candidatura dal tuo account HenryCo — le bozze si salvano automaticamente mentre raccogli i dettagli." },
+        { step: "02", title: "Aggiungere i dati aziendali", body: "Ragione sociale, profilo store, focus prodotto e ogni documento di verifica che spiega come gestisci gli ordini." },
+        { step: "03", title: "Revisione della candidatura", body: "Il team HenryCo esamina documenti, segnali di fiducia e maturità dello store — non solo un badge a pagamento." },
+        { step: "04", title: "Onboarding venditore", body: "I venditori approvati proseguono con l’onboarding, dove prezzi, commissioni di pubblicazione, finestre di pagamento e regole sono visibili prima della pubblicazione." },
+      ],
+      callout: {
+        eyebrow: "Una candidatura venditore più pulita",
+        body: "La registrazione venditore resta dentro il tuo account, così dati aziendali, stato della revisione e aggiornamenti di approvazione rimangono privati e facili da seguire.",
+      },
+    },
+    plans: {
+      kicker: "Economia dei piani",
+      title: "Livelli dichiarati in anticipo, non dopo la pubblicazione.",
+      feeLabel: "Commissione",
+      payoutLabel: "Pagamento",
+      includedLabel: "Inclusi",
+      includedSuffix: "annunci",
+      featuredLabel: "In evidenza",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "I livelli di fiducia cambiano i privilegi",
+      title: "Ottieni pagamenti più rapidi, vetrine più ampie e vantaggi sulle policy.",
+    },
+    closing: {
+      kicker: "Andare avanti",
+      title: "Candidati e segui lo stato dal tuo account.",
+      body: "L’approvazione sblocca l’onboarding venditore. Prezzi, commissioni di pubblicazione e finestre di pagamento sono visibili prima di pubblicare — niente sorprese contrattuali dopo.",
+      primaryCta: "Avvia candidatura",
+      secondaryCta: "Vai allo spazio venditore",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Prezzi per venditori — HenryCo Marketplace",
+      description:
+        "Commissioni di piano, commissioni di pubblicazione, commissioni dei posti in evidenza, commissione di transazione e processamento dei pagamenti sono tutte dichiarate in anticipo — prima di pubblicare l’inventario, non dopo.",
+    },
+    hero: {
+      kicker: "Prezzi per venditori",
+      title: "Economia chiara. Nessuna commissione nascosta.",
+      body: "Commissioni di piano, commissioni di pubblicazione, posti in evidenza, commissione di transazione e processamento dei pagamenti sono tutte dichiarate in anticipo — prima di pubblicare l’inventario, non dopo.",
+      primaryCta: "Candidati come venditore",
+      secondaryCta: "Torna alla panoramica venditore",
+      statsLabels: {
+        planTiers: "Livelli di piano",
+        trustTiers: "Livelli di fiducia",
+        featuredSlots: "Posti in evidenza",
+      },
+      featuredSlotsValue: "Valutati caso per caso",
+    },
+    plans: {
+      kicker: "Piani in sintesi",
+      feeLabel: "Commissione",
+      payoutLabel: "Pagamento",
+      includedLabel: "Inclusi",
+      includedSuffix: "annunci",
+      extraListingLabel: "Annuncio aggiuntivo",
+      featuredSlotLabel: "Posto in evidenza",
+      currencyPrefix: "NGN",
+      ctaPartner: "Contattaci per condizioni partner",
+      ctaTemplate: "Inizia con {plan}",
+    },
+    economics: {
+      kicker: "Come HenryCo guadagna",
+      title: "Dichiarato in anticipo, dedotto a vista.",
+      items: [
+        "Le commissioni di transazione vengono dedotte da ogni liquidazione del gruppo-ordine venditore prima del rilascio del pagamento.",
+        "Le commissioni di pubblicazione si applicano una volta esaurita la quota di annunci inclusi nel piano attivo del venditore.",
+        "L’evidenza è una richiesta a pagamento separata e resta soggetta a controllo qualità e fiducia.",
+        "Le commissioni di processamento del pagamento sono dedotte nel riepilogo di liquidazione del venditore, non in sorpresa più tardi.",
+        "I servizi a valore aggiunto Studio, Learn e Logistics creano nuove direttrici di ricavo per i venditori.",
+        "Le campagne governate dall’operatore e gli slot sponsorizzati restano tracciabili e mai in self-service caotico.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Tempistiche di pagamento per livello di fiducia",
+      title: "Un comportamento migliore accorcia le trattenute.",
+    },
+    closing: {
+      kicker: "Pronto a candidarti?",
+      title: "La candidatura si apre nel tuo account HenryCo.",
+      body: "Puoi salvare la bozza e tornare — i prezzi visibili qui si applicano una volta completato l’onboarding venditore.",
+      primaryCta: "Candidati come venditore",
+      secondaryCta: "Standard di fiducia",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Affidabilità e sicurezza — HenryCo Marketplace",
+      description:
+        "La fiducia regola cosa può fare un venditore, come si muove il denaro e come reagisce la moderazione. Livelli del venditore, deposito, dispute e rilascio dei pagamenti lasciano una traccia lato server.",
+    },
+    hero: {
+      kicker: "Affidabilità e sicurezza",
+      title: "Visibile prima del checkout. Applicata dopo.",
+      body: "La fiducia governa cosa può fare un venditore, come si muove il denaro e come reagisce la moderazione. Livelli del venditore, rischio dell’acquirente, punteggio degli annunci, deposito, dispute e rilascio dei pagamenti lasciano tutti una traccia lato server.",
+      pillars: [
+        { label: "Movimenti di denaro", value: "In deposito, rilasciati dopo i controlli" },
+        { label: "Recensioni", value: "Registrate lato server, tracciabili nelle dispute" },
+        { label: "Livelli", value: "Guadagnati, revocabili" },
+      ],
+    },
+    guardrails: {
+      kicker: "Quattro garanzie",
+      items: [
+        {
+          title: "Trust Passport",
+          body: "Ogni negozio e prodotto mostra livello di verifica, SLA, tasso di dispute, prontezza al pagamento e postura di evasione.",
+        },
+        {
+          title: "Controllo del deposito",
+          body: "I fondi dell’acquirente vengono prima trattenuti da HenryCo e poi spostati in pagamento rilasciabile solo dopo consegna e controlli di fiducia superati.",
+        },
+        {
+          title: "Revisione antifrode",
+          body: "Deviazioni di pagamento fuori piattaforma, media duplicati, picchi di pubblicazione e schemi di pagamento rischiosi finiscono nella visibilità delle code di revisione.",
+        },
+        {
+          title: "Tracciati di audit",
+          body: "Approvazioni, rifiuti, azioni di pagamento, decisioni sulle dispute e passaggi automatici sono registrati lato server.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Scala di fiducia del venditore",
+      title: "Livelli guadagnati con il comportamento, non comprati.",
+    },
+    policySurfaces: {
+      kicker: "Superfici delle politiche",
+      title: "Gli standard che ci imponiamo.",
+    },
+    ecosystem: {
+      kicker: "Rafforzamento della fiducia nell’ecosistema",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Esplora {collection} su HenryCo Marketplace — una selezione curata di prodotti verificati, con segnali di fiducia, chiarezza nella consegna e passaporti venditore visibili prima del checkout.",
+      fallbackDescription:
+        "Una collezione curata su HenryCo Marketplace, con prodotti verificati, segnali di fiducia, consegna chiara e passaporti venditore visibili prima del checkout.",
+    },
+    hero: {
+      primaryCta: "Apri ricerca completa",
+      secondaryCta: "Standard di fiducia",
+    },
+    sidebar: {
+      itemsLabel: "Articoli nella collezione",
+      editedByLabel: "Curata da",
+      editedByValue: "Operations del Marketplace",
+      buyerProtectionLabel: "Protezione acquirente",
+      buyerProtectionValue: "Checkout in deposito a garanzia",
+    },
+    rail: {
+      kicker: "Cosa contiene la selezione",
+      itemsSuffix: "articoli",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{policy} su HenryCo Marketplace — applicazione registrata lato server, controlli di deposito a garanzia e postura di fiducia visibili prima del checkout.",
+      fallbackTitle: "Politica del marketplace — HenryCo Marketplace",
+      fallbackDescription:
+        "Una politica di HenryCo Marketplace — applicazione registrata lato server, controlli di deposito a garanzia e postura di fiducia visibili prima del checkout.",
+    },
+    hero: {
+      backToTrust: "Torna agli standard di fiducia",
+      openSupport: "Apri un thread di assistenza",
+    },
+    details: {
+      coverageLabel: "Copertura",
+      enforcementLabel: "Applicazione",
+      updatedLabel: "Aggiornato",
+    },
+    coverageBySlug: {
+      buyerProtection: "Acquirenti",
+      sellerPolicy: "Venditori",
+      fallback: "Partecipanti al marketplace",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Pagamenti in deposito a garanzia + blocco controversia",
+      sellerPolicy: "Revisione per livello di fiducia + riserva di payout",
+      fallback: "Traccia registrata lato server",
+    },
+    updatedBySlug: {
+      buyerProtection: "A ogni revisione su pagamenti e controversie",
+      sellerPolicy: "A ogni revisione degli standard venditore",
+      fallback: "A ogni revisione della politica",
+    },
+    provisions: {
+      kicker: "Disposizioni della politica",
+    },
+    ecosystem: {
+      kicker: "Controlli connessi del marketplace",
+      openLabel: "Apri",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} su HenryCo Marketplace — stock verificato, consegna affidabile e passaporto venditore visibili prima del pagamento.",
+      fallbackDescription:
+        "Un annuncio verificato su HenryCo Marketplace, con segnali di fiducia, chiarezza sulla consegna e passaporto venditore visibili prima del pagamento.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Affidabilità venditore",
+      sellerTrustValueTemplate: "Passaporto di {vendor} visibile",
+      sellerTrustValueFallback: "Passaporto venditore in attesa",
+      availabilityLabel: "Disponibilità",
+      availabilityValueSingular: "{count} unità nello stock attuale",
+      availabilityValuePlural: "{count} unità nello stock attuale",
+      fulfillmentLabel: "Consegna",
+      paymentLabel: "Pagamento",
+      paymentValueCod: "Contrassegno o bonifico verificato",
+      paymentValueVerified: "Flusso con bonifico verificato",
+    },
+    price: {
+      label: "Prezzo",
+      leadTimeLabel: "Tempi di consegna",
+    },
+    safety: {
+      kicker: "Perché questo annuncio risulta più affidabile",
+      stockTemplate: "{count} unità attualmente visibili a magazzino",
+      codEligible: "Contrassegno disponibile dove supportato",
+      codFallback: "Flusso di verifica manuale disponibile",
+      vendorLinkedTemplate: "Il passaporto venditore di {vendor} è collegato direttamente da questa pagina",
+      vendorPending: "La superficie di fiducia del venditore è ancora da collegare",
+      reviewsTemplateSingular: "{count} recensione con valutazione media di {rating}",
+      reviewsTemplatePlural: "{count} recensioni con valutazione media di {rating}",
+    },
+    detail: {
+      kicker: "Dettaglio prodotto",
+      title: "Tutto ciò che conta prima del pagamento.",
+      deliverySummaryTitle: "Consegna, supporto e cura post-ordine",
+      deliveryFallback: "Le finestre di consegna saranno chiarite al checkout.",
+      deliveryTail:
+        "Gli ordini restano tracciabili dal pagamento alla spedizione, e le contestazioni o i thread di supporto restano associati allo stesso record d’ordine.",
+      specsTitle: "Specifiche e chiarezza dei materiali",
+      passportTitle: "Passaporto del negozio e scoperte correlate",
+      visitVendorTemplate: "Visita {vendor}",
+      exploreCategoryTemplate: "Esplora {category}",
+      seeBrandTemplate: "Vedi {brand}",
+    },
+    related: {
+      kicker: "Completa il set",
+      title: "Altro nello stesso contesto d’acquisto.",
+      body: "I rail di raccomandazione restano curati e puliti, senza rumore commerciale.",
+    },
+    reviews: {
+      kicker: "Spunti delle recensioni",
+      title: "Segnali d’acquisto verificati, senza rumore inutile.",
+      verifiedPurchase: "Acquisto verificato",
+      reviewLabel: "Recensione",
+    },
+    rail: {
+      kicker: "Chi ha visto ha comprato anche",
+      headline: "Continua a navigare senza perdere il filo.",
+      caption:
+        "I segnali di co-acquisto e di categoria affine portano al prossimo passo evidente, senza saturare di upsell.",
+      ctaLabel: "Apri ricerca",
+    },
+  },
+};
+
+const AR: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "السلة",
+      title: "سلة بمستوى رفيع، تعديلات أسرع، ووضوح أعلى للطلبات المقسّمة بين أكثر من بائع.",
+      description:
+        "تُبقي السلة تجميع البائعين ظاهرًا، وتُحدّث الكميات بسرعة، وتظل متصلة بدُرج السلة المصغّر، حتى لا يفقد المشتري السياق وهو يقترب من إتمام الطلب.",
+    },
+    emptyState: {
+      title: "سلتك ما زالت فارغة.",
+      body: "أضِف بسرعة من بطاقات المنتجات، واحفظ ما تودّ لاحقًا، وستبقى السلة محدّثة في الدُرج المصغّر وفي السلة الكاملة دون الحاجة إلى إعادة تحميل الصفحة.",
+      ctaLabel: "تصفّح المنتجات",
+    },
+  },
+  track: {
+    metadata: {
+      title: "تتبّع الطلب — HenryCo Marketplace",
+      description:
+        "تابِع كل قِسم بائع، وكل تحديث دفع، وكل مرحلة شحن في مكان واحد. يبقى الضمان نشطًا حتى يتم تأكيد التسليم.",
+    },
+    hero: {
+      kicker: "تتبّع الطلب",
+      titlePrefix: "تتبّع",
+      body: "وضوح الطلبات المقسّمة يبقى ظاهرًا هنا: كل قِسم بائع، وكل تحديث دفع، وكل مرحلة شحن يحظى بصفّه الخاص، حتى يبقى الدعم وتوقّعات المشتري على المسار نفسه.",
+      orderValueLabel: "قيمة الطلب",
+      paymentLabel: "الدفع",
+      payoutControlLabel: "ضبط تحويل الأموال",
+      payoutFrozen: "مُجمَّد",
+      payoutEscrowActive: "الضمان نشط",
+    },
+    paymentRecord: {
+      kicker: "سجلّ الدفع",
+      walletBody: "تم خصم رصيد المحفظة، والطلب محتجَز في الضمان حتى يكتمل الشحن.",
+      proofBody: "أُرفِق إثبات التحويل لمراجعة فريق المالية في HenryCo.",
+      awaitingBody: "الدفع بانتظار إثبات من الفريق المالي أو مطابقة عند التسليم.",
+      methodLabel: "الطريقة",
+      statusLabel: "الحالة",
+      proofLabel: "الإثبات",
+      viewProof: "عرض الإثبات",
+      walletDebit: "خصم من المحفظة",
+      pending: "قيد الانتظار",
+    },
+    timeline: {
+      kicker: "المسار الزمني",
+      title: "المراحل التي يراها العميل، بالترتيب.",
+    },
+    segments: {
+      kicker: "أقسام البائعين",
+      title: "كل بائع مسؤول عن شحنته الخاصة.",
+      henrycoSegment: "قِسم HenryCo",
+      fulfillmentLabel: "الشحن",
+      trackingLabel: "التتبّع",
+      payoutLabel: "تحويل الأموال",
+      trackingPending: "قيد الانتظار",
+    },
+    completion: {
+      kicker: "تأكيد الاستلام",
+      body: "أكِّد الاستلام عندما يكون الطلب مرضيًا. لا تُفرج HenryCo عن مستحقّات البائع إلا بعد تأكيد التسليم أو عند استيفاء شروط الإفراج التلقائي.",
+      confirmCta: "تأكيد الاستلام",
+    },
+    help: {
+      kicker: "تحتاج إلى مساعدة؟",
+      title: "النزاعات، والاستردادات، ومشكلات التسليم تمرّ كلها عبر خيط واحد.",
+      body: "افتح خيط دعم مرفقًا برقم الطلب هذا، حتى يرى الموظّف المسار الزمني كاملًا وتقسيم البائعين دون أن تكتبه من جديد.",
+      openSupportCta: "فتح خيط دعم",
+      viewAllOrdersCta: "عرض كل الطلبات",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "عروض موثّقة — HenryCo Marketplace",
+      description:
+        "تخفيضات مفلترة وفق الثقة، ووضوح توافر المخزون، ومسؤولية البائع. على صفحة العروض في HenryCo لا تظهر سوى المنتجات الموثّقة التي تحمل إشارات ثقة نظيفة.",
+    },
+    pageIntro: {
+      kicker: "عروض موثّقة",
+      title: "تخفيضات مفلترة وفق الثقة، ووضوح توافر المخزون، ومسؤولية البائع.",
+      description:
+        "لا نُبرز العرض إلا عندما تكون جودة الإعلان، وجواز ثقة البائع، وحالة المخزون نظيفة بما يكفي لحماية إتمام الشراء وتقليل الندم بعد الطلب.",
+    },
+    sectionLabel: "عروض موثّقة",
+    listEyebrow: "عروض موثّقة",
+    refreshNote: "تُحدَّث بانتظام",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "لا توجد عروض موثّقة الآن",
+      body: "تظهر التخفيضات الموثّقة عندما يُدرجها البائعون. تابِعنا قريبًا.",
+    },
+  },
+  brand: {
+    eyebrow: "العلامة التجارية",
+    bodyFallback:
+      "متجر موثّق على HenryCo Marketplace، تظهر فيه إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل إتمام الدفع.",
+    searchCta: "ابحث داخل هذه العلامة",
+    trustCta: "معايير الثقة",
+    stats: {
+      activeProducts: "منتجات نشطة",
+      listingsReviewed: "إعلانات تمّت مراجعتها",
+      listingsReviewedValue: "جواز ثقة ظاهر لكل منتج",
+      buyerProtection: "حماية المشتري",
+      buyerProtectionValue: "دفع عبر حساب وسيط",
+    },
+    liveKicker: "مباشر من {brand}",
+    openFullSearch: "فتح البحث الكامل",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "استكشف المنتجات الموثّقة من {brand} على HenryCo Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل إتمام الدفع.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "تصفّح المنتجات الموثّقة من {store} على HenryCo Marketplace، مع إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل إتمام الدفع.",
+    metadataDescriptionFallback:
+      "متجر موثّق على HenryCo Marketplace، تظهر فيه إشارات الثقة، ووضوح التوصيل، وجواز سفر البائع قبل كل عملية دفع.",
+    hero: {
+      eyebrow: "جواز المتجر",
+      bodyFallback:
+        "بائع موثّق على HenryCo Marketplace، مع إشارات ثقة، ووضوح في التوصيل، وجواز سفر شفّاف يظهر قبل كل عملية دفع.",
+    },
+    stats: {
+      trustScore: "درجة الثقة",
+      responseSla: "مدة الردّ",
+      responseSlaSuffix: " س",
+      followers: "المتابعون",
+    },
+    standards: {
+      eyebrow: "معايير المتجر",
+    },
+    support: {
+      eyebrow: "الدعم",
+      contactLinkLabel: "استخدم HenryCo Marketplace للتواصل مع هذا المتجر",
+      contactBodySuffix:
+        " — تُسجَّل الرسائل وتُربط بمرجع طلبك، حتى يبقى كل تحديث في مكان واحد.",
+      ctaLabel: "تواصل مع هذا المتجر",
+      subjectTemplate: "سؤال إلى {store}",
+    },
+    reviews: {
+      eyebrow: "أحدث التقييمات",
+      verifiedPurchase: "شراء موثّق",
+      review: "تقييم",
+    },
+    catalog: {
+      kicker: "كتالوج المتجر",
+      title: "كل ما يعرضه هذا المتجر مباشرةً الآن.",
+      exploreLink: "استكشف المزيد من الإعلانات الموثّقة",
+      emptyTitle: "لا توجد إعلانات مباشرة بعد",
+      emptyBody: "ستظهر هنا المنتجات المعتمدة من هذا المتجر فور إتاحتها مباشرةً.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "تشكيلة الفئة",
+      searchCta: "ابحث ضمن هذه الفئة",
+      trustCta: "اطّلع على معايير الثقة",
+      quickFiltersLabel: "فلاتر سريعة",
+    },
+    stats: {
+      activeListingsLabel: "إعلانات نشطة",
+    },
+    collectionsRail: {
+      kicker: "مجموعات منتقاة",
+      title: "مجموعات تختصر قرار الشراء.",
+    },
+    catalog: {
+      kicker: "كتالوج الفئة",
+      title: "منتجات فاخرة، تسلسل أكثر وضوحًا.",
+      openSearch: "افتح البحث الكامل",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "استكشف منتجات موثّقة ضمن {category} على HenryCo Marketplace، مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين ظاهرة قبل الدفع.",
+      fallbackDescription:
+        "تصفّح فئة منتقاة على HenryCo Marketplace مع إشارات ثقة، ووضوح في التوصيل، وجوازات بائعين قبل الدفع.",
+    },
+  },
+  help: {
+    metadata: {
+      title: "مركز المساعدة — HenryCo Marketplace",
+      description:
+        "تصفّح الأسئلة الأكثر تكرارًا بين المشترين والبائعين. إن لم تجد ما تبحث عنه، افتح تذكرة دعم وسيقرؤها شخص من الفريق.",
+    },
+    hero: {
+      kicker: "مركز المساعدة",
+      title: "اعثر على إجابة في ثوانٍ — أو تحدّث مع شخص حقيقي.",
+      body: "ابحث في المواضيع التي يطرحها المشترون والبائعون أكثر من غيرها. إن لم تجد ما تحتاج إليه، افتح تذكرة دعم من أسفل هذه الصفحة وسيقرؤها شخص من الفريق.",
+    },
+    stillNeedHelp: {
+      kicker: "ما زلت تحتاج إلى المساعدة",
+      title: "افتح تذكرة دعم وسيقرؤها شخص حقيقي.",
+      body: "تحتفظ التذاكر بكامل السياق — الطلب، البائع، سجل النزاع — حتى يعمل الفريق على القضية دون أن تعيد كتابتها مع كل رد.",
+      ctaLabel: "افتح تذكرة دعم",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "بِع على HenryCo — سوق انتقائي للبائعين الذين يقودون بالثقة",
+      description:
+        "قدِّم طلبًا للبيع على HenryCo Marketplace: تموضع يقوده مبدأ الثقة، واجهات متاجر فاخرة، ومساحة عمل موحَّدة للطلبات والمدفوعات والدعم.",
+    },
+    hero: {
+      kicker: "بِع على HenryCo",
+      title: "انتقائيٌّ بطبيعته. مصمَّم للبائعين الذين يقودون بالثقة.",
+      body: "تُفضّل HenryCo Marketplace البائعين الذين يهتمّون بالعرض، ويُنفّذون الطلبات بموثوقية، ويحترمون حماية المشتري بصدق. تجد المعايير صريحةً في هذه الصفحة، ثم يستمرّ طلب البيع داخل حساب HenryCo الخاص بك.",
+      primaryCta: "فتح طلب البيع",
+      secondaryCta: "الاطّلاع على أسعار البائعين",
+      signInCta: "تسجيل الدخول بحساب HenryCo",
+      highlights: [
+        { label: "الانتقاء", value: "مراجعة يدوية، لا إدراج مدفوع" },
+        { label: "الواجهة", value: "جواز ثقة ظاهر للمشترين" },
+        { label: "المساحة", value: "طلبات ومدفوعات ودعم في مكان واحد" },
+      ],
+    },
+    advantages: {
+      kicker: "لماذا ينجح البائعون الأقوى هنا",
+      items: [
+        { title: "تموضع يقوده مبدأ الثقة", body: "يحصل متجرك على جواز ثقة ظاهر، بدل أن يضيع في ضوضاء سوق منخفض الجودة." },
+        { title: "جودة أعلى لواجهة المتجر", body: "ممرّات تحريرية، وبحث أهدأ، وبطاقات منتج أنظف، تساعد المتاجر الجادّة على تحقيق تحويل أفضل." },
+        { title: "تشغيل أكثر وضوحًا", body: "المدفوعات والطلبات والدعم والمراقبة وتنبيهات المخزون تبقى ظاهرة في مساحة عمل واحدة أوضح." },
+      ],
+    },
+    onboarding: {
+      kicker: "كيف يسير الانضمام",
+      stepLabel: "خطوة",
+      steps: [
+        { step: "01", title: "بدء طلب البيع", body: "افتح الطلب من داخل حساب HenryCo — تُحفَظ المسوّدات تلقائيًا أثناء تجميع التفاصيل." },
+        { step: "02", title: "إضافة بيانات النشاط", body: "اسم النشاط، ملف المتجر، تركيز المنتجات، وأي مستندات تحقُّق توضّح كيف تُلبّي الطلبات." },
+        { step: "03", title: "مراجعة الطلب", body: "يراجع فريق HenryCo المستندات وإشارات الثقة وجاهزية المتجر — لا مجرد شارة مدفوعة." },
+        { step: "04", title: "انضمام البائع", body: "يواصل البائعون الموافَق عليهم خطوات الانضمام، حيث تظهر الأسعار ورسوم النشر ونوافذ التحويل وقواعد السياسات قبل النشر." },
+      ],
+      callout: {
+        eyebrow: "طلب بيع أوضح",
+        body: "يبقى تسجيل البائع داخل حسابك، فتظلّ بيانات النشاط وحالة المراجعة وتحديثات الموافقة خاصّة وسهلة المتابعة.",
+      },
+    },
+    plans: {
+      kicker: "اقتصاديات الخطط",
+      title: "المستويات معروفة مسبقًا، لا بعد النشر.",
+      feeLabel: "العمولة",
+      payoutLabel: "التحويل",
+      includedLabel: "المتضمَّن",
+      includedSuffix: "إعلانًا",
+      featuredLabel: "إبراز",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "مستويات الثقة تغيّر الامتيازات",
+      title: "احصل على تحويلات أسرع، وواجهات أوسع، ومزايا في السياسات.",
+    },
+    closing: {
+      kicker: "للمضيّ قدمًا",
+      title: "قدِّم طلبك ثم تابع حالته من حسابك.",
+      body: "تفتح الموافقة بابَ انضمام البائع. الأسعار ورسوم النشر ونوافذ التحويل ظاهرة قبل النشر — دون مفاجآت تعاقدية لاحقًا.",
+      primaryCta: "ابدأ الطلب",
+      secondaryCta: "زيارة مساحة البائع",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "تسعير البائعين — HenryCo Marketplace",
+      description:
+        "رسوم الخطة، ورسوم النشر، ورسوم الإبراز، وعمولة المعاملة، ومعالجة التحويل كلّها معلنة سلفًا — قبل نشر مخزونك، لا بعده.",
+    },
+    hero: {
+      kicker: "تسعير البائعين",
+      title: "اقتصاد واضح. لا رسوم خفية.",
+      body: "رسوم الخطة ورسوم النشر ورسوم الإبراز وعمولة المعاملة ومعالجة التحويل كلّها معلنة سلفًا — قبل نشر مخزونك، لا بعده.",
+      primaryCta: "قدّم بصفتك بائعًا",
+      secondaryCta: "العودة إلى نظرة البائع",
+      statsLabels: {
+        planTiers: "مستويات الخطة",
+        trustTiers: "مستويات الثقة",
+        featuredSlots: "خانات الإبراز",
+      },
+      featuredSlotsValue: "تُراجع حالةً بحالة",
+    },
+    plans: {
+      kicker: "الخطط بنظرة سريعة",
+      feeLabel: "العمولة",
+      payoutLabel: "التحويل",
+      includedLabel: "مُضمّن",
+      includedSuffix: "إعلانًا",
+      extraListingLabel: "إعلان إضافي",
+      featuredSlotLabel: "خانة إبراز",
+      currencyPrefix: "NGN",
+      ctaPartner: "تواصل معنا لشروط الشراكة",
+      ctaTemplate: "ابدأ بـ {plan}",
+    },
+    economics: {
+      kicker: "كيف تكسب HenryCo",
+      title: "معلَن سلفًا، يُخصم على مرأى الجميع.",
+      items: [
+        "تُخصم عمولات المعاملات من كل تسوية مجموعة-طلب لدى البائع قبل تحرير التحويل.",
+        "تُطبَّق رسوم النشر بعد استنفاد حصة الإعلانات المُضمَّنة في الخطة الفعّالة للبائع.",
+        "الإبراز طلبٌ مدفوع منفصل، ويبقى خاضعًا لمراجعة الجودة والثقة.",
+        "تُخصم رسوم معالجة التحويل ضمن لقطة تسوية البائع، لا لاحقًا كمفاجأة.",
+        "خدمات القيمة المضافة في Studio و Learn و Logistics تفتح روافد دخل إضافية للبائعين.",
+        "تظل الحملات التي يديرها المشغّل والخانات المُموَّلة قابلة للتدقيق ولا تتحوّل إلى فوضى خدمة ذاتية.",
+      ],
+    },
+    trustTiers: {
+      kicker: "توقيت التحويل حسب مستوى الثقة",
+      title: "السلوك الأفضل يقلّص فترات الاحتجاز.",
+    },
+    closing: {
+      kicker: "هل أنت جاهز للتقديم؟",
+      title: "يفتح الطلب داخل حساب HenryCo الخاص بك.",
+      body: "يمكنك حفظ المسودّة والعودة لاحقًا — التسعير الظاهر هنا يُطبَّق فور اكتمال انضمام البائع.",
+      primaryCta: "قدّم بصفتك بائعًا",
+      secondaryCta: "معايير الثقة",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "الثقة والسلامة — HenryCo Marketplace",
+      description:
+        "تحكم الثقة ما يمكن للبائع فعله، وكيف يتحرّك المال، وكيف تستجيب المراجعة. مستويات البائع، الإيداع الوسيط، النزاعات وتحرير الدفعات تترك أثرًا كاملًا على الخادم.",
+    },
+    hero: {
+      kicker: "الثقة والسلامة",
+      title: "ظاهرة قبل الدفع، ومُطبَّقة بعده.",
+      body: "تتحكّم الثقة في ما يستطيع البائع فعله، وفي حركة المال، وفي طريقة استجابة المراجعة. مستويات البائع ومخاطر المشتري وتقييم الإعلانات والإيداع الوسيط والنزاعات وتحرير الدفعات تترك جميعها أثرًا موثّقًا على الخادم.",
+      pillars: [
+        { label: "حركة المال", value: "إيداع وسيط ويُفرَج عنه بعد الفحوصات" },
+        { label: "المراجعات", value: "مسجّلة على الخادم وقابلة للتتبّع في النزاعات" },
+        { label: "المستويات", value: "تُكتسب وقابلة للسحب" },
+      ],
+    },
+    guardrails: {
+      kicker: "أربعة حواجز للحماية",
+      items: [
+        {
+          title: "جوازات الثقة",
+          body: "كل متجر ومنتج يُظهر مستوى التحقق، واتفاقية الخدمة، ونسبة النزاعات، وجاهزية التحويل، ووضع التنفيذ.",
+        },
+        {
+          title: "التحكّم بالإيداع الوسيط",
+          body: "تحتجز HenryCo أموال المشتري أولًا، ولا تتحوّل إلى تحويل قابل للإفراج إلا بعد تسليم ناجح واجتياز فحوصات الثقة.",
+        },
+        {
+          title: "مراجعة مكافحة الاحتيال",
+          body: "محاولات الدفع خارج المنصة، والوسائط المكرّرة، وقفزات سرعة النشر، وأنماط التحويل عالية المخاطر تظهر في صفوف المراجعة.",
+        },
+        {
+          title: "سجلات تدقيق",
+          body: "الموافقات والرفض وإجراءات التحويل وقرارات النزاعات وعمليات الفحص الآلية كلّها مسجّلة على الخادم.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "سلّم ثقة البائع",
+      title: "مستويات تُكتسب بالسلوك، لا تُشترى.",
+    },
+    policySurfaces: {
+      kicker: "أسطح السياسات",
+      title: "المعايير التي نُلزم بها أنفسنا.",
+    },
+    ecosystem: {
+      kicker: "تعزيز الثقة على مستوى المنظومة",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — متجر HenryCo",
+      descriptionTemplate:
+        "اكتشف {collection} على متجر HenryCo — مجموعة مختارة من المنتجات الموثوقة، مع إشارات الثقة، ووضوح التوصيل، وجوازات البائعين قبل الدفع.",
+      fallbackDescription:
+        "مجموعة مختارة على متجر HenryCo، تضم منتجات موثوقة وإشارات ثقة وتوصيلًا واضحًا وجوازات بائعين ظاهرة قبل الدفع.",
+    },
+    hero: {
+      primaryCta: "افتح البحث الكامل",
+      secondaryCta: "معايير الثقة",
+    },
+    sidebar: {
+      itemsLabel: "العناصر في المجموعة",
+      editedByLabel: "أعدّتها",
+      editedByValue: "عمليات المتجر",
+      buyerProtectionLabel: "حماية المشتري",
+      buyerProtectionValue: "الدفع عبر الضمان",
+    },
+    rail: {
+      kicker: "ما يضمّه هذا الاختيار",
+      itemsSuffix: "عنصرًا",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — متجر HenryCo",
+      descriptionTemplate:
+        "{policy} على متجر HenryCo — تطبيق مُسجَّل على الخادم، وضوابط ضمان للمدفوعات، وموقف ثقة ظاهر قبل الدفع.",
+      fallbackTitle: "سياسة المتجر — متجر HenryCo",
+      fallbackDescription:
+        "سياسة من متجر HenryCo — تطبيق مُسجَّل على الخادم، وضوابط ضمان للمدفوعات، وموقف ثقة ظاهر قبل الدفع.",
+    },
+    hero: {
+      backToTrust: "عودة إلى معايير الثقة",
+      openSupport: "افتح محادثة الدعم",
+    },
+    details: {
+      coverageLabel: "نطاق التغطية",
+      enforcementLabel: "التطبيق",
+      updatedLabel: "آخر تحديث",
+    },
+    coverageBySlug: {
+      buyerProtection: "المشترون",
+      sellerPolicy: "البائعون",
+      fallback: "المشاركون في المتجر",
+    },
+    enforcementBySlug: {
+      buyerProtection: "مدفوعات مُحتجزة في الضمان + تجميد عند النزاع",
+      sellerPolicy: "مراجعة حسب درجة الثقة + احتياطي صرف",
+      fallback: "أثر مُسجَّل على الخادم",
+    },
+    updatedBySlug: {
+      buyerProtection: "عند مراجعات المدفوعات والنزاعات",
+      sellerPolicy: "عند مراجعات معايير البائع",
+      fallback: "عند مراجعات السياسة",
+    },
+    provisions: {
+      kicker: "أحكام السياسة",
+    },
+    ecosystem: {
+      kicker: "ضوابط متصلة بالمتجر",
+      openLabel: "فتح",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} على HenryCo Marketplace — مخزون موثّق وتوصيل موثوق وجواز البائع ظاهرة قبل الدفع.",
+      fallbackDescription:
+        "إعلان موثّق على HenryCo Marketplace مع إشارات الثقة ووضوح التوصيل وجواز البائع المعروض قبل الدفع.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "ثقة البائع",
+      sellerTrustValueTemplate: "جواز {vendor} مرئي",
+      sellerTrustValueFallback: "جواز البائع قيد المراجعة",
+      availabilityLabel: "التوفر",
+      availabilityValueSingular: "{count} وحدة في المخزون الحالي",
+      availabilityValuePlural: "{count} وحدات في المخزون الحالي",
+      fulfillmentLabel: "التوصيل",
+      paymentLabel: "الدفع",
+      paymentValueCod: "الدفع عند الاستلام أو تحويل موثّق",
+      paymentValueVerified: "تدفّق بتحويل موثّق",
+    },
+    price: {
+      label: "السعر",
+      leadTimeLabel: "زمن التسليم",
+    },
+    safety: {
+      kicker: "لماذا يبدو هذا الإعلان أكثر أمانًا",
+      stockTemplate: "{count} وحدة مرئية حاليًا في الجرد",
+      codEligible: "الدفع عند الاستلام متاح حيث يُدعم",
+      codFallback: "تدفّق تحقّق يدوي متاح",
+      vendorLinkedTemplate: "جواز البائع {vendor} مرتبط مباشرة من هذه الصفحة",
+      vendorPending: "ربط واجهة ثقة البائع لا يزال قيد الإكمال",
+      reviewsTemplateSingular: "{count} مراجعة بمعدّل تقييم {rating}",
+      reviewsTemplatePlural: "{count} مراجعات بمعدّل تقييم {rating}",
+    },
+    detail: {
+      kicker: "تفاصيل المنتج",
+      title: "كل ما يهمّ قبل الدفع.",
+      deliverySummaryTitle: "التوصيل والدعم والرعاية بعد الطلب",
+      deliveryFallback: "ستُوضّح نوافذ التوصيل عند الدفع.",
+      deliveryTail:
+        "تبقى الطلبات قابلة للتتبّع من الدفع وحتى التسليم، وتظل النزاعات وخيوط الدعم مرتبطة بنفس سجل الطلب.",
+      specsTitle: "المواصفات ووضوح المواد",
+      passportTitle: "جواز المتجر والاكتشافات ذات الصلة",
+      visitVendorTemplate: "زيارة {vendor}",
+      exploreCategoryTemplate: "استكشاف {category}",
+      seeBrandTemplate: "عرض {brand}",
+    },
+    related: {
+      kicker: "أكمل المجموعة",
+      title: "المزيد ضمن سياق الشراء نفسه.",
+      body: "تبقى قضبان التوصية منتقاة وهادئة، دون ضوضاء بيع إضافية.",
+    },
+    reviews: {
+      kicker: "أبرز المراجعات",
+      title: "إشارات شراء موثّقة، دون حشو مزعج.",
+      verifiedPurchase: "شراء موثّق",
+      reviewLabel: "مراجعة",
+    },
+    rail: {
+      kicker: "اشترى الزبائن أيضًا",
+      headline: "تابع التصفّح دون أن تفقد مكانك.",
+      caption:
+        "تكشف إشارات الشراء المشترك والفئات المتقاربة الخطوة التالية البديهية، دون ضوضاء عروض زائدة.",
+      ctaLabel: "فتح البحث",
+    },
+  },
+};
+
+const ZH: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "购物车",
+      title: "更精致的购物车,编辑更快,拆单展示更清晰。",
+      description:
+        "购物车持续呈现按商家分组的视图,数量调整即时生效,并与迷你购物车抽屉保持同步,让买家在接近结算时不会失去上下文。",
+    },
+    emptyState: {
+      title: "你的购物车还是空的。",
+      body: "可从产品卡片快速加入,把心仪商品收藏稍后再看,迷你购物车与完整购物车都会即时同步,无需刷新页面。",
+      ctaLabel: "浏览商品",
+    },
+  },
+  track: {
+    metadata: {
+      title: "订单跟踪 — HenryCo Marketplace",
+      description:
+        "把每一个卖家分段、每一次付款进展、每一个履约里程碑集中在同一处呈现。在确认收货之前,代管资金始终生效。",
+    },
+    hero: {
+      kicker: "订单跟踪",
+      titlePrefix: "跟踪",
+      body: "拆分订单的清晰视图在这里持续可见:每个卖家分段、每次付款更新与每个履约里程碑各占一行,让客服与买家的预期保持同步。",
+      orderValueLabel: "订单金额",
+      paymentLabel: "付款",
+      payoutControlLabel: "结算控制",
+      payoutFrozen: "已冻结",
+      payoutEscrowActive: "代管中",
+    },
+    paymentRecord: {
+      kicker: "付款记录",
+      walletBody: "钱包余额已扣款,订单进入代管,等待履约。",
+      proofBody: "转账凭证已附上,等待 HenryCo 财务核验。",
+      awaitingBody: "付款正在等待财务凭证或交付对账。",
+      methodLabel: "方式",
+      statusLabel: "状态",
+      proofLabel: "凭证",
+      viewProof: "查看凭证",
+      walletDebit: "钱包扣款",
+      pending: "待处理",
+    },
+    timeline: {
+      kicker: "时间线",
+      title: "面向客户的里程碑,依顺序排列。",
+    },
+    segments: {
+      kicker: "卖家分段",
+      title: "每位卖家对自己的发货负责。",
+      henrycoSegment: "HenryCo 分段",
+      fulfillmentLabel: "履约",
+      trackingLabel: "物流跟踪",
+      payoutLabel: "结算",
+      trackingPending: "待处理",
+    },
+    completion: {
+      kicker: "完成确认",
+      body: "当订单令你满意时请确认完成。HenryCo 只在确认送达或订单符合自动放款条件后,才会向卖家释放结算款项。",
+      confirmCta: "确认完成",
+    },
+    help: {
+      kicker: "需要帮助?",
+      title: "争议、退款与配送问题都汇总在同一个对话中处理。",
+      body: "在工单中带上这个订单号,客服就能直接看到完整时间线与卖家拆分,不必你再重新输入。",
+      openSupportCta: "开启支持对话",
+      viewAllOrdersCta: "查看全部订单",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "已核验优惠 — HenryCo Marketplace",
+      description:
+        "依据信任、库存可靠度与卖家责任筛选的折扣。HenryCo 优惠页只显示信任信号干净、已通过核验的商品。",
+    },
+    pageIntro: {
+      kicker: "已核验优惠",
+      title: "依据信任、库存可靠度与卖家责任筛选的折扣。",
+      description:
+        "只有当商品质量、卖家信任护照与库存状态都足够干净时,我们才会把它放上优惠位,以保护转化、减少购后遗憾。",
+    },
+    sectionLabel: "已核验优惠",
+    listEyebrow: "已核验优惠",
+    refreshNote: "定期更新",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "暂无已核验的优惠",
+      body: "已核验的折扣会随着卖家陆续上架出现。稍后再来看看。",
+    },
+  },
+  brand: {
+    eyebrow: "品牌",
+    bodyFallback:
+      "HenryCo Marketplace 上经过认证的店铺,信任信号、配送清晰度与卖家护照在结账前即可查看。",
+    searchCta: "在该品牌内搜索",
+    trustCta: "信任标准",
+    stats: {
+      activeProducts: "在售商品",
+      listingsReviewed: "已审核商品",
+      listingsReviewedValue: "每件商品均显示信任护照",
+      buyerProtection: "买家保障",
+      buyerProtectionValue: "托管结算",
+    },
+    liveKicker: "来自 {brand} 的实时上架",
+    openFullSearch: "打开完整搜索",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "在 HenryCo Marketplace 浏览 {brand} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "在 HenryCo Marketplace 浏览 {store} 的认证商品,结账前即可看到信任信号、配送清晰度与卖家护照。",
+    metadataDescriptionFallback:
+      "HenryCo Marketplace 上经过认证的店铺,每次结账前都能查看信任信号、配送清晰度与卖家护照。",
+    hero: {
+      eyebrow: "店铺护照",
+      bodyFallback:
+        "HenryCo Marketplace 上经过认证的卖家,信任信号、配送清晰度与透明护照在每次结账前都可清楚查看。",
+    },
+    stats: {
+      trustScore: "信任评分",
+      responseSla: "响应时效",
+      responseSlaSuffix: " 小时",
+      followers: "关注者",
+    },
+    standards: {
+      eyebrow: "店铺标准",
+    },
+    support: {
+      eyebrow: "客户支持",
+      contactLinkLabel: "通过 HenryCo Marketplace 联系该店铺",
+      contactBodySuffix:
+        " —— 消息会被记录并与你的订单编号关联,所有更新都集中在同一处。",
+      ctaLabel: "联系该店铺",
+      subjectTemplate: "向 {store} 咨询",
+    },
+    reviews: {
+      eyebrow: "最新评价",
+      verifiedPurchase: "认证购买",
+      review: "评价",
+    },
+    catalog: {
+      kicker: "店铺目录",
+      title: "该店铺目前在售的全部商品。",
+      exploreLink: "查看更多认证商品",
+      emptyTitle: "暂无在售商品",
+      emptyBody: "经审核的商品上线后将在此显示。",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "品类精选",
+      searchCta: "在该品类中搜索",
+      trustCta: "查看信任标准",
+      quickFiltersLabel: "快速筛选",
+    },
+    stats: {
+      activeListingsLabel: "在售商品",
+    },
+    collectionsRail: {
+      kicker: "精选合辑",
+      title: "助你更快做出购买决定的合辑。",
+    },
+    catalog: {
+      kicker: "品类目录",
+      title: "高端商品,层级更清晰。",
+      openSearch: "打开完整搜索",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "在 HenryCo Marketplace 探索 {category} 中已验证的商品,结算前即可看到信任信号、清晰的配送说明与商家信任护照。",
+      fallbackDescription:
+        "在 HenryCo Marketplace 浏览一个精选品类,结算前即可看到信任信号、清晰的配送说明与商家信任护照。",
+    },
+  },
+  help: {
+    metadata: {
+      title: "帮助中心 — HenryCo Marketplace",
+      description:
+        "浏览买家和卖家最常问的问题。如果没找到所需答案,提交一张工单,团队会有专人查看。",
+    },
+    hero: {
+      kicker: "帮助中心",
+      title: "几秒内找到答案 — 或与真人沟通。",
+      body: "搜索买家与卖家最常问的话题。如果未找到所需内容,可在页面底部提交工单,团队会有专人查看。",
+    },
+    stillNeedHelp: {
+      kicker: "仍需要帮助",
+      title: "提交工单,会有专人查看。",
+      body: "工单会保留完整上下文 — 订单、商家、纠纷历史 — 这样团队能直接跟进,不需要你在每次回复时重新描述。",
+      ctaLabel: "提交支持工单",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "信任与安全 — HenryCo Marketplace",
+      description:
+        "信任决定了卖家可以做什么、资金如何流动以及审核如何响应。卖家等级、托管、争议与放款释放都会在服务器留下完整记录。",
+    },
+    hero: {
+      kicker: "信任与安全",
+      title: "结算前可见,结算后强制执行。",
+      body: "信任决定了卖家可以做什么、资金如何流动,以及审核如何响应。卖家等级、买家风险、商品评分、托管、争议与放款释放都会在服务器留下记录。",
+      pillars: [
+        { label: "资金流动", value: "托管中,审核通过后释放" },
+        { label: "评价", value: "服务器记录,争议可追溯" },
+        { label: "等级", value: "凭表现获得,可撤销" },
+      ],
+    },
+    guardrails: {
+      kicker: "四道防线",
+      items: [
+        {
+          title: "信任护照",
+          body: "每家店铺与每件商品都展示其验证等级、SLA、争议率、放款状态与履约能力。",
+        },
+        {
+          title: "托管控制",
+          body: "买家资金先由 HenryCo 托管,通过交付与信任审核后才进入可释放的放款。",
+        },
+        {
+          title: "反欺诈审查",
+          body: "脱离平台的支付引导、重复素材、上架激增以及高风险的放款行为都会进入审核队列。",
+        },
+        {
+          title: "审计轨迹",
+          body: "批准、拒绝、放款操作、争议裁决与自动化巡检都会在服务器侧记录。",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "卖家信任阶梯",
+      title: "凭表现获得,而非花钱购买的等级。",
+    },
+    policySurfaces: {
+      kicker: "政策呈现面",
+      title: "我们对自己设定的标准。",
+    },
+    ecosystem: {
+      kicker: "生态系统的信任强化",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "在 HenryCo 开店 — 面向以信任为本的卖家的精选商城",
+      description:
+        "申请加入 HenryCo Marketplace 销售:以信任为核心的定位、精致店铺,以及统一的订单、结算与支持工作台。",
+    },
+    hero: {
+      kicker: "在 HenryCo 开店",
+      title: "天生精选。专为以信任领跑的卖家而生。",
+      body: "HenryCo Marketplace 优先考虑注重呈现、按时履约且诚实保障买家权益的卖家。本页清晰列出门槛;卖家申请将在你的 HenryCo 账户内继续完成。",
+      primaryCta: "开始卖家申请",
+      secondaryCta: "查看卖家定价",
+      signInCta: "用 HenryCo 账户登录",
+      highlights: [
+        { label: "选择", value: "人工审核,而非付费上架" },
+        { label: "店铺", value: "买家可见的信任护照" },
+        { label: "工作台", value: "订单、结算、支持统一管理" },
+      ],
+    },
+    advantages: {
+      kicker: "为什么更强的卖家在这里更出色",
+      items: [
+        { title: "以信任为核心的定位", body: "你的店铺拥有清晰可见的信任护照,而不是被低质杂乱的商城噪音掩盖。" },
+        { title: "更优的店铺质量", body: "编辑栏目、更安静的搜索与更整洁的产品卡片,帮助高质量店铺更快转化。" },
+        { title: "更清晰的运营", body: "结算、订单、支持、审核与库存提醒在更整洁的同一工作台中持续可见。" },
+      ],
+    },
+    onboarding: {
+      kicker: "入驻流程",
+      stepLabel: "步骤",
+      steps: [
+        { step: "01", title: "提交卖家申请", body: "从 HenryCo 账户内打开申请 — 在你整理资料时,草稿会自动保存。" },
+        { step: "02", title: "补充经营资料", body: "公司名称、店铺简介、品类聚焦,以及说明你如何履约的核验文件。" },
+        { step: "03", title: "申请审核", body: "HenryCo 团队会审核文件、信任信号与店铺准备度 — 而不仅看一个付费徽章。" },
+        { step: "04", title: "卖家入驻", body: "通过的卖家进入入驻流程,定价、上架费、结算周期与政策规则会在开放发布之前清晰可见。" },
+      ],
+      callout: {
+        eyebrow: "更整洁的卖家申请",
+        body: "卖家注册保留在你的账户内,经营资料、审核状态与审批更新都保持私密且便于跟进。",
+      },
+    },
+    plans: {
+      kicker: "套餐经济",
+      title: "层级在发布前就已声明,而非事后。",
+      feeLabel: "费用",
+      payoutLabel: "结算",
+      includedLabel: "包含",
+      includedSuffix: "条上架",
+      featuredLabel: "推荐位",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "信任等级影响权益",
+      title: "享受更快的结算、更大的店铺与更多政策优势。",
+    },
+    closing: {
+      kicker: "继续前进",
+      title: "提交申请,在账户中查看申请状态。",
+      body: "通过审批后,即可进入卖家入驻流程。定价、上架费与结算周期在发布前都可见 — 不会有事后合同上的意外。",
+      primaryCta: "开始申请",
+      secondaryCta: "前往卖家工作台",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "卖家定价 — HenryCo 商城",
+      description:
+        "套餐费、上架费、推荐位费、交易佣金与结算手续费均提前公开 — 在发布商品之前,不是之后。",
+    },
+    hero: {
+      kicker: "卖家定价",
+      title: "明晰的经济。没有隐藏费用。",
+      body: "套餐费、上架费、推荐位费、交易佣金与结算手续费均在发布商品之前提前公开 — 不是发布之后。",
+      primaryCta: "申请成为卖家",
+      secondaryCta: "返回卖家概览",
+      statsLabels: {
+        planTiers: "套餐档位",
+        trustTiers: "信任档位",
+        featuredSlots: "推荐位",
+      },
+      featuredSlotsValue: "按个案审核",
+    },
+    plans: {
+      kicker: "套餐一览",
+      feeLabel: "佣金",
+      payoutLabel: "结算",
+      includedLabel: "包含",
+      includedSuffix: "条上架",
+      extraListingLabel: "额外上架",
+      featuredSlotLabel: "推荐位",
+      currencyPrefix: "NGN",
+      ctaPartner: "联系我们了解合作条款",
+      ctaTemplate: "选择 {plan} 开始",
+    },
+    economics: {
+      kicker: "HenryCo 如何盈利",
+      title: "提前声明,公开扣除。",
+      items: [
+        "交易佣金会在卖家订单组结算释放结算款之前先行扣除。",
+        "在卖家当前套餐附带的上架额度用尽之后,即开始计收上架费。",
+        "推荐位为单独付费申请,仍需通过质量与信任评估。",
+        "结算处理费在卖家结算快照内直接扣除,不会事后再额外加收。",
+        "Studio、Learn 与 Logistics 的增值服务为卖家开辟额外收入通道。",
+        "由平台运营把关的活动与赞助位保持可审计,绝不沦为自助式失序。",
+      ],
+    },
+    trustTiers: {
+      kicker: "按信任档位的结算节奏",
+      title: "更好的行为带来更短的扣留期。",
+    },
+    closing: {
+      kicker: "准备好申请了吗?",
+      title: "申请将在你的 HenryCo 账户中打开。",
+      body: "你可以保存草稿稍后再来 — 这里展示的定价将在卖家入驻完成后即刻生效。",
+      primaryCta: "申请成为卖家",
+      secondaryCta: "信任标准",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo 商城",
+      descriptionTemplate:
+        "在 HenryCo 商城探索 {collection} — 一组精选的可信商品,提供信任信号、清晰的配送信息,并在结账前展示卖家信任护照。",
+      fallbackDescription:
+        "HenryCo 商城上的一组精选合集,涵盖可信商品、信任信号、清晰配送以及结账前可见的卖家信任护照。",
+    },
+    hero: {
+      primaryCta: "打开完整搜索",
+      secondaryCta: "信任标准",
+    },
+    sidebar: {
+      itemsLabel: "合集中的商品",
+      editedByLabel: "编选自",
+      editedByValue: "商城运营团队",
+      buyerProtectionLabel: "买家保护",
+      buyerProtectionValue: "托管结账",
+    },
+    rail: {
+      kicker: "本选辑包含的商品",
+      itemsSuffix: "件商品",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo 商城",
+      descriptionTemplate:
+        "HenryCo 商城的 {policy} — 服务器侧记录的执行轨迹、托管支付控制以及在结账前可见的信任态势。",
+      fallbackTitle: "商城政策 — HenryCo 商城",
+      fallbackDescription:
+        "HenryCo 商城的一项政策 — 服务器侧记录的执行轨迹、托管支付控制以及在结账前可见的信任态势。",
+    },
+    hero: {
+      backToTrust: "返回信任标准",
+      openSupport: "打开支持工单",
+    },
+    details: {
+      coverageLabel: "适用范围",
+      enforcementLabel: "执行机制",
+      updatedLabel: "更新时机",
+    },
+    coverageBySlug: {
+      buyerProtection: "买家",
+      sellerPolicy: "卖家",
+      fallback: "商城参与者",
+    },
+    enforcementBySlug: {
+      buyerProtection: "款项托管 + 争议时冻结结算",
+      sellerPolicy: "信任等级审核 + 结算储备",
+      fallback: "服务器侧记录的审计轨迹",
+    },
+    updatedBySlug: {
+      buyerProtection: "在支付与争议规则更新时",
+      sellerPolicy: "在卖家标准更新时",
+      fallback: "在政策更新时",
+    },
+    provisions: {
+      kicker: "政策条款",
+    },
+    ecosystem: {
+      kicker: "联通的商城控制项",
+      openLabel: "打开",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo 商城",
+      descriptionTemplate:
+        "{title} 在 HenryCo 商城 — 已核验库存、可靠配送与卖家护照在结账前一目了然。",
+      fallbackDescription:
+        "HenryCo 商城上的已核验商品,信任信号、配送说明与卖家护照都在结账前清晰呈现。",
+    },
+    fulfillment: {
+      sellerTrustLabel: "卖家信任",
+      sellerTrustValueTemplate: "{vendor} 护照已展示",
+      sellerTrustValueFallback: "卖家护照待完善",
+      availabilityLabel: "现货",
+      availabilityValueSingular: "当前库存 {count} 件",
+      availabilityValuePlural: "当前库存 {count} 件",
+      fulfillmentLabel: "配送",
+      paymentLabel: "支付",
+      paymentValueCod: "货到付款或经核验转账",
+      paymentValueVerified: "经核验转账流程",
+    },
+    price: {
+      label: "价格",
+      leadTimeLabel: "交付周期",
+    },
+    safety: {
+      kicker: "为什么这个商品更让人安心",
+      stockTemplate: "库存中可见 {count} 件",
+      codEligible: "支持地区可货到付款",
+      codFallback: "提供人工核验流程",
+      vendorLinkedTemplate: "本页直接关联到 {vendor} 的卖家护照",
+      vendorPending: "卖家信任页尚待关联",
+      reviewsTemplateSingular: "{count} 条评价,平均评分 {rating}",
+      reviewsTemplatePlural: "{count} 条评价,平均评分 {rating}",
+    },
+    detail: {
+      kicker: "商品详情",
+      title: "结账前需要了解的一切。",
+      deliverySummaryTitle: "配送、支持与售后照看",
+      deliveryFallback: "配送窗口将在结账时进一步确认。",
+      deliveryTail:
+        "订单从付款到发货全程可追踪,任何争议或客服记录都与同一订单档案绑定。",
+      specsTitle: "规格与材质透明",
+      passportTitle: "店铺护照与相关发现",
+      visitVendorTemplate: "进入 {vendor}",
+      exploreCategoryTemplate: "浏览 {category}",
+      seeBrandTemplate: "查看 {brand}",
+    },
+    related: {
+      kicker: "补齐一整组",
+      title: "同一购买情境下的更多选择。",
+      body: "推荐栏目保持克制与精选,不会变成噪音式推销。",
+    },
+    reviews: {
+      kicker: "评价亮点",
+      title: "已核验的购买信号,不掺杂噪音。",
+      verifiedPurchase: "已核验购买",
+      reviewLabel: "评价",
+    },
+    rail: {
+      kicker: "买家也常一起买",
+      headline: "继续浏览,不会丢失上下文。",
+      caption:
+        "共同购买与同类目信号会自然引出下一步,不会塞满冗余推销。",
+      ctaLabel: "打开搜索",
+    },
+  },
+};
+
+const HI: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "कार्ट",
+      title: "एक प्रीमियम बास्केट — तेज़ बदलाव और बंटे ऑर्डर की साफ़ झलक।",
+      description:
+        "कार्ट विक्रेता-वार समूह को सामने रखता है, मात्रा तुरंत अपडेट करता है और मिनी-कार्ट ड्रॉअर से जुड़ा रहता है, ताकि चेकआउट के क़रीब पहुँचते समय ख़रीदार का संदर्भ कभी न टूटे।",
+    },
+    emptyState: {
+      title: "आपका कार्ट अभी ख़ाली है।",
+      body: "प्रोडक्ट कार्ड से झटपट जोड़ें, चीज़ें बाद के लिए सहेजें — मिनी-कार्ट और पूरे कार्ट दोनों में सब कुछ बिना रिफ़्रेश के अपडेट रहता है।",
+      ctaLabel: "प्रोडक्ट देखें",
+    },
+  },
+  track: {
+    metadata: {
+      title: "ऑर्डर ट्रैकिंग — HenryCo Marketplace",
+      description:
+        "हर विक्रेता सेगमेंट, पेमेंट अपडेट और डिलीवरी पड़ाव एक ही जगह पर ट्रैक करें। डिलीवरी पुष्ट होने तक एस्क्रो चालू रहता है।",
+    },
+    hero: {
+      kicker: "ऑर्डर ट्रैकिंग",
+      titlePrefix: "ट्रैकिंग",
+      body: "स्प्लिट ऑर्डर की पूरी साफ़ तस्वीर यहीं दिखती रहती है: हर विक्रेता सेगमेंट, हर पेमेंट अपडेट और हर डिलीवरी पड़ाव की अलग पंक्ति होती है, ताकि सपोर्ट और ख़रीदार दोनों एक ही पन्ने पर रहें।",
+      orderValueLabel: "ऑर्डर मूल्य",
+      paymentLabel: "पेमेंट",
+      payoutControlLabel: "पेआउट नियंत्रण",
+      payoutFrozen: "रोका हुआ",
+      payoutEscrowActive: "एस्क्रो सक्रिय",
+    },
+    paymentRecord: {
+      kicker: "पेमेंट रिकॉर्ड",
+      walletBody: "वॉलेट बैलेंस से कटौती हो गई है और ऑर्डर डिलीवरी तक एस्क्रो में सुरक्षित है।",
+      proofBody: "ट्रांसफ़र का प्रमाण HenryCo फ़ाइनेंस की समीक्षा के लिए लगा दिया गया है।",
+      awaitingBody: "पेमेंट फ़ाइनेंस के प्रमाण या डिलीवरी मिलान का इंतज़ार कर रहा है।",
+      methodLabel: "तरीक़ा",
+      statusLabel: "स्थिति",
+      proofLabel: "प्रमाण",
+      viewProof: "प्रमाण देखें",
+      walletDebit: "वॉलेट से कटौती",
+      pending: "लंबित",
+    },
+    timeline: {
+      kicker: "टाइमलाइन",
+      title: "ग्राहक को दिखने वाले पड़ाव, क्रम में।",
+    },
+    segments: {
+      kicker: "विक्रेता सेगमेंट",
+      title: "हर विक्रेता अपनी डिस्पैच के लिए ज़िम्मेदार रहता है।",
+      henrycoSegment: "HenryCo सेगमेंट",
+      fulfillmentLabel: "फ़ुलफ़िलमेंट",
+      trackingLabel: "ट्रैकिंग",
+      payoutLabel: "पेआउट",
+      trackingPending: "लंबित",
+    },
+    completion: {
+      kicker: "पूरा होने की पुष्टि",
+      body: "ऑर्डर ठीक हो तो पूरा होने की पुष्टि करें। HenryCo विक्रेता का पेआउट तभी जारी करता है जब डिलीवरी पुष्ट हो जाए या ऑर्डर ऑटो-रिलीज़ की शर्तें पूरी कर ले।",
+      confirmCta: "पूरा होने की पुष्टि करें",
+    },
+    help: {
+      kicker: "मदद चाहिए?",
+      title: "विवाद, रिफ़ंड और डिलीवरी की चिंताएँ — सब एक ही थ्रेड में चलती हैं।",
+      body: "इस ऑर्डर नंबर के साथ सपोर्ट थ्रेड खोलें ताकि एजेंट को पूरी टाइमलाइन और विक्रेता-वार बँटवारा बिना दोबारा टाइप किए दिख जाए।",
+      openSupportCta: "सपोर्ट थ्रेड खोलें",
+      viewAllOrdersCta: "सभी ऑर्डर देखें",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "सत्यापित डील्स — HenryCo Marketplace",
+      description:
+        "भरोसे, स्टॉक की पक्की उपलब्धता और विक्रेता ज़िम्मेदारी के आधार पर छँटी हुई छूट। HenryCo डील्स पेज पर सिर्फ़ साफ़ ट्रस्ट संकेतों वाले सत्यापित प्रोडक्ट ही दिखते हैं।",
+    },
+    pageIntro: {
+      kicker: "सत्यापित डील्स",
+      title: "भरोसे, स्टॉक की पक्की उपलब्धता और विक्रेता ज़िम्मेदारी के आधार पर छँटी छूट।",
+      description:
+        "डील तभी सामने लाई जाती है जब लिस्टिंग की गुणवत्ता, विक्रेता का ट्रस्ट पासपोर्ट और स्टॉक की स्थिति इतनी साफ़ हो कि कन्वर्ज़न सुरक्षित रहे और ख़रीदार को बाद में पछतावा न हो।",
+    },
+    sectionLabel: "सत्यापित डील्स",
+    listEyebrow: "सत्यापित डील्स",
+    refreshNote: "नियमित रूप से अपडेट होती हैं",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "अभी कोई सत्यापित डील नहीं है",
+      body: "जैसे-जैसे विक्रेता लिस्ट करते जाएँगे, सत्यापित छूट भी आती जाएँगी। थोड़ी देर बाद फिर देखें।",
+    },
+  },
+  brand: {
+    eyebrow: "ब्रांड",
+    bodyFallback:
+      "HenryCo Marketplace पर एक सत्यापित स्टोर — ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट चेकआउट से पहले ही दिखते हैं।",
+    searchCta: "इस ब्रांड में खोजें",
+    trustCta: "ट्रस्ट मानक",
+    stats: {
+      activeProducts: "सक्रिय उत्पाद",
+      listingsReviewed: "जाँचे गए लिस्टिंग",
+      listingsReviewedValue: "हर आइटम पर ट्रस्ट पासपोर्ट दिखाई देता है",
+      buyerProtection: "ख़रीदार सुरक्षा",
+      buyerProtectionValue: "एस्क्रो चेकआउट",
+    },
+    liveKicker: "{brand} से लाइव",
+    openFullSearch: "पूरी खोज खोलें",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "HenryCo Marketplace पर {brand} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "HenryCo Marketplace पर {store} के सत्यापित उत्पाद देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट सामने रहते हैं।",
+    metadataDescriptionFallback:
+      "HenryCo Marketplace पर एक सत्यापित स्टोर — हर चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और सेलर पासपोर्ट दिखाई देते हैं।",
+    hero: {
+      eyebrow: "स्टोर पासपोर्ट",
+      bodyFallback:
+        "HenryCo Marketplace पर एक सत्यापित विक्रेता — हर चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ झलक और पारदर्शी पासपोर्ट सामने रहते हैं।",
+    },
+    stats: {
+      trustScore: "ट्रस्ट स्कोर",
+      responseSla: "जवाब का समय",
+      responseSlaSuffix: " घं.",
+      followers: "फ़ॉलोअर",
+    },
+    standards: {
+      eyebrow: "स्टोर मानक",
+    },
+    support: {
+      eyebrow: "सहायता",
+      contactLinkLabel: "इस स्टोर से बात करने के लिए HenryCo Marketplace का उपयोग करें",
+      contactBodySuffix:
+        " — संदेश रिकॉर्ड होते हैं और आपके ऑर्डर रेफ़रेंस से जुड़े रहते हैं, ताकि हर अपडेट एक ही जगह बना रहे।",
+      ctaLabel: "इस स्टोर से संपर्क करें",
+      subjectTemplate: "{store} के लिए सवाल",
+    },
+    reviews: {
+      eyebrow: "हाल की समीक्षाएँ",
+      verifiedPurchase: "सत्यापित ख़रीद",
+      review: "समीक्षा",
+    },
+    catalog: {
+      kicker: "स्टोर कैटलॉग",
+      title: "इस स्टोर पर अभी जो भी लाइव है।",
+      exploreLink: "और सत्यापित लिस्टिंग देखें",
+      emptyTitle: "अभी कोई लाइव लिस्टिंग नहीं है",
+      emptyBody: "इस स्टोर के अनुमोदित उत्पाद लाइव होते ही यहाँ दिखाई देंगे।",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "कैटेगरी एडिट",
+      searchCta: "इस कैटेगरी में खोजें",
+      trustCta: "ट्रस्ट स्टैंडर्ड देखें",
+      quickFiltersLabel: "क्विक फ़िल्टर",
+    },
+    stats: {
+      activeListingsLabel: "सक्रिय लिस्टिंग",
+    },
+    collectionsRail: {
+      kicker: "क्यूरेटेड रेल",
+      title: "कलेक्शन जो ख़रीदारी का फ़ैसला आसान बनाते हैं।",
+    },
+    catalog: {
+      kicker: "कैटेगरी कैटलॉग",
+      title: "प्रीमियम प्रोडक्ट, ज़्यादा साफ़ ढाँचा।",
+      openSearch: "पूरी सर्च खोलें",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "HenryCo Marketplace पर {category} में सत्यापित प्रोडक्ट देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।",
+      fallbackDescription:
+        "HenryCo Marketplace की एक क्यूरेटेड कैटेगरी देखें — चेकआउट से पहले ट्रस्ट संकेत, डिलीवरी की साफ़ जानकारी और सेलर पासपोर्ट सामने रहते हैं।",
+    },
+  },
+  help: {
+    metadata: {
+      title: "मदद केंद्र — HenryCo Marketplace",
+      description:
+        "ख़रीदार और विक्रेता जो सवाल सबसे ज़्यादा पूछते हैं, उन्हें देखें। ज़रूरत की जानकारी न मिले, तो सपोर्ट टिकट खोलें — टीम का कोई व्यक्ति उसे पढ़ेगा।",
+    },
+    hero: {
+      kicker: "मदद केंद्र",
+      title: "सेकंडों में जवाब पाएँ — या किसी व्यक्ति से बात करें।",
+      body: "ख़रीदारों और विक्रेताओं के सबसे आम विषय खोजें। अगर ज़रूरत की चीज़ न मिले, तो इस पेज के नीचे से एक सपोर्ट टिकट खोलें और टीम का कोई व्यक्ति उसे पढ़ेगा।",
+    },
+    stillNeedHelp: {
+      kicker: "अब भी मदद चाहिए",
+      title: "टिकट खोलें — कोई व्यक्ति उसे पढ़ेगा।",
+      body: "टिकट पूरा संदर्भ जोड़े रखते हैं — ऑर्डर, विक्रेता, विवाद का इतिहास — ताकि टीम बिना आपको हर जवाब में दोहराए मुद्दे पर काम कर सके।",
+      ctaLabel: "सपोर्ट टिकट खोलें",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "ट्रस्ट और सुरक्षा — HenryCo Marketplace",
+      description:
+        "ट्रस्ट यह तय करता है कि सेलर क्या कर सकता है, पैसा कैसे चलता है और मॉडरेशन कैसे जवाब देती है। सेलर टियर, एस्क्रो, विवाद और पेआउट रिलीज़ — सबका सर्वर-साइड रिकॉर्ड बनता है।",
+    },
+    hero: {
+      kicker: "ट्रस्ट और सुरक्षा",
+      title: "चेकआउट से पहले दिखती है। उसके बाद लागू होती है।",
+      body: "ट्रस्ट तय करता है कि सेलर क्या कर सकता है, पैसा कैसे चलता है और मॉडरेशन कैसे प्रतिक्रिया देती है। सेलर टियर, बायर रिस्क, लिस्टिंग स्कोरिंग, एस्क्रो, विवाद और पेआउट रिलीज़ — सबका सर्वर-साइड रिकॉर्ड बनता है।",
+      pillars: [
+        { label: "पैसा कैसे चलता है", value: "एस्क्रो में, जाँच के बाद रिलीज़" },
+        { label: "रिव्यू", value: "सर्वर-लॉग, विवाद में ट्रेस होने योग्य" },
+        { label: "टियर", value: "अर्जित, और वापस लिए जा सकने वाले" },
+      ],
+    },
+    guardrails: {
+      kicker: "चार सुरक्षा रेखाएँ",
+      items: [
+        {
+          title: "ट्रस्ट पासपोर्ट",
+          body: "हर स्टोर और प्रोडक्ट पर वेरिफ़िकेशन स्तर, SLA, विवाद दर, पेआउट तत्परता और फ़ुलफ़िलमेंट स्थिति सामने रहती है।",
+        },
+        {
+          title: "एस्क्रो कंट्रोल",
+          body: "बायर का पैसा पहले HenryCo के पास रहता है — डिलीवरी और ट्रस्ट चेक पास होने पर ही पेआउट में जाता है।",
+        },
+        {
+          title: "एंटी-फ्रॉड समीक्षा",
+          body: "प्लेटफ़ॉर्म से बाहर भुगतान की कोशिश, डुप्लिकेट मीडिया, अचानक लिस्टिंग का उछाल और जोखिम भरे पेआउट पैटर्न रिव्यू क्यू में आते हैं।",
+        },
+        {
+          title: "ऑडिट ट्रेल",
+          body: "मंज़ूरी, अस्वीकृति, पेआउट क्रियाएँ, विवाद निर्णय और ऑटोमेशन स्वीप सब सर्वर-साइड लॉग होते हैं।",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "सेलर ट्रस्ट लैडर",
+      title: "टियर बर्ताव से अर्जित होते हैं, ख़रीदे नहीं जाते।",
+    },
+    policySurfaces: {
+      kicker: "पॉलिसी सरफ़ेस",
+      title: "जिन मानकों पर हम ख़ुद को परखते हैं।",
+    },
+    ecosystem: {
+      kicker: "इकोसिस्टम-व्यापी ट्रस्ट सुदृढ़ीकरण",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "HenryCo पर बेचें — भरोसे की अगुवाई करने वाले विक्रेताओं के लिए चुनिंदा मार्केटप्लेस",
+      description:
+        "HenryCo Marketplace पर बेचने के लिए आवेदन करें: भरोसे पर टिकी पोज़िशनिंग, प्रीमियम स्टोरफ्रंट और ऑर्डर, भुगतान व सपोर्ट के लिए एक ही जगह काम करने की सुविधा।",
+    },
+    hero: {
+      kicker: "HenryCo पर बेचें",
+      title: "मूल रूप से चयनात्मक। उन विक्रेताओं के लिए जो भरोसे की अगुवाई करते हैं।",
+      body: "HenryCo Marketplace उन विक्रेताओं को तरजीह देता है जो प्रस्तुति का ख़याल रखते हैं, भरोसेमंद डिलीवरी करते हैं और ख़रीदार सुरक्षा को सच्चे मन से निभाते हैं। मानक इस पेज पर खुलकर बताए गए हैं; विक्रेता आवेदन आपके HenryCo अकाउंट के अंदर जारी रहता है।",
+      primaryCta: "विक्रेता आवेदन खोलें",
+      secondaryCta: "विक्रेता मूल्य देखें",
+      signInCta: "HenryCo अकाउंट से साइन इन करें",
+      highlights: [
+        { label: "चयन", value: "मैनुअल समीक्षा, पेड-लिस्टिंग नहीं" },
+        { label: "स्टोरफ्रंट", value: "ख़रीदारों को दिखता ट्रस्ट पासपोर्ट" },
+        { label: "वर्कस्पेस", value: "ऑर्डर, पेआउट, सपोर्ट एक साथ" },
+      ],
+    },
+    advantages: {
+      kicker: "मज़बूत विक्रेता यहाँ क्यों आगे बढ़ते हैं",
+      items: [
+        { title: "भरोसे पर टिकी पोज़िशनिंग", body: "आपके स्टोर को साफ़ दिखने वाला ट्रस्ट पासपोर्ट मिलता है, न कि कम-गुणवत्ता वाले मार्केटप्लेस के शोर में दब जाना।" },
+        { title: "बेहतर स्टोरफ्रंट क्वालिटी", body: "एडिटोरियल रेल, शांत सर्च और साफ़ प्रोडक्ट कार्ड क्वालिटी स्टोर को तेज़ी से कन्वर्ज़न तक पहुँचाते हैं।" },
+        { title: "तेज़ संचालन", body: "पेआउट, ऑर्डर, सपोर्ट, मॉडरेशन और स्टॉक अलर्ट सब कुछ एक साफ़ वर्कस्पेस में दिखता रहता है।" },
+      ],
+    },
+    onboarding: {
+      kicker: "ऑनबोर्डिंग कैसे होती है",
+      stepLabel: "चरण",
+      steps: [
+        { step: "01", title: "विक्रेता आवेदन शुरू करें", body: "आवेदन अपने HenryCo अकाउंट से खोलें — जैसे-जैसे विवरण जोड़ते जाएँ, ड्राफ़्ट अपने आप सेव होते जाते हैं।" },
+        { step: "02", title: "व्यवसाय विवरण जोड़ें", body: "व्यवसाय का नाम, स्टोर प्रोफ़ाइल, प्रोडक्ट फ़ोकस और वे वेरिफ़िकेशन डॉक्युमेंट जो बताते हैं कि आप ऑर्डर कैसे पूरे करते हैं।" },
+        { step: "03", title: "आवेदन की समीक्षा", body: "HenryCo टीम दस्तावेज़, ट्रस्ट संकेत और स्टोर की तैयारी देखती है — सिर्फ़ कोई पेड बैज नहीं।" },
+        { step: "04", title: "वेंडर ऑनबोर्डिंग", body: "स्वीकृत विक्रेता वेंडर ऑनबोर्डिंग में जाते हैं, जहाँ कीमतें, लिस्टिंग शुल्क, पेआउट विंडो और नीतियाँ पब्लिश से पहले ही दिखती हैं।" },
+      ],
+      callout: {
+        eyebrow: "साफ़-सुथरा विक्रेता आवेदन",
+        body: "विक्रेता रजिस्ट्रेशन आपके अकाउंट के अंदर रहता है, इसलिए व्यवसाय विवरण, समीक्षा की स्थिति और स्वीकृति अपडेट निजी रहते हैं और फ़ॉलो करना आसान होता है।",
+      },
+    },
+    plans: {
+      kicker: "प्लान का अर्थशास्त्र",
+      title: "स्तर पहले ही बताए जाते हैं, पब्लिश के बाद नहीं।",
+      feeLabel: "शुल्क",
+      payoutLabel: "पेआउट",
+      includedLabel: "शामिल",
+      includedSuffix: "लिस्टिंग",
+      featuredLabel: "फ़ीचर्ड",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "ट्रस्ट टियर विशेषाधिकार बदलते हैं",
+      title: "तेज़ पेआउट, बड़े स्टोरफ्रंट और नीति-स्तर के लाभ कमाएँ।",
+    },
+    closing: {
+      kicker: "आगे बढ़ें",
+      title: "आवेदन करें, फिर अपने अकाउंट से आवेदन की स्थिति देखें।",
+      body: "अनुमोदन से वेंडर ऑनबोर्डिंग खुलती है। पब्लिश करने से पहले ही कीमत, लिस्टिंग शुल्क और पेआउट विंडो दिख जाती है — बाद में कोई कॉन्ट्रैक्ट-सरप्राइज़ नहीं।",
+      primaryCta: "आवेदन शुरू करें",
+      secondaryCta: "वेंडर वर्कस्पेस देखें",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "विक्रेता कीमत — HenryCo Marketplace",
+      description:
+        "प्लान शुल्क, लिस्टिंग शुल्क, फ़ीचर्ड स्लॉट शुल्क, ट्रांज़ैक्शन कमीशन और पेआउट प्रोसेसिंग — सब पहले से बताए जाते हैं, इन्वेंट्री पब्लिश करने से पहले, बाद में नहीं।",
+    },
+    hero: {
+      kicker: "विक्रेता कीमत",
+      title: "साफ़ इकोनॉमिक्स। कोई छिपा शुल्क नहीं।",
+      body: "प्लान शुल्क, लिस्टिंग शुल्क, फ़ीचर्ड स्लॉट शुल्क, ट्रांज़ैक्शन कमीशन और पेआउट प्रोसेसिंग — सब इन्वेंट्री पब्लिश करने से पहले ही बताए जाते हैं, बाद में नहीं।",
+      primaryCta: "विक्रेता के रूप में आवेदन",
+      secondaryCta: "विक्रेता ओवरव्यू पर वापस",
+      statsLabels: {
+        planTiers: "प्लान टियर",
+        trustTiers: "ट्रस्ट टियर",
+        featuredSlots: "फ़ीचर्ड स्लॉट",
+      },
+      featuredSlotsValue: "अलग-अलग समीक्षा",
+    },
+    plans: {
+      kicker: "प्लान एक नज़र में",
+      feeLabel: "शुल्क",
+      payoutLabel: "पेआउट",
+      includedLabel: "शामिल",
+      includedSuffix: "लिस्टिंग",
+      extraListingLabel: "अतिरिक्त लिस्टिंग",
+      featuredSlotLabel: "फ़ीचर्ड स्लॉट",
+      currencyPrefix: "NGN",
+      ctaPartner: "पार्टनर शर्तों के लिए संपर्क करें",
+      ctaTemplate: "{plan} से शुरू करें",
+    },
+    economics: {
+      kicker: "HenryCo कैसे कमाता है",
+      title: "पहले से बताया, खुले में काटा।",
+      items: [
+        "हर वेंडर ऑर्डर-ग्रुप सेटलमेंट से पेआउट रिलीज़ से पहले ट्रांज़ैक्शन कमीशन काटा जाता है।",
+        "विक्रेता के सक्रिय प्लान में शामिल लिस्टिंग कोटा खत्म होने के बाद ही पोस्टिंग शुल्क लागू होता है।",
+        "फ़ीचर्ड प्लेसमेंट अलग सशुल्क अनुरोध है और गुणवत्ता व ट्रस्ट समीक्षा के अधीन रहता है।",
+        "पेआउट प्रोसेसिंग शुल्क विक्रेता सेटलमेंट स्नैपशॉट में ही कट जाते हैं, बाद में अचानक नहीं।",
+        "Studio, Learn और Logistics की वैल्यू-ऐडेड सेवाएँ विक्रेताओं के लिए अतिरिक्त राजस्व-लेन खोलती हैं।",
+        "ऑपरेटर द्वारा नियंत्रित कैम्पेन और स्पॉन्सर्ड स्लॉट ऑडिटेबल रहते हैं — सेल्फ-सर्व अव्यवस्था में नहीं बदलते।",
+      ],
+    },
+    trustTiers: {
+      kicker: "ट्रस्ट-टियर पेआउट टाइमिंग",
+      title: "बेहतर व्यवहार से होल्ड छोटा होता है।",
+    },
+    closing: {
+      kicker: "आवेदन के लिए तैयार?",
+      title: "आवेदन आपके HenryCo अकाउंट में खुलेगा।",
+      body: "आप ड्राफ्ट सेव कर वापस आ सकते हैं — यहाँ दिख रही कीमत वेंडर ऑनबोर्डिंग पूरा होते ही लागू हो जाती है।",
+      primaryCta: "विक्रेता के रूप में आवेदन",
+      secondaryCta: "ट्रस्ट मानक",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — HenryCo मार्केटप्लेस",
+      descriptionTemplate:
+        "HenryCo मार्केटप्लेस पर {collection} देखें — सत्यापित प्रोडक्ट्स की क्यूरेटेड लाइन-अप, ट्रस्ट सिग्नल, स्पष्ट डिलीवरी और चेकआउट से पहले दिखता सेलर ट्रस्ट पासपोर्ट।",
+      fallbackDescription:
+        "HenryCo मार्केटप्लेस का एक क्यूरेटेड कलेक्शन — सत्यापित प्रोडक्ट्स, ट्रस्ट सिग्नल, साफ डिलीवरी और चेकआउट से पहले दिखता सेलर ट्रस्ट पासपोर्ट।",
+    },
+    hero: {
+      primaryCta: "पूरी सर्च खोलें",
+      secondaryCta: "ट्रस्ट मानक",
+    },
+    sidebar: {
+      itemsLabel: "कलेक्शन में आइटम",
+      editedByLabel: "क्यूरेट किया",
+      editedByValue: "मार्केटप्लेस ऑपरेशंस",
+      buyerProtectionLabel: "बायर सुरक्षा",
+      buyerProtectionValue: "एस्क्रो चेकआउट",
+    },
+    rail: {
+      kicker: "इस लाइन-अप में क्या है",
+      itemsSuffix: "आइटम",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — HenryCo मार्केटप्लेस",
+      descriptionTemplate:
+        "HenryCo मार्केटप्लेस पर {policy} — सर्वर पर लॉग की गई एनफोर्समेंट, एस्क्रो पेमेंट कंट्रोल और चेकआउट से पहले दिखता ट्रस्ट रुख।",
+      fallbackTitle: "मार्केटप्लेस नीति — HenryCo मार्केटप्लेस",
+      fallbackDescription:
+        "HenryCo मार्केटप्लेस की एक नीति — सर्वर पर लॉग की गई एनफोर्समेंट, एस्क्रो पेमेंट कंट्रोल और चेकआउट से पहले दिखता ट्रस्ट रुख।",
+    },
+    hero: {
+      backToTrust: "ट्रस्ट मानकों पर लौटें",
+      openSupport: "सपोर्ट थ्रेड खोलें",
+    },
+    details: {
+      coverageLabel: "कवरेज",
+      enforcementLabel: "एनफोर्समेंट",
+      updatedLabel: "अपडेट",
+    },
+    coverageBySlug: {
+      buyerProtection: "बायर्स",
+      sellerPolicy: "सेलर्स",
+      fallback: "मार्केटप्लेस के प्रतिभागी",
+    },
+    enforcementBySlug: {
+      buyerProtection: "एस्क्रो में रोके गए पेमेंट + विवाद पर पेआउट फ्रीज़",
+      sellerPolicy: "ट्रस्ट-टियर समीक्षा + पेआउट रिज़र्व",
+      fallback: "सर्वर पर लॉग किया गया ट्रेल",
+    },
+    updatedBySlug: {
+      buyerProtection: "पेमेंट और विवाद रिविज़न पर",
+      sellerPolicy: "सेलर मानकों के रिविज़न पर",
+      fallback: "नीति रिविज़न पर",
+    },
+    provisions: {
+      kicker: "नीति प्रावधान",
+    },
+    ecosystem: {
+      kicker: "जुड़े हुए मार्केटप्लेस कंट्रोल",
+      openLabel: "खोलें",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} HenryCo Marketplace पर — चेकआउट से पहले सत्यापित स्टॉक, भरोसेमंद डिलीवरी और सेलर पासपोर्ट सबकुछ साफ़।",
+      fallbackDescription:
+        "HenryCo Marketplace पर एक सत्यापित लिस्टिंग — चेकआउट से पहले ट्रस्ट सिग्नल, डिलीवरी की स्पष्टता और सेलर पासपोर्ट साफ़ दिखते हैं।",
+    },
+    fulfillment: {
+      sellerTrustLabel: "सेलर ट्रस्ट",
+      sellerTrustValueTemplate: "{vendor} पासपोर्ट दिख रहा है",
+      sellerTrustValueFallback: "सेलर पासपोर्ट अभी पेंडिंग",
+      availabilityLabel: "उपलब्धता",
+      availabilityValueSingular: "वर्तमान स्टॉक में {count} यूनिट",
+      availabilityValuePlural: "वर्तमान स्टॉक में {count} यूनिट",
+      fulfillmentLabel: "डिलीवरी",
+      paymentLabel: "भुगतान",
+      paymentValueCod: "COD या सत्यापित ट्रांसफ़र",
+      paymentValueVerified: "सत्यापित ट्रांसफ़र फ़्लो",
+    },
+    price: {
+      label: "क़ीमत",
+      leadTimeLabel: "लीड टाइम",
+    },
+    safety: {
+      kicker: "यह लिस्टिंग ज़्यादा सुरक्षित क्यों लगती है",
+      stockTemplate: "इन्वेंटरी में अभी {count} यूनिट दिख रही हैं",
+      codEligible: "जहाँ सपोर्ट है वहाँ कैश ऑन डिलीवरी उपलब्ध",
+      codFallback: "मैनुअल वेरिफ़िकेशन फ़्लो उपलब्ध",
+      vendorLinkedTemplate: "{vendor} का सेलर पासपोर्ट सीधे इसी पेज से लिंक है",
+      vendorPending: "वेंडर ट्रस्ट सरफ़ेस अभी लिंक नहीं हुआ",
+      reviewsTemplateSingular: "{count} रिव्यू, औसत रेटिंग {rating}",
+      reviewsTemplatePlural: "{count} रिव्यू, औसत रेटिंग {rating}",
+    },
+    detail: {
+      kicker: "प्रोडक्ट डिटेल",
+      title: "चेकआउट से पहले जो भी ज़रूरी है।",
+      deliverySummaryTitle: "डिलीवरी, सपोर्ट और ऑर्डर के बाद की देखभाल",
+      deliveryFallback: "डिलीवरी विंडो चेकआउट पर स्पष्ट कर दी जाएंगी।",
+      deliveryTail:
+        "ऑर्डर पेमेंट से लेकर डिलीवरी तक ट्रेसेबल रहते हैं, और कोई भी विवाद या सपोर्ट थ्रेड उसी ऑर्डर रिकॉर्ड से जुड़ा रहता है।",
+      specsTitle: "स्पेसिफ़िकेशन और मटीरियल की स्पष्टता",
+      passportTitle: "स्टोर पासपोर्ट और जुड़ी खोज",
+      visitVendorTemplate: "{vendor} पर जाएँ",
+      exploreCategoryTemplate: "{category} एक्सप्लोर करें",
+      seeBrandTemplate: "{brand} देखें",
+    },
+    related: {
+      kicker: "सेट पूरा करें",
+      title: "इसी ख़रीद-संदर्भ में और भी विकल्प।",
+      body: "रिकमेंडेशन रेल्स क्यूरेटेड और साफ़ रहती हैं, अनचाही पुश-सेल नहीं।",
+    },
+    reviews: {
+      kicker: "रिव्यू हाइलाइट्स",
+      title: "सत्यापित ख़रीद-सिग्नल, बेमतलब का शोर नहीं।",
+      verifiedPurchase: "सत्यापित ख़रीद",
+      reviewLabel: "रिव्यू",
+    },
+    rail: {
+      kicker: "ग्राहकों ने यह भी ख़रीदा",
+      headline: "अपनी जगह खोए बिना ब्राउज़ करते रहें।",
+      caption:
+        "को-पर्चेज़ और मिलते-जुलते कैटेगरी सिग्नल अगला तार्किक क़दम दिखाते हैं, ज़बरदस्ती की अपसेल नहीं।",
+      ctaLabel: "सर्च खोलें",
+    },
+  },
+};
+
+const IG: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Nkata",
+      title: "Nkata mara mma — mgbanwe ngwa ngwa na nghọta doro anya maka iwepụ ibu n'otu otu.",
+      description:
+        "Nkata na-edobe nchịkọta ndị na-ere ahịa ka ọ pụta ìhè, na-emelite ọnụ ọgụgụ ngwa ngwa, ma na-eme ka njikọ na obere drawer nkata gụzosie ike, ka ndị na-azụ ahịa ghara ịtụfu echiche ha mgbe ha na-eru ebe ịkwụ ụgwọ.",
+    },
+    emptyState: {
+      title: "Nkata gị ka tọgbọrọ chakoo.",
+      body: "Tinye ihe ọsọ ọsọ site na kaadị ngwa ahịa, debe ihe maka mgbe ọzọ — nkata ga-anọgide na-emelite n'ime drawer mini na nkata zuru oke n'enweghị nlọghachi azụ.",
+      ctaLabel: "Lelee ngwa ahịa",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Nsochi iwu — HenryCo Marketplace",
+      description:
+        "Soro akụkụ onye nke ọ bụla na-ere ahịa, mmelite ịkwụ ụgwọ, na ihe ndọrọ nsonye dị mkpa n'otu ebe. Escrow nọgide na-arụ ọrụ ruo mgbe a kwadoro nnyefe.",
+    },
+    hero: {
+      kicker: "Nsochi iwu",
+      titlePrefix: "Nsochi",
+      body: "Ìhè iwu kewara n'akụkụ na-anọgide na-apụta n'ebe a: akụkụ onye nke ọ bụla na-ere ahịa, mmelite ịkwụ ụgwọ na ihe ndọrọ nsonye nke ọ bụla nwere ahịrị nke ya, ka nkwado na atụmatụ onye na-azụ ahịa wee dabaa.",
+      orderValueLabel: "Uru iwu",
+      paymentLabel: "Ịkwụ ụgwọ",
+      payoutControlLabel: "Njikwa nkwụghachi ụgwọ",
+      payoutFrozen: "E kwụsịrị",
+      payoutEscrowActive: "Escrow na-arụ ọrụ",
+    },
+    paymentRecord: {
+      kicker: "Ndekọ ịkwụ ụgwọ",
+      walletBody: "E sitere n'akpa ego wepụ ego, iwu nọkwa n'escrow ruo mgbe nnyefe gachara.",
+      proofBody: "E tinyere ihe akaebe nke nkwụnye ego ka ndị na-elekọta ego HenryCo nyochaa ya.",
+      awaitingBody: "Ịkwụ ụgwọ na-eche ihe akaebe sitere n'aka ndị na-elekọta ego ma ọ bụ idokọ mgbe nnyefe ruru.",
+      methodLabel: "Ụzọ",
+      statusLabel: "Ọnọdụ",
+      proofLabel: "Akaebe",
+      viewProof: "Lelee akaebe",
+      walletDebit: "Mwepụ akpa ego",
+      pending: "Na-echere",
+    },
+    timeline: {
+      kicker: "Usoro oge",
+      title: "Ihe ndọrọ nsonye nke ndị ahịa na-ahụ, n'usoro.",
+    },
+    segments: {
+      kicker: "Akụkụ ndị na-ere ahịa",
+      title: "Onye nke ọ bụla na-ere ahịa na-aza maka mbufe nke ya.",
+      henrycoSegment: "Akụkụ HenryCo",
+      fulfillmentLabel: "Mbufe",
+      trackingLabel: "Nsochi",
+      payoutLabel: "Nkwụghachi ụgwọ",
+      trackingPending: "Na-echere",
+    },
+    completion: {
+      kicker: "Nkwado nke ngwụcha",
+      body: "Kwado mgwụcha mgbe iwu ahụ dị mma. HenryCo na-ahapụ nkwụghachi ụgwọ onye na-ere ahịa naanị mgbe a kwadoro nnyefe ma ọ bụ mgbe iwu ahụ ruru ihe ọkpụkpụ na-ahapụ onwe ya.",
+      confirmCta: "Kwado ngwụcha",
+    },
+    help: {
+      kicker: "Ịchọrọ enyemaka?",
+      title: "Esemokwu, nkwụghachi ego, na nchegbu nnyefe niile na-aga site n'otu eriri.",
+      body: "Mepee eriri nkwado nke nwere nọmba iwu a etinyere, ka onye nyere aka wee hụ usoro oge zuru oke na nkewa onye na-ere ahịa n'enweghị ka i depụta ya ọzọ.",
+      openSupportCta: "Mepee eriri nkwado",
+      viewAllOrdersCta: "Lelee iwu niile",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Mbelata ọnụahịa enyochara — HenryCo Marketplace",
+      description:
+        "Mbelata ọnụahịa esiwo nzọcha ntụkwasị obi, nkwado ngwongwo dị n'ụlọ ahịa, na ọrụ onye na-ere ahịa. Naanị ndepụta enyochara nke nwere akara ntụkwasị obi dị ọcha na-apụta na peeji deals nke HenryCo.",
+    },
+    pageIntro: {
+      kicker: "Mbelata ọnụahịa enyochara",
+      title: "Mbelata ọnụahịa esiwo nzọcha ntụkwasị obi, nkwado ngwongwo dị, na ọrụ onye na-ere ahịa.",
+      description:
+        "Anyị na-egosi naanị mbelata ọnụahịa mgbe ịdị mma ndepụta, paspọtụ ntụkwasị obi nke onye na-ere ahịa, na ọnọdụ ngwongwo dị ọcha nke ọma iji chebe ịgbanwe ahịa ma belata mwute mgbe e zụsịrị.",
+    },
+    sectionLabel: "Mbelata ọnụahịa enyochara",
+    listEyebrow: "Mbelata ọnụahịa enyochara",
+    refreshNote: "Na-emelite oge niile",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "O nweghị mbelata ọnụahịa enyochara ugbu a",
+      body: "Mbelata enyochara na-abata ka ndị na-ere ahịa na-edepụta ha. Lọghachi ọzọ obere oge.",
+    },
+  },
+  brand: {
+    eyebrow: "Akaraaka ahịa",
+    bodyFallback:
+      "Ụlọ ahịa enyochara n'elu HenryCo Marketplace, ebe akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ.",
+    searchCta: "Chọọ n'ime akaraaka ahịa a",
+    trustCta: "Ọkwa ntụkwasị obi",
+    stats: {
+      activeProducts: "Ngwa ahịa na-arụ ọrụ",
+      listingsReviewed: "Edemede enyochara",
+      listingsReviewedValue: "Paspọtụ ntụkwasị obi pụtara ìhè kwa ihe",
+      buyerProtection: "Nchekwa onye na-azụ ahịa",
+      buyerProtectionValue: "Ịkwụ ụgwọ site n'aka onye nnọchi anya",
+    },
+    liveKicker: "Ọkụ ọkụ site na {brand}",
+    openFullSearch: "Mepee nchọta zuru oke",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Lelee ngwa ahịa enyochara nke {brand} na HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ ndị na-ere ahịa na-egosi tupu ịkwụ ụgwọ.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Lelee ngwa ahịa enyochara nke {store} na HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ.",
+    metadataDescriptionFallback:
+      "Ụlọ ahịa enyochara n'elu HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ onye na-ere ahịa na-egosi tupu ịkwụ ụgwọ ọ bụla.",
+    hero: {
+      eyebrow: "Paspọtụ ụlọ ahịa",
+      bodyFallback:
+        "Onye na-ere ahịa enyochara n'elu HenryCo Marketplace — akara ntụkwasị obi, nghọta nnyefe, na paspọtụ doro anya na-egosi tupu ịkwụ ụgwọ ọ bụla.",
+    },
+    stats: {
+      trustScore: "Akara ntụkwasị obi",
+      responseSla: "Oge nzaghachi",
+      responseSlaSuffix: " awa",
+      followers: "Ndị na-eso",
+    },
+    standards: {
+      eyebrow: "Ọkwa ụlọ ahịa",
+    },
+    support: {
+      eyebrow: "Nkwado",
+      contactLinkLabel: "Jiri HenryCo Marketplace kpọtụrụ ụlọ ahịa a",
+      contactBodySuffix:
+        " — a na-edekọ ozi ma jikọta ya na nrụtụaka iwu gị ka mmelite ọ bụla na-anọgide n'otu ebe.",
+      ctaLabel: "Kpọtụrụ ụlọ ahịa a",
+      subjectTemplate: "Ajụjụ maka {store}",
+    },
+    reviews: {
+      eyebrow: "Nyocha ọhụrụ",
+      verifiedPurchase: "Ịzụta enyochara",
+      review: "Nyocha",
+    },
+    catalog: {
+      kicker: "Katalọgụ ụlọ ahịa",
+      title: "Ihe niile ụlọ ahịa a nwere ugbu a na-arụ ọrụ.",
+      exploreLink: "Chọpụta ọzọ edemede enyochara",
+      emptyTitle: "Enwebeghị edemede dị ndụ",
+      emptyBody: "Ngwa ahịa akwadoro nke ụlọ ahịa a ga-apụta ebe a ozugbo ha bidoro ịrụ ọrụ.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Nhọrọ ụdị",
+      searchCta: "Chọọ n'ime ụdị a",
+      trustCta: "Lelee ụkpụrụ ntụkwasị obi",
+      quickFiltersLabel: "Nzacha ngwa ngwa",
+    },
+    stats: {
+      activeListingsLabel: "Ndepụta na-arụ ọrụ",
+    },
+    collectionsRail: {
+      kicker: "Ngwakọta a họpụtara",
+      title: "Mkpokọta na-eme ka mkpebi ịzụrụ dị mfe.",
+    },
+    catalog: {
+      kicker: "Katalọgụ ụdị",
+      title: "Ngwa ahịa nke kachasị mma, usoro doro anya.",
+      openSearch: "Mepee ọchụchọ zuru ezu",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Chọpụta ngwa ahịa enyochara n'ime {category} na HenryCo Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa nke pụtara tupu ịkwụ ụgwọ.",
+      fallbackDescription:
+        "Tụgharịa n'ime ụdị a họpụtara na HenryCo Marketplace, na akara ntụkwasị obi, nghọta nnyefe doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ.",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Ntụkwasị obi & nchekwa — HenryCo Marketplace",
+      description:
+        "Ntụkwasị obi na-achịkwa ihe onye na-ere ahịa nwere ike ime, otú ego si agagharị, na otú nlekota si aza. Ọkwa ndị na-ere ahịa, nchekwa ego site n'aka onye nnọchi anya, esemokwu, na ntọhapụ ego niile na-ahapụ ndekọ na sava.",
+    },
+    hero: {
+      kicker: "Ntụkwasị obi & nchekwa",
+      title: "Pụta ìhè tupu ịkwụ ụgwọ. Manye ya mgbe ọ gachara.",
+      body: "Ntụkwasị obi na-achịkwa ihe onye na-ere ahịa nwere ike ime, otú ego si agagharị, na otú nlekota si meghachi. Ọkwa ndị na-ere ahịa, ihe egwu nke onye na-azụ ahịa, akara nke edemede, nchekwa ego, esemokwu, na ntọhapụ ego niile na-ahapụ ndekọ na sava.",
+      pillars: [
+        { label: "Ngagharị ego", value: "Nọ n'aka onye nnọchi, ahapụ mgbe nyochaa" },
+        { label: "Ntule", value: "Edebere na sava, enwere ike ịchọta n'esemokwu" },
+        { label: "Ọkwa", value: "A na-enweta ya, enwere ike iwepụ ya" },
+      ],
+    },
+    guardrails: {
+      kicker: "Ihe nchebe anọ",
+      items: [
+        {
+          title: "Paspọtụ ntụkwasị obi",
+          body: "Ụlọ ahịa na ngwa ahịa ọ bụla na-egosi ọkwa nyocha, SLA, ọnụego esemokwu, njikere ịnata ego, na ọnọdụ mmezu.",
+        },
+        {
+          title: "Njikwa nchekwa ego",
+          body: "Ego onye na-azụ ahịa na-anọ buru ụzọ n'aka HenryCo, ma na-aga naanị na ntọhapụ mgbe nyefere agachara nyochaa.",
+        },
+        {
+          title: "Nyocha mgbochi aghụghọ",
+          body: "Ịkpalite ịkwụ ụgwọ na mpụga elu ikuku, mídia eberebe, mwube ngwa ahịa na-eri eri, na ụzọ ntọhapụ ego dị egwu na-abata na ahịrị nyocha.",
+        },
+        {
+          title: "Ụzọ nlebanya",
+          body: "Nkwado, ajụ, mmemme ntọhapụ ego, mkpebi esemokwu, na nyocha akpaaka niile bụ ndị edebere na sava.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Mgbago ntụkwasị obi ndị na-ere ahịa",
+      title: "Ọkwa enwetara site n'omume, ọ bụghị nke a zụrụ ego.",
+    },
+    policySurfaces: {
+      kicker: "Ebe iwu na-egosi",
+      title: "Ụkpụrụ anyị na-eji eche onwe anyị.",
+    },
+    ecosystem: {
+      kicker: "Mmemme ntụkwasị obi nke gbasaa n'ụlọ niile",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Ebe enyemaka — HenryCo Marketplace",
+      description:
+        "Lelee ajụjụ ndị ndị na-azụ ahịa na ndị na-ere ahịa na-ajụkarị. Ọ bụrụ na ị chọtaghị ihe ị chọrọ, mepee tiketi nkwado — mmadụ n'ime otu ga-agụ ya.",
+    },
+    hero: {
+      kicker: "Ebe enyemaka",
+      title: "Chọta azịza n'ime sekọnd ole na ole — ma ọ bụ kparịta okwu na mmadụ.",
+      body: "Chọọ isiokwu ndị ndị na-azụ ahịa na ndị na-ere ahịa na-ajụkarị. Ọ bụrụ na ị chọtaghị ihe ị chọrọ, mepee tiketi nkwado n'okpuru ibe a, mmadụ n'otu ga-agụ ya.",
+    },
+    stillNeedHelp: {
+      kicker: "Ka chọrọ enyemaka",
+      title: "Mepee tiketi nkwado — mmadụ ga-agụ ya.",
+      body: "Tiketi na-edobe ihe niile gbasara ya — iwu ahịa, onye na-ere, akụkọ esemokwu — ka otu na-arụ ọrụ na ya n'agbanyeghị ka ị deghachi ya na nzaghachi ọ bụla.",
+      ctaLabel: "Mepee tiketi nkwado",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Ree ahịa na HenryCo — ahịa a họpụtara maka ndị na-ere ahịa na-eduga na ntụkwasị obi",
+      description:
+        "Tinye akwụkwọ maka ire ahịa na HenryCo Marketplace: njikere nke dabere na ntụkwasị obi, ụlọ ahịa mara mma na otu ebe maka iwu ahịa, ịkwụ ụgwọ na nkwado.",
+    },
+    hero: {
+      kicker: "Ree ahịa na HenryCo",
+      title: "Nhọrọ site na atụmatụ. E meere ya maka ndị na-ere ahịa nke na-eduga na ntụkwasị obi.",
+      body: "HenryCo Marketplace na-eburu ụzọ họrọ ndị na-ere ahịa na-eche maka ngosi, ndị nwere ntụkwasị obi na nnyefe, na ndị ji obi eziokwu na-echekwa ndị na-azụ ahịa. Ihe a chọrọ doro anya na ibe a; akwụkwọ ire ahịa na-aga n'ihu n'akaụntụ HenryCo gị.",
+      primaryCta: "Mepee akwụkwọ ire ahịa",
+      secondaryCta: "Lee ego ndị na-ere ahịa",
+      signInCta: "Banye site na akaụntụ HenryCo",
+      highlights: [
+        { label: "Nhọrọ", value: "Nyocha aka, ọ bụghị ịkwụ ụgwọ idepụta" },
+        { label: "Ụlọ ahịa", value: "Paspọtụ ntụkwasị obi ka ndị na-azụ ahịa hụ" },
+        { label: "Ebe ọrụ", value: "Iwu ahịa, ịkwụ ụgwọ na nkwado n'otu ebe" },
+      ],
+    },
+    advantages: {
+      kicker: "Maka gịnị mere ndị na-ere ahịa siri ike ji emeri ebe a",
+      items: [
+        { title: "Njikere dabere na ntụkwasị obi", body: "Ụlọ ahịa gị na-enweta paspọtụ ntụkwasị obi pụtara ìhè, kama ka ọ ghara ifuru n'ime mkpọtụ ahịa na-adịghị elu." },
+        { title: "Ụlọ ahịa nke ọma karịa", body: "Ụzọ nkọwa, ọchụchọ dị jụụ, na kaadị ngwa ahịa dị ọcha na-enyere ụlọ ahịa dị mma aka ịgbanwe ngwa ngwa." },
+        { title: "Mmemme doro anya", body: "Ịkwụ ụgwọ, iwu ahịa, nkwado, nlekọta na ọkwa ngwa na-anọgide na-egosi n'otu ebe ọrụ kachasị ọcha." },
+      ],
+    },
+    onboarding: {
+      kicker: "Otu mmalite si arụ ọrụ",
+      stepLabel: "Nzọụkwụ",
+      steps: [
+        { step: "01", title: "Bido akwụkwọ ire ahịa", body: "Mepee akwụkwọ ahụ site n'akaụntụ HenryCo gị — ndepụta na-echekwa onwe ya ka ị na-achịkọta ihe niile." },
+        { step: "02", title: "Tinye nkọwa azụmaahịa", body: "Aha azụmaahịa, profaịlụ ụlọ ahịa, ihe nzukọ ngwa ahịa, na akwụkwọ nyocha ọ bụla na-akọwa ka i si emezu iwu ahịa." },
+        { step: "03", title: "Nyochaa akwụkwọ", body: "Otu HenryCo na-enyocha akwụkwọ, ihe ịrịba ama ntụkwasị obi na njikere ụlọ ahịa — ọ bụghị naanị baajị akwụ ụgwọ." },
+        { step: "04", title: "Mmebata onye na-ere ahịa", body: "Ndị enyere ohere na-aga n'ihu na mmebata, ebe ego, ụgwọ idepụta, oge nkwụ ụgwọ na iwu pụtara tupu ibido ibipụta." },
+      ],
+      callout: {
+        eyebrow: "Akwụkwọ ire ahịa dị ọcha",
+        body: "Ndebanye aha onye na-ere ahịa na-anọgide n'akaụntụ gị ka nkọwa azụmaahịa, ọnọdụ nyocha, na mmelite nkwado bụrụ nzuzo ma dị mfe iso.",
+      },
+    },
+    plans: {
+      kicker: "Akụnụba atụmatụ",
+      title: "Ọkwa na-egosi tupu, ọ bụghị mgbe ibipụta gachara.",
+      feeLabel: "Ụgwọ",
+      payoutLabel: "Nkwụnye ego",
+      includedLabel: "Etinyere",
+      includedSuffix: "ndepụta",
+      featuredLabel: "Edobere",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Ọkwa ntụkwasị obi na-agbanwe ihe nrite",
+      title: "Nweta nkwụ ụgwọ ngwa ngwa, ụlọ ahịa buru ibu, na uru iwu.",
+    },
+    closing: {
+      kicker: "Gaa n'ihu",
+      title: "Tinye akwụkwọ, mgbe ahụ lelee ọnọdụ akwụkwọ gị site n'akaụntụ gị.",
+      body: "Nnabata na-emepe mmebata onye na-ere ahịa. Ego, ụgwọ idepụta, na oge nkwụ ụgwọ na-egosi tupu ibipụta — enweghị ihe ijuanya nkwekọrịta nke ga-abịa ma emechaa.",
+      primaryCta: "Bido akwụkwọ",
+      secondaryCta: "Gaa n'ebe ọrụ ndị na-ere ahịa",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Ọnụahịa onye na-ere ahịa — HenryCo Marketplace",
+      description:
+        "Ụgwọ atụmatụ, ụgwọ idepụta, ụgwọ oghere edobere, ego nrụaka azụmaahịa na nhazi nkwụ ụgwọ — niile na-egosi mbụ, tupu ibipụta ngwaahịa, ọ bụghị emesia.",
+    },
+    hero: {
+      kicker: "Ọnụahịa onye na-ere ahịa",
+      title: "Akụnụba doro anya. Enweghị ụgwọ nzuzo.",
+      body: "Ụgwọ atụmatụ, ụgwọ idepụta, ụgwọ oghere edobere, ego nrụaka na nhazi nkwụ ụgwọ — niile na-egosi mbụ, tupu ibipụta ngwaahịa gị, ọ bụghị emesia.",
+      primaryCta: "Tinye akwụkwọ dị ka onye na-ere",
+      secondaryCta: "Laghachi na nlele onye na-ere",
+      statsLabels: {
+        planTiers: "Ọkwa atụmatụ",
+        trustTiers: "Ọkwa ntụkwasị obi",
+        featuredSlots: "Oghere edobere",
+      },
+      featuredSlotsValue: "A na-elele otu otu",
+    },
+    plans: {
+      kicker: "Atụmatụ na nlele ngwa ngwa",
+      feeLabel: "Ụgwọ",
+      payoutLabel: "Nkwụ ụgwọ",
+      includedLabel: "Tinyere",
+      includedSuffix: "ihe edepụtara",
+      extraListingLabel: "Idepụta agbakwunyere",
+      featuredSlotLabel: "Oghere edobere",
+      currencyPrefix: "NGN",
+      ctaPartner: "Kpọtụrụ maka usoro mmekọ",
+      ctaTemplate: "Jiri {plan} bido",
+    },
+    economics: {
+      kicker: "Otú HenryCo si akpata ego",
+      title: "E kwupụtara mbụ, a wepụrụ n'ihu mmadụ.",
+      items: [
+        "A na-ewepụ ego nrụaka azụmaahịa n'otu otu nkwụghachi nke ìgwè iwu onye na-ere ahịa tupu ahapụ nkwụ ụgwọ.",
+        "Ụgwọ idepụta na-amalite mgbe ọnụọgụ ihe edepụtara tinyere n'atụmatụ ọrụ nke onye na-ere ahịa kwụsịrị.",
+        "Edobere ngwaahịa bụ arịrịọ akwụ ụgwọ dị iche ma na-anọgide n'okpuru nyocha ogo na ntụkwasị obi.",
+        "A na-ewepụ ụgwọ nhazi nkwụ ụgwọ n'ime ndekọ nkwụghachi onye na-ere ahịa, ọ bụghị emesia ka ihe ijuanya.",
+        "Ọrụ uru agbakwunyere nke Studio, Learn na Logistics na-emepe ụzọ ego ọzọ maka ndị na-ere ahịa.",
+        "Mkpọsa nke onye njikwa na-elekọta na oghere a kwadoro na-anọgide ka enyochaa, ọ naghị aghọ ọgbaaghara onwe-ọrụ.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Oge nkwụ ụgwọ dabere n'ọkwa ntụkwasị obi",
+      title: "Omume ọma na-eme ka oge nkwụsị dị mkpụmkpụ.",
+    },
+    closing: {
+      kicker: "Ị dị njikere ịtinye akwụkwọ?",
+      title: "Akwụkwọ a na-emepe n'akaụntụ HenryCo gị.",
+      body: "Ị nwere ike ichekwa edemede ma laghachi — ọnụahịa a na-egosi ebe a na-arụ ọrụ ozugbo mmebata onye na-ere zuru oke.",
+      primaryCta: "Tinye akwụkwọ dị ka onye na-ere",
+      secondaryCta: "Ụkpụrụ ntụkwasị obi",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — Ahịa HenryCo",
+      descriptionTemplate:
+        "Lelee {collection} n'elu Ahịa HenryCo — usoro ngwaahịa enyochara, jiri akara ntụkwasị obi, nkọwa nbuga doro anya, na paspọtụ ndị na-ere ahịa pụta ìhè tupu ịkwụ ụgwọ.",
+      fallbackDescription:
+        "Otu nchịkọta ahọpụtara n'Ahịa HenryCo, jikọtara ngwaahịa enyochara, akara ntụkwasị obi, nbuga doro anya, na paspọtụ ndị na-ere ahịa tupu ịkwụ ụgwọ.",
+    },
+    hero: {
+      primaryCta: "Mepee nchọcha zuru oke",
+      secondaryCta: "Ụkpụrụ ntụkwasị obi",
+    },
+    sidebar: {
+      itemsLabel: "Ihe dị na nchịkọta",
+      editedByLabel: "Onye haziri",
+      editedByValue: "Ọrụ Ahịa HenryCo",
+      buyerProtectionLabel: "Nchekwa onye azụ ahịa",
+      buyerProtectionValue: "Ịkwụ ụgwọ esinyere n'isi",
+    },
+    rail: {
+      kicker: "Ihe dị n'usoro ahụ",
+      itemsSuffix: "ihe",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — Ahịa HenryCo",
+      descriptionTemplate:
+        "{policy} n'elu Ahịa HenryCo — nzụlite e dekọtara na sava, njikwa ego nke akwụ́ ụgwọ, na ọnọdụ ntụkwasị obi pụta ìhè tupu ịkwụ ụgwọ.",
+      fallbackTitle: "Iwu ahịa — Ahịa HenryCo",
+      fallbackDescription:
+        "Otu iwu Ahịa HenryCo — nzụlite e dekọtara na sava, njikwa ego nke akwụ́ ụgwọ, na ọnọdụ ntụkwasị obi pụta ìhè tupu ịkwụ ụgwọ.",
+    },
+    hero: {
+      backToTrust: "Laghachi n'ụkpụrụ ntụkwasị obi",
+      openSupport: "Mepee mkparịta ụka nkwado",
+    },
+    details: {
+      coverageLabel: "Nchekwa",
+      enforcementLabel: "Nzụlite",
+      updatedLabel: "Emelitere",
+    },
+    coverageBySlug: {
+      buyerProtection: "Ndị na-azụ ahịa",
+      sellerPolicy: "Ndị na-ere ahịa",
+      fallback: "Ndị sonye na ahịa",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Ego e ji n'aka HenryCo + mgbochi ụgwọ na esemokwu",
+      sellerPolicy: "Nyochaa site n'ọkwa ntụkwasị obi + ego e debere",
+      fallback: "Aka e dekọtara na sava",
+    },
+    updatedBySlug: {
+      buyerProtection: "Mgbe mgbanwe a na-eme n'ụgwọ na esemokwu",
+      sellerPolicy: "Mgbe mgbanwe a na-eme n'ụkpụrụ ndị na-ere",
+      fallback: "Mgbe mgbanwe a na-eme n'iwu",
+    },
+    provisions: {
+      kicker: "Akwụkwọ iwu",
+    },
+    ecosystem: {
+      kicker: "Njikwa ahịa ejikọtara",
+      openLabel: "Mepee",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} na HenryCo Marketplace — ngwaahịa anwapụtara, nbufe a tụkwasịrị obi na akwụkwọ ngafe onye na-ere ihe pụta ìhè tupu ịkwụ ụgwọ.",
+      fallbackDescription:
+        "Edemede anwapụtara na HenryCo Marketplace — akara ntụkwasị obi, doro anya nbufe na akwụkwọ ngafe onye na-ere ihe pụta ìhè tupu ịkwụ ụgwọ.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Ntụkwasị obi onye na-ere",
+      sellerTrustValueTemplate: "Akwụkwọ ngafe {vendor} pụta",
+      sellerTrustValueFallback: "Akwụkwọ ngafe onye na-ere ka na-eche",
+      availabilityLabel: "Ọnụnọ",
+      availabilityValueSingular: "{count} otu n'ụlọ ahịa ugbu a",
+      availabilityValuePlural: "{count} ihe n'ụlọ ahịa ugbu a",
+      fulfillmentLabel: "Nbufe",
+      paymentLabel: "Ịkwụ ụgwọ",
+      paymentValueCod: "Kwụọ ego mgbe e wepụtara ma ọ bụ mbufe anwapụtara",
+      paymentValueVerified: "Ụzọ mbufe anwapụtara",
+    },
+    price: {
+      label: "Ọnụ ahịa",
+      leadTimeLabel: "Oge nnyefe",
+    },
+    safety: {
+      kicker: "Ihe mere edemede a ji yie nke kwụsiri ike",
+      stockTemplate: "{count} ihe na-apụta na nchekwa ugbu a",
+      codEligible: "Ịkwụ ego mgbe e wepụtara dị mgbe ọ kwadoro",
+      codFallback: "Usoro nkwado n'aka dị",
+      vendorLinkedTemplate: "Ejikọrọ akwụkwọ ngafe {vendor} ozugbo site na peeji a",
+      vendorPending: "Akụkụ ntụkwasị obi onye na-ere ka chọrọ njikọ",
+      reviewsTemplateSingular: "{count} nyocha na ọkwa nkezi nke {rating}",
+      reviewsTemplatePlural: "{count} nyocha na ọkwa nkezi nke {rating}",
+    },
+    detail: {
+      kicker: "Nkọwa ngwaahịa",
+      title: "Ihe niile dị mkpa tupu ịkwụ ụgwọ.",
+      deliverySummaryTitle: "Nbufe, nkwado na nlekọta nke ọrụ gachara",
+      deliveryFallback: "A ga-akọwapụta oge nbufe na nkwụ ụgwọ.",
+      deliveryTail:
+        "Iwu ahịa na-anọgide na-eso ụzọ site n'ịkwụ ụgwọ ruo nnyefe, ndọrọ ndọrọ ma ọ bụ akwara nkwado nile na-ejide ndekọ otu iwu ahịa ahụ.",
+      specsTitle: "Nkọwa na mma nke ihe ejiri mee",
+      passportTitle: "Akwụkwọ ngafe ụlọ ahịa na mkpughe metụtara",
+      visitVendorTemplate: "Gaa {vendor}",
+      exploreCategoryTemplate: "Nyochaa {category}",
+      seeBrandTemplate: "Hụ {brand}",
+    },
+    related: {
+      kicker: "Mejupụta usoro ahụ",
+      title: "Ihe ndị ọzọ n'otu ọnọdụ ịzụ ahịa.",
+      body: "A na-elekọta usoro nkwanye ka ọ dị ọcha, ọ bụghị mkpọtụ mbukota.",
+    },
+    reviews: {
+      kicker: "Ihe pụtara ìhè na nyocha",
+      title: "Akara ịzụ ahịa anwapụtara, ọ bụghị mkpọtụ efu.",
+      verifiedPurchase: "Ịzụ ahịa anwapụtara",
+      reviewLabel: "Nyocha",
+    },
+    rail: {
+      kicker: "Ndị ahịa zụtakwara",
+      headline: "Gaa n'ihu ịchọ ihe na-atụfughị ebe i nọ.",
+      caption:
+        "Akara mmekọ ịzụ na otu ụdị na-eweta nzọụkwụ na-esote n'ụzọ doro anya, ọ bụghị mkpọtụ mbukota.",
+      ctaLabel: "Mepee nchọta",
+    },
+  },
+};
+
+const YO: DeepPartial<MarketplacePublicCopy> = {
+  cart: {
+    pageIntro: {
+      kicker: "Apo Ìrajà",
+      title: "Apo ìrajà tó tóótun — àtúnṣe yára yára àti àlàyé tó mọ́ fún àwọn àṣẹ tí ó pín sí ọ̀pọ̀.",
+      description:
+        "Apo ìrajà náà ń jẹ́ kí àkójọpọ̀ àwọn olùtà ṣàfihàn dáadáa, ó ń ṣàtúnṣe ìye lójú-ẹsẹ̀, ó sì ń bá àpótí kéékèèkè (mini-cart) sọ̀rọ̀ pọ̀, kí àwọn olùra má baà sọnù ọ̀rọ̀ wọn nígbà tí wọ́n bá súnmọ́ ìparí ìrajà.",
+    },
+    emptyState: {
+      title: "Apo ìrajà rẹ ṣì ṣófo.",
+      body: "Fi nǹkan kún kíá láti orí káàdì ọjà, fi àwọn ohun pamọ́ fún ìgbà tó ń bọ̀ — apo ìrajà yóò máa wà ní ìmúdójúìwọ̀n nínú àpótí kéékèèkè àti nínú apo kíkún láìní àtúngbà ojú-ìwé.",
+      ctaLabel: "Ṣàwárí àwọn ọjà",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Ìtọpinpin àṣẹ — HenryCo Marketplace",
+      description:
+        "Tọpinpin gbogbo apá olùtà, ìmúdójúìwọ̀n ìsanwó, àti àmì ìfijiṣẹ́ ní ibì kan náà. Escrow yóò máa wà títí di ìgbà tí a ó fi fìdí ìfijiṣẹ́ múlẹ̀.",
+    },
+    hero: {
+      kicker: "Ìtọpinpin àṣẹ",
+      titlePrefix: "Ìtọpinpin",
+      body: "Àlàyé tó mọ́ fún àwọn àṣẹ tí ó pín sí ọ̀pọ̀ yóò máa farahàn níbí: apá olùtà kọ̀ọ̀kan, ìmúdójúìwọ̀n ìsanwó kọ̀ọ̀kan, àti àmì ìfijiṣẹ́ kọ̀ọ̀kan ní ìlà tirẹ̀ kan, kí àtìlẹyìn àti ìfojúsọ́nà olùra wà ní ìlà kan náà.",
+      orderValueLabel: "Iye àṣẹ",
+      paymentLabel: "Ìsanwó",
+      payoutControlLabel: "Ìṣàkóso ìsanpadà",
+      payoutFrozen: "Ó dúró",
+      payoutEscrowActive: "Escrow ń ṣiṣẹ́",
+    },
+    paymentRecord: {
+      kicker: "Àkọsílẹ̀ ìsanwó",
+      walletBody: "A ti yọ owó kúrò nínú àpamọ́wọ́, àṣẹ náà sì wà nínú escrow títí ìfijiṣẹ́ yóò fi parí.",
+      proofBody: "A ti fi ẹ̀rí ìfìránṣẹ́ owó hàn fún àyẹ̀wò ẹgbẹ́ ìṣúná HenryCo.",
+      awaitingBody: "Ìsanwó ń dúró de ẹ̀rí ìṣúná tàbí ìbámu ní àkókò ìfijiṣẹ́.",
+      methodLabel: "Ọ̀nà",
+      statusLabel: "Ipò",
+      proofLabel: "Ẹ̀rí",
+      viewProof: "Wo ẹ̀rí",
+      walletDebit: "Yíyọ owó nínú àpamọ́wọ́",
+      pending: "Ó ń dúró",
+    },
+    timeline: {
+      kicker: "Ìṣẹ̀lẹ̀rí àkókò",
+      title: "Àwọn àmì tí olùra rí, nínú ètò.",
+    },
+    segments: {
+      kicker: "Apá olùtà",
+      title: "Olùtà kọ̀ọ̀kan ń jíhìn fún ìfìránṣẹ́ tirẹ̀.",
+      henrycoSegment: "Apá HenryCo",
+      fulfillmentLabel: "Ìfijiṣẹ́",
+      trackingLabel: "Ìtọpinpin",
+      payoutLabel: "Ìsanpadà",
+      trackingPending: "Ó ń dúró",
+    },
+    completion: {
+      kicker: "Ìfìdí ìparí múlẹ̀",
+      body: "Fìdí ìparí múlẹ̀ nígbà tí àṣẹ náà bá tẹ́ ọ lọ́rùn. HenryCo kì í tu ìsanpadà fún olùtà sílẹ̀ àfi lẹ́yìn tí a bá ti fìdí ìfijiṣẹ́ múlẹ̀ tàbí tí àṣẹ náà bá yẹ fún ìtusílẹ̀ alátọwọ́dá-fúnra-rẹ̀.",
+      confirmCta: "Fìdí ìparí múlẹ̀",
+    },
+    help: {
+      kicker: "Ṣé o nílò ìrànlọ́wọ́?",
+      title: "Awuyewuye, ìsanpadà àti ìṣòro ìfijiṣẹ́ máa ń gba ọ̀nà eriri kan náà.",
+      body: "Ṣí eriri àtìlẹyìn pẹ̀lú nọ́mbà àṣẹ yìí tí o so mọ́, kí àṣojú náà rí ìṣẹ̀lẹ̀rí àkókò gbogbo àti ìpín olùtà láìjẹ́ pé ó dà á kọ ọ̀rọ̀ rẹ ní ẹ̀ẹ̀kejì.",
+      openSupportCta: "Ṣí eriri àtìlẹyìn",
+      viewAllOrdersCta: "Wo gbogbo àṣẹ",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Àwọn àdínkù tí a fọwọ́sí — HenryCo Marketplace",
+      description:
+        "Àdínkù tí a yan nípasẹ̀ ìgbẹ́kẹ̀lé, dájúdájú ohun-ọjà tó wà ní ìpamọ́, àti ojúṣe olùtà. Lórí ojú-ìwé deals HenryCo, kìkì àwọn àkọsílẹ̀ tó a ti fọwọ́sí pẹ̀lú àmì ìgbẹ́kẹ̀lé mímọ́ ló máa farahàn.",
+    },
+    pageIntro: {
+      kicker: "Àwọn àdínkù tí a fọwọ́sí",
+      title: "Àdínkù tí a yan nípasẹ̀ ìgbẹ́kẹ̀lé, dájúdájú ohun-ọjà tó wà ní ìpamọ́, àti ojúṣe olùtà.",
+      description:
+        "A ò ní gbé àdínkù síwájú àfi tí ìbígbónijú àkọsílẹ̀, ìwé-ìrìnnà ìgbẹ́kẹ̀lé olùtà, àti ipò ohun-ọjà bá mọ́ tó láti dáàbò bo àṣeyọrí ìrajà àti láti dín ìbàjẹ́-ọkàn olùra kù.",
+    },
+    sectionLabel: "Àwọn àdínkù tí a fọwọ́sí",
+    listEyebrow: "Àwọn àdínkù tí a fọwọ́sí",
+    refreshNote: "A ń ṣàtúnṣe rẹ̀ déédéé",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Kò sí àdínkù tí a ti fọwọ́sí nísinsìnyí",
+      body: "Àwọn àdínkù tí a fọwọ́sí máa farahàn bí àwọn olùtà ṣe ń kọ wọ́n sílẹ̀. Padà wo wọ́n láìpẹ́.",
+    },
+  },
+  brand: {
+    eyebrow: "Àmì-ọjà",
+    bodyFallback:
+      "Ilé-ìtajà tí a ti fọwọ́sí lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé pípé fún ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tí ó hàn ṣáájú ìsanwó.",
+    searchCta: "Ṣe ìwákiri nínú àmì-ọjà yìí",
+    trustCta: "Ìlànà ìgbẹ́kẹ̀lé",
+    stats: {
+      activeProducts: "Àwọn ọjà tó ń ṣiṣẹ́",
+      listingsReviewed: "Àwọn ìpolówó tí a yẹ̀ wò",
+      listingsReviewedValue: "Ìwé-ìrìnnà ìgbẹ́kẹ̀lé hàn lórí ọjà kọ̀ọ̀kan",
+      buyerProtection: "Ààbò Olùra",
+      buyerProtectionValue: "Ìsanwó láti ọwọ́ alábojútó",
+    },
+    liveKicker: "Tààrà láti {brand}",
+    openFullSearch: "Ṣí ìwákiri kíkún",
+    metadataTitle: "{brand} — HenryCo Marketplace",
+    metadataDescription:
+      "Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {brand} lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà ṣáájú ìsanwó.",
+  },
+  store: {
+    metadataTitle: "{store} — HenryCo Marketplace",
+    metadataDescription:
+      "Ṣàwárí àwọn ọjà tí a ti fọwọ́sí láti ọ̀dọ̀ {store} lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tó hàn ṣáájú ìsanwó.",
+    metadataDescriptionFallback:
+      "Ilé-ìtajà tí a ti fọwọ́sí lórí HenryCo Marketplace — àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà olùtà tí ó hàn ṣáájú gbogbo ìsanwó.",
+    hero: {
+      eyebrow: "Ìwé-ìrìnnà ilé-ìtajà",
+      bodyFallback:
+        "Olùtà tí a ti fọwọ́sí lórí HenryCo Marketplace, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, àlàyé ìfijíṣẹ́, àti ìwé-ìrìnnà tí ó hàn kedere ṣáájú gbogbo ìsanwó.",
+    },
+    stats: {
+      trustScore: "Ìkà ìgbẹ́kẹ̀lé",
+      responseSla: "Àkókò ìdáhùn",
+      responseSlaSuffix: " wákàtí",
+      followers: "Àwọn olùtẹ̀lé",
+    },
+    standards: {
+      eyebrow: "Ìlànà ilé-ìtajà",
+    },
+    support: {
+      eyebrow: "Ìrànlọ́wọ́",
+      contactLinkLabel: "Lo HenryCo Marketplace láti bá ilé-ìtajà yìí sọ̀rọ̀",
+      contactBodySuffix:
+        " — a ń kọ àwọn ìfọ̀rọ̀wérọ̀ sílẹ̀, a sì ń so wọ́n mọ́ ìtọ́kasí àṣẹ rẹ kí gbogbo àfikún ìmúdójúìwọ̀n máa wà ní ibìkan ṣoṣo.",
+      ctaLabel: "Bá ilé-ìtajà yìí sọ̀rọ̀",
+      subjectTemplate: "Ìbéèrè fún {store}",
+    },
+    reviews: {
+      eyebrow: "Àwọn àbẹ̀wò tuntun",
+      verifiedPurchase: "Rírà tí a fọwọ́sí",
+      review: "Àbẹ̀wò",
+    },
+    catalog: {
+      kicker: "Àkójọ-ọjà ilé-ìtajà",
+      title: "Gbogbo ohun tí ilé-ìtajà yìí ní lórí ètò báyìí.",
+      exploreLink: "Ṣàwárí àwọn ìpolówó tí a ti fọwọ́sí sí i",
+      emptyTitle: "Kò sí ìpolówó tó wà lórí ètò ní àkókò yìí",
+      emptyBody: "Àwọn ọjà tí a ti fọwọ́sí láti ilé-ìtajà yìí yóò fara hàn níbí níwájú bí wọ́n bá ti wà lórí ètò.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Àyẹsí ẹka",
+      searchCta: "Ṣàwárí nínú ẹka yìí",
+      trustCta: "Wo àwọn ọgbọ́n ìgbẹ́kẹ̀lé",
+      quickFiltersLabel: "Àyọkà yára",
+    },
+    stats: {
+      activeListingsLabel: "Àkójọ tó wà lẹ́yìn iṣẹ́",
+    },
+    collectionsRail: {
+      kicker: "Àkójọpọ̀ tí a yàn",
+      title: "Àkójọpọ̀ tí ó ń mú kí ìpinnu ìrajà rọrùn.",
+    },
+    catalog: {
+      kicker: "Ìtàn ẹka",
+      title: "Ọjà tó tóótun, ètò tó ṣe kedere síi.",
+      openSearch: "Ṣí àwárí kíkún",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Ṣàwárí àwọn ọjà tó jẹ́ ìmúdájú nínú {category} lórí HenryCo Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà tó wà ní ṣíṣí kí o tó san owó.",
+      fallbackDescription:
+        "Ṣàwárí ẹka tí a yàn pẹ̀lú àmọ̀ lórí HenryCo Marketplace, pẹ̀lú àmì ìgbẹ́kẹ̀lé, àlàyé ìfijiṣẹ́, àti ìwé-ìrìnnà olùtà kí o tó san owó.",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Ìgbẹ́kẹ̀lé àti ààbò — HenryCo Marketplace",
+      description:
+        "Ìgbẹ́kẹ̀lé ló ń pinnu ohun tí olùtà lè ṣe, bí owó ṣe ń gbé, àti bí ìtọ́jú ṣe ń dáhùn. Ìpele olùtà, owó tí a fi pamọ́, àríyànjiyàn, àti ìtúsílẹ̀ owó gbogbo ń fi àkọsílẹ̀ silẹ̀ lórí sáfà.",
+    },
+    hero: {
+      kicker: "Ìgbẹ́kẹ̀lé àti ààbò",
+      title: "Ó hàn ṣáájú ìsanwó. A ó sì gbé e ṣiṣẹ́ lẹ́yìn náà.",
+      body: "Ìgbẹ́kẹ̀lé ń darí ohun tí olùtà lè ṣe, bí owó ṣe ń gbé, àti bí ìtọ́jú ṣe ń dáhùn. Ìpele olùtà, ewu olùra, ìdíwọ̀n àkójọ ìpolówó, owó tí a fi pamọ́, àríyànjiyàn àti ìtúsílẹ̀ owó gbogbo ń fi àpapọ̀ àkọsílẹ̀ silẹ̀ lórí sáfà.",
+      pillars: [
+        { label: "Ìgbé owó", value: "Pamọ́, a ó tú u silẹ̀ lẹ́yìn àyẹ̀wò" },
+        { label: "Àwọn ìṣọ́ra", value: "Tí a tì silẹ̀ lórí sáfà, a sì lè tọ́ wọn nínú àríyànjiyàn" },
+        { label: "Ìpele", value: "Tí a jẹ́ pé bí a ti pa á, a sì lè gba á padà" },
+      ],
+    },
+    guardrails: {
+      kicker: "Awọn ààbò mẹ́rin",
+      items: [
+        {
+          title: "Ìwé-ìrìnnà ìgbẹ́kẹ̀lé",
+          body: "Gbogbo ilé-ìtajà àti gbogbo ọjà ń fihàn ìpele ìmúdájú, SLA, ìpín àríyànjiyàn, ìmúrasílẹ̀ ìsanwó, àti ìṣe ìfijíṣẹ́.",
+        },
+        {
+          title: "Ìṣàkóso owó tí a fi pamọ́",
+          body: "HenryCo ló ń kọ́kọ́ di owó olùra mu, lẹ́yìn náà ni a ó tú u silẹ̀ fún ìsanwó lẹ́yìn ìfijíṣẹ́ àti àyẹ̀wò ìgbẹ́kẹ̀lé.",
+        },
+        {
+          title: "Ìwádìí ìpaniyàn àyíká",
+          body: "Ìjì ìsanwó lójú òde, àwòran tí a tún ṣe, àfilọ́lẹ̀ ìpolówó tí ó pọ̀ jù àti àwòṣe ìsanwó tó léwu wọ̀ inú ìrí ipele ìwádìí.",
+        },
+        {
+          title: "Ìtàn àwọn ohun tí a ṣe",
+          body: "Ìfọwọ́sí, ìkọsílẹ̀, ìṣe ìtúsílẹ̀ owó, ìpinnu àríyànjiyàn àti àyẹ̀wò aládàá gbogbo ni a ó kọ́ silẹ̀ lórí sáfà.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Àkàbà ìgbẹ́kẹ̀lé olùtà",
+      title: "Ìpele tí a jẹ́ pé pẹ̀lú ìṣe, kì í ṣe pẹ̀lú owó.",
+    },
+    policySurfaces: {
+      kicker: "Àwọn ojú-ìlànà",
+      title: "Àwọn ìlànà tí àwa náà ń mú àra wa mọ́.",
+    },
+    ecosystem: {
+      kicker: "Ìmúgbóòrò ìgbẹ́kẹ̀lé jákèjádò àwọn ìpèsè",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Ibùdó ìrànlọ́wọ́ — HenryCo Marketplace",
+      description:
+        "Ṣàwárí àwọn ìbéèrè tí àwọn olùra àti àwọn olùtà sábà máa ń bi. Tí o kò bá rí ohun tí o nílò, ṣí ìwé ìbéèrè ìrànlọ́wọ́, ẹnìkan láti inú ẹgbẹ́ yóò kà á.",
+    },
+    hero: {
+      kicker: "Ibùdó ìrànlọ́wọ́",
+      title: "Ríbi ìdáhùn ní ìsẹ̀jú àáyá díẹ̀ — tàbí sọ̀rọ̀ pẹ̀lú ènìyàn.",
+      body: "Wá àwọn kókó tí àwọn olùra àti olùtà ń bi jù. Tí o kò bá rí ohun tí o nílò, ṣí ìwé ìbéèrè ìrànlọ́wọ́ ní ìsàlẹ̀ ojú-ìwé yìí, ẹnìkan láti inú ẹgbẹ́ yóò kà á.",
+    },
+    stillNeedHelp: {
+      kicker: "Ṣì nílò ìrànlọ́wọ́",
+      title: "Ṣí ìwé ìbéèrè ìrànlọ́wọ́, ènìyàn yóò kà á.",
+      body: "Ìwé ìbéèrè máa ń di gbogbo àlàyé pọ̀ — ìpàṣẹ, olùtà, ìtàn àríyànjiyàn — kí ẹgbẹ́ lè ṣiṣẹ́ lórí ọ̀ràn náà láìjẹ́ kí o tún kọ ọ́ ní gbogbo ìdáhùn.",
+      ctaLabel: "Ṣí ìwé ìbéèrè ìrànlọ́wọ́",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Tàjà lórí HenryCo — ọjà tí a yàn fún àwọn olùtà tí ó ń darí ìgbẹ́kẹ̀lé",
+      description:
+        "Forúkọsílẹ̀ láti tà lórí HenryCo Marketplace: àfihàn tí ó dá lórí ìgbẹ́kẹ̀lé, àwọn ilé-ìtajà tó tóótun, àti àyè iṣẹ́ kan ṣoṣo fún àwọn àṣẹ, ìsanwó, àti ìrànlọ́wọ́.",
+    },
+    hero: {
+      kicker: "Tàjà lórí HenryCo",
+      title: "Ó yàn nínú ìṣètò. A ṣe é fún àwọn olùtà tí ó ń darí ìgbẹ́kẹ̀lé.",
+      body: "HenryCo Marketplace fẹ́ràn àwọn olùtà tí ó ń bìkítà nípa ìfihàn, ìfijíṣẹ́ tí ó gbẹ́kẹ̀lé, àti ìdáàbòbò olùra ní òtítọ́. Ìwọ̀n náà hàn lójú ojú-ìwé yìí; ìwé ìfiránṣẹ́ olùtà yóò máa bá a lọ nínú àkántì HenryCo rẹ.",
+      primaryCta: "Ṣí ìwé ìfiránṣẹ́ olùtà",
+      secondaryCta: "Wo iye olùtà",
+      signInCta: "Forúkọsílẹ̀ pẹ̀lú àkántì HenryCo",
+      highlights: [
+        { label: "Ìyàn", value: "Àyẹ̀wò ọwọ́, kì í ṣe ìsanwó láti darapọ̀" },
+        { label: "Ilé-ìtajà", value: "Ìwé-ìrìnnà ìgbẹ́kẹ̀lé tí ó hàn fún olùra" },
+        { label: "Àyè iṣẹ́", value: "Àṣẹ, ìsanwó, ìrànlọ́wọ́ nínú ibìkan" },
+      ],
+    },
+    advantages: {
+      kicker: "Èèṣe ti àwọn olùtà tí ó lágbára fi máa borí síbí",
+      items: [
+        { title: "Àfihàn tí ó dá lórí ìgbẹ́kẹ̀lé", body: "Ilé-ìtajà rẹ máa gba ìwé-ìrìnnà ìgbẹ́kẹ̀lé tí ó hàn, kì í ṣe pé yóò sọnù nínú ariwo ọjà tí kò dára." },
+        { title: "Ilé-ìtajà tó dára ju lọ", body: "Àwọn ọ̀nà ìtejade, ìwákiri tí ó dákẹ́ jẹ́jẹ́, àti káàdì ọjà tí ó mọ́ máa ń ran ilé-ìtajà tí ó dára lọ́wọ́ láti yí padà yára." },
+        { title: "Iṣẹ́ tí ó hàn kedere", body: "Ìsanwó, àṣẹ, ìrànlọ́wọ́, ìṣàkóso àti ìkìlọ̀ ọjà-ìpamọ́ wà ní àfihàn nínú àyè iṣẹ́ kan tó mọ́." },
+      ],
+    },
+    onboarding: {
+      kicker: "Bí ìbẹ̀rẹ̀ ṣe ń lọ",
+      stepLabel: "Ìgbésẹ̀",
+      steps: [
+        { step: "01", title: "Bẹ̀rẹ̀ ìwé ìfiránṣẹ́ olùtà", body: "Ṣí ìwé náà láti inú àkántì HenryCo rẹ — àwọn àkọsílẹ̀ máa wà ní fífipamọ́ aládàáṣe nígbà tí o ń kó àwọn ìwífún jọ." },
+        { step: "02", title: "Fi àwọn ẹ̀ka iṣẹ́ kún", body: "Orúkọ iṣẹ́, profàìlì ilé-ìtajà, ìdojúkọ ọjà, àti àwọn ìwé ìjẹ́rìí tí ó ṣàlàyé bí o ṣe ń mú àwọn àṣẹ ṣẹ." },
+        { step: "03", title: "Àyẹ̀wò ìwé ìfiránṣẹ́", body: "Ẹgbẹ́ HenryCo ń ṣàyẹ̀wò àwọn ìwé, àwọn àmì ìgbẹ́kẹ̀lé, àti ìmúrasílẹ̀ ilé-ìtajà — kì í ṣe àmì tí ó san owó nìkan." },
+        { step: "04", title: "Ìbẹ̀rẹ̀ olùtà", body: "Àwọn olùtà tí a fọwọ́sí máa tẹ̀síwájú sí ìbẹ̀rẹ̀, níbi tí àwọn iye, owó fíkún, àkókò ìsanwó, àti ìlànà ti hàn ṣáájú ìpolówó." },
+      ],
+      callout: {
+        eyebrow: "Ìwé ìfiránṣẹ́ olùtà tí ó mọ́",
+        body: "Ìforúkọsílẹ̀ olùtà wà nínú àkántì rẹ kí àwọn ìwífún iṣẹ́, ipò àyẹ̀wò, àti ìmúdójúìwọ̀n ìfọwọ́sí lè wà ní ìkọ̀kọ̀ kí o sì rọrùn láti tẹ̀lé.",
+      },
+    },
+    plans: {
+      kicker: "Èrò ọrọ̀-ajé àwọn ètò",
+      title: "A sọ ìpele ní àkọ́kọ́, kì í ṣe lẹ́yìn ìpolówó.",
+      feeLabel: "Owó",
+      payoutLabel: "Ìsanwó",
+      includedLabel: "Tí ó wà nínú",
+      includedSuffix: "ìpolówó",
+      featuredLabel: "Ìfihàn",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Ìpele ìgbẹ́kẹ̀lé yí àwọn àǹfààní padà",
+      title: "Gba ìsanwó kíákíá, ilé-ìtajà tó tóbi, àti àwọn àǹfààní ìlànà.",
+    },
+    closing: {
+      kicker: "Tẹ̀síwájú",
+      title: "Forúkọsílẹ̀, lẹ́yìn náà wo ipò ìfiránṣẹ́ rẹ láti inú àkántì rẹ.",
+      body: "Ìfọwọ́sí máa ṣí ìbẹ̀rẹ̀ olùtà. Iye, owó fíkún, àti àkókò ìsanwó hàn ṣáájú ìpolówó — kò sí àrùn àdéhùn tí ó máa wáyé lẹ́yìn náà.",
+      primaryCta: "Bẹ̀rẹ̀ ìfiránṣẹ́",
+      secondaryCta: "Bẹ̀ àyè olùtà wò",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Iye olùtà — HenryCo Marketplace",
+      description:
+        "Owó ètò, owó ìpolówó, owó àyè àkànṣe, ìpín ọjà, àti ìṣiṣẹ́ ìsanwó — gbogbo wọn ni a sọ ṣáájú, ṣáájú kí o tó tẹ ọjà jáde, kì í ṣe lẹ́yìn rẹ̀.",
+    },
+    hero: {
+      kicker: "Iye olùtà",
+      title: "Ọrọ̀-ajé ṣíṣe-kedere. Kò sí owó tó pamọ́.",
+      body: "Owó ètò, owó ìpolówó, owó àyè àkànṣe, ìpín ọjà, àti ìṣiṣẹ́ ìsanwó — gbogbo wọn hàn ṣáájú kí o tó tẹ ọjà jáde, kì í ṣe lẹ́yìn rẹ̀.",
+      primaryCta: "Forúkọsílẹ̀ gẹ́gẹ́ bí olùtà",
+      secondaryCta: "Pa dà sí àkójọ olùtà",
+      statsLabels: {
+        planTiers: "Ipele ètò",
+        trustTiers: "Ipele ìgbẹ́kẹ̀lé",
+        featuredSlots: "Àyè àkànṣe",
+      },
+      featuredSlotsValue: "A ṣàyẹ̀wò ní ọ̀kọ̀ọ̀kan",
+    },
+    plans: {
+      kicker: "Ètò ní ojú ẹyọ kan",
+      feeLabel: "Owó",
+      payoutLabel: "Ìsanwó",
+      includedLabel: "Tó wà",
+      includedSuffix: "ìpolówó",
+      extraListingLabel: "Ìpolówó àfikún",
+      featuredSlotLabel: "Àyè àkànṣe",
+      currencyPrefix: "NGN",
+      ctaPartner: "Bá wa sọ̀rọ̀ fún àdéhùn alábàápín",
+      ctaTemplate: "Bẹ̀rẹ̀ pẹ̀lú {plan}",
+    },
+    economics: {
+      kicker: "Bí HenryCo ṣe ń jèrè owó",
+      title: "À ti sọ ṣáájú, à ń yọ kúrò ní ojú gbangba.",
+      items: [
+        "A ó yọ ìpín ọjà kúrò nínú ìpòkànpò ẹgbẹ́-àṣẹ olùtà kọ̀ọ̀kan kí a tó tú ìsanwó sílẹ̀.",
+        "Owó ìpolówó máa wọ̀nà lẹ́yìn tí èdá ìpolówó tó wà nínú ètò tó ń ṣiṣẹ́ kúrò.",
+        "Àkànṣe àyè jẹ́ ìbéèrè owó dá yà, ó sì wà lábẹ́ àyẹ̀wò ìmọ̀dájú àti ìgbẹ́kẹ̀lé.",
+        "Owó ìṣiṣẹ́ ìsanwó ni a yọ kúrò nínú àpòpọ̀ ìpòkànpò olùtà, kò sí àrùn lẹ́yìn nà.",
+        "Iṣẹ́ àfikún iye Studio, Learn àti Logistics ń ṣí ọ̀nà àfikún ti owó-wíwọlé fún olùtà.",
+        "Ìpolówó tí oníṣẹ́ ń darí àti àyè tó ní onígbọ́wọ́ ń wà ní àyẹ̀wò, kì í ṣe rúdurùdu olùtìkára.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Àkókò ìsanwó gẹ́gẹ́ bí ipele ìgbẹ́kẹ̀lé",
+      title: "Ìwà tó dáadáa máa ń mú kí àkókò ìdádúró rẹlẹ̀.",
+    },
+    closing: {
+      kicker: "Ṣé o ti ṣetán láti fọ̀wọ́sí?",
+      title: "Ìfiránṣẹ́ máa ṣí nínú àkántì HenryCo rẹ.",
+      body: "O lè tọ́jú ọ̀rọ̀ ìkọ̀wé, kí o sì pa dà — iye tí ó hàn níbí ní yóò ṣiṣẹ́ ní kété tí mmebata olùtà bá parí.",
+      primaryCta: "Forúkọsílẹ̀ gẹ́gẹ́ bí olùtà",
+      secondaryCta: "Ìlànà ìgbẹ́kẹ̀lé",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — Ọjà HenryCo",
+      descriptionTemplate:
+        "Ṣàwárí {collection} lórí Ọjà HenryCo — ètò àtìmọ̀le ti àwọn ọjà tí a ti fọwọ́sí, pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, kíkọ̀ngbé ìfijíṣẹ́, àti pásípọ̀tì olùtà tí ó hàn ṣáájú ìsanwó.",
+      fallbackDescription:
+        "Àkójọpọ̀ tí a ṣe àtìmọ̀le lórí Ọjà HenryCo, pẹ̀lú àwọn ọjà tí a ti fọwọ́sí, àmì ìgbẹ́kẹ̀lé, ìfijíṣẹ́ tó kọ̀ngbé, àti pásípọ̀tì olùtà tí ó hàn ṣáájú ìsanwó.",
+    },
+    hero: {
+      primaryCta: "Ṣí ìwákírí kíkún",
+      secondaryCta: "Àwọn ìlànà ìgbẹ́kẹ̀lé",
+    },
+    sidebar: {
+      itemsLabel: "Àwọn nǹkan nínú àkójọpọ̀",
+      editedByLabel: "Ẹni tí ó ṣàtìmọ̀le",
+      editedByValue: "Ìmọ̀ Ọjà HenryCo",
+      buyerProtectionLabel: "Ààbò olùrà",
+      buyerProtectionValue: "Ìsanwó nínú àbò",
+    },
+    rail: {
+      kicker: "Ohun tí ó wà nínú ètò yìí",
+      itemsSuffix: "nǹkan",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — Ọjà HenryCo",
+      descriptionTemplate:
+        "{policy} lórí Ọjà HenryCo — ìmúse tí a kọ sílẹ̀ lórí olùsìn, ìṣàkóso owó nínú àbò, àti ìdúró ìgbẹ́kẹ̀lé tí ó hàn ṣáájú ìsanwó.",
+      fallbackTitle: "Ìlànà ọjà — Ọjà HenryCo",
+      fallbackDescription:
+        "Ìlànà kan ti Ọjà HenryCo — ìmúse tí a kọ sílẹ̀ lórí olùsìn, ìṣàkóso owó nínú àbò, àti ìdúró ìgbẹ́kẹ̀lé tí ó hàn ṣáájú ìsanwó.",
+    },
+    hero: {
+      backToTrust: "Padà sí àwọn ìlànà ìgbẹ́kẹ̀lé",
+      openSupport: "Ṣí ìbáraẹnisọ̀rọ̀ ìrànlọ́wọ́",
+    },
+    details: {
+      coverageLabel: "Àgbègbè ààbò",
+      enforcementLabel: "Ìmúse",
+      updatedLabel: "Ìmúdójúìwọ̀n",
+    },
+    coverageBySlug: {
+      buyerProtection: "Àwọn olùrà",
+      sellerPolicy: "Àwọn olùtà",
+      fallback: "Àwọn alábàápín ọjà",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Owó nínú àbò + dídìnà ìsanwó nígbà àríyànjiyàn",
+      sellerPolicy: "Àyẹ̀wò gẹ́gẹ́ bí ipele ìgbẹ́kẹ̀lé + ìfowó-padà",
+      fallback: "Ipa-ọ̀nà tí a kọ sílẹ̀ lórí olùsìn",
+    },
+    updatedBySlug: {
+      buyerProtection: "Lójú ìṣàtúnṣe ìsanwó àti àríyànjiyàn",
+      sellerPolicy: "Lójú ìṣàtúnṣe àwọn ìlànà olùtà",
+      fallback: "Lójú ìṣàtúnṣe ìlànà",
+    },
+    provisions: {
+      kicker: "Àwọn àbáwí ìlànà",
+    },
+    ecosystem: {
+      kicker: "Àwọn ìṣàkóso ọjà tí ó sopọ̀",
+      openLabel: "Ṣí",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} lórí HenryCo Marketplace — ọjà ti a fọwọ́ sí, ìfijíṣẹ́ tó gbára lé, àti àwòrán olùtàjà tó hàn kí o tó san owó.",
+      fallbackDescription:
+        "Àkọsílẹ̀ tí a fọwọ́ sí lórí HenryCo Marketplace — pẹ̀lú àwọn àmì ìgbẹ́kẹ̀lé, kíkún ìfijíṣẹ́, àti àwòrán olùtàjà tó hàn kí o tó san owó.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Ìgbẹ́kẹ̀lé olùtàjà",
+      sellerTrustValueTemplate: "Àwòrán {vendor} hàn",
+      sellerTrustValueFallback: "Àwòrán olùtàjà ṣì ń dúró",
+      availabilityLabel: "Ìwà-ńlàá",
+      availabilityValueSingular: "{count} pisi nínú ọjà tó wà báyìí",
+      availabilityValuePlural: "{count} pisi nínú ọjà tó wà báyìí",
+      fulfillmentLabel: "Ìfijíṣẹ́",
+      paymentLabel: "Ìsanwó",
+      paymentValueCod: "Ìsanwó nígbà ìjíṣẹ́ tàbí ìfiránṣẹ́ owó tó wúlò",
+      paymentValueVerified: "Ìtẹ̀lé ìfiránṣẹ́ owó tó wúlò",
+    },
+    price: {
+      label: "Iye owó",
+      leadTimeLabel: "Àkókò ìjíṣẹ́",
+    },
+    safety: {
+      kicker: "Ìdí tí àkọsílẹ̀ yìí fi rí bí ó ṣe ní ààbò jù",
+      stockTemplate: "{count} pisi ń hàn nínú àkójọ ọjà báyìí",
+      codEligible: "Ìsanwó nígbà ìjíṣẹ́ wà níbi tí ó ti ṣeé ṣe",
+      codFallback: "Ọ̀nà ìmúdájú ọwọ́ ń wà fún ò",
+      vendorLinkedTemplate: "Àwòrán olùtàjà {vendor} ti so mọ́ ojú-ìwé yìí tààrà",
+      vendorPending: "Ìjápọ̀ àwòrán ìgbẹ́kẹ̀lé olùtàjà ṣì ń dúró",
+      reviewsTemplateSingular: "{count} àyẹ̀wò ní ìpíndọ́gba ìdíwọ̀n {rating}",
+      reviewsTemplatePlural: "{count} àyẹ̀wò ní ìpíndọ́gba ìdíwọ̀n {rating}",
+    },
+    detail: {
+      kicker: "Àlàyé ọjà",
+      title: "Gbogbo ohun tó ṣe pàtàkì kí o tó san owó.",
+      deliverySummaryTitle: "Ìfijíṣẹ́, àtìlẹ́yìn, àti ìtọ́jú lẹ́yìn àṣẹ rírà",
+      deliveryFallback: "A ó ṣe àlàyé àkókò ìjíṣẹ́ ní ìpín ìsanwó.",
+      deliveryTail:
+        "Àwọn àṣẹ rírà máa ń wà ní orí ọwọ́ láti ìsanwó dé ìjíṣẹ́, àti àwọn àríyànjiyàn tàbí ọ̀rọ̀ àtìlẹ́yìn ń so mọ́ àkọsílẹ̀ àṣẹ rírà kan náà.",
+      specsTitle: "Àwọn àlàyé àti ìmọ́lẹ̀ ohun èlò",
+      passportTitle: "Àwòrán ilé ìtajà àti àwọn àwárí tó jọmọ́",
+      visitVendorTemplate: "Lọ sí {vendor}",
+      exploreCategoryTemplate: "Ṣàwárí {category}",
+      seeBrandTemplate: "Wo {brand}",
+    },
+    related: {
+      kicker: "Mú àkójọ pé",
+      title: "Ohun mìíràn nínú ipò ọjà kan náà.",
+      body: "Àwọn ìtọ́sọ́nà máa ń jẹ́ tó dára àti tó mọ́, kì í ṣe ariwo títaja.",
+    },
+    reviews: {
+      kicker: "Àwọn àfojúsùn àyẹ̀wò",
+      title: "Àmì rírà tó wúlò, kì í ṣe ariwo lásán.",
+      verifiedPurchase: "Rírà tó wúlò",
+      reviewLabel: "Àyẹ̀wò",
+    },
+    rail: {
+      kicker: "Àwọn alábaramẹ́nu náà rà",
+      headline: "Tẹ̀síwájú ìwòye láìpẹ̀.",
+      caption:
+        "Àwọn àmì rírà àjọṣe àti àwọn ẹ̀ka tó sún mọ́lé ń mú igbésẹ̀ tó tẹ̀lé jáde, kò ní ariwo títaja àfikún.",
+      ctaLabel: "Ṣí ìṣàwárí",
+    },
+  },
+};
+
+const HA: DeepPartial<MarketplacePublicCopy> = {
+  store: {
+    metadataTitle: "{store} — Kasuwar HenryCo",
+    metadataDescription:
+      "Bincika kayayyaki da aka tantance na {store} a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo na mai sayarwa kafin biyan kuɗi.",
+    metadataDescriptionFallback:
+      "Kantin da aka tantance a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo na mai sayarwa kafin kowane biyan kuɗi.",
+    hero: {
+      eyebrow: "Fasfo na kanti",
+      bodyFallback:
+        "Mai sayarwa da aka tantance a Kasuwar HenryCo, da alamomin amincewa, isarwa mai sarari, da fasfo bayyananne da ake gani kafin kowane biyan kuɗi.",
+    },
+    stats: {
+      trustScore: "Maki na amincewa",
+      responseSla: "Lokacin amsa",
+      responseSlaSuffix: " awa",
+      followers: "Masu bibiya",
+    },
+    standards: {
+      eyebrow: "Ƙa'idodin kanti",
+    },
+    support: {
+      eyebrow: "Tallafi",
+      contactLinkLabel: "Yi amfani da Kasuwar HenryCo don tuntuɓar wannan kanti",
+      contactBodySuffix:
+        " — ana adana saƙonni kuma a haɗa su da lambar odar ka don kowane sabuntawa ya kasance a wuri ɗaya.",
+      ctaLabel: "Tuntuɓi wannan kanti",
+      subjectTemplate: "Tambaya ga {store}",
+    },
+    reviews: {
+      eyebrow: "Sabbin sharhi",
+      verifiedPurchase: "Saye da aka tantance",
+      review: "Sharhi",
+    },
+    catalog: {
+      kicker: "Kataloji na kanti",
+      title: "Duk abin da wannan kanti ke da shi a kan layi a yanzu.",
+      exploreLink: "Bincika ƙarin jeren da aka tantance",
+      emptyTitle: "Babu jeren da yake aiki yanzu",
+      emptyBody: "Kayan da aka amince da su daga wannan kanti za su fito a nan da zaran sun shiga aiki.",
+    },
+  },
+  cart: {
+    pageIntro: {
+      kicker: "Kanti",
+      title: "Kanti mai inganci — gyare-gyare cikin sauri da bayyananniyar rabe-raben odar daga masu sayarwa daban-daban.",
+      description:
+        "Kanti yana nuna rukunin masu sayarwa a fili, yana sabunta yawan kayan da sauri, kuma yana ci gaba da haɗawa da ƙaramin kanti, don kada masu siye su rasa mahallin yayin kusan kammala biyan kuɗi.",
+    },
+    emptyState: {
+      title: "Kanti ɗinka har yanzu fanko ne.",
+      body: "Ƙara cikin sauri daga katunan kaya, ajiye abubuwa don baya, kuma kanti zai ci gaba da sabuntawa a cikin ƙaramin kanti da kanti cikakke ba tare da sake loda shafi ba.",
+      ctaLabel: "Bincika kayayyaki",
+    },
+  },
+  track: {
+    metadata: {
+      title: "Bin diddigin oda — HenryCo Marketplace",
+      description:
+        "Bibi kowane sashe na mai sayarwa, sabuntawar biyan kuɗi, da matakin isarwa a wuri ɗaya. Escrow ya kasance a aiki har sai an tabbatar da isarwa.",
+    },
+    hero: {
+      kicker: "Bin diddigin oda",
+      titlePrefix: "Bin diddigi",
+      body: "Bayyana odar da aka raba a tsakanin masu sayarwa daban-daban tana ci gaba a nan: kowane sashe na mai sayarwa, sabuntawar biyan kuɗi, da matakin isarwa yana da nasa layi, don tallafi da fata na mai siye su zauna a layi ɗaya.",
+      orderValueLabel: "Darajar oda",
+      paymentLabel: "Biyan kuɗi",
+      payoutControlLabel: "Sarrafa biyan mai sayarwa",
+      payoutFrozen: "An daskare",
+      payoutEscrowActive: "Escrow yana aiki",
+    },
+    paymentRecord: {
+      kicker: "Bayanin biyan kuɗi",
+      walletBody: "An cire kuɗi daga walat, kuma odar tana cikin escrow har sai an isar da kayan.",
+      proofBody: "An haɗa hujjar canja wurin kuɗi don bita daga ƙungiyar kuɗi ta HenryCo.",
+      awaitingBody: "Biyan kuɗi yana jiran hujja daga ƙungiyar kuɗi ko daidaita lokacin isarwa.",
+      methodLabel: "Hanya",
+      statusLabel: "Matsayi",
+      proofLabel: "Hujja",
+      viewProof: "Duba hujja",
+      walletDebit: "Cirewa daga walat",
+      pending: "Yana jira",
+    },
+    timeline: {
+      kicker: "Jadawalin lokaci",
+      title: "Matakai da abokin ciniki zai gani, bisa tsari.",
+    },
+    segments: {
+      kicker: "Sassan masu sayarwa",
+      title: "Kowane mai sayarwa yana da alhakin nasa isarwar.",
+      henrycoSegment: "Sashen HenryCo",
+      fulfillmentLabel: "Isarwa",
+      trackingLabel: "Bin diddigi",
+      payoutLabel: "Biyan mai sayarwa",
+      trackingPending: "Yana jira",
+    },
+    completion: {
+      kicker: "Tabbatar da kammala",
+      body: "Tabbatar da kammalawa lokacin da oda ta ƙayatar. HenryCo na sakin biyan mai sayarwa ne kawai bayan an tabbatar da isarwa ko lokacin da odar ta cika ƙa'idodin sakin atomatik.",
+      confirmCta: "Tabbatar da kammala",
+    },
+    help: {
+      kicker: "Kana buƙatar taimako?",
+      title: "Jayayya, mayar da kuɗi, da damuwa kan isarwa, duka suna bi ta zare ɗaya.",
+      body: "Buɗe zaren tallafi tare da haɗa lambar wannan odar, don wakili ya ga cikakken jadawalin lokaci da rabewar masu sayarwa ba tare da ka sake rubuta su ba.",
+      openSupportCta: "Buɗe zaren tallafi",
+      viewAllOrdersCta: "Duba dukkan odoji",
+    },
+  },
+  deals: {
+    metadata: {
+      title: "Tayin da aka tabbatar — HenryCo Marketplace",
+      description:
+        "Ragi da aka tace bisa amincewa, tabbacin kayan a cikin ɗakin ajiya, da ɗawainiyar mai sayarwa. A shafin tayin HenryCo, sai jeren da aka tabbatar wanda yake da alamomin amincewa masu tsabta ne kawai suke fitowa.",
+    },
+    pageIntro: {
+      kicker: "Tayin da aka tabbatar",
+      title: "Ragi da aka tace bisa amincewa, tabbacin kayan a cikin ɗakin ajiya, da ɗawainiyar mai sayarwa.",
+      description:
+        "Muna nuna tayi ne kawai lokacin da ingancin jeren, fasfo na amincewar mai sayarwa, da yanayin kayan suke da tsabta isa don kāre cikakken siye da rage damuwar mai siye daga baya.",
+    },
+    sectionLabel: "Tayin da aka tabbatar",
+    listEyebrow: "Tayin da aka tabbatar",
+    refreshNote: "Ana sabuntawa akai-akai",
+    discountBadgePrefix: "−",
+    emptyState: {
+      title: "Babu tayin da aka tabbatar a yanzu",
+      body: "Ragi da aka tabbatar suna shigowa yayin da masu sayarwa suke jera su. Dawo nan ba da daɗewa ba.",
+    },
+  },
+  category: {
+    hero: {
+      kicker: "Zaɓin nau'i",
+      searchCta: "Nemo a cikin wannan nau'in",
+      trustCta: "Duba ƙa'idodin amintacce",
+      quickFiltersLabel: "Tace cikin sauri",
+    },
+    stats: {
+      activeListingsLabel: "Tallace-tallace masu aiki",
+    },
+    collectionsRail: {
+      kicker: "Tarin da aka zaɓa",
+      title: "Tari da ke sauƙaƙe shawarar siyayya.",
+    },
+    catalog: {
+      kicker: "Katalogin nau'i",
+      title: "Kayayyaki masu inganci, tsari mafi sauƙin karantawa.",
+      openSearch: "Buɗe cikakken bincike",
+    },
+    metadata: {
+      titleTemplate: "{category} — HenryCo Marketplace",
+      descriptionTemplate:
+        "Bincika tabbatattun kayayyaki a cikin {category} a HenryCo Marketplace, tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya.",
+      fallbackDescription:
+        "Bincika zaɓaɓɓen nau'i a HenryCo Marketplace tare da alamomin amintacce, bayyananniyar bayanin isarwa, da fasfo ɗin mai sayarwa kafin biya.",
+    },
+  },
+  trust: {
+    metadata: {
+      title: "Aminci da tsaro — HenryCo Marketplace",
+      description:
+        "Amincin shi ke tantance abin da mai sayarwa zai iya yi, yadda kuɗi suke gudana, da kuma yadda kulawa take amsawa. Matakan mai sayarwa, ajiyar amana, jayayya da sakin kuɗaɗen biya duk suna barin tarihi a sabar.",
+    },
+    hero: {
+      kicker: "Aminci da tsaro",
+      title: "A bayyane kafin biya. A tabbatar bayan biya.",
+      body: "Amincin yana sarrafa abin da mai sayarwa zai iya yi, yadda kuɗi suke gudana, da kuma yadda kulawa take amsawa. Matakan mai sayarwa, haɗarin mai siye, kimar tallace-tallace, ajiyar amana, jayayya da sakin kuɗaɗen biya duk suna barin tarihin sabar.",
+      pillars: [
+        { label: "Hannukan kuɗi", value: "Ajiye a amana, a saki bayan binciken aminci" },
+        { label: "Ra'ayoyi", value: "An ajiye su a sabar, kuma za a iya bin diddiginsu a jayayya" },
+        { label: "Matakai", value: "An samu su ne saboda hali, ana iya soke su" },
+      ],
+    },
+    guardrails: {
+      kicker: "Garkuwoyi huɗu",
+      items: [
+        {
+          title: "Fasfo na aminci",
+          body: "Kowane kanti da kowane kayan suna nuna matakin tabbatarwa, SLA, adadin jayayya, shirin biya, da matsayin isarwa.",
+        },
+        {
+          title: "Sarrafa ajiyar amana",
+          body: "Kuɗin mai siye yana farkon zama a hannun HenryCo, sannan kawai ya zama mai saki bayan an tabbatar da isarwa da bincike na aminci.",
+        },
+        {
+          title: "Bincike kan zamba",
+          body: "Sake biyan kuɗi a wajen dandalin, kafofin watsa labarai masu maimaitawa, hauhawar tallace-tallace, da samfuran biya masu haɗari duk suna shiga layin bincike.",
+        },
+        {
+          title: "Hanyoyin gwajin tarihi",
+          body: "Yardar, ƙin yarda, ayyukan biya, hukunce-hukuncen jayayya da binciken ta atomatik duk an rubuta su a sabar.",
+        },
+      ],
+    },
+    sellerLadder: {
+      kicker: "Tsani na amincin mai sayarwa",
+      title: "Matakai da aka samu ta hanyar hali, ba ta hanyar kuɗi ba.",
+    },
+    policySurfaces: {
+      kicker: "Mahallin manufofin",
+      title: "Ƙa'idodin da muka ɗora wa kanmu.",
+    },
+    ecosystem: {
+      kicker: "Ƙarfafa aminci a duk muhalli",
+    },
+  },
+  help: {
+    metadata: {
+      title: "Cibiyar taimako — HenryCo Marketplace",
+      description:
+        "Karanta tambayoyin da masu siye da masu sayarwa suka fi yawan yi. Idan ba ka samu abin da kake nema ba, buɗe tikitin tallafi, wani daga ƙungiyar zai karanta shi.",
+    },
+    hero: {
+      kicker: "Cibiyar taimako",
+      title: "Samu amsa cikin daƙiƙa kaɗan — ko yi magana da mutum.",
+      body: "Nemo batutuwan da masu siye da masu sayarwa suka fi yawan tambaya. Idan ba ka samu abin da kake bukata ba, buɗe tikitin tallafi a ƙarshen wannan shafin, wani daga ƙungiyar zai karanta shi.",
+    },
+    stillNeedHelp: {
+      kicker: "Har yanzu kana bukatar taimako",
+      title: "Buɗe tikitin tallafi — mutum zai karanta shi.",
+      body: "Tikiti yana ajiye dukkan mahallin tare — odar, mai sayarwa, tarihin sabani — domin ƙungiyar ta yi aiki a kan al'amarin ba tare da ka sake rubuta shi a kowane amsa ba.",
+      ctaLabel: "Buɗe tikitin tallafi",
+    },
+  },
+  sell: {
+    metadata: {
+      title: "Sayar a HenryCo — kasuwa zaɓaɓɓa ga masu sayar da ke jagorancin amincewa",
+      description:
+        "Nemi izinin sayarwa a HenryCo Marketplace: matsayi da aka kafa kan amincewa, shagunan inganci, da wuri ɗaya don odoji, biyan kuɗi da tallafi.",
+    },
+    hero: {
+      kicker: "Sayar a HenryCo",
+      title: "Zaɓaɓɓa daga tushe. An gina ta don masu sayarwa da ke jagorancin amincewa.",
+      body: "HenryCo Marketplace yana fifita masu sayarwa da ke kula da gabatarwa, masu kuɗi a isarwa da masu gaskiya wajen kare mai siye. Sharuɗɗan a fili suke a wannan shafin; aikace-aikacen mai sayarwa zai ci gaba a cikin asusunka na HenryCo.",
+      primaryCta: "Buɗe aikace-aikacen mai sayarwa",
+      secondaryCta: "Duba farashin mai sayarwa",
+      signInCta: "Shiga da asusun HenryCo",
+      highlights: [
+        { label: "Zaɓi", value: "Bita ta hannu, ba listing mai biyan kuɗi ba" },
+        { label: "Shago", value: "Fasfo ɗin amincewa wanda masu siye ke iya gani" },
+        { label: "Wurin aiki", value: "Odoji, biyan kuɗi da tallafi a wuri ɗaya" },
+      ],
+    },
+    advantages: {
+      kicker: "Me ya sa masu sayarwa masu ƙarfi ke nasara a nan",
+      items: [
+        { title: "Matsayi da aka kafa kan amincewa", body: "Shagonka yana samun fasfon amincewa a fili, maimakon ya ɓace cikin hayaniyar kasuwa marar inganci." },
+        { title: "Mafi kyawun ingancin shago", body: "Layukan edita, bincike mai natsuwa, da katunan kayayyaki masu tsabta suna taimaka wa shaguna masu inganci su juyar da abokan ciniki cikin sauri." },
+        { title: "Aiki mai tsabta", body: "Biyan kuɗi, odoji, tallafi, sa ido, da gargaɗin kayan ajiya su kasance a sarari a cikin wuri ɗaya na aiki." },
+      ],
+    },
+    onboarding: {
+      kicker: "Yadda fara aiki ke gudana",
+      stepLabel: "Mataki",
+      steps: [
+        { step: "01", title: "Fara aikace-aikacen mai sayarwa", body: "Buɗe aikace-aikacen daga asusunka na HenryCo — daftarin yana ajiyewa kai tsaye yayin da kake tara cikakkun bayanai." },
+        { step: "02", title: "Ƙara cikakkun bayanan kasuwanci", body: "Sunan kasuwanci, bayanin shago, mai da hankali kan samfuri, da duk wani takardun tabbatarwa da ke bayyana yadda kake cika odoji." },
+        { step: "03", title: "Bita na aikace-aikacen", body: "Ƙungiyar HenryCo tana bitar takardu, alamomin amincewa, da shirin shago — ba kawai alamar biyan kuɗi ba." },
+        { step: "04", title: "Fara aikin mai siyarwa", body: "Masu sayarwa da aka amince da su za su ci gaba zuwa fara aiki inda farashi, kudin shigarwa, lokutan biyan kuɗi da ƙa'idoji ke a sarari kafin a fara bugawa." },
+      ],
+      callout: {
+        eyebrow: "Aikace-aikacen mai sayarwa mai tsabta",
+        body: "Rajistar mai sayarwa tana zama a cikin asusunka, don haka cikakkun bayanan kasuwanci, matsayin bita, da sabuntawar amincewa su kasance masu zaman kansu kuma masu sauƙin bibiya.",
+      },
+    },
+    plans: {
+      kicker: "Tattalin arzikin tsare-tsare",
+      title: "An faɗi matakai a gaba, ba bayan an buga ba.",
+      feeLabel: "Kuɗi",
+      payoutLabel: "Biya",
+      includedLabel: "An haɗa",
+      includedSuffix: "tallace-tallace",
+      featuredLabel: "Mai ƙayatarwa",
+      featuredCurrencyPrefix: "NGN",
+    },
+    trustTiers: {
+      kicker: "Matakan amincewa suna canza gata",
+      title: "Sami biyan kuɗi cikin sauri, shaguna masu girma, da fa'idodin manufa.",
+    },
+    closing: {
+      kicker: "Ci gaba",
+      title: "Yi aikace-aikacen, sannan ka bi matsayin daga asusunka.",
+      body: "Amincewa yana buɗe shirin mai sayarwa. Farashi, kudin shigarwa, da lokutan biyan kuɗi suna nan a sarari kafin ka buga — babu mamaki na kwangila daga baya.",
+      primaryCta: "Fara aikace-aikacen",
+      secondaryCta: "Ziyarci wurin aiki na mai sayarwa",
+    },
+  },
+  sellPricing: {
+    metadata: {
+      title: "Farashin mai sayarwa — HenryCo Marketplace",
+      description:
+        "Kudin tsari, kudin shigarwa, kudin matsayi na musamman, kwamishan kasuwanci da sarrafa biyan kuɗi — duk ana ambata su a gaba, kafin a buga kayan, ba bayan ba.",
+    },
+    hero: {
+      kicker: "Farashin mai sayarwa",
+      title: "Tattalin arziki a sarari. Babu kuɗin ɓoye.",
+      body: "Kudin tsari, kudin shigarwa, kudin matsayi na musamman, kwamishan kasuwanci da sarrafa biyan kuɗi — duk ana ambata su a gaba kafin ka buga kayanka, ba bayan ba.",
+      primaryCta: "Nemi a matsayin mai sayarwa",
+      secondaryCta: "Koma ga taƙaitaccen mai sayarwa",
+      statsLabels: {
+        planTiers: "Matakan tsari",
+        trustTiers: "Matakan amana",
+        featuredSlots: "Wuraren musamman",
+      },
+      featuredSlotsValue: "Ana bita ɗaya-ɗaya",
+    },
+    plans: {
+      kicker: "Tsare-tsare a kallon daya",
+      feeLabel: "Kuɗi",
+      payoutLabel: "Biya",
+      includedLabel: "An haɗa",
+      includedSuffix: "shigarwa",
+      extraListingLabel: "Ƙarin shigarwa",
+      featuredSlotLabel: "Wurin musamman",
+      currencyPrefix: "NGN",
+      ctaPartner: "Tuntube mu don sharuɗɗan abokin tarayya",
+      ctaTemplate: "Fara da {plan}",
+    },
+    economics: {
+      kicker: "Yadda HenryCo ke samun kuɗi",
+      title: "An ambato a gaba, an cire a sarari.",
+      items: [
+        "Ana cire kwamishan kasuwanci daga kowane biyan ƙungiya-oda ta mai sayarwa kafin a saki biyan.",
+        "Kudin shigarwa na fara aiki bayan an gama ƙididdigar shigarwa da ke ciki na tsarin mai sayarwa.",
+        "Matsayi na musamman shi ne buƙatar biya daban, kuma yana ƙarƙashin bita na inganci da amana.",
+        "Ana cire kudin sarrafa biyan a ciki na taƙaitaccen biyan mai sayarwa, ba daga baya da mamaki ba.",
+        "Hidimomin ƙarin daraja na Studio, Learn da Logistics suna buɗe ƙarin hanyoyin kuɗi ga masu sayarwa.",
+        "Yaƙin neman wanda ma'aikaci ke gudanarwa da wuraren tallafi suna nan a buɗe don binciken, ba mai rikici na yi-da-kanka ba.",
+      ],
+    },
+    trustTiers: {
+      kicker: "Lokacin biyan bisa matakin amana",
+      title: "Halayya mafi kyau na rage tsawon riƙewa.",
+    },
+    closing: {
+      kicker: "Shirye don nema?",
+      title: "Aikace-aikacen yana buɗewa a cikin asusun HenryCo naka.",
+      body: "Za ka iya adana zane ka dawo — farashin da yake bayyana anan zai fara aiki da zaran an gama shigar mai sayarwa.",
+      primaryCta: "Nemi a matsayin mai sayarwa",
+      secondaryCta: "Matsayin amana",
+    },
+  },
+  collections: {
+    metadata: {
+      titleTemplate: "{collection} — Kasuwar HenryCo",
+      descriptionTemplate:
+        "Bincika {collection} a Kasuwar HenryCo — zaɓaɓɓun kayayyaki masu tantancewa, tare da alamomin amincewa, kyakkyawan bayanin isarwa, da fasfo na masu sayarwa kafin biyan kuɗi.",
+      fallbackDescription:
+        "Tarin zaɓaɓɓu a Kasuwar HenryCo, da kayayyaki masu tantancewa, alamomin amincewa, isarwa mai sarari, da fasfo na masu sayarwa da ake gani kafin biyan kuɗi.",
+    },
+    hero: {
+      primaryCta: "Buɗe cikakken bincike",
+      secondaryCta: "Matakan amincewa",
+    },
+    sidebar: {
+      itemsLabel: "Abubuwa cikin tarin",
+      editedByLabel: "Wanda ya tsara",
+      editedByValue: "Sashen aiki na Kasuwa",
+      buyerProtectionLabel: "Kariyar mai siye",
+      buyerProtectionValue: "Biyan kuɗi ta hannun amintacce",
+    },
+    rail: {
+      kicker: "Abin da ke cikin wannan zaɓi",
+      itemsSuffix: "abubuwa",
+    },
+  },
+  policies: {
+    metadata: {
+      titleTemplate: "{policy} — Kasuwar HenryCo",
+      descriptionTemplate:
+        "{policy} a Kasuwar HenryCo — aikatawa da aka rubuta a sabar, kula da kuɗi ta hannun amintacce, da matsayin amincewa da ake gani kafin biyan kuɗi.",
+      fallbackTitle: "Manufar kasuwa — Kasuwar HenryCo",
+      fallbackDescription:
+        "Wata manufa ta Kasuwar HenryCo — aikatawa da aka rubuta a sabar, kula da kuɗi ta hannun amintacce, da matsayin amincewa da ake gani kafin biyan kuɗi.",
+    },
+    hero: {
+      backToTrust: "Komawa zuwa matakan amincewa",
+      openSupport: "Buɗe zauren tallafi",
+    },
+    details: {
+      coverageLabel: "Yankin ɗauka",
+      enforcementLabel: "Aikatawa",
+      updatedLabel: "An sabunta",
+    },
+    coverageBySlug: {
+      buyerProtection: "Masu siye",
+      sellerPolicy: "Masu sayarwa",
+      fallback: "Mahalarta kasuwa",
+    },
+    enforcementBySlug: {
+      buyerProtection: "Kuɗaɗen biyan ta hannun amintacce + daskarewa lokacin gardama",
+      sellerPolicy: "Bita bisa matakin amana + riƙewar biya",
+      fallback: "Tarihi a sabar",
+    },
+    updatedBySlug: {
+      buyerProtection: "Lokacin sabunta tsarin biya da gardama",
+      sellerPolicy: "Lokacin sabunta matakan mai sayarwa",
+      fallback: "Lokacin sabunta manufa",
+    },
+    provisions: {
+      kicker: "Sharuɗɗan manufa",
+    },
+    ecosystem: {
+      kicker: "Sarrafa kasuwa masu haɗuwa",
+      openLabel: "Buɗe",
+    },
+  },
+  product: {
+    metadata: {
+      titleTemplate: "{title} — HenryCo Marketplace",
+      descriptionTemplate:
+        "{title} a HenryCo Marketplace — ɗakin kaya da aka tabbatar, isar da kaya mai aminci, da fasfo na mai sayarwa duka a fili kafin biya.",
+      fallbackDescription:
+        "Tallar da aka tabbatar a HenryCo Marketplace — alamomin amana, ƙayyadaddun lokutan isarwa, da fasfo na mai sayarwa duk a fili kafin biya.",
+    },
+    fulfillment: {
+      sellerTrustLabel: "Amincin mai sayarwa",
+      sellerTrustValueTemplate: "Fasfon {vendor} a fili",
+      sellerTrustValueFallback: "Fasfon mai sayarwa na jiran kammalawa",
+      availabilityLabel: "Samuwa",
+      availabilityValueSingular: "{count} naúrar a cikin tarin yanzu",
+      availabilityValuePlural: "{count} naúrori a cikin tarin yanzu",
+      fulfillmentLabel: "Isar da kaya",
+      paymentLabel: "Biyan kuɗi",
+      paymentValueCod: "Biya yayin isarwa ko wuce gona da iri da aka tabbatar",
+      paymentValueVerified: "Tafarki na wucewa wanda aka tabbatar",
+    },
+    price: {
+      label: "Farashi",
+      leadTimeLabel: "Lokacin isarwa",
+    },
+    safety: {
+      kicker: "Me ya sa wannan tallar take ji aminci",
+      stockTemplate: "Naúrori {count} suna a fili a yanzu cikin sito",
+      codEligible: "Biya yayin isarwa yana samuwa inda aka tallafa",
+      codFallback: "Hanyar tabbatarwa ta hannu tana samuwa",
+      vendorLinkedTemplate: "Fasfon mai sayarwa na {vendor} yana da alaƙa kai tsaye daga shafin nan",
+      vendorPending: "Fuskar amincin mai sayarwa har yanzu tana jiran haɗawa",
+      reviewsTemplateSingular: "{count} sharhi a kan matsakaicin ƙimar {rating}",
+      reviewsTemplatePlural: "{count} sharhi a kan matsakaicin ƙimar {rating}",
+    },
+    detail: {
+      kicker: "Bayanin samfur",
+      title: "Duk abin da yake da muhimmanci kafin biya.",
+      deliverySummaryTitle: "Isar, tallafi, da kulawa bayan oda",
+      deliveryFallback: "Za a fayyace tagulla na isar a lokacin biya.",
+      deliveryTail:
+        "Odoji suna ci gaba da bibiya daga biya har zuwa isar da kaya, kuma jayayya ko zaren tallafi suna nan a haɗe da wannan tarihin odan.",
+      specsTitle: "Ƙayyadewa da bayyananniyar kayan ɗanyu",
+      passportTitle: "Fasfon kanti da gano alaƙa",
+      visitVendorTemplate: "Ziyarci {vendor}",
+      exploreCategoryTemplate: "Bincika {category}",
+      seeBrandTemplate: "Duba {brand}",
+    },
+    related: {
+      kicker: "Cika saiti",
+      title: "Ƙarin daga wannan yanayin sayan.",
+      body: "Layukan shawarwari suna tsabta da kulawa, ba surutun ƙarin sayarwa ba.",
+    },
+    reviews: {
+      kicker: "Manyan sharhi",
+      title: "Alamun sayan da aka tabbatar, ba ƙarin surutu ba.",
+      verifiedPurchase: "Sayan da aka tabbatar",
+      reviewLabel: "Sharhi",
+    },
+    rail: {
+      kicker: "Abokan ciniki sun kuma saya",
+      headline: "Ci gaba da bincike ba tare da rasa wurin ka ba.",
+      caption:
+        "Alamomin haɗin gwiwa da kuma kusan rukuni iri ɗaya suna fitar da matakin gaba a fili, ba ƙarin tallace-tallace ba.",
+      ctaLabel: "Buɗe bincike",
+    },
+  },
+};
+
+const LOCALE_PARTIALS: Partial<Record<AppLocale, DeepPartial<MarketplacePublicCopy>>> = {
   fr: FR,
+  es: ES,
+  pt: PT,
+  de: DE,
+  it: IT,
+  ar: AR,
+  zh: ZH,
+  hi: HI,
+  ig: IG,
+  yo: YO,
+  ha: HA,
 };
 
 export function getMarketplacePublicCopy(locale: AppLocale): MarketplacePublicCopy {
-  return LOCALE_COPY[locale] ?? EN;
+  if (locale === "en") return EN;
+  const partial = LOCALE_PARTIALS[locale];
+  if (!partial) return EN;
+  return deepMergeMessages(EN, partial as Partial<MarketplacePublicCopy>);
 }
 
 export function translateMarketplacePublicLabel(locale: AppLocale, label: string) {

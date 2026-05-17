@@ -99,19 +99,19 @@ export default async function HomePage() {
             {
               icon: Search,
               title: copy.home.browseJobs,
-              body: "Search and save roles with no pressure. Apply when it feels right — we show what you have already sent.",
+              body: copy.landingWhy.browseBody,
               accent: "text-[var(--jobs-accent)]",
             },
             {
               icon: ShieldCheck,
               title: copy.home.safetyTrust,
-              body: "Employer verification and post review cut down scam listings before they waste anyone's week.",
+              body: copy.landingWhy.safetyBody,
               accent: "text-[var(--jobs-accent)]",
             },
             {
               icon: Building2,
               title: copy.shell.hiring,
-              body: "Post with context, pass review, and run shortlist + interviews in one workspace tied to your HenryCo account.",
+              body: copy.landingWhy.hiringBody,
               accent: "text-[var(--jobs-brass)]",
             },
           ].map(({ icon: Icon, title, body, accent }, i) => (
@@ -135,27 +135,27 @@ export default async function HomePage() {
             href="/hire"
             className="text-sm font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
           >
-            How hiring works <ArrowRight className="ml-1 inline-block h-4 w-4" />
+            {copy.landingHow.sectionLink} <ArrowRight className="ml-1 inline-block h-4 w-4" />
           </Link>
         </div>
         <ol className="grid gap-8 md:grid-cols-3">
           {[
             {
               step: 1,
-              title: "Look around",
-              body: "Search by title, category, place, and how you want to work. Save anything interesting — there is no clock.",
+              title: copy.landingHow.lookAroundTitle,
+              body: copy.landingHow.lookAroundBody,
               icon: Compass,
             },
             {
               step: 2,
-              title: "Sign in when you apply",
-              body: "We ask for your HenryCo account so applications and saves stay private and tied to you — not a throwaway email.",
+              title: copy.landingHow.signInTitle,
+              body: copy.landingHow.signInBody,
               icon: CircleCheck,
             },
             {
               step: 3,
-              title: "Follow what happens next",
-              body: "Shortlisted, interview, offer — stages show up in your candidate area with guidance on what to do next.",
+              title: copy.landingHow.followTitle,
+              body: copy.landingHow.followBody,
               icon: BriefcaseBusiness,
             },
           ].map(({ step, title, body, icon: Icon }, i) => (
@@ -167,7 +167,7 @@ export default async function HomePage() {
             >
               <div className="flex items-center gap-3">
                 <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
-                  Step {String(step).padStart(2, "0")}
+                  {copy.landingHow.stepLabel} {String(step).padStart(2, "0")}
                 </span>
                 <Icon className="h-4 w-4 text-[var(--jobs-muted)]" aria-hidden />
               </div>
@@ -182,8 +182,8 @@ export default async function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <p className="jobs-kicker">Featured roles</p>
-            <h2 className="mt-3 jobs-heading max-w-xl">Roles we are highlighting right now</h2>
+            <p className="jobs-kicker">{copy.landingFeatured.kicker}</p>
+            <h2 className="mt-3 jobs-heading max-w-xl">{copy.landingFeatured.heading}</h2>
           </div>
           <Link
             href="/jobs"
@@ -206,7 +206,7 @@ export default async function HomePage() {
             <p className="jobs-kicker">{copy.home.differentiators}</p>
             <h2 className="mt-3 jobs-heading max-w-sm text-balance">{copy.home.ready}</h2>
             <p className="mt-4 max-w-md text-sm leading-7 text-[var(--jobs-muted)]">
-              No throwaway emails, no hidden fees, no black-hole applications — the differences add up.
+              {copy.landingFeatured.differentiatorsBody}
             </p>
           </div>
           <ul className="divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
@@ -227,8 +227,8 @@ export default async function HomePage() {
         <PublicSpotlight
           tone="contrast"
           eyebrow={copy.home.ready}
-          title="Browse for free. Sign in when you want to save or apply."
-          body="Employers start with a short walkthrough so expectations stay clear. Candidates keep saves, applications, and stages in one HenryCo profile."
+          title={copy.landingClosing.title}
+          body={copy.landingClosing.body}
           aside={
             <ul className="space-y-3">
               {[

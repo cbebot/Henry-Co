@@ -1,12 +1,22 @@
 import Link from "next/link";
 import { ArrowRight, Layers } from "lucide-react";
+import { getLearnPathsCopy } from "@henryco/i18n/server";
 import { getPublicAcademyData } from "@/lib/learn/data";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PathCard } from "@/components/learn/ui";
 
-export const metadata = { title: "Learning paths - HenryCo Learn" };
+export async function generateMetadata() {
+  const locale = await getLearnPublicLocale();
+  const copy = getLearnPathsCopy(locale);
+  return { title: copy.meta.title };
+}
 
 export default async function PathsPage() {
-  const academy = await getPublicAcademyData();
+  const [locale, academy] = await Promise.all([
+    getLearnPublicLocale(),
+    getPublicAcademyData(),
+  ]);
+  const copy = getLearnPathsCopy(locale);
   const pathItemCounts = new Map(
     academy.paths.map((path) => [
       path.id,
@@ -22,36 +32,35 @@ export default async function PathsPage() {
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
-              Learning paths
+              {copy.hero.eyebrow}
             </p>
             <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-              Build a skill across several courses — not one long sprint.
+              {copy.hero.title}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
-              Each path lists the courses in order. Complete them one at a time; your progress
-              still lives in your HenryCo account so you can pause and return whenever you need.
+              {copy.hero.body}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href="/courses"
                 className="learn-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Browse individual courses
+                {copy.hero.ctaPrimary}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/certifications"
                 className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[var(--learn-mint-soft)] underline-offset-4 hover:underline"
               >
-                Certificate programs
+                {copy.hero.ctaSecondary}
               </Link>
             </div>
           </div>
           <ul className="grid gap-3 text-sm">
             {[
-              { label: "Paths", value: String(academy.paths.length) },
-              { label: "Courses linked", value: String(totalCourses) },
-              { label: "Pacing", value: "Pause and resume from account" },
+              { label: copy.aside.pathsLabel, value: String(academy.paths.length) },
+              { label: copy.aside.coursesLabel, value: String(totalCourses) },
+              { label: copy.aside.pacingLabel, value: copy.aside.pacingValue },
             ].map((item) => (
               <li
                 key={item.label}
@@ -73,7 +82,7 @@ export default async function PathsPage() {
       <section className="mt-14">
         <div className="flex items-baseline gap-4">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
-            Open paths
+            {copy.openPaths.eyebrow}
           </p>
           <span className="h-px flex-1 bg-[var(--learn-line)]" />
         </div>

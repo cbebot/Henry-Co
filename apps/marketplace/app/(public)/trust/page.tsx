@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -8,32 +9,30 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ecosystemOffers, policyPages, sellerTrustTierRules } from "@/lib/marketplace/policy";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
-export default function TrustPage() {
-  const passports = [
-    {
-      icon: ShieldCheck,
-      title: "Trust passports",
-      body: "Every store and product surfaces verification level, SLA, dispute rate, payout readiness, and fulfillment posture.",
-    },
-    {
-      icon: Lock,
-      title: "Escrow control",
-      body: "Buyer funds are held by HenryCo first, then move into releasable payout only after delivery and trust checks clear.",
-    },
-    {
-      icon: FileSearch,
-      title: "Anti-fraud review",
-      body: "Off-platform payment steering, duplicate media, listing velocity spikes, and risky payout patterns route into queue visibility.",
-    },
-    {
-      icon: ClipboardCheck,
-      title: "Audit trails",
-      body: "Approvals, rejections, payout actions, dispute decisions, and automation sweeps are logged server-side.",
-    },
-  ] as const;
+const GUARDRAIL_ICONS = [ShieldCheck, Lock, FileSearch, ClipboardCheck] as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  return {
+    title: copy.trust.metadata.title,
+    description: copy.trust.metadata.description,
+  };
+}
+
+export default async function TrustPage() {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+
+  const guardrails = copy.trust.guardrails.items.map((item, index) => ({
+    ...item,
+    icon: GUARDRAIL_ICONS[index] ?? GUARDRAIL_ICONS[GUARDRAIL_ICONS.length - 1],
+  }));
 
   return (
     <main className="mx-auto max-w-7xl space-y-16 px-4 py-10 sm:px-6 lg:px-8">
@@ -41,23 +40,17 @@ export default function TrustPage() {
         <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">
-              Trust &amp; safety
+              {copy.trust.hero.kicker}
             </p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
-              Visible before checkout. Enforced after it.
+              {copy.trust.hero.title}
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-              Trust governs what a seller can do, how money moves, and how moderation responds.
-              Seller tiers, buyer risk, listing scoring, escrow holds, disputes, and payout release
-              all leave a server-side paper trail.
+              {copy.trust.hero.body}
             </p>
           </div>
           <ul className="grid gap-3 text-sm">
-            {[
-              { label: "Money movement", value: "Escrowed, released after checks" },
-              { label: "Reviews", value: "Server-logged, dispute-traceable" },
-              { label: "Tiers", value: "Earned, revocable" },
-            ].map((item) => (
+            {copy.trust.hero.pillars.map((item) => (
               <li
                 key={item.label}
                 className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0"
@@ -75,9 +68,11 @@ export default function TrustPage() {
       </section>
 
       <section>
-        <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">Four guardrails</p>
+        <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
+          {copy.trust.guardrails.kicker}
+        </p>
         <ul className="mt-8 grid gap-10 md:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-[var(--market-line)]">
-          {passports.map((item, i) => {
+          {guardrails.map((item, i) => {
             const Icon = item.icon;
             return (
               <li key={item.title} className={i > 0 && i < 4 ? "xl:pl-8" : ""}>
@@ -95,10 +90,10 @@ export default function TrustPage() {
       <section className="grid gap-12 xl:grid-cols-[1fr,1fr] xl:divide-x xl:divide-[var(--market-line)]">
         <div>
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            Seller trust ladder
+            {copy.trust.sellerLadder.kicker}
           </p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
-            Tiers earned through behaviour, not paid for.
+            {copy.trust.sellerLadder.title}
           </h2>
           <ul className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {sellerTrustTierRules.map((tier) => (
@@ -123,9 +118,11 @@ export default function TrustPage() {
         </div>
 
         <div className="xl:pl-12">
-          <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">Policy surfaces</p>
+          <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
+            {copy.trust.policySurfaces.kicker}
+          </p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
-            The standards we hold ourselves to.
+            {copy.trust.policySurfaces.title}
           </h2>
           <ul className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {policyPages.map((policy) => (
@@ -156,7 +153,7 @@ export default function TrustPage() {
       <section className="border-t border-[var(--market-line)] pt-10">
         <div className="flex items-baseline gap-4">
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            Ecosystem trust reinforcement
+            {copy.trust.ecosystem.kicker}
           </p>
           <span className="h-px flex-1 bg-[var(--market-line)]" />
         </div>
