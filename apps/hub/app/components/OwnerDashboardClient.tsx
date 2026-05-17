@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import type { HubOwnerCopy } from "@henryco/i18n";
 import Image from "next/image";
 import {
   createFallbackCompanyPage,
@@ -231,11 +232,14 @@ function personTone(person: PersonRecord) {
   return "leadership";
 }
 
-function personToneLabel(person: PersonRecord) {
-  if (person.is_owner) return "Owner";
-  if (person.is_manager) return "Management";
-  if (person.is_featured) return "Featured";
-  return "Leadership";
+function personToneLabel(
+  person: PersonRecord,
+  labels: { owner: string; management: string; featured: string; leadership: string }
+) {
+  if (person.is_owner) return labels.owner;
+  if (person.is_manager) return labels.management;
+  if (person.is_featured) return labels.featured;
+  return labels.leadership;
 }
 
 function personToneClasses(person: PersonRecord) {
@@ -328,16 +332,23 @@ async function writeJson<T>(url: string, body: unknown): Promise<T> {
   return json as T;
 }
 
+type AssetUploadCopy = Pick<
+  HubOwnerCopy["ownerDashboardClient"],
+  "assetUploadPastePlaceholder" | "assetUploadingLabel" | "assetUploadLabel" | "assetPreviewUnavailable" | "assetPreviewReady" | "assetOpenLabel"
+>;
+
 function AssetUploadField({
   label,
   value,
   folder,
   onChange,
+  copy,
 }: {
   label: string;
   value?: string | null;
   folder: string;
   onChange: (value: string) => void;
+  copy: AssetUploadCopy;
 }) {
   const [uploading, setUploading] = useState(false);
   const [previewFailed, setPreviewFailed] = useState(false);
@@ -408,14 +419,14 @@ function AssetUploadField({
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value)}
           className="h-11 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-sm text-white outline-none"
-          placeholder="Paste URL or upload image"
+          placeholder={copy.assetUploadPastePlaceholder}
         />
         <label
           htmlFor={inputId}
           className="inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.06] px-4 text-sm text-white/90 transition hover:bg-white/10"
         >
           <ImageIcon className="h-4 w-4" />
-          {uploading ? "Uploading..." : "Upload"}
+          {uploading ? copy.assetUploadingLabel : copy.assetUploadLabel}
         </label>
         <input
           id={inputId}
@@ -447,7 +458,7 @@ function AssetUploadField({
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm text-white/78">{previewUrl}</div>
             <div className="mt-1 text-xs text-white/45">
-              {previewFailed ? "Preview unavailable" : "Preview ready"}
+              {previewFailed ? copy.assetPreviewUnavailable : copy.assetPreviewReady}
             </div>
           </div>
 
@@ -457,7 +468,7 @@ function AssetUploadField({
             rel="noreferrer"
             className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-xs text-white/84 transition hover:bg-white/10"
           >
-            Open
+            {copy.assetOpenLabel}
           </a>
         </div>
       ) : null}
@@ -471,7 +482,7 @@ function AssetUploadField({
   );
 }
 
-export default function OwnerDashboardClient() {
+export default function OwnerDashboardClient({ copy }: { copy: HubOwnerCopy["ownerDashboardClient"] }) {
   const [activeTab, setActiveTab] = useState<TabKey>("general");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -740,7 +751,7 @@ export default function OwnerDashboardClient() {
     return (
       <div className="min-h-screen bg-[#050816] px-4 py-10 text-white">
         <div className="mx-auto max-w-7xl rounded-[32px] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl">
-          Loading dashboard...
+          {copy.loadingDashboard}
         </div>
       </div>
     );
@@ -753,27 +764,27 @@ export default function OwnerDashboardClient() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="text-xs uppercase tracking-[0.2em] text-white/45">
-                Owner dashboard
+                {copy.headerEyebrow}
               </div>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-                Henry &amp; Co. administration
+                {copy.headerTitle}
               </h1>
               <p className="mt-2 text-sm text-white/64">
-                Manage global settings, public pages, leadership records, and divisions.
+                {copy.headerDescription}
               </p>
             </div>
 
             <div className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/78">
               <ShieldCheck className="h-4 w-4 text-[#C9A227]" />
-              Server-routed admin writes only
+              {copy.serverRoutedBadge}
             </div>
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MiniStatCard label="Leadership profiles" value={String(peopleStats.total)} />
-            <MiniStatCard label="Published profiles" value={String(peopleStats.published)} />
-            <MiniStatCard label="Published divisions" value={String(divisionStats.published)} />
-            <MiniStatCard label="Featured divisions" value={String(divisionStats.featured)} />
+            <MiniStatCard label={copy.statLabelLeadershipProfiles} value={String(peopleStats.total)} />
+            <MiniStatCard label={copy.statLabelPublishedProfiles} value={String(peopleStats.published)} />
+            <MiniStatCard label={copy.statLabelPublishedDivisions} value={String(divisionStats.published)} />
+            <MiniStatCard label={copy.statLabelFeaturedDivisions} value={String(divisionStats.featured)} />
           </div>
 
           {message ? (
@@ -796,25 +807,25 @@ export default function OwnerDashboardClient() {
             active={activeTab === "general"}
             onClick={() => setActiveTab("general")}
             icon={<LayoutDashboard className="h-4 w-4" />}
-            label="General settings"
+            label={copy.tabGeneralSettings}
           />
           <TabButton
             active={activeTab === "pages"}
             onClick={() => setActiveTab("pages")}
             icon={<FileText className="h-4 w-4" />}
-            label="Company pages"
+            label={copy.tabCompanyPages}
           />
           <TabButton
             active={activeTab === "leadership"}
             onClick={() => setActiveTab("leadership")}
             icon={<UserSquare2 className="h-4 w-4" />}
-            label="Leadership"
+            label={copy.tabLeadership}
           />
           <TabButton
             active={activeTab === "divisions"}
             onClick={() => setActiveTab("divisions")}
             icon={<Building2 className="h-4 w-4" />}
-            label="Divisions"
+            label={copy.tabDivisions}
           />
         </div>
 
@@ -822,50 +833,50 @@ export default function OwnerDashboardClient() {
           <section className="rounded-[32px] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl">
             <div className="grid gap-4 lg:grid-cols-2">
               <Input
-                label="Legal name"
+                label={copy.generalLegalNameLabel}
                 value={settings.legal_name ?? ""}
                 onChange={(value) => setSettings((prev) => ({ ...prev, legal_name: value }))}
               />
               <Input
-                label="Brand title"
+                label={copy.generalBrandTitleLabel}
                 value={settings.brand_title ?? ""}
                 onChange={(value) => setSettings((prev) => ({ ...prev, brand_title: value }))}
               />
               <Input
-                label="Brand subtitle"
+                label={copy.generalBrandSubtitleLabel}
                 value={settings.brand_subtitle ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, brand_subtitle: value }))
                 }
               />
               <Input
-                label="Base domain"
+                label={copy.generalBaseDomainLabel}
                 value={settings.base_domain ?? ""}
                 onChange={(value) => setSettings((prev) => ({ ...prev, base_domain: value }))}
               />
               <Input
-                label="Support email"
+                label={copy.generalSupportEmailLabel}
                 value={settings.support_email ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, support_email: value }))
                 }
               />
               <Input
-                label="Support phone"
+                label={copy.generalSupportPhoneLabel}
                 value={settings.support_phone ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, support_phone: value }))
                 }
               />
               <Input
-                label="Brand accent"
+                label={copy.generalBrandAccentLabel}
                 value={settings.brand_accent ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, brand_accent: value }))
                 }
               />
               <Input
-                label="Copyright label"
+                label={copy.generalCopyrightLabelLabel}
                 value={settings.copyright_label ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, copyright_label: value }))
@@ -875,74 +886,67 @@ export default function OwnerDashboardClient() {
 
             <div className="mt-4 grid gap-4">
               <TextArea
-                label="Brand description"
+                label={copy.generalBrandDescriptionLabel}
                 value={settings.brand_description ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, brand_description: value }))
                 }
               />
               <TextArea
-                label="Footer blurb"
+                label={copy.generalFooterBlurbLabel}
                 value={settings.footer_blurb ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, footer_blurb: value }))
                 }
               />
               <TextArea
-                label="Office address"
+                label={copy.generalOfficeAddressLabel}
                 value={settings.office_address ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, office_address: value }))
                 }
               />
               <TextArea
-                label="Default meta description"
+                label={copy.generalDefaultMetaDescriptionLabel}
                 value={settings.default_meta_description ?? ""}
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, default_meta_description: value }))
                 }
               />
               <AssetUploadField
-                label="Logo URL"
+                label={copy.generalLogoUrlLabel}
                 value={settings.logo_url ?? ""}
                 folder="henryco/logo"
                 onChange={(value) => setSettings((prev) => ({ ...prev, logo_url: value }))}
+                copy={copy}
               />
               <AssetUploadField
-                label="Favicon URL"
+                label={copy.generalFaviconUrlLabel}
                 value={settings.favicon_url ?? ""}
                 folder="henryco/favicon"
                 onChange={(value) =>
                   setSettings((prev) => ({ ...prev, favicon_url: value }))
                 }
+                copy={copy}
               />
             </div>
 
             <div className="mt-6 grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-              <BrandSettingsPreview settings={settings} />
+              <BrandSettingsPreview settings={settings} copy={copy} />
               <div className="rounded-[28px] border border-white/10 bg-black/25 p-5">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/45">
-                  Publishing notes
+                  {copy.generalPublishingNotesEyebrow}
                 </div>
                 <div className="mt-4 space-y-3 text-sm leading-7 text-white/66">
-                  <p>
-                    The company logo is used across the public shell, homepage hero brand
-                    surfaces, footer, and metadata fallback icons.
-                  </p>
-                  <p>
-                    If no favicon is set, the public site falls back to the saved company
-                    logo for metadata icons.
-                  </p>
-                  <p>
-                    Use a clean transparent SVG or high-resolution PNG to keep the public
-                    brand sharp across dark backgrounds.
-                  </p>
+                  <p>{copy.generalPublishingNote1}</p>
+                  <p>{copy.generalPublishingNote2}</p>
+                  <p>{copy.generalPublishingNote3}</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-6">
-              <ActionButton onClick={saveSettings} saving={saving} label="Save settings" />
+              <ActionButton onClick={saveSettings} saving={saving} label={copy.generalSaveLabel} savingLabel={copy.assetUploadingLabel} />
             </div>
           </section>
         ) : null}
@@ -969,64 +973,65 @@ export default function OwnerDashboardClient() {
 
               <div className="space-y-4">
                 <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/70">
-                  Editing public route: <span className="font-semibold text-white">/{selectedPageKey === "home" ? "" : selectedPageKey}</span>
+                  {copy.pagesEditingRoute} <span className="font-semibold text-white">/{selectedPageKey === "home" ? "" : selectedPageKey}</span>
                 </div>
                 <Input
-                  label="Title"
+                  label={copy.pagesTitleLabel}
                   value={pageDraft.title ?? ""}
                   onChange={(value) => setPageDraft((prev) => ({ ...prev, title: value }))}
                 />
                 <Input
-                  label="Subtitle"
+                  label={copy.pagesSubtitleLabel}
                   value={pageDraft.subtitle ?? ""}
                   onChange={(value) => setPageDraft((prev) => ({ ...prev, subtitle: value }))}
                 />
                 <Input
-                  label="Hero badge"
+                  label={copy.pagesHeroBadgeLabel}
                   value={pageDraft.hero_badge ?? ""}
                   onChange={(value) =>
                     setPageDraft((prev) => ({ ...prev, hero_badge: value }))
                   }
                 />
                 <TextArea
-                  label="Intro"
+                  label={copy.pagesIntroLabel}
                   value={pageDraft.intro ?? ""}
                   onChange={(value) =>
                     setPageDraft((prev) => ({ ...prev, intro: value }))
                   }
                 />
                 <AssetUploadField
-                  label="Hero image URL"
+                  label={copy.pagesHeroImageLabel}
                   value={pageDraft.hero_image_url ?? ""}
                   folder={`henryco/pages/${selectedPageKey}`}
                   onChange={(value) =>
                     setPageDraft((prev) => ({ ...prev, hero_image_url: value }))
                   }
+                  copy={copy}
                 />
                 <div className="grid gap-4 lg:grid-cols-2">
                   <Input
-                    label="Primary CTA label"
+                    label={copy.pagesPrimaryCtaLabelLabel}
                     value={pageDraft.primary_cta_label ?? ""}
                     onChange={(value) =>
                       setPageDraft((prev) => ({ ...prev, primary_cta_label: value }))
                     }
                   />
                   <Input
-                    label="Primary CTA href"
+                    label={copy.pagesPrimaryCtaHrefLabel}
                     value={pageDraft.primary_cta_href ?? ""}
                     onChange={(value) =>
                       setPageDraft((prev) => ({ ...prev, primary_cta_href: value }))
                     }
                   />
                   <Input
-                    label="Secondary CTA label"
+                    label={copy.pagesSecondaryCtaLabelLabel}
                     value={pageDraft.secondary_cta_label ?? ""}
                     onChange={(value) =>
                       setPageDraft((prev) => ({ ...prev, secondary_cta_label: value }))
                     }
                   />
                   <Input
-                    label="Secondary CTA href"
+                    label={copy.pagesSecondaryCtaHrefLabel}
                     value={pageDraft.secondary_cta_href ?? ""}
                     onChange={(value) =>
                       setPageDraft((prev) => ({ ...prev, secondary_cta_href: value }))
@@ -1034,30 +1039,30 @@ export default function OwnerDashboardClient() {
                   />
                 </div>
                 <Input
-                  label="SEO title"
+                  label={copy.pagesSeoTitleLabel}
                   value={pageDraft.seo_title ?? ""}
                   onChange={(value) => setPageDraft((prev) => ({ ...prev, seo_title: value }))}
                 />
                 <TextArea
-                  label="SEO description"
+                  label={copy.pagesSeoDescriptionLabel}
                   value={pageDraft.seo_description ?? ""}
                   onChange={(value) =>
                     setPageDraft((prev) => ({ ...prev, seo_description: value }))
                   }
                 />
                 <TextArea
-                  label="Stats JSON"
+                  label={copy.pagesStatsJsonLabel}
                   value={pageStatsInput}
                   onChange={setPageStatsInput}
                 />
                 <TextArea
-                  label="Sections JSON"
+                  label={copy.pagesSectionsJsonLabel}
                   value={pageSectionsInput}
                   onChange={setPageSectionsInput}
                 />
                 <div className="grid gap-4 lg:grid-cols-2">
                   <Input
-                    label="Sort order"
+                    label={copy.pagesSortOrderLabel}
                     value={String(pageDraft.sort_order ?? 100)}
                     onChange={(value) =>
                       setPageDraft((prev) => ({
@@ -1067,7 +1072,7 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <Toggle
-                    label="Published"
+                    label={copy.pagesPublishedLabel}
                     checked={pageDraft.is_published !== false}
                     onChange={(value) =>
                       setPageDraft((prev) => ({ ...prev, is_published: value }))
@@ -1075,7 +1080,7 @@ export default function OwnerDashboardClient() {
                   />
                 </div>
 
-                <ActionButton onClick={savePage} saving={saving} label="Save page" />
+                <ActionButton onClick={savePage} saving={saving} label={copy.pagesSaveLabel} savingLabel={copy.assetUploadingLabel} />
               </div>
             </div>
           </section>
@@ -1086,26 +1091,24 @@ export default function OwnerDashboardClient() {
             <div className="mb-6 grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
               <div className="rounded-[28px] border border-white/10 bg-black/25 p-5">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/45">
-                  Leadership board control
+                  {copy.leadershipEyebrow}
                 </div>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                  Public leadership publishing
+                  {copy.leadershipTitle}
                 </h2>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-white/66">
-                  Ownership, management, and featured representatives are normalized from
-                  the saved role fields so the public About page and the owner dashboard
-                  stay aligned.
+                  {copy.leadershipDescription}
                 </p>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  <MiniStatCard label="Profiles" value={String(peopleStats.total)} />
-                  <MiniStatCard label="Published" value={String(peopleStats.published)} />
-                  <MiniStatCard label="Owners" value={String(peopleStats.owners)} />
-                  <MiniStatCard label="Managers" value={String(peopleStats.managers)} />
+                  <MiniStatCard label={copy.leadershipStatProfiles} value={String(peopleStats.total)} />
+                  <MiniStatCard label={copy.leadershipStatPublished} value={String(peopleStats.published)} />
+                  <MiniStatCard label={copy.leadershipStatOwners} value={String(peopleStats.owners)} />
+                  <MiniStatCard label={copy.leadershipStatManagers} value={String(peopleStats.managers)} />
                 </div>
               </div>
 
-              <LeadershipPreviewCard person={selectedPersonPreview} />
+              <LeadershipPreviewCard person={selectedPersonPreview} copy={copy} />
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
@@ -1118,7 +1121,7 @@ export default function OwnerDashboardClient() {
                       : "border-white/10 bg-black/25 text-white/84 hover:bg-white/10"
                   }`}
                 >
-                  <span>New leadership record</span>
+                  <span>{copy.leadershipNewRecord}</span>
                   <UserSquare2 className="h-4 w-4" />
                 </button>
 
@@ -1128,6 +1131,7 @@ export default function OwnerDashboardClient() {
                     person={person}
                     active={selectedPersonId === person.id}
                     onClick={() => setSelectedPersonId(person.id || "new")}
+                    copy={copy}
                   />
                 ))}
               </div>
@@ -1135,42 +1139,42 @@ export default function OwnerDashboardClient() {
               <div className="space-y-4">
                 <div className="grid gap-4 lg:grid-cols-2">
                   <Input
-                    label="Full name"
+                    label={copy.leadershipFullNameLabel}
                     value={personDraft.full_name ?? ""}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, full_name: value }))
                     }
                   />
                   <Input
-                    label="Job title"
+                    label={copy.leadershipJobTitleLabel}
                     value={personDraft.job_title ?? ""}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, job_title: value }))
                     }
                   />
                   <Input
-                    label="Role label"
+                    label={copy.leadershipRoleLabelLabel}
                     value={personDraft.role_label ?? ""}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, role_label: value }))
                     }
                   />
                   <Input
-                    label="Role title"
+                    label={copy.leadershipRoleTitleLabel}
                     value={personDraft.role_title ?? ""}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, role_title: value }))
                     }
                   />
                   <Input
-                    label="Department"
+                    label={copy.leadershipDepartmentLabel}
                     value={personDraft.department ?? ""}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, department: value }))
                     }
                   />
                   <Select
-                    label="Division served"
+                    label={copy.leadershipDivisionServedLabel}
                     value={personDraft.division_slug ?? ""}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({
@@ -1179,7 +1183,7 @@ export default function OwnerDashboardClient() {
                       }))
                     }
                     options={[
-                      { label: "No division assigned", value: "" },
+                      { label: copy.leadershipNoDivisionOption, value: "" },
                       ...divisions.map((item) => ({
                         label: item.name,
                         value: item.slug,
@@ -1187,14 +1191,14 @@ export default function OwnerDashboardClient() {
                     ]}
                   />
                   <Input
-                    label="Email"
+                    label={copy.leadershipEmailLabel}
                     value={personDraft.email ?? ""}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, email: value }))
                     }
                   />
                   <Input
-                    label="Phone"
+                    label={copy.leadershipPhoneLabel}
                     value={personDraft.phone ?? ""}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, phone: value }))
@@ -1203,7 +1207,7 @@ export default function OwnerDashboardClient() {
                 </div>
 
                 <Input
-                  label="LinkedIn URL"
+                  label={copy.leadershipLinkedinLabel}
                   value={personDraft.linkedin_url ?? ""}
                   onChange={(value) =>
                     setPersonDraft((prev) => ({ ...prev, linkedin_url: value }))
@@ -1211,23 +1215,24 @@ export default function OwnerDashboardClient() {
                 />
 
                 <AssetUploadField
-                  label="Photo URL"
+                  label={copy.leadershipPhotoUrlLabel}
                   value={personDraft.photo_url ?? ""}
                   folder="henryco/people"
+                  copy={copy}
                   onChange={(value) =>
                     setPersonDraft((prev) => ({ ...prev, photo_url: value }))
                   }
                 />
 
                 <TextArea
-                  label="Short bio"
+                  label={copy.leadershipShortBioLabel}
                   value={personDraft.short_bio ?? ""}
                   onChange={(value) =>
                     setPersonDraft((prev) => ({ ...prev, short_bio: value }))
                   }
                 />
                 <TextArea
-                  label="Long bio"
+                  label={copy.leadershipLongBioLabel}
                   value={personDraft.long_bio ?? ""}
                   onChange={(value) =>
                     setPersonDraft((prev) => ({ ...prev, long_bio: value }))
@@ -1236,7 +1241,7 @@ export default function OwnerDashboardClient() {
 
                 <div className="grid gap-4 lg:grid-cols-5">
                   <Input
-                    label="Sort order"
+                    label={copy.leadershipSortOrderLabel}
                     value={String(personDraft.sort_order ?? 100)}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({
@@ -1246,14 +1251,14 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <Toggle
-                    label="Published"
+                    label={copy.leadershipPublishedLabel}
                     checked={personDraft.is_published !== false}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, is_published: value }))
                     }
                   />
                   <Toggle
-                    label="Owner"
+                    label={copy.leadershipOwnerLabel}
                     checked={Boolean(personDraft.is_owner)}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({
@@ -1265,14 +1270,14 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <Toggle
-                    label="Featured"
+                    label={copy.leadershipFeaturedLabel}
                     checked={Boolean(personDraft.is_featured)}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({ ...prev, is_featured: value }))
                     }
                   />
                   <Toggle
-                    label="Manager"
+                    label={copy.leadershipManagerLabel}
                     checked={Boolean(personDraft.is_manager)}
                     onChange={(value) =>
                       setPersonDraft((prev) => ({
@@ -1286,16 +1291,14 @@ export default function OwnerDashboardClient() {
                 </div>
 
                 <div className="rounded-[28px] border border-white/10 bg-black/25 p-5 text-sm leading-7 text-white/66">
-                  Owner and manager toggles take precedence over featured status. If a
-                  role title such as Owner, Founder, Director, or Head is saved on an
-                  older record, the dashboard now normalizes that record so the public
-                  board stays correct.
+                  {copy.leadershipTogglesNote}
                 </div>
 
                 <ActionButton
                   onClick={savePerson}
                   saving={saving}
-                  label="Save leadership record"
+                  label={copy.leadershipSaveLabel}
+                  savingLabel={copy.assetUploadingLabel}
                 />
               </div>
             </div>
@@ -1307,25 +1310,24 @@ export default function OwnerDashboardClient() {
             <div className="mb-6 grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
               <div className="rounded-[28px] border border-white/10 bg-black/25 p-5">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/45">
-                  Division publishing
+                  {copy.divisionsEyebrow}
                 </div>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                  Public division directory control
+                  {copy.divisionsTitle}
                 </h2>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-white/66">
-                  Configure brand assets, destinations, lead metadata, and public trust
-                  details for each division from one place.
+                  {copy.divisionsDescription}
                 </p>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  <MiniStatCard label="Divisions" value={String(divisionStats.total)} />
-                  <MiniStatCard label="Published" value={String(divisionStats.published)} />
-                  <MiniStatCard label="Featured" value={String(divisionStats.featured)} />
-                  <MiniStatCard label="Active" value={String(divisionStats.active)} />
+                  <MiniStatCard label={copy.divisionsStatDivisions} value={String(divisionStats.total)} />
+                  <MiniStatCard label={copy.divisionsStatPublished} value={String(divisionStats.published)} />
+                  <MiniStatCard label={copy.divisionsStatFeatured} value={String(divisionStats.featured)} />
+                  <MiniStatCard label={copy.divisionsStatActive} value={String(divisionStats.active)} />
                 </div>
               </div>
 
-              <DivisionPreviewCard division={selectedDivisionPreview} />
+              <DivisionPreviewCard division={selectedDivisionPreview} copy={copy} />
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
@@ -1338,7 +1340,7 @@ export default function OwnerDashboardClient() {
                       : "border-white/10 bg-black/25 text-white/84 hover:bg-white/10"
                   }`}
                 >
-                  <span>New division</span>
+                  <span>{copy.divisionsNewDivision}</span>
                   <Building2 className="h-4 w-4" />
                 </button>
 
@@ -1348,6 +1350,8 @@ export default function OwnerDashboardClient() {
                     division={division}
                     active={selectedDivisionSlug === division.slug}
                     onClick={() => setSelectedDivisionSlug(division.slug)}
+                    leadLabel={copy.divisionsLeadLabel}
+                    statusActiveFallback={copy.divisionsStatusActive}
                   />
                 ))}
               </div>
@@ -1355,7 +1359,7 @@ export default function OwnerDashboardClient() {
               <div className="space-y-4">
                 <div className="grid gap-4 lg:grid-cols-2">
                   <Input
-                    label="Slug"
+                    label={copy.divisionsSlugLabel}
                     value={divisionDraft.slug ?? ""}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1365,35 +1369,35 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <Input
-                    label="Name"
+                    label={copy.divisionsNameLabel}
                     value={divisionDraft.name ?? ""}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({ ...prev, name: value }))
                     }
                   />
                   <Input
-                    label="Tagline"
+                    label={copy.divisionsTaglineLabel}
                     value={divisionDraft.tagline ?? ""}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({ ...prev, tagline: value }))
                     }
                   />
                   <Input
-                    label="Accent"
+                    label={copy.divisionsAccentLabel}
                     value={divisionDraft.accent ?? "#C9A227"}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({ ...prev, accent: value }))
                     }
                   />
                   <Input
-                    label="Primary URL"
+                    label={copy.divisionsPrimaryUrlLabel}
                     value={divisionDraft.primary_url ?? ""}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({ ...prev, primary_url: value }))
                     }
                   />
                   <Input
-                    label="Subdomain"
+                    label={copy.divisionsSubdomainInputLabel}
                     value={divisionDraft.subdomain ?? ""}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1403,7 +1407,7 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <Select
-                    label="Status"
+                    label={copy.divisionsStatusLabel}
                     value={divisionDraft.status ?? "active"}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1412,13 +1416,13 @@ export default function OwnerDashboardClient() {
                       }))
                     }
                     options={[
-                      { label: "Active", value: "active" },
-                      { label: "Coming soon", value: "coming_soon" },
-                      { label: "Paused", value: "paused" },
+                      { label: copy.divisionsStatusActiveOption, value: "active" },
+                      { label: copy.divisionsStatusComingSoonOption, value: "coming_soon" },
+                      { label: copy.divisionsStatusPausedOption, value: "paused" },
                     ]}
                   />
                   <Input
-                    label="Sort order"
+                    label={copy.divisionsSortOrderLabel}
                     value={String(divisionDraft.sort_order ?? 100)}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1430,7 +1434,7 @@ export default function OwnerDashboardClient() {
                 </div>
 
                 <TextArea
-                  label="Description"
+                  label={copy.divisionsDescriptionLabel}
                   value={divisionDraft.description ?? ""}
                   onChange={(value) =>
                     setDivisionDraft((prev) => ({ ...prev, description: value }))
@@ -1438,18 +1442,20 @@ export default function OwnerDashboardClient() {
                 />
 
                 <AssetUploadField
-                  label="Logo URL"
+                  label={copy.divisionsLogoUrlLabel}
                   value={divisionDraft.logo_url ?? ""}
                   folder="henryco/divisions/logo"
+                  copy={copy}
                   onChange={(value) =>
                     setDivisionDraft((prev) => ({ ...prev, logo_url: value }))
                   }
                 />
 
                 <AssetUploadField
-                  label="Cover URL"
+                  label={copy.divisionsCoverUrlLabel}
                   value={divisionDraft.cover_url ?? ""}
                   folder="henryco/divisions/cover"
+                  copy={copy}
                   onChange={(value) =>
                     setDivisionDraft((prev) => ({ ...prev, cover_url: value }))
                   }
@@ -1457,7 +1463,7 @@ export default function OwnerDashboardClient() {
 
                 <div className="grid gap-4 lg:grid-cols-2">
                   <TextArea
-                    label="Categories (one per line)"
+                    label={copy.divisionsCategoriesLabel}
                     value={listToText(divisionDraft.categories)}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1467,7 +1473,7 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <TextArea
-                    label="Highlights (one per line)"
+                    label={copy.divisionsHighlightsLabel}
                     value={listToText(divisionDraft.highlights)}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1477,7 +1483,7 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <TextArea
-                    label="Who it serves (one per line)"
+                    label={copy.divisionsWhoItServesLabel}
                     value={listToText(divisionDraft.who_its_for)}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1487,7 +1493,7 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <TextArea
-                    label="How it works (one per line)"
+                    label={copy.divisionsHowItWorksLabel}
                     value={listToText(divisionDraft.how_it_works)}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1497,7 +1503,7 @@ export default function OwnerDashboardClient() {
                     }
                   />
                   <TextArea
-                    label="Trust points (one per line)"
+                    label={copy.divisionsTrustPointsLabel}
                     value={listToText(divisionDraft.trust)}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({
@@ -1508,7 +1514,7 @@ export default function OwnerDashboardClient() {
                   />
                   <div className="space-y-4">
                     <Select
-                      label="Lead person"
+                      label={copy.divisionsLeadPersonLabel}
                       value={divisionDraft.lead_person_id ?? ""}
                       onChange={(value) => {
                         const person = people.find((item) => item.id === value) ?? null;
@@ -1524,7 +1530,7 @@ export default function OwnerDashboardClient() {
                         }));
                       }}
                       options={[
-                        { label: "No linked person", value: "" },
+                        { label: copy.divisionsNoLinkedPersonOption, value: "" },
                         ...people.map((person) => ({
                           label: person.full_name,
                           value: person.id ?? "",
@@ -1533,23 +1539,24 @@ export default function OwnerDashboardClient() {
                     />
 
                     <Input
-                      label="Lead name"
+                      label={copy.divisionsLeadNameLabel}
                       value={divisionDraft.lead_name ?? ""}
                       onChange={(value) =>
                         setDivisionDraft((prev) => ({ ...prev, lead_name: value }))
                       }
                     />
                     <Input
-                      label="Lead title"
+                      label={copy.divisionsLeadTitleLabel}
                       value={divisionDraft.lead_title ?? ""}
                       onChange={(value) =>
                         setDivisionDraft((prev) => ({ ...prev, lead_title: value }))
                       }
                     />
                     <AssetUploadField
-                      label="Lead avatar URL"
+                      label={copy.divisionsLeadAvatarLabel}
                       value={divisionDraft.lead_avatar_url ?? ""}
                       folder="henryco/divisions/lead"
+                      copy={copy}
                       onChange={(value) =>
                         setDivisionDraft((prev) => ({ ...prev, lead_avatar_url: value }))
                       }
@@ -1559,14 +1566,14 @@ export default function OwnerDashboardClient() {
 
                 <div className="grid gap-4 lg:grid-cols-3">
                   <Toggle
-                    label="Published"
+                    label={copy.divisionsPublishedLabel}
                     checked={divisionDraft.is_published !== false}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({ ...prev, is_published: value }))
                     }
                   />
                   <Toggle
-                    label="Featured"
+                    label={copy.divisionsFeaturedLabel}
                     checked={Boolean(divisionDraft.is_featured)}
                     onChange={(value) =>
                       setDivisionDraft((prev) => ({ ...prev, is_featured: value }))
@@ -1575,12 +1582,10 @@ export default function OwnerDashboardClient() {
                 </div>
 
                 <div className="rounded-[28px] border border-white/10 bg-black/25 p-5 text-sm leading-7 text-white/66">
-                  Linking a lead person now refreshes the lead name, title, and avatar
-                  directly from the selected profile so the public division directory and
-                  the About leadership board stay in sync.
+                  {copy.divisionsLeadSyncNote}
                 </div>
 
-                <ActionButton onClick={saveDivision} saving={saving} label="Save division" />
+                <ActionButton onClick={saveDivision} saving={saving} label={copy.divisionsSaveLabel} savingLabel={copy.assetUploadingLabel} />
               </div>
             </div>
           </section>
@@ -1690,10 +1695,10 @@ function DivisionLogoFrame({
   );
 }
 
-function BrandSettingsPreview({ settings }: { settings: SettingsRecord }) {
+function BrandSettingsPreview({ settings, copy }: { settings: SettingsRecord; copy: HubOwnerCopy["ownerDashboardClient"] }) {
   return (
     <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(135deg,rgba(201,162,39,0.16),rgba(255,255,255,0.04))] p-5 shadow-[0_18px_70px_rgba(0,0,0,0.24)]">
-      <div className="text-xs uppercase tracking-[0.2em] text-white/45">Brand preview</div>
+      <div className="text-xs uppercase tracking-[0.2em] text-white/45">{copy.brandPreviewEyebrow}</div>
       <div className="mt-4 flex items-center gap-4">
         <RemoteImageFrame
           src={settings.logo_url}
@@ -1708,7 +1713,7 @@ function BrandSettingsPreview({ settings }: { settings: SettingsRecord }) {
             {settings.brand_title || "Henry & Co."}
           </div>
           <div className="mt-1 text-xs uppercase tracking-[0.2em] text-white/45">
-            {settings.brand_subtitle || "Corporate Platform"}
+            {settings.brand_subtitle || copy.brandPreviewDefaultSubtitle}
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/12 bg-black/20 px-3 py-1 text-[11px] text-white/76">
@@ -1723,33 +1728,33 @@ function BrandSettingsPreview({ settings }: { settings: SettingsRecord }) {
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">Logo</div>
+          <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">{copy.brandPreviewLogoLabel}</div>
           <div className="mt-2 truncate text-sm text-white/84">
-            {normalizeText(settings.logo_url) || "No logo URL saved"}
+            {normalizeText(settings.logo_url) || copy.brandPreviewNoLogoUrl}
           </div>
         </div>
         <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">Favicon</div>
+          <div className="text-[11px] uppercase tracking-[0.16em] text-white/45">{copy.brandPreviewFaviconLabel}</div>
           <div className="mt-2 truncate text-sm text-white/84">
-            {normalizeText(settings.favicon_url) || "Falls back to the company logo"}
+            {normalizeText(settings.favicon_url) || copy.brandPreviewFaviconFallback}
           </div>
         </div>
         <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-white/45">
             <Mail className="h-3.5 w-3.5 text-[#C9A227]" />
-            Support email
+            {copy.brandPreviewSupportEmailLabel}
           </div>
           <div className="mt-2 text-sm text-white/84">
-            {settings.support_email || "Not set"}
+            {settings.support_email || copy.brandPreviewNotSet}
           </div>
         </div>
         <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-white/45">
             <Phone className="h-3.5 w-3.5 text-[#C9A227]" />
-            Support phone
+            {copy.brandPreviewSupportPhoneLabel}
           </div>
           <div className="mt-2 text-sm text-white/84">
-            {settings.support_phone || "Not set"}
+            {settings.support_phone || copy.brandPreviewNotSet}
           </div>
         </div>
       </div>
@@ -1761,11 +1766,14 @@ function PersonListButton({
   person,
   active,
   onClick,
+  copy,
 }: {
   person: PersonRecord;
   active: boolean;
   onClick: () => void;
+  copy: Pick<HubOwnerCopy["ownerDashboardClient"], "leadershipToneOwner" | "leadershipToneManagement" | "leadershipToneFeatured" | "leadershipToneLeadership" | "leadershipPublishedBadge" | "leadershipDraftBadge">;
 }) {
+  const toneLabels = { owner: copy.leadershipToneOwner, management: copy.leadershipToneManagement, featured: copy.leadershipToneFeatured, leadership: copy.leadershipToneLeadership };
   return (
     <button
       onClick={onClick}
@@ -1786,10 +1794,10 @@ function PersonListButton({
                 person
               )}`}
             >
-              {personToneLabel(person)}
+              {personToneLabel(person, toneLabels)}
             </span>
             <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/65">
-              {person.is_published !== false ? "Published" : "Draft"}
+              {person.is_published !== false ? copy.leadershipPublishedBadge : copy.leadershipDraftBadge}
             </span>
           </div>
         </div>
@@ -1798,7 +1806,8 @@ function PersonListButton({
   );
 }
 
-function LeadershipPreviewCard({ person }: { person: PersonRecord }) {
+function LeadershipPreviewCard({ person, copy }: { person: PersonRecord; copy: HubOwnerCopy["ownerDashboardClient"] }) {
+  const toneLabels = { owner: copy.leadershipToneOwner, management: copy.leadershipToneManagement, featured: copy.leadershipToneFeatured, leadership: copy.leadershipToneLeadership };
   const toneIcon =
     personTone(person) === "owner" ? (
       <Crown className="h-4 w-4" />
@@ -1812,18 +1821,18 @@ function LeadershipPreviewCard({ person }: { person: PersonRecord }) {
 
   return (
     <div className="rounded-[28px] border border-white/10 bg-white/[0.06] p-5 shadow-[0_18px_70px_rgba(0,0,0,0.24)]">
-      <div className="text-xs uppercase tracking-[0.2em] text-white/45">Selected profile</div>
+      <div className="text-xs uppercase tracking-[0.2em] text-white/45">{copy.leadershipSelectedEyebrow}</div>
       <div className="mt-4 flex items-start gap-4">
         <PersonAvatarFrame person={person} sizeClassName="h-20 w-20" />
 
         <div className="min-w-0 flex-1">
           <div className="text-xl font-semibold tracking-tight text-white">
-            {person.full_name || "New leadership record"}
+            {person.full_name || copy.leadershipNewRecord}
           </div>
           <div className="mt-2 text-sm text-white/70">{personRoleLabel(person)}</div>
           <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] text-white/68">
             <span className="text-[#C9A227]">{toneIcon}</span>
-            {personToneLabel(person)}
+            {personToneLabel(person, toneLabels)}
           </div>
         </div>
       </div>
@@ -1831,16 +1840,16 @@ function LeadershipPreviewCard({ person }: { person: PersonRecord }) {
       <p className="mt-5 text-sm leading-7 text-white/66">
         {normalizeText(person.short_bio) ||
           normalizeText(person.long_bio) ||
-          "Use this panel to verify how the saved role, biography, and contact details will read before publishing the public leadership board."}
+          copy.leadershipPreviewPlaceholder}
       </p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <MiniStatCard
-          label="Division"
-          value={normalizeText(person.division_slug).replace(/-/g, " ") || "General"}
+          label={copy.leadershipDivisionServedLabel}
+          value={normalizeText(person.division_slug).replace(/-/g, " ") || copy.leadershipNoDivisionOption}
         />
         <MiniStatCard
-          label="Sort order"
+          label={copy.leadershipSortOrderLabel}
           value={String(Number(person.sort_order ?? 100))}
         />
       </div>
@@ -1852,10 +1861,14 @@ function DivisionListButton({
   division,
   active,
   onClick,
+  leadLabel,
+  statusActiveFallback,
 }: {
   division: DivisionRecord;
   active: boolean;
   onClick: () => void;
+  leadLabel: string;
+  statusActiveFallback: string;
 }) {
   return (
     <button
@@ -1875,11 +1888,11 @@ function DivisionListButton({
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/72">
-              {division.status || "active"}
+              {division.status || statusActiveFallback}
             </span>
             {division.lead_name ? (
               <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] text-white/72">
-                Lead: {division.lead_name}
+                {leadLabel}: {division.lead_name}
               </span>
             ) : null}
           </div>
@@ -1889,28 +1902,27 @@ function DivisionListButton({
   );
 }
 
-function DivisionPreviewCard({ division }: { division: DivisionRecord }) {
+function DivisionPreviewCard({ division, copy }: { division: DivisionRecord; copy: HubOwnerCopy["ownerDashboardClient"] }) {
   return (
     <div className="rounded-[28px] border border-white/10 bg-white/[0.06] p-5 shadow-[0_18px_70px_rgba(0,0,0,0.24)]">
-      <div className="text-xs uppercase tracking-[0.2em] text-white/45">Selected division</div>
+      <div className="text-xs uppercase tracking-[0.2em] text-white/45">{copy.divisionsSelectedEyebrow}</div>
       <div className="mt-4 flex items-start gap-4">
         <DivisionLogoFrame src={division.logo_url} name={division.name || "Division"} />
 
         <div className="min-w-0 flex-1">
           <div className="text-xl font-semibold tracking-tight text-white">
-            {division.name || "New division"}
+            {division.name || copy.divisionsNewFallbackTitle}
           </div>
           <div className="mt-2 text-sm text-white/70">
-            {normalizeText(division.tagline) ||
-              "Configure the public destination, brand assets, and leadership details for this division."}
+            {normalizeText(division.tagline) || copy.divisionsNewFallbackDescription}
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-white/68">
-              {division.status || "active"}
+              {division.status || copy.divisionsStatusActive}
             </span>
             {division.is_featured ? (
               <span className="rounded-full border border-[#C9A227]/20 bg-[#C9A227]/10 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-[#f6df9a]">
-                Featured
+                {copy.divisionsFeaturedBadge}
               </span>
             ) : null}
           </div>
@@ -1918,10 +1930,10 @@ function DivisionPreviewCard({ division }: { division: DivisionRecord }) {
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <MiniStatCard label="Lead" value={normalizeText(division.lead_name) || "Not set"} />
+        <MiniStatCard label={copy.divisionsLeadLabel} value={normalizeText(division.lead_name) || copy.brandPreviewNotSet} />
         <MiniStatCard
-          label="Subdomain"
-          value={normalizeText(division.subdomain) || "Not set"}
+          label={copy.divisionsSubdomainLabel}
+          value={normalizeText(division.subdomain) || copy.brandPreviewNotSet}
         />
       </div>
 
@@ -1932,7 +1944,7 @@ function DivisionPreviewCard({ division }: { division: DivisionRecord }) {
           rel="noreferrer"
           className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/86 transition hover:bg-white/10"
         >
-          Preview destination
+          {copy.divisionsPreviewDestination}
           <ExternalLink className="h-4 w-4" />
         </a>
       ) : null}
@@ -1970,10 +1982,12 @@ function ActionButton({
   onClick,
   saving,
   label,
+  savingLabel,
 }: {
   onClick: () => void;
   saving: boolean;
   label: string;
+  savingLabel: string;
 }) {
   return (
     <button
@@ -1982,7 +1996,7 @@ function ActionButton({
       className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#C9A227] px-5 text-sm font-semibold text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Save className="h-4 w-4" />
-      {saving ? "Saving..." : label}
+      {saving ? savingLabel : label}
     </button>
   );
 }
