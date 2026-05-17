@@ -3649,6 +3649,59 @@ const IG: DeepPartial<JobsCopy> = {
     noApplications: "Enweghị arịrịọ ọ bụla.",
     noPostings: "Enweghị nkwupụta ọrụ dị ndụ.",
   },
+  interviewRoom: {
+    kicker: "Ụlọ ajụjụ ọnụ",
+    candidateFallback: "Onye anara",
+    employerFallback: "Ndị otu na-eburu",
+    iframeTitle: "Ụlọ ajụjụ ọnụ vidiyo",
+    placeholder:
+      "Ọ ka na-akwadebe ụlọ ahụ. Onye gị na ya ga-eme ajụjụ ọnụ ga-ekekọrịta njikọ nzukọ na nkata na-adịghị anya.",
+    tabNotes: "Ihe edetụ",
+    chatHint:
+      "Onye na-eweta vidiyo na-enye nkata ụlọ ahụ. Jiri ya kekọrịta njikọ n'oge oku.",
+    notesLabel: "Ihe edetụ nzuzo",
+    notesPlaceholder:
+      "Detuo ihe ị hụrụ. Naanị ndị otu gị na-eburu ga-ahụ ya.",
+    notesSaving: "Na-echekwa…",
+    notesSavedAt: "Echekwara",
+    notesAutosave: "Na-echekwa onwe ya kwa sekọnd 30",
+    notesSaveError: "Enweghị ike ichekwa ihe edetụ.",
+  },
+  verification: {
+    skillTitle: "Nkà akwadoro",
+    skillSubtitle: "Nkà ndị ọrụ nwere ike ịtụkwasị obi n'otu nhụta.",
+    experienceTitle: "Ahụmahụ akwadoro",
+    experienceSubtitle: "Ọrụ na oge nlekọta akwadoro.",
+    referenceTitle: "Nyocha nrụtụ aka",
+    referenceSubtitle: "Nzaghachi sitere n'aka ndị nrụtụ aka ọkachamara gị.",
+    badgeVerified: "Akwadoro",
+    badgePending: "Na-echere",
+    badgeRejected: "Akwadoghị",
+  },
+  offerLetter: {
+    title: "Akwụkwọ onyinye ọrụ",
+    subtitle: "Lelee onyinye gị ma bịanye aka mgbe ị dị njikere.",
+    statusDraft: "Nhazi",
+    statusSent: "Na-echere mbinye aka gị",
+    statusSigned: "Abịanyere aka",
+    statusExpired: "Agafela",
+    statusDeclined: "Ajụrụ",
+    signCta: "Mepee ụlọ mbinye aka",
+    typedFallbackTitle: "Kwado nnabata",
+    typedFallbackPrompt:
+      "Pịnye aha gị zuru ezu iji nabata onyinye a. A na-edobe PDF abịanyere aka n'ime faịlụ gị.",
+  },
+  salary: {
+    rangeLabel: "Oke ụgwọ ọnwa ekwuputara",
+    benchmarkLabel: "Atụnyere ahịa",
+    p25Label: "Pasenti nke 25",
+    p50Label: "Etiti",
+    p75Label: "Pasenti nke 75",
+    sampleLabel: "Ọnụ ọgụgụ atụ",
+    sourceLabel: "Isi mmalite data",
+    discloseRequiredError:
+      "Ọ dị mkpa ikwuputa ụgwọ ọnwa. Nye oke ọnụọgụgụ ma ọ bụ nkọwa doro anya.",
+  },
   employerHiring: {
     pageTitle: "Akara ịchụ ndị ọrụ",
     pageSubtitle:
