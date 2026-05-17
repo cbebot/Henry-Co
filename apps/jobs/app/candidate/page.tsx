@@ -1,12 +1,24 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Bell, Bookmark, CheckCircle2, CircleAlert, FileCheck2, Sparkles } from "lucide-react";
+import { getJobsCopy } from "@henryco/i18n";
 import { EmptyState } from "@/components/feedback";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateDashboardData } from "@/lib/jobs/data";
 import { candidateNav } from "@/lib/jobs/navigation";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SectionCard, StatTile, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getJobsPublicLocale();
+  const copy = getJobsCopy(locale).candidateHome;
+  return {
+    title: copy.metaTitle,
+    description: copy.metaDescription,
+  };
+}
 
 function toneForPriority(tone: string) {
   if (tone === "good") return "good" as const;
@@ -25,7 +37,11 @@ function formatDateTime(value: string) {
 }
 
 export default async function CandidateOverviewPage() {
-  const viewer = await requireJobsUser("/candidate");
+  const [viewer, locale] = await Promise.all([
+    requireJobsUser("/candidate"),
+    getJobsPublicLocale(),
+  ]);
+  const copy = getJobsCopy(locale).candidateHome;
   const data = await getCandidateDashboardData(viewer.user!.id);
   const activeApplications = data.applicationJourneys.filter(
     (journey) => journey.application.stage !== "rejected" && journey.application.stage !== "hired"
@@ -37,19 +53,19 @@ export default async function CandidateOverviewPage() {
   return (
     <WorkspaceShell
       area="candidate"
-      title="Candidate hub"
-      subtitle="Track your profile, applications, saved roles, and recruiter updates — all in one place."
+      title={copy.pageTitle}
+      subtitle={copy.pageSubtitle}
       nav={candidateNav}
       activeHref="/candidate"
       accent="linear-gradient(135deg,#0d5e66 0%,#0e7c86 55%,#7fd0d4 100%)"
       rightRail={
         <>
-          <SectionCard title="Recruiter updates" body="Messages, stage changes, and interview invites from hiring teams.">
+          <SectionCard title={copy.rightRailRecruiterTitle} body={copy.rightRailRecruiterBody}>
             {data.recruiterFeed.length === 0 ? (
               <EmptyState
-                kicker="Quiet for now"
-                title="No recruiter movement yet."
-                body="Once a recruiter reviews, shortlists, or messages you, the latest movement will surface here."
+                kicker={copy.rightRailRecruiterEmpty}
+                title={copy.rightRailRecruiterEmptyTitle}
+                body={copy.rightRailRecruiterEmptyBody}
               />
             ) : (
               <div className="space-y-3">
@@ -67,7 +83,7 @@ export default async function CandidateOverviewPage() {
             )}
           </SectionCard>
 
-          <SectionCard title="Next actions" body="The most valuable move to make next.">
+          <SectionCard title={copy.rightRailNextActionsTitle} body={copy.rightRailNextActionsBody}>
             <div className="space-y-3">
               {data.nextActions.map((action) => (
                 <a key={action.id} href={action.href} className="block rounded-2xl bg-[var(--jobs-paper-soft)] p-4 transition hover:bg-[var(--jobs-accent-soft)]">
@@ -85,51 +101,50 @@ export default async function CandidateOverviewPage() {
     >
       <div className="space-y-4">
         <SectionCard
-          title="Overview"
-          body="A snapshot of your profile, applications, and where things stand right now."
+          title={copy.overviewTitle}
+          body={copy.overviewBody}
           actions={
             <Link href="/candidate/profile" className="text-sm font-semibold text-[var(--jobs-accent)]">
-              Improve profile
+              {copy.overviewImproveProfile}
             </Link>
           }
         >
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <StatTile
-              label="Profile readiness"
+              label={copy.tileProfileReadinessLabel}
               value={`${data.profile?.trustScore ?? 0}%`}
-              detail={data.profile?.readinessLabel || "Set up your profile"}
+              detail={data.profile?.readinessLabel || copy.tileProfileReadinessFallback}
             />
             <StatTile
-              label="Active applications"
+              label={copy.tileActiveAppsLabel}
               value={activeApplications.length}
-              detail={activeApplications.length > 0 ? "Live opportunities still moving through review." : "No live applications yet."}
+              detail={activeApplications.length > 0 ? copy.tileActiveAppsDetailActive : copy.tileActiveAppsDetailEmpty}
             />
             <StatTile
-              label="In progress"
+              label={copy.tileInProgressLabel}
               value={interviewLaneCount}
-              detail={interviewLaneCount > 0 ? "Roles in shortlist, interview, or offer stages." : "No interview movement yet."}
+              detail={interviewLaneCount > 0 ? copy.tileInProgressDetailActive : copy.tileInProgressDetailEmpty}
             />
             <StatTile
-              label="Saved roles"
+              label={copy.tileSavedRolesLabel}
               value={data.savedJobs.length}
-              detail={data.savedJobs.length > 0 ? "Shortlisted roles waiting for a deeper pass." : "Build a shortlist you can act on."}
+              detail={data.savedJobs.length > 0 ? copy.tileSavedRolesDetailActive : copy.tileSavedRolesDetailEmpty}
             />
           </div>
         </SectionCard>
 
         <SectionCard
-          title="Profile strength"
-          body="A stronger profile helps employers take your applications seriously."
+          title={copy.profileStrengthTitle}
+          body={copy.profileStrengthBody}
         >
           <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="rounded-[1.7rem] bg-[var(--jobs-paper-soft)] p-5">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="jobs-kicker">Readiness score</div>
+                  <div className="jobs-kicker">{copy.readinessScoreKicker}</div>
                   <div className="mt-3 text-4xl font-semibold tracking-tight">{data.profile?.trustScore ?? 0}%</div>
                   <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
-                    {data.profile?.readinessLabel ||
-                      "Complete your profile to improve how employers see your applications."}
+                    {data.profile?.readinessLabel || copy.readinessFallback}
                   </p>
                 </div>
                 <div className="rounded-[1.5rem] bg-white/80 p-4 text-[var(--jobs-accent)]">
@@ -162,22 +177,22 @@ export default async function CandidateOverviewPage() {
         </SectionCard>
 
         <SectionCard
-          title="Your applications"
-          body="Track the progress of every role you've applied to."
+          title={copy.applicationsTitle}
+          body={copy.applicationsBody}
           actions={
             <Link href="/candidate/applications" className="text-sm font-semibold text-[var(--jobs-accent)]">
-              View all
+              {copy.applicationsViewAll}
             </Link>
           }
         >
           {data.applicationJourneys.length === 0 ? (
             <EmptyState
-              kicker="No applications yet"
-              title="Your application timeline will appear here."
-              body="Once you apply to a role, you'll see stage updates, interview invites, and next steps right here."
+              kicker={copy.applicationsEmptyKicker}
+              title={copy.applicationsEmptyTitle}
+              body={copy.applicationsEmptyBody}
               action={
                 <Link href="/jobs" className="jobs-button-primary rounded-full px-5 py-3 text-sm font-semibold">
-                  Browse live roles
+                  {copy.applicationsBrowseCta}
                 </Link>
               }
             />
@@ -195,7 +210,7 @@ export default async function CandidateOverviewPage() {
                       <p className="mt-1 text-sm text-[var(--jobs-muted)]">{journey.application.employerName}</p>
                     </div>
                     <div className="rounded-[1.4rem] bg-white/80 px-4 py-3 text-sm text-[var(--jobs-muted)]">
-                      Updated {formatDateTime(journey.recruiterActionAt || journey.application.createdAt)}
+                      {copy.applicationUpdatedPrefix} {formatDateTime(journey.recruiterActionAt || journey.application.createdAt)}
                     </div>
                   </div>
 
@@ -224,14 +239,14 @@ export default async function CandidateOverviewPage() {
                     <div className="rounded-[1.4rem] bg-white/80 p-4">
                       <div className="flex items-center gap-2 text-sm font-semibold">
                         <Bell className="h-4 w-4 text-[var(--jobs-accent)]" />
-                        Latest recruiter action
+                        {copy.applicationLatestRecruiterLabel}
                       </div>
                       <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">{journey.recruiterActionBody}</p>
                     </div>
                     <div className="rounded-[1.4rem] bg-white/80 p-4">
                       <div className="flex items-center gap-2 text-sm font-semibold">
                         <Sparkles className="h-4 w-4 text-[var(--jobs-warning)]" />
-                        Best next move
+                        {copy.applicationBestNextMoveLabel}
                       </div>
                       <p className="mt-2 text-sm font-semibold">{journey.nextStepLabel}</p>
                       <p className="mt-1 text-sm leading-7 text-[var(--jobs-muted)]">{journey.nextStepBody}</p>
@@ -245,19 +260,19 @@ export default async function CandidateOverviewPage() {
 
         <div className="grid gap-4 xl:grid-cols-2">
           <SectionCard
-            title="Saved roles"
-            body="Roles you've bookmarked for later."
+            title={copy.savedRolesTitle}
+            body={copy.savedRolesBody}
             actions={
               <Link href="/candidate/saved-jobs" className="text-sm font-semibold text-[var(--jobs-accent)]">
-                Open saved roles
+                {copy.savedRolesOpenLink}
               </Link>
             }
           >
             {data.savedJobs.length === 0 ? (
               <EmptyState
-                kicker="Nothing saved yet"
-                title="Your shortlist is empty."
-                body="Save roles you want to compare later so they're easy to find when you're ready to apply."
+                kicker={copy.savedRolesEmptyKicker}
+                title={copy.savedRolesEmptyTitle}
+                body={copy.savedRolesEmptyBody}
               />
             ) : (
               <div className="space-y-3">
@@ -272,7 +287,7 @@ export default async function CandidateOverviewPage() {
                         {saved.job.employerName} · {saved.job.location}
                       </div>
                       {saved.job.employerTrustScore >= 70 ? (
-                        <div className="mt-2 text-xs font-medium text-[var(--jobs-success)]">High trust employer</div>
+                        <div className="mt-2 text-xs font-medium text-[var(--jobs-success)]">{copy.savedRolesHighTrustLabel}</div>
                       ) : null}
                     </div>
                   </a>
@@ -281,12 +296,12 @@ export default async function CandidateOverviewPage() {
             )}
           </SectionCard>
 
-          <SectionCard title="Recommended for you" body="Suggested roles based on your profile and activity.">
+          <SectionCard title={copy.recommendedTitle} body={copy.recommendedBody}>
             {data.recommendedJobs.length === 0 ? (
               <EmptyState
-                kicker="Recommendations warming up"
-                title="We need a bit more signal first."
-                body="Complete your profile and save or apply to a few roles to sharpen recommendations."
+                kicker={copy.recommendedEmptyKicker}
+                title={copy.recommendedEmptyTitle}
+                body={copy.recommendedEmptyBody}
               />
             ) : (
               <div className="space-y-3">
@@ -303,7 +318,7 @@ export default async function CandidateOverviewPage() {
                           {recommendation.job.employerName} · {recommendation.job.location}
                         </div>
                       </div>
-                      <span className="jobs-chip">{recommendation.score}% match</span>
+                      <span className="jobs-chip">{recommendation.score}{copy.recommendedMatchSuffix}</span>
                     </div>
                     <div className="mt-3 text-sm leading-7 text-[var(--jobs-muted)]">{recommendation.reason}</div>
                   </a>
