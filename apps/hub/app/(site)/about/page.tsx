@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getHubPublicCopy } from "@henryco/i18n/server";
 import AboutHonestBlock from "../../components/AboutHonestBlock";
 import CompanyPageClient from "../../components/CompanyPageClient";
 import {
@@ -11,6 +12,7 @@ import {
   type CompanySettingsRecord,
 } from "../../lib/company-settings-shared";
 import { getPublishedDivisions, type DivisionRow } from "../../lib/divisions";
+import { getHubPublicLocale } from "../../../lib/locale-server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -36,6 +38,8 @@ export default async function AboutPage() {
    * remains on disk for admin/curation surfaces — the rubric called for
    * "concrete divisions over team-photo grids" as the premium signal on
    * the public /about route. */
+  const locale = await getHubPublicLocale();
+  const copy = getHubPublicCopy(locale);
   const [pageResult, settingsResult, divisionsResult] =
     await Promise.allSettled([
       getCompanyPage("about"),
@@ -62,8 +66,10 @@ export default async function AboutPage() {
         serverWarning={Boolean(pageData.hasServerError)}
         hideSections={false}
         hideFooter
+        copy={copy.companyPage}
+        locale={locale}
       />
-      <AboutHonestBlock settings={settings} divisions={divisions} />
+      <AboutHonestBlock settings={settings} divisions={divisions} copy={copy.aboutHonest} />
     </>
   );
 }
