@@ -31,11 +31,11 @@ export default async function BrandSettingsPage() {
       />
 
       <OwnerPanel title={copy.companyPanelTitle} description={copy.companyPanelDescription}>
-        <CompanySettingsForm company={company as Record<string, unknown>} />
+        <CompanySettingsForm company={company as Record<string, unknown>} copy={getHubOwnerCopy(locale).brandSettingsForms} />
       </OwnerPanel>
 
       <OwnerPanel title={copy.hubPanelTitle} description={copy.hubPanelDescription}>
-        <HubSiteSettingsForm site={site as Record<string, unknown>} />
+        <HubSiteSettingsForm site={site as Record<string, unknown>} copy={getHubOwnerCopy(locale).brandSettingsForms} />
       </OwnerPanel>
     </div>
   );

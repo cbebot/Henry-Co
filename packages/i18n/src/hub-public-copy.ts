@@ -120,6 +120,22 @@ export type HubPublicCopy = {
     menuAbout: string;
     menuContact: string;
   };
+  newsletterUnsubscribe: {
+    metaTitle: string;
+    metaDescription: string;
+    eyebrow: string;
+    missingTitle: string;
+    missingBody: string;
+    missingCtaContact: string;
+    missingCtaBack: string;
+    errorTitle: string;
+    errorManualNote: string;
+    successTitle: string;
+    successBody: string;
+    changedMind: string;
+    ctaSubscribeAgain: string;
+    ctaManagePrefs: string;
+  };
 };
 
 const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
@@ -244,6 +260,25 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
     menuDivisionsDirectory: "Divisions directory",
     menuAbout: "About",
     menuContact: "Contact",
+  },
+  newsletterUnsubscribe: {
+    metaTitle: "Unsubscribe — Henry & Co.",
+    metaDescription: "One-click unsubscribe from HenryCo newsletters.",
+    eyebrow: "Newsletter",
+    missingTitle: "Unsubscribe link missing.",
+    missingBody:
+      "Open the “Unsubscribe” link from any HenryCo email to land here with a valid token. If your link has expired, contact us and we’ll honor it manually.",
+    missingCtaContact: "Contact support",
+    missingCtaBack: "Back to newsletters",
+    errorTitle: "We couldn’t unsubscribe you.",
+    errorManualNote:
+      "If this keeps happening, reply “unsubscribe” to any HenryCo email and our team will honor it manually.",
+    successTitle: "You’re unsubscribed.",
+    successBody:
+      "{{email}} won’t receive HenryCo newsletters. Transactional messages (receipts, shipping, verification, security) still send because we have to.",
+    changedMind: "Changed your mind?",
+    ctaSubscribeAgain: "Subscribe again",
+    ctaManagePrefs: "Manage all preferences",
   },
 };
 
@@ -370,6 +405,25 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
     menuAbout: "À propos",
     menuContact: "Contact",
   },
+  newsletterUnsubscribe: {
+    metaTitle: "Se désabonner — Henry & Co.",
+    metaDescription: "Désabonnement en un clic des newsletters HenryCo.",
+    eyebrow: "Newsletter",
+    missingTitle: "Lien de désabonnement manquant.",
+    missingBody:
+      "Ouvrez le lien « Se désabonner » d'un e-mail HenryCo pour arriver ici avec un jeton valide. Si votre lien a expiré, contactez-nous et nous l'honorerons manuellement.",
+    missingCtaContact: "Contacter l'assistance",
+    missingCtaBack: "Retour aux newsletters",
+    errorTitle: "Nous n'avons pas pu vous désabonner.",
+    errorManualNote:
+      "Si cela continue, répondez « désabonner » à n'importe quel e-mail HenryCo et notre équipe l'honorera manuellement.",
+    successTitle: "Vous êtes désabonné(e).",
+    successBody:
+      "{{email}} ne recevra plus les newsletters HenryCo. Les messages transactionnels (reçus, livraison, vérification, sécurité) continuent d'être envoyés car nous y sommes tenus.",
+    changedMind: "Vous avez changé d'avis ?",
+    ctaSubscribeAgain: "Se réabonner",
+    ctaManagePrefs: "Gérer toutes les préférences",
+  },
 };
 const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -493,6 +547,25 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
     menuDivisionsDirectory: "Directorio de divisiones",
     menuAbout: "Acerca de",
     menuContact: "Contacto",
+  },
+  newsletterUnsubscribe: {
+    metaTitle: "Cancelar suscripción — Henry & Co.",
+    metaDescription: "Cancela tu suscripción a los boletines de HenryCo con un clic.",
+    eyebrow: "Boletín",
+    missingTitle: "Enlace de cancelación no encontrado.",
+    missingBody:
+      "Abre el enlace «Cancelar suscripción» de cualquier correo de HenryCo para llegar aquí con un token válido. Si tu enlace ha caducado, contáctanos y lo gestionaremos manualmente.",
+    missingCtaContact: "Contactar con soporte",
+    missingCtaBack: "Volver a los boletines",
+    errorTitle: "No hemos podido cancelar tu suscripción.",
+    errorManualNote:
+      "Si el problema persiste, responde «cancelar suscripción» a cualquier correo de HenryCo y nuestro equipo lo gestionará manualmente.",
+    successTitle: "Ya estás dado de baja.",
+    successBody:
+      "{{email}} no recibirá más boletines de HenryCo. Los mensajes transaccionales (recibos, envíos, verificación, seguridad) seguirán enviándose porque estamos obligados a ello.",
+    changedMind: "¿Has cambiado de opinión?",
+    ctaSubscribeAgain: "Suscribirse de nuevo",
+    ctaManagePrefs: "Gestionar todas las preferencias",
   },
 };
 const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
@@ -618,6 +691,25 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
     menuAbout: "Sobre",
     menuContact: "Contacto",
   },
+  newsletterUnsubscribe: {
+    metaTitle: "Cancelar subscrição — Henry & Co.",
+    metaDescription: "Cancelamento de subscrição das newsletters HenryCo com um clique.",
+    eyebrow: "Newsletter",
+    missingTitle: "Ligação de cancelamento em falta.",
+    missingBody:
+      "Abra a ligação «Cancelar subscrição» de qualquer e-mail HenryCo para chegar aqui com um token válido. Se a sua ligação expirou, contacte-nos e iremos processá-lo manualmente.",
+    missingCtaContact: "Contactar suporte",
+    missingCtaBack: "Voltar às newsletters",
+    errorTitle: "Não foi possível cancelar a sua subscrição.",
+    errorManualNote:
+      "Se isto continuar, responda «cancelar subscrição» a qualquer e-mail HenryCo e a nossa equipa irá processá-lo manualmente.",
+    successTitle: "Subscrição cancelada.",
+    successBody:
+      "{{email}} não receberá mais newsletters HenryCo. As mensagens transacionais (recibos, envio, verificação, segurança) continuam a ser enviadas porque somos obrigados a isso.",
+    changedMind: "Mudou de ideias?",
+    ctaSubscribeAgain: "Subscrever novamente",
+    ctaManagePrefs: "Gerir todas as preferências",
+  },
 };
 const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -741,6 +833,25 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
     menuDivisionsDirectory: "دليل الأقسام",
     menuAbout: "من نحن",
     menuContact: "اتصل بنا",
+  },
+  newsletterUnsubscribe: {
+    metaTitle: "إلغاء الاشتراك — Henry & Co.",
+    metaDescription: "إلغاء اشتراك بنقرة واحدة من نشرات HenryCo الإخبارية.",
+    eyebrow: "النشرة البريدية",
+    missingTitle: "رابط إلغاء الاشتراك مفقود.",
+    missingBody:
+      "افتح رابط «إلغاء الاشتراك» من أي بريد إلكتروني من HenryCo للوصول هنا برمز تحقق صالح. إذا انتهت صلاحية رابطك، تواصل معنا وسنتعامل مع الطلب يدوياً.",
+    missingCtaContact: "التواصل مع الدعم",
+    missingCtaBack: "العودة إلى النشرات",
+    errorTitle: "لم نتمكن من إلغاء اشتراكك.",
+    errorManualNote:
+      "إذا استمر هذا، أرسل رداً بكلمة «إلغاء الاشتراك» على أي بريد من HenryCo وسيتولى فريقنا الأمر يدوياً.",
+    successTitle: "تم إلغاء اشتراكك.",
+    successBody:
+      "لن يتلقى {{email}} نشرات HenryCo الإخبارية. تستمر الرسائل التعاملية (الإيصالات، الشحن، التحقق، الأمان) في الإرسال لأننا ملزمون بذلك.",
+    changedMind: "هل غيّرت رأيك؟",
+    ctaSubscribeAgain: "الاشتراك مجدداً",
+    ctaManagePrefs: "إدارة كل التفضيلات",
   },
 };
 const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
@@ -866,6 +977,25 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
     menuAbout: "Über uns",
     menuContact: "Kontakt",
   },
+  newsletterUnsubscribe: {
+    metaTitle: "Abmelden — Henry & Co.",
+    metaDescription: "Mit einem Klick von HenryCo-Newslettern abmelden.",
+    eyebrow: "Newsletter",
+    missingTitle: "Abmeldelink fehlt.",
+    missingBody:
+      "Öffnen Sie den Link „Abmelden“ aus einer HenryCo-E-Mail, um mit einem gültigen Token hierher zu gelangen. Falls Ihr Link abgelaufen ist, kontaktieren Sie uns und wir bearbeiten die Abmeldung manuell.",
+    missingCtaContact: "Support kontaktieren",
+    missingCtaBack: "Zurück zu den Newslettern",
+    errorTitle: "Wir konnten Sie nicht abmelden.",
+    errorManualNote:
+      "Wenn das Problem weiterhin besteht, antworten Sie auf eine HenryCo-E-Mail mit „abmelden“ und unser Team bearbeitet dies manuell.",
+    successTitle: "Sie sind abgemeldet.",
+    successBody:
+      "{{email}} erhält keine HenryCo-Newsletter mehr. Transaktionsnachrichten (Quittungen, Versand, Verifizierung, Sicherheit) werden weiterhin gesendet, weil wir dazu verpflichtet sind.",
+    changedMind: "Haben Sie Ihre Meinung geändert?",
+    ctaSubscribeAgain: "Erneut abonnieren",
+    ctaManagePrefs: "Alle Einstellungen verwalten",
+  },
 };
 const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -989,6 +1119,25 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
     menuDivisionsDirectory: "Elenco divisioni",
     menuAbout: "Chi siamo",
     menuContact: "Contatto",
+  },
+  newsletterUnsubscribe: {
+    metaTitle: "Annulla iscrizione — Henry & Co.",
+    metaDescription: "Annulla l'iscrizione alle newsletter HenryCo con un clic.",
+    eyebrow: "Newsletter",
+    missingTitle: "Link di annullamento mancante.",
+    missingBody:
+      "Apri il link «Annulla iscrizione» da qualsiasi e-mail HenryCo per arrivare qui con un token valido. Se il tuo link è scaduto, contattaci e lo gestiremo manualmente.",
+    missingCtaContact: "Contatta l'assistenza",
+    missingCtaBack: "Torna alle newsletter",
+    errorTitle: "Non siamo riusciti a disiscriverti.",
+    errorManualNote:
+      "Se il problema persiste, rispondi «annulla iscrizione» a qualsiasi e-mail HenryCo e il nostro team provvederà manualmente.",
+    successTitle: "Sei disiscritto.",
+    successBody:
+      "{{email}} non riceverà più le newsletter HenryCo. I messaggi transazionali (ricevute, spedizioni, verifica, sicurezza) continueranno ad essere inviati perché siamo obbligati a farlo.",
+    changedMind: "Hai cambiato idea?",
+    ctaSubscribeAgain: "Iscriviti di nuovo",
+    ctaManagePrefs: "Gestisci tutte le preferenze",
   },
 };
 const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
@@ -1114,6 +1263,25 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
     menuAbout: "关于我们",
     menuContact: "联系我们",
   },
+  newsletterUnsubscribe: {
+    metaTitle: "取消订阅 — Henry & Co.",
+    metaDescription: "一键取消订阅HenryCo新闻通讯。",
+    eyebrow: "新闻通讯",
+    missingTitle: "取消订阅链接缺失。",
+    missingBody:
+      "打开任何HenryCo邮件中的「取消订阅」链接，携带有效令牌来到此页面。如果您的链接已过期，请联系我们，我们将手动处理。",
+    missingCtaContact: "联系支持",
+    missingCtaBack: "返回新闻通讯",
+    errorTitle: "我们无法为您取消订阅。",
+    errorManualNote:
+      "如果此情况持续发生，请回复任何HenryCo邮件并注明「取消订阅」，我们的团队将手动处理。",
+    successTitle: "您已取消订阅。",
+    successBody:
+      "{{email}} 将不再收到HenryCo新闻通讯。交易类消息（收据、配送、验证、安全）仍会发送，因为我们必须这样做。",
+    changedMind: "改变主意了？",
+    ctaSubscribeAgain: "重新订阅",
+    ctaManagePrefs: "管理所有偏好",
+  },
 };
 const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -1237,6 +1405,25 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
     menuDivisionsDirectory: "डिवीजन निर्देशिका",
     menuAbout: "हमारे बारे में",
     menuContact: "संपर्क",
+  },
+  newsletterUnsubscribe: {
+    metaTitle: "सदस्यता रद्द करें — Henry & Co.",
+    metaDescription: "HenryCo न्यूज़लेटर से एक क्लिक में सदस्यता रद्द करें।",
+    eyebrow: "न्यूज़लेटर",
+    missingTitle: "सदस्यता रद्द करने का लिंक नहीं मिला।",
+    missingBody:
+      "किसी भी HenryCo ईमेल से «सदस्यता रद्द करें» लिंक खोलें और वैध टोकन के साथ यहां आएं। यदि आपका लिंक समाप्त हो गया है, तो हमसे संपर्क करें और हम इसे मैन्युअली पूरा करेंगे।",
+    missingCtaContact: "सहायता से संपर्क करें",
+    missingCtaBack: "न्यूज़लेटर पर वापस जाएं",
+    errorTitle: "हम आपकी सदस्यता रद्द नहीं कर सके।",
+    errorManualNote:
+      "यदि यह जारी रहता है, किसी भी HenryCo ईमेल का जवाब «सदस्यता रद्द करें» लिखकर दें और हमारी टीम इसे मैन्युअली पूरा करेगी।",
+    successTitle: "आपकी सदस्यता रद्द हो गई।",
+    successBody:
+      "{{email}} को HenryCo न्यूज़लेटर नहीं मिलेंगे। लेन-देन संबंधी संदेश (रसीदें, शिपिंग, सत्यापन, सुरक्षा) अभी भी भेजे जाएंगे क्योंकि हमें ऐसा करना आवश्यक है।",
+    changedMind: "क्या आपने अपना मन बदल लिया?",
+    ctaSubscribeAgain: "फिर से सदस्यता लें",
+    ctaManagePrefs: "सभी प्राथमिकताएं प्रबंधित करें",
   },
 };
 const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
@@ -1362,6 +1549,25 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
     menuAbout: "Maka anyị",
     menuContact: "Kpọtụrụ anyị",
   },
+  newsletterUnsubscribe: {
+    metaTitle: "Wepụ onwe gị — Henry & Co.",
+    metaDescription: "Wepụ onwe gị na mbipụta ozi HenryCo n'otu ntụọ.",
+    eyebrow: "Mbipụta ozi",
+    missingTitle: "Njikọ iwepụ onwe gị adịghị.",
+    missingBody:
+      "Mepee njikọ «Wepụ onwe gị» n'ozi imeli ọ bụla nke HenryCo iji bịa ebe a na token zuru oke. Ọ bụrụ na njikọ gị gasịrị, kpọtụrụ anyị ma anyị ga-eme ya n'aka.",
+    missingCtaContact: "Kpọtụrụ nkwado",
+    missingCtaBack: "Laghachi na mbipụta ozi",
+    errorTitle: "Anyị enweghị ike iwepụ gị.",
+    errorManualNote:
+      "Ọ bụrụ na nke a na-aga n'ihu, zaa «wepụ onwe gị» na ozi imeli ọ bụla HenryCo ma ndị otu anyị ga-eme ya n'aka.",
+    successTitle: "Ewepụrụ gị.",
+    successBody:
+      "{{email}} agaghị enweta mbipụta ozi HenryCo. Ozi ahịa (영수증, nziga, nyochaa, nchedo) ka na-eziga n'ihi na anyị ga-eme ya.",
+    changedMind: "Ị gbanwere uche gị?",
+    ctaSubscribeAgain: "Deere aha ọzọ",
+    ctaManagePrefs: "Jikwaa nhọrọ niile",
+  },
 };
 const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -1486,6 +1692,25 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
     menuAbout: "Nípa wa",
     menuContact: "Kàn sí wa",
   },
+  newsletterUnsubscribe: {
+    metaTitle: "Yọ ìforúkọsílẹ̀ rẹ — Henry & Co.",
+    metaDescription: "Yọ ìforúkọsílẹ̀ rẹ nínú àwọn ìròyìn HenryCo pẹ̀lú tẹ kan.",
+    eyebrow: "Ìròyìn ìdúnnú",
+    missingTitle: "Ọ̀nà ìsopọ̀ ìyọ ìforúkọsílẹ̀ kò sí.",
+    missingBody:
+      "Ṣí ọ̀nà ìsopọ̀ «Yọ ìforúkọsílẹ̀ rẹ» láti èbí ímeèlì HenryCo kan láti dé ibí pẹ̀lú àmì tí ó wulo. Tí ọ̀nà ìsopọ̀ rẹ bá ti parí, kàn sí wa àti a ó gba rẹ pẹ̀lú ọwọ́.",
+    missingCtaContact: "Kàn sí àtìlẹyìn",
+    missingCtaBack: "Padà sí àwọn ìròyìn",
+    errorTitle: "A kò ṣe àṣeyọrí nínú ìyọ ìforúkọsílẹ̀ rẹ.",
+    errorManualNote:
+      "Tí èyí bá ń ṣẹlẹ̀ tún, dahùn pẹ̀lú «yọ ìforúkọsílẹ̀» sí èbí ímeèlì HenryCo kan àti ẹgbẹ́ wa ó ò gba rẹ pẹ̀lú ọwọ́.",
+    successTitle: "A ti yọ ìforúkọsílẹ̀ rẹ.",
+    successBody:
+      "{{email}} kò ní gba àwọn ìròyìn HenryCo mọ̀. Àwọn ìránṣẹ́ ohun ìdúnàádúrà (àwọn rísítì, gbigbe, ìjẹrìísí, ààbò) ṣì máa ń ránṣẹ́ nítorí pé ó jẹ́ dandan.",
+    changedMind: "Ṣé o ti yí ọkàn rẹ padà?",
+    ctaSubscribeAgain: "Forúkọ sílẹ̀ lẹ́ẹ̀kan sí",
+    ctaManagePrefs: "Ṣàkóso gbogbo àwọn àṣàyàn",
+  },
 };
 const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -1609,6 +1834,25 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
     menuDivisionsDirectory: "Jerin sassan",
     menuAbout: "Game da mu",
     menuContact: "Tuntuɓi mu",
+  },
+  newsletterUnsubscribe: {
+    metaTitle: "Soke rajista — Henry & Co.",
+    metaDescription: "Soke rajista daga sanarwar HenryCo da danna ɗaya.",
+    eyebrow: "Sanarwa",
+    missingTitle: "Hanyar soke rajista ta ɓace.",
+    missingBody:
+      "Bude hanyar «Soke rajista» daga kowanne imel na HenryCo don isa nan da ingantaccen alama. Idan hanyar ka ta ƙare, tuntuɓi mu kuma za mu yarda da ita a hannu.",
+    missingCtaContact: "Tuntuɓi tallafi",
+    missingCtaBack: "Koma sanarwa",
+    errorTitle: "Ba mu iya soke rajistarka ba.",
+    errorManualNote:
+      "Idan hakan ya ci gaba, amsa «soke rajista» zuwa kowanne imel na HenryCo kuma ƙungiyarmu za ta yarda a hannu.",
+    successTitle: "An soke rajistarka.",
+    successBody:
+      "{{email}} ba za ta karɓi sanarwar HenryCo ba. Saƙonni na ma'amala (rasa, jigilar kaya, tabbatarwa, tsaro) suna ci gaba da aika saboda dole ne.",
+    changedMind: "Ka canza ra'ayinka?",
+    ctaSubscribeAgain: "Yi rajista sake",
+    ctaManagePrefs: "Sarrafa duk zaɓuɓɓuka",
   },
 };
 
