@@ -413,6 +413,138 @@ export type JobsCopy = {
     daysSingular: string;
     daysPlural: string;
   };
+  interviewScheduler: {
+    triggerLabel: string;
+    formTitle: string;
+    labelTitle: string;
+    labelType: string;
+    labelDate: string;
+    labelTime: string;
+    labelDuration: string;
+    labelTimezone: string;
+    labelMeetingUrl: string;
+    labelLocation: string;
+    labelNotes: string;
+    titlePlaceholder: string;
+    meetingUrlPlaceholder: string;
+    locationPlaceholder: string;
+    notesPlaceholder: string;
+    typeVideo: string;
+    typePhone: string;
+    typeInPerson: string;
+    duration15: string;
+    duration30: string;
+    duration45: string;
+    duration60: string;
+    duration90: string;
+    tzLagos: string;
+    tzCotonou: string;
+    tzAccra: string;
+    tzLondon: string;
+    tzNewYork: string;
+    tzChicago: string;
+    tzLosAngeles: string;
+    tzBerlin: string;
+    submitPending: string;
+    submitLabel: string;
+    cancelLabel: string;
+    validationError: string;
+    networkError: string;
+  };
+  hirePage: {
+    metaTitle: string;
+    metaDescription: string;
+    eyebrow: string;
+    heroTitle: string;
+    heroBody: string;
+    shieldNotice: string;
+    ctaSignedIn: string;
+    ctaSignedOut: string;
+    ctaLogin: string;
+    ctaBrowseCandidates: string;
+    featureVerificationLabel: string;
+    featureVerificationValue: string;
+    featurePostReviewLabel: string;
+    featurePostReviewValue: string;
+    featurePipelineLabel: string;
+    featurePipelineValue: string;
+    howKicker: string;
+    stepPrefix: string;
+    step01Title: string;
+    step01Body: string;
+    step02Title: string;
+    step02Body: string;
+    step03Title: string;
+    step03Body: string;
+    verificationKicker: string;
+    verificationTitle: string;
+    verificationBody: string;
+    moderationKicker: string;
+    moderationTitle: string;
+    moderationBody: string;
+    qualityKicker: string;
+    qualityTitle: string;
+    qualityBody: string;
+    ctaWorkspace: string;
+    ctaGetStarted: string;
+    ctaTrustLink: string;
+    ctaFaqLink: string;
+    questionsPrefix: string;
+  };
+  candidateHome: {
+    metaTitle: string;
+    metaDescription: string;
+    pageTitle: string;
+    pageSubtitle: string;
+    rightRailRecruiterTitle: string;
+    rightRailRecruiterBody: string;
+    rightRailRecruiterEmpty: string;
+    rightRailRecruiterEmptyTitle: string;
+    rightRailRecruiterEmptyBody: string;
+    rightRailNextActionsTitle: string;
+    rightRailNextActionsBody: string;
+    overviewTitle: string;
+    overviewBody: string;
+    overviewImproveProfile: string;
+    tileProfileReadinessLabel: string;
+    tileProfileReadinessFallback: string;
+    tileActiveAppsLabel: string;
+    tileActiveAppsDetailActive: string;
+    tileActiveAppsDetailEmpty: string;
+    tileInProgressLabel: string;
+    tileInProgressDetailActive: string;
+    tileInProgressDetailEmpty: string;
+    tileSavedRolesLabel: string;
+    tileSavedRolesDetailActive: string;
+    tileSavedRolesDetailEmpty: string;
+    profileStrengthTitle: string;
+    profileStrengthBody: string;
+    readinessScoreKicker: string;
+    readinessFallback: string;
+    applicationsTitle: string;
+    applicationsBody: string;
+    applicationsViewAll: string;
+    applicationsEmptyKicker: string;
+    applicationsEmptyTitle: string;
+    applicationsEmptyBody: string;
+    applicationsBrowseCta: string;
+    applicationUpdatedPrefix: string;
+    applicationLatestRecruiterLabel: string;
+    applicationBestNextMoveLabel: string;
+    savedRolesTitle: string;
+    savedRolesBody: string;
+    savedRolesOpenLink: string;
+    savedRolesEmptyKicker: string;
+    savedRolesEmptyTitle: string;
+    savedRolesEmptyBody: string;
+    savedRolesHighTrustLabel: string;
+    recommendedTitle: string;
+    recommendedBody: string;
+    recommendedEmptyKicker: string;
+    recommendedEmptyTitle: string;
+    recommendedEmptyBody: string;
+    recommendedMatchSuffix: string;
+  };
 };
 
 const EN: JobsCopy = {
@@ -864,6 +996,157 @@ const EN: JobsCopy = {
     daysSingular: "{count} day",
     daysPlural: "{count} days",
   },
+  interviewScheduler: {
+    triggerLabel: "Schedule interview",
+    formTitle: "Schedule a new interview",
+    labelTitle: "Title",
+    labelType: "Type",
+    labelDate: "Date",
+    labelTime: "Time",
+    labelDuration: "Duration",
+    labelTimezone: "Timezone",
+    labelMeetingUrl: "Meeting URL",
+    labelLocation: "Location",
+    labelNotes: "Notes (optional)",
+    titlePlaceholder: "e.g. Technical interview",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "Office address",
+    notesPlaceholder: "Interview preparation notes...",
+    typeVideo: "Video call",
+    typePhone: "Phone call",
+    typeInPerson: "In-person",
+    duration15: "15 min",
+    duration30: "30 min",
+    duration45: "45 min",
+    duration60: "1 hour",
+    duration90: "1.5 hours",
+    tzLagos: "West Africa (Lagos)",
+    tzCotonou: "West Africa (Cotonou)",
+    tzAccra: "GMT (Accra)",
+    tzLondon: "UK (London)",
+    tzNewYork: "US Eastern",
+    tzChicago: "US Central",
+    tzLosAngeles: "US Pacific",
+    tzBerlin: "Central Europe",
+    submitPending: "Scheduling...",
+    submitLabel: "Schedule",
+    cancelLabel: "Cancel",
+    validationError: "Title, date, and time are required.",
+    networkError: "Network error. Please try again.",
+  },
+  hirePage: {
+    metaTitle: "Hire with clarity — HenryCo Jobs",
+    metaDescription:
+      "Post real roles, read applications in one place, and move candidates through visible stages. Employers and posts are reviewed to protect quality.",
+    eyebrow: "For employers",
+    heroTitle: "Hire with clarity, not chaos.",
+    heroBody:
+      "Post real roles, read applications in one place, move people through shortlist and interviews on visible stages. Employers and posts are reviewed to protect quality on both sides.",
+    shieldNotice:
+      "Posting live roles requires an active employer subscription. Candidates always browse for free; the subscription pays for moderation, anti-scam review, and candidate trust signals.",
+    ctaSignedIn: "Go to company setup",
+    ctaSignedOut: "Start hiring — sign up free",
+    ctaLogin: "I already have a HenryCo account",
+    ctaBrowseCandidates: "Browse candidates",
+    featureVerificationLabel: "Verification",
+    featureVerificationValue: "Manual review — no pay-to-play",
+    featurePostReviewLabel: "Post review",
+    featurePostReviewValue: "Clarity, fairness, fraud checks",
+    featurePipelineLabel: "Pipeline",
+    featurePipelineValue: "Visible stages for every applicant",
+    howKicker: "From first post to first hire",
+    stepPrefix: "Step",
+    step01Title: "Tell us who you are",
+    step01Body:
+      "Create your company profile with honest basics—what you do, where you hire, and how candidates should expect to hear from you. We use this for verification, not vanity.",
+    step02Title: "Submit your role for review",
+    step02Body:
+      "Write the job like you mean it: outcomes, requirements, pay band if you can share it, and how you work (remote, hybrid, on-site). New posts may sit in review briefly while we check for scams and quality.",
+    step03Title: "Run the pipeline in the open",
+    step03Body:
+      "Applications land in your employer workspace. Shortlist, interview, and decide with stages candidates can see in their own hub—fewer ghosted threads, more trust.",
+    verificationKicker: "Why verification exists",
+    verificationTitle: "Real brands. Reviewed posts. No badges for sale.",
+    verificationBody:
+      "Candidates deserve to know they are not replying to a fake brand. Verification means a human review of employer intent and profile quality — not a pay-to-play badge. While you are pending, you can still prepare your company record; some posting options unlock once you are verified.",
+    moderationKicker: "After you submit a post",
+    moderationTitle: "Moderation explains itself, then gets out of the way.",
+    moderationBody:
+      "Moderation checks for clarity, fairness, and fraud patterns. If something needs a fix, we will tell you why. When the role is live, candidates apply with one HenryCo profile; you review them in your applicant list and move stages when you are ready.",
+    qualityKicker: "Quality over volume",
+    qualityTitle: "We protect the board so serious employers stand out.",
+    qualityBody:
+      "Shared sign-in, saved roles, and application history mean candidates can hold you accountable to the process you publish. That is good for hiring: fewer wasted interviews, more people who actually want the job.",
+    ctaWorkspace: "Open workspace",
+    ctaGetStarted: "Get started",
+    ctaTrustLink: "How we protect people",
+    ctaFaqLink: "Employer FAQ",
+    questionsPrefix: "Questions?",
+  },
+  candidateHome: {
+    metaTitle: "Candidate Hub — HenryCo Jobs",
+    metaDescription:
+      "Track your profile, applications, saved roles, and recruiter updates — all in one place.",
+    pageTitle: "Candidate hub",
+    pageSubtitle:
+      "Track your profile, applications, saved roles, and recruiter updates — all in one place.",
+    rightRailRecruiterTitle: "Recruiter updates",
+    rightRailRecruiterBody:
+      "Messages, stage changes, and interview invites from hiring teams.",
+    rightRailRecruiterEmpty: "Quiet for now",
+    rightRailRecruiterEmptyTitle: "No recruiter movement yet.",
+    rightRailRecruiterEmptyBody:
+      "Once a recruiter reviews, shortlists, or messages you, the latest movement will surface here.",
+    rightRailNextActionsTitle: "Next actions",
+    rightRailNextActionsBody: "The most valuable move to make next.",
+    overviewTitle: "Overview",
+    overviewBody:
+      "A snapshot of your profile, applications, and where things stand right now.",
+    overviewImproveProfile: "Improve profile",
+    tileProfileReadinessLabel: "Profile readiness",
+    tileProfileReadinessFallback: "Set up your profile",
+    tileActiveAppsLabel: "Active applications",
+    tileActiveAppsDetailActive: "Live opportunities still moving through review.",
+    tileActiveAppsDetailEmpty: "No live applications yet.",
+    tileInProgressLabel: "In progress",
+    tileInProgressDetailActive: "Roles in shortlist, interview, or offer stages.",
+    tileInProgressDetailEmpty: "No interview movement yet.",
+    tileSavedRolesLabel: "Saved roles",
+    tileSavedRolesDetailActive: "Shortlisted roles waiting for a deeper pass.",
+    tileSavedRolesDetailEmpty: "Build a shortlist you can act on.",
+    profileStrengthTitle: "Profile strength",
+    profileStrengthBody:
+      "A stronger profile helps employers take your applications seriously.",
+    readinessScoreKicker: "Readiness score",
+    readinessFallback:
+      "Complete your profile to improve how employers see your applications.",
+    applicationsTitle: "Your applications",
+    applicationsBody: "Track the progress of every role you've applied to.",
+    applicationsViewAll: "View all",
+    applicationsEmptyKicker: "No applications yet",
+    applicationsEmptyTitle: "Your application timeline will appear here.",
+    applicationsEmptyBody:
+      "Once you apply to a role, you'll see stage updates, interview invites, and next steps right here.",
+    applicationsBrowseCta: "Browse live roles",
+    applicationUpdatedPrefix: "Updated",
+    applicationLatestRecruiterLabel: "Latest recruiter action",
+    applicationBestNextMoveLabel: "Best next move",
+    savedRolesTitle: "Saved roles",
+    savedRolesBody: "Roles you've bookmarked for later.",
+    savedRolesOpenLink: "Open saved roles",
+    savedRolesEmptyKicker: "Nothing saved yet",
+    savedRolesEmptyTitle: "Your shortlist is empty.",
+    savedRolesEmptyBody:
+      "Save roles you want to compare later so they're easy to find when you're ready to apply.",
+    savedRolesHighTrustLabel: "High trust employer",
+    recommendedTitle: "Recommended for you",
+    recommendedBody: "Suggested roles based on your profile and activity.",
+    recommendedEmptyKicker: "Recommendations warming up",
+    recommendedEmptyTitle: "We need a bit more signal first.",
+    recommendedEmptyBody:
+      "Complete your profile and save or apply to a few roles to sharpen recommendations.",
+    recommendedMatchSuffix: "% match",
+  },
 };
 
 const FR: DeepPartial<JobsCopy> = {
@@ -1267,6 +1550,157 @@ const FR: DeepPartial<JobsCopy> = {
     applicationCountPlural: "{count} candidatures",
     daysSingular: "{count} jour",
     daysPlural: "{count} jours",
+  },
+  interviewScheduler: {
+    triggerLabel: "Planifier un entretien",
+    formTitle: "Planifier un nouvel entretien",
+    labelTitle: "Intitulé",
+    labelType: "Type",
+    labelDate: "Date",
+    labelTime: "Heure",
+    labelDuration: "Durée",
+    labelTimezone: "Fuseau horaire",
+    labelMeetingUrl: "Lien de réunion",
+    labelLocation: "Lieu",
+    labelNotes: "Notes (optionnel)",
+    titlePlaceholder: "ex. Entretien technique",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "Adresse du bureau",
+    notesPlaceholder: "Notes de préparation à l'entretien...",
+    typeVideo: "Appel vidéo",
+    typePhone: "Appel téléphonique",
+    typeInPerson: "En présentiel",
+    duration15: "15 min",
+    duration30: "30 min",
+    duration45: "45 min",
+    duration60: "1 heure",
+    duration90: "1 h 30",
+    tzLagos: "Afrique de l'Ouest (Lagos)",
+    tzCotonou: "Afrique de l'Ouest (Cotonou)",
+    tzAccra: "GMT (Accra)",
+    tzLondon: "Royaume-Uni (Londres)",
+    tzNewYork: "États-Unis Est",
+    tzChicago: "États-Unis Centre",
+    tzLosAngeles: "États-Unis Pacifique",
+    tzBerlin: "Europe Centrale",
+    submitPending: "Planification en cours...",
+    submitLabel: "Planifier",
+    cancelLabel: "Annuler",
+    validationError: "L'intitulé, la date et l'heure sont obligatoires.",
+    networkError: "Erreur réseau. Veuillez réessayer.",
+  },
+  hirePage: {
+    metaTitle: "Recrutez avec clarté — HenryCo Jobs",
+    metaDescription:
+      "Publiez de vraies offres, lisez les candidatures au même endroit et faites avancer les candidats à travers des étapes visibles.",
+    eyebrow: "Pour les employeurs",
+    heroTitle: "Recrutez avec clarté, sans le chaos.",
+    heroBody:
+      "Publiez de vraies offres, lisez les candidatures au même endroit, faites avancer les personnes dans votre sélection et vos entretiens via des étapes visibles.",
+    shieldNotice:
+      "La publication d'offres en direct nécessite un abonnement employeur actif. Les candidats parcourent toujours gratuitement ; l'abonnement finance la modération, la lutte anti-arnaques et les signaux de confiance candidats.",
+    ctaSignedIn: "Aller à la configuration de l'entreprise",
+    ctaSignedOut: "Commencer à recruter — inscription gratuite",
+    ctaLogin: "J'ai déjà un compte HenryCo",
+    ctaBrowseCandidates: "Parcourir les candidats",
+    featureVerificationLabel: "Vérification",
+    featureVerificationValue: "Révision manuelle — sans paiement requis",
+    featurePostReviewLabel: "Révision des offres",
+    featurePostReviewValue: "Clarté, équité, vérification des fraudes",
+    featurePipelineLabel: "Pipeline",
+    featurePipelineValue: "Étapes visibles pour chaque candidat",
+    howKicker: "De la première offre à la première embauche",
+    stepPrefix: "Étape",
+    step01Title: "Présentez-vous",
+    step01Body:
+      "Créez le profil de votre entreprise avec des informations honnêtes — ce que vous faites, où vous recrutez et comment les candidats doivent s'attendre à avoir de vos nouvelles.",
+    step02Title: "Soumettez votre poste à révision",
+    step02Body:
+      "Rédigez l'offre d'emploi sérieusement : résultats attendus, exigences, fourchette salariale si possible, et mode de travail (télétravail, hybride, présentiel).",
+    step03Title: "Gérez le pipeline en toute transparence",
+    step03Body:
+      "Les candidatures arrivent dans votre espace employeur. Présélectionnez, interviewez et décidez avec des étapes que les candidats peuvent voir dans leur propre espace.",
+    verificationKicker: "Pourquoi la vérification existe",
+    verificationTitle: "Vraies marques. Offres révisées. Pas de badges à vendre.",
+    verificationBody:
+      "Les candidats méritent de savoir qu'ils ne répondent pas à une fausse marque. La vérification signifie une révision humaine de l'intention et de la qualité du profil de l'employeur.",
+    moderationKicker: "Après avoir soumis une offre",
+    moderationTitle: "La modération s'explique, puis s'efface.",
+    moderationBody:
+      "La modération vérifie la clarté, l'équité et les schémas de fraude. Si quelque chose doit être corrigé, nous vous dirons pourquoi.",
+    qualityKicker: "Qualité avant volume",
+    qualityTitle: "Nous protégeons le tableau pour que les employeurs sérieux se démarquent.",
+    qualityBody:
+      "La connexion partagée, les offres sauvegardées et l'historique des candidatures signifient que les candidats peuvent vous tenir responsable du processus que vous publiez.",
+    ctaWorkspace: "Ouvrir l'espace de travail",
+    ctaGetStarted: "Commencer",
+    ctaTrustLink: "Comment nous protégeons les gens",
+    ctaFaqLink: "FAQ employeur",
+    questionsPrefix: "Des questions ?",
+  },
+  candidateHome: {
+    metaTitle: "Espace candidat — HenryCo Jobs",
+    metaDescription:
+      "Suivez votre profil, vos candidatures, les offres sauvegardées et les mises à jour des recruteurs — tout en un seul endroit.",
+    pageTitle: "Espace candidat",
+    pageSubtitle:
+      "Suivez votre profil, vos candidatures, les offres sauvegardées et les mises à jour des recruteurs — tout en un seul endroit.",
+    rightRailRecruiterTitle: "Mises à jour recruteur",
+    rightRailRecruiterBody:
+      "Messages, changements d'étape et invitations à des entretiens des équipes de recrutement.",
+    rightRailRecruiterEmpty: "Calme pour l'instant",
+    rightRailRecruiterEmptyTitle: "Aucun mouvement recruteur pour l'instant.",
+    rightRailRecruiterEmptyBody:
+      "Dès qu'un recruteur vous examine, vous présélectionne ou vous envoie un message, le dernier mouvement apparaîtra ici.",
+    rightRailNextActionsTitle: "Prochaines actions",
+    rightRailNextActionsBody: "Le geste le plus précieux à faire maintenant.",
+    overviewTitle: "Aperçu",
+    overviewBody:
+      "Un instantané de votre profil, de vos candidatures et de la situation actuelle.",
+    overviewImproveProfile: "Améliorer le profil",
+    tileProfileReadinessLabel: "Préparation du profil",
+    tileProfileReadinessFallback: "Configurez votre profil",
+    tileActiveAppsLabel: "Candidatures actives",
+    tileActiveAppsDetailActive: "Opportunités en cours d'examen.",
+    tileActiveAppsDetailEmpty: "Aucune candidature active pour l'instant.",
+    tileInProgressLabel: "En cours",
+    tileInProgressDetailActive: "Postes en présélection, entretien ou offre.",
+    tileInProgressDetailEmpty: "Aucun mouvement d'entretien pour l'instant.",
+    tileSavedRolesLabel: "Offres sauvegardées",
+    tileSavedRolesDetailActive: "Postes présélectionnés en attente d'examen approfondi.",
+    tileSavedRolesDetailEmpty: "Construisez une liste sur laquelle vous pouvez agir.",
+    profileStrengthTitle: "Force du profil",
+    profileStrengthBody:
+      "Un profil plus complet aide les employeurs à prendre vos candidatures au sérieux.",
+    readinessScoreKicker: "Score de préparation",
+    readinessFallback:
+      "Complétez votre profil pour améliorer la perception de vos candidatures par les employeurs.",
+    applicationsTitle: "Vos candidatures",
+    applicationsBody: "Suivez la progression de chaque poste pour lequel vous avez postulé.",
+    applicationsViewAll: "Voir tout",
+    applicationsEmptyKicker: "Pas encore de candidatures",
+    applicationsEmptyTitle: "Votre timeline de candidatures apparaîtra ici.",
+    applicationsEmptyBody:
+      "Dès que vous postulez à un poste, vous verrez les mises à jour d'étape, les invitations à des entretiens et les prochaines étapes ici.",
+    applicationsBrowseCta: "Parcourir les offres en direct",
+    applicationUpdatedPrefix: "Mis à jour",
+    applicationLatestRecruiterLabel: "Dernière action du recruteur",
+    applicationBestNextMoveLabel: "Meilleur prochain geste",
+    savedRolesTitle: "Offres sauvegardées",
+    savedRolesBody: "Offres que vous avez mis en favoris pour plus tard.",
+    savedRolesOpenLink: "Ouvrir les offres sauvegardées",
+    savedRolesEmptyKicker: "Rien de sauvegardé pour l'instant",
+    savedRolesEmptyTitle: "Votre liste de sélection est vide.",
+    savedRolesEmptyBody:
+      "Sauvegardez les offres que vous souhaitez comparer pour les retrouver facilement lorsque vous êtes prêt à postuler.",
+    savedRolesHighTrustLabel: "Employeur de haute confiance",
+    recommendedTitle: "Recommandé pour vous",
+    recommendedBody: "Postes suggérés basés sur votre profil et votre activité.",
+    recommendedEmptyKicker: "Recommandations en cours de calibrage",
+    recommendedEmptyTitle: "Nous avons besoin d'un peu plus de signal d'abord.",
+    recommendedEmptyBody:
+      "Complétez votre profil et sauvegardez ou postulez à quelques postes pour affiner les recommandations.",
+    recommendedMatchSuffix: "% de correspondance",
   },
 };
 
@@ -1673,6 +2107,157 @@ const ES: DeepPartial<JobsCopy> = {
     daysSingular: "{count} día",
     daysPlural: "{count} días",
   },
+  interviewScheduler: {
+    triggerLabel: "Programar entrevista",
+    formTitle: "Programar una nueva entrevista",
+    labelTitle: "Título",
+    labelType: "Tipo",
+    labelDate: "Fecha",
+    labelTime: "Hora",
+    labelDuration: "Duración",
+    labelTimezone: "Zona horaria",
+    labelMeetingUrl: "Enlace de reunión",
+    labelLocation: "Ubicación",
+    labelNotes: "Notas (opcional)",
+    titlePlaceholder: "ej. Entrevista técnica",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "Dirección de la oficina",
+    notesPlaceholder: "Notas de preparación para la entrevista...",
+    typeVideo: "Videollamada",
+    typePhone: "Llamada telefónica",
+    typeInPerson: "Presencial",
+    duration15: "15 min",
+    duration30: "30 min",
+    duration45: "45 min",
+    duration60: "1 hora",
+    duration90: "1,5 horas",
+    tzLagos: "África Occidental (Lagos)",
+    tzCotonou: "África Occidental (Cotonú)",
+    tzAccra: "GMT (Accra)",
+    tzLondon: "Reino Unido (Londres)",
+    tzNewYork: "EE. UU. Este",
+    tzChicago: "EE. UU. Centro",
+    tzLosAngeles: "EE. UU. Pacífico",
+    tzBerlin: "Europa Central",
+    submitPending: "Programando...",
+    submitLabel: "Programar",
+    cancelLabel: "Cancelar",
+    validationError: "El título, la fecha y la hora son obligatorios.",
+    networkError: "Error de red. Por favor, inténtalo de nuevo.",
+  },
+  hirePage: {
+    metaTitle: "Contrata con claridad — HenryCo Jobs",
+    metaDescription:
+      "Publica roles reales, lee candidaturas en un solo lugar y avanza a los candidatos en etapas visibles.",
+    eyebrow: "Para empleadores",
+    heroTitle: "Contrata con claridad, sin caos.",
+    heroBody:
+      "Publica roles reales, lee candidaturas en un solo lugar, avanza a las personas por preselección y entrevistas en etapas visibles.",
+    shieldNotice:
+      "Publicar roles en vivo requiere una suscripción activa de empleador. Los candidatos siempre navegan gratis.",
+    ctaSignedIn: "Ir a la configuración de la empresa",
+    ctaSignedOut: "Empezar a contratar — registro gratuito",
+    ctaLogin: "Ya tengo una cuenta HenryCo",
+    ctaBrowseCandidates: "Ver candidatos",
+    featureVerificationLabel: "Verificación",
+    featureVerificationValue: "Revisión manual — sin pago para destacar",
+    featurePostReviewLabel: "Revisión de publicaciones",
+    featurePostReviewValue: "Claridad, equidad, verificación de fraudes",
+    featurePipelineLabel: "Pipeline",
+    featurePipelineValue: "Etapas visibles para cada postulante",
+    howKicker: "De la primera publicación a la primera contratación",
+    stepPrefix: "Paso",
+    step01Title: "Dinos quién eres",
+    step01Body:
+      "Crea el perfil de tu empresa con datos honestos: qué haces, dónde contratas y cómo deben esperar saber de ti los candidatos.",
+    step02Title: "Envía tu rol a revisión",
+    step02Body:
+      "Escribe el trabajo con seriedad: resultados, requisitos, banda salarial si puedes compartirla y cómo trabajas (remoto, híbrido, presencial).",
+    step03Title: "Gestiona el pipeline abiertamente",
+    step03Body:
+      "Las candidaturas llegan a tu espacio de empleador. Preselecciona, entrevista y decide con etapas que los candidatos pueden ver en su propio hub.",
+    verificationKicker: "Por qué existe la verificación",
+    verificationTitle: "Marcas reales. Posts revisados. No hay insignias en venta.",
+    verificationBody:
+      "Los candidatos merecen saber que no están respondiendo a una marca falsa. La verificación implica una revisión humana de la intención y la calidad del perfil del empleador.",
+    moderationKicker: "Después de enviar una publicación",
+    moderationTitle: "La moderación se explica y luego se aparta.",
+    moderationBody:
+      "La moderación verifica la claridad, la equidad y los patrones de fraude. Si algo necesita arreglarse, te diremos por qué.",
+    qualityKicker: "Calidad sobre volumen",
+    qualityTitle: "Protegemos el tablero para que los empleadores serios destaquen.",
+    qualityBody:
+      "El inicio de sesión compartido, los roles guardados y el historial de candidaturas significan que los candidatos pueden pedirte cuentas del proceso que publicas.",
+    ctaWorkspace: "Abrir espacio de trabajo",
+    ctaGetStarted: "Comenzar",
+    ctaTrustLink: "Cómo protegemos a las personas",
+    ctaFaqLink: "Preguntas frecuentes del empleador",
+    questionsPrefix: "¿Preguntas?",
+  },
+  candidateHome: {
+    metaTitle: "Hub del candidato — HenryCo Jobs",
+    metaDescription:
+      "Sigue tu perfil, candidaturas, roles guardados y actualizaciones de reclutadores — todo en un solo lugar.",
+    pageTitle: "Hub del candidato",
+    pageSubtitle:
+      "Sigue tu perfil, candidaturas, roles guardados y actualizaciones de reclutadores — todo en un solo lugar.",
+    rightRailRecruiterTitle: "Actualizaciones del reclutador",
+    rightRailRecruiterBody:
+      "Mensajes, cambios de etapa e invitaciones a entrevistas de los equipos de contratación.",
+    rightRailRecruiterEmpty: "Tranquilo por ahora",
+    rightRailRecruiterEmptyTitle: "Aún no hay movimiento de reclutadores.",
+    rightRailRecruiterEmptyBody:
+      "Una vez que un reclutador te revise, preseleccione o te envíe un mensaje, el último movimiento aparecerá aquí.",
+    rightRailNextActionsTitle: "Próximas acciones",
+    rightRailNextActionsBody: "El movimiento más valioso que puedes hacer ahora.",
+    overviewTitle: "Resumen",
+    overviewBody:
+      "Una instantánea de tu perfil, candidaturas y el estado actual de las cosas.",
+    overviewImproveProfile: "Mejorar perfil",
+    tileProfileReadinessLabel: "Preparación del perfil",
+    tileProfileReadinessFallback: "Configura tu perfil",
+    tileActiveAppsLabel: "Candidaturas activas",
+    tileActiveAppsDetailActive: "Oportunidades en proceso de revisión.",
+    tileActiveAppsDetailEmpty: "Aún no hay candidaturas activas.",
+    tileInProgressLabel: "En progreso",
+    tileInProgressDetailActive: "Roles en preselección, entrevista u oferta.",
+    tileInProgressDetailEmpty: "Aún no hay movimiento de entrevistas.",
+    tileSavedRolesLabel: "Roles guardados",
+    tileSavedRolesDetailActive: "Roles preseleccionados esperando una revisión más profunda.",
+    tileSavedRolesDetailEmpty: "Crea una lista en la que puedas actuar.",
+    profileStrengthTitle: "Fortaleza del perfil",
+    profileStrengthBody:
+      "Un perfil más sólido ayuda a los empleadores a tomar tus candidaturas en serio.",
+    readinessScoreKicker: "Puntuación de preparación",
+    readinessFallback:
+      "Completa tu perfil para mejorar cómo los empleadores ven tus candidaturas.",
+    applicationsTitle: "Tus candidaturas",
+    applicationsBody: "Sigue el progreso de cada rol al que has aplicado.",
+    applicationsViewAll: "Ver todo",
+    applicationsEmptyKicker: "Aún no hay candidaturas",
+    applicationsEmptyTitle: "Tu línea de tiempo de candidaturas aparecerá aquí.",
+    applicationsEmptyBody:
+      "Una vez que apliques a un rol, verás actualizaciones de etapas, invitaciones a entrevistas y próximos pasos aquí.",
+    applicationsBrowseCta: "Ver roles en vivo",
+    applicationUpdatedPrefix: "Actualizado",
+    applicationLatestRecruiterLabel: "Última acción del reclutador",
+    applicationBestNextMoveLabel: "Mejor próximo movimiento",
+    savedRolesTitle: "Roles guardados",
+    savedRolesBody: "Roles que has marcado para más tarde.",
+    savedRolesOpenLink: "Abrir roles guardados",
+    savedRolesEmptyKicker: "Nada guardado aún",
+    savedRolesEmptyTitle: "Tu lista de preselección está vacía.",
+    savedRolesEmptyBody:
+      "Guarda roles que quieras comparar más tarde para encontrarlos fácilmente cuando estés listo para aplicar.",
+    savedRolesHighTrustLabel: "Empleador de alta confianza",
+    recommendedTitle: "Recomendado para ti",
+    recommendedBody: "Roles sugeridos basados en tu perfil y actividad.",
+    recommendedEmptyKicker: "Recomendaciones en preparación",
+    recommendedEmptyTitle: "Necesitamos un poco más de señal primero.",
+    recommendedEmptyBody:
+      "Completa tu perfil y guarda o aplica a algunos roles para afinar las recomendaciones.",
+    recommendedMatchSuffix: "% de compatibilidad",
+  },
 };
 
 const PT: DeepPartial<JobsCopy> = {
@@ -2078,6 +2663,157 @@ const PT: DeepPartial<JobsCopy> = {
     daysSingular: "{count} dia",
     daysPlural: "{count} dias",
   },
+  interviewScheduler: {
+    triggerLabel: "Agendar entrevista",
+    formTitle: "Agendar uma nova entrevista",
+    labelTitle: "Título",
+    labelType: "Tipo",
+    labelDate: "Data",
+    labelTime: "Hora",
+    labelDuration: "Duração",
+    labelTimezone: "Fuso horário",
+    labelMeetingUrl: "Link da reunião",
+    labelLocation: "Local",
+    labelNotes: "Notas (opcional)",
+    titlePlaceholder: "ex. Entrevista técnica",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "Endereço do escritório",
+    notesPlaceholder: "Notas de preparação para a entrevista...",
+    typeVideo: "Videochamada",
+    typePhone: "Chamada telefónica",
+    typeInPerson: "Presencial",
+    duration15: "15 min",
+    duration30: "30 min",
+    duration45: "45 min",
+    duration60: "1 hora",
+    duration90: "1,5 horas",
+    tzLagos: "África Ocidental (Lagos)",
+    tzCotonou: "África Ocidental (Cotonu)",
+    tzAccra: "GMT (Accra)",
+    tzLondon: "Reino Unido (Londres)",
+    tzNewYork: "EUA Leste",
+    tzChicago: "EUA Centro",
+    tzLosAngeles: "EUA Pacífico",
+    tzBerlin: "Europa Central",
+    submitPending: "A agendar...",
+    submitLabel: "Agendar",
+    cancelLabel: "Cancelar",
+    validationError: "Título, data e hora são obrigatórios.",
+    networkError: "Erro de rede. Por favor, tente novamente.",
+  },
+  hirePage: {
+    metaTitle: "Contrate com clareza — HenryCo Jobs",
+    metaDescription:
+      "Publique vagas reais, leia candidaturas num só lugar e mova candidatos por etapas visíveis.",
+    eyebrow: "Para empregadores",
+    heroTitle: "Contrate com clareza, sem caos.",
+    heroBody:
+      "Publique vagas reais, leia candidaturas num único lugar, mova pessoas pela triagem e entrevistas em etapas visíveis.",
+    shieldNotice:
+      "A publicação de vagas ao vivo requer uma subscrição ativa de empregador. Os candidatos navegam sempre gratuitamente.",
+    ctaSignedIn: "Ir para a configuração da empresa",
+    ctaSignedOut: "Começar a contratar — registo gratuito",
+    ctaLogin: "Já tenho uma conta HenryCo",
+    ctaBrowseCandidates: "Ver candidatos",
+    featureVerificationLabel: "Verificação",
+    featureVerificationValue: "Revisão manual — sem pagamento para destaque",
+    featurePostReviewLabel: "Revisão de publicações",
+    featurePostReviewValue: "Clareza, equidade, verificação de fraudes",
+    featurePipelineLabel: "Pipeline",
+    featurePipelineValue: "Etapas visíveis para cada candidato",
+    howKicker: "Da primeira publicação à primeira contratação",
+    stepPrefix: "Passo",
+    step01Title: "Diga-nos quem é",
+    step01Body:
+      "Crie o perfil da sua empresa com dados honestos: o que faz, onde contrata e como os candidatos devem esperar ter notícias suas.",
+    step02Title: "Submeta a sua vaga para revisão",
+    step02Body:
+      "Escreva a oferta a sério: resultados, requisitos, banda salarial se puder partilhar e como trabalha (remoto, híbrido, presencial).",
+    step03Title: "Gira o pipeline de forma transparente",
+    step03Body:
+      "As candidaturas chegam ao seu espaço de empregador. Faça triagem, entreviste e decida com etapas que os candidatos podem ver no seu próprio hub.",
+    verificationKicker: "Por que existe a verificação",
+    verificationTitle: "Marcas reais. Posts revistos. Sem distintivos à venda.",
+    verificationBody:
+      "Os candidatos merecem saber que não estão a responder a uma marca falsa. A verificação implica uma revisão humana da intenção e qualidade do perfil do empregador.",
+    moderationKicker: "Depois de submeter uma publicação",
+    moderationTitle: "A moderação explica-se e depois sai do caminho.",
+    moderationBody:
+      "A moderação verifica a clareza, a equidade e os padrões de fraude. Se algo precisar de correção, diremos porquê.",
+    qualityKicker: "Qualidade acima do volume",
+    qualityTitle: "Protegemos o board para que os empregadores sérios se destaquem.",
+    qualityBody:
+      "O início de sessão partilhado, as vagas guardadas e o histórico de candidaturas significam que os candidatos podem responsabilizá-lo pelo processo que publica.",
+    ctaWorkspace: "Abrir espaço de trabalho",
+    ctaGetStarted: "Começar",
+    ctaTrustLink: "Como protegemos as pessoas",
+    ctaFaqLink: "FAQ para empregadores",
+    questionsPrefix: "Dúvidas?",
+  },
+  candidateHome: {
+    metaTitle: "Hub do candidato — HenryCo Jobs",
+    metaDescription:
+      "Acompanhe o seu perfil, candidaturas, vagas guardadas e atualizações de recrutadores — tudo num só lugar.",
+    pageTitle: "Hub do candidato",
+    pageSubtitle:
+      "Acompanhe o seu perfil, candidaturas, vagas guardadas e atualizações de recrutadores — tudo num só lugar.",
+    rightRailRecruiterTitle: "Atualizações do recrutador",
+    rightRailRecruiterBody:
+      "Mensagens, mudanças de etapa e convites para entrevistas das equipas de contratação.",
+    rightRailRecruiterEmpty: "Calmo por agora",
+    rightRailRecruiterEmptyTitle: "Ainda sem movimentação de recrutadores.",
+    rightRailRecruiterEmptyBody:
+      "Assim que um recrutador o examinar, colocar na lista ou enviar uma mensagem, o último movimento aparecerá aqui.",
+    rightRailNextActionsTitle: "Próximas ações",
+    rightRailNextActionsBody: "O movimento mais valioso a fazer agora.",
+    overviewTitle: "Visão geral",
+    overviewBody:
+      "Uma fotografia do seu perfil, candidaturas e onde as coisas estão neste momento.",
+    overviewImproveProfile: "Melhorar perfil",
+    tileProfileReadinessLabel: "Prontidão do perfil",
+    tileProfileReadinessFallback: "Configure o seu perfil",
+    tileActiveAppsLabel: "Candidaturas ativas",
+    tileActiveAppsDetailActive: "Oportunidades em processo de revisão.",
+    tileActiveAppsDetailEmpty: "Ainda sem candidaturas ativas.",
+    tileInProgressLabel: "Em progresso",
+    tileInProgressDetailActive: "Vagas em triagem, entrevista ou oferta.",
+    tileInProgressDetailEmpty: "Ainda sem movimentação em entrevistas.",
+    tileSavedRolesLabel: "Vagas guardadas",
+    tileSavedRolesDetailActive: "Vagas na lista de seleção à espera de análise mais aprofundada.",
+    tileSavedRolesDetailEmpty: "Construa uma lista na qual possa agir.",
+    profileStrengthTitle: "Força do perfil",
+    profileStrengthBody:
+      "Um perfil mais completo ajuda os empregadores a levarem as suas candidaturas a sério.",
+    readinessScoreKicker: "Pontuação de prontidão",
+    readinessFallback:
+      "Complete o seu perfil para melhorar como os empregadores veem as suas candidaturas.",
+    applicationsTitle: "As suas candidaturas",
+    applicationsBody: "Acompanhe o progresso de cada vaga a que se candidatou.",
+    applicationsViewAll: "Ver tudo",
+    applicationsEmptyKicker: "Ainda sem candidaturas",
+    applicationsEmptyTitle: "A sua linha do tempo de candidaturas aparecerá aqui.",
+    applicationsEmptyBody:
+      "Assim que se candidatar a uma vaga, verá atualizações de etapas, convites para entrevistas e próximos passos aqui.",
+    applicationsBrowseCta: "Ver vagas ao vivo",
+    applicationUpdatedPrefix: "Atualizado",
+    applicationLatestRecruiterLabel: "Última ação do recrutador",
+    applicationBestNextMoveLabel: "Melhor próximo movimento",
+    savedRolesTitle: "Vagas guardadas",
+    savedRolesBody: "Vagas que marcou para mais tarde.",
+    savedRolesOpenLink: "Abrir vagas guardadas",
+    savedRolesEmptyKicker: "Nada guardado ainda",
+    savedRolesEmptyTitle: "A sua lista de seleção está vazia.",
+    savedRolesEmptyBody:
+      "Guarde vagas que queira comparar mais tarde para as encontrar facilmente quando estiver pronto para se candidatar.",
+    savedRolesHighTrustLabel: "Empregador de alta confiança",
+    recommendedTitle: "Recomendado para si",
+    recommendedBody: "Vagas sugeridas com base no seu perfil e atividade.",
+    recommendedEmptyKicker: "Recomendações a aquecer",
+    recommendedEmptyTitle: "Precisamos de um pouco mais de sinal primeiro.",
+    recommendedEmptyBody:
+      "Complete o seu perfil e guarde ou candidate-se a algumas vagas para afinar as recomendações.",
+    recommendedMatchSuffix: "% de compatibilidade",
+  },
 };
 
 const AR: DeepPartial<JobsCopy> = {
@@ -2477,6 +3213,157 @@ const AR: DeepPartial<JobsCopy> = {
     applicationCountPlural: "{count} طلبات",
     daysSingular: "{count} يوم",
     daysPlural: "{count} أيام",
+  },
+  interviewScheduler: {
+    triggerLabel: "جدولة مقابلة",
+    formTitle: "جدولة مقابلة جديدة",
+    labelTitle: "العنوان",
+    labelType: "النوع",
+    labelDate: "التاريخ",
+    labelTime: "الوقت",
+    labelDuration: "المدة",
+    labelTimezone: "المنطقة الزمنية",
+    labelMeetingUrl: "رابط الاجتماع",
+    labelLocation: "الموقع",
+    labelNotes: "ملاحظات (اختياري)",
+    titlePlaceholder: "مثال: مقابلة تقنية",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "عنوان المكتب",
+    notesPlaceholder: "ملاحظات التحضير للمقابلة...",
+    typeVideo: "مكالمة فيديو",
+    typePhone: "مكالمة هاتفية",
+    typeInPerson: "حضوري",
+    duration15: "15 دقيقة",
+    duration30: "30 دقيقة",
+    duration45: "45 دقيقة",
+    duration60: "ساعة واحدة",
+    duration90: "ساعة ونصف",
+    tzLagos: "غرب أفريقيا (لاغوس)",
+    tzCotonou: "غرب أفريقيا (كوتونو)",
+    tzAccra: "غرينتش (أكرا)",
+    tzLondon: "المملكة المتحدة (لندن)",
+    tzNewYork: "الولايات المتحدة الشرقية",
+    tzChicago: "الولايات المتحدة الوسطى",
+    tzLosAngeles: "الولايات المتحدة الغربية",
+    tzBerlin: "أوروبا الوسطى",
+    submitPending: "جارٍ الجدولة...",
+    submitLabel: "جدولة",
+    cancelLabel: "إلغاء",
+    validationError: "العنوان والتاريخ والوقت مطلوبة.",
+    networkError: "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
+  },
+  hirePage: {
+    metaTitle: "وظِّف بوضوح — HenryCo Jobs",
+    metaDescription:
+      "انشر وظائف حقيقية، واقرأ الطلبات في مكان واحد، وانقل المرشحين عبر مراحل مرئية.",
+    eyebrow: "للأصحاب العمل",
+    heroTitle: "وظِّف بوضوح، بلا فوضى.",
+    heroBody:
+      "انشر وظائف حقيقية، اقرأ الطلبات في مكان واحد، وانقل الأشخاص عبر القائمة المختصرة والمقابلات بمراحل مرئية.",
+    shieldNotice:
+      "نشر الوظائف المباشرة يتطلب اشتراكًا نشطًا لصاحب العمل. يتصفح المرشحون دائمًا مجانًا.",
+    ctaSignedIn: "الذهاب إلى إعداد الشركة",
+    ctaSignedOut: "ابدأ التوظيف — سجّل مجانًا",
+    ctaLogin: "لدي بالفعل حساب HenryCo",
+    ctaBrowseCandidates: "تصفح المرشحين",
+    featureVerificationLabel: "التحقق",
+    featureVerificationValue: "مراجعة يدوية — لا دفع للتميز",
+    featurePostReviewLabel: "مراجعة المنشورات",
+    featurePostReviewValue: "الوضوح، العدالة، فحص الاحتيال",
+    featurePipelineLabel: "خط الأنابيب",
+    featurePipelineValue: "مراحل مرئية لكل متقدم",
+    howKicker: "من أول منشور إلى أول توظيف",
+    stepPrefix: "خطوة",
+    step01Title: "أخبرنا من أنت",
+    step01Body:
+      "أنشئ ملف شركتك بأساسيات صادقة — ما تفعله، وأين توظف، وكيف يتوقع المرشحون سماع أخبارك.",
+    step02Title: "أرسل وظيفتك للمراجعة",
+    step02Body:
+      "اكتب الوظيفة بجدية: النتائج، المتطلبات، النطاق الراتبي إن أمكن، وطريقة العمل.",
+    step03Title: "أدِر خط الأنابيب بشفافية",
+    step03Body:
+      "تصل الطلبات إلى مساحة عمل صاحب العمل. اختر، قابل، وقرر بمراحل يمكن للمرشحين رؤيتها في مركزهم الخاص.",
+    verificationKicker: "لماذا يوجد التحقق",
+    verificationTitle: "علامات تجارية حقيقية. منشورات مراجعة. لا شارات للبيع.",
+    verificationBody:
+      "يستحق المرشحون معرفة أنهم لا يردون على علامة تجارية مزيفة. التحقق يعني مراجعة بشرية لنية صاحب العمل وجودة ملفه.",
+    moderationKicker: "بعد إرسال منشور",
+    moderationTitle: "الإشراف يشرح نفسه ثم يتنحى.",
+    moderationBody:
+      "يتحقق الإشراف من الوضوح والعدالة وأنماط الاحتيال. إذا احتاج شيء إلى إصلاح، سنخبرك بالسبب.",
+    qualityKicker: "الجودة قبل الكمية",
+    qualityTitle: "نحمي اللوحة حتى يبرز أصحاب العمل الجادون.",
+    qualityBody:
+      "تسجيل الدخول المشترك، والأدوار المحفوظة، وسجل الطلبات يعني أن المرشحين يمكنهم محاسبتك على العملية التي تنشرها.",
+    ctaWorkspace: "فتح مساحة العمل",
+    ctaGetStarted: "ابدأ",
+    ctaTrustLink: "كيف نحمي الناس",
+    ctaFaqLink: "الأسئلة الشائعة لأصحاب العمل",
+    questionsPrefix: "أسئلة؟",
+  },
+  candidateHome: {
+    metaTitle: "مركز المرشح — HenryCo Jobs",
+    metaDescription:
+      "تتبع ملفك الشخصي والطلبات والأدوار المحفوظة وتحديثات المُوظِّفين — كل شيء في مكان واحد.",
+    pageTitle: "مركز المرشح",
+    pageSubtitle:
+      "تتبع ملفك الشخصي والطلبات والأدوار المحفوظة وتحديثات المُوظِّفين — كل شيء في مكان واحد.",
+    rightRailRecruiterTitle: "تحديثات المُوظِّف",
+    rightRailRecruiterBody:
+      "رسائل، تغييرات مرحلة، ودعوات مقابلات من فرق التوظيف.",
+    rightRailRecruiterEmpty: "هادئ الآن",
+    rightRailRecruiterEmptyTitle: "لا توجد تحركات من المُوظِّفين حتى الآن.",
+    rightRailRecruiterEmptyBody:
+      "بمجرد أن يراجعك مُوظِّف أو يضعك في القائمة المختصرة أو يراسلك، ستظهر آخر التحركات هنا.",
+    rightRailNextActionsTitle: "الإجراءات التالية",
+    rightRailNextActionsBody: "الخطوة الأكثر قيمة التي يمكنك اتخاذها الآن.",
+    overviewTitle: "نظرة عامة",
+    overviewBody:
+      "لقطة من ملفك الشخصي وطلباتك وأين تقف الأمور الآن.",
+    overviewImproveProfile: "تحسين الملف الشخصي",
+    tileProfileReadinessLabel: "جاهزية الملف الشخصي",
+    tileProfileReadinessFallback: "أعدّ ملفك الشخصي",
+    tileActiveAppsLabel: "الطلبات النشطة",
+    tileActiveAppsDetailActive: "فرص لا تزال قيد المراجعة.",
+    tileActiveAppsDetailEmpty: "لا توجد طلبات نشطة بعد.",
+    tileInProgressLabel: "قيد التنفيذ",
+    tileInProgressDetailActive: "أدوار في مراحل القائمة المختصرة أو المقابلة أو العرض.",
+    tileInProgressDetailEmpty: "لا توجد تحركات في المقابلات بعد.",
+    tileSavedRolesLabel: "الأدوار المحفوظة",
+    tileSavedRolesDetailActive: "أدوار في القائمة المختصرة تنتظر مراجعة أعمق.",
+    tileSavedRolesDetailEmpty: "ابنِ قائمة يمكنك التصرف بناءً عليها.",
+    profileStrengthTitle: "قوة الملف الشخصي",
+    profileStrengthBody:
+      "ملف شخصي أقوى يساعد أصحاب العمل على أخذ طلباتك بجدية.",
+    readinessScoreKicker: "درجة الجاهزية",
+    readinessFallback:
+      "أكمل ملفك الشخصي لتحسين نظرة أصحاب العمل لطلباتك.",
+    applicationsTitle: "طلباتك",
+    applicationsBody: "تتبع تقدم كل دور تقدمت إليه.",
+    applicationsViewAll: "عرض الكل",
+    applicationsEmptyKicker: "لا طلبات بعد",
+    applicationsEmptyTitle: "سيظهر الجدول الزمني لطلباتك هنا.",
+    applicationsEmptyBody:
+      "بمجرد تقدمك لدور ما، ستظهر تحديثات المراحل ودعوات المقابلات والخطوات التالية هنا.",
+    applicationsBrowseCta: "تصفح الأدوار المباشرة",
+    applicationUpdatedPrefix: "تم التحديث",
+    applicationLatestRecruiterLabel: "آخر إجراء من المُوظِّف",
+    applicationBestNextMoveLabel: "أفضل خطوة تالية",
+    savedRolesTitle: "الأدوار المحفوظة",
+    savedRolesBody: "الأدوار التي وضعت إشارة مرجعية عليها لوقت لاحق.",
+    savedRolesOpenLink: "فتح الأدوار المحفوظة",
+    savedRolesEmptyKicker: "لا شيء محفوظ بعد",
+    savedRolesEmptyTitle: "قائمة اختيارك فارغة.",
+    savedRolesEmptyBody:
+      "احفظ الأدوار التي تريد مقارنتها لاحقًا حتى يسهل إيجادها عندما تكون مستعدًا للتقدم.",
+    savedRolesHighTrustLabel: "صاحب عمل عالي الثقة",
+    recommendedTitle: "موصى به لك",
+    recommendedBody: "أدوار مقترحة بناءً على ملفك الشخصي ونشاطك.",
+    recommendedEmptyKicker: "التوصيات قيد الإعداد",
+    recommendedEmptyTitle: "نحتاج إلى مزيد من الإشارات أولًا.",
+    recommendedEmptyBody:
+      "أكمل ملفك الشخصي واحفظ أو تقدم لبعض الأدوار لتحسين التوصيات.",
+    recommendedMatchSuffix: "% تطابق",
   },
 };
 
@@ -2883,6 +3770,157 @@ const IG: DeepPartial<JobsCopy> = {
     daysSingular: "{count} ụbọchị",
     daysPlural: "{count} ụbọchị",
   },
+  interviewScheduler: {
+    triggerLabel: "Hazie ajụjụ ọnụ",
+    formTitle: "Hazie ajụjụ ọnụ ọhụrụ",
+    labelTitle: "Aha",
+    labelType: "Ụdị",
+    labelDate: "Ụbọchị",
+    labelTime: "Oge",
+    labelDuration: "Oge ole",
+    labelTimezone: "Mpaghara oge",
+    labelMeetingUrl: "Njikọ nzukọ",
+    labelLocation: "Ọnọdụ",
+    labelNotes: "Ndetu (nke achọrọghị)",
+    titlePlaceholder: "dị ka Ajụjụ ọnụ teknuzu",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "Adreesị ọfịs",
+    notesPlaceholder: "Ndetu nkwado maka ajụjụ ọnụ...",
+    typeVideo: "Oku vidio",
+    typePhone: "Oku ekwenti",
+    typeInPerson: "N'onwe",
+    duration15: "Nkeji 15",
+    duration30: "Nkeji 30",
+    duration45: "Nkeji 45",
+    duration60: "Otu awa",
+    duration90: "Awa na ọkara",
+    tzLagos: "Ọdịda Anyanwụ Afrịka (Lagos)",
+    tzCotonou: "Ọdịda Anyanwụ Afrịka (Cotonou)",
+    tzAccra: "GMT (Accra)",
+    tzLondon: "UK (London)",
+    tzNewYork: "US Ọwụwa anyanwụ",
+    tzChicago: "US Etiti",
+    tzLosAngeles: "US Ọdịda anyanwụ",
+    tzBerlin: "Etiti Europe",
+    submitPending: "Na-ahazi...",
+    submitLabel: "Hazie",
+    cancelLabel: "Kagbuo",
+    validationError: "Aha, ụbọchị, na oge dị mkpa.",
+    networkError: "Njehie netwọk. Biko nwalee ọzọ.",
+  },
+  hirePage: {
+    metaTitle: "Nweta ndị ọrụ n'ìhè — HenryCo Jobs",
+    metaDescription:
+      "Bipụta ọrụ n'ezie, gụọ arịrịọ n'otu ebe, kewaa ndị ọrụ n'oge ndị dị ka ọ dị.",
+    eyebrow: "Maka ndị nọ n'ọrụ",
+    heroTitle: "Nweta ndị ọrụ n'ìhè, ọ bụghị n'ọgba aghara.",
+    heroBody:
+      "Bipụta ọrụ n'ezie, gụọ arịrịọ n'otu ebe, kewaa ndị mmadụ site n'oge ndị dị ka ọ dị.",
+    shieldNotice:
+      "Bipụta ọrụ dị ndụ chọrọ ndebanye aha onye ọrụ na-arụ ọrụ. Ndị na-achọ ọrụ na-achọghị ego.",
+    ctaSignedIn: "Gaa na nkwadebe ụlọ ọrụ",
+    ctaSignedOut: "Bido nweta ndị ọrụ — debanye aha n'efu",
+    ctaLogin: "Enweela m akaụntụ HenryCo",
+    ctaBrowseCandidates: "Lelee ndị ọrụ",
+    featureVerificationLabel: "Nkwenye",
+    featureVerificationValue: "Nlele aka — ọ bụghị ịkwụ ụgwọ iji pụta ìhè",
+    featurePostReviewLabel: "Nlele ọrụ",
+    featurePostReviewValue: "Ìhè, ịdị mma, nlele aghụghọ",
+    featurePipelineLabel: "Usoro",
+    featurePipelineValue: "Oge ndị dị ka ọ dị maka onye ọ bụla",
+    howKicker: "Site n'ọrụ mbụ ruo nweta ndị ọrụ",
+    stepPrefix: "Nzọụkwụ",
+    step01Title: "Gwa anyị onye i bụ",
+    step01Body:
+      "Mepụta profaịl ụlọ ọrụ gị n'ihe ndị dị mfe na eziokwu — gịnị i na-eme, ebe i na-eweta ndị ọrụ.",
+    step02Title: "Ziga ọrụ gị maka nlele",
+    step02Body:
+      "Dee ọrụ n'ụzọ dị mma: nsonaazụ, ihe achọrọ, ọnụahịa ma ọ bụrụ na i nwere ike kesaa ya.",
+    step03Title: "Duzie usoro n'ụzọ ọ dị n'ihu",
+    step03Body:
+      "Arịrịọ na-abata n'oghere ọrụ gị. Họpụta, mere ajụjụ ọnụ, kwuo n'oge ndị ndị ọrụ nwere ike ịhụ.",
+    verificationKicker: "Ihe mere nkwenye dị",
+    verificationTitle: "Akara n'ezie. Ọrụ ejibere nlele. Ọ dịghị achara maka ọre.",
+    verificationBody:
+      "Ndị na-achọ ọrụ kwesịrị ịmara na ha anaghị aza akara adịgboroja. Nkwenye pụtara nlele mmadụ n'ebumnobi onye ọrụ.",
+    moderationKicker: "Mgbe i ziga ọrụ",
+    moderationTitle: "Nlekọta kọọ onwe ya, wee laghachi.",
+    moderationBody:
+      "Nlekọta na-elele ìhè, ịdị mma, na ụdị aghụghọ. Ọ bụrụ na ihe chọrọ ndozi, anyị ga-agwa gị ihe mere.",
+    qualityKicker: "Àgwà karịa ọnụọgụ",
+    qualityTitle: "Anyị chebe efere ka ndị ọrụ ezi-uche bụ pụta ìhè.",
+    qualityBody:
+      "Ntinye aha nke ọtụtụ mmadụ, ọrụ echedoro, na akụkọ arịrịọ pụtara na ndị na-achọ ọrụ nwere ike ịjụ ị gị ajụjụ.",
+    ctaWorkspace: "Mepee oghere ọrụ",
+    ctaGetStarted: "Bido",
+    ctaTrustLink: "Otu anyị si echebe ndị mmadụ",
+    ctaFaqLink: "Ajụjụ ndị ọrụ na-ajụkarị",
+    questionsPrefix: "Ajụjụ?",
+  },
+  candidateHome: {
+    metaTitle: "Ebe onye na-achọ ọrụ — HenryCo Jobs",
+    metaDescription:
+      "Sọpụrụ profaịl gị, arịrịọ, ọrụ echedoro, na mmelite site ndị ọrụ — ihe nile n'otu ebe.",
+    pageTitle: "Ebe onye na-achọ ọrụ",
+    pageSubtitle:
+      "Sọpụrụ profaịl gị, arịrịọ, ọrụ echedoro, na mmelite site ndị ọrụ — ihe nile n'otu ebe.",
+    rightRailRecruiterTitle: "Mmelite site n'onye na-achọ ndị ọrụ",
+    rightRailRecruiterBody:
+      "Ozi, mgbanwe oge, na nkwalite ajụjụ ọnụ site n'ndị otu ọrụ.",
+    rightRailRecruiterEmpty: "Ọ dị jụụ ugbu a",
+    rightRailRecruiterEmptyTitle: "Ọ dịghị mgbazi site n'onye na-achọ ndị ọrụ.",
+    rightRailRecruiterEmptyBody:
+      "Ozugbo onye na-achọ ndị ọrụ lele, mee ndepụta, ma ọ bụ ziga gị ozi, mgbazi ikpeazụ ga-apụta ebe a.",
+    rightRailNextActionsTitle: "Ihe na-esote",
+    rightRailNextActionsBody: "Ntụgharị kacha bara uru i nwere ike ịme ugbu a.",
+    overviewTitle: "Nchịkọta",
+    overviewBody:
+      "Foto nke profaịl gị, arịrịọ, na ebe ihe ndị dị n'ugbu a.",
+    overviewImproveProfile: "Mee profaịl ka ọ dị mma",
+    tileProfileReadinessLabel: "Njikere profaịl",
+    tileProfileReadinessFallback: "Hazie profaịl gị",
+    tileActiveAppsLabel: "Arịrịọ ndị dị ndụ",
+    tileActiveAppsDetailActive: "Ohere ndị na-abanye n'nlele.",
+    tileActiveAppsDetailEmpty: "Ọ dịghị arịrịọ ndị dị ndụ ka ugbu a.",
+    tileInProgressLabel: "Na-aga n'ihu",
+    tileInProgressDetailActive: "Ọrụ n'oge ndepụta, ajụjụ ọnụ, ma ọ bụ nnyefe.",
+    tileInProgressDetailEmpty: "Ọ dịghị mgbazi n'ajụjụ ọnụ ka ugbu a.",
+    tileSavedRolesLabel: "Ọrụ echedoro",
+    tileSavedRolesDetailActive: "Ọrụ ndị echedoro na-acho nlele nke ọzọ.",
+    tileSavedRolesDetailEmpty: "Wuo ndepụta i nwere ike ịrụ ọrụ na ya.",
+    profileStrengthTitle: "Ike profaịl",
+    profileStrengthBody:
+      "Profaịl siri ike nyere ndị ọrụ aka iji were arịrịọ gị n'anya.",
+    readinessScoreKicker: "Ogo njikere",
+    readinessFallback:
+      "Mechaa profaịl gị iji mezuo otu ndị ọrụ si ahụ arịrịọ gị.",
+    applicationsTitle: "Arịrịọ gị",
+    applicationsBody: "Sọpụrụ ọganihu nke ọrụ ọ bụla i tinyere arịrịọ.",
+    applicationsViewAll: "Hụ ihe nile",
+    applicationsEmptyKicker: "Ọ dịghị arịrịọ ka ugbu a",
+    applicationsEmptyTitle: "Usoro oge arịrịọ gị ga-apụta ebe a.",
+    applicationsEmptyBody:
+      "Ozugbo i tinyere arịrịọ n'ọrụ, i ga-ahụ mmelite oge, nkwalite ajụjụ ọnụ, na ihe na-esote ebe a.",
+    applicationsBrowseCta: "Lelee ọrụ ndị dị ndụ",
+    applicationUpdatedPrefix: "Melitere",
+    applicationLatestRecruiterLabel: "Ọrụ ikpeazụ nke onye na-achọ ndị ọrụ",
+    applicationBestNextMoveLabel: "Ntụgharị ọzọ kacha mma",
+    savedRolesTitle: "Ọrụ echedoro",
+    savedRolesBody: "Ọrụ i dere ihe ọ bụla maka mgbe e mesịa.",
+    savedRolesOpenLink: "Mepee ọrụ echedoro",
+    savedRolesEmptyKicker: "Ọ dịghị ihe echekwara ka ugbu a",
+    savedRolesEmptyTitle: "Ndepụta nke i họpụtara dị ọcha.",
+    savedRolesEmptyBody:
+      "Chekwaa ọrụ i chọrọ itụnyere ka ọ bụrụ ngwọta ịchọta ha mgbe i dị njikere itinye arịrịọ.",
+    savedRolesHighTrustLabel: "Onye ọrụ na-atụ anya",
+    recommendedTitle: "Ndị atụnyere maka gị",
+    recommendedBody: "Ọrụ ndị atụnyere dabere n'profaịl gị na omume gị.",
+    recommendedEmptyKicker: "Ndị atụnyere na-enyocha",
+    recommendedEmptyTitle: "Anyị chọrọ obere mgbe mbụ.",
+    recommendedEmptyBody:
+      "Mechaa profaịl gị wee chekwaa ma ọ bụ tinyere arịrịọ n'ọrụ ole na ole iji mezuo ndị atụnyere.",
+    recommendedMatchSuffix: "% ịdị mma",
+  },
 };
 
 const YO: DeepPartial<JobsCopy> = {
@@ -3263,6 +4301,157 @@ const YO: DeepPartial<JobsCopy> = {
     applicationCountPlural: "{count} ìbéèrè",
     daysSingular: "{count} ọjọ́",
     daysPlural: "{count} ọjọ́",
+  },
+  interviewScheduler: {
+    triggerLabel: "Ṣeto ìfọ̀rọ̀wánilẹ́nu",
+    formTitle: "Ṣeto ìfọ̀rọ̀wánilẹ́nu tuntun",
+    labelTitle: "Àkọlé",
+    labelType: "Irú",
+    labelDate: "Ọjọ́",
+    labelTime: "Àkókò",
+    labelDuration: "Iye àkókò",
+    labelTimezone: "Agbègbè àkókò",
+    labelMeetingUrl: "Ọ̀nà ìpàdé",
+    labelLocation: "Ibi",
+    labelNotes: "Àwọn àkọsílẹ̀ (aṣayan)",
+    titlePlaceholder: "fún àpẹẹrẹ Ìfọ̀rọ̀wánilẹ́nu imọ̀-ẹrọ",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "Àdírẹ́sì ọ́fíìsì",
+    notesPlaceholder: "Àwọn àkọsílẹ̀ ìmúrasílẹ̀ fún ìfọ̀rọ̀wánilẹ́nu...",
+    typeVideo: "Ìpè fídíò",
+    typePhone: "Ìpè fóònù",
+    typeInPerson: "Ní ara ẹni",
+    duration15: "Ìṣẹ́jú 15",
+    duration30: "Ìṣẹ́jú 30",
+    duration45: "Ìṣẹ́jú 45",
+    duration60: "Wákàtí kan",
+    duration90: "Wákàtí kan àti ìdajì",
+    tzLagos: "Ìwọ̀ Oòrùn Áfríkà (Lagos)",
+    tzCotonou: "Ìwọ̀ Oòrùn Áfríkà (Cotonou)",
+    tzAccra: "GMT (Accra)",
+    tzLondon: "UK (London)",
+    tzNewYork: "US Ìlà Oòrùn",
+    tzChicago: "US Àárín",
+    tzLosAngeles: "US Ìwọ̀ Oòrùn",
+    tzBerlin: "Àárín Europe",
+    submitPending: "Ní ṣíṣe ìgbérojú...",
+    submitLabel: "Gbérojú",
+    cancelLabel: "Fagilé",
+    validationError: "Àkọlé, ọjọ́, àti àkókò nilo.",
+    networkError: "Àṣìṣe nẹ́tíwọ̀ọ̀kì. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan si.",
+  },
+  hirePage: {
+    metaTitle: "Gbà iṣẹ́ pẹ̀lú ìtọ́sọ́nà — HenryCo Jobs",
+    metaDescription:
+      "Ṣeéde àwọn ipa gidi, ka àwọn ohun elo ní ibi kan, kí o sì gbé àwọn oludije lọ nípa àwọn ìpele tí a lè ríi.",
+    eyebrow: "Fún àwọn agbanisẹ́ṣẹ",
+    heroTitle: "Gbà iṣẹ́ pẹ̀lú ìtọ́sọ́nà, kì í ṣe ìdàrúdàpọ̀.",
+    heroBody:
+      "Ṣeéde àwọn ipa gidi, ka àwọn ohun elo ní ibi kan, gbé àwọn ènìyàn lọ nípa àwọn ìpele tí a lè ríi.",
+    shieldNotice:
+      "Ṣíṣe àtẹ̀jáde àwọn ipa tààràtà nilo ẹlẹ́wọ̀ agbanisẹ́ṣẹ tí ó wà ní ṣíṣẹ. Àwọn oludije máa ń wò lọ́fẹ̀ẹ́ nígbà gbogbo.",
+    ctaSignedIn: "Lọ sí ìṣọ̀kan ilé-iṣẹ́",
+    ctaSignedOut: "Bẹ̀rẹ̀ gbíjà iṣẹ́ — forúkọ silẹ̀ lọ́fẹ̀ẹ́",
+    ctaLogin: "Mo ti ní àkọọ́ntì HenryCo",
+    ctaBrowseCandidates: "Wò àwọn oludije",
+    featureVerificationLabel: "Ìfọwọ́sí",
+    featureVerificationValue: "Àgbeyẹ̀wò ọwọ́ — kò sí ìsanwó látọ̀dọ̀ àmì",
+    featurePostReviewLabel: "Àgbeyẹ̀wò ìgbéjáde",
+    featurePostReviewValue: "Ìtọ́sọ́nà, ìdọgba, àgbeyẹ̀wò ẹ̀tàn",
+    featurePipelineLabel: "Pàìpù",
+    featurePipelineValue: "Àwọn ìpele tí a lè ríi fún olùbẹwẹ kọ̀ọ̀kan",
+    howKicker: "Láti ìgbéjáde àkọ́kọ́ dé gbigba iṣẹ́ àkọ́kọ́",
+    stepPrefix: "Ìgbésẹ̀",
+    step01Title: "Sọ fún wa tani o",
+    step01Body:
+      "Ṣẹ̀dá àkọsílẹ̀ ilé-iṣẹ́ rẹ pẹ̀lú àwọn ìpìlẹ̀ òtítọ́ — ohun tí o ṣe, ibi tí o gbà iṣẹ́, àti bí àwọn oludije ṣe le retí gbọ́ nípasẹ̀ rẹ.",
+    step02Title: "Fi ipa rẹ sí fún àgbeyẹ̀wò",
+    step02Body:
+      "Kọ iṣẹ́ náà bí o ṣe túbọ̀ gbédègbẹ́yọ: àwọn ìbéèrè, ìwọn ìsanwó tí o bá lè pín, àti bí o ṣe ń ṣiṣẹ́.",
+    step03Title: "Ṣíṣakóso pàìpù ní ṣíṣí",
+    step03Body:
+      "Àwọn ohun elo máa ń dé ibi iṣẹ́ agbanisẹ́ṣẹ rẹ. Yan, gbé ìfọ̀rọ̀wánilẹ́nu, pinnu pẹ̀lú àwọn ìpele tí àwọn oludije lè ríi.",
+    verificationKicker: "Ìdí tí ìfọwọ́sí wà",
+    verificationTitle: "Àwọn àmì gidi. Àwọn ìgbéjáde tí a ṣàgbeyẹ̀wò. Kò sí àmì látà ta.",
+    verificationBody:
+      "Àwọn oludije yẹ kí wọ́n mọ pé wọn kò ń dáhùn sí àmì irọ́. Ìfọwọ́sí túmọ̀ sí àgbeyẹ̀wò ènìyàn ti ìdí agbanisẹ́ṣẹ.",
+    moderationKicker: "Lẹ́yìn tí o fi ìgbéjáde sí",
+    moderationTitle: "Ìṣàkóso ṣàlàyé ara rẹ, lẹ́yìn náà yẹra.",
+    moderationBody:
+      "Ìṣàkóso ṣàyẹ̀wò ìtọ́sọ́nà, ìdọgba, àti àwọn ìlànà ẹ̀tàn. Tí ohunkóhun bá nílò àtúnṣe, a ó sọ ìdí fún ọ.",
+    qualityKicker: "Ìdara ju iye lọ",
+    qualityTitle: "A ń dáàbò bo pẹpẹ kí àwọn agbanisẹ́ṣẹ tó túbọ̀ jẹ̀wọ̀ le dára ju.",
+    qualityBody:
+      "Wíwọlé tó pín, àwọn ipa tí a fi pamọ́, àti ìtàn ohun elo túmọ̀ sí pé àwọn oludije lè béèrè lọ́wọ́ rẹ láti ṣe bí o ti sọ.",
+    ctaWorkspace: "Ṣí ibi iṣẹ́",
+    ctaGetStarted: "Bẹ̀rẹ̀",
+    ctaTrustLink: "Bí a ṣe ń dáàbò bo àwọn ènìyàn",
+    ctaFaqLink: "FAQ agbanisẹ́ṣẹ",
+    questionsPrefix: "Àwọn ìbéèrè?",
+  },
+  candidateHome: {
+    metaTitle: "Ibùdó oludije — HenryCo Jobs",
+    metaDescription:
+      "Tọpìnpìn àkọsílẹ̀ rẹ, àwọn ohun elo, àwọn ipa tí a fi pamọ́, àti àwọn ìmúdójúìwọ̀n láti ọ̀dọ̀ àwọn agbẹjọ — gbogbo wọn ní ibi kan.",
+    pageTitle: "Ibùdó oludije",
+    pageSubtitle:
+      "Tọpìnpìn àkọsílẹ̀ rẹ, àwọn ohun elo, àwọn ipa tí a fi pamọ́, àti àwọn ìmúdójúìwọ̀n láti ọ̀dọ̀ àwọn agbẹjọ — gbogbo wọn ní ibi kan.",
+    rightRailRecruiterTitle: "Àwọn ìmúdójúìwọ̀n agbẹjọ",
+    rightRailRecruiterBody:
+      "Àwọn ìfọ̀rọ̀wánilẹ́nu, àwọn ìyípadà ìpele, àti àwọn ìkílo ìfọ̀rọ̀wánilẹ́nu láti ọ̀dọ̀ àwọn ẹgbẹ́ gbígbà iṣẹ́.",
+    rightRailRecruiterEmpty: "Dáákùn àkókò yìí",
+    rightRailRecruiterEmptyTitle: "Kò sí gbígbàdé agbẹjọ síbẹ̀.",
+    rightRailRecruiterEmptyBody:
+      "Pé agbẹjọ kan bá ṣàgbeyẹ̀wò, fi pamọ́, tàbí fi ìfọ̀rọ̀ránṣẹ sí ọ, gbígbàdé tó gbẹ̀yìn ó han ibi.",
+    rightRailNextActionsTitle: "Àwọn ìgbésẹ̀ tókàn",
+    rightRailNextActionsBody: "Ìgbésẹ̀ tó ní iye jùlọ láti ṣe báyìí.",
+    overviewTitle: "Àgbékalẹ̀",
+    overviewBody:
+      "Àwòrán ti àkọsílẹ̀ rẹ, àwọn ohun elo, àti bí àwọn nǹkan ṣe rí báyìí.",
+    overviewImproveProfile: "Mú àkọsílẹ̀ dára sí i",
+    tileProfileReadinessLabel: "Ìṣọ̀rasí àkọsílẹ̀",
+    tileProfileReadinessFallback: "Ṣètò àkọsílẹ̀ rẹ",
+    tileActiveAppsLabel: "Àwọn ohun elo tó ṣiṣẹ́",
+    tileActiveAppsDetailActive: "Àwọn ànfàní tí wọ́n ṣì ń wà ní àgbeyẹ̀wò.",
+    tileActiveAppsDetailEmpty: "Kò sí àwọn ohun elo tó ṣiṣẹ́ síbẹ̀.",
+    tileInProgressLabel: "Ní ọwọ́",
+    tileInProgressDetailActive: "Àwọn ipa ní ìpele yíyan, ìfọ̀rọ̀wánilẹ́nu, tàbí àfọwọ́wọlé.",
+    tileInProgressDetailEmpty: "Kò sí ìgbésẹ̀ ìfọ̀rọ̀wánilẹ́nu síbẹ̀.",
+    tileSavedRolesLabel: "Àwọn ipa tí a fi pamọ́",
+    tileSavedRolesDetailActive: "Àwọn ipa tí a yàn tí wọ́n dúró de àgbeyẹ̀wò jínjìn.",
+    tileSavedRolesDetailEmpty: "Kọ́ àkójọ tí o lè ṣiṣẹ́ lórí.",
+    profileStrengthTitle: "Agbára àkọsílẹ̀",
+    profileStrengthBody:
+      "Àkọsílẹ̀ tó lágbára ń ràn àwọn agbanisẹ́ṣẹ lọ́wọ́ láti gbóríyìn fún àwọn ohun elo rẹ.",
+    readinessScoreKicker: "Ìṣirò ìṣọ̀rasí",
+    readinessFallback:
+      "Parí àkọsílẹ̀ rẹ láti mú bí àwọn agbanisẹ́ṣẹ ṣe ríi àwọn ohun elo rẹ dára sí i.",
+    applicationsTitle: "Àwọn ohun elo rẹ",
+    applicationsBody: "Tọpìnpìn ìlọsíwájú ti ipa kọ̀ọ̀kan tí o ti kọ ohun elo.",
+    applicationsViewAll: "Wo gbogbo rẹ̀",
+    applicationsEmptyKicker: "Kò sí àwọn ohun elo síbẹ̀",
+    applicationsEmptyTitle: "Àkójọ àkókò ohun elo rẹ yóò han ibi.",
+    applicationsEmptyBody:
+      "Pé o bá kọ ohun elo sí ipa kan, ìmúdójúìwọ̀n ìpele, àwọn ìkílo ìfọ̀rọ̀wánilẹ́nu, àti àwọn ìgbésẹ̀ tókàn yóò han ibi.",
+    applicationsBrowseCta: "Wò àwọn ipa tó ṣiṣẹ́",
+    applicationUpdatedPrefix: "Ní ìmúdójúìwọ̀n",
+    applicationLatestRecruiterLabel: "Ìgbésẹ̀ agbẹjọ tó gbẹ̀yìn",
+    applicationBestNextMoveLabel: "Ìgbésẹ̀ tókàn tó dára jùlọ",
+    savedRolesTitle: "Àwọn ipa tí a fi pamọ́",
+    savedRolesBody: "Àwọn ipa tí o fi àmì sí fún lẹ́yìn.",
+    savedRolesOpenLink: "Ṣí àwọn ipa tí a fi pamọ́",
+    savedRolesEmptyKicker: "Kò sí ohun tí a fi pamọ́ síbẹ̀",
+    savedRolesEmptyTitle: "Àkójọ yíyan rẹ ó fọ́.",
+    savedRolesEmptyBody:
+      "Fi àwọn ipa tí o fẹ́ ṣàfiwé pamọ́ nítorí kí wọ́n ó rọrùn láti rí nígbà tí o bá ti ṣetán láti kọ ohun elo.",
+    savedRolesHighTrustLabel: "Agbanisẹ́ṣẹ tí ìgbẹ́kẹ̀lé rẹ̀ ga",
+    recommendedTitle: "Tí a dábáa fún ọ",
+    recommendedBody: "Àwọn ipa tí a dábáa dá lé àkọsílẹ̀ àti ìgbésẹ̀ rẹ.",
+    recommendedEmptyKicker: "Àwọn ìdábáa ń wárìrì",
+    recommendedEmptyTitle: "A nílò àmì díẹ̀ sí i àkọ́kọ́.",
+    recommendedEmptyBody:
+      "Parí àkọsílẹ̀ rẹ kí o sì fi pamọ́ tàbí kọ ohun elo sí àwọn ipa díẹ̀ láti mú àwọn ìdábáa dára sí i.",
+    recommendedMatchSuffix: "% ìbáradọ́",
   },
 };
 
@@ -3645,6 +4834,157 @@ const HA: DeepPartial<JobsCopy> = {
     daysSingular: "{count} kwana",
     daysPlural: "{count} kwanaki",
   },
+  interviewScheduler: {
+    triggerLabel: "Shirya hirarraki",
+    formTitle: "Shirya sabuwar hirarraki",
+    labelTitle: "Taken",
+    labelType: "Irin",
+    labelDate: "Kwanan wata",
+    labelTime: "Lokaci",
+    labelDuration: "Tsawon lokaci",
+    labelTimezone: "Yankin lokaci",
+    labelMeetingUrl: "Hanyar taron",
+    labelLocation: "Wuri",
+    labelNotes: "Bayanan kula (zabi ne)",
+    titlePlaceholder: "misali Hirarraki na fasaha",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "Adreshin ofis",
+    notesPlaceholder: "Bayanan shirya hirarraki...",
+    typeVideo: "Kiran bidiyo",
+    typePhone: "Kiran waya",
+    typeInPerson: "Face da fuska",
+    duration15: "Minti 15",
+    duration30: "Minti 30",
+    duration45: "Minti 45",
+    duration60: "Sa'a guda",
+    duration90: "Sa'a da rabi",
+    tzLagos: "Yammacin Afirka (Lagos)",
+    tzCotonou: "Yammacin Afirka (Cotonou)",
+    tzAccra: "GMT (Accra)",
+    tzLondon: "UK (London)",
+    tzNewYork: "Gabashin Amurka",
+    tzChicago: "Tsakiyar Amurka",
+    tzLosAngeles: "Yammacin Amurka",
+    tzBerlin: "Tsakiyar Turai",
+    submitPending: "Ana shirya...",
+    submitLabel: "Shirya",
+    cancelLabel: "Soke",
+    validationError: "Taken, kwanan wata, da lokaci ana bukata.",
+    networkError: "Matsalar cibiyar sadarwa. Da fatan za a sake gwadawa.",
+  },
+  hirePage: {
+    metaTitle: "Yi hayar ma'aikata da fayyace — HenryCo Jobs",
+    metaDescription:
+      "Buga ayyuka na gaske, karanta nema a wuri guda, kuma matsa 'yan takara ta matakai bayyanannun.",
+    eyebrow: "Ga ma'aikata",
+    heroTitle: "Yi hayar ma'aikata da fayyace, ba da rikici ba.",
+    heroBody:
+      "Buga ayyuka na gaske, karanta nema a wuri guda, matsa mutane ta zabi da hirarraki a matakai bayyanannun.",
+    shieldNotice:
+      "Buga ayyukan rayuwa yana bukata kuɗin subscriben mai aiki na ma'aikaci. 'Yan takara suna bincike kyauta koyaushe.",
+    ctaSignedIn: "Je zuwa saita kamfani",
+    ctaSignedOut: "Fara hayar ma'aikata — yi rajista kyauta",
+    ctaLogin: "Ina da asusun HenryCo",
+    ctaBrowseCandidates: "Duba 'yan takara",
+    featureVerificationLabel: "Tabbatarwa",
+    featureVerificationValue: "Bincike da hannu — ba tare da biyan kuɗi ba",
+    featurePostReviewLabel: "Bitar wallafe-wallafe",
+    featurePostReviewValue: "Fayyace, adalci, duba zamba",
+    featurePipelineLabel: "Tsari",
+    featurePipelineValue: "Matakai bayyanannun ga kowane mai nema",
+    howKicker: "Daga farkon bugawa zuwa farkon hayar",
+    stepPrefix: "Mataki",
+    step01Title: "Gaya mana wanda kake",
+    step01Body:
+      "Ƙirƙira bayanan kamfanin ka tare da ainihi na gaskiya — abin da kake yi, inda kake hayarwa, da yadda 'yan takara ke tsammani ji daga gare ka.",
+    step02Title: "Sillama rawar ka don bita",
+    step02Body:
+      "Rubuta aikin kamar yadda kake nufi: sakamakon, buƙatun, ɗan ƙima idan za ka iya rabawa, da yadda kake aiki.",
+    step03Title: "Gudanar da tsari a bayyane",
+    step03Body:
+      "Neman suna zuwa sararin aiki na ma'aikaci. Zabi, yi hirarraki, yanke shawara tare da matakai da 'yan takara za su gani.",
+    verificationKicker: "Dalilin da tabbatarwa ke wanzuwa",
+    verificationTitle: "Alamomin ainihi. Wallafe-wallafen da aka bita. Babu alamomin siye.",
+    verificationBody:
+      "'Yan takara suna cancanta sanin cewa ba sa amsa alamar karya. Tabbatarwa yana nufin binciken ɗan adam na niyya da ingancin bayanan ma'aikaci.",
+    moderationKicker: "Bayan ka sillama wallafin",
+    moderationTitle: "Kulawa tana bayyana kanta, sannan ta janye.",
+    moderationBody:
+      "Kulawa tana duba fayyace, adalci, da tsarin zamba. Idan wani abu yana buƙatar gyara, za mu gaya maka dalilin.",
+    qualityKicker: "Inganci akan yawan",
+    qualityTitle: "Muna kare allon don ma'aikata masu muhimmanci su yi fice.",
+    qualityBody:
+      "Rabon shiga, ayyukan da aka ajiye, da tarihin nema yana nufin 'yan takara za su iya rike ka alhakin aikin da ka buga.",
+    ctaWorkspace: "Buɗe sararin aiki",
+    ctaGetStarted: "Fara",
+    ctaTrustLink: "Yadda muke kare mutane",
+    ctaFaqLink: "Tambayoyin ma'aikata",
+    questionsPrefix: "Tambayoyi?",
+  },
+  candidateHome: {
+    metaTitle: "Cibiyar dan takara — HenryCo Jobs",
+    metaDescription:
+      "Bi sawun bayananku, nema, rawar da aka ajiye, da sabuntawa daga masu daukar ma'aikata — duk a wuri guda.",
+    pageTitle: "Cibiyar dan takara",
+    pageSubtitle:
+      "Bi sawun bayananku, nema, rawar da aka ajiye, da sabuntawa daga masu daukar ma'aikata — duk a wuri guda.",
+    rightRailRecruiterTitle: "Sabuntawa daga mai daukar ma'aikata",
+    rightRailRecruiterBody:
+      "Saƙonnin, canje-canje a matakai, da gayyata hirarraki daga ƙungiyoyin daukar ma'aikata.",
+    rightRailRecruiterEmpty: "A hankali yanzu",
+    rightRailRecruiterEmptyTitle: "Babu motsi na mai daukar ma'aikata tukuna.",
+    rightRailRecruiterEmptyBody:
+      "Da zarar mai daukar ma'aikata ya bita, ya zabi, ko ya aika saƙo gare ka, mafi ƙarshen motsi zai bayyana a nan.",
+    rightRailNextActionsTitle: "Ayyukan na gaba",
+    rightRailNextActionsBody: "Mafi muhimmancin matakin da za a ɗauka yanzu.",
+    overviewTitle: "Taƙaitawa",
+    overviewBody:
+      "Hoton bayananku, nema, da inda al'amura suke a yanzu.",
+    overviewImproveProfile: "Inganta bayanan",
+    tileProfileReadinessLabel: "Shirye-shiryen bayanan",
+    tileProfileReadinessFallback: "Saita bayananku",
+    tileActiveAppsLabel: "Nemun da ke aiki",
+    tileActiveAppsDetailActive: "Damar da ke cikin bita.",
+    tileActiveAppsDetailEmpty: "Babu nemun da ke aiki tukuna.",
+    tileInProgressLabel: "A cikin ci gaba",
+    tileInProgressDetailActive: "Rawar da ke cikin zabi, hirarraki, ko tayin.",
+    tileInProgressDetailEmpty: "Babu motsi na hirarraki tukuna.",
+    tileSavedRolesLabel: "Rawar da aka ajiye",
+    tileSavedRolesDetailActive: "Rawar da aka zaɓa tana jiran bita zurfi.",
+    tileSavedRolesDetailEmpty: "Gina jerin da za a iya aiki a kai.",
+    profileStrengthTitle: "Ƙarfin bayanan",
+    profileStrengthBody:
+      "Bayanan mafi ƙarfi yana taimaka wa ma'aikata su ɗauki nemunka da muhimmanci.",
+    readinessScoreKicker: "Maki shirye-shirye",
+    readinessFallback:
+      "Kammala bayananku don inganta yadda ma'aikata ke ganin nemunka.",
+    applicationsTitle: "Nemunanka",
+    applicationsBody: "Bi sawun ci gaban kowane rawar da ka yi nema.",
+    applicationsViewAll: "Duba duka",
+    applicationsEmptyKicker: "Babu nema tukuna",
+    applicationsEmptyTitle: "Jadawalin lokacin nemunka zai bayyana a nan.",
+    applicationsEmptyBody:
+      "Da zarar ka yi nema ga rawar, za ka ga sabuntawar matakai, gayyatar hirarraki, da matakai na gaba a nan.",
+    applicationsBrowseCta: "Duba rawar da ke aiki",
+    applicationUpdatedPrefix: "An sabunta",
+    applicationLatestRecruiterLabel: "Ayyukan mai daukar ma'aikata na ƙarshe",
+    applicationBestNextMoveLabel: "Mafi kyawun matakin na gaba",
+    savedRolesTitle: "Rawar da aka ajiye",
+    savedRolesBody: "Rawar da ka yi alama domin daga baya.",
+    savedRolesOpenLink: "Buɗe rawar da aka ajiye",
+    savedRolesEmptyKicker: "Babu abin da aka ajiye tukuna",
+    savedRolesEmptyTitle: "Jerin zaɓin ka yana da komai.",
+    savedRolesEmptyBody:
+      "Ajiye rawar da kake son kwatantawa daga baya don a samu su cikin sauƙi lokacin da ka shirya yin nema.",
+    savedRolesHighTrustLabel: "Ma'aikaci mai ƙarfin amana",
+    recommendedTitle: "An ba da shawarwari maka",
+    recommendedBody: "Rawar da aka ba da shawarwari dangane da bayananku da ayyukanka.",
+    recommendedEmptyKicker: "Shawarwari na ɗumamawa",
+    recommendedEmptyTitle: "Muna buƙatar ɗan alamar farko.",
+    recommendedEmptyBody:
+      "Kammala bayananku kuma ajiye ko yi nema ga wasu rawar don inganta shawarwarin.",
+    recommendedMatchSuffix: "% dacewa",
+  },
 };
 
 const DE: DeepPartial<JobsCopy> = {
@@ -4026,6 +5366,157 @@ const DE: DeepPartial<JobsCopy> = {
     daysSingular: "{count} Tag",
     daysPlural: "{count} Tage",
   },
+  interviewScheduler: {
+    triggerLabel: "Vorstellungsgespräch planen",
+    formTitle: "Neues Vorstellungsgespräch planen",
+    labelTitle: "Titel",
+    labelType: "Typ",
+    labelDate: "Datum",
+    labelTime: "Uhrzeit",
+    labelDuration: "Dauer",
+    labelTimezone: "Zeitzone",
+    labelMeetingUrl: "Meeting-Link",
+    labelLocation: "Ort",
+    labelNotes: "Notizen (optional)",
+    titlePlaceholder: "z. B. Technisches Vorstellungsgespräch",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "Büroadresse",
+    notesPlaceholder: "Vorbereitungsnotizen für das Gespräch...",
+    typeVideo: "Videoanruf",
+    typePhone: "Telefonanruf",
+    typeInPerson: "Persönlich",
+    duration15: "15 Min.",
+    duration30: "30 Min.",
+    duration45: "45 Min.",
+    duration60: "1 Stunde",
+    duration90: "1,5 Stunden",
+    tzLagos: "Westafrika (Lagos)",
+    tzCotonou: "Westafrika (Cotonou)",
+    tzAccra: "GMT (Accra)",
+    tzLondon: "Großbritannien (London)",
+    tzNewYork: "USA Ostküste",
+    tzChicago: "USA Mitte",
+    tzLosAngeles: "USA Westküste",
+    tzBerlin: "Mitteleuropa",
+    submitPending: "Wird geplant...",
+    submitLabel: "Planen",
+    cancelLabel: "Abbrechen",
+    validationError: "Titel, Datum und Uhrzeit sind erforderlich.",
+    networkError: "Netzwerkfehler. Bitte versuche es erneut.",
+  },
+  hirePage: {
+    metaTitle: "Klar einstellen — HenryCo Jobs",
+    metaDescription:
+      "Echte Stellen ausschreiben, Bewerbungen an einem Ort lesen, Kandidaten durch sichtbare Stufen führen.",
+    eyebrow: "Für Arbeitgeber",
+    heroTitle: "Klar einstellen, kein Chaos.",
+    heroBody:
+      "Echte Stellen ausschreiben, Bewerbungen an einem Ort lesen, Kandidaten durch Auswahl und Gespräche in sichtbaren Stufen führen.",
+    shieldNotice:
+      "Für die Veröffentlichung von Live-Stellen ist ein aktives Arbeitgeber-Abonnement erforderlich. Kandidaten surfen immer kostenlos.",
+    ctaSignedIn: "Zur Unternehmenseinrichtung",
+    ctaSignedOut: "Einstellen beginnen — kostenlos registrieren",
+    ctaLogin: "Ich habe bereits ein HenryCo-Konto",
+    ctaBrowseCandidates: "Kandidaten durchsuchen",
+    featureVerificationLabel: "Verifizierung",
+    featureVerificationValue: "Manuelle Prüfung — kein Pay-to-play",
+    featurePostReviewLabel: "Stellenprüfung",
+    featurePostReviewValue: "Klarheit, Fairness, Betrugsschutz",
+    featurePipelineLabel: "Pipeline",
+    featurePipelineValue: "Sichtbare Stufen für jeden Bewerber",
+    howKicker: "Von der ersten Stelle bis zur ersten Einstellung",
+    stepPrefix: "Schritt",
+    step01Title: "Sagen Sie uns, wer Sie sind",
+    step01Body:
+      "Erstellen Sie Ihr Unternehmensprofil mit ehrlichen Grunddaten — was Sie tun, wo Sie einstellen und wie Kandidaten erwarten können, von Ihnen zu hören.",
+    step02Title: "Reichen Sie Ihre Stelle zur Prüfung ein",
+    step02Body:
+      "Schreiben Sie die Stelle ernst: Ergebnisse, Anforderungen, Gehaltsrahmen wenn möglich, und Arbeitsweise (Remote, Hybrid, vor Ort).",
+    step03Title: "Die Pipeline offen führen",
+    step03Body:
+      "Bewerbungen landen in Ihrem Arbeitgeber-Bereich. Auswählen, Gespräche führen, entscheiden mit Stufen, die Kandidaten in ihrem eigenen Hub sehen können.",
+    verificationKicker: "Warum Verifizierung existiert",
+    verificationTitle: "Echte Marken. Geprüfte Stellen. Keine Abzeichen zu kaufen.",
+    verificationBody:
+      "Kandidaten verdienen es zu wissen, dass sie nicht auf eine gefälschte Marke antworten. Verifizierung bedeutet eine menschliche Prüfung der Arbeitgeberabsicht und Profilqualität.",
+    moderationKicker: "Nach dem Einreichen einer Stelle",
+    moderationTitle: "Die Moderation erklärt sich selbst und tritt dann zurück.",
+    moderationBody:
+      "Die Moderation prüft Klarheit, Fairness und Betrugsmuster. Wenn etwas korrigiert werden muss, sagen wir Ihnen warum.",
+    qualityKicker: "Qualität über Quantität",
+    qualityTitle: "Wir schützen die Plattform, damit seriöse Arbeitgeber hervorstechen.",
+    qualityBody:
+      "Gemeinsamer Login, gespeicherte Stellen und Bewerbungshistorie bedeuten, dass Kandidaten Sie für den veröffentlichten Prozess verantwortlich machen können.",
+    ctaWorkspace: "Arbeitsbereich öffnen",
+    ctaGetStarted: "Loslegen",
+    ctaTrustLink: "Wie wir Menschen schützen",
+    ctaFaqLink: "Arbeitgeber-FAQ",
+    questionsPrefix: "Fragen?",
+  },
+  candidateHome: {
+    metaTitle: "Kandidaten-Hub — HenryCo Jobs",
+    metaDescription:
+      "Verfolgen Sie Ihr Profil, Bewerbungen, gespeicherte Stellen und Recruiter-Updates — alles an einem Ort.",
+    pageTitle: "Kandidaten-Hub",
+    pageSubtitle:
+      "Verfolgen Sie Ihr Profil, Bewerbungen, gespeicherte Stellen und Recruiter-Updates — alles an einem Ort.",
+    rightRailRecruiterTitle: "Recruiter-Updates",
+    rightRailRecruiterBody:
+      "Nachrichten, Stufenänderungen und Intervieweinladungen von Einstellungsteams.",
+    rightRailRecruiterEmpty: "Gerade ruhig",
+    rightRailRecruiterEmptyTitle: "Noch keine Recruiter-Bewegung.",
+    rightRailRecruiterEmptyBody:
+      "Sobald ein Recruiter Sie prüft, auswählt oder Ihnen schreibt, wird die neueste Bewegung hier angezeigt.",
+    rightRailNextActionsTitle: "Nächste Schritte",
+    rightRailNextActionsBody: "Der wertvollste nächste Schritt, den Sie jetzt unternehmen können.",
+    overviewTitle: "Überblick",
+    overviewBody:
+      "Ein Snapshot Ihres Profils, Ihrer Bewerbungen und des aktuellen Stands.",
+    overviewImproveProfile: "Profil verbessern",
+    tileProfileReadinessLabel: "Profilbereitschaft",
+    tileProfileReadinessFallback: "Richten Sie Ihr Profil ein",
+    tileActiveAppsLabel: "Aktive Bewerbungen",
+    tileActiveAppsDetailActive: "Laufende Chancen in der Prüfung.",
+    tileActiveAppsDetailEmpty: "Noch keine aktiven Bewerbungen.",
+    tileInProgressLabel: "In Bearbeitung",
+    tileInProgressDetailActive: "Stellen in Auswahl, Interview oder Angebot.",
+    tileInProgressDetailEmpty: "Noch keine Interview-Bewegung.",
+    tileSavedRolesLabel: "Gespeicherte Stellen",
+    tileSavedRolesDetailActive: "Vorgemerkte Stellen warten auf eine tiefere Prüfung.",
+    tileSavedRolesDetailEmpty: "Erstellen Sie eine Shortlist, auf der Sie handeln können.",
+    profileStrengthTitle: "Profilstärke",
+    profileStrengthBody:
+      "Ein stärkeres Profil hilft Arbeitgebern, Ihre Bewerbungen ernst zu nehmen.",
+    readinessScoreKicker: "Bereitschaftspunktzahl",
+    readinessFallback:
+      "Vervollständigen Sie Ihr Profil, um die Wahrnehmung Ihrer Bewerbungen durch Arbeitgeber zu verbessern.",
+    applicationsTitle: "Ihre Bewerbungen",
+    applicationsBody: "Verfolgen Sie den Fortschritt jeder Stelle, auf die Sie sich beworben haben.",
+    applicationsViewAll: "Alle anzeigen",
+    applicationsEmptyKicker: "Noch keine Bewerbungen",
+    applicationsEmptyTitle: "Ihre Bewerbungszeitleiste erscheint hier.",
+    applicationsEmptyBody:
+      "Sobald Sie sich auf eine Stelle bewerben, sehen Sie Stufenupdates, Intervieweinladungen und nächste Schritte hier.",
+    applicationsBrowseCta: "Live-Stellen durchsuchen",
+    applicationUpdatedPrefix: "Aktualisiert",
+    applicationLatestRecruiterLabel: "Letzte Recruiter-Aktion",
+    applicationBestNextMoveLabel: "Bester nächster Schritt",
+    savedRolesTitle: "Gespeicherte Stellen",
+    savedRolesBody: "Stellen, die Sie für später mit einem Lesezeichen versehen haben.",
+    savedRolesOpenLink: "Gespeicherte Stellen öffnen",
+    savedRolesEmptyKicker: "Noch nichts gespeichert",
+    savedRolesEmptyTitle: "Ihre Shortlist ist leer.",
+    savedRolesEmptyBody:
+      "Speichern Sie Stellen, die Sie später vergleichen möchten, damit sie leicht zu finden sind, wenn Sie bereit sind, sich zu bewerben.",
+    savedRolesHighTrustLabel: "Hochvertrauens-Arbeitgeber",
+    recommendedTitle: "Empfohlen für Sie",
+    recommendedBody: "Vorgeschlagene Stellen basierend auf Ihrem Profil und Ihrer Aktivität.",
+    recommendedEmptyKicker: "Empfehlungen werden vorbereitet",
+    recommendedEmptyTitle: "Wir brauchen zuerst noch etwas mehr Signal.",
+    recommendedEmptyBody:
+      "Vervollständigen Sie Ihr Profil und speichern oder bewerben Sie sich auf einige Stellen, um die Empfehlungen zu verfeinern.",
+    recommendedMatchSuffix: "% Übereinstimmung",
+  },
 };
 
 const ZH: DeepPartial<JobsCopy> = {
@@ -4372,6 +5863,157 @@ const ZH: DeepPartial<JobsCopy> = {
     applicationCountPlural: "{count} 份申请",
     daysSingular: "{count} 天",
     daysPlural: "{count} 天",
+  },
+  interviewScheduler: {
+    triggerLabel: "安排面试",
+    formTitle: "安排新面试",
+    labelTitle: "标题",
+    labelType: "类型",
+    labelDate: "日期",
+    labelTime: "时间",
+    labelDuration: "时长",
+    labelTimezone: "时区",
+    labelMeetingUrl: "会议链接",
+    labelLocation: "地点",
+    labelNotes: "备注（可选）",
+    titlePlaceholder: "例如 技术面试",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "办公室地址",
+    notesPlaceholder: "面试准备备注...",
+    typeVideo: "视频通话",
+    typePhone: "电话通话",
+    typeInPerson: "面对面",
+    duration15: "15 分钟",
+    duration30: "30 分钟",
+    duration45: "45 分钟",
+    duration60: "1 小时",
+    duration90: "1.5 小时",
+    tzLagos: "西非（拉各斯）",
+    tzCotonou: "西非（科托努）",
+    tzAccra: "格林尼治（阿克拉）",
+    tzLondon: "英国（伦敦）",
+    tzNewYork: "美国东部",
+    tzChicago: "美国中部",
+    tzLosAngeles: "美国西部",
+    tzBerlin: "欧洲中部",
+    submitPending: "正在安排...",
+    submitLabel: "安排",
+    cancelLabel: "取消",
+    validationError: "标题、日期和时间为必填项。",
+    networkError: "网络错误，请重试。",
+  },
+  hirePage: {
+    metaTitle: "清晰招聘 — HenryCo Jobs",
+    metaDescription:
+      "发布真实职位，在一处阅读申请，通过可见阶段推进候选人流程。",
+    eyebrow: "面向雇主",
+    heroTitle: "清晰招聘，告别混乱。",
+    heroBody:
+      "发布真实职位，在一处阅读申请，通过可见阶段将候选人推进至筛选和面试环节。",
+    shieldNotice:
+      "发布实时职位需要有效的雇主订阅。候选人始终免费浏览；订阅费用用于审核、反欺诈和候选人信任信号。",
+    ctaSignedIn: "前往公司设置",
+    ctaSignedOut: "开始招聘 — 免费注册",
+    ctaLogin: "我已有 HenryCo 账户",
+    ctaBrowseCandidates: "浏览候选人",
+    featureVerificationLabel: "验证",
+    featureVerificationValue: "人工审核 — 无需付费",
+    featurePostReviewLabel: "职位审核",
+    featurePostReviewValue: "清晰、公正、反欺诈检查",
+    featurePipelineLabel: "流程",
+    featurePipelineValue: "每位申请人的可见阶段",
+    howKicker: "从首次发布到首次录用",
+    stepPrefix: "步骤",
+    step01Title: "告诉我们您是谁",
+    step01Body:
+      "创建公司档案，诚实填写基本信息——您做什么、在哪里招聘，以及候选人应该如何期望收到您的消息。",
+    step02Title: "提交职位供审核",
+    step02Body:
+      "认真撰写职位：目标成果、要求、如能分享则提供薪资范围，以及工作方式（远程、混合、现场）。",
+    step03Title: "公开管理招聘流程",
+    step03Body:
+      "申请进入雇主工作区。筛选、面试并通过候选人在自己中心可见的阶段做出决定。",
+    verificationKicker: "验证存在的原因",
+    verificationTitle: "真实品牌。经过审核的职位。不出售徽章。",
+    verificationBody:
+      "候选人有权知道他们不是在回复虚假品牌。验证意味着对雇主意图和档案质量进行人工审核。",
+    moderationKicker: "提交职位后",
+    moderationTitle: "审核自我解释，然后退出。",
+    moderationBody:
+      "审核检查清晰度、公正性和欺诈模式。如果需要修复，我们会告诉您原因。",
+    qualityKicker: "质量优先于数量",
+    qualityTitle: "我们保护平台，让认真的雇主脱颖而出。",
+    qualityBody:
+      "共享登录、保存的职位和申请历史意味着候选人可以让您对所发布的流程负责。",
+    ctaWorkspace: "打开工作区",
+    ctaGetStarted: "开始",
+    ctaTrustLink: "我们如何保护用户",
+    ctaFaqLink: "雇主常见问题",
+    questionsPrefix: "有疑问？",
+  },
+  candidateHome: {
+    metaTitle: "候选人中心 — HenryCo Jobs",
+    metaDescription:
+      "在一处跟踪您的档案、申请、保存的职位和招聘方更新。",
+    pageTitle: "候选人中心",
+    pageSubtitle:
+      "在一处跟踪您的档案、申请、保存的职位和招聘方更新。",
+    rightRailRecruiterTitle: "招聘方更新",
+    rightRailRecruiterBody:
+      "来自招聘团队的消息、阶段变化和面试邀请。",
+    rightRailRecruiterEmpty: "暂时平静",
+    rightRailRecruiterEmptyTitle: "暂无招聘方动态。",
+    rightRailRecruiterEmptyBody:
+      "一旦招聘方审核、筛选您或向您发送消息，最新动态将在此显示。",
+    rightRailNextActionsTitle: "下一步行动",
+    rightRailNextActionsBody: "现在最有价值的行动。",
+    overviewTitle: "概览",
+    overviewBody:
+      "您的档案、申请及当前情况快照。",
+    overviewImproveProfile: "改善档案",
+    tileProfileReadinessLabel: "档案完善度",
+    tileProfileReadinessFallback: "设置您的档案",
+    tileActiveAppsLabel: "活跃申请",
+    tileActiveAppsDetailActive: "仍在审核中的机会。",
+    tileActiveAppsDetailEmpty: "暂无活跃申请。",
+    tileInProgressLabel: "进行中",
+    tileInProgressDetailActive: "处于筛选、面试或报价阶段的职位。",
+    tileInProgressDetailEmpty: "暂无面试动态。",
+    tileSavedRolesLabel: "保存的职位",
+    tileSavedRolesDetailActive: "已入选职位，等待深入审查。",
+    tileSavedRolesDetailEmpty: "建立可采取行动的候选列表。",
+    profileStrengthTitle: "档案强度",
+    profileStrengthBody:
+      "更强的档案有助于雇主认真对待您的申请。",
+    readinessScoreKicker: "准备度得分",
+    readinessFallback:
+      "完善档案以改善雇主对您申请的看法。",
+    applicationsTitle: "您的申请",
+    applicationsBody: "跟踪每个您申请职位的进度。",
+    applicationsViewAll: "查看全部",
+    applicationsEmptyKicker: "暂无申请",
+    applicationsEmptyTitle: "您的申请时间线将显示在此处。",
+    applicationsEmptyBody:
+      "申请职位后，您将在此处看到阶段更新、面试邀请和后续步骤。",
+    applicationsBrowseCta: "浏览实时职位",
+    applicationUpdatedPrefix: "更新于",
+    applicationLatestRecruiterLabel: "招聘方最新操作",
+    applicationBestNextMoveLabel: "最佳下一步",
+    savedRolesTitle: "保存的职位",
+    savedRolesBody: "您为以后收藏的职位。",
+    savedRolesOpenLink: "打开保存的职位",
+    savedRolesEmptyKicker: "尚未保存任何内容",
+    savedRolesEmptyTitle: "您的候选列表为空。",
+    savedRolesEmptyBody:
+      "保存您想稍后比较的职位，以便在准备好申请时轻松找到。",
+    savedRolesHighTrustLabel: "高信任雇主",
+    recommendedTitle: "为您推荐",
+    recommendedBody: "根据您的档案和活动推荐的职位。",
+    recommendedEmptyKicker: "推荐正在准备中",
+    recommendedEmptyTitle: "我们需要更多信号。",
+    recommendedEmptyBody:
+      "完善档案并保存或申请几个职位，以优化推荐。",
+    recommendedMatchSuffix: "% 匹配",
   },
 };
 
@@ -4754,6 +6396,157 @@ const HI: DeepPartial<JobsCopy> = {
     daysSingular: "{count} दिन",
     daysPlural: "{count} दिन",
   },
+  interviewScheduler: {
+    triggerLabel: "साक्षात्कार शेड्यूल करें",
+    formTitle: "नया साक्षात्कार शेड्यूल करें",
+    labelTitle: "शीर्षक",
+    labelType: "प्रकार",
+    labelDate: "तारीख",
+    labelTime: "समय",
+    labelDuration: "अवधि",
+    labelTimezone: "समय क्षेत्र",
+    labelMeetingUrl: "मीटिंग लिंक",
+    labelLocation: "स्थान",
+    labelNotes: "नोट्स (वैकल्पिक)",
+    titlePlaceholder: "उदाहरण के लिए तकनीकी साक्षात्कार",
+    meetingUrlPlaceholder: "https://meet.google.com/...",
+    locationPlaceholder: "कार्यालय का पता",
+    notesPlaceholder: "साक्षात्कार की तैयारी के नोट्स...",
+    typeVideo: "वीडियो कॉल",
+    typePhone: "फोन कॉल",
+    typeInPerson: "व्यक्तिगत रूप से",
+    duration15: "15 मिनट",
+    duration30: "30 मिनट",
+    duration45: "45 मिनट",
+    duration60: "1 घंटा",
+    duration90: "1.5 घंटे",
+    tzLagos: "पश्चिम अफ्रीका (लागोस)",
+    tzCotonou: "पश्चिम अफ्रीका (कोटोनू)",
+    tzAccra: "जीएमटी (अक्रा)",
+    tzLondon: "यूके (लंदन)",
+    tzNewYork: "यूएस पूर्वी",
+    tzChicago: "यूएस मध्य",
+    tzLosAngeles: "यूएस पश्चिमी",
+    tzBerlin: "मध्य यूरोप",
+    submitPending: "शेड्यूल हो रहा है...",
+    submitLabel: "शेड्यूल करें",
+    cancelLabel: "रद्द करें",
+    validationError: "शीर्षक, तारीख और समय आवश्यक हैं।",
+    networkError: "नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।",
+  },
+  hirePage: {
+    metaTitle: "स्पष्टता से भर्ती करें — HenryCo Jobs",
+    metaDescription:
+      "वास्तविक भूमिकाएँ पोस्ट करें, एक स्थान पर आवेदन पढ़ें और दृश्यमान चरणों के माध्यम से उम्मीदवारों को आगे बढ़ाएं।",
+    eyebrow: "नियोक्ताओं के लिए",
+    heroTitle: "स्पष्टता से भर्ती करें, अव्यवस्था नहीं।",
+    heroBody:
+      "वास्तविक भूमिकाएँ पोस्ट करें, एक स्थान पर आवेदन पढ़ें, लोगों को दृश्यमान चरणों पर शॉर्टलिस्ट और साक्षात्कार में आगे बढ़ाएं।",
+    shieldNotice:
+      "लाइव भूमिकाएँ पोस्ट करने के लिए सक्रिय नियोक्ता सदस्यता आवश्यक है। उम्मीदवार हमेशा मुफ़्त में ब्राउज़ करते हैं।",
+    ctaSignedIn: "कंपनी सेटअप पर जाएं",
+    ctaSignedOut: "भर्ती शुरू करें — मुफ़्त साइन अप",
+    ctaLogin: "मेरे पास पहले से HenryCo खाता है",
+    ctaBrowseCandidates: "उम्मीदवार देखें",
+    featureVerificationLabel: "सत्यापन",
+    featureVerificationValue: "मैनुअल समीक्षा — पे-टु-प्ले नहीं",
+    featurePostReviewLabel: "पोस्ट समीक्षा",
+    featurePostReviewValue: "स्पष्टता, निष्पक्षता, धोखाधड़ी जांच",
+    featurePipelineLabel: "पाइपलाइन",
+    featurePipelineValue: "हर आवेदक के लिए दृश्यमान चरण",
+    howKicker: "पहली पोस्ट से पहली भर्ती तक",
+    stepPrefix: "चरण",
+    step01Title: "हमें बताएं आप कौन हैं",
+    step01Body:
+      "ईमानदार बुनियादी जानकारी के साथ अपनी कंपनी प्रोफाइल बनाएं — आप क्या करते हैं, कहाँ भर्ती करते हैं।",
+    step02Title: "समीक्षा के लिए अपनी भूमिका सबमिट करें",
+    step02Body:
+      "नौकरी को गंभीरता से लिखें: परिणाम, आवश्यकताएं, वेतन बैंड यदि साझा कर सकते हैं, और कार्य का तरीका।",
+    step03Title: "पाइपलाइन को खुले में चलाएं",
+    step03Body:
+      "आवेदन आपके नियोक्ता वर्कस्पेस में आते हैं। शॉर्टलिस्ट करें, साक्षात्कार लें, और चरणों के साथ निर्णय लें जो उम्मीदवार अपने हब में देख सकते हैं।",
+    verificationKicker: "सत्यापन क्यों है",
+    verificationTitle: "असली ब्रांड। समीक्षित पोस्ट। बिक्री के लिए कोई बैज नहीं।",
+    verificationBody:
+      "उम्मीदवार जानने के हकदार हैं कि वे नकली ब्रांड को जवाब नहीं दे रहे। सत्यापन का मतलब नियोक्ता के इरादे और प्रोफ़ाइल गुणवत्ता की मानवीय समीक्षा है।",
+    moderationKicker: "पोस्ट सबमिट करने के बाद",
+    moderationTitle: "मॉडरेशन खुद को समझाता है, फिर हट जाता है।",
+    moderationBody:
+      "मॉडरेशन स्पष्टता, निष्पक्षता और धोखाधड़ी पैटर्न की जांच करता है। यदि कुछ ठीक करने की जरूरत है, हम बताएंगे क्यों।",
+    qualityKicker: "मात्रा से अधिक गुणवत्ता",
+    qualityTitle: "हम बोर्ड की रक्षा करते हैं ताकि गंभीर नियोक्ता अलग दिखें।",
+    qualityBody:
+      "साझा लॉगिन, सहेजी गई भूमिकाएं और आवेदन इतिहास का मतलब है कि उम्मीदवार आपको प्रकाशित प्रक्रिया के लिए जवाबदेह ठहरा सकते हैं।",
+    ctaWorkspace: "वर्कस्पेस खोलें",
+    ctaGetStarted: "शुरू करें",
+    ctaTrustLink: "हम लोगों की रक्षा कैसे करते हैं",
+    ctaFaqLink: "नियोक्ता FAQ",
+    questionsPrefix: "प्रश्न?",
+  },
+  candidateHome: {
+    metaTitle: "उम्मीदवार हब — HenryCo Jobs",
+    metaDescription:
+      "अपनी प्रोफाइल, आवेदन, सहेजी गई भूमिकाएं और भर्तीकर्ता अपडेट ट्रैक करें — सब एक जगह।",
+    pageTitle: "उम्मीदवार हब",
+    pageSubtitle:
+      "अपनी प्रोफाइल, आवेदन, सहेजी गई भूमिकाएं और भर्तीकर्ता अपडेट ट्रैक करें — सब एक जगह।",
+    rightRailRecruiterTitle: "भर्तीकर्ता अपडेट",
+    rightRailRecruiterBody:
+      "भर्ती टीमों से संदेश, चरण परिवर्तन और साक्षात्कार आमंत्रण।",
+    rightRailRecruiterEmpty: "अभी शांत",
+    rightRailRecruiterEmptyTitle: "अभी तक कोई भर्तीकर्ता गतिविधि नहीं।",
+    rightRailRecruiterEmptyBody:
+      "एक बार भर्तीकर्ता आपकी समीक्षा करे, शॉर्टलिस्ट करे या संदेश भेजे, नवीनतम गतिविधि यहाँ दिखाई देगी।",
+    rightRailNextActionsTitle: "अगले कदम",
+    rightRailNextActionsBody: "अभी उठाने के लिए सबसे मूल्यवान कदम।",
+    overviewTitle: "अवलोकन",
+    overviewBody:
+      "आपकी प्रोफाइल, आवेदन और अभी की स्थिति का स्नैपशॉट।",
+    overviewImproveProfile: "प्रोफाइल सुधारें",
+    tileProfileReadinessLabel: "प्रोफाइल तैयारी",
+    tileProfileReadinessFallback: "अपनी प्रोफाइल सेट करें",
+    tileActiveAppsLabel: "सक्रिय आवेदन",
+    tileActiveAppsDetailActive: "समीक्षा में जा रहे अवसर।",
+    tileActiveAppsDetailEmpty: "अभी तक कोई सक्रिय आवेदन नहीं।",
+    tileInProgressLabel: "प्रगति में",
+    tileInProgressDetailActive: "शॉर्टलिस्ट, साक्षात्कार या प्रस्ताव चरणों में भूमिकाएं।",
+    tileInProgressDetailEmpty: "अभी तक कोई साक्षात्कार गतिविधि नहीं।",
+    tileSavedRolesLabel: "सहेजी गई भूमिकाएं",
+    tileSavedRolesDetailActive: "गहरी समीक्षा के लिए प्रतीक्षारत शॉर्टलिस्ट भूमिकाएं।",
+    tileSavedRolesDetailEmpty: "एक ऐसी शॉर्टलिस्ट बनाएं जिस पर आप कार्य कर सकें।",
+    profileStrengthTitle: "प्रोफाइल शक्ति",
+    profileStrengthBody:
+      "एक मजबूत प्रोफाइल नियोक्ताओं को आपके आवेदनों को गंभीरता से लेने में मदद करती है।",
+    readinessScoreKicker: "तैयारी स्कोर",
+    readinessFallback:
+      "नियोक्ता आपके आवेदनों को कैसे देखते हैं इसे बेहतर करने के लिए अपनी प्रोफाइल पूरी करें।",
+    applicationsTitle: "आपके आवेदन",
+    applicationsBody: "हर उस भूमिका की प्रगति ट्रैक करें जिसके लिए आपने आवेदन किया।",
+    applicationsViewAll: "सभी देखें",
+    applicationsEmptyKicker: "अभी तक कोई आवेदन नहीं",
+    applicationsEmptyTitle: "आपकी आवेदन समयरेखा यहाँ दिखाई देगी।",
+    applicationsEmptyBody:
+      "किसी भूमिका के लिए आवेदन करने पर, आप यहाँ चरण अपडेट, साक्षात्कार आमंत्रण और अगले चरण देखेंगे।",
+    applicationsBrowseCta: "लाइव भूमिकाएं देखें",
+    applicationUpdatedPrefix: "अपडेट किया",
+    applicationLatestRecruiterLabel: "भर्तीकर्ता की नवीनतम कार्रवाई",
+    applicationBestNextMoveLabel: "सर्वोत्तम अगला कदम",
+    savedRolesTitle: "सहेजी गई भूमिकाएं",
+    savedRolesBody: "बाद के लिए बुकमार्क की गई भूमिकाएं।",
+    savedRolesOpenLink: "सहेजी गई भूमिकाएं खोलें",
+    savedRolesEmptyKicker: "अभी तक कुछ सहेजा नहीं",
+    savedRolesEmptyTitle: "आपकी शॉर्टलिस्ट खाली है।",
+    savedRolesEmptyBody:
+      "बाद में तुलना करने के लिए भूमिकाएं सहेजें ताकि जब आप आवेदन करने के लिए तैयार हों तो उन्हें आसानी से ढूंढ सकें।",
+    savedRolesHighTrustLabel: "उच्च विश्वास नियोक्ता",
+    recommendedTitle: "आपके लिए अनुशंसित",
+    recommendedBody: "आपकी प्रोफाइल और गतिविधि के आधार पर सुझाई गई भूमिकाएं।",
+    recommendedEmptyKicker: "सिफारिशें तैयार हो रही हैं",
+    recommendedEmptyTitle: "हमें पहले थोड़े और संकेत चाहिए।",
+    recommendedEmptyBody:
+      "सिफारिशों को बेहतर बनाने के लिए अपनी प्रोफाइल पूरी करें और कुछ भूमिकाओं को सहेजें या आवेदन करें।",
+    recommendedMatchSuffix: "% मिलान",
+  },
 };
 
 const IT: DeepPartial<JobsCopy> = {
@@ -5129,6 +6922,138 @@ const IT: DeepPartial<JobsCopy> = {
     "applicationCountPlural": "{count} candidature",
     "daysSingular": "{count} giorno",
     "daysPlural": "{count} giorni"
+  },
+  "interviewScheduler": {
+    "triggerLabel": "Pianifica un colloquio",
+    "formTitle": "Pianifica un nuovo colloquio",
+    "labelTitle": "Titolo",
+    "labelType": "Tipo",
+    "labelDate": "Data",
+    "labelTime": "Ora",
+    "labelDuration": "Durata",
+    "labelTimezone": "Fuso orario",
+    "labelMeetingUrl": "Link della riunione",
+    "labelLocation": "Luogo",
+    "labelNotes": "Note (facoltativo)",
+    "titlePlaceholder": "es. Colloquio tecnico",
+    "meetingUrlPlaceholder": "https://meet.google.com/...",
+    "locationPlaceholder": "Indirizzo dell'ufficio",
+    "notesPlaceholder": "Note di preparazione al colloquio...",
+    "typeVideo": "Videochiamata",
+    "typePhone": "Telefonata",
+    "typeInPerson": "Di persona",
+    "duration15": "15 min",
+    "duration30": "30 min",
+    "duration45": "45 min",
+    "duration60": "1 ora",
+    "duration90": "1,5 ore",
+    "tzLagos": "Africa Occidentale (Lagos)",
+    "tzCotonou": "Africa Occidentale (Cotonou)",
+    "tzAccra": "GMT (Accra)",
+    "tzLondon": "Regno Unito (Londra)",
+    "tzNewYork": "USA Est",
+    "tzChicago": "USA Centro",
+    "tzLosAngeles": "USA Ovest",
+    "tzBerlin": "Europa Centrale",
+    "submitPending": "Pianificazione in corso...",
+    "submitLabel": "Pianifica",
+    "cancelLabel": "Annulla",
+    "validationError": "Titolo, data e ora sono obbligatori.",
+    "networkError": "Errore di rete. Riprova."
+  },
+  "hirePage": {
+    "metaTitle": "Assumi con chiarezza — HenryCo Jobs",
+    "metaDescription": "Pubblica ruoli reali, leggi le candidature in un unico posto e avanza i candidati attraverso fasi visibili.",
+    "eyebrow": "Per i datori di lavoro",
+    "heroTitle": "Assumi con chiarezza, senza il caos.",
+    "heroBody": "Pubblica ruoli reali, leggi le candidature in un unico posto, fai avanzare le persone attraverso preselezione e colloqui con fasi visibili.",
+    "shieldNotice": "Pubblicare ruoli in diretta richiede un abbonamento datore di lavoro attivo. I candidati navigano sempre gratuitamente.",
+    "ctaSignedIn": "Vai alla configurazione aziendale",
+    "ctaSignedOut": "Inizia ad assumere — registrati gratuitamente",
+    "ctaLogin": "Ho già un account HenryCo",
+    "ctaBrowseCandidates": "Sfoglia i candidati",
+    "featureVerificationLabel": "Verifica",
+    "featureVerificationValue": "Revisione manuale — nessun pay-to-play",
+    "featurePostReviewLabel": "Revisione delle offerte",
+    "featurePostReviewValue": "Chiarezza, equità, controllo frodi",
+    "featurePipelineLabel": "Pipeline",
+    "featurePipelineValue": "Fasi visibili per ogni candidato",
+    "howKicker": "Dal primo annuncio alla prima assunzione",
+    "stepPrefix": "Passo",
+    "step01Title": "Dicci chi sei",
+    "step01Body": "Crea il profilo aziendale con dati onesti — cosa fai, dove assumi e come i candidati possono aspettarsi di sentire da te.",
+    "step02Title": "Invia il tuo ruolo per la revisione",
+    "step02Body": "Scrivi il lavoro come intendi: risultati, requisiti, fascia salariale se puoi condividerla, e come lavori (remoto, ibrido, in sede).",
+    "step03Title": "Gestisci la pipeline in modo trasparente",
+    "step03Body": "Le candidature arrivano nel tuo spazio datore di lavoro. Preselezione, colloqui e decisioni con fasi che i candidati possono vedere nel loro hub.",
+    "verificationKicker": "Perché esiste la verifica",
+    "verificationTitle": "Marchi reali. Annunci revisionati. Nessun badge in vendita.",
+    "verificationBody": "I candidati meritano di sapere che non stanno rispondendo a un marchio falso. La verifica significa una revisione umana dell'intento e della qualità del profilo del datore di lavoro.",
+    "moderationKicker": "Dopo aver inviato un annuncio",
+    "moderationTitle": "La moderazione si spiega da sola, poi si toglie di mezzo.",
+    "moderationBody": "La moderazione verifica chiarezza, equità e schemi di frode. Se qualcosa necessita correzione, ti diremo perché.",
+    "qualityKicker": "Qualità prima del volume",
+    "qualityTitle": "Proteggiamo la bacheca affinché i datori di lavoro seri si distinguano.",
+    "qualityBody": "Accesso condiviso, ruoli salvati e storico delle candidature significano che i candidati possono chiederti conto del processo che pubblichi.",
+    "ctaWorkspace": "Apri lo spazio di lavoro",
+    "ctaGetStarted": "Inizia",
+    "ctaTrustLink": "Come proteggiamo le persone",
+    "ctaFaqLink": "FAQ datore di lavoro",
+    "questionsPrefix": "Domande?"
+  },
+  "candidateHome": {
+    "metaTitle": "Hub candidato — HenryCo Jobs",
+    "metaDescription": "Tieni traccia del tuo profilo, candidature, ruoli salvati e aggiornamenti dei recruiter — tutto in un unico posto.",
+    "pageTitle": "Hub candidato",
+    "pageSubtitle": "Tieni traccia del tuo profilo, candidature, ruoli salvati e aggiornamenti dei recruiter — tutto in un unico posto.",
+    "rightRailRecruiterTitle": "Aggiornamenti recruiter",
+    "rightRailRecruiterBody": "Messaggi, cambi di fase e inviti a colloqui dai team di assunzione.",
+    "rightRailRecruiterEmpty": "Silenzio per ora",
+    "rightRailRecruiterEmptyTitle": "Nessun movimento recruiter ancora.",
+    "rightRailRecruiterEmptyBody": "Una volta che un recruiter ti esamina, ti mette in shortlist o ti scrive, l'ultimo movimento apparirà qui.",
+    "rightRailNextActionsTitle": "Prossime azioni",
+    "rightRailNextActionsBody": "La mossa più preziosa da fare adesso.",
+    "overviewTitle": "Panoramica",
+    "overviewBody": "Un'istantanea del tuo profilo, candidature e dove si trovano le cose adesso.",
+    "overviewImproveProfile": "Migliora profilo",
+    "tileProfileReadinessLabel": "Prontezza profilo",
+    "tileProfileReadinessFallback": "Configura il tuo profilo",
+    "tileActiveAppsLabel": "Candidature attive",
+    "tileActiveAppsDetailActive": "Opportunità ancora in fase di revisione.",
+    "tileActiveAppsDetailEmpty": "Nessuna candidatura attiva ancora.",
+    "tileInProgressLabel": "In corso",
+    "tileInProgressDetailActive": "Ruoli in fase di preselezione, colloquio o offerta.",
+    "tileInProgressDetailEmpty": "Nessun movimento colloquio ancora.",
+    "tileSavedRolesLabel": "Ruoli salvati",
+    "tileSavedRolesDetailActive": "Ruoli in shortlist in attesa di un esame più approfondito.",
+    "tileSavedRolesDetailEmpty": "Crea una shortlist su cui puoi agire.",
+    "profileStrengthTitle": "Forza del profilo",
+    "profileStrengthBody": "Un profilo più forte aiuta i datori di lavoro a prendere sul serio le tue candidature.",
+    "readinessScoreKicker": "Punteggio di prontezza",
+    "readinessFallback": "Completa il tuo profilo per migliorare come i datori di lavoro vedono le tue candidature.",
+    "applicationsTitle": "Le tue candidature",
+    "applicationsBody": "Tieni traccia dei progressi di ogni ruolo a cui hai fatto domanda.",
+    "applicationsViewAll": "Vedi tutto",
+    "applicationsEmptyKicker": "Ancora nessuna candidatura",
+    "applicationsEmptyTitle": "La tua timeline delle candidature apparirà qui.",
+    "applicationsEmptyBody": "Una volta che fai domanda per un ruolo, vedrai aggiornamenti delle fasi, inviti a colloqui e prossimi passi qui.",
+    "applicationsBrowseCta": "Sfoglia ruoli in diretta",
+    "applicationUpdatedPrefix": "Aggiornato",
+    "applicationLatestRecruiterLabel": "Ultima azione del recruiter",
+    "applicationBestNextMoveLabel": "Mossa migliore successiva",
+    "savedRolesTitle": "Ruoli salvati",
+    "savedRolesBody": "Ruoli che hai contrassegnato per dopo.",
+    "savedRolesOpenLink": "Apri ruoli salvati",
+    "savedRolesEmptyKicker": "Niente salvato ancora",
+    "savedRolesEmptyTitle": "La tua shortlist è vuota.",
+    "savedRolesEmptyBody": "Salva i ruoli che vuoi confrontare in seguito per trovarli facilmente quando sei pronto a fare domanda.",
+    "savedRolesHighTrustLabel": "Datore di lavoro ad alta fiducia",
+    "recommendedTitle": "Consigliato per te",
+    "recommendedBody": "Ruoli suggeriti in base al tuo profilo e attività.",
+    "recommendedEmptyKicker": "Raccomandazioni in preparazione",
+    "recommendedEmptyTitle": "Abbiamo bisogno di qualche altro segnale prima.",
+    "recommendedEmptyBody": "Completa il tuo profilo e salva o fai domanda per alcuni ruoli per affinare le raccomandazioni.",
+    "recommendedMatchSuffix": "% di corrispondenza"
   }
 };
 

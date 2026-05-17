@@ -2,27 +2,33 @@
 
 import { useState, useTransition } from "react";
 import { CalendarPlus } from "lucide-react";
+import type { JobsCopy } from "@henryco/i18n";
 
-const TIMEZONE_OPTIONS = [
-  { value: "Africa/Lagos", label: "West Africa (Lagos)" },
-  { value: "Africa/Porto-Novo", label: "West Africa (Cotonou)" },
-  { value: "Africa/Accra", label: "GMT (Accra)" },
-  { value: "Europe/London", label: "UK (London)" },
-  { value: "America/New_York", label: "US Eastern" },
-  { value: "America/Chicago", label: "US Central" },
-  { value: "America/Los_Angeles", label: "US Pacific" },
-  { value: "Europe/Berlin", label: "Central Europe" },
-];
+export function InterviewScheduler({
+  applicationId,
+  copy,
+}: {
+  applicationId: string;
+  copy: JobsCopy["interviewScheduler"];
+}) {
+  const TIMEZONE_OPTIONS = [
+    { value: "Africa/Lagos", label: copy.tzLagos },
+    { value: "Africa/Porto-Novo", label: copy.tzCotonou },
+    { value: "Africa/Accra", label: copy.tzAccra },
+    { value: "Europe/London", label: copy.tzLondon },
+    { value: "America/New_York", label: copy.tzNewYork },
+    { value: "America/Chicago", label: copy.tzChicago },
+    { value: "America/Los_Angeles", label: copy.tzLosAngeles },
+    { value: "Europe/Berlin", label: copy.tzBerlin },
+  ];
 
-const DURATION_OPTIONS = [
-  { value: 15, label: "15 min" },
-  { value: 30, label: "30 min" },
-  { value: 45, label: "45 min" },
-  { value: 60, label: "1 hour" },
-  { value: 90, label: "1.5 hours" },
-];
-
-export function InterviewScheduler({ applicationId }: { applicationId: string }) {
+  const DURATION_OPTIONS = [
+    { value: 15, label: copy.duration15 },
+    { value: 30, label: copy.duration30 },
+    { value: 45, label: copy.duration45 },
+    { value: 60, label: copy.duration60 },
+    { value: 90, label: copy.duration90 },
+  ];
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
@@ -39,7 +45,7 @@ export function InterviewScheduler({ applicationId }: { applicationId: string })
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !date || !time) {
-      setError("Title, date, and time are required.");
+      setError(copy.validationError);
       return;
     }
     setError(null);
@@ -65,13 +71,13 @@ export function InterviewScheduler({ applicationId }: { applicationId: string })
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          setError(data.error || "Failed to schedule interview.");
+          setError(data.error || copy.networkError);
           return;
         }
         setOpen(false);
         window.location.reload();
       } catch {
-        setError("Network error. Please try again.");
+        setError(copy.networkError);
       }
     });
   }
@@ -83,7 +89,7 @@ export function InterviewScheduler({ applicationId }: { applicationId: string })
         className="flex items-center gap-2 rounded-xl bg-[var(--jobs-accent)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
       >
         <CalendarPlus className="h-4 w-4" />
-        Schedule interview
+        {copy.triggerLabel}
       </button>
     );
   }
@@ -93,34 +99,34 @@ export function InterviewScheduler({ applicationId }: { applicationId: string })
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-[var(--jobs-border)] bg-[var(--jobs-paper-soft)] p-5">
-      <div className="text-sm font-semibold">Schedule a new interview</div>
+      <div className="text-sm font-semibold">{copy.formTitle}</div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Title</span>
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Technical interview" className={inputClass} />
+          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelTitle}</span>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={copy.titlePlaceholder} className={inputClass} />
         </label>
         <label className="block">
-          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Type</span>
+          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelType}</span>
           <select value={interviewType} onChange={(e) => setInterviewType(e.target.value)} className={inputClass}>
-            <option value="video">Video call</option>
-            <option value="phone">Phone call</option>
-            <option value="in-person">In-person</option>
+            <option value="video">{copy.typeVideo}</option>
+            <option value="phone">{copy.typePhone}</option>
+            <option value="in-person">{copy.typeInPerson}</option>
           </select>
         </label>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
         <label className="block">
-          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Date</span>
+          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelDate}</span>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
         </label>
         <label className="block">
-          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Time</span>
+          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelTime}</span>
           <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className={inputClass} />
         </label>
         <label className="block">
-          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Duration</span>
+          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelDuration}</span>
           <select value={duration} onChange={(e) => setDuration(Number(e.target.value))} className={inputClass}>
             {DURATION_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -130,7 +136,7 @@ export function InterviewScheduler({ applicationId }: { applicationId: string })
       </div>
 
       <label className="block">
-        <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Timezone</span>
+        <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelTimezone}</span>
         <select value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputClass}>
           {TIMEZONE_OPTIONS.map((tz) => (
             <option key={tz.value} value={tz.value}>{tz.label}</option>
@@ -140,31 +146,31 @@ export function InterviewScheduler({ applicationId }: { applicationId: string })
 
       {interviewType === "video" && (
         <label className="block">
-          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Meeting URL</span>
-          <input type="url" value={meetingUrl} onChange={(e) => setMeetingUrl(e.target.value)} placeholder="https://meet.google.com/..." className={inputClass} />
+          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelMeetingUrl}</span>
+          <input type="url" value={meetingUrl} onChange={(e) => setMeetingUrl(e.target.value)} placeholder={copy.meetingUrlPlaceholder} className={inputClass} />
         </label>
       )}
 
       {interviewType === "in-person" && (
         <label className="block">
-          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Location</span>
-          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Office address" className={inputClass} />
+          <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelLocation}</span>
+          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={copy.locationPlaceholder} className={inputClass} />
         </label>
       )}
 
       <label className="block">
-        <span className="mb-1 block text-xs text-[var(--jobs-muted)]">Notes (optional)</span>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder="Interview preparation notes..." className={`${inputClass} resize-none`} />
+        <span className="mb-1 block text-xs text-[var(--jobs-muted)]">{copy.labelNotes}</span>
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder={copy.notesPlaceholder} className={`${inputClass} resize-none`} />
       </label>
 
       {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
 
       <div className="flex gap-3">
         <button type="submit" disabled={isPending} className="rounded-lg bg-[var(--jobs-accent)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-40">
-          {isPending ? "Scheduling..." : "Schedule"}
+          {isPending ? copy.submitPending : copy.submitLabel}
         </button>
         <button type="button" onClick={() => setOpen(false)} className="rounded-lg border border-[var(--jobs-border)] px-4 py-2 text-sm font-semibold transition hover:bg-[var(--jobs-paper-soft)]">
-          Cancel
+          {copy.cancelLabel}
         </button>
       </div>
     </form>
