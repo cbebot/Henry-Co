@@ -65,11 +65,18 @@
   /* On mobile the dashboard-shell's BottomActionBar (3.5rem) sits
      fixed at the viewport bottom; `.hc-shell-main` adds matching
      padding-bottom so flow content clears it. We shave the same
-     budget off the parent's min-height so the chat stage (which
-     fills it) lands the sticky composer above the bar, not under
-     it. The 0.5rem matches the shell's own padding buffer. */
+     budget off the parent's HEIGHT (not min-height — true height
+     so the page itself doesn't scroll) and lock overflow so only
+     the message-list scrolls. WhatsApp-style: the composer pinned
+     bottom never moves when you flick through history.
+
+     `dvh` (dynamic viewport height) updates as the mobile address
+     bar shows/hides, so the chat stays correctly sized through
+     keyboard open/close + scroll-driven URL-bar collapse. */
   .hc-shell-main > div:has(.acct-support-stage) {
-    min-height: calc(100dvh - 3.5rem - env(safe-area-inset-bottom, 0px) - 0.5rem);
+    height: calc(100dvh - 3.5rem - env(safe-area-inset-bottom, 0px) - 0.5rem);
+    min-height: 0;
+    overflow: hidden;
   }
 }
 
@@ -78,6 +85,7 @@
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
+  min-height: 0;
   gap: 0.75rem;
   padding: 0.85rem 1rem 0.85rem;
   background:
@@ -436,7 +444,11 @@
   }
 
   /* The chat surface immediately follows the thin bar — no card
-     border-radius, fills the rest of the screen. */
+     border-radius, fills the rest of the screen. WhatsApp-style:
+     the .mt-thread is height-locked to the available flex space
+     so its internal .mt-thread-list owns the scroll (`overflow-y:
+     auto` set in the engine), and the sticky-bottom composer (last
+     child rule far below) stays anchored while history flicks past. */
   .acct-support-room .mt-thread {
     border-radius: 0;
     border-left: 0;
@@ -444,6 +456,7 @@
     border-bottom: 0;
     box-shadow: none;
     min-height: 0;
+    height: 100%;
   }
 
   /* Tile / live pill positions adjust slightly since the bar has
@@ -550,6 +563,7 @@
     border-bottom: 0 !important;
     box-shadow: none !important;
     min-height: 0 !important;
+    height: 100% !important;
   }
   /* Pin the message list to the TOP when content is shorter than the
      viewport — otherwise short threads sit at the bottom of the
@@ -561,6 +575,21 @@
   }
   .acct-support-room .mt-thread-list-inner {
     justify-content: flex-start !important;
+  }
+  /* WhatsApp-style chat: page itself doesn't scroll on mobile, only
+     the message list does. The hc-shell-main wrapper is height-locked
+     to the viewport so children must fit; flex layout below the
+     header gives the .mt-thread the remaining space, which it caps
+     with `overflow: hidden` from the base rule, so the inner
+     `.mt-thread-list` (overflow-y: auto) is the sole scroll container.
+     The composer stays pinned via the sticky last-child rule. */
+  .hc-shell-main > div:has(.acct-support-stage) {
+    height: calc(100dvh - 3.5rem - env(safe-area-inset-bottom, 0px) - 0.5rem) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+  .acct-support-stage {
+    min-height: 0 !important;
   }
 }
 
