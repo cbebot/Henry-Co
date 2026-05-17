@@ -324,6 +324,13 @@ export type HubOwnerCopy = {
     unreadBadgeSuffix: string;
     pinChannelTitle: string;
     unpinChannelTitle: string;
+    pageEyebrow: string;
+    pageTitle: string;
+    pageDescription: string;
+    pageDeliveryOverview: string;
+    pageOwnerAssistant: string;
+    pagePanelTitle: string;
+    pagePanelDescription: string;
   };
   ownerDashboardClient: {
     loadingDashboard: string;
@@ -811,6 +818,15 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     unreadBadgeSuffix: "new",
     pinChannelTitle: "Pin channel",
     unpinChannelTitle: "Unpin channel",
+    pageEyebrow: "Internal communications",
+    pageTitle: "Team & leadership messaging",
+    pageDescription:
+      "Secure owner-side channel for operational coordination. This is not customer support and never appears on public storefronts.",
+    pageDeliveryOverview: "Delivery overview",
+    pageOwnerAssistant: "Owner assistant",
+    pagePanelTitle: "Live thread",
+    pagePanelDescription:
+      "Post updates, decisions, and handoffs. If provisioning looks degraded, apply the HenryCo Hub internal-comms migrations through 20260408120000_hq_internal_comms_attachments_visibility_rls and confirm the health probe passes.",
   },
   ownerDashboardClient: {
     loadingDashboard: "Loading dashboard...",

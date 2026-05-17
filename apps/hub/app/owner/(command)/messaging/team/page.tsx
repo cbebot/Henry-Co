@@ -1,33 +1,45 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { getHubOwnerCopy } from "@henryco/i18n/server";
 import InternalTeamCommsClient from "@/components/owner/InternalTeamCommsClient";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
+import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export default function OwnerMessagingTeamPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getHubPublicLocale();
+  const copy = getHubOwnerCopy(locale).internalTeamComms;
+  return {
+    title: copy.pageTitle,
+    description: copy.pageDescription,
+  };
+}
+
+export default async function OwnerMessagingTeamPage() {
+  const locale = await getHubPublicLocale();
+  const copy = getHubOwnerCopy(locale).internalTeamComms;
+
   return (
     <div className="space-y-6 acct-fade-in">
       <OwnerPageHeader
-        eyebrow="Internal communications"
-        title="Team & leadership messaging"
-        description="Secure owner-side channel for operational coordination. This is not customer support and never appears on public storefronts."
+        eyebrow={copy.pageEyebrow}
+        title={copy.pageTitle}
+        description={copy.pageDescription}
         actions={
           <>
             <Link href="/owner/messaging" className="acct-button-secondary">
-              Delivery overview
+              {copy.pageDeliveryOverview}
             </Link>
             <Link href="/owner/ai" className="acct-button-primary">
-              Owner assistant
+              {copy.pageOwnerAssistant}
             </Link>
           </>
         }
       />
 
-      <OwnerPanel
-        title="Live thread"
-        description="Post updates, decisions, and handoffs. If provisioning looks degraded, apply the HenryCo Hub internal-comms migrations through 20260408120000_hq_internal_comms_attachments_visibility_rls and confirm the health probe passes."
-      >
-        <InternalTeamCommsClient />
+      <OwnerPanel title={copy.pagePanelTitle} description={copy.pagePanelDescription}>
+        <InternalTeamCommsClient copy={copy} />
       </OwnerPanel>
     </div>
   );
