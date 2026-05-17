@@ -1,6 +1,7 @@
 export * from "./locales";
 export * from "./merge-messages";
 export * from "./hub-home-copy";
+export * from "./hub-workspace-copy";
 export * from "./consent-copy";
 export * from "./auth-copy";
 export * from "./state-copy";

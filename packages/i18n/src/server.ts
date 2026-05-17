@@ -7,6 +7,7 @@ export {
 } from "./seo-metadata";
 export { buildLocaleCookieOptions, localeCookieName } from "./cookie";
 export { getHubHomeCopy, getFaqFallbackForLocale, type HubHomeCopy } from "./hub-home-copy";
+export { getHubWorkspaceCopy, type HubWorkspaceCopy } from "./hub-workspace-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
