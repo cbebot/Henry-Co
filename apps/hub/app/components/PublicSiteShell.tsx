@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
 import { getAccountUrl } from "@henryco/config";
+import type { HubPublicCopy } from "@henryco/i18n";
 import {
   type PublicAccountUser,
   HenryCoSearchBreadcrumb,
@@ -81,6 +82,7 @@ export default function PublicSiteShell({
   initialSettings,
   accountChip,
   children,
+  copy,
 }: {
   initialSettings:
     | Partial<CompanySettingsRecord>
@@ -95,6 +97,7 @@ export default function PublicSiteShell({
     accountHref: string;
   };
   children: ReactNode;
+  copy: HubPublicCopy["publicSiteShell"];
 }) {
   const pathname = usePathname();
   const settings = useMemo(
@@ -119,12 +122,12 @@ export default function PublicSiteShell({
         groupIdentityActions={false}
         brand={{
           href: "/",
-          name: settings.brand_title || "Henry & Co.",
+          name: settings.brand_title || copy.brandFallback,
           sub: settings.brand_subtitle ?? undefined,
           mark: (
             <BrandLogo
               src={settings.logo_url}
-              alt={settings.brand_title || "Henry & Co."}
+              alt={settings.brand_title || copy.brandFallback}
               accent={settings.brand_accent || "#C9A227"}
               wrapperClassName="h-11 w-11"
               imageClassName="max-h-8 max-w-8 p-1"
@@ -152,9 +155,9 @@ export default function PublicSiteShell({
               settingsHref={getAccountUrl("/security")}
               showSignOut
               menuItems={[
-                { label: "Divisions directory", href: "/#divisions" },
-                { label: "About", href: "/about" },
-                { label: "Contact", href: "/contact" },
+                { label: copy.menuDivisionsDirectory, href: "/#divisions" },
+                { label: copy.menuAbout, href: "/about" },
+                { label: copy.menuContact, href: "/contact" },
               ]}
             />
           ) : null
@@ -194,7 +197,7 @@ export default function PublicSiteShell({
             <div className="flex items-center gap-3">
               <BrandLogo
                 src={settings.logo_url}
-                alt={settings.brand_title || "Henry & Co."}
+                alt={settings.brand_title || copy.brandFallback}
                 accent={settings.brand_accent || "#C9A227"}
                 wrapperClassName="h-10 w-10"
                 imageClassName="max-h-7 max-w-7 p-1"
@@ -237,78 +240,78 @@ export default function PublicSiteShell({
 
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              Company
+              {copy.colCompany}
             </div>
             <div className="mt-4 grid gap-3">
               <Link
                 href="/"
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                Home
+                {copy.linkHome}
               </Link>
               <Link
                 href="/about"
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                About
+                {copy.linkAbout}
               </Link>
               <Link
                 href="/contact"
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                Contact
+                {copy.linkContact}
               </Link>
               <Link
                 href="/search"
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                Search
+                {copy.linkSearch}
               </Link>
             </div>
           </div>
 
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              HenryCo
+              {copy.colHenryCo}
             </div>
             <div className="mt-4 grid gap-3">
               <Link
                 href={getAccountUrl("/")}
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                HenryCo account
+                {copy.linkHenryCoAccount}
               </Link>
               <Link
                 href={getAccountUrl("/settings")}
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                Language &amp; preferences
+                {copy.linkLanguagePrefs}
               </Link>
               <Link
                 href="/preferences"
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                Email preferences
+                {copy.linkEmailPrefs}
               </Link>
             </div>
           </div>
 
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              Legal
+              {copy.colLegal}
             </div>
             <div className="mt-4 grid gap-3">
               <Link
                 href="/privacy"
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                Privacy
+                {copy.linkPrivacy}
               </Link>
               <Link
                 href="/terms"
                 className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
               >
-                Terms
+                {copy.linkTerms}
               </Link>
             </div>
           </div>
@@ -317,14 +320,14 @@ export default function PublicSiteShell({
         <div className="border-t border-white/8 px-4 py-5 text-xs text-[var(--site-text-muted,rgba(255,255,255,0.55))] sm:px-6 lg:px-8">
           <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}. All rights reserved.
+              © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}. {copy.allRightsReserved}
             </div>
             <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
               <span
                 aria-hidden
                 className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent,#C9A227)]/85"
               />
-              Designed and built in-house by HenryCo Studio for the HenryCo ecosystem
+              {copy.builtBy}
             </span>
           </div>
         </div>

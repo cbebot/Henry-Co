@@ -100,6 +100,26 @@ export type HubPublicCopy = {
   faqBlock: {
     eyebrow: string;
   };
+  publicSiteShell: {
+    brandFallback: string;
+    colCompany: string;
+    linkHome: string;
+    linkAbout: string;
+    linkContact: string;
+    linkSearch: string;
+    colHenryCo: string;
+    linkHenryCoAccount: string;
+    linkLanguagePrefs: string;
+    linkEmailPrefs: string;
+    colLegal: string;
+    linkPrivacy: string;
+    linkTerms: string;
+    allRightsReserved: string;
+    builtBy: string;
+    menuDivisionsDirectory: string;
+    menuAbout: string;
+    menuContact: string;
+  };
 };
 
 const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
@@ -204,6 +224,26 @@ const HUB_PUBLIC_COPY_EN: HubPublicCopy = {
   },
   faqBlock: {
     eyebrow: "Frequently asked",
+  },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Company",
+    linkHome: "Home",
+    linkAbout: "About",
+    linkContact: "Contact",
+    linkSearch: "Search",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "HenryCo account",
+    linkLanguagePrefs: "Language & preferences",
+    linkEmailPrefs: "Email preferences",
+    colLegal: "Legal",
+    linkPrivacy: "Privacy",
+    linkTerms: "Terms",
+    allRightsReserved: "All rights reserved.",
+    builtBy: "Designed and built in-house by HenryCo Studio for the HenryCo ecosystem",
+    menuDivisionsDirectory: "Divisions directory",
+    menuAbout: "About",
+    menuContact: "Contact",
   },
 };
 
@@ -310,6 +350,26 @@ const HUB_PUBLIC_COPY_FR: DeepPartial<HubPublicCopy> = {
   faqBlock: {
     eyebrow: "Questions fréquentes",
   },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Entreprise",
+    linkHome: "Accueil",
+    linkAbout: "À propos",
+    linkContact: "Contact",
+    linkSearch: "Rechercher",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "Compte HenryCo",
+    linkLanguagePrefs: "Langue et préférences",
+    linkEmailPrefs: "Préférences e-mail",
+    colLegal: "Mentions légales",
+    linkPrivacy: "Confidentialité",
+    linkTerms: "Conditions",
+    allRightsReserved: "Tous droits réservés.",
+    builtBy: "Conçu et développé en interne par HenryCo Studio pour l'écosystème HenryCo",
+    menuDivisionsDirectory: "Annuaire des divisions",
+    menuAbout: "À propos",
+    menuContact: "Contact",
+  },
 };
 const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -413,6 +473,26 @@ const HUB_PUBLIC_COPY_ES: DeepPartial<HubPublicCopy> = {
   },
   faqBlock: {
     eyebrow: "Preguntas frecuentes",
+  },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Empresa",
+    linkHome: "Inicio",
+    linkAbout: "Acerca de",
+    linkContact: "Contacto",
+    linkSearch: "Buscar",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "Cuenta HenryCo",
+    linkLanguagePrefs: "Idioma y preferencias",
+    linkEmailPrefs: "Preferencias de correo",
+    colLegal: "Aviso legal",
+    linkPrivacy: "Privacidad",
+    linkTerms: "Condiciones",
+    allRightsReserved: "Todos los derechos reservados.",
+    builtBy: "Diseñado y construido internamente por HenryCo Studio para el ecosistema HenryCo",
+    menuDivisionsDirectory: "Directorio de divisiones",
+    menuAbout: "Acerca de",
+    menuContact: "Contacto",
   },
 };
 const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
@@ -518,6 +598,26 @@ const HUB_PUBLIC_COPY_PT: DeepPartial<HubPublicCopy> = {
   faqBlock: {
     eyebrow: "Perguntas frequentes",
   },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Empresa",
+    linkHome: "Início",
+    linkAbout: "Sobre",
+    linkContact: "Contacto",
+    linkSearch: "Pesquisar",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "Conta HenryCo",
+    linkLanguagePrefs: "Idioma e preferências",
+    linkEmailPrefs: "Preferências de e-mail",
+    colLegal: "Jurídico",
+    linkPrivacy: "Privacidade",
+    linkTerms: "Termos",
+    allRightsReserved: "Todos os direitos reservados.",
+    builtBy: "Projetado e desenvolvido internamente pela HenryCo Studio para o ecossistema HenryCo",
+    menuDivisionsDirectory: "Diretório de divisões",
+    menuAbout: "Sobre",
+    menuContact: "Contacto",
+  },
 };
 const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -621,6 +721,26 @@ const HUB_PUBLIC_COPY_AR: DeepPartial<HubPublicCopy> = {
   },
   faqBlock: {
     eyebrow: "الأسئلة الشائعة",
+  },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "الشركة",
+    linkHome: "الرئيسية",
+    linkAbout: "من نحن",
+    linkContact: "اتصل بنا",
+    linkSearch: "بحث",
+    colHenryCo: "هنري كو",
+    linkHenryCoAccount: "حساب HenryCo",
+    linkLanguagePrefs: "اللغة والتفضيلات",
+    linkEmailPrefs: "تفضيلات البريد الإلكتروني",
+    colLegal: "القانوني",
+    linkPrivacy: "الخصوصية",
+    linkTerms: "الشروط",
+    allRightsReserved: "جميع الحقوق محفوظة.",
+    builtBy: "صُمِّم وطُوِّر داخلياً بواسطة HenryCo Studio لمنظومة HenryCo",
+    menuDivisionsDirectory: "دليل الأقسام",
+    menuAbout: "من نحن",
+    menuContact: "اتصل بنا",
   },
 };
 const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
@@ -726,6 +846,26 @@ const HUB_PUBLIC_COPY_DE: DeepPartial<HubPublicCopy> = {
   faqBlock: {
     eyebrow: "Häufig gestellte Fragen",
   },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Unternehmen",
+    linkHome: "Startseite",
+    linkAbout: "Über uns",
+    linkContact: "Kontakt",
+    linkSearch: "Suche",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "HenryCo-Konto",
+    linkLanguagePrefs: "Sprache & Einstellungen",
+    linkEmailPrefs: "E-Mail-Einstellungen",
+    colLegal: "Rechtliches",
+    linkPrivacy: "Datenschutz",
+    linkTerms: "Nutzungsbedingungen",
+    allRightsReserved: "Alle Rechte vorbehalten.",
+    builtBy: "Intern entworfen und entwickelt von HenryCo Studio für das HenryCo-Ökosystem",
+    menuDivisionsDirectory: "Abteilungsverzeichnis",
+    menuAbout: "Über uns",
+    menuContact: "Kontakt",
+  },
 };
 const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -829,6 +969,26 @@ const HUB_PUBLIC_COPY_IT: DeepPartial<HubPublicCopy> = {
   },
   faqBlock: {
     eyebrow: "Domande frequenti",
+  },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Azienda",
+    linkHome: "Home",
+    linkAbout: "Chi siamo",
+    linkContact: "Contatto",
+    linkSearch: "Cerca",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "Account HenryCo",
+    linkLanguagePrefs: "Lingua e preferenze",
+    linkEmailPrefs: "Preferenze e-mail",
+    colLegal: "Note legali",
+    linkPrivacy: "Privacy",
+    linkTerms: "Termini",
+    allRightsReserved: "Tutti i diritti riservati.",
+    builtBy: "Progettato e sviluppato internamente da HenryCo Studio per l'ecosistema HenryCo",
+    menuDivisionsDirectory: "Elenco divisioni",
+    menuAbout: "Chi siamo",
+    menuContact: "Contatto",
   },
 };
 const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
@@ -934,6 +1094,26 @@ const HUB_PUBLIC_COPY_ZH: DeepPartial<HubPublicCopy> = {
   faqBlock: {
     eyebrow: "常见问题",
   },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "公司",
+    linkHome: "首页",
+    linkAbout: "关于我们",
+    linkContact: "联系我们",
+    linkSearch: "搜索",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "HenryCo账户",
+    linkLanguagePrefs: "语言与偏好",
+    linkEmailPrefs: "邮件偏好",
+    colLegal: "法律",
+    linkPrivacy: "隐私",
+    linkTerms: "条款",
+    allRightsReserved: "版权所有。",
+    builtBy: "由HenryCo Studio为HenryCo生态系统内部设计和构建",
+    menuDivisionsDirectory: "部门目录",
+    menuAbout: "关于我们",
+    menuContact: "联系我们",
+  },
 };
 const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -1037,6 +1217,26 @@ const HUB_PUBLIC_COPY_HI: DeepPartial<HubPublicCopy> = {
   },
   faqBlock: {
     eyebrow: "अक्सर पूछे जाने वाले प्रश्न",
+  },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "कंपनी",
+    linkHome: "होम",
+    linkAbout: "हमारे बारे में",
+    linkContact: "संपर्क",
+    linkSearch: "खोज",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "HenryCo खाता",
+    linkLanguagePrefs: "भाषा और प्राथमिकताएं",
+    linkEmailPrefs: "ईमेल प्राथमिकताएं",
+    colLegal: "कानूनी",
+    linkPrivacy: "गोपनीयता",
+    linkTerms: "शर्तें",
+    allRightsReserved: "सर्वाधिकार सुरक्षित।",
+    builtBy: "HenryCo Studio द्वारा HenryCo पारिस्थितिकी तंत्र के लिए आंतरिक रूप से डिज़ाइन और निर्मित",
+    menuDivisionsDirectory: "डिवीजन निर्देशिका",
+    menuAbout: "हमारे बारे में",
+    menuContact: "संपर्क",
   },
 };
 const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
@@ -1142,6 +1342,26 @@ const HUB_PUBLIC_COPY_IG: DeepPartial<HubPublicCopy> = {
   faqBlock: {
     eyebrow: "Ajụjụ a na-ajụkarị",
   },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Ụlọ ọrụ",
+    linkHome: "Ụlọ",
+    linkAbout: "Maka anyị",
+    linkContact: "Kpọtụrụ anyị",
+    linkSearch: "Chọọ",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "Akaụntụ HenryCo",
+    linkLanguagePrefs: "Asụsụ & mmasị",
+    linkEmailPrefs: "Mmasị imeli",
+    colLegal: "Iwu",
+    linkPrivacy: "Nzuzo",
+    linkTerms: "Usoro",
+    allRightsReserved: "Ikike nile echekwara.",
+    builtBy: "Achepụtara ma wuo n'ime ụlọ site na HenryCo Studio maka njikọ HenryCo",
+    menuDivisionsDirectory: "Ndepụta ngalaba",
+    menuAbout: "Maka anyị",
+    menuContact: "Kpọtụrụ anyị",
+  },
 };
 const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -1246,6 +1466,26 @@ const HUB_PUBLIC_COPY_YO: DeepPartial<HubPublicCopy> = {
   faqBlock: {
     eyebrow: "Àwọn ìbéèrè tí a sábà máa ń béèrè",
   },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Ilé-iṣẹ́",
+    linkHome: "Ilé",
+    linkAbout: "Nípa wa",
+    linkContact: "Kàn sí wa",
+    linkSearch: "Wá",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "Àkọọ́lẹ̀ HenryCo",
+    linkLanguagePrefs: "Èdè & àwọn àṣàyàn",
+    linkEmailPrefs: "Àwọn àṣàyàn ímeèlì",
+    colLegal: "Òfin",
+    linkPrivacy: "Ìpamọ́",
+    linkTerms: "Àwọn òfin",
+    allRightsReserved: "Gbogbo ẹ̀tọ́ ni a tọ́jú.",
+    builtBy: "A ṣe àpẹẹrẹ rẹ̀ àti kọ́ rẹ̀ nínú ilé nípa HenryCo Studio fún ètò HenryCo",
+    menuDivisionsDirectory: "Àtọ́kàn àwọn ẹ̀ka",
+    menuAbout: "Nípa wa",
+    menuContact: "Kàn sí wa",
+  },
 };
 const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
   footer: {
@@ -1349,6 +1589,26 @@ const HUB_PUBLIC_COPY_HA: DeepPartial<HubPublicCopy> = {
   },
   faqBlock: {
     eyebrow: "Tambayoyin da ake yawan yi",
+  },
+  publicSiteShell: {
+    brandFallback: "Henry & Co.",
+    colCompany: "Kamfani",
+    linkHome: "Gida",
+    linkAbout: "Game da mu",
+    linkContact: "Tuntuɓi mu",
+    linkSearch: "Bincika",
+    colHenryCo: "HenryCo",
+    linkHenryCoAccount: "Asusun HenryCo",
+    linkLanguagePrefs: "Harshe & zaɓuɓɓuka",
+    linkEmailPrefs: "Zaɓuɓɓukan imel",
+    colLegal: "Doka",
+    linkPrivacy: "Sirri",
+    linkTerms: "Sharuɗɗa",
+    allRightsReserved: "An kiyaye dukkan haƙƙoƙi.",
+    builtBy: "An tsara kuma an gina shi ciki gida ta HenryCo Studio don tsarin HenryCo",
+    menuDivisionsDirectory: "Jerin sassan",
+    menuAbout: "Game da mu",
+    menuContact: "Tuntuɓi mu",
   },
 };
 
