@@ -10,6 +10,7 @@ import type {
   WorkspaceSnapshot,
   WorkspaceViewer,
 } from "@/app/lib/workspace/types";
+import type { HubWorkspaceCopy } from "@henryco/i18n";
 
 export type WorkspaceSectionKey =
   | "overview"
@@ -72,7 +73,8 @@ export function canViewSection(viewer: WorkspaceViewer, key: WorkspaceSectionKey
 export function buildWorkspaceNav(
   viewer: WorkspaceViewer,
   snapshot: WorkspaceSnapshot,
-  basePath: string
+  basePath: string,
+  copy: HubWorkspaceCopy["workspaceNav"]
 ): WorkspaceNavSection[] {
   const sections: WorkspaceNavSection[] = [];
   const isNavItem = (item: WorkspaceNavItem | null): item is WorkspaceNavItem => Boolean(item);
@@ -81,14 +83,14 @@ export function buildWorkspaceNav(
     viewerHasPermission(viewer, "overview.view")
       ? {
           href: workspaceHref(basePath, "/"),
-          label: "Overview",
+          label: copy.navOverview,
           icon: "LayoutDashboard",
         }
       : null,
     viewerHasPermission(viewer, "tasks.view")
       ? {
           href: workspaceHref(basePath, "/tasks"),
-          label: "My Tasks",
+          label: copy.navMyTasks,
           icon: "ListTodo",
           badge: snapshot.tasks.length,
         }
@@ -96,7 +98,7 @@ export function buildWorkspaceNav(
     viewerHasPermission(viewer, "inbox.view")
       ? {
           href: workspaceHref(basePath, "/inbox"),
-          label: "Inbox",
+          label: copy.navInbox,
           icon: "Inbox",
           badge: snapshot.inbox.filter((item) => item.unread).length,
         }
@@ -104,7 +106,7 @@ export function buildWorkspaceNav(
     viewerHasPermission(viewer, "approvals.view")
       ? {
           href: workspaceHref(basePath, "/approvals"),
-          label: "Approvals",
+          label: copy.navApprovals,
           icon: "BadgeCheck",
           badge: snapshot.approvals.length,
         }
@@ -112,47 +114,47 @@ export function buildWorkspaceNav(
   ].filter(isNavItem);
 
   if (workspaceItems.length > 0) {
-    sections.push({ label: "Workspace", items: workspaceItems });
+    sections.push({ label: copy.sectionWorkspace, items: workspaceItems });
   }
 
   const operationsItems = [
     viewerHasPermission(viewer, "queues.view")
       ? {
           href: workspaceHref(basePath, "/queues"),
-          label: "Queues",
+          label: copy.navQueues,
           icon: "KanbanSquare",
         }
       : null,
     viewerHasPermission(viewer, "archive.view")
       ? {
           href: workspaceHref(basePath, "/archive"),
-          label: "History",
+          label: copy.navHistory,
           icon: "History",
         }
       : null,
     viewerHasPermission(viewer, "reports.view")
       ? {
           href: workspaceHref(basePath, "/reports"),
-          label: "Reports",
+          label: copy.navReports,
           icon: "ChartColumn",
         }
       : null,
     viewerHasPermission(viewer, "settings.view")
       ? {
           href: workspaceHref(basePath, "/settings"),
-          label: "Settings",
+          label: copy.navSettings,
           icon: "Settings2",
         }
       : null,
   ].filter(isNavItem);
 
   if (operationsItems.length > 0) {
-    sections.push({ label: "Operations", items: operationsItems });
+    sections.push({ label: copy.sectionOperations, items: operationsItems });
   }
 
   if (viewerHasPermission(viewer, "division.read")) {
     sections.push({
-      label: "Divisions",
+      label: copy.sectionDivisions,
       items: snapshot.modules.map((module) => ({
         href: workspaceHref(basePath, `/division/${module.division}`),
         label: getDivisionConfig(module.division).shortName,
@@ -167,28 +169,47 @@ export function buildWorkspaceNav(
 
 export function getWorkspaceSectionTitle(
   key: WorkspaceSectionKey,
-  division?: WorkspaceDivision
+  division?: WorkspaceDivision,
+  copy?: HubWorkspaceCopy["workspaceNav"]
 ) {
+  if (!copy) {
+    // Fallback to English literals when copy is not provided (legacy callers)
+    switch (key) {
+      case "overview": return "Overview";
+      case "tasks": return "My Tasks";
+      case "inbox": return "Inbox";
+      case "approvals": return "Approvals";
+      case "queues": return "Queues";
+      case "archive": return "History";
+      case "reports": return "Reports";
+      case "settings": return "Settings";
+      case "division": return division ? `${getDivisionConfig(division).shortName} Module` : "Division";
+      default: return "Workspace";
+    }
+  }
+
   switch (key) {
     case "overview":
-      return "Overview";
+      return copy.titleOverview;
     case "tasks":
-      return "My Tasks";
+      return copy.titleMyTasks;
     case "inbox":
-      return "Inbox";
+      return copy.titleInbox;
     case "approvals":
-      return "Approvals";
+      return copy.titleApprovals;
     case "queues":
-      return "Queues";
+      return copy.titleQueues;
     case "archive":
-      return "History";
+      return copy.titleHistory;
     case "reports":
-      return "Reports";
+      return copy.titleReports;
     case "settings":
-      return "Settings";
+      return copy.titleSettings;
     case "division":
-      return division ? `${getDivisionConfig(division).shortName} Module` : "Division";
+      return division
+        ? copy.titleDivisionTemplate.replace("{shortName}", getDivisionConfig(division).shortName)
+        : copy.titleFallback;
     default:
-      return "Workspace";
+      return copy.titleFallback;
   }
 }

@@ -521,6 +521,7 @@ export default function WorkspaceScreen({
   preferredWorkspaceUrl,
   divisionHrefs,
   copy,
+  navCopy,
 }: {
   viewer: WorkspaceViewer;
   snapshot: WorkspaceSnapshot;
@@ -532,6 +533,7 @@ export default function WorkspaceScreen({
   preferredWorkspaceUrl: string;
   divisionHrefs: Partial<Record<WorkspaceDivision, string>>;
   copy: HubWorkspaceCopy["workspaceScreen"];
+  navCopy?: HubWorkspaceCopy["workspaceNav"];
 }) {
   const selectedModule =
     currentKey === "division" && currentDivision
@@ -941,7 +943,7 @@ export default function WorkspaceScreen({
                   {copy.headerEyebrow}
                 </div>
                 <h1 className="mt-4 text-3xl font-semibold tracking-[-0.05em] sm:text-4xl">
-                  {getWorkspaceSectionTitle(currentKey, currentDivision)}
+                  {getWorkspaceSectionTitle(currentKey, currentDivision, navCopy)}
                 </h1>
                 <p className="mt-3 max-w-3xl text-sm leading-6 text-white/72">
                   {sectionIntro(currentKey, copy, currentDivision)}
