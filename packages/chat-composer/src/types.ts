@@ -100,6 +100,26 @@ export type ComposerProps = {
   initialText?: string;
   ariaLabel?: string;
   /**
+   * Focus the textarea on mount. Useful for chat surfaces where the
+   * thread is the entire screen — the keyboard opens immediately on
+   * mobile (subject to host browser allowing programmatic focus from a
+   * navigation gesture). Defaults to false.
+   */
+  autoFocus?: boolean;
+  /**
+   * Opt-in WhatsApp / iMessage parity on mobile (max-width: 767px):
+   * the composer shell goes flush to the viewport edge — no outer
+   * radius, no side border, no side padding, hairline top border,
+   * safe-area-inset on the bottom. Use on chat-first surfaces where
+   * the composer should read as device chrome (studio messaging
+   * centre, jobs hiring conversation). MessageThread mounts always
+   * get edge-to-edge via the `.mt-composer-host` parent selector so
+   * they do not need to pass this. Form-embedded composers
+   * (NewSupportForm, care ReplyComposer) should leave it off so the
+   * composer keeps its rounded card chrome inside the form.
+   */
+  edgeToEdgeMobile?: boolean;
+  /**
    * Extra controls rendered in the actions row, before Send. Receives the
    * live `text` and a `setText` callback so extras can both read AND mutate
    * the draft. The studio ✨ Refine button uses this to call Claude on the

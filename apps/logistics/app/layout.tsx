@@ -4,7 +4,7 @@ import { Manrope } from "next/font/google";
 import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { AssistDock } from "@henryco/ui/support";
+import { SupportAssist } from "@henryco/ui/support";
 import { createDivisionMetadata, getAccountUrl, getDivisionConfig } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
@@ -77,7 +77,7 @@ export default async function RootLayout({
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             <LogisticsShell accountSlot={accountSlot}>{children}</LogisticsShell>
-            <AssistDock division="logistics" accent="#D77539" />
+            <SupportAssist division="logistics" accent="#D77539" />
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

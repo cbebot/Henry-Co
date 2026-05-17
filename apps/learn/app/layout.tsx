@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { AssistDock } from "@henryco/ui/support";
+import { SupportAssist } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import "./globals.css";
@@ -39,7 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             {children}
-            <AssistDock division="learn" accent="#7C5CFF" />
+            <SupportAssist division="learn" accent="#7C5CFF" />
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

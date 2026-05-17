@@ -84,11 +84,31 @@ export function ChatComposer(props: ComposerProps) {
     initialText,
     ariaLabel,
     composerExtras,
+    autoFocus = false,
+    edgeToEdgeMobile = false,
   } = props;
 
   useEffect(() => {
     ensureComposerStyles();
   }, []);
+
+  useEffect(() => {
+    if (!autoFocus) return;
+    const node = inlineTextareaRef.current;
+    if (!node) return;
+    // Defer to next frame so layout has settled — iOS Safari rejects
+    // .focus() if the element hasn't been measured yet; Android Chrome
+    // honours it and opens the keyboard. On iOS this still puts the
+    // caret in the input so the first tap doesn't fight a focus race.
+    const raf = requestAnimationFrame(() => {
+      try {
+        node.focus({ preventScroll: true });
+      } catch {
+        node.focus();
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [autoFocus]);
 
   const [text, setText] = useState(initialText || "");
   const [draftHydrated, setDraftHydrated] = useState(false);
@@ -273,6 +293,7 @@ export function ChatComposer(props: ComposerProps) {
       style={toneStyle(tone)}
       data-drag-over={isDragOver ? "true" : undefined}
       data-has-text={text.length > 0 || hasAttachments ? "true" : "false"}
+      data-hc-edge-to-edge={edgeToEdgeMobile ? "true" : undefined}
       onDragOver={(event) => {
         if (!enableAttachments) return;
         if (event.dataTransfer.types.includes("Files")) {

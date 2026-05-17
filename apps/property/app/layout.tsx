@@ -5,7 +5,7 @@ import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { AssistDock } from "@henryco/ui/support";
+import { SupportAssist } from "@henryco/ui/support";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
@@ -71,7 +71,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
             {children}
-            <AssistDock division="property" accent="#BF7A47" />
+            <SupportAssist division="property" accent="#BF7A47" />
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

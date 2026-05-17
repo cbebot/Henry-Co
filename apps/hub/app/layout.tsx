@@ -8,7 +8,7 @@ import {
   PublicThemeGuard,
   ThirdPartyRuntimeProviders,
 } from "@henryco/ui/public-shell";
-import { AssistDock } from "@henryco/ui/support";
+import { SupportAssist } from "@henryco/ui/support";
 import { COMPANY, createDivisionMetadata } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
@@ -49,7 +49,7 @@ export default async function RootLayout({
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <ThirdPartyRuntimeProviders>{children}</ThirdPartyRuntimeProviders>
-          <AssistDock division="hub" />
+          <SupportAssist division="hub" />
           <ConsentNotice preferencesHref="/preferences" locale={lang} />
           <LocaleSuggestion suggestedLocale={suggestedLocale} currentLocale={lang} />
         </PublicThemeGuard>

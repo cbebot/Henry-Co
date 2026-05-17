@@ -1040,6 +1040,49 @@ html, body { overflow-x: clip; max-width: 100vw; }
   opacity: 0.985;
 }
 
+/* ────────────────────────────────────────────────────────────────────
+   Mobile (<= 767px) — WhatsApp / iMessage parity for the studio
+   /support/[threadId] room. Mirrors what the account /support surface
+   does in editorial.css: the engine ships .henryco-composer-shell as
+   edge-to-edge on phones already, but the .mt-thread parent still ships
+   a rounded card with overflow: hidden — which CLIPS the composer's
+   bottom corners into the parent's radius, undoing the engine's flush
+   look. We strip the thread shell's mobile chrome here so the composer
+   sits flush against the room boundary, then pin the message list to
+   the top so short threads don't sit halfway down a tall empty surface.
+   The composer-host's own padding-inline is owned by the engine + the
+   @henryco/messaging-thread package; we don't need to repeat it.
+   ──────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .studio-support-room {
+    gap: 0 !important;
+  }
+  .studio-support-room .mt-thread {
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+    height: 100% !important;
+  }
+  .studio-support-room .mt-thread-list {
+    padding-top: 0.6rem !important;
+  }
+  .studio-support-room .mt-thread-list-inner {
+    justify-content: flex-start !important;
+  }
+  /* Closed/resolved hints — drop their full-card chrome on mobile so
+     they slot under the thread bar without floating as another card. */
+  .studio-support-room__closed-note,
+  .studio-support-room__resolved-note {
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    padding: 0.6rem 0.85rem !important;
+  }
+}
+
 /* Thread header — pills + subject + actions on a single elevated card */
 .studio-support-header {
   display: flex;
