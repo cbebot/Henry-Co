@@ -23,12 +23,15 @@ export type PublicToastInput = {
   action?: { label: string; onClick: () => void } | null;
   /** Milliseconds before auto-dismiss. `null` keeps it until user dismisses. Default 5000. */
   durationMs?: number | null;
+  /** aria-label for the dismiss button. Override to translate (default: "Dismiss notification"). */
+  dismissLabel?: string;
 };
 
-type PublicToastEntry = Required<Omit<PublicToastInput, "durationMs" | "action" | "tone">> & {
+type PublicToastEntry = Required<Omit<PublicToastInput, "durationMs" | "action" | "tone" | "dismissLabel">> & {
   tone: PublicToastTone;
   action: PublicToastInput["action"];
   durationMs: number | null;
+  dismissLabel: string;
 };
 
 type PublicToastContext = {
@@ -98,6 +101,7 @@ export function PublicToastProvider({
         tone: input.tone ?? toneDefault,
         action: input.action ?? null,
         durationMs: input.durationMs === null ? null : input.durationMs ?? 5000,
+        dismissLabel: input.dismissLabel ?? "Dismiss notification",
       };
       setItems((prev) => {
         const next = [...prev, entry];
@@ -229,7 +233,7 @@ function PublicToastCard({
       <button
         type="button"
         onClick={onDismiss}
-        aria-label="Dismiss notification"
+        aria-label={toast.dismissLabel}
         className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-900 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
       >
         <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
