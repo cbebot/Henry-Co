@@ -1824,6 +1824,60 @@ const ES: DeepPartial<JobsCopy> = {
     noApplications: "Aún sin candidaturas.",
     noPostings: "Sin publicaciones activas.",
   },
+  interviewRoom: {
+    kicker: "Sala de entrevista",
+    candidateFallback: "Candidato/a",
+    employerFallback: "Equipo de selección",
+    iframeTitle: "Sala de entrevista por vídeo",
+    placeholder:
+      "La sala se está preparando. Tu entrevistador/a compartirá enseguida un enlace de reunión en el chat.",
+    tabChat: "Chat",
+    tabNotes: "Notas",
+    chatHint:
+      "El chat de la sala lo proporciona el proveedor de vídeo. Úsalo para compartir enlaces durante la llamada.",
+    notesLabel: "Notas privadas",
+    notesPlaceholder:
+      "Recoge tus observaciones. Solo las verá tu equipo de selección.",
+    notesSaving: "Guardando…",
+    notesSavedAt: "Guardadas",
+    notesAutosave: "Se guarda automáticamente cada 30 s",
+    notesSaveError: "No se han podido guardar las notas.",
+  },
+  verification: {
+    skillTitle: "Habilidades verificadas",
+    skillSubtitle: "Habilidades en las que los empleadores pueden confiar de un vistazo.",
+    experienceTitle: "Experiencia verificada",
+    experienceSubtitle: "Puestos y antigüedad confirmados.",
+    referenceTitle: "Comprobación de referencias",
+    referenceSubtitle: "Respuestas recogidas de tus referencias profesionales.",
+    badgeVerified: "Verificado",
+    badgePending: "Pendiente",
+    badgeRejected: "Sin verificar",
+  },
+  offerLetter: {
+    title: "Carta de oferta",
+    subtitle: "Revisa tu oferta y fírmala cuando estés listo/a.",
+    statusDraft: "Borrador",
+    statusSent: "A la espera de tu firma",
+    statusSigned: "Firmada",
+    statusExpired: "Caducada",
+    statusDeclined: "Rechazada",
+    signCta: "Abrir la sala de firma",
+    typedFallbackTitle: "Confirmar aceptación",
+    typedFallbackPrompt:
+      "Escribe tu nombre completo para aceptar esta oferta. Se guarda un PDF firmado en tus archivos.",
+  },
+  salary: {
+    rangeLabel: "Rango publicado",
+    benchmarkLabel: "Referencia del mercado",
+    p25Label: "Percentil 25",
+    p50Label: "Mediana",
+    p75Label: "Percentil 75",
+    sampleLabel: "Tamaño de la muestra",
+    sourceLabel: "Fuente de los datos",
+    discloseRequiredError:
+      "Es obligatorio indicar el salario. Proporciona un rango numérico o una etiqueta concreta.",
+  },
   employerHiring: {
     pageTitle: "Pipelines de contratación",
     pageSubtitle:
