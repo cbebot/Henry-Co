@@ -3044,6 +3044,60 @@ const AR: DeepPartial<JobsCopy> = {
     noApplications: "لا توجد طلبات بعد.",
     noPostings: "لا توجد إعلانات وظيفية نشطة.",
   },
+  interviewRoom: {
+    kicker: "غرفة المقابلة",
+    candidateFallback: "المرشح/ة",
+    employerFallback: "فريق التوظيف",
+    iframeTitle: "غرفة مقابلة عبر الفيديو",
+    placeholder:
+      "يجري تجهيز الغرفة. سيشارك من يجري المقابلة معك رابطًا للاجتماع في الدردشة قريبًا.",
+    tabChat: "الدردشة",
+    tabNotes: "الملاحظات",
+    chatHint:
+      "دردشة الغرفة يوفرها مزود خدمة الفيديو. استخدمها لمشاركة الروابط أثناء المكالمة.",
+    notesLabel: "ملاحظات خاصة",
+    notesPlaceholder:
+      "دوّن ملاحظاتك. يراها فريق التوظيف فقط.",
+    notesSaving: "جارٍ الحفظ…",
+    notesSavedAt: "تم الحفظ",
+    notesAutosave: "يُحفظ تلقائيًا كل 30 ثانية",
+    notesSaveError: "تعذّر حفظ الملاحظات.",
+  },
+  verification: {
+    skillTitle: "مهارات موثقة",
+    skillSubtitle: "مهارات يثق بها أصحاب العمل بنظرة واحدة.",
+    experienceTitle: "خبرة موثقة",
+    experienceSubtitle: "أدوار ومدد عمل مؤكدة.",
+    referenceTitle: "التحقق من المراجع",
+    referenceSubtitle: "ردود مجمعة من مراجعك المهنية.",
+    badgeVerified: "موثق",
+    badgePending: "قيد المراجعة",
+    badgeRejected: "غير موثق",
+  },
+  offerLetter: {
+    title: "خطاب العرض",
+    subtitle: "راجع عرضك ووقّعه عندما تكون جاهزًا.",
+    statusDraft: "مسودة",
+    statusSent: "بانتظار توقيعك",
+    statusSigned: "تم التوقيع",
+    statusExpired: "منتهي الصلاحية",
+    statusDeclined: "مرفوض",
+    signCta: "افتح غرفة التوقيع",
+    typedFallbackTitle: "تأكيد القبول",
+    typedFallbackPrompt:
+      "اكتب اسمك الكامل لقبول هذا العرض. يُحفظ ملف PDF موقّع ضمن ملفاتك.",
+  },
+  salary: {
+    rangeLabel: "النطاق المعلن",
+    benchmarkLabel: "المعيار السوقي",
+    p25Label: "المئين 25",
+    p50Label: "الوسيط",
+    p75Label: "المئين 75",
+    sampleLabel: "حجم العينة",
+    sourceLabel: "مصدر البيانات",
+    discloseRequiredError:
+      "الإفصاح عن الراتب مطلوب. أدخل نطاقًا رقميًا أو وصفًا واضحًا.",
+  },
   employerHiring: {
     pageTitle: "خطوط التوظيف",
     pageSubtitle:
